@@ -6,7 +6,7 @@ interface TaskDetailsProps {
     task: ITask;
 }
 
-export const TaskDetails: React.FC<TaskDetailsProps> = ({ task }) => {
+export const TaskDetails = ({ task }: TaskDetailsProps) => {
     // use Itask $ObjectType to load the concrete iew for the Task
     if (task.osdkTask.$objectType === "osdkCodingTask") {
         return <TaskDetailsCoding task={task} />;

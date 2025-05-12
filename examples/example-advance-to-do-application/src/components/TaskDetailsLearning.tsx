@@ -1,30 +1,32 @@
-import { useEffect, useMemo } from "react";
-import { EventType } from "../userAnalytics/userAnalyticsTypes";
-import useAnalytics from "../userAnalytics/useAnalytics";
+import { useMemo } from "react";
 import { ITask } from "../dataServices/useTasks";
 import { UserField } from "./userField";
-import useLearningTask, { MediaType } from "../dataServices/useLearningTask";
+import useLearningTask, { SupportedMediaType } from "../dataServices/useLearningTask";
 import css from "./TaskDetailsLearning.module.css";
 
-const MediaTypeComponentMap: Record<MediaType, React.FC<{ mediaUrl: string }>> = {
-    [MediaType.PDF]: ({ mediaUrl }: { mediaUrl: string }) => <iframe src={mediaUrl} width="100%" height="600px"></iframe>,
-    [MediaType.LINK]: ({ mediaUrl }: { mediaUrl: string }) => (
+const MediaTypeComponentMap: Record<SupportedMediaType, React.FC<{ mediaUrl: string }>> = {
+    [SupportedMediaType.PDF]: ({ mediaUrl }: { mediaUrl: string }) => <iframe src={mediaUrl} width="100%" height="600px" title="PDF Document Viewer"></iframe>,
+    [SupportedMediaType.LINK]: ({ mediaUrl }: { mediaUrl: string }) => (
         <a href={mediaUrl} target="_blank" rel="noopener noreferrer">
             {mediaUrl}
         </a>
     ),
-    [MediaType.IMAGE]: ({ mediaUrl }: { mediaUrl: string }) => <img src={mediaUrl} alt="Media content" className={css.mediaField} />,
-    [MediaType.VIDEO]: ({ mediaUrl }: { mediaUrl: string }) => <video src={mediaUrl} controls className={css.mediaField} />,
-    [MediaType.NONE]: () => <span>No media available</span>,
+    [SupportedMediaType.IMAGE]: ({ mediaUrl }: { mediaUrl: string }) => <img src={mediaUrl} alt="Media content" className={css.mediaField} />,
+    [SupportedMediaType.VIDEO]: ({ mediaUrl }: { mediaUrl: string }) => (
+        <video src={mediaUrl} controls className={css.mediaField}>
+            <track kind="captions" src="" label="English captions" />
+        </video>
+    ),
+    [SupportedMediaType.NONE]: () => <span>No media available</span>,
 };
 
-export const TaskDetailsLearning: React.FC<{ task: ITask }> = ({ task }) => {
-    const { logEvent } = useAnalytics();
-    const { learningTask, isLoading, metadata } = useLearningTask(task);
+interface ITaskDetailsLearningProps {
+    task: ITask;
+}
 
-    useEffect(() => {
-        logEvent(EventType.LearningTaskViewed, `Task ${learningTask?.osdkLearningTask.$primaryKey} viewed`);
-    }, [learningTask?.osdkLearningTask.$primaryKey, logEvent]);
+// eslint-disable-next-line react/prop-types
+export const TaskDetailsLearning: React.FC<ITaskDetailsLearningProps> = ({ task }) => {
+    const { learningTask, isLoading, metadata } = useLearningTask(task);
 
     const renderMediaContent = useMemo(() => {
         if (!learningTask?.mediaUrl) return null;

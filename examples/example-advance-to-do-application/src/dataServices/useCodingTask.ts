@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import useSWR from "swr";
-import client from "../client";
+import { useOsdkClient } from "@osdk/react";
 import { ITask } from "./useTasks";
 import { osdkCodingTask } from "@tutorial-advance-to-do-application/sdk";
-import { User } from "@osdk/foundry.admin";
+import type { User } from "@osdk/foundry.admin";
 import useAdmin from "./useAdmin";
-import { ObjectMetadata } from "@osdk/client";
+import type { ObjectMetadata } from "@osdk/client";
 
 interface CodingTaskEnriched {
   osdkCodingTask: osdkCodingTask.OsdkInstance;
@@ -16,6 +16,7 @@ interface CodingTaskEnriched {
 // TODO: Find a way to fix this as task details control is dismounted which cause a fetch on the same task.
 
 function useCodingTask(task: ITask) {
+    const client = useOsdkClient();
     const [metadata, setMetadata] = useState<ObjectMetadata>();
     const { getBatchUserDetails } = useAdmin();
 
@@ -29,7 +30,7 @@ function useCodingTask(task: ITask) {
             assignedTo: users[codingTask.assignedTo as string],
         };
         return codingTaskEnriched;
-    }, [getBatchUserDetails, task.osdkTask.$primaryKey]);
+    }, [getBatchUserDetails, task.osdkTask.$primaryKey, client]);
 
     // Only pass the fetcher if the data is not already cached
     const { data, error, isValidating } = useSWR<CodingTaskEnriched>(
@@ -45,7 +46,7 @@ function useCodingTask(task: ITask) {
     const getObjectTypeMetadata = useCallback(async () => {
         const objectTypeMetadata = await client.fetchMetadata(osdkCodingTask);
         setMetadata(objectTypeMetadata);
-    }, []);
+    }, [client]);
 
     useEffect(() => {
         getObjectTypeMetadata();

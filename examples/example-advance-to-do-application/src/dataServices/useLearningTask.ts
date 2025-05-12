@@ -1,29 +1,31 @@
 import { useCallback, useEffect, useState } from "react";
 import useSWR from "swr";
-import client from "../client";
+import { useOsdkClient } from "@osdk/react";
 import { ITask } from "./useTasks";
 import { osdkLearningTask } from "@tutorial-advance-to-do-application/sdk";
-import { User } from "@osdk/foundry.admin";
 import useAdmin from "./useAdmin";
-import { ObjectMetadata, Osdk, Result } from "@osdk/client";
+import type { ObjectMetadata, Osdk, Result } from "@osdk/client";
+import type { User } from "@osdk/foundry.admin";
 
-// eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
-export enum MediaType {
-    PDF = "PDF",
-    IMAGE = "IMAGE",
-    LINK = "LINK",
-    VIDEO = "VIDEO",
-    NONE = "NONE"
-}
+export const SupportedMediaType = {
+    PDF: "PDF",
+    IMAGE: "IMAGE",
+    LINK: "LINK",
+    VIDEO: "VIDEO",
+    NONE: "NONE"
+} as const;
+
+export type SupportedMediaType = typeof SupportedMediaType[keyof typeof SupportedMediaType];
 interface LearningTaskEnriched {
   osdkLearningTask: osdkLearningTask.OsdkInstance;
   mediaUrl: string;
   createdBy: User;
   assignedTo: User;
-  mediaType: MediaType;
+  mediaType: SupportedMediaType;
 }
 
 function useLearningTask(task: ITask) {
+    const client = useOsdkClient();
     const [metadata, setMetadata] = useState<ObjectMetadata>();
     const { getBatchUserDetails } = useAdmin();
 
@@ -40,7 +42,7 @@ function useLearningTask(task: ITask) {
             return {
                 osdkLearningTask: learningTask,
                 mediaUrl: learningTask.contentUrl ?? "",
-                mediaType: learningTask.contentUrl != undefined ? MediaType.LINK : MediaType.NONE,
+                mediaType: learningTask.contentUrl != undefined ? SupportedMediaType.LINK : SupportedMediaType.NONE,
                 createdBy: users[learningTask.createdBy as string],
                 assignedTo: users[learningTask.assignedTo as string],
             };
@@ -59,7 +61,7 @@ function useLearningTask(task: ITask) {
             assignedTo: users[learningTask.assignedTo as string],
         };
         return codingTaskEnriched;
-    }, [getBatchUserDetails, task.osdkTask.$primaryKey]);
+    }, [getBatchUserDetails, task.osdkTask.$primaryKey, client]);
 
     // Only pass the fetcher if the data is not already cached
     const { data, error, isValidating } = useSWR<LearningTaskEnriched>(
@@ -75,7 +77,7 @@ function useLearningTask(task: ITask) {
     const getObjectTypeMetadata = useCallback(async () => {
         const objectTypeMetadata = await client.fetchMetadata(osdkLearningTask);
         setMetadata(objectTypeMetadata);
-    }, []);
+    }, [client]);
 
     useEffect(() => {
         getObjectTypeMetadata();
@@ -93,16 +95,16 @@ function useLearningTask(task: ITask) {
 
 export default useLearningTask;
 
-const getMediaTypeFromMimeType = (mimeType: string): MediaType => {
+const getMediaTypeFromMimeType = (mimeType: string): SupportedMediaType => {
     if (/application\/pdf/.test(mimeType)) {
-        return MediaType.PDF;
+        return SupportedMediaType.PDF;
     } else if (/image\/(jpeg|png|gif)/.test(mimeType)) {
-        return MediaType.IMAGE;
+        return SupportedMediaType.IMAGE;
     } else if (/video\/mp4/.test(mimeType)) {
-        return MediaType.VIDEO;
+        return SupportedMediaType.VIDEO;
     } else if (/text\/html/.test(mimeType)) {
-        return MediaType.LINK;
+        return SupportedMediaType.LINK;
     } else {
-        return MediaType.NONE;
+        return SupportedMediaType.NONE;
     }
 };

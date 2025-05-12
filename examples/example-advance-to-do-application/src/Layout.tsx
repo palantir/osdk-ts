@@ -13,7 +13,7 @@ function Layout({ children }: LayoutProps) {
       <div className={css.header}>
         <a
           href="https://www.palantir.com/docs/foundry/ontology-sdk/overview/"
-          target="_blank"
+          target="_blank" rel="noreferrer"
         >
           <img src={palantirLogo} className={css.logo} alt="Palantir logo" />
         </a>
@@ -21,7 +21,7 @@ function Layout({ children }: LayoutProps) {
           <h1>@tutorial-advance-to-do-application/sdk</h1>
           <p>Exploring Advanced OSDK Topics: Interfaces, MediaSets, and More</p>
         </div>
-        <a href="https://react.dev" target="_blank">
+        <a href="https://react.dev" target="_blank" rel="noreferrer">
           <img src={reactLogo} className={css.logo} alt="React logo" />
         </a>
       </div>

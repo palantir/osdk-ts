@@ -1,18 +1,15 @@
-import { useEffect } from "react";
-import { EventType } from "../userAnalytics/userAnalyticsTypes";
-import useAnalytics from "../userAnalytics/useAnalytics";
 import { ITask } from "../dataServices/useTasks";
 import { UserField } from "./userField";
 import useCodingTask from "../dataServices/useCodingTask";
 import css from "./TaskDetailsCoding.module.css";
+import * as React from "react";
 
-export const TaskDetailsCoding: React.FC<{ task: ITask }> = ({ task: ITask }) => {
-    const { logEvent } = useAnalytics();
-    const { codingTask, isLoading, metadata } = useCodingTask(ITask);
-
-    useEffect(() => {
-        logEvent(EventType.CodingTaskViewed, `Task ${codingTask?.osdkCodingTask.$primaryKey} viewed`);
-    }, [codingTask?.osdkCodingTask.$primaryKey, logEvent]);
+interface ITaskDetailsCodingProps {
+    task: ITask;
+}
+export const TaskDetailsCoding: React.FC<ITaskDetailsCodingProps> = ({ task }) => {
+    const { codingTask, isLoading, metadata } = useCodingTask(task);
+    
     if (isLoading || !codingTask || !metadata) {
         return <div>Loading...</div>;
     }

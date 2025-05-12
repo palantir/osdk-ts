@@ -1,12 +1,12 @@
 import useSWR from "swr";
-import client from "../client";
+import { useOsdkClient } from "@osdk/react";
 import { OsdkITask } from "@tutorial-advance-to-do-application/sdk";
 import { IProject } from "./useProjects";
 import { useCallback, useEffect, useState } from "react";
 import useAdmin from "./useAdmin";
-import { User } from "@osdk/foundry.admin";
-import { InterfaceMetadata } from "@osdk/api";
 import _ from "lodash";
+import type { User } from "@osdk/foundry.admin";
+import type { InterfaceMetadata } from "@osdk/api";
 
 export interface ITask {
     osdkTask: OsdkITask.OsdkInstance;
@@ -15,6 +15,7 @@ export interface ITask {
 }
 
 function useTasks(project: IProject) {
+    const client = useOsdkClient();
     const [metadata, setMetadata] = useState<InterfaceMetadata>();
     const { getBatchUserDetails } = useAdmin();
     // `$includeAllBaseObjectProperties: true,` means that although we are fetching the object through its interface implementation 
@@ -38,7 +39,7 @@ function useTasks(project: IProject) {
             createdBy: createdByUserList[task.createdBy as string],
             }));
       return tasksList;
-    } , [getBatchUserDetails, project.$primaryKey]);
+    } , [getBatchUserDetails, project.$primaryKey, client]);
 
   const { data, isLoading, isValidating, error, mutate } = useSWR<ITask[]>(
     ["tasks",project.$primaryKey],
@@ -50,7 +51,7 @@ function useTasks(project: IProject) {
   const getObjectTypeMetadata = useCallback(async () => {
     const objectTypeMetadata = await client.fetchMetadata(OsdkITask);
     setMetadata(objectTypeMetadata);
-    } , []);
+    } , [client]);
 
     useEffect(() => {
         getObjectTypeMetadata();
@@ -107,7 +108,7 @@ function useTasks(project: IProject) {
             );
 
         subscription.unsubscribe();
-    },[data, getBatchUserDetails, mutate, project.$primaryKey]);
+    },[data, getBatchUserDetails, mutate, project.$primaryKey, client]);
 
   return {
     tasks: data ?? [],

@@ -1,8 +1,8 @@
 import { createOsdkTodoProject, deleteOsdkTodoProject, osdkTodoProject } from "@tutorial-advance-to-do-application/sdk";
 import { useCallback } from "react";
 import useSWR from "swr";
-import client from "../client";
-import { Osdk, PropertyKeys } from "@osdk/client";
+import { useOsdkClient } from "@osdk/react";
+import type { Osdk, PropertyKeys } from "@osdk/client";
 
 export type IProject = Osdk.Instance<osdkTodoProject, never, PropertyKeys<osdkTodoProject>> & {
   numberOfTasks: number,
@@ -12,6 +12,7 @@ export type IProject = Osdk.Instance<osdkTodoProject, never, PropertyKeys<osdkTo
 }
 
 function useProjects() {
+  const client = useOsdkClient();
   const fetcher = useCallback(async () => {
     const projectsPage = await client(osdkTodoProject)
       .withProperties({
@@ -39,7 +40,7 @@ function useProjects() {
         numberOfNotStartedTasks: project.numberOfNotStartedTasks ?? 0,
       }));
       return projects;
-    }, []);
+    }, [client]);
   const { data, isLoading, isValidating, error, mutate } = useSWR<IProject[]>(
     "projects",
     fetcher,
@@ -62,7 +63,7 @@ function useProjects() {
         }
         throw new Error("Failed to create project");
       },
-      [mutate],
+      [mutate, client],
     );
 
   const deleteProject: (project: IProject) => Promise<void> = useCallback(
@@ -73,7 +74,7 @@ function useProjects() {
         )
         await mutate();
       },
-      [mutate],
+      [mutate, client],
     );
 
   return {

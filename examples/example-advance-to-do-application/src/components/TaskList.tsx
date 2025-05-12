@@ -3,9 +3,6 @@ import { IProject } from "../dataServices/useProjects";
 import useTasks, { ITask } from "../dataServices/useTasks";
 import css from "./TaskList.module.css";
 import { UserField } from './userField';
-import useAnalytics from '../userAnalytics/useAnalytics';
-import { EventType } from '../userAnalytics/userAnalyticsTypes';
-
 interface TasksListProps {
     selectedProject: IProject;
     onSelectedTask: (task: ITask) => void;
@@ -13,14 +10,12 @@ interface TasksListProps {
 
 export const TaskList: React.FC<TasksListProps> = ({ selectedProject, onSelectedTask }) => {
     const { tasks, metadata } = useTasks(selectedProject);
-    const { logEvent } = useAnalytics();
     const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
     const handleTaskClick = (taskId: string) => {
         setSelectedTaskId(taskId);
         const selectedTask = tasks.find(task => task.osdkTask.$primaryKey === taskId);
         if (selectedTask) {
-            logEvent(EventType.TaskSelected, `{ taskId: ${taskId}, projectId: ${selectedProject.$primaryKey} }`);
             onSelectedTask(selectedTask);
         }
     };
@@ -35,6 +30,15 @@ export const TaskList: React.FC<TasksListProps> = ({ selectedProject, onSelected
                     key={task.osdkTask.$primaryKey as string}
                     className={`${css.taskCard} ${selectedTaskId === task.osdkTask.$primaryKey ? css.selected : ''}`}
                     onClick={() => handleTaskClick(task.osdkTask.$primaryKey as string)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            handleTaskClick(task.osdkTask.$primaryKey as string);
+                            e.preventDefault();
+                        }
+                    }}
+                    role="option"
+                    tabIndex={0}
+                    aria-selected={selectedTaskId === task.osdkTask.$primaryKey}
                 >
                     <div className={css.header}>
                         <h3>{task.osdkTask.title}</h3>

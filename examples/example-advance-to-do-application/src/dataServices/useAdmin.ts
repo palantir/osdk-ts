@@ -1,14 +1,16 @@
-import useSWR, { mutate, State, useSWRConfig } from "swr";
-import client from "../client";
-import { User } from "@osdk/foundry.admin";
+import useSWR, { mutate, useSWRConfig } from "swr";
+import type { State } from "swr";
+import { useOsdkClient } from "@osdk/react";
 import { getCurrent, profilePicture, getBatch } from "@osdk/foundry.admin/User";
 import { useCallback } from "react";
+import type { User } from "@osdk/foundry.admin";
 
 interface UserDetails {
   [key: string]: User;
 }
 
 function useAdmin() {
+  const client = useOsdkClient();
   const { cache } = useSWRConfig();
 
   const getCurrentUserDetails = useCallback(
@@ -17,7 +19,7 @@ function useAdmin() {
       return {
         "currentUser": user
       };
-    }, []
+    }, [client]
   );
   const getCurrentProfilePictureUrl: (user: User) => Promise<string> =
     useCallback(
@@ -25,7 +27,7 @@ function useAdmin() {
         const profilePictureResponse = await profilePicture(client, user.id)
         const blob = await profilePictureResponse.blob();
         return URL.createObjectURL(blob);
-      }, []
+      }, [client]
     );
 
   const { data, isLoading, isValidating, error } = useSWR<UserDetails>(
@@ -56,7 +58,7 @@ function useAdmin() {
           });
         }
         return cachedUsers;
-      }, [cache]
+      }, [cache, client]
     );
 
   return {

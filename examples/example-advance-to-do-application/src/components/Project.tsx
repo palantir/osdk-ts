@@ -1,8 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import useProjects, { IProject } from '../dataServices/useProjects';
 import css from './Project.module.css';
-import useAnalytics from '../userAnalytics/useAnalytics';
-import { EventType } from '../userAnalytics/userAnalyticsTypes';
 
 export interface ProjectProps {
     onProjectSelect?: (project: IProject) => void;
@@ -10,18 +8,16 @@ export interface ProjectProps {
 
 const Project: React.FC<ProjectProps> = ({ onProjectSelect }) => {
     const { projects } = useProjects();
-    const { logEvent } = useAnalytics();
     const [currentProject, setCurrentProject] = useState<IProject | undefined>(undefined);
 
     const handleProjectSelect = useCallback((event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedPK = event.target.value;
         const project = projects.find(p => p.$primaryKey === selectedPK);
         setCurrentProject(project);
-        logEvent(EventType.ProjectSelected, `{ projectId: selectedPK }`);
         if (project) {
             onProjectSelect?.(project);
         }
-    }, [logEvent, onProjectSelect, projects]);
+    }, [onProjectSelect, projects]);
     
     return (
         <div className={css.projectContainer}>
