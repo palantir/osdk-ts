@@ -53,24 +53,20 @@ describe("queries", () => {
   });
 
   describe("Queries that accept objects work do not break", () => {
-    it("Works when using $apiName, $objectType, $primaryKey", async () => {
+    it("Works when using $apiName, $primaryKey", async () => {
       const fn = client(queryAcceptsObject).executeFunction;
       type InferredParamType = Parameters<typeof fn>[0];
       expectTypeOf<{
         object: {
           $apiName: "Employee";
-          $objectType: "Employee";
           $primaryKey: number;
-          $title: string;
         };
       }>().toMatchTypeOf<InferredParamType>();
 
       const result = await client(queryAcceptsObject).executeFunction({
         object: {
           $apiName: "Employee",
-          $objectType: "Employee",
           $primaryKey: 50030,
-          $title: "Test",
         },
       });
       expect(result).toEqual({

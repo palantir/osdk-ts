@@ -114,11 +114,7 @@ export type {
   BaseWirePropertyTypes,
   WirePropertyTypes,
 } from "./ontology/WirePropertyTypes.js";
-export type {
-  MinimalOsdkInstance,
-  OsdkBase,
-  PrimaryKeyType,
-} from "./OsdkBase.js";
+export type { OsdkBase, PrimaryKeyType } from "./OsdkBase.js";
 export type { OsdkObject } from "./OsdkObject.js";
 export type { ConvertProps, Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";

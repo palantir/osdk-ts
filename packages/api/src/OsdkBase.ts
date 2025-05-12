@@ -21,22 +21,22 @@ import type { ObjectTypeDefinition } from "./ontology/ObjectTypeDefinition.js";
 import type { PrimaryKeyTypes } from "./ontology/PrimaryKeyTypes.js";
 import type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 
-export interface MinimalOsdkInstance<
+export interface ObjectIdentifiers<
   Q extends ObjectOrInterfaceDefinition,
 > {
   readonly $apiName: Q["apiName"];
 
   readonly $primaryKey: PrimaryKeyType<Q>;
-
-  readonly $objectType: string;
-
-  readonly $title: string | undefined;
 }
 
 export interface OsdkBase<
   Q extends ObjectOrInterfaceDefinition,
-> extends MinimalOsdkInstance<Q> {
+> extends ObjectIdentifiers<Q> {
   readonly $objectSpecifier: ObjectSpecifier<Q>;
+
+  readonly $objectType: string;
+
+  readonly $title: string | undefined;
 }
 
 export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> =
