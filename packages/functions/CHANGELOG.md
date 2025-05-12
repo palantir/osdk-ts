@@ -1,5 +1,11 @@
 # @osdk/functions.unstable
 
+## 0.0.7
+
+### Patch Changes
+
+- e6e7f22: Method params typing fix on EditBatch interface
+
 ## 0.0.6
 
 ### Patch Changes
