@@ -71,8 +71,13 @@ describe(createEditBatch, () => {
     editBatch.update(taskInstance, { name: "My Very New Task Name" });
     editBatch.update({ $apiName: "Task", $primaryKey: 3 }, {});
     editBatch.create(Task, { id: 0, name: "My Task Name" });
-    editBatch.create(Office, { officeId: "3", capacity: 2 });
-    editBatch.update({ $apiName: "Office", $primaryKey: "3" }, { capacity: 4 });
+    editBatch.create(Office, {
+      officeId: "3",
+      entrance: { type: "Point", coordinates: [1, 2] },
+    });
+    editBatch.update({ $apiName: "Office", $primaryKey: "3" }, {
+      entrance: { type: "Point", coordinates: [2, 4] },
+    });
 
     editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
       $apiName: "Person",
@@ -140,12 +145,15 @@ describe(createEditBatch, () => {
       {
         type: "createObject",
         obj: Office,
-        properties: { officeId: "3", capacity: 2 },
+        properties: {
+          officeId: "3",
+          entrance: { type: "Point", coordinates: [1, 2] },
+        },
       },
       {
         type: "updateObject",
         obj: { $apiName: "Office", $primaryKey: "3" },
-        properties: { capacity: 4 },
+        properties: { entrance: { type: "Point", coordinates: [2, 4] } },
       },
       {
         type: "addLink",
