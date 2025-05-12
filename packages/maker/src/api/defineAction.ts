@@ -75,7 +75,7 @@ export function defineCreateInterfaceObjectAction(
         id,
         displayName: prop.sharedPropertyType.displayName
           ?? prop.sharedPropertyType.nonNameSpacedApiName,
-        type: extractActionParameterTypeFromSpt(prop.sharedPropertyType),
+        type: extractActionParameterType(prop.sharedPropertyType),
         typeClasses: prop.sharedPropertyType.typeClasses ?? [],
         validation: {
           required: true,
@@ -117,7 +117,7 @@ export function defineCreateObjectAction(
       ...(objectType.properties?.map(prop => ({
         id: prop.apiName,
         displayName: prop.displayName,
-        type: extractActionParameterTypeFromOpt(prop),
+        type: extractActionParameterType(prop),
         validation: {
           required: true,
           allowedValues: extractAllowedValuesFromType(prop.type),
@@ -185,7 +185,7 @@ export function defineModifyInterfaceObjectAction(
         id,
         displayName: prop.sharedPropertyType.displayName
           ?? prop.sharedPropertyType.nonNameSpacedApiName,
-        type: extractActionParameterTypeFromSpt(prop.sharedPropertyType),
+        type: extractActionParameterType(prop.sharedPropertyType),
         typeClasses: prop.sharedPropertyType.typeClasses ?? [],
         validation: {
           required: true,
@@ -238,7 +238,7 @@ export function defineModifyObjectAction(
       ...(objectType.properties?.map(prop => ({
         id: prop.apiName,
         displayName: prop.displayName,
-        type: extractActionParameterTypeFromOpt(prop),
+        type: extractActionParameterType(prop),
         validation: {
           required: true,
           allowedValues: extractAllowedValuesFromType(prop.type),
@@ -504,42 +504,8 @@ function extractAllowedValuesFromType(
   }
 }
 
-function extractActionParameterTypeFromOpt(
-  opt: ObjectPropertyType,
-): ActionParameterType {
-  const typeType = opt.type;
-  if (typeof typeType === "object") {
-    switch (typeType.type) {
-      case "marking":
-        break;
-      case "struct":
-        break;
-      default:
-        throw new Error(`Unknown type`);
-    }
-  }
-  if (
-    typeof typeType === "string" && isActionParameterTypePrimitive(typeType)
-  ) {
-    return maybeAddList(typeType, opt.array);
-  }
-  switch (typeType) {
-    case "byte":
-    case "short":
-      return maybeAddList("integer", opt.array);
-    case "geopoint":
-      return maybeAddList("geoshape", opt.array);
-    case "float":
-      return maybeAddList("double", opt.array);
-    case "geotimeSeries":
-      return maybeAddList("geotimeSeriesReference", opt.array);
-    default:
-      throw new Error("Unknown type");
-  }
-}
-
-function extractActionParameterTypeFromSpt(
-  spt: SharedPropertyType,
+function extractActionParameterType(
+  spt: SharedPropertyType | ObjectPropertyType,
 ): ActionParameterType {
   const typeType = spt.type;
   if (typeof typeType === "object") {
