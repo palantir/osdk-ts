@@ -21,11 +21,7 @@ import type {
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { namespace, ontologyDefinition } from "./defineOntology.js";
-import type {
-  Nullability,
-  PropertyTypeType,
-  SharedPropertyType,
-} from "./types.js";
+import type { PropertyTypeType, SharedPropertyType } from "./types.js";
 
 const defaultTypeClasses: SharedPropertyType["typeClasses"] = [{
   kind: "render_hint",
@@ -43,7 +39,6 @@ export function defineSharedPropertyType(
     visibility?: Visibility;
     typeClasses?: SharedPropertyType["typeClasses"];
     gothamMapping?: SharedPropertyTypeGothamMapping;
-    nullability?: Nullability;
   },
 ): SharedPropertyType {
   const apiName = namespace + opts.apiName;

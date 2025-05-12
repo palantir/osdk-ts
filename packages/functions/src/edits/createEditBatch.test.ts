@@ -15,8 +15,8 @@
  */
 
 import type { Client, Osdk } from "@osdk/client";
-import type { Person } from "@osdk/client.test.ontology";
-import { Task } from "@osdk/client.test.ontology";
+import type { Employee, Person } from "@osdk/client.test.ontology";
+import { Office, Task } from "@osdk/client.test.ontology";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createEditBatch } from "./createEditBatch.js";
 import type { EditBatch } from "./EditBatch.js";
@@ -24,10 +24,34 @@ import type { Edits } from "./types.js";
 
 type TestEditScope =
   | Edits.Object<Task>
-  | Edits.Link<Task, "RP">;
+  | Edits.Object<Office>
+  | Edits.Link<Task, "RP">
+  | Edits.Link<Task, "Todos">
+  | Edits.Link<Office, "occupants">;
 
 describe(createEditBatch, () => {
+  const taskInstance = {
+    $apiName: "Task",
+    $primaryKey: 2,
+  } as Osdk.Instance<Task>;
+
+  const personInstance = {
+    $apiName: "Person",
+    $primaryKey: 2,
+  } as Osdk.Instance<Person>;
+
+  const officeInstance = {
+    $apiName: "Office",
+    $primaryKey: "2",
+  } as Osdk.Instance<Office>;
+
+  const employeeInstance = {
+    $apiName: "Employee",
+    $primaryKey: 2,
+  } as Osdk.Instance<Employee>;
+
   let client: Client;
+
   let editBatch: EditBatch<TestEditScope>;
 
   beforeEach(() => {
@@ -36,16 +60,6 @@ describe(createEditBatch, () => {
   });
 
   it("collects all edits", () => {
-    const taskInstance = {
-      $apiName: "Task",
-      $primaryKey: 2,
-    } as Osdk.Instance<Task>;
-
-    const personInstance = {
-      $apiName: "Person",
-      $primaryKey: 2,
-    } as Osdk.Instance<Person>;
-
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Task, { id: 1, name: "My Other Task Name" });
     editBatch.create(Task, { id: 3 });
@@ -57,6 +71,8 @@ describe(createEditBatch, () => {
     editBatch.update(taskInstance, { name: "My Very New Task Name" });
     editBatch.update({ $apiName: "Task", $primaryKey: 3 }, {});
     editBatch.create(Task, { id: 0, name: "My Task Name" });
+    editBatch.create(Office, { officeId: "3", capacity: 2 });
+    editBatch.update({ $apiName: "Office", $primaryKey: "3" }, { capacity: 4 });
 
     editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
       $apiName: "Person",
@@ -71,6 +87,17 @@ describe(createEditBatch, () => {
       $apiName: "Person",
       $primaryKey: 1,
     });
+    editBatch.link(taskInstance, "Todos", { $apiName: "Todo", $primaryKey: 0 });
+    editBatch.unlink({ $apiName: "Task", $primaryKey: 2 }, "Todos", {
+      $apiName: "Todo",
+      $primaryKey: 0,
+    });
+    editBatch.link(officeInstance, "occupants", employeeInstance);
+    editBatch.unlink(
+      { $apiName: "Office", $primaryKey: "2" },
+      "occupants",
+      employeeInstance,
+    );
 
     expect(editBatch.getEdits()).toEqual([
       {
@@ -111,6 +138,16 @@ describe(createEditBatch, () => {
         properties: { id: 0, name: "My Task Name" },
       },
       {
+        type: "createObject",
+        obj: Office,
+        properties: { officeId: "3", capacity: 2 },
+      },
+      {
+        type: "updateObject",
+        obj: { $apiName: "Office", $primaryKey: "3" },
+        properties: { capacity: 4 },
+      },
+      {
         type: "addLink",
         apiName: "RP",
         source: { $apiName: "Task", $primaryKey: 0 },
@@ -134,6 +171,96 @@ describe(createEditBatch, () => {
         source: { $apiName: "Task", $primaryKey: 0 },
         target: { $apiName: "Person", $primaryKey: 1 },
       },
+      {
+        type: "addLink",
+        apiName: "Todos",
+        source: { $apiName: "Task", $primaryKey: 2 },
+        target: { $apiName: "Todo", $primaryKey: 0 },
+      },
+      {
+        type: "removeLink",
+        apiName: "Todos",
+        source: { $apiName: "Task", $primaryKey: 2 },
+        target: { $apiName: "Todo", $primaryKey: 0 },
+      },
+      {
+        type: "addLink",
+        apiName: "occupants",
+        source: { $apiName: "Office", $primaryKey: "2" },
+        target: { $apiName: "Employee", $primaryKey: 2 },
+      },
+      {
+        type: "removeLink",
+        apiName: "occupants",
+        source: { $apiName: "Office", $primaryKey: "2" },
+        target: { $apiName: "Employee", $primaryKey: 2 },
+      },
     ]);
+  });
+
+  it("prevents bad link edits", () => {
+    // @ts-expect-error
+    editBatch.link(taskInstance, "RP", officeInstance); // Linking to Office instead of Person
+
+    editBatch.link(
+      { $apiName: "Task", $primaryKey: 2 },
+      // @ts-expect-error
+      "occupants",
+      employeeInstance,
+    ); // Using Office link
+
+    editBatch.link(
+      { $apiName: "Office", $primaryKey: "2" },
+      "occupants",
+      // @ts-expect-error
+      personInstance,
+    ); // Linking to Person instead of Employee
+
+    // @ts-expect-error
+    editBatch.link(officeInstance, "Todos", {
+      $apiName: "Todo",
+      $primaryKey: 0,
+    }); // Using Task link
+  });
+
+  it("prevents bad unlink edits", () => {
+    // @ts-expect-error
+    editBatch.unlink(taskInstance, "RP", officeInstance); // Unlinking Office instead of Person
+
+    editBatch.unlink(
+      { $apiName: "Task", $primaryKey: 2 },
+      // @ts-expect-error
+      "occupants",
+      employeeInstance,
+    ); // Using Office link
+
+    editBatch.unlink(
+      { $apiName: "Office", $primaryKey: "2" },
+      "occupants",
+      // @ts-expect-error
+      personInstance,
+    ); // Unlinking Person instead of Employee
+
+    // @ts-expect-error
+    editBatch.unlink(officeInstance, "Todos", {
+      $apiName: "Todo",
+      $primaryKey: 0,
+    }); // Using Task link
+  });
+
+  it("prevents bad update edits", () => {
+    // @ts-expect-error
+    editBatch.update(taskInstance, { capacity: 4 }); // Using Office properties
+
+    // @ts-expect-error
+    editBatch.update({ $apiName: "Task", $primaryKey: 2 }, { capacity: 4 }); // Using Office properties
+  });
+
+  it("prevents bad update edits", () => {
+    // @ts-expect-error
+    editBatch.update(taskInstance, { capacity: 4 }); // Using Office properties
+
+    // @ts-expect-error
+    editBatch.update({ $apiName: "Task", $primaryKey: 2 }, { capacity: 4 }); // Using Office properties
   });
 });
