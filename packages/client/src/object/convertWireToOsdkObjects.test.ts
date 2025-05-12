@@ -89,9 +89,7 @@ describe("convertWireToOsdkObjects", () => {
     );
 
     // Should have $title
-    expect(JSON.stringify(employee2)).toMatchInlineSnapshot(
-      `"{"employeeId":50031,"fullName":"Jane Doe","office":"SEA","class":"Blue","startDate":"2012-02-12","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50031,"$title":"Jane Doe","$objectSpecifier":"Employee:50031","$metadata":{"type":"object","apiName":"Employee","description":"A full-time or part-time \\n\\n employee of our firm","primaryKeyApiName":"employeeId","primaryKeyType":"integer","links":{"peeps":{"multiplicity":true,"targetType":"Employee"},"lead":{"multiplicity":false,"targetType":"Employee"},"officeLink":{"multiplicity":false,"targetType":"Office"}},"properties":{"employeeId":{"multiplicity":false,"type":"integer","nullable":false},"fullName":{"multiplicity":false,"type":"string","nullable":true},"office":{"multiplicity":false,"description":"The unique \\"ID\\" of the employee's \\\\\\"primary\\\\\\" assigned office.\\n This is some more text.","type":"string","nullable":true},"class":{"multiplicity":false,"description":"","type":"string","nullable":true},"startDate":{"multiplicity":false,"description":"The date the employee was hired (most recently, if they were re-hired)","type":"datetime","nullable":true},"employeeStatus":{"multiplicity":false,"description":"TimeSeries of the status of the employee","type":"stringTimeseries","nullable":true},"employeeSensor":{"multiplicity":false,"description":"TimeSeries sensor of the status of the employee","type":"sensorTimeseries","nullable":true},"employeeLocation":{"multiplicity":false,"description":"Geotime series reference of the location of the employee","type":"geotimeSeriesReference","nullable":true}},"implements":["FooInterface"],"interfaceMap":{"FooInterface":{"fooSpt":"fullName"}},"inverseInterfaceMap":{"FooInterface":{"fullName":"fooSpt"}},"icon":{"type":"blueprint","color":"blue","name":"person"},"titleProperty":"fullName","displayName":"Employee","pluralDisplayName":"Employees","status":"ACTIVE","rid":"ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44","visibility":"NORMAL"}}"`,
-    );
+    expect(JSON.stringify(employee2)).toMatchSnapshot();
 
     expect(JSON.stringify(employee2.$as(FooInterface))).toMatchInlineSnapshot(
       `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50031,"$objectSpecifier":"Employee:50031","$title":"Jane Doe","$metadata":{"type":"interface","rid":"ri.interface.main.interface.1","apiName":"FooInterface","displayName":"Foo Interface","description":"Interface for Foo","implements":[],"properties":{"fooSpt":{"displayName":"Foo","multiplicity":false,"description":"A foo","type":"string","nullable":true}},"links":{},"implementedBy":["Employee","Person"]},"fooSpt":"Jane Doe"}"`,
@@ -265,38 +263,7 @@ describe("convertWireToOsdkObjects", () => {
       {},
     )) as unknown as Osdk<FooInterface>[];
 
-    expect(objAsFoo).toMatchSnapshot(`
-      {
-        "$apiName": "FooInterface",
-        "$metadata": {
-          "apiName": "FooInterface",
-          "description": "Interface for Foo",
-          "displayName": "Foo Interface",
-          "implementedBy": [
-            "Employee",
-            "Person",
-          ],
-          "implements": [],
-          "links": {},
-          "properties": {
-            "fooSpt": {
-              "description": "A foo",
-              "displayName": "Foo",
-              "multiplicity": false,
-              "nullable": true,
-              "type": "string",
-            },
-          },
-          "rid": "ri.interface.main.interface.1",
-          "type": "interface",
-        },
-        "$objectSpecifier": "Employee:0",
-        "$objectType": "Employee",
-        "$primaryKey": 0,
-        "$title": "Steve",
-        "fooSpt": "Steve",
-      }
-    `);
+    expect(objAsFoo).toMatchSnapshot();
 
     const obj = objAsFoo.$as(Employee);
     expect(obj.fullName).toEqual("Steve");
