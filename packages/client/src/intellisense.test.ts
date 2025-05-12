@@ -17,6 +17,7 @@
 import type { Logger } from "@osdk/api";
 import { findUpSync } from "find-up";
 import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import invariant from "tiny-invariant";
 import * as ts from "typescript";
 import {
@@ -65,7 +66,7 @@ describe("intellisense", () => {
 
   beforeAll(() => {
     const clientsPackageJson = findUpSync("package.json", {
-      cwd: import.meta.dirname,
+      cwd: path.dirname(fileURLToPath(import.meta.url)),
     });
     console.log({ clientsPackageJson });
     invariant(clientsPackageJson != null);
