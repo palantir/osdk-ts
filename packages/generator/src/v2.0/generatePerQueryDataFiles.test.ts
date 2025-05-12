@@ -39,7 +39,7 @@ describe("generatePerQueryDataFiles", () => {
         outDir: BASE_PATH,
         importExt: ".js",
         forInternalUse: true,
-        pinnedQueryTypes: [],
+        fixedVersionQueryTypes: [],
       },
       true,
     );
@@ -330,7 +330,7 @@ describe("generatePerQueryDataFiles", () => {
         outDir: BASE_PATH,
         importExt: ".js",
         forInternalUse: true,
-        pinnedQueryTypes: [],
+        fixedVersionQueryTypes: [],
       },
       true,
     );

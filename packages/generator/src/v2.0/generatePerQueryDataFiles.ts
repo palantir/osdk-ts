@@ -38,7 +38,7 @@ export async function generatePerQueryDataFilesV2(
     fs,
     outDir: rootOutDir,
     ontology,
-    pinnedQueryTypes,
+    fixedVersionQueryTypes,
     importExt = "",
     forInternalUse = false,
   }: Pick<
@@ -48,7 +48,7 @@ export async function generatePerQueryDataFilesV2(
     | "importExt"
     | "ontology"
     | "forInternalUse"
-    | "pinnedQueryTypes"
+    | "fixedVersionQueryTypes"
   >,
   v2: boolean,
 ): Promise<void> {
@@ -65,7 +65,7 @@ export async function generatePerQueryDataFilesV2(
         importExt,
         ontology,
         forInternalUse,
-        pinnedQueryTypes,
+        fixedVersionQueryTypes,
       );
     }),
   );
@@ -95,7 +95,7 @@ async function generateV2QueryFile(
   importExt: string,
   ontology: EnhancedOntologyDefinition,
   forInternalUse: boolean,
-  pinnedQueryTypes: string[],
+  fixedVersionQueryTypes: string[],
 ) {
   const relFilePath = path.join(relOutDir, `${query.shortApiName}.ts`);
   const objectTypes = getObjectTypeApiNamesFromQuery(query);
@@ -117,7 +117,9 @@ async function generateV2QueryFile(
     wireQueryDataTypeToQueryDataTypeDefinition(query.output),
   );
 
-  const isUsingFixedVersion = pinnedQueryTypes.includes(query.fullApiName);
+  const isUsingFixedVersion = fixedVersionQueryTypes.includes(
+    query.fullApiName,
+  );
 
   await fs.writeFile(
     path.join(outDir, `${query.shortApiName}.ts`),

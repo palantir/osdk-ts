@@ -37,7 +37,7 @@ export async function generateClientSdkVersionTwoPointZero(
   externalInterfaces: Map<string, string> = new Map(),
   externalSpts: Map<string, string> = new Map(),
   forInternalUse: boolean = false,
-  pinnedQueryTypes: string[] = [],
+  fixedVersionQueryTypes: string[] = [],
 ): Promise<void> {
   const importExt = ".js"; // turns out you can always use the extension
 
@@ -64,7 +64,7 @@ export async function generateClientSdkVersionTwoPointZero(
     fs,
     outDir,
     forInternalUse,
-    pinnedQueryTypes,
+    fixedVersionQueryTypes,
   };
 
   await generateRootIndexTsFile(ctx);
