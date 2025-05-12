@@ -10,9 +10,9 @@ This project demonstrates advanced features of the Ontology SDK (OSDK) using a T
   - [Project Architecture](#project-architecture)
     - [React Routing](#react-routing)
       - [Routing Configuration](#routing-configuration)
-    - [The `client.ts` File](#the-clientts-file)
-      - [Key Responsibilities](#key-responsibilities)
-      - [Implementation](#implementation)
+    - [OAuth and OSDK Client Configuration](#oauth-and-osdk-client-configuration)
+      - [The OsdkProvider Component](#the-osdkprovider-component)
+      - [Authentication Configuration](#authentication-configuration)
       - [Usage in Components](#usage-in-components)
   - [Configuration](#configuration)
     - [Environment Files](#environment-files)
@@ -84,7 +84,9 @@ const router = createBrowserRouter(
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <RouterProvider router={router} />,
+    <OsdkProvider client={client}>
+      <RouterProvider router={router} />,
+    </OsdkProvider>
   </StrictMode>
 );
 ```
@@ -93,88 +95,71 @@ The routes are:
 - `/`: The main application home page
 - `/auth/callback`: Handles OAuth authentication callbacks
 
-Authentication is managed through the OSDK OAuth client in `client.ts`, which redirects unauthenticated users to the login page automatically.
+Authentication is managed through the OSDK OAuth client, which redirects unauthenticated users to the login page automatically.
 
-### The `client.ts` File
+### OAuth and OSDK Client Configuration
 
-The `client.ts` file serves as the central connection point to the OSDK backend. It initializes and exports an OSDK client instance that's used throughout the application.
+#### The OsdkProvider Component
 
-#### Key Responsibilities
+The application uses the `OsdkProvider` component from the `@osdk/react` package to provide authentication context and client access throughout the component tree. This follows the React context pattern, making OAuth authentication and OSDK client operations available without prop drilling.
 
-1. **OSDK Client Initialization**: Configures the OSDK client with authentication, foundry URL, and ontology RID
-2. **Authentication Integration**: Uses OSDK OAuth for authentication
-3. **Meta Tag Processing**: Retrieves configuration parameters from meta tags in the HTML document
+```tsx
+import { OsdkProvider } from "@osdk/react";
+import client from "./client";
 
-#### Implementation
-
-```typescript
-import { Client, createClient } from "@osdk/client";
-import { createPublicOauthClient } from "@osdk/oauth";
-
-function getMetaTagContent(tagName: string): string {
-  const elements = document.querySelectorAll(`meta[name="${tagName}"]`);
-  const element = elements.item(elements.length - 1);
-  const value = element ? element.getAttribute("content") : null;
-
-  if (value == null || value === "") {
-    throw new Error(`Meta tag ${tagName} not found or empty`);
-  }
-
-  if (value.match(/^%.+%$/)) {
-    throw new Error(`Meta tag ${tagName} contains placeholder value. Add ${value.replace(`/docs/%/g`, "")} to your .env files`);
-  }
-
-  return value;
-}
-
-const foundryUrl = getMetaTagContent("osdk-foundryUrl");
-const clientId = getMetaTagContent("osdk-clientId");
-const redirectUrl = getMetaTagContent("osdk-redirectUrl");
-const ontologyRid = getMetaTagContent("osdk-ontologyRid");
-const scopes = [
-	"api:read-data",
-	"api:write-data",
-	"api:admin-read",
-	"api:mediasets-read",
-	"api:mediasets-write"
-]
-
-export const auth = createPublicOauthClient(
-  clientId,
-  foundryUrl,
-  redirectUrl,
-  undefined,
-  undefined,
-  undefined,
-  scopes,
-  )
-
-const client: Client = createClient(
-  foundryUrl,
-  ontologyRid,
-  auth,
+// In the application's root
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <OsdkProvider client={client}>
+      <RouterProvider router={router} />
+    </OsdkProvider>
+  </StrictMode>
 );
-
-export default client;
 ```
+
+#### Authentication Configuration
+
+The client is configured in a separate `client.ts` file that handles:
+
+1. **OAuth Authentication Setup**: Configures the authentication flow using OSDK's OAuth client
+2. **Client Initialization**: Sets up the OSDK client with the authenticated user session
+3. **Configuration Parameters**: Retrieves foundry URL, client ID, redirect URL and other OAuth parameters from meta tags
+
+The OAuth client handles:
+- Authentication redirect flows
+- Token acquisition and refresh
+- Session management
+- Appropriate scopes for API access
 
 #### Usage in Components
 
-Components and hooks import this client to interact with the backend:
+Components can access the authenticated OSDK client using the useOsdk hook:
 
 ```typescript
-import client from '../client';
+import { useOsdk } from '@osdk/react';
 
-// In a hook like useTasks or useProjects
-const fetcher = useCallback(async () => {
-  const tasksPage = await client(OsdkITask).where({
-      projectId: { $eq: project.$primaryKey },
-  }).fetchPage({
-      $orderBy: { "dueDate": "desc", "status": "asc" }, 
-  });
-  // Process and return the data
-}, [project.$primaryKey]);
+function MyComponent() {
+  const { client } = useOsdk();
+  
+  const fetchData = useCallback(async () => {
+    const tasksPage = await client(OsdkITask).where({
+        projectId: { $eq: project.$primaryKey },
+    }).fetchPage({
+        $orderBy: { "dueDate": "desc", "status": "asc" }, 
+    });
+    // Process and return the data
+  }, [client, project.$primaryKey]);
+  
+  // Rest of the component
+}
 ```
+
+This pattern ensures that:
+
+1. Authentication is handled centrally at the application root
+2. Components only access data the authenticated user is authorized to see
+3. OAuth token refresh occurs automatically
+4. API requests include the proper authentication headers
 
 ## Configuration
 
