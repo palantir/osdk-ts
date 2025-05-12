@@ -303,19 +303,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           sendObjectUpdateResponse(ws, `${idNum2}`);
           await listenerPromise.promise;
           expect(listener.onChange).toHaveBeenCalled();
-          expect(updateReceived).toMatchInlineSnapshot(`
-            {
-              "object": {
-                "$apiName": "Employee",
-                "$objectSpecifier": "Employee:undefined",
-                "$objectType": "Employee",
-                "$primaryKey": undefined,
-                "$title": undefined,
-                "employeeId": 1,
-              },
-              "state": "ADDED_OR_UPDATED",
-            }
-          `);
+          expect(updateReceived).toMatchSnapshot();
         });
 
         it("should correctly return reference update", async () => {
@@ -324,31 +312,7 @@ describe("ObjectSetListenerWebsocket", async () => {
           sendReferenceUpdatesResponse(ws, `${idNum2}`);
           await listenerPromise.promise;
           expect(listener.onChange).toHaveBeenCalled();
-          expect(updateReceived).toMatchInlineSnapshot(`
-            {
-              "object": {
-                "$apiName": "Employee",
-                "$objectSpecifier": "Employee:12345",
-                "$objectType": "Employee",
-                "$primaryKey": "12345",
-                "$title": undefined,
-                "employeeId": "12345",
-                "employeeLocation": GeotimeSeriesPropertyImpl {
-                  "lastFetchedValue": {
-                    "time": "111",
-                    "value": {
-                      "coordinates": [
-                        100,
-                        200,
-                      ],
-                      "type": "Point",
-                    },
-                  },
-                },
-              },
-              "state": "ADDED_OR_UPDATED",
-            }
-          `);
+          expect(updateReceived).toMatchSnapshot();
         });
 
         describe("additional subscription", async () => {

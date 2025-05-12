@@ -23,4 +23,6 @@ export interface InterfaceHolder<
   _Q extends Osdk.Instance<any> = never,
 > extends BaseHolder {
   [InterfaceDefRef]: InterfaceMetadata;
+
+  $metadata: InterfaceMetadata;
 }

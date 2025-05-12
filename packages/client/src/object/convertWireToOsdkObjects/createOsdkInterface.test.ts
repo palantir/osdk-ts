@@ -70,6 +70,7 @@ describe(createOsdkInterface, () => {
     expect(Object.keys(iface)).toMatchInlineSnapshot(`
       [
         "$apiName",
+        "$metadata",
         "asdf",
       ]
     `);
@@ -79,6 +80,19 @@ describe(createOsdkInterface, () => {
     expect(JSON.stringify(iface, undefined, 2)).toMatchInlineSnapshot(`
       "{
         "$apiName": "IFoo",
+        "$metadata": {
+          "apiName": "IFoo",
+          "displayName": "",
+          "links": {},
+          "properties": {
+            "asdf": {
+              "type": "string"
+            }
+          },
+          "rid": "",
+          "type": "interface",
+          "implements": []
+        },
         "asdf": "hi mom"
       }"
     `);
@@ -131,6 +145,7 @@ describe(createOsdkInterface, () => {
     expect(Object.keys(iface)).toMatchInlineSnapshot(`
       [
         "$apiName",
+        "$metadata",
         "asdf",
       ]
     `);
@@ -140,6 +155,19 @@ describe(createOsdkInterface, () => {
     expect(JSON.stringify(iface, undefined, 2)).toMatchInlineSnapshot(`
       "{
         "$apiName": "a.IFoo",
+        "$metadata": {
+          "apiName": "a.IFoo",
+          "displayName": "",
+          "links": {},
+          "properties": {
+            "a.asdf": {
+              "type": "string"
+            }
+          },
+          "rid": "",
+          "type": "interface",
+          "implements": []
+        },
         "asdf": "hi mom"
       }"
     `);
@@ -192,6 +220,7 @@ describe(createOsdkInterface, () => {
     expect(Object.keys(iface)).toMatchInlineSnapshot(`
       [
         "$apiName",
+        "$metadata",
         "b.asdf",
       ]
     `);
@@ -201,6 +230,19 @@ describe(createOsdkInterface, () => {
     expect(JSON.stringify(iface, undefined, 2)).toMatchInlineSnapshot(`
       "{
         "$apiName": "a.IFoo",
+        "$metadata": {
+          "apiName": "a.IFoo",
+          "displayName": "",
+          "links": {},
+          "properties": {
+            "b.asdf": {
+              "type": "string"
+            }
+          },
+          "rid": "",
+          "type": "interface",
+          "implements": []
+        },
         "b.asdf": "hi mom"
       }"
     `);
