@@ -22,8 +22,6 @@ This project demonstrates advanced features of the Ontology SDK (OSDK) using a T
     - [Development vs. Production Configuration](#development-vs-production-configuration)
       - [Development Environment](#development-environment)
       - [Production Environment](#production-environment)
-    - [Deployment using Marketplace](#deployment-using-marketplace)
-    - [Runtime Configuration Updates](#runtime-configuration-updates)
   - [Key OSDK Features Demonstrated](#key-osdk-features-demonstrated)
     - [1. Interfaces and Polymorphic Task Types](#1-interfaces-and-polymorphic-task-types)
     - [2. Media Content (MediaSets)](#2-media-content-mediasets)
@@ -92,6 +90,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 ```
 
 The routes are:
+
 - `/`: The main application home page
 - `/auth/callback`: Handles OAuth authentication callbacks
 
@@ -126,6 +125,7 @@ The client is configured in a separate `client.ts` file that handles:
 3. **Configuration Parameters**: Retrieves foundry URL, client ID, redirect URL and other OAuth parameters from meta tags
 
 The OAuth client handles:
+
 - Authentication redirect flows
 - Token acquisition and refresh
 - Session management
@@ -194,18 +194,12 @@ The application uses meta tags in `index.html` to dynamically configure the OSDK
 ### Key Configuration Variables
 
 ```
+
 # Authentication settings
 VITE_FOUNDRY_CLIENT_ID=your-client-id
 VITE_FOUNDRY_REDIRECT_URL=http://localhost:3000/
 VITE_FOUNDRY_API_URL=https://my-foundry-instance.palantirfoundry.com
 VITE_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.12345678-abcd-1234-efgh-1234567890ab
-
-# Feature flags
-VITE_ENABLE_ANALYTICS=true
-VITE_ENABLE_REAL_TIME_UPDATES=true
-
-# API version
-VITE_API_VERSION=v1
 ```
 
 ### Development vs. Production Configuration
@@ -216,9 +210,6 @@ The development environment typically uses:
 
 - Local development server with hot module replacement
 - Integration with a development or staging Foundry instance
-- More verbose logging and debugging information
-- Mock data when needed
-- Disabled analytics
 
 Example `.env.development`:
 
@@ -227,9 +218,6 @@ VITE_FOUNDRY_CLIENT_ID=your-dev-client-id
 VITE_FOUNDRY_REDIRECT_URL=http://localhost:3000/
 VITE_FOUNDRY_API_URL=https://dev-foundry.palantirfoundry.com
 VITE_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.dev-12345
-VITE_ENABLE_ANALYTICS=false
-VITE_ENABLE_MOCK_DATA=true
-VITE_LOG_LEVEL=debug
 ```
 
 #### Production Environment
@@ -238,8 +226,6 @@ The production environment uses:
 
 - Production Foundry instance
 - Optimized builds with minimized code
-- Full analytics tracking
-- Error reporting to monitoring services
 - Stricter security settings
 
 Example `.env.production`:
@@ -249,57 +235,6 @@ VITE_FOUNDRY_CLIENT_ID=your-prod-client-id
 VITE_FOUNDRY_REDIRECT_URL=https://your-production-domain.com/
 VITE_FOUNDRY_API_URL=https://prod-foundry.palantirfoundry.com
 VITE_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.prod-67890
-VITE_ENABLE_ANALYTICS=true
-VITE_ENABLE_MOCK_DATA=false
-VITE_LOG_LEVEL=error
-```
-
-### Deployment using Marketplace
-
-When deploying your application via Marketplace, the Developer console automatically replaces the HTML meta tag placeholders with actual values from the environment variables. This ensures correct configuration without requiring manual HTML modifications.
-
-### Runtime Configuration Updates
-
-For configuration that might change at runtime without redeployment, we use a configuration service:
-
-```typescript
-// configService.ts
-import { useEffect, useState } from 'react';
-import client from './client';
-import { OsdkAppConfig } from './generated/ontology';
-
-export function useAppConfig() {
-  const [config, setConfig] = useState({
-    featureFlags: {
-      enableNewUI: import.meta.env.VITE_ENABLE_NEW_UI === 'true',
-      enableBetaFeatures: false,
-    },
-    settings: {
-      refreshInterval: 30000,
-    }
-  });
-
-  useEffect(() => {
-    // Fetch runtime configuration from backend
-    async function loadConfig() {
-      try {
-        const serverConfig = await client(OsdkAppConfig).all();
-        if (serverConfig && serverConfig.length > 0) {
-          setConfig(currentConfig => ({
-            ...currentConfig,
-            ...serverConfig[0],
-          }));
-        }
-      } catch (error) {
-        console.error('Failed to load runtime configuration', error);
-      }
-    }
-
-    loadConfig();
-  }, []);
-
-  return config;
-}
 ```
 
 ## Key OSDK Features Demonstrated
