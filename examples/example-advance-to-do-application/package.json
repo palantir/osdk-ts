@@ -22,8 +22,6 @@
     "@osdk/foundry.admin": "^2.20.0",
     "@osdk/oauth": "^1.1.1",
     "@osdk/react": "^0.3.0",
-    "@react-pdf-viewer/core": "^3.12.0",
-    "@react-pdf-viewer/default-layout": "^3.12.0",
     "@tutorial-advance-to-do-application/sdk": "file:./tutorial-advance-to-do-application-sdk-0.9.0.tgz",
     "lodash": "^4.17.21",
     "react": "^18",
