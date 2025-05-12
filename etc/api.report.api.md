@@ -123,7 +123,7 @@ export namespace ActionParam {
     	// Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    export type ObjectType<T extends ObjectTypeDefinition> = OsdkBase<T> | OsdkObjectPrimaryKeyType<T>;
+    export type ObjectType<T extends ObjectTypeDefinition> = MinimalOsdkInstance<T> | OsdkObjectPrimaryKeyType<T>;
     	// (undocumented)
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
     	// (undocumented)
@@ -749,6 +749,18 @@ export interface MediaReference {
 }
 
 // @public (undocumented)
+export interface MinimalOsdkInstance<Q extends ObjectOrInterfaceDefinition> {
+    	// (undocumented)
+    readonly $apiName: Q["apiName"];
+    	// (undocumented)
+    readonly $objectType: string;
+    	// (undocumented)
+    readonly $primaryKey: PrimaryKeyType<Q>;
+    	// (undocumented)
+    readonly $title: string | undefined;
+}
+
+// @public (undocumented)
 export type NullabilityAdherence = false | "throw" | "drop";
 
 // @public (undocumented)
@@ -915,8 +927,7 @@ export type Osdk<
 
 // @public (undocumented)
 export namespace Osdk {
-    	// Warning: (ae-forgotten-export) The symbol "OsdkBaseWithObjectSpecifier" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export type Instance<
@@ -924,7 +935,7 @@ export namespace Osdk {
     		OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
     		P extends PropertyKeys<Q> = PropertyKeys<Q>,
     		R extends Record<string, SimplePropertyDef> = {}
-    	> = OsdkBaseWithObjectSpecifier<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
+    	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
         		readonly $link: Q extends {
             			linksType?: any
             		} ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never
@@ -936,12 +947,10 @@ export namespace Osdk {
 }
 
 // @public (undocumented)
-export type OsdkBase<Q extends ObjectOrInterfaceDefinition> = {
-    	readonly $apiName: Q["apiName"]
-    	readonly $objectType: string
-    	readonly $primaryKey: PrimaryKeyType<Q>
-    	readonly $title: string | undefined
-};
+export interface OsdkBase<Q extends ObjectOrInterfaceDefinition> extends MinimalOsdkInstance<Q> {
+    	// (undocumented)
+    readonly $objectSpecifier: ObjectSpecifier<Q>;
+}
 
 // @public @deprecated (undocumented)
 export type OsdkObject<N extends string> = {
@@ -1116,7 +1125,7 @@ export namespace QueryParam {
     	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
     	// (undocumented)
-    export type ObjectType<T extends ObjectTypeDefinition> = OsdkBase<T> | OsdkObjectPrimaryKeyType<T>;
+    export type ObjectType<T extends ObjectTypeDefinition> = MinimalOsdkInstance<T> | OsdkObjectPrimaryKeyType<T>;
     	// (undocumented)
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
     	// Warning: (ae-forgotten-export) The symbol "AggregationRangeKeyTypes" needs to be exported by the entry point index.d.ts
@@ -1151,7 +1160,7 @@ export namespace QueryResult {
     	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
     	// (undocumented)
-    export type ObjectType<T extends ObjectTypeDefinition> = OsdkBaseWithObjectSpecifier<T>;
+    export type ObjectType<T extends ObjectTypeDefinition> = OsdkBase<T>;
     	// (undocumented)
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueWireToClient[T];
     	// Warning: (ae-forgotten-export) The symbol "AggKeyWireToClient" needs to be exported by the entry point index.d.ts
