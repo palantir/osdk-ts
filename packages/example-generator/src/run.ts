@@ -27,12 +27,14 @@ import { findUp } from "find-up";
 import { globby } from "globby";
 import * as jestDiff from "jest-diff";
 import { exec } from "node:child_process";
-import fs from "node:fs";
+import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import * as tmp from "tmp";
 import { gitIgnoreFilter } from "./gitIgnoreFilter.js";
+
+const execPromisified = promisify(exec);
 
 interface RunArgs {
   outputDirectory: string;
@@ -41,8 +43,9 @@ interface RunArgs {
 
 export async function run({ outputDirectory, check }: RunArgs): Promise<void> {
   const resolvedOutput = path.resolve(outputDirectory);
+  const monorepoNodeModules = path.join(resolvedOutput, "../node_modules");
   const tmpDir = createTmpDir();
-  await generateExamples(tmpDir);
+  await generateExamples(tmpDir, monorepoNodeModules);
   await fixMonorepolint(tmpDir);
   if (check) {
     await checkExamples(resolvedOutput, tmpDir);
@@ -67,7 +70,10 @@ function templatesWithSdkVersions<T extends Pick<Template, "files">>(
   );
 }
 
-async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
+async function generateExamples(
+  tmpDir: tmp.DirResult,
+  nodeModulesPath: string,
+): Promise<void> {
   process.chdir(tmpDir.name);
   for (const [template, sdkVersion] of templatesWithSdkVersions(TEMPLATES)) {
     const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
@@ -95,6 +101,7 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
     });
 
     await mutateFiles(tmpDir, exampleId, template, sdkVersion);
+    await runLintFix(tmpDir, exampleId, nodeModulesPath);
   }
 
   for (
@@ -138,21 +145,46 @@ async function mutateFiles(
       const filePath = path.join(tmpDir.name, exampleId, match);
       const result = mutator.mutate(
         template,
-        fs.readFileSync(filePath, "utf-8"),
+        await fs.readFile(filePath, "utf-8"),
         sdkVersion,
       );
       switch (result.type) {
         case "modify":
-          fs.writeFileSync(filePath, result.newContent);
+          await fs.writeFile(filePath, result.newContent);
           break;
         case "delete":
-          fs.rmSync(filePath);
+          await fs.rm(filePath);
           break;
         default:
           const unknown: never = result;
           throw new Error(`Unknown mutator type: ${unknown}`);
       }
     }
+  }
+}
+
+async function runLintFix(
+  tmpDir: tmp.DirResult,
+  exampleId: string,
+  nodeModulesPath: string,
+) {
+  const examplePath = path.join(tmpDir.name, exampleId);
+
+  const packageJson = JSON.parse(
+    await fs.readFile(path.join(examplePath, "package.json"), "utf-8"),
+  ) as { scripts: Record<string, string> };
+
+  if (packageJson.scripts["lint:fix"] != null) {
+    consola.info(`Running lint:fix for ${exampleId}`);
+    await fs.symlink(
+      nodeModulesPath,
+      path.join(examplePath, "node_modules"),
+      "dir",
+    );
+    await execPromisified(
+      "npm run lint:fix",
+      { cwd: examplePath },
+    );
   }
 }
 
@@ -178,7 +210,7 @@ async function fixMonorepolint(tmpDir: tmp.DirResult): Promise<void> {
       "package.json",
     )
   );
-  const { stdout: mrlStdout, stderr: mrlStderr } = await promisify(exec)(
+  const { stdout: mrlStdout, stderr: mrlStderr } = await execPromisified(
     `pnpm exec monorepolint check --verbose --fix --paths ${
       mrlPaths.join(" ")
     }`,
@@ -200,8 +232,8 @@ async function checkExamples(
     const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
     consola.info(`Checking contents of ${exampleId}`);
     // realpath because globby in .gitignore filter requires symlinks in tmp directory to be resolved
-    const pathLeft = fs.realpathSync(path.join(resolvedOutput, exampleId));
-    const pathRight = fs.realpathSync(path.join(tmpDir.name, exampleId));
+    const pathLeft = await fs.realpath(path.join(resolvedOutput, exampleId));
+    const pathRight = await fs.realpath(path.join(tmpDir.name, exampleId));
     const compareResult = compareSync(
       pathLeft,
       pathRight,
@@ -226,8 +258,8 @@ async function checkExamples(
             ? path.join(q.path2, q.name2)
             : null;
 
-          const aContents = getContents(aPath);
-          const bContents = getContents(bPath);
+          const aContents = await getContents(aPath);
+          const bContents = await getContents(bPath);
 
           if (aContents || bContents) {
             consola.error("Contents differ");
@@ -248,14 +280,14 @@ async function checkExamples(
   }
 }
 
-function getContents(aPath: string | null) {
+async function getContents(aPath: string | null) {
   return aPath?.endsWith(".json")
     ? JSON.parse(
-      fs.readFileSync(aPath, "utf-8"),
+      await fs.readFile(aPath, "utf-8"),
     )
     : aPath?.endsWith(".ts") || aPath?.endsWith(".tsx")
         || aPath?.endsWith(".js") || aPath?.endsWith(".jsx")
-    ? fs.readFileSync(aPath, "utf-8")
+    ? await fs.readFile(aPath, "utf-8")
     : null;
 }
 
@@ -273,9 +305,9 @@ async function copyExamples(
     const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
     const exampleOutputPath = path.join(resolvedOutput, exampleId);
     const exampleTmpPath = path.join(tmpDir.name, exampleId);
-    fs.rmSync(exampleOutputPath, { recursive: true, force: true });
-    fs.mkdirSync(exampleOutputPath, { recursive: true });
-    fs.cpSync(exampleTmpPath, exampleOutputPath, { recursive: true });
+    await fs.rm(exampleOutputPath, { recursive: true, force: true });
+    await fs.mkdir(exampleOutputPath, { recursive: true });
+    await fs.cp(exampleTmpPath, exampleOutputPath, { recursive: true });
   }
   consola.success("Done");
 }
