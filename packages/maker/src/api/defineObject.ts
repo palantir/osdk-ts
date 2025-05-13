@@ -46,14 +46,11 @@ export function defineObject(objectDef: ObjectType): ObjectType {
       }
 
       // Apply empty array for geo types and markings, otherwise apply default type classes
-      const isGeoType = prop.type === "geopoint" || prop.type === "geoshape"
-        || prop.type === "geotimeSeries";
-      const isMarkingType = typeof prop.type === "object"
-        && "type" in prop.type && prop.type.type === "marking";
+      const isGeoType = prop.type === "geopoint" || prop.type === "geoshape";
 
       return {
         ...prop,
-        typeClasses: (isGeoType || isMarkingType) ? [] : defaultTypeClasses,
+        typeClasses: isGeoType ? [] : defaultTypeClasses,
       };
     });
   }
