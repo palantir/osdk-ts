@@ -77,10 +77,7 @@ export let ontologyDefinition: OntologyDefinition;
 export let importedTypes: OntologyDefinition;
 
 /** @internal */
-export let globalNamespace: string;
-
-/** @internal */
-export let importing: number;
+export let namespace: string;
 
 type OntologyAndValueTypeIrs = {
   ontology: OntologyIr;
@@ -112,7 +109,7 @@ export async function defineOntology(
   body: () => void | Promise<void>,
   outputDir: string,
 ): Promise<OntologyAndValueTypeIrs> {
-  globalNamespace = ns;
+  namespace = ns;
   ontologyDefinition = {
     OBJECT_TYPE: {},
     ACTION_TYPE: {},
@@ -129,7 +126,6 @@ export async function defineOntology(
     INTERFACE_TYPE: {},
     VALUE_TYPE: {},
   };
-  importing = 0;
   try {
     await body();
   } catch (e) {
@@ -208,9 +204,11 @@ importOntologyEntity(${entityFileNameBase});
           .join("\n") + "\n";
         const typeIndexFilePath = path.join(typeDirPath, "index.ts");
         fs.writeFileSync(typeIndexFilePath, typeIndexContent, { flag: "w" });
-        topLevelExportStatements.push(
-          `export * from './build/${typeDirName}';`,
-        );
+        for (const entityModuleName of entityModuleNames) {
+          topLevelExportStatements.push(
+            `export { ${entityModuleName} } from './build/${typeDirName}/${entityModuleName}.ts';`,
+          );
+        }
       }
     },
   );
@@ -1242,23 +1240,18 @@ export function sanitize(namespace: string, s: string): string {
   return s.includes(".") ? s : namespace + s;
 }
 
-export function setGlobalNamespace(ns: string): void {
-  globalNamespace = ns;
+export function extractNamespace(apiName: string): string {
+  return apiName.substring(0, apiName.lastIndexOf(".") + 1);
 }
 
-export function incImporting(): void {
-  importing += 1;
-}
-export function decImporting(): void {
-  importing -= 1;
-}
-function withoutNamespace(apiName: string): string {
+export function withoutNamespace(apiName: string): string {
   const lastDot = apiName.lastIndexOf(".");
   if (lastDot === -1) {
     return apiName;
   }
   return apiName.substring(lastDot + 1);
 }
+
 function camel(str: string): string {
   if (!str) {
     return str;

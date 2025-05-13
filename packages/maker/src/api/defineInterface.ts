@@ -16,9 +16,10 @@
 
 import invariant from "tiny-invariant";
 import {
-  globalNamespace,
+  namespace,
   ontologyDefinition,
   updateOntology,
+  withoutNamespace,
 } from "./defineOntology.js";
 import { defineSharedPropertyType } from "./defineSpt.js";
 import type { BlueprintIcon } from "./iconNames.js";
@@ -57,7 +58,7 @@ export type InterfaceTypeDefinition = {
 export function defineInterface(
   interfaceDef: InterfaceTypeDefinition,
 ): InterfaceType {
-  const apiName = globalNamespace + interfaceDef.apiName;
+  const apiName = namespace + interfaceDef.apiName;
   invariant(
     ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][apiName]
       === undefined,
@@ -73,7 +74,7 @@ export function defineInterface(
           return [apiName, {
             required: type.required,
             sharedPropertyType: unifyBasePropertyDefinition(
-              globalNamespace,
+              namespace,
               apiName,
               type.propertyDefinition,
             ),
@@ -83,7 +84,7 @@ export function defineInterface(
         return [apiName, {
           required: true,
           sharedPropertyType: unifyBasePropertyDefinition(
-            globalNamespace,
+            namespace,
             apiName,
             type,
           ),
@@ -211,9 +212,7 @@ function unifyBasePropertyDefinition(
     });
     return spt;
   } else {
-    const unNamespacedTypeApiName = type.apiName.slice(
-      type.apiName.lastIndexOf(".") + 1,
-    );
+    const unNamespacedTypeApiName = withoutNamespace(type.apiName);
     invariant(
       namespace + apiName === type.apiName
         || apiName === unNamespacedTypeApiName,

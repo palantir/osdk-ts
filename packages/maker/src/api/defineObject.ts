@@ -16,7 +16,8 @@
 
 import invariant from "tiny-invariant";
 import {
-  globalNamespace,
+  extractNamespace,
+  namespace,
   ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
@@ -47,7 +48,7 @@ export function defineObjectInner(
 export function defineObject(
   objectDef: ObjectTypeDefinition,
 ): ObjectType {
-  const apiName = globalNamespace + objectDef.apiName;
+  const apiName = namespace + objectDef.apiName;
   const propertyApiNames = (objectDef.properties ?? []).map(val => val.apiName);
   if (
     ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][apiName]
@@ -232,8 +233,4 @@ function validateInterfaceImplProperty(
   }
 
   return { type: "valid" };
-}
-
-function extractNamespace(apiName: string): string {
-  return apiName.substring(0, apiName.lastIndexOf(".") + 1);
 }

@@ -17,7 +17,7 @@
 import type { ParameterId } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import {
-  globalNamespace,
+  namespace,
   ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
@@ -313,7 +313,7 @@ export function defineDeleteObjectAction(
 }
 
 export function defineAction(actionDef: ActionTypeDefinition): ActionType {
-  const apiName = globalNamespace + actionDef.apiName;
+  const apiName = namespace + actionDef.apiName;
   const parameterIds = (actionDef.parameters ?? []).map(p => p.id);
 
   if (
@@ -611,5 +611,5 @@ function kebab(s: string): string {
 }
 
 function sanitize(s: string): string {
-  return s.includes(".") ? s : globalNamespace + s;
+  return s.includes(".") ? s : namespace + s;
 }

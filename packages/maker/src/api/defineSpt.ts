@@ -21,7 +21,7 @@ import type {
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import {
-  globalNamespace,
+  namespace,
   ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
@@ -51,7 +51,7 @@ export interface SharedPropertyTypeDefinition {
 export function defineSharedPropertyType(
   sptDef: SharedPropertyTypeDefinition,
 ): SharedPropertyType {
-  const apiName = globalNamespace + sptDef.apiName;
+  const apiName = namespace + sptDef.apiName;
   invariant(
     ontologyDefinition[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][apiName]
       === undefined,
