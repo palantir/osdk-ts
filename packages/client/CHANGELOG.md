@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.2.0-beta.20
+
+### Minor Changes
+
+- 889e84b: Release
+
+### Patch Changes
+
+- Updated dependencies [889e84b]
+  - @osdk/generator-converters@2.2.0-beta.20
+  - @osdk/client.unstable@2.2.0-beta.20
+  - @osdk/api@2.2.0-beta.20
+
 ## 2.2.0-beta.19
 
 ### Minor Changes
