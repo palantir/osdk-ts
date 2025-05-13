@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-import { consola } from "../consola.js";
+export function generateNpmRc(): string {
+  const urlWithToken =
+    "//{{FOUNDRY_HOSTNAME}}/artifacts/api/repositories/{{REPOSITORY_RID}}/contents/release/npm/:_authToken=${FOUNDRY_TOKEN}";
+  const registry =
+    "registry=https://{{FOUNDRY_HOSTNAME}}/artifacts/api/repositories/{{REPOSITORY_RID}}/contents/release/npm/";
+  const omitLockFile = "omit-lockfile-registry-resolved=true";
 
-export async function promptProject(
-  { project }: { project?: string },
-): Promise<string> {
-  while (project == null || !/^[a-zA-Z0-9-_]+$/.test(project)) {
-    if (project != null) {
-      consola.fail(
-        "Project name can only contain alphanumeric characters, hyphens and underscores",
-      );
-    }
-    project = await consola.prompt("Project name:", {
-      type: "text",
-      placeholder: "my-osdk-app",
-      default: "my-osdk-app",
-    });
-  }
-
-  return project;
+  return `${urlWithToken}\n`
+    + `${registry}\n`
+    + `${omitLockFile}\n`;
 }

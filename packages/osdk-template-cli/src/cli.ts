@@ -18,14 +18,14 @@ import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
+import { promptDestinationProject } from "./prompts/promptDestinationProject.js";
 import { promptOverwrite } from "./prompts/promptOverwrite.js";
-import { promptProject } from "./prompts/promptProject.js";
 import { promptSourceProject } from "./prompts/promptSourceProject.js";
 import { run } from "./run.js";
 
 interface CliArgs {
   sourceProject?: string;
-  project?: string;
+  destinationProject?: string;
   overwrite?: boolean;
 }
 
@@ -36,7 +36,7 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     .strict()
     .help()
     .command(
-      "$0 [sourceProject] [project] [--<option>]",
+      "$0 [sourceProject] [destinationProject] [--<option>]",
       "Create a new OSDK template project based on source project. Information may be provided through options to skip interactive prompts.",
       (yargs) =>
         yargs
@@ -44,9 +44,8 @@ export async function cli(args: string[] = process.argv): Promise<void> {
             type: "string",
             describe:
               "Path to the source project to use as a template. If not provided, the default is '../examples/example-advance-to-do-application'.",
-            default: "../examples/example-advance-to-do-application",
           })
-          .positional("project", {
+          .positional("destinationProject", {
             type: "string",
             describe: "Project name to create",
           })
@@ -57,13 +56,17 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     );
 
   const parsed: CliArgs = base.parseSync();
-  const sourceProject: string = await promptSourceProject(parsed);
-  const project: string = await promptProject(parsed);
-  const overwrite: boolean = await promptOverwrite({ ...parsed, project });
-
+  const sourceProject: string = await promptSourceProject({
+    sourceProject: parsed.sourceProject,
+  });
+  const destinationProject: string = await promptDestinationProject(parsed);
+  const overwrite: boolean = await promptOverwrite({
+    ...parsed,
+    destinationProject,
+  });
   await run({
     sourceProject,
-    project,
+    destinationProject,
     overwrite,
   });
 }

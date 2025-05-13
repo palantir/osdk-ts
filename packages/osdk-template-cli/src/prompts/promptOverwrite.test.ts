@@ -31,7 +31,7 @@ test("it accepts valid 'overwrite' from prompt", async () => {
   vi.mocked(fs.existsSync).mockReturnValue(true);
   vi.mocked(consola.prompt).mockResolvedValueOnce("overwrite");
 
-  const result = await promptOverwrite({ project: "abc" });
+  const result = await promptOverwrite({ destinationProject: "abc" });
   expect(result).toBe(true);
   expect(vi.mocked(consola.prompt).mock.calls.length).toBe(1);
 });
@@ -40,13 +40,16 @@ test("it accepts valid 'ignore' from prompt", async () => {
   vi.mocked(fs.existsSync).mockReturnValue(true);
   vi.mocked(consola.prompt).mockResolvedValueOnce("ignore");
 
-  const result = await promptOverwrite({ project: "abc" });
+  const result = await promptOverwrite({ destinationProject: "abc" });
   expect(result).toBe(false);
   expect(vi.mocked(consola.prompt).mock.calls.length).toBe(1);
 });
 
 test("it accepts initial value without prompt", async () => {
-  const result = await promptOverwrite({ project: "abc", overwrite: true });
+  const result = await promptOverwrite({
+    destinationProject: "abc",
+    overwrite: true,
+  });
   expect(result).toBe(true);
   expect(vi.mocked(consola.prompt).mock.calls.length).toBe(0);
 });
@@ -54,7 +57,7 @@ test("it accepts initial value without prompt", async () => {
 test("it returns true if project does not already exist", async () => {
   vi.mocked(fs.existsSync).mockReturnValue(false);
 
-  const result = await promptOverwrite({ project: "abc" });
+  const result = await promptOverwrite({ destinationProject: "abc" });
   expect(result).toBe(true);
   expect(vi.mocked(consola.prompt).mock.calls.length).toBe(0);
 });

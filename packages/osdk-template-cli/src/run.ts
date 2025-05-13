@@ -17,39 +17,49 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { consola } from "./consola.js";
+import {
+  generateEnvDevelopment,
+  generateEnvProduction,
+} from "./generate/generateEnv.js";
+import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.js";
+import { generateNpmRc } from "./generate/generateNpmRc.js";
 import { green } from "./highlight.js";
 
 interface RunArgs {
   sourceProject: string;
-  project: string;
+  destinationProject: string;
   overwrite: boolean;
 }
 
 export async function run(
   {
     sourceProject,
-    project,
+    destinationProject,
     overwrite,
   }: RunArgs,
 ): Promise<void> {
   consola.log("");
   consola.start(
-    `Creating project ${green(project)} based off ${green(sourceProject)}`,
+    `Creating project ${green(destinationProject)} based off ${
+      green(sourceProject)
+    }`,
   );
 
   const cwd = process.cwd();
-  const root = path.join(cwd, project);
+  const root = path.join(cwd, destinationProject);
   const sourceProjectPath = path.join(cwd, sourceProject);
 
-  try {
-    // Check if source project exists and is a directory
-    const sourceStats = await fs.stat(sourceProjectPath);
-    if (!sourceStats.isDirectory()) {
-      throw new Error(
-        `Source project ${green(sourceProject)} is not a directory`,
-      );
-    }
+  // List of directories and files to exclude from copying
+  const excludeDirs = new Set(["dist", "node_modules", ".turbo"]);
+  const excludeFiles = new Set([
+    "package-lock.json",
+    ".env.development",
+    ".env.production",
+    ".npmrc",
+    "foundry.config.json",
+  ]);
 
+  try {
     // Check if source project is empty
     const sourceProjectFiles = await fs.readdir(sourceProjectPath);
     if (sourceProjectFiles.length === 0) {
@@ -73,24 +83,61 @@ export async function run(
 
     consola.info(`Copying files into project directory`);
 
-    // Copy all files from source project to project directory
-    for (const file of sourceProjectFiles) {
-      const sourceFilePath = path.join(sourceProjectPath, file);
-      const destFilePath = path.join(root, file);
-      const fileStats = await fs.stat(sourceFilePath);
+    // Recursive function to copy files and directories
+    async function copyDirectory(src: string, dest: string) {
+      const entries = await fs.readdir(src, { withFileTypes: true });
 
-      if (fileStats.isDirectory()) {
-        await fs.mkdir(destFilePath, { recursive: true });
-        const subFiles = await fs.readdir(sourceFilePath);
-        for (const subFile of subFiles) {
-          const sourceSubFilePath = path.join(sourceFilePath, subFile);
-          const destSubFilePath = path.join(destFilePath, subFile);
-          await fs.copyFile(sourceSubFilePath, destSubFilePath);
+      for (const entry of entries) {
+        // Skip excluded directories and files
+        if (entry.isDirectory() && excludeDirs.has(entry.name)) {
+          continue;
         }
-      } else {
-        await fs.copyFile(sourceFilePath, destFilePath);
+        if (!entry.isDirectory() && excludeFiles.has(entry.name)) {
+          continue;
+        }
+
+        const srcPath = path.join(src, entry.name);
+        const destPath = path.join(dest, entry.name);
+
+        if (entry.isDirectory()) {
+          await fs.mkdir(destPath, { recursive: true });
+          await copyDirectory(srcPath, destPath);
+        } else {
+          await fs.copyFile(srcPath, destPath);
+        }
       }
     }
+
+    // Start copying from the source project path to the destination root
+    await copyDirectory(sourceProjectPath, root);
+
+    const npmRc = generateNpmRc();
+    await fs.writeFile(path.join(root, ".npmrc"), npmRc);
+    const envDevelopment = generateEnvDevelopment({
+      envPrefix: "VITE_",
+      foundryUrl: "http://localhost:8080",
+      clientId: "{{APPLICATION_CLIENT_ID}}",
+      corsProxy: false,
+      ontology: "{{ONTOLOGY_RID}}",
+    });
+    await fs.writeFile(path.join(root, ".env.development"), envDevelopment);
+    const envProduction = generateEnvProduction({
+      envPrefix: "VITE_",
+      foundryUrl: "https://{{FOUNDRY_HOSTNAME}}",
+      applicationUrl: "https://{{FOUNDRY_HOSTNAME}}",
+      clientId: "{{APPLICATION_CLIENT_ID}}",
+      ontology: "{{ONTOLOGY_RID}}",
+    });
+    await fs.writeFile(path.join(root, ".env.production"), envProduction);
+    const foundryConfigJson = generateFoundryConfigJson({
+      foundryUrl: "https://{{FOUNDRY_HOSTNAME}}",
+      application: "{{APPLICATION_RID}}",
+      directory: "./dist",
+    });
+    await fs.writeFile(
+      path.join(root, "foundry.config.json"),
+      foundryConfigJson,
+    );
 
     consola.success("Success");
 

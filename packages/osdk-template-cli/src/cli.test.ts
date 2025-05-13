@@ -20,8 +20,8 @@ import { fileURLToPath } from "node:url";
 import { dirSync } from "tmp";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { cli } from "./cli.js";
+import { promptDestinationProject } from "./prompts/promptDestinationProject.js";
 import { promptOverwrite } from "./prompts/promptOverwrite.js";
-import { promptProject } from "./prompts/promptProject.js";
 import { promptSourceProject } from "./prompts/promptSourceProject.js";
 import { run } from "./run.js";
 
@@ -56,14 +56,14 @@ describe("CLI", () => {
     vi.mocked(promptSourceProject).mockResolvedValue(
       "../examples/example-advance-to-do-application",
     );
-    vi.mocked(promptProject).mockResolvedValue("my-new-project");
+    vi.mocked(promptDestinationProject).mockResolvedValue("my-new-project");
     vi.mocked(promptOverwrite).mockResolvedValue(true);
     vi.mocked(run).mockResolvedValue();
 
     await cli(["node", "cli.js"]);
 
     expect(promptSourceProject).toHaveBeenCalled();
-    expect(promptProject).toHaveBeenCalled();
+    expect(promptDestinationProject).toHaveBeenCalled();
     expect(promptOverwrite).toHaveBeenCalled();
     expect(run).toHaveBeenCalledWith({
       sourceProject: "../examples/example-advance-to-do-application",

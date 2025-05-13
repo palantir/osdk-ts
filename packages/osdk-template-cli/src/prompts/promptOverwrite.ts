@@ -21,10 +21,10 @@ import { green } from "../highlight.js";
 
 export async function promptOverwrite(
   {
-    project,
+    destinationProject,
     overwrite,
   }: {
-    project: string;
+    destinationProject: string;
     overwrite?: boolean;
   },
 ): Promise<boolean> {
@@ -32,14 +32,14 @@ export async function promptOverwrite(
     return overwrite;
   }
 
-  if (!fs.existsSync(path.join(process.cwd(), project))) {
+  if (!fs.existsSync(path.join(process.cwd(), destinationProject))) {
     return true;
   }
 
   const result = await consola.prompt(
     `The directory ${
       green(
-        project,
+        destinationProject,
       )
     } already exists do you want to overwrite or ignore it?`,
     {
