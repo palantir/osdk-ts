@@ -362,7 +362,10 @@ function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
     ruleSetBinding: undefined,
     baseFormatter: property.baseFormatter,
     type: convertType(property.type),
-    typeClasses: property.typeClasses ?? [],
+    typeClasses: property.typeClasses
+      ?? ((property.type === "geopoint" || property.type === "geoshape")
+        ? []
+        : []),
     status: property.status ?? { type: "active", active: {} },
     inlineAction: undefined,
     dataConstraints: convertNullabilityToDataConstraint(property),

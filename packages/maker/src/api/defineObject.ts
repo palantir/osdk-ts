@@ -28,8 +28,36 @@ import type {
 const ISO_8601_DURATION =
   /^P(?!$)(?:(?:((?:\d+Y)|(?:\d+(?:\.|,)\d+Y$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+D)|(?:\d+(?:\.|,)\d+D$))?(T((?:\d+H)|(?:\d+(?:\.|,)\d+H$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+S)|(?:\d+(?:\.|,)\d+S$))?)?)|(?:\d+(?:(?:\.|,)\d+)?W))$/;
 
+// Default type classes to apply to properties (same as in defineSpt.ts)
+const defaultTypeClasses = [{
+  kind: "render_hint",
+  name: "SELECTABLE",
+}, { kind: "render_hint", name: "SORTABLE" }];
+
 export function defineObject(objectDef: ObjectType): ObjectType {
   const apiName = namespace + objectDef.apiName;
+
+  // Apply default type classes to properties if not specified
+  if (objectDef.properties) {
+    objectDef.properties = objectDef.properties.map(prop => {
+      // Skip if typeClasses is already defined
+      if (prop.typeClasses !== undefined) {
+        return prop;
+      }
+
+      // Apply empty array for geo types and markings, otherwise apply default type classes
+      const isGeoType = prop.type === "geopoint" || prop.type === "geoshape"
+        || prop.type === "geotimeSeries";
+      const isMarkingType = typeof prop.type === "object"
+        && "type" in prop.type && prop.type.type === "marking";
+
+      return {
+        ...prop,
+        typeClasses: (isGeoType || isMarkingType) ? [] : defaultTypeClasses,
+      };
+    });
+  }
+
   const propertyApiNames = (objectDef.properties ?? []).map(val => val.apiName);
   if (ontologyDefinition.objectTypes[apiName] !== undefined) {
     throw new Error(
