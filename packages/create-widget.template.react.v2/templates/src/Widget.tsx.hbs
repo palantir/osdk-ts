@@ -120,7 +120,7 @@ export const Widget: React.FC = () => {
           <Box>
             <Flex direction="column" gap="2">
               <Text>
-                Try and of the following methods from your Ontology SDK
+                Try any of the following methods from your Ontology SDK
               </Text>
               <Flex direction="column" gap="1">
                 <Heading size="4">Objects ({objectApiNames.length})</Heading>
