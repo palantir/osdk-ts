@@ -52,6 +52,9 @@ export function defineSharedPropertyType(
     apiName,
     nonNameSpacedApiName: opts.apiName,
     displayName: opts.displayName ?? opts.apiName, // This way the non-namespaced api name is the display name (maybe not ideal)
-    typeClasses: opts.typeClasses ?? defaultTypeClasses,
+    typeClasses: opts.typeClasses
+      ?? ((opts.type === "geopoint" || opts.type === "geoshape")
+        ? []
+        : defaultTypeClasses),
   };
 }
