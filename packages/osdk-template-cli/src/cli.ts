@@ -59,7 +59,9 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   const sourceProject: string = await promptSourceProject({
     sourceProject: parsed.sourceProject,
   });
-  const destinationProject: string = await promptDestinationProject(parsed);
+  const destinationProject: string = await promptDestinationProject({
+    destinationProject: parsed.destinationProject,
+  });
   const overwrite: boolean = await promptOverwrite({
     ...parsed,
     destinationProject,

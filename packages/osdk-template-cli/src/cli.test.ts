@@ -26,7 +26,7 @@ import { promptSourceProject } from "./prompts/promptSourceProject.js";
 import { run } from "./run.js";
 
 vi.mock("./prompts/promptOverwrite.js");
-vi.mock("./prompts/promptProject.js");
+vi.mock("./prompts/promptDestinationProject.js");
 vi.mock("./prompts/promptSourceProject.js");
 vi.mock("./run.js");
 
@@ -67,7 +67,7 @@ describe("CLI", () => {
     expect(promptOverwrite).toHaveBeenCalled();
     expect(run).toHaveBeenCalledWith({
       sourceProject: "../examples/example-advance-to-do-application",
-      project: "my-new-project",
+      destinationProject: "my-new-project",
       overwrite: true,
     });
   });

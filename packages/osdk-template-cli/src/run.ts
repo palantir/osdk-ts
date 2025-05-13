@@ -143,7 +143,7 @@ export async function run(
 
     const cdRelative = path.relative(cwd, root);
     consola.box({
-      message: `Done! ${cdRelative} created:\n`,
+      message: `Done! ${cdRelative} created\n`,
       style: {
         padding: 2,
         borderColor: "green",
