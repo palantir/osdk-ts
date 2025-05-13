@@ -239,10 +239,7 @@ function convertObject(
       ),
       titlePropertyTypeRid: objectType.titlePropertyApiName,
       apiName: objectType.apiName,
-      status: objectType.status ?? {
-        type: "active",
-        active: {},
-      },
+      status: convertObjectStatus(objectType.status),
       redacted: false,
       implementsInterfaces2: implementations.map(impl => ({
         interfaceTypeApiName: impl.implements.apiName,
@@ -363,7 +360,7 @@ function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
     baseFormatter: property.baseFormatter,
     type: convertType(property.type),
     typeClasses: property.typeClasses ?? [],
-    status: property.status ?? { type: "active", active: {} },
+    status: convertObjectStatus(property.status),
     inlineAction: undefined,
     dataConstraints: convertNullabilityToDataConstraint(property),
     sharedPropertyTypeRid: property.sharedPropertyType?.apiName,
@@ -648,6 +645,42 @@ function convertType(
       // use helper function to distribute `type` properly
       return distributeTypeHelper(type);
   }
+}
+
+function convertObjectStatus(status: any): any {
+  if (status === undefined) {
+    return {
+      type: "active",
+      active: {},
+    };
+  }
+
+  if (status === "active") {
+    return {
+      type: "active",
+      active: {},
+    };
+  }
+
+  if (status === "experimental") {
+    return {
+      type: "experimental",
+      experimental: {},
+    };
+  }
+
+  if (typeof status === "object" && status.type === "deprecated") {
+    return {
+      type: "deprecated",
+      deprecated: {
+        message: status.message,
+        deadline: status.deadline,
+        replacedBy: undefined,
+      },
+    };
+  }
+
+  return status;
 }
 
 function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
