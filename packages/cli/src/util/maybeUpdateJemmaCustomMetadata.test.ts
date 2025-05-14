@@ -28,14 +28,17 @@ vi.mock("consola", () => ({
 describe("maybeUpdateJemmaCustomMetadata", () => {
   const TEST_FILE_PATH = "/test/metadata.json";
   const TEST_SITE_LINK = "https://example.com";
-
+  const TEST_SITE_VERSION = "1.0.0";
   afterEach(() => {
     vi.unstubAllEnvs();
     vi.restoreAllMocks();
   });
 
   it("should not write to file when environment variable is not set", () => {
-    maybeUpdateJemmaCustomMetadata(TEST_SITE_LINK);
+    maybeUpdateJemmaCustomMetadata({
+      siteLink: TEST_SITE_LINK,
+      siteVersion: TEST_SITE_VERSION,
+    });
     expect(fs.writeFileSync).not.toHaveBeenCalled();
   });
 
@@ -45,11 +48,18 @@ describe("maybeUpdateJemmaCustomMetadata", () => {
       throw new Error("File not found");
     });
 
-    maybeUpdateJemmaCustomMetadata(TEST_SITE_LINK);
+    maybeUpdateJemmaCustomMetadata({
+      siteLink: TEST_SITE_LINK,
+      siteVersion: TEST_SITE_VERSION,
+    });
 
     expect(fs.writeFileSync).toHaveBeenCalledWith(
       TEST_FILE_PATH,
-      JSON.stringify({ siteLink: TEST_SITE_LINK }, null, 2),
+      JSON.stringify(
+        { siteLink: TEST_SITE_LINK, siteVersion: TEST_SITE_VERSION },
+        null,
+        2,
+      ),
     );
   });
 
@@ -57,11 +67,18 @@ describe("maybeUpdateJemmaCustomMetadata", () => {
     vi.stubEnv("JEMMA_JOB_CUSTOM_METADATA_PATH", TEST_FILE_PATH);
     vi.mocked(fs.readFileSync).mockReturnValue("{}");
 
-    maybeUpdateJemmaCustomMetadata(TEST_SITE_LINK);
+    maybeUpdateJemmaCustomMetadata({
+      siteLink: TEST_SITE_LINK,
+      siteVersion: TEST_SITE_VERSION,
+    });
 
     expect(fs.writeFileSync).toHaveBeenCalledWith(
       TEST_FILE_PATH,
-      JSON.stringify({ siteLink: TEST_SITE_LINK }, null, 2),
+      JSON.stringify(
+        { siteLink: TEST_SITE_LINK, siteVersion: TEST_SITE_VERSION },
+        null,
+        2,
+      ),
     );
   });
 
@@ -70,10 +87,14 @@ describe("maybeUpdateJemmaCustomMetadata", () => {
     const existingData = {
       someOtherKey: "value",
       siteLink: "old-link.com",
+      siteVersion: "0.0.1",
     };
     vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(existingData));
 
-    maybeUpdateJemmaCustomMetadata(TEST_SITE_LINK);
+    maybeUpdateJemmaCustomMetadata({
+      siteLink: TEST_SITE_LINK,
+      siteVersion: TEST_SITE_VERSION,
+    });
 
     expect(fs.writeFileSync).toHaveBeenCalledWith(
       TEST_FILE_PATH,
@@ -81,6 +102,7 @@ describe("maybeUpdateJemmaCustomMetadata", () => {
         {
           ...existingData,
           siteLink: TEST_SITE_LINK,
+          siteVersion: TEST_SITE_VERSION,
         },
         null,
         2,
@@ -92,11 +114,18 @@ describe("maybeUpdateJemmaCustomMetadata", () => {
     vi.stubEnv("JEMMA_JOB_CUSTOM_METADATA_PATH", TEST_FILE_PATH);
     vi.mocked(fs.readFileSync).mockReturnValue("invalid json");
 
-    maybeUpdateJemmaCustomMetadata(TEST_SITE_LINK);
+    maybeUpdateJemmaCustomMetadata({
+      siteLink: TEST_SITE_LINK,
+      siteVersion: TEST_SITE_VERSION,
+    });
 
     expect(fs.writeFileSync).toHaveBeenCalledWith(
       TEST_FILE_PATH,
-      JSON.stringify({ siteLink: TEST_SITE_LINK }, null, 2),
+      JSON.stringify(
+        { siteLink: TEST_SITE_LINK, siteVersion: TEST_SITE_VERSION },
+        null,
+        2,
+      ),
     );
   });
 });

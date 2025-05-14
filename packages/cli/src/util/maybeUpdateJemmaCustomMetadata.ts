@@ -27,12 +27,20 @@ const JEMMA_JOB_CUSTOM_METADATA_PATH = "JEMMA_JOB_CUSTOM_METADATA_PATH";
  * The custom metadata file will be updated with the following format:
  *
  * {
- *   "siteLink": "https://example.com"
+ *   "siteLink": "https://example.com",
+ *   "siteVersion": "1.0.0"
  * }
  *
  * @param siteLink The site link to write to the custom metadata file.
+ * @param siteVersion The site version to write to the custom metadata file.
  */
-export function maybeUpdateJemmaCustomMetadata(siteLink: string): void {
+export function maybeUpdateJemmaCustomMetadata({
+  siteLink,
+  siteVersion,
+}: {
+  siteLink: string;
+  siteVersion: string;
+}): void {
   const jemmaCustomMetadataFilePath = getJemmaCustomMetadataFilePath();
   if (jemmaCustomMetadataFilePath == null) {
     return;
@@ -46,6 +54,7 @@ export function maybeUpdateJemmaCustomMetadata(siteLink: string): void {
 
     // Set the site link in the custom metadata
     customMetadata.siteLink = siteLink;
+    customMetadata.siteVersion = siteVersion;
 
     // Write the custom metadata to the file
     writeCustomMetadata(jemmaCustomMetadataFilePath, customMetadata);
