@@ -25,8 +25,6 @@ describe("getBaseHref", () => {
   });
 
   test("returns localhost URLs in local mode", () => {
-    vi.spyOn(codeWorkspacesMode, "isCodeWorkspacesMode").mockReturnValue(false);
-
     const server = {
       config: {
         mode: "",
@@ -40,7 +38,6 @@ describe("getBaseHref", () => {
   });
 
   test("returns code workspaces URLs in code workspaces mode", () => {
-    vi.spyOn(codeWorkspacesMode, "isCodeWorkspacesMode").mockReturnValue(true);
     // Representative value when running dev mode in Code Workspaces mode
     vi.spyOn(codeWorkspacesMode, "getCodeWorkspacesBaseHref").mockReturnValue(
       "https://workspace.stack.com/proxy/path",
