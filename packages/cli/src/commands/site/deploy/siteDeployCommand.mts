@@ -28,6 +28,7 @@ import { Readable } from "node:stream";
 import prettyBytes from "pretty-bytes";
 import type { InternalClientContext } from "../../../net/internalClientContext.mjs";
 import type { ThirdPartyAppRid } from "../../../net/ThirdPartyAppRid.js";
+import { maybeUpdateJemmaCustomMetadata } from "../../../util/maybeUpdateJemmaCustomMetadata.js";
 import { loadToken } from "../../../util/token.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
@@ -96,6 +97,7 @@ export default async function siteDeployCommand(
     archive,
   );
 
+  let siteLink: string | undefined;
   if (!uploadOnly) {
     const website = await thirdPartyApplications.deployWebsite(
       clientCtx,
@@ -105,10 +107,8 @@ export default async function siteDeployCommand(
     consola.success(`Deployed ${siteVersion} successfully`);
     const domain = website.subdomains[0];
     if (domain != null) {
-      logSiteLink(
-        "View live site:",
-        `https://${domain}`,
-      );
+      siteLink = `https://${domain}`;
+      logSiteLink("View live site:", siteLink);
     }
   } else {
     const website = await thirdPartyApplications.getWebsite(
@@ -118,11 +118,15 @@ export default async function siteDeployCommand(
     const domain = website?.subdomains[0];
     consola.info("Upload only mode enabled, skipping deployment");
     if (domain != null) {
-      logSiteLink(
-        "Preview link:",
-        `https://${domain}/.system/preview?previewVersion=${siteVersion}`,
-      );
+      siteLink =
+        `https://${domain}/.system/preview?previewVersion=${siteVersion}`;
+      logSiteLink("Preview link:", siteLink);
     }
+  }
+
+  // Write the site link and version to the custom metadata file when the site link is present
+  if (siteLink != null) {
+    maybeUpdateJemmaCustomMetadata({ siteLink, siteVersion });
   }
 }
 
