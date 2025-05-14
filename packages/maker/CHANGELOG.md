@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.10.0-beta.21
+
+### Minor Changes
+
+- 94663ab: Change the status definitions for objects and add validation for timestamps.
+- f12caa4: Fix marking list for modify action
+- 317b555: Release
+
+### Patch Changes
+
+- Updated dependencies [317b555]
+  - @osdk/api@2.2.0-beta.21
+
 ## 0.10.0-beta.20
 
 ### Minor Changes

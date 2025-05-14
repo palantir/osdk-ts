@@ -1,5 +1,11 @@
 # @osdk/generator-utils
 
+## 2.2.0-beta.21
+
+### Minor Changes
+
+- 317b555: Release
+
 ## 2.2.0-beta.20
 
 ### Minor Changes
