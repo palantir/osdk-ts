@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { safeGetEnvVar } from "../common/safeGetEnvVar.js";
+import type { ViteDevServer } from "vite";
 import {
-  getCodeWorkspacesFoundryToken,
+  getCodeWorkspacesBaseHref,
   isCodeWorkspacesMode,
 } from "./codeWorkspacesMode.js";
 
-// User token environment variable name
-const FOUNDRY_TOKEN = "FOUNDRY_TOKEN";
+export function getBaseHref(server: ViteDevServer): string {
+  const baseHref = isCodeWorkspacesMode(server.config.mode)
+    ? getCodeWorkspacesBaseHref()
+    : getLocalhostBaseHref(server);
+  // Ensure that all URLs end with a trailing slash for consistency
+  return baseHref.replace(/\/?$/, "/");
+}
 
-export function getFoundryToken(mode: string | undefined): string {
-  if (isCodeWorkspacesMode(mode)) {
-    return getCodeWorkspacesFoundryToken();
-  }
-  return safeGetEnvVar(
-    process.env,
-    FOUNDRY_TOKEN,
-    "This value is required to run dev mode.",
-  );
+function getLocalhostBaseHref(server: ViteDevServer): string {
+  return `${
+    server.config.server.https ? "https" : "http"
+  }://localhost:${server.config.server.port}${server.config.base}`;
 }

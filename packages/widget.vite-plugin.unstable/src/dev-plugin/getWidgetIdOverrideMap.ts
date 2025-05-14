@@ -27,7 +27,7 @@ export async function getWidgetIdOverrideMap(
   codeEntrypoints: Record<string, string>,
   configFileToEntrypoint: Record<string, string>,
   configFiles: Record<string, WidgetConfig<ParameterConfig>>,
-  localhostUrl: string,
+  baseHref: string,
 ): Promise<Record<string, string[]>> {
   const widgetIdToEntrypoint = Object.entries(configFiles).reduce<
     Record<string, string>
@@ -48,16 +48,22 @@ export async function getWidgetIdOverrideMap(
   >(
     (acc, [widgetId, entrypoint]) => {
       const overrides = [
-        `/${VITE_INJECTIONS_PATH}`,
-        ...injectedScripts.scriptSources,
-        entrypoint,
+        VITE_INJECTIONS_PATH,
+        ...injectedScripts.scriptSources.map((script) =>
+          removeBasePath(script, baseHref)
+        ),
+        entrypoint.slice(1),
       ];
-      // Prefix with localhost URL to create the full URL
-      acc[widgetId] = overrides.map((override) => `${localhostUrl}${override}`);
+      acc[widgetId] = overrides.map((override) => `${baseHref}${override}`);
       return acc;
     },
     {},
   );
 
   return widgetIdToOverrides;
+}
+
+function removeBasePath(scriptPath: string, baseHref: string): string {
+  const baseHrefPath = new URL(baseHref).pathname;
+  return scriptPath.replace(baseHrefPath, "");
 }

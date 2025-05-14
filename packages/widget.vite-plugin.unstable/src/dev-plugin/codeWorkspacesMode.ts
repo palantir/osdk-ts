@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import fs from "fs";
 import { safeGetEnvVar } from "../common/safeGetEnvVar.js";
 
 const CODE_WORKSPACES = "code-workspaces";
 
 // Environment variable names
-export const CODE_WORKSPACES_TOKEN = "FOUNDRY_PROXY_TOKEN";
+const CODE_WORKSPACES_TOKEN_PATH = "FOUNDRY_PROXY_TOKEN";
 const FOUNDRY_PROXY_URL = "FOUNDRY_PROXY_URL";
 const DEV_SERVER_DOMAIN = "DEV_SERVER_DOMAIN";
 const DEV_SERVER_BASE_PATH = "DEV_SERVER_BASE_PATH";
@@ -50,4 +51,25 @@ export function getCodeWorkspacesBaseHref(): string {
     "This value is required when running dev mode in Code Workspaces mode.",
   );
   return `https://${devServerDomain}${devServerPath}`;
+}
+
+/**
+ * Read the token value from the file specified in the environment variable. The value within this
+ * file could change over the lifetime of the workspace container.
+ */
+export function getCodeWorkspacesFoundryToken(): string {
+  const tokenFilePath = safeGetEnvVar(
+    process.env,
+    CODE_WORKSPACES_TOKEN_PATH,
+    "This value is required when running dev mode in Code Workspaces mode.",
+  );
+  try {
+    return fs.readFileSync(tokenFilePath, "utf8");
+  } catch (err) {
+    throw new Error(
+      `Failed to read Foundry token from '${tokenFilePath}': ${
+        (err as Error).message
+      }`,
+    );
+  }
 }
