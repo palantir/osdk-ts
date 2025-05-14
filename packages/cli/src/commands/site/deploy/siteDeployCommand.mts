@@ -124,7 +124,7 @@ export default async function siteDeployCommand(
     }
   }
 
-  // Write the site link to the custom metadata file if it exists
+  // Write the site link and version to the custom metadata file when the site link is present
   if (siteLink != null) {
     maybeUpdateJemmaCustomMetadata({ siteLink, siteVersion });
   }
