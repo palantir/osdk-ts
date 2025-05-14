@@ -18,8 +18,10 @@ export { default as default } from "./cli/main.js";
 
 export {
   defineAction,
+  defineAddLinkAction,
   defineCreateInterfaceObjectAction,
   defineCreateObjectAction,
+  defineDeleteLinkAction,
   defineDeleteObjectAction,
   defineModifyInterfaceObjectAction,
   defineModifyObjectAction,

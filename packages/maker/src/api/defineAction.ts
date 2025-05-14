@@ -23,6 +23,7 @@ import type {
   ActionParameterTypePrimitive,
   ActionType,
   InterfaceType,
+  LinkTypeDefinition,
   ObjectPropertyType,
   ObjectType,
   PropertyTypeType,
@@ -304,6 +305,107 @@ export function defineDeleteObjectAction(
   });
 }
 
+export function defineAddLinkAction(
+  linkType: LinkTypeDefinition,
+): ActionType {
+  invariant(
+    "many" in linkType,
+    `Add link action is not supported for one-to-many link types`,
+  );
+  return defineAction({
+    apiName: `create-link-${
+      kebab(linkType.id.split(".").pop() ?? linkType.id)
+    }`,
+    displayName: `Create ${linkType.id}`,
+    parameters: [
+      {
+        id: linkType.many.object.apiName,
+        displayName: linkType.many.object.displayName,
+        type: {
+          type: "objectReference",
+          objectReference: { objectTypeId: linkType.many.object.apiName },
+        },
+        validation: {
+          required: true,
+          allowedValues: { type: "objectQuery" },
+        },
+      },
+      {
+        id: linkType.toMany.object.apiName,
+        displayName: linkType.toMany.object.displayName,
+        type: {
+          type: "objectReference",
+          objectReference: { objectTypeId: linkType.toMany.object.apiName },
+        },
+        validation: {
+          required: true,
+          allowedValues: { type: "objectQuery" },
+        },
+      },
+    ],
+    status: "active",
+    rules: [
+      {
+        type: "addLinkRule",
+        addLinkRule: {
+          linkTypeId: linkType.id,
+          sourceObject: linkType.many.object.apiName,
+          targetObject: linkType.toMany.object.apiName,
+        },
+      },
+    ],
+  });
+}
+
+export function defineDeleteLinkAction(
+  linkType: LinkTypeDefinition,
+): ActionType {
+  invariant(
+    "many" in linkType,
+    `Delete link action is not supported for one-to-many link types`,
+  );
+  return defineAction({
+    apiName: `delete-link-${
+      kebab(linkType.id.split(".").pop() ?? linkType.id)
+    }`,
+    displayName: `Delete ${linkType.id}`,
+    parameters: [{
+      id: linkType.many.object.apiName,
+      displayName: linkType.many.object.displayName,
+      type: {
+        type: "objectReference",
+        objectReference: { objectTypeId: linkType.many.object.apiName },
+      },
+      validation: {
+        required: true,
+        allowedValues: { type: "objectQuery" },
+      },
+    }, {
+      id: linkType.toMany.object.apiName,
+      displayName: linkType.toMany.object.displayName,
+      type: {
+        type: "objectReference",
+        objectReference: { objectTypeId: linkType.toMany.object.apiName },
+      },
+      validation: {
+        required: true,
+        allowedValues: { type: "objectQuery" },
+      },
+    }],
+    status: "active",
+    rules: [
+      {
+        type: "deleteLinkRule",
+        deleteLinkRule: {
+          linkTypeId: linkType.id,
+          sourceObject: linkType.many.object.apiName,
+          targetObject: linkType.toMany.object.apiName,
+        },
+      },
+    ],
+  });
+}
+
 export function defineAction(actionDef: ActionType): ActionType {
   const apiName = namespace + actionDef.apiName;
   const parameterIds = (actionDef.parameters ?? []).map(p => p.id);
@@ -358,6 +460,26 @@ export function defineAction(actionDef: ActionType): ActionType {
       invariant(
         parameterIds.some(id => id === rule.deleteObjectRule.objectToDelete),
         `Object to delete parameter must be defined in parameters`,
+      );
+    }
+    if (rule.type === "addLinkRule") {
+      invariant(
+        parameterIds.some(id => id === rule.addLinkRule.sourceObject),
+        `Source object parameter must be defined in parameters`,
+      );
+      invariant(
+        parameterIds.some(id => id === rule.addLinkRule.targetObject),
+        `Target object parameter must be defined in parameters`,
+      );
+    }
+    if (rule.type === "deleteLinkRule") {
+      invariant(
+        parameterIds.some(id => id === rule.deleteLinkRule.sourceObject),
+        `Source object parameter must be defined in parameters`,
+      );
+      invariant(
+        parameterIds.some(id => id === rule.deleteLinkRule.targetObject),
+        `Target object parameter must be defined in parameters`,
       );
     }
   });
