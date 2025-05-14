@@ -149,7 +149,7 @@ describe(GeneratePackageCommand, () => {
       [
         {
           "file": "/not-real/index.d.ts",
-          "line": 6858,
+          "line": 6859,
           "message": "Module '"internal/@osdk/api"' has no exported member 'notARealThing'.",
         },
       ]
