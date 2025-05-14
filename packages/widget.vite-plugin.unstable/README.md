@@ -25,7 +25,7 @@ The `@osdk/widget.client` package exports a `defineConfig` helper so that you ca
 import { defineConfig } from "@osdk/widget.client";
 
 export default defineConfig({
-  id: "<Widget ID>", // The unique identifier of the widget with your project
+  id: "<Widget ID>", // The unique identifier of the widget within your project
   name: "<Widget Name>", // A user friendly name for your widget
   description: "<Widget Description>", // A user friendly description of your widget
   type: "workshop",

@@ -127,6 +127,7 @@ export type ActionParameterAllowedValues =
     minimum?: OntologyIrParameterDateRangeValue;
   }
   | { type: "objectTypeReference"; interfaceTypes: Array<InterfaceTypeApiName> }
+  | { type: "objectQuery" }
   | { type: "attachment" }
   | { type: "boolean" }
   | { type: "objectSetRid" }
@@ -168,6 +169,15 @@ export type {
   InterfaceTypeStatus_experimental,
 };
 
+export type ObjectTypeStatus =
+  | "active"
+  | "experimental"
+  | {
+    type: "deprecated";
+    message: string;
+    deadline: string;
+  };
+
 export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
 export type OptionalFields<T, K extends keyof T> =
   & Pick<Partial<T>, K>
@@ -182,6 +192,7 @@ export interface ObjectTypeInner extends
     | "implementsInterfaces2"
     | "displayMetadata"
     | "primaryKeys"
+    | "status"
   >
 {
   primaryKeyPropertyApiName: string;
@@ -194,6 +205,7 @@ export interface ObjectTypeInner extends
   pluralDisplayName: string;
   visibility: Visibility;
   editsEnabled: boolean;
+  status?: ObjectTypeStatus;
 }
 
 export type InterfaceImplementation = {
@@ -225,6 +237,7 @@ export interface ObjectPropertyTypeInner extends
     | "ruleSetBinding"
     | "displayMetadata"
     | "dataConstraints"
+    | "status"
   >
 {
   type: PropertyTypeType;
@@ -235,6 +248,7 @@ export interface ObjectPropertyTypeInner extends
   displayName: string;
   visibility: Visibility;
   nullability?: Nullability;
+  status?: ObjectTypeStatus;
 }
 
 export type ObjectPropertyType = RequiredFields<
@@ -621,6 +635,7 @@ export type ActionParameterTypePrimitive =
   | "date"
   | "dateList"
   | "objectTypeReference"
+  | "objectReference"
   | "attachment"
   | "attachmentList"
   | "marking"
@@ -639,6 +654,7 @@ export type ActionParameterTypeComplex =
   | OntologyIrBaseParameterType_objectReferenceList
   | OntologyIrBaseParameterType_objectSetRid
   | OntologyIrBaseParameterType_objectTypeReference
+  | OntologyIrBaseParameterType_objectReference
   | OntologyIrBaseParameterType_interfaceReference
   | OntologyIrBaseParameterType_interfaceReferenceList
   | OntologyIrBaseParameterType_struct

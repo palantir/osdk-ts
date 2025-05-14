@@ -28,6 +28,10 @@ import type {
 const ISO_8601_DURATION =
   /^P(?!$)(?:(?:((?:\d+Y)|(?:\d+(?:\.|,)\d+Y$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+D)|(?:\d+(?:\.|,)\d+D$))?(T((?:\d+H)|(?:\d+(?:\.|,)\d+H$))?((?:\d+M)|(?:\d+(?:\.|,)\d+M$))?((?:\d+S)|(?:\d+(?:\.|,)\d+S$))?)?)|(?:\d+(?:(?:\.|,)\d+)?W))$/;
 
+// ISO 8601 date and time format (YYYY-MM-DDThh:mm:ss.sssZ)
+const ISO_8601_DATETIME =
+  /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?)?$/;
+
 export function defineObject(objectDef: ObjectType): ObjectType {
   const apiName = namespace + objectDef.apiName;
   const propertyApiNames = (objectDef.properties ?? []).map(val => val.apiName);
@@ -49,6 +53,32 @@ export function defineObject(objectDef: ObjectType): ObjectType {
     retentionPeriod === undefined || ISO_8601_DURATION.test(retentionPeriod),
     `Retention period "${retentionPeriod}" on object "${objectDef.apiName}" is not a valid ISO 8601 duration string`,
   );
+
+  // Validate that if object status is experimental, no property can have a status of active
+  if (objectDef.status === "experimental") {
+    const activeProperties = (objectDef.properties ?? [])
+      .filter(property => property.status === "active")
+      .map(property => property.apiName);
+
+    invariant(
+      activeProperties.length === 0,
+      `When object "${objectDef.apiName}" has experimental status, no properties can have "active" status, but found active properties: ${
+        activeProperties.join(", ")
+      }`,
+    );
+  }
+
+  // Validate deprecated status deadline is in ISO 8601 format
+  if (
+    objectDef.status && typeof objectDef.status === "object"
+    && objectDef.status.type === "deprecated"
+  ) {
+    const deadline = objectDef.status.deadline;
+    invariant(
+      deadline !== undefined && ISO_8601_DATETIME.test(deadline),
+      `Deprecated status deadline "${deadline}" on object "${objectDef.apiName}" is not a valid ISO 8601 datetime string`,
+    );
+  }
   invariant(
     (objectDef.properties ?? []).filter(p =>
       p.apiName === objectDef.titlePropertyApiName

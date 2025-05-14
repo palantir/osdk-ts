@@ -1,5 +1,12 @@
 # @osdk/create-app.template.react
 
+## 2.2.0-beta.20
+
+### Minor Changes
+
+- d4c962c: Fix typos for widgets libraries
+- 889e84b: Release
+
 ## 2.2.0-beta.19
 
 ## 2.2.0-beta.18

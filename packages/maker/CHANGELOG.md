@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.10.0-beta.20
+
+### Minor Changes
+
+- 7bb2971: OAC support for actions on objects
+- ca5d920: Fix marking/list validation
+- 889e84b: Release
+
+### Patch Changes
+
+- Updated dependencies [889e84b]
+  - @osdk/api@2.2.0-beta.20
+
 ## 0.10.0-beta.19
 
 ### Minor Changes

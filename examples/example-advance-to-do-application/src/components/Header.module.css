@@ -1,0 +1,9 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: top;
+    padding: 5px;
+    background-color: var(--card-background-color);
+    gap: 20px;
+    height: 100%;
+}

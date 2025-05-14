@@ -1,5 +1,17 @@
 # @osdk/functions.unstable
 
+## 1.0.0-beta.13
+
+### Minor Changes
+
+- 889e84b: Release
+- 6f30353: Method params typing fix on EditBatch interface
+
+### Patch Changes
+
+- Updated dependencies [889e84b]
+  - @osdk/client@2.2.0-beta.20
+
 ## 1.0.0-beta.12
 
 ### Patch Changes
