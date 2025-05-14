@@ -122,6 +122,10 @@ export class PublicClientAuth implements Auth {
         const didRefresh = await this.tryRefreshToken(refreshToken);
         if (didRefresh) {
           shouldMakeAuthRequest = false;
+          localStorage.setItem(
+            this.palantirRefreshTokenScopes,
+            clientScopes,
+          );
         }
       } else {
         // Scopes don't match - remove refresh token and force re-authentication
@@ -264,6 +268,7 @@ export class PublicClientAuth implements Auth {
       // Scopes don't match - remove refresh token and force re-authentication
       localStorage.removeItem(this.palantirRefreshToken);
       localStorage.removeItem(this.palantirRefreshTokenScopes);
+      sessionStorage.removeItem(this.palantirPkce);
       throw new Error(
         "Stored scopes don't match current scopes. Please sign in again.",
       );
