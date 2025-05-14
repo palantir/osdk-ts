@@ -84,7 +84,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/client",
       "@osdk/api",
-      "@osdk/functions.unstable",
+      "@osdk/functions",
     ],
     {
       ...LIBRARY_RULES,
@@ -331,7 +331,7 @@ const disallowWorkspaceCaret = createRuleFactory({
           if (
             dep === "@osdk/shared.client2"
             // Since this package is only being used internally, it's fine to keep this relaxed to ^ so it can use newer client versions without bumping everything
-            || (packageJson.name === "@osdk/functions.unstable"
+            || (packageJson.name === "@osdk/functions"
               && dep === "@osdk/client")
           ) continue;
           const message = `'workspace:^' not allowed (${d}['${dep}']).`;
