@@ -1,5 +1,16 @@
 # @osdk/functions.unstable
 
+## 1.0.0-beta.14
+
+### Minor Changes
+
+- 317b555: Release
+
+### Patch Changes
+
+- Updated dependencies [317b555]
+  - @osdk/client@2.2.0-beta.21
+
 ## 1.0.0-beta.13
 
 ### Minor Changes
