@@ -86,7 +86,7 @@
     "@osdk/tests.verify-esm-node16": "0.0.3",
     "@osdk/examples.widget-minimal-react-sdk-2.x": "0.0.0",
     "@osdk/create-widget.template.minimal-react.v2": "2.0.0",
-    "@osdk/functions.unstable": "0.0.0",
+    "@osdk/functions": "0.0.0",
     "@osdk/examples.advance-to-do-application": "0.0.0"
   },
   "changesets": [

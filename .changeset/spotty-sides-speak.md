@@ -28,7 +28,7 @@
 "@osdk/shared.test": patch
 "@osdk/cli.common": patch
 "@osdk/create-app": patch
-"@osdk/functions.unstable": patch
+"@osdk/functions": patch
 "@osdk/generator": patch
 "@osdk/client": patch
 "@osdk/maker": patch

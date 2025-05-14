@@ -1,5 +1,5 @@
 ---
-"@osdk/functions.unstable": minor
+"@osdk/functions": minor
 ---
 
 Fix exports from @osdk/functions.unstable package

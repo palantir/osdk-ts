@@ -1,5 +1,5 @@
 ---
-"@osdk/functions.unstable": minor
+"@osdk/functions": minor
 ---
 
 Add ontology edits API
