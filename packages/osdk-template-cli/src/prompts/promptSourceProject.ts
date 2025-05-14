@@ -17,39 +17,49 @@
 import fs from "node:fs/promises";
 import { consola } from "../consola.js";
 
+const DEFAULT_PATH = "../examples/example-advance-to-do-application";
+const PATH_REGEX = /^[a-zA-Z0-9-_/\\.]+$/;
+
+async function validateSourceProjectPath(
+  sourceProject: string,
+): Promise<boolean> {
+  if (!PATH_REGEX.test(sourceProject)) {
+    consola.fail("Source project path can only contain valid path characters.");
+    return false;
+  }
+  try {
+    const stats = await fs.stat(sourceProject);
+    if (!stats.isDirectory()) {
+      consola.fail(`Source project ${sourceProject} is not a directory.`);
+      return false;
+    }
+
+    const files = await fs.readdir(sourceProject);
+    if (files.length === 0) {
+      consola.fail(`Source project ${sourceProject} is empty.`);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    consola.fail(`Source project ${sourceProject} does not exist.`);
+    return false;
+  }
+}
+
 export async function promptSourceProject(
   { sourceProject }: { sourceProject?: string },
 ): Promise<string> {
-  // Adjusted regex to allow valid path characters
-  const pathRegex = /^[a-zA-Z0-9-_/\\.]+$/;
-
   while (true) {
-    if (sourceProject && pathRegex.test(sourceProject)) {
-      try {
-        const stats = await fs.stat(sourceProject);
-        if (stats.isDirectory()) {
-          const files = await fs.readdir(sourceProject);
-          if (files.length > 0) {
-            return sourceProject; // Valid path, exists, is a directory, and is not empty
-          } else {
-            consola.fail(`Source project ${sourceProject} is empty.`);
-          }
-        } else {
-          consola.fail(`Source project ${sourceProject} is not a directory.`);
-        }
-      } catch (err) {
-        consola.fail(`Source project ${sourceProject} does not exist.`);
-      }
-    } else if (sourceProject != null) {
-      consola.fail(
-        "Source project path can only contain valid path characters.",
-      );
+    if (
+      sourceProject != null && await validateSourceProjectPath(sourceProject)
+    ) {
+      return sourceProject;
     }
-
     sourceProject = await consola.prompt("Source project path:", {
       type: "text",
-      placeholder: "../examples/example-advance-to-do-application",
-      default: "../examples/example-advance-to-do-application",
+      placeholder: DEFAULT_PATH,
+      default: DEFAULT_PATH,
     });
   }
 }
