@@ -32,3 +32,4 @@ export { defineObject } from "./api/defineObject.js";
 export { defineOntology } from "./api/defineOntology.js";
 export { defineSharedPropertyType } from "./api/defineSpt.js";
 export { defineValueType } from "./api/defineValueType.js";
+export type { ObjectPropertyType, PropertyTypeType } from "./api/types.js";
