@@ -33,6 +33,7 @@ import {
 
 export class PublicClientAuth implements Auth {
   private palantirRefreshToken = "palantir_refresh_token" as const;
+  private palantirRefreshTokenScopes = "palantir_refresh_token_scopes" as const;
   private palantirPkce = "palantir_pkce" as const;
 
   private nextSubscriberId = 0;
@@ -108,13 +109,29 @@ export class PublicClientAuth implements Auth {
    */
   public async signIn(): Promise<SignInResponse> {
     let shouldMakeAuthRequest = true;
+    const clientScopes = this.options.scopes?.join(" ") ?? "";
 
-    // 1. Check if we have a refresh token in local storage
+    // 1. Check if we have a refresh token in local storage. If the scopes match, we can use it to get a new token
+    // If the scopes don't match, we need to re-authenticate
     const refreshToken = localStorage.getItem(this.palantirRefreshToken);
+    const storedScopes = localStorage.getItem(this.palantirRefreshTokenScopes);
+
     if (refreshToken) {
-      const didRefresh = await this.tryRefreshToken(refreshToken);
-      if (didRefresh) {
-        shouldMakeAuthRequest = false;
+      // Check if stored scopes match current client scopes
+      if (storedScopes && storedScopes === clientScopes) {
+        const didRefresh = await this.tryRefreshToken(refreshToken);
+        if (didRefresh) {
+          shouldMakeAuthRequest = false;
+          localStorage.setItem(
+            this.palantirRefreshTokenScopes,
+            clientScopes,
+          );
+        }
+      } else {
+        // Scopes don't match - remove refresh token and force re-authentication
+        localStorage.removeItem(this.palantirRefreshToken);
+        localStorage.removeItem(this.palantirRefreshTokenScopes);
+        sessionStorage.removeItem(this.palantirPkce);
       }
     }
 
@@ -136,6 +153,10 @@ export class PublicClientAuth implements Auth {
           localStorage.setItem(
             this.palantirRefreshToken,
             this.token.refreshToken,
+          );
+          localStorage.setItem(
+            this.palantirRefreshTokenScopes,
+            clientScopes,
           );
         }
         shouldMakeAuthRequest = false;
@@ -219,6 +240,7 @@ export class PublicClientAuth implements Auth {
     // Clean up local storage
     sessionStorage.removeItem(this.palantirPkce);
     localStorage.removeItem(this.palantirRefreshToken);
+    localStorage.removeItem(this.palantirRefreshTokenScopes);
 
     // Remove all references to this token
     this.token = null;
@@ -236,6 +258,20 @@ export class PublicClientAuth implements Auth {
     const refreshToken = localStorage.getItem(this.palantirRefreshToken);
     if (!refreshToken) {
       throw new Error("No refresh token found");
+    }
+
+    // Check if stored scopes match current client scopes
+    const storedScopes = localStorage.getItem(this.palantirRefreshTokenScopes);
+    const clientScopes = this.options.scopes?.join(" ") ?? "";
+
+    if (storedScopes !== clientScopes) {
+      // Scopes don't match - remove refresh token and force re-authentication
+      localStorage.removeItem(this.palantirRefreshToken);
+      localStorage.removeItem(this.palantirRefreshTokenScopes);
+      sessionStorage.removeItem(this.palantirPkce);
+      throw new Error(
+        "Stored scopes don't match current scopes. Please sign in again.",
+      );
     }
 
     const didRefresh = await this.tryRefreshToken(refreshToken);
@@ -318,6 +354,11 @@ export class PublicClientAuth implements Auth {
           this.palantirRefreshToken,
           this.token.refreshToken,
         );
+        const clientScopes = this.options.scopes?.join(" ") ?? "";
+        localStorage.setItem(
+          this.palantirRefreshTokenScopes,
+          clientScopes,
+        );
       }
       return true;
     } catch (e) {
@@ -327,6 +368,7 @@ export class PublicClientAuth implements Auth {
         e,
       );
       localStorage.removeItem(this.palantirRefreshToken);
+      localStorage.removeItem(this.palantirRefreshTokenScopes);
       return false;
     }
   }
