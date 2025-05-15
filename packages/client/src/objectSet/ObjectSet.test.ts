@@ -575,17 +575,11 @@ describe("ObjectSet", () => {
   });
 
   describe("Derived Properties Object Set", () => {
-    it("does not allow aggregate or selectProperty before a link type is selected", () => {
+    it("does not allow aggregate before a link type is selected", () => {
       client(Employee).withProperties({
         "derivedPropertyName": (base) =>
           // @ts-expect-error
           base.aggregate("employeeId:exactDistinct"),
-      });
-
-      client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
-          // @ts-expect-error
-          base.selectProperty("employeeId"),
       });
     });
 

@@ -1,5 +1,58 @@
 # @osdk/cli.cmd.typescript
 
+## 0.26.0-beta.21
+
+### Minor Changes
+
+- 317b555: Release
+
+### Patch Changes
+
+- Updated dependencies [317b555]
+  - @osdk/cli.common@0.26.0-beta.21
+  - @osdk/generator@2.2.0-beta.21
+
+## 0.26.0-beta.20
+
+### Minor Changes
+
+- 889e84b: Release
+
+### Patch Changes
+
+- Updated dependencies [889e84b]
+  - @osdk/cli.common@0.26.0-beta.20
+  - @osdk/generator@2.2.0-beta.20
+
+## 0.26.0-beta.19
+
+### Patch Changes
+
+- @osdk/generator@2.2.0-beta.19
+- @osdk/cli.common@0.26.0-beta.19
+
+## 0.26.0-beta.18
+
+### Patch Changes
+
+- @osdk/generator@2.2.0-beta.18
+- @osdk/cli.common@0.26.0-beta.18
+
+## 0.26.0-beta.17
+
+### Minor Changes
+
+- 791e655: Add support for geoshape and geohash action parameters.
+
+### Patch Changes
+
+- Updated dependencies [b61e9f5]
+- Updated dependencies [430dee3]
+- Updated dependencies [67e772e]
+- Updated dependencies [791e655]
+  - @osdk/generator@2.2.0-beta.17
+  - @osdk/cli.common@0.26.0-beta.17
+
 ## 0.26.0-beta.16
 
 ### Patch Changes

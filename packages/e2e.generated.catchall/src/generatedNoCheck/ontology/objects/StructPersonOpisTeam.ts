@@ -20,6 +20,9 @@ export namespace StructPersonOpisTeam {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly address:
       | {
           city: $PropType['string'] | undefined;
@@ -27,7 +30,13 @@ export namespace StructPersonOpisTeam {
           zipcode: $PropType['integer'] | undefined;
         }
       | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly age: $PropType['integer'] | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly id: $PropType['string'];
   }
   export type StrictProps = Props;

@@ -23,11 +23,13 @@ import type {
   ActionParameterTypePrimitive,
   ActionType,
   InterfaceType,
+  ObjectPropertyType,
   ObjectType,
+  PropertyTypeType,
   SharedPropertyType,
 } from "./types.js";
 
-export function defineCreateAction(
+export function defineCreateInterfaceObjectAction(
   interfaceType: InterfaceType,
   objectType?: ObjectType,
 ): ActionType {
@@ -73,12 +75,14 @@ export function defineCreateAction(
         id,
         displayName: prop.sharedPropertyType.displayName
           ?? prop.sharedPropertyType.nonNameSpacedApiName,
-        type: extractActionParameterTypeFromSpt(prop.sharedPropertyType),
+        type: extractActionParameterType(prop.sharedPropertyType),
         typeClasses: prop.sharedPropertyType.typeClasses ?? [],
         validation: {
-          required: true,
-          allowedValues: extractAllowedValuesFromSpt(
-            prop.sharedPropertyType,
+          required: (prop.sharedPropertyType.array ?? false)
+            ? { listLength: {} }
+            : true,
+          allowedValues: extractAllowedValuesFromType(
+            prop.sharedPropertyType.type,
           ),
         },
       })),
@@ -103,7 +107,44 @@ export function defineCreateAction(
   });
 }
 
-export function defineModifyAction(
+export function defineCreateObjectAction(
+  objectType: ObjectType,
+): ActionType {
+  return defineAction({
+    apiName: `create-object-${
+      kebab(objectType.apiName.split(".").pop() ?? objectType.apiName)
+    }`,
+    displayName: `Create ${objectType.displayName}`,
+    parameters: [
+      ...(objectType.properties?.map(prop => ({
+        id: prop.apiName,
+        displayName: prop.displayName,
+        type: extractActionParameterType(prop),
+        validation: {
+          required: true,
+          allowedValues: extractAllowedValuesFromType(prop.type),
+        },
+      })) ?? []),
+    ],
+    status: "active",
+    rules: [{
+      type: "addObjectRule",
+      addObjectRule: {
+        objectTypeId: objectType.apiName,
+        propertyValues: objectType.properties
+          ? Object.fromEntries(
+            objectType.properties.map(
+              p => [p.apiName, { type: "parameterId", parameterId: p.apiName }],
+            ),
+          )
+          : {},
+        structFieldValues: {},
+      },
+    }],
+  });
+}
+
+export function defineModifyInterfaceObjectAction(
   interfaceType: InterfaceType,
   objectType?: ObjectType,
 ): ActionType {
@@ -146,12 +187,14 @@ export function defineModifyAction(
         id,
         displayName: prop.sharedPropertyType.displayName
           ?? prop.sharedPropertyType.nonNameSpacedApiName,
-        type: extractActionParameterTypeFromSpt(prop.sharedPropertyType),
+        type: extractActionParameterType(prop.sharedPropertyType),
         typeClasses: prop.sharedPropertyType.typeClasses ?? [],
         validation: {
-          required: true,
-          allowedValues: extractAllowedValuesFromSpt(
-            prop.sharedPropertyType,
+          required: (prop.sharedPropertyType.array ?? false)
+            ? { listLength: {} }
+            : true,
+          allowedValues: extractAllowedValuesFromType(
+            prop.sharedPropertyType.type,
           ),
         },
       })),
@@ -169,6 +212,94 @@ export function defineModifyAction(
               [id, prop],
             ) => [id, { type: "parameterId", parameterId: id }]),
           ),
+        },
+      },
+    ],
+  });
+}
+
+export function defineModifyObjectAction(
+  objectType: ObjectType,
+): ActionType {
+  return defineAction({
+    apiName: `modify-object-${
+      kebab(objectType.apiName.split(".").pop() ?? objectType.apiName)
+    }`,
+    displayName: `Modify ${objectType.displayName}`,
+    parameters: [
+      {
+        id: "objectToModifyParameter",
+        displayName: "Modify object",
+        type: {
+          type: "objectReference",
+          objectReference: { objectTypeId: objectType.apiName },
+        },
+        validation: {
+          allowedValues: { type: "objectQuery" },
+          required: true,
+        },
+      },
+      ...(objectType.properties?.map(prop => ({
+        id: prop.apiName,
+        displayName: prop.displayName,
+        type: extractActionParameterType(prop),
+        validation: {
+          required: true,
+          allowedValues: extractAllowedValuesFromType(prop.type),
+        },
+      })) ?? []),
+    ],
+    status: "active",
+    rules: [
+      {
+        type: "modifyObjectRule",
+        modifyObjectRule: {
+          objectToModify: "objectToModifyParameter",
+          propertyValues: objectType.properties
+            ? Object.fromEntries(
+              objectType.properties.map(
+                p => [p.apiName, {
+                  type: "parameterId",
+                  parameterId: p.apiName,
+                }],
+              ),
+            )
+            : {},
+          structFieldValues: {},
+        },
+      },
+    ],
+  });
+}
+
+export function defineDeleteObjectAction(
+  objectType: ObjectType,
+): ActionType {
+  return defineAction({
+    apiName: `delete-object-${
+      kebab(objectType.apiName.split(".").pop() ?? objectType.apiName)
+    }`,
+    displayName: `Delete ${objectType.displayName}`,
+    parameters: [
+      {
+        id: "objectToDeleteParameter",
+        displayName: "Delete object",
+        type: {
+          type: "objectReference",
+          objectReference: { objectTypeId: objectType.apiName },
+        },
+        validation: {
+          required: true,
+          allowedValues: { type: "objectQuery" },
+        },
+      },
+    ],
+    status: "active",
+    rules: [
+      {
+        type: "deleteObjectRule",
+        deleteObjectRule: {
+          objectToDelete: "objectToDeleteParameter",
         },
       },
     ],
@@ -218,7 +349,20 @@ export function defineAction(actionDef: ActionType): ActionType {
     actionDef.rules.length > 0,
     `Action type ${actionDef.apiName} must have at least one logic rule`,
   );
-
+  actionDef.rules.forEach(rule => {
+    if (rule.type === "modifyObjectRule") {
+      invariant(
+        parameterIds.some(id => id === rule.modifyObjectRule.objectToModify),
+        `Object to modify parameter must be defined in parameters`,
+      );
+    }
+    if (rule.type === "deleteObjectRule") {
+      invariant(
+        parameterIds.some(id => id === rule.deleteObjectRule.objectToDelete),
+        `Object to delete parameter must be defined in parameters`,
+      );
+    }
+  });
   const fullAction = { ...actionDef, apiName: apiName };
   ontologyDefinition.actionTypes[apiName] = fullAction;
   return fullAction;
@@ -271,15 +415,40 @@ function referencedParameterIds(actionDef: ActionType): Set<ParameterId> {
           },
         );
         break;
+      case "addObjectRule":
+        Object.entries(rule.addObjectRule.propertyValues).forEach(([k, v]) => {
+          if (v.type === "parameterId") {
+            parameterIds.add(v.parameterId);
+          }
+        });
+        break;
+      case "modifyObjectRule":
+        Object.entries(rule.modifyObjectRule.propertyValues).forEach(
+          ([k, v]) => {
+            if (v.type === "parameterId") {
+              parameterIds.add(v.parameterId);
+            }
+          },
+        );
+        break;
+      case "addOrModifyObjectRuleV2":
+        Object.entries(rule.addOrModifyObjectRuleV2.propertyValues).forEach(
+          ([k, v]) => {
+            if (v.type === "parameterId") {
+              parameterIds.add(v.parameterId);
+            }
+          },
+        );
+        break;
     }
   });
   return parameterIds;
 }
 
-function extractAllowedValuesFromSpt(
-  spt: SharedPropertyType,
+function extractAllowedValuesFromType(
+  type: PropertyTypeType,
 ): ActionParameterAllowedValues {
-  switch (spt.type) {
+  switch (type) {
     case "boolean":
       return { type: "boolean" };
     case "byte":
@@ -325,9 +494,9 @@ function extractAllowedValuesFromSpt(
     case "geotimeSeries":
       return { type: "geotimeSeriesReference" };
     default:
-      switch (spt.type.type) {
+      switch (type.type) {
         case "marking":
-          return spt.type.markingType === "CBAC"
+          return type.markingType === "CBAC"
             ? { type: "cbacMarking" }
             : { type: "mandatoryMarking" };
         case "struct":
@@ -339,16 +508,16 @@ function extractAllowedValuesFromSpt(
   }
 }
 
-function extractActionParameterTypeFromSpt(
-  spt: SharedPropertyType,
+function extractActionParameterType(
+  pt: SharedPropertyType | ObjectPropertyType,
 ): ActionParameterType {
-  const typeType = spt.type;
+  const typeType = pt.type;
   if (typeof typeType === "object") {
     switch (typeType.type) {
       case "marking":
-        break;
+        return maybeAddList("marking", pt);
       case "struct":
-        break;
+        throw new Error("Structs are not supported yet");
       default:
         throw new Error(`Unknown type`);
     }
@@ -356,18 +525,18 @@ function extractActionParameterTypeFromSpt(
   if (
     typeof typeType === "string" && isActionParameterTypePrimitive(typeType)
   ) {
-    return maybeAddList(typeType, spt);
+    return maybeAddList(typeType, pt);
   }
   switch (typeType) {
     case "byte":
     case "short":
-      return maybeAddList("integer", spt);
+      return maybeAddList("integer", pt);
     case "geopoint":
-      return maybeAddList("geoshape", spt);
+      return maybeAddList("geoshape", pt);
     case "float":
-      return maybeAddList("double", spt);
+      return maybeAddList("double", pt);
     case "geotimeSeries":
-      return maybeAddList("geotimeSeriesReference", spt);
+      return maybeAddList("geotimeSeriesReference", pt);
     default:
       throw new Error("Unknown type");
   }
@@ -375,9 +544,9 @@ function extractActionParameterTypeFromSpt(
 
 function maybeAddList(
   type: ActionParameterTypePrimitive,
-  spt: SharedPropertyType,
+  pt: SharedPropertyType | ObjectPropertyType,
 ): ActionParameterType {
-  return ((spt.array ?? false) ? type + "List" : type) as ActionParameterType;
+  return ((pt.array ?? false) ? type + "List" : type) as ActionParameterType;
 }
 
 function isActionParameterTypePrimitive(
@@ -406,6 +575,7 @@ function isActionParameterTypePrimitive(
     "date",
     "dateList",
     "objectTypeReference",
+    "objectReference",
     "attachment",
     "attachmentList",
     "marking",

@@ -20,8 +20,19 @@ export namespace TestGeoAction {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly geoPk: $PropType['string'];
+    /**
+     *   display name: 'Geoshape',
+     *   description: geoshape
+     */
     readonly geoshapeProp: $PropType['geoshape'] | undefined;
+    /**
+     *   display name: 'Geotitle',
+     *   description: geoTitle
+     */
     readonly geoTitle: $PropType['string'] | undefined;
   }
   export type StrictProps = Props;

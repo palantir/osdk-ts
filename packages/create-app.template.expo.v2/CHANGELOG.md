@@ -1,5 +1,23 @@
 # @osdk/create-app.template.expo.v2
 
+## 2.2.0-beta.21
+
+### Minor Changes
+
+- 317b555: Release
+
+## 2.2.0-beta.20
+
+### Minor Changes
+
+- 889e84b: Release
+
+## 2.2.0-beta.19
+
+## 2.2.0-beta.18
+
+## 2.2.0-beta.17
+
 ## 2.2.0-beta.16
 
 ## 2.2.0-beta.15

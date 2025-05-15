@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { getFoundryToken } from "./getFoundryToken.js";
+
 type WidgetSettings = Record<string, {
   scriptEntrypoints: Array<{
     filePath: string;
@@ -27,6 +29,7 @@ export function setWidgetSetSettings(
   widgetSetRid: string,
   widgetIdToOverrides: Record<string, string[]>,
   baseHref: string,
+  viteMode: string | undefined,
 ): Promise<Response> {
   const widgetSettings: WidgetSettings = Object.fromEntries(
     Object.entries(widgetIdToOverrides).map(
@@ -54,7 +57,7 @@ export function setWidgetSetSettings(
       }),
       method: "POST",
       headers: {
-        authorization: `Bearer ${process.env.FOUNDRY_TOKEN}`,
+        authorization: `Bearer ${getFoundryToken(viteMode)}`,
         accept: "application/json",
         "content-type": "application/json",
       },
@@ -62,13 +65,16 @@ export function setWidgetSetSettings(
   );
 }
 
-export function enableDevMode(foundryUrl: string): Promise<Response> {
+export function enableDevMode(
+  foundryUrl: string,
+  viteMode: string | undefined,
+): Promise<Response> {
   return fetch(
     `${foundryUrl}/api/v2/widgets/devModeSettings/enable?preview=true`,
     {
       method: "POST",
       headers: {
-        authorization: `Bearer ${process.env.FOUNDRY_TOKEN}`,
+        authorization: `Bearer ${getFoundryToken(viteMode)}`,
         accept: "application/json",
       },
     },

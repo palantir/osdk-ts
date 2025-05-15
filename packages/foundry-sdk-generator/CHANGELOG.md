@@ -1,5 +1,71 @@
 # @osdk/foundry-sdk-generator
 
+## 2.2.0-beta.21
+
+### Minor Changes
+
+- 317b555: Release
+
+### Patch Changes
+
+- Updated dependencies [317b555]
+  - @osdk/generator@2.2.0-beta.21
+  - @osdk/client@2.2.0-beta.21
+  - @osdk/api@2.2.0-beta.21
+
+## 2.2.0-beta.20
+
+### Minor Changes
+
+- 889e84b: Release
+
+### Patch Changes
+
+- Updated dependencies [889e84b]
+  - @osdk/generator@2.2.0-beta.20
+  - @osdk/client@2.2.0-beta.20
+  - @osdk/api@2.2.0-beta.20
+
+## 2.2.0-beta.19
+
+### Patch Changes
+
+- Updated dependencies [1f6842f]
+  - @osdk/client@2.2.0-beta.19
+  - @osdk/api@2.2.0-beta.19
+  - @osdk/generator@2.2.0-beta.19
+
+## 2.2.0-beta.18
+
+### Patch Changes
+
+- Updated dependencies [56aa502]
+  - @osdk/client@2.2.0-beta.18
+  - @osdk/api@2.2.0-beta.18
+  - @osdk/generator@2.2.0-beta.18
+
+## 2.2.0-beta.17
+
+### Minor Changes
+
+- 67e772e: Fixes action parameter generation to enforce strict fields
+- 791e655: Add support for geoshape and geohash action parameters.
+
+### Patch Changes
+
+- Updated dependencies [b61e9f5]
+- Updated dependencies [c6bee50]
+- Updated dependencies [abe4897]
+- Updated dependencies [5a12181]
+- Updated dependencies [430dee3]
+- Updated dependencies [67e772e]
+- Updated dependencies [70b4464]
+- Updated dependencies [791e655]
+- Updated dependencies [751e5b3]
+  - @osdk/generator@2.2.0-beta.17
+  - @osdk/client@2.2.0-beta.17
+  - @osdk/api@2.2.0-beta.17
+
 ## 2.2.0-beta.16
 
 ### Patch Changes

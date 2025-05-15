@@ -57,7 +57,12 @@ import type {
   UserId as _api_UserId,
   ValueTypeReference as _api_ValueTypeReference,
 } from "../../api/__components.js";
-import type { ModificationType as _api_modification_ModificationType } from "../../api/modification/__components.js";
+import type {
+  ModificationType as _api_modification_ModificationType,
+  ObjectTypeBranchIndexingConfiguration
+    as _api_modification_ObjectTypeBranchIndexingConfiguration,
+} from "../../api/modification/__components.js";
+import type { OntologyValidationError as _api_validation_OntologyValidationError } from "../../api/validation/__components.js";
 import type { WorkflowRid as _workflow_api_WorkflowRid } from "../../workflow/api/__components.js";
 
 /**
@@ -503,6 +508,12 @@ export interface DerivedPropertyTypeDependOnAnotherDerivedPropertyError {
   propertyTypeId?: _api_PropertyTypeId | null | undefined;
   propertyTypeRid?: _api_PropertyTypeRid | null | undefined;
 }
+export interface EntityIndexingConfiguration {
+  objectTypes: Record<
+    _api_ObjectTypeRid,
+    _api_modification_ObjectTypeBranchIndexingConfiguration
+  >;
+}
 export interface ErrorStatus {
   errors: Array<ValidationError>;
   ontologyErrors: OntologyErrors;
@@ -691,6 +702,7 @@ export interface ImplicitAndExplicitPropertyImplementationError {
  * branch will return data from the master branch.
  */
 export interface IndexedBranchConfig {
+  entityConfig?: EntityIndexingConfiguration | null | undefined;
 }
 export interface InterfaceImplementationError_missingSharedProperty {
   type: "missingSharedProperty";
@@ -1170,6 +1182,12 @@ export type MergeConstraintError = MergeConstraintError_branchConflictsWithMain;
 
 export interface MergedStatusV2 {
 }
+export interface MergeOntologyBranchDryRunRequest {
+  validateExternalBranchedReferences?: boolean | null | undefined;
+}
+export interface MergeOntologyBranchDryRunResponse {
+  status: OntologyBranchMergeStatus;
+}
 export interface MergeOntologyServiceBranchRequest {
 }
 export interface MergeOntologyServiceBranchResponse {
@@ -1432,6 +1450,24 @@ export type OntologyBranchDetails =
 export type OntologyBranchDisplayName = string;
 export interface OntologyBranchEntityModificationData {
   modificationType: _api_modification_ModificationType;
+}
+export interface OntologyBranchMergeFailureStatus {
+  errors: Array<_api_validation_OntologyValidationError>;
+}
+export interface OntologyBranchMergeStatus_success {
+  type: "success";
+  success: OntologyBranchMergeSuccessStatus;
+}
+
+export interface OntologyBranchMergeStatus_failure {
+  type: "failure";
+  failure: OntologyBranchMergeFailureStatus;
+}
+export type OntologyBranchMergeStatus =
+  | OntologyBranchMergeStatus_success
+  | OntologyBranchMergeStatus_failure;
+
+export interface OntologyBranchMergeSuccessStatus {
 }
 /**
  * A type to represent the modified ontology entities and the contributors of an OntologyBranch.

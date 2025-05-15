@@ -1,5 +1,19 @@
 # @osdk/create-widget.template.react.v2
 
+## 2.1.0-beta.10
+
+### Minor Changes
+
+- 317b555: Release
+
+## 2.1.0-beta.9
+
+### Minor Changes
+
+- d4c962c: Fix typos for widgets libraries
+
+## 2.1.0-beta.8
+
 ## 2.1.0-beta.7
 
 ## 2.1.0-beta.6

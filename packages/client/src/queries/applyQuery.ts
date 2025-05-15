@@ -19,6 +19,7 @@ import type {
   AllowedBucketTypes,
   CompileTimeMetadata,
   ObjectOrInterfaceDefinition,
+  ObjectSpecifier,
   ObjectTypeDefinition,
   OsdkBase,
   PrimaryKeyType,
@@ -386,7 +387,7 @@ export function createQueryObjectResponse<
 >(
   primaryKey: PrimaryKeyType<Q>,
   objectDef: Q,
-): OsdkBase<Q> {
+): OsdkBase<Q> & { $objectSpecifier: ObjectSpecifier<Q> } {
   return {
     $apiName: objectDef.apiName,
     $title: undefined,

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Logger } from "@osdk/api";
 import type { Subprocess } from "execa";
 import { execaNode } from "execa";
 import { findUpMultiple } from "find-up";
@@ -24,7 +25,6 @@ import pLocate from "p-locate";
 import pMap from "p-map";
 import invariant from "tiny-invariant";
 import { server as s } from "typescript";
-import type { Logger } from "./logger/Logger.js";
 
 type RequestFn<
   T extends s.protocol.Request,

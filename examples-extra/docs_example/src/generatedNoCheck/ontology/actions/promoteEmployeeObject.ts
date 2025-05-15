@@ -45,13 +45,13 @@ export namespace promoteEmployeeObject {
     /**
      * Update an employee's title and compensation
      */
-    applyAction<P extends promoteEmployeeObject.Params, OP extends ApplyActionOptions>(
-      args: P,
+    applyAction<OP extends ApplyActionOptions>(
+      args: promoteEmployeeObject.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
-    batchApplyAction<P extends ReadonlyArray<promoteEmployeeObject.Params>, OP extends ApplyBatchActionOptions>(
-      args: P,
+    batchApplyAction<OP extends ApplyBatchActionOptions>(
+      args: ReadonlyArray<promoteEmployeeObject.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }

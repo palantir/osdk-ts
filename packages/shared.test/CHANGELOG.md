@@ -1,5 +1,60 @@
 # @osdk/shared.test
 
+## 2.2.0-beta.21
+
+### Minor Changes
+
+- 317b555: Release
+
+### Patch Changes
+
+- Updated dependencies [317b555]
+  - @osdk/generator-converters@2.2.0-beta.21
+  - @osdk/api@2.2.0-beta.21
+
+## 2.2.0-beta.20
+
+### Minor Changes
+
+- 889e84b: Release
+
+### Patch Changes
+
+- Updated dependencies [889e84b]
+  - @osdk/generator-converters@2.2.0-beta.20
+  - @osdk/api@2.2.0-beta.20
+
+## 2.2.0-beta.19
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.19
+- @osdk/generator-converters@2.2.0-beta.19
+
+## 2.2.0-beta.18
+
+### Patch Changes
+
+- Updated dependencies [56aa502]
+  - @osdk/api@2.2.0-beta.18
+  - @osdk/generator-converters@2.2.0-beta.18
+
+## 2.2.0-beta.17
+
+### Minor Changes
+
+- 5a12181: Quick fix for geohash params.
+- 791e655: Add support for geoshape and geohash action parameters.
+
+### Patch Changes
+
+- Updated dependencies [c6bee50]
+- Updated dependencies [abe4897]
+- Updated dependencies [70b4464]
+- Updated dependencies [791e655]
+  - @osdk/api@2.2.0-beta.17
+  - @osdk/generator-converters@2.2.0-beta.17
+
 ## 2.2.0-beta.16
 
 ### Patch Changes

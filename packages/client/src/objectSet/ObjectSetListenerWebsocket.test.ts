@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import type { ObjectSetSubscription, PropertyKeys } from "@osdk/api";
+import type {
+  Logger,
+  ObjectSetSubscription,
+  Osdk,
+  PropertyKeys,
+} from "@osdk/api";
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import type {
   ObjectSetStreamSubscribeRequests,
-  ObjectUpdate,
   StreamMessage,
 } from "@osdk/foundry.ontologies";
 import {
@@ -43,7 +47,6 @@ import {
 import { z } from "zod";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
-import type { Logger } from "../logger/Logger.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   constructWebsocketUrl,
@@ -125,7 +128,10 @@ describe("ObjectSetListenerWebsocket", async () => {
     >;
     let oslwInst = 0;
 
-    let updateReceived: ObjectUpdate | undefined = undefined;
+    let updateReceived: {
+      object: Osdk.Instance<Employee>;
+      state: "ADDED_OR_UPDATED" | "REMOVED";
+    } | undefined = undefined;
 
     let listenerPromise: DeferredPromise<void>;
 
@@ -147,7 +153,7 @@ describe("ObjectSetListenerWebsocket", async () => {
 
       listener = {
         onChange: vi.fn((o) => {
-          updateReceived = o;
+          updateReceived = { object: o.object, state: o.state };
           listenerPromise.resolve();
         }),
         onError: vi.fn(),

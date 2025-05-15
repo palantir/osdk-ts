@@ -1,5 +1,51 @@
 # @osdk/example-generator
 
+## 0.10.0-beta.21
+
+### Minor Changes
+
+- 317b555: Release
+
+### Patch Changes
+
+- Updated dependencies [317b555]
+  - @osdk/create-widget@2.1.0-beta.10
+  - @osdk/create-app@2.2.0-beta.21
+
+## 0.10.0-beta.20
+
+### Minor Changes
+
+- d4c962c: Fix typos for widgets libraries
+- 889e84b: Release
+
+### Patch Changes
+
+- Updated dependencies [889e84b]
+  - @osdk/create-app@2.2.0-beta.20
+  - @osdk/create-widget@2.1.0-beta.9
+
+## 0.10.0-beta.19
+
+### Patch Changes
+
+- @osdk/create-app@2.2.0-beta.19
+- @osdk/create-widget@2.1.0-beta.8
+
+## 0.10.0-beta.18
+
+### Patch Changes
+
+- @osdk/create-app@2.2.0-beta.18
+- @osdk/create-widget@2.1.0-beta.8
+
+## 0.10.0-beta.17
+
+### Patch Changes
+
+- @osdk/create-app@2.2.0-beta.17
+- @osdk/create-widget@2.1.0-beta.8
+
 ## 0.10.0-beta.16
 
 ### Patch Changes

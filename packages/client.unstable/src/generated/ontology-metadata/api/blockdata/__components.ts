@@ -319,11 +319,11 @@ export interface OntologyIrKnownMarketplaceIdentifiers {
   interfaceTypes: Record<_api_InterfaceTypeApiName, BlockInternalId>;
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeId, BlockInternalId>;
-  objectTypeIds: Record<_api_ObjectTypeId, BlockInternalId>;
+  objectTypeIds: Record<_api_ObjectTypeApiName, BlockInternalId>;
   objectTypes: Record<_api_ObjectTypeApiName, BlockInternalId>;
   propertyTypeIds: Record<
-    _api_ObjectTypeId,
-    Record<_api_PropertyTypeId, BlockInternalId>
+    _api_ObjectTypeApiName,
+    Record<_api_ObjectTypeFieldApiName, BlockInternalId>
   >;
   propertyTypes: Record<_api_ObjectTypeFieldApiName, BlockInternalId>;
   shapeIdForInstallPrefix?: BlockShapeId | null | undefined;
@@ -410,7 +410,7 @@ export interface OntologyIrPropertyToPropertyMapping {
 export interface OntologyIrSchemaMigrationBlockData {
   propertyTypeRidsToIds: Record<
     _api_ObjectTypeFieldApiName,
-    _api_PropertyTypeId
+    _api_ObjectTypeFieldApiName
   >;
   schemaMigrations: OntologyIrSchemaTransitionsWithSchemaVersion;
 }

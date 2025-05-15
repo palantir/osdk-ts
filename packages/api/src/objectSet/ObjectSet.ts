@@ -376,7 +376,7 @@ interface WithProperties<
   readonly withProperties: <
     NEW extends Record<string, SimplePropertyDef>,
   >(
-    clause: { [K in keyof NEW]: DerivedProperty.Selector<Q, NEW[K]> },
+    clause: { [K in keyof NEW]: DerivedProperty.Creator<Q, NEW[K]> },
   ) => ObjectSet<
     Q,
     {

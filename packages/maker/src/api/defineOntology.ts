@@ -32,6 +32,7 @@
 
 import type {
   ActionTypeStatus,
+  DataConstraints,
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionValidation,
@@ -60,6 +61,7 @@ import type {
   RetentionPolicy,
   SectionId,
 } from "@osdk/client.unstable";
+import invariant from "tiny-invariant";
 import { isExotic } from "./defineObject.js";
 import type {
   ActionParameter,
@@ -67,6 +69,7 @@ import type {
   ActionType,
   InterfaceType,
   LinkTypeDefinition,
+  Nullability,
   ObjectPropertyType,
   ObjectType,
   Ontology,
@@ -228,7 +231,7 @@ function convertObject(
         pluralDisplayName: objectType.pluralDisplayName,
         visibility: objectType.visibility ?? "NORMAL",
       },
-      primaryKeys: objectType.primaryKeys,
+      primaryKeys: [objectType.primaryKeyPropertyApiName],
       propertyTypes: Object.fromEntries(
         objectType.properties?.map<[string, OntologyIrPropertyType]>(
           val => [val.apiName, convertProperty(val)],
@@ -236,10 +239,7 @@ function convertObject(
       ),
       titlePropertyTypeRid: objectType.titlePropertyApiName,
       apiName: objectType.apiName,
-      status: objectType.status ?? {
-        type: "active",
-        active: {},
-      },
+      status: convertObjectStatus(objectType.status),
       redacted: false,
       implementsInterfaces2: implementations.map(impl => ({
         interfaceTypeApiName: impl.implements.apiName,
@@ -360,9 +360,9 @@ function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
     baseFormatter: property.baseFormatter,
     type: convertType(property.type),
     typeClasses: property.typeClasses ?? [],
-    status: property.status ?? { type: "active", active: {} },
+    status: convertObjectStatus(property.status),
     inlineAction: undefined,
-    dataConstraints: property.dataConstraints,
+    dataConstraints: convertNullabilityToDataConstraint(property),
     sharedPropertyTypeRid: property.sharedPropertyType?.apiName,
     valueType: undefined,
   };
@@ -386,7 +386,7 @@ function convertLink(
         oneToManyLinkMetadata: linkType.one.metadata,
         oneSidePrimaryKeyToManySidePropertyMapping: [{
           from: {
-            apiName: linkType.one.object.primaryKeys[0],
+            apiName: linkType.one.object.primaryKeyPropertyApiName,
             object: linkType.one.object.apiName,
           },
           to: {
@@ -407,21 +407,21 @@ function convertLink(
         peeringMetadata: undefined,
         objectTypeAPrimaryKeyPropertyMapping: [{
           from: {
-            apiName: linkType.many.object.primaryKeys[0],
+            apiName: linkType.many.object.primaryKeyPropertyApiName,
             object: linkType.many.object.apiName,
           },
           to: {
-            apiName: linkType.many.object.primaryKeys[0],
+            apiName: linkType.many.object.primaryKeyPropertyApiName,
             object: linkType.many.object.apiName,
           },
         }],
         objectTypeBPrimaryKeyPropertyMapping: [{
           from: {
-            apiName: linkType.toMany.object.primaryKeys[0],
+            apiName: linkType.toMany.object.primaryKeyPropertyApiName,
             object: linkType.toMany.object.apiName,
           },
           to: {
-            apiName: linkType.toMany.object.primaryKeys[0],
+            apiName: linkType.toMany.object.primaryKeyPropertyApiName,
             object: linkType.toMany.object.apiName,
           },
         }],
@@ -437,17 +437,17 @@ function convertLink(
           writebackDatasetRid: undefined,
           objectTypeAPrimaryKeyMapping: [{
             property: {
-              apiName: linkType.many.object.primaryKeys[0],
+              apiName: linkType.many.object.primaryKeyPropertyApiName,
               object: linkType.many.object.apiName,
             },
-            column: linkType.many.object.primaryKeys[0],
+            column: linkType.many.object.primaryKeyPropertyApiName,
           }],
           objectTypeBPrimaryKeyMapping: [{
             property: {
-              apiName: linkType.toMany.object.primaryKeys[0],
+              apiName: linkType.toMany.object.primaryKeyPropertyApiName,
               object: linkType.toMany.object.apiName,
             },
-            column: linkType.many.object.primaryKeys[0],
+            column: linkType.many.object.primaryKeyPropertyApiName,
           }],
         },
       },
@@ -514,17 +514,12 @@ function convertSpt(
     gothamMapping,
     typeClasses,
     valueType,
+    nullability,
   }: SharedPropertyType,
 ): OntologyIrSharedPropertyType {
   const dataConstraint:
     | OntologyIrSharedPropertyType["dataConstraints"]
-    | undefined = (typeof type === "object" && type.type === "marking")
-      ? {
-        propertyTypeConstraints: [],
-        nullability: undefined,
-        nullabilityV2: { noEmptyCollections: true, noNulls: true },
-      }
-      : undefined;
+    | undefined = convertNullabilityToDataConstraint({ type, nullability });
   return {
     apiName,
     displayMetadata: {
@@ -650,6 +645,42 @@ function convertType(
       // use helper function to distribute `type` properly
       return distributeTypeHelper(type);
   }
+}
+
+function convertObjectStatus(status: any): any {
+  if (status === undefined) {
+    return {
+      type: "active",
+      active: {},
+    };
+  }
+
+  if (status === "active") {
+    return {
+      type: "active",
+      active: {},
+    };
+  }
+
+  if (status === "experimental") {
+    return {
+      type: "experimental",
+      experimental: {},
+    };
+  }
+
+  if (typeof status === "object" && status.type === "deprecated") {
+    return {
+      type: "deprecated",
+      deprecated: {
+        message: status.message,
+        deadline: status.deadline,
+        replacedBy: undefined,
+      },
+    };
+  }
+
+  return status;
 }
 
 function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
@@ -958,6 +989,34 @@ function convertParameterRequirementConstraint(
   return {
     type: "listLengthValidation",
     listLengthValidation: { minLength: min, maxLength: max },
+  };
+}
+
+function convertNullabilityToDataConstraint(
+  prop: { type: PropertyTypeType; nullability?: Nullability },
+): DataConstraints | undefined {
+  if (typeof prop.type === "object" && prop.type.type === "marking") {
+    if (prop.nullability === undefined) {
+      return {
+        propertyTypeConstraints: [],
+        nullability: undefined,
+        nullabilityV2: { noEmptyCollections: true, noNulls: true },
+      };
+    }
+    invariant(
+      prop.nullability?.noNulls,
+      "Marking property type has noNulls set to false, marking properties must not be nullable",
+    );
+    return {
+      propertyTypeConstraints: [],
+      nullability: undefined,
+      nullabilityV2: prop.nullability,
+    };
+  }
+  return prop.nullability === undefined ? undefined : {
+    propertyTypeConstraints: [],
+    nullability: undefined,
+    nullabilityV2: prop.nullability,
   };
 }
 

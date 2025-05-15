@@ -1,5 +1,69 @@
 # @osdk/maker
 
+## 0.10.0-beta.21
+
+### Minor Changes
+
+- 94663ab: Change the status definitions for objects and add validation for timestamps.
+- f12caa4: Fix marking list for modify action
+- 317b555: Release
+
+### Patch Changes
+
+- Updated dependencies [317b555]
+  - @osdk/api@2.2.0-beta.21
+
+## 0.10.0-beta.20
+
+### Minor Changes
+
+- 7bb2971: OAC support for actions on objects
+- ca5d920: Fix marking/list validation
+- 889e84b: Release
+
+### Patch Changes
+
+- Updated dependencies [889e84b]
+  - @osdk/api@2.2.0-beta.20
+
+## 0.10.0-beta.19
+
+### Minor Changes
+
+- e287c5b: Support marking types in SPTs in Interfaces in Actions
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.19
+
+## 0.10.0-beta.18
+
+### Minor Changes
+
+- 489ea17: Wire through nullability to SPT
+
+### Patch Changes
+
+- Updated dependencies [56aa502]
+  - @osdk/api@2.2.0-beta.18
+
+## 0.10.0-beta.17
+
+### Minor Changes
+
+- 6eeb423: Simple create and modify actions for interfaces
+- 38ad25b: Make properties nullable
+- 5745d3e: Make Object PKs singular
+- 791e655: Add support for geoshape and geohash action parameters.
+
+### Patch Changes
+
+- Updated dependencies [c6bee50]
+- Updated dependencies [abe4897]
+- Updated dependencies [70b4464]
+- Updated dependencies [791e655]
+  - @osdk/api@2.2.0-beta.17
+
 ## 0.10.0-beta.16
 
 ### Minor Changes

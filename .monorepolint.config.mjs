@@ -31,6 +31,14 @@ import {
 import * as child_process from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const rootPackageJson = JSON.parse(
+  await fs.readFile(
+    path.join(path.dirname(fileURLToPath(import.meta.url)), "package.json"),
+    "utf8",
+  ),
+);
 
 const LATEST_TYPESCRIPT_DEP = "~5.5.4";
 
@@ -76,7 +84,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/client",
       "@osdk/api",
-      "@osdk/functions.unstable",
+      "@osdk/functions",
     ],
     {
       ...LIBRARY_RULES,
@@ -323,7 +331,7 @@ const disallowWorkspaceCaret = createRuleFactory({
           if (
             dep === "@osdk/shared.client2"
             // Since this package is only being used internally, it's fine to keep this relaxed to ^ so it can use newer client versions without bumping everything
-            || (packageJson.name === "@osdk/functions.unstable"
+            || (packageJson.name === "@osdk/functions"
               && dep === "@osdk/client")
           ) continue;
           const message = `'workspace:^' not allowed (${d}['${dep}']).`;
@@ -1033,8 +1041,10 @@ function checkApiRules(shared) {
       options: {
         devDependencies: {
           "@osdk/monorepo.api-extractor": "workspace:~",
-          "@microsoft/api-documenter": "^7.26.5",
-          "@microsoft/api-extractor": "^7.49.1",
+          "@microsoft/api-documenter":
+            rootPackageJson.devDependencies["@microsoft/api-documenter"],
+          "@microsoft/api-extractor":
+            rootPackageJson.devDependencies["@microsoft/api-extractor"],
         },
       },
     }),

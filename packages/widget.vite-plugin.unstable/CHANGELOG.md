@@ -1,5 +1,37 @@
 # @osdk/widget.vite-plugin.unstable
 
+## 2.1.0-beta.10
+
+### Minor Changes
+
+- 317b555: Release
+- 9673e54: Fixes for custom widgets Vite plugin in Code Workspaces mode
+
+### Patch Changes
+
+- Updated dependencies [317b555]
+  - @osdk/widget.api.unstable@2.1.0-beta.10
+
+## 2.1.0-beta.9
+
+### Minor Changes
+
+- d4c962c: Fix typos for widgets libraries
+
+### Patch Changes
+
+- @osdk/widget.api.unstable@2.1.0-beta.9
+
+## 2.1.0-beta.8
+
+### Minor Changes
+
+- 87b747c: Code Workspaces awareness for the Widgets Vite plugin
+
+### Patch Changes
+
+- @osdk/widget.api.unstable@2.1.0-beta.8
+
 ## 2.1.0-beta.7
 
 ### Minor Changes

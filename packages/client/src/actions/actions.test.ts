@@ -34,6 +34,7 @@ import {
   moveOffice,
 } from "@osdk/client.test.ontology";
 import type {
+  ApplyActionRequestV2,
   BatchApplyActionResponseV2,
   SyncApplyActionResponseV2,
 } from "@osdk/foundry.ontologies";
@@ -369,9 +370,37 @@ describe.each([
     >();
 
     const result = await client(addGeoshape).applyAction({
-      geoshapeParam:
-        stubData.actionRequestWithGeoshape.parameters.geoshapeParam,
-      geohashParam: stubData.actionRequestWithGeoshape.parameters.geohashParam,
+      geoshapeParam: {
+        type: "Polygon",
+        coordinates: [
+          [
+            [
+              -97.86567863752134,
+              38.418052586871624,
+            ],
+            [
+              -97.86567863752134,
+              35.410223767370525,
+            ],
+            [
+              -91.98573135442845,
+              35.410223767370525,
+            ],
+            [
+              -91.98573135442845,
+              38.418052586871624,
+            ],
+            [
+              -97.86567863752134,
+              38.418052586871624,
+            ],
+          ],
+        ],
+      },
+      geohashParam: {
+        type: "Point",
+        coordinates: [-79.4382042508868, 40.917859676842255],
+      },
     });
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
@@ -529,6 +558,51 @@ describe.each([
         "type": "edits",
       },
     );
+  });
+
+  describe("Properly handles undefined values for optional parameters", () => {
+    it("Sends null on request for explicitly undefined values", async () => {
+      await apiServer.boundary(async () => {
+        let request = {} as ApplyActionRequestV2;
+        apiServer.use(MockOntologiesV2.Actions.apply(baseUrl, async (info) => {
+          request = await info.request.json();
+          return {
+            validation: {
+              result: "VALID",
+              submissionCriteria: [],
+              parameters: {},
+            },
+          };
+        }));
+
+        await client($Actions.createStructPerson).applyAction({
+          name: "testMan",
+          address: undefined,
+        });
+        expect(request.parameters).toEqual({ address: null, name: "testMan" });
+      })();
+    });
+
+    it("Does not send null on request for unset values", async () => {
+      await apiServer.boundary(async () => {
+        let request = {} as ApplyActionRequestV2;
+        apiServer.use(MockOntologiesV2.Actions.apply(baseUrl, async (info) => {
+          request = await info.request.json();
+          return {
+            validation: {
+              result: "VALID",
+              submissionCriteria: [],
+              parameters: {},
+            },
+          };
+        }));
+
+        await client($Actions.createStructPerson).applyAction({
+          name: "testMan",
+        });
+        expect(request.parameters).toEqual({ name: "testMan" });
+      })();
+    });
   });
 });
 

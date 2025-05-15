@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { Logger, ObjectTypeDefinition } from "@osdk/api";
 import { PalantirApiError } from "@osdk/shared.net.errors";
 import { DefaultMap, DefaultWeakMap } from "mnemonist";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
 import { additionalContext, type Client } from "../../Client.js";
-import type { Logger } from "../../logger/Logger.js";
 import type {
   ObjectHolder,
 } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";

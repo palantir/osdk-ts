@@ -20,7 +20,13 @@ export namespace StructPerson {
   export type Links = {};
 
   export interface Props {
+    /**
+     * (no ontology metadata)
+     */
     readonly address: { city: $PropType['string'] | undefined; state: $PropType['string'] | undefined } | undefined;
+    /**
+     * (no ontology metadata)
+     */
     readonly name: $PropType['string'];
   }
   export type StrictProps = Props;

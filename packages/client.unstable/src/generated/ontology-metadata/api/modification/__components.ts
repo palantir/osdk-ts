@@ -199,6 +199,7 @@ import type {
   SharedPropertyTypeGothamMappingModification
     as _api_typemapping_SharedPropertyTypeGothamMappingModification,
 } from "../typemapping/__components.js";
+import type { OntologyValidationError as _api_validation_OntologyValidationError } from "../validation/__components.js";
 
 /**
  * This signals to OMA that the Object Type will be regenerated as the Action Type changes, rather than modified
@@ -296,6 +297,12 @@ export interface ActivePropertyTypeStatusModification {
 export interface ArrayPropertyTypeModification {
   subtype: TypeForModification;
 }
+export interface BranchEntityIndexingConfigurationModification {
+  parentBranchObjectTypes: Record<
+    _api_ObjectTypeRid,
+    ObjectTypeBranchIndexingConfiguration
+  >;
+}
 /**
  * Request to check existing unique identifiers before making an Ontology modification. A maximum of 500
  * identifiers is allowed. This will also return reused ObjectTypeIds if on a multitenant stack.
@@ -318,6 +325,18 @@ export type CompassFolderRid = string;
  * An rid identifying a Compass namespace. This rid is generated randomly and is safe for logging purposes.
  */
 export type CompassNamespaceRid = string;
+export interface CopyEditsFromParentBranchOnInitialIndexingMode {
+}
+export interface CopyEditsMode_copyEditsFromParentBranchOnInitialIndexing {
+  type: "copyEditsFromParentBranchOnInitialIndexing";
+  copyEditsFromParentBranchOnInitialIndexing:
+    CopyEditsFromParentBranchOnInitialIndexingMode;
+}
+/**
+ * Configuration describing whether/how edits should be copied from parent branch.
+ */
+export type CopyEditsMode =
+  CopyEditsMode_copyEditsFromParentBranchOnInitialIndexing;
 
 /**
  * Constraints that apply to any data in this property. The constraints will be enforced by the storage
@@ -345,6 +364,12 @@ export interface DropObjectTypePeeringMetadata {
  * Configuration to enable edits history. In the future specific settings may be added.
  */
 export interface EditsHistoryConfigModification {
+}
+/**
+ * Contains configuration to import edits history from Phonograph to Funnel/Highbury. This should be set in the
+ * edits history object, not in the main object.
+ */
+export interface EditsHistoryImportConfigurationModification {
 }
 export interface EditsHistoryModification_config {
   type: "config";
@@ -730,6 +755,7 @@ export interface ManyToManyLinkTypeStreamDatasourceModification {
  * Request to set the migration configuration for the Phonograph to Highbury migration for an entity.
  */
 export interface MigrationConfigurationModification {
+  importEditsHistory?: boolean | null | undefined;
   minMigrationDuration: string;
   transitionRetryLimit: number;
   transitionWindows: _api_entitymetadata_TransitionWindows;
@@ -796,10 +822,17 @@ export interface ObjectStorageV1Modification {
  * endpoint can be used.
  */
 export interface ObjectStorageV2Modification {
+  editsHistoryImportConfiguration?:
+    | EditsHistoryImportConfigurationModification
+    | null
+    | undefined;
   migrationConfiguration?:
     | MigrationConfigurationModification
     | null
     | undefined;
+}
+export interface ObjectTypeBranchIndexingConfiguration {
+  copyEditsMode: CopyEditsMode;
 }
 export interface ObjectTypeCreate {
   objectType: ObjectTypeModification;
@@ -1261,6 +1294,27 @@ export interface OntologyInformationInternal {
  * made by OMS.
  */
 export type OntologyModificationDescription = string;
+export interface OntologyModificationDryRunErrorStatus {
+  errors: Array<_api_validation_OntologyValidationError>;
+}
+export interface OntologyModificationDryRunRequest {
+  modificationRequest: OntologyModificationRequest;
+}
+export interface OntologyModificationDryRunResponse_success {
+  type: "success";
+  success: OntologyModificationDryRunSuccessStatus;
+}
+
+export interface OntologyModificationDryRunResponse_error {
+  type: "error";
+  error: OntologyModificationDryRunErrorStatus;
+}
+export type OntologyModificationDryRunResponse =
+  | OntologyModificationDryRunResponse_success
+  | OntologyModificationDryRunResponse_error;
+
+export interface OntologyModificationDryRunSuccessStatus {
+}
 export interface OntologyModificationRequest {
   actionTypesToCreate: Record<
     _api_ActionTypeIdInRequest,
@@ -1268,6 +1322,10 @@ export interface OntologyModificationRequest {
   >;
   actionTypesToDelete: Array<_api_ActionTypeRid>;
   actionTypesToUpdate: Record<_api_ActionTypeRid, _api_ActionTypeUpdate>;
+  branchIndexingConfiguration?:
+    | BranchEntityIndexingConfigurationModification
+    | null
+    | undefined;
   checkForNoops?: boolean | null | undefined;
   expectedLastRebasedOntologyVersion?: _api_OntologyVersion | null | undefined;
   expectedOntologyVersion?: _api_OntologyVersion | null | undefined;

@@ -127,6 +127,7 @@ export type ActionParameterAllowedValues =
     minimum?: OntologyIrParameterDateRangeValue;
   }
   | { type: "objectTypeReference"; interfaceTypes: Array<InterfaceTypeApiName> }
+  | { type: "objectQuery" }
   | { type: "attachment" }
   | { type: "boolean" }
   | { type: "objectSetRid" }
@@ -168,6 +169,15 @@ export type {
   InterfaceTypeStatus_experimental,
 };
 
+export type ObjectTypeStatus =
+  | "active"
+  | "experimental"
+  | {
+    type: "deprecated";
+    message: string;
+    deadline: string;
+  };
+
 export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
 export type OptionalFields<T, K extends keyof T> =
   & Pick<Partial<T>, K>
@@ -181,8 +191,11 @@ export interface ObjectTypeInner extends
     | "allImplementsInterfaces"
     | "implementsInterfaces2"
     | "displayMetadata"
+    | "primaryKeys"
+    | "status"
   >
 {
+  primaryKeyPropertyApiName: string;
   properties: Array<ObjectPropertyType>;
   titlePropertyApiName: string;
   implementsInterfaces: Array<InterfaceImplementation>;
@@ -192,6 +205,7 @@ export interface ObjectTypeInner extends
   pluralDisplayName: string;
   visibility: Visibility;
   editsEnabled: boolean;
+  status?: ObjectTypeStatus;
 }
 
 export type InterfaceImplementation = {
@@ -203,7 +217,7 @@ export type ObjectType =
   & RequiredFields<
     Partial<ObjectTypeInner>,
     | "apiName"
-    | "primaryKeys"
+    | "primaryKeyPropertyApiName"
     | "displayName"
     | "pluralDisplayName"
     | "titlePropertyApiName"
@@ -222,6 +236,8 @@ export interface ObjectPropertyTypeInner extends
     | "valueType"
     | "ruleSetBinding"
     | "displayMetadata"
+    | "dataConstraints"
+    | "status"
   >
 {
   type: PropertyTypeType;
@@ -231,6 +247,8 @@ export interface ObjectPropertyTypeInner extends
   description: string | undefined;
   displayName: string;
   visibility: Visibility;
+  nullability?: Nullability;
+  status?: ObjectTypeStatus;
 }
 
 export type ObjectPropertyType = RequiredFields<
@@ -267,6 +285,12 @@ export interface PropertyType {
   valueType?: ApiNameValueTypeReference;
   visibility?: Visibility;
   typeClasses?: TypeClass[];
+  nullability?: Nullability;
+}
+
+export interface Nullability {
+  noEmptyCollections: boolean;
+  noNulls: boolean;
 }
 
 type TypeClass = { kind: string; name: string };
@@ -611,6 +635,7 @@ export type ActionParameterTypePrimitive =
   | "date"
   | "dateList"
   | "objectTypeReference"
+  | "objectReference"
   | "attachment"
   | "attachmentList"
   | "marking"
@@ -629,6 +654,7 @@ export type ActionParameterTypeComplex =
   | OntologyIrBaseParameterType_objectReferenceList
   | OntologyIrBaseParameterType_objectSetRid
   | OntologyIrBaseParameterType_objectTypeReference
+  | OntologyIrBaseParameterType_objectReference
   | OntologyIrBaseParameterType_interfaceReference
   | OntologyIrBaseParameterType_interfaceReferenceList
   | OntologyIrBaseParameterType_struct

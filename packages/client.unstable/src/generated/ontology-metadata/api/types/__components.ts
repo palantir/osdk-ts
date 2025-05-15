@@ -21,6 +21,8 @@ import type {
   MediaItemRid as _api_MediaItemRid,
   MediaSetRid as _api_MediaSetRid,
   MediaSetViewRid as _api_MediaSetViewRid,
+  ObjectTypeApiName as _api_ObjectTypeApiName,
+  ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
   ObjectTypeId as _api_ObjectTypeId,
   OntologyIrQualifiedSeriesIdPropertyValue
     as _api_OntologyIrQualifiedSeriesIdPropertyValue,
@@ -1224,17 +1226,17 @@ export interface OntologyIrBaseParameterType_dateList {
 
 export interface OntologyIrBaseParameterType_objectReference {
   type: "objectReference";
-  objectReference: ObjectReferenceType;
+  objectReference: OntologyIrObjectReferenceType;
 }
 
 export interface OntologyIrBaseParameterType_objectReferenceList {
   type: "objectReferenceList";
-  objectReferenceList: ObjectReferenceListType;
+  objectReferenceList: OntologyIrObjectReferenceListType;
 }
 
 export interface OntologyIrBaseParameterType_objectSetRid {
   type: "objectSetRid";
-  objectSetRid: ObjectSetRidType;
+  objectSetRid: OntologyIrObjectSetRidType;
 }
 
 export interface OntologyIrBaseParameterType_interfaceReference {
@@ -1455,17 +1457,17 @@ export interface OntologyIrDataValue_null {
 
 export interface OntologyIrDataValue_objectLocator {
   type: "objectLocator";
-  objectLocator: ObjectLocatorValue;
+  objectLocator: OntologyIrObjectLocatorValue;
 }
 
 export interface OntologyIrDataValue_objectLocatorList {
   type: "objectLocatorList";
-  objectLocatorList: ObjectLocatorListValue;
+  objectLocatorList: OntologyIrObjectLocatorListValue;
 }
 
 export interface OntologyIrDataValue_objectType {
   type: "objectType";
-  objectType: ObjectTypeValue;
+  objectType: OntologyIrObjectTypeValue;
 }
 
 export interface OntologyIrDataValue_attachment {
@@ -1559,6 +1561,50 @@ export interface OntologyIrInterfaceReferenceListType {
 }
 export interface OntologyIrInterfaceReferenceType {
   interfaceTypeRid: _api_InterfaceTypeApiName;
+}
+export interface OntologyIrObjectLocator {
+  objectTypeId: _api_ObjectTypeApiName;
+  primaryKey: OntologyIrObjectPrimaryKey;
+}
+/**
+ * A parameter value type that consists of a list of ObjectLocators.
+ */
+export interface OntologyIrObjectLocatorListValue {
+  objectLocatorList: Array<OntologyIrObjectLocator>;
+}
+/**
+ * A parameter value type that is an ObjectLocator.
+ */
+export type OntologyIrObjectLocatorValue = OntologyIrObjectLocator;
+export type OntologyIrObjectPrimaryKey = Record<
+  _api_ObjectTypeFieldApiName,
+  PrimaryKeyValue
+>;
+
+/**
+ * ObjectReferenceListType specifies that this parameter must be a list of ObjectLocators.
+ */
+export interface OntologyIrObjectReferenceListType {
+  objectTypeId: _api_ObjectTypeApiName;
+}
+/**
+ * ObjectReferenceType specifies that this parameter must be an ObjectLocator. An additional optional field maybeCreateObjectOption is included for handling upsert action types by providing flexibility of object creation from a user-specified PK or auto-generated UID PK.
+ */
+export interface OntologyIrObjectReferenceType {
+  maybeCreateObjectOption?: CreateObjectOption | null | undefined;
+  objectTypeId: _api_ObjectTypeApiName;
+}
+/**
+ * ObjectSetRidType specifies that this parameter must be an ObjectSetRid.
+ */
+export interface OntologyIrObjectSetRidType {
+  objectTypeId: _api_ObjectTypeApiName;
+}
+/**
+ * A parameter value that references a specific object type.
+ */
+export interface OntologyIrObjectTypeValue {
+  objectTypeId: _api_ObjectTypeApiName;
 }
 export interface OntologyIrTimeDependentPropertyValue_seriesId {
   type: "seriesId";

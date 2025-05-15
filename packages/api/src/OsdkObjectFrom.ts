@@ -30,7 +30,7 @@ import type {
   ObjectTypeDefinition,
 } from "./ontology/ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "./ontology/SimplePropertyDef.js";
-import type { OsdkBase } from "./OsdkBase.js";
+import type { OsdkBaseWithObjectSpecifier } from "./OsdkBase.js";
 
 type DropDollarOptions<T extends string> = Exclude<
   T,
@@ -99,6 +99,8 @@ export type MapPropNamesToInterface<
   TO
 >[JustProps<FROM, P> & keyof PropMapToInterface<FROM, TO>];
 /**
+ * Older version of this helper that allows for `$rid` and co in
+ * the properties field.
  * @param FROM - the interface or object type to convert from
  * @param TO - the interface or object type to convert to
  * @param P - the property(s) to convert
@@ -131,22 +133,6 @@ export type ValidToFrom<
   FROM extends ObjectOrInterfaceDefinition,
 > = FROM extends InterfaceDefinition ? ObjectOrInterfaceDefinition
   : InterfaceDefinition;
-
-/**
- * @param P The properties to add from Q
- * @param Z The existing underlying properties
- */
-type UnderlyingProps<
-  Q extends ObjectOrInterfaceDefinition,
-  P extends string,
-  Z extends string,
-  NEW_Q extends ValidToFrom<Q>,
-> =
-  & Z
-  & Q extends InterfaceDefinition
-  ? NEW_Q extends ObjectTypeDefinition ? ConvertProps<Q, NEW_Q, P>
-  : Z
-  : Z;
 
 export type IsNever<T> = [T] extends [never] ? true : false;
 
@@ -197,7 +183,7 @@ export namespace Osdk {
     P extends PropertyKeys<Q> = PropertyKeys<Q>,
     R extends Record<string, SimplePropertyDef> = {},
   > =
-    & OsdkBase<Q>
+    & OsdkBaseWithObjectSpecifier<Q>
     & Pick<
       CompileTimeMetadata<Q>["props"],
       // If there aren't any additional properties, then we want GetPropsKeys to default to PropertyKeys<Q>

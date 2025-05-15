@@ -19,6 +19,7 @@ import type {
   DatasourceRid as _api_DatasourceRid,
   LinkTypeRid as _api_LinkTypeRid,
   ObjectTypeRid as _api_ObjectTypeRid,
+  OntologyBranchRid as _api_OntologyBranchRid,
   OntologyVersion as _api_OntologyVersion,
   RestrictedViewTransactionRid as _api_RestrictedViewTransactionRid,
   StreamViewRid as _api_StreamViewRid,
@@ -41,6 +42,7 @@ export interface GetSecurityProvenanceRequest {
     | null
     | undefined;
   objectTypes: Array<_api_ObjectTypeRid>;
+  ontologyBranchRid?: _api_OntologyBranchRid | null | undefined;
 }
 /**
  * Request to load security provenance information for ObjectTypes and LinkTypes.

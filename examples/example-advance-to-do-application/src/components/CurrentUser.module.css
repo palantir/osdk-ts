@@ -1,0 +1,25 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: var(--background-color);
+    gap: 20px;
+}
+
+.details {
+    background-color: var(--card-background-color);
+    display: flex;
+    flex-direction: column;
+    align-items: top;
+    padding: 10px;
+    align-items: center;
+    border-radius: 8px;
+    width: max-content;
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}

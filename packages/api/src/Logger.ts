@@ -15,12 +15,12 @@
  */
 
 export interface Logger {
-  trace: LogFn;
-  debug: LogFn;
-  fatal: LogFn;
-  error: LogFn;
-  warn: LogFn;
-  info: LogFn;
+  trace: Logger.LogFn;
+  debug: Logger.LogFn;
+  fatal: Logger.LogFn;
+  error: Logger.LogFn;
+  warn: Logger.LogFn;
+  info: Logger.LogFn;
 
   isLevelEnabled(level: string): boolean;
 
@@ -30,7 +30,9 @@ export interface Logger {
   ): Logger;
 }
 
-export interface LogFn {
-  (obj: unknown, msg?: string, ...args: any[]): void;
-  (msg: string, ...args: any[]): void;
+export namespace Logger {
+  export interface LogFn {
+    (obj: unknown, msg?: string, ...args: any[]): void;
+    (msg: string, ...args: any[]): void;
+  }
 }
