@@ -30,6 +30,7 @@
     "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "codegen": "node codegen.mjs",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
@@ -38,9 +39,14 @@
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "dependencies": {
+    "@osdk/docs-spec-core": "^0.5.0",
+    "@osdk/docs-spec-sdk": "^0.1.0"
+  },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
+    "yaml": "^2.8.0",
     "typescript": "~5.5.4"
   },
   "publishConfig": {

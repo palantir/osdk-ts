@@ -1,0 +1,1806 @@
+kind: sdk
+versions:
+  "1.0.0":
+    snippets:
+      loadSingleObjectGuide:
+        - template: |-
+            import { GetObjectError, isOk, Result } from "{{{packageName}}}";
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            const result: Result<{{objectType}}, GetObjectError> = await client.ontology.objects.{{objectType}}.get("primaryKey");
+            if (isOk(result)) {
+                const object: {{objectType}} = result.value;
+            } else {
+                console.error(result.error.errorType);
+            }
+      loadObjectPageGuide:
+        - template: |-
+            import { isOk, LoadObjectSetError, Page, Result } from "{{{packageName}}}";
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            const firstPage: Result<Page<{{objectType}}>, LoadObjectSetError> = await client.ontology.objects.{{objectType}}.page({ pageSize: 30 });
+
+            if (isOk(firstPage)) {
+                const secondPage: Result<Page<{{objectType}}>, LoadObjectSetError> = await client.ontology.objects.{{objectType}}
+                    .page({ pageSize: 30, pageToken: firstPage.value.nextPageToken });
+
+                const objects = isOk(secondPage) ? [...firstPage.value.data, ...secondPage.value.data] : firstPage.value.data;
+                const object = objects[0];
+            }
+      orderObjectsGuide:
+        - template: |-
+            import { isOk, Page, Result, SearchObjectsError } from "{{{packageName}}}";
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            const page: Result<Page<{{objectType}}>, SearchObjectsError> = await client.ontology.objects.{{objectType}}
+                .orderBy(sortBy => sortBy.{{titleProperty}}.asc())
+                .page({ pageSize: 30 });
+
+            if (isOk(page)) {
+                const objects = page.value.data;
+                const object = objects[0];
+            }
+      searchObjectsGuide:
+        - template: |-
+            import { isOk, LoadObjectSetError, Page, Result } from "{{{packageName}}}";
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            const page: Result<Page<{{objectType}}>, LoadObjectSetError> = await client.ontology.objects.{{objectType}}
+                .where(query => query.{{titleProperty}}.isNull())
+                .page({ pageSize: 30 });
+
+            if (isOk(page)) {
+                const objects = page.value.data;
+                const object = objects[0];
+            }
+      loadSingleObjectReference:
+        - template: |-
+            import { GetObjectError, Result } from "{{{packageName}}}";
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            const response: Result<{{objectType}}, GetObjectError> = await client.ontology.objects.{{objectType}}.get("primaryKey");
+      loadObjectsReference:
+        - template: |-
+            import { LoadObjectSetError, Page, Result } from "{{{packageName}}}";
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            const response: Result<Page<{{objectType}}>, LoadObjectSetError> = await client.ontology.objects.{{objectType}}
+                .page({ pageSize: 30 });
+      loadAllObjectsReference:
+        - template: |-
+            import { isOk, LoadObjectSetError, Result } from "{{{packageName}}}";
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            const objects: Result<{{objectType}}[], LoadObjectSetError> = await client.ontology.objects.{{objectType}}.all();
+
+            if (isOk(objects)) {
+                const object = objects.value[0];
+            }
+      loadLinkedObjectReference:
+        - template: |-
+            import { GetLinkedObjectError, Result } from "{{{packageName}}}";
+            import { {{sourceObjectType}}, {{linkedObjectType}} } from "{{{packageName}}}/ontology/objects";
+
+            function getLinked{{linkedObjectType}}(source: {{sourceObjectType}}, linkedObjectPrimaryKey: {{linkedPrimaryKeyProperty.type}}) {
+                return source.{{linkApiName}}.get(linkedObjectPrimaryKey);
+            }
+      loadLinkedObjectsReference:
+        - template: |-
+            import { GetLinkedObjectError, Result } from "{{{packageName}}}";
+            import { {{sourceObjectType}}, {{linkedObjectType}} } from "{{{packageName}}}/ontology/objects";
+
+            function getLinked{{linkedObjectType}}(source: {{sourceObjectType}}) {
+                {{#isLinkManySided}}
+                return source.{{linkApiName}}.page({ pageSize: 30 });
+                {{/isLinkManySided}}
+                {{^isLinkManySided}}
+                return source.{{linkApiName}}.get();
+                {{/isLinkManySided}}
+            }
+      aggregationTemplate:
+        - template: |-
+            import { Op } from "{{{packageName}}}";
+
+            const num{{objectType}} = await client.ontology.objects.{{objectType}}
+                .where(query => Op.not(query.{{property}}.isNull()))
+                .groupBy(property => property.{{property}}.exact())
+                .count()
+                .compute()
+      countAggregationTemplate:
+        - template: |-
+            const num{{objectType}} = await client.ontology.objects.{{objectType}}
+                .count()
+                .compute()
+      approximateDistinctAggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const distinct{{objectType}} = await client.ontology.objects.{{objectType}}
+                .approximateDistinct(obj => obj.{{property}})
+                .compute()
+
+            // This is equivalent to the above, but uses metricName as the metric name instead of the default "distinctCount"
+            const distinct{{objectType}}CustomName = await client.ontology.objects.{{objectType}}
+                .aggregate(obj => ({
+                    metricName: obj.{{property}}.approximateDistinct(),
+                }))
+                .compute()
+      exactDistinctAggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const distinct{{objectType}} = await client.ontology.objects.{{objectType}}
+                .exactDistinct(obj => obj.{{property}})
+                .compute()
+
+            // This is equivalent to the above, but uses metricName as the metric name instead of the default "exactDistinctCount"
+            const distinct{{objectType}}CustomName = await client.ontology.objects.{{objectType}}
+                .aggregate(obj => ({
+                    metricName: obj.{{property}}.exactDistinct(),
+                }))
+                .compute()
+      numericAggregationTemplate:
+        - template: |-
+            const {{operation}}{{objectType}} = await client.ontology.objects.{{objectType}}
+                .{{operation}}(obj => obj.{{property}})
+                .compute()
+
+            // This is equivalent to the above, but uses "metricName" as the metric name instead of the default "{{operation}}"
+            const {{operation}}{{objectType}}CustomName = await client.ontology.objects.{{objectType}}
+                .aggregate(obj => ({
+                    metricName: obj.{{property}}.{{operation}}(),
+                }))
+                .compute()
+      fixedWidthGroupByTemplate:
+        - template: |-
+            const grouped{{objectType}} = await client.ontology.objects.{{objectType}}
+                .groupBy(obj => obj.{{property}}.fixedWidth(10))
+                .count()
+                .compute()
+      durationGroupByTemplate:
+        - template: |-
+            const grouped{{objectType}} = await client.ontology.objects.{{objectType}}
+                .groupBy(obj => obj.{{property}}.by{{duration}}({{#durationText}}{{arg}}{{/durationText}}))
+                .count()
+                .compute()
+      exactGroupByTemplate:
+        - template: |-
+            const grouped{{objectType}} = await client.ontology.objects.{{objectType}}
+                .groupBy(obj => obj.{{property}}.exact())
+                .count()
+                .compute()
+      rangeGroupByTemplate:
+        - template: |-
+            {{#isDateProperty}}
+            import { LocalDate } from "{{{packageName}}}";
+
+            {{/isDateProperty}}
+            {{#isTimestampProperty}}
+            import { Timestamp } from "{{{packageName}}}";
+
+            {{/isTimestampProperty}}
+            const grouped{{objectType}} = await client.ontology.objects.{{objectType}}
+                .groupBy(obj => obj.{{property}}.ranges([{
+                    startValue: {{propertyValue}},
+                    endValue: {{propertyValueIncremented}}
+                }]))
+                .count()
+                .compute()
+      applyAction:
+        - template: |-
+            import { ActionValidationResult, ActionExecutionMode, ReturnEditsMode{{#hasAttachmentImports}}, Attachment{{/hasAttachmentImports}}{{#hasDateInputs}}, LocalDate{{#hasTimestampInputs}}, {{/hasTimestampInputs}}{{/hasDateInputs}}{{#hasTimestampInputs}}, Timestamp{{/hasTimestampInputs}} } from "{{{packageName}}}";
+
+            {{#hasAttachmentUpload}}
+            const attachment: Attachment = uploadMyFile();
+            {{/hasAttachmentUpload}}
+            {{#attachmentProperty}}
+            const attachment: Attachment = {{{attachmentProperty}}};
+            {{/attachmentProperty}}
+            const result = await client.ontology.actions.{{actionApiName}}({{^hasParameters}}{},{{/hasParameters}}{{#hasParameters}}{
+                {{#legacyActionTypeParameterValues}}
+                "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                {{/legacyActionTypeParameterValues}}
+            },{{/hasParameters}} {
+                mode: ActionExecutionMode.VALIDATE_AND_EXECUTE,
+                returnEdits: ReturnEditsMode.ALL,
+                }
+            );
+            // Check if http request was successful
+            if (!isOk(result)) {
+              throw result.error;
+            }
+            // Check if the validation was successful
+            console.log(result.value.validation);
+            if (result.value.validation.result === ActionValidationResult.VALID) {
+                // If ReturnEditsMode.ALL is used, new and updated objects edits will contain the primary key of the object
+                if (result.value.edits.type === "edits") {
+                    console.log(result.value.edits);
+                }
+            }
+      batchApplyAction:
+        - template: |-
+            import { ActionExecutionMode, ReturnEditsMode{{#hasAttachmentImports}}, Attachment{{/hasAttachmentImports}}{{#hasDateInputs}}, LocalDate{{#hasTimestampInputs}}, {{/hasTimestampInputs}}{{/hasDateInputs}}{{#hasTimestampInputs}}, Timestamp{{/hasTimestampInputs}} } from "{{{packageName}}}";
+
+            {{#hasAttachmentUpload}}
+            const attachment: Attachment = uploadMyFile();
+            {{/hasAttachmentUpload}}
+            {{#attachmentProperty}}
+            const attachment: Attachment = {{{attachmentProperty}}};
+            {{/attachmentProperty}}
+            const result = await client.ontology.bulkActions.{{actionApiName}}(
+                [
+                    {{^hasParameters}}{},{}{{/hasParameters}}{{#hasParameters}}{
+                    {{#legacyActionTypeParameterValues}}
+                    "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                    {{/legacyActionTypeParameterValues}}
+                    },
+                    {
+                    {{#legacyActionTypeParameterValues}}
+                    "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                    {{/legacyActionTypeParameterValues}}
+                    },{{/hasParameters}}
+                ],
+                {
+                    returnEdits: ReturnEditsMode.NONE,
+                }
+            );
+      uploadAttachment:
+        - template: |-
+            import { Result, isOk, Attachment, AttachmentsError } from "{{{packageName}}}";
+
+            async function uploadMyFile() {
+                const file = await fetch("file.json");
+                const blob = await file.blob();
+                return client.ontology.attachments.upload("myFile", blob);
+            }
+
+            const result: Result<Attachment, AttachmentsError> = await uploadMyFile();
+
+            if (isOk(result)) {
+                const attachment = result.value;
+                console.log(attachment);
+            } else {
+                console.error(result.error.errorType);
+            }
+      executeFunction:
+        - template: |-
+            {{#needsImports}}
+            import { {{#hasAttachmentImports}}Attachment{{#hasDateInputs}},{{/hasDateInputs}}{{^hasDateInputs}}{{#hasTimestampInputs}},{{/hasTimestampInputs}}{{/hasDateInputs}}{{/hasAttachmentImports}}{{#hasDateInputs}}LocalDate{{#hasTimestampInputs}}, {{/hasTimestampInputs}}{{/hasDateInputs}}{{#hasTimestampInputs}}Timestamp{{/hasTimestampInputs}} } from "{{{packageName}}}";
+
+            {{/needsImports}}
+            {{#hasAttachmentUpload}}
+            const attachment: Attachment = uploadMyFile();
+            {{/hasAttachmentUpload}}
+            {{#attachmentProperty}}
+            const attachment: Attachment = {{{attachmentProperty}}};
+            {{/attachmentProperty}}
+            const result = await client.ontology.queries.{{funcApiName}}({{{legacyFunctionInputValues}}});
+      stringStartsWithTemplate:
+        - template: |-
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.startsWith("foo"));
+      containsAllTermsInOrderTemplate:
+        - template: |-
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.containsAllTermsInOrder("foo bar"));
+      containsAnyTermTemplate:
+        - template: |-
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.containsAnyTerm("foo bar"));
+      containsAllTermsTemplate:
+        - template: |-
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.containsAllTerms("foo bar"));
+      equalityTemplate:
+        - template: |-
+            {{#isDateProperty}}
+            import { LocalDate } from "{{{packageName}}}";
+
+            {{/isDateProperty}}
+            {{#isTimestampProperty}}
+            import { Timestamp } from "{{{packageName}}}";
+
+            {{/isTimestampProperty}}
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.eq({{{propertyValue}}}));
+      inFilterTemplate:
+        - template: // Not supported
+      nullTemplate:
+        - template: |-
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.isNull());
+      rangeTemplate:
+        - template: |-
+            {{#isDateProperty}}
+            import { LocalDate } from "{{{packageName}}}";
+
+            {{/isDateProperty}}
+            {{#isTimestampProperty}}
+            import { Timestamp } from "{{{packageName}}}";
+
+            {{/isTimestampProperty}}
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.{{operation}}({{{propertyValue}}}));
+      withinDistanceTemplate:
+        - template: |-
+            import { GeoPoint } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.within{{distanceUnitText}}(
+                    // New York City
+                    GeoPoint.fromCoordinates({ latitude: 40.7128, longitude: -74.0060 }),
+                    100.0,
+                ));
+      withinBoundingBoxTemplate:
+        - template: |-
+            import { GeoPoint } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.withinBoundingBox({
+                    topLeft: GeoPoint.fromCoordinates({ latitude: 40.7128, longitude: -74.0060 }),
+                    bottomRight: GeoPoint.fromCoordinates({ latitude: 25.123, longitude: 80.4231 }),
+                });
+      withinPolygonTemplate:
+        - template: |-
+            import { Polygon } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.withinPolygon(Polygon.fromGeoJson({
+                    type: "Polygon",
+                    coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]],
+                }));
+      intersectsPolygonTemplate:
+        - template: |-
+            import { Polygon } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.{{intersects}}Polygon(Polygon.fromGeoJson({
+                    type: "Polygon",
+                    coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]],
+                }));
+      intersectsBboxTemplate:
+        - template: |-
+            import { GeoPoint } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.{{intersects}}BoundingBox({
+                    topLeft: GeoPoint.fromCoordinates({ latitude: 40.7128, longitude: -74.0060 }),
+                    bottomRight: GeoPoint.fromCoordinates({ latitude: 25.123, longitude: 80.4231 }),
+                });
+      notTemplate:
+        - template: |-
+            import { Op } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => Op.not(query.{{primaryKeyProperty.apiName}}.isNull()));
+      andTemplate:
+        - template: |-
+            import { Op } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => Op.and(
+                    Op.not(query.{{primaryKeyProperty.apiName}}.isNull()),
+                    query.{{primaryKeyProperty.apiName}}.eq("primaryKey"),
+                ));
+      orTemplate:
+        - template: |-
+            import { Op } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => Op.or(
+                    query.{{primaryKeyProperty.apiName}}.isNull(),
+                    query.{{primaryKeyProperty.apiName}}.eq("primaryKey"),
+                ));
+      loadTimeSeriesPointsSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            function getAllTimeSeriesPoints(obj: {{objectType}}) {
+                return obj.{{property}}.points.all();
+            }
+      loadRelativeTimeSeriesPointsSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            // Only supports ranges in the past
+            function getRelativeTimeSeriesPoints(obj: {{objectType}}) {
+                return obj.{{property}}.from{{timeUnitValue}}Ago(1).all();
+            }
+      loadAbsoluteTimeSeriesPointsSnippet:
+        - template: |-
+            import { Timestamp } from "{{{packageName}}}";
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            function getRelativeTimeSeriesPoints(obj: {{objectType}}) {
+                return obj.{{property}}.range({
+                    startTime: Timestamp.fromISOString("2022-08-13T12:34:56Z"),
+                    endTime: Timestamp.fromISOString("2022-08-14T12:34:56Z"),
+                });
+            }
+      loadTimeSeriesFirstPointSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            function getAllTimeSeriesPoints(obj: {{objectType}}) {
+                return obj.{{property}}.getFirstPoint();
+            }
+      loadTimeSeriesLastPointSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            function getAllTimeSeriesPoints(obj: {{objectType}}) {
+                return obj.{{property}}.getLastPoint();
+            }
+      loadObjectMetadataSnippet:
+        - template: // Not supported.
+      subscribeToObjectSetInstructions:
+        - template: // Subscribing to object sets is only supported in 2.x versions of the SDK.
+  "1.1.0":
+    snippets:
+      loadSingleObjectGuide:
+        - template: |-
+            import { GetObjectError, isOk, Result } from "{{{packageName}}}";
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            const result: Result<{{objectType}}, GetObjectError> = await client.ontology.objects.{{objectType}}.fetchOneWithErrors("primaryKey");
+            if (isOk(result)) {
+                const object: {{objectType}} = result.value;
+            } else {
+                console.error(result.error.errorType);
+            }
+            // You can also fetch a single object without the Result wrapper
+            try {
+                const object: {{objectType}} = await client.ontology.objects.{{objectType}}.fetchOne("primaryKey");
+            }
+            catch(e) {
+                console.error(e);
+            }
+      loadObjectPageGuide:
+        - template: |-
+            import { isOk, LoadObjectSetError, Page, Result } from "{{{packageName}}}";
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            const firstPage: Result<Page<{{objectType}}>, LoadObjectSetError> = await client.ontology.objects.{{objectType}}.fetchPageWithErrors({ pageSize: 30 });
+
+            if (isOk(firstPage)) {
+                const secondPage: Result<Page<{{objectType}}>, LoadObjectSetError> = await client.ontology.objects.{{objectType}}
+                    .fetchPageWithErrors({ pageSize: 30, pageToken: firstPage.value.nextPageToken });
+
+                const objects = isOk(secondPage) ? [...firstPage.value.data, ...secondPage.value.data] : firstPage.value.data;
+                const object = objects[0];
+            }
+
+            // To fetch a page without a result wrapper, use fetchPage with a try/catch instead
+            try {
+                const firstPage: Page<{{objectType}}> = await client.ontology.objects.{{objectType}}.fetchPage({ pageSize: 30 });
+                const secondPage: Page<{{objectType}}> = await client.ontology.objects.{{objectType}}
+                    .fetchPage({ pageSize: 30, pageToken: firstPage.value.nextPageToken });
+                const objects = [...firstPage.data, ...secondPage.data];
+                const object = objects[0];
+            }
+            catch (e) {
+                console.error(e);
+            }
+      orderObjectsGuide:
+        - template: |-
+            import { isOk, Page, Result, SearchObjectsError } from "{{{packageName}}}";
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            const page: Result<Page<{{objectType}}>, SearchObjectsError> = await client.ontology.objects.{{objectType}}
+                .orderBy(sortBy => sortBy.{{titleProperty}}.asc())
+                .fetchPageWithErrors({ pageSize: 30 });
+
+            if (isOk(page)) {
+                const objects = page.value.data;
+                const object = objects[0];
+            }
+      searchObjectsGuide:
+        - template: |-
+            import { isOk, LoadObjectSetError, Page, Result } from "{{{packageName}}}";
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            const page: Result<Page<{{objectType}}>, LoadObjectSetError> = await client.ontology.objects.{{objectType}}
+                .where(query => query.{{titleProperty}}.isNull())
+                .fetchPageWithErrors({ pageSize: 30 });
+
+            if (isOk(page)) {
+                const objects = page.value.data;
+                const object = objects[0];
+            }
+      loadSingleObjectReference:
+        - template: |
+            import { GetObjectError, Result } from "{{{packageName}}}";
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            const response: Result<{{objectType}}, GetObjectError> = await client.ontology.objects.{{objectType}}.fetchOneWithErrors("primaryKey");
+
+            // You can also fetch a single object without the result wrapper
+            const responseNoWrapper: {{objectType}} = await client.ontology.objects.{{objectType}}.fetchOne("primaryKey");
+      loadObjectsReference:
+        - template: |-
+            import { LoadObjectSetError, Page, Result } from "{{{packageName}}}";
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            const response: Result<Page<{{objectType}}>, LoadObjectSetError> = await client.ontology.objects.{{objectType}}
+                .fetchPageWithErrors({ pageSize: 30 });
+
+            // To fetch a page without a result wrapper, use fetchPage instead
+            const responseNoErrorWrapper: Page<{{objectType}}> = await client.ontology.objects.{{objectType}}
+                .fetchPage({ pageSize: 30 });
+      loadAllObjectsReference:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            const objects: {{objectType}}[]= [];
+
+            for await(const obj of client.ontology.objects.{{objectType}}.asyncIter()) {
+                objects.push(obj);
+            }
+            const object = objects.value[0];
+      loadLinkedObjectReference:
+        - template: |-
+            import { GetLinkedObjectError, Result } from "{{{packageName}}}";
+            import { {{sourceObjectType}}, {{linkedObjectType}} } from "{{{packageName}}}/ontology/objects";
+
+            function getLinked{{linkedObjectType}}(source: {{sourceObjectType}}, linkedObjectPrimaryKey: {{linkedPrimaryKeyProperty.type}}): Result<{{linkedObjectType}}, GetLinkedObjectError>
+            {
+                return source.{{linkApiName}}.fetchOneWithErrors(linkedObjectPrimaryKey);
+            }
+
+            // You can also get a linked object without the result wrapper
+            function getLinkedNoWrapper{{linkedObjectType}}(source: {{sourceObjectType}}, linkedObjectPrimaryKey: {{linkedPrimaryKeyProperty.type}}): {{linkedObjectType}} {
+                return source.{{linkApiName}}.fetchOne(linkedObjectPrimaryKey);
+            }
+      loadLinkedObjectsReference:
+        - template: |-
+            import { GetLinkedObjectError, Result } from "{{{packageName}}}";
+            import { {{sourceObjectType}}, {{linkedObjectType}} } from "{{{packageName}}}/ontology/objects";
+
+            function getLinked{{linkedObjectType}}(source: {{sourceObjectType}}) {
+                {{#isLinkManySided}}
+                return source.{{linkApiName}}.fetchPageWithErrors({ pageSize: 30 });
+                {{/isLinkManySided}}
+                {{^isLinkManySided}}
+                return source.{{linkApiName}}.fetchOneWithErrors();
+                {{/isLinkManySided}}
+            }
+      aggregationTemplate:
+        - template: |-
+            import { Op } from "{{{packageName}}}";
+
+            const num{{objectType}} = await client.ontology.objects.{{objectType}}
+                .where(query => Op.not(query.{{property}}.isNull()))
+                .groupBy(property => property.{{property}}.exact())
+                .count()
+                .compute()
+      countAggregationTemplate:
+        - template: |-
+            const num{{objectType}} = await client.ontology.objects.{{objectType}}
+                .count()
+                .compute()
+      approximateDistinctAggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const distinct{{objectType}} = await client.ontology.objects.{{objectType}}
+                .approximateDistinct(obj => obj.{{property}})
+                .compute()
+
+            // This is equivalent to the above, but uses metricName as the metric name instead of the default "distinctCount"
+            const distinct{{objectType}}CustomName = await client.ontology.objects.{{objectType}}
+                .aggregate(obj => ({
+                    metricName: obj.{{property}}.approximateDistinct(),
+                }))
+                .compute()
+      exactDistinctAggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const distinct{{objectType}} = await client.ontology.objects.{{objectType}}
+                .exactDistinct(obj => obj.{{property}})
+                .compute()
+
+            // This is equivalent to the above, but uses metricName as the metric name instead of the default "exactDistinctCount"
+            const distinct{{objectType}}CustomName = await client.ontology.objects.{{objectType}}
+                .aggregate(obj => ({
+                    metricName: obj.{{property}}.exactDistinct(),
+                }))
+                .compute()
+      numericAggregationTemplate:
+        - template: |-
+            const {{operation}}{{objectType}} = await client.ontology.objects.{{objectType}}
+                .{{operation}}(obj => obj.{{property}})
+                .compute()
+
+            // This is equivalent to the above, but uses "metricName" as the metric name instead of the default "{{operation}}"
+            const {{operation}}{{objectType}}CustomName = await client.ontology.objects.{{objectType}}
+                .aggregate(obj => ({
+                    metricName: obj.{{property}}.{{operation}}(),
+                }))
+                .compute()
+      fixedWidthGroupByTemplate:
+        - template: |-
+            const grouped{{objectType}} = await client.ontology.objects.{{objectType}}
+                .groupBy(obj => obj.{{property}}.fixedWidth(10))
+                .count()
+                .compute()
+      durationGroupByTemplate:
+        - template: |-
+            const grouped{{objectType}} = await client.ontology.objects.{{objectType}}
+                .groupBy(obj => obj.{{property}}.by{{duration}}({{#durationText}}{{arg}}{{/durationText}}))
+                .count()
+                .compute()
+      exactGroupByTemplate:
+        - template: |-
+            const grouped{{objectType}} = await client.ontology.objects.{{objectType}}
+                .groupBy(obj => obj.{{property}}.exact())
+                .count()
+                .compute()
+      rangeGroupByTemplate:
+        - template: |-
+            {{#isDateProperty}}
+            import { LocalDate } from "{{{packageName}}}";
+
+            {{/isDateProperty}}
+            {{#isTimestampProperty}}
+            import { Timestamp } from "{{{packageName}}}";
+
+            {{/isTimestampProperty}}
+            const grouped{{objectType}} = await client.ontology.objects.{{objectType}}
+                .groupBy(obj => obj.{{property}}.ranges([{
+                    startValue: {{propertyValue}},
+                    endValue: {{propertyValueIncremented}}
+                }]))
+                .count()
+                .compute()
+      applyAction:
+        - template: |-
+            import { ActionValidationResult, ActionExecutionMode, ReturnEditsMode{{#hasAttachmentImports}}, Attachment{{/hasAttachmentImports}}{{#hasDateInputs}}, LocalDate{{#hasTimestampInputs}}, {{/hasTimestampInputs}}{{/hasDateInputs}}{{#hasTimestampInputs}}, Timestamp{{/hasTimestampInputs}} } from "{{{packageName}}}";
+
+            {{#hasAttachmentUpload}}
+            const attachment: Attachment = uploadMyFile();
+            {{/hasAttachmentUpload}}
+            {{#attachmentProperty}}
+            const attachment: Attachment = {{{attachmentProperty}}};
+            {{/attachmentProperty}}
+            const result = await client.ontology.actions.{{actionApiName}}({{^hasParameters}}{},{{/hasParameters}}{{#hasParameters}}{
+                {{#legacyActionTypeParameterValues}}
+                "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                {{/legacyActionTypeParameterValues}}
+            },{{/hasParameters}} {
+                mode: ActionExecutionMode.VALIDATE_AND_EXECUTE,
+                returnEdits: ReturnEditsMode.ALL,
+                }
+            );
+            // Check if http request was successful
+            if (!isOk(result)) {
+              throw result.error;
+            }
+            // Check if the validation was successful
+            console.log(result.value.validation);
+            if (result.value.validation.result === ActionValidationResult.VALID) {
+                // If ReturnEditsMode.ALL is used, new and updated objects edits will contain the primary key of the object
+                if (result.value.edits.type === "edits") {
+                    console.log(result.value.edits);
+                }
+            }
+      batchApplyAction:
+        - template: |-
+            import { ActionExecutionMode, ReturnEditsMode{{#hasAttachmentImports}}, Attachment{{/hasAttachmentImports}}{{#hasDateInputs}}, LocalDate{{#hasTimestampInputs}}, {{/hasTimestampInputs}}{{/hasDateInputs}}{{#hasTimestampInputs}}, Timestamp{{/hasTimestampInputs}} } from "{{{packageName}}}";
+
+            {{#hasAttachmentUpload}}
+            const attachment: Attachment = uploadMyFile();
+            {{/hasAttachmentUpload}}
+            {{#attachmentProperty}}
+            const attachment: Attachment = {{{attachmentProperty}}};
+            {{/attachmentProperty}}
+            const result = await client.ontology.batchActions.{{actionApiName}}(
+                [
+                    {{^hasParameters}}{},{}{{/hasParameters}}{{#hasParameters}}{
+                    {{#legacyActionTypeParameterValues}}
+                    "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                    {{/legacyActionTypeParameterValues}}
+                    },
+                    {
+                    {{#legacyActionTypeParameterValues}}
+                    "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                    {{/legacyActionTypeParameterValues}}
+                    },{{/hasParameters}}
+                ],
+                {
+                    returnEdits: ReturnEditsMode.NONE,
+                }
+            );
+      uploadAttachment:
+        - template: |-
+            import { Result, isOk, Attachment, AttachmentsError } from "{{{packageName}}}";
+
+            async function uploadMyFile() {
+                const file = await fetch("file.json");
+                const blob = await file.blob();
+                return client.ontology.attachments.upload("myFile", blob);
+            }
+
+            const result: Result<Attachment, AttachmentsError> = await uploadMyFile();
+
+            if (isOk(result)) {
+                const attachment = result.value;
+                console.log(attachment);
+            } else {
+                console.error(result.error.errorType);
+            }
+      executeFunction:
+        - template: |-
+            {{#needsImports}}
+            import { {{#hasAttachmentImports}}Attachment{{#hasDateInputs}},{{/hasDateInputs}}{{^hasDateInputs}}{{#hasTimestampInputs}},{{/hasTimestampInputs}}{{/hasDateInputs}}{{/hasAttachmentImports}}{{#hasDateInputs}}LocalDate{{#hasTimestampInputs}}, {{/hasTimestampInputs}}{{/hasDateInputs}}{{#hasTimestampInputs}}Timestamp{{/hasTimestampInputs}} } from "{{{packageName}}}";
+
+            {{/needsImports}}
+            {{#hasAttachmentUpload}}
+            const attachment: Attachment = uploadMyFile();
+            {{/hasAttachmentUpload}}
+            {{#attachmentProperty}}
+            const attachment: Attachment = {{{attachmentProperty}}};
+            {{/attachmentProperty}}
+            const result = await client.ontology.queries.{{funcApiName}}({{{legacyFunctionInputValues}}});
+      stringStartsWithTemplate:
+        - template: |-
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.startsWith("foo"));
+      containsAllTermsInOrderTemplate:
+        - template: |-
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.containsAllTermsInOrder("foo bar"));
+      containsAnyTermTemplate:
+        - template: |-
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.containsAnyTerm("foo bar"));
+      containsAllTermsTemplate:
+        - template: |-
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.containsAllTerms("foo bar"));
+      equalityTemplate:
+        - template: |-
+            {{#isDateProperty}}
+            import { LocalDate } from "{{{packageName}}}";
+
+            {{/isDateProperty}}
+            {{#isTimestampProperty}}
+            import { Timestamp } from "{{{packageName}}}";
+
+            {{/isTimestampProperty}}
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.eq({{{propertyValue}}}));
+      inFilterTemplate:
+        - template: // Not supported
+      nullTemplate:
+        - template: |-
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.isNull());
+      rangeTemplate:
+        - template: |-
+            {{#isDateProperty}}
+            import { LocalDate } from "{{{packageName}}}";
+
+            {{/isDateProperty}}
+            {{#isTimestampProperty}}
+            import { Timestamp } from "{{{packageName}}}";
+
+            {{/isTimestampProperty}}
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.{{operation}}({{{propertyValue}}}));
+      withinDistanceTemplate:
+        - template: |-
+            import { GeoPoint } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.within{{distanceUnitText}}(
+                    // New York City
+                    GeoPoint.fromCoordinates({ latitude: 40.7128, longitude: -74.0060 }),
+                    100.0,
+                ));
+      withinBoundingBoxTemplate:
+        - template: |-
+            import { GeoPoint } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.withinBoundingBox({
+                    topLeft: GeoPoint.fromCoordinates({ latitude: 40.7128, longitude: -74.0060 }),
+                    bottomRight: GeoPoint.fromCoordinates({ latitude: 25.123, longitude: 80.4231 }),
+                });
+      withinPolygonTemplate:
+        - template: |-
+            import { Polygon } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.withinPolygon(Polygon.fromGeoJson({
+                    type: "Polygon",
+                    coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]],
+                }));
+      intersectsPolygonTemplate:
+        - template: |-
+            import { Polygon } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.{{intersects}}Polygon(Polygon.fromGeoJson({
+                    type: "Polygon",
+                    coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]],
+                }));
+      intersectsBboxTemplate:
+        - template: |-
+            import { GeoPoint } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => query.{{property}}.{{intersects}}BoundingBox({
+                    topLeft: GeoPoint.fromCoordinates({ latitude: 40.7128, longitude: -74.0060 }),
+                    bottomRight: GeoPoint.fromCoordinates({ latitude: 25.123, longitude: 80.4231 }),
+                });
+      notTemplate:
+        - template: |-
+            import { Op } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => Op.not(query.{{primaryKeyProperty.apiName}}.isNull()));
+      andTemplate:
+        - template: |-
+            import { Op } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => Op.and(
+                    Op.not(query.{{primaryKeyProperty.apiName}}.isNull()),
+                    query.{{primaryKeyProperty.apiName}}.eq("primaryKey"),
+                ));
+      orTemplate:
+        - template: |-
+            import { Op } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
+                .where(query => Op.or(
+                    query.{{primaryKeyProperty.apiName}}.isNull(),
+                    query.{{primaryKeyProperty.apiName}}.eq("primaryKey"),
+                ));
+      loadTimeSeriesPointsSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            function getAllTimeSeriesPoints(obj: {{objectType}}) {
+                return obj.{{property}}.points.all();
+            }
+      loadRelativeTimeSeriesPointsSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            // Only supports ranges in the past
+            function getRelativeTimeSeriesPoints(obj: {{objectType}}) {
+                return obj.{{property}}.from{{timeUnitValue}}Ago(1).all();
+            }
+      loadAbsoluteTimeSeriesPointsSnippet:
+        - template: |-
+            import { Timestamp } from "{{{packageName}}}";
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            function getRelativeTimeSeriesPoints(obj: {{objectType}}) {
+                return obj.{{property}}.range({
+                    startTime: Timestamp.fromISOString("2022-08-13T12:34:56Z"),
+                    endTime: Timestamp.fromISOString("2022-08-14T12:34:56Z"),
+                });
+            }
+      loadTimeSeriesFirstPointSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            function getAllTimeSeriesPoints(obj: {{objectType}}) {
+                return obj.{{property}}.getFirstPoint();
+            }
+      loadTimeSeriesLastPointSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+
+            function getAllTimeSeriesPoints(obj: {{objectType}}) {
+                return obj.{{property}}.getLastPoint();
+            }
+      loadObjectMetadataSnippet:
+        - template: // Not supported.
+      subscribeToObjectSetInstructions:
+        - template: // Subscribing to object sets is only supported in 2.x versions of the SDK
+  "2.0.0":
+    snippets:
+      loadSingleObjectGuide:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { Osdk, isOk, Result } from "@osdk/client";
+
+            const result: Result<Osdk.Instance<{{objectType}}>> = await client({{objectType}}).fetchOneWithErrors("<primaryKey>");
+            if (isOk(result)) {
+                const object: Osdk.Instance<{{objectType}}> = result.value;
+            } else {
+                console.error(result.error.message);
+            }
+            // You can also fetch a single object without the Result wrapper
+            try {
+                const object: Osdk.Instance<{{objectType}} = await client({{objectType}}).fetchOne("<primaryKey>");
+            }
+            catch(e) {
+                console.error(e);
+            }
+      loadObjectPageGuide:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { isOk, Osdk, PageResult, Result } from "@osdk/client";
+
+            const firstPage: Result<PageResult<Osdk.Instance<{{objectType}}>>>
+                = await client({{objectType}}).fetchPageWithErrors({ $pageSize: 30 });
+
+            if (isOk(firstPage)) {
+                const secondPage: Result<PageResult<Osdk.Instance<{{objectType}}, never, "{{titleProperty}}">>>
+                // You can also down select properties to only get the properties you need from the object
+                = await client({{objectType}}).fetchPageWithErrors({ $select: ["{{titleProperty}}"], $pageSize: 30, $nextPageToken: firstPage.value.nextPageToken });
+
+                const objects = isOk(secondPage) ? [...firstPage.value.data, ...secondPage.value.data] : firstPage.value.data;
+                const object = objects[0];
+            }
+
+             // If you want to get rids, you need to add a flag to specifically request for it. Note how the return type now includes $rid rather than never
+            const secondPageWithRids: Result<PageResult<Osdk.Instance<{{objectType}}, "$rid", "{{titleProperty}}">>>
+                = await client({{objectType}}).fetchPageWithErrors({ $select: ["{{titleProperty}}"], $includeRid:true, $pageSize: 30, $nextPageToken: firstPage.value.nextPageToken });
+
+            // To fetch a page without a result wrapper, use fetchPage with a try/catch instead
+            try {
+                const firstPage: PageResult<Osdk.Instance<{{objectType}}>>
+                    = await client({{objectType}}).fetchPage({ $pageSize: 30 });
+                const secondPage: PageResult<Osdk.Instance<{{objectType}}>>
+                 = await client({{objectType}}).fetchPage({ $pageSize: 30, $nextPageToken: firstPage.nextPageToken });
+                const objects = [...firstPage.data, ...secondPage.data];
+                const object = objects[0];
+            }
+            catch (e) {
+                console.error(e);
+            }
+      orderObjectsGuide:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { isOk, Osdk, PageResult, Result } from "@osdk/client";
+
+            const page: Result<PageResult<Osdk.Instance<{{objectType}}>>> = await client({{objectType}})
+                .fetchPageWithErrors({
+                    $orderBy: {"{{titleProperty}}": "asc"},
+                    $pageSize: 30
+                });
+
+            if (isOk(page)) {
+                const objects = page.value.data;
+                const object = objects[0];
+            }
+      searchObjectsGuide:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { isOk, Osdk, PageResult, Result } from "@osdk/client";
+
+            const page: Result<PageResult<Osdk.Instance<{{objectType}}>>> = await client({{objectType}})
+                .where({
+                    {{titleProperty}}: {$isNull: true}
+                })
+                .fetchPageWithErrors({
+                    $pageSize: 30
+                });
+
+            if (isOk(page)) {
+                const objects = page.value.data;
+                const object = objects[0];
+            }
+      loadSingleObjectReference:
+        - template: |+
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { Osdk, Result } from "@osdk/client";
+
+            const response: Result<Osdk.Instance<{{objectType}}>> = await client({{objectType}}).fetchOneWithErrors("<primaryKey>");
+
+            // You can also fetch a single object without the Result wrapper
+
+            const responseNoErrorWrapper: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne("<primaryKey>");
+
+      loadObjectsReference:
+        - template: |
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { Osdk, PageResult, Result } from "@osdk/client";
+
+            const response:  Result<PageResult<Osdk.Instance<{{objectType}}>>>
+                = await client({{objectType}}).fetchPageWithErrors({ $pageSize: 30 });
+
+            // To fetch a page without a result wrapper, use fetchPage instead
+            const responseNoErrorWrapper: PageResult<Osdk.Instance<{{objectType}}>>
+                = await client({{objectType}}).fetchPage({ $pageSize: 30 });
+      loadAllObjectsReference:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { Osdk } from "@osdk/client";
+
+            const objects: Osdk.Instance<{{objectType}}>[]= [];
+
+            for await(const obj of client({{objectType}}).asyncIter()) {
+                objects.push(obj);
+            }
+            const object = objects[0];
+      loadLinkedObjectReference:
+        - template: |-
+            import { {{sourceObjectType}}, {{linkedObjectType}} } from "{{{packageName}}}";
+            import { Osdk, Result } from "@osdk/client";
+
+            function getLinked{{linkedObjectType}}(source: Osdk.Instance<{{sourceObjectType}}>, linkedObjectPrimaryKey: {{linkedPrimaryKeyProperty.type}}): Result<Osdk.Instance<{{objectType}}>>
+            {
+                return source.$link.{{linkApiName}}.fetchOneWithErrors(linkedObjectPrimaryKey);
+            }
+
+            // You can also get a linked object without the result wrapper
+            function getLinkedNoWrapper{{linkedObjectType}}(source: Osdk.Instance<{{sourceObjectType}}>, linkedObjectPrimaryKey: {{linkedPrimaryKeyProperty.type}}): Osdk.Instance<{{objectType}}> {
+                return source.$link.{{linkApiName}}.fetchOne(linkedObjectPrimaryKey);
+            }
+      loadLinkedObjectsReference:
+        - template: |-
+            import { {{linkedObjectType}} } from "{{{packageName}}}";
+
+            function getLinked{{linkedObjectType}}(source: Osdk.Instance<{{sourceObjectType}}>) {
+                {{#isLinkManySided}}
+                return source.$link.{{linkApiName}}.fetchPageWithErrors({ $pageSize: 30 });
+                {{/isLinkManySided}}
+                {{^isLinkManySided}}
+                return source.$link.{{linkApiName}}.fetchOneWithErrors();
+                {{/isLinkManySided}}
+            }
+      aggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const num{{objectType}} = await client({{objectType}})
+                .where({{property}}: { $isNull : false })
+                .aggregate({
+                    $select: { $count: "unordered" },
+                    $groupBy: { name: "exact" },
+                });
+      countAggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const num{{objectType}} = await client({{objectType}})
+                .aggregate({
+                    $select: {$count: "unordered"},
+                });
+      approximateDistinctAggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const distinct{{objectType}} = await client({{objectType}})
+                .aggregate({
+                    $select: { "{{property}}:approximateDistinct" : "unordered" },
+                });
+      exactDistinctAggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const distinct{{objectType}} = await client({{objectType}})
+                .aggregate({
+                    $select: { "{{property}}:exactDistinct" : "unordered" },
+                });
+      numericAggregationTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const {{operation}}{{objectType}} = await client({{objectType}})
+                .aggregation({
+                    $select: { "{{property}}:{{operation}}" : "unordered" }
+                });
+      fixedWidthGroupByTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const grouped{{objectType}} = await client({{objectType}})
+                .aggregate({
+                    $select: { $count: "unordered" },
+                    $groupBy: { {{property}} : { $fixedWidth: 10 } }
+                });
+      durationGroupByTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const grouped{{objectType}} = await client({{objectType}})
+                .aggregate({
+                    $select: { $count: "unordered" },
+                    $groupBy: { {{property}} : $duration: [ {{#durationText}}{{arg}}{{/durationText}}, "{{#durationText}}{{unit}}{{/durationText}}"] }
+                })
+      exactGroupByTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const grouped{{objectType}} = await client({{objectType}})
+                .aggregate({
+                    $select: { $count: "unordered" },
+                    $groupBy: { {{property}} : "exact" }
+                })
+      rangeGroupByTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const grouped{{objectType}} = await client({{objectType}})
+                .aggregate({
+                    $select: { $count: "unordered" },
+                    $groupBy: { {{property}} : { $ranges: [[{{propertyValue}}, {{propertyValueIncremented}} ]]} }
+                });
+      applyAction:
+        - template: |-
+            import { {{actionApiName}} } from "{{{packageName}}}";
+            {{#hasAttachmentImports}}import { AttachmentUpload } from "@osdk/api";{{/hasAttachmentImports}}{{#hasMediaParameter}}import { MediaReference } from "@osdk/api";{{/hasMediaParameter}}
+
+
+            {{#hasAttachmentUpload}}
+            const attachment: AttachmentUpload = uploadMyFile();
+            {{/hasAttachmentUpload}}
+            {{#attachmentProperty}}
+            const attachment: Attachment = {{{attachmentProperty}}};
+            {{/attachmentProperty}}
+            {{#hasMediaParameter}}
+            const mediaReference: MediaReference = uploadMedia();
+            {{/hasMediaParameter}}
+            const result = await client({{actionApiName}}).applyAction(
+            {{^hasParameters}}{},
+            {{/hasParameters}}{{#hasParameters}}
+                {
+                {{#legacyActionTypeParameterValues}}
+                "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                {{/legacyActionTypeParameterValues}}
+                },{{/hasParameters}}
+                {
+                $returnEdits: true,
+                }
+            );
+
+            if (result.type === "edits") {
+                // for new objects and updated objects edits will contain the primary key of the object
+                const updatedObject = result.editedObjectTypes[0];
+                console.log("Updated object", updatedObject);
+            }
+      batchApplyAction:
+        - template: |-
+            import { {{actionApiName}} } from "{{{packageName}}}";
+            {{#hasAttachmentImports}}
+            import { AttachmentUpload } from "@osdk/api";
+            {{/hasAttachmentImports}}{{#hasMediaParameter}}import { MediaReference } from "@osdk/api";{{/hasMediaParameter}}
+
+
+            {{#hasAttachmentUpload}}
+            const attachment: AttachmentUpload = uploadMyFile();
+            {{/hasAttachmentUpload}}
+            {{#attachmentProperty}}
+            const attachment: Attachment = {{{attachmentProperty}}};
+            {{/attachmentProperty}}
+            {{#hasMediaParameter}}
+            const mediaReference: MediaReference = uploadMedia();
+            {{/hasMediaParameter}}
+            const result = await client({{actionApiName}}).batchApplyAction(
+                [
+                    {{^hasParameters}}{},{}{{/hasParameters}}{{#hasParameters}}{
+                    {{#legacyActionTypeParameterValues}}
+                    "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                    {{/legacyActionTypeParameterValues}}
+                    },
+                    {
+                    {{#legacyActionTypeParameterValues}}
+                    "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                    {{/legacyActionTypeParameterValues}}
+                    },{{/hasParameters}}
+                ],
+                {
+                    $returnEdits: false,
+                }
+            );
+      uploadAttachment:
+        - template: |
+            import { Result, isOk } from "@osdk/client";
+            import { AttachmentUpload } from "@osdk/api";
+
+            // To upload an attachment with 2.0, it has to be linked to an action call
+
+            async function uploadMyFile() {
+                const file = await fetch("file.json");
+                const blob = await file.blob();
+                return createAttachmentUpload(blob, "myFile");
+            }
+
+            const myAttachmentUpload: AttachmentUpload = await uploadMyFile();
+
+            const actionResult = client(attachmentUploadingAction).applyAction({ attachment: myAttachmentUpload });
+      castInterfaceToObjectReference:
+        - template: |-
+            import { {{objectTypeApiName}}, {{interfaceApiName}} } from "{{{packageName}}}";
+            import { isOk, Osdk } from "@osdk/client";
+
+            const page = await client({{interfaceApiName}}).fetchPageWithErrors();
+
+            if (isOk(page)) {
+                const interfaces = page.value.data;
+                const {{interfaceApiNameCamelCase}}: Osdk<{{interfaceApiName}}> = interfaces[0];
+
+                // Cast from interface to object type
+                const {{objectTypeApiNameCamelCase}}: Osdk<{{objectTypeApiName}}> = {{interfaceApiNameCamelCase}}.$as({{objectTypeApiName}});
+                // Or from object type back to interface
+                const {{interfaceApiNameCamelCase}}2: Osdk<{{interfaceApiName}}> = {{objectTypeApiNameCamelCase}}.$as({{interfaceApiName}});
+            }
+      executeFunction:
+        - template: |-
+            {{#needsImports}}
+            import { {{funcApiName}} } from "{{{packageName}}}";
+            {{#hasAttachmentImports}}import { AttachmentUpload } from "@osdk/api";{{/hasAttachmentImports}}
+
+            {{/needsImports}}
+            {{#hasAttachmentUpload}}
+            const attachment: AttachmentUpload = uploadMyFile();
+            {{/hasAttachmentUpload}}
+            {{#attachmentProperty}}
+            const attachment: Attachment = {{{attachmentProperty}}};
+            {{/attachmentProperty}}
+            const result = await client({{funcApiName}}).executeFunction({{{legacyFunctionInputValues}}});
+      stringStartsWithTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client({{objectType}})
+                .where({
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { {{structSubPropertyApiName}}: { $startsWith: "foo" }}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}} : { $startsWith: "foo" }
+                    {{/structSubPropertyApiName}}
+                })
+      containsAllTermsInOrderTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client({{objectType}})
+                .where({
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { {{structSubPropertyApiName}}: { $containsAllTermsInOrder: "foo bar" }}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}} : { $containsAllTermsInOrder: "foo bar" }
+                    {{/structSubPropertyApiName}}
+                })
+      containsAnyTermTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client({{objectType}})
+                .where({
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { {{structSubPropertyApiName}}: { $containsAnyTerm: "foo bar" }}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}} : { $containsAnyTerm: "foo bar" }
+                    {{/structSubPropertyApiName}}
+                })
+      containsAllTermsTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client({{objectType}})
+                .where({
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { {{structSubPropertyApiName}}: { $containsAllTerms: "foo bar" }}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}} : { $containsAllTerms: "foo bar" }
+                    {{/structSubPropertyApiName}}
+                })
+      equalityTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client({{objectType}})
+                .where({
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { {{structSubPropertyApiName}}: { $eq: {{{propertyValue}}} }}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $eq: {{{propertyValue}}} }
+                    {{/structSubPropertyApiName}}
+                });
+      inFilterTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            const {{objectType}}ObjectSet = client({{objectType}})
+                .where({
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { {{structSubPropertyApiName}}: { $in: [{{{propertyValue}}}] }}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $in: [{{{propertyValue}}}] }
+                    {{/structSubPropertyApiName}}
+                });
+      nullTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client({{objectType}})
+                .where({
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { {{structSubPropertyApiName}}: { $isNull: true }}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $isNull: true }
+                    {{/structSubPropertyApiName}}
+                });
+      rangeTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client({{objectType}})
+                .where({
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { {{structSubPropertyApiName}}: { ${{operation}}: {{{propertyValue}}} }}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { ${{operation}}: {{{propertyValue}}} }
+                    {{/structSubPropertyApiName}}
+                });
+      withinDistanceTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client({{objectType}})
+                .where({
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { {{structSubPropertyApiName}}: { $within: { $distance: [100, "{{distanceUnit}}"], $of: [-74.0060, 40.7128]} }}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $within: { $distance: [100, "{{distanceUnit}}"], $of: [-74.0060, 40.7128]}}
+                    {{/structSubPropertyApiName}}
+                })
+      withinBoundingBoxTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client({{objectType}})
+                .where({
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { {{structSubPropertyApiName}}: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}
+                    {{/structSubPropertyApiName}}
+
+                });
+      withinPolygonTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client({{objectType}})
+                .where({
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { {{structSubPropertyApiName}}: { $within: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $within: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}
+                    {{/structSubPropertyApiName}}
+                });
+      intersectsPolygonTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client({{objectType}})
+                .where({
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { {{structSubPropertyApiName}}: { $intersects: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]}}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $intersects: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]}}
+                    {{/structSubPropertyApiName}}
+                });
+      intersectsBboxTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client({{objectType}})
+                .where({
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { {{structSubPropertyApiName}} : { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}} : { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}
+                    {{/structSubPropertyApiName}}
+                });
+      notTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client({{objectType}})
+                .where({ $not: { {{primaryKeyProperty.apiName}}: { $isNull: true }}});
+      andTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client({{objectType}})
+                .where({ $and:[
+                    { $not: { {{primaryKeyProperty.apiName}}: { $isNull: true }}},
+                    { {{primaryKeyProperty.apiName}}: { $eq: "<primaryKey>" }}
+                ]});
+      orTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const {{objectType}}ObjectSet = client({{objectType}})
+                .where({ $or:[
+                    { $not: { {{primaryKeyProperty.apiName}}: { $isNull: true }}},
+                    { {{primaryKeyProperty.apiName}}: { $eq: "<primaryKey>" }}
+                ]});
+      loadInterfacesReference:
+        - template: |-
+            import { {{interfaceApiName}} } from "{{{packageName}}}";
+            import { Osdk, PageResult, Result } from "@osdk/client";
+
+            const response:  Result<PageResult<Osdk<{{interfaceApiName}}>>>
+                = await client({{interfaceApiName}}).fetchPageWithErrors({ $pageSize: 30 });
+
+            // To fetch a page without a result wrapper, use fetchPage instead
+            const responseNoErrorWrapper: PageResult<Osdk<{{interfaceApiName}}>>
+                = await client({{interfaceApiName}}).fetchPage({ $pageSize: 30 });
+      loadAllInterfacesReference:
+        - template: |-
+            import { {{interfaceApiName}} } from "{{{packageName}}}";
+            import { Osdk } from "@osdk/client";
+
+            const interfaces: Osdk<{{interfaceApiName}}>[] = [];
+
+            for await(const int of client({{interfaceApiName}}).asyncIter()) {
+                interfaces.push(int);
+            }
+            const interface1 = interfaces[0];
+      loadOrderedInterfacesReference:
+        - template: |-
+            import { {{interfaceApiName}} } from "{{{packageName}}}";
+            import { isOk, Osdk, PageResult, Result } from "@osdk/client";
+
+            const page: Result<PageResult<Osdk<{{interfaceApiName}}>>> = await client({{interfaceApiName}})
+                .fetchPageWithErrors({
+                    $orderBy: {"someProperty": "asc"},
+                    $pageSize: 30
+                });
+
+            if (isOk(page)) {
+                const interfaces = page.value.data;
+                const interface1 = interfaces[0];
+            }
+      searchInterfacesReference:
+        - template: |-
+            import { {{interfaceApiName}} } from "{{{packageName}}}";
+            import { isOk, Osdk, PageResult, Result } from "@osdk/client";
+
+            const page: Result<PageResult<Osdk<{{interfaceApiName}}>>> = await client({{interfaceApiName}})
+                .where({
+                    $and:[
+                        { $not: { someProperty: { $isNull: true }}},
+                        { someProperty: { $eq: "foo" }}
+                    ]
+                })
+                .fetchPageWithErrors({
+                    $pageSize: 30
+                });
+
+            if (isOk(page)) {
+                const interfaces = page.value.data;
+                const interface1 = interfaces[0];
+            }
+      loadTimeSeriesPointsSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            function getAllTimeSeriesPoints(obj: {{objectType}}) {
+                return obj.{{property}}.getAllPoints();
+            }
+      loadRelativeTimeSeriesPointsSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            // Only supports ranges in the past
+            function getRelativeTimeSeriesPoints(obj: {{objectType}}) {
+                return obj.{{property}}.getAllPoints({
+                    $before: 1,
+                    $unit: "{{timeUnit}}",
+                })
+            }
+      loadAbsoluteTimeSeriesPointsSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            function getAbsoluteTimeSeriesPoints(obj: {{objectType}}) {
+                return obj.{{property}}.getAllPoints({
+                    $startTime: "2022-08-13T12:34:56Z",
+                    $endTime: "2022-08-14T12:34:56Z",
+                });
+            }
+      loadTimeSeriesFirstPointSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            function getFirstTimeSeriesPoint(obj: {{objectType}}) {
+                return obj.{{property}}.getFirstPoint();
+            }
+      loadTimeSeriesLastPointSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            function getLastTimeSeriesPoint(obj: {{objectType}}) {
+                return obj.{{property}}.getLastPoint();
+            }
+      loadGeotimeSeriesPointsSnippet:
+        - template: |-
+            // Upgrade to 2.1 for official support
+      loadRelativeGeotimeSeriesPointsSnippet:
+        - template: |-
+            // Upgrade to 2.1 for official support
+      loadAbsoluteGeotimeSeriesPointsSnippet:
+        - template: |-
+            // Upgrade to 2.1 for official support
+      loadGeotimeSeriesLastPointSnippet:
+        - template: |-
+            // Upgrade to 2.1 for official support
+      loadObjectMetadataSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const objectTypeMetadata = await client.fetchMetadata({{objectType}});
+
+            if (objectTypeMetadata.icon.type === "blueprint") {
+                const blueprintIconName = objectTypeMetadata.icon.name;
+            }
+            const currentVisibility = objectTypeMetadata.visibility;
+            const currentDescription = objectTypeMetadata.description;
+      loadInterfaceMetadataSnippet:
+        - template: |-
+            import { {{interfaceApiName}} } from "{{{packageName}}}";
+
+            const interfaceTypeMetadata = await client.fetchMetadata({{interfaceApiName}});
+
+            const implementingObjectTypes = interfaceTypeMetadata.implementedBy;
+            const interfaceRid = interfaceTypeMetadata.rid;
+      subscribeToObjectSetInstructions:
+        - template: |-
+            // Upgrade to 2.1 for official support
+      uploadMedia:
+        - template: |-
+            // Upgrade to 2.1 for official support
+      readMedia:
+        - template: |-
+            // Upgrade to 2.1 for official support
+      derivedPropertyBaseExample:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const sum{{objectType}} = await client({{objectType}})
+                .withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("fooLink").pivotTo("barLink").selectProperty("foo")
+                })
+                .where({
+                  "newPropertyName": { $gt: 10 }
+                });
+                .aggregate({
+                  $select: { "newPropertyName:max": "unordered" }
+                });
+      derivedPropertyApproximateDistinctAggregation:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const sum{{objectType}} = await client({{objectType}})
+                .withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:approximateDistinct")
+                })
+      derivedPropertyExactDistinctAggregation:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const sum{{objectType}} = await client({{objectType}})
+                .withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:exactDistinct")
+                })
+      derivedPropertyCollectToListAggregation:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const sum{{objectType}} = await client({{objectType}})
+                .withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:collectToList", 75)
+                })
+      derivedPropertyCollectToSetAggregation:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const sum{{objectType}} = await client({{objectType}})
+                .withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:collectToSet", 75)
+                })
+      derivedPropertyCountAggregation:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const sum{{objectType}} = await client({{objectType}})
+                .withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkName}}").aggregate("$count")
+                })
+      derivedPropertySelectPropertyAggregation:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const sum{{objectType}} = await client({{objectType}})
+                .withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}")
+                })
+      derivedPropertyApproximatePercentileAggregation:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const sum{{objectType}} = await client({{objectType}})
+                .withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:approximatePercentile", 0.5)
+                })
+
+      derivedPropertyNumericAggregation:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            const sum{{objectType}} = await client({{objectType}})
+                .withProperties({
+                  "newPropertyName": (baseObjectSet) =>
+                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:{{operation}}")
+                })
+  "2.1.0":
+    snippets:
+      loadGeotimeSeriesPointsSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            function getAllTimeSeriesPoints(obj: {{objectType}}) {
+                return obj.{{property}}.getAllValues();
+            }
+      loadRelativeGeotimeSeriesPointsSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            // Only supports ranges in the past
+            function getRelativeTimeSeriesPoints(obj: {{objectType}}) {
+                return obj.{{property}}.getAllValues({
+                    $before: 1,
+                    $unit: "{{timeUnit}}",
+                })
+            }
+      loadAbsoluteGeotimeSeriesPointsSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            function getAbsoluteTimeSeriesPoints(obj: {{objectType}}) {
+                return obj.{{property}}.getAllValues({
+                    $startTime: "2022-08-13T12:34:56Z",
+                    $endTime: "2022-08-14T12:34:56Z",
+                });
+            }
+      loadGeotimeSeriesLastPointSnippet:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+
+            function getLastTimeSeriesPoint(obj: {{objectType}}) {
+                return obj.{{property}}.getLatestValue();
+            }
+      subscribeToObjectSetInstructions:
+        - template: "import { {{objectOrInterfaceApiName}} } from \"{{{packageName}}}\";
+
+
+            // A map of primary keys to objects loaded through the SDK
+
+            const objects: { [key: string]: {{objectOrInterfaceApiName}}.OsdkInstance } = ...
+
+
+            const subscription = client({{objectOrInterfaceApiName}}).subscribe(
+            \        {
+
+            \            onChange(update) {
+
+            \                if (update.state === \"ADDED_OR_UPDATED\") {
+
+            \                    // An object has received an update or an object was added to the object set
+
+            \                    const currentObject = objects[update.object.$primaryKey];
+
+            \                    if (currentObject !== undefined) {
+
+            \                        currentObject[\"<propertyName>\"] = update.object[\"<propertyName>\"] ?? currentObject[\"<propertyName>\"];
+
+            \                    }
+
+            \                }
+
+            \                else if (update.state === \"DELETED\") {
+
+            \                    // The object has been deleted
+
+            \                    delete objects[update.object.$primaryKey];
+
+            \                }
+
+            \            },
+
+            \            onSuccessfulSubscription() {
+
+            \                // The subscription was successful and you can expect to receive updates
+
+            \            },
+
+            \            onError(err) {
+
+            \                // There was an error with the subscription and you will not receive any more updates
+
+            \                console.error(err);
+
+            \            },
+
+            \            onOutOfDate() {
+
+            \                // We could not keep track of all changes. Please reload the objects in your set.
+
+            \            },
+
+            \        },
+
+            \        { properties: [ {{#propertyNames}}\"{{.}}\", {{/propertyNames}}\b\b]}
+
+            \    );
+
+
+            subscription.unsubscribe();"
+      uploadMedia:
+        - template: |-
+            import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
+            import { {{objectType}} } from "{{{packageName}}}"
+            import { Result, isOk } from "@osdk/client";
+            import { MediaReference } from "@osdk/api";
+
+            // To upload media with 2.x, it has to be linked to an Action call
+            async function uploadMedia() {
+                const file = await fetch("file.json");
+                const data = await file.blob();
+
+                // Upload media to an object type with a media property. This returns a media reference that can passed to
+                // a media parameter in an Action.
+                return await client(
+                    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+                ).createMediaReference({
+                    data,
+                    fileName: "myFile",
+                    objectType: {{objectType}},
+                    propertyType: "MediaPropertyApi",
+                });
+            }
+
+            const mediaReference: MediaReference = await uploadMedia();
+            const actionResult = client(mediaUploadingAction).applyAction({ media_parameter: mediaReference });
+      readMedia:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            import { MediaMetadata, MediaReference } from "@osdk/api";
+            import { Osdk, Result } from "@osdk/client";
+
+            const result = await client({{objectType}}).fetchOne("<primaryKey>");
+
+            // Fetch metadata of a media property
+            const mediaMetadata = await result.{{property}}?.fetchMetadata();
+
+            // Fetch contents of a media property
+            const response = await result.{{property}}?.fetchContents();
+
+            if (response.ok) {
+                const data = await response.blob();
+                ...
+            }
