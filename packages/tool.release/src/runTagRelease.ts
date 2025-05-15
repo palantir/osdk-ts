@@ -200,7 +200,7 @@ export async function runTagRelease(
 
 function getDirNameFromPackageName(packageName: string) {
   switch (packageName) {
-    case "@osdk/functions.unstable":
+    case "@osdk/functions":
       return "functions";
     default:
       return packageName.split("/")[1];
