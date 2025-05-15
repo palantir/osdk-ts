@@ -2221,6 +2221,9 @@ describe("generator", () => {
           }
 
           export interface Props {
+            /**
+             * (no ontology metadata)
+             */
             readonly email: $PropType['string'];
           }
           export type StrictProps = Props;
@@ -2309,8 +2312,18 @@ describe("generator", () => {
           }
 
           export interface Props {
+            /**
+             *   display name: 'Body',
+             *   description: The text of the todo
+             */
             readonly body: $PropType['string'] | undefined;
+            /**
+             * (no ontology metadata)
+             */
             readonly complete: $PropType['boolean'] | undefined;
+            /**
+             * (no ontology metadata)
+             */
             readonly id: $PropType['integer'];
           }
           export type StrictProps = Props;
