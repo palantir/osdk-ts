@@ -1,5 +1,12 @@
 # @osdk/cli
 
+## 0.26.0-beta.21
+
+### Minor Changes
+
+- fb5452c: Write site url to Jemma custom metadata file when present
+- 317b555: Release
+
 ## 0.26.0-beta.20
 
 ### Minor Changes

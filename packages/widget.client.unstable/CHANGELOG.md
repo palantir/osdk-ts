@@ -1,5 +1,17 @@
 # @osdk/widget.client.unstable
 
+## 2.1.0-beta.10
+
+### Minor Changes
+
+- 317b555: Release
+
+### Patch Changes
+
+- Updated dependencies [317b555]
+  - @osdk/widget.api.unstable@2.1.0-beta.10
+  - @osdk/client@2.2.0-beta.21
+
 ## 2.1.0-beta.9
 
 ### Patch Changes

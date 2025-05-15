@@ -1,5 +1,5 @@
 ---
-"@osdk/functions.unstable": patch
+"@osdk/functions": patch
 ---
 
 Created for functions usage.
