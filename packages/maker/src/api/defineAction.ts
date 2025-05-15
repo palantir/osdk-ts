@@ -80,7 +80,7 @@ export function defineCreateInterfaceObjectAction(
         validation: {
           required: (prop.sharedPropertyType.array ?? false)
             ? { listLength: {} }
-            : true,
+            : prop.required,
           allowedValues: extractAllowedValuesFromType(
             prop.sharedPropertyType.type,
           ),
@@ -192,7 +192,7 @@ export function defineModifyInterfaceObjectAction(
         validation: {
           required: (prop.sharedPropertyType.array ?? false)
             ? { listLength: {} }
-            : true,
+            : prop.required,
           allowedValues: extractAllowedValuesFromType(
             prop.sharedPropertyType.type,
           ),
