@@ -1,4 +1,4 @@
-# @osdk/functions.unstable
+# @osdk/functions
 
 ## 0.0.7
 
