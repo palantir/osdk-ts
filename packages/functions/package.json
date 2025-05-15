@@ -1,5 +1,5 @@
 {
-  "name": "@osdk/functions.unstable",
+  "name": "@osdk/functions",
   "version": "0.0.7",
   "description": "",
   "access": "public",
