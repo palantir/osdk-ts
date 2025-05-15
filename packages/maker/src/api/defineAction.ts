@@ -190,7 +190,9 @@ export function defineModifyInterfaceObjectAction(
         type: extractActionParameterType(prop.sharedPropertyType),
         typeClasses: prop.sharedPropertyType.typeClasses ?? [],
         validation: {
-          required: true,
+          required: (prop.sharedPropertyType.array ?? false)
+            ? { listLength: {} }
+            : true,
           allowedValues: extractAllowedValuesFromType(
             prop.sharedPropertyType.type,
           ),

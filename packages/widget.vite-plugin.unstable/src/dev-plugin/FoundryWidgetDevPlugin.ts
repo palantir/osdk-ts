@@ -33,11 +33,8 @@ import {
 import { extractWidgetConfig } from "../common/extractWidgetConfig.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
 import { standardizeFileExtension } from "../common/standardizeFileExtension.js";
-import {
-  getCodeWorkspacesBaseHref,
-  isCodeWorkspacesMode,
-} from "./codeWorkspacesMode.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
+import { getBaseHref } from "./getBaseHref.js";
 import { getFoundryToken } from "./getFoundryToken.js";
 import { getWidgetIdOverrideMap } from "./getWidgetIdOverrideMap.js";
 import { publishDevModeSettings } from "./publishDevModeSettings.js";
@@ -157,7 +154,7 @@ export function FoundryWidgetDevPlugin(): Plugin {
             codeEntrypoints,
             configFileToEntrypoint,
             configFiles,
-            getLocalhostUrl(server),
+            getBaseHref(server),
           );
           await publishDevModeSettings(
             server,
@@ -237,20 +234,6 @@ export function FoundryWidgetDevPlugin(): Plugin {
   };
 }
 
-function getLocalhostUrl(server: ViteDevServer): string {
-  return `${
-    server.config.server.https ? "https" : "http"
-  }://localhost:${server.config.server.port}`;
-}
-
-function getBaseHref(
-  server: ViteDevServer,
-): string {
-  return isCodeWorkspacesMode(server.config.mode)
-    ? getCodeWorkspacesBaseHref()
-    : `${getLocalhostUrl(server)}${server.config.base}`;
-}
-
 /**
  * During the resolution phase source are given as relative paths to the importer
  */
@@ -263,8 +246,7 @@ function serverPath(server: ViteDevServer, subPath: string): string {
 }
 
 function printSetupPageUrl(server: ViteDevServer) {
-  const localhostUrl = getLocalhostUrl(server);
-  const setupRoute = `${localhostUrl}${serverPath(server, SETUP_PATH)}/`;
+  const setupRoute = `${getBaseHref(server)}${SETUP_PATH}/`;
   server.config.logger.info(
     `  ${color.green("➜")}  ${
       color.bold("Click to enter developer mode for your widget set")

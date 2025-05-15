@@ -10,3 +10,5 @@ writeback
 geohash
 mediasets
 efgh
+jemma
+JEMMA
