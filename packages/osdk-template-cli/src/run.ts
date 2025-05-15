@@ -116,21 +116,6 @@ export async function run(
     // Start copying from the source project path to the destination root
     await copyDirectory(sourceProjectPath, root);
 
-    // Copy .jemma directory and its files from template to destination
-    async function copyJemmaDirectory() {
-      const jemmaSrc = path.join(sourceProjectPath, ".jemma");
-      const jemmaDest = path.join(root, ".jemma");
-      try {
-        // Check if .jemma exists in the source
-        await fs.access(jemmaSrc);
-        await copyDirectory(jemmaSrc, jemmaDest);
-        consola.info("Copied .jemma directory");
-      } catch {
-        consola.warn(".jemma directory not found in source project");
-      }
-    }
-    await copyJemmaDirectory();
-
     const npmRc = generateNpmRc();
     await fs.writeFile(path.join(root, ".npmrc"), npmRc);
     const envDevelopment = generateEnvDevelopment({

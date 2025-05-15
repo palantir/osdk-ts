@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
+import path from "path";
 import { consola } from "../consola.js";
 
 export async function promptDestinationProject(
   { destinationProject }: { destinationProject?: string },
 ): Promise<string> {
   while (
-    destinationProject == null || !/^[a-zA-Z0-9-_]+$/.test(destinationProject)
+    destinationProject == null || !isValidPath(destinationProject)
   ) {
     if (destinationProject != null) {
       consola.fail(
-        "Project name can only contain alphanumeric characters, hyphens and underscores",
+        "Invalid path. Please enter a valid file system path.",
       );
     }
-    destinationProject = await consola.prompt("Destination project name:", {
+    destinationProject = await consola.prompt("Destination project path:", {
       type: "text",
       placeholder: "my-osdk-template-app",
       default: "my-osdk-template-app",
@@ -35,4 +36,16 @@ export async function promptDestinationProject(
   }
 
   return destinationProject;
+}
+
+function isValidPath(p: string): boolean {
+  // Attempt to resolve the path to check its validity.
+  // This doesn't check for existence, just for a valid path format.
+  try {
+    const PATH_REGEX = /^[a-zA-Z0-9-_/\\.]+$/;
+    return PATH_REGEX.test(p)
+      && (path.isAbsolute(p) || path.normalize(p) === p);
+  } catch {
+    return false;
+  }
 }

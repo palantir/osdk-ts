@@ -14,42 +14,50 @@
  * limitations under the License.
  */
 
-import { afterEach, expect, test, vi } from "vitest";
+import mockFs from "mock-fs";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { consola } from "../consola.js";
 import { promptDestinationProject } from "./promptDestinationProject.js";
 
 vi.mock("../consola.js");
 
-afterEach(() => {
-  vi.restoreAllMocks();
+beforeEach(() => {
+  mockFs({
+    "/valid/path/to/project": {}, // Mock a valid directory
+  });
 });
 
-test("it accepts valid project from prompt", async () => {
-  vi.mocked(consola).prompt.mockResolvedValueOnce("my-osdk-app");
-  expect(await promptDestinationProject({})).toEqual("my-osdk-app");
+afterEach(() => {
+  vi.restoreAllMocks();
+  mockFs.restore();
+});
+
+test("it accepts valid path from prompt", async () => {
+  vi.mocked(consola).prompt.mockResolvedValueOnce("/valid/path/to/project");
+  expect(await promptDestinationProject({})).toEqual("/valid/path/to/project");
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });
 
-test("it prompts again if answered value is invalid", async () => {
+test("it prompts again if answered value is invalid path", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce("!@#$%^&*()_+");
-  vi.mocked(consola).prompt.mockResolvedValueOnce("my-osdk-app");
-  expect(await promptDestinationProject({})).toEqual("my-osdk-app");
+  vi.mocked(consola).prompt.mockResolvedValueOnce("/valid/path/to/project");
+  expect(await promptDestinationProject({})).toEqual("/valid/path/to/project");
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(2);
 });
 
-test("it accepts valid initial value without prompt", async () => {
-  expect(await promptDestinationProject({ destinationProject: "my-osdk-app" }))
-    .toEqual(
-      "my-osdk-app",
-    );
+test("it accepts valid initial path without prompt", async () => {
+  expect(
+    await promptDestinationProject({
+      destinationProject: "/valid/path/to/project",
+    }),
+  )
+    .toEqual("/valid/path/to/project");
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
 });
 
-test("it prompts if initial value is invalid", async () => {
-  vi.mocked(consola).prompt.mockResolvedValueOnce("my-osdk-app");
+test("it prompts if initial path is invalid", async () => {
+  vi.mocked(consola).prompt.mockResolvedValueOnce("/valid/path/to/project");
   expect(await promptDestinationProject({ destinationProject: "!@#$%^&*()_+" }))
-    .toEqual(
-      "my-osdk-app",
-    );
+    .toEqual("/valid/path/to/project");
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });
