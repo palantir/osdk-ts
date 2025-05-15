@@ -23,10 +23,9 @@ const router = createBrowserRouter(
 );
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  
   <StrictMode>
     <OsdkProvider client={client}>
       <RouterProvider router={router} />,
     </OsdkProvider>
-  </StrictMode>
+  </StrictMode>,
 );
