@@ -1,5 +1,11 @@
 # @osdk/legacy-client
 
+## 2.5.5
+
+### Patch Changes
+
+- affbaf1: update the legacy public oauth client to support refresh
+
 ## 2.5.4
 
 ### Patch Changes
