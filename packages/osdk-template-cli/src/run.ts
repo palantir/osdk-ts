@@ -23,12 +23,15 @@ import {
 } from "./generate/generateEnv.js";
 import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.js";
 import { generateNpmRc } from "./generate/generateNpmRc.js";
+import { getTemplatePackageFile } from "./getTemplatePackageFile.js";
 import { green } from "./highlight.js";
+import { updateViteConfigTs } from "./updateViteConfig.js";
 
 interface RunArgs {
   sourceProject: string;
   destinationProject: string;
   overwrite: boolean;
+  osdkPackage: string;
 }
 
 export async function run(
@@ -36,6 +39,7 @@ export async function run(
     sourceProject,
     destinationProject,
     overwrite,
+    osdkPackage,
   }: RunArgs,
 ): Promise<void> {
   consola.log("");
@@ -139,6 +143,24 @@ export async function run(
       foundryConfigJson,
     );
 
+    // find package.json and update it.
+    const packageJsonPath = path.join(root, "package.json");
+    const packageJson = await fs.readFile(packageJsonPath, "utf-8");
+    const updatedPackageJson = getTemplatePackageFile(packageJson, osdkPackage);
+    // replace the package.json file with the updated one
+    const formattedPackageJson = JSON.stringify(
+      JSON.parse(updatedPackageJson),
+      null,
+      2,
+    );
+    await fs.writeFile(packageJsonPath, formattedPackageJson);
+    consola.info(`Updating package.json`);
+    // find vite.config.ts and update it by adding the resolve alias
+    const viteConfigPath = path.join(root, "vite.config.ts");
+    const viteConfig = await fs.readFile(viteConfigPath, "utf-8");
+    const updatedViteConfig = updateViteConfigTs(viteConfig, osdkPackage);
+    await fs.writeFile(viteConfigPath, updatedViteConfig);
+    consola.info(`Updating vite.config.ts`);
     consola.success("Success");
 
     const cdRelative = path.relative(cwd, root);

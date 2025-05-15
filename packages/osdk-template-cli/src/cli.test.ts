@@ -21,6 +21,7 @@ import { dirSync } from "tmp";
 import { beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import { cli } from "./cli.js";
 import { promptDestinationProject } from "./prompts/promptDestinationProject.js";
+import { promptOsdkPackage } from "./prompts/promptOsdkPackage.js";
 import { promptOverwrite } from "./prompts/promptOverwrite.js";
 import { promptSourceProject } from "./prompts/promptSourceProject.js";
 import { run } from "./run.js";
@@ -28,6 +29,7 @@ import { run } from "./run.js";
 vi.mock("./prompts/promptOverwrite.js");
 vi.mock("./prompts/promptDestinationProject.js");
 vi.mock("./prompts/promptSourceProject.js");
+vi.mock("./prompts/promptOsdkPackage.js");
 vi.mock("./run.js");
 
 let createAppVersion: string;
@@ -58,6 +60,7 @@ describe("CLI", () => {
     );
     vi.mocked(promptDestinationProject).mockResolvedValue("my-new-project");
     vi.mocked(promptOverwrite).mockResolvedValue(true);
+    vi.mocked(promptOsdkPackage).mockResolvedValue("@my-app/sdk");
     vi.mocked(run).mockResolvedValue();
 
     await cli(["node", "cli.js"]);
@@ -65,10 +68,12 @@ describe("CLI", () => {
     expect(promptSourceProject).toHaveBeenCalled();
     expect(promptDestinationProject).toHaveBeenCalled();
     expect(promptOverwrite).toHaveBeenCalled();
+    expect(promptOsdkPackage).toHaveBeenCalled();
     expect(run).toHaveBeenCalledWith({
       sourceProject: "../examples/example-advance-to-do-application",
       destinationProject: "my-new-project",
       overwrite: true,
+      osdkPackage: "@my-app/sdk",
     });
   });
 });

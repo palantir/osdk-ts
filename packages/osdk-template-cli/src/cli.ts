@@ -19,6 +19,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 
 import { promptDestinationProject } from "./prompts/promptDestinationProject.js";
+import { promptOsdkPackage } from "./prompts/promptOsdkPackage.js";
 import { promptOverwrite } from "./prompts/promptOverwrite.js";
 import { promptSourceProject } from "./prompts/promptSourceProject.js";
 import { run } from "./run.js";
@@ -27,6 +28,7 @@ interface CliArgs {
   sourceProject?: string;
   destinationProject?: string;
   overwrite?: boolean;
+  osdkPackage?: string;
 }
 
 export async function cli(args: string[] = process.argv): Promise<void> {
@@ -52,6 +54,11 @@ export async function cli(args: string[] = process.argv): Promise<void> {
           .option("overwrite", {
             type: "boolean",
             describe: "Overwrite project directory if already exists",
+          })
+          .option("osdkPackage", {
+            type: "string",
+            describe:
+              "OSDK package name for your application from Developer Console. Example: @my-app/sdk",
           }),
     );
 
@@ -66,9 +73,13 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     ...parsed,
     destinationProject,
   });
+  const osdkPackage: string = await promptOsdkPackage({
+    osdkPackage: parsed.osdkPackage,
+  });
   await run({
     sourceProject,
     destinationProject,
     overwrite,
+    osdkPackage,
   });
 }
