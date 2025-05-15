@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
+import type { ObjectMetadata, Osdk } from "@osdk/api";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import type { BaseHolder } from "./BaseHolder.js";
@@ -27,11 +27,13 @@ import type { ClientRef, ObjectDefRef } from "./InternalSymbols.js";
  * The unused generic parameter `_Q` can be used as an added check when casting.
  * That is its only purpose
  */
-export interface ObjectHolder<_Q extends Osdk.Instance<any> = never>
+export interface ObjectHolder<Q extends Osdk.Instance<any> = never>
   extends BaseHolder
 {
   readonly [ObjectDefRef]: FetchedObjectTypeDefinition;
   readonly [ClientRef]: MinimalClient;
 
   readonly "$link": ReturnType<typeof get$link>;
+
+  readonly "$metadata": ObjectMetadata;
 }

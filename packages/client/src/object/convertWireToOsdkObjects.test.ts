@@ -63,6 +63,7 @@ describe("convertWireToOsdkObjects", () => {
       "$objectType",
       "$primaryKey",
       "$objectSpecifier",
+      "$metadata",
       "employeeLocation",
     ].sort());
 
@@ -81,21 +82,17 @@ describe("convertWireToOsdkObjects", () => {
     }).fetchPage();
 
     // Should not have $title
-    expect(JSON.stringify(employee)).toMatchInlineSnapshot(
-      `"{"employeeId":50030,"fullName":"John Doe","office":"NYC","class":"Red","startDate":"2019-01-01","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030"}"`,
-    );
+    expect(JSON.stringify(employee)).toMatchSnapshot();
 
     expect(JSON.stringify(employee.$as(FooInterface))).toMatchInlineSnapshot(
-      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030","fooSpt":"John Doe"}"`,
+      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50030,"$objectSpecifier":"Employee:50030","$metadata":{"type":"interface","rid":"ri.interface.main.interface.1","apiName":"FooInterface","displayName":"Foo Interface","description":"Interface for Foo","implements":[],"properties":{"fooSpt":{"displayName":"Foo","multiplicity":false,"description":"A foo","type":"string","nullable":true}},"links":{},"implementedBy":["Employee","Person"]},"fooSpt":"John Doe"}"`,
     );
 
     // Should have $title
-    expect(JSON.stringify(employee2)).toMatchInlineSnapshot(
-      `"{"employeeId":50031,"fullName":"Jane Doe","office":"SEA","class":"Blue","startDate":"2012-02-12","employeeStatus":{},"employeeSensor":{},"employeeLocation":{},"$apiName":"Employee","$objectType":"Employee","$primaryKey":50031,"$title":"Jane Doe","$objectSpecifier":"Employee:50031"}"`,
-    );
+    expect(JSON.stringify(employee2)).toMatchSnapshot();
 
     expect(JSON.stringify(employee2.$as(FooInterface))).toMatchInlineSnapshot(
-      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50031,"$objectSpecifier":"Employee:50031","$title":"Jane Doe","fooSpt":"Jane Doe"}"`,
+      `"{"$apiName":"FooInterface","$objectType":"Employee","$primaryKey":50031,"$objectSpecifier":"Employee:50031","$title":"Jane Doe","$metadata":{"type":"interface","rid":"ri.interface.main.interface.1","apiName":"FooInterface","displayName":"Foo Interface","description":"Interface for Foo","implements":[],"properties":{"fooSpt":{"displayName":"Foo","multiplicity":false,"description":"A foo","type":"string","nullable":true}},"links":{},"implementedBy":["Employee","Person"]},"fooSpt":"Jane Doe"}"`,
     );
   });
 
@@ -266,31 +263,12 @@ describe("convertWireToOsdkObjects", () => {
       {},
     )) as unknown as Osdk<FooInterface>[];
 
-    expect(objAsFoo).toMatchInlineSnapshot(`
-      {
-        "$apiName": "FooInterface",
-        "$objectSpecifier": "Employee:0",
-        "$objectType": "Employee",
-        "$primaryKey": 0,
-        "$title": "Steve",
-        "fooSpt": "Steve",
-      }
-    `);
+    expect(objAsFoo).toMatchSnapshot();
 
     const obj = objAsFoo.$as(Employee);
     expect(obj.fullName).toEqual("Steve");
 
-    expect(obj).toMatchInlineSnapshot(`
-      {
-        "$apiName": "Employee",
-        "$objectSpecifier": "Employee:0",
-        "$objectType": "Employee",
-        "$primaryKey": 0,
-        "$title": "Steve",
-        "employeeId": 0,
-        "fullName": "Steve",
-      }
-    `);
+    expect(obj).toMatchSnapshot();
   });
 
   it("reconstitutes interfaces properly without rid - new", async () => {
@@ -321,6 +299,28 @@ describe("convertWireToOsdkObjects", () => {
     expect(objAsFoo).toMatchInlineSnapshot(`
       {
         "$apiName": "FooInterface",
+        "$metadata": {
+          "apiName": "FooInterface",
+          "description": "Interface for Foo",
+          "displayName": "Foo Interface",
+          "implementedBy": [
+            "Employee",
+            "Person",
+          ],
+          "implements": [],
+          "links": {},
+          "properties": {
+            "fooSpt": {
+              "description": "A foo",
+              "displayName": "Foo",
+              "multiplicity": false,
+              "nullable": true,
+              "type": "string",
+            },
+          },
+          "rid": "ri.interface.main.interface.1",
+          "type": "interface",
+        },
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
@@ -332,16 +332,7 @@ describe("convertWireToOsdkObjects", () => {
     const obj = objAsFoo.$as(Employee);
     expect(obj.fullName).toEqual("Steve");
 
-    expect(obj).toMatchInlineSnapshot(`
-      {
-        "$apiName": "Employee",
-        "$objectSpecifier": "Employee:0",
-        "$objectType": "Employee",
-        "$primaryKey": 0,
-        "$title": "Steve",
-        "fullName": "Steve",
-      }
-    `);
+    expect(obj).toMatchSnapshot();
   });
 
   it("reconstitutes interfaces properly with rid", async () => {
@@ -370,6 +361,28 @@ describe("convertWireToOsdkObjects", () => {
     expect(objAsFoo).toMatchInlineSnapshot(`
       {
         "$apiName": "FooInterface",
+        "$metadata": {
+          "apiName": "FooInterface",
+          "description": "Interface for Foo",
+          "displayName": "Foo Interface",
+          "implementedBy": [
+            "Employee",
+            "Person",
+          ],
+          "implements": [],
+          "links": {},
+          "properties": {
+            "fooSpt": {
+              "description": "A foo",
+              "displayName": "Foo",
+              "multiplicity": false,
+              "nullable": true,
+              "type": "string",
+            },
+          },
+          "rid": "ri.interface.main.interface.1",
+          "type": "interface",
+        },
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
@@ -383,18 +396,7 @@ describe("convertWireToOsdkObjects", () => {
     const obj = objAsFoo.$as(Employee);
     expect(obj.fullName).toEqual("Steve");
 
-    expect(obj).toMatchInlineSnapshot(`
-      {
-        "$apiName": "Employee",
-        "$objectSpecifier": "Employee:0",
-        "$objectType": "Employee",
-        "$primaryKey": 0,
-        "$rid": "hiMom",
-        "$title": "Steve",
-        "employeeId": 0,
-        "fullName": "Steve",
-      }
-    `);
+    expect(obj).toMatchSnapshot();
     expect(obj.$rid).toEqual("hiMom");
   });
 
@@ -428,6 +430,28 @@ describe("convertWireToOsdkObjects", () => {
     expect(objAsFoo).toMatchInlineSnapshot(`
       {
         "$apiName": "FooInterface",
+        "$metadata": {
+          "apiName": "FooInterface",
+          "description": "Interface for Foo",
+          "displayName": "Foo Interface",
+          "implementedBy": [
+            "Employee",
+            "Person",
+          ],
+          "implements": [],
+          "links": {},
+          "properties": {
+            "fooSpt": {
+              "description": "A foo",
+              "displayName": "Foo",
+              "multiplicity": false,
+              "nullable": true,
+              "type": "string",
+            },
+          },
+          "rid": "ri.interface.main.interface.1",
+          "type": "interface",
+        },
         "$objectSpecifier": "Employee:0",
         "$objectType": "Employee",
         "$primaryKey": 0,
@@ -441,18 +465,7 @@ describe("convertWireToOsdkObjects", () => {
     const obj = objAsFoo.$as(Employee);
     expect(obj.fullName).toEqual("Steve");
 
-    expect(obj).toMatchInlineSnapshot(`
-      {
-        "$apiName": "Employee",
-        "$objectSpecifier": "Employee:0",
-        "$objectType": "Employee",
-        "$primaryKey": 0,
-        "$rid": "hiMom",
-        "$title": "Steve",
-        "employeeId": 0,
-        "fullName": "Steve",
-      }
-    `);
+    expect(obj).toMatchSnapshot();
     expect(obj.$rid).toEqual("hiMom");
   });
 

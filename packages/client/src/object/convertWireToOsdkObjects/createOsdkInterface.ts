@@ -68,6 +68,7 @@ export function createOsdkInterface<
         value: clone,
         enumerable: false,
       },
+      "$metadata": { value: interfaceDef, enumerable: true },
 
       [InterfaceDefRef]: { value: interfaceDef },
 
