@@ -47,7 +47,6 @@ import type {
   RetentionPolicy,
   SectionId,
 } from "@osdk/client.unstable";
-import consola from "consola";
 import * as fs from "fs";
 import * as path from "path";
 import invariant from "tiny-invariant";
@@ -137,7 +136,6 @@ export async function defineOntology(
     throw e;
   }
 
-  consola.warn(`Ontology -- ${JSON.stringify(ontologyDefinition, null, 2)}`);
   writeStaticObjects(outputDir);
   return {
     ontology: convertToWireOntologyIr(ontologyDefinition),
