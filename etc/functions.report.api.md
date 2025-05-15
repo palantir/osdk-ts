@@ -12,9 +12,6 @@ import type { ObjectTypeDefinition } from '@osdk/client';
 import type { Osdk } from '@osdk/client';
 import type { OsdkObjectPropertyType } from '@osdk/client';
 import type { PropertyKeys } from '@osdk/client';
-import { Range as Range_2 } from '@osdk/client';
-import { ThreeDimensionalAggregation } from '@osdk/client';
-import { TwoDimensionalAggregation } from '@osdk/client';
 
 export { Attachment }
 
@@ -104,16 +101,10 @@ export type Long<T extends string = string> = T & {
     	__longBrand?: void
 };
 
-export { Range_2 as Range }
-
-export { ThreeDimensionalAggregation }
-
 // @public (undocumented)
 export type TimestampISOString<T extends string = string> = T & {
     	__timestampBrand?: void
 };
-
-export { TwoDimensionalAggregation }
 
 // (No @packageDocumentation comment for this package)
 
