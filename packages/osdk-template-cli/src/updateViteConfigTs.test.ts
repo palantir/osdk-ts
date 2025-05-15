@@ -18,7 +18,7 @@ import { describe, expect, it } from "vitest";
 import { updateViteConfigTs } from "./updateViteConfig.js";
 
 describe("updateViteConfigTs", () => {
-  it("should add resolve configuration to the Vite config", () => {
+  it("should add resolve configuration to the Vite config when none exists", () => {
     const inputConfig = `
       import path from 'node:path';
       import { createRequire } from 'node:module';
@@ -59,7 +59,7 @@ describe("updateViteConfigTs", () => {
         resolve: {
           alias: {
             "@tutorial-advance-to-do-application/sdk":
-              path.resolve(__dirname, 'node_modules/@{{APPLICATION_PACKAGE_NAME}}/sdk')
+              path.resolve(__dirname, 'node_modules/@{{APPLICATION_PACKAGE_NAME}}/sdk'),
           },
         },
         plugins: [
@@ -84,7 +84,113 @@ describe("updateViteConfigTs", () => {
       "@tutorial-advance-to-do-application/sdk",
     );
 
-    // Normalize whitespace for comparison
+    const normalize = (str: string) => str.replace(/\s+/g, " ").trim();
+
+    expect(normalize(result)).toBe(normalize(expectedOutputConfig));
+  });
+
+  it("should add the alias as the first entry if resolve section exists without it", () => {
+    const inputConfig = `
+      import path from 'node:path';
+      import { defineConfig } from 'vite';
+
+      export default defineConfig({
+        resolve: {
+          alias: {
+            "@osdk-template-cli": path.resolve(__dirname, '../..'),
+          },
+        },
+        plugins: [],
+      });
+    `;
+
+    const expectedOutputConfig = `
+      import path from 'node:path';
+      import { defineConfig } from 'vite';
+
+      export default defineConfig({
+        resolve: {
+          alias: {
+            "@tutorial-advance-to-do-application/sdk":
+              path.resolve(__dirname, 'node_modules/@{{APPLICATION_PACKAGE_NAME}}/sdk'),
+            "@osdk-template-cli": path.resolve(__dirname, '../..'),
+          },
+        },
+        plugins: [],
+      });
+    `;
+
+    const result = updateViteConfigTs(
+      inputConfig,
+      "@tutorial-advance-to-do-application/sdk",
+    );
+
+    const normalize = (str: string) => str.replace(/\s+/g, " ").trim();
+
+    expect(normalize(result)).toBe(normalize(expectedOutputConfig));
+  });
+
+  it("should not modify config if alias already exists", () => {
+    const inputConfig = `
+      import path from 'node:path';
+      import { defineConfig } from 'vite';
+
+      export default defineConfig({
+        resolve: {
+          alias: {
+            "@tutorial-advance-to-do-application/sdk":
+              path.resolve(__dirname, 'node_modules/@tutorial-advance-to-do-application/sdk'),
+            "@osdk-template-cli": path.resolve(__dirname, '../..'),
+          },
+        },
+        plugins: [],
+      });
+    `;
+
+    const result = updateViteConfigTs(
+      inputConfig,
+      "@tutorial-advance-to-do-application/sdk",
+    );
+
+    const normalize = (str: string) => str.replace(/\s+/g, "").trim();
+
+    expect(normalize(result)).toBe(normalize(inputConfig));
+  });
+
+  it("should add alias section if resolve exists without alias", () => {
+    const inputConfig = `
+      import path from 'node:path';
+      import { defineConfig } from 'vite';
+
+      export default defineConfig({
+        resolve: {
+          extensions: ['.js', '.ts', '.jsx', '.tsx'],
+        },
+        plugins: [],
+      });
+    `;
+
+    const expectedOutputConfig = `
+      import path from 'node:path';
+      import { defineConfig } from 'vite';
+
+      export default defineConfig({
+        resolve: {
+          alias: {
+            "@tutorial-advance-to-do-application/sdk":
+              path.resolve(__dirname, 'node_modules/@{{APPLICATION_PACKAGE_NAME}}/sdk'),
+          },
+          extensions: ['.js', '.ts', '.jsx', '.tsx'],
+        },
+        plugins: [],
+      });
+    `;
+
+    const result = updateViteConfigTs(
+      inputConfig,
+      "@tutorial-advance-to-do-application/sdk",
+    );
+
     const normalize = (str: string) => str.replace(/\s+/g, " ").trim();
 
     expect(normalize(result)).toBe(normalize(expectedOutputConfig));

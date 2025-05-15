@@ -22,6 +22,7 @@ import {
   generateEnvProduction,
 } from "./generate/generateEnv.js";
 import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.js";
+import { generateJemmaFolderWithContent } from "./generate/generateJemmaFolderWithContent.js";
 import { generateNpmRc } from "./generate/generateNpmRc.js";
 import { getTemplatePackageFile } from "./getTemplatePackageFile.js";
 import { green } from "./highlight.js";
@@ -115,6 +116,21 @@ export async function run(
     // Start copying from the source project path to the destination root
     await copyDirectory(sourceProjectPath, root);
 
+    // Copy .jemma directory and its files from template to destination
+    async function copyJemmaDirectory() {
+      const jemmaSrc = path.join(sourceProjectPath, ".jemma");
+      const jemmaDest = path.join(root, ".jemma");
+      try {
+        // Check if .jemma exists in the source
+        await fs.access(jemmaSrc);
+        await copyDirectory(jemmaSrc, jemmaDest);
+        consola.info("Copied .jemma directory");
+      } catch {
+        consola.warn(".jemma directory not found in source project");
+      }
+    }
+    await copyJemmaDirectory();
+
     const npmRc = generateNpmRc();
     await fs.writeFile(path.join(root, ".npmrc"), npmRc);
     const envDevelopment = generateEnvDevelopment({
@@ -161,6 +177,12 @@ export async function run(
     const updatedViteConfig = updateViteConfigTs(viteConfig, osdkPackage);
     await fs.writeFile(viteConfigPath, updatedViteConfig);
     consola.info(`Updating vite.config.ts`);
+    // add .jemma folder with content
+    const results = await generateJemmaFolderWithContent(root);
+    if (!results) {
+      throw new Error("Failed to create .jemma folder");
+    }
+    consola.info(`Creating .jemma folder with content`);
     consola.success("Success");
 
     const cdRelative = path.relative(cwd, root);

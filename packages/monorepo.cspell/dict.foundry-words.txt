@@ -10,3 +10,13 @@ writeback
 geohash
 mediasets
 efgh
+Jemma
+jemma
+getcwd
+urlopen
+pipefail
+MSYS
+esac
+armv
+pushd
+popd
