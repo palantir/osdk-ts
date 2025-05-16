@@ -302,6 +302,17 @@ versions:
         - template: |-
             const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
                 .where(query => query.{{property}}.containsAllTerms("foo bar"));
+      containsTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            // Edit this import if your client location differs
+            import { client } from "./client";
+            const filteredObjects = client({{objectType}})
+                .where({
+                    {{property}} : { $contains: {{{arrayElementValue}}} }
+                })
+          computedVariables:
+            - arrayElementValue
       equalityTemplate:
         - template: |-
             {{#isDateProperty}}
@@ -1839,7 +1850,7 @@ versions:
 
             // Object set operations can be chained. e.g. To find all objects in objectSetA 
             // that are present in objectSetB but do not exist in objectSetC:
-            const result: {{objectType}}.ObjectSet = objectSetA
+            const result = objectSetA
               .intersect(objectSetB)
               .subtract(objectSetC);
 
@@ -1852,7 +1863,7 @@ versions:
             const objectSetC = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "c"}})
 
             // Combine objectSetA, objectSetB and objectSetC
-            const result: {{objectType}}.ObjectSet = objectSetA
+            const result = {{objectType}}.ObjectSet = objectSetA
               .union(objectSetB)
               .union(objectSetC); // alternatively: objectSetA.union(objectSetB, objectSetC)
 
@@ -1866,7 +1877,7 @@ versions:
 
 
             // Return objects in objectSetA that are not present in either objectSetB or objectSetC
-            const result: {{objectType}}.ObjectSet = objectSetA
+            const result = {{objectType}}.ObjectSet = objectSetA
               .subtract(objectSetB)
               .subtract(objectSetC); // alternatively: objectSetA.subtract(objectSetB, objectSetC)
 
@@ -1880,9 +1891,19 @@ versions:
 
 
             // Return all objects common to objectSetA, objectSetB and objectSetC
-            const result: {{objectType}}.ObjectSet = objectSetA
+            const result = {{objectType}}.ObjectSet = objectSetA
               .intersect(objectSetB)
               .intersect(objectSetC); // alternatively: objectSetA.intersect(objectSetB, objectSetC)
+      searchAround:
+        - template: |-
+            // Edit this import if your client location differs
+            import { client } from "./client";
+            import { {{sourceObjectType}} } from "{{{packageName}}}";
+            // Take 3 `{{sourceObjectType}}` objects
+            const objects = await client({{sourceObjectType}}).take(3);
+            // Traverse the `{{linkApiName}}` link type to find linked `{{linkedObjectType}}` objects
+            const linkedObjects = {{sourceObjectType}}.pivotTo("{{linkApiName}}")
+
   "2.1.0":
     snippets:
       loadGeotimeSeriesPointsSnippet:
