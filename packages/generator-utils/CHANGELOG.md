@@ -46,9 +46,9 @@
 
 ### Minor Changes
 
--   25fd9f0: Updating package.json to have better entry points to support react native bundlers.
--   0beaf9d: Introduces generator utils
--   c691c8b: Package now has experimental support for commonjs
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 0beaf9d: Introduces generator utils
+- c691c8b: Package now has experimental support for commonjs
 
 ## 2.1.0-beta.31
 

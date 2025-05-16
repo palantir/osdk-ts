@@ -10,9 +10,9 @@
 
 ### Minor Changes
 
--   25fd9f0: Updating package.json to have better entry points to support react native bundlers.
--   c691c8b: Package now has experimental support for commonjs
--   963addb: Include API error info in CLI error messages
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- c691c8b: Package now has experimental support for commonjs
+- 963addb: Include API error info in CLI error messages
 
 ## 2.1.0-beta.2
 

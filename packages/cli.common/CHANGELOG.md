@@ -50,11 +50,11 @@
 
 ### Minor Changes
 
--   25fd9f0: Updating package.json to have better entry points to support react native bundlers.
--   1dca4cb: Use @osdk/foundry-config-json in @osdk/widget.vite-plugin.unstable for shared config and auto versioning
--   cf9dcbe: Split out @osdk/foundry-config-json package
--   e968bc0: Use api:ontologies-X instead of api:X-data
--   3d2ba6f: Revert api:x-read/write back to api:read/write-x
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 1dca4cb: Use @osdk/foundry-config-json in @osdk/widget.vite-plugin.unstable for shared config and auto versioning
+- cf9dcbe: Split out @osdk/foundry-config-json package
+- e968bc0: Use api:ontologies-X instead of api:X-data
+- 3d2ba6f: Revert api:x-read/write back to api:read/write-x
 
 ## 0.25.0-beta.31
 

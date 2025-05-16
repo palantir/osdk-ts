@@ -151,7 +151,7 @@ export async function copyChangelogs(
    */
   const packageInfo = await getPackageInfo();
 
-  const ignoredPackages = [];
+  const ignoredPackages: string[] = [];
 
   for (const pkg of packageInfo) {
     if (ignoredPackages.includes(pkg.name)) {

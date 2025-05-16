@@ -4,14 +4,14 @@
 
 ### Major Changes
 
--   c4fdca1: Make @osdk/foundry-config-json public
+- c4fdca1: Make @osdk/foundry-config-json public
 
 ### Minor Changes
 
--   1dca4cb: Use @osdk/foundry-config-json in @osdk/widget.vite-plugin.unstable for shared config and auto versioning
--   cf9dcbe: Split out @osdk/foundry-config-json package
--   8766327: CLI unstable widgetset commands
--   83e7ea3: Move from a single-widget to widget set model for custom widget libraries
+- 1dca4cb: Use @osdk/foundry-config-json in @osdk/widget.vite-plugin.unstable for shared config and auto versioning
+- cf9dcbe: Split out @osdk/foundry-config-json package
+- 8766327: CLI unstable widgetset commands
+- 83e7ea3: Move from a single-widget to widget set model for custom widget libraries
 
 ## 1.0.0-beta.4
 

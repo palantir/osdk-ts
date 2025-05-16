@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
--   25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
 
 ## 0.3.0-beta.0
 

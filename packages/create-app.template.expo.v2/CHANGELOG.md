@@ -50,8 +50,8 @@
 
 ### Minor Changes
 
--   f0b519d: Upgrade to vitest 3 and vite 6
--   ef09e2d: Add Expo template to create-app
+- f0b519d: Upgrade to vitest 3 and vite 6
+- ef09e2d: Add Expo template to create-app
 
 ## 2.1.0-beta.31
 
