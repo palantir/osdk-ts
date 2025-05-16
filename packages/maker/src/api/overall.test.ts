@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as fs from "fs";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   defineAction,
@@ -34,7 +35,12 @@ import {
 } from "./defineOntology.js";
 import { defineSharedPropertyType } from "./defineSpt.js";
 import { defineValueType } from "./defineValueType.js";
-import type { InterfaceType } from "./types.js";
+import { importOntologyEntity } from "./importOntologyEntity.js";
+import {
+  type InterfaceType,
+  OntologyEntityTypeEnum,
+  type SharedPropertyType,
+} from "./types.js";
 
 describe("Ontology Defining", () => {
   beforeEach(async () => {
@@ -5053,6 +5059,298 @@ describe("Ontology Defining", () => {
         },
       }
         `);
+    });
+  });
+  describe("Imports", () => {
+    it("Simple importing works", () => {
+      // does the same as "import { spt } from '@other/package'"
+      const spt: SharedPropertyType = {
+        apiName: "com.other.package.spt",
+        nonNameSpacedApiName: "spt",
+        type: "string",
+        __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
+      };
+      importOntologyEntity(spt);
+
+      const myInterface = defineInterface({
+        apiName: "myInterface",
+        properties: {
+          spt,
+        },
+      });
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "blockData": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {
+              "com.palantir.myInterface": {
+                "interfaceType": {
+                  "allExtendsInterfaces": [],
+                  "allLinks": [],
+                  "allProperties": [],
+                  "allPropertiesV2": {},
+                  "apiName": "com.palantir.myInterface",
+                  "displayMetadata": {
+                    "description": "myInterface",
+                    "displayName": "myInterface",
+                    "icon": undefined,
+                  },
+                  "extendsInterfaces": [],
+                  "links": [],
+                  "properties": [],
+                  "propertiesV2": {
+                    "com.other.package.spt": {
+                      "required": true,
+                      "sharedPropertyType": {
+                        "aliases": [],
+                        "apiName": "com.other.package.spt",
+                        "baseFormatter": undefined,
+                        "dataConstraints": undefined,
+                        "displayMetadata": {
+                          "description": undefined,
+                          "displayName": "com.other.package.spt",
+                          "visibility": "NORMAL",
+                        },
+                        "gothamMapping": undefined,
+                        "indexedForSearch": true,
+                        "type": {
+                          "string": {
+                            "analyzerOverride": undefined,
+                            "enableAsciiFolding": undefined,
+                            "isLongText": false,
+                            "supportsEfficientLeadingWildcard": false,
+                            "supportsExactMatching": true,
+                          },
+                          "type": "string",
+                        },
+                        "typeClasses": [],
+                        "valueType": undefined,
+                      },
+                    },
+                  },
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                },
+              },
+            },
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedTypes": {
+            "actionTypes": [],
+            "interfaceTypes": [],
+            "linkTypes": [],
+            "objectTypes": [],
+            "sharedPropertyTypes": [
+              {
+                "apiName": "com.other.package.spt",
+                "description": undefined,
+                "displayName": "com.other.package.spt",
+                "type": {
+                  "string": {
+                    "analyzerOverride": undefined,
+                    "enableAsciiFolding": undefined,
+                    "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
+                    "supportsExactMatching": true,
+                  },
+                  "type": "string",
+                },
+              },
+            ],
+          },
+        }
+      `);
+    });
+    it("Export files are generated correctly", async () => {
+      await defineOntology("com.my.package.", () => {
+        const mySpt = defineSharedPropertyType({
+          apiName: "mySpt",
+          type: "string",
+        });
+        const myInterface = defineInterface({
+          apiName: "myInterface",
+          properties: {
+            mySpt,
+          },
+        });
+        const myObject = defineObject({
+          titlePropertyApiName: "bar",
+          displayName: "My Object",
+          pluralDisplayName: "myObjects",
+          apiName: "myObject",
+          primaryKeyPropertyApiName: "bar",
+          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          implementsInterfaces: [{
+            implements: myInterface,
+            propertyMapping: [{ interfaceProperty: "mySpt", mapsTo: "bar" }],
+          }],
+        });
+      }, "src/generated/export_files_are_generated_correctly");
+
+      expect(
+        fs.readFileSync(
+          "src/generated/export_files_are_generated_correctly/build/interface-types/myInterface.ts",
+          "utf8",
+        ),
+      ).toMatchInlineSnapshot(`
+        "
+        import { importOntologyEntity } from '@osdk/maker';
+
+        export const myInterface = {
+          "apiName": "com.my.package.myInterface",
+          "displayMetadata": {
+            "displayName": "myInterface",
+            "description": "myInterface"
+          },
+          "extendsInterfaces": [],
+          "links": [],
+          "status": {
+            "type": "active",
+            "active": {}
+          },
+          "propertiesV2": {
+            "mySpt": {
+              "required": true,
+              "sharedPropertyType": {
+                "apiName": "com.my.package.mySpt",
+                "type": "string",
+                "nonNameSpacedApiName": "mySpt",
+                "displayName": "mySpt",
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE"
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE"
+                  }
+                ],
+                "__type": "SHARED_PROPERTY_TYPE"
+              }
+            }
+          },
+          "__type": "INTERFACE_TYPE"
+        } as const;
+                
+        importOntologyEntity(myInterface);
+                "
+      `);
+
+      expect(
+        fs.readFileSync(
+          "src/generated/export_files_are_generated_correctly/build/object-types/myObject.ts",
+          "utf8",
+        ),
+      ).toMatchInlineSnapshot(`
+        "
+        import { importOntologyEntity } from '@osdk/maker';
+
+        export const myObject = {
+          "titlePropertyApiName": "bar",
+          "displayName": "My Object",
+          "pluralDisplayName": "myObjects",
+          "apiName": "com.my.package.myObject",
+          "primaryKeyPropertyApiName": "bar",
+          "properties": [
+            {
+              "apiName": "bar",
+              "type": "string",
+              "displayName": "Bar"
+            }
+          ],
+          "implementsInterfaces": [
+            {
+              "implements": {
+                "apiName": "com.my.package.myInterface",
+                "displayMetadata": {
+                  "displayName": "myInterface",
+                  "description": "myInterface"
+                },
+                "extendsInterfaces": [],
+                "links": [],
+                "status": {
+                  "type": "active",
+                  "active": {}
+                },
+                "propertiesV2": {
+                  "mySpt": {
+                    "required": true,
+                    "sharedPropertyType": {
+                      "apiName": "com.my.package.mySpt",
+                      "type": "string",
+                      "nonNameSpacedApiName": "mySpt",
+                      "displayName": "mySpt",
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE"
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE"
+                        }
+                      ],
+                      "__type": "SHARED_PROPERTY_TYPE"
+                    }
+                  }
+                },
+                "__type": "INTERFACE_TYPE"
+              },
+              "propertyMapping": [
+                {
+                  "interfaceProperty": "com.my.package.mySpt",
+                  "mapsTo": "bar"
+                }
+              ]
+            }
+          ],
+          "__type": "OBJECT_TYPE"
+        } as const;
+                
+        importOntologyEntity(myObject);
+                "
+      `);
+
+      expect(
+        fs.readFileSync(
+          "src/generated/export_files_are_generated_correctly/build/shared-property-types/mySpt.ts",
+          "utf8",
+        ),
+      ).toMatchInlineSnapshot(`
+        "
+        import { importOntologyEntity } from '@osdk/maker';
+
+        export const mySpt = {
+          "apiName": "com.my.package.mySpt",
+          "type": "string",
+          "nonNameSpacedApiName": "mySpt",
+          "displayName": "mySpt",
+          "typeClasses": [
+            {
+              "kind": "render_hint",
+              "name": "SELECTABLE"
+            },
+            {
+              "kind": "render_hint",
+              "name": "SORTABLE"
+            }
+          ],
+          "__type": "SHARED_PROPERTY_TYPE"
+        } as const;
+                
+        importOntologyEntity(mySpt);
+                "
+      `);
     });
   });
 });
