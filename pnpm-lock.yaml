@@ -1471,8 +1471,8 @@ importers:
         specifier: workspace:*
         version: link:../client.unstable
       '@osdk/foundry.core':
-        specifier: 2.18.0
-        version: 2.18.0
+        specifier: 2.20.0
+        version: 2.20.0
       '@osdk/foundry.ontologies':
         specifier: 2.18.0
         version: 2.18.0
@@ -3614,8 +3614,8 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/foundry.core':
-        specifier: 2.18.0
-        version: 2.18.0
+        specifier: 2.20.0
+        version: 2.20.0
       '@osdk/foundry.geo':
         specifier: 2.18.0
         version: 2.18.0
