@@ -42,9 +42,9 @@ fs.writeFileSync(
 // THIS FILE IS GENERATED. DO NOT MODIFY.
 // You probably want to modify ../../../codegen.mjs instead.
 
-import type { DocsSnippets } from "@osdk/docs-spec-core";
+import type { SdkSnippets } from "@osdk/docs-spec-core";
 import type { OSDK_SNIPPETS_SPEC } from "@osdk/docs-spec-sdk";
 
-export const snippets: DocsSnippets<typeof OSDK_SNIPPETS_SPEC> = ${docsJson};
+export const snippets: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> = ${docsJson};
   `,
 );

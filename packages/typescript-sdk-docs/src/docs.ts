@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DocsSnippets } from "@osdk/docs-spec-core";
+import type { SdkSnippets } from "@osdk/docs-spec-core";
 import type {
   ActionParameterSampleValuesIR,
   ActionParameterSampleValueTypeIR,
@@ -29,7 +29,7 @@ import { snippets } from "./generatedNoCheck/docsNoComputedVariables.js";
 
 const indentedNewLine = (spacesCount: number) => `\n${" ".repeat(spacesCount)}`;
 
-export const TYPESCRIPT_OSDK_SNIPPETS: DocsSnippets<typeof OSDK_SNIPPETS_SPEC> =
+export const TYPESCRIPT_OSDK_SNIPPETS: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> =
   {
     ...snippets,
     computedVariables: {
