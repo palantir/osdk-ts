@@ -242,6 +242,145 @@
   - @osdk/api@2.2.0-beta.2
   - @osdk/generator@2.2.0-beta.2
 
+## 2.1.0
+
+### Minor Changes
+
+-   3dc9676: Explicitly label package.json as type module now.
+-   25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+-   1b60b3d: Packages use more specific versions instead of indirection through shared.net
+-   c70821e: Fix generation of actions with new parameter types.
+-   71b5a9d: Packages generated with foundry-sdk-generator are now properly esm
+-   1812118: Add geotime support for OSDK.
+-   bc1761c: Update platform API dependencies.
+-   3a85529: Generated SDKS produce valid ESM packages
+-   bb8b219: Use new external packages instead of the internal ones.
+-   44e62f6: Updating fetch for auth and other packages.
+-   91cfa3a: Fixing url parsing for client.
+-   9d35a1f: Remove unused imports
+-   2c63bc5: Fixes being unable to generate in dev console without --beta
+-   c9da74c: Improves code quality by fixing linting errors
+-   abfe4b3: Add support for reading struct properties.
+-   908c8f6: We now generate osdk libs that support commonjs
+-   0beaf9d: Generated packages should have proper package.json
+-   cf57a8d: Fixing resolution for object type parameters.
+-   9018dc2: Updating platform api dependencies.
+-   6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+-   0beaf9d: Generated packages now use ^ dependencies on @osdk/api and @osdk/client
+-   09eaf24: Update to latest platform sdks
+-   71dfb4c: Now export all api shapes from client, so use that dependency instead.
+-   d665147: Update platform sdk deps
+
+### Patch Changes
+
+-   Updated dependencies [966d408]
+-   Updated dependencies [b773513]
+-   Updated dependencies [cddc196]
+-   Updated dependencies [d794c19]
+-   Updated dependencies [05febf4]
+-   Updated dependencies [55c05f2]
+-   Updated dependencies [a06ec35]
+-   Updated dependencies [0dc40b0]
+-   Updated dependencies [3703d81]
+-   Updated dependencies [6f50516]
+-   Updated dependencies [25fd9f0]
+-   Updated dependencies [1b60b3d]
+-   Updated dependencies [11a05cc]
+-   Updated dependencies [7865cb6]
+-   Updated dependencies [e6fbd94]
+-   Updated dependencies [9c4efe6]
+-   Updated dependencies [0a7c747]
+-   Updated dependencies [f0b519d]
+-   Updated dependencies [3ea2e79]
+-   Updated dependencies [1812118]
+-   Updated dependencies [d927a1d]
+-   Updated dependencies [bc1761c]
+-   Updated dependencies [656f975]
+-   Updated dependencies [f1145ff]
+-   Updated dependencies [1c59d93]
+-   Updated dependencies [f446d0c]
+-   Updated dependencies [c80ca45]
+-   Updated dependencies [bb8b219]
+-   Updated dependencies [44e62f6]
+-   Updated dependencies [03f95eb]
+-   Updated dependencies [91cfa3a]
+-   Updated dependencies [94463b6]
+-   Updated dependencies [14624f7]
+-   Updated dependencies [1a89f23]
+-   Updated dependencies [9d35a1f]
+-   Updated dependencies [c691c8b]
+-   Updated dependencies [749cf69]
+-   Updated dependencies [f03e39f]
+-   Updated dependencies [d464009]
+-   Updated dependencies [11088aa]
+-   Updated dependencies [72c1905]
+-   Updated dependencies [720218d]
+-   Updated dependencies [9298f75]
+-   Updated dependencies [eb27b54]
+-   Updated dependencies [7a95618]
+-   Updated dependencies [f34b3d4]
+-   Updated dependencies [d88fdb9]
+-   Updated dependencies [8eb2378]
+-   Updated dependencies [acbfab9]
+-   Updated dependencies [027db73]
+-   Updated dependencies [c9da74c]
+-   Updated dependencies [27f0f77]
+-   Updated dependencies [015279b]
+-   Updated dependencies [62c1d63]
+-   Updated dependencies [3c9ac22]
+-   Updated dependencies [1591f04]
+-   Updated dependencies [91cfa3a]
+-   Updated dependencies [03e1941]
+-   Updated dependencies [e86e91d]
+-   Updated dependencies [963addb]
+-   Updated dependencies [abfe4b3]
+-   Updated dependencies [b79becf]
+-   Updated dependencies [27866a8]
+-   Updated dependencies [0cd1603]
+-   Updated dependencies [a7a4aef]
+-   Updated dependencies [e5fe7c0]
+-   Updated dependencies [1b2e8c9]
+-   Updated dependencies [9f3807c]
+-   Updated dependencies [ecd4aee]
+-   Updated dependencies [d12c92b]
+-   Updated dependencies [0c56d21]
+-   Updated dependencies [a5a0ea4]
+-   Updated dependencies [e548b9b]
+-   Updated dependencies [6671a39]
+-   Updated dependencies [5e78575]
+-   Updated dependencies [ee6224b]
+-   Updated dependencies [1dc0228]
+-   Updated dependencies [6c60414]
+-   Updated dependencies [5fe2c8d]
+-   Updated dependencies [fa02ebf]
+-   Updated dependencies [696c59c]
+-   Updated dependencies [9af346e]
+-   Updated dependencies [d3b3f35]
+-   Updated dependencies [c682504]
+-   Updated dependencies [785f663]
+-   Updated dependencies [9018dc2]
+-   Updated dependencies [a6c320d]
+-   Updated dependencies [8026baf]
+-   Updated dependencies [6b6c8a1]
+-   Updated dependencies [c537e2d]
+-   Updated dependencies [3fc2ee6]
+-   Updated dependencies [518972b]
+-   Updated dependencies [0d8ac3b]
+-   Updated dependencies [73fa373]
+-   Updated dependencies [bf0e3b4]
+-   Updated dependencies [8e6a5f4]
+-   Updated dependencies [09eaf24]
+-   Updated dependencies [71dfb4c]
+-   Updated dependencies [2d5e648]
+-   Updated dependencies [31e7d70]
+-   Updated dependencies [c4f88a8]
+-   Updated dependencies [d665147]
+-   Updated dependencies [f19da8e]
+    -   @osdk/client@2.1.0
+    -   @osdk/api@2.1.0
+    -   @osdk/generator@2.1.0
+    -   @osdk/shared.client.impl@1.1.0
+
 ## 2.1.0-beta.31
 
 ### Minor Changes

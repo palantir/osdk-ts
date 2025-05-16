@@ -177,6 +177,62 @@
 - @osdk/generator@2.2.0-beta.2
 - @osdk/cli.common@0.26.0-beta.2
 
+## 0.25.0
+
+### Minor Changes
+
+-   25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+-   1b60b3d: Packages use more specific versions instead of indirection through shared.net
+-   1812118: Add geotime support for OSDK.
+-   bc1761c: Update platform API dependencies.
+-   bb8b219: Use new external packages instead of the internal ones.
+-   91cfa3a: Fixing url parsing for client.
+-   abfe4b3: Add support for reading struct properties.
+-   9018dc2: Updating platform api dependencies.
+-   6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+-   09eaf24: Update to latest platform sdks
+-   d665147: Update platform sdk deps
+
+### Patch Changes
+
+-   Updated dependencies [d794c19]
+-   Updated dependencies [0dc40b0]
+-   Updated dependencies [3703d81]
+-   Updated dependencies [25fd9f0]
+-   Updated dependencies [1b60b3d]
+-   Updated dependencies [f0b519d]
+-   Updated dependencies [1812118]
+-   Updated dependencies [1dca4cb]
+-   Updated dependencies [bc1761c]
+-   Updated dependencies [cf9dcbe]
+-   Updated dependencies [e968bc0]
+-   Updated dependencies [bb8b219]
+-   Updated dependencies [44e62f6]
+-   Updated dependencies [03f95eb]
+-   Updated dependencies [91cfa3a]
+-   Updated dependencies [9d35a1f]
+-   Updated dependencies [c691c8b]
+-   Updated dependencies [749cf69]
+-   Updated dependencies [027db73]
+-   Updated dependencies [c9da74c]
+-   Updated dependencies [963addb]
+-   Updated dependencies [abfe4b3]
+-   Updated dependencies [3d2ba6f]
+-   Updated dependencies [ecd4aee]
+-   Updated dependencies [a5a0ea4]
+-   Updated dependencies [ee6224b]
+-   Updated dependencies [696c59c]
+-   Updated dependencies [9018dc2]
+-   Updated dependencies [6b6c8a1]
+-   Updated dependencies [518972b]
+-   Updated dependencies [bf0e3b4]
+-   Updated dependencies [09eaf24]
+-   Updated dependencies [71dfb4c]
+-   Updated dependencies [d665147]
+    -   @osdk/generator@2.1.0
+    -   @osdk/shared.client.impl@1.1.0
+    -   @osdk/cli.common@0.25.0
+
 ## 0.25.0-beta.31
 
 ### Minor Changes

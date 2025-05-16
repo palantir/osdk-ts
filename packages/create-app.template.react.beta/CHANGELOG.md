@@ -59,6 +59,25 @@
 
 ## 2.2.0-beta.2
 
+## 2.1.0
+
+### Minor Changes
+
+-   62a3d1f: Use fixed versions for create-app client and oauth deps
+-   25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+-   f0b519d: Upgrade to vitest 3 and vite 6
+-   35efba7: Upgraded to eslint 9
+-   04e69b4: Remove warning about import paths
+-   51b270d: Support 2.0 syntax in Next and Vue templates
+-   f99c04d: fix ts2.0 template so it doesn't break on lint task
+-   6671a39: Upgrade execa where used
+-   425dda2: Fixes create-app template for beta versions
+-   1f7e0a1: "Fixes dependency on OSDK"
+-   bab844f: Update vitest to 2.1.2
+-   f99c04d: update dev dependencies
+-   bab844f: Upgrade vite to 5.4.8
+-   0e1a2e3: Add the scopes option to OSDK CLI and update all example generators to include the scopes if provided, else, hide the scopes to avoid confusion
+
 ## 2.1.0-beta.31
 
 ## 2.1.0-beta.30
