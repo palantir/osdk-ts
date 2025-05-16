@@ -120,10 +120,11 @@ export namespace ActionParam {
         	};
     	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
-    	// Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "ObjectIdentifiers" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    export type ObjectType<T extends ObjectTypeDefinition> = MinimalOsdkInstance<T> | OsdkObjectPrimaryKeyType<T>;
+    export type ObjectType<T extends ObjectTypeDefinition> = ObjectIdentifiers<T> | OsdkObjectPrimaryKeyType<T>;
     	// (undocumented)
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
     	// (undocumented)
@@ -749,18 +750,6 @@ export interface MediaReference {
 }
 
 // @public (undocumented)
-export interface MinimalOsdkInstance<Q extends ObjectOrInterfaceDefinition> {
-    	// (undocumented)
-    readonly $apiName: Q["apiName"];
-    	// (undocumented)
-    readonly $objectType: string;
-    	// (undocumented)
-    readonly $primaryKey: PrimaryKeyType<Q>;
-    	// (undocumented)
-    readonly $title: string | undefined;
-}
-
-// @public (undocumented)
 export type NullabilityAdherence = false | "throw" | "drop";
 
 // @public (undocumented)
@@ -947,9 +936,13 @@ export namespace Osdk {
 }
 
 // @public (undocumented)
-export interface OsdkBase<Q extends ObjectOrInterfaceDefinition> extends MinimalOsdkInstance<Q> {
+export interface OsdkBase<Q extends ObjectOrInterfaceDefinition> extends ObjectIdentifiers<Q> {
     	// (undocumented)
     readonly $objectSpecifier: ObjectSpecifier<Q>;
+    	// (undocumented)
+    readonly $objectType: string;
+    	// (undocumented)
+    readonly $title: string | undefined;
 }
 
 // @public @deprecated (undocumented)
@@ -1125,7 +1118,7 @@ export namespace QueryParam {
     	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
     	// (undocumented)
-    export type ObjectType<T extends ObjectTypeDefinition> = MinimalOsdkInstance<T> | OsdkObjectPrimaryKeyType<T>;
+    export type ObjectType<T extends ObjectTypeDefinition> = ObjectIdentifiers<T> | OsdkObjectPrimaryKeyType<T>;
     	// (undocumented)
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
     	// Warning: (ae-forgotten-export) The symbol "AggregationRangeKeyTypes" needs to be exported by the entry point index.d.ts
