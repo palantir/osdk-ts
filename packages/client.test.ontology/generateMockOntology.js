@@ -32,9 +32,34 @@ try {
   // ignored, only needed for regeneration
 }
 
-const fullOntology = new LegacyFauxFoundry()
+const fauxFoundry = new LegacyFauxFoundry();
+const fullOntology = fauxFoundry
   .getDefaultOntology()
-  .getOntologyFullMetadata();
+  .getFilteredOntologyMetadata(
+    {
+      actionTypes: fauxFoundry.getDefaultOntology().getAllActionTypes().map((
+        actionType,
+      ) => actionType.apiName),
+      objectTypes: fauxFoundry.getDefaultOntology().getAllObjectTypes().map((
+        objectType,
+      ) => objectType.objectType.apiName),
+      interfaceTypes: fauxFoundry.getDefaultOntology().getAllInterfaceTypes()
+        .map((
+          interfaceType,
+        ) => interfaceType.apiName),
+      linkTypes: fauxFoundry.getDefaultOntology().getAllObjectTypes().flatMap(
+        x => x.linkTypes.map(y => y.apiName),
+      ),
+      // @ts-ignore
+      queryTypes: [
+        ...new Set(
+          fauxFoundry.getDefaultOntology().getAllQueryTypes().map(x =>
+            x.apiName
+          ),
+        ),
+      ],
+    },
+  );
 
 const ontologyWithoutUnsupportedAction = {
   ...fullOntology,
@@ -65,4 +90,5 @@ await generateClientSdkVersionTwoPointZero(
   undefined,
   undefined,
   true,
+  ["addOne"],
 );

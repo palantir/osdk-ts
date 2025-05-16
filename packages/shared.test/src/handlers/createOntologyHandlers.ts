@@ -29,7 +29,7 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
   fauxFoundry,
 ) => [
   /**
-   * Load ObjectSet Objects
+   * Load full Ontology metadata
    */
   OntologiesV2.OntologiesV2.getFullMetadata(
     baseUrl,
@@ -37,6 +37,18 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
         .getOntologyFullMetadata();
+    },
+  ),
+
+  /**
+   * Load ontology metadata for the requested object, link, action, query, and interface types.
+   */
+  OntologiesV2.OntologiesV2.loadMetadata(
+    baseUrl,
+    async ({ params, request }) => {
+      return fauxFoundry
+        .getOntology(params.ontologyApiName)
+        .getFilteredOntologyMetadata(await request.json());
     },
   ),
 
@@ -85,9 +97,18 @@ export const createOntologyHandlers: FauxFoundryHandlersFactory = (
   OntologiesV2.QueryTypes.get(
     baseUrl,
     async (req) => {
+      const queryParams = Object.fromEntries(
+        new URL(req.request.url).searchParams.entries(),
+      );
+
+      const version = queryParams["version"];
       return fauxFoundry
         .getOntology(req.params.ontologyApiName)
-        .getQueryDef(req.params.queryTypeApiName);
+        .getQueryDef(
+          version
+            ? `${req.params.queryTypeApiName}:${version}`
+            : req.params.queryTypeApiName,
+        );
     },
   ),
 

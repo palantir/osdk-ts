@@ -1086,9 +1086,13 @@ export interface QueryDefinition<T = any> {
     	// (undocumented)
     apiName: string;
     	// (undocumented)
+    isFixedVersion?: boolean;
+    	// (undocumented)
     osdkMetadata?: OsdkMetadata;
     	// (undocumented)
     type: "query";
+    	// (undocumented)
+    version?: string;
 }
 
 // @public (undocumented)
