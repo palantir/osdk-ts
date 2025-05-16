@@ -3827,9 +3827,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      dedent:
-        specifier: 1.5.3
-        version: 1.5.3
       typescript:
         specifier: ~5.5.4
         version: 5.5.4

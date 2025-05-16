@@ -2,7 +2,7 @@
   "extends": ["//"],
   "tasks": {
     "codegen": {
-      "inputs": ["codegen.mjs"],
+      "inputs": ["codegen.mjs", "src/documentation.yml"],
       "outputs": ["src/generatedNoCheck/**/*"]
     }
   }
