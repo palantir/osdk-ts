@@ -1,5 +1,11 @@
 # @osdk/functions
 
+## 1.0.0-beta.15
+
+### Minor Changes
+
+- eab3988: Rename @osdk/functions.unstable to @osdk/functions
+
 ## 1.0.0-beta.14
 
 ### Minor Changes
