@@ -37,7 +37,7 @@ fs.mkdirSync(path.join(__dirname, "./src/generatedNoCheck"), {
 });
 
 fs.writeFileSync(
-  path.join(__dirname, "./src/generatedNoCheck/docs.ts"),
+  path.join(__dirname, "./src/generatedNoCheck/docsNoComputedVariables.ts"),
   `
 // THIS FILE IS GENERATED. DO NOT MODIFY.
 // You probably want to modify ../../../codegen.mjs instead.
