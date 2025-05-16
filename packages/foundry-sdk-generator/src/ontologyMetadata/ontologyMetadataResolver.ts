@@ -39,7 +39,7 @@ export interface OntologyInfo {
   requestedMetadata: OntologyFullMetadata;
   externalInterfaces: Map<string, string>;
   externalObjects: Map<string, string>;
-  pinnedQueryTypes: string[];
+  fixedVersionQueryTypes: string[];
 }
 
 export class OntologyMetadataResolver {
@@ -256,7 +256,7 @@ export class OntologyMetadataResolver {
       for (const queryType of entities.queryTypesApiNamesToLoad ?? []) {
         if (queryType.includes(":")) {
           throw new Error(
-            `Pinned query types are not supported with external packages: ${queryType}`,
+            `Query types with fixed versions are not supported with external packages: ${queryType}`,
           );
         }
       }
@@ -309,7 +309,7 @@ export class OntologyMetadataResolver {
         requestedMetadata: filteredFullMetadata,
         externalInterfaces,
         externalObjects,
-        pinnedQueryTypes: [],
+        fixedVersionQueryTypes: [],
       });
     } else {
       const objectTypes = new Set(entities.objectTypesApiNamesToLoad);
@@ -331,7 +331,7 @@ export class OntologyMetadataResolver {
       }
 
       const queryTypes = new Set<string>();
-      const pinnedQueryTypes = [];
+      const fixedVersionQueryTypes = [];
 
       for (const queryType of entities.queryTypesApiNamesToLoad ?? []) {
         if (queryTypes.has(queryType)) {
@@ -343,7 +343,7 @@ export class OntologyMetadataResolver {
 
         if (lastColonIndex !== -1) {
           const queryTypeApiName = queryType.substring(0, lastColonIndex);
-          pinnedQueryTypes.push(queryTypeApiName);
+          fixedVersionQueryTypes.push(queryTypeApiName);
         }
         queryTypes.add(queryType);
       }
@@ -385,7 +385,7 @@ export class OntologyMetadataResolver {
         requestedMetadata,
         externalInterfaces: new Map(),
         externalObjects: new Map(),
-        pinnedQueryTypes,
+        fixedVersionQueryTypes,
       });
     }
   }

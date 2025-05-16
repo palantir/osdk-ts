@@ -87,7 +87,7 @@ export async function generatePackage(
     ontologyInfo.externalInterfaces,
     new Map(),
     false,
-    ontologyInfo.pinnedQueryTypes,
+    ontologyInfo.fixedVersionQueryTypes,
   );
 
   // actually write file plus save contents

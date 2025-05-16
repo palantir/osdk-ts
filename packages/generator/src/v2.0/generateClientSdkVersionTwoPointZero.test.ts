@@ -2140,7 +2140,7 @@ describe("generator", () => {
   });
 
   describe("queries with versions", () => {
-    it("can generate properly when queries have versions and optionally pinned", async () => {
+    it("can generate properly when queries have versions and optionally have fixed versions", async () => {
       await generateClientSdkVersionTwoPointZero(
         {
           ontology: TodoWireOntology.ontology,

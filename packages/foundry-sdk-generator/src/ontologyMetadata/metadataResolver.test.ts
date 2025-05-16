@@ -66,7 +66,7 @@ describe("Load Ontologies Metadata", () => {
       {
         "externalInterfaces": Map {},
         "externalObjects": Map {},
-        "pinnedQueryTypes": [],
+        "fixedVersionQueryTypes": [],
         "requestedMetadata": {
           "actionTypes": {},
           "interfaceTypes": {},
@@ -330,7 +330,9 @@ describe("Load Ontologies Metadata", () => {
         throw new Error(ontologyDefinitions.error.join("\n"));
       }
 
-      expect(ontologyDefinitions.value.pinnedQueryTypes).toEqual(["addOne"]);
+      expect(ontologyDefinitions.value.fixedVersionQueryTypes).toEqual([
+        "addOne",
+      ]);
       expect(
         ontologyDefinitions.value.requestedMetadata.queryTypes,
       ).toMatchInlineSnapshot(`
@@ -371,7 +373,9 @@ describe("Load Ontologies Metadata", () => {
         throw new Error(ontologyDefinitions.error.join("\n"));
       }
 
-      expect(ontologyDefinitions.value.pinnedQueryTypes.length).toEqual(0);
+      expect(ontologyDefinitions.value.fixedVersionQueryTypes.length).toEqual(
+        0,
+      );
       expect(
         ontologyDefinitions.value.requestedMetadata.queryTypes,
       ).toMatchInlineSnapshot(`
