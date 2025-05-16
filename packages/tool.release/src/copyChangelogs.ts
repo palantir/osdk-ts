@@ -151,10 +151,7 @@ export async function copyChangelogs(
    */
   const packageInfo = await getPackageInfo();
 
-  const ignoredPackages = [
-    "@osdk/e2e.generated.catchall",
-    "@osdk/e2e.sandbox.catchall",
-  ];
+  const ignoredPackages = [];
 
   for (const pkg of packageInfo) {
     if (ignoredPackages.includes(pkg.name)) {
