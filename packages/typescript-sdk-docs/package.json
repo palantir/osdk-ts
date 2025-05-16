@@ -41,7 +41,8 @@
   },
   "dependencies": {
     "@osdk/docs-spec-core": "^0.5.0",
-    "@osdk/docs-spec-sdk": "^0.1.0"
+    "@osdk/docs-spec-sdk": "^0.1.0",
+    "outdent": "^0.8.0"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",

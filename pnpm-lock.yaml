@@ -3820,6 +3820,9 @@ importers:
       '@osdk/docs-spec-sdk':
         specifier: ^0.1.0
         version: 0.1.0
+      outdent:
+        specifier: ^0.8.0
+        version: 0.8.0
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
@@ -11614,6 +11617,9 @@ packages:
 
   outdent@0.5.0:
     resolution: {integrity: sha512-/jHxFIzoMXdqPzTaCpFzAAWhpkSjZPF4Vsn6jAfNpmbH/ymsmd7Qc6VE9BGn0L6YMj6uwpQLxCECpus4ukKS9Q==}
+
+  outdent@0.8.0:
+    resolution: {integrity: sha512-KiOAIsdpUTcAXuykya5fnVVT+/5uS0Q1mrkRHcF89tpieSmY33O/tmc54CqwA+bfhbtEfZUNLHaPUiB9X3jt1A==}
 
   outvariant@1.4.3:
     resolution: {integrity: sha512-+Sl2UErvtsoajRDKCE5/dBz4DIvHXQQnAxtQTF04OJxY0+DyZXSo5P5Bb7XYWOh81syohlYL24hbDwxedPUJCA==}
@@ -23553,6 +23559,8 @@ snapshots:
   os-tmpdir@1.0.2: {}
 
   outdent@0.5.0: {}
+
+  outdent@0.8.0: {}
 
   outvariant@1.4.3: {}
 
