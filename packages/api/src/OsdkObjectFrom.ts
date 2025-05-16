@@ -30,7 +30,7 @@ import type {
   ObjectTypeDefinition,
 } from "./ontology/ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "./ontology/SimplePropertyDef.js";
-import type { OsdkBaseWithObjectSpecifier } from "./OsdkBase.js";
+import type { OsdkBase } from "./OsdkBase.js";
 
 type DropDollarOptions<T extends string> = Exclude<
   T,
@@ -183,7 +183,7 @@ export namespace Osdk {
     P extends PropertyKeys<Q> = PropertyKeys<Q>,
     R extends Record<string, SimplePropertyDef> = {},
   > =
-    & OsdkBaseWithObjectSpecifier<Q>
+    & OsdkBase<Q>
     & Pick<
       CompileTimeMetadata<Q>["props"],
       // If there aren't any additional properties, then we want GetPropsKeys to default to PropertyKeys<Q>

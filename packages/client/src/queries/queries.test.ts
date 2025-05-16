@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectSpecifier } from "@osdk/api";
+import type { ObjectSet, ObjectSpecifier, OsdkBase } from "@osdk/api";
 import {
   $Queries,
   acceptsThreeDimensionalAggregationFunction,
@@ -52,29 +52,78 @@ describe("queries", () => {
     expect(result).toBe(3);
   });
 
-  it("accepts objects", async () => {
-    const employee = await client(Employee).fetchOne(
-      50030,
-    );
-    const result = await client(queryAcceptsObject).executeFunction({
-      object: employee,
-    });
-    expect(result).toEqual({
-      $apiName: "Employee",
-      $objectType: "Employee",
-      $primaryKey: 50031,
-      $objectSpecifier: "Employee:50031",
+  describe("Queries that accept objects work do not break", () => {
+    it("Works when using $apiName, $primaryKey", async () => {
+      const fn = client(queryAcceptsObject).executeFunction;
+      type InferredParamType = Parameters<typeof fn>[0];
+      expectTypeOf<{
+        object: {
+          $apiName: "Employee";
+          $primaryKey: number;
+        };
+      }>().toMatchTypeOf<InferredParamType>();
+
+      const result = await client(queryAcceptsObject).executeFunction({
+        object: {
+          $apiName: "Employee",
+          $primaryKey: 50030,
+        },
+      });
+      expect(result).toEqual({
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 50031,
+        $objectSpecifier: "Employee:50031",
+      });
     });
 
-    // Should also accept primary keys
-    const result2 = await client(queryAcceptsObject).executeFunction({
-      object: 50030,
+    it("Works when using an existing object", async () => {
+      const employee = await client(Employee).fetchOne(
+        50030,
+      );
+      const result = await client(queryAcceptsObject).executeFunction({
+        object: employee,
+      });
+      expect(result).toEqual({
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 50031,
+        $objectSpecifier: "Employee:50031",
+      });
     });
-    expect(result2).toEqual({
-      $apiName: "Employee",
-      $objectType: "Employee",
-      $primaryKey: 50031,
-      $objectSpecifier: "Employee:50031",
+
+    it("Works when using a primary key", async () => {
+      const result = await client(queryAcceptsObject).executeFunction({
+        object: 50030,
+      });
+      expect(result).toEqual({
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 50031,
+        $objectSpecifier: "Employee:50031",
+      });
+    });
+
+    it("Works when explicitly typing object with OsdkBase", async () => {
+      /**
+       * We do this test because we used to type object parameters with OsdkBase
+       */
+      const objectQueryParameter = {
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 50030,
+        $title: "Test",
+        $objectSpecifier: "Employee:50031" as ObjectSpecifier<Employee>,
+      } satisfies OsdkBase<Employee>;
+      const result = await client(queryAcceptsObject).executeFunction({
+        object: objectQueryParameter,
+      });
+      expect(result).toEqual({
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 50031,
+        $objectSpecifier: "Employee:50031",
+      });
     });
   });
 
