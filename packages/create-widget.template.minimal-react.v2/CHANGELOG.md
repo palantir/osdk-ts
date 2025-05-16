@@ -22,6 +22,13 @@
 
 ## 2.1.0-beta.2
 
+## 2.0.0
+
+### Minor Changes
+
+- 255a8f1: Add minimal React widget template without OSDK
+- 14bb6d2: Address comments on new minimal widget template
+
 ## 2.0.0-beta.16
 
 ### Minor Changes
