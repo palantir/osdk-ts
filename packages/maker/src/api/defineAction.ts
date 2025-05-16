@@ -16,17 +16,23 @@
 
 import type { ParameterId } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
-import { namespace, ontologyDefinition } from "./defineOntology.js";
-import type {
-  ActionParameterAllowedValues,
-  ActionParameterType,
-  ActionParameterTypePrimitive,
-  ActionType,
-  InterfaceType,
-  ObjectPropertyType,
-  ObjectType,
-  PropertyTypeType,
-  SharedPropertyType,
+import {
+  namespace,
+  ontologyDefinition,
+  updateOntology,
+} from "./defineOntology.js";
+import {
+  type ActionParameterAllowedValues,
+  type ActionParameterType,
+  type ActionParameterTypePrimitive,
+  type ActionType,
+  type ActionTypeDefinition,
+  type InterfaceType,
+  type ObjectPropertyType,
+  type ObjectType,
+  OntologyEntityTypeEnum,
+  type PropertyTypeType,
+  type SharedPropertyType,
 } from "./types.js";
 
 export function defineCreateInterfaceObjectAction(
@@ -306,11 +312,14 @@ export function defineDeleteObjectAction(
   });
 }
 
-export function defineAction(actionDef: ActionType): ActionType {
+export function defineAction(actionDef: ActionTypeDefinition): ActionType {
   const apiName = namespace + actionDef.apiName;
   const parameterIds = (actionDef.parameters ?? []).map(p => p.id);
 
-  if (ontologyDefinition.actionTypes[apiName] !== undefined) {
+  if (
+    ontologyDefinition[OntologyEntityTypeEnum.ACTION_TYPE][apiName]
+      !== undefined
+  ) {
     throw new Error(
       `Action type with apiName ${actionDef.apiName} is already defined`,
     );
@@ -363,12 +372,18 @@ export function defineAction(actionDef: ActionType): ActionType {
       );
     }
   });
-  const fullAction = { ...actionDef, apiName: apiName };
-  ontologyDefinition.actionTypes[apiName] = fullAction;
+  const fullAction = {
+    ...actionDef,
+    apiName: apiName,
+    __type: OntologyEntityTypeEnum.ACTION_TYPE,
+  } as ActionType;
+  updateOntology(fullAction);
   return fullAction;
 }
 
-function referencedParameterIds(actionDef: ActionType): Set<ParameterId> {
+function referencedParameterIds(
+  actionDef: ActionTypeDefinition,
+): Set<ParameterId> {
   const parameterIds: Set<ParameterId> = new Set();
 
   // section definitions

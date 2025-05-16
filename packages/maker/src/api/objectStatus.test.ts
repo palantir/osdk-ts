@@ -21,7 +21,7 @@ import type { ObjectTypeStatus } from "./types.js";
 
 describe("Object Status", () => {
   beforeEach(async () => {
-    await defineOntology("com.palantir.", () => {});
+    await defineOntology("com.palantir.", () => {}, "/tmp/");
   });
 
   describe("Object Status Validation", () => {
@@ -47,7 +47,7 @@ describe("Object Status", () => {
         ).toThrowError(
           /When object "validation-test" has experimental status, no properties can have "active" status/,
         );
-      });
+      }, "/tmp/");
     });
 
     it("does not throw when object status is experimental and no properties have active status", async () => {
@@ -70,7 +70,7 @@ describe("Object Status", () => {
             ],
           })
         ).not.toThrow();
-      });
+      }, "/tmp/");
     });
   });
 
@@ -94,7 +94,7 @@ describe("Object Status", () => {
           type: "active",
           active: {},
         });
-      });
+      }, "/tmp/");
     });
 
     it("converts active status to proper format", async () => {
@@ -117,7 +117,7 @@ describe("Object Status", () => {
           type: "active",
           active: {},
         });
-      });
+      }, "/tmp/");
     });
 
     it("converts experimental status to proper format", async () => {
@@ -140,7 +140,7 @@ describe("Object Status", () => {
           type: "experimental",
           experimental: {},
         });
-      });
+      }, "/tmp/");
     });
 
     it("converts deprecated status to proper format", async () => {
@@ -171,7 +171,7 @@ describe("Object Status", () => {
             replacedBy: undefined,
           },
         });
-      });
+      }, "/tmp/");
     });
   });
 });
