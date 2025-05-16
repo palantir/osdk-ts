@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// @ts-check
+
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
