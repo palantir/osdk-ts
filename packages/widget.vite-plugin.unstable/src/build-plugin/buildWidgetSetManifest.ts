@@ -16,6 +16,7 @@
 
 import type {
   WidgetManifestConfig,
+  WidgetSetInputSpec,
   WidgetSetManifest,
 } from "@osdk/widget.api.unstable";
 import type { WidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
@@ -24,6 +25,7 @@ export function buildWidgetSetManifest(
   widgetSetRid: string,
   widgetSetVersion: string,
   widgetBuilds: WidgetBuildOutputs[],
+  widgetSetInputSpec: WidgetSetInputSpec,
 ): WidgetSetManifest {
   return {
     manifestVersion: "1.0.0",
@@ -35,6 +37,7 @@ export function buildWidgetSetManifest(
           .map(buildWidgetManifest)
           .map((widgetManifest) => [widgetManifest.id, widgetManifest]),
       ),
+      inputSpec: widgetSetInputSpec,
     },
   };
 }
