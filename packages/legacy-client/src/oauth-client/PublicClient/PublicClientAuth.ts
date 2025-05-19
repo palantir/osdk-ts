@@ -71,7 +71,12 @@ export class PublicClientAuth implements Auth {
     }
 
     if (!options.scopes) {
-      options.scopes = ["api:read-data", "api:write-data"];
+      options.scopes = [
+        "api:read-data",
+        "api:write-data",
+        "api:use-ontologies-read",
+        "api:use-ontologies-write",
+      ];
     }
   }
 
