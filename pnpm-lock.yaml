@@ -3962,7 +3962,7 @@ importers:
         version: 2.1.0
       fs-extra:
         specifier: ^11.2.0
-        version: 11.2.0
+        version: 11.3.0
       parse5:
         specifier: ^7.2.1
         version: 7.2.1
@@ -5450,7 +5450,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {'0': node >=0.10.0}
+    engines: {node: '>=0.10.0'}
 
   '@expo/cli@0.21.8':
     resolution: {integrity: sha512-gU+NlL/XS9r7LEfLhjDDKuv3jEtOh+rVnk/k7Lp8WrUwaMCoEGfmQpSqLXetFCCC4UFXSaj1cdMGoy2UBw4rew==}
@@ -9779,10 +9779,6 @@ packages:
     resolution: {integrity: sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==}
     engines: {node: '>= 0.6'}
 
-  fs-extra@11.2.0:
-    resolution: {integrity: sha512-PmDi3uwK5nFuXh7XDTlVnS17xJS7vW36is2+w3xcv8SVxiB4NyATf4ctkVY5bkSjX0Y4nbvZCq1/EjtEyr9ktw==}
-    engines: {node: '>=14.14'}
-
   fs-extra@11.3.0:
     resolution: {integrity: sha512-Z4XaCL6dUDHfP/jT25jJKMmtxvuwbkrD1vNSMFlo9lNLY2c5FHYSQgHPRZUjAB26TpDEoW9HCOgplrdbaPV/ew==}
     engines: {node: '>=14.14'}
@@ -13040,11 +13036,6 @@ packages:
         optional: true
       uglify-js:
         optional: true
-
-  terser@5.39.0:
-    resolution: {integrity: sha512-LBAhFyLho16harJoWMg/nZsQYgTrg5jXOn2nCYjRUcZZEdE3qa2zb8QEDRUGVZBW4rlazf2fxkg8tztybTaqWw==}
-    engines: {node: '>=10'}
-    hasBin: true
 
   terser@5.39.2:
     resolution: {integrity: sha512-yEPUmWve+VA78bI71BW70Dh0TuV4HHd+I5SHOAfS1+QBOmvmCiiffgjR8ryyEd3KIfvPGFqoADt8LdQ6XpXIvg==}
@@ -21241,12 +21232,6 @@ snapshots:
 
   fresh@0.5.2: {}
 
-  fs-extra@11.2.0:
-    dependencies:
-      graceful-fs: 4.2.11
-      jsonfile: 6.1.0
-      universalify: 2.0.1
-
   fs-extra@11.3.0:
     dependencies:
       graceful-fs: 4.2.11
@@ -22881,7 +22866,7 @@ snapshots:
   metro-minify-terser@0.81.0:
     dependencies:
       flow-enums-runtime: 0.0.6
-      terser: 5.39.0
+      terser: 5.39.2
 
   metro-resolver@0.81.0:
     dependencies:
@@ -25021,13 +25006,6 @@ snapshots:
     optionalDependencies:
       '@swc/core': 1.7.39
       esbuild: 0.25.3
-
-  terser@5.39.0:
-    dependencies:
-      '@jridgewell/source-map': 0.3.6
-      acorn: 8.14.1
-      commander: 2.20.3
-      source-map-support: 0.5.21
 
   terser@5.39.2:
     dependencies:
