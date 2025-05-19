@@ -154,6 +154,10 @@ export type GetPropsKeys<
   : IsAny<P> extends true ? PropertyKeys<Q>
   : P;
 
+export interface OsdkInstanceWithScore<T extends Osdk.Instance<any>> {
+  score: number;
+  instance: T;
+}
 /**
  * Use `Osdk.Instance` or `YourType.OsdkInstance`
  */

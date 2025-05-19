@@ -17,6 +17,7 @@
 import type {
   FetchPageArgs,
   NullabilityAdherence,
+  ObjectSetArgs,
 } from "../object/FetchPageArgs.js";
 import type { FetchPageResult } from "../object/FetchPageResult.js";
 
@@ -32,11 +33,12 @@ type fetchPageByRidFn = <
   const R extends boolean,
   const S extends NullabilityAdherence,
   const T extends boolean,
+  Z extends ObjectSetArgs.OrderByOptions<L> = never,
 >(
   objectType: Q,
   rids: string[],
-  options?: FetchPageArgs<Q, L, R, any, S, T>,
-) => Promise<FetchPageResult<Q, L, R, S, T>>;
+  options?: FetchPageArgs<Q, L, R, any, S, T, never, Z>,
+) => Promise<FetchPageResult<Q, L, R, S, T, Z>>;
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid: Experiment<
   "2.2.0",

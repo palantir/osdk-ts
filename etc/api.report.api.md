@@ -222,6 +222,7 @@ export type ApplyBatchActionOptions = {
     	$returnEdits?: boolean
 };
 
+// Warning: (ae-forgotten-export) The symbol "ObjectSetArgs" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "OrderByArg" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -232,8 +233,9 @@ export interface AsyncIterArgs<
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
-	RDP_KEYS extends string = never
-> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+	RDP_KEYS extends string = never,
+	Z extends ObjectSetArgs.OrderByOptions<K> = never
+> extends SelectArg<Q, K, R, S>, OrderByArg<Q, K, Z> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
@@ -275,7 +277,7 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 }
 
 // @public (undocumented)
-export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
+export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
 
 // @public (undocumented)
 export type CompileTimeMetadata<T extends {
@@ -537,8 +539,9 @@ export interface FetchPageArgs<
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
-	RDP_KEYS extends string = never
-> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS> {
+	RDP_KEYS extends string = never,
+	Z extends ObjectSetArgs.OrderByOptions<K> = never
+> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, Z> {
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -1061,6 +1064,8 @@ export interface PropertyValueWireToClient {
     stringTimeseries: TimeSeriesProperty<string>;
     	// (undocumented)
     timestamp: string;
+    	// (undocumented)
+    vector: number[];
 }
 
 // Warning: (ae-forgotten-export) The symbol "PrimitiveDataType" needs to be exported by the entry point index.d.ts

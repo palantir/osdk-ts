@@ -19,9 +19,14 @@ import type {
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
-import type { ExtractOptions, IsNever, Osdk } from "../OsdkObjectFrom.js";
+import type {
+  ExtractOptions,
+  IsNever,
+  Osdk,
+  OsdkInstanceWithScore,
+} from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
-import type { NullabilityAdherence } from "./FetchPageArgs.js";
+import type { NullabilityAdherence, ObjectSetArgs } from "./FetchPageArgs.js";
 
 /** exposed for a test */
 export type RespectNullability<S extends NullabilityAdherence> = S extends false
@@ -52,9 +57,15 @@ export type FetchPageResult<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean = false,
+  Z extends ObjectSetArgs.OrderByOptions<L> = never,
 > = PageResult<
-  PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>>
+  PropertyKeys<Q> extends L
+    ? Z extends "relevance"
+      ? OsdkInstanceWithScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, L>>
     : Osdk.Instance<Q, ExtractOptions<R, S, T>, L>
+    : Z extends "relevance"
+      ? OsdkInstanceWithScore<Osdk.Instance<Q, ExtractOptions<R, S, T>>>
+    : Osdk.Instance<Q, ExtractOptions<R, S, T>>
 >;
 
 /**
@@ -67,12 +78,21 @@ export type SingleOsdkResult<
   S extends NullabilityAdherence,
   RDPs extends Record<string, SimplePropertyDef> = {},
   T extends boolean = false,
-> = Osdk.Instance<
-  Q,
-  ExtractOptions<R, S, T>,
-  PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-  { [K in Extract<keyof RDPs, L>]: RDPs[K] }
->;
+  Z extends ObjectSetArgs.OrderByOptions<L> = never,
+> = Z extends "relevance" ? OsdkInstanceWithScore<
+    Osdk.Instance<
+      Q,
+      ExtractOptions<R, S, T>,
+      PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
+      { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+    >
+  >
+  : Osdk.Instance<
+    Q,
+    ExtractOptions<R, S, T>,
+    PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
+    { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+  >;
 
 export type IsAny<T> = unknown extends T
   ? [keyof T] extends [never] ? false : true

@@ -239,10 +239,11 @@ describe("ObjectSet", () => {
       [stubData.employee1.__rid, stubData.employee2.__rid],
       {},
     );
+
     expectTypeOf<typeof employees>().toMatchTypeOf<
       FetchPageResult<Employee, PropertyKeys<Employee>, boolean, any, any>
     >;
-    expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
+    expect(employees.data[0]).toBe(stubData.employee1.employeeId);
     expect(employees.data[1].$primaryKey).toBe(stubData.employee2.employeeId);
   });
 
@@ -269,7 +270,7 @@ describe("ObjectSet", () => {
       { $select: ["fullName"] },
     );
     expectTypeOf<typeof employees>().toMatchTypeOf<
-      FetchPageResult<Employee, "fullName", boolean, any, any>
+      FetchPageResult<Employee, "fullName", boolean, any, any, never>
     >;
     expect(employees.data[0].$primaryKey).toBe(stubData.employee2.employeeId);
     expect(employees.data[1].$primaryKey).toBe(stubData.employee3.employeeId);
@@ -957,6 +958,51 @@ describe("ObjectSet", () => {
   //   });
   // });
 
+  describe("nearestNeighbors", () => {
+    it("finds nearest neighbors via text query", async () => {
+      const numNeighbors = 3;
+      const nearestNeighborsObjectSet = client(Employee).nearestNeighbors(
+        "python3",
+        numNeighbors,
+        "skillSetEmbedding",
+      );
+      const { data: employees } = await nearestNeighborsObjectSet.fetchPage();
+      expect(employees).toHaveLength(numNeighbors);
+      // Check that no score is returned when not ordered by relevance
+      // @ts-expect-error
+      employees.forEach(e => expect(e.$score).toBeUndefined());
+    });
+
+    it("finds nearest neighbors via text query ordered by relevance", async () => {
+      const numNeighbors = 3;
+      const nearestNeighborsObjectSet = client(Employee).nearestNeighbors(
+        "python3",
+        numNeighbors,
+        "skillSetEmbedding",
+      );
+      const { data: employees } = await nearestNeighborsObjectSet.fetchPage({
+        $orderBy: "relevance",
+      });
+      expect(employees).toHaveLength(numNeighbors);
+      // Check that no score is returned when not ordered by relevance
+      // employees.forEach(e => expect(e.).toBeDefined());
+    });
+
+    it("finds nearest neighbors via vector query", async () => {
+      const numNeighbors = 3;
+      const nearestNeighborsObjectSet = client(Employee).nearestNeighbors(
+        Array.from({ length: 1536 }, () => 0.3),
+        numNeighbors,
+        "skillSetEmbedding",
+      );
+      const { data: employees } = await nearestNeighborsObjectSet.fetchPage();
+      expect(employees).toHaveLength(numNeighbors);
+      // Check that no score is returned when not ordered by relevance
+      // @ts-expect-error
+      employees.forEach(e => expect(e.$score).toBeUndefined());
+    });
+  });
+
   describe("conversions", () => {
     describe("strictNonNull: false", () => {
       it("returns bad data", async () => {
@@ -1014,6 +1060,8 @@ describe("ObjectSet", () => {
             | "startDate"
             | "employeeLocation"
             | "employeeSensor"
+            | "skillSet"
+            | "skillSetEmbedding"
           >();
 
         expectTypeOf<
@@ -1038,6 +1086,8 @@ describe("ObjectSet", () => {
             | "employeeStatus"
             | "employeeSensor"
             | "employeeLocation"
+            | "skillSet"
+            | "skillSetEmbedding"
           >();
 
         // We don't have a proper definition that has

@@ -56,6 +56,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "timeseries":
     case "marking":
     case "geotimeSeriesReference":
+    case "vector":
     case "struct":
       return {
         displayName: input.displayName,
@@ -73,12 +74,10 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         nullable: true,
       };
     }
-    case "cipherText":
-    case "vector": {
+    case "cipherText": {
       log?.info(
         `${JSON.stringify(input.dataType.type)} is not a supported dataType`,
       );
-
       return undefined;
     }
     default:
@@ -112,6 +111,7 @@ function objectPropertyTypeToSdkPropertyDefinition(
     case "marking":
     case "geotimeSeriesReference":
     case "mediaReference":
+    case "vector":
       return propertyType.type;
     case "date":
       return "datetime";
@@ -135,8 +135,7 @@ function objectPropertyTypeToSdkPropertyDefinition(
         {},
       );
     }
-    case "cipherText":
-    case "vector": {
+    case "cipherText": {
       log?.info(
         `${JSON.stringify(propertyType.type)} is not a supported propertyType`,
       );

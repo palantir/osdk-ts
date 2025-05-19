@@ -685,8 +685,13 @@ export class FauxDataStore {
       };
     }
 
-    if (parsedBody.orderBy) {
-      objects = objects.sort(createOrderBySortFn(parsedBody.orderBy));
+    const orderBy = parsedBody.orderBy;
+    if (orderBy) {
+      if (orderBy?.orderType === "relevance") {
+        objects = objects.map(o => ({ ...o, "$score": 0.1 }));
+      } else {
+        objects = objects.sort(createOrderBySortFn(orderBy));
+      }
     }
 
     // finally, if we got interfaces, the objects have names like the interface and we need

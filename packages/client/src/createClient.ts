@@ -22,6 +22,7 @@ import type {
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
+  ObjectSetArgs,
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
@@ -224,10 +225,11 @@ export function createClientInternal(
               const L extends PropertyKeys<Q>,
               const R extends boolean,
               const S extends false | "throw" = NullabilityAdherence.Default,
+              const Z extends ObjectSetArgs.OrderByOptions<L> = never,
             >(
               objectOrInterfaceType: Q,
               rids: string[],
-              options: FetchPageArgs<Q, L, R, any, S> = {},
+              options: FetchPageArgs<Q, L, R, any, S, any, never, Z> = {},
             ) => {
               return await fetchPage(
                 clientCtx,
