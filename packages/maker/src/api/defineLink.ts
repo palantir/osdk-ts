@@ -15,8 +15,13 @@
  */
 
 import invariant from "tiny-invariant";
-import { ontologyDefinition } from "./defineOntology.js";
-import type { LinkTypeDefinition, SharedPropertyType } from "./types.js";
+import { updateOntology } from "./defineOntology.js";
+import type {
+  LinkType,
+  LinkTypeDefinition,
+  SharedPropertyType,
+} from "./types.js";
+import { OntologyEntityTypeEnum } from "./types.js";
 
 const defaultTypeClasses: SharedPropertyType["typeClasses"] = [{
   kind: "render_hint",
@@ -25,14 +30,14 @@ const defaultTypeClasses: SharedPropertyType["typeClasses"] = [{
 
 export function defineLink(
   linkDefinition: LinkTypeDefinition,
-): LinkTypeDefinition {
+): LinkType {
   if ("one" in linkDefinition) {
     const foreignKey = linkDefinition.toMany.object.properties?.find(prop =>
       prop.apiName === linkDefinition.manyForeignKeyProperty
     );
     invariant(
       foreignKey !== undefined,
-      `Foreign key ${linkDefinition.manyForeignKeyProperty} on link ${linkDefinition.id} does not exist on object ${linkDefinition.toMany.object.apiName}}`,
+      `Foreign key ${linkDefinition.manyForeignKeyProperty} on link ${linkDefinition.apiName} does not exist on object ${linkDefinition.toMany.object.apiName}}`,
     );
 
     const typesMatch =
@@ -41,9 +46,13 @@ export function defineLink(
       )?.type;
     invariant(
       typesMatch,
-      `Link ${linkDefinition.id} has type mismatch between the one side's primary key and the foreign key on the many side`,
+      `Link ${linkDefinition.apiName} has type mismatch between the one side's primary key and the foreign key on the many side`,
     );
   }
-  ontologyDefinition.linkTypes[linkDefinition.id] = linkDefinition;
-  return linkDefinition;
+  const linkType: LinkType = {
+    ...linkDefinition,
+    __type: OntologyEntityTypeEnum.LINK_TYPE,
+  };
+  updateOntology(linkType);
+  return linkType;
 }

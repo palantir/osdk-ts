@@ -49,7 +49,10 @@ export async function applyQuery<
 ): Promise<
   QueryReturnType<CompileTimeMetadata<QD>["output"]>
 > {
-  const qd = await client.ontologyProvider.getQueryDefinition(query.apiName);
+  const qd = await client.ontologyProvider.getQueryDefinition(
+    query.apiName,
+    query.isFixedVersion ? query.version : undefined,
+  );
 
   const response = await OntologiesV2.Queries.execute(
     addUserAgentAndRequestContextHeaders(
@@ -67,6 +70,7 @@ export async function applyQuery<
         )
         : {},
     },
+    { version: qd.version },
   );
   const objectOutputDefs = await getRequiredDefinitions(qd.output, client);
   const remappedResponse = await remapQueryResponse(

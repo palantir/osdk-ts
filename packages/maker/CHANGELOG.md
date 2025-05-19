@@ -1,5 +1,23 @@
 # @osdk/maker
 
+## 0.10.0-beta.23
+
+### Minor Changes
+
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+- f1b1188: OAC Imports v0
+
+### Patch Changes
+
+- Updated dependencies [18ba34f]
+  - @osdk/api@2.2.0-beta.22
+
+## 0.10.0-beta.22
+
+### Minor Changes
+
+- 75f6b51: Propagate required/optional fields from interfaces to actions
+
 ## 0.10.0-beta.21
 
 ### Minor Changes

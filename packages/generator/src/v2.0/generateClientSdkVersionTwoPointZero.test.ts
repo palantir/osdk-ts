@@ -1022,7 +1022,8 @@ describe("generator", () => {
             apiName: 'getCount';
             rid: 'rid.query.1';
             type: 'query';
-            version: '0';
+            version: '1.1.0';
+            isFixedVersion: false;
             parameters: {
               /**
                * (no ontology metadata)
@@ -1040,14 +1041,15 @@ describe("generator", () => {
           };
           apiName: 'getCount';
           type: 'query';
-          version: '0';
+          version: '1.1.0';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const getCount: getCount = {
           apiName: 'getCount',
           type: 'query',
-          version: '0',
+          version: '1.1.0',
+          isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -1076,7 +1078,8 @@ describe("generator", () => {
             apiName: 'returnsTodo';
             rid: 'rid.query.2';
             type: 'query';
-            version: '0';
+            version: '3.2.0';
+            isFixedVersion: false;
             parameters: {
               /**
                *   description: Random desc so we test jsdoc
@@ -1099,14 +1102,15 @@ describe("generator", () => {
           };
           apiName: 'returnsTodo';
           type: 'query';
-          version: '0';
+          version: '3.2.0';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const returnsTodo: returnsTodo = {
           apiName: 'returnsTodo',
           type: 'query',
-          version: '0',
+          version: '3.2.0',
+          isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -1660,7 +1664,8 @@ describe("generator", () => {
             apiName: 'foo.bar.getCount';
             rid: 'rid.query.1';
             type: 'query';
-            version: '0';
+            version: '1.1.0';
+            isFixedVersion: false;
             parameters: {
               /**
                * (no ontology metadata)
@@ -1678,14 +1683,15 @@ describe("generator", () => {
           };
           apiName: 'foo.bar.getCount';
           type: 'query';
-          version: '0';
+          version: '1.1.0';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const getCount: getCount = {
           apiName: 'foo.bar.getCount',
           type: 'query',
-          version: '0',
+          version: '1.1.0',
+          isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -1714,7 +1720,8 @@ describe("generator", () => {
             apiName: 'foo.bar.returnsTodo';
             rid: 'rid.query.2';
             type: 'query';
-            version: '0';
+            version: '3.2.0';
+            isFixedVersion: false;
             parameters: {
               /**
                *   description: Random desc so we test jsdoc
@@ -1737,14 +1744,15 @@ describe("generator", () => {
           };
           apiName: 'foo.bar.returnsTodo';
           type: 'query';
-          version: '0';
+          version: '3.2.0';
           osdkMetadata: typeof $osdkMetadata;
         }
 
         export const returnsTodo: returnsTodo = {
           apiName: 'foo.bar.returnsTodo',
           type: 'query',
-          version: '0',
+          version: '3.2.0',
+          isFixedVersion: false,
           osdkMetadata: $osdkMetadata,
         };
         ",
@@ -1879,6 +1887,7 @@ describe("generator", () => {
               rid: 'ri.a.b.c';
               type: 'query';
               version: '0';
+              isFixedVersion: false;
               parameters: {
                 /**
                  * (no ontology metadata)
@@ -1908,6 +1917,7 @@ describe("generator", () => {
             apiName: 'getTask',
             type: 'query',
             version: '0',
+            isFixedVersion: false,
             osdkMetadata: $osdkMetadata,
           };
           "
@@ -2126,6 +2136,395 @@ describe("generator", () => {
           };
           "
         `);
+    });
+  });
+
+  describe("queries with versions", () => {
+    it("can generate properly when queries have versions and optionally have fixed versions", async () => {
+      await generateClientSdkVersionTwoPointZero(
+        {
+          ontology: TodoWireOntology.ontology,
+          actionTypes: {},
+          interfaceTypes: {},
+          objectTypes: TodoWireOntology.objectTypes,
+          queryTypes: {
+            "getCount:1.1.0": {
+              ...TodoWireOntology.queryTypes.getCount,
+            },
+            "returnsTodo:3.2.0": {
+              ...TodoWireOntology.queryTypes.returnsTodo,
+              version: "0",
+            },
+          },
+          sharedPropertyTypes: {},
+        },
+        "typescript-sdk/0.0.0 osdk-cli/0.0.0",
+        helper.minimalFiles,
+        BASE_PATH,
+        "module",
+        new Map(),
+        new Map(),
+        new Map(),
+        false,
+        ["getCount"],
+      );
+
+      expect(
+        tweakedFilesForSnapshotConsistency(helper.getFiles()),
+      ).toMatchInlineSnapshot(`
+        {
+          "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = 'PLACEHOLDER';
+        export const $osdkMetadata = { extraUserAgent: 'typescript-sdk/0.0.0 osdk-cli/0.0.0' };
+
+        export const $ontologyRid = 'ridHere';
+        ",
+          "/foo/index.ts": "export {} from './ontology/actions.js';
+        export * as $Actions from './ontology/actions.js';
+        export {} from './ontology/interfaces.js';
+        export * as $Interfaces from './ontology/interfaces.js';
+        export { Person, Todo } from './ontology/objects.js';
+        export * as $Objects from './ontology/objects.js';
+        export { getCount, returnsTodo } from './ontology/queries.js';
+        export * as $Queries from './ontology/queries.js';
+        export { $osdkMetadata } from './OntologyMetadata.js';
+        export { $ontologyRid } from './OntologyMetadata.js';
+        ",
+          "/foo/ontology/actions.ts": "export {};
+        ",
+          "/foo/ontology/interfaces.ts": "export {};
+        ",
+          "/foo/ontology/objects.ts": "export { Person } from './objects/Person.js';
+        export { Todo } from './objects/Todo.js';
+        ",
+          "/foo/ontology/objects/Person.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import type { Todo } from './Todo.js';
+        import type {
+          PropertyKeys as $PropertyKeys,
+          ObjectTypeDefinition as $ObjectTypeDefinition,
+          ObjectMetadata as $ObjectMetadata,
+        } from '@osdk/client';
+        import type {
+          ObjectSet as $ObjectSet,
+          Osdk as $Osdk,
+          OsdkObject as $OsdkObject,
+          PropertyValueWireToClient as $PropType,
+          SingleLinkAccessor as $SingleLinkAccessor,
+        } from '@osdk/client';
+
+        export namespace Person {
+          export type PropertyKeys = 'email';
+
+          export interface Links {
+            readonly Todos: Todo.ObjectSet;
+          }
+
+          export interface Props {
+            /**
+             * (no ontology metadata)
+             */
+            readonly email: $PropType['string'];
+          }
+          export type StrictProps = Props;
+
+          export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {}
+
+          export type OsdkInstance<
+            OPTIONS extends never | '$rid' = never,
+            K extends keyof Person.Props = keyof Person.Props,
+          > = $Osdk.Instance<Person, OPTIONS, K>;
+
+          /** @deprecated use OsdkInstance */
+          export type OsdkObject<
+            OPTIONS extends never | '$rid' = never,
+            K extends keyof Person.Props = keyof Person.Props,
+          > = OsdkInstance<OPTIONS, K>;
+        }
+
+        export interface Person extends $ObjectTypeDefinition {
+          osdkMetadata: typeof $osdkMetadata;
+          type: 'object';
+          apiName: 'Person';
+          __DefinitionMetadata?: {
+            objectSet: Person.ObjectSet;
+            props: Person.Props;
+            linksType: Person.Links;
+            strictProps: Person.StrictProps;
+            apiName: 'Person';
+            description: 'A person';
+            displayName: 'Person';
+            icon: {
+              type: 'blueprint';
+              name: 'document';
+              color: 'blue';
+            };
+            implements: [];
+            interfaceMap: {};
+            inverseInterfaceMap: {};
+            links: {
+              Todos: $ObjectMetadata.Link<Todo, true>;
+            };
+            pluralDisplayName: 'Persons';
+            primaryKeyApiName: 'email';
+            primaryKeyType: 'string';
+            properties: {
+              /**
+               * (no ontology metadata)
+               */
+              email: $PropertyDef<'string', 'non-nullable', 'single'>;
+            };
+            rid: 'ridForPerson';
+            status: 'ACTIVE';
+            titleProperty: 'email';
+            type: 'object';
+          };
+        }
+
+        export const Person: Person = {
+          type: 'object',
+          apiName: 'Person',
+          osdkMetadata: $osdkMetadata,
+        };
+        ",
+          "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import type { Person } from './Person.js';
+        import type {
+          PropertyKeys as $PropertyKeys,
+          ObjectTypeDefinition as $ObjectTypeDefinition,
+          ObjectMetadata as $ObjectMetadata,
+        } from '@osdk/client';
+        import type {
+          ObjectSet as $ObjectSet,
+          Osdk as $Osdk,
+          OsdkObject as $OsdkObject,
+          PropertyValueWireToClient as $PropType,
+          SingleLinkAccessor as $SingleLinkAccessor,
+        } from '@osdk/client';
+
+        export namespace Todo {
+          export type PropertyKeys = 'id' | 'body' | 'complete';
+
+          export interface Links {
+            readonly Assignee: $SingleLinkAccessor<Person>;
+          }
+
+          export interface Props {
+            /**
+             *   display name: 'Body',
+             *   description: The text of the todo
+             */
+            readonly body: $PropType['string'] | undefined;
+            /**
+             * (no ontology metadata)
+             */
+            readonly complete: $PropType['boolean'] | undefined;
+            /**
+             * (no ontology metadata)
+             */
+            readonly id: $PropType['integer'];
+          }
+          export type StrictProps = Props;
+
+          export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
+
+          export type OsdkInstance<
+            OPTIONS extends never | '$rid' = never,
+            K extends keyof Todo.Props = keyof Todo.Props,
+          > = $Osdk.Instance<Todo, OPTIONS, K>;
+
+          /** @deprecated use OsdkInstance */
+          export type OsdkObject<
+            OPTIONS extends never | '$rid' = never,
+            K extends keyof Todo.Props = keyof Todo.Props,
+          > = OsdkInstance<OPTIONS, K>;
+        }
+
+        export interface Todo extends $ObjectTypeDefinition {
+          osdkMetadata: typeof $osdkMetadata;
+          type: 'object';
+          apiName: 'Todo';
+          __DefinitionMetadata?: {
+            objectSet: Todo.ObjectSet;
+            props: Todo.Props;
+            linksType: Todo.Links;
+            strictProps: Todo.StrictProps;
+            apiName: 'Todo';
+            description: 'Its a todo item.';
+            displayName: 'AwesomeTodoDisplayname';
+            icon: {
+              type: 'blueprint';
+              name: 'document';
+              color: 'blue';
+            };
+            implements: ['SomeInterface'];
+            interfaceMap: {
+              SomeInterface: {
+                SomeProperty: 'body';
+              };
+            };
+            inverseInterfaceMap: {
+              SomeInterface: {
+                body: 'SomeProperty';
+              };
+            };
+            links: {
+              Assignee: $ObjectMetadata.Link<Person, false>;
+            };
+            pluralDisplayName: 'AwesomeTodoDisplayNames';
+            primaryKeyApiName: 'id';
+            primaryKeyType: 'integer';
+            properties: {
+              /**
+               *   display name: 'Body',
+               *   description: The text of the todo
+               */
+              body: $PropertyDef<'string', 'nullable', 'single'>;
+              /**
+               * (no ontology metadata)
+               */
+              complete: $PropertyDef<'boolean', 'nullable', 'single'>;
+              /**
+               * (no ontology metadata)
+               */
+              id: $PropertyDef<'integer', 'non-nullable', 'single'>;
+            };
+            rid: 'ridForTodo';
+            status: 'ACTIVE';
+            titleProperty: 'body';
+            type: 'object';
+          };
+        }
+
+        export const Todo: Todo = {
+          type: 'object',
+          apiName: 'Todo',
+          osdkMetadata: $osdkMetadata,
+        };
+        ",
+          "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
+        export { returnsTodo } from './queries/returnsTodo.js';
+        ",
+          "/foo/ontology/queries/getCount.ts": "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+        export namespace getCount {
+          export interface Signature {
+            (query: getCount.Parameters): Promise<getCount.ReturnType>;
+          }
+
+          export interface Parameters {
+            /**
+             * (no ontology metadata)
+             */
+            readonly completed: QueryParam.PrimitiveType<'boolean'>;
+          }
+
+          export type ReturnType = QueryResult.PrimitiveType<'integer'>;
+        }
+
+        export interface getCount extends QueryDefinition<getCount.Signature>, VersionBound<$ExpectedClientVersion> {
+          __DefinitionMetadata?: {
+            apiName: 'getCount';
+            rid: 'rid.query.1';
+            type: 'query';
+            version: '1.1.0';
+            isFixedVersion: true;
+            parameters: {
+              /**
+               * (no ontology metadata)
+               */
+              completed: {
+                nullable: false;
+                type: 'boolean';
+              };
+            };
+            output: {
+              nullable: false;
+              type: 'integer';
+            };
+            signature: getCount.Signature;
+          };
+          apiName: 'getCount';
+          type: 'query';
+          version: '1.1.0';
+          osdkMetadata: typeof $osdkMetadata;
+        }
+
+        export const getCount: getCount = {
+          apiName: 'getCount',
+          type: 'query',
+          version: '1.1.0',
+          isFixedVersion: true,
+          osdkMetadata: $osdkMetadata,
+        };
+        ",
+          "/foo/ontology/queries/returnsTodo.ts": "import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, VersionBound } from '@osdk/client';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+        import type { Todo } from '../objects/Todo.js';
+
+        export namespace returnsTodo {
+          export interface Signature {
+            (query: returnsTodo.Parameters): Promise<returnsTodo.ReturnType>;
+          }
+
+          export interface Parameters {
+            /**
+             *   description: Random desc so we test jsdoc
+             */
+            readonly someTodo: QueryParam.ObjectType<Todo>;
+          }
+
+          export type ReturnType = QueryResult.ObjectType<Todo>;
+        }
+
+        export interface returnsTodo extends QueryDefinition<returnsTodo.Signature>, VersionBound<$ExpectedClientVersion> {
+          __DefinitionMetadata?: {
+            apiName: 'returnsTodo';
+            rid: 'rid.query.2';
+            type: 'query';
+            version: '0';
+            isFixedVersion: false;
+            parameters: {
+              /**
+               *   description: Random desc so we test jsdoc
+               */
+              someTodo: {
+                description: 'Random desc so we test jsdoc';
+                nullable: false;
+                object: 'Todo';
+                type: 'object';
+                __OsdkTargetType?: Todo;
+              };
+            };
+            output: {
+              nullable: false;
+              object: 'Todo';
+              type: 'object';
+              __OsdkTargetType?: Todo;
+            };
+            signature: returnsTodo.Signature;
+          };
+          apiName: 'returnsTodo';
+          type: 'query';
+          version: '0';
+          osdkMetadata: typeof $osdkMetadata;
+        }
+
+        export const returnsTodo: returnsTodo = {
+          apiName: 'returnsTodo',
+          type: 'query',
+          version: '0',
+          isFixedVersion: false,
+          osdkMetadata: $osdkMetadata,
+        };
+        ",
+        }
+      `);
     });
   });
 

@@ -66,7 +66,8 @@ describe("Load Ontologies Metadata", () => {
       {
         "externalInterfaces": Map {},
         "externalObjects": Map {},
-        "filteredFullMetadata": {
+        "fixedVersionQueryTypes": [],
+        "requestedMetadata": {
           "actionTypes": {},
           "interfaceTypes": {},
           "objectTypes": {},
@@ -107,7 +108,7 @@ describe("Load Ontologies Metadata", () => {
       [
         "Unable to find the following Object Types: objectDoesNotExist",
         "Unable to find the following Query Types: queryDoesNotExist",
-        "Unable to find the following Action Types: actionDoesNotExit",
+        "Unable to find the following Action Types: action-does-not-exit",
       ]
     `);
   });
@@ -189,7 +190,7 @@ describe("Load Ontologies Metadata", () => {
       throw new Error();
     }
 
-    const fullMetadata = ontologyDefinitions.value.filteredFullMetadata;
+    const fullMetadata = ontologyDefinitions.value.requestedMetadata;
     expect(Object.keys(fullMetadata.objectTypes)).toHaveLength(0);
     expect(Object.keys(fullMetadata.actionTypes)).toHaveLength(0);
     expect(Object.keys(fullMetadata.queryTypes)).toHaveLength(0);
@@ -205,7 +206,7 @@ describe("Load Ontologies Metadata", () => {
         "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
         {
           objectTypesApiNamesToLoad: ["Employee"],
-          actionTypesApiNamesToLoad: ["promote-employee"],
+          actionTypesApiNamesToLoad: ["promoteEmployee"],
           interfaceTypesApiNamesToLoad: ["FooInterface"],
         },
       );
@@ -215,7 +216,7 @@ describe("Load Ontologies Metadata", () => {
       throw new Error();
     }
 
-    const fullMetadata = ontologyDefinitions.value.filteredFullMetadata;
+    const fullMetadata = ontologyDefinitions.value.requestedMetadata;
 
     expect(Object.keys(fullMetadata.objectTypes)).toHaveLength(1);
     expect(fullMetadata.objectTypes.Employee.linkTypes)
@@ -235,7 +236,7 @@ describe("Load Ontologies Metadata", () => {
         "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
         {
           objectTypesApiNamesToLoad: ["Employee", "Office"],
-          actionTypesApiNamesToLoad: ["promote-employee"],
+          actionTypesApiNamesToLoad: ["promoteEmployee"],
           linkTypesApiNamesToLoad: ["Employee.peeps", "Employee.officeLink"],
         },
       );
@@ -244,7 +245,7 @@ describe("Load Ontologies Metadata", () => {
       throw new Error(ontologyDefinitions.error.join("\n"));
     }
 
-    const fullMetadata = ontologyDefinitions.value.filteredFullMetadata;
+    const fullMetadata = ontologyDefinitions.value.requestedMetadata;
 
     expect(Object.keys(fullMetadata.objectTypes)).toHaveLength(2);
     expect(fullMetadata.objectTypes.Employee.linkTypes).toHaveLength(2);
@@ -263,7 +264,7 @@ describe("Load Ontologies Metadata", () => {
         {
           objectTypesApiNamesToLoad: ["Employee", "Office"],
           actionTypesApiNamesToLoad: [
-            "promote-employee",
+            "promoteEmployee",
             "deleteFooInterface",
             "createStructPerson",
             "actionTakesMedia",
@@ -276,7 +277,7 @@ describe("Load Ontologies Metadata", () => {
       throw new Error(ontologyDefinitions.error.join("\n"));
     }
 
-    const fullMetadata = ontologyDefinitions.value.filteredFullMetadata;
+    const fullMetadata = ontologyDefinitions.value.requestedMetadata;
 
     expect(Object.keys(fullMetadata.objectTypes)).toHaveLength(2);
     expect(Object.keys(fullMetadata.actionTypes)).toHaveLength(4);
@@ -293,7 +294,7 @@ describe("Load Ontologies Metadata", () => {
         {
           objectTypesApiNamesToLoad: ["Employee", "Office"],
           actionTypesApiNamesToLoad: [
-            "promote-employee",
+            "promoteEmployee",
             "deleteFooInterface",
             "createStructPerson",
             "actionTakesMedia",
@@ -310,5 +311,93 @@ describe("Load Ontologies Metadata", () => {
           "Unable to load action deleteFooInterface because it takes an unloaded interface type as a parameter: FooInterface make sure to specify it as an argument with --ontologyInterfaces FooInterface",
         ]
       `);
+  });
+
+  describe("Load ontology metadata with query types with versions", () => {
+    it("Loads query types with versions", async () => {
+      const ontologyMetadataResolver = new OntologyMetadataResolver(
+        "myAccessToken",
+        "https://stack.palantir.com",
+      );
+      const ontologyDefinitions = await ontologyMetadataResolver
+        .getWireOntologyDefinition(
+          "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+          {
+            queryTypesApiNamesToLoad: ["addOne:0.0.9"],
+          },
+        );
+      if (ontologyDefinitions.isErr()) {
+        throw new Error(ontologyDefinitions.error.join("\n"));
+      }
+
+      expect(ontologyDefinitions.value.fixedVersionQueryTypes).toEqual([
+        "addOne",
+      ]);
+      expect(
+        ontologyDefinitions.value.requestedMetadata.queryTypes,
+      ).toMatchInlineSnapshot(`
+        {
+          "addOne:0.0.9": {
+            "apiName": "addOne",
+            "displayName": "myFunction",
+            "output": {
+              "type": "integer",
+            },
+            "parameters": {
+              "n": {
+                "dataType": {
+                  "type": "integer",
+                },
+              },
+            },
+            "rid": "ri.function-registry.main.function.abd64ff3-276e-48c5-afee-5a6ef0b2ea47",
+            "version": "0.0.9",
+          },
+        }
+      `);
+    });
+
+    it("Loads query types with no versions", async () => {
+      const ontologyMetadataResolver = new OntologyMetadataResolver(
+        "myAccessToken",
+        "https://stack.palantir.com",
+      );
+      const ontologyDefinitions = await ontologyMetadataResolver
+        .getWireOntologyDefinition(
+          "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+          {
+            queryTypesApiNamesToLoad: ["addOne"],
+          },
+        );
+      if (ontologyDefinitions.isErr()) {
+        throw new Error(ontologyDefinitions.error.join("\n"));
+      }
+
+      expect(ontologyDefinitions.value.fixedVersionQueryTypes.length).toEqual(
+        0,
+      );
+      expect(
+        ontologyDefinitions.value.requestedMetadata.queryTypes,
+      ).toMatchInlineSnapshot(`
+        {
+          "addOne": {
+            "apiName": "addOne",
+            "displayName": "myFunction",
+            "output": {
+              "type": "integer",
+            },
+            "parameters": {
+              "n": {
+                "dataType": {
+                  "type": "integer",
+                },
+              },
+            },
+            "rid": "ri.function-registry.main.function.abd64ff3-276e-48c5-afee-5a6ef0b2ea47",
+            "version": "0.0.9",
+          },
+        }
+      `);
+    });
   });
 });

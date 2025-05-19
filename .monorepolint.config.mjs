@@ -129,6 +129,7 @@ const archetypeRules = archetypes(
       "@osdk/shared.net.errors",
       "@osdk/shared.net.fetch",
       "@osdk/shared.net",
+      "@osdk/typescript-sdk-docs",
       "@osdk/widget.api.unstable",
       "@osdk/widget.client.unstable",
     ],
