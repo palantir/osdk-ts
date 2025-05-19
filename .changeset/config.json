@@ -15,9 +15,22 @@
       "@osdk/generator-utils",
       "@osdk/generator",
       "@osdk/e2e.generated.catchall",
-      "@osdk/e2e.sandbox.catchall"
+      "@osdk/e2e.sandbox.catchall",
+      "@osdk/cli.internal"
     ],
-    ["@osdk/cli", "@osdk/cli.*"],
+    ["@osdk/cli", "@osdk/cli.common", "@osdk/cli.cmd.typescript"],
+    [
+      "@osdk/shared.client.impl",
+      "@osdk/shared.net.errors",
+      "@osdk/shared.net.fetch",
+      "@osdk/shared.net.fetch.impl"
+    ],
+    [
+      "@osdk/widget.api",
+      "@osdk/widget.client",
+      "@osdk/widget.client-react",
+      "@osdk/widget.vite-plugin"
+    ],
     [
       "@osdk/widget.api.unstable",
       "@osdk/widget.client.unstable",

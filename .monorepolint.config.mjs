@@ -141,6 +141,7 @@ const archetypeRules = archetypes(
     "consumerCliPackages",
     [
       "@osdk/cli",
+      "@osdk/cli.internal",
       "@osdk/create-app",
       "@osdk/create-widget",
       "@osdk/foundry-sdk-generator",
@@ -182,7 +183,8 @@ const archetypeRules = archetypes(
   .addArchetype(
     "internal libraries / templates",
     [
-      "@osdk/cli.*",
+      "@osdk/cli.cmd.typescript",
+      "@osdk/cli.common",
       "@osdk/client.test.ontology",
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",
