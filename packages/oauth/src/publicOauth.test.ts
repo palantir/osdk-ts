@@ -204,7 +204,13 @@ describe(createPublicOauthClient, () => {
         code_challenge_method: "S256",
         scope: [
           "offline_access",
-          ...(clientArgs.scopes ?? ["api:read-data", "api:write-data"].sort()),
+          ...(clientArgs.scopes
+            ?? [
+              "api:read-data",
+              "api:write-data",
+              "api:use-ontologies-read",
+              "api:use-ontologies-write",
+            ].sort()),
         ].join(" "),
         state: expect.any(String),
       }),
@@ -384,7 +390,12 @@ describe(createPublicOauthClient, () => {
         expect.any(Function),
         undefined,
         (clientArgs.scopes
-          ?? ["api:read-data", "api:write-data"]).sort().join(" "),
+          ?? [
+            "api:read-data",
+            "api:write-data",
+            "api:use-ontologies-read",
+            "api:use-ontologies-write",
+          ]).sort().join(" "),
       );
     });
 
@@ -395,7 +406,12 @@ describe(createPublicOauthClient, () => {
         localStorage: {
           refresh_token: "a-refresh-token",
           requestedScopes: (clientArgs.scopes
-            ?? ["api:read-data", "api:write-data"]).sort().join(" "),
+            ?? [
+              "api:read-data",
+              "api:write-data",
+              "api:use-ontologies-read",
+              "api:use-ontologies-write",
+            ]).sort().join(" "),
         },
         sessionStorage: {},
       },
