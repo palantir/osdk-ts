@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.10.0-beta.22
+
+### Minor Changes
+
+- 75f6b51: Propagate required/optional fields from interfaces to actions
+
 ## 0.10.0-beta.21
 
 ### Minor Changes

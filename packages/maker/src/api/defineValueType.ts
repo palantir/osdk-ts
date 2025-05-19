@@ -22,8 +22,12 @@ import type {
   ValueTypeDataConstraint,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
-import { ontologyDefinition } from "./defineOntology.js";
-import type { ValueTypeDefinitionVersion, ValueTypeType } from "./types.js";
+import { updateOntology } from "./defineOntology.js";
+import {
+  OntologyEntityTypeEnum,
+  type ValueTypeDefinitionVersion,
+  type ValueTypeType,
+} from "./types.js";
 
 type ZipBaseAndConstraint<Base, Constraint> = {
   [PropertyType in (BaseType["type"] & DataConstraint["type"])]: Base extends
@@ -110,16 +114,18 @@ function convertValueTypeTypeToBaseType(
   }
 }
 
+export type ValueTypeDefinition = {
+  apiName: string;
+  displayName: string;
+  description?: string;
+  type: NewValueTypeDefinition;
+  version: string;
+};
+
 export function defineValueType(
-  opts: {
-    apiName: string;
-    displayName: string;
-    description?: string;
-    type: NewValueTypeDefinition;
-    version: string;
-  },
+  valueTypeDef: ValueTypeDefinition,
 ): ValueTypeDefinitionVersion {
-  const { apiName, displayName, description, type, version } = opts;
+  const { apiName, displayName, description, type, version } = valueTypeDef;
   const semverValidation =
     /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/;
   invariant(semverValidation.test(version), "Version is not a valid semver");
@@ -153,10 +159,8 @@ export function defineValueType(
     baseType: baseType,
     constraints: constraints,
     exampleValues: [],
+    __type: OntologyEntityTypeEnum.VALUE_TYPE,
   };
-  if (ontologyDefinition.valueTypes[apiName] === undefined) {
-    ontologyDefinition.valueTypes[apiName] = [];
-  }
-  ontologyDefinition.valueTypes[apiName].push(vt);
+  updateOntology(vt);
   return vt;
 }
