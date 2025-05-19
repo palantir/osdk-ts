@@ -10,6 +10,6 @@
   },
   "dependencies": {
     "@cspell/cspell-types": "^8.18.1",
-    "@types/node": "^18.0.0"
+    "@types/node": "^20.0.0"
   }
 }
