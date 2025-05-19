@@ -39,7 +39,7 @@ jobs:
   
   changesets:
     name: Check for changesets
-    if: ${{ github.event_name == 'pull_request' }}
+    if: ${{ github.event_name == 'pull_request' && !startsWith(github.event.pull_request.head.ref, 'changeset-release') }}
     timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
