@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.2.0-beta.22
+
+### Minor Changes
+
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+
 ## 2.2.0-beta.21
 
 ### Minor Changes

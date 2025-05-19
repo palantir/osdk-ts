@@ -1,5 +1,16 @@
 # @osdk/generator-converters
 
+## 2.2.0-beta.22
+
+### Minor Changes
+
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+
+### Patch Changes
+
+- Updated dependencies [18ba34f]
+  - @osdk/api@2.2.0-beta.22
+
 ## 2.2.0-beta.21
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @osdk/functions
 
+## 1.0.0-beta.16
+
+### Patch Changes
+
+- Updated dependencies [18ba34f]
+  - @osdk/client@2.2.0-beta.22
+
 ## 1.0.0-beta.15
 
 ### Minor Changes
