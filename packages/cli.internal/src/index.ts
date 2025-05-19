@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { cli } from "./cli.js";
+export { cli } from "@osdk/cli.cmd.typescript";
