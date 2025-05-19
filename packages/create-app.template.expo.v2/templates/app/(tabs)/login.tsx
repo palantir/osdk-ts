@@ -31,7 +31,7 @@ export default function Login() {
         "api:read-data",
         "api:write-data",
         "api:use-ontologies-read",
-        "api:use-ontologies-write"
+        "api:use-ontologies-write",
       ],
       redirectUri,
       usePKCE: true,
