@@ -302,17 +302,6 @@ versions:
         - template: |-
             const {{objectType}}ObjectSet = client.ontology.objects.{{objectType}}
                 .where(query => query.{{property}}.containsAllTerms("foo bar"));
-      containsTemplate:
-        - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
-            // Edit this import if your client location differs
-            import { client } from "./client";
-            const filteredObjects = client({{objectType}})
-                .where({
-                    {{property}} : { $contains: {{{arrayElementValue}}} }
-                })
-          computedVariables:
-            - arrayElementValue
       equalityTemplate:
         - template: |-
             {{#isDateProperty}}
@@ -1584,6 +1573,18 @@ versions:
                 ]});
           computedVariables:
             - primaryKeyPropertyV2
+      containsTemplate:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            // Edit this import if your client location differs
+            import { client } from "./client";
+
+            const filteredObjects = client({{objectType}})
+                .where({
+                    {{property}} : { $contains: {{{arrayElementValue}}} }
+                })
+          computedVariables:
+            - arrayElementValue
       loadInterfacesReference:
         - template: |-
             import { {{interfaceApiName}} } from "{{{packageName}}}";
@@ -1896,13 +1897,17 @@ versions:
               .intersect(objectSetC); // alternatively: objectSetA.intersect(objectSetB, objectSetC)
       searchAround:
         - template: |-
+            import { {{sourceObjectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { {{sourceObjectType}} } from "{{{packageName}}}";
-            // Take 3 `{{sourceObjectType}}` objects
-            const objects = await client({{sourceObjectType}}).take(3);
-            // Traverse the `{{linkApiName}}` link type to find linked `{{linkedObjectType}}` objects
-            const linkedObjects = {{sourceObjectType}}.pivotTo("{{linkApiName}}")
+
+            // Object set containing objects a, b and c
+            const objects = client({{sourceObjectType}})
+                .where({ {{rawLinkedPrimaryKeyProperty.apiName}}: { $in: ["a", "b", "c"]}});
+
+            // Traverse the selected link type to find all objects of type
+            // {{linkedObjectType}} linked to objects a, b and c
+            const linkedObjects = await objects.pivotTo("{{linkApiName}}");
 
   "2.1.0":
     snippets:
