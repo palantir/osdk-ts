@@ -56,18 +56,8 @@ export namespace DerivedProperty {
   export type Clause<
     Q extends ObjectOrInterfaceDefinition,
   > = {
-    [key: string]: Creator<Q, SimplePropertyDef>;
+    [key: string]: DerivedPropertyCreator<Q, SimplePropertyDef>;
   };
-
-  export type Creator<
-    Q extends ObjectOrInterfaceDefinition,
-    T extends SimplePropertyDef,
-  > = (
-    baseObjectSet: Builder<Q, false>,
-  ) =>
-    | Definition<T, Q>
-    | NumericPropertyDefinition<T, Q>
-    | DatetimePropertyDefinition<T, Q>;
 
   interface BaseBuilder<
     Q extends ObjectOrInterfaceDefinition,
@@ -95,6 +85,16 @@ export namespace DerivedProperty {
 
   export type ValidParts = "DAYS" | "MONTHS" | "QUARTERS" | "YEARS";
 }
+
+export type DerivedPropertyCreator<
+  Q extends ObjectOrInterfaceDefinition,
+  T extends SimplePropertyDef,
+> = (
+  baseObjectSet: DerivedProperty.Builder<Q, false>,
+) =>
+  | DerivedProperty.Definition<T, Q>
+  | DerivedProperty.NumericPropertyDefinition<T, Q>
+  | DerivedProperty.DatetimePropertyDefinition<T, Q>;
 
 type BuilderTypeFromConstraint<
   Q extends ObjectOrInterfaceDefinition,
