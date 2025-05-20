@@ -33,12 +33,14 @@ import type {
   MinMaxWithPropAggregateOption,
 } from "./WithPropertiesAggregationOptions.js";
 
+declare const DerivedPropertyDefinitionBrand: unique symbol;
+
 export namespace DerivedProperty {
   export interface Definition<
     T extends SimplePropertyDef,
     Q extends ObjectOrInterfaceDefinition,
   > {
-    type: T;
+    readonly [DerivedPropertyDefinitionBrand]: true;
   }
 
   export interface NumericPropertyDefinition<

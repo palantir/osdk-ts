@@ -28,94 +28,99 @@ export function derivedPropertyDefinitionFactory(
     any
   >["extractPart"];
 } {
-  const definition: DerivedProperty.NumericPropertyDefinition<any, any> & {
-    extractPart: DerivedProperty.DatetimePropertyDefinition<
-      any,
-      any
-    >["extractPart"];
-  } = {
-    abs() {
-      return derivedPropertyDefinitionFactory({
-        type: "absoluteValue",
-        property: wireDefinition,
-      }, definitionMap);
-    },
-    negate() {
-      return derivedPropertyDefinitionFactory({
-        type: "negate",
-        property: wireDefinition,
-      }, definitionMap);
-    },
-    max(value) {
-      return derivedPropertyDefinitionFactory({
-        type: "greatest",
-        properties: [
-          wireDefinition,
-          getDefinitionFromMap(value, definitionMap),
-        ],
-      }, definitionMap);
-    },
-    min(value) {
-      return derivedPropertyDefinitionFactory({
-        type: "least",
-        properties: [
-          wireDefinition,
-          getDefinitionFromMap(value, definitionMap),
-        ],
-      }, definitionMap);
-    },
-    add(
-      value,
-    ) {
-      return derivedPropertyDefinitionFactory({
-        type: "add",
-        properties: [
-          wireDefinition,
-          getDefinitionFromMap(value, definitionMap),
-        ],
-      }, definitionMap);
-    },
-    subtract(
-      value,
-    ) {
-      return derivedPropertyDefinitionFactory({
-        "type": "subtract",
-        "left": wireDefinition,
-        "right": getDefinitionFromMap(value, definitionMap),
-      }, definitionMap);
-    },
-    multiply(
-      value,
-    ) {
-      return derivedPropertyDefinitionFactory({
-        type: "multiply",
-        properties: [
-          wireDefinition,
-          getDefinitionFromMap(value, definitionMap),
-        ],
-      }, definitionMap);
-    },
-    divide(
-      value,
-    ) {
-      return derivedPropertyDefinitionFactory({
-        "type": "subtract",
-        "left": wireDefinition,
-        "right": getDefinitionFromMap(value, definitionMap),
-      }, definitionMap);
-    },
-    extractPart: (part) => {
-      return derivedPropertyDefinitionFactory({
-        type: "extract",
-        part,
-        property: wireDefinition,
-      }, definitionMap);
-    },
-    type: {},
+  type RemoveSymbolKeys<T> = {
+    [K in keyof T as K extends symbol ? never : K]: T[K];
   };
 
+  const definition:
+    & RemoveSymbolKeys<DerivedProperty.NumericPropertyDefinition<any, any>>
+    & {
+      extractPart: DerivedProperty.DatetimePropertyDefinition<
+        any,
+        any
+      >["extractPart"];
+    } = {
+      abs() {
+        return derivedPropertyDefinitionFactory({
+          type: "absoluteValue",
+          property: wireDefinition,
+        }, definitionMap);
+      },
+      negate() {
+        return derivedPropertyDefinitionFactory({
+          type: "negate",
+          property: wireDefinition,
+        }, definitionMap);
+      },
+      max(value) {
+        return derivedPropertyDefinitionFactory({
+          type: "greatest",
+          properties: [
+            wireDefinition,
+            getDefinitionFromMap(value, definitionMap),
+          ],
+        }, definitionMap);
+      },
+      min(value) {
+        return derivedPropertyDefinitionFactory({
+          type: "least",
+          properties: [
+            wireDefinition,
+            getDefinitionFromMap(value, definitionMap),
+          ],
+        }, definitionMap);
+      },
+      add(
+        value,
+      ) {
+        return derivedPropertyDefinitionFactory({
+          type: "add",
+          properties: [
+            wireDefinition,
+            getDefinitionFromMap(value, definitionMap),
+          ],
+        }, definitionMap);
+      },
+      subtract(
+        value,
+      ) {
+        return derivedPropertyDefinitionFactory({
+          "type": "subtract",
+          "left": wireDefinition,
+          "right": getDefinitionFromMap(value, definitionMap),
+        }, definitionMap);
+      },
+      multiply(
+        value,
+      ) {
+        return derivedPropertyDefinitionFactory({
+          type: "multiply",
+          properties: [
+            wireDefinition,
+            getDefinitionFromMap(value, definitionMap),
+          ],
+        }, definitionMap);
+      },
+      divide(
+        value,
+      ) {
+        return derivedPropertyDefinitionFactory({
+          "type": "subtract",
+          "left": wireDefinition,
+          "right": getDefinitionFromMap(value, definitionMap),
+        }, definitionMap);
+      },
+      extractPart: (part) => {
+        return derivedPropertyDefinitionFactory({
+          type: "extract",
+          part,
+          property: wireDefinition,
+        }, definitionMap);
+      },
+    };
+
   definitionMap.set(definition, wireDefinition);
-  return definition;
+  return definition as any;
 }
 
 const getDefinitionFromMap = (
