@@ -57,13 +57,19 @@ export function defineSharedPropertyType(
       === undefined,
     `Shared property type ${apiName} already exists`,
   );
+  const isStruct = typeof sptDef.type === "object"
+    && sptDef.type.type === "struct";
+  invariant(
+    !isStruct || (sptDef.typeClasses?.length ?? 0) === 0,
+    `Shared property type ${apiName} of type 'struct' cannot have type classes`,
+  );
 
   const fullSpt: SharedPropertyType = {
     ...sptDef,
     apiName,
     nonNameSpacedApiName: sptDef.apiName,
     displayName: sptDef.displayName ?? sptDef.apiName, // This way the non-namespaced api name is the display name (maybe not ideal)
-    typeClasses: sptDef.typeClasses ?? defaultTypeClasses,
+    typeClasses: sptDef.typeClasses ?? (isStruct ? [] : defaultTypeClasses),
     __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
   };
   updateOntology(fullSpt);
