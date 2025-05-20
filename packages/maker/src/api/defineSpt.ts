@@ -60,8 +60,10 @@ export function defineSharedPropertyType(
   const isStruct = typeof sptDef.type === "object"
     && sptDef.type.type === "struct";
   invariant(
-    !isStruct || (sptDef.typeClasses?.length ?? 0) === 0,
-    `Shared property type ${apiName} of type 'struct' cannot have type classes`,
+    !isStruct
+      || (sptDef.typeClasses ?? []).filter((tc) => tc.kind === "render_hint")
+          .length === 0,
+    `Shared property type ${apiName} of type 'struct' should not have render hints`,
   );
 
   const fullSpt: SharedPropertyType = {
