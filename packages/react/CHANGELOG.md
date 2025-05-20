@@ -1,5 +1,17 @@
 # @osdkkit/react
 
+## 0.4.0-beta.6
+
+### Minor Changes
+
+- a1f5bdc: Adds react 19 as valid peer deps
+
+### Patch Changes
+
+- Updated dependencies [4183a55]
+  - @osdk/client@2.2.0-beta.23
+  - @osdk/api@2.2.0-beta.23
+
 ## 0.4.0-beta.5
 
 ### Minor Changes

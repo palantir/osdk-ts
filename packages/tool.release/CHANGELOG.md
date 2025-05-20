@@ -1,5 +1,11 @@
 # @osdk/tool.release
 
+## 0.7.0-beta.3
+
+### Minor Changes
+
+- c8da1f9: Write script to add updated changelogs from previous release
+
 ## 0.7.0-beta.2
 
 ### Minor Changes

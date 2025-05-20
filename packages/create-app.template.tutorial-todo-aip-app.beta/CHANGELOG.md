@@ -1,5 +1,11 @@
 # @osdk/create-app.template.tutorial-todo-aip-app.beta
 
+## 2.2.0-beta.23
+
+### Minor Changes
+
+- 2e8e351: Update template to use new OsdkProvider
+
 ## 2.2.0-beta.22
 
 ## 2.2.0-beta.21

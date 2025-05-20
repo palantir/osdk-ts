@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.2.0-beta.3
+
+### Minor Changes
+
+- 0e0935e: Added api:use-ontologies-read/write to the default scope initialization
+
 ## 1.2.0-beta.2
 
 ### Minor Changes

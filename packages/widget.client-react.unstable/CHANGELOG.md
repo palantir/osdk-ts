@@ -1,5 +1,17 @@
 # @osdk/widget.client-react.unstable
 
+## 2.1.0-beta.11
+
+### Minor Changes
+
+- a1f5bdc: Adds react 19 as valid peer deps
+
+### Patch Changes
+
+- Updated dependencies [4183a55]
+  - @osdk/client@2.2.0-beta.23
+  - @osdk/widget.client.unstable@2.1.0-beta.11
+
 ## 2.1.0-beta.10
 
 ### Minor Changes

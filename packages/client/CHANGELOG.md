@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.2.0-beta.23
+
+### Minor Changes
+
+- 4183a55: Refactor OsdkBase to avoid breaks with type not being discoverable
+
+### Patch Changes
+
+- Updated dependencies [4183a55]
+  - @osdk/api@2.2.0-beta.23
+  - @osdk/generator-converters@2.2.0-beta.23
+  - @osdk/client.unstable@2.2.0-beta.23
+
 ## 2.2.0-beta.22
 
 ### Minor Changes
