@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import useSWR from "swr";
 import Mocks from "./mocks";
 import { IProject } from "./useProjects";
-
+import { useOsdkClient } from "@osdk/react";
 export interface ITask {
   $apiName: string;
   $primaryKey: string;
@@ -12,6 +12,9 @@ export interface ITask {
 }
 
 export function useProjectTasks(project: IProject | undefined) {
+  // Use this client variable to access the Ontology SDK.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const client = useOsdkClient();
   const { data, isLoading, isValidating, error, mutate } = useSWR<ITask[]>(
     project != null ? `projects/${project.id}/tasks` : null,
     // Try to implement this with the Ontology SDK!
