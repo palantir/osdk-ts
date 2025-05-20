@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import type { OsdkBase } from "@osdk/api";
+import type { PrimaryKeyTypes } from "@osdk/api";
 
-export function isOsdkBaseObject(o: any): o is OsdkBase<any> {
+export function isObjectSpecifiersObject(
+  o: any,
+): o is { $apiName: string; $primaryKey: PrimaryKeyTypes } {
   return o && typeof o === "object" && typeof o.$apiName === "string"
     && o.$primaryKey != null;
 }

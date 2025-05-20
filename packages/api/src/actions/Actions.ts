@@ -21,7 +21,7 @@ import type {
   CompileTimeMetadata,
   ObjectTypeDefinition,
 } from "../ontology/ObjectTypeDefinition.js";
-import type { OsdkBase } from "../OsdkBase.js";
+import type { ObjectIdentifiers } from "../OsdkBase.js";
 import type { OsdkObjectPrimaryKeyType } from "../OsdkObjectPrimaryKeyType.js";
 
 import type {
@@ -52,7 +52,7 @@ export namespace ActionParam {
    * Helper type to convert action definition parameter object types to typescript types
    */
   export type ObjectType<T extends ObjectTypeDefinition> =
-    | OsdkBase<T>
+    | ObjectIdentifiers<T>
     | OsdkObjectPrimaryKeyType<T>;
 
   /**
