@@ -43,12 +43,10 @@ export namespace ObjectSetArgs {
     | "relevance";
 
   export interface OrderBy<
+    Z extends OrderByOptions<L> = {},
     L extends string = never,
-  > // Z extends OrderByOptions<L> = never,
-  {
-    $orderBy?: {
-      [K in L]?: "asc" | "desc";
-    };
+  > {
+    $orderBy?: Z;
   }
 
   export interface AsyncIter<
@@ -56,7 +54,8 @@ export namespace ObjectSetArgs {
     K extends PropertyKeys<Q> = never,
     T extends boolean = false,
     RDP_KEYS extends string = never,
-  > extends Select<K, RDP_KEYS>, OrderBy<K> {
+    Z extends OrderByOptions<K> = {},
+  > extends Select<K, RDP_KEYS>, OrderBy<Z, K> {
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
   }
@@ -85,7 +84,8 @@ export interface SelectArg<
 export interface OrderByArg<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q> = PropertyKeys<Q>,
-> extends ObjectSetArgs.OrderBy<L> {
+  Z extends ObjectSetArgs.OrderByOptions<L> = {},
+> extends ObjectSetArgs.OrderBy<Z, L> {
 }
 
 export type SelectArgToKeys<
@@ -103,7 +103,8 @@ export interface FetchPageArgs<
   S extends NullabilityAdherence = NullabilityAdherence.Default,
   T extends boolean = false,
   RDP_KEYS extends string = never,
-> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS> {
+  Z extends ObjectSetArgs.OrderByOptions<K> = {},
+> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, Z> {
   $nextPageToken?: string;
   $pageSize?: number;
 }
@@ -116,7 +117,8 @@ export interface AsyncIterArgs<
   S extends NullabilityAdherence = NullabilityAdherence.Default,
   T extends boolean = false,
   RDP_KEYS extends string = never,
-> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+  Z extends ObjectSetArgs.OrderByOptions<K> = {},
+> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>, Z> {
   $__UNSTABLE_useOldInterfaceApis?: boolean;
   $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }

@@ -222,7 +222,6 @@ export type ApplyBatchActionOptions = {
     	$returnEdits?: boolean
 };
 
-// Warning: (ae-forgotten-export) The symbol "ObjectSetArgs" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "OrderByArg" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -233,9 +232,8 @@ export interface AsyncIterArgs<
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
-	RDP_KEYS extends string = never,
-	Z extends ObjectSetArgs.OrderByOptions<K> = never
-> extends SelectArg<Q, K, R, S>, OrderByArg<Q, K, Z> {
+	RDP_KEYS extends string = never
+> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
@@ -539,9 +537,8 @@ export interface FetchPageArgs<
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
-	RDP_KEYS extends string = never,
-	Z extends ObjectSetArgs.OrderByOptions<K> = never
-> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, Z> {
+	RDP_KEYS extends string = never
+> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS> {
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -837,6 +834,54 @@ export interface ObjectSet<
 	Q extends ObjectOrInterfaceDefinition = any,
 	UNUSED_OR_RDP extends BaseObjectSet<Q> | Record<string, SimplePropertyDef> = never
 > extends ObjectSetCleanedTypes<Q, ExtractRdp<UNUSED_OR_RDP>, MergeObjectSet<Q, ExtractRdp<UNUSED_OR_RDP>>> {}
+
+// @public (undocumented)
+export namespace ObjectSetArgs {
+    	// (undocumented)
+    export interface AsyncIter<
+    		Q extends ObjectOrInterfaceDefinition,
+    		K extends PropertyKeys<Q> = never,
+    		T extends boolean = false,
+    		RDP_KEYS extends string = never
+    	> extends Select<K, RDP_KEYS>, OrderBy<K> {
+        		// (undocumented)
+        $__UNSTABLE_useOldInterfaceApis?: boolean;
+        		// (undocumented)
+        $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
+        	}
+    	// (undocumented)
+    export interface FetchPage<
+    		Q extends ObjectOrInterfaceDefinition,
+    		K extends PropertyKeys<Q> = never,
+    		T extends boolean = false,
+    		RDP_KEYS extends string = never
+    	> extends AsyncIter<Q, K, T, RDP_KEYS> {
+        		// (undocumented)
+        $nextPageToken?: string;
+        		// (undocumented)
+        $pageSize?: number;
+        	}
+    	// (undocumented)
+    export interface OrderBy<
+    		Z extends OrderByOptions<L>,
+    		L extends string = never
+    	> {
+        		// (undocumented)
+        $orderBy?: Z;
+        	}
+    	// (undocumented)
+    export type OrderByOptions<L extends string = never> = { [K in L]? : "asc" | "desc" } | "relevance";
+    	// (undocumented)
+    export interface Select<
+    		OBJECT_KEYS extends string = never,
+    		RDP_KEYS extends string = never
+    	> {
+        		// (undocumented)
+        $includeRid?: boolean;
+        		// (undocumented)
+        $select?: readonly (OBJECT_KEYS | RDP_KEYS)[];
+        	}
+}
 
 // @public (undocumented)
 export interface ObjectSetQueryDataType<T_Target extends ObjectTypeDefinition = never> extends BaseQueryDataTypeDefinition<"objectSet"> {

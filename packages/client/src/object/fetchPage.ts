@@ -22,6 +22,7 @@ import type {
   InterfaceDefinition,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
+  ObjectSetArgs,
   ObjectTypeDefinition,
   PropertyKeys,
   Result,
@@ -185,24 +186,27 @@ export async function fetchPageInternal<
   A extends Augments,
   S extends NullabilityAdherence,
   T extends boolean,
+  Z extends ObjectSetArgs.OrderByOptions<L>,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, A, S, T> = {},
+  args: FetchPageArgs<Q, L, R, A, S, T, never, Z> = {},
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(
       client,
       objectType,
-      args,
+      // Unhappy without cast, would throw
+      // Argument of type 'FetchPageArgs<Q, L, R, A, S, T, never, Z>' is not assignable to parameter of type 'FetchPageArgs<InterfaceDefinition, L, R, any, S, T, never, {}>'
+      args as FetchPageArgs<InterfaceDefinition, L, R, A, S, T, never, Z>,
       objectSet,
     ) as any; // fixme
   } else {
     return await fetchObjectPage(
       client,
       objectType,
-      args,
+      args as FetchPageArgs<ObjectTypeDefinition, L, R, A, S, T, never, Z>,
       objectSet,
     ) as any; // fixme
   }
@@ -285,7 +289,9 @@ function applyFetchArgs<
     any,
     any,
     any,
-    any
+    any,
+    any,
+    ObjectSetArgs.OrderByOptions<any>
   >,
   body: X,
 ): X {
@@ -297,13 +303,16 @@ function applyFetchArgs<
     body.pageSize = args.$pageSize;
   }
 
-  if (args?.$orderBy != null) {
-    body.orderBy = {
-      fields: Object.entries(args.$orderBy).map(([field, direction]) => ({
-        field,
-        direction,
-      })),
-    };
+  const orderBy = args?.$orderBy;
+  if (orderBy) {
+    body.orderBy = orderBy === "relevance"
+      ? { orderType: "relevance", fields: [] }
+      : {
+        fields: Object.entries(orderBy).map(([field, direction]) => ({
+          field,
+          direction,
+        })),
+      };
   }
 
   return body;
@@ -316,10 +325,11 @@ export async function fetchObjectPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
+  Z extends ObjectSetArgs.OrderByOptions<L>,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, Augments, S, T>,
+  args: FetchPageArgs<Q, L, R, Augments, S, T, never, Z>,
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
   const r = await OntologiesV2.OntologyObjectSets.load(
