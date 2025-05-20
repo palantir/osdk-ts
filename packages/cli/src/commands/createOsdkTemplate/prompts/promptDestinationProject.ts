@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import path from "path";
-import { consola } from "../consola.js";
 
 export async function promptDestinationProject(
   { destinationProject }: { destinationProject?: string },
@@ -31,10 +31,13 @@ export async function promptDestinationProject(
     destinationProject = await consola.prompt("Destination project path:", {
       type: "text",
       placeholder: "my-osdk-template-app",
-      default: "my-osdk-template-app",
+      // default: "my-osdk-template-app",
     });
+    if (destinationProject == null) {
+      consola.info("Prompt canceled by user. Exiting...");
+      process.exit(0);
+    }
   }
-
   return destinationProject;
 }
 

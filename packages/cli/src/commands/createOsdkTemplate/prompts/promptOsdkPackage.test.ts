@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import { afterEach, expect, test, vi } from "vitest";
-import { consola } from "../consola.js";
 import { promptOsdkPackage } from "./promptOsdkPackage.js";
 
-vi.mock("../consola.js");
+vi.mock("consola");
 
 afterEach(() => {
   vi.restoreAllMocks();

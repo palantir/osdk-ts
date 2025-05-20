@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
+import { colorize } from "consola/utils";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { consola } from "./consola.js";
 import {
   generateEnvDevelopment,
   generateEnvProduction,
@@ -25,7 +26,6 @@ import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.
 import { generateJemmaFolderWithContent } from "./generate/generateJemmaFolderWithContent.js";
 import { generateNpmRc } from "./generate/generateNpmRc.js";
 import { getTemplatePackageFile } from "./getTemplatePackageFile.js";
-import { green } from "./highlight.js";
 import { updateViteConfigTs } from "./updateViteConfig.js";
 
 interface RunArgs {
@@ -45,8 +45,8 @@ export async function run(
 ): Promise<void> {
   consola.log("");
   consola.start(
-    `Creating project ${green(destinationProject)} based off ${
-      green(sourceProject)
+    `Creating project ${colorize("green", destinationProject)} based off ${
+      colorize("green", sourceProject)
     }`,
   );
 
@@ -68,7 +68,9 @@ export async function run(
     // Check if source project is empty
     const sourceProjectFiles = await fs.readdir(sourceProjectPath);
     if (sourceProjectFiles.length === 0) {
-      throw new Error(`Source project ${green(sourceProject)} is empty`);
+      throw new Error(
+        `Source project ${colorize("green", sourceProject)} is empty`,
+      );
     }
 
     // Handle project directory creation or overwriting

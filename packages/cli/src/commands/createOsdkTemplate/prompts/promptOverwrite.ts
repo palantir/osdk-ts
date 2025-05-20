@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
+import { colorize } from "consola/utils";
 import fs from "node:fs";
 import path from "node:path";
-import { consola } from "../consola.js";
-import { green } from "../highlight.js";
 
 export async function promptOverwrite(
   {
@@ -38,9 +38,7 @@ export async function promptOverwrite(
 
   const result = await consola.prompt(
     `The directory ${
-      green(
-        destinationProject,
-      )
+      colorize("green", destinationProject)
     } already exists do you want to overwrite or ignore it?`,
     {
       type: "select",

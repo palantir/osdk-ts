@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import fs from "node:fs";
 import { afterEach, expect, test, vi } from "vitest";
-import { consola } from "../consola.js";
 import { promptOverwrite } from "./promptOverwrite.js";
 
 // Mock the consola and fs modules
-vi.mock("../consola.js");
+vi.mock("consola");
 vi.mock("node:fs");
 
 afterEach(() => {

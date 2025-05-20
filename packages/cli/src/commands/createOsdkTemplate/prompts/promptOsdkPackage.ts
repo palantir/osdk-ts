@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { consola } from "../consola.js";
-import { italic } from "../highlight.js";
+import { consola } from "consola";
+import { colorize } from "consola/utils";
 
 export async function promptOsdkPackage(
   { osdkPackage }: { osdkPackage?: string },
@@ -26,12 +26,15 @@ export async function promptOsdkPackage(
     }
     osdkPackage = await consola.prompt(
       `Enter the OSDK package name for your application from Developer Console:\n${
-        italic(
-          "(Example: @my-app/sdk)",
-        )
+        colorize("italic", "(Example: @my-app/sdk)")
       }`,
       { type: "text" },
     );
+
+    if (osdkPackage == null) {
+      consola.info("Prompt canceled. Exiting...");
+      process.exit(0); // Exit the process if Esc is pressed
+    }
   }
   return osdkPackage;
 }

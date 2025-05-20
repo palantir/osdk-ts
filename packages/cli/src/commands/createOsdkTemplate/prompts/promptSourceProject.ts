@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import fs from "node:fs/promises";
-import { consola } from "../consola.js";
 
 const DEFAULT_PATH = "../examples/example-advance-to-do-application";
 const PATH_REGEX = /^[a-zA-Z0-9-_/\\.]+$/;
@@ -59,7 +59,13 @@ export async function promptSourceProject(
     sourceProject = await consola.prompt("Source project path:", {
       type: "text",
       placeholder: DEFAULT_PATH,
-      default: DEFAULT_PATH,
+      // default: DEFAULT_PATH,
     });
+
+    // Handle escape or empty input
+    if (!sourceProject) {
+      consola.info("Operation cancelled.");
+      process.exit(0); // Exit the process if Esc is pressed
+    }
   }
 }

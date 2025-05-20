@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import mockFs from "mock-fs";
 import { afterEach, expect, test, vi } from "vitest";
-import { consola } from "../consola.js";
 import { promptSourceProject } from "./promptSourceProject.js";
 
-vi.mock("../consola.js");
+vi.mock("consola");
 
 afterEach(() => {
   mockFs.restore();

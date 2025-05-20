@@ -142,7 +142,6 @@ const archetypeRules = archetypes(
     [
       "@osdk/cli",
       "@osdk/create-app",
-      "@osdk/osdk-template-cli",
       "@osdk/create-widget",
       "@osdk/foundry-sdk-generator",
     ],
