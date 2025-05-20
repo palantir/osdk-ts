@@ -23,7 +23,7 @@ import {
   isAttachmentUpload,
 } from "../object/AttachmentUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
-import { isOsdkBaseObject } from "./isOsdkBaseObject.js";
+import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
 import { extractPrimaryKeyFromObjectSpecifier } from "./objectSpecifierUtils.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
@@ -115,7 +115,7 @@ export async function toDataValueQueries(
       break;
     }
     case "object": {
-      if (isOsdkBaseObject(value)) {
+      if (isObjectSpecifiersObject(value)) {
         return value.$primaryKey;
       }
       break;
