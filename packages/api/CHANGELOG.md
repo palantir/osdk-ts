@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.2.0-beta.23
+
+### Minor Changes
+
+- 4183a55: Refactor OsdkBase to avoid breaks with type not being discoverable
+
 ## 2.2.0-beta.22
 
 ### Minor Changes

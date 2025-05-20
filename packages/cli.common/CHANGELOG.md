@@ -1,5 +1,11 @@
 # @osdk/cli.common
 
+## 0.26.0-beta.23
+
+### Minor Changes
+
+- 0e0935e: Added api:use-ontologies-read/write to the default scope initialization
+
 ## 0.26.0-beta.22
 
 ## 0.26.0-beta.21
