@@ -972,20 +972,23 @@ describe("ObjectSet", () => {
       employees.forEach(e => expect(e.$score).toBeUndefined());
     });
 
-    // it("finds nearest neighbors via text query ordered by relevance", async () => {
-    //   const numNeighbors = 3;
-    //   const nearestNeighborsObjectSet = client(Employee).nearestNeighbors(
-    //     "python3",
-    //     numNeighbors,
-    //     "skillSetEmbedding",
-    //   );
-    //   const { data: employees } = await nearestNeighborsObjectSet.fetchPage({
-    //     $orderBy: "relevance",
-    //   });
-    //   expect(employees).toHaveLength(numNeighbors);
-    //   // Check that no score is returned when not ordered by relevance
-    //   // employees.forEach(e => expect(e.).toBeDefined());
-    // });
+    it("finds nearest neighbors via text query ordered by relevance", async () => {
+      const numNeighbors = 3;
+      const nearestNeighborsObjectSet = client(Employee).nearestNeighbors(
+        "python3",
+        numNeighbors,
+        "skillSetEmbedding",
+      );
+
+      const f = nearestNeighborsObjectSet.fetchPage({ $orderBy: "relevancy" });
+
+      const { data: employees } = await nearestNeighborsObjectSet.fetchPage({
+        $orderBy: { "a": "s" },
+      });
+      expect(employees).toHaveLength(numNeighbors);
+      // Check that no score is returned when not ordered by relevance
+      // employees.forEach(e => expect(e.).toBeDefined());
+    });
 
     it("finds nearest neighbors via vector query", async () => {
       const numNeighbors = 3;

@@ -232,8 +232,9 @@ export interface AsyncIterArgs<
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
-	RDP_KEYS extends string = never
-> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+	RDP_KEYS extends string = never,
+	Z extends ObjectSetArgs.OrderByOptions<K> = {}
+> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>, Z> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
@@ -537,14 +538,16 @@ export interface FetchPageArgs<
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
-	RDP_KEYS extends string = never
-> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS> {
+	RDP_KEYS extends string = never,
+	Z extends ObjectSetArgs.OrderByOptions<K> = {}
+> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, Z> {
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
     $pageSize?: number;
 }
 
+// Warning: (ae-forgotten-export) The symbol "OsdkInstanceWithScore" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractOptions" needs to be exported by the entry point index.d.ts
 //
 // @public
@@ -553,8 +556,9 @@ export type FetchPageResult<
 	L extends PropertyKeys<Q>,
 	R extends boolean,
 	S extends NullabilityAdherence,
-	T extends boolean = false
-> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, L>>;
+	T extends boolean = false,
+	Z extends ObjectSetArgs.OrderByOptions<L> = {}
+> = PageResult<Z extends "relevance" ? (PropertyKeys<Q> extends L ? OsdkInstanceWithScore<Osdk.Instance<Q, ExtractOptions<R, S, T>>> : OsdkInstanceWithScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, L>>) : (PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, L>)>;
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
@@ -842,8 +846,9 @@ export namespace ObjectSetArgs {
     		Q extends ObjectOrInterfaceDefinition,
     		K extends PropertyKeys<Q> = never,
     		T extends boolean = false,
-    		RDP_KEYS extends string = never
-    	> extends Select<K, RDP_KEYS>, OrderBy<K> {
+    		RDP_KEYS extends string = never,
+    		Z extends OrderByOptions<K> = {}
+    	> extends Select<K, RDP_KEYS>, OrderBy<Z, K> {
         		// (undocumented)
         $__UNSTABLE_useOldInterfaceApis?: boolean;
         		// (undocumented)
@@ -854,8 +859,9 @@ export namespace ObjectSetArgs {
     		Q extends ObjectOrInterfaceDefinition,
     		K extends PropertyKeys<Q> = never,
     		T extends boolean = false,
-    		RDP_KEYS extends string = never
-    	> extends AsyncIter<Q, K, T, RDP_KEYS> {
+    		RDP_KEYS extends string = never,
+    		Z extends OrderByOptions<K> = {}
+    	> extends AsyncIter<Q, K, T, RDP_KEYS, Z> {
         		// (undocumented)
         $nextPageToken?: string;
         		// (undocumented)

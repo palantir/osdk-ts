@@ -86,24 +86,29 @@ type NOOP<T> = T extends (...args: any[]) => any ? T
   : { [K in keyof T]: T[K] };
 
 type SubSelectRDPsHelper<
-  X extends ValidFetchPageArgs<any, any> | ValidAsyncIterArgs<any, any>,
+  X extends
+    | ValidFetchPageArgs<any, any, any>
+    | ValidAsyncIterArgs<any, any, any>,
   DEFAULT extends string,
 > = [X] extends [never] ? DEFAULT
   : (X["$select"] & string[])[number] & DEFAULT;
 
 type SubSelectRDPs<
   RDPs extends Record<string, SimplePropertyDef>,
-  X extends ValidFetchPageArgs<any, RDPs> | ValidAsyncIterArgs<any, RDPs>,
+  X extends
+    | ValidFetchPageArgs<any, RDPs, any>
+    | ValidAsyncIterArgs<any, RDPs, any>,
 > = [RDPs] extends [never] ? never
   : NOOP<{ [K in SubSelectRDPsHelper<X, string & keyof RDPs>]: RDPs[K] }>;
 
 export interface MinimalObjectSet<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > extends
   BaseObjectSet<Q>,
-  FetchPage<Q, RDPs>,
-  AsyncIter<Q, RDPs>,
+  FetchPage<Q, RDPs, Z>,
+  AsyncIter<Q, RDPs, Z>,
   Where<Q, RDPs>
 {
 }
@@ -124,37 +129,43 @@ type Extract$Select<X extends FetchPageArgs<any, any>> = NonNullable<
 interface FetchPage<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > {
-  readonly fetchPage: FetchPageSignature<Q, RDPs>;
-  readonly fetchPageWithErrors: FetchPageWithErrorsSignature<Q, RDPs>;
+  readonly fetchPage: FetchPageSignature<Q, RDPs, Z>;
+  readonly fetchPageWithErrors: FetchPageWithErrorsSignature<Q, RDPs, Z>;
 }
 
 type ValidFetchPageArgs<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
+  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>>,
 > =
   | ObjectSetArgs.FetchPage<
     Q,
     PropertyKeys<Q>,
     false,
-    string & keyof RDPs
+    string & keyof RDPs,
+    Z
   >
   | ObjectSetArgs.FetchPage<
     Q,
     never,
     true,
-    string & keyof RDPs
+    string & keyof RDPs,
+    Z
   >;
 
 type ValidAsyncIterArgs<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
+  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>>,
 > =
   | ObjectSetArgs.AsyncIter<
     Q,
     PropertyKeys<Q>,
     false,
-    string & keyof RDPs
+    string & keyof RDPs,
+    Z
   >
   | AsyncIterArgs<
     Q,
@@ -163,12 +174,14 @@ type ValidAsyncIterArgs<
     any,
     any,
     true,
-    string & keyof RDPs
+    string & keyof RDPs,
+    Z
   >;
 
 interface FetchPageSignature<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > {
   /**
    * Gets a page of objects of this type, with a result wrapper
@@ -182,7 +195,7 @@ interface FetchPageSignature<
 
    * @returns a page of objects
    */
-  <const X extends ValidFetchPageArgs<Q, RDPs> = never>(
+  <const X extends ValidFetchPageArgs<Q, RDPs, Z> = never>(
     args?: X,
   ): Promise<
     PageResult<
@@ -229,6 +242,7 @@ interface FetchPageSignature<
 interface FetchPageWithErrorsSignature<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > {
   /**
    * Gets a page of objects of this type, with a result wrapper
@@ -244,7 +258,7 @@ interface FetchPageWithErrorsSignature<
     }
    * @returns a page of objects, wrapped in a result wrapper
    */
-  <X extends ValidFetchPageArgs<Q, RDPs> = never>(
+  <X extends ValidFetchPageArgs<Q, RDPs, Z> = never>(
     args?: X,
   ): Promise<
     Result<
@@ -317,6 +331,7 @@ interface Where<
 interface AsyncIterSignature<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > {
   /**
    * Returns an async iterator to load all objects of this type
@@ -326,7 +341,7 @@ interface AsyncIterSignature<
    * }
    * @returns an async iterator to load all objects
    */
-  <X extends ValidAsyncIterArgs<Q, RDPs> = never>(
+  <X extends ValidAsyncIterArgs<Q, RDPs, Z> = never>(
     args?: X,
   ): AsyncIterableIterator<
     Osdk.Instance<
@@ -365,8 +380,9 @@ interface AsyncIterSignature<
 interface AsyncIter<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > {
-  asyncIter: AsyncIterSignature<Q, RDPs>;
+  asyncIter: AsyncIterSignature<Q, RDPs, Z>;
 }
 
 interface WithProperties<
@@ -415,11 +431,13 @@ export interface ObjectSet<
   UNUSED_OR_RDP extends
     | BaseObjectSet<Q>
     | Record<string, SimplePropertyDef> = never,
+  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > extends
   ObjectSetCleanedTypes<
     Q,
     ExtractRdp<UNUSED_OR_RDP>,
-    MergeObjectSet<Q, ExtractRdp<UNUSED_OR_RDP>>
+    MergeObjectSet<Q, ExtractRdp<UNUSED_OR_RDP>>,
+    Z
   >
 {
 }
@@ -629,8 +647,9 @@ interface ObjectSetCleanedTypes<
   Q extends ObjectOrInterfaceDefinition,
   D extends Record<string, SimplePropertyDef>,
   MERGED extends ObjectOrInterfaceDefinition & Q,
+  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>>,
 > extends
-  MinimalObjectSet<Q, D>,
+  MinimalObjectSet<Q, D, Z>,
   WithProperties<Q, D>,
   Aggregate<MERGED>,
   SetArithmetic<MERGED>,

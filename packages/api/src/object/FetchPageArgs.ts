@@ -43,7 +43,7 @@ export namespace ObjectSetArgs {
     | "relevance";
 
   export interface OrderBy<
-    Z extends OrderByOptions<L> = {},
+    Z extends OrderByOptions<L>,
     L extends string = never,
   > {
     $orderBy?: Z;
@@ -65,7 +65,8 @@ export namespace ObjectSetArgs {
     K extends PropertyKeys<Q> = never,
     T extends boolean = false,
     RDP_KEYS extends string = never,
-  > extends AsyncIter<Q, K, T, RDP_KEYS> {
+    Z extends OrderByOptions<K> = {},
+  > extends AsyncIter<Q, K, T, RDP_KEYS, Z> {
     $nextPageToken?: string;
     $pageSize?: number;
   }
