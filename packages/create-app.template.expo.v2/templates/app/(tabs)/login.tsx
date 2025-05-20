@@ -27,7 +27,12 @@ export default function Login() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: CLIENT_ID,
-      scopes: ["api:read-data", "api:write-data"],
+      scopes: [
+        "api:read-data",
+        "api:write-data",
+        "api:use-ontologies-read",
+        "api:use-ontologies-write",
+      ],
       redirectUri,
       usePKCE: true,
     },
