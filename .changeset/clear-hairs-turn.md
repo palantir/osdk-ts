@@ -2,4 +2,4 @@
 "@osdk/maker": patch
 ---
 
-Enforce that struct type SPTs cannot have type classes
+Enforce that struct, mediaReference, and GTSR type SPTs cannot have render hints
