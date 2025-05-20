@@ -21,15 +21,6 @@ if [ -f "${SCRIPT_DIR}/../.changeset/pre.json" ]; then
     fi
 fi
 
-## if the current git branch starts with "release/{VERSION}"
-## then we append `-${VERSION}` to the tag
-BRANCH=$(git rev-parse --abbrev-ref HEAD)
-if [[ $BRANCH == release/* ]]; then
-    VERSION=${BRANCH#release/}
-    TAG="${TAG}-${VERSION}"
-fi
-
-
 echo "Publishing with tag: $TAG"
 
 pnpm run prePublish && pnpm publish --no-git-checks -r --report-summary --tag "$TAG"
