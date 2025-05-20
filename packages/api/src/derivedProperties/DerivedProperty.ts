@@ -53,28 +53,31 @@ export namespace DerivedProperty {
     Q extends ObjectOrInterfaceDefinition,
   > extends Definition<T, Q>, DatetimeExpressions<Q, T> {}
 
-  export type Clause<
-    Q extends ObjectOrInterfaceDefinition,
-  > = {
-    [key: string]: Creator<Q, SimplePropertyDef>;
-  };
+  export type ValidParts = "DAYS" | "MONTHS" | "QUARTERS" | "YEARS";
+}
 
-  export type Creator<
-    Q extends ObjectOrInterfaceDefinition,
-    T extends SimplePropertyDef,
-  > = (
-    baseObjectSet: Builder<Q, false>,
-  ) =>
-    | Definition<T, Q>
-    | NumericPropertyDefinition<T, Q>
-    | DatetimePropertyDefinition<T, Q>;
+export type Clause<
+  Q extends ObjectOrInterfaceDefinition,
+> = {
+  [key: string]: Creator<Q, SimplePropertyDef>;
+};
 
+export type Creator<
+  Q extends ObjectOrInterfaceDefinition,
+  T extends SimplePropertyDef,
+> = (
+  baseObjectSet: DerivedPropertyBuilders.Builder<Q, false>,
+) =>
+  | DerivedProperty.Definition<T, Q>
+  | DerivedProperty.NumericPropertyDefinition<T, Q>
+  | DerivedProperty.DatetimePropertyDefinition<T, Q>;
+
+export namespace DerivedPropertyBuilders {
   interface BaseBuilder<
     Q extends ObjectOrInterfaceDefinition,
     CONSTRAINED extends boolean,
   > extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {
   }
-
   export interface Builder<
     Q extends ObjectOrInterfaceDefinition,
     CONSTRAINED extends boolean,
@@ -92,15 +95,13 @@ export namespace DerivedProperty {
     CONSTRAINED extends boolean,
   > extends AggregateBuilder<Q, CONSTRAINED>, Selectable<Q> {
   }
-
-  export type ValidParts = "DAYS" | "MONTHS" | "QUARTERS" | "YEARS";
 }
 
 type BuilderTypeFromConstraint<
   Q extends ObjectOrInterfaceDefinition,
   CONSTRAINED extends boolean,
-> = CONSTRAINED extends true ? DerivedProperty.AggregateBuilder<Q, true>
-  : DerivedProperty.SelectPropertyBuilder<Q, false>;
+> = CONSTRAINED extends true ? DerivedPropertyBuilders.AggregateBuilder<Q, true>
+  : DerivedPropertyBuilders.SelectPropertyBuilder<Q, false>;
 
 type Filterable<
   Q extends ObjectOrInterfaceDefinition,
@@ -118,10 +119,10 @@ type Pivotable<
   readonly pivotTo: <L extends LinkNames<Q>>(
     type: L,
   ) => CONSTRAINED extends true
-    ? DerivedProperty.AggregateBuilder<LinkedType<Q, L>, true>
+    ? DerivedPropertyBuilders.AggregateBuilder<LinkedType<Q, L>, true>
     : NonNullable<CompileTimeMetadata<Q>["links"][L]["multiplicity"]> extends
-      true ? DerivedProperty.AggregateBuilder<LinkedType<Q, L>, true>
-    : DerivedProperty.SelectPropertyBuilder<LinkedType<Q, L>, false>;
+      true ? DerivedPropertyBuilders.AggregateBuilder<LinkedType<Q, L>, true>
+    : DerivedPropertyBuilders.SelectPropertyBuilder<LinkedType<Q, L>, false>;
 };
 
 type Constant<Q extends ObjectOrInterfaceDefinition> = {
