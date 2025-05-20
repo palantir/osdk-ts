@@ -1324,16 +1324,7 @@ describe("Ontology Defining", () => {
                         },
                         "type": "struct",
                       },
-                      "typeClasses": [
-                        {
-                          "kind": "render_hint",
-                          "name": "SELECTABLE",
-                        },
-                        {
-                          "kind": "render_hint",
-                          "name": "SORTABLE",
-                        },
-                      ],
+                      "typeClasses": [],
                       "valueType": undefined,
                     },
                   },

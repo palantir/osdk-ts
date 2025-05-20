@@ -65,7 +65,15 @@ export function processOptionsAndAssignDefaults(
     useHistory: options.useHistory ?? true,
     loginPage: options.loginPage,
     postLoginPage: options.postLoginPage || window.location.toString(),
-    joinedScopes: [...options.scopes ?? ["api:read-data", "api:write-data"]]
+    joinedScopes: [
+      ...options.scopes
+        ?? [
+          "api:read-data",
+          "api:write-data",
+          "api:use-ontologies-read",
+          "api:use-ontologies-write",
+        ],
+    ]
       .sort().join(" "),
     fetchFn: options.fetchFn ?? globalThis.fetch,
     ctxPath: options.ctxPath ?? "multipass",

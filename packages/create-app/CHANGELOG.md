@@ -1,5 +1,7 @@
 # @osdk/create-app
 
+## 2.2.0-beta.23
+
 ## 2.2.0-beta.22
 
 ## 2.2.0-beta.21
@@ -67,6 +69,22 @@
 ## 2.2.0-beta.3
 
 ## 2.2.0-beta.2
+
+## 2.1.0
+
+### Minor Changes
+
+- 62a3d1f: Use fixed versions for create-app client and oauth deps
+- be9a9ff: Update dependencies for next apps and lock in typescript version
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- ef09e2d: Add Expo template to create-app
+- f7008f7: Support TypeScript 2.0 syntax for Todo App tutorials
+- 51b270d: Support 2.0 syntax in Next and Vue templates
+- 292f5a5: Fix template imports
+- 3d2ba6f: Revert api:x-read/write back to api:read/write-x
+- 81e99c0: Couple templates with SDK version, allow specifying --sdkVersion
+- 4849ae2: internal create-app code is codegen'd
+- 0e1a2e3: Add the scopes option to OSDK CLI and update all example generators to include the scopes if provided, else, hide the scopes to avoid confusion
 
 ## 2.1.0-beta.31
 

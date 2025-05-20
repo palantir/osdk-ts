@@ -1,5 +1,7 @@
 # @osdk/client.unstable
 
+## 2.2.0-beta.23
+
 ## 2.2.0-beta.22
 
 ## 2.2.0-beta.21
@@ -78,6 +80,19 @@
 ## 2.2.0-beta.3
 
 ## 2.2.0-beta.2
+
+## 2.1.0
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 94463b6: Support objects as code
+- 9d35a1f: Remove unused imports
+- 7a95618: Generate new OMS APIs
+- caf1abc: Support generating linked products for marketplace
+- 83e7ea3: Move from a single-widget to widget set model for custom widget libraries
+- 2b35ed4: Structs in maker package
+- 06e66dc: Making interface type status configurable
 
 ## 2.1.0-beta.31
 

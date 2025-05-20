@@ -1,5 +1,7 @@
 # @osdk/create-app.template-packager
 
+## 2.2.0-beta.23
+
 ## 2.2.0-beta.22
 
 ## 2.2.0-beta.21
@@ -53,6 +55,12 @@
 ## 2.2.0-beta.3
 
 ## 2.2.0-beta.2
+
+## 2.1.0
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
 
 ## 2.1.0-beta.31
 

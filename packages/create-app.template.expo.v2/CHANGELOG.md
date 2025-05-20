@@ -1,5 +1,11 @@
 # @osdk/create-app.template.expo.v2
 
+## 2.2.0-beta.23
+
+### Minor Changes
+
+- 0e0935e: Added api:use-ontologies-read/write to the default scope initialization
+
 ## 2.2.0-beta.22
 
 ## 2.2.0-beta.21
@@ -53,6 +59,13 @@
 ## 2.2.0-beta.3
 
 ## 2.2.0-beta.2
+
+## 2.1.0
+
+### Minor Changes
+
+- f0b519d: Upgrade to vitest 3 and vite 6
+- ef09e2d: Add Expo template to create-app
 
 ## 2.1.0-beta.31
 

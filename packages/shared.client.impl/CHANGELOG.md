@@ -8,6 +8,25 @@
   - @osdk/shared.net.errors@2.2.0-beta.2
   - @osdk/shared.net.fetch@1.2.0-beta.2
 
+## 1.1.0
+
+### Minor Changes
+
+- 3703d81: Changed shared context to a version less error prone
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 1b60b3d: Packages use more specific versions instead of indirection through shared.net
+- c691c8b: Package now has experimental support for commonjs
+- 963addb: Include API error info in CLI error messages
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+- Updated dependencies [c691c8b]
+- Updated dependencies [963addb]
+- Updated dependencies [1132993]
+  - @osdk/shared.net.errors@2.1.0
+  - @osdk/shared.net.fetch@1.1.0
+
 ## 1.1.0-beta.5
 
 ### Minor Changes
