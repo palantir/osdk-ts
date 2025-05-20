@@ -406,9 +406,9 @@ export class ListQuery extends BaseListQuery<
         $pageSize: this.options.pageSize,
         // For now this keeps the shared test code from falling apart
         // but shouldn't be needed ideally
-        // ...(Object.keys(this.#orderBy).length > 0
-        //   ? { $orderBy: this.#orderBy }
-        //   : {}),
+        ...(Object.keys(this.#orderBy).length > 0
+          ? { $orderBy: this.#orderBy }
+          : {}),
       });
 
       if (signal?.aborted) {

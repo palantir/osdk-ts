@@ -22,7 +22,6 @@ import type {
   InterfaceDefinition,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
-  ObjectSetArgs,
   ObjectTypeDefinition,
   PropertyKeys,
   Result,
@@ -186,13 +185,12 @@ export async function fetchPageInternal<
   A extends Augments,
   S extends NullabilityAdherence,
   T extends boolean,
-  Z extends ObjectSetArgs.OrderByOptions<L> = never,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, A, S, T, never, Z> = {},
-): Promise<FetchPageResult<Q, L, R, S, T, Z>> {
+  args: FetchPageArgs<Q, L, R, A, S, T> = {},
+): Promise<FetchPageResult<Q, L, R, S, T>> {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(
       client,
@@ -218,13 +216,12 @@ export async function fetchPageWithErrorsInternal<
   A extends Augments,
   S extends NullabilityAdherence,
   T extends boolean,
-  Z extends ObjectSetArgs.OrderByOptions<L> = never,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, A, S, T, never, Z> = {},
-): Promise<Result<FetchPageResult<Q, L, R, S, T, Z>>> {
+  args: FetchPageArgs<Q, L, R, A, S, T> = {},
+): Promise<Result<FetchPageResult<Q, L, R, S, T>>> {
   try {
     const result = await fetchPageInternal(client, objectType, objectSet, args);
     return { value: result };
@@ -250,13 +247,12 @@ export async function fetchPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
-  Z extends ObjectSetArgs.OrderByOptions<L> = never,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, any, S, T, never, Z> = {},
+  args: FetchPageArgs<Q, L, R, any, S, T>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
-): Promise<FetchPageResult<Q, L, R, S, T, Z>> {
+): Promise<FetchPageResult<Q, L, R, S, T>> {
   return fetchPageInternal(client, objectType, objectSet, args);
 }
 
@@ -267,13 +263,12 @@ export async function fetchPageWithErrors<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
-  Z extends ObjectSetArgs.OrderByOptions<L> = never,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, any, S, T, never, Z> = {},
+  args: FetchPageArgs<Q, L, R, any, S, T>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
-): Promise<Result<FetchPageResult<Q, L, R, S, T, Z>>> {
+): Promise<Result<FetchPageResult<Q, L, R, S, T>>> {
   return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
 }
 
@@ -290,9 +285,7 @@ function applyFetchArgs<
     any,
     any,
     any,
-    any,
-    any,
-    ObjectSetArgs.OrderByOptions<any>
+    any
   >,
   body: X,
 ): X {
@@ -304,16 +297,13 @@ function applyFetchArgs<
     body.pageSize = args.$pageSize;
   }
 
-  const orderBy = args?.$orderBy;
-  if (orderBy) {
-    body.orderBy = orderBy === "relevance"
-      ? { orderType: "relevance", fields: [] }
-      : {
-        fields: Object.entries(orderBy).map(([field, direction]) => ({
-          field,
-          direction,
-        })),
-      };
+  if (args?.$orderBy != null) {
+    body.orderBy = {
+      fields: Object.entries(args.$orderBy).map(([field, direction]) => ({
+        field,
+        direction,
+      })),
+    };
   }
 
   return body;
@@ -326,13 +316,12 @@ export async function fetchObjectPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
-  Z extends ObjectSetArgs.OrderByOptions<L> = never,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, Augments, S, T, never, Z> = {},
+  args: FetchPageArgs<Q, L, R, Augments, S, T>,
   objectSet: ObjectSet,
-): Promise<FetchPageResult<Q, L, R, S, T, Z>> {
+): Promise<FetchPageResult<Q, L, R, S, T>> {
   const r = await OntologiesV2.OntologyObjectSets.load(
     addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,
@@ -355,5 +344,5 @@ export async function fetchObjectPage<
     ),
     nextPageToken: r.nextPageToken,
     totalCount: r.totalCount,
-  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T, Z>>;
+  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T>>;
 }

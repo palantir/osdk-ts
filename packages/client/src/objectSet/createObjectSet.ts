@@ -23,7 +23,6 @@ import type {
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectSetArgs,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
@@ -157,9 +156,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherence.Default,
       T extends boolean = false,
-      Z extends ObjectSetArgs.OrderByOptions<L> = never,
     >(
-      args?: AsyncIterArgs<Q, L, R, A, S, T, never, Z>,
+      args?: AsyncIterArgs<Q, L, R, A, S, T>,
     ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S, {}, T>> {
       let $nextPageToken: string | undefined = undefined;
       do {
@@ -168,8 +166,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           L,
           R,
           S,
-          T,
-          Z
+          T
         > = await fetchPageInternal(
           augmentRequestContext(
             clientCtx,

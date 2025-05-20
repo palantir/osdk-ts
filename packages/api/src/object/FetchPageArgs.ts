@@ -44,9 +44,11 @@ export namespace ObjectSetArgs {
 
   export interface OrderBy<
     L extends string = never,
-    Z extends OrderByOptions<L> = never,
-  > {
-    $orderBy?: Z;
+  > // Z extends OrderByOptions<L> = never,
+  {
+    $orderBy?: {
+      [K in L]?: "asc" | "desc";
+    };
   }
 
   export interface AsyncIter<
@@ -83,8 +85,7 @@ export interface SelectArg<
 export interface OrderByArg<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q> = PropertyKeys<Q>,
-  Z extends ObjectSetArgs.OrderByOptions<L> = never,
-> extends ObjectSetArgs.OrderBy<L, Z> {
+> extends ObjectSetArgs.OrderBy<L> {
 }
 
 export type SelectArgToKeys<
@@ -102,8 +103,7 @@ export interface FetchPageArgs<
   S extends NullabilityAdherence = NullabilityAdherence.Default,
   T extends boolean = false,
   RDP_KEYS extends string = never,
-  Z extends ObjectSetArgs.OrderByOptions<K> = never,
-> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, Z> {
+> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS> {
   $nextPageToken?: string;
   $pageSize?: number;
 }
@@ -116,8 +116,7 @@ export interface AsyncIterArgs<
   S extends NullabilityAdherence = NullabilityAdherence.Default,
   T extends boolean = false,
   RDP_KEYS extends string = never,
-  Z extends ObjectSetArgs.OrderByOptions<K> = never,
-> extends SelectArg<Q, K, R, S>, OrderByArg<Q, K, Z> {
+> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
   $__UNSTABLE_useOldInterfaceApis?: boolean;
   $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }
