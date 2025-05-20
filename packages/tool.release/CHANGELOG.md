@@ -6,6 +6,17 @@
 
 - 21e33a5: Upgrade consola to 3.4.0
 
+## 0.6.0
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- f0b519d: Upgrade to vitest 3 and vite 6
+- c170ecd: Throws error when trying to generate PR with package versions that are already published to NPM
+- 1ae146c: Fix release for none release types.
+- c9da74c: Improves code quality by fixing linting errors
+- 6671a39: Upgrade execa where used
+
 ## 0.6.0-beta.5
 
 ### Minor Changes

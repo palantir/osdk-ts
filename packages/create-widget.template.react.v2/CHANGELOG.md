@@ -30,6 +30,23 @@
 
 ## 2.1.0-beta.2
 
+## 2.0.0
+
+### Minor Changes
+
+- f0b519d: Upgrade to vitest 3 and vite 6
+- 776ae5d: Initial create widget CLI
+- ff1ece7: Update create-widget template README and autoVersion strategy
+- c5f9fe0: Rename widget template component name consistent
+- 2bd3ba3: Fix a typo in the generated widget description
+- adf3b12: Rename @osdk/widget.manifest-vite-plugin to @osdk/widget.vite-plugin.unstable
+- 121475a: Release versions 1.1.0 of Custom Widget client libraries
+- 83e7ea3: Move from a single-widget to widget set model for custom widget libraries
+- 7507ed7: Upgrade to Vite v6
+- d430386: Rename unstable create-widget --widgetSetRid arg to --widgetSet
+- 23754dd: Correct widget template package dependency versions
+- da8585b: Updated implementation for the custom widget Vite plugin
+
 ## 2.0.0-beta.16
 
 ## 2.0.0-beta.15

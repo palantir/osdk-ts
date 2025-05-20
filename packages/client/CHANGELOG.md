@@ -308,6 +308,183 @@
   - @osdk/generator-converters@2.2.0-beta.2
   - @osdk/client.unstable@2.2.0-beta.2
 
+## 2.1.0
+
+### Minor Changes
+
+- 966d408: Rename type for base action parameter types.
+- b773513: Fix onOutOfDate handler from being fired twice
+- cddc196: Try-catches handlers called during subscription
+- d794c19: Adding support for struct action params.
+- 05febf4: Adds Reference Update support in subscribe
+- 55c05f2: Remove runtime derived properties from external types.
+- a06ec35: Fixes the lastFetchedValue on a Geotime Series property from reference updates
+- 0dc40b0: Switch to OSDK.Instance
+- 3703d81: Changed shared context to a version less error prone
+- 6f50516: Fix bug where object return types in a query were not properly mapped when wrapped in a struct.
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 11a05cc: Updated subscribe api to make requesting properties optional
+- 7865cb6: Add support for search on struct properties.
+- e6fbd94: Export Attachment from client
+- 9c4efe6: Support uploading media parameters through actions
+- 0a7c747: Add support for timeseries sensors.
+- 3ea2e79: Creates new export for internal helper functions
+- 1812118: Add geotime support for OSDK.
+- d927a1d: Throws error in createClient when passed an invalid ontology RID
+- bc1761c: Update platform API dependencies.
+- 656f975: Fixes attachment upload inputs sending incorrect in browser contexts
+- f1145ff: Adds support for runtime derived properties
+- 1c59d93: Allows interfaces to be used with subscribe
+- f446d0c: Exposes $clone from OSDK Object instances
+- c80ca45: Add ability to create interfaces through actions now.
+- bb8b219: Use new external packages instead of the internal ones.
+- 44e62f6: Updating fetch for auth and other packages.
+- 03f95eb: Add support for interface params in actions.
+- 91cfa3a: Fixing url parsing for client.
+- 94463b6: Support objects as code
+- 14624f7: Supports custom formatters in browser
+- 1a89f23: Removing support for augmenting interfaces when fetching them.
+- 9d35a1f: Remove unused imports
+- c691c8b: Package now has experimental support for commonjs
+- 749cf69: Remove experimental non null for now.
+- f03e39f: Add a namespace type for listeners.
+- d464009: improves interface api name mapping with api namespaces
+- 11088aa: Fix where clause types so we don't accept more than one key in the clauses.
+- 720218d: OSDK Client no longer uses javascript proxies for its objects. This results in a 13% increase in construction time but at 1kb per object reduction in memory
+- 9298f75: Using new interface APIs for backend.
+- eb27b54: Fix URL for experimental method
+- 7a95618: Generate new OMS APIs
+- f34b3d4: Add ability to fetch by rid, experimentally.
+- d88fdb9: Adds methods to extract date strings from Dates and ISO-8601 strings
+- 8eb2378: Fixes where clauses when objects have an api namespace
+- acbfab9: Fixes where clauses for interfaces with no properties.
+- c9da74c: Improves code quality by fixing linting errors
+- 27f0f77: Interface instances are immutable just like object instances
+- 015279b: Fix use of new interfaces api with preview flag.
+- 62c1d63: Add support for reading media reference property in OSDK.
+- 3c9ac22: Cleaning up where clause types.
+- 91cfa3a: Fixing URL parsing for custom entry points.
+- e86e91d: Internal property of Client is removed from output
+- abfe4b3: Add support for reading struct properties.
+- 27866a8: Removing interface argument for selecting object types. This is not supported in the new apis, and is not being used internally anywhere with the old apis.
+- 0cd1603: Fixes AttachmentUpload for browser contexts
+- a7a4aef: Removes dependency on crypto
+- e5fe7c0: Adds experimental method to convert an object set into RID
+- 1b2e8c9: Adds subscribe feature directly to client
+- 9f3807c: Allows $in to take a readonly array
+- d12c92b: Fixes process.env.NODE_ENV handling
+- 0c56d21: Exposing fuzzy searching.
+- e548b9b: Updates subscribe to return object updates
+- 6671a39: Upgrade execa where used
+- 5e78575: Fix queries that have response types with nested values, like arrays.
+- ee6224b: Explicitly type aggregation types in queries.
+- 1dc0228: Change experimental code style to prevent future breaks
+- fa02ebf: Adds SLS dependency for object-set-watcher API
+- 9af346e: Fixing proxy handlers.
+- d3b3f35: Add's onSuccessfulSubscribe handler to subscribe functionality
+- c682504: Locks dependency version of 3 internal libraries
+- 9018dc2: Updating platform api dependencies.
+- a6c320d: Internal optimization to reduce memory usage for unused interface objects
+- 8026baf: Update interface support for .subscribe
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+- c537e2d: Remove unused imports.
+- 3fc2ee6: Include more descriptive JS docs for public utils
+- 0d8ac3b: Remove attachment from exports.
+- 73fa373: Exports helper method to construct object sets from RIDs from internal utils
+- 8e6a5f4: Avoid type-fest's IsAny as it doesn't always work
+- 09eaf24: Update to latest platform sdks
+- 71dfb4c: Now export all api shapes from client, so use that dependency instead.
+- 2d5e648: Remove subscribe from experimental gate.
+- c4f88a8: Removes circular dependency that may upset legacy tools like react-native
+- d665147: Update platform sdk deps
+- f19da8e: Remove where clause from aggregate options. This option was never actually doing anything before as it was not passed to the backend for processing, so we are removing it to prevent future confusion.
+
+### Patch Changes
+
+- Updated dependencies [966d408]
+- Updated dependencies [cddc196]
+- Updated dependencies [d794c19]
+- Updated dependencies [05febf4]
+- Updated dependencies [55c05f2]
+- Updated dependencies [0dc40b0]
+- Updated dependencies [3703d81]
+- Updated dependencies [25fd9f0]
+- Updated dependencies [1b60b3d]
+- Updated dependencies [11a05cc]
+- Updated dependencies [7865cb6]
+- Updated dependencies [9c4efe6]
+- Updated dependencies [0a7c747]
+- Updated dependencies [f0b519d]
+- Updated dependencies [3ea2e79]
+- Updated dependencies [1812118]
+- Updated dependencies [bc1761c]
+- Updated dependencies [656f975]
+- Updated dependencies [f1145ff]
+- Updated dependencies [f446d0c]
+- Updated dependencies [c80ca45]
+- Updated dependencies [bb8b219]
+- Updated dependencies [44e62f6]
+- Updated dependencies [03f95eb]
+- Updated dependencies [91cfa3a]
+- Updated dependencies [94463b6]
+- Updated dependencies [1a89f23]
+- Updated dependencies [9d35a1f]
+- Updated dependencies [c691c8b]
+- Updated dependencies [749cf69]
+- Updated dependencies [f03e39f]
+- Updated dependencies [11088aa]
+- Updated dependencies [72c1905]
+- Updated dependencies [9298f75]
+- Updated dependencies [7a95618]
+- Updated dependencies [f34b3d4]
+- Updated dependencies [acbfab9]
+- Updated dependencies [c9da74c]
+- Updated dependencies [62c1d63]
+- Updated dependencies [3c9ac22]
+- Updated dependencies [1591f04]
+- Updated dependencies [03e1941]
+- Updated dependencies [963addb]
+- Updated dependencies [abfe4b3]
+- Updated dependencies [b79becf]
+- Updated dependencies [27866a8]
+- Updated dependencies [caf1abc]
+- Updated dependencies [e5fe7c0]
+- Updated dependencies [1b2e8c9]
+- Updated dependencies [81b2fb2]
+- Updated dependencies [9f3807c]
+- Updated dependencies [ecd4aee]
+- Updated dependencies [0c56d21]
+- Updated dependencies [e548b9b]
+- Updated dependencies [83e7ea3]
+- Updated dependencies [ee6224b]
+- Updated dependencies [1dc0228]
+- Updated dependencies [6c60414]
+- Updated dependencies [5fe2c8d]
+- Updated dependencies [7d777eb]
+- Updated dependencies [1132993]
+- Updated dependencies [d3b3f35]
+- Updated dependencies [c682504]
+- Updated dependencies [785f663]
+- Updated dependencies [9018dc2]
+- Updated dependencies [6b6c8a1]
+- Updated dependencies [c537e2d]
+- Updated dependencies [73fa373]
+- Updated dependencies [bf0e3b4]
+- Updated dependencies [8e6a5f4]
+- Updated dependencies [2b35ed4]
+- Updated dependencies [09eaf24]
+- Updated dependencies [2d5e648]
+- Updated dependencies [06e66dc]
+- Updated dependencies [31e7d70]
+- Updated dependencies [d665147]
+- Updated dependencies [f19da8e]
+  - @osdk/generator-converters@2.1.0
+  - @osdk/api@2.1.0
+  - @osdk/shared.client.impl@1.1.0
+  - @osdk/client.unstable@2.1.0
+  - @osdk/shared.net.errors@2.1.0
+  - @osdk/shared.net.fetch@1.1.0
+
 ## 2.1.0-beta.31
 
 ### Minor Changes

@@ -58,6 +58,16 @@
 
 ## 2.2.0-beta.2
 
+## 2.1.0
+
+### Minor Changes
+
+- 62a3d1f: Use fixed versions for create-app client and oauth deps
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- f0b519d: Upgrade to vitest 3 and vite 6
+- 51b270d: Support 2.0 syntax in Next and Vue templates
+- 0e1a2e3: Add the scopes option to OSDK CLI and update all example generators to include the scopes if provided, else, hide the scopes to avoid confusion
+
 ## 2.1.0-beta.31
 
 ## 2.1.0-beta.30

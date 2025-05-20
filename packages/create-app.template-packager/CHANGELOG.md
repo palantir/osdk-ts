@@ -54,6 +54,12 @@
 
 ## 2.2.0-beta.2
 
+## 2.1.0
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+
 ## 2.1.0-beta.31
 
 ## 2.1.0-beta.30
