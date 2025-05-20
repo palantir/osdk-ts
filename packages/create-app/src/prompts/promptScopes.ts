@@ -38,8 +38,10 @@ export async function promptScopes(
       "Enter the scopes to request during OAuth:",
       {
         type: "text",
-        placeholder: "api:read-data api:write-data",
-        default: "api:read-data api:write-data",
+        placeholder:
+          "api:read-data api:write-data api:use-ontologies-read api:use-ontologies-write",
+        default:
+          "api:read-data api:write-data api:use-ontologies-read api:use-ontologies-write",
       },
     );
     scopes = stringScopes.split(" ");
