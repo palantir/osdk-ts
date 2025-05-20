@@ -58,14 +58,32 @@ export function defineSharedPropertyType(
     `Shared property type ${apiName} already exists`,
   );
 
+  // ExperimentalTimeDependentV1 and Attachment types should be included here once supported
+  const shouldNotHaveRenderHints = ["struct", "mediaReference", "geotimeSeries"]
+    .includes(getPropertyTypeName(sptDef.type));
+  const hasRenderHints = (sptDef.typeClasses ?? []).some(tc =>
+    tc.kind.toLowerCase() === "render_hint"
+  );
+  invariant(
+    !shouldNotHaveRenderHints || !hasRenderHints,
+    `Shared property type ${apiName} of type '${
+      getPropertyTypeName(sptDef.type)
+    }' should not have render hints`,
+  );
+
   const fullSpt: SharedPropertyType = {
     ...sptDef,
     apiName,
     nonNameSpacedApiName: sptDef.apiName,
     displayName: sptDef.displayName ?? sptDef.apiName, // This way the non-namespaced api name is the display name (maybe not ideal)
-    typeClasses: sptDef.typeClasses ?? defaultTypeClasses,
+    typeClasses: sptDef.typeClasses
+      ?? (shouldNotHaveRenderHints ? [] : defaultTypeClasses),
     __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
   };
   updateOntology(fullSpt);
   return fullSpt;
+}
+
+function getPropertyTypeName(type: PropertyTypeType): string {
+  return typeof type === "object" ? type.type : type;
 }
