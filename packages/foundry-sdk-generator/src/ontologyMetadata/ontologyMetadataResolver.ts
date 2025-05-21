@@ -659,6 +659,21 @@ export class OntologyMetadataResolver {
             )
           } in parameter ${propertyName}`,
         ]);
+      case "entrySet":
+        return Result.coalesce([
+          this.visitSupportedQueryTypes(
+            queryApiName,
+            propertyName,
+            baseType.keyType,
+            loadedObjectApiNames,
+          ),
+          this.visitSupportedQueryTypes(
+            queryApiName,
+            propertyName,
+            baseType.valueType,
+            loadedObjectApiNames,
+          ),
+        ]);
       case "string":
       case "boolean":
       case "attachment":
@@ -670,7 +685,6 @@ export class OntologyMetadataResolver {
       case "threeDimensionalAggregation":
       case "timestamp":
       case "twoDimensionalAggregation":
-      case "entrySet":
       case "null":
         return Result.ok({});
       case "unsupported":
