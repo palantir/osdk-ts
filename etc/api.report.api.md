@@ -443,13 +443,8 @@ export namespace DerivedProperty {
     	> extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q>, Constant<Q> {}
     	// (undocumented)
     export type Clause<Q extends ObjectOrInterfaceDefinition> = {
-        		[key: string]: Creator<Q, SimplePropertyDef>
+        		[key: string]: DerivedPropertyCreator<Q, SimplePropertyDef>
         	};
-    	// (undocumented)
-    export type Creator<
-    		Q extends ObjectOrInterfaceDefinition,
-    		T extends SimplePropertyDef
-    	> = (baseObjectSet: Builder<Q, false>) => Definition<T, Q> | NumericPropertyDefinition<T, Q> | DatetimePropertyDefinition<T, Q>;
     	// Warning: (ae-forgotten-export) The symbol "DatetimeExpressions" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -465,7 +460,7 @@ export namespace DerivedProperty {
     		Q extends ObjectOrInterfaceDefinition
     	> {
         		// (undocumented)
-        type: T;
+        readonly [DerivedPropertyDefinitionBrand]: true;
         	}
     	// Warning: (ae-forgotten-export) The symbol "NumericExpressions" needs to be exported by the entry point index.d.ts
     //
@@ -1372,6 +1367,7 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 //
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
+// src/derivedProperties/DerivedProperty.ts:58:7 - (ae-forgotten-export) The symbol "DerivedPropertyCreator" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
