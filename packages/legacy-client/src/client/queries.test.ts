@@ -281,6 +281,56 @@ describe("Queries", () => {
         },
       });
     });
+
+    it("Loads multiple returned objects with a fetchAll", async () => {
+      mockFetchResponse(
+        fetch,
+        {
+          value: ["1", "2", "3"],
+        },
+      );
+
+      mockFetchResponse(
+        fetch,
+        {
+          data: [{
+            __apiName: "Todo",
+            __primaryKey: "1",
+          }, {
+            __apiName: "Todo",
+            __primaryKey: "2",
+          }, {
+            __apiName: "Todo",
+            __primaryKey: "3",
+          }],
+        },
+      );
+
+      const response = await queries.queryTypeReturnsObjectArray();
+
+      expectFetchToBeCalledWithBody(
+        fetch,
+        `Ontology/objectSets/loadObjects`,
+        {
+          "objectSet": {
+            "type": "filter",
+            "where": {
+              "type": "in",
+              "field": "id",
+              "value": ["1", "2", "3"],
+            },
+            "objectSet": {
+              "type": "base",
+              "objectType": "Todo",
+            },
+          },
+          "select": [],
+        },
+      );
+
+      response.type === "ok"
+        && expect(response.value.value[0].$primaryKey).toEqual("1");
+    });
   });
 
   describe("type tests", () => {
@@ -358,6 +408,7 @@ describe("Queries", () => {
         "queryTakesNestedObjects",
         "queryWithOnlyOptionalArgs",
         "queryWithOnlyRequiredArgs",
+        "queryTypeReturnsObjectArray",
       ]
     `);
   });
