@@ -1,5 +1,11 @@
 # @osdk/functions
 
+## 0.0.8
+
+### Patch Changes
+
+- @osdk/client@2.1.5
+
 ## 0.0.7
 
 ### Patch Changes
