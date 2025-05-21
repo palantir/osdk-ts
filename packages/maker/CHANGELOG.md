@@ -1,5 +1,12 @@
 # @osdk/maker
 
+## 0.10.0-beta.25
+
+### Minor Changes
+
+- 1a09a8e: Enforce that struct, mediaReference, and GTSR type SPTs cannot have render hints
+- 8f67e1e: OAC Struct Property Field Mapping Support
+
 ## 0.10.0-beta.24
 
 ### Patch Changes
