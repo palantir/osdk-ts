@@ -1,5 +1,11 @@
 # @osdk/create-app.template.expo.v2
 
+## 2.1.5
+
+### Patch Changes
+
+- ca9dec4: Added api:use-ontologies-read/write to the default scope initialization
+
 ## 2.1.4
 
 ## 2.1.3

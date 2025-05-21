@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.1.2
+
+### Patch Changes
+
+- ca9dec4: Added api:use-ontologies-read/write to the default scope initialization
+
 ## 1.1.1
 
 ### Patch Changes
