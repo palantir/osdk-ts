@@ -1,5 +1,12 @@
 # @osdk/legacy-client
 
+## 2.5.6
+
+### Patch Changes
+
+- 45eee43: Prevent multiple calls for queries that return arrays of objects
+- f5b2487: Added use operations to the default scopes
+
 ## 2.5.5
 
 ### Patch Changes
