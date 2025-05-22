@@ -5249,7 +5249,7 @@ describe("Ontology Defining", () => {
       const generatedDir = path.join(
         __dirname,
         "..",
-        "generated",
+        "generatedNoCheck",
         "export_files_are_generated_correctly",
       );
       await defineOntology("com.my.package.", () => {
