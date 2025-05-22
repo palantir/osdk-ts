@@ -5246,12 +5246,12 @@ describe("Ontology Defining", () => {
       `);
     });
     it("Export files are generated correctly", async () => {
-      const generatedDir = path.join(
+      const generatedDir = path.resolve(path.join(
         __dirname,
         "..",
         "generatedNoCheck",
         "export_files_are_generated_correctly",
-      );
+      ));
       await defineOntology("com.my.package.", () => {
         const mySpt = defineSharedPropertyType({
           apiName: "mySpt",
@@ -5435,7 +5435,10 @@ describe("Ontology Defining", () => {
         export const mySpt: SharedPropertyType = wrapWithProxy(mySpt_base);
                 "
       `);
-      fs.rmSync(generatedDir, { recursive: true, force: true });
+      fs.rmSync(path.resolve(path.join(generatedDir, "..")), {
+        recursive: true,
+        force: true,
+      });
     });
   });
 });
