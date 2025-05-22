@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-import { importedTypes } from "./defineOntology.js";
+import { importOntologyEntity } from "./importOntologyEntity.js";
 import type { OntologyEntityBase } from "./types.js";
-import { OntologyEntityTypeEnum } from "./types.js";
 
-export function importOntologyEntity<T extends OntologyEntityBase>(e: T): void {
-  if (e.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {
-    importedTypes[e.__type][e.apiName] = e as any;
-    return;
-  }
-  // value types are a special case
-  if (
-    importedTypes[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName]
-      === undefined
-  ) {
-    importedTypes[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName] = [];
-  }
-  importedTypes[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName]
-    .push(e as any);
+/**
+ * Wraps an OntologyEntityType with a Proxy that calls importOntologyEntity when properties are accessed.
+ *
+ * @param entity - The OntologyEntityType to wrap with a Proxy
+ * @returns A Proxy that imports the entity when properties are accessed
+ */
+export function wrapWithProxy<T extends OntologyEntityBase>(entity: T): T {
+  return new Proxy(entity, {
+    get(target, prop, receiver) {
+      importOntologyEntity(target);
+      return Reflect.get(target, prop, receiver);
+    },
+  });
 }

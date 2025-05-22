@@ -5277,9 +5277,10 @@ describe("Ontology Defining", () => {
         ),
       ).toMatchInlineSnapshot(`
         "
-        import { importOntologyEntity } from '@osdk/maker';
+        import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
+        import type { InterfaceType } from '@osdk/maker';
 
-        export const myInterface = {
+        const myInterface_base: InterfaceType = {
           "apiName": "com.my.package.myInterface",
           "displayMetadata": {
             "displayName": "myInterface",
@@ -5309,14 +5310,14 @@ describe("Ontology Defining", () => {
                     "name": "SORTABLE"
                   }
                 ],
-                "__type": "SHARED_PROPERTY_TYPE"
+                "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE
               }
             }
           },
-          "__type": "INTERFACE_TYPE"
-        } as const;
+          "__type": OntologyEntityTypeEnum.INTERFACE_TYPE
+        } as unknown as InterfaceType;
                 
-        importOntologyEntity(myInterface);
+        export const myInterface = wrapWithProxy(myInterface_base);
                 "
       `);
 
@@ -5327,9 +5328,10 @@ describe("Ontology Defining", () => {
         ),
       ).toMatchInlineSnapshot(`
         "
-        import { importOntologyEntity } from '@osdk/maker';
+        import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
+        import type { ObjectType } from '@osdk/maker';
 
-        export const myObject = {
+        const myObject_base: ObjectType = {
           "titlePropertyApiName": "bar",
           "displayName": "My Object",
           "pluralDisplayName": "myObjects",
@@ -5374,11 +5376,11 @@ describe("Ontology Defining", () => {
                           "name": "SORTABLE"
                         }
                       ],
-                      "__type": "SHARED_PROPERTY_TYPE"
+                      "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE
                     }
                   }
                 },
-                "__type": "INTERFACE_TYPE"
+                "__type": OntologyEntityTypeEnum.INTERFACE_TYPE
               },
               "propertyMapping": [
                 {
@@ -5388,10 +5390,10 @@ describe("Ontology Defining", () => {
               ]
             }
           ],
-          "__type": "OBJECT_TYPE"
-        } as const;
+          "__type": OntologyEntityTypeEnum.OBJECT_TYPE
+        } as unknown as ObjectType;
                 
-        importOntologyEntity(myObject);
+        export const myObject = wrapWithProxy(myObject_base);
                 "
       `);
 
@@ -5402,9 +5404,10 @@ describe("Ontology Defining", () => {
         ),
       ).toMatchInlineSnapshot(`
         "
-        import { importOntologyEntity } from '@osdk/maker';
+        import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
+        import type { SharedPropertyType } from '@osdk/maker';
 
-        export const mySpt = {
+        const mySpt_base: SharedPropertyType = {
           "apiName": "com.my.package.mySpt",
           "type": "string",
           "nonNameSpacedApiName": "mySpt",
@@ -5419,10 +5422,10 @@ describe("Ontology Defining", () => {
               "name": "SORTABLE"
             }
           ],
-          "__type": "SHARED_PROPERTY_TYPE"
-        } as const;
+          "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE
+        } as unknown as SharedPropertyType;
                 
-        importOntologyEntity(mySpt);
+        export const mySpt = wrapWithProxy(mySpt_base);
                 "
       `);
     });
