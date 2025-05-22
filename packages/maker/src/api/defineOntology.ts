@@ -144,7 +144,7 @@ export async function defineOntology(
 }
 
 export function writeStaticObjects(outputDir: string): void {
-  const outputBuildDir = path.resolve(outputDir, "build");
+  const codegenDir = path.resolve(outputDir, "codegen");
   const typeDirs = {
     [OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE]: "shared-property-types",
     [OntologyEntityTypeEnum.ACTION_TYPE]: "action-types",
@@ -154,12 +154,12 @@ export function writeStaticObjects(outputDir: string): void {
     [OntologyEntityTypeEnum.VALUE_TYPE]: "value-types",
   };
 
-  if (!fs.existsSync(outputBuildDir)) {
-    fs.mkdirSync(outputBuildDir, { recursive: true });
+  if (!fs.existsSync(codegenDir)) {
+    fs.mkdirSync(codegenDir, { recursive: true });
   }
 
   Object.values(typeDirs).forEach(typeDirNameFromMap => {
-    const currentTypeDirPath = path.join(outputBuildDir, typeDirNameFromMap);
+    const currentTypeDirPath = path.join(codegenDir, typeDirNameFromMap);
     if (fs.existsSync(currentTypeDirPath)) {
       fs.rmSync(currentTypeDirPath, { recursive: true, force: true });
     }
@@ -173,40 +173,43 @@ export function writeStaticObjects(outputDir: string): void {
       const typeDirName =
         typeDirs[ontologyTypeEnumKey as OntologyEntityTypeEnum];
 
-      const typeDirPath = path.join(outputBuildDir, typeDirName);
+      const typeDirPath = path.join(codegenDir, typeDirName);
       const entityModuleNames: string[] = [];
 
-      Object.entries(entities).forEach(([apiName, entity]) => {
-        const entityFileNameBase = camel(withoutNamespace(apiName))
-          + (ontologyTypeEnumKey as OntologyEntityTypeEnum
-              === OntologyEntityTypeEnum.VALUE_TYPE
-            ? "ValueType"
-            : "");
-        const filePath = path.join(typeDirPath, `${entityFileNameBase}.ts`);
-        const content = `
-import { importOntologyEntity } from '@osdk/maker';
-
-export const ${entityFileNameBase} = ${
-          JSON.stringify(entity, null, 2)
-        } as const;
-        
-importOntologyEntity(${entityFileNameBase});
-        `;
-        fs.writeFileSync(filePath, content, { flag: "w" });
-        entityModuleNames.push(entityFileNameBase);
-      });
-
-      if (entityModuleNames.length > 0) {
-        const typeIndexContent = entityModuleNames
-          .map(name => `export * from './${name}';`)
-          .join("\n") + "\n";
-        const typeIndexFilePath = path.join(typeDirPath, "index.ts");
-        fs.writeFileSync(typeIndexFilePath, typeIndexContent, { flag: "w" });
-        for (const entityModuleName of entityModuleNames) {
-          topLevelExportStatements.push(
-            `export { ${entityModuleName} } from './build/${typeDirName}/${entityModuleName}.ts';`,
+      Object.entries(entities).forEach(
+        ([apiName, entity]: [string, OntologyEntityType]) => {
+          const entityFileNameBase = camel(withoutNamespace(apiName))
+            + (ontologyTypeEnumKey as OntologyEntityTypeEnum
+                === OntologyEntityTypeEnum.VALUE_TYPE
+              ? "ValueType"
+              : "");
+          const filePath = path.join(typeDirPath, `${entityFileNameBase}.ts`);
+          const entityTypeName = getEntityTypeName(ontologyTypeEnumKey);
+          const entityJSON = JSON.stringify(entity, null, 2).replace(
+            /("__type"\s*:\s*)"([^"]*)"/g,
+            (_, prefix, value) => `${prefix}OntologyEntityTypeEnum.${value}`,
           );
-        }
+          const content = `
+import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
+import type { ${entityTypeName} } from '@osdk/maker';
+
+const ${entityFileNameBase}_base: ${entityTypeName} = ${
+            ontologyTypeEnumKey === "VALUE_TYPE"
+              ? entityJSON.slice(1, -2)
+              : entityJSON
+          } as unknown as ${entityTypeName};
+        
+export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFileNameBase}_base);
+        `;
+          fs.writeFileSync(filePath, content, { flag: "w" });
+          entityModuleNames.push(entityFileNameBase);
+        },
+      );
+
+      for (const entityModuleName of entityModuleNames) {
+        topLevelExportStatements.push(
+          `export { ${entityModuleName} } from './codegen/${typeDirName}/${entityModuleName}.js';`,
+        );
       }
     },
   );
@@ -1279,4 +1282,18 @@ function camel(str: string): string {
   let result = str.replace(/[-_]+(.)?/g, (_, c) => (c ? c.toUpperCase() : ""));
   result = result.charAt(0).toLowerCase() + result.slice(1);
   return result;
+}
+
+/**
+ * Gets the TypeScript type name corresponding to an OntologyEntityTypeEnum value
+ */
+function getEntityTypeName(type: string): string {
+  return {
+    [OntologyEntityTypeEnum.OBJECT_TYPE]: "ObjectType",
+    [OntologyEntityTypeEnum.LINK_TYPE]: "LinkType",
+    [OntologyEntityTypeEnum.INTERFACE_TYPE]: "InterfaceType",
+    [OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE]: "SharedPropertyType",
+    [OntologyEntityTypeEnum.ACTION_TYPE]: "ActionType",
+    [OntologyEntityTypeEnum.VALUE_TYPE]: "ValueTypeDefinitionVersion",
+  }[type]!;
 }

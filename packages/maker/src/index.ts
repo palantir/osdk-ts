@@ -33,3 +33,13 @@ export { defineOntology } from "./api/defineOntology.js";
 export { defineSharedPropertyType } from "./api/defineSpt.js";
 export { defineValueType } from "./api/defineValueType.js";
 export { importOntologyEntity } from "./api/importOntologyEntity.js";
+export type {
+  ActionType,
+  InterfaceType,
+  LinkType,
+  ObjectType,
+  SharedPropertyType,
+  ValueTypeDefinitionVersion,
+} from "./api/types.js";
+export { OntologyEntityTypeEnum } from "./api/types.js";
+export { wrapWithProxy } from "./api/wrapWithProxy.js";
