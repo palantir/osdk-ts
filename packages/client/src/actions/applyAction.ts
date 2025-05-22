@@ -198,13 +198,7 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
 
   const parameterMap: { [parameterName: string]: unknown } = {};
   for (const [key, value] of Object.entries(params)) {
-    /**
-     * When a user applies an action and explicitly passed in an undefined value,
-     * we should forward a value of null to the server. If we pass through undefined,
-     * the field will be dropped at request time. We do a conditional here so as to not
-     * affect recursive calls in toDataValue.
-     */
-    parameterMap[key] = value == null ? null : await toDataValue(value, client);
+    parameterMap[key] = await toDataValue(value, client);
   }
 
   return parameterMap;
