@@ -59,9 +59,6 @@ export { createPlatformClient } from "./createPlatformClient.js";
 export type { PlatformClient } from "./createPlatformClient.js";
 export { createAttachmentUpload } from "./object/AttachmentUpload.js";
 export type { ResultOrError } from "./ResultOrError.js";
-export {
-  createObjectSpecifierFromPrimaryKey,
-} from "./util/objectSpecifierUtils.js";
 
 export {
   extractDate,

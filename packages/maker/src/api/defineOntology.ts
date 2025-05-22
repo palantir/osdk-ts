@@ -533,16 +533,38 @@ function convertDatasourceDefinition(
       };
     case "dataset":
     default:
+      const datasetPropertyMapping = Object.fromEntries(
+        properties.map((prop) => {
+          prop.type;
+          if (typeof prop.type === "object" && prop.type?.type === "struct") {
+            const structMapping = {
+              type: "struct",
+              struct: {
+                column: prop.apiName,
+                mapping: Object.fromEntries(
+                  Object.entries(prop.type.structDefinition).map((
+                    [fieldName, _fieldType],
+                  ) => [
+                    fieldName,
+                    { apiName: fieldName, mappings: {} },
+                  ]),
+                ),
+              },
+            };
+            return [prop.apiName, structMapping];
+          } else {
+            return [
+              prop.apiName,
+              { type: "column", column: prop.apiName },
+            ];
+          }
+        }),
+      );
       return {
         type: "datasetV2",
         datasetV2: {
           datasetRid: objectType.apiName,
-          propertyMapping: Object.fromEntries(
-            properties.map((prop) => [
-              prop.apiName,
-              { type: "column", column: prop.apiName },
-            ]),
-          ),
+          propertyMapping: datasetPropertyMapping,
         },
       };
   }
