@@ -5435,6 +5435,7 @@ describe("Ontology Defining", () => {
         export const mySpt: SharedPropertyType = wrapWithProxy(mySpt_base);
                 "
       `);
+      fs.rmSync(generatedDir, { recursive: true, force: true });
     });
   });
 });
