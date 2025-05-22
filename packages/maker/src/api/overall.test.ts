@@ -5272,7 +5272,7 @@ describe("Ontology Defining", () => {
 
       expect(
         fs.readFileSync(
-          "src/generated/export_files_are_generated_correctly/build/interface-types/myInterface.ts",
+          "src/generated/export_files_are_generated_correctly/codegen/interface-types/myInterface.ts",
           "utf8",
         ),
       ).toMatchInlineSnapshot(`
@@ -5323,7 +5323,7 @@ describe("Ontology Defining", () => {
 
       expect(
         fs.readFileSync(
-          "src/generated/export_files_are_generated_correctly/build/object-types/myObject.ts",
+          "src/generated/export_files_are_generated_correctly/codegen/object-types/myObject.ts",
           "utf8",
         ),
       ).toMatchInlineSnapshot(`
@@ -5399,7 +5399,7 @@ describe("Ontology Defining", () => {
 
       expect(
         fs.readFileSync(
-          "src/generated/export_files_are_generated_correctly/build/shared-property-types/mySpt.ts",
+          "src/generated/export_files_are_generated_correctly/codegen/shared-property-types/mySpt.ts",
           "utf8",
         ),
       ).toMatchInlineSnapshot(`
