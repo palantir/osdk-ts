@@ -5317,7 +5317,7 @@ describe("Ontology Defining", () => {
           "__type": OntologyEntityTypeEnum.INTERFACE_TYPE
         } as unknown as InterfaceType;
                 
-        export const myInterface = wrapWithProxy(myInterface_base);
+        export const myInterface: InterfaceType = wrapWithProxy(myInterface_base);
                 "
       `);
 
@@ -5393,7 +5393,7 @@ describe("Ontology Defining", () => {
           "__type": OntologyEntityTypeEnum.OBJECT_TYPE
         } as unknown as ObjectType;
                 
-        export const myObject = wrapWithProxy(myObject_base);
+        export const myObject: ObjectType = wrapWithProxy(myObject_base);
                 "
       `);
 
@@ -5425,7 +5425,7 @@ describe("Ontology Defining", () => {
           "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE
         } as unknown as SharedPropertyType;
                 
-        export const mySpt = wrapWithProxy(mySpt_base);
+        export const mySpt: SharedPropertyType = wrapWithProxy(mySpt_base);
                 "
       `);
     });

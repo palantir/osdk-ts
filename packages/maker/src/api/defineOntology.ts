@@ -199,7 +199,7 @@ const ${entityFileNameBase}_base: ${entityTypeName} = ${
               : entityJSON
           } as unknown as ${entityTypeName};
         
-export const ${entityFileNameBase} = wrapWithProxy(${entityFileNameBase}_base);
+export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFileNameBase}_base);
         `;
           fs.writeFileSync(filePath, content, { flag: "w" });
           entityModuleNames.push(entityFileNameBase);
