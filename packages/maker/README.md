@@ -564,40 +564,6 @@ const productObject = defineObject({
 });
 ```
 
-### Object with Special Properties
-
-```typescript
-const mediaObject = defineObject({
-  apiName: "mediaItem",
-  displayName: "Media Item",
-  pluralDisplayName: "Media Items",
-  titlePropertyApiName: "name",
-  primaryKeyPropertyApiName: "id",
-  properties: [
-    {
-      apiName: "id",
-      type: "string",
-      displayName: "ID",
-    },
-    {
-      apiName: "name",
-      type: "string",
-      displayName: "Name",
-    },
-    {
-      apiName: "image",
-      type: "mediaReference",
-      displayName: "Image",
-    },
-    {
-      apiName: "location",
-      type: "geopoint",
-      displayName: "Location",
-    },
-  ],
-});
-```
-
 ## Defining Links
 
 Links define relationships between objects.
@@ -804,31 +770,3 @@ const createEmployeePersonAction = defineCreateInterfaceObjectAction(
 // Define an action to modify objects implementing an interface
 const modifyPersonAction = defineModifyInterfaceObjectAction(personInterface);
 ```
-
-## Importing Ontology Entities
-
-You can import entities from other ontologies to reuse them:
-
-```typescript
-import { importOntologyEntity } from "@osdk/maker";
-
-// Import a shared property type from another ontology
-const importedProperty = {
-  apiName: "com.other.namespace.property",
-  nonNameSpacedApiName: "property",
-  type: "string",
-  __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
-};
-
-importOntologyEntity(importedProperty);
-
-// Use the imported property in your ontology
-const usingImportedInterface = defineInterface({
-  apiName: "UsingImported",
-  properties: {
-    importedProperty,
-  },
-});
-```
-
-This README provides examples and guidance for using the maker package to define ontologies. For more detailed information, refer to the API documentation and source code.
