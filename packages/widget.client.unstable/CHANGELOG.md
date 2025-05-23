@@ -1,5 +1,18 @@
 # @osdk/widget.client.unstable
 
+## 3.0.0-beta.2
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+  - @osdk/client@2.3.0-beta.2
+  - @osdk/widget.api.unstable@3.0.0-beta.2
+
 ## 2.1.0-beta.11
 
 ### Patch Changes

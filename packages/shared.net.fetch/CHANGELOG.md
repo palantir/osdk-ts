@@ -1,5 +1,16 @@
 # @osdk/shared.net.fetch
 
+## 1.3.0-beta.2
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+  - @osdk/shared.net.errors@2.3.0-beta.2
+
 ## 1.2.0-beta.2
 
 ### Minor Changes

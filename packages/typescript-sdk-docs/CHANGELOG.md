@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.2.0-beta.2
+
+### Minor Changes
+
+- 776ae8a: Simulated release
+
 ## 0.1.0-beta.1
 
 ### Minor Changes

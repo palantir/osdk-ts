@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.11.0-beta.2
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 4a7638b: Use absolute paths in OAC test
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+  - @osdk/api@2.3.0-beta.2
+
 ## 0.10.0-beta.25
 
 ### Minor Changes
