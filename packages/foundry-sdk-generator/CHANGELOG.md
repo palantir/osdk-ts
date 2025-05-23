@@ -1,5 +1,17 @@
 # @osdk/foundry-sdk-generator
 
+## 2.2.0-rc.24
+
+### Patch Changes
+
+- b9bc65e: Improved validation for query map types
+- Updated dependencies [cdd3154]
+- Updated dependencies [5665b18]
+- Updated dependencies [a146ce4]
+  - @osdk/client@2.2.0-rc.24
+  - @osdk/api@2.2.0-rc.24
+  - @osdk/generator@2.2.0-rc.24
+
 ## 2.2.0-beta.23
 
 ### Patch Changes

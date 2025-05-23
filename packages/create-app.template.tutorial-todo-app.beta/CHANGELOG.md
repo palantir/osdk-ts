@@ -1,5 +1,11 @@
 # @osdk/create-app.template.tutorial-todo-app.beta
 
+## 2.2.0-rc.24
+
+### Patch Changes
+
+- 49422cd: add commented lines to show users where to get the client from
+
 ## 2.2.0-beta.23
 
 ### Minor Changes

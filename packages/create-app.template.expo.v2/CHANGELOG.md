@@ -1,5 +1,7 @@
 # @osdk/create-app.template.expo.v2
 
+## 2.2.0-rc.24
+
 ## 2.2.0-beta.23
 
 ### Minor Changes
