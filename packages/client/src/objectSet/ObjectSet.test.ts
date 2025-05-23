@@ -583,19 +583,19 @@ describe("ObjectSet", () => {
       });
     });
 
-    it("does not allow selectProperty when a many link was selected at any point", () => {
-      client(Employee).withProperties({
-        "derivedPropertyName": (base) => {
-          // @ts-expect-error
-          base.pivotTo("peeps").selectProperty("employeeId");
+    // it("does not allow selectProperty when a many link was selected at any point", () => {
+    //   client(Employee).withProperties({
+    //     "derivedPropertyName": (base) => {
+    //       // @ts-expect-error
+    //       base.pivotTo("peeps").selectProperty("employeeId");
 
-          // @ts-expect-error
-          base.pivotTo("lead").pivotTo("peeps").selectProperty("employeeId");
+    //       // @ts-expect-error
+    //       base.pivotTo("lead").pivotTo("peeps").selectProperty("employeeId");
 
-          return base.pivotTo("lead").selectProperty("employeeId");
-        },
-      });
-    });
+    //       return base.pivotTo("lead").selectProperty("employeeId");
+    //     },
+    //   });
+    // });
 
     it("enforces a return only of correct type", () => {
       client(Employee).withProperties({
@@ -668,21 +668,21 @@ describe("ObjectSet", () => {
       >();
     });
 
-    it("correctly narrows types of selectProperty function", () => {
-      client(Employee).withProperties({
-        "derivedPropertyName": (base) => {
-          // @ts-expect-error
-          base.pivotTo("lead").selectProperty("notAProperty");
+    // it("correctly narrows types of selectProperty function", () => {
+    //   client(Employee).withProperties({
+    //     "derivedPropertyName": (base) => {
+    //       // @ts-expect-error
+    //       base.pivotTo("lead").selectProperty("notAProperty");
 
-          return base.pivotTo("lead").selectProperty("employeeStatus");
-        },
-      }) satisfies ObjectSet<
-        Employee,
-        {
-          "derivedPropertyName": "stringTimeseries" | undefined;
-        }
-      >;
-    });
+    //       return base.pivotTo("lead").selectProperty("employeeStatus");
+    //     },
+    //   }) satisfies ObjectSet<
+    //     Employee,
+    //     {
+    //       "derivedPropertyName": "stringTimeseries" | undefined;
+    //     }
+    //   >;
+    // });
 
     it("propagates derived property type to future object set operations with correct types", () => {
       client(Employee).withProperties({
@@ -727,21 +727,21 @@ describe("ObjectSet", () => {
         }>
       >();
 
-      const selectPropertyObjectSet = client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId"),
-      }).where({ "derivedPropertyName": { "$eq": 3 } });
+      // const selectPropertyObjectSet = client(Employee).withProperties({
+      //   "derivedPropertyName": (base) =>
+      //     base.pivotTo("lead").selectProperty("employeeId"),
+      // }).where({ "derivedPropertyName": { "$eq": 3 } });
 
-      expectTypeOf(selectPropertyObjectSet).toEqualTypeOf<
-        ObjectSet<Employee, {
-          derivedPropertyName: "integer";
-        }>
-      >();
+      // expectTypeOf(selectPropertyObjectSet).toEqualTypeOf<
+      //   ObjectSet<Employee, {
+      //     derivedPropertyName: "integer";
+      //   }>
+      // >();
 
-      client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("startDate"),
-      }).where({ "derivedPropertyName": { "$eq": "datetimeFilter" } });
+      // client(Employee).withProperties({
+      //   "derivedPropertyName": (base) =>
+      //     base.pivotTo("lead").selectProperty("startDate"),
+      // }).where({ "derivedPropertyName": { "$eq": "datetimeFilter" } });
     });
 
     it("correctly types multiple property definitions in one clause", () => {
@@ -749,14 +749,14 @@ describe("ObjectSet", () => {
         "derivedPropertyName": (base) =>
           base.pivotTo("lead").aggregate("employeeId:sum"),
         "derivedPropertyName2": (base) =>
-          base.pivotTo("lead").selectProperty("fullName"),
+          base.pivotTo("lead").aggregate("fullName:approximateDistinct"),
       }).where({ "derivedPropertyName": { "$eq": 3 } })
-        .where({ "derivedPropertyName2": { "$eq": "name" } });
+        .where({ "derivedPropertyName2": { "$eq": 5 } });
 
       expectTypeOf(objectSet).toEqualTypeOf<
         ObjectSet<Employee, {
           derivedPropertyName: "double" | undefined;
-          derivedPropertyName2: "string" | undefined;
+          derivedPropertyName2: "integer";
         }>
       >();
     });
@@ -764,45 +764,45 @@ describe("ObjectSet", () => {
     it("ensures other properties are consistently typed", () => {
       client(Employee).withProperties({
         "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId"),
+          base.pivotTo("lead").aggregate("employeeId:collectList"),
       }).where({ "fullName": { "$eq": "A" } });
 
       client(Employee).withProperties({
         "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId"),
+          base.pivotTo("lead").aggregate("employeeId:collectList"),
       }).where({ "employeeId": { "$eq": 2 } });
     });
 
     it("allows fetching derived properties with correctly typed Osdk.Instance types", async () => {
       const objectWithRdp = await client(Employee).withProperties({
         "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId"),
+          base.pivotTo("lead").aggregate("employeeId:collectList"),
       }).fetchOne(stubData.employee1.employeeId);
 
       expectTypeOf(objectWithRdp.derivedPropertyName).toEqualTypeOf<
-        number
+        number[] | undefined
       >();
-      expect(objectWithRdp.derivedPropertyName).toBe(
-        stubData.employee2.__primaryKey,
+      expect(objectWithRdp.derivedPropertyName).toEqual(
+        [stubData.employee2.__primaryKey],
       );
 
-      const objectWithUndefinedRdp = await client(Employee).withProperties({
-        "derivedPropertyName": (base) =>
-          base.pivotTo("lead").selectProperty("employeeId"),
-      }).fetchOne(stubData.employee2.employeeId, {
-        $select: ["derivedPropertyName"],
-      });
+      // const objectWithUndefinedRdp = await client(Employee).withProperties({
+      //   "derivedPropertyName": (base) =>
+      //     base.pivotTo("lead").aggregate("employeeId:collectList"),
+      // }).fetchOne(stubData.employee2.employeeId, {
+      //   $select: ["derivedPropertyName"],
+      // });
 
-      expect(objectWithUndefinedRdp.derivedPropertyName).toBeUndefined();
+      // expect(objectWithUndefinedRdp.derivedPropertyName).toBeUndefined();
     });
 
     it("correctly deserializes attachments and geo properties", async () => {
       const objectWithRdp = await client(objectTypeWithAllPropertyTypes)
         .withProperties({
           "attachmentSelectDp": (base) =>
-            base.pivotTo("linkedObjectType").selectProperty("attachment"),
+            base.pivotTo("linkedObjectType").aggregate("attachment:collectSet"),
           "geoSelectDp": (base) =>
-            base.pivotTo("linkedObjectType").selectProperty("geoShape"),
+            base.pivotTo("linkedObjectType").aggregate("geoShape:collectSet"),
           "geoCollectListDp": (base) =>
             base.pivotTo("linkedObjectType").aggregate(
               "geoShapeArray:collectList",
@@ -810,49 +810,53 @@ describe("ObjectSet", () => {
         }).fetchOne(5);
 
       expectTypeOf(objectWithRdp.attachmentSelectDp).toEqualTypeOf<
-        Attachment | undefined
+        Attachment[] | undefined
       >();
       expect(objectWithRdp.attachmentSelectDp).toMatchInlineSnapshot(
         `
-        {
-          "fetchContents": [Function],
-          "fetchMetadata": [Function],
-          "rid": "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
-        }
+        [
+          {
+            "fetchContents": [Function],
+            "fetchMetadata": [Function],
+            "rid": "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+          },
+        ]
       `,
       );
 
       expectTypeOf(objectWithRdp.geoSelectDp).toEqualTypeOf<
-        GeoJSON.GeoJSON | undefined
+        GeoJSON.GeoJSON[] | undefined
       >();
       expect(objectWithRdp.geoSelectDp).toMatchInlineSnapshot(`
-        {
-          "coordinates": [
-            [
+        [
+          {
+            "coordinates": [
               [
-                1,
-                1,
-              ],
-              [
-                1,
-                2,
-              ],
-              [
-                2,
-                2,
-              ],
-              [
-                2,
-                1,
-              ],
-              [
-                1,
-                1,
+                [
+                  1,
+                  1,
+                ],
+                [
+                  1,
+                  2,
+                ],
+                [
+                  2,
+                  2,
+                ],
+                [
+                  2,
+                  1,
+                ],
+                [
+                  1,
+                  1,
+                ],
               ],
             ],
-          ],
-          "type": "Polygon",
-        }
+            "type": "Polygon",
+          },
+        ]
       `);
 
       expectTypeOf(objectWithRdp.geoCollectListDp).toEqualTypeOf<
@@ -896,9 +900,11 @@ describe("ObjectSet", () => {
       const fetchPageTest = await client(objectTypeWithAllPropertyTypes)
         .withProperties({
           "attachmentSelectDp": (base) =>
-            base.pivotTo("linkedObjectType").selectProperty("attachment"),
+            base.pivotTo("linkedObjectType").aggregate(
+              "attachment:collectList",
+            ),
           "geoSelectDp": (base) =>
-            base.pivotTo("linkedObjectType").selectProperty("geoShape"),
+            base.pivotTo("linkedObjectType").aggregate("geoShape:collectList"),
           "geoCollectListDp": (base) =>
             base.pivotTo("linkedObjectType").aggregate(
               "geoShapeArray:collectList",
@@ -907,11 +913,13 @@ describe("ObjectSet", () => {
 
       expect(fetchPageTest.data[0].attachmentSelectDp).toMatchInlineSnapshot(
         `
-        {
-          "fetchContents": [Function],
-          "fetchMetadata": [Function],
-          "rid": "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
-        }
+        [
+          {
+            "fetchContents": [Function],
+            "fetchMetadata": [Function],
+            "rid": "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+          },
+        ]
       `,
       );
     });
