@@ -1,5 +1,11 @@
 # @osdk/tool.release
 
+## 0.8.0-beta.2
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+
 ## 0.7.0-beta.3
 
 ### Minor Changes

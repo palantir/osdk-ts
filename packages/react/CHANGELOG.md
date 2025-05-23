@@ -1,5 +1,18 @@
 # @osdkkit/react
 
+## 0.5.0-beta.2
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+  - @osdk/api@2.3.0-beta.2
+  - @osdk/client@2.3.0-beta.2
+
 ## 0.4.0-beta.6
 
 ### Minor Changes

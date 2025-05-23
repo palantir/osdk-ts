@@ -1,5 +1,11 @@
 # @osdk/foundry-config-json
 
+## 1.2.0-beta.2
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+
 ## 1.0.0
 
 ### Major Changes

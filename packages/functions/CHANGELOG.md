@@ -1,5 +1,16 @@
 # @osdk/functions
 
+## 2.0.0-beta.2
+
+### Minor Changes
+
+- 776ae8a: Simulated release
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+  - @osdk/client@2.3.0-beta.2
+
 ## 1.0.0-beta.17
 
 ### Patch Changes

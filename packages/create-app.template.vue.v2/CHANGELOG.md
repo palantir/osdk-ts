@@ -1,5 +1,11 @@
 # @osdk/create-app.template.vue.v2
 
+## 2.3.0-beta.2
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+
 ## 2.2.0-beta.23
 
 ## 2.2.0-beta.22

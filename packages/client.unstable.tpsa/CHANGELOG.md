@@ -1,5 +1,11 @@
 # @osdk/client.unstable.tpsa
 
+## 0.5.0-beta.2
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+
 ## 0.3.0
 
 ### Minor Changes
