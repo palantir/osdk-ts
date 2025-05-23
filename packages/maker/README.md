@@ -24,17 +24,6 @@ To get started with the maker package, install it as a dependency in your projec
 npm install @osdk/maker
 ```
 
-## Key Concepts
-
-The maker package revolves around a few key ontology entity types:
-
-- **Shared Property Types (SPTs)**: Reusable property definitions that can be shared across different object types and interfaces.
-- **Value Types**: Custom data types with constraints and validation rules.
-- **Interfaces**: Collections of properties that define a contract for objects implementing them.
-- **Objects**: Core data entities with properties, relationships, and behaviors.
-- **Links**: Relationships between objects that define how they connect.
-- **Actions**: Operations that can be performed on objects, such as creating, modifying, or deleting them.
-
 ## Defining an Ontology
 
 An ontology serves as a container for all your type definitions. You define an ontology using the `defineOntology` function:
