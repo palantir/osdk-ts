@@ -432,25 +432,15 @@ export namespace DerivedProperty {
     		Q extends ObjectOrInterfaceDefinition,
     		CONSTRAINED extends boolean
     	> extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {}
-    	// Warning: (ae-forgotten-export) The symbol "Selectable" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "Constant" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
+    	// (undocumented)
     export interface Builder<
     		Q extends ObjectOrInterfaceDefinition,
     		CONSTRAINED extends boolean
-    	> extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q>, Constant<Q> {}
+    	> extends BaseBuilder<Q, CONSTRAINED> {}
     	// (undocumented)
     export type Clause<Q extends ObjectOrInterfaceDefinition> = {
         		[key: string]: DerivedPropertyCreator<Q, SimplePropertyDef>
         	};
-    	// Warning: (ae-forgotten-export) The symbol "DatetimeExpressions" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    export interface DatetimePropertyDefinition<
-    		T extends SimplePropertyDef,
-    		Q extends ObjectOrInterfaceDefinition
-    	> extends Definition<T, Q>, DatetimeExpressions<Q, T> {}
     	// Warning: (ae-forgotten-export) The symbol "SimplePropertyDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -461,20 +451,6 @@ export namespace DerivedProperty {
         		// (undocumented)
         readonly [DerivedPropertyDefinitionBrand]: true;
         	}
-    	// Warning: (ae-forgotten-export) The symbol "NumericExpressions" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    export interface NumericPropertyDefinition<
-    		T extends SimplePropertyDef,
-    		Q extends ObjectOrInterfaceDefinition
-    	> extends Definition<T, Q>, NumericExpressions<Q, T> {}
-    	// (undocumented)
-    export interface SelectPropertyBuilder<
-    		Q extends ObjectOrInterfaceDefinition,
-    		CONSTRAINED extends boolean
-    	> extends AggregateBuilder<Q, CONSTRAINED>, Selectable<Q> {}
-    	// (undocumented)
-    export type ValidParts = "DAYS" | "MONTHS" | "QUARTERS" | "YEARS";
     	{};
 }
 
@@ -1380,7 +1356,7 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 //
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
-// src/derivedProperties/DerivedProperty.ts:58:7 - (ae-forgotten-export) The symbol "DerivedPropertyCreator" needs to be exported by the entry point index.d.ts
+// src/derivedProperties/DerivedProperty.ts:42:7 - (ae-forgotten-export) The symbol "DerivedPropertyCreator" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
