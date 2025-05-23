@@ -619,7 +619,7 @@ describe("ObjectSet", () => {
       type ObjectSetType = $ObjectSet<
         EmployeeApiTest,
         {
-          mom: "integer" | undefined;
+          mom: "integer";
         }
       >;
 
