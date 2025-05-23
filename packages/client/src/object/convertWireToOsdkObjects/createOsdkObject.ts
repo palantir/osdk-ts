@@ -98,6 +98,14 @@ const basePropDefs = {
     },
     enumerable: true,
   },
+  "$__experimental_metadata": {
+    get: function(this: ObjectHolder) {
+      return {
+        object: this[ObjectDefRef],
+      };
+    },
+    enumerable: false,
+  },
 };
 
 /**
@@ -121,7 +129,7 @@ export function createOsdkObject(
         enumerable: false,
         value: simpleOsdkProperties,
       },
-      [ObjectDefRef]: { value: objectDef, enumerable: false },
+      [ObjectDefRef]: { value: objectDef, enumerable: false }, // TODO: Potentially update when GA metadata field
       [ClientRef]: { value: client, enumerable: false },
       ...basePropDefs,
     } satisfies Record<keyof ObjectHolder, PropertyDescriptor>,

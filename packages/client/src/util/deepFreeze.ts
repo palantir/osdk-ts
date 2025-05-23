@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-import type { InterfaceMetadata, ObjectMetadata, Osdk } from "@osdk/api";
-import type { BaseHolder } from "./BaseHolder.js";
-import type { InterfaceDefRef } from "./InternalSymbols.js";
-
-/** @internal */
-export interface InterfaceHolder<
-  _Q extends Osdk.Instance<any> = never,
-> extends BaseHolder {
-  [InterfaceDefRef]: InterfaceMetadata;
-
-  readonly "$__experimental_metadata": {
-    readonly object: ObjectMetadata;
-    readonly interface: InterfaceMetadata;
-  };
+export function deepFreeze<T>(obj: T): T {
+  Object.getOwnPropertyNames(obj).forEach(name => {
+    const prop = (obj as any)[name];
+    if (typeof prop === "object" && prop != null && !Object.isFrozen(prop)) {
+      deepFreeze(prop);
+    }
+  });
+  return Object.freeze(obj);
 }
