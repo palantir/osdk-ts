@@ -98,6 +98,12 @@ const basePropDefs = {
     },
     enumerable: true,
   },
+  "$metadata": {
+    get: function(this: ObjectHolder) {
+      return this[ObjectDefRef];
+    },
+    enumerable: true,
+  },
 };
 
 /**
