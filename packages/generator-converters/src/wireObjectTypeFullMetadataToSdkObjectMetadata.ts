@@ -101,7 +101,7 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
     pluralDisplayName: objectTypeWithLink.objectType.pluralDisplayName,
     status: ensureStringEnumSupportedOrUndefined(
       objectTypeWithLink.objectType.status,
-      supportedObjectTypeReleaseStatuses,
+      supportedReleaseStatus,
     ),
     rid: objectTypeWithLink.objectType.rid,
     visibility: ensureStringEnumSupportedOrUndefined(
@@ -122,7 +122,7 @@ function invertProps(
 
 export const supportedIconTypes = ["blueprint"] as const;
 
-export const supportedObjectTypeReleaseStatuses = [
+export const supportedReleaseStatus = [
   "ACTIVE",
   "EXPERIMENTAL",
   "DEPRECATED",
@@ -135,7 +135,7 @@ export const supportedObjectTypeVisibility = [
   "HIDDEN",
 ] as const;
 
-function ensureStringEnumSupportedOrUndefined<T extends string>(
+export function ensureStringEnumSupportedOrUndefined<T extends string>(
   value: T | undefined,
   supportedValues: readonly string[],
 ): T | undefined {

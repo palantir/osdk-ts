@@ -18,8 +18,8 @@ import type { ObjectMetadata } from "@osdk/api";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import type {
   supportedIconTypes,
-  supportedObjectTypeReleaseStatuses,
   supportedObjectTypeVisibility,
+  supportedReleaseStatus,
 } from "./wireObjectTypeFullMetadataToSdkObjectMetadata.js";
 import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "./wireObjectTypeFullMetadataToSdkObjectMetadata.js";
 
@@ -66,7 +66,7 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
     type excludedStatuses = "";
     expectTypeOf<
       Exclude<
-        typeof supportedObjectTypeReleaseStatuses[number],
+        typeof supportedReleaseStatus[number],
         excludedStatuses
       >
     >()
