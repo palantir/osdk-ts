@@ -127,8 +127,8 @@
     "@osdk-foundry-config-json-simulatedRelease",
     "@osdk-foundry-sdk-generator-simulatedRelease",
     "@osdk-functions-simulatedRelease",
-    "@osdk-generator-simulatedRelease",
     "@osdk-generator-converters-simulatedRelease",
+    "@osdk-generator-simulatedRelease",
     "@osdk-generator-utils-simulatedRelease",
     "@osdk-maker-simulatedRelease",
     "@osdk-monorepo.api-extractor-simulatedRelease",
@@ -149,6 +149,8 @@
     "@osdk-widget.api.unstable-simulatedRelease",
     "@osdk-widget.client-react.unstable-simulatedRelease",
     "@osdk-widget.client.unstable-simulatedRelease",
-    "@osdk-widget.vite-plugin.unstable-simulatedRelease"
+    "@osdk-widget.vite-plugin.unstable-simulatedRelease",
+    "chatty-eagles-argue",
+    "spicy-humans-joke"
   ]
 }

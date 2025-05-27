@@ -1,5 +1,7 @@
 # @osdk/create-app
 
+## 2.3.0-beta.2
+
 ## 2.2.0-beta.23
 
 ## 2.2.0-beta.22

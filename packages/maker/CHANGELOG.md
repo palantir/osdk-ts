@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.11.0-beta.2
+
+### Minor Changes
+
+- fea541b: Support old importing workflow
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.2
+
 ## 0.10.0-beta.25
 
 ### Minor Changes
