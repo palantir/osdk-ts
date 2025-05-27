@@ -15,6 +15,7 @@
  */
 
 import * as fs from "fs";
+import path from "path";
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   defineAction,
@@ -5245,6 +5246,12 @@ describe("Ontology Defining", () => {
       `);
     });
     it("Export files are generated correctly", async () => {
+      const generatedDir = path.resolve(path.join(
+        __dirname,
+        "..",
+        "generatedNoCheck",
+        "export_files_are_generated_correctly",
+      ));
       await defineOntology("com.my.package.", () => {
         const mySpt = defineSharedPropertyType({
           apiName: "mySpt",
@@ -5268,18 +5275,19 @@ describe("Ontology Defining", () => {
             propertyMapping: [{ interfaceProperty: "mySpt", mapsTo: "bar" }],
           }],
         });
-      }, "src/generated/export_files_are_generated_correctly");
+      }, generatedDir);
 
       expect(
         fs.readFileSync(
-          "src/generated/export_files_are_generated_correctly/build/interface-types/myInterface.ts",
+          path.join(generatedDir, "codegen/interface-types/myInterface.ts"),
           "utf8",
         ),
       ).toMatchInlineSnapshot(`
         "
-        import { importOntologyEntity } from '@osdk/maker';
+        import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
+        import type { InterfaceType } from '@osdk/maker';
 
-        export const myInterface = {
+        const myInterface_base: InterfaceType = {
           "apiName": "com.my.package.myInterface",
           "displayMetadata": {
             "displayName": "myInterface",
@@ -5309,27 +5317,28 @@ describe("Ontology Defining", () => {
                     "name": "SORTABLE"
                   }
                 ],
-                "__type": "SHARED_PROPERTY_TYPE"
+                "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE
               }
             }
           },
-          "__type": "INTERFACE_TYPE"
-        } as const;
+          "__type": OntologyEntityTypeEnum.INTERFACE_TYPE
+        } as unknown as InterfaceType;
                 
-        importOntologyEntity(myInterface);
+        export const myInterface: InterfaceType = wrapWithProxy(myInterface_base);
                 "
       `);
 
       expect(
         fs.readFileSync(
-          "src/generated/export_files_are_generated_correctly/build/object-types/myObject.ts",
+          path.join(generatedDir, "codegen/object-types/myObject.ts"),
           "utf8",
         ),
       ).toMatchInlineSnapshot(`
         "
-        import { importOntologyEntity } from '@osdk/maker';
+        import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
+        import type { ObjectType } from '@osdk/maker';
 
-        export const myObject = {
+        const myObject_base: ObjectType = {
           "titlePropertyApiName": "bar",
           "displayName": "My Object",
           "pluralDisplayName": "myObjects",
@@ -5374,11 +5383,11 @@ describe("Ontology Defining", () => {
                           "name": "SORTABLE"
                         }
                       ],
-                      "__type": "SHARED_PROPERTY_TYPE"
+                      "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE
                     }
                   }
                 },
-                "__type": "INTERFACE_TYPE"
+                "__type": OntologyEntityTypeEnum.INTERFACE_TYPE
               },
               "propertyMapping": [
                 {
@@ -5388,23 +5397,24 @@ describe("Ontology Defining", () => {
               ]
             }
           ],
-          "__type": "OBJECT_TYPE"
-        } as const;
+          "__type": OntologyEntityTypeEnum.OBJECT_TYPE
+        } as unknown as ObjectType;
                 
-        importOntologyEntity(myObject);
+        export const myObject: ObjectType = wrapWithProxy(myObject_base);
                 "
       `);
 
       expect(
         fs.readFileSync(
-          "src/generated/export_files_are_generated_correctly/build/shared-property-types/mySpt.ts",
+          path.join(generatedDir, "codegen/shared-property-types/mySpt.ts"),
           "utf8",
         ),
       ).toMatchInlineSnapshot(`
         "
-        import { importOntologyEntity } from '@osdk/maker';
+        import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
+        import type { SharedPropertyType } from '@osdk/maker';
 
-        export const mySpt = {
+        const mySpt_base: SharedPropertyType = {
           "apiName": "com.my.package.mySpt",
           "type": "string",
           "nonNameSpacedApiName": "mySpt",
@@ -5419,12 +5429,16 @@ describe("Ontology Defining", () => {
               "name": "SORTABLE"
             }
           ],
-          "__type": "SHARED_PROPERTY_TYPE"
-        } as const;
+          "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE
+        } as unknown as SharedPropertyType;
                 
-        importOntologyEntity(mySpt);
+        export const mySpt: SharedPropertyType = wrapWithProxy(mySpt_base);
                 "
       `);
+      fs.rmSync(path.resolve(path.join(generatedDir, "..")), {
+        recursive: true,
+        force: true,
+      });
     });
   });
 });
