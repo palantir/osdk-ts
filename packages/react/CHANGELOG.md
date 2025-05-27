@@ -1,5 +1,16 @@
 # @osdkkit/react
 
+## 0.5.0-beta.2
+
+### Minor Changes
+
+- 595a81c: Remove dangling comma in root render function
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.2
+- @osdk/client@2.3.0-beta.2
+
 ## 0.4.0-beta.6
 
 ### Minor Changes
