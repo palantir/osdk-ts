@@ -1,5 +1,14 @@
 # @osdk/maker
 
+## 0.10.0-rc.26
+
+### Patch Changes
+
+- cff551a: Update OAC codegen
+- Updated dependencies [5665b18]
+- Updated dependencies [a146ce4]
+  - @osdk/api@2.2.0-rc.24
+
 ## 0.10.0-beta.25
 
 ### Minor Changes

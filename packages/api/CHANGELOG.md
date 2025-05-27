@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.2.0-rc.24
+
+### Patch Changes
+
+- 5665b18: Remove selection RDPs from the API
+- a146ce4: Cleanup RDP API
+
 ## 2.2.0-beta.23
 
 ### Minor Changes
