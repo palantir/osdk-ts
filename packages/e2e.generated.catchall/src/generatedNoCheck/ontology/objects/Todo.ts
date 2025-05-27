@@ -25,6 +25,7 @@ export namespace Todo {
   export interface Props {
     /**
      *   display name: 'Body',
+     *
      *   description: The text of the todo
      */
     readonly body: $PropType['string'] | undefined;
@@ -89,6 +90,7 @@ export interface Todo extends $ObjectTypeDefinition {
     properties: {
       /**
        *   display name: 'Body',
+       *
        *   description: The text of the todo
        */
       body: $PropertyDef<'string', 'nullable', 'single'>;
