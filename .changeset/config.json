@@ -15,9 +15,10 @@
       "@osdk/generator-utils",
       "@osdk/generator",
       "@osdk/e2e.generated.catchall",
-      "@osdk/e2e.sandbox.catchall"
+      "@osdk/e2e.sandbox.catchall",
+      "@osdk/cli.internal"
     ],
-    ["@osdk/cli", "@osdk/cli.*"],
+    ["@osdk/cli", "@osdk/cli.common", "@osdk/cli.cmd.typescript"],
     [
       "@osdk/widget.api.unstable",
       "@osdk/widget.client.unstable",
