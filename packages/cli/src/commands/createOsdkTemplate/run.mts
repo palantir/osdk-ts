@@ -120,14 +120,16 @@ export async function run(
 
     const npmRc = generateNpmRc();
     await fs.writeFile(path.join(root, ".npmrc"), npmRc);
+    //.env.development
     const envDevelopment = generateEnvDevelopment({
       envPrefix: "VITE_",
-      foundryUrl: "http://localhost:8080",
+      foundryUrl: "https://{{FOUNDRY_HOSTNAME}}",
       clientId: "{{APPLICATION_CLIENT_ID}}",
       corsProxy: false,
       ontology: "{{ONTOLOGY_RID}}",
     });
     await fs.writeFile(path.join(root, ".env.development"), envDevelopment);
+    // .env.production
     const envProduction = generateEnvProduction({
       envPrefix: "VITE_",
       foundryUrl: "https://{{FOUNDRY_HOSTNAME}}",
@@ -136,6 +138,16 @@ export async function run(
       ontology: "{{ONTOLOGY_RID}}",
     });
     await fs.writeFile(path.join(root, ".env.production"), envProduction);
+    // .env.code-workspaces
+    const envCodeWorkspaces = generateEnvProduction({
+      envPrefix: "VITE_",
+      foundryUrl: "https://{{FOUNDRY_HOSTNAME}}",
+      applicationUrl: "https://${DEV_SERVER_DOMAIN}${DEV_SERVER_BASE_PATH}",
+      clientId: "{{APPLICATION_CLIENT_ID}}",
+      ontology: "{{ONTOLOGY_RID}}",
+    });
+    await fs.writeFile(path.join(root, ".env.code-workspaces"), envProduction);
+
     const foundryConfigJson = generateFoundryConfigJson({
       foundryUrl: "https://{{FOUNDRY_HOSTNAME}}",
       application: "{{APPLICATION_RID}}",
