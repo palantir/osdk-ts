@@ -66,7 +66,7 @@ Then wrap your existing root components with `<OsdkProvider2 client={client}>`:
 ```ts
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <OsdkProvider2 client={client}>
-    <RouterProvider router={router} />,
+    <RouterProvider router={router} />
   </OsdkProvider2>,
 );
 ```
