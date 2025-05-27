@@ -1,5 +1,12 @@
 # @osdk/create-app.template.tutorial-todo-app.beta
 
+## 2.3.0-beta.2
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+- 595a81c: Remove dangling comma in root render function
+
 ## 2.2.0-beta.23
 
 ### Minor Changes

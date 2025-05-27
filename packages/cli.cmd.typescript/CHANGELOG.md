@@ -1,5 +1,20 @@
 # @osdk/cli.cmd.typescript
 
+## 0.27.0-beta.2
+
+### Minor Changes
+
+- 322c5bc: Simulated release
+
+### Patch Changes
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+  - @osdk/cli.common@0.27.0-beta.2
+  - @osdk/generator@2.3.0-beta.2
+  - @osdk/shared.client.impl@1.3.0-beta.2
+
 ## 0.26.0-beta.23
 
 ### Patch Changes
