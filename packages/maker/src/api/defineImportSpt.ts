@@ -15,6 +15,7 @@
  */
 
 import invariant from "tiny-invariant";
+import { importOntologyEntity } from "./importOntologyEntity.js";
 import {
   OntologyEntityTypeEnum,
   type PropertyTypeType,
@@ -32,6 +33,9 @@ export function importSharedPropertyType(
   },
 ): SharedPropertyType {
   const { apiName, packageName, typeHint } = opts;
+  const fullApiName = packageName === undefined
+    ? apiName
+    : `${packageName}.${apiName}`;
   if (packageName !== undefined) {
     invariant(
       !packageName.endsWith("."),
@@ -42,18 +46,13 @@ export function importSharedPropertyType(
       packageName.match("[A-Z]") == null,
       "Package name includes upper case characters",
     );
-
-    return {
-      apiName: packageName + "." + apiName,
-      type: typeHint,
-      nonNameSpacedApiName: apiName,
-      __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
-    };
   }
-  return {
-    apiName: apiName,
+  const spt: SharedPropertyType = {
+    apiName: fullApiName,
     type: typeHint,
     nonNameSpacedApiName: apiName,
     __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
   };
+  importOntologyEntity(spt);
+  return spt;
 }
