@@ -72,7 +72,7 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
   icon?: Icon;
   visibility?: ObjectTypeVisibility;
   pluralDisplayName: string;
-  status: ReleaseStatus;
+  status?: ReleaseStatus;
   interfaceMap: Record<
     /* InterfaceType api name */ string,
     Record<
@@ -138,7 +138,8 @@ export type ReleaseStatus =
   | "ACTIVE"
   | "EXPERIMENTAL"
   | "DEPRECATED"
-  | "ENDORSED";
+  | "ENDORSED"
+  | undefined;
 
 type ObjectTypeVisibility = "NORMAL" | "PROMINENT" | "HIDDEN";
 
