@@ -26,6 +26,7 @@ import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.
 import { generateJemmaFolderWithContent } from "./generate/generateJemmaFolderWithContent.js";
 import { generateNpmRc } from "./generate/generateNpmRc.js";
 import { getTemplatePackageFile } from "./getTemplatePackageFile.js";
+import { removeEnvPatternsFromGitignore } from "./removeEnvPatternsFromGitignore.js";
 import { updateViteConfigTs } from "./updateViteConfig.js";
 
 interface RunArgs {
@@ -60,6 +61,7 @@ export async function run(
     "package-lock.json",
     ".env.development",
     ".env.production",
+    ".env.code-workspaces",
     ".npmrc",
     "foundry.config.json",
   ]);
@@ -120,7 +122,7 @@ export async function run(
 
     const npmRc = generateNpmRc();
     await fs.writeFile(path.join(root, ".npmrc"), npmRc);
-    //.env.development
+    // .env.development
     const envDevelopment = generateEnvDevelopment({
       envPrefix: "VITE_",
       foundryUrl: "https://{{FOUNDRY_HOSTNAME}}",
@@ -147,6 +149,14 @@ export async function run(
       ontology: "{{ONTOLOGY_RID}}",
     });
     await fs.writeFile(path.join(root, ".env.code-workspaces"), envProduction);
+
+    // update .gitignore to remove env.* patterns
+    const gitignorePath = path.join(root, ".gitignore");
+    const gitignoreContent = await fs.readFile(gitignorePath, "utf-8");
+    const updatedGitignore = removeEnvPatternsFromGitignore(gitignoreContent);
+    // Write the updated gitignore back
+    await fs.writeFile(path.join(root, ".gitignore"), updatedGitignore);
+    consola.info(`Updating .gitignore to remove env.* patterns`);
 
     const foundryConfigJson = generateFoundryConfigJson({
       foundryUrl: "https://{{FOUNDRY_HOSTNAME}}",
@@ -176,6 +186,7 @@ export async function run(
     const updatedViteConfig = updateViteConfigTs(viteConfig, osdkPackage);
     await fs.writeFile(viteConfigPath, updatedViteConfig);
     consola.info(`Updating vite.config.ts`);
+
     // add .jemma folder with content
     const results = await generateJemmaFolderWithContent(root);
     if (!results) {
