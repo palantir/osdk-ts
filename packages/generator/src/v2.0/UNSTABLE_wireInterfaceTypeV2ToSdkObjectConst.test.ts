@@ -233,8 +233,8 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
 
         export interface Props {
           /**
-           *   display name: 'foo property dn',
-           *   description: foo property desc
+           * display name: 'foo property dn',
+           * description: foo property desc
            */
           readonly foo: $PropType["integer"] | undefined;
         }
@@ -271,8 +271,8 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           links: {};
           properties: {
             /**
-             *   display name: 'foo property dn',
-             *   description: foo property desc
+             * display name: 'foo property dn',
+             * description: foo property desc
              */
             foo: $PropertyDef<"integer", "nullable", "single">;
           };
@@ -330,13 +330,13 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
 
         export interface Props {
           /**
-           *   display name: 'bar property dn',
-           *   description: bar property desc
+           * display name: 'bar property dn',
+           * description: bar property desc
            */
           readonly bar: $PropType["integer"] | undefined;
           /**
-           *   display name: 'foo property dn',
-           *   description: foo property desc
+           * display name: 'foo property dn',
+           * description: foo property desc
            */
           readonly foo: $PropType["integer"] | undefined;
         }
@@ -373,13 +373,13 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           links: {};
           properties: {
             /**
-             *   display name: 'bar property dn',
-             *   description: bar property desc
+             * display name: 'bar property dn',
+             * description: bar property desc
              */
             bar: $PropertyDef<"integer", "nullable", "single">;
             /**
-             *   display name: 'foo property dn',
-             *   description: foo property desc
+             * display name: 'foo property dn',
+             * description: foo property desc
              */
             foo: $PropertyDef<"integer", "nullable", "single">;
           };
@@ -437,8 +437,8 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
 
         export interface Props {
           /**
-           *   display name: 'foo property dn',
-           *   description: foo property desc
+           * display name: 'foo property dn',
+           * description: foo property desc
            */
           readonly foo: $PropType["integer"] | undefined;
         }
@@ -475,8 +475,8 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           links: {};
           properties: {
             /**
-             *   display name: 'foo property dn',
-             *   description: foo property desc
+             * display name: 'foo property dn',
+             * description: foo property desc
              */
             foo: $PropertyDef<"integer", "nullable", "single">;
           };

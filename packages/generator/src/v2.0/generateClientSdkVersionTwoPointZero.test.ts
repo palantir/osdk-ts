@@ -730,8 +730,8 @@ describe("generator", () => {
 
           export interface Props {
             /**
-             *   display name: 'Sum Property',
-             *   description: Some property
+             * display name: 'Sum Property',
+             * description: Some property
              */
             readonly SomeProperty: $PropType['string'] | undefined;
           }
@@ -768,8 +768,8 @@ describe("generator", () => {
             links: {};
             properties: {
               /**
-               *   display name: 'Sum Property',
-               *   description: Some property
+               * display name: 'Sum Property',
+               * description: Some property
                */
               SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
             };
@@ -904,8 +904,8 @@ describe("generator", () => {
 
           export interface Props {
             /**
-             *   display name: 'Body',
-             *   description: The text of the todo
+             * display name: 'Body',
+             * description: The text of the todo
              */
             readonly body: $PropType['string'] | undefined;
             /**
@@ -969,8 +969,8 @@ describe("generator", () => {
             primaryKeyType: 'integer';
             properties: {
               /**
-               *   display name: 'Body',
-               *   description: The text of the todo
+               * display name: 'Body',
+               * description: The text of the todo
                */
               body: $PropertyDef<'string', 'nullable', 'single'>;
               /**
@@ -1065,7 +1065,7 @@ describe("generator", () => {
 
           export interface Parameters {
             /**
-             *   description: Random desc so we test jsdoc
+             * description: Random desc so we test jsdoc
              */
             readonly someTodo: QueryParam.ObjectType<Todo>;
           }
@@ -1082,7 +1082,7 @@ describe("generator", () => {
             isFixedVersion: false;
             parameters: {
               /**
-               *   description: Random desc so we test jsdoc
+               * description: Random desc so we test jsdoc
                */
               someTodo: {
                 description: 'Random desc so we test jsdoc';
@@ -1372,8 +1372,8 @@ describe("generator", () => {
 
           export interface Props {
             /**
-             *   display name: 'Sum Property',
-             *   description: Some property
+             * display name: 'Sum Property',
+             * description: Some property
              */
             readonly SomeProperty: $PropType['string'] | undefined;
           }
@@ -1410,8 +1410,8 @@ describe("generator", () => {
             links: {};
             properties: {
               /**
-               *   display name: 'Sum Property',
-               *   description: Some property
+               * display name: 'Sum Property',
+               * description: Some property
                */
               SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
             };
@@ -1546,8 +1546,8 @@ describe("generator", () => {
 
           export interface Props {
             /**
-             *   display name: 'Body',
-             *   description: The text of the todo
+             * display name: 'Body',
+             * description: The text of the todo
              */
             readonly body: $PropType['string'] | undefined;
             /**
@@ -1611,8 +1611,8 @@ describe("generator", () => {
             primaryKeyType: 'integer';
             properties: {
               /**
-               *   display name: 'Body',
-               *   description: The text of the todo
+               * display name: 'Body',
+               * description: The text of the todo
                */
               body: $PropertyDef<'string', 'nullable', 'single'>;
               /**
@@ -1707,7 +1707,7 @@ describe("generator", () => {
 
           export interface Parameters {
             /**
-             *   description: Random desc so we test jsdoc
+             * description: Random desc so we test jsdoc
              */
             readonly someTodo: QueryParam.ObjectType<Todo>;
           }
@@ -1724,7 +1724,7 @@ describe("generator", () => {
             isFixedVersion: false;
             parameters: {
               /**
-               *   description: Random desc so we test jsdoc
+               * description: Random desc so we test jsdoc
                */
               someTodo: {
                 description: 'Random desc so we test jsdoc';
@@ -2313,8 +2313,8 @@ describe("generator", () => {
 
           export interface Props {
             /**
-             *   display name: 'Body',
-             *   description: The text of the todo
+             * display name: 'Body',
+             * description: The text of the todo
              */
             readonly body: $PropType['string'] | undefined;
             /**
@@ -2378,8 +2378,8 @@ describe("generator", () => {
             primaryKeyType: 'integer';
             properties: {
               /**
-               *   display name: 'Body',
-               *   description: The text of the todo
+               * display name: 'Body',
+               * description: The text of the todo
                */
               body: $PropertyDef<'string', 'nullable', 'single'>;
               /**
@@ -2474,7 +2474,7 @@ describe("generator", () => {
 
           export interface Parameters {
             /**
-             *   description: Random desc so we test jsdoc
+             * description: Random desc so we test jsdoc
              */
             readonly someTodo: QueryParam.ObjectType<Todo>;
           }
@@ -2491,7 +2491,7 @@ describe("generator", () => {
             isFixedVersion: false;
             parameters: {
               /**
-               *   description: Random desc so we test jsdoc
+               * description: Random desc so we test jsdoc
                */
               someTodo: {
                 description: 'Random desc so we test jsdoc';
@@ -2584,11 +2584,11 @@ describe("generator", () => {
 
           export interface Props {
             /**
-             *   display name: 'Some Property'
+             * display name: 'Some Property'
              */
             readonly spt: $PropType['string'] | undefined;
             /**
-             *   display name: 'Some Property 2'
+             * display name: 'Some Property 2'
              */
             readonly spt2: $PropType['string'] | undefined;
           }
@@ -2624,11 +2624,11 @@ describe("generator", () => {
             links: {};
             properties: {
               /**
-               *   display name: 'Some Property'
+               * display name: 'Some Property'
                */
               spt: $PropertyDef<'string', 'nullable', 'single'>;
               /**
-               *   display name: 'Some Property 2'
+               * display name: 'Some Property 2'
                */
               spt2: $PropertyDef<'string', 'nullable', 'single'>;
             };
