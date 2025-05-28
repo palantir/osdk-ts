@@ -119,6 +119,7 @@ export interface NbaPlayer extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'name';
     type: 'object';
+    visibility: undefined;
   };
 }
 

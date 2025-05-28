@@ -70,6 +70,7 @@ export interface MtaBus extends $ObjectTypeDefinition {
       name: 'traffic';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -98,6 +99,7 @@ export interface MtaBus extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'name';
     type: 'object';
+    visibility: undefined;
   };
 }
 

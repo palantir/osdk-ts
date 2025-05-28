@@ -48,6 +48,7 @@ export interface OsdkTestInterface extends $InterfaceDefinition {
     description: 'OsdkTestInterface';
     displayName: 'OsdkTestInterface';
     implementedBy: ['OsdkTestObject'];
+    implements: undefined;
     links: {};
     properties: {
       /**
