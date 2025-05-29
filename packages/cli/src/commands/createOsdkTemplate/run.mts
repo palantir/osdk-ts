@@ -19,6 +19,7 @@ import { colorize } from "consola/utils";
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
+  generateEnvCodeWorkspace,
   generateEnvDevelopment,
   generateEnvProduction,
 } from "./generate/generateEnv.js";
@@ -141,14 +142,13 @@ export async function run(
     });
     await fs.writeFile(path.join(root, ".env.production"), envProduction);
     // .env.code-workspaces
-    const envCodeWorkspaces = generateEnvProduction({
+    const envCodeWorkspaces = generateEnvCodeWorkspace({
       envPrefix: "VITE_",
       foundryUrl: "https://{{FOUNDRY_HOSTNAME}}",
-      applicationUrl: "https://${DEV_SERVER_DOMAIN}${DEV_SERVER_BASE_PATH}",
       clientId: "{{APPLICATION_CLIENT_ID}}",
       ontology: "{{ONTOLOGY_RID}}",
     });
-    await fs.writeFile(path.join(root, ".env.code-workspaces"), envProduction);
+    await fs.writeFile(path.join(root, ".env.code-workspaces"), envCodeWorkspaces);
 
     // update .gitignore to remove env.* patterns
     const gitignorePath = path.join(root, ".gitignore");

@@ -119,3 +119,50 @@ ${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
 ${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontology}
 `;
 }
+
+export function generateEnvCodeWorkspace({
+  envPrefix,
+  foundryUrl,
+  clientId,
+  ontology,
+}: {
+  envPrefix: string;
+  foundryUrl: string;
+  clientId: string;
+  ontology: string;
+}): string {
+  const applicationUrl = "https://${DEV_SERVER_DOMAIN}${DEV_SERVER_BASE_PATH}";
+  return `# This env file is intended for using the application in code-workspaces.
+
+# This URL is the URL your users will be redirected back to after signing in.
+# This URL must exactly match one of the URLs listed in the "OAuth & scopes"
+# page of Developer Console.
+#
+# If you change where your application is hosted, you will need to change this
+# URL here and in Developer Console.
+
+${
+    applicationUrl == null
+      ? "# "
+      : ""
+  }${envPrefix}FOUNDRY_REDIRECT_URL=${applicationUrl}/auth/callback
+
+
+# This URL is the Foundry host that your OSDK will use. It typically does not
+# need to be changed.
+
+${envPrefix}FOUNDRY_API_URL=${foundryUrl}
+
+
+# This client ID must match the client ID given on the "OAuth & scopes" page of
+# Developer Console. It typically does not need to be changed.
+
+${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
+
+# This Ontology RID must match the Ontology RID your Developer Console is associated with.
+# You can check the Ontology on the "Data Resources" page of Developer Console. 
+# It typically does not need to be changed.
+
+${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontology}
+`;
+}

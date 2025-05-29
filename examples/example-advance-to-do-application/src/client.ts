@@ -23,11 +23,12 @@ const clientId = getMetaTagContent("osdk-clientId");
 const redirectUrl = getMetaTagContent("osdk-redirectUrl");
 const ontologyRid = getMetaTagContent("osdk-ontologyRid");
 const scopes = [
-	"api:read-data",
-	"api:write-data",
-	"api:admin-read",
-	"api:mediasets-read",
-	"api:mediasets-write"
+	"api:use-ontologies-read",
+	"api:use-ontologies-write",
+	"api:use-admin-read",
+	"api:use-admin-write",
+	"api:use-mediasets-read",
+	"api:use-mediasets-write"
 ]
 
 export const auth = createPublicOauthClient(
