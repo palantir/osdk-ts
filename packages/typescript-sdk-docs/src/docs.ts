@@ -29,8 +29,12 @@ import { snippets } from "./generatedNoCheck/docsNoComputedVariables.js";
 
 const indentedNewLine = (spacesCount: number) => `\n${" ".repeat(spacesCount)}`;
 
-export const TYPESCRIPT_OSDK_SNIPPETS: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> =
-  {
+export type SdkSnippetsSpec = SdkSnippets<typeof OSDK_SNIPPETS_SPEC>;
+
+export function addComputedVariablesToSnippets(
+  snippets: SdkSnippetsSpec,
+): SdkSnippetsSpec {
+  return {
     ...snippets,
     computedVariables: {
       functionInputValuesV1: handleFunctionInputValuesV1,
@@ -51,6 +55,10 @@ export const TYPESCRIPT_OSDK_SNIPPETS: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> =
       linkedPrimaryKeyPropertyV2: handleLinkedPrimaryKeyPropertyV2,
     },
   };
+}
+
+export const TYPESCRIPT_OSDK_SNIPPETS: SdkSnippetsSpec =
+  addComputedVariablesToSnippets(snippets);
 
 // SDK major version enum
 enum SdkMajorVersion {
