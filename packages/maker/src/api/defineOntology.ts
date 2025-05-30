@@ -15,6 +15,7 @@
  */
 
 import type {
+  ActionTypePermissionInformation,
   ActionTypeStatus,
   DataConstraints,
   OntologyIr,
@@ -399,7 +400,21 @@ function convertToWireBlockData(
       }),
     ),
     blockPermissionInformation: {
-      actionTypes: {},
+      actionTypes: Object.fromEntries(
+        Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE])
+          .filter(([apiName, action]) => action.validation)
+          .map<
+            [string, ActionTypePermissionInformation]
+          >(([apiName, action]) => {
+            return [apiName, {
+              restrictionStatus: {
+                hasRolesApplied: true,
+                ontologyPackageRid: null,
+                publicProject: false,
+              },
+            }];
+          }),
+      ),
       linkTypes: {},
       objectTypes: {},
     },

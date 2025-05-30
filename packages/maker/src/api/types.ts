@@ -196,6 +196,17 @@ export interface ActionTypeInner {
   typeClasses: Array<TypeClass>;
 }
 
+export type ActionValidationRule = OntologyIrValidationRule;
+
+export type ActionValidationDefinition =
+  | GroupValidationRule
+  | OntologyIrValidationRule;
+
+export type GroupValidationRule = {
+  type: "group";
+  name: string;
+};
+
 export type ActionStatus =
   | "active"
   | "experimental"
