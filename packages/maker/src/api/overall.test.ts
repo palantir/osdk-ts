@@ -25,6 +25,7 @@ import {
   defineModifyInterfaceObjectAction,
   defineModifyObjectAction,
 } from "./defineAction.js";
+import { importSharedPropertyType } from "./defineImportSpt.js";
 import { defineInterface } from "./defineInterface.js";
 import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
 import { defineLink } from "./defineLink.js";
@@ -5137,6 +5138,110 @@ describe("Ontology Defining", () => {
     });
   });
   describe("Imports", () => {
+    it("Legacy importing works", () => {
+      const id = importSharedPropertyType({
+        apiName: "id",
+        packageName: "com.palantir.core.ontology.types",
+        typeHint: "string",
+      });
+      const myInterface = defineInterface({
+        apiName: "myInterface",
+        properties: {
+          id,
+        },
+      });
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "blockData": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {
+              "com.palantir.myInterface": {
+                "interfaceType": {
+                  "allExtendsInterfaces": [],
+                  "allLinks": [],
+                  "allProperties": [],
+                  "allPropertiesV2": {},
+                  "apiName": "com.palantir.myInterface",
+                  "displayMetadata": {
+                    "description": "myInterface",
+                    "displayName": "myInterface",
+                    "icon": undefined,
+                  },
+                  "extendsInterfaces": [],
+                  "links": [],
+                  "properties": [],
+                  "propertiesV2": {
+                    "com.palantir.core.ontology.types.id": {
+                      "required": true,
+                      "sharedPropertyType": {
+                        "aliases": [],
+                        "apiName": "com.palantir.core.ontology.types.id",
+                        "baseFormatter": undefined,
+                        "dataConstraints": undefined,
+                        "displayMetadata": {
+                          "description": undefined,
+                          "displayName": "com.palantir.core.ontology.types.id",
+                          "visibility": "NORMAL",
+                        },
+                        "gothamMapping": undefined,
+                        "indexedForSearch": true,
+                        "type": {
+                          "string": {
+                            "analyzerOverride": undefined,
+                            "enableAsciiFolding": undefined,
+                            "isLongText": false,
+                            "supportsEfficientLeadingWildcard": false,
+                            "supportsExactMatching": true,
+                          },
+                          "type": "string",
+                        },
+                        "typeClasses": [],
+                        "valueType": undefined,
+                      },
+                    },
+                  },
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                },
+              },
+            },
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedTypes": {
+            "actionTypes": [],
+            "interfaceTypes": [],
+            "linkTypes": [],
+            "objectTypes": [],
+            "sharedPropertyTypes": [
+              {
+                "apiName": "com.palantir.core.ontology.types.id",
+                "description": undefined,
+                "displayName": "com.palantir.core.ontology.types.id",
+                "type": {
+                  "string": {
+                    "analyzerOverride": undefined,
+                    "enableAsciiFolding": undefined,
+                    "isLongText": false,
+                    "supportsEfficientLeadingWildcard": false,
+                    "supportsExactMatching": true,
+                  },
+                  "type": "string",
+                },
+              },
+            ],
+          },
+        }
+      `);
+    });
     it("Simple importing works", () => {
       // does the same as "import { spt } from '@other/package'"
       const spt: SharedPropertyType = {
