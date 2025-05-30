@@ -13,6 +13,7 @@ export namespace completeTodo {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     is_complete: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'boolean';

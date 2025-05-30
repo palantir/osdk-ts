@@ -45,6 +45,7 @@ describe(modernToLegacyWhereClause, () => {
             displayName: "",
             links: {},
             rid: "",
+            description: undefined,
           },
         } as const satisfies ObjectOrInterfaceDefinition;
 
@@ -97,6 +98,7 @@ describe(modernToLegacyWhereClause, () => {
             displayName: "",
             links: {},
             rid: "",
+            description: undefined,
           },
         } as const satisfies ObjectOrInterfaceDefinition;
 
@@ -153,6 +155,7 @@ describe(modernToLegacyWhereClause, () => {
             displayName: "",
             links: {},
             rid: "",
+            description: undefined,
           },
         } as const satisfies ObjectOrInterfaceDefinition;
 
@@ -206,6 +209,7 @@ describe(modernToLegacyWhereClause, () => {
             displayName: "",
             links: {},
             rid: "",
+            description: undefined,
           },
         } as const satisfies ObjectOrInterfaceDefinition;
 
@@ -236,6 +240,7 @@ describe(modernToLegacyWhereClause, () => {
             displayName: "",
             links: {},
             rid: "",
+            description: undefined,
           },
         } as const satisfies ObjectOrInterfaceDefinition;
         const r = modernToLegacyWhereClause({

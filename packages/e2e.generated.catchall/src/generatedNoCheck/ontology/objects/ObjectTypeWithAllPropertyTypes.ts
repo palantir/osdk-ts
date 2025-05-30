@@ -210,6 +210,7 @@ export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition {
       name: 'objectTypeWithAllPropertyTypes';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -346,6 +347,7 @@ export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'id';
     type: 'object';
+    visibility: undefined;
   };
 }
 

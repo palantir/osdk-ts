@@ -58,6 +58,8 @@ export interface Athlete extends $InterfaceDefinition {
     apiName: 'Athlete';
     description: 'Its an athlete.';
     displayName: 'Athlete interface';
+    implementedBy: undefined;
+    implements: undefined;
     links: {};
     properties: {
       /**

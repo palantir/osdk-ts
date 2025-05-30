@@ -17,7 +17,6 @@
 import type { InterfaceMetadata } from "@osdk/api";
 import type { InterfaceType } from "@osdk/foundry.ontologies";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
-import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 
@@ -39,11 +38,9 @@ export class EnhancedInterfaceType extends EnhancedBase<InterfaceType> {
   }
 
   getCleanedUpDefinition(v2: boolean): InterfaceMetadata {
-    return deleteUndefineds(
-      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-        this.raw,
-        v2,
-      ),
+    return __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+      this.raw,
+      v2,
     );
   }
 }

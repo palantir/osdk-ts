@@ -66,6 +66,7 @@ export interface BuilderDeploymentState extends $ObjectTypeDefinition {
       name: 'builder';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -90,6 +91,7 @@ export interface BuilderDeploymentState extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'skuId';
     type: 'object';
+    visibility: undefined;
   };
 }
 

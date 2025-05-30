@@ -24,7 +24,6 @@ import { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
 import { propertyJsdoc } from "../shared/propertyJsdoc.js";
-import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
 
 /** @internal */
@@ -49,12 +48,10 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     ),
   );
 
-  const definition = deleteUndefineds(
-    wireObjectTypeFullMetadataToSdkObjectMetadata(
-      object.raw,
-      true,
-      consola,
-    ),
+  const definition = wireObjectTypeFullMetadataToSdkObjectMetadata(
+    object.raw,
+    true,
+    consola,
   );
 
   const objectDefIdentifier = object.getDefinitionIdentifier(true);

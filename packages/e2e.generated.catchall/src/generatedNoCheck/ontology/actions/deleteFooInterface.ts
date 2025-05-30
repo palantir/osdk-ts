@@ -13,6 +13,7 @@ export namespace deleteFooInterface {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     deletedInterface: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Interface<FooInterface>;

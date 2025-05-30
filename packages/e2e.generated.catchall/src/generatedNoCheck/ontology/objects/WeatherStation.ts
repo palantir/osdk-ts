@@ -63,6 +63,7 @@ export interface WeatherStation extends $ObjectTypeDefinition {
       name: 'weather';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -84,6 +85,7 @@ export interface WeatherStation extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'stationId';
     type: 'object';
+    visibility: undefined;
   };
 }
 

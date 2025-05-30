@@ -13,6 +13,7 @@ export namespace deleteOsdkTestObject {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     OsdkTestObject: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<OsdkTestObject>;

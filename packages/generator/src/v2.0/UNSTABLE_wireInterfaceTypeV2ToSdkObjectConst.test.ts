@@ -168,6 +168,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           linksType: OsdkObjectLinks$Bar;
           strictProps: Bar.StrictProps;
           apiName: "Bar";
+          description: undefined;
           displayName: "Bar";
           implementedBy: [];
           implements: [];

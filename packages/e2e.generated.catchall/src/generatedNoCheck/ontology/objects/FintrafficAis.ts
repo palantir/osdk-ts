@@ -82,6 +82,7 @@ export interface FintrafficAis extends $ObjectTypeDefinition {
       name: 'traffic';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -122,6 +123,7 @@ export interface FintrafficAis extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'name';
     type: 'object';
+    visibility: undefined;
   };
 }
 
