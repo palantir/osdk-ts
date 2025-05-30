@@ -508,6 +508,28 @@ export interface DerivedPropertyTypeDependOnAnotherDerivedPropertyError {
   propertyTypeId?: _api_PropertyTypeId | null | undefined;
   propertyTypeRid?: _api_PropertyTypeRid | null | undefined;
 }
+/**
+ * Request to discard changes made to the specified entities on a branch.
+ */
+export interface DiscardChangesRequest {
+  actionTypeRids: Array<_api_ActionTypeRid>;
+  expectedOntologyVersion?: _api_OntologyVersion | null | undefined;
+  interfaceTypeRids: Array<_api_InterfaceTypeRid>;
+  linkTypeDatasourceRids: Array<_api_DatasourceRid>;
+  linkTypeRids: Array<_api_LinkTypeRid>;
+  objectTypeDatasourceRids: Array<_api_DatasourceRid>;
+  objectTypeRids: Array<_api_ObjectTypeRid>;
+  ruleSetRids: Array<_api_RuleSetRid>;
+  sharedPropertyTypeRids: Array<_api_SharedPropertyTypeRid>;
+  typeGroupRids: Array<_api_TypeGroupRid>;
+  workflowRids: Array<_workflow_api_WorkflowRid>;
+}
+/**
+ * Return type for the discardChangesOnBranch endpoint.
+ */
+export interface DiscardChangesResponse {
+  ontologyVersion: _api_OntologyVersion;
+}
 export interface EntityIndexingConfiguration {
   objectTypes: Record<
     _api_ObjectTypeRid,
@@ -1266,6 +1288,12 @@ export interface MissingPropertyDataTypeSchemaMigrationError {
   targetType: _api_Type;
 }
 /**
+ * Property security groups are not yet supported with MDOs.
+ */
+export interface MissingPropertySecurityGroupTypeError {
+  objectTypeRid: _api_ObjectTypeRid;
+}
+/**
  * The object implementing the interface does not have all required shared properties.
  */
 export interface MissingSharedPropertyError {
@@ -1295,6 +1323,12 @@ export interface NonDefaultOntologyBranchDetails {
  * changes on the ontology branch.
  */
 export interface NonIndexedBranchConfig {
+}
+/**
+ * Property security groups are not yet supported with MDOs.
+ */
+export interface NonUniquePropertySecurityGroupNamesError {
+  objectTypeRid: _api_ObjectTypeRid;
 }
 /**
  * All property types in each object type must be mapped to a datasource or explicitly labeled as edit-only (if the object type backing datasource supports edit-only).
@@ -1598,6 +1632,14 @@ export interface PrimaryKeyIsDerivedError {
   objectType: _api_ObjectTypeRid;
   primaryKeyPropertyTypesThatAreDerived: Array<_api_PropertyTypeId>;
 }
+/**
+ * A property specified in the datasource definition is not mapped to a property security group or is mapped
+ * to more than one property security group.
+ */
+export interface PrimaryKeyReferencesInMultiplePropertySecurityGroupsError {
+  objectTypeRid: _api_ObjectTypeRid;
+  primaryKeys: Array<_api_PropertyTypeRid>;
+}
 export interface PropertySecurityGroupsConstraintError_unmappedPropertiesInPropertySecurityGroup {
   type: "unmappedPropertiesInPropertySecurityGroup";
   unmappedPropertiesInPropertySecurityGroup:
@@ -1608,6 +1650,22 @@ export interface PropertySecurityGroupsConstraintError_invalidNumberOfPropertyRe
   type: "invalidNumberOfPropertyReferencesInPropertySecurityGroup";
   invalidNumberOfPropertyReferencesInPropertySecurityGroup:
     InvalidNumberOfPropertyReferencesInPropertySecurityGroupError;
+}
+
+export interface PropertySecurityGroupsConstraintError_primaryKeyReferencesInMultiplePropertySecurityGroups {
+  type: "primaryKeyReferencesInMultiplePropertySecurityGroups";
+  primaryKeyReferencesInMultiplePropertySecurityGroups:
+    PrimaryKeyReferencesInMultiplePropertySecurityGroupsError;
+}
+
+export interface PropertySecurityGroupsConstraintError_missingPropertySecurityGroupType {
+  type: "missingPropertySecurityGroupType";
+  missingPropertySecurityGroupType: MissingPropertySecurityGroupTypeError;
+}
+
+export interface PropertySecurityGroupsConstraintError_nonUniquePropertySecurityGroupNames {
+  type: "nonUniquePropertySecurityGroupNames";
+  nonUniquePropertySecurityGroupNames: NonUniquePropertySecurityGroupNamesError;
 }
 
 export interface PropertySecurityGroupsConstraintError_unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError {
@@ -1621,6 +1679,9 @@ export interface PropertySecurityGroupsConstraintError_unexpectedPropertyTypeRef
 export type PropertySecurityGroupsConstraintError =
   | PropertySecurityGroupsConstraintError_unmappedPropertiesInPropertySecurityGroup
   | PropertySecurityGroupsConstraintError_invalidNumberOfPropertyReferencesInPropertySecurityGroup
+  | PropertySecurityGroupsConstraintError_primaryKeyReferencesInMultiplePropertySecurityGroups
+  | PropertySecurityGroupsConstraintError_missingPropertySecurityGroupType
+  | PropertySecurityGroupsConstraintError_nonUniquePropertySecurityGroupNames
   | PropertySecurityGroupsConstraintError_unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError;
 
 /**

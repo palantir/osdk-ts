@@ -971,12 +971,6 @@ export interface ErrorType_interfaceTypeContainsDuplicateProperties {
     InterfaceTypeContainsDuplicateProperties;
 }
 
-export interface ErrorType_interfaceTypeContainsInheritedSharedPropertyTypes {
-  type: "interfaceTypeContainsInheritedSharedPropertyTypes";
-  interfaceTypeContainsInheritedSharedPropertyTypes:
-    InterfaceTypeContainsInheritedSharedPropertyTypes;
-}
-
 export interface ErrorType_interfaceTypeExtendedDoesNotExistOrDeleted {
   type: "interfaceTypeExtendedDoesNotExistOrDeleted";
   interfaceTypeExtendedDoesNotExistOrDeleted:
@@ -3249,6 +3243,27 @@ export interface ErrorType_typeGroupDescriptionTooLong {
   typeGroupDescriptionTooLong: TypeGroupDescriptionTooLong;
 }
 
+export interface ErrorType_propertySecurityGroupNameTooLong {
+  type: "propertySecurityGroupNameTooLong";
+  propertySecurityGroupNameTooLong: PropertySecurityGroupNameTooLong;
+}
+
+export interface ErrorType_primaryKeyReferencesInMultiplePropertySecurityGroups {
+  type: "primaryKeyReferencesInMultiplePropertySecurityGroups";
+  primaryKeyReferencesInMultiplePropertySecurityGroups:
+    PrimaryKeyReferencesInMultiplePropertySecurityGroups;
+}
+
+export interface ErrorType_missingPropertySecurityGroupTypes {
+  type: "missingPropertySecurityGroupTypes";
+  missingPropertySecurityGroupTypes: MissingPropertySecurityGroupTypes;
+}
+
+export interface ErrorType_nonUniquePropertySecurityGroupNames {
+  type: "nonUniquePropertySecurityGroupNames";
+  nonUniquePropertySecurityGroupNames: NonUniquePropertySecurityGroupNames;
+}
+
 export interface ErrorType_objectEditsCannotBeCopiedForObjectTypeOnBranchNeedsRebasing {
   type: "objectEditsCannotBeCopiedForObjectTypeOnBranchNeedsRebasing";
   objectEditsCannotBeCopiedForObjectTypeOnBranchNeedsRebasing:
@@ -3328,7 +3343,6 @@ export type ErrorType =
   | ErrorType_sensorLinkTypeLinkedSensorObjectTypeDoesNotHaveSensorTrait
   | ErrorType_interfaceTypeToDeleteIsReferencedByExistingTypes
   | ErrorType_interfaceTypeContainsDuplicateProperties
-  | ErrorType_interfaceTypeContainsInheritedSharedPropertyTypes
   | ErrorType_interfaceTypeExtendedDoesNotExistOrDeleted
   | ErrorType_interfaceTypeWithActiveStatusRemovingSharedPropertyTypes
   | ErrorType_interfaceTypeInvalidApiName
@@ -3720,6 +3734,10 @@ export type ErrorType =
   | ErrorType_typeGroupCountExceeded
   | ErrorType_typeGroupDisplayNameTooLong
   | ErrorType_typeGroupDescriptionTooLong
+  | ErrorType_propertySecurityGroupNameTooLong
+  | ErrorType_primaryKeyReferencesInMultiplePropertySecurityGroups
+  | ErrorType_missingPropertySecurityGroupTypes
+  | ErrorType_nonUniquePropertySecurityGroupNames
   | ErrorType_objectEditsCannotBeCopiedForObjectTypeOnBranchNeedsRebasing
   | ErrorType_objectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches
   | ErrorType_parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch;
@@ -3745,12 +3763,6 @@ export interface InterfaceLinkTypeDisplayNameTooLong {
  * The interface contains duplicate properties. This may be due to declaring a property as both required and optional.
  */
 export interface InterfaceTypeContainsDuplicateProperties {
-}
-/**
- * The interface contains shared property types that are inherited from an extended interface. Removing the
- * shared property type from the child interface will keep the interface definition but resolve the error.
- */
-export interface InterfaceTypeContainsInheritedSharedPropertyTypes {
 }
 /**
  * An interface contains too many properties. This includes both properties coming from the interface as well as those coming from extended interfaces. It also counts both optional and required properties.
@@ -4349,6 +4361,16 @@ export interface LinkTypeTypeClassValueTooLong {
  * Invalid LinkTypeEntityMetadata encountered. Storage Backend set to ObjectStorageV1 but one or more ObjectStorageV2 ObjectDbs are enabled.
  */
 export interface LinkTypeV1WithOsv2ObjectDbsEnabled {
+}
+/**
+ * Property security groups must have types.
+ */
+export interface MissingPropertySecurityGroupTypes {
+}
+/**
+ * Property security group names must be unique within the object type.
+ */
+export interface NonUniquePropertySecurityGroupNames {
 }
 export interface NotFoundErrorCategory {
 }
@@ -5505,6 +5527,16 @@ export interface OntologyValidationError {
  * Parent object type branch indexing config can only be set for object types present on the parent branch.
  */
 export interface ParentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch {
+}
+/**
+ * Primary keys referenced in multiple property security groups.
+ */
+export interface PrimaryKeyReferencesInMultiplePropertySecurityGroups {
+}
+/**
+ * Property security group name is too long.
+ */
+export interface PropertySecurityGroupNameTooLong {
 }
 /**
  * A RuleSetBinding is referencing missing PropertyTypeIds.

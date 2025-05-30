@@ -27,6 +27,8 @@ import {
   type ActionParameterTypePrimitive,
   type ActionType,
   type ActionTypeDefinition,
+  type ActionValidationDefinition,
+  type ActionValidationRule,
   type InterfaceType,
   type ObjectPropertyType,
   type ObjectType,
@@ -38,6 +40,7 @@ import {
 export function defineCreateInterfaceObjectAction(
   interfaceType: InterfaceType,
   objectType?: ObjectType,
+  submissionCriteria?: ActionValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `create-${
@@ -110,11 +113,19 @@ export function defineCreateInterfaceObjectAction(
         },
       },
     ],
+    ...(submissionCriteria
+      ? {
+        validation: [
+          createValidationRule(submissionCriteria),
+        ],
+      }
+      : {}),
   });
 }
 
 export function defineCreateObjectAction(
   objectType: ObjectType,
+  submissionCriteria?: ActionValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `create-object-${
@@ -147,12 +158,20 @@ export function defineCreateObjectAction(
         structFieldValues: {},
       },
     }],
+    ...(submissionCriteria
+      ? {
+        validation: [
+          createValidationRule(submissionCriteria),
+        ],
+      }
+      : {}),
   });
 }
 
 export function defineModifyInterfaceObjectAction(
   interfaceType: InterfaceType,
   objectType?: ObjectType,
+  submissionCriteria?: ActionValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `modify-${
@@ -221,11 +240,19 @@ export function defineModifyInterfaceObjectAction(
         },
       },
     ],
+    ...(submissionCriteria
+      ? {
+        validation: [
+          createValidationRule(submissionCriteria),
+        ],
+      }
+      : {}),
   });
 }
 
 export function defineModifyObjectAction(
   objectType: ObjectType,
+  submissionCriteria?: ActionValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `modify-object-${
@@ -275,11 +302,19 @@ export function defineModifyObjectAction(
         },
       },
     ],
+    ...(submissionCriteria
+      ? {
+        validation: [
+          createValidationRule(submissionCriteria),
+        ],
+      }
+      : {}),
   });
 }
 
 export function defineDeleteObjectAction(
   objectType: ObjectType,
+  submissionCriteria?: ActionValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `delete-object-${
@@ -309,6 +344,13 @@ export function defineDeleteObjectAction(
         },
       },
     ],
+    ...(submissionCriteria
+      ? {
+        validation: [
+          createValidationRule(submissionCriteria),
+        ],
+      }
+      : {}),
   });
 }
 
@@ -612,4 +654,53 @@ function kebab(s: string): string {
 
 function sanitize(s: string): string {
   return s.includes(".") ? s : namespace + s;
+}
+
+function createValidationRule(
+  actionValidation: ActionValidationDefinition,
+): ActionValidationRule {
+  switch (actionValidation.type) {
+    case "group":
+      return {
+        condition: {
+          type: "comparison",
+          comparison: {
+            operator: "EQUALS",
+            left: {
+              type: "userProperty",
+              userProperty: {
+                userId: {
+                  type: "currentUser",
+                  currentUser: {},
+                },
+                propertyValue: {
+                  type: "groupIds",
+                  groupIds: {},
+                },
+              },
+            },
+            right: {
+              type: "staticValue",
+              staticValue: {
+                type: "stringList",
+                stringList: {
+                  strings: [
+                    actionValidation.name,
+                  ],
+                },
+              },
+            },
+          },
+        },
+        displayMetadata: {
+          failureMessage:
+            "Insufficient permissions. Missing organization membership required to submit action",
+          typeClasses: [],
+        },
+      };
+    default:
+      throw new Error(
+        `Unknown action validation type: ${actionValidation.type}`,
+      );
+  }
 }
