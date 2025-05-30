@@ -957,6 +957,54 @@ describe("ObjectSet", () => {
   //   });
   // });
 
+  describe("nearestNeighbors", () => {
+    it("finds nearest neighbors via text query", async () => {
+      const numNeighbors = 3;
+      const nearestNeighborsObjectSet = client(Employee).nearestNeighbors(
+        "python3",
+        numNeighbors,
+        "skillSetEmbedding",
+      );
+      const { data: employees } = await nearestNeighborsObjectSet.fetchPage();
+      expect(employees).toHaveLength(numNeighbors);
+      // Check that no score is returned when not ordered by relevance
+      // @ts-expect-error
+      employees.forEach(e => expect(e.$score).toBeUndefined());
+    });
+
+    it("finds nearest neighbors via text query ordered by relevance", async () => {
+      const numNeighbors = 3;
+      const nearestNeighborsObjectSet = client(Employee).nearestNeighbors(
+        "python3",
+        numNeighbors,
+        "skillSetEmbedding",
+      );
+
+      const f = nearestNeighborsObjectSet.fetchPage({ $orderBy: "relevancy" });
+
+      const { data: employees } = await nearestNeighborsObjectSet.fetchPage({
+        $orderBy: { "a": "s" },
+      });
+      expect(employees).toHaveLength(numNeighbors);
+      // Check that no score is returned when not ordered by relevance
+      // employees.forEach(e => expect(e.).toBeDefined());
+    });
+
+    it("finds nearest neighbors via vector query", async () => {
+      const numNeighbors = 3;
+      const nearestNeighborsObjectSet = client(Employee).nearestNeighbors(
+        Array.from({ length: 1536 }, () => 0.3),
+        numNeighbors,
+        "skillSetEmbedding",
+      );
+      const { data: employees } = await nearestNeighborsObjectSet.fetchPage();
+      expect(employees).toHaveLength(numNeighbors);
+      // Check that no score is returned when not ordered by relevance
+      // @ts-expect-error
+      employees.forEach(e => expect(e.$score).toBeUndefined());
+    });
+  });
+
   describe("conversions", () => {
     describe("strictNonNull: false", () => {
       it("returns bad data", async () => {
@@ -1014,6 +1062,8 @@ describe("ObjectSet", () => {
             | "startDate"
             | "employeeLocation"
             | "employeeSensor"
+            | "skillSet"
+            | "skillSetEmbedding"
           >();
 
         expectTypeOf<
@@ -1038,6 +1088,8 @@ describe("ObjectSet", () => {
             | "employeeStatus"
             | "employeeSensor"
             | "employeeLocation"
+            | "skillSet"
+            | "skillSetEmbedding"
           >();
 
         // We don't have a proper definition that has

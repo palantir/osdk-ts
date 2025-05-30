@@ -15,7 +15,9 @@
  */
 
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
+import stableStringify from "json-stable-stringify";
 import invariant from "tiny-invariant";
+import { nearestNeighborRequestHandlers } from "../stubs/nearestNeighborRequests.js";
 import type { BaseServerObject } from "./BaseServerObject.js";
 import type { FauxDataStore } from "./FauxDataStore.js";
 import { filterObjects } from "./filterObjects.js";
@@ -173,9 +175,7 @@ export function getObjectsFromSet(
       });
 
     case "nearestNeighbors":
-      throw new Error(
-        `Unhandled objectSet type ${JSON.stringify(objectSet)} in shared.test`,
-      );
+      return nearestNeighborRequestHandlers[stableStringify(objectSet)];
 
     case "reference":
       throw new Error(

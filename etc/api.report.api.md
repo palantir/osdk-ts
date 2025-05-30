@@ -232,8 +232,9 @@ export interface AsyncIterArgs<
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
-	RDP_KEYS extends string = never
-> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+	RDP_KEYS extends string = never,
+	Z extends ObjectSetArgs.OrderByOptions<K> = {}
+> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>, Z> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
@@ -275,7 +276,7 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 }
 
 // @public (undocumented)
-export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
+export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
 
 // @public (undocumented)
 export type CompileTimeMetadata<T extends {
@@ -537,14 +538,16 @@ export interface FetchPageArgs<
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
-	RDP_KEYS extends string = never
-> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS> {
+	RDP_KEYS extends string = never,
+	Z extends ObjectSetArgs.OrderByOptions<K> = {}
+> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, Z> {
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
     $pageSize?: number;
 }
 
+// Warning: (ae-forgotten-export) The symbol "OsdkInstanceWithScore" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractOptions" needs to be exported by the entry point index.d.ts
 //
 // @public
@@ -553,8 +556,9 @@ export type FetchPageResult<
 	L extends PropertyKeys<Q>,
 	R extends boolean,
 	S extends NullabilityAdherence,
-	T extends boolean = false
-> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, L>>;
+	T extends boolean = false,
+	Z extends ObjectSetArgs.OrderByOptions<L> = {}
+> = PageResult<Z extends "relevance" ? (PropertyKeys<Q> extends L ? OsdkInstanceWithScore<Osdk.Instance<Q, ExtractOptions<R, S, T>>> : OsdkInstanceWithScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, L>>) : (PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, L>)>;
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
@@ -836,6 +840,56 @@ export interface ObjectSet<
 > extends ObjectSetCleanedTypes<Q, ExtractRdp<UNUSED_OR_RDP>, MergeObjectSet<Q, ExtractRdp<UNUSED_OR_RDP>>> {}
 
 // @public (undocumented)
+export namespace ObjectSetArgs {
+    	// (undocumented)
+    export interface AsyncIter<
+    		Q extends ObjectOrInterfaceDefinition,
+    		K extends PropertyKeys<Q> = never,
+    		T extends boolean = false,
+    		RDP_KEYS extends string = never,
+    		Z extends OrderByOptions<K> = {}
+    	> extends Select<K, RDP_KEYS>, OrderBy<Z, K> {
+        		// (undocumented)
+        $__UNSTABLE_useOldInterfaceApis?: boolean;
+        		// (undocumented)
+        $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
+        	}
+    	// (undocumented)
+    export interface FetchPage<
+    		Q extends ObjectOrInterfaceDefinition,
+    		K extends PropertyKeys<Q> = never,
+    		T extends boolean = false,
+    		RDP_KEYS extends string = never,
+    		Z extends OrderByOptions<K> = {}
+    	> extends AsyncIter<Q, K, T, RDP_KEYS, Z> {
+        		// (undocumented)
+        $nextPageToken?: string;
+        		// (undocumented)
+        $pageSize?: number;
+        	}
+    	// (undocumented)
+    export interface OrderBy<
+    		Z extends OrderByOptions<L>,
+    		L extends string = never
+    	> {
+        		// (undocumented)
+        $orderBy?: Z;
+        	}
+    	// (undocumented)
+    export type OrderByOptions<L extends string = never> = { [K in L]? : "asc" | "desc" } | "relevance";
+    	// (undocumented)
+    export interface Select<
+    		OBJECT_KEYS extends string = never,
+    		RDP_KEYS extends string = never
+    	> {
+        		// (undocumented)
+        $includeRid?: boolean;
+        		// (undocumented)
+        $select?: readonly (OBJECT_KEYS | RDP_KEYS)[];
+        	}
+}
+
+// @public (undocumented)
 export interface ObjectSetQueryDataType<T_Target extends ObjectTypeDefinition = never> extends BaseQueryDataTypeDefinition<"objectSet"> {
     	// (undocumented)
     __OsdkTargetType?: T_Target;
@@ -1061,6 +1115,8 @@ export interface PropertyValueWireToClient {
     stringTimeseries: TimeSeriesProperty<string>;
     	// (undocumented)
     timestamp: string;
+    	// (undocumented)
+    vector: number[];
 }
 
 // Warning: (ae-forgotten-export) The symbol "PrimitiveDataType" needs to be exported by the entry point index.d.ts
