@@ -151,6 +151,7 @@
     "@osdk-widget.client.unstable-simulatedRelease",
     "@osdk-widget.vite-plugin.unstable-simulatedRelease",
     "chatty-eagles-argue",
-    "spicy-humans-joke"
+    "spicy-humans-joke",
+    "swift-goats-write"
   ]
 }

@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.11.0-beta.3
+
+### Minor Changes
+
+- 3c840d9: Support array type SPTs in legacy OAC importing workflow
+
 ## 0.11.0-beta.2
 
 ### Minor Changes
