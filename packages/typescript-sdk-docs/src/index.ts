@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-export { TYPESCRIPT_OSDK_SNIPPETS } from "./docs.js";
+export {
+  addComputedVariablesToSnippets,
+  TYPESCRIPT_OSDK_SNIPPETS,
+} from "./docs.js";
+export type { SdkSnippetsSpec } from "./docs.js";
