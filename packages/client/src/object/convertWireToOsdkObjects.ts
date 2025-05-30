@@ -25,6 +25,7 @@ import type {
   OntologyObjectV2,
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
+import type { DerivedPropertyRuntimeMetadata } from "../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   type FetchedObjectTypeDefinition,
@@ -55,10 +56,7 @@ export async function convertWireToOsdkObjects(
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
   forceRemoveRid: boolean = false,
-  derivedPropertyTypesByName: Record<
-    string,
-    ObjectMetadata.Property
-  >,
+  derivedPropertyTypesByName: DerivedPropertyRuntimeMetadata,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
@@ -129,10 +127,7 @@ export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: string,
-  derivedPropertyTypeByName: Record<
-    string,
-    ObjectMetadata.Property
-  >,
+  derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -145,10 +140,7 @@ export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: undefined,
-  derivedPropertyTypeByName: Record<
-    string,
-    ObjectMetadata.Property
-  >,
+  derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -161,10 +153,7 @@ export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
-  derivedPropertyTypeByName: Record<
-    string,
-    ObjectMetadata.Property
-  >,
+  derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -180,10 +169,7 @@ export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
-  derivedPropertyTypeByName: Record<
-    string,
-    ObjectMetadata.Property
-  >,
+  derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
   forceRemoveRid: boolean = false,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,

@@ -915,6 +915,15 @@ describe("ObjectSet", () => {
       `,
       );
     });
+    it("correctly deserializes count", async () => {
+      const objectWithRdp = await client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("$count"),
+      }).fetchOne(stubData.employee1.employeeId);
+
+      expectTypeOf(objectWithRdp.derivedPropertyName).toEqualTypeOf<number>();
+      expect(objectWithRdp.derivedPropertyName).toEqual(1);
+    });
   });
 
   // Can't run these tests because we can't load by primary key!
