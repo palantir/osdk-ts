@@ -40,7 +40,7 @@ import {
 export function defineCreateInterfaceObjectAction(
   interfaceType: InterfaceType,
   objectType?: ObjectType,
-  submissionCriteria?: ActionValidationDefinition,
+  validation?: ActionValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `create-${
@@ -113,10 +113,10 @@ export function defineCreateInterfaceObjectAction(
         },
       },
     ],
-    ...(submissionCriteria
+    ...(validation
       ? {
         validation: [
-          createValidationRule(submissionCriteria),
+          createValidationRule(validation),
         ],
       }
       : {}),
@@ -125,7 +125,7 @@ export function defineCreateInterfaceObjectAction(
 
 export function defineCreateObjectAction(
   objectType: ObjectType,
-  submissionCriteria?: ActionValidationDefinition,
+  validation?: ActionValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `create-object-${
@@ -158,10 +158,10 @@ export function defineCreateObjectAction(
         structFieldValues: {},
       },
     }],
-    ...(submissionCriteria
+    ...(validation
       ? {
         validation: [
-          createValidationRule(submissionCriteria),
+          createValidationRule(validation),
         ],
       }
       : {}),
@@ -171,7 +171,7 @@ export function defineCreateObjectAction(
 export function defineModifyInterfaceObjectAction(
   interfaceType: InterfaceType,
   objectType?: ObjectType,
-  submissionCriteria?: ActionValidationDefinition,
+  validation?: ActionValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `modify-${
@@ -240,10 +240,10 @@ export function defineModifyInterfaceObjectAction(
         },
       },
     ],
-    ...(submissionCriteria
+    ...(validation
       ? {
         validation: [
-          createValidationRule(submissionCriteria),
+          createValidationRule(validation),
         ],
       }
       : {}),
@@ -252,7 +252,7 @@ export function defineModifyInterfaceObjectAction(
 
 export function defineModifyObjectAction(
   objectType: ObjectType,
-  submissionCriteria?: ActionValidationDefinition,
+  validation?: ActionValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `modify-object-${
@@ -302,10 +302,10 @@ export function defineModifyObjectAction(
         },
       },
     ],
-    ...(submissionCriteria
+    ...(validation
       ? {
         validation: [
-          createValidationRule(submissionCriteria),
+          createValidationRule(validation),
         ],
       }
       : {}),
@@ -314,7 +314,7 @@ export function defineModifyObjectAction(
 
 export function defineDeleteObjectAction(
   objectType: ObjectType,
-  submissionCriteria?: ActionValidationDefinition,
+  validation?: ActionValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `delete-object-${
@@ -344,10 +344,10 @@ export function defineDeleteObjectAction(
         },
       },
     ],
-    ...(submissionCriteria
+    ...(validation
       ? {
         validation: [
-          createValidationRule(submissionCriteria),
+          createValidationRule(validation),
         ],
       }
       : {}),
@@ -659,6 +659,9 @@ function sanitize(s: string): string {
 function createValidationRule(
   actionValidation: ActionValidationDefinition,
 ): ActionValidationRule {
+  if (!("type" in actionValidation)) {
+    return actionValidation;
+  }
   switch (actionValidation.type) {
     case "group":
       return {

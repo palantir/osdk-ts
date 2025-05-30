@@ -198,10 +198,12 @@ export interface ActionTypeInner {
 
 export type ActionValidationRule = OntologyIrValidationRule;
 
-export type ActionValidationType = "group";
+export type ActionValidationDefinition =
+  | GroupValidationRule
+  | OntologyIrValidationRule;
 
-export type ActionValidationDefinition = {
-  type: ActionValidationType;
+export type GroupValidationRule = {
+  type: "group";
   name: string;
 };
 
