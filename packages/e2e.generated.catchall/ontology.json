@@ -484,15 +484,24 @@
         "primaryKey": "airportCountryName",
         "properties": {
           "airportCountryName": {
-            "displayName": "airportCountryName",
+            "displayName": "Airport Country Name",
             "dataType": {
               "type": "string"
+            },
+            "status": {
+              "type": "deprecated",
+              "message": "This property is deprecated.",
+              "deadline": "2024-12-31",
+              "replacedBy": "newProperty"
             }
           },
           "airportCountryIsoCode": {
             "displayName": "airportCountryIsoCode",
             "dataType": {
               "type": "string"
+            },
+            "status": {
+              "type": "experimental"
             }
           }
         },

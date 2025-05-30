@@ -26,11 +26,13 @@ export namespace TestGeoAction {
     readonly geoPk: $PropType['string'];
     /**
      *   display name: 'Geoshape',
+     *
      *   description: geoshape
      */
     readonly geoshapeProp: $PropType['geoshape'] | undefined;
     /**
      *   display name: 'Geotitle',
+     *
      *   description: geoTitle
      */
     readonly geoTitle: $PropType['string'] | undefined;
@@ -81,11 +83,13 @@ export interface TestGeoAction extends $ObjectTypeDefinition {
       geoPk: $PropertyDef<'string', 'non-nullable', 'single'>;
       /**
        *   display name: 'Geoshape',
+       *
        *   description: geoshape
        */
       geoshapeProp: $PropertyDef<'geoshape', 'nullable', 'single'>;
       /**
        *   display name: 'Geotitle',
+       *
        *   description: geoTitle
        */
       geoTitle: $PropertyDef<'string', 'nullable', 'single'>;
