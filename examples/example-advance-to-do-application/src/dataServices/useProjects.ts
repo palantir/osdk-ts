@@ -1,4 +1,4 @@
-import { createOsdkTodoProject, deleteOsdkTodoProject, osdkTodoProject } from "@tutorial-advance-to-do-application/sdk";
+import { osdkTodoProject } from "@tutorial-advance-to-do-application/sdk";
 import { useCallback } from "react";
 import useSWR from "swr";
 import { useOsdkClient } from "@osdk/react";
@@ -41,49 +41,17 @@ function useProjects() {
       }));
       return projects;
     }, [client]);
-  const { data, isLoading, isValidating, error, mutate } = useSWR<IProject[]>(
+  const { data, isLoading, isValidating, error } = useSWR<IProject[]>(
     "projects",
     fetcher,
     { revalidateOnFocus: false }
   );
-
-  const createProject: (name: string) => Promise<IProject["$primaryKey"]> =
-    useCallback(
-      async (name) => {
-        const result = await client(createOsdkTodoProject).applyAction({
-                name,
-            },
-            {
-                $returnEdits: true,
-            }
-        )
-        await mutate();
-        if (result.type === "edits") {
-            return result.addedObjects[0].primaryKey as string;
-        }
-        throw new Error("Failed to create project");
-      },
-      [mutate, client],
-    );
-
-  const deleteProject: (project: IProject) => Promise<void> = useCallback(
-    async (project) => {
-        await client(deleteOsdkTodoProject).applyAction({
-                osdkTodoProject: project.$primaryKey
-            }
-        )
-        await mutate();
-      },
-      [mutate, client],
-    );
 
   return {
     projects: data ?? [],
     isLoading,
     isValidating,
     isError: error,
-    createProject,
-    deleteProject,
   };
 }
 

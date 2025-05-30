@@ -23,4 +23,3 @@ dist-ssr
 *.sln
 *.sw?
 .env.*
-sync-advance-todo-with-hatch.sh

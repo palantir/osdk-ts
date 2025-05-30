@@ -20,6 +20,7 @@ import { ExitProcessError, getYargsBase } from "@osdk/cli.common";
 import { consola } from "consola";
 import type { Argv } from "yargs";
 import auth from "./commands/auth/index.js";
+import createOsdkTemplate from "./commands/createOsdkTemplate/index.js";
 import site from "./commands/site/index.js";
 import widgetSet from "./commands/widgetset/index.js";
 
@@ -45,6 +46,7 @@ export async function cli(args: string[] = process.argv): Promise<
             .command(typescript)
             .command(auth)
             .command(widgetSet)
+            .command(createOsdkTemplate)
             .demandCommand();
         },
         handler: (_args) => {},
