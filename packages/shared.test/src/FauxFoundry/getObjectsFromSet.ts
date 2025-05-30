@@ -251,6 +251,10 @@ function getDerivedPropertySelection(
         new Set(objs.map(o => o[operation.selectedPropertyApiName])),
       );
     }
+    case "count": {
+      const objs = getObjectsFromSet(ds, objectSet, obj);
+      return objs.length.toString();
+    }
   }
 }
 

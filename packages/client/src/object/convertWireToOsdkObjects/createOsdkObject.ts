@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectMetadata } from "@osdk/api";
 import type { Attachment, ReferenceValue } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
 import { MediaReferencePropertyImpl } from "../../createMediaReferenceProperty.js";
 import { TimeSeriesPropertyImpl } from "../../createTimeseriesProperty.js";
+import type { DerivedPropertyRuntimeMetadata } from "../../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { hydrateAttachmentFromRidInternal } from "../../public-utils/hydrateAttachmentFromRid.js";
@@ -110,7 +110,7 @@ export function createOsdkObject(
   client: MinimalClient,
   objectDef: FetchedObjectTypeDefinition,
   simpleOsdkProperties: SimpleOsdkProperties,
-  derivedPropertyTypeByName: Record<string, ObjectMetadata.Property> = {},
+  derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata = {},
 ): ObjectHolder {
   // updates the object's "hidden class/map".
   const rawObj = simpleOsdkProperties as ObjectHolder;
@@ -142,11 +142,31 @@ export function createOsdkObject(
       );
     } else if (
       propKey in derivedPropertyTypeByName
-      && typeof (derivedPropertyTypeByName[propKey].type) === "string"
-      && specialPropertyTypes.has(derivedPropertyTypeByName[propKey].type)
+      && derivedPropertyTypeByName[propKey].definition.type === "selection"
+      && derivedPropertyTypeByName[propKey].definition.operation.type
+        === "count"
+    ) {
+      const num = Number(rawObj[propKey]);
+      invariant(
+        Number.isSafeInteger(num),
+        "Count aggregation for derived property " + propKey
+          + " returned a value larger than safe integer.",
+      );
+      rawObj[propKey] = num;
+    } // Some properties need to be deserialized specially when constructed with RDP
+    else if (
+      propKey in derivedPropertyTypeByName
+      && derivedPropertyTypeByName[propKey].propertyType != null
+      && typeof (derivedPropertyTypeByName[propKey].propertyType.type)
+        === "string"
+      && specialPropertyTypes.has(
+        derivedPropertyTypeByName[propKey].propertyType.type,
+      )
     ) {
       const rawValue = rawObj[propKey as any];
-      if (derivedPropertyTypeByName[propKey].type === "attachment") {
+      if (
+        derivedPropertyTypeByName[propKey].propertyType?.type === "attachment"
+      ) {
         if (Array.isArray(rawValue)) {
           rawObj[propKey] = rawValue.map(a =>
             hydrateAttachmentFromRidInternal(client, a.rid)

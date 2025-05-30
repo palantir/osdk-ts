@@ -87,7 +87,23 @@ describe("extractRdpDefinition", () => {
       `
       {
         "myRdp": {
-          "type": "attachment",
+          "definition": {
+            "objectSet": {
+              "link": "testLink2",
+              "objectSet": {
+                "type": "methodInput",
+              },
+              "type": "searchAround",
+            },
+            "operation": {
+              "selectedPropertyApiName": "testProperty",
+              "type": "get",
+            },
+            "type": "selection",
+          },
+          "propertyType": {
+            "type": "attachment",
+          },
         },
       }
     `,
@@ -136,13 +152,63 @@ describe("extractRdpDefinition", () => {
     expect(result).toMatchInlineSnapshot(`
       {
         "myRdp": {
-          "type": "attachment",
+          "definition": {
+            "objectSet": {
+              "link": "testLink2",
+              "objectSet": {
+                "type": "methodInput",
+              },
+              "type": "searchAround",
+            },
+            "operation": {
+              "selectedPropertyApiName": "testProperty",
+              "type": "get",
+            },
+            "type": "selection",
+          },
+          "propertyType": {
+            "type": "attachment",
+          },
         },
         "rdp1": {
-          "type": "attachment",
+          "definition": {
+            "objectSet": {
+              "link": "testLink2",
+              "objectSet": {
+                "type": "methodInput",
+              },
+              "type": "searchAround",
+            },
+            "operation": {
+              "limit": 100,
+              "selectedPropertyApiName": "testProperty",
+              "type": "collectList",
+            },
+            "type": "selection",
+          },
+          "propertyType": {
+            "type": "attachment",
+          },
         },
         "rdp2": {
-          "type": "attachment",
+          "definition": {
+            "objectSet": {
+              "link": "testLink2",
+              "objectSet": {
+                "type": "methodInput",
+              },
+              "type": "searchAround",
+            },
+            "operation": {
+              "limit": 100,
+              "selectedPropertyApiName": "testProperty",
+              "type": "collectSet",
+            },
+            "type": "selection",
+          },
+          "propertyType": {
+            "type": "attachment",
+          },
         },
       }
     `);
@@ -190,7 +256,23 @@ describe("extractRdpDefinition", () => {
       `
       {
         "myRdp": {
-          "type": "attachment",
+          "definition": {
+            "objectSet": {
+              "link": "testLink2",
+              "objectSet": {
+                "type": "methodInput",
+              },
+              "type": "searchAround",
+            },
+            "operation": {
+              "selectedPropertyApiName": "testProperty",
+              "type": "get",
+            },
+            "type": "selection",
+          },
+          "propertyType": {
+            "type": "attachment",
+          },
         },
       }
     `,
