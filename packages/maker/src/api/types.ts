@@ -298,6 +298,7 @@ export interface ObjectPropertyTypeInner extends
   visibility: Visibility;
   nullability?: Nullability;
   status?: ObjectTypeStatus;
+  editOnly?: boolean;
 }
 
 export type ObjectPropertyType = RequiredFields<
