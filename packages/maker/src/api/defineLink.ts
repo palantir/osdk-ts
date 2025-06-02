@@ -19,14 +19,8 @@ import { updateOntology } from "./defineOntology.js";
 import type {
   LinkType,
   LinkTypeDefinition,
-  SharedPropertyType,
 } from "./types.js";
 import { OntologyEntityTypeEnum } from "./types.js";
-
-const defaultTypeClasses: SharedPropertyType["typeClasses"] = [{
-  kind: "render_hint",
-  name: "SELECTABLE",
-}, { kind: "render_hint", name: "SORTABLE" }];
 
 export function defineLink(
   linkDefinition: LinkTypeDefinition,
