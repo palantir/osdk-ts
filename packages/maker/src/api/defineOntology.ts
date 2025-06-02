@@ -573,7 +573,9 @@ function convertDatasourceDefinition(
           } else {
             return [
               prop.apiName,
-              { type: "column", column: prop.apiName },
+              prop.editOnly
+                ? { type: "editOnly", editOnly: {} }
+                : { type: "column", column: prop.apiName },
             ];
           }
         }),
