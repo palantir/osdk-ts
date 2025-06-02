@@ -24,9 +24,10 @@ import {
 import { isMediaReference } from "../object/mediaUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isInterfaceActionParam } from "./interfaceUtils.js";
-import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
-import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
-import { isPoint } from "./isPoint.js";
+import { isObjectSpecifiersObject } from "./type-verifiers/isObjectSpecifiersObject.js";
+import { isObjectTypeDefinition } from "./type-verifiers/isObjectTypeDefinition.js";
+import { isOntologyObjectV2 } from "./type-verifiers/isOntologyObjectV2.js";
+import { isPoint } from "./type-verifiers/isPoint.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
@@ -118,6 +119,10 @@ export async function toDataValue(
       objectTypeApiName: value.$objectType,
       primaryKeyValue: value.$primaryKey,
     };
+  }
+
+  if (isObjectTypeDefinition(value)) {
+    return value.apiName;
   }
 
   // TODO (during queries implementation)
