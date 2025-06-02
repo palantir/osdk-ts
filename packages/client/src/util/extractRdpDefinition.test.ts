@@ -101,7 +101,7 @@ describe("extractRdpDefinition", () => {
             },
             "type": "selection",
           },
-          "propertyType": {
+          "selectedOrCollectedPropertyType": {
             "type": "attachment",
           },
         },
@@ -166,7 +166,7 @@ describe("extractRdpDefinition", () => {
             },
             "type": "selection",
           },
-          "propertyType": {
+          "selectedOrCollectedPropertyType": {
             "type": "attachment",
           },
         },
@@ -186,7 +186,7 @@ describe("extractRdpDefinition", () => {
             },
             "type": "selection",
           },
-          "propertyType": {
+          "selectedOrCollectedPropertyType": {
             "type": "attachment",
           },
         },
@@ -206,7 +206,7 @@ describe("extractRdpDefinition", () => {
             },
             "type": "selection",
           },
-          "propertyType": {
+          "selectedOrCollectedPropertyType": {
             "type": "attachment",
           },
         },
@@ -270,7 +270,7 @@ describe("extractRdpDefinition", () => {
             },
             "type": "selection",
           },
-          "propertyType": {
+          "selectedOrCollectedPropertyType": {
             "type": "attachment",
           },
         },

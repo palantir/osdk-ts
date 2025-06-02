@@ -140,53 +140,73 @@ export function createOsdkObject(
         rawObj,
         propKey,
       );
-    } else if (
-      propKey in derivedPropertyTypeByName
-      && derivedPropertyTypeByName[propKey].definition.type === "selection"
-      && derivedPropertyTypeByName[propKey].definition.operation.type
-        === "count"
-    ) {
-      const num = Number(rawObj[propKey]);
-      invariant(
-        Number.isSafeInteger(num),
-        "Count aggregation for derived property " + propKey
-          + " returned a value larger than safe integer.",
+    } else if (propKey in derivedPropertyTypeByName) {
+      rawObj[propKey] = modifyRdpProperties(
+        client,
+        derivedPropertyTypeByName,
+        rawObj[propKey],
+        propKey,
       );
-      rawObj[propKey] = num;
-    } // Some properties need to be deserialized specially when constructed with RDP
-    else if (
-      propKey in derivedPropertyTypeByName
-      && derivedPropertyTypeByName[propKey].propertyType != null
-      && typeof (derivedPropertyTypeByName[propKey].propertyType.type)
-        === "string"
-      && specialPropertyTypes.has(
-        derivedPropertyTypeByName[propKey].propertyType.type,
-      )
-    ) {
-      const rawValue = rawObj[propKey as any];
-      if (
-        derivedPropertyTypeByName[propKey].propertyType?.type === "attachment"
-      ) {
-        if (Array.isArray(rawValue)) {
-          rawObj[propKey] = rawValue.map(a =>
-            hydrateAttachmentFromRidInternal(client, a.rid)
-          );
-        } else {
-          rawObj[propKey] = hydrateAttachmentFromRidInternal(
-            client,
-            (rawValue as Attachment).rid,
-          );
-        }
-      } else {
-        invariant(
-          false,
-          "Derived property aggregations for Timeseries and Media are not supported",
-        );
-      }
     }
   }
 
   return Object.freeze(rawObj);
+}
+
+function modifyRdpProperties(
+  client: MinimalClient,
+  derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
+  rawValue: any,
+  propKey: string,
+): any {
+  if (
+    derivedPropertyTypeByName[propKey].definition.type === "selection"
+    && derivedPropertyTypeByName[propKey].definition.operation.type
+      === "count"
+  ) {
+    const num = Number(rawValue);
+    invariant(
+      Number.isSafeInteger(num),
+      "Count aggregation for derived property " + propKey
+        + " returned a value larger than safe integer.",
+    );
+    return num;
+  } // Selected or collected properties need to be deserialized specially when constructed with RDP
+  else if (
+    derivedPropertyTypeByName[propKey].selectedOrCollectedPropertyType
+      != null
+    && typeof (derivedPropertyTypeByName[propKey]
+        .selectedOrCollectedPropertyType.type)
+      === "string"
+    && specialPropertyTypes.has(
+      derivedPropertyTypeByName[propKey].selectedOrCollectedPropertyType
+        .type,
+    )
+  ) {
+    switch (
+      derivedPropertyTypeByName[propKey].selectedOrCollectedPropertyType
+        ?.type
+    ) {
+      case "attachment":
+        if (Array.isArray(rawValue)) {
+          return rawValue.map(a =>
+            hydrateAttachmentFromRidInternal(client, a.rid)
+          );
+        } else {
+          return hydrateAttachmentFromRidInternal(
+            client,
+            (rawValue as Attachment).rid,
+          );
+        }
+        break;
+      default:
+        invariant(
+          false,
+          "Derived property aggregations for Timeseries and Media are not supported",
+        );
+    }
+  }
+  return rawValue;
 }
 
 function createSpecialProperty(

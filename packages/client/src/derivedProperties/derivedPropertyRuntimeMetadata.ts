@@ -19,5 +19,5 @@ import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 
 export type DerivedPropertyRuntimeMetadata = Record<string, {
   definition: DerivedPropertyDefinition;
-  propertyType: ObjectMetadata.Property | undefined;
+  selectedOrCollectedPropertyType: ObjectMetadata.Property | undefined;
 }>;

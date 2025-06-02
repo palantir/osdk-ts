@@ -84,7 +84,7 @@ async function extractRdpDefinitionInternal(
       ) {
         if (definition.type !== "selection") {
           definitions[name] = {
-            propertyType: undefined,
+            selectedOrCollectedPropertyType: undefined,
             definition,
           };
           continue;
@@ -112,7 +112,7 @@ async function extractRdpDefinitionInternal(
             );
 
             definitions[name] = {
-              propertyType:
+              selectedOrCollectedPropertyType:
                 objDef.properties[definition.operation.selectedPropertyApiName],
               definition,
             };
@@ -120,7 +120,7 @@ async function extractRdpDefinitionInternal(
 
           default:
             definitions[name] = {
-              propertyType: undefined,
+              selectedOrCollectedPropertyType: undefined,
               definition,
             };
         }
