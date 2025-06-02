@@ -8,7 +8,7 @@ import { InlineSpinner } from "./InlineSpinner.js";
 import { SmallTextDiv, TodoView } from "./TodoView.js";
 
 interface TodoListProps {
-  where: WhereClause<Todo>;
+  where: WhereClause<$Interfaces.TodoLike>;
   heading?: string;
 }
 
