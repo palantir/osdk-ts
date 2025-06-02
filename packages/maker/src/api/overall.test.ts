@@ -3155,7 +3155,16 @@ describe("Ontology Defining", () => {
                         },
                         "type": "string",
                       },
-                      "typeClasses": [],
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
                       "valueType": undefined,
                     },
                   },
