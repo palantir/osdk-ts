@@ -16,10 +16,7 @@
 
 import invariant from "tiny-invariant";
 import { updateOntology } from "./defineOntology.js";
-import type {
-  LinkType,
-  LinkTypeDefinition,
-} from "./types.js";
+import type { LinkType, LinkTypeDefinition } from "./types.js";
 import { OntologyEntityTypeEnum } from "./types.js";
 
 export function defineLink(
