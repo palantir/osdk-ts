@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.11.0-beta.4
+
+### Minor Changes
+
+- 474f4ca: Group permissions for OAC actions
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.3
+
 ## 0.11.0-beta.3
 
 ### Minor Changes
