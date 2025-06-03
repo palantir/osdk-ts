@@ -1,5 +1,16 @@
 # @osdk/client
 
+## 2.2.0-rc.25
+
+### Patch Changes
+
+- 397f906: Ensure count operations return numbers
+- 5467a0f: Fix orderBy argument on object load methods
+- Updated dependencies [5467a0f]
+  - @osdk/api@2.2.0-rc.25
+  - @osdk/generator-converters@2.2.0-rc.25
+  - @osdk/client.unstable@2.2.0-rc.25
+
 ## 2.2.0-rc.24
 
 ### Patch Changes

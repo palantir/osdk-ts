@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.2.0-rc.25
+
+### Patch Changes
+
+- 5467a0f: Fix orderBy argument on object load methods
+
 ## 2.2.0-rc.24
 
 ### Patch Changes
