@@ -62,7 +62,7 @@ export interface SingleLinkAccessor<
     options?: A,
   ) => Promise<
     A extends FetchPageArgs<T, infer L, infer R, any, infer S>
-      ? Osdk.Instance<T, ExtractOptions<R, S>, L>
+      ? Osdk.Instance<T, ExtractOptions<R, S>, L & PropertyKeys<T>>
       : Osdk.Instance<T>
   >;
 
