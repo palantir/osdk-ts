@@ -23,11 +23,7 @@ interface OsdkMakerRegistry {
 
 const GLOBAL_REGISTRY_KEY = Symbol.for("@osdk/maker:registry");
 
-if (!(globalThis as any)[GLOBAL_REGISTRY_KEY]) {
-  resetGlobals();
-}
-
-export function getRegistry(): OsdkMakerRegistry {
+function getRegistry(): OsdkMakerRegistry {
   return (globalThis as any)[GLOBAL_REGISTRY_KEY];
 }
 
