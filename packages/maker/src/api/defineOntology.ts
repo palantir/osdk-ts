@@ -70,14 +70,6 @@ import type {
 } from "./types.js";
 import { OntologyEntityTypeEnum } from "./types.js";
 
-// // type -> apiName -> entity
-// /** @internal */
-// export let ontologyDefinition: OntologyDefinition;
-
-// // type -> apiName -> entity
-// /** @internal */
-// export let importedTypes: OntologyDefinition;
-
 /** @internal */
 export let namespace: string;
 
@@ -85,27 +77,6 @@ type OntologyAndValueTypeIrs = {
   ontology: OntologyIr;
   valueType: OntologyIrValueTypeBlockData;
 };
-
-export function updateOntology<
-  T extends OntologyEntityType,
->(
-  entity: T,
-): void {
-  if (entity.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {
-    ontologyDefinition()[entity.__type][entity.apiName] = entity;
-    return;
-  }
-  // value types are a special case
-  if (
-    ontologyDefinition()[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
-      === undefined
-  ) {
-    ontologyDefinition()[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName] =
-      [];
-  }
-  ontologyDefinition()[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
-    .push(entity);
-}
 
 export async function defineOntology(
   ns: string,
@@ -1281,6 +1252,27 @@ function convertNullabilityToDataConstraint(
     nullability: undefined,
     nullabilityV2: prop.nullability,
   };
+}
+
+export function updateOntology<
+  T extends OntologyEntityType,
+>(
+  entity: T,
+): void {
+  if (entity.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {
+    ontologyDefinition()[entity.__type][entity.apiName] = entity;
+    return;
+  }
+  // value types are a special case
+  if (
+    ontologyDefinition()[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
+      === undefined
+  ) {
+    ontologyDefinition()[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName] =
+      [];
+  }
+  ontologyDefinition()[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
+    .push(entity);
 }
 
 /**
