@@ -66,6 +66,7 @@ import type {
   OntologyEntityType,
   PropertyTypeType,
   SharedPropertyType,
+  TypeClass,
 } from "./types.js";
 import { OntologyEntityTypeEnum } from "./types.js";
 
@@ -560,7 +561,9 @@ function convertDatasourceDefinition(
           } else {
             return [
               prop.apiName,
-              { type: "column", column: prop.apiName },
+              prop.editOnly
+                ? { type: "editOnly", editOnly: {} }
+                : { type: "column", column: prop.apiName },
             ];
           }
         }),
@@ -575,7 +578,37 @@ function convertDatasourceDefinition(
   }
 }
 
+export const defaultTypeClasses: TypeClass[] = [{
+  kind: "render_hint",
+  name: "SELECTABLE",
+}, { kind: "render_hint", name: "SORTABLE" }];
+
+// ExperimentalTimeDependentV1 and Attachment types should be included here once supported
+export function shouldNotHaveRenderHints(type: PropertyTypeType): boolean {
+  return ["struct", "mediaReference", "geotimeSeries"].includes(
+    getPropertyTypeName(type),
+  );
+}
+
+export function hasRenderHints(typeClasses: TypeClass[] | undefined): boolean {
+  return (typeClasses ?? []).some(tc =>
+    tc.kind.toLowerCase() === "render_hint"
+  );
+}
+
+export function getPropertyTypeName(type: PropertyTypeType): string {
+  return typeof type === "object" ? type.type : type;
+}
+
 function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
+  const apiName = namespace + property.apiName;
+  invariant(
+    !shouldNotHaveRenderHints(property.type)
+      || !hasRenderHints(property.typeClasses),
+    `Property type ${apiName} of type '${
+      getPropertyTypeName(property.type)
+    }' should not have render hints`,
+  );
   const output: OntologyIrPropertyType = {
     apiName: property.apiName,
     sharedPropertyTypeApiName: property.sharedPropertyType?.apiName,
@@ -588,7 +621,8 @@ function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
     ruleSetBinding: undefined,
     baseFormatter: property.baseFormatter,
     type: convertType(property.type),
-    typeClasses: property.typeClasses ?? [],
+    typeClasses: property.typeClasses
+      ?? (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
     status: convertObjectStatus(property.status),
     inlineAction: undefined,
     dataConstraints: convertNullabilityToDataConstraint(property),

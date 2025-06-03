@@ -298,6 +298,7 @@ export interface ObjectPropertyTypeInner extends
   visibility: Visibility;
   nullability?: Nullability;
   status?: ObjectTypeStatus;
+  editOnly?: boolean;
 }
 
 export type ObjectPropertyType = RequiredFields<
@@ -344,7 +345,7 @@ export interface Nullability {
   noNulls: boolean;
 }
 
-type TypeClass = { kind: string; name: string };
+export type TypeClass = { kind: string; name: string };
 
 export interface SharedPropertyType extends OntologyEntityBase, PropertyType {
   apiName: string;

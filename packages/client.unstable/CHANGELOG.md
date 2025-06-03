@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.3.0-beta.3
+
+### Minor Changes
+
+- 474f4ca: Group permissions for OAC actions
+
 ## 2.3.0-beta.2
 
 ## 2.2.0-beta.23

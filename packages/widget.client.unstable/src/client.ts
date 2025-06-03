@@ -70,8 +70,8 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
 export function createFoundryWidgetClient<
   C extends WidgetConfig<C["parameters"]>,
 >(): FoundryWidgetClient<C> {
-  invariant(window.top, "[FoundryWidgetClient] Must be run in an iframe");
-  const parentWindow = window.top;
+  invariant(window.parent, "[FoundryWidgetClient] Must be run in an iframe");
+  const parentWindow = window.parent;
   const metaTag = document.querySelector(
     `meta[name="${META_TAG_HOST_ORIGIN}"]`,
   );
