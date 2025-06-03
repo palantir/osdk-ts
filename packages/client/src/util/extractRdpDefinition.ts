@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { ObjectMetadata } from "@osdk/api";
 import type { ObjectSet } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
+import type { DerivedPropertyRuntimeMetadata } from "../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function extractRdpDefinition(
   clientCtx: MinimalClient,
   objectSet: ObjectSet,
 ): Promise<
-  Record<string, ObjectMetadata.Property>
+  DerivedPropertyRuntimeMetadata
 > {
   return (await extractRdpDefinitionInternal(
     clientCtx,
@@ -41,7 +41,7 @@ async function extractRdpDefinitionInternal(
   methodInputObjectType: string | undefined,
 ): Promise<
   {
-    definitions: Record<string, ObjectMetadata.Property>;
+    definitions: DerivedPropertyRuntimeMetadata;
     childObjectType?: string;
   }
 > {
@@ -83,6 +83,10 @@ async function extractRdpDefinitionInternal(
         const [name, definition] of Object.entries(objectSet.derivedProperties)
       ) {
         if (definition.type !== "selection") {
+          definitions[name] = {
+            selectedOrCollectedPropertyType: undefined,
+            definition,
+          };
           continue;
         }
 
@@ -107,11 +111,18 @@ async function extractRdpDefinitionInternal(
               operationLevelObjectType,
             );
 
-            definitions[name] =
-              objDef.properties[definition.operation.selectedPropertyApiName];
+            definitions[name] = {
+              selectedOrCollectedPropertyType:
+                objDef.properties[definition.operation.selectedPropertyApiName],
+              definition,
+            };
+            break;
 
           default:
-            continue;
+            definitions[name] = {
+              selectedOrCollectedPropertyType: undefined,
+              definition,
+            };
         }
       }
       return { definitions, childObjectType };
