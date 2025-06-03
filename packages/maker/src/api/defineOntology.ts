@@ -45,6 +45,7 @@ import type {
   ParameterId,
   ParameterRenderHint,
   ParameterRequiredConfiguration,
+  PropertyTypeMappingInfo,
   RetentionPolicy,
   SectionId,
 } from "@osdk/client.unstable";
@@ -550,45 +551,58 @@ function convertDatasourceDefinition(
           propertySecurityGroups: undefined,
         },
       };
+    case "restrictedView":
+      return {
+        type: "restrictedViewV2",
+        restrictedViewV2: {
+          restrictedViewRid: objectType.apiName,
+          propertyMapping: buildPropertyMapping(properties),
+        },
+      };
     case "dataset":
     default:
-      const datasetPropertyMapping = Object.fromEntries(
-        properties.map((prop) => {
-          prop.type;
-          if (typeof prop.type === "object" && prop.type?.type === "struct") {
-            const structMapping = {
-              type: "struct",
-              struct: {
-                column: prop.apiName,
-                mapping: Object.fromEntries(
-                  Object.entries(prop.type.structDefinition).map((
-                    [fieldName, _fieldType],
-                  ) => [
-                    fieldName,
-                    { apiName: fieldName, mappings: {} },
-                  ]),
-                ),
-              },
-            };
-            return [prop.apiName, structMapping];
-          } else {
-            return [
-              prop.apiName,
-              prop.editOnly
-                ? { type: "editOnly", editOnly: {} }
-                : { type: "column", column: prop.apiName },
-            ];
-          }
-        }),
-      );
       return {
         type: "datasetV2",
         datasetV2: {
           datasetRid: objectType.apiName,
-          propertyMapping: datasetPropertyMapping,
+          propertyMapping: buildPropertyMapping(properties),
         },
       };
   }
+}
+
+function buildPropertyMapping(
+  properties: ObjectPropertyType[],
+): Record<string, PropertyTypeMappingInfo> {
+  return Object.fromEntries(
+    properties.map((prop) => {
+      prop.type;
+      if (typeof prop.type === "object" && prop.type?.type === "struct") {
+        const structMapping = {
+          type: "struct",
+          struct: {
+            column: prop.apiName,
+            mapping: Object.fromEntries(
+              Object.entries(prop.type.structDefinition).map((
+                [fieldName, _fieldType],
+              ) => [
+                fieldName,
+                { apiName: fieldName, mappings: {} },
+              ]),
+            ),
+          },
+        };
+        return [prop.apiName, structMapping];
+      } else {
+        return [
+          prop.apiName,
+          prop.editOnly
+            ? { type: "editOnly", editOnly: {} }
+            : { type: "column", column: prop.apiName },
+        ];
+      }
+    }),
+  );
 }
 
 export const defaultTypeClasses: TypeClass[] = [{
