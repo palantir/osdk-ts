@@ -20,7 +20,7 @@ import {
   namespace,
   updateOntology,
 } from "./defineOntology.js";
-import { ontologyDefinition } from "./global-state.js";
+import { ontologyDefinition } from "./globals.js";
 import type {
   InterfacePropertyType,
   ObjectType,

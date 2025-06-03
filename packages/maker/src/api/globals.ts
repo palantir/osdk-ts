@@ -16,19 +16,31 @@
 
 import type { OntologyDefinition } from "./types.js";
 
-// global-state.ts
-
-interface OsdkMakerGlobals {
+interface OsdkMakerRegistry {
   ontologyDefinition: OntologyDefinition;
   importedTypes: OntologyDefinition;
-  namespace: string;
 }
 
-let osdkMakerGlobals: OsdkMakerGlobals;
+const GLOBAL_REGISTRY_KEY = Symbol.for("@osdk/maker:registry");
+
+if (!(globalThis as any)[GLOBAL_REGISTRY_KEY]) {
+  resetGlobals();
+}
+
+export function getRegistry(): OsdkMakerRegistry {
+  return (globalThis as any)[GLOBAL_REGISTRY_KEY];
+}
+
+export function ontologyDefinition(): OntologyDefinition {
+  return getRegistry().ontologyDefinition;
+}
+
+export function importedTypes(): OntologyDefinition {
+  return getRegistry().importedTypes;
+}
 
 export function resetGlobals(): void {
-  const g = globalThis as any;
-  g.__osdkMaker = {
+  (globalThis as any)[GLOBAL_REGISTRY_KEY] = {
     ontologyDefinition: {
       OBJECT_TYPE: {},
       ACTION_TYPE: {},
@@ -46,33 +58,4 @@ export function resetGlobals(): void {
       VALUE_TYPE: {},
     },
   };
-
-  osdkMakerGlobals = g.__osdkMaker;
 }
-
-export function getOrCreateGlobals(): OsdkMakerGlobals {
-  if (!osdkMakerGlobals) {
-    resetGlobals();
-  }
-  return osdkMakerGlobals;
-}
-
-export function ontologyDefinition(): OntologyDefinition {
-  return getOrCreateGlobals().ontologyDefinition;
-}
-
-// export function updateOntologyDefinition(definition: OntologyDefinition): void {
-//   getOrCreateGlobals().ontologyDefinition = definition;
-// }
-
-export function importedTypes(): OntologyDefinition {
-  return getOrCreateGlobals().importedTypes;
-}
-
-// export function updateImportedTypes(
-//   type: OntologyEntityTypeEnum,
-//   apiName: string,
-//   entity: OntologyEntityTypeMapping[OntologyEntityTypeEnum],
-// ): void {
-//   getOrCreateGlobals().importedTypes[type][apiName] = entity as any;
-// }

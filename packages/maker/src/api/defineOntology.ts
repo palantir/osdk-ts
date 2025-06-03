@@ -52,11 +52,7 @@ import * as fs from "fs";
 import * as path from "path";
 import invariant from "tiny-invariant";
 import { isExotic } from "./defineObject.js";
-import {
-  importedTypes,
-  ontologyDefinition,
-  resetGlobals,
-} from "./global-state.js";
+import { importedTypes, ontologyDefinition, resetGlobals } from "./globals.js";
 import type {
   ActionParameter,
   ActionParameterRequirementConstraint,

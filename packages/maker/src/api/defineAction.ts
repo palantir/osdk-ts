@@ -17,7 +17,7 @@
 import type { ParameterId } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { namespace, updateOntology } from "./defineOntology.js";
-import { ontologyDefinition } from "./global-state.js";
+import { ontologyDefinition } from "./globals.js";
 import {
   type ActionParameterAllowedValues,
   type ActionParameterType,

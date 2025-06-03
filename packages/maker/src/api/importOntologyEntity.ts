@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { importedTypes } from "./global-state.js";
+import { importedTypes } from "./globals.js";
 import type { OntologyEntityBase } from "./types.js";
 import { OntologyEntityTypeEnum } from "./types.js";
 

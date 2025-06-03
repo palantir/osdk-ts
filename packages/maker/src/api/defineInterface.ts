@@ -21,7 +21,7 @@ import {
   withoutNamespace,
 } from "./defineOntology.js";
 import { defineSharedPropertyType } from "./defineSpt.js";
-import { ontologyDefinition } from "./global-state.js";
+import { ontologyDefinition } from "./globals.js";
 import type { BlueprintIcon } from "./iconNames.js";
 import {
   type InterfaceType,
