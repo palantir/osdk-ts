@@ -36,10 +36,10 @@ export namespace DerivedObjectOrInterfaceDefinition {
       properties: {
         [T in keyof D]: SimplePropertyDef.ToPropertyDef<D[T]>;
       };
-      props: {
+      props?: {
         [T in keyof D]: SimplePropertyDef.ToRuntimeProperty<D[T]>;
       };
-    };
+    } | undefined;
   } & K;
 }
 

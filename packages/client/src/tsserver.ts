@@ -107,6 +107,16 @@ class TsServerImpl extends EventEmitter<{
     isQuickInfoResponse,
   );
 
+  sendCompletionsRequest: RequestFn<
+    s.protocol.CompletionsRequest,
+    s.protocol.CompletionInfoResponse
+  > = this.#requestFactory(
+    s.protocol.CommandTypes.CompletionInfo,
+    (m): m is s.protocol.CompletionInfoResponse =>
+      isResponse(m)
+      && m.command === s.protocol.CommandTypes.CompletionInfo as string,
+  );
+
   async #makeRequest<
     T extends s.protocol.Request,
     X extends s.protocol.Response = never,

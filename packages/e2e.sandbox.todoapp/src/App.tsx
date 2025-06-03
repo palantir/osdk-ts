@@ -3,13 +3,15 @@ import React from "react";
 import "./App.css";
 import CreateTodoForm from "./CreateTodoForm.js";
 import FilterSelector from "./FilterSelector.js";
-import type { Todo } from "./generatedNoCheck2/index.js";
+import type { TodoLike } from "./generatedNoCheck2/index.js";
 import { H1 } from "./H2.js";
 import { Section } from "./Section.js";
 import TodoList from "./TodoList.js";
 
 function App() {
-  const [whereClause, setWhereClause] = React.useState<WhereClause<Todo>>({});
+  const [whereClause, setWhereClause] = React.useState<WhereClause<TodoLike>>(
+    {},
+  );
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
