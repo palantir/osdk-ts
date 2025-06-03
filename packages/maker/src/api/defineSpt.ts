@@ -20,11 +20,8 @@ import type {
   Visibility,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
-import {
-  namespace,
-  ontologyDefinition,
-  updateOntology,
-} from "./defineOntology.js";
+import { namespace, updateOntology } from "./defineOntology.js";
+import { ontologyDefinition } from "./global-state.js";
 import {
   OntologyEntityTypeEnum,
   type PropertyTypeType,
@@ -53,7 +50,7 @@ export function defineSharedPropertyType(
 ): SharedPropertyType {
   const apiName = namespace + sptDef.apiName;
   invariant(
-    ontologyDefinition[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][apiName]
+    ontologyDefinition()[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][apiName]
       === undefined,
     `Shared property type ${apiName} already exists`,
   );

@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { importedTypes } from "./defineOntology.js";
+import { importedTypes } from "./global-state.js";
 import type { OntologyEntityBase } from "./types.js";
 import { OntologyEntityTypeEnum } from "./types.js";
 
 export function importOntologyEntity<T extends OntologyEntityBase>(e: T): void {
   if (e.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {
-    importedTypes[e.__type][e.apiName] = e as any;
+    importedTypes()[e.__type][e.apiName] = e as any;
     return;
   }
   // value types are a special case
   if (
-    importedTypes[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName]
+    importedTypes()[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName]
       === undefined
   ) {
-    importedTypes[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName] = [];
+    importedTypes()[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName] = [];
   }
-  importedTypes[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName]
+  importedTypes()[OntologyEntityTypeEnum.VALUE_TYPE][e.apiName]
     .push(e as any);
 }

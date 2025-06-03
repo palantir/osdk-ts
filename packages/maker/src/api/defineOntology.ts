@@ -52,6 +52,11 @@ import * as fs from "fs";
 import * as path from "path";
 import invariant from "tiny-invariant";
 import { isExotic } from "./defineObject.js";
+import {
+  importedTypes,
+  ontologyDefinition,
+  resetGlobals,
+} from "./global-state.js";
 import type {
   ActionParameter,
   ActionParameterRequirementConstraint,
@@ -68,13 +73,13 @@ import type {
 } from "./types.js";
 import { OntologyEntityTypeEnum } from "./types.js";
 
-// type -> apiName -> entity
-/** @internal */
-export let ontologyDefinition: OntologyDefinition;
+// // type -> apiName -> entity
+// /** @internal */
+// export let ontologyDefinition: OntologyDefinition;
 
-// type -> apiName -> entity
-/** @internal */
-export let importedTypes: OntologyDefinition;
+// // type -> apiName -> entity
+// /** @internal */
+// export let importedTypes: OntologyDefinition;
 
 /** @internal */
 export let namespace: string;
@@ -90,17 +95,18 @@ export function updateOntology<
   entity: T,
 ): void {
   if (entity.__type !== OntologyEntityTypeEnum.VALUE_TYPE) {
-    ontologyDefinition[entity.__type][entity.apiName] = entity;
+    ontologyDefinition()[entity.__type][entity.apiName] = entity;
     return;
   }
   // value types are a special case
   if (
-    ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
+    ontologyDefinition()[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
       === undefined
   ) {
-    ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName] = [];
+    ontologyDefinition()[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName] =
+      [];
   }
-  ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
+  ontologyDefinition()[OntologyEntityTypeEnum.VALUE_TYPE][entity.apiName]
     .push(entity);
 }
 
@@ -109,23 +115,8 @@ export async function defineOntology(
   body: () => void | Promise<void>,
   outputDir: string,
 ): Promise<OntologyAndValueTypeIrs> {
+  resetGlobals();
   namespace = ns;
-  ontologyDefinition = {
-    OBJECT_TYPE: {},
-    ACTION_TYPE: {},
-    LINK_TYPE: {},
-    INTERFACE_TYPE: {},
-    SHARED_PROPERTY_TYPE: {},
-    VALUE_TYPE: {},
-  };
-  importedTypes = {
-    SHARED_PROPERTY_TYPE: {},
-    OBJECT_TYPE: {},
-    ACTION_TYPE: {},
-    LINK_TYPE: {},
-    INTERFACE_TYPE: {},
-    VALUE_TYPE: {},
-  };
   try {
     await body();
   } catch (e) {
@@ -139,8 +130,8 @@ export async function defineOntology(
 
   writeStaticObjects(outputDir);
   return {
-    ontology: convertToWireOntologyIr(ontologyDefinition),
-    valueType: convertOntologyToValueTypeIr(ontologyDefinition),
+    ontology: convertToWireOntologyIr(ontologyDefinition()),
+    valueType: convertOntologyToValueTypeIr(ontologyDefinition()),
   };
 }
 
@@ -169,7 +160,7 @@ export function writeStaticObjects(outputDir: string): void {
 
   const topLevelExportStatements: string[] = [];
 
-  Object.entries(ontologyDefinition).forEach(
+  Object.entries(ontologyDefinition()).forEach(
     ([ontologyTypeEnumKey, entities]) => {
       const typeDirName =
         typeDirs[ontologyTypeEnumKey as OntologyEntityTypeEnum];
@@ -249,7 +240,7 @@ function convertToWireOntologyIr(
 ): OntologyIr {
   return {
     blockData: convertToWireBlockData(ontology),
-    importedTypes: convertToWireImportedTypes(importedTypes),
+    importedTypes: convertToWireImportedTypes(importedTypes()),
   };
 }
 
@@ -739,11 +730,11 @@ function convertInterface(
 }
 
 export function dumpOntologyFullMetadata(): OntologyIr {
-  return convertToWireOntologyIr(ontologyDefinition);
+  return convertToWireOntologyIr(ontologyDefinition());
 }
 
 export function dumpValueTypeWireType(): OntologyIrValueTypeBlockData {
-  return convertOntologyToValueTypeIr(ontologyDefinition);
+  return convertOntologyToValueTypeIr(ontologyDefinition());
 }
 
 function convertSpt(

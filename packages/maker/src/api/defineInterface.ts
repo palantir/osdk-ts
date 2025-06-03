@@ -17,11 +17,11 @@
 import invariant from "tiny-invariant";
 import {
   namespace,
-  ontologyDefinition,
   updateOntology,
   withoutNamespace,
 } from "./defineOntology.js";
 import { defineSharedPropertyType } from "./defineSpt.js";
+import { ontologyDefinition } from "./global-state.js";
 import type { BlueprintIcon } from "./iconNames.js";
 import {
   type InterfaceType,
@@ -60,7 +60,7 @@ export function defineInterface(
 ): InterfaceType {
   const apiName = namespace + interfaceDef.apiName;
   invariant(
-    ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][apiName]
+    ontologyDefinition()[OntologyEntityTypeEnum.INTERFACE_TYPE][apiName]
       === undefined,
     `Interface ${apiName} already exists`,
   );

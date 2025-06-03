@@ -16,11 +16,8 @@
 
 import type { ParameterId } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
-import {
-  namespace,
-  ontologyDefinition,
-  updateOntology,
-} from "./defineOntology.js";
+import { namespace, updateOntology } from "./defineOntology.js";
+import { ontologyDefinition } from "./global-state.js";
 import {
   type ActionParameterAllowedValues,
   type ActionParameterType,
@@ -359,7 +356,7 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
   const parameterIds = (actionDef.parameters ?? []).map(p => p.id);
 
   if (
-    ontologyDefinition[OntologyEntityTypeEnum.ACTION_TYPE][apiName]
+    ontologyDefinition()[OntologyEntityTypeEnum.ACTION_TYPE][apiName]
       !== undefined
   ) {
     throw new Error(

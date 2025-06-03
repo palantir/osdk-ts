@@ -18,9 +18,9 @@ import invariant from "tiny-invariant";
 import {
   extractNamespace,
   namespace,
-  ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
+import { ontologyDefinition } from "./global-state.js";
 import type {
   InterfacePropertyType,
   ObjectType,
@@ -45,7 +45,7 @@ export function defineObject(
   const apiName = namespace + objectDef.apiName;
   const propertyApiNames = (objectDef.properties ?? []).map(val => val.apiName);
   if (
-    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][apiName]
+    ontologyDefinition()[OntologyEntityTypeEnum.OBJECT_TYPE][apiName]
       !== undefined
   ) {
     throw new Error(
@@ -148,7 +148,7 @@ export function defineObject(
     const extendsValidations = interfaceImpl.implements.extendsInterfaces
       .flatMap(interfaceApiName =>
         Object.entries(
-          ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][
+          ontologyDefinition()[OntologyEntityTypeEnum.INTERFACE_TYPE][
             interfaceApiName
           ].propertiesV2 as Record<string, InterfacePropertyType>,
         ).map(validateProperty)
