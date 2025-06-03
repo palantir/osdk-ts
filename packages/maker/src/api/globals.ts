@@ -35,7 +35,7 @@ export function importedTypes(): OntologyDefinition {
   return getRegistry().importedTypes;
 }
 
-export function resetGlobals(): void {
+export function resetMakerGlobals(): void {
   (globalThis as any)[GLOBAL_REGISTRY_KEY] = {
     ontologyDefinition: {
       OBJECT_TYPE: {},

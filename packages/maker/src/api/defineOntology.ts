@@ -52,7 +52,11 @@ import * as fs from "fs";
 import * as path from "path";
 import invariant from "tiny-invariant";
 import { isExotic } from "./defineObject.js";
-import { importedTypes, ontologyDefinition, resetGlobals } from "./globals.js";
+import {
+  importedTypes,
+  ontologyDefinition,
+  resetMakerGlobals,
+} from "./globals.js";
 import type {
   ActionParameter,
   ActionParameterRequirementConstraint,
@@ -83,7 +87,7 @@ export async function defineOntology(
   body: () => void | Promise<void>,
   outputDir: string,
 ): Promise<OntologyAndValueTypeIrs> {
-  resetGlobals();
+  resetMakerGlobals();
   namespace = ns;
   try {
     await body();
