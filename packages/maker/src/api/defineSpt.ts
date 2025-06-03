@@ -20,7 +20,6 @@ import type {
   Visibility,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
-import { ontologyDefinition } from "./globals.js";
 import {
   defaultTypeClasses,
   getPropertyTypeName,
@@ -29,6 +28,7 @@ import {
   shouldNotHaveRenderHints,
   updateOntology,
 } from "./defineOntology.js";
+import { ontologyDefinition } from "./globals.js";
 import {
   OntologyEntityTypeEnum,
   type PropertyTypeType,
