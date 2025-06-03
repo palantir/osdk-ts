@@ -680,9 +680,14 @@ export interface ObjectTypeDatasourceDefinition_stream {
   retentionPeriod?: string;
 }
 
+export interface ObjectTypeDatasourceDefinition_restrictedView {
+  type: "restrictedView";
+}
+
 export type ObjectTypeDatasourceDefinition =
   | ObjectTypeDatasourceDefinition_stream
-  | ObjectTypeDatasourceDefinition_dataset;
+  | ObjectTypeDatasourceDefinition_dataset
+  | ObjectTypeDatasourceDefinition_restrictedView;
 
 export type ActionParameterTypePrimitive =
   | "boolean"
