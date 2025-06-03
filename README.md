@@ -104,3 +104,4 @@ For more details, refer to the [public docs](https://www.palantir.com/docs/found
 2. `gh auth login` to authenticate with github.com
 3. `pnpm install`
 4. `./scripts/createReleasePr.sh`
+5. Once your release PR has been merged, run `/scripts/tag-release.sh [COMMIT_SHA]` to tag your release.
