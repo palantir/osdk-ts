@@ -3196,12 +3196,16 @@ describe("Ontology Defining", () => {
         displayName: "Foo",
         pluralDisplayName: "Foo",
         apiName: "foo",
-        primaryKeyPropertyApiName: "bar",
+        primaryKeyPropertyApiName: "fizz",
         properties: [{
           apiName: "bar",
           type: "string",
           displayName: "Bar",
           editOnly: true,
+        }, {
+          apiName: "fizz",
+          type: "string",
+          displayName: "Fizz",
         }],
       });
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -3226,6 +3230,10 @@ describe("Ontology Defining", () => {
                           "bar": {
                             "editOnly": {},
                             "type": "editOnly",
+                          },
+                          "fizz": {
+                            "column": "fizz",
+                            "type": "column",
                           },
                         },
                       },
@@ -3260,7 +3268,7 @@ describe("Ontology Defining", () => {
                   },
                   "implementsInterfaces2": [],
                   "primaryKeys": [
-                    "bar",
+                    "fizz",
                   ],
                   "propertyTypes": {
                     "bar": {
@@ -3270,6 +3278,46 @@ describe("Ontology Defining", () => {
                       "displayMetadata": {
                         "description": undefined,
                         "displayName": "Bar",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "fizz": {
+                      "apiName": "fizz",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Fizz",
                         "visibility": "NORMAL",
                       },
                       "indexedForSearch": true,
@@ -3324,6 +3372,26 @@ describe("Ontology Defining", () => {
           },
         }
       `);
+    });
+
+    it("Fails if edit only property is primary key", () => {
+      expect(() => {
+        defineObject({
+          titlePropertyApiName: "bar",
+          displayName: "Foo",
+          pluralDisplayName: "Foo",
+          apiName: "foo",
+          primaryKeyPropertyApiName: "bar",
+          properties: [{
+            apiName: "bar",
+            type: "string",
+            displayName: "Bar",
+            editOnly: true,
+          }],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Primary key property bar on object foo cannot be edit-only]`,
+      );
     });
 
     it("Fail if stream retention period is not ISO 8601 compliant", () => {
