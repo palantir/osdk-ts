@@ -60,6 +60,14 @@ export function defineObject(
     propertyApiNames.includes(objectDef.primaryKeyPropertyApiName),
     `Primary key property ${objectDef.primaryKeyPropertyApiName} does not exist on object ${objectDef.apiName}`,
   );
+
+  invariant(
+    (objectDef.properties ?? []).filter(p =>
+      p.apiName === objectDef.primaryKeyPropertyApiName
+    ).every(p => !p.editOnly),
+    `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
+  );
+
   const retentionPeriod = (objectDef.datasource as any)?.retentionPeriod;
   invariant(
     retentionPeriod === undefined || ISO_8601_DURATION.test(retentionPeriod),
