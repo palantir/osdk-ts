@@ -29,13 +29,13 @@ export function propertyJsdoc(
     }
 
     if (renderDisplayName) {
-      ret += ` *   display name: '${property.displayName}'${
+      ret += ` * display name: '${property.displayName}'${
         property.description ? "," : ""
       }\n`;
     }
 
     if (property.description) {
-      ret += ` *   description: ${property.description}\n`;
+      ret += ` * description: ${property.description}\n`;
     }
   } else {
     ret += ` * (no ontology metadata)\n`;
