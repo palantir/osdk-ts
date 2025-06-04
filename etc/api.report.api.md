@@ -50,7 +50,7 @@ export interface ActionMetadata {
     	// Warning: (ae-forgotten-export) The symbol "ReleaseStatus" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    status?: ReleaseStatus;
+    status: ReleaseStatus;
     	// (undocumented)
     type: "action";
 }
