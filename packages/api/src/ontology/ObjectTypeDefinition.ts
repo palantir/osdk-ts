@@ -138,8 +138,7 @@ export type ReleaseStatus =
   | "ACTIVE"
   | "EXPERIMENTAL"
   | "DEPRECATED"
-  | "ENDORSED"
-  | undefined;
+  | "ENDORSED";
 
 type ObjectTypeVisibility = "NORMAL" | "PROMINENT" | "HIDDEN";
 
