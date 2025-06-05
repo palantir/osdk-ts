@@ -42,6 +42,7 @@ export interface SomeInterface extends $InterfaceDefinition {
     linksType: OsdkObjectLinks$SomeInterface;
     strictProps: SomeInterface.StrictProps;
     apiName: 'com.example.dep.SomeInterface';
+    description: undefined;
     displayName: 'Sum Interface';
     implements: [];
     links: {};

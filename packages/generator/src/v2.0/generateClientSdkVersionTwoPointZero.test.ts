@@ -823,6 +823,7 @@ describe("generator", () => {
           status: 'ACTIVE';
           titleProperty: 'email';
           type: 'object';
+          visibility: undefined;
         };
       }
 
@@ -930,6 +931,7 @@ describe("generator", () => {
           status: 'ACTIVE';
           titleProperty: 'body';
           type: 'object';
+          visibility: undefined;
         };
       }
 
@@ -1435,6 +1437,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'email';
             type: 'object';
+            visibility: undefined;
           };
         }
 
@@ -1542,6 +1545,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'body';
             type: 'object';
+            visibility: undefined;
           };
         }
 
@@ -1903,6 +1907,7 @@ describe("generator", () => {
               linksType: UsesForeignSpt.Links;
               strictProps: UsesForeignSpt.StrictProps;
               apiName: 'UsesForeignSpt';
+              description: undefined;
               displayName: 'Uses Foreign Spt';
               icon: {
                 type: 'blueprint';
@@ -1930,6 +1935,7 @@ describe("generator", () => {
               status: 'ACTIVE';
               titleProperty: 'id';
               type: 'object';
+              visibility: undefined;
             };
           }
 
@@ -1975,11 +1981,13 @@ describe("generator", () => {
             // Represents the definition of the parameters for the action
             export type ParamsDefinition = {
               body: {
+                description: undefined;
                 multiplicity: false;
                 nullable: false;
                 type: 'string';
               };
               task: {
+                description: undefined;
                 multiplicity: false;
                 nullable: false;
                 type: ActionMetadata.DataType.Object<$Imported$com$example$dep$Task>;
@@ -2123,6 +2131,7 @@ describe("generator", () => {
             linksType: OsdkObjectLinks$SomeInterface;
             strictProps: SomeInterface.StrictProps;
             apiName: 'com.example.dep.SomeInterface';
+            description: undefined;
             displayName: 'Sum Interface';
             implements: [];
             links: {};
@@ -2196,6 +2205,7 @@ describe("generator", () => {
             linksType: Task.Links;
             strictProps: Task.StrictProps;
             apiName: 'com.example.dep.Task';
+            description: undefined;
             displayName: 'Task';
             icon: {
               type: 'blueprint';
@@ -2223,6 +2233,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'taskId';
             type: 'object';
+            visibility: undefined;
           };
         }
 

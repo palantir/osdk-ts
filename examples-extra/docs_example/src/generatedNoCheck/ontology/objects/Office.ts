@@ -66,6 +66,7 @@ export interface Office extends $ObjectTypeDefinition {
       name: 'office';
       color: 'blue';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -102,6 +103,7 @@ export interface Office extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'officeId';
     type: 'object';
+    visibility: undefined;
   };
 }
 

@@ -64,6 +64,8 @@ export const ObjectTypeWithReservedNames: ObjectTypeWithReservedNamesDef = {
     name: "icon",
     color: "blue",
   },
+  description: "An object type with reserved names",
+  visibility: "NORMAL",
   titleProperty: "id" as const,
   displayName: "ObjectTypeWithReservedNames",
   pluralDisplayName: "",
