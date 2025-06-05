@@ -55,12 +55,14 @@ export interface equipment extends $ObjectTypeDefinition {
     linksType: equipment.Links;
     strictProps: equipment.StrictProps;
     apiName: 'equipment';
+    description: undefined;
     displayName: 'Equipment';
     icon: {
       type: 'blueprint';
       name: 'equipment';
       color: 'blue';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -81,6 +83,7 @@ export interface equipment extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'equipmentId';
     type: 'object';
+    visibility: undefined;
   };
 }
 

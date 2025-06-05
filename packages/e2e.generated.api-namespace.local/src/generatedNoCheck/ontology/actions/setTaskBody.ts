@@ -13,11 +13,13 @@ export namespace setTaskBody {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     body: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     task: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<$Imported$com$example$dep$Task>;

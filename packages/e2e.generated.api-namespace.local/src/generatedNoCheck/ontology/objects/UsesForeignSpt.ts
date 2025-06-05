@@ -55,6 +55,7 @@ export interface UsesForeignSpt extends $ObjectTypeDefinition {
     linksType: UsesForeignSpt.Links;
     strictProps: UsesForeignSpt.StrictProps;
     apiName: 'UsesForeignSpt';
+    description: undefined;
     displayName: 'Uses Foreign Spt';
     icon: {
       type: 'blueprint';
@@ -82,6 +83,7 @@ export interface UsesForeignSpt extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'id';
     type: 'object';
+    visibility: undefined;
   };
 }
 
