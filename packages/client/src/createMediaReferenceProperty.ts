@@ -15,6 +15,7 @@
  */
 
 import type { Media, MediaMetadata, MediaReference } from "@osdk/api";
+import type { MediaReference as CoreMediaReference } from "@osdk/foundry.core";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
@@ -28,18 +29,18 @@ export class MediaReferencePropertyImpl implements Media {
     objectApiName: string;
     primaryKey: any;
     propertyName: string;
-    mediaReferencePropertyValue: OntologiesV2.MediaReferenceProperty;
+    mediaReference: CoreMediaReference;
   }) {
     const {
       client,
       objectApiName,
       primaryKey,
       propertyName,
-      mediaReferencePropertyValue,
+      mediaReference,
     } = args;
     this.#client = client;
     this.#triplet = [objectApiName, primaryKey, propertyName];
-    this.#mediaReference = JSON.parse(mediaReferencePropertyValue);
+    this.#mediaReference = mediaReference;
   }
 
   public async fetchContents(): Promise<Response> {
