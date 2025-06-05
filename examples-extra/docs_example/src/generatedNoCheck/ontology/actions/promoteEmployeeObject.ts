@@ -13,16 +13,19 @@ export namespace promoteEmployeeObject {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     employee: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     newCompensation: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'double';
     };
     newTitle: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';

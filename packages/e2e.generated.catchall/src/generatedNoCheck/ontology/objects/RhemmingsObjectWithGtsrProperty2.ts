@@ -60,6 +60,7 @@ export interface RhemmingsObjectWithGtsrProperty2 extends $ObjectTypeDefinition 
       name: 'traffic';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -92,6 +93,7 @@ export interface RhemmingsObjectWithGtsrProperty2 extends $ObjectTypeDefinition 
     status: 'ACTIVE';
     titleProperty: 'id';
     type: 'object';
+    visibility: undefined;
   };
 }
 

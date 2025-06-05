@@ -158,6 +158,7 @@ export interface Employee extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'firstName';
     type: 'object';
+    visibility: undefined;
   };
 }
 

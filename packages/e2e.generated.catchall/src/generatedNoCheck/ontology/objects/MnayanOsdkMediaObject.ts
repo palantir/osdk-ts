@@ -57,6 +57,7 @@ export interface MnayanOsdkMediaObject extends $ObjectTypeDefinition {
       name: 'object';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -81,6 +82,7 @@ export interface MnayanOsdkMediaObject extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'path';
     type: 'object';
+    visibility: undefined;
   };
 }
 

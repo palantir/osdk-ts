@@ -60,6 +60,7 @@ export interface Venture extends $ObjectTypeDefinition {
       name: 'ventureIcon';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
@@ -86,6 +87,7 @@ export interface Venture extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'ventureName';
     type: 'object';
+    visibility: undefined;
   };
 }
 

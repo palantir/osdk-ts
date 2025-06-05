@@ -30,6 +30,7 @@ export namespace createOfficeAndEmployee {
       type: 'integer';
     };
     officeId: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';

@@ -12,16 +12,19 @@ export namespace createStructPersonOpiTeam {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     address: {
+      description: undefined;
       multiplicity: false;
       nullable: true;
       type: ActionMetadata.DataType.Struct<{ city: 'string'; state: 'string'; zipcode: 'integer' }>;
     };
     age: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'integer';
     };
     id: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';
