@@ -1,5 +1,13 @@
 # @osdk/generator-converters
 
+## 2.2.0-rc.26
+
+### Patch Changes
+
+- 3d0ab11: Add protection for dropping unsupported enums instead of throwing"
+- Updated dependencies [3d0ab11]
+  - @osdk/api@2.2.0-rc.26
+
 ## 2.2.0-rc.25
 
 ### Patch Changes
