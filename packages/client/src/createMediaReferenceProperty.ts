@@ -69,7 +69,7 @@ export class MediaReferencePropertyImpl implements Media {
     };
   }
 
-  public getReference(): MediaReference {
+  public getMediaReference(): MediaReference {
     return this.#mediaReference;
   }
 }

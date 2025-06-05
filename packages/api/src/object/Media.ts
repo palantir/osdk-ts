@@ -26,7 +26,7 @@ export interface Media {
   /**
    * Returns the media reference
    */
-  getReference(): MediaReference;
+  getMediaReference(): MediaReference;
 }
 
 /**
