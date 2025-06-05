@@ -117,7 +117,7 @@ async function fetchInterfacePage<
 >(
   client: MinimalClient,
   interfaceType: Q,
-  args: FetchPageArgs<Q, L, R, any, S, T>,
+  args: FetchPageArgs<Q, L, R, any, S, T, never>,
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
   if (args.$__UNSTABLE_useOldInterfaceApis) {
@@ -250,7 +250,7 @@ export async function fetchPage<
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, any, S, T>,
+  args: FetchPageArgs<Q, L, R, any, S, T, never>,
   objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
   return fetchPageInternal(client, objectType, objectSet, args);
