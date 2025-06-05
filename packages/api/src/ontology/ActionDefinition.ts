@@ -32,7 +32,7 @@ export interface ActionMetadata {
       modified: boolean;
     }>
   >;
-  status: ReleaseStatus;
+  status?: ReleaseStatus;
   rid: string;
 }
 

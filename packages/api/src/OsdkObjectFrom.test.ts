@@ -130,6 +130,9 @@ describe("ExtractOptions", () => {
       status: "ACTIVE";
       titleProperty: "name";
       type: "object";
+      icon: undefined;
+      visibility: undefined;
+      description: undefined;
     };
   };
 
