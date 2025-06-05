@@ -50,7 +50,7 @@ export interface ActionMetadata {
     	// Warning: (ae-forgotten-export) The symbol "ReleaseStatus" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    status: ReleaseStatus;
+    status: ReleaseStatus | undefined;
     	// (undocumented)
     type: "action";
 }
@@ -758,7 +758,7 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
     	// Warning: (ae-forgotten-export) The symbol "Icon" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    icon?: Icon;
+    icon: Icon | undefined;
     	// (undocumented)
     interfaceMap: Record<string, Record<string, string>>;
     	// (undocumented)
@@ -770,7 +770,7 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
     	// (undocumented)
     primaryKeyType: PrimaryKeyTypes;
     	// (undocumented)
-    status: ReleaseStatus;
+    status: ReleaseStatus | undefined;
     	// (undocumented)
     titleProperty: keyof this["properties"];
     	// (undocumented)
@@ -778,7 +778,7 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
     	// Warning: (ae-forgotten-export) The symbol "ObjectTypeVisibility" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    visibility?: ObjectTypeVisibility;
+    visibility: ObjectTypeVisibility | undefined;
 }
 
 // @public (undocumented)
