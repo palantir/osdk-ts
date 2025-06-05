@@ -68,6 +68,7 @@ export interface TestGeoAction extends $ObjectTypeDefinition {
       name: 'weather';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -94,6 +95,7 @@ export interface TestGeoAction extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'stationId';
     type: 'object';
+    visibility: undefined;
   };
 }
 
