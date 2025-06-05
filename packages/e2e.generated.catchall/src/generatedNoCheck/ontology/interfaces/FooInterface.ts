@@ -45,6 +45,8 @@ export interface FooInterface extends $InterfaceDefinition {
     apiName: 'FooInterface';
     description: 'Its a Foo.';
     displayName: 'Foo interface';
+    implementedBy: undefined;
+    implements: undefined;
     links: {};
     properties: {
       /**

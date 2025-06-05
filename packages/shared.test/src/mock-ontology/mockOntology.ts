@@ -85,6 +85,7 @@ const Todo: TodoDef = {
   interfaceMap: {},
   inverseInterfaceMap: {},
   rid: "",
+  visibility: "HIDDEN",
 };
 
 interface TodoDef extends ObjectMetadata, VersionBound<"0.15.0"> {

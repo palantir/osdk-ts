@@ -50,6 +50,9 @@ describe(createOsdkInterface, () => {
         titleProperty: "foo",
         rid: "",
         status: "ACTIVE",
+        icon: undefined,
+        visibility: undefined,
+        description: undefined,
       } satisfies FetchedObjectTypeDefinition,
     };
 
@@ -65,6 +68,7 @@ describe(createOsdkInterface, () => {
       rid: "",
       type: "interface",
       implements: [],
+      description: undefined,
     });
 
     expect(Object.keys(iface)).toMatchInlineSnapshot(`
@@ -111,6 +115,9 @@ describe(createOsdkInterface, () => {
         titleProperty: "foo",
         rid: "",
         status: "ACTIVE",
+        icon: undefined,
+        visibility: undefined,
+        description: undefined,
       } satisfies FetchedObjectTypeDefinition,
     };
 
@@ -126,6 +133,7 @@ describe(createOsdkInterface, () => {
       rid: "",
       type: "interface",
       implements: [],
+      description: undefined,
     });
 
     expect(Object.keys(iface)).toMatchInlineSnapshot(`
@@ -172,6 +180,9 @@ describe(createOsdkInterface, () => {
         titleProperty: "foo",
         rid: "",
         status: "ACTIVE",
+        icon: undefined,
+        visibility: undefined,
+        description: undefined,
       } satisfies FetchedObjectTypeDefinition,
     };
 
@@ -187,6 +198,7 @@ describe(createOsdkInterface, () => {
       rid: "",
       type: "interface",
       implements: [],
+      description: undefined,
     });
 
     expect(Object.keys(iface)).toMatchInlineSnapshot(`

@@ -63,6 +63,7 @@ export interface StructPersonOpisTeam extends $ObjectTypeDefinition {
       name: 'traffic';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -87,6 +88,7 @@ export interface StructPersonOpisTeam extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'name';
     type: 'object';
+    visibility: undefined;
   };
 }
 

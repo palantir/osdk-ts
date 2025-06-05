@@ -59,6 +59,7 @@ export interface SotSensor extends $ObjectTypeDefinition {
       name: 'sotsensor';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -91,6 +92,7 @@ export interface SotSensor extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'seriesId';
     type: 'object';
+    visibility: undefined;
   };
 }
 

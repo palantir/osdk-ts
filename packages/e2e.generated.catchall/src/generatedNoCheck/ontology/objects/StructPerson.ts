@@ -56,6 +56,7 @@ export interface StructPerson extends $ObjectTypeDefinition {
       name: 'traffic';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -76,6 +77,7 @@ export interface StructPerson extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'name';
     type: 'object';
+    visibility: undefined;
   };
 }
 

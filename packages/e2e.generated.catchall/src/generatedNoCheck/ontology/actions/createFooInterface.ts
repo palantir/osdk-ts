@@ -12,6 +12,7 @@ export namespace createFooInterface {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     createdInterface: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'objectType';

@@ -65,6 +65,7 @@ export interface McAirportStruct extends $ObjectTypeDefinition {
       name: 'mcAirportStruct';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -97,6 +98,7 @@ export interface McAirportStruct extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'airportName';
     type: 'object';
+    visibility: undefined;
   };
 }
 
