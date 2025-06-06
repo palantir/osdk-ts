@@ -1,5 +1,11 @@
 # @osdk/functions
 
+## 1.0.0-rc.20
+
+### Patch Changes
+
+- @osdk/client@2.2.0-rc.26
+
 ## 1.0.0-rc.19
 
 ### Patch Changes
