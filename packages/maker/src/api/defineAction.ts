@@ -21,8 +21,7 @@ import {
   ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
-import type {
-  organizationId,
+import {
   type ActionParameterAllowedValues,
   type ActionParameterType,
   type ActionParameterTypePrimitive,
@@ -34,6 +33,7 @@ import type {
   type ObjectPropertyType,
   type ObjectType,
   OntologyEntityTypeEnum,
+  type organizationId,
   type PropertyTypeType,
   type SharedPropertyType,
 } from "./types.js";
