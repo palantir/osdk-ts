@@ -16,16 +16,19 @@ export namespace FooInterface {
   export interface Props {
     /**
      *   display name: 'Description',
+     *
      *   description: Description of Description
      */
     readonly description: $PropType['string'] | undefined;
     /**
      *   display name: 'Inherited Description',
+     *
      *   description: Description property we inherited from some parent interface
      */
     readonly inheritedDescription: $PropType['string'] | undefined;
     /**
      *   display name: 'Name',
+     *
      *   description: Name of Foo
      */
     readonly name: $PropType['string'] | undefined;
@@ -64,16 +67,19 @@ export interface FooInterface extends $InterfaceDefinition {
     properties: {
       /**
        *   display name: 'Description',
+       *
        *   description: Description of Description
        */
       description: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        *   display name: 'Inherited Description',
+       *
        *   description: Description property we inherited from some parent interface
        */
       inheritedDescription: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        *   display name: 'Name',
+       *
        *   description: Name of Foo
        */
       name: $PropertyDef<'string', 'nullable', 'single'>;

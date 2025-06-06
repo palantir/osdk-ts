@@ -16,16 +16,19 @@ export namespace Athlete {
   export interface Props {
     /**
      *   display name: 'Athlete ID',
+     *
      *   description: Athlete ID
      */
     readonly athleteId: $PropType['string'] | undefined;
     /**
      *   display name: 'Jersey Number',
+     *
      *   description: Jersey Number
      */
     readonly jerseyNumber: $PropType['integer'] | undefined;
     /**
      *   display name: 'Name',
+     *
      *   description: Name
      */
     readonly name22: $PropType['string'] | undefined;
@@ -64,16 +67,19 @@ export interface Athlete extends $InterfaceDefinition {
     properties: {
       /**
        *   display name: 'Athlete ID',
+       *
        *   description: Athlete ID
        */
       athleteId: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        *   display name: 'Jersey Number',
+       *
        *   description: Jersey Number
        */
       jerseyNumber: $PropertyDef<'integer', 'nullable', 'single'>;
       /**
        *   display name: 'Name',
+       *
        *   description: Name
        */
       name22: $PropertyDef<'string', 'nullable', 'single'>;

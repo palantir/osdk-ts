@@ -731,6 +731,7 @@ describe("generator", () => {
           export interface Props {
             /**
              *   display name: 'Sum Property',
+             *
              *   description: Some property
              */
             readonly SomeProperty: $PropType['string'] | undefined;
@@ -769,6 +770,7 @@ describe("generator", () => {
             properties: {
               /**
                *   display name: 'Sum Property',
+               *
                *   description: Some property
                */
               SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
@@ -906,6 +908,7 @@ describe("generator", () => {
           export interface Props {
             /**
              *   display name: 'Body',
+             *
              *   description: The text of the todo
              */
             readonly body: $PropType['string'] | undefined;
@@ -971,6 +974,7 @@ describe("generator", () => {
             properties: {
               /**
                *   display name: 'Body',
+               *
                *   description: The text of the todo
                */
               body: $PropertyDef<'string', 'nullable', 'single'>;
@@ -1375,6 +1379,7 @@ describe("generator", () => {
           export interface Props {
             /**
              *   display name: 'Sum Property',
+             *
              *   description: Some property
              */
             readonly SomeProperty: $PropType['string'] | undefined;
@@ -1413,6 +1418,7 @@ describe("generator", () => {
             properties: {
               /**
                *   display name: 'Sum Property',
+               *
                *   description: Some property
                */
               SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
@@ -1550,6 +1556,7 @@ describe("generator", () => {
           export interface Props {
             /**
              *   display name: 'Body',
+             *
              *   description: The text of the todo
              */
             readonly body: $PropType['string'] | undefined;
@@ -1615,6 +1622,7 @@ describe("generator", () => {
             properties: {
               /**
                *   display name: 'Body',
+               *
                *   description: The text of the todo
                */
               body: $PropertyDef<'string', 'nullable', 'single'>;
@@ -2323,6 +2331,7 @@ describe("generator", () => {
           export interface Props {
             /**
              *   display name: 'Body',
+             *
              *   description: The text of the todo
              */
             readonly body: $PropType['string'] | undefined;
@@ -2388,6 +2397,7 @@ describe("generator", () => {
             properties: {
               /**
                *   display name: 'Body',
+               *
                *   description: The text of the todo
                */
               body: $PropertyDef<'string', 'nullable', 'single'>;

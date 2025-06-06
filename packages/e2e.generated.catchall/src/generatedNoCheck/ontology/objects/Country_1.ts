@@ -24,11 +24,20 @@ export namespace Country_1 {
 
   export interface Props {
     /**
-     * (no ontology metadata)
+     * @experimental
+     *
+     *   property status: experimental
      */
     readonly airportCountryIsoCode: $PropType['string'] | undefined;
     /**
-     * (no ontology metadata)
+     *   @deprecated
+     *   - This property is deprecated.
+     *   - deadline: 2024-12-31
+     *   - replaced by: newProperty
+     *
+     *   property status: deprecated
+     *
+     *   display name: 'Airport Country Name'
      */
     readonly airportCountryName: $PropType['string'];
   }
@@ -76,11 +85,20 @@ export interface Country_1 extends $ObjectTypeDefinition {
     primaryKeyType: 'string';
     properties: {
       /**
-       * (no ontology metadata)
+       * @experimental
+       *
+       *   property status: experimental
        */
       airportCountryIsoCode: $PropertyDef<'string', 'nullable', 'single'>;
       /**
-       * (no ontology metadata)
+       *   @deprecated
+       *   - This property is deprecated.
+       *   - deadline: 2024-12-31
+       *   - replaced by: newProperty
+       *
+       *   property status: deprecated
+       *
+       *   display name: 'Airport Country Name'
        */
       airportCountryName: $PropertyDef<'string', 'non-nullable', 'single'>;
     };
