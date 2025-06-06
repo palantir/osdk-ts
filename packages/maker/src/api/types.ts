@@ -200,12 +200,23 @@ export type ActionValidationRule = OntologyIrValidationRule;
 
 export type ActionValidationDefinition =
   | GroupValidationRule
+  | OrganizationValidationRule
   | OntologyIrValidationRule;
 
 export type GroupValidationRule = {
   type: "group";
   name: string;
 };
+
+export type OrganizationValidationRule = {
+  type: "organization";
+  name: organizationId;
+};
+
+export type organizationId =
+  | "palantir"
+  | "pretzel"
+  | { type: "custom"; id: string };
 
 export type ActionStatus =
   | "active"
