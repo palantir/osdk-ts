@@ -121,12 +121,22 @@ describe("Ontology Defining", () => {
       expect(objectPropertyType.dataConstraints?.propertyTypeConstraints)
         .toHaveLength(1);
 
-      const constraint = objectPropertyType.dataConstraints
+      const constraintWrapper = objectPropertyType.dataConstraints
         ?.propertyTypeConstraints[0];
-      expect(constraint?.constraints.type).toBe("string");
-      expect(constraint?.constraints.string?.length?.minSize).toBe(5);
-      expect(constraint?.constraints.string?.length?.maxSize).toBe(20);
-      expect(constraint?.failureMessage?.message).toBe(
+      expect(constraintWrapper?.constraints?.type).toBe("string");
+      expect(
+        (constraintWrapper?.constraints as {
+          type: "string";
+          string: { length: { minSize: number; maxSize: number } };
+        }).string.length.minSize,
+      ).toBe(5);
+      expect(
+        (constraintWrapper?.constraints as {
+          type: "string";
+          string: { length: { minSize: number; maxSize: number } };
+        }).string.length.maxSize,
+      ).toBe(20);
+      expect(constraintWrapper?.failureMessage?.message).toBe(
         "String must be between 5 and 20 characters",
       );
     });
