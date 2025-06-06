@@ -256,7 +256,20 @@ export const objectWithAllPropertyTypes1 = {
       type: "Polygon",
     },
   ],
-  mediaReference: "ri.MediaReferencePlaceholder",
+  mediaReference: {
+    mimeType: "application/pdf",
+    reference: {
+      type: "mediaSetViewItem",
+      mediaSetViewItem: {
+        mediaSetRid:
+          "ri.mio.main.media-set.4153d42f-ca4b-4e42-8ca5-8e6aa7edb642",
+        mediaSetViewRid:
+          "ri.mio.main.view.82a798ad-d637-4595-acc6-987bcf16629b",
+        mediaItemRid:
+          "ri.mio.main.media-item.001ec98b-1620-4814-9e17-8e9c4e536225",
+      },
+    },
+  },
 } as const;
 
 export const objectWithAllPropertyTypesEmptyEntries = {

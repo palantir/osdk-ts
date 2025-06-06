@@ -24,7 +24,10 @@ export async function runMediaTest(): Promise<void> {
   );
 
   console.log("Object id:", result?.id);
-  console.log("Object Media reference:", result?.mediaReference);
+  console.log(
+    "Object Media reference:",
+    result?.mediaReference?.getMediaReference(),
+  );
 
   const mediaMetadata = await result.mediaReference?.fetchMetadata();
   const response = await result.mediaReference?.fetchContents().then(

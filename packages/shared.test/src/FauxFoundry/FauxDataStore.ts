@@ -526,7 +526,7 @@ export class FauxDataStore {
       );
     }
 
-    const rid = obj[property];
+    const rid = obj[property].reference.mediaSetViewItem.mediaItemRid;
 
     if (!rid || !rid.startsWith("ri.")) {
       throw new OpenApiCallError(
