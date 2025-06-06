@@ -77,6 +77,7 @@ export interface Task extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'taskId';
     type: 'object';
+    visibility: undefined;
   };
 }
 

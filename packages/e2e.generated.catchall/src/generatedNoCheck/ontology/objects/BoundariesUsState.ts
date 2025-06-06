@@ -58,6 +58,7 @@ export interface BoundariesUsState extends $ObjectTypeDefinition {
       name: 'usState';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -87,6 +88,7 @@ export interface BoundariesUsState extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'usState';
     type: 'object';
+    visibility: undefined;
   };
 }
 

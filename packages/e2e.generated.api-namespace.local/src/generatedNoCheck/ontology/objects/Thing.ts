@@ -49,6 +49,7 @@ export interface Thing extends $ObjectTypeDefinition {
     linksType: Thing.Links;
     strictProps: Thing.StrictProps;
     apiName: 'Thing';
+    description: undefined;
     displayName: 'Thing';
     icon: {
       type: 'blueprint';
@@ -84,6 +85,7 @@ export interface Thing extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'id';
     type: 'object';
+    visibility: undefined;
   };
 }
 

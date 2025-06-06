@@ -39,11 +39,9 @@ export class EnhancedInterfaceType extends EnhancedBase<InterfaceType> {
   }
 
   getCleanedUpDefinition(v2: boolean): InterfaceMetadata {
-    return deleteUndefineds(
-      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-        this.raw,
-        v2,
-      ),
+    return __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+      this.raw,
+      v2,
     );
   }
 }

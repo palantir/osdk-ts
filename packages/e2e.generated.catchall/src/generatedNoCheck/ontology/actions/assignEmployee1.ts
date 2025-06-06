@@ -14,11 +14,13 @@ export namespace assignEmployee1 {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     'employee-1': {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Employee>;
     };
     'venture-1': {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<Venture>;

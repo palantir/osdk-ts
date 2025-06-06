@@ -24,6 +24,7 @@ export namespace moveOffice {
       type: 'integer';
     };
     officeId: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';
