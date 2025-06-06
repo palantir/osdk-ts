@@ -141,8 +141,6 @@ describe("Ontology Defining", () => {
       );
     });
 
-    // I had originally added a test for struct conversions too, but value type structs are converted to structV2 which are not supported
-
     it("Correctly serializes a value type", () => {
       defineValueType({
         apiName: "apiName",

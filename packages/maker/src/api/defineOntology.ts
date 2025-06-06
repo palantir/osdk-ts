@@ -771,33 +771,6 @@ function dataConstraintToPropertyTypeDataConstraint(
       } as PropertyTypeDataConstraints_struct;
 
     case "structV2":
-      // TODO / q: is it worth adding PropertyTypeDataConstraints_structV2?
-
-      // otherwise need some way to convert from ValueTypeReference (where does this rid even come from, and versionId)
-      // to the regular struct element DataConstraints
-      // export interface ValueTypeReference {
-      //   rid: ValueTypeRid;
-      //   versionId: ValueTypeVersionId | undefined;
-      // }
-      // export interface DataConstraints {
-      //   nullability?: DataNullability | null | undefined;
-      //   nullabilityV2?: DataNullabilityV2 | null | undefined;
-      //   propertyTypeConstraints: Array<PropertyTypeDataConstraintsWrapper>;
-      // }
-
-      // return {
-      //   type: "struct",
-      //   struct: {
-      //     elementConstraints: Object.fromEntries(
-      //       Object.entries(dc.structV2.elementConstraints).map((
-      //         [field, constraint],
-      //       ) => [
-      //         field,
-      //         BLAH,
-      //       ]),
-      //     ),
-      //   },
-      // } as PropertyTypeDataConstraints_struct;
       throw new Error("StructV2 constraints are not supported");
 
     case "timestamp":
