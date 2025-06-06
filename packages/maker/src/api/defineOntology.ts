@@ -17,6 +17,7 @@
 import type {
   ActionTypePermissionInformation,
   ActionTypeStatus,
+  DataConstraint,
   DataConstraints,
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
@@ -45,9 +46,25 @@ import type {
   ParameterId,
   ParameterRenderHint,
   ParameterRequiredConfiguration,
+  PropertyTypeDataConstraints,
+  PropertyTypeDataConstraints_array,
+  PropertyTypeDataConstraints_boolean,
+  PropertyTypeDataConstraints_date,
+  PropertyTypeDataConstraints_decimal,
+  PropertyTypeDataConstraints_double,
+  PropertyTypeDataConstraints_float,
+  PropertyTypeDataConstraints_integer,
+  PropertyTypeDataConstraints_long,
+  PropertyTypeDataConstraints_short,
+  PropertyTypeDataConstraints_string,
+  PropertyTypeDataConstraints_struct,
+  PropertyTypeDataConstraints_timestamp,
+  PropertyTypeDataConstraintsWrapper,
   PropertyTypeMappingInfo,
   RetentionPolicy,
   SectionId,
+  ValueTypeApiNameReference,
+  ValueTypeDataConstraint,
 } from "@osdk/client.unstable";
 import * as fs from "fs";
 import * as path from "path";
@@ -67,6 +84,7 @@ import type {
   PropertyTypeType,
   SharedPropertyType,
   TypeClass,
+  ValueTypeDefinitionVersion,
 } from "./types.js";
 import { OntologyEntityTypeEnum } from "./types.js";
 
@@ -652,11 +670,155 @@ function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
       ?? (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
     status: convertObjectStatus(property.status),
     inlineAction: undefined,
-    dataConstraints: convertNullabilityToDataConstraint(property),
+    dataConstraints: property.valueType
+      ? convertValueTypeDataConstraints(property.valueType.constraints)
+      : convertNullabilityToDataConstraint(property),
     sharedPropertyTypeRid: property.sharedPropertyType?.apiName,
-    valueType: undefined,
+    valueType: property.valueType
+      ? convertValueType(property.valueType)
+      : undefined,
   };
   return output;
+}
+
+function convertValueType(
+  valueType: ValueTypeDefinitionVersion,
+): ValueTypeApiNameReference {
+  return {
+    apiName: valueType.apiName,
+    version: valueType.version,
+  };
+}
+
+function convertValueTypeDataConstraints(
+  dataConstraints: ValueTypeDataConstraint[],
+): DataConstraints | undefined {
+  if (dataConstraints.length === 0) {
+    return undefined;
+  }
+
+  const propertyTypeConstraints: PropertyTypeDataConstraintsWrapper[] =
+    dataConstraints.map(
+      (constraint): PropertyTypeDataConstraintsWrapper => ({
+        constraints: dataConstraintToPropertyTypeDataConstraint(
+          constraint.constraint.constraint,
+        ),
+        failureMessage: constraint.constraint.failureMessage,
+      }),
+    );
+
+  return {
+    propertyTypeConstraints,
+  };
+}
+
+function dataConstraintToPropertyTypeDataConstraint(
+  dc: DataConstraint,
+): PropertyTypeDataConstraints {
+  switch (dc.type) {
+    case "array":
+      return { ...dc } as PropertyTypeDataConstraints_array;
+
+    case "boolean":
+      return { ...dc } as PropertyTypeDataConstraints_boolean;
+
+    case "binary":
+      throw new Error("Binary type constraints are not supported");
+
+    case "date":
+      return { ...dc } as PropertyTypeDataConstraints_date;
+
+    case "decimal":
+      return { ...dc } as PropertyTypeDataConstraints_decimal;
+
+    case "double":
+      return { ...dc } as PropertyTypeDataConstraints_double;
+
+    case "float":
+      return { ...dc } as PropertyTypeDataConstraints_float;
+
+    case "integer":
+      return { ...dc } as PropertyTypeDataConstraints_integer;
+
+    case "long":
+      return { ...dc } as PropertyTypeDataConstraints_long;
+
+    case "map":
+      throw new Error("Map type constraints are not supported");
+
+    case "nullable":
+      throw new Error("Nullable constraints are not supported");
+
+    case "short":
+      return { ...dc } as PropertyTypeDataConstraints_short;
+
+    case "string":
+      return { ...dc } as PropertyTypeDataConstraints_string;
+
+    case "struct":
+      return {
+        type: "struct",
+        struct: {
+          elementConstraints: Object.fromEntries(
+            Object.entries(dc.struct.elementConstraints).map((
+              [field, constraint],
+            ) => [
+              field,
+              convertDataConstraintToDataConstraints(constraint),
+            ]),
+          ),
+        },
+      } as PropertyTypeDataConstraints_struct;
+
+    case "structV2":
+      // TODO / q: is it worth adding PropertyTypeDataConstraints_structV2?
+
+      // otherwise need some way to convert from ValueTypeReference (where does this rid even come from, and versionId)
+      // to the regular struct element DataConstraints
+      // export interface ValueTypeReference {
+      //   rid: ValueTypeRid;
+      //   versionId: ValueTypeVersionId | undefined;
+      // }
+      // export interface DataConstraints {
+      //   nullability?: DataNullability | null | undefined;
+      //   nullabilityV2?: DataNullabilityV2 | null | undefined;
+      //   propertyTypeConstraints: Array<PropertyTypeDataConstraintsWrapper>;
+      // }
+
+      // return {
+      //   type: "struct",
+      //   struct: {
+      //     elementConstraints: Object.fromEntries(
+      //       Object.entries(dc.structV2.elementConstraints).map((
+      //         [field, constraint],
+      //       ) => [
+      //         field,
+      //         BLAH,
+      //       ]),
+      //     ),
+      //   },
+      // } as PropertyTypeDataConstraints_struct;
+      throw new Error("StructV2 constraints are not supported");
+
+    case "timestamp":
+      return { ...dc } as PropertyTypeDataConstraints_timestamp;
+
+    default:
+      throw new Error(`Unknown DataConstraint type: ${(dc as any).type}`);
+  }
+}
+
+function convertDataConstraintToDataConstraints(
+  dc: DataConstraint,
+): DataConstraints {
+  return {
+    propertyTypeConstraints: [
+      {
+        constraints: dataConstraintToPropertyTypeDataConstraint(dc),
+        // known limitation: structs don't carry field-level data constraint failure messages
+      },
+    ],
+  };
 }
 
 function convertLink(
