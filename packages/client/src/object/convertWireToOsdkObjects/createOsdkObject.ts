@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { MediaReference } from "@osdk/foundry.core";
 import type { Attachment, ReferenceValue } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { GeotimeSeriesPropertyImpl } from "../../createGeotimeSeriesProperty.js";
@@ -273,6 +274,7 @@ function createSpecialProperty(
       objectApiName: objectDef.apiName,
       primaryKey: rawObject[objectDef.primaryKeyApiName as string],
       propertyName: p as string,
+      mediaReference: rawValue as MediaReference,
     });
   }
 }
