@@ -291,7 +291,7 @@ export interface ObjectPropertyTypeInner extends
 {
   type: PropertyTypeType;
   array?: boolean;
-  valueType: string | ValueTypeDefinitionVersion;
+  valueType: ValueTypeDefinitionVersion;
   sharedPropertyType: SharedPropertyType;
   description: string | undefined;
   displayName: string;
