@@ -48,7 +48,8 @@ describe("media", () => {
         ),
         "application/json",
         "file1.txt",
-        stubData.objectWithAllPropertyTypes1.mediaReference,
+        stubData.objectWithAllPropertyTypes1.mediaReference.reference
+          .mediaSetViewItem.mediaItemRid,
       );
 
     return () => {
@@ -81,6 +82,29 @@ describe("media", () => {
     const mediaContent = await object1?.mediaReference?.fetchContents();
     expect(await mediaContent!.json()).toEqual({
       content: "Hello World",
+    });
+  });
+
+  it("gets media reference successfully", async () => {
+    const result = await client(objectTypeWithAllPropertyTypes)
+      .where({ id: stubData.objectWithAllPropertyTypes1.id }).fetchPage();
+
+    const object1 = result.data[0];
+    expect(object1.mediaReference).toBeDefined();
+    const mediaReference = object1.mediaReference?.getMediaReference();
+    expect(mediaReference).toEqual({
+      mimeType: "application/pdf",
+      reference: {
+        type: "mediaSetViewItem",
+        mediaSetViewItem: {
+          mediaSetRid:
+            "ri.mio.main.media-set.4153d42f-ca4b-4e42-8ca5-8e6aa7edb642",
+          mediaSetViewRid:
+            "ri.mio.main.view.82a798ad-d637-4595-acc6-987bcf16629b",
+          mediaItemRid:
+            "ri.mio.main.media-item.001ec98b-1620-4814-9e17-8e9c4e536225",
+        },
+      },
     });
   });
 });

@@ -23,6 +23,10 @@ export interface Media {
    * Fetches content of a media reference property
    */
   fetchContents(): Promise<Response>;
+  /**
+   * Returns the media reference
+   */
+  getMediaReference(): MediaReference;
 }
 
 /**
