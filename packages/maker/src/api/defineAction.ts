@@ -33,7 +33,7 @@ import {
   type ObjectPropertyType,
   type ObjectType,
   OntologyEntityTypeEnum,
-  type organizationId,
+  type OrganizationId,
   type PropertyTypeType,
   type SharedPropertyType,
 } from "./types.js";
@@ -748,7 +748,7 @@ function createValidationRule(
   }
 }
 
-function getOrganizationId(organizationName: organizationId): string {
+function getOrganizationId(organizationName: OrganizationId): string {
   if (typeof organizationName === "string") {
     switch (organizationName) {
       case "palantir":

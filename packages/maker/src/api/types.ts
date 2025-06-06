@@ -210,10 +210,10 @@ export type GroupValidationRule = {
 
 export type OrganizationValidationRule = {
   type: "organization";
-  name: organizationId;
+  name: OrganizationId;
 };
 
-export type organizationId =
+export type OrganizationId =
   | "palantir"
   | "pretzel"
   | { type: "custom"; id: string };
