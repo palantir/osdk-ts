@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, ObjectSpecifier } from "@osdk/api";
+import type {
+  ObjectMetadata,
+  ObjectOrInterfaceDefinition,
+  ObjectSpecifier,
+} from "@osdk/api";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
 import type { UnderlyingOsdkObject } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
@@ -37,6 +41,10 @@ export interface BaseHolder {
   readonly "$clone": (
     newProps?: Record<string, any>,
   ) => this;
+
+  readonly "$__experimental_metadata": {
+    readonly object: ObjectMetadata;
+  };
 
   // [key: `$$${string}`]: any;
   // Unlike SimpleOsdkProperties, all of our remaining types are unknown as the full
