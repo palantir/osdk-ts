@@ -1,6 +1,6 @@
 ---
-"@osdk/client": minor
-"@osdk/api": minor
+"@osdk/client": patch
+"@osdk/api": patch
 ---
 
 Improves exposed APIs

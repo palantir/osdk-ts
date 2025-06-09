@@ -1,5 +1,5 @@
 ---
-"@osdk/maker": minor
+"@osdk/maker": patch
 ---
 
 OAC Imports v0

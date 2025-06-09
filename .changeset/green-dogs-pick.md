@@ -1,6 +1,6 @@
 ---
-"@osdk/client.unstable": minor
-"@osdk/maker": minor
+"@osdk/client.unstable": patch
+"@osdk/maker": patch
 ---
 
 Links as Code
