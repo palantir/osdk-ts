@@ -172,7 +172,7 @@ popd
  * @returns A promise that resolves to a boolean indicating success.
  */
 async function createSettingScript(directory: string): Promise<boolean> {
-  const scriptPath = path.join(directory, "setting.sh");
+  const scriptPath = path.join(directory, "settings.sh");
   const scriptContent = `#!/usr/bin/env bash
 export NODE_INSTALLATION_VERSION=18.18.0
 export REPOSITORY_RID={{REPOSITORY_RID}}
