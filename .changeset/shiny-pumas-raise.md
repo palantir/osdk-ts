@@ -1,6 +1,6 @@
 ---
-"@osdk/client": minor
-"@osdk/react": minor
+"@osdk/client": patch
+"@osdk/react": patch
 ---
 
 Improvements to @osdk/react
