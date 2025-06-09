@@ -1,6 +1,5 @@
 ---
-"@osdk/widget.client-react.unstable": minor
+"@osdk/widget.client-react.unstable": patch
 ---
-      
+
 Simulated release
-      
