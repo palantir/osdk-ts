@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import type { MarketplaceMonitor, MarketplaceReferencedEntities } from "./generated/object-sentinel/api/index.js";
 import type {
-  TemplatedObjectSet 
+  MarketplaceMonitor,
+  MarketplaceReferencedEntities,
+} from "./generated/object-sentinel/api/index.js";
+export type { MarketplaceEffectInput } from "./generated/object-sentinel/api/index.js";
+import type {
+  TemplatedObjectSet,
 } from "./generated/object-set-service/api/__components.js";
 import type {
   OntologyIrImportedTypes,
@@ -68,7 +72,6 @@ export type OntologyIrValueTypeBlockData = {
   valueTypes: OntologyIrValueTypeBlockDataEntry[];
 };
 
-
 export type AutomationIrBlockData = {
   automations: AutomationIr[];
 };
@@ -104,12 +107,12 @@ export interface ObjectSetShapeData {
 
 export type ObjectSetBlockDataV1 = {
   singleObjectSetBlockDatas: Array<SingleObjectSetBlockData>;
-}
+};
 export type SingleObjectSetBlockData = {
   objectSetTemplateId: string;
   securityRidTemplateId: string;
   templatedObjectSet: TemplatedObjectSet;
-}
+};
 
 export type ReadableId = string;
 export type BaseParameterType = OntologyIrBaseParameterType;

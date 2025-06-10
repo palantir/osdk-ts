@@ -17,6 +17,9 @@
 import type {
   ActionTypePermissionInformation,
   ActionTypeStatus,
+  AutomationIr,
+  AutomationIrBlockData,
+  AutomationShapeData,
   DataConstraints,
   MarketplaceEffect,
   MarketplaceMonitor,
@@ -51,13 +54,12 @@ import type {
   PropertyTypeMappingInfo,
   RetentionPolicy,
   SectionId,
-
-  AutomationIr,
-  AutomationIrBlockData,
-  SingleObjectSetBlockData} from "@osdk/client.unstable";
+  SingleObjectSetBlockData,
+} from "@osdk/client.unstable";
 import * as fs from "fs";
 import * as path from "path";
 import invariant from "tiny-invariant";
+import { toBlockShapeId } from "./blockShapeId.js";
 import { isExotic } from "./defineObject.js";
 import type {
   ActionParameter,
@@ -261,14 +263,15 @@ function convertOntologyToValueTypeIr(
 function convertToWireAutomateIr(
   ontology: OntologyDefinition,
 ): AutomationIrBlockData {
-  const automations = Object.values(ontology[OntologyEntityTypeEnum.AUTOMATION]).map(
-    automation => {
-      return generateAutomationIr(automation)
-    },
-  );
-  
+  const automations = Object.values(ontology[OntologyEntityTypeEnum.AUTOMATION])
+    .map(
+      automation => {
+        return generateAutomationIr(automation);
+      },
+    );
+
   return {
-    automations
+    automations,
   };
 }
 
@@ -278,19 +281,20 @@ function convertToWireAutomateIr(
 function generateAutomationIr(
   automation: Automation,
 ): AutomationIr {
-  const marketplaceMonitor = convertToMarketplaceMonitor(automation);
-  const objectSets = convertObjectSets(automation);
+  const automationShapeDataCollector: AutomationShapeData = {
+    actionsToParameters: {},
+    actionParameters: {},
+    objectTypesToProperties: {},
+    objectProperties: {},
+  };
 
-  // Extract object type from the automation condition
-  const objectTypeRid = automation.condition.objectTypeRid;
-  const objectType = ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][objectTypeRid];
-  
-  const { actionsToParameters, actionParameters } = generateActionShapeData(ontologyDefinition);
-  
-  const { objectTypesToProperties, objectProperties } = generateObjectShapeData(objectType);
-  
-  const objectSetReadableId = generateReadableId("object-type", objectTypeRid);
-  
+  const objectSetReadableId = "object-set-readable-id";
+  const objectSets = convertObjectSets(automation);
+  const marketplaceMonitor = convertToMarketplaceMonitor(
+    automation,
+    automationShapeDataCollector,
+  );
+
   return {
     automationBlockData: {
       marketplaceMonitor,
@@ -298,88 +302,104 @@ function generateAutomationIr(
       referencedObjectSetEntities: undefined,
     },
     automationShapeData: {
-      actionsToParameters,
-      actionParameters,
-      objectTypesToProperties,
-      objectProperties,
+      actionsToParameters: automationShapeDataCollector.actionsToParameters,
+      actionParameters: automationShapeDataCollector.actionParameters,
+      objectTypesToProperties:
+        automationShapeDataCollector.objectTypesToProperties,
+      objectProperties: automationShapeDataCollector.objectProperties,
     },
     objectSetBlockData: {
-      singleObjectSetBlockDatas: objectSets
+      singleObjectSetBlockDatas: objectSets,
     },
     objectSetShapeData: {
       objectSetReadableId,
-      objectTypesToProperties,
-      objectProperties,
+      objectTypesToProperties:
+        automationShapeDataCollector.objectTypesToProperties,
+      objectProperties: automationShapeDataCollector.objectProperties,
     },
   };
 }
 
-
-
 /**
  * Generates shape data for actions and parameters
  */
-function generateActionShapeData(ontology: OntologyDefinition) {
+function generateActionShapeData(
+  actionType: ActionType,
+  automationShapeDataCollector: AutomationShapeData,
+) {
   const actionsToParameters: Record<string, string[]> = {};
   const actionParameters: Record<string, any> = {};
-  
-  Object.values(ontology[OntologyEntityTypeEnum.ACTION_TYPE]).forEach(actionType => {
-    const actionReadableId = generateReadableId("action-type", actionType.apiName);
-    
-    const parameterIds: string[] = [];
-    
-    (actionType.parameters || []).forEach(param => {
-      const paramReadableId = generateReadableId(
-        "action", 
-        actionType.apiName, 
-        "parameter", 
-        param.id
-      );
-      
-      parameterIds.push(paramReadableId);
-      
-      actionParameters[paramReadableId] = {
-        type: param.type,
-        // Add other parameter properties as needed
-      };
-    });
-    
-    actionsToParameters[actionReadableId] = parameterIds;
+
+  const actionReadableId = generateReadableId(
+    "action-type",
+    actionType.apiName,
+  );
+
+  const parameterIds: string[] = [];
+
+  (actionType.parameters || []).forEach(param => {
+    const paramReadableId = generateReadableId(
+      "action",
+      actionType.apiName,
+      "parameter",
+      param.id,
+    );
+
+    parameterIds.push(paramReadableId);
+
+    actionParameters[paramReadableId] = {
+      type: param.type,
+      // Add other parameter properties as needed
+    };
   });
-  
-  return { actionsToParameters, actionParameters };
+
+  actionsToParameters[actionReadableId] = parameterIds;
+
+  automationShapeDataCollector.actionsToParameters = {
+    ...automationShapeDataCollector.actionsToParameters,
+    ...actionsToParameters,
+  };
+  automationShapeDataCollector.actionParameters = {
+    ...automationShapeDataCollector.actionParameters,
+    ...actionParameters,
+  };
 }
 
 /**
  * Generates shape data for object types and properties
  */
-function generateObjectShapeData(objectType: ObjectType) {
-  const objectTypesToProperties: Record<string, string[]> = {};
+function updateObjectShapeData(
+  objectType: ObjectType,
+  collector: AutomationShapeData,
+): void {
   const objectProperties: Record<string, any> = {};
-  
-  const objectTypeReadableId = generateReadableId("object-type", objectType.apiName);
+  const objectTypeReadableId = generateReadableId(
+    "object-type",
+    objectType.apiName,
+  );
   const propertyIds: string[] = [];
-  
+
   // Process properties
   (objectType.properties || []).forEach(property => {
     const propertyReadableId = generateReadableId(
       objectType.apiName,
       "property-type",
-      property.apiName
+      property.apiName,
     );
-    
+
     propertyIds.push(propertyReadableId);
-    
-    // Store property type information
+
     objectProperties[propertyReadableId] = {
       type: property.type,
       // Add other property attributes as needed
     };
   });
-  
-  objectTypesToProperties[objectTypeReadableId] = propertyIds;
-  
-  return { objectTypesToProperties, objectProperties };
+
+  collector.objectTypesToProperties[objectTypeReadableId] = propertyIds;
+  collector.objectProperties = {
+    ...collector.objectProperties,
+    ...objectProperties,
+  };
 }
 
 /**
@@ -390,29 +410,29 @@ function generateReadableId(...components: string[]): string {
   return components.join("-");
 }
 
-/**
- * Generates a shape ID by hashing the readable ID using SHA-256
- */
-function generateShapeId(readableId: string): string {
-  // In a real implementation, this would use SHA-256
-  // For now, we'll just return a placeholder
-  return `shape-id-for-${readableId}`;
-}
-
 function convertObjectSets(
   automation: Automation,
 ): Array<SingleObjectSetBlockData> {
-  // NOTE: this objectTypeRid is actually the shape id.
-  const objectTypeRid = automation.condition.objectTypeRid;
+  const readableId = generateReadableId(
+    "object-type",
+    automation.condition.objectType.apiName,
+  );
+  const readableIdForObjectSet = generateReadableId(
+    "object-set",
+    automation.condition.objectType.apiName,
+  );
+  const readableIdForAutomation = generateReadableId(
+    "monitor",
+    automation.apiName,
+  );
   return [{
     // NOTE: this is the object set shape id.
-    objectSetTemplateId: "",
-    securityRidTemplateId: "",
+    objectSetTemplateId: toBlockShapeId(readableIdForObjectSet),
+    securityRidTemplateId: toBlockShapeId(readableIdForAutomation),
     templatedObjectSet: {
       type: "base",
       base: {
-        // NOTE: this actually needs to be a shape id.
-        objectTypeId: objectTypeRid,
+        objectTypeId: toBlockShapeId(readableId),
       },
     },
   }];
@@ -420,12 +440,19 @@ function convertObjectSets(
 
 function convertToMarketplaceMonitor(
   automation: Automation,
+  automationShapeDataCollector: AutomationShapeData,
 ): MarketplaceMonitor {
-  const version = 1; // todo - check this is ok
-  const rid = `ri.object-sentinel..${automation.apiName}`; // todo - check this is ok
-  const objectSetRid = "ri.objectset.main.objectset.placeholder"; // todo - how to deal with this?
+  const version = 1;
+  const rid = `ri.object-sentinel..${automation.apiName}`;
 
-  const { subscribers, scopedTokenEffects } = getAutomationEffects(automation);
+  const { subscribers, scopedTokenEffects } = getAutomationEffects(
+    automation,
+    automationShapeDataCollector,
+  );
+  updateObjectShapeData(
+    automation.condition.objectType,
+    automationShapeDataCollector,
+  );
 
   return {
     isCurrentlyInTriggeringState: false,
@@ -442,7 +469,12 @@ function convertToMarketplaceMonitor(
               type: "added",
               added: {},
             },
-            objectSetRid: objectSetRid,
+            objectSetRid: toBlockShapeId(
+              generateReadableId(
+                "object-set",
+                automation.condition.objectType.apiName,
+              ),
+            ),
           },
         },
       },
@@ -483,7 +515,10 @@ function convertToMarketplaceMonitor(
   };
 }
 
-function getAutomationEffects(automation: Automation) {
+function getAutomationEffects(
+  automation: Automation,
+  automationShapeDataCollector: AutomationShapeData,
+) {
   const userScopedEffectsSubscribers:
     MarketplaceMonitor["metadata"]["subscribers"] = [];
   let scopedTokenEffects: MarketplaceMonitor["metadata"]["scopedTokenEffects"] =
@@ -494,15 +529,27 @@ function getAutomationEffects(automation: Automation) {
 
   Object.entries(automation.effects).forEach(([effectId, effect]) => {
     if (effect.type === "action") {
+      generateActionShapeData(effect.action, automationShapeDataCollector);
+      const actionBlockShapeId = toBlockShapeId(
+        generateReadableId("action-type", effect.action.apiName),
+      );
       if (effect.scoped) {
         scopedEffects[effectId] = {
           type: "action",
-          action: effect.definition,
+          action: {
+            ...effect.definition,
+            actionTypeRid: actionBlockShapeId,
+            actionInputs: {},
+          },
         };
       } else {
         nonScopedEffects[effectId] = {
           type: "action",
-          action: effect.definition,
+          action: {
+            ...effect.definition,
+            actionTypeRid: actionBlockShapeId,
+            actionInputs: {},
+          },
         };
       }
     }

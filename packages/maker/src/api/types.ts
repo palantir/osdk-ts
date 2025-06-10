@@ -28,6 +28,7 @@ import type {
   LinkTypeDisplayMetadata,
   LinkTypeMetadata,
   MarketplaceActionEffect,
+  MarketplaceEffectInput,
   MarketplaceFunctionEffect,
   OntologyIrBaseParameterType_decimal,
   OntologyIrBaseParameterType_decimalList,
@@ -756,7 +757,7 @@ export type AutomationDefinition = Omit<Automation, "__type">;
 
 export type AutomationCondition = {
   type: "objectsAdded";
-  objectTypeRid: string;
+  objectType: ObjectType;
   // filters: []; // filters are not currently supported
 };
 
@@ -765,7 +766,9 @@ export type Effect = AutomationActionEffect | AutomationFunctionEffect;
 export type AutomationActionEffect = {
   type: "action";
   effectId: string;
-  definition: MarketplaceActionEffect;
+  definition: Omit<MarketplaceActionEffect, "actionTypeRid" | "actionInputs">;
+  parameters: Record<ActionParameter["id"], MarketplaceEffectInput>;
+  action: ActionType;
   onBehalfOfUserId: string;
   scoped: boolean;
 };
