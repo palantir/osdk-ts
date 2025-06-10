@@ -33,6 +33,7 @@ export default async function main(
     apiNamespace: string;
     snapshotDir: string;
     valueTypesOutput: string;
+    automationsOutput: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -71,6 +72,12 @@ export default async function main(
         default: "value-types.json",
         coerce: path.resolve,
       },
+      automationsOutput: {
+        describe: "Automation Output File",
+        type: "string",
+        default: "automations.json",
+        coerce: path.resolve,
+      },
     })
     .parseAsync();
   let apiNamespace = "";
@@ -101,6 +108,12 @@ export default async function main(
     await fs.writeFile(
       commandLineOpts.valueTypesOutput,
       JSON.stringify(ontology.valueType, null, 2),
+    );
+  }
+  if (ontology.automation.automations.length > 0) {
+    await fs.writeFile(
+      commandLineOpts.automationsOutput,
+      JSON.stringify(ontology.automation, null, 2),
     );
   }
 }
