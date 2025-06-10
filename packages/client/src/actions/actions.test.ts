@@ -19,6 +19,7 @@ import type {
   ActionValidationResponse,
   AttachmentUpload,
   MediaReference,
+  ObjectTypeDefinition,
 } from "@osdk/api";
 import {
   $Actions,
@@ -495,7 +496,7 @@ describe.each([
 
     expectTypeOf<
       {
-        createdInterface: string;
+        createdInterface: string | ObjectTypeDefinition;
       }
     >().toMatchTypeOf<
       InferredParamType
@@ -509,7 +510,7 @@ describe.each([
     >[0];
 
     expectTypeOf<{
-      createdInterface: string;
+      createdInterface: string | ObjectTypeDefinition;
     }[]>().toMatchTypeOf<InferredBatchParamType>();
 
     const result = await client(createFooInterface).applyAction({

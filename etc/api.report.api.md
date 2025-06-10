@@ -331,7 +331,7 @@ export interface DataValueClientToWire {
     	// (undocumented)
     null: null;
     	// (undocumented)
-    objectType: string;
+    objectType: string | ObjectTypeDefinition;
     	// (undocumented)
     set: Set<any>;
     	// (undocumented)

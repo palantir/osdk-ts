@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ActionMetadata } from "@osdk/api";
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -39,6 +40,8 @@ import { isWireObjectSet } from "./WireObjectSet.js";
 export async function toDataValue(
   value: unknown,
   client: MinimalClient,
+  actionMetadata: ActionMetadata,
+  parameterName: string,
 ): Promise<DataValue> {
   if (value == null) {
     // typeof null is 'object' so do this first
@@ -55,13 +58,16 @@ export async function toDataValue(
     ) {
       const converted = [];
       for (const value of values) {
-        converted.push(await toDataValue(value, client));
+        converted.push(
+          await toDataValue(value, client, actionMetadata, parameterName),
+        );
       }
       return converted;
     }
     const promiseArray = Array.from(
       value,
-      async (innerValue) => await toDataValue(innerValue, client),
+      async (innerValue) =>
+        await toDataValue(innerValue, client, actionMetadata, parameterName),
     );
     return Promise.all(promiseArray);
   }
@@ -75,7 +81,12 @@ export async function toDataValue(
         filename: value.name,
       },
     );
-    return await toDataValue(attachment.rid, client);
+    return await toDataValue(
+      attachment.rid,
+      client,
+      actionMetadata,
+      parameterName,
+    );
   }
 
   if (isAttachmentFile(value)) {
@@ -86,20 +97,40 @@ export async function toDataValue(
         filename: value.name as string,
       },
     );
-    return await toDataValue(attachment.rid, client);
+    return await toDataValue(
+      attachment.rid,
+      client,
+      actionMetadata,
+      parameterName,
+    );
   }
 
   // objects just send the JSON'd primaryKey
   if (isOntologyObjectV2(value)) {
-    return await toDataValue(value.__primaryKey, client);
+    return await toDataValue(
+      value.__primaryKey,
+      client,
+      actionMetadata,
+      parameterName,
+    );
   }
 
   if (isObjectSpecifiersObject(value)) {
-    return await toDataValue(value.$primaryKey, client);
+    return await toDataValue(
+      value.$primaryKey,
+      client,
+      actionMetadata,
+      parameterName,
+    );
   }
 
   if (isPoint(value)) {
-    return await toDataValue(value.coordinates.join(), client);
+    return await toDataValue(
+      value.coordinates.join(),
+      client,
+      actionMetadata,
+      parameterName,
+    );
   }
 
   // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
@@ -121,7 +152,11 @@ export async function toDataValue(
     };
   }
 
-  if (isObjectTypeDefinition(value)) {
+  if (
+    parameterName in actionMetadata.parameters
+    && actionMetadata.parameters[parameterName].type === "objectType"
+    && isObjectTypeDefinition(value)
+  ) {
     return value.apiName;
   }
 
@@ -134,7 +169,12 @@ export async function toDataValue(
     return Object.entries(value).reduce(
       async (promisedAcc, [key, structValue]) => {
         const acc = await promisedAcc;
-        acc[key] = await toDataValue(structValue, client);
+        acc[key] = await toDataValue(
+          structValue,
+          client,
+          actionMetadata,
+          parameterName,
+        );
         return acc;
       },
       Promise.resolve({} as { [key: string]: DataValue }),
