@@ -1,5 +1,15 @@
 # @osdk/create-app.template.tutorial-todo-aip-app
 
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 1444362: Read environment variables from index.html meta tags
+- fa02507: Use options overload when initializing client in create-app templates and standardize formatting
+- 889e84b: Release
+- 317b555: Release
+
 ## 2.2.0-rc.26
 
 ## 2.2.0-rc.25

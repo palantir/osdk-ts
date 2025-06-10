@@ -1,5 +1,13 @@
 # @osdk/tool.release
 
+## 0.7.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 21e33a5: Upgrade consola to 3.4.0
+- c8da1f9: Write script to add updated changelogs from previous release
+
 ## 0.7.0-beta.3
 
 ### Minor Changes

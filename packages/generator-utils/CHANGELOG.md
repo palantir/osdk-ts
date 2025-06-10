@@ -1,5 +1,13 @@
 # @osdk/generator-utils
 
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 889e84b: Release
+- 317b555: Release
+
 ## 2.2.0-rc.26
 
 ## 2.2.0-rc.25
