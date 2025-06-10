@@ -70,6 +70,7 @@ export type {
   MarketplaceEffect,
   MarketplaceFunctionEffect,
   MarketplaceMonitor,
+  MarketplaceScopedEffect,
 } from "./generated/object-sentinel/api/__components.js";
 
 export type {
