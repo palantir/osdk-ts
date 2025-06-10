@@ -16,7 +16,7 @@
 
 import * as fs from "fs";
 import path from "path";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vitest } from "vitest";
 import {
   defineAction,
   defineCreateInterfaceObjectAction,
@@ -25,6 +25,7 @@ import {
   defineModifyInterfaceObjectAction,
   defineModifyObjectAction,
 } from "./defineAction.js";
+import { defineAutomation } from "./defineAutomation.js";
 import { importSharedPropertyType } from "./defineImportSpt.js";
 import { defineInterface } from "./defineInterface.js";
 import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
@@ -32,6 +33,7 @@ import { defineLink } from "./defineLink.js";
 import { defineObject } from "./defineObject.js";
 import {
   defineOntology,
+  dumpAutomationWireType,
   dumpOntologyFullMetadata,
   dumpValueTypeWireType,
 } from "./defineOntology.js";
@@ -6899,6 +6901,221 @@ describe("Ontology Defining", () => {
       fs.rmSync(path.resolve(path.join(generatedDir, "..")), {
         recursive: true,
         force: true,
+      });
+    });
+  });
+  describe("Automations", () => {
+    describe("defineAutomation", () => {
+      it("Automations with action effects are defined correctly", () => {
+        const exampleObjectType = defineObject({
+          titlePropertyApiName: "bar",
+          displayName: "exampleObjectType",
+          pluralDisplayName: "exampleObjectTypes",
+          apiName: "foo",
+          primaryKeyPropertyApiName: "bar",
+          properties: [{
+            apiName: "bar",
+            type: "string",
+            displayName: "Bar",
+          }],
+        });
+
+        const exampleAction = defineAction({
+          apiName: "foo",
+          displayName: "exampleAction",
+          status: "active",
+          rules: [{
+            type: "addOrModifyObjectRuleV2",
+            addOrModifyObjectRuleV2: {
+              objectToModify: "objectToModifyParameter",
+              propertyValues: {
+                "bar": {
+                  type: "parameterId",
+                  parameterId: "param1",
+                },
+              },
+              structFieldValues: {},
+            },
+          }],
+          parameters: [{
+            id: "param1",
+            displayName: "param1",
+            type: "boolean",
+            validation: { required: true, allowedValues: { type: "boolean" } },
+          }],
+        });
+
+        const automation = defineAutomation({
+          apiName: "automationApiName",
+          condition: {
+            objectType: exampleObjectType,
+            type: "objectsAdded",
+          },
+          effects: {
+            "effect-1": {
+              type: "action",
+              action: exampleAction,
+              definition: {
+                actionTypeVersion: undefined,
+                executionMode: undefined,
+                executionSettings: undefined,
+              },
+              effectId: "effect-1",
+              onBehalfOfUserId: "user-id-1",
+              parameters: {
+                ["parameterApiName"]: {
+                  type: "staticValue",
+                  staticValue: {
+                    type: "string",
+                    string: "param1",
+                  },
+                },
+              },
+              scoped: false,
+            },
+          },
+        });
+        Date.prototype.toISOString = vitest.fn(() => "fake-date");
+        console.log({ OUT: dumpAutomationWireType() });
+        expect(dumpAutomationWireType()).toMatchInlineSnapshot(
+          `
+ {
+   "automations": [
+     {
+       "automationBlockData": {
+         "marketplaceMonitor": {
+           "attribution": {
+             "createdAt": "fake-date",
+             "createdBy": undefined,
+           },
+           "isCurrentlyInTriggeringState": false,
+           "lastEvaluationTime": undefined,
+           "lastHistoryEvent": {},
+           "lastRecoveryEvent": {},
+           "lastTriggerEvent": {},
+           "logic": {
+             "event": {
+               "eventType": {
+                 "notSavedObjectSetEvent": {
+                   "eventType": {
+                     "added": {},
+                     "type": "added",
+                   },
+                   "objectSetRid": "63c49d36-25a1-5c19-b76e-3f1e4acaa1af",
+                 },
+                 "type": "notSavedObjectSetEvent",
+               },
+             },
+             "type": "event",
+           },
+           "metadata": {
+             "branchRid": undefined,
+             "cycleDetectionSettings": undefined,
+             "dependentAutomations": [],
+             "disabled": {},
+             "expiry": undefined,
+             "expiryDate": "",
+             "globalEffectExecutionSettings": undefined,
+             "liveConfig": undefined,
+             "management": undefined,
+             "mgsConfig": undefined,
+             "muted": {
+               "forUsers": {},
+             },
+             "priority": undefined,
+             "rendering": undefined,
+             "renderingV2": {},
+             "rid": "ri.object-sentinel..automationApiName",
+             "scopedTokenEffects": undefined,
+             "subscribers": [
+               {
+                 "recoveryEffects": {},
+                 "subscriberType": {
+                   "type": "user",
+                   "user": {
+                     "userId": "user",
+                   },
+                 },
+                 "triggerEffects": {
+                   "effect-1": {
+                     "action": {
+                       "actionInputs": {},
+                       "actionTypeRid": "8f1b9b8e-1682-5fed-9f33-37d9b75645cf",
+                       "actionTypeVersion": undefined,
+                       "executionMode": undefined,
+                       "executionSettings": undefined,
+                     },
+                     "type": "action",
+                   },
+                 },
+               },
+             ],
+             "telemetryConfig": undefined,
+             "timeSeriesAlertingOverrides": undefined,
+             "triggerExecutionSettings": undefined,
+           },
+           "monitorType": "FUNNEL_BACKED_INCREMENTAL",
+           "publishedMonitorVersion": 1,
+           "version": 1,
+           "versionedObjectSetsVersionsUsed": {},
+         },
+         "referencedObjectSetEntities": undefined,
+         "requiredInputEntityIds": [],
+       },
+       "automationShapeData": {
+         "actionParameters": {
+           "action-com.palantir.foo-parameter-param1": {
+             "type": "boolean",
+           },
+         },
+         "actionsToParameters": {
+           "action-type-com.palantir.foo": [
+             "action-com.palantir.foo-parameter-param1",
+           ],
+         },
+         "objectProperties": {
+           "com.palantir.foo-property-type-bar": {
+             "type": "string",
+           },
+         },
+         "objectTypesToProperties": {
+           "object-type-com.palantir.foo": [
+             "com.palantir.foo-property-type-bar",
+           ],
+         },
+       },
+       "objectSetBlockData": {
+         "singleObjectSetBlockDatas": [
+           {
+             "objectSetTemplateId": "63c49d36-25a1-5c19-b76e-3f1e4acaa1af",
+             "securityRidTemplateId": "60e35b45-a7a0-50a3-af7e-47ee1a7834df",
+             "templatedObjectSet": {
+               "base": {
+                 "objectTypeId": "b4b1e31d-b387-5e4b-858b-d1d360f45f38",
+               },
+               "type": "base",
+             },
+           },
+         ],
+       },
+       "objectSetShapeData": {
+         "objectProperties": {
+           "com.palantir.foo-property-type-bar": {
+             "type": "string",
+           },
+         },
+         "objectSetReadableId": "object-set-readable-id",
+         "objectTypesToProperties": {
+           "object-type-com.palantir.foo": [
+             "com.palantir.foo-property-type-bar",
+           ],
+         },
+       },
+     },
+   ],
+ }
+            `,
+        );
       });
     });
   });
