@@ -25,6 +25,7 @@ import {
   defineModifyInterfaceObjectAction,
   defineModifyObjectAction,
 } from "./defineAction.js";
+import { defineAutomation } from "./defineAutomation.js";
 import { importSharedPropertyType } from "./defineImportSpt.js";
 import { defineInterface } from "./defineInterface.js";
 import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
@@ -32,6 +33,7 @@ import { defineLink } from "./defineLink.js";
 import { defineObject } from "./defineObject.js";
 import {
   defineOntology,
+  dumpAutomationWireType,
   dumpOntologyFullMetadata,
   dumpValueTypeWireType,
 } from "./defineOntology.js";
@@ -6823,6 +6825,85 @@ describe("Ontology Defining", () => {
       fs.rmSync(path.resolve(path.join(generatedDir, "..")), {
         recursive: true,
         force: true,
+      });
+    });
+  });
+  describe("Automations", () => {
+    describe("defineAutomation", () => {
+      it("Automations with action effects are defined correctly", () => {
+        const exampleObjectType = defineObject({
+          titlePropertyApiName: "bar",
+          displayName: "exampleObjectType",
+          pluralDisplayName: "exampleObjectTypes",
+          apiName: "foo",
+          primaryKeyPropertyApiName: "bar",
+          properties: [{
+            apiName: "bar",
+            type: "string",
+            displayName: "Bar",
+          }],
+        });
+
+        const exampleAction = defineAction({
+          apiName: "foo",
+          displayName: "exampleAction",
+          status: "active",
+          rules: [{
+            type: "addOrModifyObjectRuleV2",
+            addOrModifyObjectRuleV2: {
+              objectToModify: "objectToModifyParameter",
+              propertyValues: {
+                "bar": {
+                  type: "parameterId",
+                  parameterId: "param1",
+                },
+              },
+              structFieldValues: {},
+            },
+          }],
+          parameters: [{
+            id: "param1",
+            displayName: "param1",
+            type: "boolean",
+            validation: { required: true, allowedValues: { type: "boolean" } },
+          }],
+        });
+
+        const automation = defineAutomation({
+          apiName: "automationApiName",
+          condition: {
+            objectType: exampleObjectType,
+            type: "objectsAdded",
+          },
+          effects: {
+            "effect-1": {
+              type: "action",
+              action: exampleAction,
+              definition: {
+                actionTypeVersion: undefined,
+                executionMode: undefined,
+                executionSettings: undefined,
+              },
+              effectId: "effect-1",
+              onBehalfOfUserId: "user-id-1",
+              parameters: {
+                ["parameterApiName"]: {
+                  type: "staticValue",
+                  staticValue: {
+                    type: "string",
+                    string: "param1",
+                  },
+                },
+              },
+              scoped: false,
+            },
+          },
+        });
+        expect(dumpAutomationWireType()).toMatchInlineSnapshot(
+          `
+            {}
+            `,
+        );
       });
     });
   });
