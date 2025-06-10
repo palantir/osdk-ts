@@ -1978,9 +1978,9 @@ versions:
 
             \                }
 
-            \                else if (update.state === \"DELETED\") {
+            \                else if (update.state === \"REMOVED\") {
 
-            \                    // The object has been deleted
+            \                    // The object was removed from the object set, which could mean it was deleted or no longer meets the filter criteria
 
             \                    delete objects[update.object.$primaryKey];
 
