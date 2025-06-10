@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { MarketplaceMonitor } from "./generated/object-sentinel/api/index.js";
-import type { 
-  ObjectSetBlockDataV1 as ImportedObjectSetBlockDataV1,
+import type { MarketplaceMonitor, MarketplaceReferencedEntities } from "./generated/object-sentinel/api/index.js";
+import type {
   TemplatedObjectSet 
 } from "./generated/object-set-service/api/__components.js";
 import type {
   OntologyIrImportedTypes,
   OntologyIrOntologyBlockDataV2,
 } from "./generated/ontology-metadata/api/blockdata/index.js";
+import type { OntologyIrBaseParameterType } from "./generated/ontology-metadata/api/types/__components.js";
 import type { BaseType } from "./generated/type-registry/api/BaseType.js";
 import type { ExampleValue } from "./generated/type-registry/api/ExampleValue.js";
 import type { ValueTypeApiName } from "./generated/type-registry/api/ValueTypeApiName.js";
@@ -69,28 +69,25 @@ export type OntologyIrValueTypeBlockData = {
 };
 
 
-
-export type ObjectSetBlockDataEntry = {
-  objectSet: TemplatedObjectSet;
-  templateId: string;
+export type AutomationIrBlockData = {
+  automations: AutomationIr[];
 };
 
 export interface AutomationIr {
-  automationBlockData: SingleAutomationIrBlockData;
+  automationBlockData: AutomationBlockDataV1;
   automationShapeData: AutomationShapeData;
-  objectSetBlockData: ImportedObjectSetBlockDataV1;
+  objectSetBlockData: ObjectSetBlockDataV1;
   objectSetShapeData: ObjectSetShapeData;
 }
 
-export type AutomationIrBlockData = {
-  automations: SingleAutomationIrBlockData[];
-};
-
-export type SingleAutomationIrBlockData = {
-  automation: MarketplaceMonitor;
-  // All the object sets that are used by this automation
-  objectSets: ObjectSetBlockDataEntry[];
-};
+export interface AutomationBlockDataV1 {
+  marketplaceMonitor: MarketplaceMonitor;
+  referencedObjectSetEntities?:
+    | MarketplaceReferencedEntities
+    | null
+    | undefined;
+  requiredInputEntityIds: Array<string>;
+}
 
 export interface AutomationShapeData {
   actionsToParameters: Record<ReadableId, ReadableId[]>;
@@ -105,6 +102,15 @@ export interface ObjectSetShapeData {
   objectProperties: Record<ReadableId, AllowedObjectPropertyType>;
 }
 
+export type ObjectSetBlockDataV1 = {
+  singleObjectSetBlockDatas: Array<SingleObjectSetBlockData>;
+}
+export type SingleObjectSetBlockData = {
+  objectSetTemplateId: string;
+  securityRidTemplateId: string;
+  templatedObjectSet: TemplatedObjectSet;
+}
+
 export type ReadableId = string;
-export type BaseParameterType = any; // Will be properly typed when implementing convertToWireAutomateIr
+export type BaseParameterType = OntologyIrBaseParameterType;
 export type AllowedObjectPropertyType = any; // Will be properly typed when implementing convertToWireAutomateIr

@@ -51,13 +51,10 @@ import type {
   PropertyTypeMappingInfo,
   RetentionPolicy,
   SectionId,
-} from "@osdk/client.unstable";
-import type {
+
   AutomationIr,
   AutomationIrBlockData,
-  ObjectSetBlockDataEntry,
-  SingleAutomationIrBlockData,
-} from "@osdk/client.unstable/src/blockDataIr.js";
+  SingleObjectSetBlockData} from "@osdk/client.unstable";
 import * as fs from "fs";
 import * as path from "path";
 import invariant from "tiny-invariant";
@@ -266,20 +263,12 @@ function convertToWireAutomateIr(
 ): AutomationIrBlockData {
   const automations = Object.values(ontology[OntologyEntityTypeEnum.AUTOMATION]).map(
     automation => {
-      const automationBlockData = {
-        automation: convertToMarketplaceMonitor(automation),
-        objectSets: convertObjectSets(automation),
-      };
-      
-      // Generate the AutomationIr with shape data
-      const automationIr = generateAutomationIr(automation, automationBlockData);
-      
-      return automationBlockData;
+      return generateAutomationIr(automation)
     },
   );
   
   return {
-    automations,
+    automations
   };
 }
 
@@ -288,24 +277,25 @@ function convertToWireAutomateIr(
  */
 function generateAutomationIr(
   automation: Automation,
-  blockData: SingleAutomationIrBlockData,
 ): AutomationIr {
+  const marketplaceMonitor = convertToMarketplaceMonitor(automation);
+  const objectSets = convertObjectSets(automation);
+
   // Extract object type from the automation condition
   const objectTypeRid = automation.condition.objectTypeRid;
   const objectType = ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][objectTypeRid];
   
-  // Generate shape data for actions and parameters
   const { actionsToParameters, actionParameters } = generateActionShapeData(ontologyDefinition);
   
-  // Generate shape data for object types and properties
   const { objectTypesToProperties, objectProperties } = generateObjectShapeData(objectType);
   
-  // Generate object set shape data
   const objectSetReadableId = generateReadableId("object-type", objectTypeRid);
   
   return {
     automationBlockData: {
-      // This would be filled with actual automation block data
+      marketplaceMonitor,
+      requiredInputEntityIds: [],
+      referencedObjectSetEntities: undefined,
     },
     automationShapeData: {
       actionsToParameters,
@@ -313,7 +303,9 @@ function generateAutomationIr(
       objectTypesToProperties,
       objectProperties,
     },
-    objectSetBlockData: blockData.objectSets[0].objectSet,
+    objectSetBlockData: {
+      singleObjectSetBlockDatas: objectSets
+    },
     objectSetShapeData: {
       objectSetReadableId,
       objectTypesToProperties,
@@ -322,6 +314,8 @@ function generateAutomationIr(
   };
 }
 
+
+
 /**
  * Generates shape data for actions and parameters
  */
@@ -329,14 +323,11 @@ function generateActionShapeData(ontology: OntologyDefinition) {
   const actionsToParameters: Record<string, string[]> = {};
   const actionParameters: Record<string, any> = {};
   
-  // Process all action types
   Object.values(ontology[OntologyEntityTypeEnum.ACTION_TYPE]).forEach(actionType => {
     const actionReadableId = generateReadableId("action-type", actionType.apiName);
     
-    // Map parameters to this action
     const parameterIds: string[] = [];
     
-    // Process parameters
     (actionType.parameters || []).forEach(param => {
       const paramReadableId = generateReadableId(
         "action", 
@@ -347,7 +338,6 @@ function generateActionShapeData(ontology: OntologyDefinition) {
       
       parameterIds.push(paramReadableId);
       
-      // Store parameter type information
       actionParameters[paramReadableId] = {
         type: param.type,
         // Add other parameter properties as needed
@@ -411,12 +401,14 @@ function generateShapeId(readableId: string): string {
 
 function convertObjectSets(
   automation: Automation,
-): Array<ObjectSetBlockDataEntry> {
+): Array<SingleObjectSetBlockData> {
+  // NOTE: this objectTypeRid is actually the shape id.
   const objectTypeRid = automation.condition.objectTypeRid;
   return [{
     // NOTE: this is the object set shape id.
-    templateId: "",
-    objectSet: {
+    objectSetTemplateId: "",
+    securityRidTemplateId: "",
+    templatedObjectSet: {
       type: "base",
       base: {
         // NOTE: this actually needs to be a shape id.
