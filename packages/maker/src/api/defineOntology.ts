@@ -425,7 +425,6 @@ function convertObjectSets(
     automation.apiName,
   );
   return [{
-    // NOTE: this is the object set shape id.
     objectSetTemplateId: toBlockShapeId(readableIdForObjectSet),
     securityRidTemplateId: toBlockShapeId(readableIdForAutomation),
     templatedObjectSet: {
