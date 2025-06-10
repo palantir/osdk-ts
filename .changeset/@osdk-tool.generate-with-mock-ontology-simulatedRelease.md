@@ -1,6 +1,5 @@
 ---
-"@osdk/tool.generate-with-mock-ontology": minor
+"@osdk/tool.generate-with-mock-ontology": patch
 ---
-      
+
 Simulated release
-      
