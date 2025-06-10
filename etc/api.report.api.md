@@ -692,6 +692,7 @@ export namespace Logger {
 export interface Media {
     	fetchContents(): Promise<Response>;
     	fetchMetadata(): Promise<MediaMetadata_2>;
+    	getMediaReference(): MediaReference;
 }
 
 // @public
