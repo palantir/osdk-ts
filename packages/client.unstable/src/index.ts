@@ -75,10 +75,16 @@ export type {
 
 export type {
   ApiNameValueTypeReference,
+  AutomationIr,
   AutomationIrBlockData,
+  AutomationBlockDataV1,
+  AutomationShapeData,
   ObjectSetBlockDataEntry,
+  ObjectSetShapeData,
   OntologyIr,
   OntologyIrOntologyBlockDataV2,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
+  ReadableId,
+  SingleAutomationIrBlockData,
 } from "./blockDataIr.js";

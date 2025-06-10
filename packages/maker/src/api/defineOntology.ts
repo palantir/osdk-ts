@@ -17,12 +17,10 @@
 import type {
   ActionTypePermissionInformation,
   ActionTypeStatus,
-  AutomationIrBlockData,
   DataConstraints,
   MarketplaceEffect,
   MarketplaceMonitor,
   MarketplaceScopedEffect,
-  ObjectSetBlockDataEntry,
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionValidation,
@@ -54,6 +52,12 @@ import type {
   RetentionPolicy,
   SectionId,
 } from "@osdk/client.unstable";
+import type {
+  AutomationIr,
+  AutomationIrBlockData,
+  ObjectSetBlockDataEntry,
+  SingleAutomationIrBlockData,
+} from "@osdk/client.unstable/src/blockDataIr.js";
 import * as fs from "fs";
 import * as path from "path";
 import invariant from "tiny-invariant";
@@ -260,14 +264,149 @@ function convertOntologyToValueTypeIr(
 function convertToWireAutomateIr(
   ontology: OntologyDefinition,
 ): AutomationIrBlockData {
-  return {
-    automations: Object.values(ontology[OntologyEntityTypeEnum.AUTOMATION]).map(
-      automation => ({
+  const automations = Object.values(ontology[OntologyEntityTypeEnum.AUTOMATION]).map(
+    automation => {
+      const automationBlockData = {
         automation: convertToMarketplaceMonitor(automation),
         objectSets: convertObjectSets(automation),
-      }),
-    ),
+      };
+      
+      // Generate the AutomationIr with shape data
+      const automationIr = generateAutomationIr(automation, automationBlockData);
+      
+      return automationBlockData;
+    },
+  );
+  
+  return {
+    automations,
   };
+}
+
+/**
+ * Generates the AutomationIr with shape data and readable IDs
+ */
+function generateAutomationIr(
+  automation: Automation,
+  blockData: SingleAutomationIrBlockData,
+): AutomationIr {
+  // Extract object type from the automation condition
+  const objectTypeRid = automation.condition.objectTypeRid;
+  const objectType = ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][objectTypeRid];
+  
+  // Generate shape data for actions and parameters
+  const { actionsToParameters, actionParameters } = generateActionShapeData(ontologyDefinition);
+  
+  // Generate shape data for object types and properties
+  const { objectTypesToProperties, objectProperties } = generateObjectShapeData(objectType);
+  
+  // Generate object set shape data
+  const objectSetReadableId = generateReadableId("object-type", objectTypeRid);
+  
+  return {
+    automationBlockData: {
+      // This would be filled with actual automation block data
+    },
+    automationShapeData: {
+      actionsToParameters,
+      actionParameters,
+      objectTypesToProperties,
+      objectProperties,
+    },
+    objectSetBlockData: blockData.objectSets[0].objectSet,
+    objectSetShapeData: {
+      objectSetReadableId,
+      objectTypesToProperties,
+      objectProperties,
+    },
+  };
+}
+
+/**
+ * Generates shape data for actions and parameters
+ */
+function generateActionShapeData(ontology: OntologyDefinition) {
+  const actionsToParameters: Record<string, string[]> = {};
+  const actionParameters: Record<string, any> = {};
+  
+  // Process all action types
+  Object.values(ontology[OntologyEntityTypeEnum.ACTION_TYPE]).forEach(actionType => {
+    const actionReadableId = generateReadableId("action-type", actionType.apiName);
+    
+    // Map parameters to this action
+    const parameterIds: string[] = [];
+    
+    // Process parameters
+    (actionType.parameters || []).forEach(param => {
+      const paramReadableId = generateReadableId(
+        "action", 
+        actionType.apiName, 
+        "parameter", 
+        param.id
+      );
+      
+      parameterIds.push(paramReadableId);
+      
+      // Store parameter type information
+      actionParameters[paramReadableId] = {
+        type: param.type,
+        // Add other parameter properties as needed
+      };
+    });
+    
+    actionsToParameters[actionReadableId] = parameterIds;
+  });
+  
+  return { actionsToParameters, actionParameters };
+}
+
+/**
+ * Generates shape data for object types and properties
+ */
+function generateObjectShapeData(objectType: ObjectType) {
+  const objectTypesToProperties: Record<string, string[]> = {};
+  const objectProperties: Record<string, any> = {};
+  
+  const objectTypeReadableId = generateReadableId("object-type", objectType.apiName);
+  const propertyIds: string[] = [];
+  
+  // Process properties
+  (objectType.properties || []).forEach(property => {
+    const propertyReadableId = generateReadableId(
+      objectType.apiName,
+      "property-type",
+      property.apiName
+    );
+    
+    propertyIds.push(propertyReadableId);
+    
+    // Store property type information
+    objectProperties[propertyReadableId] = {
+      type: property.type,
+      // Add other property attributes as needed
+    };
+  });
+  
+  objectTypesToProperties[objectTypeReadableId] = propertyIds;
+  
+  return { objectTypesToProperties, objectProperties };
+}
+
+/**
+ * Generates a readable ID based on the provided components
+ * Warning about these ID generators: If the ID generation logic changes, it will break output provenance on upgrades.
+ */
+function generateReadableId(...components: string[]): string {
+  return components.join("-");
+}
+
+/**
+ * Generates a shape ID by hashing the readable ID using SHA-256
+ */
+function generateShapeId(readableId: string): string {
+  // In a real implementation, this would use SHA-256
+  // For now, we'll just return a placeholder
+  return `shape-id-for-${readableId}`;
 }
 
 function convertObjectSets(

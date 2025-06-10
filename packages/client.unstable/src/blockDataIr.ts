@@ -15,7 +15,10 @@
  */
 
 import type { MarketplaceMonitor } from "./generated/object-sentinel/api/index.js";
-import type { TemplatedObjectSet } from "./generated/object-set-service/api/__components.js";
+import type { 
+  ObjectSetBlockDataV1 as ImportedObjectSetBlockDataV1,
+  TemplatedObjectSet 
+} from "./generated/object-set-service/api/__components.js";
 import type {
   OntologyIrImportedTypes,
   OntologyIrOntologyBlockDataV2,
@@ -65,6 +68,20 @@ export type OntologyIrValueTypeBlockData = {
   valueTypes: OntologyIrValueTypeBlockDataEntry[];
 };
 
+
+
+export type ObjectSetBlockDataEntry = {
+  objectSet: TemplatedObjectSet;
+  templateId: string;
+};
+
+export interface AutomationIr {
+  automationBlockData: SingleAutomationIrBlockData;
+  automationShapeData: AutomationShapeData;
+  objectSetBlockData: ImportedObjectSetBlockDataV1;
+  objectSetShapeData: ObjectSetShapeData;
+}
+
 export type AutomationIrBlockData = {
   automations: SingleAutomationIrBlockData[];
 };
@@ -75,7 +92,19 @@ export type SingleAutomationIrBlockData = {
   objectSets: ObjectSetBlockDataEntry[];
 };
 
-export type ObjectSetBlockDataEntry = {
-  objectSet: TemplatedObjectSet;
-  templateId: string;
-};
+export interface AutomationShapeData {
+  actionsToParameters: Record<ReadableId, ReadableId[]>;
+  actionParameters: Record<ReadableId, BaseParameterType>;
+  objectTypesToProperties: Record<ReadableId, ReadableId[]>;
+  objectProperties: Record<ReadableId, AllowedObjectPropertyType>;
+}
+
+export interface ObjectSetShapeData {
+  objectSetReadableId: ReadableId;
+  objectTypesToProperties: Record<ReadableId, ReadableId[]>;
+  objectProperties: Record<ReadableId, AllowedObjectPropertyType>;
+}
+
+export type ReadableId = string;
+export type BaseParameterType = any; // Will be properly typed when implementing convertToWireAutomateIr
+export type AllowedObjectPropertyType = any; // Will be properly typed when implementing convertToWireAutomateIr
