@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { CLEAR_DATA } from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Todo } from '../objects/Todo.js';
 import type { Person } from '../objects/Person.js';
@@ -57,11 +58,11 @@ export namespace actionTakesAllParameterTypes {
   export interface Params {
     readonly attachmentArray: ReadonlyArray<ActionParam.PrimitiveType<'attachment'>>;
 
-    readonly dateArray?: ReadonlyArray<ActionParam.PrimitiveType<'datetime'>>;
+    readonly dateArray?: ReadonlyArray<ActionParam.PrimitiveType<'datetime'>> | typeof CLEAR_DATA;
     /**
      * A person Object
      */
-    readonly object?: ActionParam.ObjectType<Person>;
+    readonly object?: ActionParam.ObjectType<Person> | typeof CLEAR_DATA;
 
     readonly objectSet: ActionParam.ObjectSetType<Todo>;
 

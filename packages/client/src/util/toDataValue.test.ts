@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { CLEAR_DATA } from "@osdk/api";
 import { Employee, Task } from "@osdk/client.test.ontology";
 import type { MediaReference } from "@osdk/foundry.core";
 import {
@@ -180,5 +181,18 @@ describe(toDataValue, () => {
 
     const converted = await toDataValue(mediaReference, clientCtx);
     expect(converted).toEqual(mediaReference);
+  });
+
+  it("Converts CLEAR_DATA to null", async () => {
+    const converted = await toDataValue(CLEAR_DATA, clientCtx);
+    expect(converted).toBeNull();
+  });
+
+  it("Converts CLEAR_DATA equivalents to null", async () => {
+    const clearData = Symbol.for("CLEAR_DATA") as symbol & {
+      __type: "CLEAR_DATA";
+    };
+    const converted = await toDataValue(clearData, clientCtx);
+    expect(converted).toEqual([null]);
   });
 });

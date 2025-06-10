@@ -16,6 +16,7 @@
 
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import { CLEAR_DATA } from "../actions/clearData.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   isAttachmentFile,
@@ -41,7 +42,13 @@ export async function toDataValue(
 ): Promise<DataValue> {
   if (value == null) {
     // typeof null is 'object' so do this first
+    // Sending null over the wire clears the data, whereas undefined is dropped at request time.
+    // Null values are not allowed with OSDK types, but leaving here as an override.
     return value;
+  }
+
+  if (value === CLEAR_DATA) {
+    return null;
   }
 
   // arrays and sets are both sent over the wire as arrays
