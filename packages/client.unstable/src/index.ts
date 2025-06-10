@@ -74,11 +74,20 @@ export type {
 } from "./generated/object-sentinel/api/__components.js";
 
 export type {
+  AllowedObjectPropertyType,
   ApiNameValueTypeReference,
+  AutomationBlockDataV1,
+  AutomationIr,
   AutomationIrBlockData,
-  ObjectSetBlockDataEntry,
+  AutomationShapeData,
+  BaseParameterType,
+  MarketplaceEffectInput,
+  ObjectSetBlockDataV1,
+  ObjectSetShapeData,
   OntologyIr,
   OntologyIrOntologyBlockDataV2,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
+  ReadableId,
+  SingleObjectSetBlockData,
 } from "./blockDataIr.js";

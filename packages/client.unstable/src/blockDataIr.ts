@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-import type { MarketplaceMonitor } from "./generated/object-sentinel/api/index.js";
-import type { TemplatedObjectSet } from "./generated/object-set-service/api/__components.js";
+import type {
+  MarketplaceMonitor,
+  MarketplaceReferencedEntities,
+} from "./generated/object-sentinel/api/index.js";
+export type { MarketplaceEffectInput } from "./generated/object-sentinel/api/index.js";
+import type {
+  TemplatedObjectSet,
+} from "./generated/object-set-service/api/__components.js";
 import type {
   OntologyIrImportedTypes,
   OntologyIrOntologyBlockDataV2,
 } from "./generated/ontology-metadata/api/blockdata/index.js";
+import type { OntologyIrBaseParameterType } from "./generated/ontology-metadata/api/types/__components.js";
 import type { BaseType } from "./generated/type-registry/api/BaseType.js";
 import type { ExampleValue } from "./generated/type-registry/api/ExampleValue.js";
 import type { ValueTypeApiName } from "./generated/type-registry/api/ValueTypeApiName.js";
@@ -66,16 +73,47 @@ export type OntologyIrValueTypeBlockData = {
 };
 
 export type AutomationIrBlockData = {
-  automations: SingleAutomationIrBlockData[];
+  automations: AutomationIr[];
 };
 
-export type SingleAutomationIrBlockData = {
-  automation: MarketplaceMonitor;
-  // All the object sets that are used by this automation
-  objectSets: ObjectSetBlockDataEntry[];
+export interface AutomationIr {
+  automationBlockData: AutomationBlockDataV1;
+  automationShapeData: AutomationShapeData;
+  objectSetBlockData: ObjectSetBlockDataV1;
+  objectSetShapeData: ObjectSetShapeData;
+}
+
+export interface AutomationBlockDataV1 {
+  marketplaceMonitor: MarketplaceMonitor;
+  referencedObjectSetEntities?:
+    | MarketplaceReferencedEntities
+    | null
+    | undefined;
+  requiredInputEntityIds: Array<string>;
+}
+
+export interface AutomationShapeData {
+  actionsToParameters: Record<ReadableId, ReadableId[]>;
+  actionParameters: Record<ReadableId, BaseParameterType>;
+  objectTypesToProperties: Record<ReadableId, ReadableId[]>;
+  objectProperties: Record<ReadableId, AllowedObjectPropertyType>;
+}
+
+export interface ObjectSetShapeData {
+  objectSetReadableId: ReadableId;
+  objectTypesToProperties: Record<ReadableId, ReadableId[]>;
+  objectProperties: Record<ReadableId, AllowedObjectPropertyType>;
+}
+
+export type ObjectSetBlockDataV1 = {
+  singleObjectSetBlockDatas: Array<SingleObjectSetBlockData>;
+};
+export type SingleObjectSetBlockData = {
+  objectSetTemplateId: string;
+  securityRidTemplateId: string;
+  templatedObjectSet: TemplatedObjectSet;
 };
 
-export type ObjectSetBlockDataEntry = {
-  objectSet: TemplatedObjectSet;
-  templateId: string;
-};
+export type ReadableId = string;
+export type BaseParameterType = OntologyIrBaseParameterType;
+export type AllowedObjectPropertyType = any; // Will be properly typed when implementing convertToWireAutomateIr
