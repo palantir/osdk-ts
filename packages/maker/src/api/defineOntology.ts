@@ -323,7 +323,7 @@ function generateAutomationIr(
 /**
  * Generates shape data for actions and parameters
  */
-function generateActionShapeData(
+function updateActionShapeData(
   actionType: ActionType,
   automationShapeDataCollector: AutomationShapeData,
 ) {
@@ -379,7 +379,6 @@ function updateObjectShapeData(
   );
   const propertyIds: string[] = [];
 
-  // Process properties
   (objectType.properties || []).forEach(property => {
     const propertyReadableId = generateReadableId(
       objectType.apiName,
@@ -529,7 +528,7 @@ function getAutomationEffects(
 
   Object.entries(automation.effects).forEach(([effectId, effect]) => {
     if (effect.type === "action") {
-      generateActionShapeData(effect.action, automationShapeDataCollector);
+      updateActionShapeData(effect.action, automationShapeDataCollector);
       const actionBlockShapeId = toBlockShapeId(
         generateReadableId("action-type", effect.action.apiName),
       );
@@ -552,6 +551,10 @@ function getAutomationEffects(
           },
         };
       }
+    }
+
+    if (effect.type === "function") {
+      throw new Error("Function effects are not supported");
     }
   });
 
