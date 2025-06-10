@@ -278,6 +278,11 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
 
 // @public (undocumented)
+export const CLEAR_DATA: symbol & {
+    	__type: "CLEAR_DATA"
+};
+
+// @public (undocumented)
 export type CompileTimeMetadata<T extends {
     	__DefinitionMetadata?: {}
 }> = NonNullable<T["__DefinitionMetadata"]>;

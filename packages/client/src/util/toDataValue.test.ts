@@ -193,6 +193,6 @@ describe(toDataValue, () => {
       __type: "CLEAR_DATA";
     };
     const converted = await toDataValue(clearData, clientCtx);
-    expect(converted).toEqual([null]);
+    expect(converted).toEqual(null);
   });
 });
