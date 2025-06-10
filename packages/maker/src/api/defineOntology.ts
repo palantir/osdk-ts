@@ -21,6 +21,7 @@ import type {
   DataConstraints,
   MarketplaceEffect,
   MarketplaceMonitor,
+  MarketplaceScopedEffect,
   ObjectSetBlockDataEntry,
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
@@ -352,22 +353,22 @@ function convertToMarketplaceMonitor(
 }
 
 function getAutomationEffects(automation: Automation) {
-  const subscribers: Array<any> = [];
-  let scopedTokenEffects: any = undefined;
+  const userScopedEffectsSubscribers:
+    MarketplaceMonitor["metadata"]["subscribers"] = [];
+  let scopedTokenEffects: MarketplaceMonitor["metadata"]["scopedTokenEffects"] =
+    undefined;
 
   const nonScopedEffects: Record<string, MarketplaceEffect> = {};
-  const scopedEffects: Record<string, MarketplaceEffect> = {};
+  const scopedEffects: Record<string, MarketplaceScopedEffect> = {};
 
   Object.entries(automation.effects).forEach(([effectId, effect]) => {
     if (effect.type === "action") {
       if (effect.scoped) {
-        // Add to scoped effects
         scopedEffects[effectId] = {
           type: "action",
           action: effect.definition,
         };
       } else {
-        // Add to non-scoped effects
         nonScopedEffects[effectId] = {
           type: "action",
           action: effect.definition,
@@ -377,7 +378,7 @@ function getAutomationEffects(automation: Automation) {
   });
 
   if (Object.keys(nonScopedEffects).length > 0) {
-    subscribers.push({
+    userScopedEffectsSubscribers.push({
       subscriberType: {
         type: "user",
         user: {
@@ -389,18 +390,42 @@ function getAutomationEffects(automation: Automation) {
     });
   }
 
-  // If we have scoped effects, create scopedTokenEffects
   if (Object.keys(scopedEffects).length > 0) {
     scopedTokenEffects = {
-      additionalScope: {},
-      generatedScope: {},
+      additionalScope: {
+        actionTypeRids: [],
+        artifacts: [],
+        functionLocators: [],
+        functionRids: [],
+        languageModelRid: [],
+        linkTypeRids: [],
+        mediaSets: [],
+        objectTypeRids: [],
+        sources: [],
+        sourcesV2: [],
+        valueTypes: [],
+        webhookLocators: [],
+      },
+      generatedScope: {
+        actionTypeRids: [],
+        artifacts: [],
+        functionLocators: [],
+        functionRids: [],
+        languageModelRid: [],
+        linkTypeRids: [],
+        mediaSets: [],
+        objectTypeRids: [],
+        sources: [],
+        sourcesV2: [],
+        valueTypes: [],
+        webhookLocators: [],
+      },
       sideEffects: {
         triggerEffects: scopedEffects,
-        recoveryEffects: {},
       },
     };
   }
-  return { subscribers, scopedTokenEffects };
+  return { subscribers: userScopedEffectsSubscribers, scopedTokenEffects };
 }
 
 function convertToWireOntologyIr(
