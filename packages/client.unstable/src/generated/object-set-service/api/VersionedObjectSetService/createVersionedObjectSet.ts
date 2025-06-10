@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,17 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { CreateVersionedObjectSetRequest } from "../CreateVersionedObjectSetRequest.js";
-import type { CreateVersionedObjectSetResponse } from "../CreateVersionedObjectSetResponse.js";
+import type {
+  CreateVersionedObjectSetRequest as _api_CreateVersionedObjectSetRequest,
+  CreateVersionedObjectSetResponse as _api_CreateVersionedObjectSetResponse,
+} from "../__components.js";
 
 /**
  * Creates a versioned object set located at the specified compass path. Propagates any exceptions thrown by Compass when registering the versioned object set resource.
  */
 export async function createVersionedObjectSet(
   ctx: ConjureContext,
-  request: CreateVersionedObjectSetRequest,
-): Promise<CreateVersionedObjectSetResponse> {
+  request: _api_CreateVersionedObjectSetRequest,
+): Promise<_api_CreateVersionedObjectSetResponse> {
   return conjureFetch(ctx, `/versionedObjectSets`, "POST", request);
 }

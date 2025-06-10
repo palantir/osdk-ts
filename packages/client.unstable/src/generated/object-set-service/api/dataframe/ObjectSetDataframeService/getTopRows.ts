@@ -15,22 +15,27 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type {
-  GetBulkLatestVersionRequest as _api_GetBulkLatestVersionRequest,
-  GetBulkLatestVersionResponse as _api_GetBulkLatestVersionResponse,
-} from "../__components.js";
+import type { GetTopRowsRequest as _api_dataframe_GetTopRowsRequest } from "../__components.js";
 
 /**
- * Returns the latest versions of requested versioned object sets.
+ * Returns top N rows from the computed dataframe in arrow format.
+ *
+ * If `ORDER BY` is not specified in the query, the ordering is unspecified and the order of rows returned may
+ * not be deterministic.
+ *
+ * The response will include the response as specified by the serialization format.
  */
-export async function getBulkLatestVersion(
+export async function getTopRows(
   ctx: ConjureContext,
-  request: _api_GetBulkLatestVersionRequest,
-): Promise<_api_GetBulkLatestVersionResponse> {
+  request: _api_dataframe_GetTopRowsRequest,
+): Promise<string> {
   return conjureFetch(
     ctx,
-    `/bulk/versionedObjectSets/latestVersion`,
+    `/dataframe/getTopRows`,
     "PUT",
     request,
+    undefined,
+    undefined,
+    "application/octet-stream",
   );
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,19 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetObjectLocatorsNextScrollRequest } from "../GetObjectLocatorsNextScrollRequest.js";
-import type { GetObjectLocatorsScrollResponse } from "../GetObjectLocatorsScrollResponse.js";
+import type {
+  GetObjectLocatorsNextScrollRequest as _api_GetObjectLocatorsNextScrollRequest,
+  GetObjectLocatorsScrollResponse as _api_GetObjectLocatorsScrollResponse,
+} from "../__components.js";
 
 /**
  * Request for a subsequent scroll of ObjectLocator(s).
+ *
+ * WARNING: Throws if the object set references object types containing object type derived properties (OTDPs).
  */
 export async function getObjectLocatorsNextScroll(
   ctx: ConjureContext,
-  request: GetObjectLocatorsNextScrollRequest,
-): Promise<GetObjectLocatorsScrollResponse> {
+  request: _api_GetObjectLocatorsNextScrollRequest,
+): Promise<_api_GetObjectLocatorsScrollResponse> {
   return conjureFetch(ctx, `/scroll/locators/next`, "POST", request);
 }

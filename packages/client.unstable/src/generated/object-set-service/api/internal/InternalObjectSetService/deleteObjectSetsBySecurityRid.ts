@@ -16,21 +16,22 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  GetBulkLatestVersionRequest as _api_GetBulkLatestVersionRequest,
-  GetBulkLatestVersionResponse as _api_GetBulkLatestVersionResponse,
+  DeleteObjectSetsBySecurityRidResponse
+    as _api_internal_DeleteObjectSetsBySecurityRidResponse,
+  SecurityRid as _api_internal_SecurityRid,
 } from "../__components.js";
 
 /**
- * Returns the latest versions of requested versioned object sets.
+ * Deletes all object sets that are secured by the given security RID.
+ * This will cause future operations which access the object sets to fail.
  */
-export async function getBulkLatestVersion(
+export async function deleteObjectSetsBySecurityRid(
   ctx: ConjureContext,
-  request: _api_GetBulkLatestVersionRequest,
-): Promise<_api_GetBulkLatestVersionResponse> {
+  securityRid: _api_internal_SecurityRid,
+): Promise<_api_internal_DeleteObjectSetsBySecurityRidResponse> {
   return conjureFetch(
     ctx,
-    `/bulk/versionedObjectSets/latestVersion`,
-    "PUT",
-    request,
+    `/internal/objectSets/securityRid/${securityRid}`,
+    "DELETE",
   );
 }

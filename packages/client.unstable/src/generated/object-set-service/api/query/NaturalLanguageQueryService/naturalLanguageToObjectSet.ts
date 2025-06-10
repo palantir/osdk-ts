@@ -16,21 +16,17 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  GetBulkLatestVersionRequest as _api_GetBulkLatestVersionRequest,
-  GetBulkLatestVersionResponse as _api_GetBulkLatestVersionResponse,
+  NaturalLanguageObjectSetRequest as _api_query_NaturalLanguageObjectSetRequest,
+  NaturalLanguageObjectSetResponse
+    as _api_query_NaturalLanguageObjectSetResponse,
 } from "../__components.js";
 
 /**
- * Returns the latest versions of requested versioned object sets.
+ * Run an Object Query using LMS given a scope of ontology entities and a natural language query
  */
-export async function getBulkLatestVersion(
+export async function naturalLanguageToObjectSet(
   ctx: ConjureContext,
-  request: _api_GetBulkLatestVersionRequest,
-): Promise<_api_GetBulkLatestVersionResponse> {
-  return conjureFetch(
-    ctx,
-    `/bulk/versionedObjectSets/latestVersion`,
-    "PUT",
-    request,
-  );
+  request: _api_query_NaturalLanguageObjectSetRequest,
+): Promise<_api_query_NaturalLanguageObjectSetResponse> {
+  return conjureFetch(ctx, `/natural-language/llm/objectSet`, "PUT", request);
 }

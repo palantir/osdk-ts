@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,17 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { CreateObjectSetRequest } from "../CreateObjectSetRequest.js";
-import type { CreateObjectSetResponse } from "../CreateObjectSetResponse.js";
+import type {
+  CreateObjectSetRequest as _api_CreateObjectSetRequest,
+  CreateObjectSetResponse as _api_CreateObjectSetResponse,
+} from "../__components.js";
 
 /**
  * Creates an orphaned object set - i.e. not part of any versioned object set. This may be for temporary or internal application use. No gatekeeper resource is created - instead the given security rid is assumed to already exist and will be used to permission the created object set.
  */
 export async function createObjectSet(
   ctx: ConjureContext,
-  request: CreateObjectSetRequest,
-): Promise<CreateObjectSetResponse> {
+  request: _api_CreateObjectSetRequest,
+): Promise<_api_CreateObjectSetResponse> {
   return conjureFetch(ctx, `/objectSets`, "POST", request);
 }
