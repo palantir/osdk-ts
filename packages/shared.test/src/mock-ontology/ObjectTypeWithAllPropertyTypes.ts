@@ -281,4 +281,6 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef =
     interfaceMap: {},
     inverseInterfaceMap: {},
     rid: "rid.object-type.123",
+    description: "An object type with all property types",
+    visibility: "NORMAL",
   } satisfies ObjectMetadata;

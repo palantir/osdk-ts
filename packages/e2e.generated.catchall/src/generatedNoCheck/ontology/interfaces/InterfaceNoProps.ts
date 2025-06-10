@@ -42,6 +42,7 @@ export interface InterfaceNoProps extends $InterfaceDefinition {
     apiName: 'InterfaceNoProps';
     description: 'Its a Foo.';
     displayName: 'FInterfaceNoProps';
+    implements: undefined;
     links: {};
     properties: {};
     rid: 'ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b';

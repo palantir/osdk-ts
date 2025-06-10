@@ -63,6 +63,7 @@ export interface Employee extends $ObjectTypeDefinition {
       name: 'employee';
       color: 'blue';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
@@ -102,6 +103,7 @@ export interface Employee extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'employeeId';
     type: 'object';
+    visibility: undefined;
   };
 }
 

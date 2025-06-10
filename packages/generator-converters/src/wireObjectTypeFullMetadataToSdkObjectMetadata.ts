@@ -98,9 +98,15 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
     titleProperty: objectTypeWithLink.objectType.titleProperty,
     displayName: objectTypeWithLink.objectType.displayName,
     pluralDisplayName: objectTypeWithLink.objectType.pluralDisplayName,
-    status: objectTypeWithLink.objectType.status,
+    status: ensureStringEnumSupportedOrUndefined(
+      objectTypeWithLink.objectType.status,
+      supportedReleaseStatus,
+    ),
     rid: objectTypeWithLink.objectType.rid,
-    visibility: objectTypeWithLink.objectType.visibility,
+    visibility: ensureStringEnumSupportedOrUndefined(
+      objectTypeWithLink.objectType.visibility,
+      supportedObjectTypeVisibility,
+    ),
   };
 }
 
@@ -113,4 +119,23 @@ function invertProps(
       : Record<string, string>;
 }
 
-const supportedIconTypes = ["blueprint"];
+export const supportedIconTypes = ["blueprint"] as const;
+
+export const supportedReleaseStatus = [
+  "ACTIVE",
+  "EXPERIMENTAL",
+  "DEPRECATED",
+] as const;
+
+export const supportedObjectTypeVisibility = [
+  "NORMAL",
+  "PROMINENT",
+  "HIDDEN",
+] as const;
+
+export function ensureStringEnumSupportedOrUndefined<T extends string>(
+  value: T | undefined,
+  supportedValues: readonly string[],
+): T | undefined {
+  return value && supportedValues.includes(value) ? value : undefined;
+}
