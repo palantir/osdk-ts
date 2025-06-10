@@ -14,23 +14,4 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type {
-  GetBulkLatestVersionRequest as _api_GetBulkLatestVersionRequest,
-  GetBulkLatestVersionResponse as _api_GetBulkLatestVersionResponse,
-} from "../__components.js";
-
-/**
- * Returns the latest versions of requested versioned object sets.
- */
-export async function getBulkLatestVersion(
-  ctx: ConjureContext,
-  request: _api_GetBulkLatestVersionRequest,
-): Promise<_api_GetBulkLatestVersionResponse> {
-  return conjureFetch(
-    ctx,
-    `/bulk/versionedObjectSets/latestVersion`,
-    "PUT",
-    request,
-  );
-}
+export { getTopRows } from "./ObjectSetDataframeService/getTopRows.js";

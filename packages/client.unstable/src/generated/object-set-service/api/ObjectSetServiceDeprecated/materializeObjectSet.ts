@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,17 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { MaterializeObjectSetRequest } from "../MaterializeObjectSetRequest.js";
-import type { MaterializeObjectSetResponse } from "../MaterializeObjectSetResponse.js";
+import type {
+  MaterializeObjectSetRequest as _api_MaterializeObjectSetRequest,
+  MaterializeObjectSetResponse as _api_MaterializeObjectSetResponse,
+} from "../__components.js";
 
 /**
  * Deprecated, do not use. Use ObjectSetService instead.
  */
 export async function materializeObjectSet(
   ctx: ConjureContext,
-  request: MaterializeObjectSetRequest,
-): Promise<MaterializeObjectSetResponse> {
+  request: _api_MaterializeObjectSetRequest,
+): Promise<_api_MaterializeObjectSetResponse> {
   return conjureFetch(ctx, `/objectSets/materialize`, "POST", request);
 }

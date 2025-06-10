@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,18 @@
 
 export * as InternalObjectSetService from "./InternalObjectSetService.js";
 
-export type { HighburyPageTokenComponents } from "./HighburyPageTokenComponents.js";
-export type { HighburyPageTokenComponentsV1 } from "./HighburyPageTokenComponentsV1.js";
-export type { InternalArrayPropertyValue } from "./InternalArrayPropertyValue.js";
-export type { InternalFloatPropertyValue } from "./InternalFloatPropertyValue.js";
-export type { InternalGeohashPropertyValue } from "./InternalGeohashPropertyValue.js";
-export type { InternalPropertyValue } from "./InternalPropertyValue.js";
-export type { LoadPatchableEntitiesRequest } from "./LoadPatchableEntitiesRequest.js";
-export type { LoadPatchableEntitiesResponse } from "./LoadPatchableEntitiesResponse.js";
-export type { PatchableFoundryEntity } from "./PatchableFoundryEntity.js";
+export type {
+  DeleteObjectSetsBySecurityRidResponse,
+  HighburyPageTokenComponents,
+  HighburyPageTokenComponentsV1,
+  InternalArrayPropertyValue,
+  InternalBytePropertyValue,
+  InternalFloatPropertyValue,
+  InternalGeohashPropertyValue,
+  InternalPropertyValue,
+  InternalShortPropertyValue,
+  LoadPatchableEntitiesRequest,
+  LoadPatchableEntitiesResponse,
+  PatchableFoundryEntity,
+  SecurityRid,
+} from "./__components.js";

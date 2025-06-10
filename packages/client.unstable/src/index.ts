@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-export type { DirectedLinkTypeRid } from "./generated/object-set-service/api/DirectedLinkTypeRid.js";
-export type { FoundryObjectReference } from "./generated/object-set-service/api/FoundryObjectReference.js";
-export type { GetBulkLinksPageRequest } from "./generated/object-set-service/api/GetBulkLinksPageRequest.js";
-export type { ObjectIdentifier } from "./generated/object-set-service/api/ObjectIdentifier.js";
-export type { ObjectSet } from "./generated/object-set-service/api/ObjectSet.js";
-export type { ObjectSetFilter } from "./generated/object-set-service/api/ObjectSetFilter.js";
+export type {
+  DirectedLinkTypeRid,
+  FoundryObjectReference,
+  GetBulkLinksPageRequest,
+  ObjectIdentifier,
+  ObjectSet,
+  ObjectSetFilter,
+} from "./generated/object-set-service/api/__components.js";
 
 export { createTemporaryObjectSet } from "./generated/object-set-service/api/ObjectSetService.js";
 export { getBulkLinksPage } from "./generated/object-set-service/api/ObjectSetServiceV2/getBulkLinksPage.js";
