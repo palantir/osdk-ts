@@ -1,5 +1,13 @@
 # @osdk/typescript-sdk-docs
 
+## 0.1.0
+
+### Patch Changes
+
+- 023d76a: Fix TS OSDK types
+- dc418de: Add doc snippets for contains + searchAround
+- 37cba2a: Create @osdk/typescript-sdk-docs
+
 ## 0.1.0-beta.1
 
 ### Minor Changes

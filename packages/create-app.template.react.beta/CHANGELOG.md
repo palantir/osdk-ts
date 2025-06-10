@@ -1,5 +1,18 @@
 # @osdk/create-app.template.react
 
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 1444362: Read environment variables from index.html meta tags
+- d4c962c: Fix typos for widgets libraries
+- fa02507: Use options overload when initializing client in create-app templates and standardize formatting
+- 43283db: Use client.ts
+- 889e84b: Release
+- b2e8fc5: Set @osdk/create version to non-beta
+- 317b555: Release
+
 ## 2.2.0-rc.26
 
 ## 2.2.0-rc.25

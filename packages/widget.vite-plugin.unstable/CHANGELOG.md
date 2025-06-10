@@ -1,5 +1,24 @@
 # @osdk/widget.vite-plugin.unstable
 
+## 2.1.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 3ba0499: Move Vite plugin to API Gateway public endpoints
+- d4c962c: Fix typos for widgets libraries
+- a9f2596: Send baseHref when setting widget set settings
+- 0caa7b8: Use HTML parsing for Vite post-build widget manifest creation
+- 87b747c: Code Workspaces awareness for the Widgets Vite plugin
+- 317b555: Release
+- 994ab25: Support widget dev server on non-root paths
+- 9673e54: Fixes for custom widgets Vite plugin in Code Workspaces mode
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [317b555]
+  - @osdk/foundry-config-json@1.1.0
+  - @osdk/widget.api.unstable@2.1.0
+
 ## 2.1.0-beta.11
 
 ### Patch Changes

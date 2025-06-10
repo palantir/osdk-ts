@@ -1,6 +1,6 @@
 {
   "name": "@osdk/functions",
-  "version": "1.0.0-rc.20",
+  "version": "1.0.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",

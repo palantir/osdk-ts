@@ -1,5 +1,67 @@
 # @osdk/generator
 
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- b61e9f5: Make Query Map Types Optional
+- b68adea: Add support for inherited interfaces.
+- 12843cb: Add ability to load all underlying properties of an interface.
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+- 21e33a5: Upgrade consola to 3.4.0
+- 63b2e63: Update Platform SDK Dependencies
+- 7416ce4: Update Platform SDK Dependencies
+- 430dee3: JSdoc for object properties are generated
+- 49a91dc: Add consola as hard dep for generator.
+- 889e84b: Release
+- 67e772e: Fixes action parameter generation to enforce strict fields
+- 791e655: Add support for geoshape and geohash action parameters.
+- 317b555: Release
+- 63b2e63: Supports generating queries for entrySet function types
+- cc380b5: Use the latest Platform APIs
+- 3d0ab11: Add protection for dropping unsupported enums instead of throwing"
+- 805df40: Fix interface action types.
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [b68adea]
+- Updated dependencies [c6bee50]
+- Updated dependencies [7416ce4]
+- Updated dependencies [7170fd1]
+- Updated dependencies [12843cb]
+- Updated dependencies [18ba34f]
+- Updated dependencies [6abf078]
+- Updated dependencies [f82767c]
+- Updated dependencies [56aa502]
+- Updated dependencies [0e874b1]
+- Updated dependencies [abe4897]
+- Updated dependencies [63b2e63]
+- Updated dependencies [cddfbf9]
+- Updated dependencies [7416ce4]
+- Updated dependencies [23ea0e4]
+- Updated dependencies [26c2d95]
+- Updated dependencies [488b51c]
+- Updated dependencies [71462e9]
+- Updated dependencies [fccd9ac]
+- Updated dependencies [5665b18]
+- Updated dependencies [46cede4]
+- Updated dependencies [761e69d]
+- Updated dependencies [889e84b]
+- Updated dependencies [a6e5f89]
+- Updated dependencies [ed69666]
+- Updated dependencies [4183a55]
+- Updated dependencies [70b4464]
+- Updated dependencies [791e655]
+- Updated dependencies [317b555]
+- Updated dependencies [63b2e63]
+- Updated dependencies [a146ce4]
+- Updated dependencies [3d0ab11]
+- Updated dependencies [805df40]
+- Updated dependencies [5467a0f]
+- Updated dependencies [63b2e63]
+  - @osdk/api@2.2.0
+  - @osdk/generator-converters@2.2.0
+
 ## 2.2.0-rc.26
 
 ### Patch Changes
