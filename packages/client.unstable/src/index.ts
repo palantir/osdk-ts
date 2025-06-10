@@ -66,7 +66,16 @@ export type { ValueTypeStatus } from "./generated/type-registry/api/ValueTypeSta
 export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVersion.js";
 
 export type {
+  MarketplaceActionEffect,
+  MarketplaceEffect,
+  MarketplaceFunctionEffect,
+  MarketplaceMonitor,
+} from "./generated/object-sentinel/api/__components.js";
+
+export type {
   ApiNameValueTypeReference,
+  AutomationIrBlockData,
+  ObjectSetBlockDataEntry,
   OntologyIr,
   OntologyIrOntologyBlockDataV2,
   OntologyIrValueTypeBlockData,
