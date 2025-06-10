@@ -24,7 +24,7 @@ export interface InterfaceHolder<
 > extends BaseHolder {
   [InterfaceDefRef]: InterfaceMetadata;
 
-  readonly "$__experimental_metadata": {
+  readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
     readonly object: ObjectMetadata;
     readonly interface: InterfaceMetadata;
   };

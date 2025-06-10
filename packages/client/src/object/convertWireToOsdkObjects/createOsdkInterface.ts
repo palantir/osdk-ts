@@ -68,7 +68,7 @@ export function createOsdkInterface<
         value: clone,
         enumerable: false,
       },
-      "$__experimental_metadata": {
+      "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
         value: {
           "object": underlying[ObjectDefRef],
           "interface": interfaceDef,

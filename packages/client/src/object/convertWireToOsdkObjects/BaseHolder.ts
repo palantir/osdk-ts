@@ -42,7 +42,7 @@ export interface BaseHolder {
     newProps?: Record<string, any>,
   ) => this;
 
-  readonly "$__experimental_metadata": {
+  readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
     readonly object: ObjectMetadata;
   };
 

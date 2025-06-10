@@ -98,7 +98,7 @@ const basePropDefs = {
     },
     enumerable: true,
   },
-  "$__experimental_metadata": {
+  "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
     get: function(this: ObjectHolder) {
       return {
         object: this[ObjectDefRef],

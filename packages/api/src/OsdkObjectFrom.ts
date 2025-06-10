@@ -218,7 +218,8 @@ export namespace Osdk {
           },
       ) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>;
 
-      readonly $__experimental_metadata: Q extends ObjectTypeDefinition ? {
+      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends
+        ObjectTypeDefinition ? {
           object: Q;
         }
         : {
