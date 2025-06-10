@@ -1,5 +1,7 @@
 # @osdk/create-app.template.tutorial-todo-aip-app
 
+## 2.2.1
+
 ## 2.2.0
 
 ### Patch Changes

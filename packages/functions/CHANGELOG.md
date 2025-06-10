@@ -1,5 +1,12 @@
 # @osdk/functions
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [87e2264]
+  - @osdk/client@2.2.1
+
 ## 1.0.0
 
 ### Patch Changes
