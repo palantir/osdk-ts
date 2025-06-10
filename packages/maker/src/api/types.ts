@@ -27,6 +27,7 @@ import type {
   InterfaceTypeStatus,
   LinkTypeDisplayMetadata,
   LinkTypeMetadata,
+  MarketplaceActionEffect,
   OntologyIrBaseParameterType_decimal,
   OntologyIrBaseParameterType_decimalList,
   OntologyIrBaseParameterType_interfaceReference,
@@ -95,6 +96,7 @@ export enum OntologyEntityTypeEnum {
   SHARED_PROPERTY_TYPE = "SHARED_PROPERTY_TYPE",
   ACTION_TYPE = "ACTION_TYPE",
   VALUE_TYPE = "VALUE_TYPE",
+  AUTOMATION = "AUTOMATION",
 }
 export interface OntologyEntityTypeMapping {
   [OntologyEntityTypeEnum.OBJECT_TYPE]: ObjectType;
@@ -103,6 +105,7 @@ export interface OntologyEntityTypeMapping {
   [OntologyEntityTypeEnum.INTERFACE_TYPE]: InterfaceType;
   [OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE]: SharedPropertyType;
   [OntologyEntityTypeEnum.VALUE_TYPE]: ValueTypeDefinitionVersion;
+  [OntologyEntityTypeEnum.AUTOMATION]: Automation;
 }
 
 export type OntologyDefinition =
@@ -740,3 +743,28 @@ export type ActionParameterTypeComplex =
 export type ActionParameterType =
   | ActionParameterTypePrimitive
   | ActionParameterTypeComplex;
+
+export interface Automation extends OntologyEntityBase {
+  apiName: string;
+  condition: AutomationCondition;
+  effects: Record<string, Effect>;
+  __type: OntologyEntityTypeEnum.AUTOMATION;
+}
+
+export type AutomationDefinition = Omit<Automation, "__type">;
+
+export type AutomationCondition = {
+  type: "objectsAdded";
+  objectTypeRid: string;
+  filters: [];
+};
+
+export type Effect = AutomationActionEffect;
+
+export type AutomationActionEffect = {
+  type: "action";
+  effectId: string;
+  definition: MarketplaceActionEffect;
+  onBehalfOfUserId: string;
+  scoped: boolean;
+};

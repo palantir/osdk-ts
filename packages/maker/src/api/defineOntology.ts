@@ -17,7 +17,11 @@
 import type {
   ActionTypePermissionInformation,
   ActionTypeStatus,
+  AutomationIrBlockData,
   DataConstraints,
+  MarketplaceEffect,
+  MarketplaceMonitor,
+  ObjectSetBlockDataEntry,
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionValidation,
@@ -57,6 +61,7 @@ import type {
   ActionParameter,
   ActionParameterRequirementConstraint,
   ActionType,
+  Automation,
   InterfaceType,
   LinkType,
   Nullability,
@@ -84,6 +89,7 @@ export let namespace: string;
 type OntologyAndValueTypeIrs = {
   ontology: OntologyIr;
   valueType: OntologyIrValueTypeBlockData;
+  automation: AutomationIrBlockData;
 };
 
 export function updateOntology<
@@ -119,6 +125,7 @@ export async function defineOntology(
     INTERFACE_TYPE: {},
     SHARED_PROPERTY_TYPE: {},
     VALUE_TYPE: {},
+    AUTOMATION: {},
   };
   importedTypes = {
     SHARED_PROPERTY_TYPE: {},
@@ -127,6 +134,7 @@ export async function defineOntology(
     LINK_TYPE: {},
     INTERFACE_TYPE: {},
     VALUE_TYPE: {},
+    AUTOMATION: {},
   };
   try {
     await body();
@@ -143,6 +151,7 @@ export async function defineOntology(
   return {
     ontology: convertToWireOntologyIr(ontologyDefinition),
     valueType: convertOntologyToValueTypeIr(ontologyDefinition),
+    automation: convertToWireAutomateIr(ontologyDefinition),
   };
 }
 
@@ -155,6 +164,7 @@ export function writeStaticObjects(outputDir: string): void {
     [OntologyEntityTypeEnum.LINK_TYPE]: "link-types",
     [OntologyEntityTypeEnum.INTERFACE_TYPE]: "interface-types",
     [OntologyEntityTypeEnum.VALUE_TYPE]: "value-types",
+    [OntologyEntityTypeEnum.AUTOMATION]: "automations",
   };
 
   if (!fs.existsSync(codegenDir)) {
@@ -244,6 +254,153 @@ function convertOntologyToValueTypeIr(
       })),
     })),
   };
+}
+
+function convertToWireAutomateIr(
+  ontology: OntologyDefinition,
+): AutomationIrBlockData {
+  return {
+    automations: Object.values(ontology[OntologyEntityTypeEnum.AUTOMATION]).map(
+      automation => ({
+        automation: convertToMarketplaceMonitor(automation),
+        objectSets: convertObjectSets(automation),
+      }),
+    ),
+  };
+}
+
+function convertObjectSets(
+  automation: Automation,
+): Array<ObjectSetBlockDataEntry> {
+  const objectTypeRid = automation.condition.objectTypeRid;
+  return [{
+    // NOTE: this is the object set shape id.
+    templateId: "",
+    objectSet: {
+      type: "base",
+      base: {
+        // NOTE: this actually needs to be a shape id.
+        objectTypeId: objectTypeRid,
+      },
+    },
+  }];
+}
+
+function convertToMarketplaceMonitor(
+  automation: Automation,
+): MarketplaceMonitor {
+  const version = 1; // todo - check this is ok
+  const rid = `ri.object-sentinel..${automation.apiName}`; // todo - check this is ok
+  const objectSetRid = "ri.objectset.main.objectset.placeholder"; // todo - how to deal with this?
+
+  const { subscribers, scopedTokenEffects } = getAutomationEffects(automation);
+
+  return {
+    isCurrentlyInTriggeringState: false,
+    lastHistoryEvent: {},
+    lastRecoveryEvent: {},
+    lastTriggerEvent: {},
+    logic: {
+      type: "event",
+      event: {
+        eventType: {
+          type: "notSavedObjectSetEvent",
+          notSavedObjectSetEvent: {
+            eventType: {
+              type: "added",
+              added: {},
+            },
+            objectSetRid: objectSetRid,
+          },
+        },
+      },
+    },
+    metadata: {
+      dependentAutomations: [],
+      disabled: {},
+      expiryDate: "", // deprecated field.
+      muted: {
+        forUsers: {},
+      },
+      renderingV2: {},
+      rid: rid,
+      subscribers: subscribers,
+      branchRid: undefined,
+      cycleDetectionSettings: undefined,
+      expiry: undefined,
+      globalEffectExecutionSettings: undefined,
+      liveConfig: undefined,
+      management: undefined,
+      mgsConfig: undefined,
+      priority: undefined,
+      rendering: undefined,
+      scopedTokenEffects: scopedTokenEffects,
+      telemetryConfig: undefined,
+      timeSeriesAlertingOverrides: undefined,
+      triggerExecutionSettings: undefined,
+    },
+    monitorType: "FUNNEL_BACKED_INCREMENTAL",
+    version,
+    versionedObjectSetsVersionsUsed: {},
+    attribution: {
+      createdAt: new Date().toISOString(),
+      createdBy: undefined,
+    },
+    lastEvaluationTime: undefined,
+    publishedMonitorVersion: version,
+  };
+}
+
+function getAutomationEffects(automation: Automation) {
+  const subscribers: Array<any> = [];
+  let scopedTokenEffects: any = undefined;
+
+  const nonScopedEffects: Record<string, MarketplaceEffect> = {};
+  const scopedEffects: Record<string, MarketplaceEffect> = {};
+
+  Object.entries(automation.effects).forEach(([effectId, effect]) => {
+    if (effect.type === "action") {
+      if (effect.scoped) {
+        // Add to scoped effects
+        scopedEffects[effectId] = {
+          type: "action",
+          action: effect.definition,
+        };
+      } else {
+        // Add to non-scoped effects
+        nonScopedEffects[effectId] = {
+          type: "action",
+          action: effect.definition,
+        };
+      }
+    }
+  });
+
+  if (Object.keys(nonScopedEffects).length > 0) {
+    subscribers.push({
+      subscriberType: {
+        type: "user",
+        user: {
+          userId: "user",
+        },
+      },
+      triggerEffects: nonScopedEffects,
+      recoveryEffects: {},
+    });
+  }
+
+  // If we have scoped effects, create scopedTokenEffects
+  if (Object.keys(scopedEffects).length > 0) {
+    scopedTokenEffects = {
+      additionalScope: {},
+      generatedScope: {},
+      sideEffects: {
+        triggerEffects: scopedEffects,
+        recoveryEffects: {},
+      },
+    };
+  }
+  return { subscribers, scopedTokenEffects };
 }
 
 function convertToWireOntologyIr(
@@ -792,6 +949,10 @@ export function dumpOntologyFullMetadata(): OntologyIr {
 
 export function dumpValueTypeWireType(): OntologyIrValueTypeBlockData {
   return convertOntologyToValueTypeIr(ontologyDefinition);
+}
+
+export function dumpAutomationWireType(): AutomationIrBlockData {
+  return convertToWireAutomateIr(ontologyDefinition);
 }
 
 function convertSpt(
