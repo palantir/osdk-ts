@@ -15,8 +15,7 @@
  */
 
 import type { BlockShapeId } from "@osdk/client.unstable";
-import { createHash } from "crypto";
-import { v5 as uuidv5 } from "uuid";
+import crypto from "crypto";
 
 /**
  * Converts a string to a BlockShapeId by:
@@ -28,19 +27,20 @@ import { v5 as uuidv5 } from "uuid";
  * @returns A BlockShapeId generated from the input string
  */
 export function toBlockShapeId(input: string): BlockShapeId {
-  try {
-    // Create SHA-256 hash of the input string
-    const hash = createHash("sha256").update(input, "utf8").digest();
+  const sha256hash = crypto.createHash("sha256").update(input, "utf8").digest();
+  const md5Hash = crypto.createHash("md5").update(sha256hash)
+    .digest();
 
-    // Generate a name-based UUID (v5) from the hash
-    // Using a nil UUID as namespace since we're already using a hash
-    const NIL_UUID = "00000000-0000-0000-0000-000000000000";
-    return uuidv5(hash, NIL_UUID);
-  } catch (error) {
-    throw new Error(
-      `Failed to create BlockShapeId: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
-    );
-  }
+  md5Hash[6] &= 0x0f;
+  md5Hash[6] |= 0x30;
+  md5Hash[8] &= 0x3f;
+  md5Hash[8] |= 0x80;
+
+  return [
+    md5Hash.subarray(0, 4).toString("hex"),
+    md5Hash.subarray(4, 6).toString("hex"),
+    md5Hash.subarray(6, 8).toString("hex"),
+    md5Hash.subarray(8, 10).toString("hex"),
+    md5Hash.subarray(10, 16).toString("hex"),
+  ].join("-");
 }
