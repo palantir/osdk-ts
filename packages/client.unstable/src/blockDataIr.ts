@@ -15,13 +15,13 @@
  */
 
 import type {
-  MarketplaceMonitor,
-  MarketplaceReferencedEntities,
-} from "./generated/object-sentinel/api/index.js";
-export type { MarketplaceEffectInput } from "./generated/object-sentinel/api/index.js";
+  AutomationBlockDataV1,
+} from "./generated/object-sentinel/api/__components.js";
 import type {
+  ObjectSetBlockDataV1,
   TemplatedObjectSet,
 } from "./generated/object-set-service/api/__components.js";
+import type { DataType } from "./generated/ontology-metadata/api/__components.js";
 import type {
   OntologyIrImportedTypes,
   OntologyIrOntologyBlockDataV2,
@@ -72,24 +72,18 @@ export type OntologyIrValueTypeBlockData = {
   valueTypes: OntologyIrValueTypeBlockDataEntry[];
 };
 
-export type AutomationIrBlockData = {
-  automations: AutomationIr[];
-};
-
 export interface AutomationIr {
   automationBlockData: AutomationBlockDataV1;
   automationShapeData: AutomationShapeData;
   objectSetBlockData: ObjectSetBlockDataV1;
   objectSetShapeData: ObjectSetShapeData;
+  functionShapeData: FunctionShapeData | undefined;
 }
 
-export interface AutomationBlockDataV1 {
-  marketplaceMonitor: MarketplaceMonitor;
-  referencedObjectSetEntities?:
-    | MarketplaceReferencedEntities
-    | null
-    | undefined;
-  requiredInputEntityIds: Array<string>;
+export interface FunctionShapeData {
+  functionReadableId: ReadableId;
+  outputDataType: DataType;
+  inputs: Record<ReadableId, DataType>;
 }
 
 export interface AutomationShapeData {
@@ -105,9 +99,6 @@ export interface ObjectSetShapeData {
   objectProperties: Record<ReadableId, AllowedObjectPropertyType>;
 }
 
-export type ObjectSetBlockDataV1 = {
-  singleObjectSetBlockDatas: Array<SingleObjectSetBlockData>;
-};
 export type SingleObjectSetBlockData = {
   objectSetTemplateId: string;
   securityRidTemplateId: string;

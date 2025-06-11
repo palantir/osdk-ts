@@ -68,6 +68,7 @@ export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVe
 export type {
   MarketplaceActionEffect,
   MarketplaceEffect,
+  MarketplaceEffectInput,
   MarketplaceFunctionEffect,
   MarketplaceMonitor,
   MarketplaceScopedEffect,
@@ -76,13 +77,9 @@ export type {
 export type {
   AllowedObjectPropertyType,
   ApiNameValueTypeReference,
-  AutomationBlockDataV1,
   AutomationIr,
-  AutomationIrBlockData,
   AutomationShapeData,
   BaseParameterType,
-  MarketplaceEffectInput,
-  ObjectSetBlockDataV1,
   ObjectSetShapeData,
   OntologyIr,
   OntologyIrOntologyBlockDataV2,
