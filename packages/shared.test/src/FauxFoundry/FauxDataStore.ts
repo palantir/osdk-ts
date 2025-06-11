@@ -751,6 +751,16 @@ export class FauxDataStore {
       def: actionDef,
       attachments: this.#attachments,
     });
+    const automations = this.#fauxOntology.getAllAutomationImpls();
+    automations.forEach(automation => {
+      if (automation.postActionPredicate(r)) {
+        // ignore the responses
+        this.applyAction(
+          automation.effect.definition.apiName,
+          automation.effect.request,
+        );
+      }
+    });
 
     // The legacy actions return the full payload
     // they want to return, so we need to do that
