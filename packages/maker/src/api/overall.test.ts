@@ -6986,139 +6986,137 @@ describe("Ontology Defining", () => {
         expect(dumpAutomationWireType()).toMatchInlineSnapshot(
           `
           {
-            "automations": [
-              {
-                "automationBlockData": {
-                  "marketplaceMonitor": {
-                    "attribution": {
-                      "createdAt": "fake-date",
-                      "createdBy": undefined,
-                    },
-                    "isCurrentlyInTriggeringState": false,
-                    "lastEvaluationTime": undefined,
-                    "lastHistoryEvent": {},
-                    "lastRecoveryEvent": {},
-                    "lastTriggerEvent": {},
-                    "logic": {
-                      "event": {
+            "automationBlockData": {
+              "marketplaceMonitor": {
+                "attribution": {
+                  "createdAt": "fake-date",
+                  "createdBy": undefined,
+                },
+                "isCurrentlyInTriggeringState": false,
+                "lastEvaluationTime": undefined,
+                "lastHistoryEvent": {},
+                "lastRecoveryEvent": {},
+                "lastTriggerEvent": {},
+                "logic": {
+                  "event": {
+                    "eventType": {
+                      "notSavedObjectSetEvent": {
                         "eventType": {
-                          "notSavedObjectSetEvent": {
-                            "eventType": {
-                              "added": {},
-                              "type": "added",
-                            },
-                            "objectSetRid": "be43d793-e892-3b2f-9f13-e9154d8e8e3f",
-                          },
-                          "type": "notSavedObjectSetEvent",
+                          "added": {},
+                          "type": "added",
                         },
+                        "objectSetRid": "be43d793-e892-3b2f-9f13-e9154d8e8e3f",
                       },
-                      "type": "event",
+                      "type": "notSavedObjectSetEvent",
                     },
-                    "metadata": {
-                      "branchRid": undefined,
-                      "cycleDetectionSettings": undefined,
-                      "dependentAutomations": [],
-                      "disabled": {},
-                      "expiry": undefined,
-                      "expiryDate": "",
-                      "globalEffectExecutionSettings": undefined,
-                      "liveConfig": undefined,
-                      "management": undefined,
-                      "mgsConfig": undefined,
-                      "muted": {
-                        "forUsers": {},
-                      },
-                      "priority": undefined,
-                      "rendering": undefined,
-                      "renderingV2": {},
-                      "rid": "ri.object-sentinel..automationApiName",
-                      "scopedTokenEffects": undefined,
-                      "subscribers": [
-                        {
-                          "recoveryEffects": {},
-                          "subscriberType": {
-                            "type": "user",
-                            "user": {
-                              "userId": "user",
-                            },
-                          },
-                          "triggerEffects": {
-                            "effect-1": {
-                              "action": {
-                                "actionInputs": {},
-                                "actionTypeRid": "f583fd6b-7638-3438-b519-c195107107e0",
-                                "actionTypeVersion": undefined,
-                                "executionMode": undefined,
-                                "executionSettings": undefined,
-                              },
-                              "type": "action",
-                            },
-                          },
-                        },
-                      ],
-                      "telemetryConfig": undefined,
-                      "timeSeriesAlertingOverrides": undefined,
-                      "triggerExecutionSettings": undefined,
-                    },
-                    "monitorType": "FUNNEL_BACKED_INCREMENTAL",
-                    "publishedMonitorVersion": 1,
-                    "version": 1,
-                    "versionedObjectSetsVersionsUsed": {},
                   },
-                  "referencedObjectSetEntities": undefined,
-                  "requiredInputEntityIds": [],
+                  "type": "event",
                 },
-                "automationShapeData": {
-                  "actionParameters": {
-                    "action-com.palantir.foo-parameter-param1": {
-                      "type": "boolean",
-                    },
+                "metadata": {
+                  "branchRid": undefined,
+                  "cycleDetectionSettings": undefined,
+                  "dependentAutomations": [],
+                  "disabled": {},
+                  "expiry": undefined,
+                  "expiryDate": "3000-01-01T00:00:00+00:00",
+                  "globalEffectExecutionSettings": undefined,
+                  "liveConfig": undefined,
+                  "management": undefined,
+                  "mgsConfig": undefined,
+                  "muted": {
+                    "forUsers": {},
                   },
-                  "actionsToParameters": {
-                    "action-type-com.palantir.foo": [
-                      "action-com.palantir.foo-parameter-param1",
-                    ],
-                  },
-                  "objectProperties": {
-                    "com.palantir.foo-property-type-bar": {
-                      "type": "string",
-                    },
-                  },
-                  "objectTypesToProperties": {
-                    "object-type-com.palantir.foo": [
-                      "com.palantir.foo-property-type-bar",
-                    ],
-                  },
-                },
-                "objectSetBlockData": {
-                  "singleObjectSetBlockDatas": [
+                  "priority": undefined,
+                  "rendering": undefined,
+                  "renderingV2": {},
+                  "rid": "ri.object-sentinel..automation.automationApiName",
+                  "scopedTokenEffects": undefined,
+                  "subscribers": [
                     {
-                      "objectSetTemplateId": "be43d793-e892-3b2f-9f13-e9154d8e8e3f",
-                      "securityRidTemplateId": "3141bd29-3996-38a6-adaf-ecd945b9b194",
-                      "templatedObjectSet": {
-                        "base": {
-                          "objectTypeId": "835af9c0-d7d7-354a-9627-586dc906aa09",
+                      "recoveryEffects": {},
+                      "subscriberType": {
+                        "type": "user",
+                        "user": {
+                          "userId": {},
                         },
-                        "type": "base",
+                      },
+                      "triggerEffects": {
+                        "e9578733-0701-541f-9122-bddbf4eb8354": {
+                          "action": {
+                            "actionInputs": {},
+                            "actionTypeRid": "f583fd6b-7638-3438-b519-c195107107e0",
+                            "actionTypeVersion": undefined,
+                            "executionMode": undefined,
+                            "executionSettings": undefined,
+                          },
+                          "type": "action",
+                        },
                       },
                     },
                   ],
+                  "telemetryConfig": undefined,
+                  "timeSeriesAlertingOverrides": undefined,
+                  "triggerExecutionSettings": undefined,
                 },
-                "objectSetShapeData": {
-                  "objectProperties": {
-                    "com.palantir.foo-property-type-bar": {
-                      "type": "string",
-                    },
-                  },
-                  "objectSetReadableId": "object-set-readable-id",
-                  "objectTypesToProperties": {
-                    "object-type-com.palantir.foo": [
-                      "com.palantir.foo-property-type-bar",
-                    ],
-                  },
+                "monitorType": "FUNNEL_BACKED_INCREMENTAL",
+                "publishedMonitorVersion": 1,
+                "version": 1,
+                "versionedObjectSetsVersionsUsed": {},
+              },
+              "referencedObjectSetEntities": undefined,
+              "requiredInputEntityIds": [],
+            },
+            "automationShapeData": {
+              "actionParameters": {
+                "action-com.palantir.foo-parameter-param1": {
+                  "boolean": {},
+                  "type": "boolean",
                 },
               },
-            ],
+              "actionsToParameters": {
+                "action-type-com.palantir.foo": [
+                  "action-com.palantir.foo-parameter-param1",
+                ],
+              },
+              "objectProperties": {
+                "com.palantir.foo-property-type-bar": {
+                  "type": "string",
+                },
+              },
+              "objectTypesToProperties": {
+                "object-type-com.palantir.foo": [
+                  "com.palantir.foo-property-type-bar",
+                ],
+              },
+            },
+            "functionShapeData": undefined,
+            "objectSetBlockData": {
+              "singleObjectSetBlockDatas": [
+                {
+                  "objectSetTemplateId": "be43d793-e892-3b2f-9f13-e9154d8e8e3f",
+                  "securityRidTemplateId": "3141bd29-3996-38a6-adaf-ecd945b9b194",
+                  "templatedObjectSet": {
+                    "base": {
+                      "objectTypeId": "835af9c0-d7d7-354a-9627-586dc906aa09",
+                    },
+                    "type": "base",
+                  },
+                },
+              ],
+            },
+            "objectSetShapeData": {
+              "objectProperties": {
+                "com.palantir.foo-property-type-bar": {
+                  "type": "string",
+                },
+              },
+              "objectSetReadableId": "object-set-com.palantir.foo",
+              "objectTypesToProperties": {
+                "object-type-com.palantir.foo": [
+                  "com.palantir.foo-property-type-bar",
+                ],
+              },
+            },
           }
         `,
         );
