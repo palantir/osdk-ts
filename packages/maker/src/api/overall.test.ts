@@ -17,6 +17,7 @@
 import * as fs from "fs";
 import path from "path";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
+import { toBlockShapeId } from "./blockShapeId.js";
 import {
   defineAction,
   defineCreateInterfaceObjectAction,
@@ -52,6 +53,11 @@ describe("Ontology Defining", () => {
   });
 
   describe("ValueTypes", () => {
+    it("hash", () => {
+      expect(toBlockShapeId(
+        "object-set-com.palantir.foundry.as.code.sandbox.sandbox-ontology.foo",
+      )).toEqual("42bd96c8-cec1-30af-8cef-9613c8074c95");
+    });
     it("Fails to define value type with incorrect semver", () => {
       expect(() =>
         defineValueType({

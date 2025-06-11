@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ import type {
   ActionTypePermissionInformation,
   ActionTypeStatus,
   AutomationIr,
-  AutomationIrBlockData,
   AutomationShapeData,
   DataConstraints,
   MarketplaceEffect,
@@ -59,6 +58,7 @@ import type {
 import * as fs from "fs";
 import * as path from "path";
 import invariant from "tiny-invariant";
+import { v5 as uuidv5 } from "uuid";
 import { toBlockShapeId } from "./blockShapeId.js";
 import { isExotic } from "./defineObject.js";
 import type {
@@ -93,7 +93,7 @@ export let namespace: string;
 type OntologyAndValueTypeIrs = {
   ontology: OntologyIr;
   valueType: OntologyIrValueTypeBlockData;
-  automation: AutomationIrBlockData;
+  automation: AutomationIr;
 };
 
 export function updateOntology<
@@ -262,17 +262,13 @@ function convertOntologyToValueTypeIr(
 
 function convertToWireAutomateIr(
   ontology: OntologyDefinition,
-): AutomationIrBlockData {
-  const automations = Object.values(ontology[OntologyEntityTypeEnum.AUTOMATION])
-    .map(
-      automation => {
-        return generateAutomationIr(automation);
-      },
-    );
-
-  return {
-    automations,
-  };
+): AutomationIr {
+  const automation =
+    Object.values(ontology[OntologyEntityTypeEnum.AUTOMATION])[0];
+  if (automation === undefined) {
+    return {} as AutomationIr;
+  }
+  return generateAutomationIr(automation);
 }
 
 /**
@@ -288,7 +284,10 @@ function generateAutomationIr(
     objectProperties: {},
   };
 
-  const objectSetReadableId = "object-set-readable-id";
+  const objectSetReadableId = generateReadableId(
+    "object-set",
+    automation.condition.objectType.apiName,
+  );
   const objectSets = convertObjectSets(automation);
   const marketplaceMonitor = convertToMarketplaceMonitor(
     automation,
@@ -317,6 +316,7 @@ function generateAutomationIr(
         automationShapeDataCollector.objectTypesToProperties,
       objectProperties: automationShapeDataCollector.objectProperties,
     },
+    functionShapeData: undefined,
   };
 }
 
@@ -347,10 +347,13 @@ function updateActionShapeData(
 
     parameterIds.push(paramReadableId);
 
-    actionParameters[paramReadableId] = {
-      type: param.type,
-      // Add other parameter properties as needed
-    };
+    actionParameters[paramReadableId] = (typeof param.type === "string")
+      ? {
+        type: param.type,
+        [param.type]: {},
+      }
+      : param.type;
+    // Add other parameter properties as needed
   });
 
   actionsToParameters[actionReadableId] = parameterIds;
@@ -441,7 +444,7 @@ function convertToMarketplaceMonitor(
   automationShapeDataCollector: AutomationShapeData,
 ): MarketplaceMonitor {
   const version = 1;
-  const rid = `ri.object-sentinel..${automation.apiName}`;
+  const rid = `ri.object-sentinel..automation.${automation.apiName}`;
 
   const { subscribers, scopedTokenEffects } = getAutomationEffects(
     automation,
@@ -480,7 +483,7 @@ function convertToMarketplaceMonitor(
     metadata: {
       dependentAutomations: [],
       disabled: {},
-      expiryDate: "", // deprecated field.
+      expiryDate: "3000-01-01T00:00:00+00:00", // deprecated field.
       muted: {
         forUsers: {},
       },
@@ -532,7 +535,9 @@ function getAutomationEffects(
         generateReadableId("action-type", effect.action.apiName),
       );
       if (effect.scoped) {
-        scopedEffects[effectId] = {
+        scopedEffects[
+          uuidv5(effectId, "00000000-0000-0000-0000-000000000000")
+        ] = {
           type: "action",
           action: {
             ...effect.definition,
@@ -541,7 +546,9 @@ function getAutomationEffects(
           },
         };
       } else {
-        nonScopedEffects[effectId] = {
+        nonScopedEffects[
+          uuidv5(effectId, "00000000-0000-0000-0000-000000000000")
+        ] = {
           type: "action",
           action: {
             ...effect.definition,
@@ -562,7 +569,7 @@ function getAutomationEffects(
       subscriberType: {
         type: "user",
         user: {
-          userId: "user",
+          userId: {},
         },
       },
       triggerEffects: nonScopedEffects,
@@ -1156,7 +1163,7 @@ export function dumpValueTypeWireType(): OntologyIrValueTypeBlockData {
   return convertOntologyToValueTypeIr(ontologyDefinition);
 }
 
-export function dumpAutomationWireType(): AutomationIrBlockData {
+export function dumpAutomationWireType(): AutomationIr {
   return convertToWireAutomateIr(ontologyDefinition);
 }
 

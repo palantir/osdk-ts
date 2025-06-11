@@ -110,7 +110,7 @@ export default async function main(
       JSON.stringify(ontology.valueType, null, 2),
     );
   }
-  if (ontology.automation.automations.length > 0) {
+  if (Object.keys(ontology.automation).length > 0) {
     await fs.writeFile(
       commandLineOpts.automationsOutput,
       JSON.stringify(ontology.automation, null, 2),
