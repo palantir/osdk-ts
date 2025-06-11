@@ -1,5 +1,15 @@
 # @osdk/client
 
+## 2.2.1
+
+### Patch Changes
+
+- 87e2264: Add 'getMediaReference' method to Media
+- Updated dependencies [87e2264]
+  - @osdk/api@2.2.1
+  - @osdk/generator-converters@2.2.1
+  - @osdk/client.unstable@2.2.1
+
 ## 2.2.0
 
 ### Patch Changes

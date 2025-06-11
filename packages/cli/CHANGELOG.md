@@ -1,5 +1,7 @@
 # @osdk/cli
 
+## 0.26.1
+
 ## 0.26.0
 
 ### Patch Changes

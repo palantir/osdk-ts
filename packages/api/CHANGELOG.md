@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.2.1
+
+### Patch Changes
+
+- 87e2264: Add 'getMediaReference' method to Media
+
 ## 2.2.0
 
 ### Patch Changes
