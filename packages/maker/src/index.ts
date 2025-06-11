@@ -24,6 +24,7 @@ export {
   defineModifyInterfaceObjectAction,
   defineModifyObjectAction,
 } from "./api/defineAction.js";
+export { defineAutomation } from "./api/defineAutomation.js";
 export { importSharedPropertyType } from "./api/defineImportSpt.js";
 export { defineInterface } from "./api/defineInterface.js";
 export { defineInterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
