@@ -67,8 +67,24 @@ export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVe
 
 export type {
   ApiNameValueTypeReference,
+  ComputeModuleIrBlockData,
+  ComputeModuleIrBlockDataEntry,
   OntologyIr,
   OntologyIrOntologyBlockDataV2,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
 } from "./blockDataIr.js";
+
+export type {
+  AnnotatedEndpoint,
+  ComputeModuleAuthMode,
+  DeployedAppMarketplaceBlockDataV1,
+  DeployedAppsComputationParams,
+  DeployedAppsRuntimeParams,
+  HttpBody,
+  HttpMethod,
+  ScalingConfig,
+  ServerEndpointsSpec,
+  StringPart,
+  StringParts,
+} from "./generated/module-group/__components.js";

@@ -15,6 +15,10 @@
  */
 
 import type {
+  DeployedAppsComputationParams,
+  DeployedAppsRuntimeParams,
+} from "./generated/module-group/index.js";
+import type {
   OntologyIrImportedTypes,
   OntologyIrOntologyBlockDataV2,
 } from "./generated/ontology-metadata/api/blockdata/index.js";
@@ -61,4 +65,15 @@ export type OntologyIrValueTypeBlockDataEntry = {
 
 export type OntologyIrValueTypeBlockData = {
   valueTypes: OntologyIrValueTypeBlockDataEntry[];
+};
+
+export type ComputeModuleIrBlockData = {
+  type: string;
+  deployedAppMarketplaceBlockDataV1: ComputeModuleIrBlockDataEntry;
+};
+
+export type ComputeModuleIrBlockDataEntry = {
+  runtimeParameters: DeployedAppsRuntimeParams;
+  computationParameters: DeployedAppsComputationParams;
+  numberOfFunctionsRegistered?: number;
 };
