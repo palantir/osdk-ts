@@ -30,6 +30,7 @@ import {
   type BodyInfo,
   type ComputeModuleDefinition,
   type ComputeModuleType,
+  type ContainerResource,
   type DataType,
   type FoundryContainerizedApplication,
   type FunctionInputType,
@@ -134,7 +135,7 @@ function createFoundryContainerizedApplication(
           },
         },
         additionalConfig: {
-          resources: computeModuleDefinition.resourceConfig,
+          resources: createContainerResources(computeModuleDefinition),
           commands: [],
           arguments: [],
           env: [],
@@ -147,6 +148,32 @@ function createFoundryContainerizedApplication(
   };
 }
 
+function createContainerResources(
+  computeModuleDefinition: ComputeModuleDefinition,
+): ContainerResource[] {
+  return computeModuleDefinition.resourceConfig.map(resource => {
+    switch (resource.type) {
+      case "cpu":
+        return {
+          resourceType: { type: "cpu", cpu: {} },
+          request: resource.request,
+          ...resource.limit && { limit: resource.limit },
+        };
+      case "memory":
+        return {
+          resourceType: { type: "memory", memory: {} },
+          request: resource.request,
+          ...resource.limit && { limit: resource.limit },
+        };
+      case "gpu":
+        return {
+          resourceType: { type: "gpu", gpu: {} },
+          request: resource.request,
+          ...resource.limit && { limit: resource.limit },
+        };
+    }
+  });
+}
 // OpenAPI type definitions
 interface OpenAPIServer {
   url: string;

@@ -465,10 +465,16 @@ export type ComputeModuleDefinition = {
   container: string;
   authMode: ComputeModuleAuthMode;
   scalingConfig: ScalingConfig;
-  resourceConfig: Array<ContainerResource>;
+  resourceConfig: Array<ComputeModuleDefinitionResource>;
 };
 
-type ContainerResource = {
+export type ComputeModuleDefinitionResource = {
+  type: "cpu" | "memory" | "gpu";
+  request: string;
+  limit?: string;
+};
+
+export type ContainerResource = {
   resourceType: ResourceType;
   request: string;
   limit?: string;
