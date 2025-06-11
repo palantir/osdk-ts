@@ -15,7 +15,7 @@
  */
 
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
-import type { FauxActionImpl } from "./FauxActionImpl.js";
+import type { FauxDataStoreBatch } from "./FauxDataStoreBatch.js";
 
 export type Automation = {
   apiName: string;
@@ -23,7 +23,8 @@ export type Automation = {
 
 export type AutomationImpl = {
   // This is a very simplified example of an automation that currently fits nicely into the faux foundry.
-  postActionPredicate(actionReturnType: ReturnType<FauxActionImpl>): boolean;
+  // Actions currently mutate the FauxDataStoreBatch directly, so we predicate on that.
+  postActionPredicate(actionReturnType: FauxDataStoreBatch): boolean;
   effect: {
     type: "action";
     definition: OntologiesV2.ActionTypeV2;

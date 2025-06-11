@@ -751,10 +751,14 @@ export class FauxDataStore {
       def: actionDef,
       attachments: this.#attachments,
     });
+    // This could be much more efficient by only "running" the automations that are relevant
+
     const automations = this.#fauxOntology.getAllAutomationImpls();
     automations.forEach(automation => {
-      if (automation.postActionPredicate(r)) {
-        // ignore the responses
+      if (automation.postActionPredicate(batch)) {
+        // ignore the responses, these will continue to directly mutate the datastores
+        // Ideally, this application is pushed down into the FauxDataStoreBatch, but this is slightly
+        // more annoying since automations talk in terms of actions
         this.applyAction(
           automation.effect.definition.apiName,
           automation.effect.request,
