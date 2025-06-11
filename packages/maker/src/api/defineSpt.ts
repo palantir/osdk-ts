@@ -21,14 +21,16 @@ import type {
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import {
+  namespace,
+  ontologyDefinition,
+  updateOntology,
+} from "./defineOntology.js";
+import {
   defaultTypeClasses,
   getPropertyTypeName,
   hasRenderHints,
-  namespace,
-  ontologyDefinition,
   shouldNotHaveRenderHints,
-  updateOntology,
-} from "./defineOntology.js";
+} from "./propertyConversionUtils.js";
 import {
   OntologyEntityTypeEnum,
   type PropertyTypeType,
