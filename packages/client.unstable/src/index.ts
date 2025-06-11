@@ -81,6 +81,8 @@ export type {
   AutomationShapeData,
   BaseParameterType,
   ObjectSetShapeData,
+  ComputeModuleIrBlockData,
+  ComputeModuleIrBlockDataEntry,
   OntologyIr,
   OntologyIrOntologyBlockDataV2,
   OntologyIrValueTypeBlockData,
@@ -88,3 +90,17 @@ export type {
   ReadableId,
   SingleObjectSetBlockData,
 } from "./blockDataIr.js";
+
+export type {
+  AnnotatedEndpoint,
+  ComputeModuleAuthMode,
+  DeployedAppMarketplaceBlockDataV1,
+  DeployedAppsComputationParams,
+  DeployedAppsRuntimeParams,
+  HttpBody,
+  HttpMethod,
+  ScalingConfig,
+  ServerEndpointsSpec,
+  StringPart,
+  StringParts,
+} from "./generated/module-group/__components.js";

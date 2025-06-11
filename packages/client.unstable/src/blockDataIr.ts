@@ -23,6 +23,10 @@ import type {
 } from "./generated/object-set-service/api/__components.js";
 import type { DataType } from "./generated/ontology-metadata/api/__components.js";
 import type {
+  DeployedAppsComputationParams,
+  DeployedAppsRuntimeParams,
+} from "./generated/module-group/index.js";
+import type {
   OntologyIrImportedTypes,
   OntologyIrOntologyBlockDataV2,
 } from "./generated/ontology-metadata/api/blockdata/index.js";
@@ -108,3 +112,13 @@ export type SingleObjectSetBlockData = {
 export type ReadableId = string;
 export type BaseParameterType = OntologyIrBaseParameterType;
 export type AllowedObjectPropertyType = any; // Will be properly typed when implementing convertToWireAutomateIr
+export type ComputeModuleIrBlockData = {
+  type: string;
+  deployedAppMarketplaceBlockDataV1: ComputeModuleIrBlockDataEntry;
+};
+
+export type ComputeModuleIrBlockDataEntry = {
+  runtimeParameters: DeployedAppsRuntimeParams;
+  computationParameters: DeployedAppsComputationParams;
+  numberOfFunctionsRegistered?: number;
+};
