@@ -33,6 +33,10 @@ import {
 import { OpenApiCallError } from "../handlers/util/handleOpenApiCall.js";
 import type { FauxActionImpl } from "./FauxActionImpl.js";
 import type { FauxQueryImpl } from "./FauxQueryImpl.js";
+import type {
+  Automation,
+  AutomationImpl as FauxAutomationImpl,
+} from "./hackTypes.js";
 import type { TH_ObjectTypeFullMetadata } from "./typeHelpers/TH_ObjectTypeFullMetadata.js";
 
 /**
@@ -42,6 +46,7 @@ import type { TH_ObjectTypeFullMetadata } from "./typeHelpers/TH_ObjectTypeFullM
 export class FauxOntology {
   #ontology: OntologiesV2.OntologyFullMetadata;
   #actionImpl: Map<OntologiesV2.ActionTypeApiName, FauxActionImpl> = new Map();
+  #automationImpl: Map<string, FauxAutomationImpl> = new Map();
   #queryImpl: Map<
     OntologiesV2.QueryApiName,
     Map<OntologiesV2.FunctionVersion, FauxQueryImpl>
@@ -350,6 +355,30 @@ export class FauxOntology {
     if (implementation) {
       this.#actionImpl.set(def.apiName, implementation);
     }
+  }
+
+  registerAutomation<Q extends Automation>(
+    def: Q,
+    implementation: FauxAutomationImpl,
+  ): void {
+    if (def.apiName in this.#automationImpl) {
+      throw new Error(
+        `Automation ${def.apiName} already registered`,
+      );
+    }
+    this.#automationImpl.set(def.apiName, implementation);
+  }
+
+  getAllAutomationImpls(): Map<string, FauxAutomationImpl> {
+    return this.#automationImpl;
+  }
+
+  getAutomationImpl(automationApiName: string): FauxAutomationImpl {
+    const impl = this.#automationImpl.get(automationApiName);
+    if (!impl) {
+      throw new Error(`Automation ${automationApiName} not found`);
+    }
+    return impl;
   }
 
   registerQueryType(
