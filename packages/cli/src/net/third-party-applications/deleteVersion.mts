@@ -25,7 +25,7 @@ export async function deleteVersion(
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/${version}?preview=true`;
+    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${encodeURIComponent(thirdPartyAppRid)}/website/versions/${encodeURIComponent(version)}?preview=true`;
 
   await fetch(
     url,
