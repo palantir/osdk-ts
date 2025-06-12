@@ -556,7 +556,6 @@ function getAutomationEffects(
       updateFunctionEffect(
         effect,
         automationShapeDataCollector,
-        scopedEffects,
         effectId,
         nonScopedEffects,
       );
@@ -667,11 +666,10 @@ function updateActionEffect(
 
 function updateFunctionEffect(
   effect: AutomationFunctionEffect,
+  // TODO: add to the shapes collected
   automationShapeDataCollector: AutomationShapeData,
-  scopedEffects: Record<string, MarketplaceScopedEffect>,
   effectId: string,
   nonScopedEffects: Record<string, MarketplaceEffect>,
-  objectType: ObjectType,
 ) {
   const functionBlockShapeId = toBlockShapeId(
     generateReadableId("function", effect.function.apiName),
