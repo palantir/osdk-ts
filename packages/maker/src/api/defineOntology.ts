@@ -77,6 +77,7 @@ import type {
   Automation,
   AutomationActionEffect,
   AutomationFunctionEffect,
+  FunctionEffectInput,
   InterfaceType,
   LinkType,
   ObjectPropertyType,
@@ -670,6 +671,7 @@ function updateFunctionEffect(
   scopedEffects: Record<string, MarketplaceScopedEffect>,
   effectId: string,
   nonScopedEffects: Record<string, MarketplaceEffect>,
+  objectType: ObjectType,
 ) {
   const functionBlockShapeId = toBlockShapeId(
     generateReadableId("function", effect.function.apiName),
@@ -690,10 +692,40 @@ function updateFunctionEffect(
         type: "function",
         function: {
           ...effect.definition,
-          functionRid: functionBlockShapeId,
-          functionInputs: {},
+          functionLocator: functionBlockShapeId,
+          functionInputs: Object.fromEntries(
+            Object.entries(effect.parameters).map(([functionInputName, v]) => {
+              return convertFunctionEffectInput(v, functionInputName);
+            }),
+          ),
         },
       };
+  }
+}
+
+function convertFunctionEffectInput(
+  input: FunctionEffectInput,
+  functionInputName: string,
+) {
+  switch (input.type) {
+    case "string":
+      return [functionInputName, {
+        type: "string",
+        value: input.value,
+      }];
+    case "currentProperty":
+      return [functionInputName, {
+        type: "currentProperty",
+        property: toBlockShapeId(
+          generateReadableId(
+            input.objectType.apiName,
+            "property-type",
+            input.property.apiName,
+          ),
+        ),
+      }];
+    default:
+      throw new Error("Invalid function input type");
   }
 }
 

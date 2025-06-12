@@ -25,6 +25,7 @@ import type {
   DeployedAppsRuntimeParams,
   ExampleValue,
   FailureMessage,
+  FunctionInputName,
   HttpBody,
   ImportedTypes,
   InterfaceTypeApiName,
@@ -908,7 +909,17 @@ export type AutomationFunctionEffect = {
   type: "function";
   effectId: string;
   definition: MarketplaceFunctionEffect;
+  parameters: Record<FunctionInputName, FunctionEffectInput>;
   function: ComputeModuleType;
   onBehalfOfUserId: string;
   scoped: boolean;
+};
+
+export type FunctionEffectInput = {
+  type: "string";
+  value: string;
+} | {
+  type: "currentProperty";
+  property: ObjectPropertyType;
+  objectType: ObjectType;
 };
