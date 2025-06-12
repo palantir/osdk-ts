@@ -1,5 +1,15 @@
 # @osdk/widget.vite-plugin.unstable
 
+## 2.2.0-beta.2
+
+### Minor Changes
+
+- 1bcfbbc: Bump fs-extra from 11.2.0 to 11.3.0
+
+### Patch Changes
+
+- @osdk/widget.api.unstable@2.2.0-beta.2
+
 ## 2.1.0-beta.11
 
 ### Patch Changes

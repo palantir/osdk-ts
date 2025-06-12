@@ -1,5 +1,19 @@
 # @osdk/widget.client.unstable
 
+## 2.2.0-beta.2
+
+### Minor Changes
+
+- d4803e5: Use window.parent instead of window.top for messaging
+
+### Patch Changes
+
+- Updated dependencies [43c5547]
+- Updated dependencies [3736624]
+- Updated dependencies [3b5ccaa]
+  - @osdk/client@2.3.0-beta.4
+  - @osdk/widget.api.unstable@2.2.0-beta.2
+
 ## 2.1.0-beta.11
 
 ### Patch Changes
