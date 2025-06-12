@@ -130,7 +130,7 @@ function createFoundryContainerizedApplication(
           imagePullMetadata: {
             type: "foundryArtifacts",
             foundryArtifacts: {
-              artifactsRepoRid: "foo",
+              artifactsRepoRid: "ri.redacted.redacted.redacted.redacted",
             },
           },
         },
