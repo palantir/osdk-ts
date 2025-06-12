@@ -15,6 +15,10 @@
  */
 
 import type {
+  DeployedAppsComputationParams,
+  DeployedAppsRuntimeParams,
+} from "./generated/module-group/index.js";
+import type {
   AutomationBlockDataV1,
 } from "./generated/object-sentinel/api/__components.js";
 import type {
@@ -70,6 +74,17 @@ export type OntologyIrValueTypeBlockDataEntry = {
 
 export type OntologyIrValueTypeBlockData = {
   valueTypes: OntologyIrValueTypeBlockDataEntry[];
+};
+
+export type ComputeModuleIrBlockData = {
+  type: string;
+  deployedAppMarketplaceBlockDataV1: ComputeModuleIrBlockDataEntry;
+};
+
+export type ComputeModuleIrBlockDataEntry = {
+  runtimeParameters: DeployedAppsRuntimeParams;
+  computationParameters: DeployedAppsComputationParams;
+  numberOfFunctionsRegistered?: number;
 };
 
 export interface AutomationIr {

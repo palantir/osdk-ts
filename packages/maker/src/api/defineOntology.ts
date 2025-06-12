@@ -19,6 +19,8 @@ import type {
   ActionTypeStatus,
   AutomationIr,
   AutomationShapeData,
+  ComputeModuleIrBlockData,
+  ComputeModuleIrBlockDataEntry,
   DataConstraints,
   MarketplaceEffect,
   MarketplaceMonitor,
@@ -93,6 +95,7 @@ export let namespace: string;
 type OntologyAndValueTypeIrs = {
   ontology: OntologyIr;
   valueType: OntologyIrValueTypeBlockData;
+  computeModule: ComputeModuleIrBlockData;
   automation: AutomationIr;
 };
 
@@ -129,6 +132,7 @@ export async function defineOntology(
     INTERFACE_TYPE: {},
     SHARED_PROPERTY_TYPE: {},
     VALUE_TYPE: {},
+    COMPUTE_MODULE_TYPE: {},
     AUTOMATION: {},
   };
   importedTypes = {
@@ -138,6 +142,7 @@ export async function defineOntology(
     LINK_TYPE: {},
     INTERFACE_TYPE: {},
     VALUE_TYPE: {},
+    COMPUTE_MODULE_TYPE: {},
     AUTOMATION: {},
   };
   try {
@@ -155,6 +160,7 @@ export async function defineOntology(
   return {
     ontology: convertToWireOntologyIr(ontologyDefinition),
     valueType: convertOntologyToValueTypeIr(ontologyDefinition),
+    computeModule: convertOntologyToComputeModuleIr(ontologyDefinition),
     automation: convertToWireAutomateIr(ontologyDefinition),
   };
 }
@@ -168,6 +174,7 @@ export function writeStaticObjects(outputDir: string): void {
     [OntologyEntityTypeEnum.LINK_TYPE]: "link-types",
     [OntologyEntityTypeEnum.INTERFACE_TYPE]: "interface-types",
     [OntologyEntityTypeEnum.VALUE_TYPE]: "value-types",
+    [OntologyEntityTypeEnum.COMPUTE_MODULE_TYPE]: "compute-module-types",
     [OntologyEntityTypeEnum.AUTOMATION]: "automations",
   };
 
@@ -257,6 +264,24 @@ function convertOntologyToValueTypeIr(
         exampleValues: definition.exampleValues,
       })),
     })),
+  };
+}
+
+function convertOntologyToComputeModuleIr(
+  ontology: OntologyDefinition,
+): ComputeModuleIrBlockData {
+  const definition = ontology[OntologyEntityTypeEnum.COMPUTE_MODULE_TYPE];
+  return {
+    type: "deployedAppMarketplaceBlockDataV1",
+    deployedAppMarketplaceBlockDataV1:
+      Object.values(definition).map<ComputeModuleIrBlockDataEntry>(
+        computeModule => ({
+          runtimeParameters: computeModule.runtimeParameters,
+          computationParameters: computeModule.computationParameters,
+          numberOfFunctionsRegistered: computeModule.numberOfFunctionsRegistered
+            ?? undefined,
+        }),
+      )[0],
   };
 }
 
@@ -1161,6 +1186,10 @@ export function dumpOntologyFullMetadata(): OntologyIr {
 
 export function dumpValueTypeWireType(): OntologyIrValueTypeBlockData {
   return convertOntologyToValueTypeIr(ontologyDefinition);
+}
+
+export function dumpComputeModuleWireType(): ComputeModuleIrBlockData {
+  return convertOntologyToComputeModuleIr(ontologyDefinition);
 }
 
 export function dumpAutomationWireType(): AutomationIr {
