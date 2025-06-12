@@ -908,6 +908,7 @@ export type AutomationFunctionEffect = {
   type: "function";
   effectId: string;
   definition: MarketplaceFunctionEffect;
+  function: ComputeModuleType;
   onBehalfOfUserId: string;
   scoped: boolean;
 };

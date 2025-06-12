@@ -75,6 +75,8 @@ import type {
   ActionParameterRequirementConstraint,
   ActionType,
   Automation,
+  AutomationActionEffect,
+  AutomationFunctionEffect,
   InterfaceType,
   LinkType,
   ObjectPropertyType,
@@ -541,37 +543,22 @@ function getAutomationEffects(
 
   Object.entries(automation.effects).forEach(([effectId, effect]) => {
     if (effect.type === "action") {
-      updateActionShapeData(effect.action, automationShapeDataCollector);
-      const actionBlockShapeId = toBlockShapeId(
-        generateReadableId("action-type", effect.action.apiName),
+      updateActionEffect(
+        effect,
+        automationShapeDataCollector,
+        scopedEffects,
+        effectId,
+        nonScopedEffects,
       );
-      if (effect.scoped) {
-        scopedEffects[
-          uuidv5(effectId, "00000000-0000-0000-0000-000000000000")
-        ] = {
-          type: "action",
-          action: {
-            ...effect.definition,
-            actionTypeRid: actionBlockShapeId,
-            actionInputs: {},
-          },
-        };
-      } else {
-        nonScopedEffects[
-          uuidv5(effectId, "00000000-0000-0000-0000-000000000000")
-        ] = {
-          type: "action",
-          action: {
-            ...effect.definition,
-            actionTypeRid: actionBlockShapeId,
-            actionInputs: {},
-          },
-        };
-      }
     }
-
     if (effect.type === "function") {
-      throw new Error("Function effects are not supported");
+      updateFunctionEffect(
+        effect,
+        automationShapeDataCollector,
+        scopedEffects,
+        effectId,
+        nonScopedEffects,
+      );
     }
   });
 
@@ -642,6 +629,72 @@ function convertOntologyToComputeModuleIr(
         }),
       )[0],
   };
+}
+
+function updateActionEffect(
+  effect: AutomationActionEffect,
+  automationShapeDataCollector: AutomationShapeData,
+  scopedEffects: Record<string, MarketplaceScopedEffect>,
+  effectId: string,
+  nonScopedEffects: Record<string, MarketplaceEffect>,
+) {
+  updateActionShapeData(effect.action, automationShapeDataCollector);
+  const actionBlockShapeId = toBlockShapeId(
+    generateReadableId("action-type", effect.action.apiName),
+  );
+  if (effect.scoped) {
+    scopedEffects[uuidv5(effectId, "00000000-0000-0000-0000-000000000000")] = {
+      type: "action",
+      action: {
+        ...effect.definition,
+        actionTypeRid: actionBlockShapeId,
+        actionInputs: {},
+      },
+    };
+  } else {
+    nonScopedEffects[uuidv5(effectId, "00000000-0000-0000-0000-000000000000")] =
+      {
+        type: "action",
+        action: {
+          ...effect.definition,
+          actionTypeRid: actionBlockShapeId,
+          actionInputs: {},
+        },
+      };
+  }
+}
+
+function updateFunctionEffect(
+  effect: AutomationFunctionEffect,
+  automationShapeDataCollector: AutomationShapeData,
+  scopedEffects: Record<string, MarketplaceScopedEffect>,
+  effectId: string,
+  nonScopedEffects: Record<string, MarketplaceEffect>,
+) {
+  const functionBlockShapeId = toBlockShapeId(
+    generateReadableId("function", effect.function.apiName),
+  );
+  if (effect.scoped) {
+    // scopedEffects[uuidv5(effectId, "00000000-0000-0000-0000-000000000000")] = {
+    //   type: "logic",
+    //   logic: {
+    //     ...effect.definition,
+    //     functionRid: functionBlockShapeId,
+    //     functionInputs: {},
+    //   },
+    // };
+    throw new Error("Scoped function effects not supported");
+  } else {
+    nonScopedEffects[uuidv5(effectId, "00000000-0000-0000-0000-000000000000")] =
+      {
+        type: "function",
+        function: {
+          ...effect.definition,
+          functionRid: functionBlockShapeId,
+          functionInputs: {},
+        },
+      };
+  }
 }
 
 function convertToWireOntologyIr(
