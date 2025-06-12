@@ -21,7 +21,7 @@ import type {
   ObjectSetBlockDataV1,
   TemplatedObjectSet,
 } from "./generated/object-set-service/api/__components.js";
-import type { DataType } from "./generated/ontology-metadata/api/__components.js";
+import type { DataType } from "./generated/marketplace/api/functions/__components.js";
 import type {
   DeployedAppsComputationParams,
   DeployedAppsRuntimeParams,

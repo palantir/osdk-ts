@@ -674,7 +674,7 @@ function updateActionEffect(
 }
 
 function updateFunctionEffect(
-  effect: AutomationFunctionEffect, // TODO: add to the shapes collected
+  effect: AutomationFunctionEffect,
   effectId: string, 
   nonScopedEffects: Record<string, MarketplaceEffect>, 
   functionShapeDataCollector: NonNullable<AutomationIr["functionShapeData"]>,
@@ -695,13 +695,15 @@ function updateFunctionEffect(
           functionLocator: functionBlockShapeId,
           functionInputs: Object.fromEntries(
             Object.entries(effect.parameters).map(([functionInputName, v]) => {
-              const readableId = toBlockShapeId(generateReadableId("function-input", functionInputName));
-              functionShapeDataCollector.inputs[readableId] = v;
+              const readableId = 
+              functionShapeDataCollector.inputs[readableId] = 
+              // function input names are stable across marketplace deploys
               return convertFunctionEffectInput(v, functionInputName);
             }),
           ),
         },
       };
+      
   }
 }
 
