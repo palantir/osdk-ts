@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.26.2
+
+### Patch Changes
+
+- 1df5973: Fix URI components encoding
+
 ## 0.26.1
 
 ## 0.26.0
