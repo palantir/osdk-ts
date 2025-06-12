@@ -297,6 +297,11 @@ function generateAutomationIr(
     objectTypesToProperties: {},
     objectProperties: {},
   };
+  const functionShapeDataCollector: AutomationIr["functionShapeData"] = {
+    functionReadableId: "",
+    outputDataType: null as any,
+    inputs: {},
+  };
 
   const objectSetReadableId = generateReadableId(
     "object-set",
@@ -306,6 +311,7 @@ function generateAutomationIr(
   const marketplaceMonitor = convertToMarketplaceMonitor(
     automation,
     automationShapeDataCollector,
+    functionShapeDataCollector,
   );
 
   return {
@@ -330,7 +336,7 @@ function generateAutomationIr(
         automationShapeDataCollector.objectTypesToProperties,
       objectProperties: automationShapeDataCollector.objectProperties,
     },
-    functionShapeData: undefined,
+    functionShapeData: functionShapeDataCollector,
   };
 }
 
@@ -456,6 +462,7 @@ function convertObjectSets(
 function convertToMarketplaceMonitor(
   automation: Automation,
   automationShapeDataCollector: AutomationShapeData,
+  functionShapeDataCollector: AutomationIr["functionShapeData"],
 ): MarketplaceMonitor {
   const version = 1;
   const rid = `ri.object-sentinel..automation.${automation.apiName}`;
@@ -463,6 +470,7 @@ function convertToMarketplaceMonitor(
   const { subscribers, scopedTokenEffects } = getAutomationEffects(
     automation,
     automationShapeDataCollector,
+    functionShapeDataCollector,
   );
   updateObjectShapeData(
     automation.condition.objectType,
@@ -533,6 +541,7 @@ function convertToMarketplaceMonitor(
 function getAutomationEffects(
   automation: Automation,
   automationShapeDataCollector: AutomationShapeData,
+  functionShapeDataCollector: AutomationIr["functionShapeData"],
 ) {
   const userScopedEffectsSubscribers:
     MarketplaceMonitor["metadata"]["subscribers"] = [];
@@ -555,9 +564,9 @@ function getAutomationEffects(
     if (effect.type === "function") {
       updateFunctionEffect(
         effect,
-        automationShapeDataCollector,
         effectId,
         nonScopedEffects,
+        functionShapeDataCollector,
       );
     }
   });
@@ -665,24 +674,17 @@ function updateActionEffect(
 }
 
 function updateFunctionEffect(
-  effect: AutomationFunctionEffect,
-  // TODO: add to the shapes collected
-  automationShapeDataCollector: AutomationShapeData,
-  effectId: string,
-  nonScopedEffects: Record<string, MarketplaceEffect>,
+  effect: AutomationFunctionEffect, // TODO: add to the shapes collected
+  effectId: string, 
+  nonScopedEffects: Record<string, MarketplaceEffect>, 
+  functionShapeDataCollector: NonNullable<AutomationIr["functionShapeData"]>,
 ) {
+  const functionReadableId = generateReadableId("function", effect.function.apiName)
   const functionBlockShapeId = toBlockShapeId(
     generateReadableId("function", effect.function.apiName),
   );
+  functionShapeDataCollector.functionReadableId = functionReadableId;
   if (effect.scoped) {
-    // scopedEffects[uuidv5(effectId, "00000000-0000-0000-0000-000000000000")] = {
-    //   type: "logic",
-    //   logic: {
-    //     ...effect.definition,
-    //     functionRid: functionBlockShapeId,
-    //     functionInputs: {},
-    //   },
-    // };
     throw new Error("Scoped function effects not supported");
   } else {
     nonScopedEffects[uuidv5(effectId, "00000000-0000-0000-0000-000000000000")] =
@@ -693,6 +695,8 @@ function updateFunctionEffect(
           functionLocator: functionBlockShapeId,
           functionInputs: Object.fromEntries(
             Object.entries(effect.parameters).map(([functionInputName, v]) => {
+              const readableId = toBlockShapeId(generateReadableId("function-input", functionInputName));
+              functionShapeDataCollector.inputs[readableId] = v;
               return convertFunctionEffectInput(v, functionInputName);
             }),
           ),
