@@ -27,7 +27,9 @@ export async function uploadVersion(
 ): Promise<Version> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/upload?version=${version}&preview=true`;
+    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/upload?version=${
+      encodeURIComponent(version)
+    }&preview=true`;
 
   const result = await fetch(
     url,
