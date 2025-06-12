@@ -65,6 +65,82 @@ describe("Ontology Defining", () => {
         "[Error: Invariant failed: Version is not a valid semver]",
       );
     });
+
+    it("Tests convertProperty function with valueType constraints for string", () => {
+      const testStringValueType = defineValueType({
+        apiName: "stringWithConstraints",
+        displayName: "String With Constraints",
+        description: "A string type with additional constraints",
+        type: {
+          "type": "string",
+          constraints: [
+            {
+              constraint: {
+                type: "length",
+                length: {
+                  minSize: 5,
+                  maxSize: 20,
+                },
+              },
+              failureMessage: {
+                message: "String must be between 5 and 20 characters",
+              },
+            },
+          ],
+        },
+        version: "1.0.0",
+      });
+
+      const object = defineObject({
+        titlePropertyApiName: "constrainedString",
+        displayName: "Test Object",
+        pluralDisplayName: "Test Objects",
+        apiName: "testObject",
+        primaryKeyPropertyApiName: "constrainedString",
+        properties: [
+          {
+            apiName: "constrainedString",
+            type: "string",
+            displayName: "Constrained String",
+            valueType: testStringValueType,
+          },
+        ],
+      });
+
+      const ontology = dumpOntologyFullMetadata();
+      const objectPropertyType =
+        ontology.blockData.objectTypes["com.palantir.testObject"]
+          .objectType.propertyTypes["constrainedString"];
+
+      expect(objectPropertyType.valueType).toEqual({
+        apiName: "stringWithConstraints",
+        version: "1.0.0",
+      });
+
+      expect(objectPropertyType.dataConstraints).toBeDefined();
+      expect(objectPropertyType.dataConstraints?.propertyTypeConstraints)
+        .toHaveLength(1);
+
+      const constraintWrapper = objectPropertyType.dataConstraints
+        ?.propertyTypeConstraints[0];
+      expect(constraintWrapper?.constraints?.type).toBe("string");
+      expect(
+        (constraintWrapper?.constraints as {
+          type: "string";
+          string: { length: { minSize: number; maxSize: number } };
+        }).string.length.minSize,
+      ).toBe(5);
+      expect(
+        (constraintWrapper?.constraints as {
+          type: "string";
+          string: { length: { minSize: number; maxSize: number } };
+        }).string.length.maxSize,
+      ).toBe(20);
+      expect(constraintWrapper?.failureMessage?.message).toBe(
+        "String must be between 5 and 20 characters",
+      );
+    });
+
     it("Correctly serializes a value type", () => {
       defineValueType({
         apiName: "apiName",
