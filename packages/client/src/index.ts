@@ -49,7 +49,7 @@ export type {
   VersionBound,
   WhereClause,
 } from "@osdk/api";
-export { isOk } from "@osdk/api";
+export { CLEAR_DATA, isOk } from "@osdk/api";
 export { PalantirApiError } from "@osdk/shared.net.errors";
 
 export { ActionValidationError } from "./actions/ActionValidationError.js";
@@ -59,7 +59,6 @@ export { createPlatformClient } from "./createPlatformClient.js";
 export type { PlatformClient } from "./createPlatformClient.js";
 export { createAttachmentUpload } from "./object/AttachmentUpload.js";
 export type { ResultOrError } from "./ResultOrError.js";
-
 export {
   extractDate,
   extractDateInLocalTime,

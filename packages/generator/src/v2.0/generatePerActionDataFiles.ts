@@ -172,9 +172,10 @@ export async function generatePerActionDataFiles(
               const key = `${getDescriptionIfPresent(ogValue.description)}
                   readonly "${ogKey}"${ogValue.nullable ? "?" : ""}`;
 
-              const value = ogValue.multiplicity
+              const value = (ogValue.multiplicity
                 ? `ReadonlyArray<${getActionParamType(ogValue.type)}>`
-                : `${getActionParamType(ogValue.type)}`;
+                : `${getActionParamType(ogValue.type)}`)
+                + (ogValue.nullable ? " | typeof CLEAR_DATA" : "");
               jsDocBlock.push(
                 `* @param {${getActionParamType(ogValue.type)}} ${
                   ogValue.nullable ? `[${ogKey}]` : ogKey
@@ -306,6 +307,9 @@ export async function generatePerActionDataFiles(
         true,
       );
 
+      const shouldImportClearData = Object.entries(fullActionDef.parameters)
+        .some(([apiName, def]) => def.nullable === true);
+
       await fs.writeFile(
         path.join(rootOutDir, currentFilePath),
         await formatTs(`
@@ -316,7 +320,13 @@ export async function generatePerActionDataFiles(
             ActionReturnTypeForOptions,
             ApplyActionOptions,
             ApplyBatchActionOptions,
-          } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
+          } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";${
+          shouldImportClearData
+            ? `import { CLEAR_DATA } from "${
+              forInternalUse ? "@osdk/api" : "@osdk/client"
+            }";`
+            : ""
+        }
           import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
           ${imports}
 

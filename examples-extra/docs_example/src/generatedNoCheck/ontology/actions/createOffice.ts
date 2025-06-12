@@ -6,6 +6,7 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
+import { CLEAR_DATA } from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createOffice {
@@ -44,17 +45,17 @@ export namespace createOffice {
     /**
      * The office's physical address (not necessarily shipping address)
      */
-    readonly address?: ActionParam.PrimitiveType<'string'>;
+    readonly address?: ActionParam.PrimitiveType<'string'> | typeof CLEAR_DATA;
     /**
      * The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)
      */
-    readonly capacity?: ActionParam.PrimitiveType<'integer'>;
+    readonly capacity?: ActionParam.PrimitiveType<'integer'> | typeof CLEAR_DATA;
 
     readonly officeId: ActionParam.PrimitiveType<'string'>;
     /**
      * A list of all office names
      */
-    readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'string'>>;
+    readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'string'>> | typeof CLEAR_DATA;
   }
 
   // Represents a fqn of the action
