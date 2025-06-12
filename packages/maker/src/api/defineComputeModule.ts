@@ -120,9 +120,9 @@ function createFoundryContainerizedApplication(
   return {
     containers: [
       {
-        name: computeModuleDefinition.apiName,
+        name: computeModuleDefinition.container,
         image: {
-          name: computeModuleDefinition.apiName,
+          name: computeModuleDefinition.container,
           tagOrDigest: {
             type: "tag",
             tag: version,
