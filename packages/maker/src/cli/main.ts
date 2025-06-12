@@ -34,6 +34,7 @@ export default async function main(
     snapshotDir: string;
     valueTypesOutput: string;
     automationsOutput: string;
+    computeModulesOutput: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -78,6 +79,12 @@ export default async function main(
         default: "automations.json",
         coerce: path.resolve,
       },
+      computeModulesOutput: {
+        describe: "Compute Module Output File",
+        type: "string",
+        default: "compute-modules.json",
+        coerce: path.resolve,
+      },
     })
     .parseAsync();
   let apiNamespace = "";
@@ -114,6 +121,12 @@ export default async function main(
     await fs.writeFile(
       commandLineOpts.automationsOutput,
       JSON.stringify(ontology.automation, null, 2),
+    );
+  }
+  if (Object.keys(ontology.computeModule).length > 0) {
+    await fs.writeFile(
+      commandLineOpts.computeModulesOutput,
+      JSON.stringify(ontology.computeModule, null, 2),
     );
   }
 }
