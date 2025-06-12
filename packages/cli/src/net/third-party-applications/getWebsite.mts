@@ -27,7 +27,7 @@ export async function getWebsite(
 ): Promise<Website | undefined> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${encodeURIComponent(thirdPartyAppRid)}/website?preview=true`;
+    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website?preview=true`;
 
   try {
     const result = await fetch(url);

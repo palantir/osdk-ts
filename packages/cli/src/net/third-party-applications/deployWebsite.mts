@@ -27,7 +27,7 @@ export async function deployWebsite(
 ): Promise<Website> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${encodeURIComponent(thirdPartyAppRid)}/website/deploy?preview=true`;
+    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/deploy?preview=true`;
 
   const result = await fetch(
     url,
