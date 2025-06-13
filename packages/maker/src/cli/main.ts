@@ -93,12 +93,10 @@ export default async function main(
   }
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
 
-  const outputDirForOntology = commandLineOpts.outputDir;
-
   const ontology = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
-    outputDirForOntology,
+    commandLineOpts.outputDir,
   );
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
