@@ -17,6 +17,7 @@
 import * as fs from "fs";
 import path from "path";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
+import { toBlockShapeId } from "./blockShapeId.js";
 import {
   defineAction,
   defineCreateInterfaceObjectAction,

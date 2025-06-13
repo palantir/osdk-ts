@@ -671,24 +671,6 @@ function getAutomationEffects(
   return { subscribers: userScopedEffectsSubscribers, scopedTokenEffects };
 }
 
-function convertOntologyToComputeModuleIr(
-  ontology: OntologyDefinition,
-): ComputeModuleIrBlockData {
-  const definition = ontology[OntologyEntityTypeEnum.COMPUTE_MODULE_TYPE];
-  return {
-    type: "deployedAppMarketplaceBlockDataV1",
-    deployedAppMarketplaceBlockDataV1:
-      Object.values(definition).map<ComputeModuleIrBlockDataEntry>(
-        computeModule => ({
-          runtimeParameters: computeModule.runtimeParameters,
-          computationParameters: computeModule.computationParameters,
-          numberOfFunctionsRegistered: computeModule.numberOfFunctionsRegistered
-            ?? undefined,
-        }),
-      )[0],
-  };
-}
-
 function updateActionEffect(
   effect: AutomationActionEffect,
   automationShapeDataCollector: AutomationShapeData,
