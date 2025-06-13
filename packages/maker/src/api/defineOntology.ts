@@ -21,7 +21,6 @@ import type {
   AutomationShapeData,
   ComputeModuleIrBlockData,
   ComputeModuleIrBlockDataEntry,
-  DataConstraints,
   MarketplaceEffect,
   MarketplaceMonitor,
   MarketplaceScopedEffect,
@@ -45,8 +44,6 @@ import type {
   OntologyIrSection,
   OntologyIrSharedPropertyType,
   OntologyIrSharedPropertyTypeBlockDataV2,
-  OntologyIrStructFieldType,
-  OntologyIrType,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
   ParameterId,
@@ -63,6 +60,16 @@ import invariant from "tiny-invariant";
 import { v5 as uuidv5 } from "uuid";
 import { toBlockShapeId } from "./blockShapeId.js";
 import { isExotic } from "./defineObject.js";
+import {
+  convertNullabilityToDataConstraint,
+  convertType,
+  convertValueType,
+  convertValueTypeDataConstraints,
+  defaultTypeClasses,
+  getPropertyTypeName,
+  hasRenderHints,
+  shouldNotHaveRenderHints,
+} from "./propertyConversionUtils.js";
 import type {
   ActionParameter,
   ActionParameterRequirementConstraint,
@@ -70,14 +77,11 @@ import type {
   Automation,
   InterfaceType,
   LinkType,
-  Nullability,
   ObjectPropertyType,
   ObjectType,
   OntologyDefinition,
   OntologyEntityType,
-  PropertyTypeType,
   SharedPropertyType,
-  TypeClass,
 } from "./types.js";
 import { OntologyEntityTypeEnum } from "./types.js";
 
@@ -95,8 +99,8 @@ export let namespace: string;
 type OntologyAndValueTypeIrs = {
   ontology: OntologyIr;
   valueType: OntologyIrValueTypeBlockData;
-  computeModule: ComputeModuleIrBlockData;
   automation: AutomationIr;
+  computeModule: ComputeModuleIrBlockData;
 };
 
 export function updateOntology<
@@ -132,8 +136,8 @@ export async function defineOntology(
     INTERFACE_TYPE: {},
     SHARED_PROPERTY_TYPE: {},
     VALUE_TYPE: {},
-    COMPUTE_MODULE_TYPE: {},
     AUTOMATION: {},
+    COMPUTE_MODULE_TYPE: {},
   };
   importedTypes = {
     SHARED_PROPERTY_TYPE: {},
@@ -142,8 +146,8 @@ export async function defineOntology(
     LINK_TYPE: {},
     INTERFACE_TYPE: {},
     VALUE_TYPE: {},
-    COMPUTE_MODULE_TYPE: {},
     AUTOMATION: {},
+    COMPUTE_MODULE_TYPE: {},
   };
   try {
     await body();
@@ -160,8 +164,8 @@ export async function defineOntology(
   return {
     ontology: convertToWireOntologyIr(ontologyDefinition),
     valueType: convertOntologyToValueTypeIr(ontologyDefinition),
-    computeModule: convertOntologyToComputeModuleIr(ontologyDefinition),
     automation: convertToWireAutomateIr(ontologyDefinition),
+    computeModule: convertOntologyToComputeModuleIr(ontologyDefinition),
   };
 }
 
@@ -174,8 +178,8 @@ export function writeStaticObjects(outputDir: string): void {
     [OntologyEntityTypeEnum.LINK_TYPE]: "link-types",
     [OntologyEntityTypeEnum.INTERFACE_TYPE]: "interface-types",
     [OntologyEntityTypeEnum.VALUE_TYPE]: "value-types",
-    [OntologyEntityTypeEnum.COMPUTE_MODULE_TYPE]: "compute-module-types",
     [OntologyEntityTypeEnum.AUTOMATION]: "automations",
+    [OntologyEntityTypeEnum.COMPUTE_MODULE_TYPE]: "compute-module-types",
   };
 
   if (!fs.existsSync(codegenDir)) {
@@ -320,10 +324,25 @@ function generateAutomationIr(
   );
 
   return {
+    automationReadableId: generateReadableId(
+      "automation",
+      automation.apiName,
+    ),
     automationBlockData: {
       marketplaceMonitor,
-      requiredInputEntityIds: [],
-      referencedObjectSetEntities: undefined,
+      requiredInputEntityIds: [
+        toBlockShapeId(generateReadableId(
+          "object-type",
+          automation.condition.objectType.apiName,
+        )),
+      ],
+      referencedObjectSetEntities: {
+        objectTypeRids: [toBlockShapeId(generateReadableId(
+          "object-type",
+          automation.condition.objectType.apiName,
+        ))],
+        linkTypeRids: [],
+      },
     },
     automationShapeData: {
       actionsToParameters: automationShapeDataCollector.actionsToParameters,
@@ -417,9 +436,23 @@ function updateObjectShapeData(
     propertyIds.push(propertyReadableId);
 
     objectProperties[propertyReadableId] = {
-      type: property.type,
-      // Add other property attributes as needed
+      type: "objectPropertyType",
+      objectPropertyType: {
+        type: "primitive",
+        primitive: {
+          type: property.type + "Type",
+          [property.type + "Type"]: {},
+        },
+      },
     };
+
+    // (typeof property.type === "string")
+    //   ? {
+    //     type: property
+    //     [property.type]: {},
+    //   }
+    //   : property.type;
+    // Add other property attributes as needed
   });
 
   collector.objectTypesToProperties[objectTypeReadableId] = propertyIds;
@@ -999,28 +1032,6 @@ function buildPropertyMapping(
   );
 }
 
-export const defaultTypeClasses: TypeClass[] = [{
-  kind: "render_hint",
-  name: "SELECTABLE",
-}, { kind: "render_hint", name: "SORTABLE" }];
-
-// ExperimentalTimeDependentV1 and Attachment types should be included here once supported
-export function shouldNotHaveRenderHints(type: PropertyTypeType): boolean {
-  return ["struct", "mediaReference", "geotimeSeries"].includes(
-    getPropertyTypeName(type),
-  );
-}
-
-export function hasRenderHints(typeClasses: TypeClass[] | undefined): boolean {
-  return (typeClasses ?? []).some(tc =>
-    tc.kind.toLowerCase() === "render_hint"
-  );
-}
-
-export function getPropertyTypeName(type: PropertyTypeType): string {
-  return typeof type === "object" ? type.type : type;
-}
-
 function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
   const apiName = namespace + property.apiName;
   invariant(
@@ -1046,9 +1057,13 @@ function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
       ?? (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
     status: convertObjectStatus(property.status),
     inlineAction: undefined,
-    dataConstraints: convertNullabilityToDataConstraint(property),
+    dataConstraints: property.valueType
+      ? convertValueTypeDataConstraints(property.valueType.constraints)
+      : convertNullabilityToDataConstraint(property),
     sharedPropertyTypeRid: property.sharedPropertyType?.apiName,
-    valueType: undefined,
+    valueType: property.valueType
+      ? convertValueType(property.valueType)
+      : undefined,
   };
   return output;
 }
@@ -1188,12 +1203,12 @@ export function dumpValueTypeWireType(): OntologyIrValueTypeBlockData {
   return convertOntologyToValueTypeIr(ontologyDefinition);
 }
 
-export function dumpComputeModuleWireType(): ComputeModuleIrBlockData {
-  return convertOntologyToComputeModuleIr(ontologyDefinition);
-}
-
 export function dumpAutomationWireType(): AutomationIr {
   return convertToWireAutomateIr(ontologyDefinition);
+}
+
+export function dumpComputeModuleWireType(): ComputeModuleIrBlockData {
+  return convertOntologyToComputeModuleIr(ontologyDefinition);
 }
 
 function convertSpt(
@@ -1236,107 +1251,6 @@ function convertSpt(
     typeClasses: typeClasses ?? [],
     valueType: valueType,
   };
-}
-
-function convertType(
-  type: PropertyTypeType,
-): OntologyIrType {
-  switch (true) {
-    case (typeof type === "object" && "markingType" in type):
-      return {
-        "type": "marking",
-        marking: { markingType: type.markingType },
-      };
-
-    case (typeof type === "object" && "structDefinition" in type):
-      const structFields: Array<OntologyIrStructFieldType> = new Array();
-      for (const key in type.structDefinition) {
-        const fieldTypeDefinition = type.structDefinition[key];
-        let field: OntologyIrStructFieldType;
-        if (typeof fieldTypeDefinition === "string") {
-          field = {
-            apiName: key,
-            displayMetadata: { displayName: key, description: undefined },
-            typeClasses: [],
-            aliases: [],
-            fieldType: convertType(fieldTypeDefinition),
-          };
-        } else {
-          // If it is a full form type definition then process it as such
-          if ("fieldType" in fieldTypeDefinition) {
-            field = {
-              ...fieldTypeDefinition,
-              apiName: key,
-              fieldType: convertType(fieldTypeDefinition.fieldType),
-              typeClasses: fieldTypeDefinition.typeClasses ?? [],
-              aliases: fieldTypeDefinition.aliases ?? [],
-            };
-          } else {
-            field = {
-              apiName: key,
-              displayMetadata: { displayName: key, description: undefined },
-              typeClasses: [],
-              aliases: [],
-              fieldType: convertType(fieldTypeDefinition),
-            };
-          }
-        }
-
-        structFields.push(field);
-      }
-
-      return {
-        type: "struct",
-        struct: { structFields },
-      };
-
-    case (typeof type === "object" && "isLongText" in type):
-      return {
-        "type": "string",
-        "string": {
-          analyzerOverride: undefined,
-          enableAsciiFolding: undefined,
-          isLongText: type.isLongText,
-          supportsEfficientLeadingWildcard:
-            type.supportsEfficientLeadingWildcard,
-          supportsExactMatching: type.supportsExactMatching,
-        },
-      };
-
-    case (type === "geopoint"):
-      return { type: "geohash", geohash: {} };
-
-    case (type === "decimal"):
-      return { type, [type]: { precision: undefined, scale: undefined } };
-
-    case (type === "string"):
-      return {
-        type,
-        [type]: {
-          analyzerOverride: undefined,
-          enableAsciiFolding: undefined,
-          isLongText: false,
-          supportsEfficientLeadingWildcard: false,
-          supportsExactMatching: true,
-        },
-      };
-
-    case (type === "mediaReference"):
-      return {
-        type: type,
-        mediaReference: {},
-      };
-
-    case (type === "geotimeSeries"):
-      return {
-        type: "geotimeSeriesReference",
-        geotimeSeriesReference: {},
-      };
-
-    default:
-      // use helper function to distribute `type` properly
-      return distributeTypeHelper(type);
-  }
 }
 
 function convertObjectStatus(status: any): any {
@@ -1682,46 +1596,6 @@ function convertParameterRequirementConstraint(
     type: "listLengthValidation",
     listLengthValidation: { minLength: min, maxLength: max },
   };
-}
-
-function convertNullabilityToDataConstraint(
-  prop: { type: PropertyTypeType; nullability?: Nullability },
-): DataConstraints | undefined {
-  if (typeof prop.type === "object" && prop.type.type === "marking") {
-    if (prop.nullability === undefined) {
-      return {
-        propertyTypeConstraints: [],
-        nullability: undefined,
-        nullabilityV2: { noEmptyCollections: true, noNulls: true },
-      };
-    }
-    invariant(
-      prop.nullability?.noNulls,
-      "Marking property type has noNulls set to false, marking properties must not be nullable",
-    );
-    return {
-      propertyTypeConstraints: [],
-      nullability: undefined,
-      nullabilityV2: prop.nullability,
-    };
-  }
-  return prop.nullability === undefined ? undefined : {
-    propertyTypeConstraints: [],
-    nullability: undefined,
-    nullabilityV2: prop.nullability,
-  };
-}
-
-/**
- * Helper function to avoid duplication. Makes the types match properly with the correct
- * behavior without needing to switch on type.
- * @param type
- * @returns
- */
-function distributeTypeHelper<T extends string>(
-  type: T,
-): T extends any ? { type: T } & { [K in T]: {} } : never {
-  return { type, [type]: {} } as any; // any cast to match conditional return type
 }
 
 export function sanitize(namespace: string, s: string): string {

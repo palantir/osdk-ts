@@ -17,7 +17,6 @@
 import * as fs from "fs";
 import path from "path";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
-import { toBlockShapeId } from "./blockShapeId.js";
 import {
   defineAction,
   defineCreateInterfaceObjectAction,
@@ -73,6 +72,82 @@ describe("Ontology Defining", () => {
         "[Error: Invariant failed: Version is not a valid semver]",
       );
     });
+
+    it("Tests convertProperty function with valueType constraints for string", () => {
+      const testStringValueType = defineValueType({
+        apiName: "stringWithConstraints",
+        displayName: "String With Constraints",
+        description: "A string type with additional constraints",
+        type: {
+          "type": "string",
+          constraints: [
+            {
+              constraint: {
+                type: "length",
+                length: {
+                  minSize: 5,
+                  maxSize: 20,
+                },
+              },
+              failureMessage: {
+                message: "String must be between 5 and 20 characters",
+              },
+            },
+          ],
+        },
+        version: "1.0.0",
+      });
+
+      const object = defineObject({
+        titlePropertyApiName: "constrainedString",
+        displayName: "Test Object",
+        pluralDisplayName: "Test Objects",
+        apiName: "testObject",
+        primaryKeyPropertyApiName: "constrainedString",
+        properties: [
+          {
+            apiName: "constrainedString",
+            type: "string",
+            displayName: "Constrained String",
+            valueType: testStringValueType,
+          },
+        ],
+      });
+
+      const ontology = dumpOntologyFullMetadata();
+      const objectPropertyType =
+        ontology.blockData.objectTypes["com.palantir.testObject"]
+          .objectType.propertyTypes["constrainedString"];
+
+      expect(objectPropertyType.valueType).toEqual({
+        apiName: "stringWithConstraints",
+        version: "1.0.0",
+      });
+
+      expect(objectPropertyType.dataConstraints).toBeDefined();
+      expect(objectPropertyType.dataConstraints?.propertyTypeConstraints)
+        .toHaveLength(1);
+
+      const constraintWrapper = objectPropertyType.dataConstraints
+        ?.propertyTypeConstraints[0];
+      expect(constraintWrapper?.constraints?.type).toBe("string");
+      expect(
+        (constraintWrapper?.constraints as {
+          type: "string";
+          string: { length: { minSize: number; maxSize: number } };
+        }).string.length.minSize,
+      ).toBe(5);
+      expect(
+        (constraintWrapper?.constraints as {
+          type: "string";
+          string: { length: { minSize: number; maxSize: number } };
+        }).string.length.maxSize,
+      ).toBe(20);
+      expect(constraintWrapper?.failureMessage?.message).toBe(
+        "String must be between 5 and 20 characters",
+      );
+    });
+
     it("Correctly serializes a value type", () => {
       defineValueType({
         apiName: "apiName",
@@ -6953,7 +7028,7 @@ describe("Ontology Defining", () => {
                   "priority": undefined,
                   "rendering": undefined,
                   "renderingV2": {},
-                  "rid": "ri.object-sentinel..automation.automationApiName",
+                  "rid": "ri.object-sentinel..automation.com.palantir.automationApiName",
                   "scopedTokenEffects": undefined,
                   "subscribers": [
                     {
@@ -6987,9 +7062,17 @@ describe("Ontology Defining", () => {
                 "version": 1,
                 "versionedObjectSetsVersionsUsed": {},
               },
-              "referencedObjectSetEntities": undefined,
-              "requiredInputEntityIds": [],
+              "referencedObjectSetEntities": {
+                "linkTypeRids": [],
+                "objectTypeRids": [
+                  "835af9c0-d7d7-354a-9627-586dc906aa09",
+                ],
+              },
+              "requiredInputEntityIds": [
+                "835af9c0-d7d7-354a-9627-586dc906aa09",
+              ],
             },
+            "automationReadableId": "automation-com.palantir.automationApiName",
             "automationShapeData": {
               "actionParameters": {
                 "action-com.palantir.foo-parameter-param1": {
@@ -7004,7 +7087,14 @@ describe("Ontology Defining", () => {
               },
               "objectProperties": {
                 "com.palantir.foo-property-type-bar": {
-                  "type": "string",
+                  "objectPropertyType": {
+                    "primitive": {
+                      "stringType": {},
+                      "type": "stringType",
+                    },
+                    "type": "primitive",
+                  },
+                  "type": "objectPropertyType",
                 },
               },
               "objectTypesToProperties": {
@@ -7018,7 +7108,7 @@ describe("Ontology Defining", () => {
               "singleObjectSetBlockDatas": [
                 {
                   "objectSetTemplateId": "be43d793-e892-3b2f-9f13-e9154d8e8e3f",
-                  "securityRidTemplateId": "3141bd29-3996-38a6-adaf-ecd945b9b194",
+                  "securityRidTemplateId": "22ee4b44-0c0b-36e5-af10-2548552044ae",
                   "templatedObjectSet": {
                     "base": {
                       "objectTypeId": "835af9c0-d7d7-354a-9627-586dc906aa09",
@@ -7031,7 +7121,14 @@ describe("Ontology Defining", () => {
             "objectSetShapeData": {
               "objectProperties": {
                 "com.palantir.foo-property-type-bar": {
-                  "type": "string",
+                  "objectPropertyType": {
+                    "primitive": {
+                      "stringType": {},
+                      "type": "stringType",
+                    },
+                    "type": "primitive",
+                  },
+                  "type": "objectPropertyType",
                 },
               },
               "objectSetReadableId": "object-set-com.palantir.foo",

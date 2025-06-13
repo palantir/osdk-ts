@@ -41,7 +41,7 @@ import {
 
 export function defineComputeModule(
   computeModuleDefinition: ComputeModuleDefinition,
-): Promise<ComputeModuleType> {
+): ComputeModuleType {
   // buildDockerContainer(computeModuleDefinition);
   const serverEndpointsSpec = convertOpenApiToFunctionSpec(
     computeModuleDefinition.openApiSpec ?? "{}",
@@ -119,24 +119,22 @@ function createFoundryContainerizedApplication(
   computeModuleDefinition: ComputeModuleDefinition,
 ): FoundryContainerizedApplication {
   const version = computeModuleDefinition.imageNameAndTag.split(":").at(-1);
-  // Extract the image name by removing any registry (everything before the last "/") and removing the version (everything after the ":")
-  const imageNameWithRegistry =
-    computeModuleDefinition.imageNameAndTag.split(":")[0];
-  const imageName = imageNameWithRegistry.split("/").at(-1);
+  const name = computeModuleDefinition.imageNameAndTag.split(":").at(0);
   invariant(
     version !== undefined,
     "container name must have version at the end",
   );
+
   invariant(
-    imageName !== undefined,
-    "container name must have a valid image name",
+    name !== undefined,
+    "container name must have a name",
   );
   return {
     containers: [
       {
-        name: imageName,
+        name: name,
         image: {
-          name: imageName,
+          name: name,
           tagOrDigest: {
             type: "tag",
             tag: version,

@@ -88,6 +88,7 @@ export type ComputeModuleIrBlockDataEntry = {
 };
 
 export interface AutomationIr {
+  automationReadableId: ReadableId;
   automationBlockData: AutomationBlockDataV1;
   automationShapeData: AutomationShapeData;
   objectSetBlockData: ObjectSetBlockDataV1;

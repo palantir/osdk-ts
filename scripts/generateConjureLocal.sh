@@ -31,7 +31,11 @@ function generateConjure() {
     formatTypescript "$OUT_DIR" "$PACKAGE_PATH"
 }
 
+<<<<<<< HEAD
 generateConjure "/Volumes/git/foundry/object-sentinel/object-sentinel-api/build/conjure-transform-output/object-sentinel-api.conjure.json" "${SCRIPT_DIR}/../packages/client.unstable" "object-sentinel"
+=======
+generateConjure "/Volumes/git/foundry/marketplace/marketplace-api/build/conjure-ir/marketplace-api.conjure.json" "${SCRIPT_DIR}/../packages/client.unstable" "marketplace"
+>>>>>>> c8915c669aa2b18c2d51dbea8c8220f225e37ba9
 
 # Reset git changes if the generated files are only changed by copyright year
 git status --porcelain --untracked-files=no | while read line; do

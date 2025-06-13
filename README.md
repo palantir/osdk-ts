@@ -80,8 +80,8 @@ For more details, refer to the [public docs](https://www.palantir.com/docs/found
 1. Fork the repo
 2. Create a branch
 3. `pnpm install`
-4. Start dev mode: `pnpm dev`
-5. Add your code
+4. Add your code
+5. Run all lint rules and tests with `pnpm check` from root. Run `pnpm turbo typecheck` to quickly check any issues with your types.
 6. Add a changeset
 
    > 📘 Note
@@ -96,7 +96,6 @@ For more details, refer to the [public docs](https://www.palantir.com/docs/found
    > Info
    > Full docs on the `changesets` tool can be found at the [changesets/changesets github repo](https://github.com/changesets/changesets).
 7. If you're curious what the final build output might look like you can run `pnpm build` from root.
-8. Run all lint rules and tests with `pnpm check` from root.
 
 ## Publishing
 

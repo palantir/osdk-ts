@@ -104,8 +104,8 @@ export enum OntologyEntityTypeEnum {
   SHARED_PROPERTY_TYPE = "SHARED_PROPERTY_TYPE",
   ACTION_TYPE = "ACTION_TYPE",
   VALUE_TYPE = "VALUE_TYPE",
-  COMPUTE_MODULE_TYPE = "COMPUTE_MODULE_TYPE",
   AUTOMATION = "AUTOMATION",
+  COMPUTE_MODULE_TYPE = "COMPUTE_MODULE_TYPE",
 }
 export interface OntologyEntityTypeMapping {
   [OntologyEntityTypeEnum.OBJECT_TYPE]: ObjectType;
@@ -114,8 +114,8 @@ export interface OntologyEntityTypeMapping {
   [OntologyEntityTypeEnum.INTERFACE_TYPE]: InterfaceType;
   [OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE]: SharedPropertyType;
   [OntologyEntityTypeEnum.VALUE_TYPE]: ValueTypeDefinitionVersion;
-  [OntologyEntityTypeEnum.COMPUTE_MODULE_TYPE]: ComputeModuleType;
   [OntologyEntityTypeEnum.AUTOMATION]: Automation;
+  [OntologyEntityTypeEnum.COMPUTE_MODULE_TYPE]: ComputeModuleType;
 }
 
 export type OntologyDefinition =
@@ -304,7 +304,7 @@ export interface ObjectPropertyTypeInner extends
 {
   type: PropertyTypeType;
   array?: boolean;
-  valueType: string | ValueTypeDefinitionVersion;
+  valueType: ValueTypeDefinitionVersion;
   sharedPropertyType: SharedPropertyType;
   description: string | undefined;
   displayName: string;
