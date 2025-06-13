@@ -113,7 +113,7 @@ export function updateOntology<
 export async function defineOntology(
   ns: string,
   body: () => void | Promise<void>,
-  outputDir: string,
+  outputDir: string | undefined,
 ): Promise<OntologyAndValueTypeIrs> {
   namespace = ns;
   ontologyDefinition = {
@@ -143,7 +143,9 @@ export async function defineOntology(
     throw e;
   }
 
-  writeStaticObjects(outputDir);
+  if (outputDir) {
+    writeStaticObjects(outputDir);
+  }
   return {
     ontology: convertToWireOntologyIr(ontologyDefinition),
     valueType: convertOntologyToValueTypeIr(ontologyDefinition),
