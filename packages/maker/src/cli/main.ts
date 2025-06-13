@@ -68,8 +68,7 @@ export default async function main(
       },
       outputDir: {
         alias: "d",
-        describe:
-          "Directory for ontology processing artifacts. If not specified, it's derived from the input path.",
+        describe: "Directory for generated ontology entities",
         type: "string",
         coerce: path.resolve,
       },
