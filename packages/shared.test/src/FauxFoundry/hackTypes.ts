@@ -29,5 +29,11 @@ export type AutomationImpl = {
     type: "action";
     definition: OntologiesV2.ActionTypeV2;
     request: OntologiesV2.ApplyActionRequestV2;
+  } | {
+    type: "generic";
+    execute: (
+      latestEdit: OntologiesV2.ObjectEdit,
+      req: OntologiesV2.ApplyActionRequestV2,
+    ) => void;
   };
 };

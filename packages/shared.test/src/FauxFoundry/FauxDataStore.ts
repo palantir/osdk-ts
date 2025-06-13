@@ -759,13 +759,22 @@ export class FauxDataStore {
     const automations = this.#fauxOntology.getAllAutomationImpls();
     automations.forEach(automation => {
       if (automation.postActionPredicate(batch)) {
-        // ignore the responses, these will continue to directly mutate the datastores
-        // Ideally, this application is pushed down into the FauxDataStoreBatch, but this is slightly
-        // more annoying since automations talk in terms of actions
-        this.applyAction(
-          automation.effect.definition.apiName,
-          automation.effect.request,
-        );
+        if (automation.effect.type === "action") {
+          // ignore the responses, these will continue to directly mutate the datastores
+          // Ideally, this application is pushed down into the FauxDataStoreBatch, but this is slightly
+          // more annoying since automations talk in terms of actions
+          this.applyAction(
+            automation.effect.definition.apiName,
+            automation.effect.request,
+          );
+        }
+        if (automation.effect.type === "generic") {
+          // HACK HACK: we don't know which edit applyAction actually caused so pass through the best we can
+          automation.effect.execute(
+            batch.objectEdits.edits[batch.objectEdits.edits.length - 1],
+            req,
+          );
+        }
       }
     });
 
