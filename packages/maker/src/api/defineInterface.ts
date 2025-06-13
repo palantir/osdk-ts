@@ -52,7 +52,7 @@ export type InterfaceTypeDefinition = {
     string,
     PropertyBase | PropertyWithOptional
   >;
-  extends?: InterfaceType | InterfaceType[] | string | string[];
+  extends?: InterfaceType | InterfaceType[];
 };
 
 export function defineInterface(
@@ -93,23 +93,11 @@ export function defineInterface(
     ),
   );
 
-  let extendsInterfaces: string[] = [];
-  if (interfaceDef.extends) {
-    if (typeof interfaceDef.extends === "string") {
-      extendsInterfaces = [interfaceDef.extends];
-    } else if (
-      Array.isArray(interfaceDef.extends)
-      && interfaceDef.extends.every(item => typeof item === "string")
-    ) {
-      extendsInterfaces = interfaceDef.extends;
-    } else if ((interfaceDef.extends as InterfaceType).apiName !== undefined) {
-      extendsInterfaces = [(interfaceDef.extends as InterfaceType).apiName];
-    } else {
-      extendsInterfaces = (interfaceDef.extends as InterfaceType[]).map(item =>
-        item.apiName
-      );
-    }
-  }
+  const extendsInterfaces = interfaceDef.extends
+    ? (Array.isArray(interfaceDef.extends)
+      ? interfaceDef.extends
+      : [interfaceDef.extends])
+    : [];
 
   const status: InterfaceTypeStatus = mapSimplifiedStatusToInterfaceTypeStatus(
     interfaceDef.status ?? { type: "active" },
@@ -137,7 +125,7 @@ export function defineInterface(
         }
         : undefined,
     },
-    extendsInterfaces: extendsInterfaces,
+    extendsInterfaces,
     links: [],
     status,
     propertiesV2: properties,
