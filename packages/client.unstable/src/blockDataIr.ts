@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import type { DataType } from "./generated/marketplace/api/functions/__components.js";
+import type {
+  DeployedAppsComputationParams,
+  DeployedAppsRuntimeParams,
+} from "./generated/module-group/index.js";
 import type {
   AutomationBlockDataV1,
 } from "./generated/object-sentinel/api/__components.js";
@@ -21,11 +26,6 @@ import type {
   ObjectSetBlockDataV1,
   TemplatedObjectSet,
 } from "./generated/object-set-service/api/__components.js";
-import type { DataType } from "./generated/marketplace/api/functions/__components.js";
-import type {
-  DeployedAppsComputationParams,
-  DeployedAppsRuntimeParams,
-} from "./generated/module-group/index.js";
 import type {
   OntologyIrImportedTypes,
   OntologyIrOntologyBlockDataV2,
