@@ -135,8 +135,8 @@ function validateActionParameterType(
     case "geoshape":
       if (
         !(typeof value === "object"
-          && ("coordinates" in value! || "geometries" in value!
-            || "features" in value!))
+            && ("coordinates" in value! || "geometries" in value!
+              || "features" in value!) || typeof value === "string")
       ) {
         ret.result = "INVALID";
         ret.parameters[paramKey] = {
