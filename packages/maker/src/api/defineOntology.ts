@@ -75,6 +75,9 @@ import type {
   ActionParameterRequirementConstraint,
   ActionType,
   Automation,
+  AutomationActionEffect,
+  AutomationFunctionEffect,
+  FunctionEffectInput,
   InterfaceType,
   LinkType,
   ObjectPropertyType,
@@ -312,6 +315,11 @@ function generateAutomationIr(
     objectTypesToProperties: {},
     objectProperties: {},
   };
+  const functionShapeDataCollector: AutomationIr["functionShapeData"] = {
+    functionReadableId: "",
+    outputDataType: null as any,
+    inputs: {},
+  };
 
   const objectSetReadableId = generateReadableId(
     "object-set",
@@ -321,6 +329,7 @@ function generateAutomationIr(
   const marketplaceMonitor = convertToMarketplaceMonitor(
     automation,
     automationShapeDataCollector,
+    functionShapeDataCollector,
   );
 
   return {
@@ -360,7 +369,7 @@ function generateAutomationIr(
         automationShapeDataCollector.objectTypesToProperties,
       objectProperties: automationShapeDataCollector.objectProperties,
     },
-    functionShapeData: undefined,
+    functionShapeData: functionShapeDataCollector,
   };
 }
 
@@ -500,6 +509,7 @@ function convertObjectSets(
 function convertToMarketplaceMonitor(
   automation: Automation,
   automationShapeDataCollector: AutomationShapeData,
+  functionShapeDataCollector: NonNullable<AutomationIr["functionShapeData"]>,
 ): MarketplaceMonitor {
   const version = 1;
   const rid = `ri.object-sentinel..automation.${automation.apiName}`;
@@ -507,6 +517,7 @@ function convertToMarketplaceMonitor(
   const { subscribers, scopedTokenEffects } = getAutomationEffects(
     automation,
     automationShapeDataCollector,
+    functionShapeDataCollector,
   );
   updateObjectShapeData(
     automation.condition.objectType,
@@ -577,6 +588,7 @@ function convertToMarketplaceMonitor(
 function getAutomationEffects(
   automation: Automation,
   automationShapeDataCollector: AutomationShapeData,
+  functionShapeDataCollector: NonNullable<AutomationIr["functionShapeData"]>,
 ) {
   const userScopedEffectsSubscribers:
     MarketplaceMonitor["metadata"]["subscribers"] = [];
@@ -588,37 +600,21 @@ function getAutomationEffects(
 
   Object.entries(automation.effects).forEach(([effectId, effect]) => {
     if (effect.type === "action") {
-      updateActionShapeData(effect.action, automationShapeDataCollector);
-      const actionBlockShapeId = toBlockShapeId(
-        generateReadableId("action-type", effect.action.apiName),
+      updateActionEffect(
+        effect,
+        automationShapeDataCollector,
+        scopedEffects,
+        effectId,
+        nonScopedEffects,
       );
-      if (effect.scoped) {
-        scopedEffects[
-          uuidv5(effectId, "00000000-0000-0000-0000-000000000000")
-        ] = {
-          type: "action",
-          action: {
-            ...effect.definition,
-            actionTypeRid: actionBlockShapeId,
-            actionInputs: {},
-          },
-        };
-      } else {
-        nonScopedEffects[
-          uuidv5(effectId, "00000000-0000-0000-0000-000000000000")
-        ] = {
-          type: "action",
-          action: {
-            ...effect.definition,
-            actionTypeRid: actionBlockShapeId,
-            actionInputs: {},
-          },
-        };
-      }
     }
-
     if (effect.type === "function") {
-      throw new Error("Function effects are not supported");
+      updateFunctionEffect(
+        effect,
+        effectId,
+        nonScopedEffects,
+        functionShapeDataCollector,
+      );
     }
   });
 
@@ -671,6 +667,145 @@ function getAutomationEffects(
     };
   }
   return { subscribers: userScopedEffectsSubscribers, scopedTokenEffects };
+}
+
+function convertOntologyToComputeModuleIr(
+  ontology: OntologyDefinition,
+): ComputeModuleIrBlockData {
+  const definition = ontology[OntologyEntityTypeEnum.COMPUTE_MODULE_TYPE];
+  return {
+    type: "deployedAppMarketplaceBlockDataV1",
+    deployedAppMarketplaceBlockDataV1:
+      Object.values(definition).map<ComputeModuleIrBlockDataEntry>(
+        computeModule => ({
+          runtimeParameters: computeModule.runtimeParameters,
+          computationParameters: computeModule.computationParameters,
+          numberOfFunctionsRegistered: computeModule.numberOfFunctionsRegistered
+            ?? undefined,
+        }),
+      )[0],
+  };
+}
+
+function updateActionEffect(
+  effect: AutomationActionEffect,
+  automationShapeDataCollector: AutomationShapeData,
+  scopedEffects: Record<string, MarketplaceScopedEffect>,
+  effectId: string,
+  nonScopedEffects: Record<string, MarketplaceEffect>,
+) {
+  updateActionShapeData(effect.action, automationShapeDataCollector);
+  const actionBlockShapeId = toBlockShapeId(
+    generateReadableId("action-type", effect.action.apiName),
+  );
+  if (effect.scoped) {
+    scopedEffects[uuidv5(effectId, "00000000-0000-0000-0000-000000000000")] = {
+      type: "action",
+      action: {
+        ...effect.definition,
+        actionTypeRid: actionBlockShapeId,
+        actionInputs: {},
+      },
+    };
+  } else {
+    nonScopedEffects[uuidv5(effectId, "00000000-0000-0000-0000-000000000000")] =
+      {
+        type: "action",
+        action: {
+          ...effect.definition,
+          actionTypeRid: actionBlockShapeId,
+          actionInputs: {},
+        },
+      };
+  }
+}
+
+function updateFunctionEffect(
+  effect: AutomationFunctionEffect,
+  effectId: string,
+  nonScopedEffects: Record<string, MarketplaceEffect>,
+  functionShapeDataCollector: NonNullable<AutomationIr["functionShapeData"]>,
+) {
+  const functionReadableId = generateReadableId(
+    "function",
+    effect.function.apiName,
+  );
+  const functionBlockShapeId = toBlockShapeId(
+    generateReadableId("function", effect.function.apiName),
+  );
+  functionShapeDataCollector.functionReadableId = functionReadableId;
+  functionShapeDataCollector.outputDataType = {
+    type: "anonymousCustomType",
+    anonymousCustomType: { fields: {} },
+  };
+  if (effect.scoped) {
+    throw new Error("Scoped function effects not supported");
+  } else {
+    nonScopedEffects[uuidv5(effectId, "00000000-0000-0000-0000-000000000000")] =
+      {
+        type: "function",
+        function: {
+          ...effect.definition,
+          functionLocator: functionBlockShapeId,
+          functionInputs: Object.fromEntries(
+            Object.entries(effect.parameters).map(([functionInputName, v]) => {
+              const readableId = generateReadableId(
+                effect.function.apiName,
+                "function-input",
+                functionInputName,
+              );
+              functionShapeDataCollector.inputs[readableId] = convertInputType(
+                v,
+              );
+              // function input names are stable across marketplace deploys
+              return convertFunctionEffectInput(v, functionInputName);
+            }),
+          ),
+        },
+      };
+  }
+}
+
+/**
+ * Converts a function effect input to the appropriate type for the function shape data
+ */
+function convertInputType(
+  input: FunctionEffectInput,
+): NonNullable<AutomationIr["functionShapeData"]>["outputDataType"] {
+  if (input.type === "string") {
+    return { type: "string", string: {} };
+  } else if (input.type === "currentProperty") {
+    return { type: "string", string: {} };
+  } else {
+    // Handle any other types that might be added in the future
+    return { type: "string", string: {} };
+  }
+}
+
+function convertFunctionEffectInput(
+  input: FunctionEffectInput,
+  functionInputName: string,
+) {
+  switch (input.type) {
+    case "string":
+      return [functionInputName, {
+        type: "string",
+        value: input.value,
+      }];
+    case "currentProperty":
+      return [functionInputName, {
+        type: "currentProperty",
+        property: toBlockShapeId(
+          generateReadableId(
+            input.objectType.apiName,
+            "property-type",
+            input.property.apiName,
+          ),
+        ),
+      }];
+    default:
+      throw new Error("Invalid function input type");
+  }
 }
 
 function convertToWireOntologyIr(
