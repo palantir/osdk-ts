@@ -699,12 +699,11 @@ export class FauxDataStore {
     );
 
     if (!page) {
-      throw new OpenApiCallError(
-        404,
-        InvalidRequest(
-          `No objects found for ${JSON.stringify(parsedBody)}`,
-        ),
-      );
+      return {
+        data: [],
+        totalCount: "0",
+        nextPageToken: undefined,
+      };
     }
     const ret = subSelectProperties(
       page,
