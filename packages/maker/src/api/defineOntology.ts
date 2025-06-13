@@ -306,10 +306,25 @@ function generateAutomationIr(
   );
 
   return {
+    automationReadableId: generateReadableId(
+      "automation",
+      automation.apiName,
+    ),
     automationBlockData: {
       marketplaceMonitor,
-      requiredInputEntityIds: [],
-      referencedObjectSetEntities: undefined,
+      requiredInputEntityIds: [
+        toBlockShapeId(generateReadableId(
+          "object-type",
+          automation.condition.objectType.apiName,
+        )),
+      ],
+      referencedObjectSetEntities: {
+        objectTypeRids: [toBlockShapeId(generateReadableId(
+          "object-type",
+          automation.condition.objectType.apiName,
+        ))],
+        linkTypeRids: [],
+      },
     },
     automationShapeData: {
       actionsToParameters: automationShapeDataCollector.actionsToParameters,
@@ -403,9 +418,23 @@ function updateObjectShapeData(
     propertyIds.push(propertyReadableId);
 
     objectProperties[propertyReadableId] = {
-      type: property.type,
-      // Add other property attributes as needed
+      type: "objectPropertyType",
+      objectPropertyType: {
+        type: "primitive",
+        primitive: {
+          type: property.type + "Type",
+          [property.type + "Type"]: {},
+        },
+      },
     };
+
+    // (typeof property.type === "string")
+    //   ? {
+    //     type: property
+    //     [property.type]: {},
+    //   }
+    //   : property.type;
+    // Add other property attributes as needed
   });
 
   collector.objectTypesToProperties[objectTypeReadableId] = propertyIds;
