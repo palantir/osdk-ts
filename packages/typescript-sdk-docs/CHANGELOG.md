@@ -1,5 +1,12 @@
 # @osdk/typescript-sdk-docs
 
+## 0.2.0-beta.2
+
+### Minor Changes
+
+- 57e414b: Array subtype doc examples
+- 5183311: Update documentation for subscriptions
+
 ## 0.1.0-beta.1
 
 ### Minor Changes

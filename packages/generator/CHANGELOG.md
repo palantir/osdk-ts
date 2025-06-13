@@ -1,5 +1,20 @@
 # @osdk/generator
 
+## 2.3.0-beta.4
+
+### Minor Changes
+
+- fe00f84: Generate deprecation warnings for object properties
+- ef46ed6: Add protection for dropping unsupported enums instead of throwing"
+
+### Patch Changes
+
+- Updated dependencies [43c5547]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [3b5ccaa]
+  - @osdk/api@2.3.0-beta.4
+  - @osdk/generator-converters@2.3.0-beta.4
+
 ## 2.3.0-beta.3
 
 ### Patch Changes

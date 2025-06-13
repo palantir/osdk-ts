@@ -1,5 +1,23 @@
 # @osdk/maker
 
+## 0.11.0-beta.5
+
+### Minor Changes
+
+- 4d13e4d: Restricted view datasources in OAC
+- b8d0526: OAC edit only properties for dataset backed objects
+- 0d5feaa: Docs for maker
+- e20c5d6: Validate edit only properties are not primary keys
+- 27cdb1d: Adding concrete object value type support
+- c177bf0: Update property default typeClasses to match SPT default typeClasses
+
+### Patch Changes
+
+- Updated dependencies [43c5547]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [3b5ccaa]
+  - @osdk/api@2.3.0-beta.4
+
 ## 0.11.0-beta.4
 
 ### Minor Changes

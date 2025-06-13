@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.27.0-beta.4
+
+### Minor Changes
+
+- cc844f6: Fix URI components encoding
+
 ## 0.27.0-beta.3
 
 ## 0.27.0-beta.2

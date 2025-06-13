@@ -1,5 +1,13 @@
 # @osdk/client.unstable
 
+## 2.3.0-beta.4
+
+### Minor Changes
+
+- cc2ce5f: add module-group api
+- a6c01ff: Add object-sentinel API
+- 3408ea9: Update object set service API
+
 ## 2.3.0-beta.3
 
 ### Minor Changes
