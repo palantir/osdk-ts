@@ -154,12 +154,8 @@ export function defineObject(
     )
       .map<ValidationResult>(validateProperty);
     const extendsValidations = interfaceImpl.implements.extendsInterfaces
-      .flatMap(interfaceApiName =>
-        Object.entries(
-          ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][
-            interfaceApiName
-          ].propertiesV2 as Record<string, InterfacePropertyType>,
-        ).map(validateProperty)
+      .flatMap(interfaceType =>
+        Object.entries(interfaceType.propertiesV2).map(validateProperty)
       );
 
     const allFailedValidations = baseValidations.concat(
