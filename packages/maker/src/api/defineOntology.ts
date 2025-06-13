@@ -19,11 +19,11 @@ import type {
   ActionTypeStatus,
   AutomationIr,
   AutomationShapeData,
+  ComputeModuleIrBlockData,
+  ComputeModuleIrBlockDataEntry,
   MarketplaceEffect,
   MarketplaceMonitor,
   MarketplaceScopedEffect,
-  ComputeModuleIrBlockData,
-  ComputeModuleIrBlockDataEntry,
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionValidation,
@@ -274,6 +274,24 @@ function convertOntologyToValueTypeIr(
   };
 }
 
+function convertOntologyToComputeModuleIr(
+  ontology: OntologyDefinition,
+): ComputeModuleIrBlockData {
+  const definition = ontology[OntologyEntityTypeEnum.COMPUTE_MODULE_TYPE];
+  return {
+    type: "deployedAppMarketplaceBlockDataV1",
+    deployedAppMarketplaceBlockDataV1:
+      Object.values(definition).map<ComputeModuleIrBlockDataEntry>(
+        computeModule => ({
+          runtimeParameters: computeModule.runtimeParameters,
+          computationParameters: computeModule.computationParameters,
+          numberOfFunctionsRegistered: computeModule.numberOfFunctionsRegistered
+            ?? undefined,
+        }),
+      )[0],
+  };
+}
+
 function convertToWireAutomateIr(
   ontology: OntologyDefinition,
 ): AutomationIr {
@@ -315,10 +333,25 @@ function generateAutomationIr(
   );
 
   return {
+    automationReadableId: generateReadableId(
+      "automation",
+      automation.apiName,
+    ),
     automationBlockData: {
       marketplaceMonitor,
-      requiredInputEntityIds: [],
-      referencedObjectSetEntities: undefined,
+      requiredInputEntityIds: [
+        toBlockShapeId(generateReadableId(
+          "object-type",
+          automation.condition.objectType.apiName,
+        )),
+      ],
+      referencedObjectSetEntities: {
+        objectTypeRids: [toBlockShapeId(generateReadableId(
+          "object-type",
+          automation.condition.objectType.apiName,
+        ))],
+        linkTypeRids: [],
+      },
     },
     automationShapeData: {
       actionsToParameters: automationShapeDataCollector.actionsToParameters,
@@ -412,9 +445,23 @@ function updateObjectShapeData(
     propertyIds.push(propertyReadableId);
 
     objectProperties[propertyReadableId] = {
-      type: property.type,
-      // Add other property attributes as needed
+      type: "objectPropertyType",
+      objectPropertyType: {
+        type: "primitive",
+        primitive: {
+          type: property.type + "Type",
+          [property.type + "Type"]: {},
+        },
+      },
     };
+
+    // (typeof property.type === "string")
+    //   ? {
+    //     type: property
+    //     [property.type]: {},
+    //   }
+    //   : property.type;
+    // Add other property attributes as needed
   });
 
   collector.objectTypesToProperties[objectTypeReadableId] = propertyIds;
@@ -675,16 +722,22 @@ function updateActionEffect(
 
 function updateFunctionEffect(
   effect: AutomationFunctionEffect,
-  effectId: string, 
-  nonScopedEffects: Record<string, MarketplaceEffect>, 
+  effectId: string,
+  nonScopedEffects: Record<string, MarketplaceEffect>,
   functionShapeDataCollector: NonNullable<AutomationIr["functionShapeData"]>,
 ) {
-  const functionReadableId = generateReadableId("function", effect.function.apiName)
+  const functionReadableId = generateReadableId(
+    "function",
+    effect.function.apiName,
+  );
   const functionBlockShapeId = toBlockShapeId(
     generateReadableId("function", effect.function.apiName),
   );
   functionShapeDataCollector.functionReadableId = functionReadableId;
-  functionShapeDataCollector.outputDataType = {type: "anonymousCustomType", anonymousCustomType: {fields: {}}};
+  functionShapeDataCollector.outputDataType = {
+    type: "anonymousCustomType",
+    anonymousCustomType: { fields: {} },
+  };
   if (effect.scoped) {
     throw new Error("Scoped function effects not supported");
   } else {
@@ -696,22 +749,29 @@ function updateFunctionEffect(
           functionLocator: functionBlockShapeId,
           functionInputs: Object.fromEntries(
             Object.entries(effect.parameters).map(([functionInputName, v]) => {
-              const readableId = generateReadableId(effect.function.apiName, "function-input", functionInputName);
-              functionShapeDataCollector.inputs[readableId] = convertInputType(v);
+              const readableId = generateReadableId(
+                effect.function.apiName,
+                "function-input",
+                functionInputName,
+              );
+              functionShapeDataCollector.inputs[readableId] = convertInputType(
+                v,
+              );
               // function input names are stable across marketplace deploys
               return convertFunctionEffectInput(v, functionInputName);
             }),
           ),
         },
       };
-      
   }
 }
 
 /**
  * Converts a function effect input to the appropriate type for the function shape data
  */
-function convertInputType(input: FunctionEffectInput): NonNullable<AutomationIr["functionShapeData"]>["outputDataType"] {
+function convertInputType(
+  input: FunctionEffectInput,
+): NonNullable<AutomationIr["functionShapeData"]>["outputDataType"] {
   if (input.type === "string") {
     return { type: "string", string: {} };
   } else if (input.type === "currentProperty") {

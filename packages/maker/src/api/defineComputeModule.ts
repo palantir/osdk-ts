@@ -39,11 +39,12 @@ import {
   type ParametersInfo,
 } from "./types.js";
 
-export async function defineComputeModule(
+export function defineComputeModule(
   computeModuleDefinition: ComputeModuleDefinition,
-): Promise<ComputeModuleType> {
+): ComputeModuleType {
+  // buildDockerContainer(computeModuleDefinition);
   const serverEndpointsSpec = convertOpenApiToFunctionSpec(
-    JSON.parse(await inspectDockerImage(computeModuleDefinition.container)),
+    computeModuleDefinition.openApiSpec ?? "{}",
   );
 
   const computeModule: DeployedAppMarketplaceBlockDataV1 = {
@@ -86,25 +87,30 @@ export async function defineComputeModule(
   return computeModuleType;
 }
 
-async function inspectDockerImage(imageName: string): Promise<string> {
+async function buildDockerContainer(
+  def: ComputeModuleDefinition,
+  outputDir: string,
+): Promise<string> {
   try {
-    // First run docker inspect
-    const { stdout: inspectOutput } = await execa("docker", [
-      "inspect",
-      imageName,
+    const buildArgs = Object.keys(def.buildArgs).map(key =>
+      `--build-arg ${key}="${def.buildArgs[key]}"`
+    );
+    const containerName = def.imageNameAndTag;
+    const ociOutputFlag =
+      `--output "type=oci,dest=${outputDir},name=${containerName}"`;
+
+    await execa("docker", [
+      "build",
+      "-t",
+      containerName,
+      ociOutputFlag,
+      ...buildArgs,
     ]);
 
-    // Then pipe the output to jq
-    const { stdout: jqOutput } = await execa("jq", [
-      ".[0].Config.Labels[\"server.openapi\"]",
-    ], {
-      input: inspectOutput,
-    });
-
-    return jqOutput.trim();
+    return def.openApiSpec ?? "{}";
   } catch (error) {
     throw new Error(
-      `Failed to inspect Docker image: ${(error as Error).message}`,
+      `Failed to build Docker image: ${(error as Error).message}`,
     );
   }
 }
@@ -112,17 +118,23 @@ async function inspectDockerImage(imageName: string): Promise<string> {
 function createFoundryContainerizedApplication(
   computeModuleDefinition: ComputeModuleDefinition,
 ): FoundryContainerizedApplication {
-  const version = computeModuleDefinition.container.split(":").at(-1);
+  const version = computeModuleDefinition.imageNameAndTag.split(":").at(-1);
+  const name = computeModuleDefinition.imageNameAndTag.split(":").at(0);
   invariant(
     version !== undefined,
     "container name must have version at the end",
   );
+
+  invariant(
+    name !== undefined,
+    "container name must have a name",
+  );
   return {
     containers: [
       {
-        name: computeModuleDefinition.apiName,
+        name: name,
         image: {
-          name: computeModuleDefinition.apiName,
+          name: name,
           tagOrDigest: {
             type: "tag",
             tag: version,

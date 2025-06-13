@@ -76,7 +76,19 @@ export type OntologyIrValueTypeBlockData = {
   valueTypes: OntologyIrValueTypeBlockDataEntry[];
 };
 
+export type ComputeModuleIrBlockData = {
+  type: string;
+  deployedAppMarketplaceBlockDataV1: ComputeModuleIrBlockDataEntry;
+};
+
+export type ComputeModuleIrBlockDataEntry = {
+  runtimeParameters: DeployedAppsRuntimeParams;
+  computationParameters: DeployedAppsComputationParams;
+  numberOfFunctionsRegistered?: number;
+};
+
 export interface AutomationIr {
+  automationReadableId: ReadableId;
   automationBlockData: AutomationBlockDataV1;
   automationShapeData: AutomationShapeData;
   objectSetBlockData: ObjectSetBlockDataV1;
@@ -112,13 +124,3 @@ export type SingleObjectSetBlockData = {
 export type ReadableId = string;
 export type BaseParameterType = OntologyIrBaseParameterType;
 export type AllowedObjectPropertyType = any; // Will be properly typed when implementing convertToWireAutomateIr
-export type ComputeModuleIrBlockData = {
-  type: string;
-  deployedAppMarketplaceBlockDataV1: ComputeModuleIrBlockDataEntry;
-};
-
-export type ComputeModuleIrBlockDataEntry = {
-  runtimeParameters: DeployedAppsRuntimeParams;
-  computationParameters: DeployedAppsComputationParams;
-  numberOfFunctionsRegistered?: number;
-};

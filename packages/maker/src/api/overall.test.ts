@@ -17,7 +17,6 @@
 import * as fs from "fs";
 import path from "path";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
-import { toBlockShapeId } from "./blockShapeId.js";
 import {
   defineAction,
   defineCreateInterfaceObjectAction,
@@ -7029,7 +7028,7 @@ describe("Ontology Defining", () => {
                   "priority": undefined,
                   "rendering": undefined,
                   "renderingV2": {},
-                  "rid": "ri.object-sentinel..automation.automationApiName",
+                  "rid": "ri.object-sentinel..automation.com.palantir.automationApiName",
                   "scopedTokenEffects": undefined,
                   "subscribers": [
                     {
@@ -7063,9 +7062,17 @@ describe("Ontology Defining", () => {
                 "version": 1,
                 "versionedObjectSetsVersionsUsed": {},
               },
-              "referencedObjectSetEntities": undefined,
-              "requiredInputEntityIds": [],
+              "referencedObjectSetEntities": {
+                "linkTypeRids": [],
+                "objectTypeRids": [
+                  "835af9c0-d7d7-354a-9627-586dc906aa09",
+                ],
+              },
+              "requiredInputEntityIds": [
+                "835af9c0-d7d7-354a-9627-586dc906aa09",
+              ],
             },
+            "automationReadableId": "automation-com.palantir.automationApiName",
             "automationShapeData": {
               "actionParameters": {
                 "action-com.palantir.foo-parameter-param1": {
@@ -7080,7 +7087,14 @@ describe("Ontology Defining", () => {
               },
               "objectProperties": {
                 "com.palantir.foo-property-type-bar": {
-                  "type": "string",
+                  "objectPropertyType": {
+                    "primitive": {
+                      "stringType": {},
+                      "type": "stringType",
+                    },
+                    "type": "primitive",
+                  },
+                  "type": "objectPropertyType",
                 },
               },
               "objectTypesToProperties": {
@@ -7094,7 +7108,7 @@ describe("Ontology Defining", () => {
               "singleObjectSetBlockDatas": [
                 {
                   "objectSetTemplateId": "be43d793-e892-3b2f-9f13-e9154d8e8e3f",
-                  "securityRidTemplateId": "3141bd29-3996-38a6-adaf-ecd945b9b194",
+                  "securityRidTemplateId": "22ee4b44-0c0b-36e5-af10-2548552044ae",
                   "templatedObjectSet": {
                     "base": {
                       "objectTypeId": "835af9c0-d7d7-354a-9627-586dc906aa09",
@@ -7107,7 +7121,14 @@ describe("Ontology Defining", () => {
             "objectSetShapeData": {
               "objectProperties": {
                 "com.palantir.foo-property-type-bar": {
-                  "type": "string",
+                  "objectPropertyType": {
+                    "primitive": {
+                      "stringType": {},
+                      "type": "stringType",
+                    },
+                    "type": "primitive",
+                  },
+                  "type": "objectPropertyType",
                 },
               },
               "objectSetReadableId": "object-set-com.palantir.foo",

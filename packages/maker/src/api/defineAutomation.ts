@@ -15,7 +15,11 @@
  */
 
 import invariant from "tiny-invariant";
-import { ontologyDefinition, updateOntology } from "./defineOntology.js";
+import {
+  namespace,
+  ontologyDefinition,
+  updateOntology,
+} from "./defineOntology.js";
 import type { Automation, AutomationDefinition } from "./types.js";
 import { OntologyEntityTypeEnum } from "./types.js";
 
@@ -29,7 +33,7 @@ export function defineAutomation(
   );
 
   const fullAutomation: AutomationDefinition = {
-    apiName: automationDef.apiName,
+    apiName: namespace + automationDef.apiName,
     condition: automationDef.condition,
     effects: automationDef.effects,
   };
