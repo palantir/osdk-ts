@@ -111,6 +111,7 @@ export class FauxFoundry {
 
   getDataStore(ontologyApiNameOrRid: string): FauxDataStore {
     const ontology = this.getOntology(ontologyApiNameOrRid); // will throw
+
     const dataStore = this.#dataStoresByOntologyApiName.get(ontology.apiName);
     if (!dataStore) {
       const ret = new FauxDataStore(ontology, this.attachments);

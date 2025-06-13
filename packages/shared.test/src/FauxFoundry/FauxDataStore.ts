@@ -154,6 +154,10 @@ export class FauxDataStore {
     return this.#fauxOntology;
   }
 
+  set ontology(newOntology: FauxOntology) {
+    this.#fauxOntology = newOntology;
+  }
+
   #assertObjectExists(
     objectType: string,
     primaryKey: string | number | boolean,
