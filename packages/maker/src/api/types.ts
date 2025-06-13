@@ -467,7 +467,10 @@ export interface ComputeModuleType extends OntologyEntityBase {
 
 export type ComputeModuleDefinition = {
   apiName: string;
-  container: string;
+  imageNameAndTag: string;
+  dockerDirectory: string;
+  buildArgs: { [key: string]: string };
+  openApiSpec?: string;
   authMode: ComputeModuleAuthMode;
   scalingConfig: ScalingConfig;
   resourceConfig: Array<ComputeModuleDefinitionResource>;
