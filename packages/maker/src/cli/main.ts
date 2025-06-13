@@ -95,16 +95,6 @@ export default async function main(
 
   const outputDirForOntology = commandLineOpts.outputDir;
 
-  if (outputDirForOntology) {
-    consola.info(
-      `Using ontology processing directory: ${outputDirForOntology}`,
-    );
-  } else {
-    consola.info(
-      `No output directory specified for ontology processing. Static objects will not be written.`,
-    );
-  }
-
   const ontology = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
