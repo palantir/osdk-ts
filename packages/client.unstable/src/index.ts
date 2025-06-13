@@ -66,9 +66,41 @@ export type { ValueTypeStatus } from "./generated/type-registry/api/ValueTypeSta
 export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVersion.js";
 
 export type {
+  MarketplaceActionEffect,
+  MarketplaceEffect,
+  MarketplaceEffectInput,
+  MarketplaceFunctionEffect,
+  MarketplaceMonitor,
+  MarketplaceScopedEffect,
+} from "./generated/object-sentinel/api/__components.js";
+
+export type {
+  AllowedObjectPropertyType,
   ApiNameValueTypeReference,
+  AutomationIr,
+  AutomationShapeData,
+  BaseParameterType,
+  ComputeModuleIrBlockData,
+  ComputeModuleIrBlockDataEntry,
+  ObjectSetShapeData,
   OntologyIr,
   OntologyIrOntologyBlockDataV2,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
+  ReadableId,
+  SingleObjectSetBlockData,
 } from "./blockDataIr.js";
+
+export type {
+  AnnotatedEndpoint,
+  ComputeModuleAuthMode,
+  DeployedAppMarketplaceBlockDataV1,
+  DeployedAppsComputationParams,
+  DeployedAppsRuntimeParams,
+  HttpBody,
+  HttpMethod,
+  ScalingConfig,
+  ServerEndpointsSpec,
+  StringPart,
+  StringParts,
+} from "./generated/module-group/__components.js";

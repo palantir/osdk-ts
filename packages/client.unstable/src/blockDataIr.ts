@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
+import type { DataType } from "./generated/marketplace/api/functions/__components.js";
+import type {
+  DeployedAppsComputationParams,
+  DeployedAppsRuntimeParams,
+} from "./generated/module-group/index.js";
+import type {
+  AutomationBlockDataV1,
+} from "./generated/object-sentinel/api/__components.js";
+import type {
+  ObjectSetBlockDataV1,
+  TemplatedObjectSet,
+} from "./generated/object-set-service/api/__components.js";
 import type {
   OntologyIrImportedTypes,
   OntologyIrOntologyBlockDataV2,
 } from "./generated/ontology-metadata/api/blockdata/index.js";
+import type { OntologyIrBaseParameterType } from "./generated/ontology-metadata/api/types/__components.js";
 import type { BaseType } from "./generated/type-registry/api/BaseType.js";
 import type { ExampleValue } from "./generated/type-registry/api/ExampleValue.js";
 import type { ValueTypeApiName } from "./generated/type-registry/api/ValueTypeApiName.js";
@@ -29,6 +42,7 @@ import type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVe
 export type InterfaceTypeApiName = string;
 export type ObjectTypeFieldApiName = string;
 export type InterfaceLinkTypeApiName = string;
+``;
 export type { OntologyIrOntologyBlockDataV2 } from "./generated/ontology-metadata/api/blockdata/index.js";
 
 export interface OntologyIr {
@@ -62,3 +76,52 @@ export type OntologyIrValueTypeBlockDataEntry = {
 export type OntologyIrValueTypeBlockData = {
   valueTypes: OntologyIrValueTypeBlockDataEntry[];
 };
+
+export type ComputeModuleIrBlockData = {
+  type: string;
+  deployedAppMarketplaceBlockDataV1: ComputeModuleIrBlockDataEntry;
+};
+
+export type ComputeModuleIrBlockDataEntry = {
+  runtimeParameters: DeployedAppsRuntimeParams;
+  computationParameters: DeployedAppsComputationParams;
+  numberOfFunctionsRegistered?: number;
+};
+
+export interface AutomationIr {
+  automationReadableId: ReadableId;
+  automationBlockData: AutomationBlockDataV1;
+  automationShapeData: AutomationShapeData;
+  objectSetBlockData: ObjectSetBlockDataV1;
+  objectSetShapeData: ObjectSetShapeData;
+  functionShapeData: FunctionShapeData | undefined;
+}
+
+export interface FunctionShapeData {
+  functionReadableId: ReadableId;
+  outputDataType: DataType;
+  inputs: Record<ReadableId, DataType>;
+}
+
+export interface AutomationShapeData {
+  actionsToParameters: Record<ReadableId, ReadableId[]>;
+  actionParameters: Record<ReadableId, BaseParameterType>;
+  objectTypesToProperties: Record<ReadableId, ReadableId[]>;
+  objectProperties: Record<ReadableId, AllowedObjectPropertyType>;
+}
+
+export interface ObjectSetShapeData {
+  objectSetReadableId: ReadableId;
+  objectTypesToProperties: Record<ReadableId, ReadableId[]>;
+  objectProperties: Record<ReadableId, AllowedObjectPropertyType>;
+}
+
+export type SingleObjectSetBlockData = {
+  objectSetTemplateId: string;
+  securityRidTemplateId: string;
+  templatedObjectSet: TemplatedObjectSet;
+};
+
+export type ReadableId = string;
+export type BaseParameterType = OntologyIrBaseParameterType;
+export type AllowedObjectPropertyType = any; // Will be properly typed when implementing convertToWireAutomateIr

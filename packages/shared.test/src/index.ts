@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export { FauxAttachmentStore } from "./FauxFoundry/FauxAttachmentStore.js";
+export { FauxDataStore } from "./FauxFoundry/FauxDataStore.js";
 export { FauxFoundry } from "./FauxFoundry/FauxFoundry.js";
 export { ActionTypeBuilder } from "./FauxFoundry/typeHelpers/ActionTypeBuilder.js";
 export type { TH_ActionDefinition } from "./FauxFoundry/typeHelpers/TH_ActionDefinition.js";

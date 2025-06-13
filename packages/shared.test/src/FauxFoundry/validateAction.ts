@@ -135,8 +135,8 @@ function validateActionParameterType(
     case "geoshape":
       if (
         !(typeof value === "object"
-          && ("coordinates" in value! || "geometries" in value!
-            || "features" in value!))
+            && ("coordinates" in value! || "geometries" in value!
+              || "features" in value!) || typeof value === "string")
       ) {
         ret.result = "INVALID";
         ret.parameters[paramKey] = {
@@ -267,16 +267,11 @@ function matchesOntologyDataType(
         `matchesOntologyDataType: ${odt.type} not implemented yet.`,
       );
     case "double":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return typeof value === "number";
     case "float":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return typeof value === "number";
     case "integer":
       return (typeof value === "number" && Number.isInteger(value));
-
     case "long":
       throw new Error(
         `matchesOntologyDataType: ${odt.type} not implemented yet.`,

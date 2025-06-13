@@ -16,7 +16,8 @@
 
 import * as fs from "fs";
 import path from "path";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vitest } from "vitest";
+import { toBlockShapeId } from "./blockShapeId.js";
 import {
   defineAction,
   defineCreateInterfaceObjectAction,
@@ -25,6 +26,7 @@ import {
   defineModifyInterfaceObjectAction,
   defineModifyObjectAction,
 } from "./defineAction.js";
+import { defineAutomation } from "./defineAutomation.js";
 import { importSharedPropertyType } from "./defineImportSpt.js";
 import { defineInterface } from "./defineInterface.js";
 import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
@@ -32,6 +34,7 @@ import { defineLink } from "./defineLink.js";
 import { defineObject } from "./defineObject.js";
 import {
   defineOntology,
+  dumpAutomationWireType,
   dumpOntologyFullMetadata,
   dumpValueTypeWireType,
 } from "./defineOntology.js";
@@ -50,6 +53,11 @@ describe("Ontology Defining", () => {
   });
 
   describe("ValueTypes", () => {
+    it("hash", () => {
+      expect(toBlockShapeId(
+        "object-set-com.palantir.foundry.as.code.sandbox.sandbox-ontology.foo",
+      )).toEqual("42bd96c8-cec1-30af-8cef-9613c8074c95");
+    });
     it("Fails to define value type with incorrect semver", () => {
       expect(() =>
         defineValueType({
@@ -7013,6 +7021,241 @@ describe("Ontology Defining", () => {
         export const childInterface: InterfaceType = wrapWithProxy(childInterface_base);
                 "
       `);
+    });
+  });
+  describe("Automations", () => {
+    describe("defineAutomation", () => {
+      it("Automations with action effects are defined correctly", () => {
+        const exampleObjectType = defineObject({
+          titlePropertyApiName: "bar",
+          displayName: "exampleObjectType",
+          pluralDisplayName: "exampleObjectTypes",
+          apiName: "foo",
+          primaryKeyPropertyApiName: "bar",
+          properties: [{
+            apiName: "bar",
+            type: "string",
+            displayName: "Bar",
+          }],
+        });
+
+        const exampleAction = defineAction({
+          apiName: "foo",
+          displayName: "exampleAction",
+          status: "active",
+          rules: [{
+            type: "addOrModifyObjectRuleV2",
+            addOrModifyObjectRuleV2: {
+              objectToModify: "objectToModifyParameter",
+              propertyValues: {
+                "bar": {
+                  type: "parameterId",
+                  parameterId: "param1",
+                },
+              },
+              structFieldValues: {},
+            },
+          }],
+          parameters: [{
+            id: "param1",
+            displayName: "param1",
+            type: "boolean",
+            validation: { required: true, allowedValues: { type: "boolean" } },
+          }],
+        });
+
+        const automation = defineAutomation({
+          apiName: "automationApiName",
+          condition: {
+            objectType: exampleObjectType,
+            type: "objectsAdded",
+          },
+          effects: {
+            "effect-1": {
+              type: "action",
+              action: exampleAction,
+              definition: {
+                actionTypeVersion: undefined,
+                executionMode: undefined,
+                executionSettings: undefined,
+              },
+              effectId: "effect-1",
+              onBehalfOfUserId: "user-id-1",
+              parameters: {
+                ["parameterApiName"]: {
+                  type: "staticValue",
+                  staticValue: {
+                    type: "string",
+                    string: "param1",
+                  },
+                },
+              },
+              scoped: false,
+            },
+          },
+        });
+        Date.prototype.toISOString = vitest.fn(() => "fake-date");
+        console.log({ OUT: dumpAutomationWireType() });
+        expect(dumpAutomationWireType()).toMatchInlineSnapshot(
+          `
+          {
+            "automationBlockData": {
+              "marketplaceMonitor": {
+                "attribution": {
+                  "createdAt": "fake-date",
+                  "createdBy": undefined,
+                },
+                "isCurrentlyInTriggeringState": false,
+                "lastEvaluationTime": undefined,
+                "lastHistoryEvent": {},
+                "lastRecoveryEvent": {},
+                "lastTriggerEvent": {},
+                "logic": {
+                  "event": {
+                    "eventType": {
+                      "notSavedObjectSetEvent": {
+                        "eventType": {
+                          "added": {},
+                          "type": "added",
+                        },
+                        "objectSetRid": "be43d793-e892-3b2f-9f13-e9154d8e8e3f",
+                      },
+                      "type": "notSavedObjectSetEvent",
+                    },
+                  },
+                  "type": "event",
+                },
+                "metadata": {
+                  "branchRid": undefined,
+                  "cycleDetectionSettings": undefined,
+                  "dependentAutomations": [],
+                  "disabled": {},
+                  "expiry": undefined,
+                  "expiryDate": "3000-01-01T00:00:00+00:00",
+                  "globalEffectExecutionSettings": undefined,
+                  "liveConfig": undefined,
+                  "management": undefined,
+                  "mgsConfig": undefined,
+                  "muted": {
+                    "forUsers": {},
+                  },
+                  "priority": undefined,
+                  "rendering": undefined,
+                  "renderingV2": {},
+                  "rid": "ri.object-sentinel..automation.com.palantir.automationApiName",
+                  "scopedTokenEffects": undefined,
+                  "subscribers": [
+                    {
+                      "recoveryEffects": {},
+                      "subscriberType": {
+                        "type": "user",
+                        "user": {
+                          "userId": {},
+                        },
+                      },
+                      "triggerEffects": {
+                        "e9578733-0701-541f-9122-bddbf4eb8354": {
+                          "action": {
+                            "actionInputs": {},
+                            "actionTypeRid": "f583fd6b-7638-3438-b519-c195107107e0",
+                            "actionTypeVersion": undefined,
+                            "executionMode": undefined,
+                            "executionSettings": undefined,
+                          },
+                          "type": "action",
+                        },
+                      },
+                    },
+                  ],
+                  "telemetryConfig": undefined,
+                  "timeSeriesAlertingOverrides": undefined,
+                  "triggerExecutionSettings": undefined,
+                },
+                "monitorType": "FUNNEL_BACKED_INCREMENTAL",
+                "publishedMonitorVersion": 1,
+                "version": 1,
+                "versionedObjectSetsVersionsUsed": {},
+              },
+              "referencedObjectSetEntities": {
+                "linkTypeRids": [],
+                "objectTypeRids": [
+                  "835af9c0-d7d7-354a-9627-586dc906aa09",
+                ],
+              },
+              "requiredInputEntityIds": [
+                "835af9c0-d7d7-354a-9627-586dc906aa09",
+              ],
+            },
+            "automationReadableId": "automation-com.palantir.automationApiName",
+            "automationShapeData": {
+              "actionParameters": {
+                "action-com.palantir.foo-parameter-param1": {
+                  "boolean": {},
+                  "type": "boolean",
+                },
+              },
+              "actionsToParameters": {
+                "action-type-com.palantir.foo": [
+                  "action-com.palantir.foo-parameter-param1",
+                ],
+              },
+              "objectProperties": {
+                "com.palantir.foo-property-type-bar": {
+                  "objectPropertyType": {
+                    "primitive": {
+                      "stringType": {},
+                      "type": "stringType",
+                    },
+                    "type": "primitive",
+                  },
+                  "type": "objectPropertyType",
+                },
+              },
+              "objectTypesToProperties": {
+                "object-type-com.palantir.foo": [
+                  "com.palantir.foo-property-type-bar",
+                ],
+              },
+            },
+            "functionShapeData": undefined,
+            "objectSetBlockData": {
+              "singleObjectSetBlockDatas": [
+                {
+                  "objectSetTemplateId": "be43d793-e892-3b2f-9f13-e9154d8e8e3f",
+                  "securityRidTemplateId": "22ee4b44-0c0b-36e5-af10-2548552044ae",
+                  "templatedObjectSet": {
+                    "base": {
+                      "objectTypeId": "835af9c0-d7d7-354a-9627-586dc906aa09",
+                    },
+                    "type": "base",
+                  },
+                },
+              ],
+            },
+            "objectSetShapeData": {
+              "objectProperties": {
+                "com.palantir.foo-property-type-bar": {
+                  "objectPropertyType": {
+                    "primitive": {
+                      "stringType": {},
+                      "type": "stringType",
+                    },
+                    "type": "primitive",
+                  },
+                  "type": "objectPropertyType",
+                },
+              },
+              "objectSetReadableId": "object-set-com.palantir.foo",
+              "objectTypesToProperties": {
+                "object-type-com.palantir.foo": [
+                  "com.palantir.foo-property-type-bar",
+                ],
+              },
+            },
+          }
+        `,
+        );
+      });
     });
   });
 });

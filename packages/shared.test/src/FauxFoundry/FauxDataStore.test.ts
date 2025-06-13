@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+import type * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { beforeEach, describe, expect, it } from "vitest";
 import type { BaseServerObject } from "./BaseServerObject.js";
 import { FauxAttachmentStore } from "./FauxAttachmentStore.js";
 import { FauxDataStore } from "./FauxDataStore.js";
+import type { FauxDataStoreBatch } from "./FauxDataStoreBatch.js";
 import { FauxOntology } from "./FauxOntology.js";
+import type { AutomationImpl } from "./hackTypes.js";
 
 describe(FauxDataStore, () => {
   describe("Simple Employee ontology", () => {
@@ -193,6 +196,193 @@ describe(FauxDataStore, () => {
       expect(getLeadsAndPeeps("d")).toMatchObject({
         lead: undefined,
         peeps: [c], // d no longer leads b
+      });
+    });
+  });
+  describe("Automations", () => {
+    it("should run automations after a create action", () => {
+      // Setup
+      const attachmentsStore = new FauxAttachmentStore();
+      const fauxOntology = new FauxOntology({
+        apiName: "test",
+        description: "test",
+        displayName: "test",
+        rid: "ri.test",
+      });
+      const fauxDataStore = new FauxDataStore(fauxOntology, attachmentsStore);
+
+      // Register Task object type
+      const Task = {
+        implementsInterfaces: [],
+        implementsInterfaces2: {},
+        linkTypes: [],
+        objectType: {
+          apiName: "Task",
+          description: "Task",
+          displayName: "Task",
+          rid: "ri.Task",
+          icon: {
+            color: "#000000",
+            name: "task",
+            type: "blueprint",
+          },
+          pluralDisplayName: "Tasks",
+          primaryKey: "id",
+          properties: {
+            id: {
+              dataType: { type: "string" },
+              rid: "ri.id",
+              displayName: "id",
+              description: "id",
+            },
+            status: {
+              dataType: { type: "string" },
+              rid: "ri.status",
+              displayName: "status",
+              description: "status",
+            },
+            priority: {
+              dataType: { type: "string" },
+              rid: "ri.priority",
+              displayName: "priority",
+              description: "priority",
+            },
+          },
+          status: "ACTIVE",
+          titleProperty: "id",
+        },
+        sharedPropertyTypeMapping: {},
+      } as const;
+
+      fauxOntology.registerObjectType(Task);
+
+      // Register create task action
+      const createTaskActionType: OntologiesV2.ActionTypeV2 = {
+        apiName: "createTask",
+        description: "Create a new task",
+        displayName: "Create Task",
+        parameters: {
+          id: {
+            dataType: { type: "string" },
+            displayName: "ID",
+            required: true,
+          },
+          status: {
+            dataType: { type: "string" },
+            displayName: "Status",
+            required: true,
+          },
+        },
+        rid: "ri.action.createTask",
+        status: "ACTIVE",
+        operations: [{
+          type: "createObject",
+          objectTypeApiName: "Task",
+        }],
+      };
+
+      fauxOntology.registerActionType(
+        createTaskActionType,
+        (batch: FauxDataStoreBatch, req: OntologiesV2.ApplyActionRequestV2) => {
+          batch.addObject("Task", "task-1", { id: "task-1", status: "open" });
+          return {
+            validation: {
+              parameters: {},
+              result: "VALID",
+              submissionCriteria: [],
+            },
+          };
+        },
+      );
+
+      // Register update task priority action
+      const updateTaskPriorityActionType: OntologiesV2.ActionTypeV2 = {
+        apiName: "updateTaskPriority",
+        description: "Update task priority",
+        displayName: "Update Task Priority",
+        parameters: {
+          id: {
+            dataType: { type: "string" },
+            displayName: "ID",
+            required: true,
+          },
+          priority: {
+            dataType: { type: "string" },
+            displayName: "Priority",
+            required: true,
+          },
+        },
+        rid: "ri.action.updateTaskPriority",
+        status: "ACTIVE",
+        operations: [{
+          type: "modifyObject",
+          objectTypeApiName: "Task",
+        }],
+      };
+
+      fauxOntology.registerActionType(
+        updateTaskPriorityActionType,
+        (batch: FauxDataStoreBatch, req: OntologiesV2.ApplyActionRequestV2) => {
+          batch.modifyObject("Task", req.parameters.id, {
+            priority: req.parameters.priority,
+          });
+          return {
+            validation: {
+              parameters: {},
+              result: "VALID",
+              submissionCriteria: [],
+            },
+          };
+        },
+      );
+
+      // Register automation that sets priority to "high" for new tasks
+      const automationImpl: AutomationImpl = {
+        postActionPredicate: (batch: FauxDataStoreBatch) => {
+          // Check if a Task was added in this batch
+          return batch.objectEdits.edits.some(
+            (edit) => edit.type === "addObject" && edit.objectType === "Task",
+          );
+        },
+        effect: {
+          type: "action",
+          definition: updateTaskPriorityActionType,
+          request: {
+            parameters: {
+              id: "task-1", // This is hardcoded for simplicity in the test
+              priority: "high",
+            },
+            options: {
+              mode: "VALIDATE_AND_EXECUTE",
+            },
+          },
+        },
+      };
+
+      fauxOntology.registerAutomation(
+        { apiName: "setHighPriorityForNewTasks" },
+        automationImpl,
+      );
+
+      // Apply the create task action
+      fauxDataStore.applyAction("createTask", {
+        parameters: {
+          id: "task-1",
+          status: "open",
+        },
+        options: {
+          mode: "VALIDATE_AND_EXECUTE",
+        },
+      });
+
+      // Verify the task was created
+      const task = fauxDataStore.getObject("Task", "task-1");
+      expect(task).toBeDefined();
+      expect(task).toMatchObject({
+        __apiName: "Task",
+        __primaryKey: "task-1",
+        status: "open",
+        priority: "high", // The automation should have set this
       });
     });
   });

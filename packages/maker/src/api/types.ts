@@ -19,14 +19,23 @@ import type {
   ActionTypeStatus_deprecated,
   ApiNameValueTypeReference,
   BaseType,
+  ComputeModuleAuthMode,
+  ComputeModuleIrBlockData,
   DataConstraint,
+  DeployedAppsComputationParams,
+  DeployedAppsRuntimeParams,
   ExampleValue,
   FailureMessage,
+  FunctionInputName,
+  HttpBody,
   ImportedTypes,
   InterfaceTypeApiName,
   InterfaceTypeStatus,
   LinkTypeDisplayMetadata,
   LinkTypeMetadata,
+  MarketplaceActionEffect,
+  MarketplaceEffectInput,
+  MarketplaceFunctionEffect,
   OntologyIrBaseParameterType_decimal,
   OntologyIrBaseParameterType_decimalList,
   OntologyIrBaseParameterType_interfaceReference,
@@ -50,8 +59,10 @@ import type {
   OntologyIrPropertyType,
   OntologyIrValidationRule,
   ParameterId,
+  ScalingConfig,
   SectionId,
   SharedPropertyTypeGothamMapping,
+  StringParts,
   StructFieldType,
   ValueTypeApiName,
   ValueTypeDataConstraint,
@@ -95,6 +106,8 @@ export enum OntologyEntityTypeEnum {
   SHARED_PROPERTY_TYPE = "SHARED_PROPERTY_TYPE",
   ACTION_TYPE = "ACTION_TYPE",
   VALUE_TYPE = "VALUE_TYPE",
+  AUTOMATION = "AUTOMATION",
+  COMPUTE_MODULE_TYPE = "COMPUTE_MODULE_TYPE",
 }
 export interface OntologyEntityTypeMapping {
   [OntologyEntityTypeEnum.OBJECT_TYPE]: ObjectType;
@@ -103,6 +116,8 @@ export interface OntologyEntityTypeMapping {
   [OntologyEntityTypeEnum.INTERFACE_TYPE]: InterfaceType;
   [OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE]: SharedPropertyType;
   [OntologyEntityTypeEnum.VALUE_TYPE]: ValueTypeDefinitionVersion;
+  [OntologyEntityTypeEnum.AUTOMATION]: Automation;
+  [OntologyEntityTypeEnum.COMPUTE_MODULE_TYPE]: ComputeModuleType;
 }
 
 export type OntologyDefinition =
@@ -447,6 +462,138 @@ export type LinkTypeDefinition =
     "__type"
   >;
 
+export interface ComputeModuleType extends OntologyEntityBase {
+  __type: OntologyEntityTypeEnum.COMPUTE_MODULE_TYPE;
+  buildContainer: (ociFile: string) => Promise<string>;
+  runtimeParameters: DeployedAppsRuntimeParams;
+  computationParameters: DeployedAppsComputationParams;
+  numberOfFunctionsRegistered?: number | null;
+}
+
+export type ComputeModuleContainerAndBlockData = {
+  buildContainer: (ociFile: string) => Promise<string>;
+  blockData: ComputeModuleIrBlockData;
+};
+
+export type ComputeModuleDefinition = {
+  apiName: string;
+  imageNameAndTag: string;
+  dockerDirectory: string;
+  buildArgs: { [key: string]: string };
+  openApiSpec?: string;
+  authMode: ComputeModuleAuthMode;
+  scalingConfig: ScalingConfig;
+  resourceConfig: Array<ComputeModuleDefinitionResource>;
+};
+
+export type ComputeModuleDefinitionResource = {
+  type: "cpu" | "memory" | "gpu";
+  request: string;
+  limit?: string;
+};
+
+export type ContainerResource = {
+  resourceType: ResourceType;
+  request: string;
+  limit?: string;
+};
+
+export type ResourceType =
+  | { type: "cpu"; cpu: {} }
+  | { type: "memory"; memory: {} }
+  | { type: "gpu"; gpu: {} };
+
+export type FoundryContainerizedApplication = {
+  containers: Array<Container>;
+  volumes: Array<Volume>;
+};
+
+export type Container = {
+  name: string;
+  image: Image;
+  additionalConfig?: ContainerConfig;
+};
+
+export type Volume = {
+  name: string;
+  type: {
+    type: "emptyDirectory";
+    emptyDirectory: {};
+  };
+};
+export type Image = {
+  name: string;
+  tagOrDigest: tagOrDigest;
+  imagePullMetadata: ImagePullMetadataOrDynamic;
+};
+
+export type tagOrDigest = {
+  type: "tag";
+  tag: string;
+} | {
+  type: "digest";
+  digest: string;
+};
+
+export type ImagePullMetadataOrDynamic = {
+  type: "foundryArtifacts";
+  foundryArtifacts: {
+    artifactsRepoRid: string;
+  };
+};
+
+export type ContainerConfig = {
+  resources: Array<ContainerResource>;
+  arguments: Array<any>;
+  commands: Array<any>;
+  env: Array<any>;
+  ports: Array<any>;
+  volumeMounts: Array<any>;
+};
+
+export type FunctionInputType = {
+  name: string;
+  dataType: DataType;
+  required: boolean;
+};
+
+type SingleOutputType = {
+  description: null;
+  dataType: DataType;
+};
+
+export type FunctionOutputType = {
+  type: "single";
+  single: SingleOutputType;
+};
+
+export type DataType = {
+  type:
+    | "boolean"
+    | "integer"
+    | "double"
+    | "string"
+    | "list"
+    | "anonymousCustomType";
+  string?: Record<string, never>;
+  anonymousCustomType?: {
+    fields: Record<string, DataType>;
+    fieldMetadata: null;
+  };
+  list?: DataType;
+};
+
+export type ParametersInfo = {
+  inputs: FunctionInputType[];
+  headers: Record<string, StringParts>;
+  queryParameters: Record<string, StringParts>;
+};
+
+export type BodyInfo = {
+  body: HttpBody;
+  inputType: FunctionInputType;
+};
+
 export interface OneToManyLinkTypeDefinition {
   apiName: LinkTypeId;
   one: OneToManyObjectLinkReference;
@@ -742,3 +889,49 @@ export type ActionParameterTypeComplex =
 export type ActionParameterType =
   | ActionParameterTypePrimitive
   | ActionParameterTypeComplex;
+
+export interface Automation extends OntologyEntityBase {
+  apiName: string;
+  condition: AutomationCondition;
+  effects: Record<string, Effect>;
+  __type: OntologyEntityTypeEnum.AUTOMATION;
+}
+
+export type AutomationDefinition = Omit<Automation, "__type">;
+
+export type AutomationCondition = {
+  type: "objectsAdded";
+  objectType: ObjectType;
+  // filters: []; // filters are not currently supported
+};
+
+export type Effect = AutomationActionEffect | AutomationFunctionEffect;
+
+export type AutomationActionEffect = {
+  type: "action";
+  effectId: string;
+  definition: Omit<MarketplaceActionEffect, "actionTypeRid" | "actionInputs">;
+  parameters: Record<ActionParameter["id"], MarketplaceEffectInput>;
+  action: ActionType;
+  onBehalfOfUserId: string;
+  scoped: boolean;
+};
+
+export type AutomationFunctionEffect = {
+  type: "function";
+  effectId: string;
+  definition: MarketplaceFunctionEffect;
+  parameters: Record<FunctionInputName, FunctionEffectInput>;
+  function: ComputeModuleType;
+  onBehalfOfUserId: string;
+  scoped: boolean;
+};
+
+export type FunctionEffectInput = {
+  type: "string";
+  value: string;
+} | {
+  type: "currentProperty";
+  property: ObjectPropertyType;
+  objectType: ObjectType;
+};

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,12 @@
 import type {
   ActionTypePermissionInformation,
   ActionTypeStatus,
+  AutomationIr,
+  AutomationShapeData,
+  ComputeModuleIrBlockData,
+  MarketplaceEffect,
+  MarketplaceMonitor,
+  MarketplaceScopedEffect,
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionValidation,
@@ -45,10 +51,13 @@ import type {
   PropertyTypeMappingInfo,
   RetentionPolicy,
   SectionId,
+  SingleObjectSetBlockData,
 } from "@osdk/client.unstable";
 import * as fs from "fs";
 import * as path from "path";
 import invariant from "tiny-invariant";
+import { v5 as uuidv5 } from "uuid";
+import { toBlockShapeId } from "./blockShapeId.js";
 import { isExotic } from "./defineObject.js";
 import {
   convertNullabilityToDataConstraint,
@@ -64,6 +73,11 @@ import type {
   ActionParameter,
   ActionParameterRequirementConstraint,
   ActionType,
+  Automation,
+  AutomationActionEffect,
+  AutomationFunctionEffect,
+  ComputeModuleContainerAndBlockData,
+  FunctionEffectInput,
   InterfaceType,
   LinkType,
   ObjectPropertyType,
@@ -88,6 +102,8 @@ export let namespace: string;
 type OntologyAndValueTypeIrs = {
   ontology: OntologyIr;
   valueType: OntologyIrValueTypeBlockData;
+  automation: AutomationIr;
+  computeModule: ComputeModuleContainerAndBlockData;
 };
 
 export function updateOntology<
@@ -123,6 +139,8 @@ export async function defineOntology(
     INTERFACE_TYPE: {},
     SHARED_PROPERTY_TYPE: {},
     VALUE_TYPE: {},
+    AUTOMATION: {},
+    COMPUTE_MODULE_TYPE: {},
   };
   importedTypes = {
     SHARED_PROPERTY_TYPE: {},
@@ -131,6 +149,8 @@ export async function defineOntology(
     LINK_TYPE: {},
     INTERFACE_TYPE: {},
     VALUE_TYPE: {},
+    AUTOMATION: {},
+    COMPUTE_MODULE_TYPE: {},
   };
   try {
     await body();
@@ -149,6 +169,8 @@ export async function defineOntology(
   return {
     ontology: convertToWireOntologyIr(ontologyDefinition),
     valueType: convertOntologyToValueTypeIr(ontologyDefinition),
+    automation: convertToWireAutomateIr(ontologyDefinition),
+    computeModule: convertOntologyToComputeModuleIr(ontologyDefinition),
   };
 }
 
@@ -161,6 +183,8 @@ export function writeStaticObjects(outputDir: string): void {
     [OntologyEntityTypeEnum.LINK_TYPE]: "link-types",
     [OntologyEntityTypeEnum.INTERFACE_TYPE]: "interface-types",
     [OntologyEntityTypeEnum.VALUE_TYPE]: "value-types",
+    [OntologyEntityTypeEnum.AUTOMATION]: "automations",
+    [OntologyEntityTypeEnum.COMPUTE_MODULE_TYPE]: "compute-module-types",
   };
 
   if (!fs.existsSync(codegenDir)) {
@@ -250,6 +274,524 @@ function convertOntologyToValueTypeIr(
       })),
     })),
   };
+}
+
+function convertOntologyToComputeModuleIr(
+  ontology: OntologyDefinition,
+): ComputeModuleContainerAndBlockData {
+  const definition = ontology[OntologyEntityTypeEnum.COMPUTE_MODULE_TYPE];
+  return Object.values(definition).map<ComputeModuleContainerAndBlockData>(
+    computeModule => ({
+      buildContainer: computeModule.buildContainer,
+      blockData: {
+        type: "deployedAppMarketplaceBlockDataV1",
+        deployedAppMarketplaceBlockDataV1: {
+          runtimeParameters: computeModule.runtimeParameters,
+          computationParameters: computeModule.computationParameters,
+          numberOfFunctionsRegistered: computeModule.numberOfFunctionsRegistered
+            ?? undefined,
+        },
+      },
+    }),
+  )[0];
+}
+
+function convertToWireAutomateIr(
+  ontology: OntologyDefinition,
+): AutomationIr {
+  const automation =
+    Object.values(ontology[OntologyEntityTypeEnum.AUTOMATION])[0];
+  if (automation === undefined) {
+    return {} as AutomationIr;
+  }
+  return generateAutomationIr(automation);
+}
+
+/**
+ * Generates the AutomationIr with shape data and readable IDs
+ */
+function generateAutomationIr(
+  automation: Automation,
+): AutomationIr {
+  const automationShapeDataCollector: AutomationShapeData = {
+    actionsToParameters: {},
+    actionParameters: {},
+    objectTypesToProperties: {},
+    objectProperties: {},
+  };
+  const functionShapeDataCollector: AutomationIr["functionShapeData"] = {
+    functionReadableId: "",
+    outputDataType: null as any,
+    inputs: {},
+  };
+
+  const objectSetReadableId = generateReadableId(
+    "object-set",
+    automation.condition.objectType.apiName,
+  );
+  const objectSets = convertObjectSets(automation);
+  const marketplaceMonitor = convertToMarketplaceMonitor(
+    automation,
+    automationShapeDataCollector,
+    functionShapeDataCollector,
+  );
+
+  return {
+    automationReadableId: generateReadableId(
+      "automation",
+      automation.apiName,
+    ),
+    automationBlockData: {
+      marketplaceMonitor,
+      requiredInputEntityIds: [
+        toBlockShapeId(generateReadableId(
+          "object-type",
+          automation.condition.objectType.apiName,
+        )),
+      ],
+      referencedObjectSetEntities: {
+        objectTypeRids: [toBlockShapeId(generateReadableId(
+          "object-type",
+          automation.condition.objectType.apiName,
+        ))],
+        linkTypeRids: [],
+      },
+    },
+    automationShapeData: {
+      actionsToParameters: automationShapeDataCollector.actionsToParameters,
+      actionParameters: automationShapeDataCollector.actionParameters,
+      objectTypesToProperties:
+        automationShapeDataCollector.objectTypesToProperties,
+      objectProperties: automationShapeDataCollector.objectProperties,
+    },
+    objectSetBlockData: {
+      singleObjectSetBlockDatas: objectSets,
+    },
+    objectSetShapeData: {
+      objectSetReadableId,
+      objectTypesToProperties:
+        automationShapeDataCollector.objectTypesToProperties,
+      objectProperties: automationShapeDataCollector.objectProperties,
+    },
+    functionShapeData: functionShapeDataCollector,
+  };
+}
+
+/**
+ * Generates shape data for actions and parameters
+ */
+function updateActionShapeData(
+  actionType: ActionType,
+  automationShapeDataCollector: AutomationShapeData,
+) {
+  const actionsToParameters: Record<string, string[]> = {};
+  const actionParameters: Record<string, any> = {};
+
+  const actionReadableId = generateReadableId(
+    "action-type",
+    actionType.apiName,
+  );
+
+  const parameterIds: string[] = [];
+
+  (actionType.parameters || []).forEach(param => {
+    const paramReadableId = generateReadableId(
+      "action",
+      actionType.apiName,
+      "parameter",
+      param.id,
+    );
+
+    parameterIds.push(paramReadableId);
+
+    actionParameters[paramReadableId] = (typeof param.type === "string")
+      ? {
+        type: param.type,
+        [param.type]: {},
+      }
+      : param.type;
+    // Add other parameter properties as needed
+  });
+
+  actionsToParameters[actionReadableId] = parameterIds;
+
+  automationShapeDataCollector.actionsToParameters = {
+    ...automationShapeDataCollector.actionsToParameters,
+    ...actionsToParameters,
+  };
+  automationShapeDataCollector.actionParameters = {
+    ...automationShapeDataCollector.actionParameters,
+    ...actionParameters,
+  };
+}
+
+/**
+ * Generates shape data for object types and properties
+ */
+function updateObjectShapeData(
+  objectType: ObjectType,
+  collector: AutomationShapeData,
+): void {
+  const objectProperties: Record<string, any> = {};
+  const objectTypeReadableId = generateReadableId(
+    "object-type",
+    objectType.apiName,
+  );
+  const propertyIds: string[] = [];
+
+  (objectType.properties || []).forEach(property => {
+    const propertyReadableId = generateReadableId(
+      objectType.apiName,
+      "property-type",
+      property.apiName,
+    );
+
+    propertyIds.push(propertyReadableId);
+
+    objectProperties[propertyReadableId] = {
+      type: "objectPropertyType",
+      objectPropertyType: {
+        type: "primitive",
+        primitive: {
+          type: property.type + "Type",
+          [property.type + "Type"]: {},
+        },
+      },
+    };
+
+    // (typeof property.type === "string")
+    //   ? {
+    //     type: property
+    //     [property.type]: {},
+    //   }
+    //   : property.type;
+    // Add other property attributes as needed
+  });
+
+  collector.objectTypesToProperties[objectTypeReadableId] = propertyIds;
+  collector.objectProperties = {
+    ...collector.objectProperties,
+    ...objectProperties,
+  };
+}
+
+/**
+ * Generates a readable ID based on the provided components
+ * Warning about these ID generators: If the ID generation logic changes, it will break output provenance on upgrades.
+ */
+function generateReadableId(...components: string[]): string {
+  return components.join("-");
+}
+
+function convertObjectSets(
+  automation: Automation,
+): Array<SingleObjectSetBlockData> {
+  const readableId = generateReadableId(
+    "object-type",
+    automation.condition.objectType.apiName,
+  );
+  const readableIdForObjectSet = generateReadableId(
+    "object-set",
+    automation.condition.objectType.apiName,
+  );
+  const readableIdForAutomation = generateReadableId(
+    "monitor",
+    automation.apiName,
+  );
+  return [{
+    objectSetTemplateId: toBlockShapeId(readableIdForObjectSet),
+    securityRidTemplateId: toBlockShapeId(readableIdForAutomation),
+    templatedObjectSet: {
+      type: "base",
+      base: {
+        objectTypeId: toBlockShapeId(readableId),
+      },
+    },
+  }];
+}
+
+function convertToMarketplaceMonitor(
+  automation: Automation,
+  automationShapeDataCollector: AutomationShapeData,
+  functionShapeDataCollector: NonNullable<AutomationIr["functionShapeData"]>,
+): MarketplaceMonitor {
+  const version = 1;
+  const rid = `ri.object-sentinel..automation.${automation.apiName}`;
+
+  const { subscribers, scopedTokenEffects } = getAutomationEffects(
+    automation,
+    automationShapeDataCollector,
+    functionShapeDataCollector,
+  );
+  updateObjectShapeData(
+    automation.condition.objectType,
+    automationShapeDataCollector,
+  );
+
+  return {
+    isCurrentlyInTriggeringState: false,
+    lastHistoryEvent: {},
+    lastRecoveryEvent: {},
+    lastTriggerEvent: {},
+    logic: {
+      type: "event",
+      event: {
+        eventType: {
+          type: "notSavedObjectSetEvent",
+          notSavedObjectSetEvent: {
+            eventType: {
+              type: "added",
+              added: {},
+            },
+            objectSetRid: toBlockShapeId(
+              generateReadableId(
+                "object-set",
+                automation.condition.objectType.apiName,
+              ),
+            ),
+          },
+        },
+      },
+    },
+    metadata: {
+      dependentAutomations: [],
+      disabled: {},
+      expiryDate: "3000-01-01T00:00:00+00:00", // deprecated field.
+      muted: {
+        forUsers: {},
+      },
+      renderingV2: {},
+      rid: rid,
+      subscribers: subscribers,
+      branchRid: undefined,
+      cycleDetectionSettings: undefined,
+      expiry: undefined,
+      globalEffectExecutionSettings: undefined,
+      liveConfig: undefined,
+      management: undefined,
+      mgsConfig: undefined,
+      priority: undefined,
+      rendering: undefined,
+      scopedTokenEffects: scopedTokenEffects,
+      telemetryConfig: undefined,
+      timeSeriesAlertingOverrides: undefined,
+      triggerExecutionSettings: undefined,
+    },
+    monitorType: "FUNNEL_BACKED_INCREMENTAL",
+    version,
+    versionedObjectSetsVersionsUsed: {},
+    attribution: {
+      createdAt: new Date().toISOString(),
+      createdBy: undefined,
+    },
+    lastEvaluationTime: undefined,
+    publishedMonitorVersion: version,
+  };
+}
+
+function getAutomationEffects(
+  automation: Automation,
+  automationShapeDataCollector: AutomationShapeData,
+  functionShapeDataCollector: NonNullable<AutomationIr["functionShapeData"]>,
+) {
+  const userScopedEffectsSubscribers:
+    MarketplaceMonitor["metadata"]["subscribers"] = [];
+  let scopedTokenEffects: MarketplaceMonitor["metadata"]["scopedTokenEffects"] =
+    undefined;
+
+  const nonScopedEffects: Record<string, MarketplaceEffect> = {};
+  const scopedEffects: Record<string, MarketplaceScopedEffect> = {};
+
+  Object.entries(automation.effects).forEach(([effectId, effect]) => {
+    if (effect.type === "action") {
+      updateActionEffect(
+        effect,
+        automationShapeDataCollector,
+        scopedEffects,
+        effectId,
+        nonScopedEffects,
+      );
+    }
+    if (effect.type === "function") {
+      updateFunctionEffect(
+        effect,
+        effectId,
+        nonScopedEffects,
+        functionShapeDataCollector,
+      );
+    }
+  });
+
+  if (Object.keys(nonScopedEffects).length > 0) {
+    userScopedEffectsSubscribers.push({
+      subscriberType: {
+        type: "user",
+        user: {
+          userId: {},
+        },
+      },
+      triggerEffects: nonScopedEffects,
+      recoveryEffects: {},
+    });
+  }
+
+  if (Object.keys(scopedEffects).length > 0) {
+    scopedTokenEffects = {
+      additionalScope: {
+        actionTypeRids: [],
+        artifacts: [],
+        functionLocators: [],
+        functionRids: [],
+        languageModelRid: [],
+        linkTypeRids: [],
+        mediaSets: [],
+        objectTypeRids: [],
+        sources: [],
+        sourcesV2: [],
+        valueTypes: [],
+        webhookLocators: [],
+      },
+      generatedScope: {
+        actionTypeRids: [],
+        artifacts: [],
+        functionLocators: [],
+        functionRids: [],
+        languageModelRid: [],
+        linkTypeRids: [],
+        mediaSets: [],
+        objectTypeRids: [],
+        sources: [],
+        sourcesV2: [],
+        valueTypes: [],
+        webhookLocators: [],
+      },
+      sideEffects: {
+        triggerEffects: scopedEffects,
+      },
+    };
+  }
+  return { subscribers: userScopedEffectsSubscribers, scopedTokenEffects };
+}
+
+function updateActionEffect(
+  effect: AutomationActionEffect,
+  automationShapeDataCollector: AutomationShapeData,
+  scopedEffects: Record<string, MarketplaceScopedEffect>,
+  effectId: string,
+  nonScopedEffects: Record<string, MarketplaceEffect>,
+) {
+  updateActionShapeData(effect.action, automationShapeDataCollector);
+  const actionBlockShapeId = toBlockShapeId(
+    generateReadableId("action-type", effect.action.apiName),
+  );
+  if (effect.scoped) {
+    scopedEffects[uuidv5(effectId, "00000000-0000-0000-0000-000000000000")] = {
+      type: "action",
+      action: {
+        ...effect.definition,
+        actionTypeRid: actionBlockShapeId,
+        actionInputs: {},
+      },
+    };
+  } else {
+    nonScopedEffects[uuidv5(effectId, "00000000-0000-0000-0000-000000000000")] =
+      {
+        type: "action",
+        action: {
+          ...effect.definition,
+          actionTypeRid: actionBlockShapeId,
+          actionInputs: {},
+        },
+      };
+  }
+}
+
+function updateFunctionEffect(
+  effect: AutomationFunctionEffect,
+  effectId: string,
+  nonScopedEffects: Record<string, MarketplaceEffect>,
+  functionShapeDataCollector: NonNullable<AutomationIr["functionShapeData"]>,
+) {
+  const functionReadableId = generateReadableId(
+    "function",
+    effect.function.apiName,
+  );
+  const functionBlockShapeId = toBlockShapeId(
+    generateReadableId("function", effect.function.apiName),
+  );
+  functionShapeDataCollector.functionReadableId = functionReadableId;
+  functionShapeDataCollector.outputDataType = {
+    type: "anonymousCustomType",
+    anonymousCustomType: { fields: {} },
+  };
+  if (effect.scoped) {
+    throw new Error("Scoped function effects not supported");
+  } else {
+    nonScopedEffects[uuidv5(effectId, "00000000-0000-0000-0000-000000000000")] =
+      {
+        type: "function",
+        function: {
+          ...effect.definition,
+          functionLocator: functionBlockShapeId,
+          functionInputs: Object.fromEntries(
+            Object.entries(effect.parameters).map(([functionInputName, v]) => {
+              const readableId = generateReadableId(
+                effect.function.apiName,
+                "function-input",
+                functionInputName,
+              );
+              functionShapeDataCollector.inputs[readableId] = convertInputType(
+                v,
+              );
+              // function input names are stable across marketplace deploys
+              return convertFunctionEffectInput(v, functionInputName);
+            }),
+          ),
+        },
+      };
+  }
+}
+
+/**
+ * Converts a function effect input to the appropriate type for the function shape data
+ */
+function convertInputType(
+  input: FunctionEffectInput,
+): NonNullable<AutomationIr["functionShapeData"]>["outputDataType"] {
+  if (input.type === "string") {
+    return { type: "string", string: {} };
+  } else if (input.type === "currentProperty") {
+    return { type: "string", string: {} };
+  } else {
+    // Handle any other types that might be added in the future
+    return { type: "string", string: {} };
+  }
+}
+
+function convertFunctionEffectInput(
+  input: FunctionEffectInput,
+  functionInputName: string,
+) {
+  switch (input.type) {
+    case "string":
+      return [functionInputName, {
+        type: "string",
+        value: input.value,
+      }];
+    case "currentProperty":
+      return [functionInputName, {
+        type: "currentProperty",
+        property: toBlockShapeId(
+          generateReadableId(
+            input.objectType.apiName,
+            "property-type",
+            input.property.apiName,
+          ),
+        ),
+      }];
+    default:
+      throw new Error("Invalid function input type");
+  }
 }
 
 function convertToWireOntologyIr(
@@ -781,6 +1323,14 @@ export function dumpOntologyFullMetadata(): OntologyIr {
 
 export function dumpValueTypeWireType(): OntologyIrValueTypeBlockData {
   return convertOntologyToValueTypeIr(ontologyDefinition);
+}
+
+export function dumpAutomationWireType(): AutomationIr {
+  return convertToWireAutomateIr(ontologyDefinition);
+}
+
+export function dumpComputeModuleWireType(): ComputeModuleIrBlockData {
+  return convertOntologyToComputeModuleIr(ontologyDefinition).blockData;
 }
 
 function convertSpt(

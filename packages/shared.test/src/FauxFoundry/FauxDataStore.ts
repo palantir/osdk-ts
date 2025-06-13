@@ -154,6 +154,10 @@ export class FauxDataStore {
     return this.#fauxOntology;
   }
 
+  set ontology(newOntology: FauxOntology) {
+    this.#fauxOntology = newOntology;
+  }
+
   #assertObjectExists(
     objectType: string,
     primaryKey: string | number | boolean,
@@ -699,12 +703,11 @@ export class FauxDataStore {
     );
 
     if (!page) {
-      throw new OpenApiCallError(
-        404,
-        InvalidRequest(
-          `No objects found for ${JSON.stringify(parsedBody)}`,
-        ),
-      );
+      return {
+        data: [],
+        totalCount: "0",
+        nextPageToken: undefined,
+      };
     }
     const ret = subSelectProperties(
       page,
@@ -750,6 +753,29 @@ export class FauxDataStore {
     const r = actionImpl(batch, req, {
       def: actionDef,
       attachments: this.#attachments,
+    });
+    // This could be much more efficient by only "running" the automations that are relevant
+
+    const automations = this.#fauxOntology.getAllAutomationImpls();
+    automations.forEach(automation => {
+      if (automation.postActionPredicate(batch)) {
+        if (automation.effect.type === "action") {
+          // ignore the responses, these will continue to directly mutate the datastores
+          // Ideally, this application is pushed down into the FauxDataStoreBatch, but this is slightly
+          // more annoying since automations talk in terms of actions
+          this.applyAction(
+            automation.effect.definition.apiName,
+            automation.effect.request,
+          );
+        }
+        if (automation.effect.type === "generic") {
+          // HACK HACK: we don't know which edit applyAction actually caused so pass through the best we can
+          automation.effect.execute(
+            batch.objectEdits.edits[batch.objectEdits.edits.length - 1],
+            req,
+          );
+        }
+      }
     });
 
     // The legacy actions return the full payload
