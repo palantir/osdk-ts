@@ -15,6 +15,10 @@
  */
 
 import type {
+  DeployedAppsComputationParams,
+  DeployedAppsRuntimeParams,
+} from "./generated/module-group/index.js";
+import type {
   AutomationBlockDataV1,
 } from "./generated/object-sentinel/api/__components.js";
 import type {
@@ -22,10 +26,6 @@ import type {
   TemplatedObjectSet,
 } from "./generated/object-set-service/api/__components.js";
 import type { DataType } from "./generated/ontology-metadata/api/__components.js";
-import type {
-  DeployedAppsComputationParams,
-  DeployedAppsRuntimeParams,
-} from "./generated/module-group/index.js";
 import type {
   OntologyIrImportedTypes,
   OntologyIrOntologyBlockDataV2,
