@@ -333,12 +333,14 @@ export interface InterfaceType extends
     // these things don't need to exist as the system works fine without them (I'm told)
     | "allProperties"
     | "allLinks"
+    | "extendsInterfaces"
     | "allExtendsInterfaces"
     | "propertiesV2"
     | "allPropertiesV2"
   >
 {
   propertiesV2: Record<string, InterfacePropertyType>;
+  extendsInterfaces: Array<InterfaceType>;
   status: InterfaceTypeStatus;
   __type: OntologyEntityTypeEnum.INTERFACE_TYPE;
 }

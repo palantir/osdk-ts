@@ -129,7 +129,7 @@ export function updateOntology<
 export async function defineOntology(
   ns: string,
   body: () => void | Promise<void>,
-  outputDir: string,
+  outputDir: string | undefined,
 ): Promise<OntologyAndValueTypeIrs> {
   namespace = ns;
   ontologyDefinition = {
@@ -163,7 +163,9 @@ export async function defineOntology(
     throw e;
   }
 
-  writeStaticObjects(outputDir);
+  if (outputDir) {
+    writeStaticObjects(outputDir);
+  }
   return {
     ontology: convertToWireOntologyIr(ontologyDefinition),
     valueType: convertOntologyToValueTypeIr(ontologyDefinition),
@@ -1321,6 +1323,7 @@ function convertInterface(
           sharedPropertyType: convertSpt(spt.sharedPropertyType),
         }]),
     ),
+    extendsInterfaces: interfaceType.extendsInterfaces.map(i => i.apiName),
     // these are omitted from our internal types but we need to re-add them for the final json
     allExtendsInterfaces: [],
     allLinks: [],

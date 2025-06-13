@@ -789,7 +789,7 @@ describe("Ontology Defining", () => {
         properties: {
           property2: "string",
         },
-        extends: ["parentInterface"],
+        extends: parentInterface,
       });
 
       expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
@@ -814,7 +814,7 @@ describe("Ontology Defining", () => {
                   "icon": undefined,
                 },
                 "extendsInterfaces": [
-                  "parentInterface",
+                  "com.palantir.parentInterface",
                 ],
                 "links": [],
                 "properties": [],
@@ -6907,6 +6907,119 @@ describe("Ontology Defining", () => {
         recursive: true,
         force: true,
       });
+    });
+    it("Extended interfaces are propagated to the static objects", async () => {
+      const generatedDir = path.resolve(path.join(
+        __dirname,
+        "..",
+        "generatedNoCheck",
+        "extended_interfaces_are_propagated_to_the_static_objects",
+      ));
+      await defineOntology("com.palantir.", () => {
+        const parentInterface = defineInterface({
+          apiName: "parentInterface",
+          properties: {
+            property1: "string",
+          },
+        });
+        const childInterface = defineInterface({
+          apiName: "childInterface",
+          properties: {
+            property2: "string",
+          },
+          extends: [parentInterface],
+        });
+      }, generatedDir);
+
+      expect(
+        fs.readFileSync(
+          path.join(generatedDir, "codegen/interface-types/childInterface.ts"),
+          "utf8",
+        ),
+      ).toMatchInlineSnapshot(`
+        "
+        import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
+        import type { InterfaceType } from '@osdk/maker';
+
+        const childInterface_base: InterfaceType = {
+          "apiName": "com.palantir.childInterface",
+          "displayMetadata": {
+            "displayName": "childInterface",
+            "description": "childInterface"
+          },
+          "extendsInterfaces": [
+            {
+              "apiName": "com.palantir.parentInterface",
+              "displayMetadata": {
+                "displayName": "parentInterface",
+                "description": "parentInterface"
+              },
+              "extendsInterfaces": [],
+              "links": [],
+              "status": {
+                "type": "active",
+                "active": {}
+              },
+              "propertiesV2": {
+                "property1": {
+                  "required": true,
+                  "sharedPropertyType": {
+                    "apiName": "com.palantir.property1",
+                    "displayName": "property1",
+                    "type": "string",
+                    "array": false,
+                    "nonNameSpacedApiName": "property1",
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE"
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE"
+                      }
+                    ],
+                    "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE
+                  }
+                }
+              },
+              "__type": OntologyEntityTypeEnum.INTERFACE_TYPE
+            }
+          ],
+          "links": [],
+          "status": {
+            "type": "active",
+            "active": {}
+          },
+          "propertiesV2": {
+            "property2": {
+              "required": true,
+              "sharedPropertyType": {
+                "apiName": "com.palantir.property2",
+                "displayName": "property2",
+                "type": "string",
+                "array": false,
+                "nonNameSpacedApiName": "property2",
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE"
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE"
+                  }
+                ],
+                "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE
+              }
+            }
+          },
+          "__type": OntologyEntityTypeEnum.INTERFACE_TYPE
+        } as unknown as InterfaceType;
+                
+        export const childInterface: InterfaceType = wrapWithProxy(childInterface_base);
+                "
+      `);
     });
   });
   describe("Automations", () => {
