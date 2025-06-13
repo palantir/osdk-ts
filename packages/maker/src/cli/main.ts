@@ -35,6 +35,7 @@ export default async function main(
     valueTypesOutput: string;
     automationsOutput: string;
     computeModulesOutput: string;
+    ociOutput: string;
     outputDir?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
@@ -92,6 +93,12 @@ export default async function main(
         default: "compute-modules.json",
         coerce: path.resolve,
       },
+      ociOutput: {
+        describe: "Compute Module OCI Output File",
+        type: "string",
+        default: "oci.tgz",
+        coerce: path.resolve,
+      },
     })
     .parseAsync();
   let apiNamespace = "";
@@ -134,8 +141,9 @@ export default async function main(
   if (Object.keys(ontology.computeModule).length > 0) {
     await fs.writeFile(
       commandLineOpts.computeModulesOutput,
-      JSON.stringify(ontology.computeModule, null, 2),
+      JSON.stringify(ontology.computeModule.blockData, null, 2),
     );
+    await ontology.computeModule.buildContainer(commandLineOpts.ociOutput);
   }
 }
 

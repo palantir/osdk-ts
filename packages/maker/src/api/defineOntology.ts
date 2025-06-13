@@ -20,7 +20,6 @@ import type {
   AutomationIr,
   AutomationShapeData,
   ComputeModuleIrBlockData,
-  ComputeModuleIrBlockDataEntry,
   MarketplaceEffect,
   MarketplaceMonitor,
   MarketplaceScopedEffect,
@@ -77,6 +76,7 @@ import type {
   Automation,
   AutomationActionEffect,
   AutomationFunctionEffect,
+  ComputeModuleContainerAndBlockData,
   FunctionEffectInput,
   InterfaceType,
   LinkType,
@@ -103,7 +103,7 @@ type OntologyAndValueTypeIrs = {
   ontology: OntologyIr;
   valueType: OntologyIrValueTypeBlockData;
   automation: AutomationIr;
-  computeModule: ComputeModuleIrBlockData;
+  computeModule: ComputeModuleContainerAndBlockData;
 };
 
 export function updateOntology<
@@ -278,20 +278,22 @@ function convertOntologyToValueTypeIr(
 
 function convertOntologyToComputeModuleIr(
   ontology: OntologyDefinition,
-): ComputeModuleIrBlockData {
+): ComputeModuleContainerAndBlockData {
   const definition = ontology[OntologyEntityTypeEnum.COMPUTE_MODULE_TYPE];
-  return {
-    type: "deployedAppMarketplaceBlockDataV1",
-    deployedAppMarketplaceBlockDataV1:
-      Object.values(definition).map<ComputeModuleIrBlockDataEntry>(
-        computeModule => ({
+  return Object.values(definition).map<ComputeModuleContainerAndBlockData>(
+    computeModule => ({
+      buildContainer: computeModule.buildContainer,
+      blockData: {
+        type: "deployedAppMarketplaceBlockDataV1",
+        deployedAppMarketplaceBlockDataV1: {
           runtimeParameters: computeModule.runtimeParameters,
           computationParameters: computeModule.computationParameters,
           numberOfFunctionsRegistered: computeModule.numberOfFunctionsRegistered
             ?? undefined,
-        }),
-      )[0],
-  };
+        },
+      },
+    }),
+  )[0];
 }
 
 function convertToWireAutomateIr(
@@ -1328,7 +1330,7 @@ export function dumpAutomationWireType(): AutomationIr {
 }
 
 export function dumpComputeModuleWireType(): ComputeModuleIrBlockData {
-  return convertOntologyToComputeModuleIr(ontologyDefinition);
+  return convertOntologyToComputeModuleIr(ontologyDefinition).blockData;
 }
 
 function convertSpt(

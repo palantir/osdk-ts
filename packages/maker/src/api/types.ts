@@ -20,6 +20,7 @@ import type {
   ApiNameValueTypeReference,
   BaseType,
   ComputeModuleAuthMode,
+  ComputeModuleIrBlockData,
   DataConstraint,
   DeployedAppsComputationParams,
   DeployedAppsRuntimeParams,
@@ -463,10 +464,16 @@ export type LinkTypeDefinition =
 
 export interface ComputeModuleType extends OntologyEntityBase {
   __type: OntologyEntityTypeEnum.COMPUTE_MODULE_TYPE;
+  buildContainer: (ociFile: string) => Promise<string>;
   runtimeParameters: DeployedAppsRuntimeParams;
   computationParameters: DeployedAppsComputationParams;
   numberOfFunctionsRegistered?: number | null;
 }
+
+export type ComputeModuleContainerAndBlockData = {
+  buildContainer: (ociFile: string) => Promise<string>;
+  blockData: ComputeModuleIrBlockData;
+};
 
 export type ComputeModuleDefinition = {
   apiName: string;

@@ -42,6 +42,7 @@ import type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVe
 export type InterfaceTypeApiName = string;
 export type ObjectTypeFieldApiName = string;
 export type InterfaceLinkTypeApiName = string;
+``;
 export type { OntologyIrOntologyBlockDataV2 } from "./generated/ontology-metadata/api/blockdata/index.js";
 
 export interface OntologyIr {

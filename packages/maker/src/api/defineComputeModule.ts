@@ -81,6 +81,8 @@ export function defineComputeModule(
   const computeModuleType: ComputeModuleType = {
     ...computeModule,
     apiName: computeModuleDefinition.apiName,
+    buildContainer: (ogiFile: string) =>
+      buildDockerContainer(computeModuleDefinition, ogiFile),
     __type: OntologyEntityTypeEnum.COMPUTE_MODULE_TYPE,
   };
   updateOntology(computeModuleType);
@@ -89,7 +91,7 @@ export function defineComputeModule(
 
 async function buildDockerContainer(
   def: ComputeModuleDefinition,
-  outputDir: string,
+  ogiFile: string,
 ): Promise<string> {
   try {
     const buildArgs = Object.keys(def.buildArgs).map(key =>
@@ -97,7 +99,7 @@ async function buildDockerContainer(
     );
     const containerName = def.imageNameAndTag;
     const ociOutputFlag =
-      `--output "type=oci,dest=${outputDir},name=${containerName}"`;
+      `--output "type=oci,dest=${ogiFile},name=${containerName}"`;
 
     await execa("docker", [
       "build",
