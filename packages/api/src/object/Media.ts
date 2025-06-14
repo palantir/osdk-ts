@@ -40,8 +40,14 @@ export interface MediaReference {
       mediaItemRid: string;
       mediaSetRid: string;
       mediaSetViewRid: string;
+      readToken?: string;
     };
   };
+}
+
+export interface MediaUpload {
+  readonly path: string;
+  readonly data: Blob;
 }
 
 /**
