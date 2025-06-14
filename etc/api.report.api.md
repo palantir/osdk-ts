@@ -741,8 +741,17 @@ export interface MediaReference {
             			mediaItemRid: string
             			mediaSetRid: string
             			mediaSetViewRid: string
+            			readToken?: string
             		}
         	};
+}
+
+// @public (undocumented)
+export interface MediaUpload {
+    	// (undocumented)
+    readonly data: Blob;
+    	// (undocumented)
+    readonly path: string;
 }
 
 // @public (undocumented)
