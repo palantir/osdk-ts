@@ -82,7 +82,6 @@ export default async function main(
       dependencies: {
         describe: "File to write dependencies to",
         type: "string",
-        default: "dependencies.json",
         coerce: path.resolve,
       },
     })
