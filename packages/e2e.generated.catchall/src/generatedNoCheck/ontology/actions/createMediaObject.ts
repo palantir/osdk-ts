@@ -12,11 +12,13 @@ export namespace createMediaObject {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     media_reference: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'mediaReference';
     };
     path: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';

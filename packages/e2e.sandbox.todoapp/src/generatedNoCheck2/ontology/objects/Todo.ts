@@ -57,6 +57,7 @@ export interface Todo extends $ObjectTypeDefinition {
       name: 'todo';
       color: 'red';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -82,6 +83,7 @@ export interface Todo extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'title';
     type: 'object';
+    visibility: undefined;
   };
 }
 

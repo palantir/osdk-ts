@@ -13,11 +13,13 @@ export namespace editOsdkTestObject {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     OsdkTestObject: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Object<OsdkTestObject>;
     };
     string_property: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';

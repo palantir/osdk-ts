@@ -68,6 +68,7 @@ export interface BgaoNflPlayer extends $ObjectTypeDefinition {
       name: 'traffic';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -108,6 +109,7 @@ export interface BgaoNflPlayer extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'entityId';
     type: 'object';
+    visibility: undefined;
   };
 }
 

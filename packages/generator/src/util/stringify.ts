@@ -50,7 +50,7 @@ export function stringify<T extends Record<string, any>>(
   } = {},
   separator = ",\n",
 ): string {
-  const defaultKeyFormatter = (key: string) => `${JSON.stringify(key)}`;
+  const defaultKeyFormatter = (key: string) => JSON.stringify(key);
   const entries: Array<string> = [];
 
   const sortedKeys = Object.keys(obj).sort((a, b) => a.localeCompare(b));
@@ -71,6 +71,8 @@ export function stringify<T extends Record<string, any>>(
       } else {
         entries.push(`${res[0]}: ${res[1]}`);
       }
+    } else if (value === undefined) {
+      entries.push(`${defaultKeyFormatter(key)}: undefined`);
     }
   }
   return entries.join(separator);

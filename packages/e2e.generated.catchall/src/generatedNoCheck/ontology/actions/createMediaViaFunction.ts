@@ -12,6 +12,7 @@ export namespace createMediaViaFunction {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     mediaItem: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'mediaReference';

@@ -14,11 +14,13 @@ export namespace actionTakesAllParameterTypes {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     attachmentArray: {
+      description: undefined;
       multiplicity: true;
       nullable: false;
       type: 'attachment';
     };
     dateArray: {
+      description: undefined;
       multiplicity: true;
       nullable: true;
       type: 'datetime';
@@ -30,16 +32,19 @@ export namespace actionTakesAllParameterTypes {
       type: ActionMetadata.DataType.Object<Person>;
     };
     objectSet: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.ObjectSet<Todo>;
     };
     string: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';
     };
     'time-stamp': {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'timestamp';
