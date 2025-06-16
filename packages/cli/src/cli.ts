@@ -36,6 +36,7 @@ export async function cli(args: string[] = process.argv): Promise<
   try {
     return await base
       .command(site)
+      .command(widgetSet)
       .command({
         command: "unstable",
         aliases: ["experimental"],
