@@ -21,6 +21,10 @@ import type {
   ActionTypeV2,
 } from "@osdk/internal.foundry.core";
 import { getModifiedEntityTypes } from "./getEditedEntities.js";
+import {
+  ensureStringEnumSupportedOrUndefined,
+  supportedReleaseStatus,
+} from "./wireObjectTypeFullMetadataToSdkObjectMetadata.js";
 
 export function wireActionTypeV2ToSdkActionMetadata(
   input: ActionTypeV2,
@@ -41,7 +45,10 @@ export function wireActionTypeV2ToSdkActionMetadata(
       modifiedEntityTypes.modifiedObjects,
     ),
     rid: input.rid,
-    status: input.status,
+    status: ensureStringEnumSupportedOrUndefined(
+      input.status,
+      supportedReleaseStatus,
+    ),
   };
 }
 

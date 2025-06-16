@@ -72,7 +72,7 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
   icon?: Icon;
   visibility?: ObjectTypeVisibility;
   pluralDisplayName: string;
-  status: ReleaseStatus;
+  status?: ReleaseStatus;
   interfaceMap: Record<
     /* InterfaceType api name */ string,
     Record<

@@ -17,7 +17,6 @@
 import type { ObjectMetadata } from "@osdk/api";
 import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
 import type { ObjectTypeFullMetadata } from "@osdk/internal.foundry.core";
-import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 
@@ -35,11 +34,9 @@ export class EnhancedObjectType extends EnhancedBase<ObjectTypeFullMetadata> {
   }
 
   getCleanedUpDefinition(v2: boolean): ObjectMetadata {
-    return deleteUndefineds(
-      wireObjectTypeFullMetadataToSdkObjectMetadata(
-        this.raw,
-        v2,
-      ),
+    return wireObjectTypeFullMetadataToSdkObjectMetadata(
+      this.raw,
+      v2,
     );
   }
 }

@@ -71,6 +71,8 @@ export function stringify<T extends Record<string, any>>(
       } else {
         entries.push(`${res[0]}: ${res[1]}`);
       }
+    } else if (value === undefined) {
+      entries.push(`${defaultKeyFormatter(key)}: undefined`);
     }
   }
   return entries.join(separator);
