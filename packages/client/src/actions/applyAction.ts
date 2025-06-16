@@ -135,7 +135,7 @@ export async function applyAction<
       action.apiName,
       {
         requests: parameters
-          ? await remapBatchActionParams(parameters, client)
+          ? await remapBatchActionParams(parameters, client, action.apiName)
           : [],
         options: {
           returnEdits: options?.$returnEdits ? "ALL" : "NONE",
@@ -158,6 +158,7 @@ export async function applyAction<
             CompileTimeActionMetadata<AD>["parameters"]
           >,
           client,
+          action.apiName,
         ),
         options: {
           mode: (options as ApplyActionOptions)?.$validateOnly
@@ -191,6 +192,7 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
     | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>
     | undefined,
   client: MinimalClient,
+  actionApiName: string,
 ): Promise<Record<string, DataValue>> {
   if (params == null) {
     return {};
@@ -198,7 +200,7 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
 
   const parameterMap: { [parameterName: string]: unknown } = {};
   for (const [key, value] of Object.entries(params)) {
-    parameterMap[key] = await toDataValue(value, client);
+    parameterMap[key] = await toDataValue(value, client, actionApiName);
   }
 
   return parameterMap;
@@ -209,10 +211,13 @@ async function remapBatchActionParams<
 >(
   params: OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>[],
   client: MinimalClient,
+  actionApiName: string,
 ) {
   const remappedParams = await Promise.all(params.map(
     async param => {
-      return { parameters: await remapActionParams<AD>(param, client) };
+      return {
+        parameters: await remapActionParams<AD>(param, client, actionApiName),
+      };
     },
   ));
 

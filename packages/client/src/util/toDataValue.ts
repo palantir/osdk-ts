@@ -38,6 +38,7 @@ import { isWireObjectSet } from "./WireObjectSet.js";
 export async function toDataValue(
   value: unknown,
   client: MinimalClient,
+  actionApiName: string,
 ): Promise<DataValue> {
   if (value == null) {
     // typeof null is 'object' so do this first
@@ -54,13 +55,14 @@ export async function toDataValue(
     ) {
       const converted = [];
       for (const value of values) {
-        converted.push(await toDataValue(value, client));
+        converted.push(await toDataValue(value, client, actionApiName));
       }
       return converted;
     }
     const promiseArray = Array.from(
       value,
-      async (innerValue) => await toDataValue(innerValue, client),
+      async (innerValue) =>
+        await toDataValue(innerValue, client, actionApiName),
     );
     return Promise.all(promiseArray);
   }
@@ -74,7 +76,7 @@ export async function toDataValue(
         filename: value.name,
       },
     );
-    return await toDataValue(attachment.rid, client);
+    return await toDataValue(attachment.rid, client, actionApiName);
   }
 
   if (isAttachmentFile(value)) {
@@ -85,28 +87,36 @@ export async function toDataValue(
         filename: value.name as string,
       },
     );
-    return await toDataValue(attachment.rid, client);
+    return await toDataValue(attachment.rid, client, actionApiName);
   }
 
   // new media item upload interface, very similar to how attachments work above
 
   if (isMediaUpload(value)) {
     const mediaRef = await OntologiesV2.MediaReferenceProperties
-      .uploadActionsMediaContent(client, value.data, { path: value.path });
-    return await toDataValue(mediaRef, client);
+      .uploadMedia(client, value.data, {
+        path: value.path,
+        ontology: await client.ontologyRid,
+        action: actionApiName,
+      });
+    return await toDataValue(mediaRef, client, actionApiName);
   }
 
   // objects just send the JSON'd primaryKey
   if (isOntologyObjectV2(value)) {
-    return await toDataValue(value.__primaryKey, client);
+    return await toDataValue(value.__primaryKey, client, actionApiName);
   }
 
   if (isObjectSpecifiersObject(value)) {
-    return await toDataValue(value.$primaryKey, client);
+    return await toDataValue(value.$primaryKey, client, actionApiName);
   }
 
   if (isPoint(value)) {
-    return await toDataValue(value.coordinates.reverse().join(), client);
+    return await toDataValue(
+      value.coordinates.reverse().join(),
+      client,
+      actionApiName,
+    );
   }
 
   // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
@@ -137,7 +147,7 @@ export async function toDataValue(
     return Object.entries(value).reduce(
       async (promisedAcc, [key, structValue]) => {
         const acc = await promisedAcc;
-        acc[key] = await toDataValue(structValue, client);
+        acc[key] = await toDataValue(structValue, client, actionApiName);
         return acc;
       },
       Promise.resolve({} as { [key: string]: DataValue }),

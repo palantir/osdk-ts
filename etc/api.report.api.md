@@ -746,7 +746,7 @@ export interface MediaReference {
         	};
 }
 
-// @public (undocumented)
+// @public
 export interface MediaUpload {
     	// (undocumented)
     readonly data: Blob;
