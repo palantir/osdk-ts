@@ -17,7 +17,7 @@
 import { lt } from "semver-ts";
 import { dependencies } from "./defineOntology.js";
 
-export function importDependency(
+export function addDependency(
   namespace: string,
   version: string,
 ): void {

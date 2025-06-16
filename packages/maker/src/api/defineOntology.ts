@@ -1232,5 +1232,5 @@ function dependencyInjectionString(): string {
   );
   const currentPackageVersion: string = packageJson.version ?? "";
 
-  return `import { importDependency } from '@osdk/maker';\n\nimportDependency("${namespaceNoDot}", "${currentPackageVersion}");\n`;
+  return `import { addDependency } from '@osdk/maker';\n\naddDependency("${namespaceNoDot}", "${currentPackageVersion}");\n`;
 }
