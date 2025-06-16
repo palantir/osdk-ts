@@ -203,6 +203,12 @@ describe("ExtractOptions", () => {
           Osdk.Instance<quickAndDirty, never, "name">
         >();
     });
+
+    it("Is assignable to Record<string, unknown>", () => {
+      // We encountered a break where this stopped being assignable. We need to continue to support this assignment.
+      const a = {} as Osdk.Instance<quickAndDirty>;
+      a as Record<string, unknown>;
+    });
   });
 
   describe("Osdk<>", () => {
