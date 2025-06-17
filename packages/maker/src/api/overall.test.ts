@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// cspell:disable
+
 import * as fs from "fs";
 import path from "path";
 import { beforeEach, describe, expect, it } from "vitest";
