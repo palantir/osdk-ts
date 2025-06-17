@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-// cspell:disable
-
 import * as fs from "fs";
 import path from "path";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -2088,7 +2086,7 @@ describe("Ontology Defining", () => {
                   },
                   "type": "oneToMany",
                 },
-                "id": "fizztofoo",
+                "id": "fizz-to-foo",
                 "redacted": false,
                 "status": {
                   "active": {},
@@ -2493,7 +2491,7 @@ describe("Ontology Defining", () => {
                   },
                   "type": "manyToMany",
                 },
-                "id": "fizztofoo",
+                "id": "fizz-to-foo",
                 "redacted": false,
                 "status": {
                   "active": {},

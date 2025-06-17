@@ -761,10 +761,18 @@ function convertLink(
 }
 
 function cleanAndValidateLinkTypeId(apiName: string): string {
-  const linkTypeId = apiName.toLowerCase();
+  // Insert a dash before any uppercase letter that follows a lowercase letter or digit
+  const step1 = apiName.replace(/([a-z0-9])([A-Z])/g, "$1-$2");
+  // Insert a dash after a sequence of uppercase letters when followed by a lowercase letter, and convert to lowercase
+  // e.g., apiName, APIname, and apiNAME will all be converted to api-name
+  const linkTypeId = step1.replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
+    .toLowerCase();
+
   const VALIDATION_PATTERN = /^([a-z][a-z0-9\-]*)$/;
   if (!VALIDATION_PATTERN.test(linkTypeId)) {
-    throw new Error(`LinkType id '${linkTypeId}' does not match required pattern`);
+    throw new Error(
+      `LinkType id '${linkTypeId}' must be lower case with dashes.`,
+    );
   }
   return linkTypeId;
 }
