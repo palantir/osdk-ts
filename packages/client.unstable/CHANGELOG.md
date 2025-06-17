@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.3.0-beta.5
+
+### Minor Changes
+
+- d6bccdf: Add marketplace API
+
 ## 2.3.0-beta.4
 
 ### Minor Changes

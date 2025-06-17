@@ -1,5 +1,11 @@
 # @osdk/widget.api.unstable
 
+## 3.0.0-beta.3
+
+### Minor Changes
+
+- db62626: Remove unstable fetch proxy from widgets
+
 ## 2.2.0-beta.2
 
 ## 2.1.0-beta.11

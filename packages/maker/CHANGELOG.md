@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.11.0-beta.6
+
+### Minor Changes
+
+- e34ee12: Add output dir CLI flag
+- 37cdc7e: Propagate interface extension to static objects
+- 982d3ce: Start tracking and injecting OAC dependencies
+
+### Patch Changes
+
+- Updated dependencies [e8c4aed]
+  - @osdk/api@2.3.0-beta.5
+
 ## 0.11.0-beta.5
 
 ### Minor Changes
