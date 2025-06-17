@@ -57,15 +57,6 @@ describe("FoundryHostEventTarget", () => {
         HostMessage.Payload.UpdateParameters<typeof test>
       >();
     });
-
-    hostTarget.addEventListener(
-      "host._unstable.fetch-response-failed",
-      (event) => {
-        expectTypeOf(
-          event.detail,
-        ).toMatchTypeOf<HostMessage.Payload._unstable_FetchResponseFailed>();
-      },
-    );
   });
 
   it("should narrow the event payload based on host message type for removeEventListener", () => {
