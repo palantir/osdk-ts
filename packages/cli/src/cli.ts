@@ -36,6 +36,7 @@ export async function cli(args: string[] = process.argv): Promise<
   try {
     return await base
       .command(site)
+      .command(widgetSet)
       .command({
         command: "unstable",
         aliases: ["experimental"],
@@ -44,6 +45,7 @@ export async function cli(args: string[] = process.argv): Promise<
           return argv
             .command(typescript)
             .command(auth)
+            // TODO: Remove copy of widgetset command from unstable once we've moved over templates
             .command(widgetSet)
             .demandCommand();
         },
