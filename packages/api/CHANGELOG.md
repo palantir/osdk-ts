@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.3.0-beta.5
+
+### Minor Changes
+
+- e8c4aed: Fixes breaks introduced between 2.1 and 2.2
+
 ## 2.3.0-beta.4
 
 ### Minor Changes

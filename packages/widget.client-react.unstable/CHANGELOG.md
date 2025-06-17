@@ -1,5 +1,17 @@
 # @osdk/widget.client-react.unstable
 
+## 3.0.0-beta.3
+
+### Minor Changes
+
+- db62626: Remove unstable fetch proxy from widgets
+
+### Patch Changes
+
+- Updated dependencies [db62626]
+  - @osdk/widget.client.unstable@3.0.0-beta.3
+  - @osdk/client@2.3.0-beta.5
+
 ## 2.2.0-beta.2
 
 ### Patch Changes
