@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { CLEAR_DATA } from "@osdk/api";
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
-import { CLEAR_DATA } from "../actions/clearData.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   isAttachmentFile,

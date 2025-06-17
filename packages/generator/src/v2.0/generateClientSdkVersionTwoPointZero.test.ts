@@ -562,7 +562,6 @@ describe("generator", () => {
           ApplyActionOptions,
           ApplyBatchActionOptions,
         } from '@osdk/client';
-        import { CLEAR_DATA } from '@osdk/client';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
 
@@ -584,7 +583,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | typeof CLEAR_DATA;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | ActionParam.ClearDataType;
           }
 
           // Represents a fqn of the action
@@ -639,7 +638,6 @@ describe("generator", () => {
           ApplyActionOptions,
           ApplyBatchActionOptions,
         } from '@osdk/client';
-        import { CLEAR_DATA } from '@osdk/client';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
 
@@ -661,7 +659,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo> | typeof CLEAR_DATA;
+            readonly object?: ActionParam.ObjectType<Todo> | ActionParam.ClearDataType;
           }
 
           // Represents a fqn of the action
@@ -1212,7 +1210,6 @@ describe("generator", () => {
           ApplyActionOptions,
           ApplyBatchActionOptions,
         } from '@osdk/api';
-        import { CLEAR_DATA } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
 
@@ -1234,7 +1231,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | typeof CLEAR_DATA;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | ActionParam.ClearDataType;
           }
 
           // Represents a fqn of the action
@@ -1289,7 +1286,6 @@ describe("generator", () => {
           ApplyActionOptions,
           ApplyBatchActionOptions,
         } from '@osdk/api';
-        import { CLEAR_DATA } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from '../objects/Todo.js';
 
@@ -1311,7 +1307,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo> | typeof CLEAR_DATA;
+            readonly object?: ActionParam.ObjectType<Todo> | ActionParam.ClearDataType;
           }
 
           // Represents a fqn of the action

@@ -6,7 +6,6 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
-import { CLEAR_DATA } from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createStructPerson {
@@ -30,7 +29,7 @@ export namespace createStructPerson {
    * Create a struct
    */
   export interface Params {
-    readonly address?: ActionParam.StructType<{ city: 'string'; state: 'string' }> | typeof CLEAR_DATA;
+    readonly address?: ActionParam.StructType<{ city: 'string'; state: 'string' }> | ActionParam.ClearDataType;
 
     readonly name: ActionParam.PrimitiveType<'string'>;
   }

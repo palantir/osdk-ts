@@ -6,7 +6,6 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
-import { CLEAR_DATA } from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace moveOffice {
@@ -45,17 +44,17 @@ export namespace moveOffice {
     /**
      * The office's new physical address (not necessarily shipping address)
      */
-    readonly newAddress?: ActionParam.PrimitiveType<'string'> | typeof CLEAR_DATA;
+    readonly newAddress?: ActionParam.PrimitiveType<'string'> | ActionParam.ClearDataType;
     /**
      * The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)
      */
-    readonly newCapacity?: ActionParam.PrimitiveType<'integer'> | typeof CLEAR_DATA;
+    readonly newCapacity?: ActionParam.PrimitiveType<'integer'> | ActionParam.ClearDataType;
 
     readonly officeId: ActionParam.PrimitiveType<'string'>;
     /**
      * A list of all office names
      */
-    readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'integer'>> | typeof CLEAR_DATA;
+    readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'integer'>> | ActionParam.ClearDataType;
   }
 
   // Represents a fqn of the action

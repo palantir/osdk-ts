@@ -112,6 +112,8 @@ export namespace ActionMetadata {
 // @public
 export namespace ActionParam {
     	// (undocumented)
+    export type ClearDataType = typeof CLEAR_DATA;
+    	// (undocumented)
     export type InterfaceType<T extends InterfaceDefinition> = {
         		$objectType: CompileTimeMetadata<T> extends {
             			implementedBy: infer U

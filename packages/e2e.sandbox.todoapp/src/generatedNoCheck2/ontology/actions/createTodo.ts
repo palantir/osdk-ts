@@ -6,7 +6,6 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from '@osdk/client';
-import { CLEAR_DATA } from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace createTodo {
@@ -38,7 +37,7 @@ export namespace createTodo {
   export interface Params {
     readonly is_complete: ActionParam.PrimitiveType<'boolean'>;
 
-    readonly location?: ActionParam.PrimitiveType<'string'> | typeof CLEAR_DATA;
+    readonly location?: ActionParam.PrimitiveType<'string'> | ActionParam.ClearDataType;
 
     readonly Todo: ActionParam.PrimitiveType<'string'>;
   }
