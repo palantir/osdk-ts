@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { Client } from "@osdk/client";
 import {
   type AsyncParameterValueMap,
   type AsyncValue,
@@ -30,10 +29,6 @@ export interface FoundryWidgetClientContext<
   C extends WidgetConfig<C["parameters"]>,
 > {
   emitEvent: FoundryWidgetClient<C>["emitEvent"];
-  /**
-   * Creates a new OSDK client for the given Ontology, automatically inferring the correct URL to make API requests to.
-   */
-  createOntologyClient: (ontologyRid: string) => Client;
   hostEventTarget: FoundryHostEventTarget<C>;
 
   /**
@@ -56,11 +51,6 @@ export const FoundryWidgetContext: React.Context<
   FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>
 >({
   emitEvent: () => {},
-  createOntologyClient: () => {
-    throw new Error(
-      "createOntologyClient is not implemented in this context",
-    );
-  },
   hostEventTarget: new FoundryHostEventTarget<WidgetConfig<ParameterConfig>>(),
   asyncParameterValues: {},
   parameters: {

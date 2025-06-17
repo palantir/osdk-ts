@@ -154,7 +154,6 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
     <FoundryWidgetContext.Provider
       value={{
         emitEvent: client.emitEvent,
-        createOntologyClient: client.createOntologyClient,
         hostEventTarget: client.hostEventTarget,
         asyncParameterValues,
         parameters: {
