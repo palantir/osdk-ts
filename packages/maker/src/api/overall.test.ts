@@ -2010,7 +2010,7 @@ describe("Ontology Defining", () => {
                   },
                   "type": "oneToMany",
                 },
-                "id": "fizzToFoo",
+                "id": "fizztofoo",
                 "redacted": false,
                 "status": {
                   "active": {},
@@ -2415,7 +2415,7 @@ describe("Ontology Defining", () => {
                   },
                   "type": "manyToMany",
                 },
-                "id": "fizzToFoo",
+                "id": "fizztofoo",
                 "redacted": false,
                 "status": {
                   "active": {},
@@ -6824,6 +6824,201 @@ describe("Ontology Defining", () => {
         recursive: true,
         force: true,
       });
+    });
+  });
+
+  describe("Required Interface Link Constraints", () => {
+    beforeEach(async () => {
+      await defineOntology("com.palantir.", () => {}, "/tmp/");
+    });
+
+    it("validates that objects fulfill required interface link constraints", () => {
+      // Define two interfaces with a required link constraint between them
+      const sourceInterface = defineInterface({ apiName: "SourceInterface" });
+      const targetInterface = defineInterface({ apiName: "TargetInterface" });
+      
+      // Define a required link constraint from SourceInterface to TargetInterface
+      defineInterfaceLinkConstraint({
+        apiName: "requiredLink",
+        from: sourceInterface,
+        // TODO(jcai): shouldn't we disallow both toOne + toMany in a single link constraint
+        // also, toOne passes here for some reason..
+        toMany: targetInterface,
+        required: true,
+      });
+      
+      // Define objects implementing the interfaces
+      const sourceObject = defineObject({
+        apiName: "SourceObject",
+        displayName: "Source Object",
+        pluralDisplayName: "Source Objects",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        properties: [{ apiName: "id", displayName: "ID", type: "string" }],
+        implementsInterfaces: [
+          {
+            implements: sourceInterface,
+            propertyMapping: [],
+          },
+        ],
+      });
+      
+      const targetObject = defineObject({
+        apiName: "TargetObject",
+        displayName: "Target Object",
+        pluralDisplayName: "Target Objects",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        properties: [{ apiName: "id", displayName: "ID", type: "string" }],
+        implementsInterfaces: [
+          {
+            implements: targetInterface,
+            propertyMapping: [],
+          },
+        ],
+      });
+      
+      // Define a link between the objects to fulfill the constraint
+      const link = defineLink({
+        apiName: "source-to-target",
+        one: {
+          object: sourceObject,
+          metadata: {
+            displayMetadata: {
+              displayName: "Source",
+              groupDisplayName: "",
+              pluralDisplayName: "Sources",
+              visibility: "NORMAL",
+            },
+            typeClasses: [],
+            apiName: "source",
+          },
+        },
+        toMany: {
+          object: targetObject,
+          metadata: {
+            displayMetadata: {
+              displayName: "Target",
+              groupDisplayName: "",
+              pluralDisplayName: "Targets",
+              visibility: "NORMAL",
+            },
+            typeClasses: [],
+            apiName: "target",
+          },
+        },
+        manyForeignKeyProperty: "id",
+        cardinality: "OneToMany",
+      });
+      
+      // This should pass because the link fulfills the constraint
+      // Convert to wire format to trigger validation
+      expect(() => dumpOntologyFullMetadata()).not.toThrow();
+    });
+
+    it("throws an error when a required interface link constraint is not fulfilled", () => {
+      // Define two interfaces with a required link constraint between them
+      const sourceInterface = defineInterface({ apiName: "SourceInterface2" });
+      const targetInterface = defineInterface({ apiName: "TargetInterface2" });
+      
+      // Define a required link constraint from SourceInterface to TargetInterface
+      defineInterfaceLinkConstraint({
+        apiName: "requiredLink",
+        from: sourceInterface,
+        toOne: targetInterface,
+        required: true,
+      });
+      
+      // Define an object implementing the source interface
+      const sourceObject = defineObject({
+        apiName: "SourceObject2",
+        displayName: "Source Object",
+        pluralDisplayName: "Source Objects",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        properties: [{ apiName: "id", displayName: "ID", type: "string" }],
+        implementsInterfaces: [
+          {
+            implements: sourceInterface,
+            propertyMapping: [],
+          },
+        ],
+      });
+      
+      // Define an object implementing the target interface
+      const targetObject = defineObject({
+        apiName: "TargetObject2",
+        displayName: "Target Object",
+        pluralDisplayName: "Target Objects",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        properties: [{ apiName: "id", displayName: "ID", type: "string" }],
+        implementsInterfaces: [
+          {
+            implements: targetInterface,
+            propertyMapping: [],
+          },
+        ],
+      });
+      
+      // No link is defined between the objects, so the validation should fail
+      expect(() => {
+        // Convert to wire format to trigger validation
+        dumpOntologyFullMetadata();
+      }).toThrowError(/required link constraint/);
+    });
+    
+    it("does not validate non-required interface link constraints", () => {
+      // Define two interfaces with a non-required link constraint between them
+      const sourceInterface = defineInterface({ apiName: "SourceInterface3" });
+      const targetInterface = defineInterface({ apiName: "TargetInterface3" });
+      
+      // Define a non-required link constraint from SourceInterface to TargetInterface
+      defineInterfaceLinkConstraint({
+        apiName: "optionalLink",
+        from: sourceInterface,
+        toOne: targetInterface,
+        required: false,
+      });
+      
+      // Define an object implementing the source interface
+      const sourceObject = defineObject({
+        apiName: "SourceObject3",
+        displayName: "Source Object",
+        pluralDisplayName: "Source Objects",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        properties: [{ apiName: "id", displayName: "ID", type: "string" }],
+        implementsInterfaces: [
+          {
+            implements: sourceInterface,
+            propertyMapping: [],
+          },
+        ],
+      });
+      
+      // Define an object implementing the target interface
+      const targetObject = defineObject({
+        apiName: "TargetObject3",
+        displayName: "Target Object",
+        pluralDisplayName: "Target Objects",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        properties: [{ apiName: "id", displayName: "ID", type: "string" }],
+        implementsInterfaces: [
+          {
+            implements: targetInterface,
+            propertyMapping: [],
+          },
+        ],
+      });
+      
+      // No link is defined between the objects, but since the constraint is not required,
+      // the validation should pass
+      expect(() => {
+        // Convert to wire format to trigger validation
+        dumpOntologyFullMetadata();
+      }).not.toThrow();
     });
   });
 });

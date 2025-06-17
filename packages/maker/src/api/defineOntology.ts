@@ -106,6 +106,130 @@ export function updateOntology<
     .push(entity);
 }
 
+/**
+ * Validates that objects implementing interfaces with required link constraints fulfill those requirements.
+ * @throws {Error} If validation fails
+ */
+function validateRequiredInterfaceLinkConstraints(): void {
+  // Get all objects and links from the ontology
+  const allObjects = Object.values(ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE]);
+  const allLinks = Object.values(ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE]);
+
+  // Check each object that implements interfaces
+  allObjects.forEach(objectType => {
+    if (!objectType.implementsInterfaces || objectType.implementsInterfaces.length === 0) {
+      return; // Skip objects that don't implement interfaces
+    }
+    
+    // For each interface that the object implements
+    objectType.implementsInterfaces.forEach(implementation => {
+      const interfaceType = implementation.implements;
+      
+      // Skip if the interface doesn't have any link constraints
+      if (!interfaceType.links || interfaceType.links.length === 0) {
+        return;
+      }
+      
+      // Check each link constraint on the interface
+      interfaceType.links.forEach(linkConstraint => {
+        // Skip if the link constraint is not required
+        if (linkConstraint.required === false) {
+          return;
+        }
+        
+        // Get the target interface API name from the link constraint
+        let targetInterfaceApiName: string;
+        
+        if (!linkConstraint.linkedEntityTypeId || typeof linkConstraint.linkedEntityTypeId !== 'object') {
+          throw new Error(`Invalid linkedEntityTypeId for link constraint ${linkConstraint.metadata.apiName}`);
+        }
+        
+        // Per the interfaces we should have a type field
+        if ('type' in linkConstraint.linkedEntityTypeId && linkConstraint.linkedEntityTypeId.type === 'interfaceType') {
+          targetInterfaceApiName = (linkConstraint.linkedEntityTypeId as any).interfaceType;
+        } else {
+          // If we can't determine the target interface, provide a helpful error message
+          const errorMsg = `Unable to determine target interface for link constraint ${linkConstraint.metadata.apiName} on interface ${interfaceType.apiName}. ` +
+            `LinkedEntityTypeId: ${JSON.stringify(linkConstraint.linkedEntityTypeId)}`;
+          throw new Error(errorMsg);
+        }
+        
+        // Find objects that implement the target interface
+        const objectsImplementingTargetInterface = allObjects.filter(obj => 
+          (obj.implementsInterfaces ?? []).some(impl => 
+            impl.implements.apiName === targetInterfaceApiName
+          )
+        );
+        
+        // Skip if no objects implement the target interface - can't validate in this case
+        // TODO(jcai): shouldn't we error here instead of warning?
+        if (objectsImplementingTargetInterface.length === 0) {
+          // console.warn(`No objects implement interface ${targetInterfaceApiName} required by link constraint on ${interfaceType.apiName}`);
+          return;
+        }
+        
+        // Check if the current object has a link to any object implementing the target interface
+        const hasRequiredLink = allLinks.some(linkType => {
+          // shouldn't I load the interface and see what's up -- e.g., 
+          // 1:1 and 1:m are a thing -- I guess m:1 can be a thing if you just flip flop stuff
+          // but 1:1 isn't a thing in link Defs
+          /*
+      links: i.interfaceType.allLinks.map(l => ({
+        apiName: l.metadata.apiName,
+        displayName: l.metadata.displayName,
+        description: l.metadata.description,
+        cardinality: l.cardinality,
+        required: l.required,
+      })),
+          */
+          // Check one-to-many links
+          if ("one" in linkType) {
+            if (linkType.one.object.apiName === objectType.apiName) {
+              // This object is on the "one" side of the link
+              return objectsImplementingTargetInterface.some(targetObj => 
+                linkType.toMany.object.apiName === targetObj.apiName
+              );
+            }
+            if (linkType.toMany.object.apiName === objectType.apiName) {
+              // This object is on the "many" side of the link
+              return objectsImplementingTargetInterface.some(targetObj => 
+                linkType.one.object.apiName === targetObj.apiName
+              );
+            }
+          } 
+          // Check many-to-many links
+          else if ("many" in linkType) {
+            if (linkType.many.object.apiName === objectType.apiName) {
+              // This object is on the "many" side
+              return objectsImplementingTargetInterface.some(targetObj => 
+                linkType.toMany.object.apiName === targetObj.apiName
+              );
+            }
+            if (linkType.toMany.object.apiName === objectType.apiName) {
+              // This object is on the "toMany" side
+              return objectsImplementingTargetInterface.some(targetObj => 
+                linkType.many.object.apiName === targetObj.apiName
+              );
+            }
+          }
+          return false;
+        });
+        
+        // Throw an error if the required link constraint is not fulfilled
+        if (!hasRequiredLink) {
+          throw new Error(
+            `Object '${objectType.apiName}' implements interface '${interfaceType.apiName}' ` +
+            `which has a required link constraint '${linkConstraint.metadata.apiName}' ` +
+            `to interface '${targetInterfaceApiName}', but the object doesn't have a link to any object ` +
+            `that implements '${targetInterfaceApiName}'. Please add a link definition between ` +
+            `'${objectType.apiName}' and an object that implements '${targetInterfaceApiName}'.`
+          );
+        }
+      });
+    });
+  });
+}
+
 export async function defineOntology(
   ns: string,
   body: () => void | Promise<void>,
@@ -139,6 +263,9 @@ export async function defineOntology(
     throw e;
   }
 
+  // Validate that objects implementing interfaces with required link constraints fulfill those requirements
+  validateRequiredInterfaceLinkConstraints();
+  
   writeStaticObjects(outputDir);
   return {
     ontology: convertToWireOntologyIr(ontologyDefinition),
@@ -669,7 +796,8 @@ function convertLink(
     definition = {
       type: "oneToMany",
       oneToMany: {
-        cardinalityHint: "ONE_TO_ONE",
+        cardinalityHint: "ONE_TO_ONE", // how to differentiate when ppl want 1:1 vs 1:m? Maybe doesn't matter.
+        // actually it does matter!
         manyToOneLinkMetadata: linkType.toMany.metadata,
         objectTypeRidManySide: linkType.toMany.object.apiName,
         objectTypeRidOneSide: linkType.one.object.apiName,
@@ -751,7 +879,7 @@ function convertLink(
   return {
     linkType: {
       definition: definition,
-      id: linkType.apiName,
+      id: cleanAndValidateLinkTypeId(linkType.apiName),
       status: linkType.status ?? { type: "active", active: {} },
       redacted: linkType.redacted ?? false,
     },
@@ -760,6 +888,15 @@ function convertLink(
       arePatchesEnabled: linkType.editsEnabled ?? false,
     },
   };
+}
+
+function cleanAndValidateLinkTypeId(apiName: string): string {
+  const linkTypeId = apiName.toLowerCase();
+  const VALIDATION_PATTERN = /^([a-z][a-z0-9\-]*)$/;
+  if (!VALIDATION_PATTERN.test(linkTypeId)) {
+    throw new Error(`LinkType id '${linkTypeId}' does not match required pattern`);
+  }
+  return linkTypeId;
 }
 
 function convertInterface(
@@ -787,6 +924,9 @@ function convertInterface(
 }
 
 export function dumpOntologyFullMetadata(): OntologyIr {
+  // Validate that objects implementing interfaces with required link constraints fulfill those requirements
+  validateRequiredInterfaceLinkConstraints();
+  
   return convertToWireOntologyIr(ontologyDefinition);
 }
 

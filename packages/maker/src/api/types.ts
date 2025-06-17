@@ -445,6 +445,10 @@ export type LinkTypeDefinition =
     "__type"
   >;
 
+// TODO(jcai): we need to add a OneToOneLinkTypeDefinition + Reference here
+// also, shouldn't we support MANY TO ONE? whatevs
+// add ONE_TO_ONE option here
+
 export interface OneToManyLinkTypeDefinition {
   apiName: LinkTypeId;
   one: OneToManyObjectLinkReference;
