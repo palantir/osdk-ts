@@ -82,6 +82,10 @@ export let ontologyDefinition: OntologyDefinition;
 /** @internal */
 export let importedTypes: OntologyDefinition;
 
+// namespace -> version
+/** @internal */
+export let dependencies: Record<string, string>;
+
 /** @internal */
 export let namespace: string;
 
@@ -114,8 +118,10 @@ export async function defineOntology(
   ns: string,
   body: () => void | Promise<void>,
   outputDir: string | undefined,
+  dependencyFile?: string,
 ): Promise<OntologyAndValueTypeIrs> {
   namespace = ns;
+  dependencies = {};
   ontologyDefinition = {
     OBJECT_TYPE: {},
     ACTION_TYPE: {},
@@ -145,6 +151,9 @@ export async function defineOntology(
 
   if (outputDir) {
     writeStaticObjects(outputDir);
+  }
+  if (dependencyFile) {
+    writeDependencyFile(dependencyFile);
   }
   return {
     ontology: convertToWireOntologyIr(ontologyDefinition),
@@ -224,7 +233,8 @@ export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFi
   );
 
   if (topLevelExportStatements.length > 0) {
-    const mainIndexContent = topLevelExportStatements.join("\n") + "\n";
+    const mainIndexContent = dependencyInjectionString()
+      + topLevelExportStatements.join("\n") + "\n";
     const mainIndexFilePath = path.join(outputDir, "index.ts");
     fs.writeFileSync(mainIndexFilePath, mainIndexContent, { flag: "w" });
   }
@@ -1207,4 +1217,20 @@ function getEntityTypeName(type: string): string {
     [OntologyEntityTypeEnum.ACTION_TYPE]: "ActionType",
     [OntologyEntityTypeEnum.VALUE_TYPE]: "ValueTypeDefinitionVersion",
   }[type]!;
+}
+
+function writeDependencyFile(dependencyFile: string): void {
+  fs.writeFileSync(dependencyFile, JSON.stringify(dependencies, null, 2));
+}
+
+function dependencyInjectionString(): string {
+  const namespaceNoDot: string = namespace.endsWith(".")
+    ? namespace.slice(0, -1)
+    : namespace;
+  const packageJson = JSON.parse(
+    fs.readFileSync("package.json", "utf-8"),
+  );
+  const currentPackageVersion: string = packageJson.version ?? "";
+
+  return `import { addDependency } from '@osdk/maker';\n\naddDependency("${namespaceNoDot}", "${currentPackageVersion}");\n`;
 }
