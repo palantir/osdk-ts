@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { type Client, createClient } from "@osdk/client";
 import {
   HostMessage,
   visitHostMessage,
@@ -24,7 +23,6 @@ import {
 import { META_TAG_HOST_ORIGIN } from "@osdk/widget.api.unstable";
 import invariant from "tiny-invariant";
 import { FoundryHostEventTarget } from "./host.js";
-import { deserializeResponse, serializeRequest } from "./request.js";
 
 export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
   /**
@@ -39,11 +37,6 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
     eventId: M["payload"]["eventId"],
     payload: Omit<M["payload"], "eventId">,
   ) => void;
-
-  /**
-   * Creates a new OSDK client for the given Ontology, automatically inferring the correct URL to make API requests to.
-   */
-  createOntologyClient: (ontologyRid: string) => Client;
 
   /**
    * Sends a message to the parent frame.
@@ -92,18 +85,6 @@ export function createFoundryWidgetClient<
       "host.update-parameters": (payload) => {
         hostEventTarget.dispatchEventMessage("host.update-parameters", payload);
       },
-      "host._unstable.fetch-response-success": (payload) => {
-        hostEventTarget.dispatchEventMessage(
-          "host._unstable.fetch-response-success",
-          payload,
-        );
-      },
-      "host._unstable.fetch-response-failed": (payload) => {
-        hostEventTarget.dispatchEventMessage(
-          "host._unstable.fetch-response-failed",
-          payload,
-        );
-      },
       _unknown: () => {
         // Do nothing
       },
@@ -113,58 +94,8 @@ export function createFoundryWidgetClient<
     parentWindow.postMessage(message, hostOrigin);
   };
 
-  // Temporary fetch proxy since the widget iframe isn't allowed to make requests (yet)
-  // This should be replaced by a server-side proxy instead.
-  const fetchProxy: typeof fetch = async (
-    input: RequestInfo | URL,
-    init?: RequestInit | undefined,
-  ) => {
-    const requestId = Math.random().toString(36).substring(7);
-
-    return new Promise<Response>((resolve, reject: (error: Error) => void) => {
-      function handleMessage(event: MessageEvent) {
-        const { data } = event;
-        visitHostMessage(event.data, {
-          "host.update-parameters": () => {
-            // do nothing
-          },
-          "host._unstable.fetch-response-success": (payload) => {
-            if (payload.id === requestId) {
-              window.removeEventListener("message", handleMessage);
-              resolve(deserializeResponse(payload));
-            }
-          },
-          "host._unstable.fetch-response-failed": (payload) => {
-            if (payload.id === requestId) {
-              window.removeEventListener("message", handleMessage);
-              reject(new Error(data.error));
-            }
-          },
-          _unknown: () => {
-            // Do nothing
-          },
-        });
-      }
-      window.addEventListener("message", handleMessage);
-      sendMessageToHost({
-        type: "widget._unstable.fetch-request",
-        payload: serializeRequest(requestId, input, init),
-      });
-    });
-  };
-
   return {
     hostEventTarget,
-    createOntologyClient: (ontologyRid: string) => {
-      return createClient(
-        hostOrigin,
-        ontologyRid,
-        // Temporary while we don't have a server-side proxying requests from within the frame
-        () => Promise.resolve("unused_token"),
-        undefined,
-        fetchProxy,
-      );
-    },
     ready: () => {
       sendMessageToHost({
         type: "widget.ready",
