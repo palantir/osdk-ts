@@ -30,6 +30,12 @@ import { createActionParameterV2 } from "./TH_ActionParameterV2.js";
 import type { TH_ActionTypeV2 } from "./TH_ActionTypeV2.js";
 import { createAction } from "./TH_ActionTypeV2.js";
 
+export function actionTypeBuilder<
+  P extends Record<ParameterId, ActionParameterV2> = {},
+>(action: TH_ActionTypeV2<P> | string): ActionTypeBuilder<P> {
+  return new ActionTypeBuilder(action);
+}
+
 export function createActionRid() {
   return `ri.ontology.main.action-type.${crypto.randomUUID()}`;
 }

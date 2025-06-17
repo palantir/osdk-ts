@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import type { FauxOntology } from "@osdk/faux";
-import { FooInterface } from "../stubs/interfaceTypes.js";
-import {
-  employeeObjectWithLinkTypes,
-  officeObjectTypeWithLinkTypes,
-} from "../stubs/objectTypesWithLinkTypes.js";
+export interface BaseAPIError {
+  errorCode: string;
+  errorName: string;
+  errorInstanceId: string;
+  parameters: Record<string, any>;
+}
 
-export function addEmployeeOntology(ontology: FauxOntology): void {
-  ontology.registerObjectType(employeeObjectWithLinkTypes);
-  ontology.registerObjectType(officeObjectTypeWithLinkTypes);
-  ontology.registerInterfaceType(FooInterface);
+// These are the shape of the errors that come back from the API.
+export function isBaseApiError(error: any): error is BaseAPIError {
+  return (
+    error && typeof error === "object" && "errorCode" in error
+    && "errorName" in error && "errorInstanceId" in error
+  );
 }

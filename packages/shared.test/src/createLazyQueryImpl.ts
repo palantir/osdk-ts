@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-import type { FauxOntology } from "@osdk/faux";
-import { FooInterface } from "../stubs/interfaceTypes.js";
-import {
-  employeeObjectWithLinkTypes,
-  officeObjectTypeWithLinkTypes,
-} from "../stubs/objectTypesWithLinkTypes.js";
+import { Errors, OpenApiCallError } from "@osdk/faux";
+import type {
+  ExecuteQueryRequest,
+  ExecuteQueryResponse,
+} from "@osdk/foundry.ontologies";
 
-export function addEmployeeOntology(ontology: FauxOntology): void {
-  ontology.registerObjectType(employeeObjectWithLinkTypes);
-  ontology.registerObjectType(officeObjectTypeWithLinkTypes);
-  ontology.registerInterfaceType(FooInterface);
+export function createLazyQueryImpl(
+  bodyToResponse: Record<string, ExecuteQueryResponse>,
+): (req: ExecuteQueryRequest) => ExecuteQueryResponse {
+  return (req: ExecuteQueryRequest): ExecuteQueryResponse => {
+    const body = JSON.stringify(req);
+
+    const resp = bodyToResponse[body];
+    if (!resp) {
+      throw new OpenApiCallError(
+        400,
+        Errors.InvalidRequest("Invalid Query Request"),
+      );
+    }
+    return resp;
+  };
 }

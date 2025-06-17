@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import type { FauxOntology } from "@osdk/faux";
 import type {
   ExecuteQueryRequest,
   ExecuteQueryResponse,
 } from "@osdk/foundry.ontologies";
-import type { FauxOntology } from "../FauxFoundry/FauxOntology.js";
-import { createLazyQueryImpl } from "../handlers/util/createLazyQueryImpl.js";
+import { createLazyQueryImpl } from "../createLazyQueryImpl.js";
 import { employee1, employee2 } from "./objects.js";
 import {
   addOneQueryType,

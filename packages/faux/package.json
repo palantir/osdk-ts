@@ -1,5 +1,5 @@
 {
-  "name": "@osdk/shared.test",
+  "name": "@osdk/faux",
   "private": true,
   "version": "2.3.0-beta.5",
   "description": "",
@@ -30,6 +30,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run --pool=forks",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
@@ -52,7 +53,6 @@
     "type-fest": "^4.37.0"
   },
   "devDependencies": {
-    "@osdk/faux": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/json-stable-stringify": "^1.0.36",

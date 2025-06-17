@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
+import { Errors, OpenApiCallError } from "@osdk/faux";
+import type { FauxActionImpl, FauxDataStoreBatch } from "@osdk/faux";
 import type * as OntologiesV2 from "@osdk/foundry.ontologies";
 import stableStringify from "json-stable-stringify";
 import invariant from "tiny-invariant";
-import { ApplyActionFailedError } from "../../errors.js";
-import type { FauxActionImpl } from "../../FauxFoundry/FauxActionImpl.js";
-import type { FauxDataStoreBatch } from "../../FauxFoundry/FauxDataStoreBatch.js";
-import { OpenApiCallError } from "./handleOpenApiCall.js";
 
 /**
  * I don't think this should be used long term, but it provides a stop gap for
@@ -65,7 +63,7 @@ export function createLazyDoNothingActionImpl(
     if (resp === undefined) {
       // this is the "normal" (or at least previously normal) error when the result
       // was undefined.
-      throw new OpenApiCallError(400, ApplyActionFailedError);
+      throw new OpenApiCallError(400, Errors.ApplyActionFailedError);
     }
 
     return resp;

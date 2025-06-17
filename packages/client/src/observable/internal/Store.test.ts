@@ -23,11 +23,11 @@ import {
 } from "@osdk/client.test.ontology";
 import type { SetupServer } from "@osdk/shared.test";
 import {
-  ActionTypeBuilder,
   FauxFoundry,
   ontologies,
   startNodeApiServer,
   stubData,
+  TypeHelpers,
 } from "@osdk/shared.test";
 import chalk from "chalk";
 import invariant from "tiny-invariant";
@@ -1358,7 +1358,7 @@ describe(Store, () => {
         const {
           actionDefinition: crazyAction,
           actionTypeV2: crazyActionTypeV2,
-        } = new ActionTypeBuilder("asdf")
+        } = TypeHelpers.actionTypeBuilder("asdf")
           .addParameter("foo", "string")
           .build();
 

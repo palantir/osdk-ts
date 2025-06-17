@@ -18,9 +18,9 @@
 
 import type { RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
+import { defaultOntologyForConjure } from "../defaultOntologyForConjure.js";
+import { defaultOntologyMetadata } from "../defaultOntologyMetadata.js";
 import { OntologiesV2 } from "../mock/index.js";
-import { defaultOntologyForConjure } from "../stubs/defaultOntologyForConjure.js";
-import { defaultOntologyMetadata } from "../stubs/ontologies/defaultOntologyMetadata.js";
 import { authHandlerMiddleware } from "./authHandlerMiddleware.js";
 import type { FauxFoundryHandlersFactory } from "./createFauxFoundryHandlers.js";
 

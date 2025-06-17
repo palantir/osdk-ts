@@ -14,23 +14,11 @@
  * limitations under the License.
  */
 
-import type {
-  ExecuteQueryRequest,
-  ExecuteQueryResponse,
-} from "@osdk/foundry.ontologies";
-import { InvalidRequest } from "../../errors.js";
-import { OpenApiCallError } from "./handleOpenApiCall.js";
+import type { Ontology } from "@osdk/foundry.ontologies";
 
-export function createLazyQueryImpl(
-  bodyToResponse: Record<string, ExecuteQueryResponse>,
-): (req: ExecuteQueryRequest) => ExecuteQueryResponse {
-  return (req: ExecuteQueryRequest): ExecuteQueryResponse => {
-    const body = JSON.stringify(req);
-
-    const resp = bodyToResponse[body];
-    if (!resp) {
-      throw new OpenApiCallError(400, InvalidRequest("Invalid Query Request"));
-    }
-    return resp;
-  };
-}
+export const defaultOntologyMetadata: Ontology = {
+  apiName: "default-ontology",
+  displayName: "Ontology",
+  description: "The default ontology",
+  rid: "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+};
