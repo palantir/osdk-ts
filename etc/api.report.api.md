@@ -932,14 +932,11 @@ export namespace Osdk {
 }
 
 // @public (undocumented)
-export interface OsdkBase<Q extends ObjectOrInterfaceDefinition> extends ObjectIdentifiers<Q> {
-    	// (undocumented)
-    readonly $objectSpecifier: ObjectSpecifier<Q>;
-    	// (undocumented)
-    readonly $objectType: string;
-    	// (undocumented)
-    readonly $title: string | undefined;
-}
+export type OsdkBase<Q extends ObjectOrInterfaceDefinition> = ObjectIdentifiers<Q> & {
+    	readonly $objectSpecifier: ObjectSpecifier<Q>
+    	readonly $objectType: string
+    	readonly $title: string | undefined
+};
 
 // @public @deprecated (undocumented)
 export type OsdkObject<N extends string> = {
