@@ -2086,7 +2086,7 @@ describe("Ontology Defining", () => {
                   },
                   "type": "oneToMany",
                 },
-                "id": "fizzToFoo",
+                "id": "fizztofoo",
                 "redacted": false,
                 "status": {
                   "active": {},
@@ -2491,7 +2491,7 @@ describe("Ontology Defining", () => {
                   },
                   "type": "manyToMany",
                 },
-                "id": "fizzToFoo",
+                "id": "fizztofoo",
                 "redacted": false,
                 "status": {
                   "active": {},

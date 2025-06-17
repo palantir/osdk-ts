@@ -749,7 +749,7 @@ function convertLink(
   return {
     linkType: {
       definition: definition,
-      id: linkType.apiName,
+      id: cleanAndValidateLinkTypeId(linkType.apiName),
       status: linkType.status ?? { type: "active", active: {} },
       redacted: linkType.redacted ?? false,
     },
@@ -758,6 +758,15 @@ function convertLink(
       arePatchesEnabled: linkType.editsEnabled ?? false,
     },
   };
+}
+
+function cleanAndValidateLinkTypeId(apiName: string): string {
+  const linkTypeId = apiName.toLowerCase();
+  const VALIDATION_PATTERN = /^([a-z][a-z0-9\-]*)$/;
+  if (!VALIDATION_PATTERN.test(linkTypeId)) {
+    throw new Error(`LinkType id '${linkTypeId}' does not match required pattern`);
+  }
+  return linkTypeId;
 }
 
 function convertInterface(
