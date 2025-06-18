@@ -338,7 +338,7 @@ const UPDATE_PACKAGE_JSON: Mutator = {
       .replace(
         // Use locally generated SDK in the monorepo
         /"@osdk\/widget.client-react.unstable": "\^.*?"/,
-        `"@osdk/widget.client-react.unstable": "workspace:*"`,
+        `"@osdk/widget.client-react": "workspace:*"`,
       )
       .replace(
         // Use locally generated SDK in the monorepo

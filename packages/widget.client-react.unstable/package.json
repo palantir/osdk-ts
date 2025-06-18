@@ -1,5 +1,5 @@
 {
-  "name": "@osdk/widget.client-react.unstable",
+  "name": "@osdk/widget.client-react",
   "version": "3.0.0-beta.3",
   "description": "Wrapper around @osdk/widget.client",
   "access": "public",

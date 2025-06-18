@@ -268,7 +268,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "reactLibrary",
     [
-      "@osdk/widget.client-react.unstable",
+      "@osdk/widget.client-react",
       "@osdk/react",
     ],
     {

@@ -995,7 +995,7 @@ importers:
       '@osdk/widget.client':
         specifier: workspace:*
         version: link:../../packages/widget.client
-      '@osdk/widget.client-react.unstable':
+      '@osdk/widget.client-react':
         specifier: workspace:*
         version: link:../../packages/widget.client-react.unstable
       react:
@@ -1077,7 +1077,7 @@ importers:
       '@osdk/widget.client':
         specifier: workspace:*
         version: link:../../packages/widget.client
-      '@osdk/widget.client-react.unstable':
+      '@osdk/widget.client-react':
         specifier: workspace:*
         version: link:../../packages/widget.client-react.unstable
       '@radix-ui/react-icons':
@@ -2899,7 +2899,7 @@ importers:
       '@osdk/widget.client':
         specifier: workspace:~
         version: link:../widget.client
-      '@osdk/widget.client-react.unstable':
+      '@osdk/widget.client-react':
         specifier: workspace:~
         version: link:../widget.client-react.unstable
       '@radix-ui/react-icons':
