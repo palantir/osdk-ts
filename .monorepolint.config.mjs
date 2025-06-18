@@ -130,8 +130,8 @@ const archetypeRules = archetypes(
       "@osdk/shared.net.fetch",
       "@osdk/shared.net",
       "@osdk/typescript-sdk-docs",
-      "@osdk/widget.api.unstable",
-      "@osdk/widget.client.unstable",
+      "@osdk/widget.api",
+      "@osdk/widget.client",
     ],
     {
       ...LIBRARY_RULES,
@@ -256,7 +256,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "vitePlugin",
     [
-      "@osdk/widget.vite-plugin.unstable",
+      "@osdk/widget.vite-plugin",
     ],
     {
       ...LIBRARY_RULES,
@@ -268,7 +268,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "reactLibrary",
     [
-      "@osdk/widget.client-react.unstable",
+      "@osdk/widget.client-react",
       "@osdk/react",
     ],
     {
