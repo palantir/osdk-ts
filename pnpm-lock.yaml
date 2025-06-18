@@ -1113,12 +1113,12 @@ importers:
       '@blueprintjs/core':
         specifier: ^5.16.0
         version: 5.16.0(@types/react@18.3.12)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@osdk/widget.client-react.unstable':
+      '@osdk/widget.client':
         specifier: workspace:*
-        version: link:../../packages/widget.client-react.unstable
-      '@osdk/widget.client.unstable':
+        version: link:../../packages/widget.client
+      '@osdk/widget.client-react':
         specifier: workspace:*
-        version: link:../../packages/widget.client.unstable
+        version: link:../../packages/widget.client-react
       react:
         specifier: ^18
         version: 18.3.1
@@ -1135,9 +1135,9 @@ importers:
       '@eslint/js':
         specifier: ^9.13.0
         version: 9.21.0
-      '@osdk/widget.vite-plugin.unstable':
+      '@osdk/widget.vite-plugin':
         specifier: workspace:*
-        version: link:../../packages/widget.vite-plugin.unstable
+        version: link:../../packages/widget.vite-plugin
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -1195,12 +1195,12 @@ importers:
       '@osdk/e2e.generated.catchall':
         specifier: workspace:*
         version: link:../../packages/e2e.generated.catchall
-      '@osdk/widget.client-react.unstable':
+      '@osdk/widget.client':
         specifier: workspace:*
-        version: link:../../packages/widget.client-react.unstable
-      '@osdk/widget.client.unstable':
+        version: link:../../packages/widget.client
+      '@osdk/widget.client-react':
         specifier: workspace:*
-        version: link:../../packages/widget.client.unstable
+        version: link:../../packages/widget.client-react
       '@radix-ui/react-icons':
         specifier: ^1.3.1
         version: 1.3.2(react@18.3.1)
@@ -1223,9 +1223,9 @@ importers:
       '@eslint/js':
         specifier: ^9.13.0
         version: 9.21.0
-      '@osdk/widget.vite-plugin.unstable':
+      '@osdk/widget.vite-plugin':
         specifier: workspace:*
-        version: link:../../packages/widget.vite-plugin.unstable
+        version: link:../../packages/widget.vite-plugin
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -1360,9 +1360,9 @@ importers:
       '@osdk/shared.net.fetch':
         specifier: workspace:~
         version: link:../shared.net.fetch
-      '@osdk/widget.api.unstable':
+      '@osdk/widget.api':
         specifier: workspace:~
-        version: link:../widget.api.unstable
+        version: link:../widget.api
       '@types/archiver':
         specifier: ^6.0.2
         version: 6.0.2
@@ -3017,12 +3017,12 @@ importers:
       '@osdk/foundry.datasets':
         specifier: ~2.5.0
         version: 2.5.0
-      '@osdk/widget.client-react.unstable':
+      '@osdk/widget.client':
         specifier: workspace:~
-        version: link:../widget.client-react.unstable
-      '@osdk/widget.client.unstable':
+        version: link:../widget.client
+      '@osdk/widget.client-react':
         specifier: workspace:~
-        version: link:../widget.client.unstable
+        version: link:../widget.client-react
       '@radix-ui/react-icons':
         specifier: ^1.3.1
         version: 1.3.2(react@18.3.1)
@@ -3042,9 +3042,9 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/widget.vite-plugin.unstable':
+      '@osdk/widget.vite-plugin':
         specifier: workspace:~
-        version: link:../widget.vite-plugin.unstable
+        version: link:../widget.vite-plugin
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -3873,7 +3873,7 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
-  packages/widget.api.unstable:
+  packages/widget.api:
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
@@ -3891,7 +3891,29 @@ importers:
         specifier: ^3.0.5
         version: 3.0.7(@types/node@22.13.0)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3)(lightningcss@1.29.1)(msw@2.7.3(@types/node@22.13.0)(typescript@5.5.4))(terser@5.39.0)(yaml@2.8.0)
 
-  packages/widget.client-react.unstable:
+  packages/widget.client:
+    dependencies:
+      '@osdk/widget.api':
+        specifier: workspace:~
+        version: link:../widget.api
+      tiny-invariant:
+        specifier: ^1.3.1
+        version: 1.3.3
+    devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      ts-expect:
+        specifier: ^1.3.0
+        version: 1.3.0
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+
+  packages/widget.client-react:
     devDependencies:
       '@osdk/client':
         specifier: workspace:~
@@ -3902,9 +3924,9 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/widget.client.unstable':
+      '@osdk/widget.client':
         specifier: workspace:~
-        version: link:../widget.client.unstable
+        version: link:../widget.client
       '@types/react':
         specifier: ^18.3.12
         version: 18.3.12
@@ -3924,39 +3946,14 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
-  packages/widget.client.unstable:
-    dependencies:
-      '@osdk/widget.api.unstable':
-        specifier: workspace:~
-        version: link:../widget.api.unstable
-      tiny-invariant:
-        specifier: ^1.3.1
-        version: 1.3.3
-    devDependencies:
-      '@osdk/client':
-        specifier: workspace:~
-        version: link:../client
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      ts-expect:
-        specifier: ^1.3.0
-        version: 1.3.0
-      typescript:
-        specifier: ~5.5.4
-        version: 5.5.4
-
-  packages/widget.vite-plugin.unstable:
+  packages/widget.vite-plugin:
     dependencies:
       '@osdk/foundry-config-json':
         specifier: workspace:~
         version: link:../foundry-config-json
-      '@osdk/widget.api.unstable':
+      '@osdk/widget.api':
         specifier: workspace:~
-        version: link:../widget.api.unstable
+        version: link:../widget.api
       escodegen:
         specifier: ^2.1.0
         version: 2.1.0
@@ -18456,7 +18453,7 @@ snapshots:
   '@types/fs-extra@11.0.4':
     dependencies:
       '@types/jsonfile': 6.1.4
-      '@types/node': 18.19.100
+      '@types/node': 20.17.47
 
   '@types/geojson@7946.0.14': {}
 
@@ -18499,7 +18496,7 @@ snapshots:
 
   '@types/jsonfile@6.1.4':
     dependencies:
-      '@types/node': 18.19.100
+      '@types/node': 20.17.47
 
   '@types/lint-staged@13.3.0': {}
 

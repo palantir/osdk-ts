@@ -1,6 +1,7 @@
+import { createClient } from "@osdk/client";
 import type { Dataset } from "@osdk/foundry.datasets";
 import { Datasets } from "@osdk/foundry.datasets";
-import { type AsyncValue } from "@osdk/widget.client.unstable";
+import { type AsyncValue } from "@osdk/widget.client";
 import { ExclamationTriangleIcon, TableIcon } from "@radix-ui/react-icons";
 import {
   Box,
@@ -19,16 +20,20 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useWidgetContext } from "./context.js";
 
 export const App: React.FC = () => {
-  const { parameters, hostEventTarget, emitEvent, createOntologyClient } =
-    useWidgetContext();
+  const { parameters, hostEventTarget, emitEvent } = useWidgetContext();
   const { headerText, todoItems, showWarning, datasetRid } = parameters.values;
   const [newTodoItem, setNewTodoItem] = useState("");
   const [dataset, setDataset] = useState<AsyncValue<Dataset>>({
     type: "not-started",
   });
   const client = useMemo(
-    () => createOntologyClient("ri.ontology.main.ontology.0000-0000-0000-0000"),
-    [createOntologyClient],
+    () =>
+      createClient(
+        window.location.origin,
+        "ri.ontology.main.ontology.0000-0000-0000-0000",
+        () => Promise.resolve("dummy-auth"),
+      ),
+    [],
   );
 
   useEffect(() => {
@@ -55,7 +60,7 @@ export const App: React.FC = () => {
             value: dataset,
           });
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           setDataset((prevDataset) => ({
             type: "failed",
             error: error as Error,
