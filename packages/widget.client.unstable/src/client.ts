@@ -63,6 +63,87 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
 export function createFoundryWidgetClient<
   C extends WidgetConfig<C["parameters"]>,
 >(): FoundryWidgetClient<C> {
+  if ("__PALANTIR_WIDGET_API__" in window) {
+    return _createFoundryWidgetClient<C>(
+      window.__PALANTIR_WIDGET_API__ as PalantirWidgetApi<C>,
+    );
+  }
+  // todo: drop support for sandbox v1
+  return _createFoundryWidgetClientLegacy<C>();
+}
+
+interface PalantirWidgetApiEvents<C extends WidgetConfig<C["parameters"]>> {
+  message: CustomEvent<HostMessage<C>>;
+}
+
+interface PalantirWidgetApi<C extends WidgetConfig<C["parameters"]>> {
+  sendMessage: <M extends WidgetMessage<C>>(message: M) => void;
+  addEventListener<K extends keyof PalantirWidgetApiEvents<C>>(
+    type: K,
+    listener: (ev: PalantirWidgetApiEvents<C>[K]) => any,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  removeEventListener<K extends keyof PalantirWidgetApiEvents<C>>(
+    type: K,
+    listener: (ev: PalantirWidgetApiEvents<C>[K]) => any,
+    options?: boolean | EventListenerOptions,
+  ): void;
+}
+
+function _createFoundryWidgetClient<
+  C extends WidgetConfig<C["parameters"]>,
+>(
+  widgetApi: PalantirWidgetApi<C>,
+): FoundryWidgetClient<C> {
+  const hostEventTarget = new FoundryHostEventTarget<C>();
+
+  const listenForHostMessages = (event: CustomEvent<HostMessage<C>>) => {
+    visitHostMessage(event.detail, {
+      "host.update-parameters": (payload) => {
+        hostEventTarget.dispatchEventMessage("host.update-parameters", payload);
+      },
+      _unknown: () => {
+        // Do nothing
+      },
+    });
+  };
+  const sendMessageToHost = <M extends WidgetMessage<C>>(message: M) => {
+    widgetApi.sendMessage(message);
+  };
+
+  return {
+    hostEventTarget,
+    ready: () => {
+      sendMessageToHost({
+        type: "widget.ready",
+        payload: {
+          apiVersion: HostMessage.Version,
+        },
+      });
+    },
+    emitEvent: (eventId, payload) => {
+      sendMessageToHost({
+        type: "widget.emit-event",
+        payload: {
+          eventId,
+          ...payload,
+        },
+      });
+    },
+    sendMessage: sendMessageToHost,
+    subscribe: () => {
+      widgetApi.addEventListener("message", listenForHostMessages);
+    },
+    unsubscribe: () => {
+      widgetApi.removeEventListener("message", listenForHostMessages);
+    },
+  };
+}
+
+// todo: drop support for sandbox v1
+function _createFoundryWidgetClientLegacy<
+  C extends WidgetConfig<C["parameters"]>,
+>(): FoundryWidgetClient<C> {
   invariant(window.parent, "[FoundryWidgetClient] Must be run in an iframe");
   const parentWindow = window.parent;
   const metaTag = document.querySelector(
