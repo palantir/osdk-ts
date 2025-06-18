@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-import type { FauxOntology } from "@osdk/faux";
-import { FooInterface } from "../stubs/interfaceTypes.js";
-import {
-  employeeObjectWithLinkTypes,
-  officeObjectTypeWithLinkTypes,
-} from "../stubs/objectTypesWithLinkTypes.js";
-
-export function addEmployeeOntology(ontology: FauxOntology): void {
-  ontology.registerObjectType(employeeObjectWithLinkTypes);
-  ontology.registerObjectType(officeObjectTypeWithLinkTypes);
-  ontology.registerInterfaceType(FooInterface);
+export function withoutRid<T extends { __rid?: any }>(o: T): Omit<T, "__rid"> {
+  const { __rid, ...r } = o;
+  return r;
 }

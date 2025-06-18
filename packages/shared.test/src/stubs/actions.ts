@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import type { FauxOntology } from "@osdk/faux";
 import type {
   ApplyActionRequestV2,
   SyncApplyActionResponseV2,
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
-import type { FauxOntology } from "../FauxFoundry/FauxOntology.js";
-import { createLazyDoNothingActionImpl } from "../handlers/util/createLazyDoNothingActionImpl.js";
+import { createLazyDoNothingActionImpl } from "../createLazyDoNothingActionImpl.js";
 import { moveOfficeImpl } from "./actions/moveOffice.js";
 import {
   ActionCreatesInterface,

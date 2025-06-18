@@ -199,8 +199,7 @@ export class FauxDataStore {
    * Version of register object generally used in shared.test
    * @param obj A raw server side representation of an object
    *
-   * @internal so that we don't get the overrides in `@osdk/client` that make it
-   * too easy to end up with an any.
+   * Don't use, its too easy to end up with an any.
    */
   registerObject(obj: BaseServerObject): void;
   registerObject(
