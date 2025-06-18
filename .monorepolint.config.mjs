@@ -121,6 +121,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/foundry-config-json",
       "@osdk/generator-converters",
+      "@osdk/generator-converters.ontologyir",
       "@osdk/generator-utils",
       "@osdk/generator",
       "@osdk/maker",
