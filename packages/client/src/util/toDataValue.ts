@@ -98,7 +98,7 @@ export async function toDataValue(
   }
 
   if (isPoint(value)) {
-    return await toDataValue(value.coordinates.join(), client);
+    return await toDataValue(value.coordinates.reverse().join(), client);
   }
 
   // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
