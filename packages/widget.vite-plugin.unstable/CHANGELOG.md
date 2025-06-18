@@ -1,4 +1,4 @@
-# @osdk/widget.vite-plugin.unstable
+# @osdk/widget.vite-plugin
 
 ## 3.0.0-beta.3
 

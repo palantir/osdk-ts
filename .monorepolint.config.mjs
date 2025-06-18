@@ -256,7 +256,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "vitePlugin",
     [
-      "@osdk/widget.vite-plugin.unstable",
+      "@osdk/widget.vite-plugin",
     ],
     {
       ...LIBRARY_RULES,

@@ -348,7 +348,7 @@ const UPDATE_PACKAGE_JSON: Mutator = {
       .replace(
         // Use locally generated SDK in the monorepo
         /"@osdk\/widget.vite-plugin.unstable": "\^.*?"/,
-        `"@osdk/widget.vite-plugin.unstable": "workspace:*"`,
+        `"@osdk/widget.vite-plugin": "workspace:*"`,
       )
       .replace(
         // Follow monorepo package naming convention

@@ -1014,7 +1014,7 @@ importers:
       '@eslint/js':
         specifier: ^9.13.0
         version: 9.21.0
-      '@osdk/widget.vite-plugin.unstable':
+      '@osdk/widget.vite-plugin':
         specifier: workspace:*
         version: link:../../packages/widget.vite-plugin.unstable
       '@types/react':
@@ -1102,7 +1102,7 @@ importers:
       '@eslint/js':
         specifier: ^9.13.0
         version: 9.21.0
-      '@osdk/widget.vite-plugin.unstable':
+      '@osdk/widget.vite-plugin':
         specifier: workspace:*
         version: link:../../packages/widget.vite-plugin.unstable
       '@types/react':
@@ -2921,7 +2921,7 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/widget.vite-plugin.unstable':
+      '@osdk/widget.vite-plugin':
         specifier: workspace:~
         version: link:../widget.vite-plugin.unstable
       '@types/react':

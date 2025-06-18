@@ -1,4 +1,4 @@
-# @osdk/widget.vite-plugin.unstable
+# @osdk/widget.vite-plugin
 
 This is a Vite plugin that will automatically discover `*.config.(j|t)s` files that are imported into entrypoint files and generates a `.palantir/widgets.config.json` file for Foundry to read from. This allows developers to write out their configuration for custom widgets in Foundry in a single, type-safe file and not worry about generating a manifest file needed for publishing new versions of the widget within Foundry.
 
@@ -7,7 +7,7 @@ This is a Vite plugin that will automatically discover `*.config.(j|t)s` files t
 To use the plugin, add it to the `plugins` list of your [vite configuration](https://vitejs.dev/config/):
 
 ```js
-import foundryWidgetPlugin from "@osdk/widget.vite-plugin.unstable";
+import foundryWidgetPlugin from "@osdk/widget.vite-plugin";
 import { defineConfig } from "vite";
 
 export default defineConfig({
@@ -129,7 +129,7 @@ second.html         // Second entrypoint
 And then in your vite config, you will need to configure the [`build.rollupOptions.input`](https://rollupjs.org/configuration-options/#input) option to discover both entrypoints:
 
 ```js
-import foundryWidgetPlugin from "@osdk/widget.vite-plugin.unstable";
+import foundryWidgetPlugin from "@osdk/widget.vite-plugin";
 import { defineConfig } from "vite";
 
 export default defineConfig({
