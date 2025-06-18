@@ -1016,7 +1016,7 @@ importers:
         version: 9.21.0
       '@osdk/widget.vite-plugin':
         specifier: workspace:*
-        version: link:../../packages/widget.vite-plugin.unstable
+        version: link:../../packages/widget.vite-plugin
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -1104,7 +1104,7 @@ importers:
         version: 9.21.0
       '@osdk/widget.vite-plugin':
         specifier: workspace:*
-        version: link:../../packages/widget.vite-plugin.unstable
+        version: link:../../packages/widget.vite-plugin
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -2923,7 +2923,7 @@ importers:
         version: link:../monorepo.tsconfig
       '@osdk/widget.vite-plugin':
         specifier: workspace:~
-        version: link:../widget.vite-plugin.unstable
+        version: link:../widget.vite-plugin
       '@types/react':
         specifier: ^18
         version: 18.3.12
@@ -3828,7 +3828,7 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
-  packages/widget.vite-plugin.unstable:
+  packages/widget.vite-plugin:
     dependencies:
       '@osdk/foundry-config-json':
         specifier: workspace:~
@@ -18183,7 +18183,7 @@ snapshots:
   '@types/fs-extra@11.0.4':
     dependencies:
       '@types/jsonfile': 6.1.4
-      '@types/node': 18.19.100
+      '@types/node': 20.17.47
 
   '@types/geojson@7946.0.14': {}
 
@@ -18226,7 +18226,7 @@ snapshots:
 
   '@types/jsonfile@6.1.4':
     dependencies:
-      '@types/node': 18.19.100
+      '@types/node': 20.17.47
 
   '@types/lint-staged@13.3.0': {}
 
