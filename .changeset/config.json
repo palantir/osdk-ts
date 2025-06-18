@@ -12,6 +12,7 @@
       "@osdk/create-app",
       "@osdk/foundry-sdk-generator",
       "@osdk/generator-converters",
+      "@osdk/generator-converters.ontologyir",
       "@osdk/generator-utils",
       "@osdk/generator",
       "@osdk/e2e.generated.catchall",
