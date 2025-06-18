@@ -112,6 +112,8 @@ export namespace ActionMetadata {
 // @public
 export namespace ActionParam {
     	// (undocumented)
+    export type ClearDataType = typeof CLEAR_DATA;
+    	// (undocumented)
     export type InterfaceType<T extends InterfaceDefinition> = {
         		$objectType: CompileTimeMetadata<T> extends {
             			implementedBy: infer U
@@ -276,6 +278,11 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 
 // @public (undocumented)
 export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
+
+// @public (undocumented)
+export const CLEAR_DATA: symbol & {
+    	__type: "CLEAR_DATA"
+};
 
 // @public (undocumented)
 export type CompileTimeMetadata<T extends {
