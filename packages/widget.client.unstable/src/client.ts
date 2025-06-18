@@ -64,7 +64,7 @@ export function createFoundryWidgetClient<
   C extends WidgetConfig<C["parameters"]>,
 >(): FoundryWidgetClient<C> {
   if ("__PALANTIR_WIDGET_API__" in window) {
-    return _createFoundryWidgetClient(
+    return _createFoundryWidgetClient<C>(
       window.__PALANTIR_WIDGET_API__ as PalantirWidgetApi<C>,
     );
   }
