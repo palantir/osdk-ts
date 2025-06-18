@@ -128,6 +128,11 @@ export async function applyAction<
     augmentRequestContext(client, _ => ({ finalMethodCall: "applyAction" })),
     action,
   );
+
+  const actionMetadata = await client.ontologyProvider.getActionDefinition(
+    action.apiName,
+  );
+
   if (Array.isArray(parameters)) {
     const response = await OntologiesV2.Actions.applyBatch(
       clientWithHeaders,
@@ -135,7 +140,7 @@ export async function applyAction<
       action.apiName,
       {
         requests: parameters
-          ? await remapBatchActionParams(parameters, client)
+          ? await remapBatchActionParams(parameters, client, actionMetadata)
           : [],
         options: {
           returnEdits: options?.$returnEdits ? "ALL" : "NONE",
@@ -158,6 +163,7 @@ export async function applyAction<
             CompileTimeActionMetadata<AD>["parameters"]
           >,
           client,
+          actionMetadata,
         ),
         options: {
           mode: (options as ApplyActionOptions)?.$validateOnly
@@ -191,6 +197,7 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
     | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>
     | undefined,
   client: MinimalClient,
+  actionMetadata: ActionMetadata,
 ): Promise<Record<string, DataValue>> {
   if (params == null) {
     return {};
@@ -198,7 +205,7 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
 
   const parameterMap: { [parameterName: string]: unknown } = {};
   for (const [key, value] of Object.entries(params)) {
-    parameterMap[key] = await toDataValue(value, client);
+    parameterMap[key] = await toDataValue(value, client, actionMetadata, key);
   }
 
   return parameterMap;
@@ -209,10 +216,13 @@ async function remapBatchActionParams<
 >(
   params: OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>[],
   client: MinimalClient,
+  actionMetadata: ActionMetadata,
 ) {
   const remappedParams = await Promise.all(params.map(
     async param => {
-      return { parameters: await remapActionParams<AD>(param, client) };
+      return {
+        parameters: await remapActionParams<AD>(param, client, actionMetadata),
+      };
     },
   ));
 
