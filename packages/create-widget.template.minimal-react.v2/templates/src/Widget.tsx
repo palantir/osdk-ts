@@ -2,7 +2,7 @@ import { Button, Card, H4 } from "@blueprintjs/core";
 import {
   type FoundryWidgetClientContext,
   useFoundryWidgetContext,
-} from "@osdk/widget.client-react.unstable";
+} from "@osdk/widget.client-react";
 import React, { useCallback, useEffect } from "react";
 import type MainConfig from "./main.config.js";
 import css from "./Widget.module.css";

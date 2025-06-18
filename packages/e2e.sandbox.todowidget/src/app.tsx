@@ -1,7 +1,7 @@
 import { createClient } from "@osdk/client";
 import type { Dataset } from "@osdk/foundry.datasets";
 import { Datasets } from "@osdk/foundry.datasets";
-import { type AsyncValue } from "@osdk/widget.client.unstable";
+import { type AsyncValue } from "@osdk/widget.client";
 import { ExclamationTriangleIcon, TableIcon } from "@radix-ui/react-icons";
 import {
   Box,
