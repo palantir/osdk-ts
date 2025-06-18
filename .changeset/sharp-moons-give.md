@@ -1,6 +1,6 @@
 ---
 "@osdk/widget.client-react.unstable": minor
-"@osdk/widget.client.unstable": minor
+"@osdk/widget.client": minor
 "@osdk/widget.api": minor
 ---
 

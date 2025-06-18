@@ -69,7 +69,7 @@
     "@osdk/e2e.sandbox.views.todo-widget": "0.1.0-beta.1",
     "@osdk/widget.api": "2.1.0",
     "@osdk/widget.client-react.unstable": "2.1.0",
-    "@osdk/widget.client.unstable": "2.1.0",
+    "@osdk/widget.client": "2.1.0",
     "@osdk/widget.vite-plugin": "2.1.0",
     "@osdk/e2e.sandbox.todowidget": "0.2.0",
     "@osdk/react": "0.4.0",

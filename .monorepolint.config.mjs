@@ -131,7 +131,7 @@ const archetypeRules = archetypes(
       "@osdk/shared.net",
       "@osdk/typescript-sdk-docs",
       "@osdk/widget.api",
-      "@osdk/widget.client.unstable",
+      "@osdk/widget.client",
     ],
     {
       ...LIBRARY_RULES,

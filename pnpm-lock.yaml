@@ -995,7 +995,7 @@ importers:
       '@osdk/widget.client-react.unstable':
         specifier: workspace:*
         version: link:../../packages/widget.client-react.unstable
-      '@osdk/widget.client.unstable':
+      '@osdk/widget.client':
         specifier: workspace:*
         version: link:../../packages/widget.client.unstable
       react:
@@ -1077,7 +1077,7 @@ importers:
       '@osdk/widget.client-react.unstable':
         specifier: workspace:*
         version: link:../../packages/widget.client-react.unstable
-      '@osdk/widget.client.unstable':
+      '@osdk/widget.client':
         specifier: workspace:*
         version: link:../../packages/widget.client.unstable
       '@radix-ui/react-icons':
@@ -2899,7 +2899,7 @@ importers:
       '@osdk/widget.client-react.unstable':
         specifier: workspace:~
         version: link:../widget.client-react.unstable
-      '@osdk/widget.client.unstable':
+      '@osdk/widget.client':
         specifier: workspace:~
         version: link:../widget.client.unstable
       '@radix-ui/react-icons':
@@ -3784,7 +3784,7 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/widget.client.unstable':
+      '@osdk/widget.client':
         specifier: workspace:~
         version: link:../widget.client.unstable
       '@types/react':

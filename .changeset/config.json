@@ -20,7 +20,7 @@
     ["@osdk/cli", "@osdk/cli.*"],
     [
       "@osdk/widget.api",
-      "@osdk/widget.client.unstable",
+      "@osdk/widget.client",
       "@osdk/widget.client-react.unstable",
       "@osdk/widget.vite-plugin",
       "@osdk/create-widget",

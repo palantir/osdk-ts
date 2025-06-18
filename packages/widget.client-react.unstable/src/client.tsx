@@ -20,8 +20,8 @@ import type {
   ParameterConfig,
   ParameterValueMap,
   WidgetConfig,
-} from "@osdk/widget.client.unstable";
-import { createFoundryWidgetClient } from "@osdk/widget.client.unstable";
+} from "@osdk/widget.client";
+import { createFoundryWidgetClient } from "@osdk/widget.client";
 import React, { useEffect, useMemo } from "react";
 import type { FoundryWidgetClientContext } from "./context.js";
 import { FoundryWidgetContext } from "./context.js";

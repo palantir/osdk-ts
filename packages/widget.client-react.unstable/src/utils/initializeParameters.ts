@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  AsyncParameterValueMap,
-  WidgetConfig,
-} from "@osdk/widget.client.unstable";
+import type { AsyncParameterValueMap, WidgetConfig } from "@osdk/widget.client";
 
 /**
  * Utility function to initialize a map of parameter values to either a loading or not-started loading state

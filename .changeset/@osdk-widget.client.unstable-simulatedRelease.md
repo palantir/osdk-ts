@@ -1,5 +1,5 @@
 ---
-"@osdk/widget.client.unstable": minor
+"@osdk/widget.client": minor
 ---
       
 Simulated release
