@@ -65,10 +65,11 @@ export namespace ActionParam {
    */
   export type InterfaceType<T extends InterfaceDefinition> = {
     $objectType: CompileTimeMetadata<T> extends { implementedBy: infer U }
-      ? (U extends ReadonlyArray<never> ? string
-        : U extends ReadonlyArray<string> ? U[number]
-        : string)
-      : string;
+      ? (U extends ReadonlyArray<never> ? ApiNameOrObjectTypeDefinition
+        : U extends ReadonlyArray<string>
+          ? U[number] | (ObjectTypeDefinition & { apiName: U[number] })
+        : string | ApiNameOrObjectTypeDefinition)
+      : string | ApiNameOrObjectTypeDefinition;
     $primaryKey: string | number;
   };
 
@@ -76,6 +77,10 @@ export namespace ActionParam {
     T extends Record<string, keyof DataValueClientToWire>,
   > = { [K in keyof T]: DataValueClientToWire[T[K]] };
 }
+
+type ApiNameOrObjectTypeDefinition =
+  | string
+  | ObjectTypeDefinition;
 
 export type ActionEditResponse = ActionResults;
 export type ActionValidationResponse = ValidateActionResponseV2;
