@@ -147,14 +147,16 @@ export async function toDataValue(
 
   if (isInterfaceActionParam(value)) {
     return {
-      objectTypeApiName: value.$objectType,
+      objectTypeApiName: isObjectTypeDefinition(value.$objectType)
+        ? value.$objectType.apiName
+        : value.$objectType,
       primaryKeyValue: value.$primaryKey,
     };
   }
 
   if (
     parameterName in actionMetadata.parameters
-    && actionMetadata.parameters[parameterName].type === "objectType"
+    && (actionMetadata.parameters[parameterName].type === "objectType")
     && isObjectTypeDefinition(value)
   ) {
     return value.apiName;

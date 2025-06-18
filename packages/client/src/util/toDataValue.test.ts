@@ -243,7 +243,7 @@ describe(toDataValue, () => {
     expect(converted).toEqual(mediaReference);
   });
 
-  it("converts object type definitions correctly", async () => {
+  it("converts object type definitions for create interface actions correctly", async () => {
     const otDef = {
       apiName: "Employee",
       type: "object",
@@ -261,5 +261,37 @@ describe(toDataValue, () => {
       "interfaceObjectTypeApiName",
     );
     expect(converted).toEqual("Employee");
+  });
+
+  it("converts object type definitions for modify and delete interface actions correctly", async () => {
+    const otDef = {
+      apiName: "Employee",
+      type: "object",
+    } satisfies ObjectTypeDefinition;
+    const converted = await toDataValue(
+      {
+        $objectType: otDef,
+        $primaryKey: "hello",
+      },
+      clientCtx,
+      {
+        "apiName": "interfaceTest",
+        parameters: {
+          interfaceObjectTypeApiName: {
+            type: { type: "interface", interface: {} },
+          },
+        },
+        type: "action",
+        status: "ACTIVE",
+        rid: "",
+      },
+      "interfaceObjectTypeApiName",
+    );
+    expect(converted).toMatchInlineSnapshot(`
+      {
+        "objectTypeApiName": "Employee",
+        "primaryKeyValue": "hello",
+      }
+    `);
   });
 });

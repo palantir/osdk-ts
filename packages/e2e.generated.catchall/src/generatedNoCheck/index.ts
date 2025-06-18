@@ -2,6 +2,7 @@ export {
   actionTakesAllParameterTypes,
   assignEmployee1,
   createFooInterface,
+  createInterfaceForTest,
   createMediaObject,
   createMediaViaFunction,
   createOsdkTestObject,
@@ -10,11 +11,12 @@ export {
   createTestGeoAction,
   createTodo,
   deleteFooInterface,
+  deleteInterfaceForTest,
   deleteOsdkTestObject,
   editOsdkTestObject,
 } from './ontology/actions.js';
 export * as $Actions from './ontology/actions.js';
-export { Athlete, FooInterface, InterfaceNoProps, OsdkTestInterface } from './ontology/interfaces.js';
+export { Athlete, FooInterface, InterfaceForTest, InterfaceNoProps, OsdkTestInterface } from './ontology/interfaces.js';
 export * as $Interfaces from './ontology/interfaces.js';
 export {
   BgaoNflPlayer,
