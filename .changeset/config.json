@@ -19,7 +19,7 @@
     ],
     ["@osdk/cli", "@osdk/cli.*"],
     [
-      "@osdk/widget.api.unstable",
+      "@osdk/widget.api",
       "@osdk/widget.client.unstable",
       "@osdk/widget.client-react.unstable",
       "@osdk/widget.vite-plugin.unstable",

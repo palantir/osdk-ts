@@ -1239,7 +1239,7 @@ importers:
       '@osdk/shared.net.fetch':
         specifier: workspace:~
         version: link:../shared.net.fetch
-      '@osdk/widget.api.unstable':
+      '@osdk/widget.api':
         specifier: workspace:~
         version: link:../widget.api.unstable
       '@types/archiver':
@@ -3808,7 +3808,7 @@ importers:
 
   packages/widget.client.unstable:
     dependencies:
-      '@osdk/widget.api.unstable':
+      '@osdk/widget.api':
         specifier: workspace:~
         version: link:../widget.api.unstable
       tiny-invariant:
@@ -3833,7 +3833,7 @@ importers:
       '@osdk/foundry-config-json':
         specifier: workspace:~
         version: link:../foundry-config-json
-      '@osdk/widget.api.unstable':
+      '@osdk/widget.api':
         specifier: workspace:~
         version: link:../widget.api.unstable
       escodegen:

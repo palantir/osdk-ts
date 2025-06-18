@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api.unstable";
+import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
 import type { ViteDevServer } from "vite";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import * as extractInjectedScriptsModule from "../extractInjectedScripts.js";

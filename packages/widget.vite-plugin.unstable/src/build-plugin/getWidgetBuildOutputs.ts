@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api.unstable";
+import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
 import path from "path";
 import type { Rollup } from "vite";
 import { standardizeFileExtension } from "../common/standardizeFileExtension.js";

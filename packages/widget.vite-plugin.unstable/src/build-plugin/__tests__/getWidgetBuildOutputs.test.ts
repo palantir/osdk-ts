@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api.unstable";
+import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
 import type { Rollup } from "vite";
 import { expect, test, vi } from "vitest";
 import * as extractBuildOutputsModule from "../extractBuildOutputs.js";

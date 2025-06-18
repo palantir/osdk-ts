@@ -19,8 +19,8 @@ import {
   visitHostMessage,
   type WidgetConfig,
   type WidgetMessage,
-} from "@osdk/widget.api.unstable";
-import { META_TAG_HOST_ORIGIN } from "@osdk/widget.api.unstable";
+} from "@osdk/widget.api";
+import { META_TAG_HOST_ORIGIN } from "@osdk/widget.api";
 import invariant from "tiny-invariant";
 import { FoundryHostEventTarget } from "./host.js";
 

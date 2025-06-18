@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  type ParameterConfig,
-  type WidgetConfig,
-} from "@osdk/widget.api.unstable";
+import { type ParameterConfig, type WidgetConfig } from "@osdk/widget.api";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import color from "picocolors";

@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  WidgetManifestConfig,
-  WidgetSetManifest,
-} from "@osdk/widget.api.unstable";
+import type { WidgetManifestConfig, WidgetSetManifest } from "@osdk/widget.api";
 import type { WidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
 
 export function buildWidgetSetManifest(
