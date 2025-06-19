@@ -200,7 +200,6 @@ export class OntologyIrToFullMetadataConverter {
 
     for (const link of links) {
       const linkType = link.linkType;
-      const linkApiName = linkType.id;
       const linkStatus = this.convertLinkTypeStatus(linkType.status);
 
       let mappings: Record<string, Ontologies.LinkTypeSideV2>;
@@ -208,18 +207,25 @@ export class OntologyIrToFullMetadataConverter {
         case "manyToMany": {
           const linkDef = linkType.definition.manyToMany;
           const sideA: Ontologies.LinkTypeSideV2 = {
-            apiName: linkApiName,
-            displayName: linkApiName,
+            apiName:
+              linkType.definition.manyToMany.objectTypeAToBLinkMetadata.apiName
+                ?? "",
+            displayName:
+              linkType.definition.manyToMany.objectTypeAToBLinkMetadata
+                .displayMetadata.displayName,
             cardinality: "MANY",
-            objectTypeApiName: linkDef.objectTypeRidA,
+            objectTypeApiName: linkDef.objectTypeRidB,
             linkTypeRid:
-              `ri.${linkDef.objectTypeRidA}.${linkApiName}.${linkDef.objectTypeRidB}`,
+              `ri.${linkDef.objectTypeRidA}.${linkType.id}.${linkDef.objectTypeRidB}`,
             status: linkStatus,
           };
 
           const sideB: Ontologies.LinkTypeSideV2 = {
             ...sideA,
-            objectTypeApiName: linkDef.objectTypeRidB,
+            apiName:
+              linkType.definition.manyToMany.objectTypeBToALinkMetadata.apiName
+                ?? "",
+            objectTypeApiName: linkDef.objectTypeRidA,
           };
 
           mappings = {
@@ -231,19 +237,23 @@ export class OntologyIrToFullMetadataConverter {
         case "oneToMany": {
           const linkDef = linkType.definition.oneToMany;
           const sideOne: Ontologies.LinkTypeSideV2 = {
-            apiName: linkApiName,
-            displayName: linkApiName,
-            objectTypeApiName: linkDef.objectTypeRidOneSide,
+            apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
+            displayName:
+              linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
+            objectTypeApiName: linkDef.objectTypeRidManySide,
             cardinality: "ONE",
             linkTypeRid:
-              `ri.${linkDef.objectTypeRidOneSide}.${linkApiName}.${linkDef.objectTypeRidManySide}`,
+              `ri.${linkDef.objectTypeRidOneSide}.${linkType.id}.${linkDef.objectTypeRidManySide}`,
             status: linkStatus,
           };
 
           const sideMany: Ontologies.LinkTypeSideV2 = {
             ...sideOne,
             cardinality: "MANY",
-            objectTypeApiName: linkDef.objectTypeRidManySide,
+            apiName: linkDef.manyToOneLinkMetadata.apiName ?? "",
+            displayName:
+              linkDef.manyToOneLinkMetadata.displayMetadata.displayName,
+            objectTypeApiName: linkDef.objectTypeRidOneSide,
           };
 
           mappings = {
