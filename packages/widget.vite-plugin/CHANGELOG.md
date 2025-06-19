@@ -1,5 +1,16 @@
 # @osdk/widget.vite-plugin
 
+## 2.1.1
+
+### Patch Changes
+
+- 2c10a9f: Simulated release
+- 2c10a9f: Remove unstable suffix from widget packages
+- Updated dependencies [2c10a9f]
+- Updated dependencies [2c10a9f]
+- Updated dependencies [2c10a9f]
+  - @osdk/widget.api@2.1.1
+
 ## 2.1.0
 
 ### Patch Changes

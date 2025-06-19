@@ -1,5 +1,12 @@
 # @osdk/create-widget.template.react.v2
 
+## 2.1.1
+
+### Patch Changes
+
+- 2c10a9f: Remove unstable suffix from widget packages
+- 704dfc5: Fix create-widget templates workspace dependency version
+
 ## 2.1.0
 
 ### Patch Changes

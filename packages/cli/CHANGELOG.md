@@ -1,5 +1,12 @@
 # @osdk/cli
 
+## 0.26.3
+
+### Patch Changes
+
+- ad48d54: Register "widgetset" CLI command out of unstable
+- 2c10a9f: Remove unstable suffix from widget packages
+
 ## 0.26.2
 
 ### Patch Changes
