@@ -1,5 +1,19 @@
 # @osdk/widget.client-react
 
+## 2.1.1
+
+### Patch Changes
+
+- 2c10a9f: Simulated release
+- 2c10a9f: Remove unstable suffix from widget packages
+- 2c10a9f: Remove unstable fetch proxy from widgets
+- Updated dependencies [2c10a9f]
+- Updated dependencies [2c10a9f]
+- Updated dependencies [2c10a9f]
+- Updated dependencies [2c10a9f]
+- Updated dependencies [2c10a9f]
+  - @osdk/widget.client@2.1.1
+
 ## 2.1.0
 
 ### Patch Changes
