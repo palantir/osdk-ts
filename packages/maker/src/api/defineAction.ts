@@ -544,6 +544,7 @@ function extractAllowedValuesFromType(
     case "string":
       return { type: "text" };
     case "geopoint":
+      return { type: "geohash" };
     case "geoshape":
       return { type: "geoshape" };
     case "mediaReference":
