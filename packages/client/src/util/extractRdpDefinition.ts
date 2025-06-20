@@ -188,7 +188,7 @@ async function extractRdpDefinitionInternal(
       return { definitions: {} };
     // We don't have to worry about new object sets being added and doing a runtime break and breaking people since the OSDK is always constructing these.
     default:
-      const _: never = objectSet;
+      const _ = objectSet;
       invariant(
         false,
         `Unsupported object set type for Runtime Derived Properties`,

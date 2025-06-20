@@ -72,7 +72,12 @@ export type {
   FetchPageResult,
   SingleOsdkResult,
 } from "./object/FetchPageResult.js";
-export type { Media, MediaMetadata, MediaReference } from "./object/Media.js";
+export type {
+  Media,
+  MediaMetadata,
+  MediaReference,
+  MediaUpload,
+} from "./object/Media.js";
 export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
