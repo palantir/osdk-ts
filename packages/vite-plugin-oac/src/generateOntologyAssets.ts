@@ -142,11 +142,19 @@ async function fullMetadataToOsdk(logger: Logger): Promise<void> {
   const tempDir = path.join(
     process.cwd(),
     "node_modules",
-    ".tmp",
-    "osdkGeneration",
+    ".osdkGeneration",
+    "src",
   );
   await fs.promises.rm(tempDir, { recursive: true, force: true });
   await fs.promises.mkdir(tempDir, { recursive: true });
+
+  // The osdk cli currently mutes package.json files which we don't want in this case
+  // so we give it a fake package.json file
+  await fs.promises.writeFile(
+    path.join(tempDir, "..", "package.json"),
+    JSON.stringify({}, null, 2),
+    { encoding: "utf-8" },
+  );
 
   try {
     // Then generate the source code for the osdk
@@ -200,6 +208,7 @@ async function fullMetadataToOsdk(logger: Logger): Promise<void> {
             },
           );
         }
+        await compileOsdk(logger);
 
         // Clean up temporary directory after successful sync
         await fs.promises.rm(tempDir, { recursive: true, force: true });
@@ -238,4 +247,23 @@ async function fullMetadataToOsdk(logger: Logger): Promise<void> {
     }
     throw error;
   }
+}
+
+async function compileOsdk(logger: Logger) {
+  const { stdout, stderr, exitCode } = await execa("pnpm", [
+    "exec",
+    "tsc",
+  ]);
+
+  if (stdout && NOISY) {
+    logger.info(`OSDK generation output: ${stdout}`, {
+      timestamp: true,
+    });
+  }
+  if (stderr) {
+    logger.error(`OSDK generation stderr: ${stderr}`, {
+      timestamp: true,
+    });
+  }
+  return exitCode;
 }
