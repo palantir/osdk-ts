@@ -3051,7 +3051,7 @@ importers:
         version: 0.40.3
       msw:
         specifier: ^2.7.3
-        version: 2.7.3(@types/node@24.0.3)(typescript@5.5.4)
+        version: 2.7.3(@types/node@20.19.1)(typescript@5.5.4)
       semver:
         specifier: ^7.5.1
         version: 7.6.3
@@ -3071,6 +3071,9 @@ importers:
       '@types/json-stable-stringify':
         specifier: ^1.0.36
         version: 1.0.36
+      '@types/node':
+        specifier: ^20
+        version: 20.19.1
       '@types/semver':
         specifier: ^7.3.12
         version: 7.5.8
@@ -15988,6 +15991,13 @@ snapshots:
       '@types/node': 20.17.47
     optional: true
 
+  '@inquirer/confirm@5.1.5(@types/node@20.19.1)':
+    dependencies:
+      '@inquirer/core': 10.1.6(@types/node@20.19.1)
+      '@inquirer/type': 3.0.4(@types/node@20.19.1)
+    optionalDependencies:
+      '@types/node': 20.19.1
+
   '@inquirer/confirm@5.1.5(@types/node@24.0.3)':
     dependencies:
       '@inquirer/core': 10.1.6(@types/node@24.0.3)
@@ -16022,6 +16032,19 @@ snapshots:
       '@types/node': 20.17.47
     optional: true
 
+  '@inquirer/core@10.1.6(@types/node@20.19.1)':
+    dependencies:
+      '@inquirer/figures': 1.0.10
+      '@inquirer/type': 3.0.4(@types/node@20.19.1)
+      ansi-escapes: 4.3.2
+      cli-width: 4.1.0
+      mute-stream: 2.0.0
+      signal-exit: 4.1.0
+      wrap-ansi: 6.2.0
+      yoctocolors-cjs: 2.1.2
+    optionalDependencies:
+      '@types/node': 20.19.1
+
   '@inquirer/core@10.1.6(@types/node@24.0.3)':
     dependencies:
       '@inquirer/figures': 1.0.10
@@ -16045,6 +16068,10 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.17.47
     optional: true
+
+  '@inquirer/type@3.0.4(@types/node@20.19.1)':
+    optionalDependencies:
+      '@types/node': 20.19.1
 
   '@inquirer/type@3.0.4(@types/node@24.0.3)':
     optionalDependencies:
@@ -18401,7 +18428,7 @@ snapshots:
 
   '@types/adm-zip@0.5.7':
     dependencies:
-      '@types/node': 20.17.47
+      '@types/node': 20.19.1
 
   '@types/archiver@6.0.2':
     dependencies:
@@ -23316,6 +23343,31 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
     optional: true
+
+  msw@2.7.3(@types/node@20.19.1)(typescript@5.5.4):
+    dependencies:
+      '@bundled-es-modules/cookie': 2.0.1
+      '@bundled-es-modules/statuses': 1.0.1
+      '@bundled-es-modules/tough-cookie': 0.1.6
+      '@inquirer/confirm': 5.1.5(@types/node@20.19.1)
+      '@mswjs/interceptors': 0.37.6
+      '@open-draft/deferred-promise': 2.2.0
+      '@open-draft/until': 2.1.0
+      '@types/cookie': 0.6.0
+      '@types/statuses': 2.0.5
+      graphql: 16.8.1
+      headers-polyfill: 4.0.3
+      is-node-process: 1.2.0
+      outvariant: 1.4.3
+      path-to-regexp: 6.3.0
+      picocolors: 1.1.1
+      strict-event-emitter: 0.5.1
+      type-fest: 4.37.0
+      yargs: 17.7.2
+    optionalDependencies:
+      typescript: 5.5.4
+    transitivePeerDependencies:
+      - '@types/node'
 
   msw@2.7.3(@types/node@24.0.3)(typescript@5.5.4):
     dependencies:
