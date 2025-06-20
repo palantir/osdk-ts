@@ -277,7 +277,7 @@ export function defineModifyObjectAction(
         displayName: prop.displayName,
         type: extractActionParameterType(prop),
         validation: {
-          required: true,
+          required: false,
           allowedValues: extractAllowedValuesFromType(prop.type),
         },
       })) ?? []),
