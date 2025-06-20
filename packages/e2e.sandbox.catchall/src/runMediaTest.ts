@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
+import type { MediaUpload } from "@osdk/api";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
 import { $Actions, MnayanOsdkMediaObject } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
+
+async function runUploadMediaTest(): Promise<void> {
+  const data = new Blob([
+    JSON.stringify({ name: "Hello World" }, null, 2),
+  ]);
+  const payload: MediaUpload = { data, path: "helloworld.txt" };
+
+  const result = await client($Actions.createMediaViaFunction).applyAction({
+    mediaItem: payload,
+  }, { $returnEdits: true });
+}
 
 export async function runMediaTest(): Promise<void> {
   const result = await client(MnayanOsdkMediaObject).fetchOne(

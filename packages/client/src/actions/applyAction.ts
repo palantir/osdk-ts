@@ -32,6 +32,7 @@ import type {
 } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import { loadActionMetadata } from "../ontology/loadActionMetadata.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import type { NOOP } from "../util/NOOP.js";
@@ -135,7 +136,11 @@ export async function applyAction<
       action.apiName,
       {
         requests: parameters
-          ? await remapBatchActionParams(parameters, client, action.apiName)
+          ? await remapBatchActionParams(
+            parameters,
+            client,
+            await loadActionMetadata(client, action.apiName),
+          )
           : [],
         options: {
           returnEdits: options?.$returnEdits ? "ALL" : "NONE",
@@ -158,7 +163,7 @@ export async function applyAction<
             CompileTimeActionMetadata<AD>["parameters"]
           >,
           client,
-          action.apiName,
+          await loadActionMetadata(client, action.apiName),
         ),
         options: {
           mode: (options as ApplyActionOptions)?.$validateOnly
@@ -192,7 +197,7 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
     | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>
     | undefined,
   client: MinimalClient,
-  actionApiName: string,
+  actionMetadata: ActionMetadata,
 ): Promise<Record<string, DataValue>> {
   if (params == null) {
     return {};
@@ -200,7 +205,7 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
 
   const parameterMap: { [parameterName: string]: unknown } = {};
   for (const [key, value] of Object.entries(params)) {
-    parameterMap[key] = await toDataValue(value, client, actionApiName);
+    parameterMap[key] = await toDataValue(value, client, actionMetadata);
   }
 
   return parameterMap;
@@ -211,12 +216,12 @@ async function remapBatchActionParams<
 >(
   params: OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>[],
   client: MinimalClient,
-  actionApiName: string,
+  actionMetadata: ActionMetadata,
 ) {
   const remappedParams = await Promise.all(params.map(
     async param => {
       return {
-        parameters: await remapActionParams<AD>(param, client, actionApiName),
+        parameters: await remapActionParams<AD>(param, client, actionMetadata),
       };
     },
   ));

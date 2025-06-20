@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ActionMetadata } from "@osdk/api";
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -38,7 +39,7 @@ import { isWireObjectSet } from "./WireObjectSet.js";
 export async function toDataValue(
   value: unknown,
   client: MinimalClient,
-  actionApiName: string,
+  actionMetadata: ActionMetadata,
 ): Promise<DataValue> {
   if (value == null) {
     // typeof null is 'object' so do this first
@@ -55,14 +56,14 @@ export async function toDataValue(
     ) {
       const converted = [];
       for (const value of values) {
-        converted.push(await toDataValue(value, client, actionApiName));
+        converted.push(await toDataValue(value, client, actionMetadata));
       }
       return converted;
     }
     const promiseArray = Array.from(
       value,
       async (innerValue) =>
-        await toDataValue(innerValue, client, actionApiName),
+        await toDataValue(innerValue, client, actionMetadata),
     );
     return Promise.all(promiseArray);
   }
@@ -76,7 +77,7 @@ export async function toDataValue(
         filename: value.name,
       },
     );
-    return await toDataValue(attachment.rid, client, actionApiName);
+    return await toDataValue(attachment.rid, client, actionMetadata);
   }
 
   if (isAttachmentFile(value)) {
@@ -87,7 +88,7 @@ export async function toDataValue(
         filename: value.name as string,
       },
     );
-    return await toDataValue(attachment.rid, client, actionApiName);
+    return await toDataValue(attachment.rid, client, actionMetadata);
   }
 
   // new media item upload interface, very similar to how attachments work above
@@ -97,25 +98,25 @@ export async function toDataValue(
       .uploadMedia(client, value.data, {
         path: value.path,
         ontology: await client.ontologyRid,
-        action: actionApiName,
+        action: actionMetadata.apiName,
       });
-    return await toDataValue(mediaRef, client, actionApiName);
+    return await toDataValue(mediaRef, client, actionMetadata);
   }
 
   // objects just send the JSON'd primaryKey
   if (isOntologyObjectV2(value)) {
-    return await toDataValue(value.__primaryKey, client, actionApiName);
+    return await toDataValue(value.__primaryKey, client, actionMetadata);
   }
 
   if (isObjectSpecifiersObject(value)) {
-    return await toDataValue(value.$primaryKey, client, actionApiName);
+    return await toDataValue(value.$primaryKey, client, actionMetadata);
   }
 
   if (isPoint(value)) {
     return await toDataValue(
       value.coordinates.reverse().join(),
       client,
-      actionApiName,
+      actionMetadata,
     );
   }
 
@@ -147,7 +148,7 @@ export async function toDataValue(
     return Object.entries(value).reduce(
       async (promisedAcc, [key, structValue]) => {
         const acc = await promisedAcc;
-        acc[key] = await toDataValue(structValue, client, actionApiName);
+        acc[key] = await toDataValue(structValue, client, actionMetadata);
         return acc;
       },
       Promise.resolve({} as { [key: string]: DataValue }),
