@@ -230,25 +230,25 @@ export class OntologyIrToFullMetadataConverter {
         }
         case "oneToMany": {
           const linkDef = linkType.definition.oneToMany;
-          const sideOne: Ontologies.LinkTypeSideV2 = {
+          const sideMany: Ontologies.LinkTypeSideV2 = {
             apiName: linkApiName,
             displayName: linkApiName,
-            objectTypeApiName: linkDef.objectTypeRidOneSide,
-            cardinality: "ONE",
+            objectTypeApiName: linkDef.objectTypeRidManySide,
+            cardinality: "MANY",
             linkTypeRid:
               `ri.${linkDef.objectTypeRidOneSide}.${linkApiName}.${linkDef.objectTypeRidManySide}`,
             status: linkStatus,
           };
 
-          const sideMany: Ontologies.LinkTypeSideV2 = {
-            ...sideOne,
-            cardinality: "MANY",
-            objectTypeApiName: linkDef.objectTypeRidManySide,
+          const sideOne: Ontologies.LinkTypeSideV2 = {
+            ...sideMany,
+            cardinality: "ONE",
+            objectTypeApiName: linkDef.objectTypeRidOneSide,
           };
 
           mappings = {
-            [linkDef.objectTypeRidOneSide]: sideOne,
-            [linkDef.objectTypeRidManySide]: sideMany,
+            [linkDef.objectTypeRidOneSide]: sideMany,
+            [linkDef.objectTypeRidManySide]: sideOne,
           };
           break;
         }
