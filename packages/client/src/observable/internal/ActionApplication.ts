@@ -17,8 +17,7 @@
 import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
 import delay from "delay";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
-import { type Changes, createChangedObjects } from "./Changes.js";
-import type { ObjectCacheKey } from "./ObjectQuery.js";
+import { type Changes } from "./Changes.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 import type { Store } from "./Store.js";
 
@@ -76,58 +75,26 @@ export class ActionApplication {
   };
 
   #invalidateActionEditResponse = async (
-    value: ActionEditResponse,
-  ): Promise<ActionEditResponse> => {
-    const typesToInvalidate = new Set<string>();
-
+    { deletedObjects, modifiedObjects, addedObjects, editedObjectTypes, type }:
+      ActionEditResponse,
+  ): Promise<void> => {
     let changes: Changes | undefined;
-    if (value.type === "edits") {
+    if (type === "edits") {
       const promisesToWait: Promise<any>[] = [];
-      // TODO we need an backend update for deletes
-      for (const obj of value.modifiedObjects) {
-        promisesToWait.push(
-          this.store.invalidateObject(obj.objectType, obj.primaryKey),
-        );
-      }
 
-      for (const obj of value.addedObjects) {
-        promisesToWait.push(
-          this.store.invalidateObject(obj.objectType, obj.primaryKey),
-        );
-
-        typesToInvalidate.add(obj.objectType);
+      for (const list of [deletedObjects, modifiedObjects, addedObjects]) {
+        for (const obj of list ?? []) {
+          promisesToWait.push(
+            this.store.invalidateObject(obj.objectType, obj.primaryKey),
+          );
+        }
       }
 
       await Promise.all(promisesToWait);
-
-      // the action invocation just gives back object ids,
-      // but the invalidateObject calls above should have put the
-      // actual objects in the cache
-      const changes = createChangedObjects();
-      for (const changeType of ["addedObjects", "modifiedObjects"] as const) {
-        for (const { objectType, primaryKey } of (value[changeType] ?? [])) {
-          const cacheKey = this.store.getCacheKey<ObjectCacheKey>(
-            "object",
-            objectType,
-            primaryKey,
-          );
-          // N.B. this probably isn't right. `getValue`() will give you the "top"
-          // value but I think we want the "truth" guaranteed.
-          const obj = this.store.getValue(cacheKey);
-          if (obj && obj.value) {
-            changes[changeType].set(objectType, obj.value);
-            (changeType === "addedObjects" ? changes.added : changes.modified)
-              .add(cacheKey);
-          }
-        }
-      }
     } else {
-      for (const apiName of value.editedObjectTypes) {
-        typesToInvalidate.add(apiName.toString());
+      for (const apiName of editedObjectTypes) {
         await this.store.invalidateObjectType(apiName as string, changes);
       }
     }
-
-    return value;
   };
 }

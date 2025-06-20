@@ -27,6 +27,7 @@ export class Changes {
 
   added: Set<ListCacheKey | ObjectCacheKey> = new Set();
   modified: Set<ListCacheKey | ObjectCacheKey> = new Set();
+  deleted: Set<ListCacheKey | ObjectCacheKey> = new Set();
 
   registerObject = (
     cacheKey: ObjectCacheKey,
@@ -35,6 +36,10 @@ export class Changes {
   ): void => {
     this[isNew ? "addedObjects" : "modifiedObjects"].set(data.$apiName, data);
     this[isNew ? "added" : "modified"].add(cacheKey);
+  };
+
+  deleteObject = (cacheKey: ObjectCacheKey): void => {
+    this.deleted.add(cacheKey);
   };
 
   registerList = (key: ListCacheKey): void => {
@@ -47,6 +52,7 @@ export class Changes {
       && this.addedObjects.size === 0
       && this.added.size === 0
       && this.modified.size === 0
+      && this.deleted.size === 0
     );
   }
 }

@@ -406,6 +406,66 @@ describe(Store, () => {
         expectSingleObjectCallAndClear(subFn, truthUpdatedEmployee);
         expectNoMoreCalls(subFn);
       });
+
+      describe("object deletes", () => {
+        it("it properly updates the list", async () => {
+          const emp = employeesAsServerReturns[0];
+          updateList(cache, { type: Employee, where: {}, orderBy: {} }, [
+            emp,
+          ]);
+
+          const subFn = mockSingleSubCallback();
+          defer(
+            cache.observeObject(
+              Employee,
+              emp.$primaryKey,
+              { mode: "offline" },
+              subFn,
+            ),
+          );
+          expectSingleObjectCallAndClear(subFn, emp);
+
+          const subListFn = mockListSubCallback();
+          defer(
+            cache.observeList({
+              type: Employee,
+              mode: "offline",
+            }, subListFn),
+          );
+
+          await waitForCall(subListFn, 1);
+          expectSingleListCallAndClear(
+            subListFn,
+            [emp],
+            { status: "loaded" },
+          );
+
+          const cacheKey = cache.getCacheKey<ObjectCacheKey>(
+            "object",
+            emp.$apiName,
+            emp.$primaryKey,
+          );
+
+          // Actual test is here, prior to this is setup
+          testStage("delete the object");
+
+          cache.batch({
+            optimisticId: createOptimisticId(),
+          }, (batch) => {
+            batch.changes.deleteObject(cacheKey);
+            batch.delete(cacheKey, "loading");
+          });
+
+          expectSingleObjectCallAndClear(subFn, undefined);
+
+          await waitForCall(subListFn, 1);
+          expectSingleListCallAndClear(
+            subListFn,
+            [],
+            { isOptimistic: true, status: "loading" },
+          );
+        });
+      });
     });
 
     describe(".invalidateObject", () => {
