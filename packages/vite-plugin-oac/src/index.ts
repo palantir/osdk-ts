@@ -25,7 +25,7 @@ import { watchOntologyAsCode } from "./watchOntologyAsCode.js";
  * Vite plugin for Ontology as Code (OAC) that generates ontology IR, metadata, and OSDK
  * in both development and build modes.
  */
-export default function oacVitePlugin(opts: {
+export function ontologyAsCode(opts: {
   hooks?: {
     preSeed?: (fauxOntology: FauxOntology) => Promise<void>;
   };
