@@ -2048,7 +2048,7 @@ describe("Ontology Defining", () => {
               "linkType": {
                 "definition": {
                   "oneToMany": {
-                    "cardinalityHint": "ONE_TO_ONE",
+                    "cardinalityHint": "ONE_TO_MANY",
                     "manyToOneLinkMetadata": {
                       "apiName": "foos",
                       "displayMetadata": {
@@ -4941,8 +4941,8 @@ describe("Ontology Defining", () => {
                                 "type": "text",
                               },
                               "required": {
-                                "required": {},
-                                "type": "required",
+                                "notRequired": {},
+                                "type": "notRequired",
                               },
                             },
                           },
