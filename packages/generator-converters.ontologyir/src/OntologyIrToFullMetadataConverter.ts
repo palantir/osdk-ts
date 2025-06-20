@@ -330,10 +330,17 @@ export class OntologyIrToFullMetadataConverter {
         }
         case "addOrModifyObjectRuleV2": {
           const r = irLogic.addOrModifyObjectRuleV2;
-          return {
-            type: "modifyObject",
-            objectTypeApiName: r.objectToModify,
-          } satisfies Ontologies.LogicRule;
+
+          const modifyParamType =
+            action.actionType.metadata.parameters[r.objectToModify].type;
+          if (modifyParamType.type === "objectReference") {
+            return {
+              type: "modifyObject",
+              objectTypeApiName: modifyParamType.objectReference.objectTypeId,
+            } satisfies Ontologies.LogicRule;
+          } else {
+            throw "Unable to convert modifyAction because parameter does not exist";
+          }
         }
         case "deleteLinkRule":
           throw new Error("Delete link rule not supported");

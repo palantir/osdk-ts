@@ -48,8 +48,8 @@ export class FauxDataStoreBatch {
   public getObject = (
     objectType: string,
     primaryKey: string | number | boolean,
-  ): BaseServerObject => {
-    return this.#fauxDataStore.getObjectOrThrow(
+  ): BaseServerObject | undefined => {
+    return this.#fauxDataStore.getObject(
       objectType,
       primaryKey,
     );
