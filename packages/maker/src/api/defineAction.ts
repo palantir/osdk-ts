@@ -544,6 +544,7 @@ function extractAllowedValuesFromType(
     case "string":
       return { type: "text" };
     case "geopoint":
+      return { type: "geohash" };
     case "geoshape":
       return { type: "geoshape" };
     case "mediaReference":
@@ -589,7 +590,7 @@ function extractActionParameterType(
     case "short":
       return maybeAddList("integer", pt);
     case "geopoint":
-      return maybeAddList("geoshape", pt);
+      return maybeAddList("geohash", pt);
     case "float":
       return maybeAddList("double", pt);
     case "geotimeSeries":
