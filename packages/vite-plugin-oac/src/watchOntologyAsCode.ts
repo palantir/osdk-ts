@@ -15,7 +15,7 @@
  */
 
 import EventEmitter from "node:events";
-import fs from "node:fs";
+import * as fs from "node:fs";
 import type { FSWatcher, Logger } from "vite";
 import { generateOntologyAssets } from "./generateOntologyAssets.js";
 
@@ -24,10 +24,11 @@ export interface WatchOntologyAsCodeEvents {
 }
 
 export function watchOntologyAsCode(
-  { watcher, logger, ontologyDir }: {
+  { watcher, logger, ontologyDir, workDir }: {
     watcher: FSWatcher;
     logger: Logger;
     ontologyDir: string;
+    workDir: string;
   },
 ): EventEmitter<WatchOntologyAsCodeEvents> {
   const emitter = new EventEmitter<WatchOntologyAsCodeEvents>();
@@ -37,8 +38,6 @@ export function watchOntologyAsCode(
 
   if (!fs.existsSync(ontologyDir)) {
     fs.mkdirSync(ontologyDir, { recursive: true });
-
-    logger.info("Created .ontology directory", { timestamp: true });
   }
 
   watcher.add(ontologyDir);
@@ -64,9 +63,12 @@ export function watchOntologyAsCode(
     }
 
     (async () => {
+      await fs.promises.mkdir(workDir, { recursive: true });
+
       await generateOntologyAssets({
         logger,
         ontologyDir,
+        workDir,
       });
       emitter.emit("generated");
     })().catch((error) => {

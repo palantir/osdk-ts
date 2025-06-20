@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { FauxFoundry } from "@osdk/faux";
+import type { FauxDataStoreBatch, FauxFoundry } from "@osdk/faux";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import type { FauxActionImpl } from "./FauxFoundryTypes.js";
 
@@ -28,7 +28,10 @@ export function registerOntologyFullMetadata(
   });
   // Register action types with implementations
   Object.values(ontologyFullMetadata.actionTypes).forEach((actionType) => {
-    const implementation = createActionImplementation(actionType);
+    const implementation = createActionImplementation(
+      actionType,
+      ontologyFullMetadata,
+    );
     const actionTypeWithCamelCaseApiName = {
       ...actionType,
       apiName: camelcase(actionType.apiName),
@@ -53,38 +56,10 @@ export function registerOntologyFullMetadata(
  */
 function createActionImplementation(
   actionType: Ontologies.ActionTypeV2,
+  fullMetadata: Ontologies.OntologyFullMetadata,
 ): FauxActionImpl {
   return (
-    batch: {
-      addObject: (
-        objectType: string,
-        primaryKey: string | number | boolean,
-        object: Record<string, unknown>,
-      ) => void;
-      modifyObject: (
-        objectType: string,
-        primaryKey: string | number | boolean,
-        update: Record<string, unknown>,
-      ) => void;
-      deleteObject: (
-        objectType: string,
-        primaryKey: string | number | boolean,
-      ) => void;
-      addLink: (
-        leftObjectType: string,
-        leftPrimaryKey: string | number | boolean,
-        leftLinkName: string,
-        rightObjectType: string,
-        rightPrimaryKey: string | number | boolean,
-      ) => void;
-      removeLink: (
-        leftObjectType: string,
-        leftPrimaryKey: string | number | boolean,
-        leftLinkName: string,
-        rightObjectType: string,
-        rightPrimaryKey: string | number | boolean,
-      ) => void;
-    },
+    batch,
     payload: {
       parameters: Record<string, any>;
     },
@@ -110,31 +85,38 @@ function createActionImplementation(
             }
           }
 
+          handleObjectLinks(
+            batch,
+            fullMetadata,
+            objectTypeApiName,
+            primaryKey,
+            params,
+          );
           batch.addObject(objectTypeApiName, primaryKey, objectData);
           break;
         }
         case "modifyObject": {
           // Handle modify object operation
-          let objectTypeApiName: string;
-          let primaryKey: string | number | boolean;
 
-          if (typeof operation.objectTypeApiName === "string") {
-            objectTypeApiName = operation.objectTypeApiName;
-            primaryKey = params.primaryKey_;
-          } else {
-            // If objectTypeApiName is a parameter reference
-            const objectToModify = params[operation.objectTypeApiName];
-            if (objectToModify) {
-              objectTypeApiName = objectToModify.objectTypeApiName
-                || objectToModify;
-              primaryKey = objectToModify.primaryKeyValue || params.primaryKey_;
-            } else {
-              // Default to the parameter name if not found
-              objectTypeApiName = operation.objectTypeApiName;
-              primaryKey = params.primaryKey_;
+          // HACK HACK HACK
+
+          const objectTypeApiName: string = operation.objectTypeApiName;
+          let primaryKey: string | number | boolean | undefined = undefined;
+          const pks = [...batch.getObjects(objectTypeApiName)].map(val =>
+            val.__primaryKey
+          );
+
+          // Find the intersection of parameter values and primary keys
+          const found = Object.values(params).findIndex(val => {
+            if (pks.includes(val)) {
+              primaryKey = val;
+              return true;
             }
+            return false;
+          }) !== -1;
+          if (!found) {
+            throw new Error("Could not find primary key");
           }
-
           // Create object data from parameters, excluding the primary key and objectToModifyParameter
           const objectData: Record<string, unknown> = {};
           for (const [key, value] of Object.entries(params)) {
@@ -143,8 +125,17 @@ function createActionImplementation(
               objectData[key] = toDataValue(value, param);
             }
           }
+          if (primaryKey !== undefined) {
+            batch.modifyObject(objectTypeApiName, primaryKey, objectData);
+            handleObjectLinks(
+              batch,
+              fullMetadata,
+              objectTypeApiName,
+              primaryKey,
+              params,
+            );
+          }
 
-          batch.modifyObject(objectTypeApiName, primaryKey, objectData);
           break;
         }
         case "deleteObject": {
@@ -241,7 +232,7 @@ function camelcase(apiName: string): string {
 }
 
 function toDataValue(value: any, param: Ontologies.ActionParameterV2): unknown {
-  if (param.dataType.type === "geoshape" && typeof value === "string") {
+  if (param.dataType.type === "geohash" && typeof value === "string") {
     return latLonStringToGeoJSON(value);
   }
   return value;
@@ -268,4 +259,56 @@ function latLonStringToGeoJSON(latLonStr: string) {
     type: "Point",
     coordinates: [lon, lat], // GeoJSON uses [longitude, latitude]
   };
+}
+
+/**
+ * Handles linking objects based on parameter values and existing objects
+ */
+function handleObjectLinks(
+  batch: FauxDataStoreBatch,
+  fullMetadata: Ontologies.OntologyFullMetadata,
+  objectTypeApiName: string,
+  primaryKey: string | number | boolean,
+  params: Record<string, unknown>,
+): void {
+  // HACK HACK HACK
+  fullMetadata.objectTypes[objectTypeApiName].linkTypes.forEach(link => {
+    const cardinality = link.cardinality;
+    if (cardinality === "ONE") {
+      // This means its a one to many and we are on the one side of the link
+      const foreignObjects = [...batch.getObjects(link.objectTypeApiName)];
+      foreignObjects.forEach(foreignObject => {
+        if (
+          Object.values(params).findIndex(val =>
+            val === foreignObject.__primaryKey
+          ) !== -1
+        ) {
+          batch.addLink(
+            objectTypeApiName,
+            primaryKey,
+            link.apiName,
+            link.objectTypeApiName,
+            foreignObject.__primaryKey,
+          );
+        }
+      });
+    } else {
+      // This means its a one to many and we are on the many side of the link
+      const foreignObjects = [...batch.getObjects(link.objectTypeApiName)];
+      foreignObjects.forEach(foreignObject => {
+        if (
+          Object.values(foreignObject).findIndex(val => val === primaryKey)
+            !== -1
+        ) {
+          batch.addLink(
+            objectTypeApiName,
+            primaryKey,
+            link.apiName,
+            link.objectTypeApiName,
+            foreignObject.__primaryKey,
+          );
+        }
+      });
+    }
+  });
 }

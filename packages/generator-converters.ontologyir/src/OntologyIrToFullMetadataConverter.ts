@@ -200,7 +200,6 @@ export class OntologyIrToFullMetadataConverter {
 
     for (const link of links) {
       const linkType = link.linkType;
-      const linkApiName = linkType.id;
       const linkStatus = this.convertLinkTypeStatus(linkType.status);
 
       let mappings: Record<string, Ontologies.LinkTypeSideV2>;
@@ -208,18 +207,21 @@ export class OntologyIrToFullMetadataConverter {
         case "manyToMany": {
           const linkDef = linkType.definition.manyToMany;
           const sideA: Ontologies.LinkTypeSideV2 = {
-            apiName: linkApiName,
-            displayName: linkApiName,
+            apiName: linkDef.objectTypeAToBLinkMetadata.apiName ?? "",
+            displayName: linkDef.objectTypeAToBLinkMetadata
+              .displayMetadata.displayName,
             cardinality: "MANY",
-            objectTypeApiName: linkDef.objectTypeRidA,
+            objectTypeApiName: linkDef.objectTypeRidB,
             linkTypeRid:
-              `ri.${linkDef.objectTypeRidA}.${linkApiName}.${linkDef.objectTypeRidB}`,
+              `ri.${linkDef.objectTypeRidA}.${linkType.id}.${linkDef.objectTypeRidB}`,
             status: linkStatus,
           };
 
           const sideB: Ontologies.LinkTypeSideV2 = {
             ...sideA,
-            objectTypeApiName: linkDef.objectTypeRidB,
+            apiName: linkDef.objectTypeBToALinkMetadata.apiName
+              ?? "",
+            objectTypeApiName: linkDef.objectTypeRidA,
           };
 
           mappings = {
@@ -230,25 +232,29 @@ export class OntologyIrToFullMetadataConverter {
         }
         case "oneToMany": {
           const linkDef = linkType.definition.oneToMany;
-          const sideMany: Ontologies.LinkTypeSideV2 = {
-            apiName: linkApiName,
-            displayName: linkApiName,
-            objectTypeApiName: linkDef.objectTypeRidManySide,
-            cardinality: "MANY",
+          const manySide: Ontologies.LinkTypeSideV2 = {
+            apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
+            displayName:
+              linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
+            objectTypeApiName: linkDef.objectTypeRidOneSide,
+            cardinality: "ONE",
             linkTypeRid:
-              `ri.${linkDef.objectTypeRidOneSide}.${linkApiName}.${linkDef.objectTypeRidManySide}`,
+              `ri.${linkDef.objectTypeRidOneSide}.${linkType.id}.${linkDef.objectTypeRidManySide}`,
             status: linkStatus,
           };
 
-          const sideOne: Ontologies.LinkTypeSideV2 = {
-            ...sideMany,
-            cardinality: "ONE",
-            objectTypeApiName: linkDef.objectTypeRidOneSide,
+          const oneSide: Ontologies.LinkTypeSideV2 = {
+            ...manySide,
+            cardinality: "MANY",
+            apiName: linkDef.manyToOneLinkMetadata.apiName ?? "",
+            displayName:
+              linkDef.manyToOneLinkMetadata.displayMetadata.displayName,
+            objectTypeApiName: linkDef.objectTypeRidManySide,
           };
 
           mappings = {
-            [linkDef.objectTypeRidOneSide]: sideMany,
-            [linkDef.objectTypeRidManySide]: sideOne,
+            [linkDef.objectTypeRidOneSide]: oneSide,
+            [linkDef.objectTypeRidManySide]: manySide,
           };
           break;
         }
@@ -320,10 +326,19 @@ export class OntologyIrToFullMetadataConverter {
         }
         case "addOrModifyObjectRuleV2": {
           const r = irLogic.addOrModifyObjectRuleV2;
-          return {
-            type: "modifyObject",
-            objectTypeApiName: r.objectToModify,
-          } satisfies Ontologies.LogicRule;
+
+          const modifyParamType =
+            action.actionType.metadata.parameters[r.objectToModify].type;
+          if (modifyParamType.type === "objectReference") {
+            return {
+              type: "modifyObject",
+              objectTypeApiName: modifyParamType.objectReference.objectTypeId,
+            } satisfies Ontologies.LogicRule;
+          } else {
+            throw new Error(
+              "Unable to convert modifyAction because parameter does not exist",
+            );
+          }
         }
         case "deleteLinkRule":
           throw new Error("Delete link rule not supported");
@@ -367,10 +382,19 @@ export class OntologyIrToFullMetadataConverter {
         }
         case "modifyObjectRule": {
           const r = irLogic.modifyObjectRule;
-          return {
-            type: "modifyObject",
-            objectTypeApiName: r.objectToModify,
-          } satisfies Ontologies.LogicRule;
+
+          const modifyParamType =
+            action.actionType.metadata.parameters[r.objectToModify].type;
+          if (modifyParamType.type === "objectReference") {
+            return {
+              type: "modifyObject",
+              objectTypeApiName: modifyParamType.objectReference.objectTypeId,
+            } satisfies Ontologies.LogicRule;
+          } else {
+            throw new Error(
+              "Unable to convert modifyAction because parameter does not exist",
+            );
+          }
         }
         default:
           throw new Error("Unknown logic rule type");
@@ -553,7 +577,7 @@ export class OntologyIrToFullMetadataConverter {
       result[paramKey] = {
         displayName: irParameter.displayMetadata.displayName,
         description: irParameter.displayMetadata.description,
-        required: true,
+        required: isParameterRequired(action, paramKey),
         dataType,
       };
     }
@@ -837,4 +861,13 @@ export class OntologyIrToFullMetadataConverter {
         throw new Error(`Unknown link type status: ${status}`);
     }
   }
+}
+
+function isParameterRequired(
+  action: OntologyIrActionTypeBlockDataV2,
+  paramKey: string,
+): boolean {
+  return action.actionType.actionTypeLogic.validation
+    .parameterValidations[paramKey].defaultValidation.validation.required.type
+    === "required";
 }

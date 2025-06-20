@@ -21,6 +21,7 @@ import EventEmitter from "node:events";
 import path from "node:path";
 import type { Connect } from "vite";
 import { applySeed } from "./applySeed.js";
+import { ontologyFullMetadataPath } from "./generateOntologyAssets.js";
 import { registerOntologyFullMetadata } from "./registerOntologyFullMetadata.js";
 import { routeConnectToMsw } from "./routeConnectToMsw.js";
 import { readJsonFile } from "./utils/readJsonFile.js";
@@ -40,16 +41,31 @@ export class FoundryMiddlewareController {
     msw.LifeCycleEventsMap
   >();
   #hooks: Hooks | undefined;
+  #ontologyDir: string;
+  #workDir: string;
 
   constructor(
-    serverUrl: string,
-    defaultOntologyRid: string,
-    oacEmitter: EventEmitter<WatchOntologyAsCodeEvents>,
-    hooks?: Hooks,
+    {
+      serverUrl,
+      defaultOntologyRid,
+      oacEmitter,
+      ontologyDir,
+      hooks,
+      workDir,
+    }: {
+      serverUrl: string;
+      defaultOntologyRid: string;
+      oacEmitter: EventEmitter<WatchOntologyAsCodeEvents>;
+      ontologyDir: string;
+      workDir: string;
+      hooks?: Hooks;
+    },
   ) {
     this.#serverUrl = serverUrl;
     this.#defaultOntologyRid = defaultOntologyRid;
     this.#hooks = hooks;
+    this.#ontologyDir = ontologyDir;
+    this.#workDir = workDir;
 
     // create empty initial foundry
     this.#fauxFoundry = this.#createNewFauxFoundry();
@@ -93,30 +109,30 @@ export class FoundryMiddlewareController {
     const ontology = fauxFoundry.getDefaultOntology();
 
     const ontologyFullMetadata = readJsonFile<Ontologies.OntologyFullMetadata>(
-      ".ontology.json",
+      ontologyFullMetadataPath(this.#workDir),
     );
     registerOntologyFullMetadata(ontology, ontologyFullMetadata);
 
     try {
       if (this.#hooks?.preSeed) {
-        this.#debugLog("[oac] calling preSeed hook");
+        this.#debugLog("calling preSeed hook");
       }
 
       await this.#hooks?.preSeed?.(ontology);
     } catch (e) {
       this.#errorLog(
-        "[oac] Unhandled error from preSeed hook. Ignoring and continuing.",
+        "Unhandled error from preSeed hook. Ignoring and continuing.",
         e,
       );
     }
 
-    this.#debugLog("[osdk] applying seed data");
+    this.#debugLog("applying seed data");
     await applySeed(
       this.#fauxFoundry,
-      path.resolve(import.meta.dirname, "..", "..", ".ontology", "seed.ts"),
+      path.resolve(this.#ontologyDir, "seed.ts"),
     );
 
-    this.#infoLog("[osdk] Finished reloading ontology & seed data");
+    this.#infoLog("Finished reloading ontology & seed data");
     // TODO Maybe emit something that tells the front end associated with this
     // vite plugin to full reload?
   }
