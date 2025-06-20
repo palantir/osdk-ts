@@ -19,6 +19,7 @@ export * as TypeHelpers from "./FauxFoundry/typeHelpers/index.js";
 export { isBaseApiError } from "./BaseError.js";
 export type { BaseAPIError } from "./BaseError.js";
 export * as Errors from "./errors.js";
+export { type BaseServerObject } from "./FauxFoundry/BaseServerObject.js";
 export type { FauxActionImpl } from "./FauxFoundry/FauxActionImpl.js";
 export { FauxDataStore } from "./FauxFoundry/FauxDataStore.js";
 export { FauxDataStoreBatch } from "./FauxFoundry/FauxDataStoreBatch.js";

@@ -277,7 +277,7 @@ export function defineModifyObjectAction(
         displayName: prop.displayName,
         type: extractActionParameterType(prop),
         validation: {
-          required: true,
+          required: false,
           allowedValues: extractAllowedValuesFromType(prop.type),
         },
       })) ?? []),
@@ -544,6 +544,7 @@ function extractAllowedValuesFromType(
     case "string":
       return { type: "text" };
     case "geopoint":
+      return { type: "geohash" };
     case "geoshape":
       return { type: "geoshape" };
     case "mediaReference":
