@@ -45,13 +45,21 @@ export class FauxDataStoreBatch {
     this.#fauxDataStore = fauxDataStore;
   }
 
-  getObject = (
+  public getObject = (
     objectType: string,
     primaryKey: string | number | boolean,
   ): BaseServerObject => {
     return this.#fauxDataStore.getObjectOrThrow(
       objectType,
       primaryKey,
+    );
+  };
+
+  public getObjects = (
+    objectType: string,
+  ): Iterable<BaseServerObject> => {
+    return this.#fauxDataStore.getObjectsOfType(
+      objectType,
     );
   };
 

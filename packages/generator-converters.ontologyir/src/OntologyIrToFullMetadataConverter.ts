@@ -236,29 +236,29 @@ export class OntologyIrToFullMetadataConverter {
         }
         case "oneToMany": {
           const linkDef = linkType.definition.oneToMany;
-          const sideOne: Ontologies.LinkTypeSideV2 = {
+          const manySide: Ontologies.LinkTypeSideV2 = {
             apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
             displayName:
               linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
-            objectTypeApiName: linkDef.objectTypeRidManySide,
+            objectTypeApiName: linkDef.objectTypeRidOneSide,
             cardinality: "ONE",
             linkTypeRid:
               `ri.${linkDef.objectTypeRidOneSide}.${linkType.id}.${linkDef.objectTypeRidManySide}`,
             status: linkStatus,
           };
 
-          const sideMany: Ontologies.LinkTypeSideV2 = {
-            ...sideOne,
+          const oneSide: Ontologies.LinkTypeSideV2 = {
+            ...manySide,
             cardinality: "MANY",
             apiName: linkDef.manyToOneLinkMetadata.apiName ?? "",
             displayName:
               linkDef.manyToOneLinkMetadata.displayMetadata.displayName,
-            objectTypeApiName: linkDef.objectTypeRidOneSide,
+            objectTypeApiName: linkDef.objectTypeRidManySide,
           };
 
           mappings = {
-            [linkDef.objectTypeRidOneSide]: sideOne,
-            [linkDef.objectTypeRidManySide]: sideMany,
+            [linkDef.objectTypeRidOneSide]: oneSide,
+            [linkDef.objectTypeRidManySide]: manySide,
           };
           break;
         }
@@ -386,6 +386,15 @@ export class OntologyIrToFullMetadataConverter {
           throw new Error("Unknown logic rule type");
       }
     });
+  }
+
+  static isParameterRequired(
+    action: OntologyIrActionTypeBlockDataV2,
+    paramKey: string,
+  ): boolean {
+    return action.actionType.actionTypeLogic.validation
+      .parameterValidations[paramKey].defaultValidation.validation.required.type
+      === "required";
   }
 
   /**
@@ -563,7 +572,10 @@ export class OntologyIrToFullMetadataConverter {
       result[paramKey] = {
         displayName: irParameter.displayMetadata.displayName,
         description: irParameter.displayMetadata.description,
-        required: true,
+        required: OntologyIrToFullMetadataConverter.isParameterRequired(
+          action,
+          paramKey,
+        ),
         dataType,
       };
     }
