@@ -32,14 +32,14 @@ export namespace DerivedObjectOrInterfaceDefinition {
     K extends ObjectOrInterfaceDefinition,
     D extends Record<string, SimplePropertyDef>,
   > = {
-    __DefinitionMetadata: {
+    __DefinitionMetadata?: {
       properties: {
         [T in keyof D]: SimplePropertyDef.ToPropertyDef<D[T]>;
       };
       props?: {
         [T in keyof D]: SimplePropertyDef.ToRuntimeProperty<D[T]>;
       };
-    } | undefined;
+    };
   } & K;
 }
 

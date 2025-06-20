@@ -24,6 +24,7 @@ import type {
   PageResult,
   PropertyKeys,
 } from "../index.js";
+import type { DerivedObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 
 export function createMockObjectSet<
@@ -708,6 +709,25 @@ describe("ObjectSet", () => {
       expectTypeOf(result.countNumberNoUndefined).toEqualTypeOf<number>();
       expectTypeOf(result.sumNumber).toEqualTypeOf<number | undefined>();
       expectTypeOf(result.avgNumber).toEqualTypeOf<number | undefined>();
+    });
+
+    it("Merged object type is equivalent to original", () => {
+      const a = {} as EmployeeApiTest;
+      let b = {} as DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+        EmployeeApiTest,
+        {}
+      >;
+
+      b = a; // should be assignable. testing explicitly due to break in 2.2 release.
+
+      expectTypeOf<
+        EmployeeApiTest
+      >().branded.toEqualTypeOf<
+        DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+          EmployeeApiTest,
+          {}
+        >
+      >();
     });
   });
   describe("aggregate", () => {
