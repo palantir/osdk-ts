@@ -15,7 +15,6 @@
  */
 
 import type { FauxOntology } from "@osdk/faux";
-import path from "node:path";
 import type { PluginOption, ResolvedConfig } from "vite";
 import { FoundryMiddlewareController } from "./FoundryMiddlewareController.js";
 import { generateOntologyAssets } from "./generateOntologyAssets.js";
@@ -25,13 +24,17 @@ import { watchOntologyAsCode } from "./watchOntologyAsCode.js";
  * Vite plugin for Ontology as Code (OAC) that generates ontology IR, metadata, and OSDK
  * in both development and build modes.
  */
-export function ontologyAsCode(opts: {
-  hooks?: {
-    preSeed?: (fauxOntology: FauxOntology) => Promise<void>;
-  };
-}): PluginOption {
-  const ontologyDir = path.resolve(".ontology");
-
+export function ontologyAsCode(
+  {
+    hooks = {},
+    ontologyDir = "./ontology",
+  }: {
+    hooks?: {
+      preSeed?: (fauxOntology: FauxOntology) => Promise<void>;
+    };
+    ontologyDir: string;
+  },
+): PluginOption {
   let config: ResolvedConfig;
 
   return {
@@ -54,10 +57,14 @@ export function ontologyAsCode(opts: {
       }://localhost:${server.config.server.port}`;
 
       const foundryMiddlewareController = new FoundryMiddlewareController(
-        middlewareUrl,
-        `ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000`,
-        oacEmitter,
-        opts?.hooks,
+        {
+          serverUrl: middlewareUrl,
+          defaultOntologyRid:
+            `ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000`,
+          oacEmitter,
+          ontologyDir,
+          hooks,
+        },
       );
 
       server.middlewares.use(foundryMiddlewareController.middleware);
