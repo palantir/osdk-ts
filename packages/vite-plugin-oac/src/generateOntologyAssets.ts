@@ -67,7 +67,7 @@ async function ontologyJsToIr(
     "exec",
     "maker",
     "-i",
-    `${ontologyDir}/ontology.mjs`,
+    `${ontologyDir}/ontology.mts`,
     "-o",
     ".ontology.ir.json",
   ]);
