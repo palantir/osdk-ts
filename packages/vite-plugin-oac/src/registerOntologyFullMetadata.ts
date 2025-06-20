@@ -232,7 +232,7 @@ function camelcase(apiName: string): string {
 }
 
 function toDataValue(value: any, param: Ontologies.ActionParameterV2): unknown {
-  if (param.dataType.type === "geoshape" && typeof value === "string") {
+  if (param.dataType.type === "geohash" && typeof value === "string") {
     return latLonStringToGeoJSON(value);
   }
   return value;

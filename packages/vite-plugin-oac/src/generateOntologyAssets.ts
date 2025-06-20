@@ -265,7 +265,9 @@ async function compileOsdk(logger: Logger) {
   const { stdout, stderr, exitCode } = await execa("pnpm", [
     "exec",
     "tsc",
-  ]);
+  ], {
+    cwd: ".osdk",
+  });
 
   if (stdout && NOISY) {
     logger.info(`OSDK generation output: ${stdout}`, {

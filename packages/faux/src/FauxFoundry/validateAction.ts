@@ -267,9 +267,8 @@ function matchesOntologyDataType(
         `matchesOntologyDataType: ${odt.type} not implemented yet.`,
       );
     case "double":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return typeof value === "number";
+
     case "float":
       throw new Error(
         `matchesOntologyDataType: ${odt.type} not implemented yet.`,
