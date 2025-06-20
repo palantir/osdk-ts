@@ -15,6 +15,8 @@
  */
 
 import type { FauxOntology } from "@osdk/faux";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import type { PluginOption, ResolvedConfig } from "vite";
 import { FoundryMiddlewareController } from "./FoundryMiddlewareController.js";
 import { generateOntologyAssets } from "./generateOntologyAssets.js";
@@ -37,6 +39,8 @@ export function ontologyAsCode(
 ): PluginOption {
   let config: ResolvedConfig;
 
+  const workDir = path.join("node_modules", ".osdk", ".oac");
+
   return {
     name: "oac-vite-plugin",
 
@@ -50,6 +54,7 @@ export function ontologyAsCode(
         watcher: server.watcher,
         logger: server.config.logger,
         ontologyDir,
+        workDir,
       });
 
       const middlewareUrl = `http${
@@ -64,6 +69,7 @@ export function ontologyAsCode(
           oacEmitter,
           ontologyDir,
           hooks,
+          workDir,
         },
       );
 
@@ -78,9 +84,12 @@ export function ontologyAsCode(
         });
 
         try {
+          await fs.promises.mkdir(workDir, { recursive: true });
+
           await generateOntologyAssets({
             logger: config.logger,
             ontologyDir,
+            workDir,
           });
 
           config.logger.info(
