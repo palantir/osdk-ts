@@ -40,16 +40,27 @@ export class FoundryMiddlewareController {
     msw.LifeCycleEventsMap
   >();
   #hooks: Hooks | undefined;
+  #ontologyDir: string;
 
   constructor(
-    serverUrl: string,
-    defaultOntologyRid: string,
-    oacEmitter: EventEmitter<WatchOntologyAsCodeEvents>,
-    hooks?: Hooks,
+    {
+      serverUrl,
+      defaultOntologyRid,
+      oacEmitter,
+      ontologyDir,
+      hooks,
+    }: {
+      serverUrl: string;
+      defaultOntologyRid: string;
+      oacEmitter: EventEmitter<WatchOntologyAsCodeEvents>;
+      ontologyDir: string;
+      hooks?: Hooks;
+    },
   ) {
     this.#serverUrl = serverUrl;
     this.#defaultOntologyRid = defaultOntologyRid;
     this.#hooks = hooks;
+    this.#ontologyDir = ontologyDir;
 
     // create empty initial foundry
     this.#fauxFoundry = this.#createNewFauxFoundry();
@@ -113,7 +124,7 @@ export class FoundryMiddlewareController {
     this.#debugLog("[osdk] applying seed data");
     await applySeed(
       this.#fauxFoundry,
-      path.resolve(import.meta.dirname, "..", "..", ".ontology", "seed.ts"),
+      path.resolve(this.#ontologyDir, "seed.ts"),
     );
 
     this.#infoLog("[osdk] Finished reloading ontology & seed data");

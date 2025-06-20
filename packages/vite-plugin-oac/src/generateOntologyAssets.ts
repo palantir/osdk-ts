@@ -47,7 +47,7 @@ export async function generateOntologyAssets({
   }
 
   // Generate the assets in sequence
-  await ontologyJsToIr(logger);
+  await ontologyJsToIr(logger, ontologyDir);
   await ontologyIrToFullMetadata(logger);
   await fullMetadataToOsdk(logger);
 }
@@ -55,7 +55,10 @@ export async function generateOntologyAssets({
 /**
  * Convert ontology.mjs to IR format using the maker tool
  */
-async function ontologyJsToIr(logger: Logger): Promise<void> {
+async function ontologyJsToIr(
+  logger: Logger,
+  ontologyDir: string,
+): Promise<void> {
   if (NOISY) {
     logger.info("Generating Ontology IR", { timestamp: true });
   }
@@ -64,7 +67,7 @@ async function ontologyJsToIr(logger: Logger): Promise<void> {
     "exec",
     "maker",
     "-i",
-    ".ontology/ontology.mjs",
+    `${ontologyDir}/ontology.mjs`,
     "-o",
     ".ontology.ir.json",
   ]);

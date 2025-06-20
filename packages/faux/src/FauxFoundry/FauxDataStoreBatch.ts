@@ -55,6 +55,10 @@ export class FauxDataStoreBatch {
     );
   };
 
+  getObjects = (objectType: string): Iterable<BaseServerObject> => {
+    return this.#fauxDataStore.getObjectsOfType(objectType);
+  };
+
   public addObject<T extends ObjectTypeDefinition>(
     objectType: T["apiName"],
     primaryKey: PrimaryKeyType<T>,
