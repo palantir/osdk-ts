@@ -27,7 +27,6 @@
     }
   },
   "scripts": {
-    "build": "( cd ../.irtofull && pnpm build ) && tsc",
     "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
