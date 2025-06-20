@@ -360,7 +360,7 @@ export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
 
 export function expectSingleObjectCallAndClear<T extends ObjectTypeDefinition>(
   subFn: MockedObject<Observer<ObjectPayload | undefined>>,
-  object: Osdk.Instance<T>,
+  object: Osdk.Instance<T> | undefined,
   status?: Status,
 ): void {
   expect(subFn.next).toHaveBeenCalledExactlyOnceWith(

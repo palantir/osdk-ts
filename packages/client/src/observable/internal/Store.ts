@@ -57,6 +57,7 @@ import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { Query } from "./Query.js";
 import { RefCounts } from "./RefCounts.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
+import { tombstone } from "./tombstone.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 /*
@@ -93,6 +94,11 @@ export interface BatchContext {
   read: <K extends CacheKey<string, any, any>>(
     k: K,
   ) => Entry<K> | undefined;
+
+  delete: <K extends CacheKey<string, any, any>>(
+    k: K,
+    status: Entry<K>["status"],
+  ) => Entry<K>;
 }
 
 interface UpdateOptions {
@@ -537,6 +543,9 @@ export class Store {
         }
 
         return newValue;
+      },
+      delete: (cacheKey, status) => {
+        return batchContext.write(cacheKey, tombstone, status);
       },
       read: (cacheKey) => {
         return optimisticId
