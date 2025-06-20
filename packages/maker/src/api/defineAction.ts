@@ -590,7 +590,7 @@ function extractActionParameterType(
     case "short":
       return maybeAddList("integer", pt);
     case "geopoint":
-      return maybeAddList("geoshape", pt);
+      return maybeAddList("geohash", pt);
     case "float":
       return maybeAddList("double", pt);
     case "geotimeSeries":
