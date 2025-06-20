@@ -3070,10 +3070,10 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "linkTypes": [
               {
                 "apiName": "Dc3DistributionCenterProposalToDistributionRoute",
-                "cardinality": "ONE",
+                "cardinality": "MANY",
                 "displayName": "Dc3DistributionCenterProposalToDistributionRoute",
                 "linkTypeRid": "ri.Dc3DistributionCenterProposal.Dc3DistributionCenterProposalToDistributionRoute.Dc3DistributionRouteAnalysis",
-                "objectTypeApiName": "Dc3DistributionCenterProposal",
+                "objectTypeApiName": "Dc3DistributionRouteAnalysis",
                 "status": "ACTIVE",
               },
             ],
@@ -3150,18 +3150,18 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "linkTypes": [
               {
                 "apiName": "Dc3RestaurantToDistributionRoute",
-                "cardinality": "MANY",
+                "cardinality": "ONE",
                 "displayName": "Dc3RestaurantToDistributionRoute",
                 "linkTypeRid": "ri.Dc3Restaurant.Dc3RestaurantToDistributionRoute.Dc3DistributionRouteAnalysis",
-                "objectTypeApiName": "Dc3DistributionRouteAnalysis",
+                "objectTypeApiName": "Dc3Restaurant",
                 "status": "ACTIVE",
               },
               {
                 "apiName": "Dc3DistributionCenterProposalToDistributionRoute",
-                "cardinality": "MANY",
+                "cardinality": "ONE",
                 "displayName": "Dc3DistributionCenterProposalToDistributionRoute",
                 "linkTypeRid": "ri.Dc3DistributionCenterProposal.Dc3DistributionCenterProposalToDistributionRoute.Dc3DistributionRouteAnalysis",
-                "objectTypeApiName": "Dc3DistributionRouteAnalysis",
+                "objectTypeApiName": "Dc3DistributionCenterProposal",
                 "status": "ACTIVE",
               },
             ],
@@ -3238,10 +3238,10 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "linkTypes": [
               {
                 "apiName": "Dc3RestaurantToDistributionRoute",
-                "cardinality": "ONE",
+                "cardinality": "MANY",
                 "displayName": "Dc3RestaurantToDistributionRoute",
                 "linkTypeRid": "ri.Dc3Restaurant.Dc3RestaurantToDistributionRoute.Dc3DistributionRouteAnalysis",
-                "objectTypeApiName": "Dc3Restaurant",
+                "objectTypeApiName": "Dc3DistributionRouteAnalysis",
                 "status": "ACTIVE",
               },
             ],
