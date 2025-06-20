@@ -92,6 +92,7 @@ export async function runMediaTest(): Promise<void> {
   );
 
   console.log(mediaMetadata);
+  await runUploadMediaTest();
 }
 
 void runMediaTest();
