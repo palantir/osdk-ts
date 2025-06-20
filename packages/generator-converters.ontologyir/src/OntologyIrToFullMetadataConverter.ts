@@ -339,7 +339,9 @@ export class OntologyIrToFullMetadataConverter {
               objectTypeApiName: modifyParamType.objectReference.objectTypeId,
             } satisfies Ontologies.LogicRule;
           } else {
-            throw "Unable to convert modifyAction because parameter does not exist";
+            throw new Error(
+              "Unable to convert modifyAction because parameter does not exist",
+            );
           }
         }
         case "deleteLinkRule":
@@ -384,10 +386,19 @@ export class OntologyIrToFullMetadataConverter {
         }
         case "modifyObjectRule": {
           const r = irLogic.modifyObjectRule;
-          return {
-            type: "modifyObject",
-            objectTypeApiName: r.objectToModify,
-          } satisfies Ontologies.LogicRule;
+
+          const modifyParamType =
+            action.actionType.metadata.parameters[r.objectToModify].type;
+          if (modifyParamType.type === "objectReference") {
+            return {
+              type: "modifyObject",
+              objectTypeApiName: modifyParamType.objectReference.objectTypeId,
+            } satisfies Ontologies.LogicRule;
+          } else {
+            throw new Error(
+              "Unable to convert modifyAction because parameter does not exist",
+            );
+          }
         }
         default:
           throw new Error("Unknown logic rule type");
