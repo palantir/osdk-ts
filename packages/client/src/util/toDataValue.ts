@@ -95,11 +95,16 @@ export async function toDataValue(
 
   if (isMediaUpload(value)) {
     const mediaRef = await OntologiesV2.MediaReferenceProperties
-      .uploadMedia(client, value.data, {
-        path: value.path,
-        ontology: await client.ontologyRid,
-        action: actionMetadata.apiName,
-      });
+      .uploadMedia(
+        client,
+        await client.ontologyRid,
+        actionMetadata.apiName,
+        value.data,
+        {
+          mediaItemPath: value.path,
+          preview: true,
+        },
+      );
     return await toDataValue(mediaRef, client, actionMetadata);
   }
 

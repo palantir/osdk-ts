@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionValidationResponse } from "@osdk/api";
+import type { ValidateActionResponseV2 as ActionValidationResponse } from "@osdk/foundry.ontologies";
 
 export class ActionValidationError extends Error {
   constructor(public validation: ActionValidationResponse) {

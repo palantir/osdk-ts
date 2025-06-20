@@ -327,7 +327,7 @@ export interface DataValueClientToWire {
     	// (undocumented)
     marking: string;
     	// (undocumented)
-    mediaReference: MediaReference;
+    mediaReference: MediaReference | MediaUpload;
     	// (undocumented)
     null: null;
     	// (undocumented)
