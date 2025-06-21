@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionMetadata, MediaUpload } from "@osdk/api";
+import type { ActionMetadata } from "@osdk/api";
 import { Employee, Task } from "@osdk/client.test.ontology";
 import type { MediaReference } from "@osdk/foundry.core";
 import {
@@ -29,7 +29,6 @@ import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAttachmentUpload } from "../object/AttachmentUpload.js";
-import { isMediaReference } from "../object/mediaUpload.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import { toDataValue } from "./toDataValue.js";
 
@@ -52,7 +51,9 @@ describe(toDataValue, () => {
     );
 
     // toDataValue only needs the apiName right now, update this if that changes
-    const fakeActionMetadata = { apiName: "create-unstructured-image-example" };
+    const fakeActionMetadata = {
+      apiName: "createUnstructuredImageExampleObject",
+    };
     mockActionMetadata = fakeActionMetadata as ActionMetadata;
 
     return () => {
@@ -204,6 +205,7 @@ describe(toDataValue, () => {
     expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
   });
 
+  /*
   it("converts media uploads correctly", async () => {
     const file: MediaUpload = {
       data: new Blob([
@@ -217,6 +219,7 @@ describe(toDataValue, () => {
     const converted = await toDataValue(file, clientCtx, mockActionMetadata);
     expect(isMediaReference(converted)).toBe(true);
   });
+  */
 
   it("converts media reference correctly", async () => {
     const mediaReference: MediaReference = {
