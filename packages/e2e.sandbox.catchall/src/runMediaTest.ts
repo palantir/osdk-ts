@@ -14,16 +14,72 @@
  * limitations under the License.
  */
 
-import type { MediaUpload } from "@osdk/api";
+import type { Media, MediaReference, MediaUpload } from "@osdk/api";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
 import { $Actions, MnayanOsdkMediaObject } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 
-async function runUploadMediaTest(): Promise<void> {
-  const data = new Blob([
-    JSON.stringify({ name: "Hello World" }, null, 2),
-  ]);
-  const payload: MediaUpload = { data, path: "helloworld.txt" };
+async function runReadMediaTest(ref: Media): Promise<Blob> {
+  const mediaMetadata = await ref.fetchMetadata();
+  if (mediaMetadata.sizeBytes !== 18484484) {
+    throw (new Error(
+      `Media Metadata was incorrect: expected: 18484484 bytes and got ${mediaMetadata.sizeBytes} bytes`,
+    ));
+  }
+  if (mediaMetadata.mediaType !== "imagery") {
+    throw (new Error(
+      `Media Metadata was incorrect: expected type imagery and got ${mediaMetadata.mediaType}`,
+    ));
+  }
+
+  const mediaContents = await ref.fetchContents();
+
+  if (!mediaContents.ok) {
+    throw (new Error("Failed to fetch media contents"));
+  }
+
+  const mediaMimeType = mediaContents.headers.get("Content-Type");
+  if (mediaMimeType !== "image/png") {
+    throw (new Error(
+      `MediaMimeType was incorrect: expected image/png and got ${mediaMimeType} instead`,
+    ));
+  }
+
+  return mediaContents.blob();
+}
+
+async function runCreateMediaReferenceTest(
+  data: Blob,
+): Promise<MediaReference> {
+  // should not work
+  // Won't allow property keys not of media ref type
+  await client(
+    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+  )
+    .createMediaReference({
+      data: data,
+      fileName: "test15.png",
+      objectType: MnayanOsdkMediaObject,
+      // @ts-expect-error
+      propertyType: "path",
+    }).then((_) => {
+      throw (new Error(
+        "This create media reference should not resolve as it is not being assigned to a media reference property",
+      ));
+    });
+
+  // should work
+  return client(__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference)
+    .createMediaReference({
+      data,
+      fileName: "test15.png",
+      objectType: MnayanOsdkMediaObject,
+      propertyType: "mediaReference",
+    });
+}
+
+async function runUploadMediaTest(data: Blob): Promise<void> {
+  const payload: MediaUpload = { data, path: "test15.png" };
 
   const result = await client($Actions.createMediaViaFunction).applyAction({
     mediaItem: payload,
@@ -41,58 +97,32 @@ export async function runMediaTest(): Promise<void> {
     result?.mediaReference?.getMediaReference(),
   );
 
-  const mediaMetadata = await result.mediaReference?.fetchMetadata();
-  const response = await result.mediaReference?.fetchContents().then(
-    async response => {
-      if (!response.ok) {
-        console.log("Error fetching data");
-      } else {
-        const mimeType = response.headers.get("Content-Type");
-        console.log("Data mimetype:", mimeType);
+  if (!result.mediaReference) {
+    throw (new Error("Object does not contain expected media reference"));
+  }
 
-        const mediaRef = await client(
-          __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-        )
-          .createMediaReference({
-            data: await response.blob(),
-            fileName: "test15.png",
-            objectType: MnayanOsdkMediaObject,
-            propertyType: "mediaReference",
-          });
+  const testImage: Blob = await runReadMediaTest(result.mediaReference);
+  const mediaRef: MediaReference = await runCreateMediaReferenceTest(testImage);
 
-        // Won't allow property keys not of media ref type
-        const mediaRefShouldNotWork = await client(
-          __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-        )
-          .createMediaReference({
-            data: await response.blob(),
-            fileName: "test15.png",
-            objectType: MnayanOsdkMediaObject,
-            // @ts-expect-error
-            propertyType: "path",
-          });
+  // test applying via a function backed action
+  await client(
+    $Actions.createMediaViaFunction,
+  )
+    .applyAction({
+      mediaItem: mediaRef,
+    }, {
+      $returnEdits: true,
+    });
+  // test creating object via an action
+  await client($Actions.createMediaObject).applyAction({
+    path: "test9",
+    media_reference: mediaRef,
+  }, {
+    $returnEdits: true,
+  });
 
-        console.log("Media Reference:", mediaRef);
-        // Enable below to test creating object via non-function backed action
-        /* const result = await client($Actions.createMediaObject).applyAction({
-           path: "test9",
-           media_reference: mediaRef,
-         }, {
-           $returnEdits: true,
-         }); */
-
-        const result = await client($Actions.createMediaViaFunction)
-          .applyAction({
-            mediaItem: mediaRef,
-          }, {
-            $returnEdits: true,
-          });
-      }
-    },
-  );
-
-  console.log(mediaMetadata);
-  await runUploadMediaTest();
+  // test direct media upload
+  await runUploadMediaTest(testImage);
 }
 
 void runMediaTest();

@@ -52,7 +52,7 @@ describe(toDataValue, () => {
     );
 
     // toDataValue only needs the apiName right now, update this if that changes
-    const fakeActionMetadata = { apiName: "some-action-name" };
+    const fakeActionMetadata = { apiName: "create-unstructured-image-example" };
     mockActionMetadata = fakeActionMetadata as ActionMetadata;
 
     return () => {
