@@ -9,7 +9,7 @@ export {
   createStructPersonOpiTeam,
   createTestGeoAction,
   createTodo,
-  createUnstructuredImageExampleObject,
+  createUnstructuredImageExample,
   deleteFooInterface,
   deleteOsdkTestObject,
   editOsdkTestObject,

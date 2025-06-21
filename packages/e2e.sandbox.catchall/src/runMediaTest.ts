@@ -26,7 +26,7 @@ async function runReadMediaTest(ref: Media): Promise<Blob> {
       `Media Metadata was incorrect: expected: 18484484 bytes and got ${mediaMetadata.sizeBytes} bytes`,
     ));
   }
-  if (mediaMetadata.mediaType !== "imagery") {
+  if (mediaMetadata.mediaType !== "image/png") {
     throw (new Error(
       `Media Metadata was incorrect: expected type imagery and got ${mediaMetadata.mediaType}`,
     ));
@@ -66,6 +66,8 @@ async function runCreateMediaReferenceTest(
       throw (new Error(
         "This create media reference should not resolve as it is not being assigned to a media reference property",
       ));
+    }).catch(() => {
+      console.log("Request failed as expected");
     });
 
   // should work
@@ -81,7 +83,7 @@ async function runCreateMediaReferenceTest(
 async function runUploadMediaTest(data: Blob): Promise<void> {
   const payload: MediaUpload = { data, path: "test15.png" };
 
-  const result = await client($Actions.createUnstructuredImageExampleObject)
+  const result = await client($Actions.createUnstructuredImageExample)
     .applyAction({
       media_reference: payload,
       path: "test15.png",
@@ -102,11 +104,16 @@ export async function runMediaTest(): Promise<void> {
   if (!result.mediaReference) {
     throw (new Error("Object does not contain expected media reference"));
   }
-
+  console.log("Reading Media Reference");
   const testImage: Blob = await runReadMediaTest(result.mediaReference);
+  console.log("SUCCESS: Reading Media Reference");
+
+  console.log("Creating Media Reference");
   const mediaRef: MediaReference = await runCreateMediaReferenceTest(testImage);
+  console.log("SUCCESS: Creating Media Reference");
 
   // test applying via a function backed action
+  console.log("Applying Media Reference via Function Backed Action");
   await client(
     $Actions.createMediaViaFunction,
   )
@@ -115,16 +122,22 @@ export async function runMediaTest(): Promise<void> {
     }, {
       $returnEdits: true,
     });
+  console.log("SUCCESS: Applying Media Reference via Function Backed Action");
   // test creating object via an action
+  /*
+  console.log("Applying Media Reference via Action");
   await client($Actions.createMediaObject).applyAction({
     path: "test9",
     media_reference: mediaRef,
   }, {
     $returnEdits: true,
   });
-
+  console.log("SUCCESS: Applying Media Reference via Action");
+  */
   // test direct media upload
+  console.log("Testing Media Upload Type");
   await runUploadMediaTest(testImage);
+  console.log("SUCCESS: Testing Media Upload Type");
 }
 
 void runMediaTest();

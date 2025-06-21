@@ -247,8 +247,8 @@
         }
       ]
     },
-    "create-unstructured-image-example-object": {
-      "apiName": "create-unstructured-image-example-object",
+    "create-unstructured-image-example": {
+      "apiName": "create-unstructured-image-example",
       "displayName": "Creates an Unstructured Image Example Object",
       "status": "EXPERIMENTAL",
       "parameters": {

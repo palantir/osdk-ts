@@ -8,7 +8,7 @@ import type {
 } from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-export namespace createUnstructuredImageExampleObject {
+export namespace createUnstructuredImageExample {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     media_reference: {
@@ -34,12 +34,12 @@ export namespace createUnstructuredImageExampleObject {
   // Represents a fqn of the action
   export interface Signatures {
     applyAction<OP extends ApplyActionOptions>(
-      args: createUnstructuredImageExampleObject.Params,
+      args: createUnstructuredImageExample.Params,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
 
     batchApplyAction<OP extends ApplyBatchActionOptions>(
-      args: ReadonlyArray<createUnstructuredImageExampleObject.Params>,
+      args: ReadonlyArray<createUnstructuredImageExample.Params>,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }
@@ -49,10 +49,9 @@ export namespace createUnstructuredImageExampleObject {
  * @param {ActionParam.PrimitiveType<"mediaReference">} media_reference
  * @param {ActionParam.PrimitiveType<"string">} path
  */
-export interface createUnstructuredImageExampleObject
-  extends ActionDefinition<createUnstructuredImageExampleObject.Signatures> {
+export interface createUnstructuredImageExample extends ActionDefinition<createUnstructuredImageExample.Signatures> {
   __DefinitionMetadata?: {
-    apiName: 'createUnstructuredImageExampleObject';
+    apiName: 'createUnstructuredImageExample';
     displayName: 'Creates an Unstructured Image Example Object';
     modifiedEntities: {
       UnstructuredImageExample: {
@@ -60,20 +59,20 @@ export interface createUnstructuredImageExampleObject
         modified: false;
       };
     };
-    parameters: createUnstructuredImageExampleObject.ParamsDefinition;
+    parameters: createUnstructuredImageExample.ParamsDefinition;
     rid: 'ri.actions.main.action-type.9d28a423-b11e-485f-8a4c-f8b4131c0b85';
     status: 'EXPERIMENTAL';
     type: 'action';
 
-    signatures: createUnstructuredImageExampleObject.Signatures;
+    signatures: createUnstructuredImageExample.Signatures;
   };
-  apiName: 'createUnstructuredImageExampleObject';
+  apiName: 'createUnstructuredImageExample';
   type: 'action';
   osdkMetadata: typeof $osdkMetadata;
 }
 
-export const createUnstructuredImageExampleObject: createUnstructuredImageExampleObject = {
-  apiName: 'createUnstructuredImageExampleObject',
+export const createUnstructuredImageExample: createUnstructuredImageExample = {
+  apiName: 'createUnstructuredImageExample',
   type: 'action',
   osdkMetadata: $osdkMetadata,
 };
