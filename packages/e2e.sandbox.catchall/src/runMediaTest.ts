@@ -81,9 +81,11 @@ async function runCreateMediaReferenceTest(
 async function runUploadMediaTest(data: Blob): Promise<void> {
   const payload: MediaUpload = { data, path: "test15.png" };
 
-  const result = await client($Actions.createMediaViaFunction).applyAction({
-    mediaItem: payload,
-  }, { $returnEdits: true });
+  const result = await client($Actions.createUnstructuredImageExampleObject)
+    .applyAction({
+      media_reference: payload,
+      path: "test15.png",
+    }, { $returnEdits: true });
 }
 
 export async function runMediaTest(): Promise<void> {
