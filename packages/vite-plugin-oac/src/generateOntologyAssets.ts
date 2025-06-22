@@ -19,8 +19,8 @@ import {
   OntologyIrToFullMetadataConverter,
 } from "@osdk/generator-converters.ontologyir";
 import { execa } from "execa";
-import fs from "node:fs";
-import path from "node:path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import type { Logger } from "vite";
 import { syncDirectories } from "./syncDirectories.js";
 
@@ -29,6 +29,7 @@ export const NOISY = false;
 export interface GenerateOntologyAssetsOptions {
   logger: Logger;
   ontologyDir: string;
+  workDir: string;
 }
 
 /**
@@ -36,10 +37,10 @@ export interface GenerateOntologyAssetsOptions {
  * This function contains the core generation logic extracted from watchOntologyAsCode
  * so it can be used both in dev mode (via file watching) and build mode.
  */
-export async function generateOntologyAssets({
-  logger,
-  ontologyDir,
-}: GenerateOntologyAssetsOptions): Promise<void> {
+export async function generateOntologyAssets(
+  opts: GenerateOntologyAssetsOptions,
+): Promise<void> {
+  const { ontologyDir, logger } = opts;
   // Ensure the ontology directory exists
   if (!fs.existsSync(ontologyDir)) {
     fs.mkdirSync(ontologyDir, { recursive: true });
@@ -47,15 +48,25 @@ export async function generateOntologyAssets({
   }
 
   // Generate the assets in sequence
-  await ontologyJsToIr(logger);
-  await ontologyIrToFullMetadata(logger);
-  await fullMetadataToOsdk(logger);
+  await ontologyJsToIr(opts);
+  await ontologyIrToFullMetadata(opts);
+  await fullMetadataToOsdk(opts);
+}
+
+export function ontologyIrPath(workDir: string): string {
+  return path.join(workDir, ".ontology.ir.json");
+}
+
+export function ontologyFullMetadataPath(workDir: string): string {
+  return path.join(workDir, ".ontology.json");
 }
 
 /**
  * Convert ontology.mjs to IR format using the maker tool
  */
-async function ontologyJsToIr(logger: Logger): Promise<void> {
+async function ontologyJsToIr(
+  { logger, ontologyDir, workDir }: GenerateOntologyAssetsOptions,
+): Promise<void> {
   if (NOISY) {
     logger.info("Generating Ontology IR", { timestamp: true });
   }
@@ -64,9 +75,9 @@ async function ontologyJsToIr(logger: Logger): Promise<void> {
     "exec",
     "maker",
     "-i",
-    ".ontology/ontology.mjs",
+    `${ontologyDir}/ontology.mts`,
     "-o",
-    ".ontology.ir.json",
+    ontologyIrPath(workDir),
   ]);
 
   if (exitCode !== 0) {
@@ -90,13 +101,15 @@ async function ontologyJsToIr(logger: Logger): Promise<void> {
 /**
  * Convert IR to full metadata format
  */
-async function ontologyIrToFullMetadata(logger: Logger): Promise<void> {
+async function ontologyIrToFullMetadata(
+  { logger, workDir }: GenerateOntologyAssetsOptions,
+): Promise<void> {
   if (NOISY) {
     logger.info("Converting IR to Full metadata", { timestamp: true });
   }
 
   try {
-    const irContent = await fs.promises.readFile("./.ontology.ir.json", {
+    const irContent = await fs.promises.readFile(ontologyIrPath(workDir), {
       encoding: "utf-8",
     });
     const blockData = JSON.parse(irContent)
@@ -107,7 +120,7 @@ async function ontologyIrToFullMetadata(logger: Logger): Promise<void> {
     );
 
     await fs.promises.writeFile(
-      "./.ontology.json",
+      ontologyFullMetadataPath(workDir),
       JSON.stringify(fullMeta, null, 2),
     );
 
@@ -130,20 +143,29 @@ async function ontologyIrToFullMetadata(logger: Logger): Promise<void> {
 /**
  * Generate OSDK from full metadata
  */
-async function fullMetadataToOsdk(logger: Logger): Promise<void> {
+async function fullMetadataToOsdk(
+  { logger, workDir }: GenerateOntologyAssetsOptions,
+): Promise<void> {
   if (NOISY) {
     logger.info("Generating OSDK from full metadata", { timestamp: true });
   }
 
   // First create a clean temporary directory to generate the SDK into
   const tempDir = path.join(
-    process.cwd(),
-    "node_modules",
-    ".tmp",
-    "osdkGeneration",
+    workDir,
+    ".osdkGenerationTmp",
+    "src",
   );
   await fs.promises.rm(tempDir, { recursive: true, force: true });
   await fs.promises.mkdir(tempDir, { recursive: true });
+
+  // The osdk cli currently mutes package.json files which we don't want in this case
+  // so we give it a fake package.json file
+  await fs.promises.writeFile(
+    path.join(tempDir, "..", "package.json"),
+    JSON.stringify({}, null, 2),
+    { encoding: "utf-8" },
+  );
 
   try {
     // Then generate the source code for the osdk
@@ -157,7 +179,7 @@ async function fullMetadataToOsdk(logger: Logger): Promise<void> {
       "--outDir",
       tempSrcDir,
       "--ontologyPath",
-      ".ontology.json",
+      ontologyFullMetadataPath(workDir),
       "--beta",
       "true",
       "--packageType",
@@ -175,6 +197,7 @@ async function fullMetadataToOsdk(logger: Logger): Promise<void> {
 
     // Then if it was successful, synchronize the generated code with the target directory
     if (exitCode === 0) {
+      // TODO we should just generate this whole thing into the work dir?
       const targetDir = ".osdk/src";
       try {
         if (NOISY) {
@@ -197,6 +220,7 @@ async function fullMetadataToOsdk(logger: Logger): Promise<void> {
             },
           );
         }
+        await compileOsdk(logger);
 
         // Clean up temporary directory after successful sync
         await fs.promises.rm(tempDir, { recursive: true, force: true });
@@ -235,4 +259,25 @@ async function fullMetadataToOsdk(logger: Logger): Promise<void> {
     }
     throw error;
   }
+}
+
+async function compileOsdk(logger: Logger) {
+  const { stdout, stderr, exitCode } = await execa("pnpm", [
+    "exec",
+    "tsc",
+  ], {
+    cwd: ".osdk",
+  });
+
+  if (stdout && NOISY) {
+    logger.info(`OSDK generation output: ${stdout}`, {
+      timestamp: true,
+    });
+  }
+  if (stderr) {
+    logger.error(`OSDK generation stderr: ${stderr}`, {
+      timestamp: true,
+    });
+  }
+  return exitCode;
 }

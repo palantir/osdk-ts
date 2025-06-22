@@ -15,7 +15,8 @@
  */
 
 import type { FauxOntology } from "@osdk/faux";
-import path from "node:path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import type { PluginOption, ResolvedConfig } from "vite";
 import { FoundryMiddlewareController } from "./FoundryMiddlewareController.js";
 import { generateOntologyAssets } from "./generateOntologyAssets.js";
@@ -25,14 +26,20 @@ import { watchOntologyAsCode } from "./watchOntologyAsCode.js";
  * Vite plugin for Ontology as Code (OAC) that generates ontology IR, metadata, and OSDK
  * in both development and build modes.
  */
-export function ontologyAsCode(opts: {
-  hooks?: {
-    preSeed?: (fauxOntology: FauxOntology) => Promise<void>;
-  };
-}): PluginOption {
-  const ontologyDir = path.resolve(".ontology");
-
+export function ontologyAsCode(
+  {
+    hooks = {},
+    ontologyDir = "./ontology",
+  }: {
+    hooks?: {
+      preSeed?: (fauxOntology: FauxOntology) => Promise<void>;
+    };
+    ontologyDir: string;
+  },
+): PluginOption {
   let config: ResolvedConfig;
+
+  const workDir = path.join("node_modules", ".osdk", ".oac");
 
   return {
     name: "oac-vite-plugin",
@@ -47,6 +54,7 @@ export function ontologyAsCode(opts: {
         watcher: server.watcher,
         logger: server.config.logger,
         ontologyDir,
+        workDir,
       });
 
       const middlewareUrl = `http${
@@ -54,10 +62,15 @@ export function ontologyAsCode(opts: {
       }://localhost:${server.config.server.port}`;
 
       const foundryMiddlewareController = new FoundryMiddlewareController(
-        middlewareUrl,
-        `ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000`,
-        oacEmitter,
-        opts?.hooks,
+        {
+          serverUrl: middlewareUrl,
+          defaultOntologyRid:
+            `ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000`,
+          oacEmitter,
+          ontologyDir,
+          hooks,
+          workDir,
+        },
       );
 
       server.middlewares.use(foundryMiddlewareController.middleware);
@@ -71,9 +84,12 @@ export function ontologyAsCode(opts: {
         });
 
         try {
+          await fs.promises.mkdir(workDir, { recursive: true });
+
           await generateOntologyAssets({
             logger: config.logger,
             ontologyDir,
+            workDir,
           });
 
           config.logger.info(
