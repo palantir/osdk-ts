@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.11.0-beta.8
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/api@2.3.0-beta.7
+
 ## 0.11.0-beta.7
 
 ### Minor Changes

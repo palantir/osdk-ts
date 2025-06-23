@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.27.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
 ## 0.27.0-beta.6
 
 ### Minor Changes

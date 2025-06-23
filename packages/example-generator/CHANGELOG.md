@@ -1,5 +1,17 @@
 # @osdk/example-generator
 
+## 0.11.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/create-widget@3.0.0-beta.5
+  - @osdk/create-app@2.3.0-beta.7
+
 ## 0.11.0-beta.6
 
 ### Minor Changes
