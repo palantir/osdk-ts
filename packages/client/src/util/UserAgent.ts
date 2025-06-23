@@ -15,3 +15,5 @@
  */
 
 export const USER_AGENT: string = `osdk-client/${process.env.PACKAGE_VERSION}`;
+export const OBSERVABLE_USER_AGENT: string =
+  `osdk-observable-client/${process.env.PACKAGE_VERSION}`;
