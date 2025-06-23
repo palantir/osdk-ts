@@ -123,17 +123,7 @@ export async function runMediaTest(): Promise<void> {
       $returnEdits: true,
     });
   console.log("SUCCESS: Applying Media Reference via Function Backed Action");
-  // test creating object via an action
-  /*
-  console.log("Applying Media Reference via Action");
-  await client($Actions.createMediaObject).applyAction({
-    path: "test9",
-    media_reference: mediaRef,
-  }, {
-    $returnEdits: true,
-  });
-  console.log("SUCCESS: Applying Media Reference via Action");
-  */
+
   // test direct media upload
   console.log("Testing Media Upload Type");
   await runUploadMediaTest(testImage);
