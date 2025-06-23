@@ -255,11 +255,19 @@ function convertUserObjectPropertyType(
   };
 }
 
-export function convertToDisplayName(s: string): string {
-  return s.charAt(0).toUpperCase() + s.slice(1);
+export function convertToDisplayName(s: string | undefined | null): string {
+  return s === undefined || s == null
+    ? ""
+    : s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 // TODO: edge cases
-export function convertToPluralDisplayName(s: string): string {
-  return convertToDisplayName(s) + "s";
+export function convertToPluralDisplayName(
+  s: string | undefined | null,
+): string {
+  return s === undefined || s == null
+    ? ""
+    : s.endsWith("s")
+    ? convertToDisplayName(s)
+    : convertToDisplayName(s) + "s";
 }

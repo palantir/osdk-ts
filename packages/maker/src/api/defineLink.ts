@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-
-
+import type { LinkTypeMetadata } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import {
   convertToDisplayName,
@@ -25,7 +24,11 @@ import { updateOntology } from "./defineOntology.js";
 import type {
   LinkType,
   LinkTypeDefinition,
+  LinkTypeMetadataUserDefinition,
+  ManyToManyObjectLinkReference,
+  ManyToManyObjectLinkReferenceUserDefinition,
   OneToManyObjectLinkReference,
+  OneToManyObjectLinkReferenceUserDefinition,
 } from "./types.js";
 import { OntologyEntityTypeEnum } from "./types.js";
 
@@ -65,10 +68,11 @@ export function defineLink(
     }
     : {
       ...linkDefinition,
-      many: convertUserOneToManyLinkDefinition(linkDefinition.many),
-      toMany: convertUserOneToManyLinkDefinition(linkDefinition.toMany),
+      many: convertUserManyToManyLinkDefinition(linkDefinition.many),
+      toMany: convertUserManyToManyLinkDefinition(linkDefinition.toMany),
     };
   const linkType: LinkType = {
+    cardinality: "one" in linkDefinition ? "OneToMany" : undefined,
     ...fullLinkDefinition,
     __type: OntologyEntityTypeEnum.LINK_TYPE,
   };
@@ -77,47 +81,36 @@ export function defineLink(
 }
 
 function convertUserOneToManyLinkDefinition(
-  oneToMany: OneToManyObjectLinkReference,
+  oneToMany: OneToManyObjectLinkReferenceUserDefinition,
 ): OneToManyObjectLinkReference {
-  const displayMetadata = "displayMetadata" in oneToMany.metadata
-    ? oneToMany.metadata.displayMetadata
-    : undefined;
   return {
     ...oneToMany,
-    metadata: {
-      displayMetadata: displayMetadata ?? {
-        displayName: convertToDisplayName(oneToMany.object.apiName),
-        pluralDisplayName: convertToPluralDisplayName(oneToMany.object.apiName),
-        visibility: "NORMAL",
-        groupDisplayName: "",
-        ...oneToMany.metadata,
-      },
-      typeClasses: [],
-      apiName: oneToMany.metadata.apiName,
-    },
+    metadata: convertLinkTypeMetadata(oneToMany.metadata),
   };
 }
 
 function convertUserManyToManyLinkDefinition(
-  manyToMany: OneToManyObjectLinkReference,
-): OneToManyObjectLinkReference {
-  const displayMetadata = "displayMetadata" in manyToMany.metadata
-    ? manyToMany.metadata.displayMetadata
-    : undefined;
+  manyToMany: ManyToManyObjectLinkReferenceUserDefinition,
+): ManyToManyObjectLinkReference {
   return {
     ...manyToMany,
-    metadata: {
-      displayMetadata: displayMetadata ?? {
-        displayName: convertToDisplayName(manyToMany.object.apiName),
-        pluralDisplayName: convertToPluralDisplayName(
-          manyToMany.object.apiName,
-        ),
-        visibility: "NORMAL",
-        groupDisplayName: "",
-        ...manyToMany.metadata,
-      },
-      typeClasses: [],
-      apiName: manyToMany.metadata.apiName,
+    metadata: convertLinkTypeMetadata(manyToMany.metadata),
+  };
+}
+
+function convertLinkTypeMetadata(
+  metadata: LinkTypeMetadataUserDefinition,
+): LinkTypeMetadata {
+  return {
+    apiName: metadata.apiName,
+    displayMetadata: {
+      displayName: metadata.displayName
+        ?? convertToDisplayName(metadata.apiName),
+      pluralDisplayName: metadata.pluralDisplayName
+        ?? convertToPluralDisplayName(metadata.apiName),
+      visibility: metadata.visibility ?? "NORMAL",
+      groupDisplayName: metadata.groupDisplayName ?? "",
     },
+    typeClasses: [],
   };
 }
