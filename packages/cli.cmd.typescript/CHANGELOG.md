@@ -1,5 +1,17 @@
 # @osdk/cli.cmd.typescript
 
+## 0.27.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/cli.common@0.27.0-beta.7
+  - @osdk/generator@2.3.0-beta.7
+
 ## 0.27.0-beta.6
 
 ### Patch Changes

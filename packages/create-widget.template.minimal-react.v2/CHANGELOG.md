@@ -1,5 +1,11 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.0.0-beta.5
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
 ## 3.0.0-beta.4
 
 ### Minor Changes

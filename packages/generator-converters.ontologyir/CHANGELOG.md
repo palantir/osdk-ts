@@ -1,5 +1,16 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/client.unstable@2.3.0-beta.7
+
 ## 2.3.0-beta.6
 
 ### Minor Changes

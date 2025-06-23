@@ -1,5 +1,16 @@
 # @osdk/client.test.ontology
 
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/api@2.3.0-beta.7
+
 ## 2.3.0-beta.6
 
 ### Patch Changes

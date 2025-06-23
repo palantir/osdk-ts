@@ -1,5 +1,17 @@
 # @osdk/shared.test
 
+## 0.1.0-beta.3
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/generator-converters@2.3.0-beta.7
+  - @osdk/api@2.3.0-beta.7
+
 ## 0.1.0-beta.2
 
 ### Minor Changes

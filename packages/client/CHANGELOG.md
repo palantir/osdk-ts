@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- 2a23cca: ObservableClient now adds to the fetch-user-agent
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/generator-converters@2.3.0-beta.7
+  - @osdk/client.unstable@2.3.0-beta.7
+  - @osdk/api@2.3.0-beta.7
+
 ## 2.3.0-beta.6
 
 ### Minor Changes

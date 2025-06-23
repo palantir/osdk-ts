@@ -1,5 +1,21 @@
 # @osdk/vite-plugin-oac
 
+## 0.1.0-beta.2
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/generator-converters.ontologyir@2.3.0-beta.7
+  - @osdk/client.unstable@2.3.0-beta.7
+  - @osdk/maker@0.11.0-beta.8
+  - @osdk/faux@0.1.0-beta.3
+  - @osdk/api@2.3.0-beta.7
+  - @osdk/cli@0.27.0-beta.7
+
 ## 0.1.0-beta.1
 
 ### Patch Changes

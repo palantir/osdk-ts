@@ -1,5 +1,18 @@
 # @osdk/widget.client-react
 
+## 3.0.0-beta.5
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [2a23cca]
+- Updated dependencies [f8db93d]
+  - @osdk/client@2.3.0-beta.7
+  - @osdk/widget.client@3.0.0-beta.5
+
 ## 3.0.0-beta.4
 
 ### Minor Changes

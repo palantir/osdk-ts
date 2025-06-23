@@ -1,5 +1,16 @@
 # @osdk/widget.client
 
+## 3.0.0-beta.5
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/widget.api@3.0.0-beta.5
+
 ## 3.0.0-beta.4
 
 ### Minor Changes

@@ -1,5 +1,18 @@
 # @osdkkit/react
 
+## 0.5.0-beta.4
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [2a23cca]
+- Updated dependencies [f8db93d]
+  - @osdk/client@2.3.0-beta.7
+  - @osdk/api@2.3.0-beta.7
+
 ## 0.5.0-beta.3
 
 ### Minor Changes
