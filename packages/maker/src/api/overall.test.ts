@@ -97,14 +97,13 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Test Objects",
         apiName: "testObject",
         primaryKeyPropertyApiName: "constrainedString",
-        properties: [
-          {
-            apiName: "constrainedString",
+        properties: {
+          constrainedString: {
             type: "string",
             displayName: "Constrained String",
             valueType: testStringValueType,
           },
-        ],
+        },
       });
 
       const ontology = dumpOntologyFullMetadata();
@@ -1592,7 +1591,12 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "Foo",
           apiName: "foo",
           primaryKeyPropertyApiName: "bar",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: {
+            bar: {
+              type: "string",
+              displayName: "Bar",
+            },
+          },
         });
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Title property fizz is not defined on object foo]`,
@@ -1605,7 +1609,12 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "Foo",
           apiName: "foo",
           primaryKeyPropertyApiName: "fizz",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: {
+            bar: {
+              type: "string",
+              displayName: "Bar",
+            },
+          },
         });
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Primary key property fizz does not exist on object foo]`,
@@ -1618,7 +1627,12 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "Foo",
           apiName: "foo",
           primaryKeyPropertyApiName: "bar",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: {
+            bar: {
+              type: "string",
+              displayName: "Bar",
+            },
+          },
           implementsInterfaces: [{
             implements: sample,
             propertyMapping: [{ interfaceProperty: "foo", mapsTo: "fizz" }],
@@ -1635,7 +1649,12 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "Foo",
           apiName: "foo",
           primaryKeyPropertyApiName: "bar",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: {
+            bar: {
+              type: "string",
+              displayName: "Bar",
+            },
+          },
           implementsInterfaces: [{
             implements: sample,
             propertyMapping: [{ interfaceProperty: "fizz", mapsTo: "bar" }, {
@@ -1649,6 +1668,130 @@ describe("Ontology Defining", () => {
       );
     });
 
+    it("Minimal object definition correctly defined", () => {
+      const object = defineObject({
+        titlePropertyApiName: "bar",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          bar: {
+            type: "string",
+          },
+        },
+      });
+
+      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+        {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {
+            "com.palantir.foo": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "datasetV2": {
+                      "datasetRid": "com.palantir.foo",
+                      "propertyMapping": {
+                        "bar": {
+                          "column": "bar",
+                          "type": "column",
+                        },
+                      },
+                    },
+                    "type": "datasetV2",
+                  },
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
+                  "rid": "ri.ontology.main.datasource.com.palantir.foo",
+                },
+              ],
+              "entityMetadata": {
+                "arePatchesEnabled": false,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.foo",
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "Foo",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Foos",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "bar",
+                ],
+                "propertyTypes": {
+                  "bar": {
+                    "apiName": "bar",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Bar",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                },
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+                "titlePropertyTypeRid": "bar",
+              },
+            },
+          },
+          "sharedPropertyTypes": {},
+        }
+      `);
+    });
     it("Objects properly defined", () => {
       const spt = defineSharedPropertyType({
         apiName: "foo",
@@ -1666,10 +1809,12 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [
-          { apiName: "bar", type: "string", displayName: "Bar" },
-          {
-            apiName: "geopoint",
+        properties: {
+          bar: {
+            type: "string",
+            displayName: "Bar",
+          },
+          geopoint: {
             type: {
               type: "struct",
               structDefinition: {
@@ -1679,7 +1824,7 @@ describe("Ontology Defining", () => {
             },
             displayName: "geopoint",
           },
-        ],
+        },
         implementsInterfaces: [{
           implements: sample,
           propertyMapping: [{ interfaceProperty: "foo", mapsTo: "bar" }],
@@ -1975,6 +2120,7 @@ describe("Ontology Defining", () => {
         }
       `);
     });
+
     it("One To Many Links are properly defined", () => {
       const object = defineObject({
         titlePropertyApiName: "bar",
@@ -1982,7 +2128,12 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+        properties: {
+          bar: {
+            type: "string",
+            displayName: "Bar",
+          },
+        },
       });
 
       const otherObject = defineObject({
@@ -1991,11 +2142,16 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Fizz",
         apiName: "fizz",
         primaryKeyPropertyApiName: "fizz",
-        properties: [{ apiName: "fizz", type: "string", displayName: "Fizz" }, {
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: {
+          fizz: {
+            type: "string",
+            displayName: "Fizz",
+          },
+          bar: {
+            type: "string",
+            displayName: "Bar",
+          },
+        },
       });
 
       defineLink({
@@ -2003,31 +2159,20 @@ describe("Ontology Defining", () => {
         one: {
           object: object,
           metadata: {
-            displayMetadata: {
-              displayName: "Foo",
-              groupDisplayName: "",
-              pluralDisplayName: "Foos",
-              visibility: "NORMAL",
-            },
-            typeClasses: [],
             apiName: "fizzes",
+            displayName: "Foo",
+            pluralDisplayName: "Foos",
           },
         },
         toMany: {
           object: otherObject,
           metadata: {
-            displayMetadata: {
-              displayName: "Fizz",
-              groupDisplayName: "",
-              pluralDisplayName: "Fizzes",
-              visibility: "NORMAL",
-            },
-            typeClasses: [],
             apiName: "foos",
+            displayName: "Fizz",
+            pluralDisplayName: "Fizzes",
           },
         },
         manyForeignKeyProperty: "bar",
-        cardinality: "OneToMany",
       });
 
       expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
@@ -2345,7 +2490,11 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+        properties: {
+          bar: {
+            type: "string",
+          },
+        },
       });
 
       const otherObject = defineObject({
@@ -2354,11 +2503,10 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Fizz",
         apiName: "fizz",
         primaryKeyPropertyApiName: "fizz",
-        properties: [{ apiName: "fizz", type: "string", displayName: "Fizz" }, {
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: {
+          fizz: { type: "string" },
+          bar: { type: "string" },
+        },
       });
 
       defineLink({
@@ -2366,27 +2514,17 @@ describe("Ontology Defining", () => {
         many: {
           object: object,
           metadata: {
-            displayMetadata: {
-              displayName: "Foo",
-              groupDisplayName: "",
-              pluralDisplayName: "Foos",
-              visibility: "NORMAL",
-            },
-            typeClasses: [],
             apiName: "fizzes",
+            displayName: "Foo",
+            pluralDisplayName: "Foos",
           },
         },
         toMany: {
           object: otherObject,
           metadata: {
-            displayMetadata: {
-              displayName: "Fizz",
-              groupDisplayName: "",
-              pluralDisplayName: "Fizzes",
-              visibility: "NORMAL",
-            },
-            typeClasses: [],
             apiName: "foos",
+            displayName: "Fizz",
+            pluralDisplayName: "Fizzes",
           },
         },
       });
@@ -2743,6 +2881,364 @@ describe("Ontology Defining", () => {
       `);
     });
 
+    it("Minimal links are properly defined", () => {
+      const object = defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "Foo",
+        pluralDisplayName: "Foo",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          bar: {
+            type: "string",
+            displayName: "Bar",
+          },
+        },
+      });
+
+      const otherObject = defineObject({
+        titlePropertyApiName: "fizz",
+        displayName: "Fizz",
+        pluralDisplayName: "Fizz",
+        apiName: "fizz",
+        primaryKeyPropertyApiName: "fizz",
+        properties: {
+          fizz: {
+            type: "string",
+            displayName: "Fizz",
+          },
+          bar: {
+            type: "string",
+            displayName: "Bar",
+          },
+        },
+      });
+
+      defineLink({
+        apiName: "fizzToFoo",
+        one: {
+          object: object,
+          metadata: {
+            apiName: "fizzes",
+          },
+        },
+        toMany: {
+          object: otherObject,
+          metadata: {
+            apiName: "foos",
+          },
+        },
+        manyForeignKeyProperty: "bar",
+      });
+
+      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+        {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {
+            "fizzToFoo": {
+              "datasources": [],
+              "entityMetadata": {
+                "arePatchesEnabled": false,
+              },
+              "linkType": {
+                "definition": {
+                  "oneToMany": {
+                    "cardinalityHint": "ONE_TO_MANY",
+                    "manyToOneLinkMetadata": {
+                      "apiName": "foos",
+                      "displayMetadata": {
+                        "displayName": "Foos",
+                        "groupDisplayName": "",
+                        "pluralDisplayName": "Foos",
+                        "visibility": "NORMAL",
+                      },
+                      "typeClasses": [],
+                    },
+                    "objectTypeRidManySide": "com.palantir.fizz",
+                    "objectTypeRidOneSide": "com.palantir.foo",
+                    "oneSidePrimaryKeyToManySidePropertyMapping": [
+                      {
+                        "from": {
+                          "apiName": "bar",
+                          "object": "com.palantir.foo",
+                        },
+                        "to": {
+                          "apiName": "bar",
+                          "object": "com.palantir.fizz",
+                        },
+                      },
+                    ],
+                    "oneToManyLinkMetadata": {
+                      "apiName": "fizzes",
+                      "displayMetadata": {
+                        "displayName": "Fizzes",
+                        "groupDisplayName": "",
+                        "pluralDisplayName": "Fizzes",
+                        "visibility": "NORMAL",
+                      },
+                      "typeClasses": [],
+                    },
+                  },
+                  "type": "oneToMany",
+                },
+                "id": "fizz-to-foo",
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+          },
+          "objectTypes": {
+            "com.palantir.fizz": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "datasetV2": {
+                      "datasetRid": "com.palantir.fizz",
+                      "propertyMapping": {
+                        "bar": {
+                          "column": "bar",
+                          "type": "column",
+                        },
+                        "fizz": {
+                          "column": "fizz",
+                          "type": "column",
+                        },
+                      },
+                    },
+                    "type": "datasetV2",
+                  },
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
+                  "rid": "ri.ontology.main.datasource.com.palantir.fizz",
+                },
+              ],
+              "entityMetadata": {
+                "arePatchesEnabled": false,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.fizz",
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "Fizz",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Fizz",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "fizz",
+                ],
+                "propertyTypes": {
+                  "bar": {
+                    "apiName": "bar",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Bar",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                  "fizz": {
+                    "apiName": "fizz",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Fizz",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                },
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+                "titlePropertyTypeRid": "fizz",
+              },
+            },
+            "com.palantir.foo": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "datasetV2": {
+                      "datasetRid": "com.palantir.foo",
+                      "propertyMapping": {
+                        "bar": {
+                          "column": "bar",
+                          "type": "column",
+                        },
+                      },
+                    },
+                    "type": "datasetV2",
+                  },
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
+                  "rid": "ri.ontology.main.datasource.com.palantir.foo",
+                },
+              ],
+              "entityMetadata": {
+                "arePatchesEnabled": false,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.foo",
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "Foo",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Foo",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "bar",
+                ],
+                "propertyTypes": {
+                  "bar": {
+                    "apiName": "bar",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Bar",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                },
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+                "titlePropertyTypeRid": "bar",
+              },
+            },
+          },
+          "sharedPropertyTypes": {},
+        }
+      `);
+    });
+
     it("Explicit datasource definitions are properly defined", () => {
       const datasetBackedObject = defineObject({
         titlePropertyApiName: "bar",
@@ -2750,7 +3246,9 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "datasetBackedObject",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+        properties: {
+          bar: { type: "string" },
+        },
         datasource: { type: "dataset" },
       });
 
@@ -2760,11 +3258,10 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "streamBackedObjectNoRetention",
         apiName: "fizz",
         primaryKeyPropertyApiName: "fizz",
-        properties: [{ apiName: "fizz", type: "string", displayName: "Fizz" }, {
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: {
+          fizz: { type: "string" },
+          bar: { type: "string" },
+        },
         datasource: { type: "stream" },
       });
 
@@ -2774,7 +3271,9 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "streamBackedObjectWithRetention",
         apiName: "buzz",
         primaryKeyPropertyApiName: "buzz",
-        properties: [{ apiName: "buzz", type: "string", displayName: "Buzz" }],
+        properties: {
+          buzz: { type: "string" },
+        },
         datasource: { type: "stream", retentionPeriod: "PT1H" },
       });
 
@@ -3137,11 +3636,9 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: {
+          bar: { type: "string" },
+        },
         datasource: { type: "restrictedView" },
       });
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -3273,16 +3770,10 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "fizz",
-        properties: [{
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-          editOnly: true,
-        }, {
-          apiName: "fizz",
-          type: "string",
-          displayName: "Fizz",
-        }],
+        properties: {
+          bar: { type: "string", editOnly: true },
+          fizz: { type: "string" },
+        },
       });
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
@@ -3458,12 +3949,9 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "Foo",
           apiName: "foo",
           primaryKeyPropertyApiName: "bar",
-          properties: [{
-            apiName: "bar",
-            type: "string",
-            displayName: "Bar",
-            editOnly: true,
-          }],
+          properties: {
+            bar: { type: "string", editOnly: true },
+          },
         });
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Primary key property bar on object foo cannot be edit-only]`,
@@ -3478,11 +3966,9 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "streamBackedObjectWithRetention",
           apiName: "buzz",
           primaryKeyPropertyApiName: "buzz",
-          properties: [{
-            apiName: "buzz",
-            type: "string",
-            displayName: "Buzz",
-          }],
+          properties: {
+            buzz: { type: "string" },
+          },
           datasource: {
             type: "stream",
             retentionPeriod: "bad retention period string",
@@ -3500,15 +3986,10 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "exampleObject",
         apiName: "fizz",
         primaryKeyPropertyApiName: "bar",
-        properties: [{
-          apiName: "fizz",
-          type: "mediaReference",
-          displayName: "Fizz",
-        }, {
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: {
+          fizz: { type: "mediaReference" },
+          bar: { type: "string" },
+        },
         datasource: { type: "stream" },
       });
 
@@ -3856,11 +4337,9 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "exampleObjectTypes",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: {
+          bar: { type: "string" },
+        },
       });
 
       const createActionWithObjectType = defineCreateInterfaceObjectAction(
@@ -4628,11 +5107,9 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "exampleObjectTypes",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: {
+          bar: { type: "string" },
+        },
       });
 
       const createObjectActionType = defineCreateObjectAction(
@@ -5173,17 +5650,10 @@ describe("Ontology Defining", () => {
         primaryKeyPropertyApiName: "id",
         pluralDisplayName: "tests",
         titlePropertyApiName: "name",
-        properties: [{
-          apiName: "name",
-          type: "string",
-          displayName: "Name",
-          description: "The name of the test object",
-        }, {
-          apiName: "id",
-          type: "string",
-          displayName: "ID",
-          description: "The ID of the test object",
-        }],
+        properties: {
+          name: { type: "string", description: "The name of the test object" },
+          id: { type: "string", description: "The ID of the test object" },
+        },
       });
       expect(() =>
         defineAction({
@@ -5686,17 +6156,14 @@ describe("Ontology Defining", () => {
         primaryKeyPropertyApiName: "id",
         pluralDisplayName: "tests",
         titlePropertyApiName: "name",
-        properties: [{
-          apiName: "name",
-          type: "string",
-          displayName: "Name",
-          description: "The name of the test object",
-        }, {
-          apiName: "id",
-          type: "string",
-          displayName: "ID",
-          description: "The ID of the test object",
-        }],
+        properties: {
+          name: { type: "string", description: "The name of the test object" },
+          id: {
+            type: "string",
+            displayName: "ID",
+            description: "The ID of the test object",
+          },
+        },
       });
       const createAction = defineCreateObjectAction(sampleObject, {
         type: "group",
@@ -6076,17 +6543,14 @@ describe("Ontology Defining", () => {
         primaryKeyPropertyApiName: "id",
         pluralDisplayName: "tests",
         titlePropertyApiName: "name",
-        properties: [{
-          apiName: "name",
-          type: "string",
-          displayName: "Name",
-          description: "The name of the test object",
-        }, {
-          apiName: "id",
-          type: "string",
-          displayName: "ID",
-          description: "The ID of the test object",
-        }],
+        properties: {
+          name: { type: "string", description: "The name of the test object" },
+          id: {
+            type: "string",
+            displayName: "ID",
+            description: "The ID of the test object",
+          },
+        },
       });
       const createAction = defineCreateObjectAction(sampleObject, {
         displayMetadata: {
@@ -6730,7 +7194,9 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "myObjects",
           apiName: "myObject",
           primaryKeyPropertyApiName: "bar",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: {
+            bar: { type: "string" },
+          },
           implementsInterfaces: [{
             implements: myInterface,
             propertyMapping: [{ interfaceProperty: "mySpt", mapsTo: "bar" }],
@@ -6808,8 +7274,8 @@ describe("Ontology Defining", () => {
           "properties": [
             {
               "apiName": "bar",
-              "type": "string",
-              "displayName": "Bar"
+              "displayName": "Bar",
+              "type": "string"
             }
           ],
           "implementsInterfaces": [

@@ -254,6 +254,31 @@ export interface ObjectTypeInner extends
   status?: ObjectTypeStatus;
 }
 
+export interface ObjectTypeInnerUserDefinition extends
+  Omit<
+    OntologyIrObjectType,
+    | "titlePropertyTypeRid"
+    | "propertyTypes"
+    | "allImplementsInterfaces"
+    | "implementsInterfaces2"
+    | "displayMetadata"
+    | "primaryKeys"
+    | "status"
+  >
+{
+  primaryKeyPropertyApiName: string;
+  properties: { [key: string]: ObjectPropertyTypeUserDefinition };
+  titlePropertyApiName: string;
+  implementsInterfaces: Array<InterfaceImplementation>;
+  description: string | undefined;
+  icon: { locator: BlueprintIcon; color: string } | undefined;
+  displayName?: string;
+  pluralDisplayName?: string;
+  visibility: Visibility;
+  editsEnabled: boolean;
+  status?: ObjectTypeStatus;
+}
+
 export type InterfaceImplementation = {
   implements: InterfaceType;
   propertyMapping: { interfaceProperty: string; mapsTo: string }[];
@@ -273,7 +298,20 @@ export type ObjectType =
     datasource?: ObjectTypeDatasourceDefinition;
     __type: OntologyEntityTypeEnum.OBJECT_TYPE;
   };
-export type ObjectTypeDefinition = Omit<ObjectType, "__type">;
+export type ObjectTypeDefinition = Omit<ObjectTypeUserDefinition, "__type">;
+
+export type ObjectTypeUserDefinition =
+  & OntologyEntityBase
+  & RequiredFields<
+    Partial<ObjectTypeInnerUserDefinition>,
+    | "apiName"
+    | "primaryKeyPropertyApiName"
+    | "titlePropertyApiName"
+  >
+  & {
+    datasource?: ObjectTypeDatasourceDefinition;
+    __type: OntologyEntityTypeEnum.OBJECT_TYPE;
+  };
 
 export interface ObjectPropertyTypeInner extends
   Omit<
@@ -304,6 +342,11 @@ export interface ObjectPropertyTypeInner extends
 export type ObjectPropertyType = RequiredFields<
   Partial<ObjectPropertyTypeInner>,
   "apiName" | "type" | "displayName"
+>;
+
+export type ObjectPropertyTypeUserDefinition = RequiredFields<
+  Partial<ObjectPropertyTypeInner>,
+  "type"
 >;
 
 export interface InterfacePropertyType {
@@ -435,13 +478,13 @@ export type LinkType =
 
 export type LinkTypeDefinition =
   | Omit<
-    OntologyEntityBase & OneToManyLinkTypeDefinition & {
+    OntologyEntityBase & OneToManyLinkTypeUserDefinition & {
       __type: OntologyEntityTypeEnum.LINK_TYPE;
     },
     "__type"
   >
   | Omit<
-    OntologyEntityBase & ManyToManyLinkTypeDefinition & {
+    OntologyEntityBase & ManyToManyLinkTypeUserDefinition & {
       __type: OntologyEntityTypeEnum.LINK_TYPE;
     },
     "__type"
@@ -459,8 +502,20 @@ export interface OneToManyLinkTypeDefinition {
 }
 
 export interface OneToManyObjectLinkReference {
-  object: ObjectTypeDefinition;
+  object: ObjectType;
   metadata: LinkTypeMetadata;
+}
+
+export interface OneToManyLinkTypeUserDefinition {
+  apiName: LinkTypeId;
+  one: OneToManyObjectLinkReferenceUserDefinition;
+  toMany: OneToManyObjectLinkReferenceUserDefinition;
+  manyForeignKeyProperty: ObjectTypePropertyApiName;
+}
+
+export interface OneToManyObjectLinkReferenceUserDefinition {
+  object: ObjectType;
+  metadata: LinkTypeMetadataUserDefinition;
 }
 
 export interface ManyToManyLinkTypeDefinition {
@@ -473,8 +528,27 @@ export interface ManyToManyLinkTypeDefinition {
 }
 
 export interface ManyToManyObjectLinkReference {
-  object: ObjectTypeDefinition;
+  object: ObjectType;
   metadata: LinkTypeMetadata;
+}
+
+export interface ManyToManyLinkTypeUserDefinition {
+  apiName: LinkTypeId;
+  many: ManyToManyObjectLinkReferenceUserDefinition;
+  toMany: ManyToManyObjectLinkReferenceUserDefinition;
+}
+
+export interface ManyToManyObjectLinkReferenceUserDefinition {
+  object: ObjectType;
+  metadata: LinkTypeMetadataUserDefinition;
+}
+
+export interface LinkTypeMetadataUserDefinition {
+  apiName: string;
+  displayName?: string;
+  pluralDisplayName?: string;
+  visibility?: Visibility;
+  groupDisplayName?: string;
 }
 
 export type LinkSideMetadata = OptionalFields<

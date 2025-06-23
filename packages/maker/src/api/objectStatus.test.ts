@@ -35,14 +35,13 @@ describe("Object Status", () => {
             apiName: "validation-test",
             primaryKeyPropertyApiName: "bar",
             status: "experimental" as ObjectTypeStatus,
-            properties: [
-              {
-                apiName: "bar",
+            properties: {
+              bar: {
                 type: "string",
                 displayName: "Bar",
                 status: "active" as ObjectTypeStatus,
               },
-            ],
+            },
           })
         ).toThrowError(
           /When object "validation-test" has experimental status, no properties can have "active" status/,
@@ -60,14 +59,13 @@ describe("Object Status", () => {
             apiName: "validation-test-2",
             primaryKeyPropertyApiName: "bar",
             status: "experimental" as ObjectTypeStatus,
-            properties: [
-              {
-                apiName: "bar",
+            properties: {
+              bar: {
                 type: "string",
                 displayName: "Bar",
                 status: "experimental" as ObjectTypeStatus,
               },
-            ],
+            },
           })
         ).not.toThrow();
       }, "/tmp/");
@@ -83,7 +81,12 @@ describe("Object Status", () => {
           pluralDisplayName: "DefaultStatusObjects",
           apiName: "default-status",
           primaryKeyPropertyApiName: "bar",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: {
+            bar: {
+              type: "string",
+              displayName: "Bar",
+            },
+          },
         });
 
         const metadata = dumpOntologyFullMetadata();
@@ -105,7 +108,12 @@ describe("Object Status", () => {
           pluralDisplayName: "ActiveStatusObjects",
           apiName: "active-status",
           primaryKeyPropertyApiName: "bar",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: {
+            bar: {
+              type: "string",
+              displayName: "Bar",
+            },
+          },
           status: "active" as ObjectTypeStatus,
         });
 
@@ -128,7 +136,12 @@ describe("Object Status", () => {
           pluralDisplayName: "ExperimentalStatusObjects",
           apiName: "experimental-status",
           primaryKeyPropertyApiName: "bar",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: {
+            bar: {
+              type: "string",
+              displayName: "Bar",
+            },
+          },
           status: "experimental" as ObjectTypeStatus,
         });
 
@@ -151,7 +164,12 @@ describe("Object Status", () => {
           pluralDisplayName: "DeprecatedStatusObjects",
           apiName: "deprecated-status",
           primaryKeyPropertyApiName: "bar",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: {
+            bar: {
+              type: "string",
+              displayName: "Bar",
+            },
+          },
           status: {
             type: "deprecated",
             message: "This object is deprecated",
