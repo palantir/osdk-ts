@@ -609,35 +609,35 @@ export const BGaoNflPlayerObjectType: ObjectTypeV2 = {
             dataType: {
               type: "string",
             },
-            rid: "rid.a.b",
+            rid: "ri.a.b.c.d",
           },
           {
             apiName: "addressLine2",
             dataType: {
               type: "string",
             },
-            rid: "rid.a.b",
+            rid: "ri.a.b.c.d",
           },
           {
             apiName: "city",
             dataType: {
               type: "string",
             },
-            rid: "rid.a.b",
+            rid: "ri.a.b.c.d",
           },
           {
             apiName: "state",
             dataType: {
               type: "string",
             },
-            rid: "rid.a.b",
+            rid: "ri.a.b.c.d",
           },
           {
             apiName: "zipCode",
             dataType: {
               type: "integer",
             },
-            rid: "rid.a.b",
+            rid: "ri.a.b.c.d",
           },
         ],
       },
