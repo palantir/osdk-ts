@@ -17,8 +17,7 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import type { Logger } from "vite";
-import { NOISY } from "./generateOntologyAssets.js";
+import type { Logger } from "./Logger.js";
 
 /**
  * Synchronize directories by copying only changed files and removing obsolete ones
@@ -28,11 +27,7 @@ export async function syncDirectories(
   targetDir: string,
   logger: Logger,
 ): Promise<void> {
-  if (NOISY) {
-    logger.info(`Synchronizing ${sourceDir} to ${targetDir}`, {
-      timestamp: true,
-    });
-  }
+  logger.debug(`Synchronizing ${sourceDir} to ${targetDir}`);
 
   // Ensure target directory exists
   await fs.promises.mkdir(targetDir, { recursive: true });
@@ -63,12 +58,12 @@ export async function syncDirectories(
         await fs.promises.mkdir(path.dirname(targetFile), { recursive: true });
         await fs.promises.copyFile(sourceFile, targetFile);
         addedCount++;
-        logger.info(`Added: ${relativeFile}`, { timestamp: true });
+        logger.debug(`Added: ${relativeFile}`);
       } else if (isDifferent) {
         // Changed file - update it
         await fs.promises.copyFile(sourceFile, targetFile);
         updatedCount++;
-        logger.info(`Updated: ${targetFile}`, { timestamp: true });
+        logger.debug(`Updated: ${targetFile}`);
       } else {
         // File is unchanged
         unchangedCount++;
@@ -78,7 +73,7 @@ export async function syncDirectories(
         error instanceof Error ? error.message : String(error)
       }`;
       errors.push(errorMsg);
-      logger.error(errorMsg, { timestamp: true });
+      logger.error(errorMsg);
     }
   }
 
@@ -89,13 +84,13 @@ export async function syncDirectories(
       try {
         await fs.promises.unlink(targetFile);
         removedCount++;
-        logger.info(`Removed: ${relativeFile}`, { timestamp: true });
+        logger.debug(`Removed: ${relativeFile}`);
       } catch (error) {
         const errorMsg = `Failed to remove ${relativeFile}: ${
           error instanceof Error ? error.message : String(error)
         }`;
         errors.push(errorMsg);
-        logger.error(errorMsg, { timestamp: true });
+        logger.error(errorMsg);
       }
     }
   }
@@ -108,22 +103,16 @@ export async function syncDirectories(
       `Failed to clean up empty directories: ${
         error instanceof Error ? error.message : String(error)
       }`,
-      { timestamp: true },
     );
   }
 
-  if (NOISY) {
-    // Log summary
-    logger.info(
-      `Sync complete: ${addedCount} added, ${updatedCount} updated, ${removedCount} removed, ${unchangedCount} unchanged`,
-      { timestamp: true },
-    );
-  }
+  // Log summary
+  logger.debug(
+    `Sync complete: ${addedCount} added, ${updatedCount} updated, ${removedCount} removed, ${unchangedCount} unchanged`,
+  );
 
   if (errors.length > 0) {
-    logger.warn(`Encountered ${errors.length} errors during sync`, {
-      timestamp: true,
-    });
+    logger.warn(`Encountered ${errors.length} errors during sync`);
   }
 }
 

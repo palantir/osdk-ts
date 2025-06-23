@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeDefinition,
-  Osdk,
-  PrimaryKeyType,
-  PropertyKeys,
-} from "@osdk/api";
+import type { FauxOntology } from "@osdk/faux";
+import type { Level } from "./Logger.js";
 
-export interface OptimisticBuilder {
-  updateObject: <T extends ObjectTypeDefinition>(
-    value: Osdk.Instance<T>,
-  ) => this;
-  createObject: <T extends ObjectTypeDefinition>(
-    type: T,
-    primaryKey: PrimaryKeyType<T>,
-    properties: Pick<Osdk.Instance<T>, PropertyKeys<T>>,
-  ) => this;
-  deleteObject: <T extends ObjectTypeDefinition>(
-    value: Osdk.Instance<T>,
-  ) => this;
+export interface OacConfig {
+  hooks?: {
+    preSeed?: (fauxOntology: FauxOntology) => Promise<void>;
+  };
+  ontologyDir: string;
+  loggerLevel?: keyof typeof Level;
+}
+
+export class OacConfig {
+  constructor(config: OacConfig) {
+    Object.assign(this, config);
+  }
 }

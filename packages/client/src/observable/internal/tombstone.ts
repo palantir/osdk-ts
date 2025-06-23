@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-import type { FauxFoundry } from "@osdk/faux";
-
-export type FauxActionImpl = Parameters<
-  ReturnType<FauxFoundry["getOntology"]>["registerActionType"]
->[1];
+export const tombstone: undefined = undefined;
