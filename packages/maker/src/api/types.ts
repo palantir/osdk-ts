@@ -495,7 +495,7 @@ export interface OneToManyLinkTypeDefinition {
   one: OneToManyObjectLinkReference;
   toMany: OneToManyObjectLinkReference;
   manyForeignKeyProperty: ObjectTypePropertyApiName;
-  cardinality?: "OneToMany" | "OneToOne" | undefined;
+  cardinality: "OneToMany" | "OneToOne" | undefined;
   editsEnabled?: boolean;
   status?: OntologyIrLinkTypeStatus;
   redacted?: boolean;
