@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import type { ActionMetadata } from "@osdk/api";
+import type { ActionMetadata, MediaUpload } from "@osdk/api";
 import { Employee, Task } from "@osdk/client.test.ontology";
 import type { MediaReference } from "@osdk/foundry.core";
+import type { SetupServer } from "@osdk/shared.test";
 import {
   LegacyFauxFoundry,
+  MockOntologiesV2,
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
@@ -29,6 +31,7 @@ import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAttachmentUpload } from "../object/AttachmentUpload.js";
+import { isMediaReference } from "../object/mediaUpload.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import { toDataValue } from "./toDataValue.js";
 
@@ -36,12 +39,15 @@ describe(toDataValue, () => {
   let client: Client;
   let clientCtx: MinimalClient;
   let mockActionMetadata: ActionMetadata;
+  let apiServer: SetupServer;
 
   const mockFetch: MockedFunction<typeof globalThis.fetch> = vi.fn();
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
     ({ client } = testSetup);
+
+    apiServer = testSetup.apiServer;
 
     clientCtx = createMinimalClient(
       { ontologyRid: testSetup.fauxFoundry.defaultOntologyRid },
@@ -205,7 +211,6 @@ describe(toDataValue, () => {
     expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
   });
 
-  /*
   it("converts media uploads correctly", async () => {
     const file: MediaUpload = {
       data: new Blob([
@@ -216,10 +221,30 @@ describe(toDataValue, () => {
       path: "file.txt",
     };
 
-    const converted = await toDataValue(file, clientCtx, mockActionMetadata);
-    expect(isMediaReference(converted)).toBe(true);
+    // TODO: Mock MediaUpload properly in FauxFoundry
+    apiServer.boundary(async () => {
+      apiServer.use(
+        MockOntologiesV2.MediaReferenceProperties.uploadMedia(
+          "https://stack.palantir.com",
+          () => {
+            return {
+              mimeType: "application/json",
+              reference: {
+                type: "mediaSetViewItem",
+                mediaSetViewItem: {
+                  mediaItemRid: "media-item-rid",
+                  mediaSetRid: "media-set-rid",
+                  mediaSetViewRid: "media-set-view-rid",
+                },
+              },
+            };
+          },
+        ),
+      );
+      const converted = await toDataValue(file, clientCtx, mockActionMetadata);
+      expect(isMediaReference(converted)).toBe(true);
+    });
   });
-  */
 
   it("converts media reference correctly", async () => {
     const mediaReference: MediaReference = {

@@ -41,3 +41,11 @@ export const upload: CallFactory<
   MediaReferenceProperties.upload,
   ["ontologyApiName", "objectType", "propertyName"],
 );
+
+export const uploadMedia: CallFactory<
+  "ontologyApiName" | "actionTypeApiName",
+  typeof MediaReferenceProperties.uploadMedia
+> = handleOpenApiCall(
+  MediaReferenceProperties.uploadMedia,
+  ["ontologyApiName", "actionTypeApiName"],
+);

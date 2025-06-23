@@ -59,6 +59,7 @@ export function LinkTypeNotFound(
     parameters: {
       objectType,
       linkType,
+      linkTypeId: undefined,
     },
   };
 }

@@ -16,7 +16,7 @@
 
 import type { ObjectTypeV2 } from "@osdk/foundry.ontologies";
 
-export const employeeObjectType = {
+export const employeeObjectType: ObjectTypeV2 = {
   apiName: "Employee",
   displayName: "Employee",
   pluralDisplayName: "Employees",
@@ -609,30 +609,35 @@ export const BGaoNflPlayerObjectType: ObjectTypeV2 = {
             dataType: {
               type: "string",
             },
+            rid: "rid.a.b",
           },
           {
             apiName: "addressLine2",
             dataType: {
               type: "string",
             },
+            rid: "rid.a.b",
           },
           {
             apiName: "city",
             dataType: {
               type: "string",
             },
+            rid: "rid.a.b",
           },
           {
             apiName: "state",
             dataType: {
               type: "string",
             },
+            rid: "rid.a.b",
           },
           {
             apiName: "zipCode",
             dataType: {
               type: "integer",
             },
+            rid: "rid.a.b",
           },
         ],
       },
