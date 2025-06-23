@@ -32,7 +32,6 @@ import type {
 } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { loadActionMetadata } from "../ontology/loadActionMetadata.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import type { NOOP } from "../util/NOOP.js";
@@ -139,7 +138,7 @@ export async function applyAction<
           ? await remapBatchActionParams(
             parameters,
             client,
-            await loadActionMetadata(client, action.apiName),
+            await client.ontologyProvider.getActionDefinition(action.apiName),
           )
           : [],
         options: {
@@ -163,7 +162,7 @@ export async function applyAction<
             CompileTimeActionMetadata<AD>["parameters"]
           >,
           client,
-          await loadActionMetadata(client, action.apiName),
+          await client.ontologyProvider.getActionDefinition(action.apiName),
         ),
         options: {
           mode: (options as ApplyActionOptions)?.$validateOnly
