@@ -2821,7 +2821,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "displayName": "Delete [DC3] Distribution Center Proposal",
             "operations": [
               {
-                "objectTypeApiName": "objectToDeleteParameter",
+                "objectTypeApiName": "Dc3DistributionCenterProposal",
                 "type": "deleteObject",
               },
             ],
@@ -2846,7 +2846,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "displayName": "Delete [DC3] Distribution Route Analysis",
             "operations": [
               {
-                "objectTypeApiName": "objectToDeleteParameter",
+                "objectTypeApiName": "Dc3DistributionRouteAnalysis",
                 "type": "deleteObject",
               },
             ],
@@ -2871,7 +2871,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "displayName": "Delete [DC3] Restaurant",
             "operations": [
               {
-                "objectTypeApiName": "objectToDeleteParameter",
+                "objectTypeApiName": "Dc3Restaurant",
                 "type": "deleteObject",
               },
             ],
