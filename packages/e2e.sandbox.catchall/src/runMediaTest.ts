@@ -28,7 +28,7 @@ async function runReadMediaTest(ref: Media): Promise<Blob> {
   }
   if (mediaMetadata.mediaType !== "image/png") {
     throw (new Error(
-      `Media Metadata was incorrect: expected type imagery and got ${mediaMetadata.mediaType}`,
+      `Media Metadata was incorrect: expected type image/png and got ${mediaMetadata.mediaType}`,
     ));
   }
 
