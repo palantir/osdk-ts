@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.3.0-beta.6
+
+### Minor Changes
+
+- 9839eab: Reverts #1617
+
 ## 2.3.0-beta.5
 
 ### Minor Changes

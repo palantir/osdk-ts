@@ -1,5 +1,16 @@
 # @osdk/widget.vite-plugin
 
+## 3.0.0-beta.4
+
+### Minor Changes
+
+- 7901ae0: Remove unstable suffix from widget packages
+
+### Patch Changes
+
+- Updated dependencies [7901ae0]
+  - @osdk/widget.api@3.0.0-beta.4
+
 ## 3.0.0-beta.3
 
 ### Patch Changes

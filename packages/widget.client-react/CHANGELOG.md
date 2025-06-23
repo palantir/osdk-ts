@@ -1,5 +1,22 @@
 # @osdk/widget.client-react
 
+## 3.0.0-beta.4
+
+### Minor Changes
+
+- 7901ae0: Remove unstable suffix from widget packages
+
+### Patch Changes
+
+- Updated dependencies [7901ae0]
+- Updated dependencies [9839eab]
+- Updated dependencies [37b9066]
+- Updated dependencies [cd911a6]
+- Updated dependencies [2c800e5]
+- Updated dependencies [cd911a6]
+  - @osdk/widget.client@3.0.0-beta.4
+  - @osdk/client@2.3.0-beta.6
+
 ## 3.0.0-beta.3
 
 ### Minor Changes
