@@ -21,16 +21,10 @@ import {
 import { execa } from "execa";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import type { Logger } from "vite";
+import { inspect } from "node:util";
+import type { Logger } from "./Logger.js";
+import type { OacContext } from "./OacContext.js";
 import { syncDirectories } from "./syncDirectories.js";
-
-export const NOISY = false;
-
-export interface GenerateOntologyAssetsOptions {
-  logger: Logger;
-  ontologyDir: string;
-  workDir: string;
-}
 
 /**
  * Generate all ontology assets: IR, full metadata, and OSDK.
@@ -38,13 +32,15 @@ export interface GenerateOntologyAssetsOptions {
  * so it can be used both in dev mode (via file watching) and build mode.
  */
 export async function generateOntologyAssets(
-  opts: GenerateOntologyAssetsOptions,
+  opts: OacContext,
 ): Promise<void> {
   const { ontologyDir, logger } = opts;
+  await fs.promises.mkdir(opts.workDir, { recursive: true });
+
   // Ensure the ontology directory exists
   if (!fs.existsSync(ontologyDir)) {
     fs.mkdirSync(ontologyDir, { recursive: true });
-    logger.info("Created .ontology directory", { timestamp: true });
+    logger.info("Created .ontology directory");
   }
 
   // Generate the assets in sequence
@@ -65,11 +61,9 @@ export function ontologyFullMetadataPath(workDir: string): string {
  * Convert ontology.mjs to IR format using the maker tool
  */
 async function ontologyJsToIr(
-  { logger, ontologyDir, workDir }: GenerateOntologyAssetsOptions,
+  { logger, ontologyDir, workDir }: OacContext,
 ): Promise<void> {
-  if (NOISY) {
-    logger.info("Generating Ontology IR", { timestamp: true });
-  }
+  logger.debug("Generating Ontology IR");
 
   const { stdout, stderr, exitCode } = await execa("pnpm", [
     "exec",
@@ -81,20 +75,16 @@ async function ontologyJsToIr(
   ]);
 
   if (exitCode !== 0) {
-    logger.error(`Ontology IR generation failed with exit code ${exitCode}`, {
-      timestamp: true,
-    });
+    logger.error(`Ontology IR generation failed with exit code ${exitCode}`);
     if (stderr) {
-      logger.error(`Command stderr: ${stderr}`, { timestamp: true });
+      logger.error(`Command stderr: ${stderr}`);
     }
     throw new Error(`Failed to generate ontology IR: exit code ${exitCode}`);
   }
 
   // Log stdout for debugging if needed
-  if (stdout && NOISY) {
-    logger.info(`Ontology IR generation output: ${stdout}`, {
-      timestamp: true,
-    });
+  if (stdout) {
+    logger.debug(`Ontology IR generation output: ${stdout}`);
   }
 }
 
@@ -102,11 +92,9 @@ async function ontologyJsToIr(
  * Convert IR to full metadata format
  */
 async function ontologyIrToFullMetadata(
-  { logger, workDir }: GenerateOntologyAssetsOptions,
+  { logger, workDir }: OacContext,
 ): Promise<void> {
-  if (NOISY) {
-    logger.info("Converting IR to Full metadata", { timestamp: true });
-  }
+  logger.debug("Converting IR to Full metadata");
 
   try {
     const irContent = await fs.promises.readFile(ontologyIrPath(workDir), {
@@ -124,17 +112,10 @@ async function ontologyIrToFullMetadata(
       JSON.stringify(fullMeta, null, 2),
     );
 
-    if (NOISY) {
-      logger.info("Successfully converted IR to full metadata", {
-        timestamp: true,
-      });
-    }
+    logger.debug("Successfully converted IR to full metadata");
   } catch (error) {
     logger.error(
-      `Failed to convert IR to full metadata: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
-      { timestamp: true },
+      `Failed to convert IR to full metadata: ${inspect(error)}`,
     );
     throw error;
   }
@@ -144,11 +125,9 @@ async function ontologyIrToFullMetadata(
  * Generate OSDK from full metadata
  */
 async function fullMetadataToOsdk(
-  { logger, workDir }: GenerateOntologyAssetsOptions,
+  { logger, workDir }: OacContext,
 ): Promise<void> {
-  if (NOISY) {
-    logger.info("Generating OSDK from full metadata", { timestamp: true });
-  }
+  logger.debug("Generating OSDK from full metadata");
 
   // First create a clean temporary directory to generate the SDK into
   const tempDir = path.join(
@@ -188,11 +167,10 @@ async function fullMetadataToOsdk(
       "dev",
     ]);
 
-    if (stdout && NOISY) {
-      logger.info(`OSDK generation output: ${stdout}`, { timestamp: true });
-    }
+    logger.debug(`OSDK generation output: ${stdout}`);
+
     if (stderr) {
-      logger.error(`OSDK generation stderr: ${stderr}`, { timestamp: true });
+      logger.error(`OSDK generation stderr: ${stderr}`);
     }
 
     // Then if it was successful, synchronize the generated code with the target directory
@@ -200,47 +178,31 @@ async function fullMetadataToOsdk(
       // TODO we should just generate this whole thing into the work dir?
       const targetDir = ".osdk/src";
       try {
-        if (NOISY) {
-          logger.info(
-            "OSDK generation successful, synchronizing with target directory",
-            {
-              timestamp: true,
-            },
-          );
-        }
+        logger.debug(
+          "OSDK generation successful, synchronizing with target directory",
+        );
 
         // Use granular synchronization instead of wholesale replacement
         await syncDirectories(tempSrcDir, targetDir, logger);
 
-        if (NOISY) {
-          logger.info(
-            `Successfully synchronized ${targetDir} with newly generated code`,
-            {
-              timestamp: true,
-            },
-          );
-        }
+        logger.debug(
+          `Successfully synchronized ${targetDir} with newly generated code`,
+        );
+
         await compileOsdk(logger);
 
         // Clean up temporary directory after successful sync
         await fs.promises.rm(tempDir, { recursive: true, force: true });
       } catch (error) {
         logger.error(
-          `Failed to synchronize ${targetDir} directory: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-          { timestamp: true },
+          `Failed to synchronize ${targetDir} directory: ${inspect(error)}`,
         );
-        logger.error(`Temporary files left at: ${tempDir}`, {
-          timestamp: true,
-        });
+        logger.error(`Temporary files left at: ${tempDir}`);
         throw error;
       }
     } else {
-      logger.error(`OSDK generation failed with exit code ${exitCode}`, {
-        timestamp: true,
-      });
-      logger.error(`Temporary files left at: ${tempDir}`, { timestamp: true });
+      logger.error(`OSDK generation failed with exit code ${exitCode}`);
+      logger.error(`Temporary files left at: ${tempDir}`);
       throw new Error(`OSDK generation failed with exit code ${exitCode}`);
     }
   } catch (error) {
@@ -249,12 +211,7 @@ async function fullMetadataToOsdk(
       await fs.promises.rm(tempDir, { recursive: true, force: true });
     } catch (cleanupError) {
       logger.warn(
-        `Failed to clean up temporary directory: ${
-          cleanupError instanceof Error
-            ? cleanupError.message
-            : String(cleanupError)
-        }`,
-        { timestamp: true },
+        `Failed to clean up temporary directory: ${inspect(cleanupError)}`,
       );
     }
     throw error;
@@ -269,15 +226,10 @@ async function compileOsdk(logger: Logger) {
     cwd: ".osdk",
   });
 
-  if (stdout && NOISY) {
-    logger.info(`OSDK generation output: ${stdout}`, {
-      timestamp: true,
-    });
-  }
+  logger.debug(`OSDK generation output: ${stdout}`);
+
   if (stderr) {
-    logger.error(`OSDK generation stderr: ${stderr}`, {
-      timestamp: true,
-    });
+    logger.error(`OSDK generation stderr: ${stderr}`);
   }
   return exitCode;
 }

@@ -244,7 +244,9 @@ export class Store {
 
   applyAction: <Q extends ActionDefinition<any>>(
     action: Q,
-    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
+    args:
+      | Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
+      | Array<Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]>,
     opts?: Store.ApplyActionOptions,
   ) => Promise<ActionEditResponse> = async (action, args, opts) => {
     return await new ActionApplication(this).applyAction(action, args, opts);

@@ -14,5 +14,22 @@
  * limitations under the License.
  */
 
-export { OacConfig } from "./OacConfig.js";
-export { ontologyAsCode } from "./ontologyAsCode.js";
+import Emittery from "emittery";
+import type { FSWatcher, ViteDevServer } from "vite";
+import type { OacConfig } from "./OacConfig.js";
+import { OacContext } from "./OacContext.js";
+
+export interface OacServerEvents {
+  generatedOntologyAssets: undefined;
+}
+
+export class OacServerContext extends OacContext {
+  watcher: FSWatcher;
+  emitter: Emittery<OacServerEvents>;
+
+  constructor(config: OacConfig, server: ViteDevServer) {
+    super(config, server.config);
+    this.watcher = server.watcher;
+    this.emitter = new Emittery<OacServerEvents>();
+  }
+}

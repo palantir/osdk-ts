@@ -107,7 +107,9 @@ export interface ObservableClient {
 
   applyAction: <Q extends ActionDefinition<any>>(
     action: Q,
-    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
+    args:
+      | Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
+      | Array<Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]>,
     opts?: ObservableClient.ApplyActionOptions,
   ) => Promise<unknown>;
 

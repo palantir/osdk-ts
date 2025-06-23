@@ -676,7 +676,7 @@ export class FauxDataStore {
     // caching off the important properties
     let objects = getObjectsFromSet(this, parsedBody.objectSet, undefined);
 
-    if (!objects) {
+    if (!objects || objects.length === 0) {
       return {
         data: [],
         totalCount: "0",

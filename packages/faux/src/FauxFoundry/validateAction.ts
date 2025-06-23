@@ -289,9 +289,9 @@ function matchesOntologyDataType(
         `matchesOntologyDataType: ${odt.type} not implemented yet.`,
       );
     case "object":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return typeof value === "string"
+        || (value != null && typeof value === "object"
+          && "$primaryKey" in value);
     case "objectSet":
       throw new Error(
         `matchesOntologyDataType: ${odt.type} not implemented yet.`,

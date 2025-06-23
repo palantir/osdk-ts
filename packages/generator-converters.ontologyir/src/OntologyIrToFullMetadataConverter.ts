@@ -344,9 +344,16 @@ export class OntologyIrToFullMetadataConverter {
           throw new Error("Delete link rule not supported");
         case "deleteObjectRule": {
           const r = irLogic.deleteObjectRule;
+          const ontologyIrParameter =
+            action.actionType.metadata.parameters[r.objectToDelete];
+          if (ontologyIrParameter.type.type !== "objectReference") {
+            throw new Error("invalid parameter type");
+          }
+
           return {
             type: "deleteObject",
-            objectTypeApiName: r.objectToDelete,
+            objectTypeApiName:
+              ontologyIrParameter.type.objectReference.objectTypeId,
           } satisfies Ontologies.LogicRule;
         }
         case "modifyInterfaceRule": {

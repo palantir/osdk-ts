@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-import type { FauxFoundry } from "@osdk/faux";
+import type { FauxOntology } from "@osdk/faux";
+import type { Level } from "./Logger.js";
 
-export type FauxActionImpl = Parameters<
-  ReturnType<FauxFoundry["getOntology"]>["registerActionType"]
->[1];
+export interface OacConfig {
+  hooks?: {
+    preSeed?: (fauxOntology: FauxOntology) => Promise<void>;
+  };
+  ontologyDir: string;
+  loggerLevel?: keyof typeof Level;
+}
+
+export class OacConfig {
+  constructor(config: OacConfig) {
+    Object.assign(this, config);
+  }
+}

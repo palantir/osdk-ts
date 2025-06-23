@@ -2,6 +2,7 @@ arethetypeswrong
 attw
 consola
 dprint
+Emittery
 execa
 immer
 jiti

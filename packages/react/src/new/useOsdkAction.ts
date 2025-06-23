@@ -32,7 +32,7 @@ type ApplyActionParams<Q extends ActionDefinition<any>> =
 
 export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
   applyAction: (
-    args: ApplyActionParams<Q>,
+    args: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>,
   ) => Promise<unknown>;
 
   error:
@@ -55,17 +55,42 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
   const [isPending, setPending] = React.useState(false);
 
   const applyAction = React.useCallback(async function applyAction(
-    hookArgs: ApplyActionParams<Q>,
+    hookArgs: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>,
   ) {
-    const { $optimisticUpdate, ...args } = hookArgs;
     try {
       setPending(true);
       setError(undefined);
-      const r = await observableClient.applyAction(actionDef, args, {
-        optimisticUpdate: $optimisticUpdate,
-      });
-      setData(r);
-      return r;
+
+      if (Array.isArray(hookArgs)) {
+        const updates: Array<
+          ObservableClient.ApplyActionOptions["optimisticUpdate"]
+        > = [];
+        const args = hookArgs.map(a => {
+          const { $optimisticUpdate, ...args } = a;
+          if ($optimisticUpdate) {
+            updates.push($optimisticUpdate);
+          }
+          return args;
+        });
+
+        const r = await observableClient.applyAction(actionDef, args, {
+          optimisticUpdate: (ctx) => {
+            for (const update of updates) {
+              update?.(ctx);
+            }
+          },
+        });
+        setData(r);
+        return r;
+      } else {
+        const { $optimisticUpdate, ...args } = hookArgs;
+
+        const r = await observableClient.applyAction(actionDef, args, {
+          optimisticUpdate: $optimisticUpdate,
+        });
+        setData(r);
+        return r;
+      }
     } catch (e) {
       if (e instanceof ActionValidationError) {
         setError({

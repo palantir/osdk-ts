@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
+import type {
+  ActionDefinition,
+  ActionEditResponse,
+  ActionReturnTypeForOptions,
+} from "@osdk/api";
 import delay from "delay";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { type Changes } from "./Changes.js";
@@ -28,7 +32,9 @@ export class ActionApplication {
 
   applyAction: <Q extends ActionDefinition<any>>(
     action: Q,
-    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
+    args:
+      | Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
+      | Array<Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]>,
     opts?: Store.ApplyActionOptions,
   ) => Promise<ActionEditResponse> = async (
     action,
@@ -45,6 +51,23 @@ export class ActionApplication {
 
     return await (async () => {
       try {
+        if (Array.isArray(args)) {
+          if (process.env.NODE_ENV !== "production") {
+            logger?.debug("applying action to multiple args", args);
+          }
+
+          const results: ActionReturnTypeForOptions<{ $returnEdits: true }> =
+            await this.store
+              .client(action).batchApplyAction(
+                args,
+                { $returnEdits: true },
+              );
+
+          await this.#invalidateActionEditResponse(results);
+
+          return results;
+        }
+
         // The types for client get confused when we dynamically applyAction so we
         // have to deal with the `any` here and force cast it to what it should be.
         // TODO: Update the types so this doesn't happen!

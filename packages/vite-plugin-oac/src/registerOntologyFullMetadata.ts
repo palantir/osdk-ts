@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-import type { FauxDataStoreBatch, FauxFoundry } from "@osdk/faux";
+import type {
+  BaseServerObject,
+  FauxActionImpl,
+  FauxDataStoreBatch,
+  FauxFoundry,
+} from "@osdk/faux";
 import type * as Ontologies from "@osdk/foundry.ontologies";
-import type { FauxActionImpl } from "./FauxFoundryTypes.js";
+import { inspect } from "node:util";
+import invariant from "tiny-invariant";
+
+inspect.defaultOptions = {
+  colors: true,
+  depth: Infinity,
+};
 
 export function registerOntologyFullMetadata(
   ontology: ReturnType<FauxFoundry["getOntology"]>,
@@ -51,6 +62,8 @@ export function registerOntologyFullMetadata(
   });
 }
 
+// NOTE: The ontology full metadata is not sufficient for doing this properly.
+
 /**
  * Creates a fake implementation for an action type based on its operations
  */
@@ -73,96 +86,95 @@ function createActionImplementation(
       switch (operation.type) {
         case "createObject": {
           // Handle create object operation
-          const objectTypeApiName = operation.objectTypeApiName;
-          const primaryKey = params.primaryKey_;
+          const objectType = getObjectTypeForOperation(
+            operation,
+            fullMetadata,
+          );
 
-          // Create object data from parameters, excluding the primary key
-          const objectData: Record<string, unknown> = {};
-          for (const [key, value] of Object.entries(params)) {
-            if (key !== "primaryKey_") {
-              const param = actionType.parameters[key];
-              objectData[key] = toDataValue(value, param);
-            }
-          }
+          // we don't store the PK with the other properties
+          const primaryKeyProp = objectType.objectType.primaryKey;
+          const primaryKey = extractAndDelete(params, primaryKeyProp);
 
+          // Create object data from parameters
+          const objectData = paramsToDataValues(params, actionType);
+          batch.addObject(
+            objectType.objectType.apiName,
+            primaryKey,
+            objectData,
+          );
+
+          // TODO: this shouldn't send params but the actual object!
           handleObjectLinks(
             batch,
             fullMetadata,
-            objectTypeApiName,
+            objectType.objectType.apiName,
             primaryKey,
             params,
           );
-          batch.addObject(objectTypeApiName, primaryKey, objectData);
           break;
         }
+
         case "modifyObject": {
           // Handle modify object operation
-
-          // HACK HACK HACK
-
-          const objectTypeApiName: string = operation.objectTypeApiName;
-          let primaryKey: string | number | boolean | undefined = undefined;
-          const pks = [...batch.getObjects(objectTypeApiName)].map(val =>
-            val.__primaryKey
+          const { objectType } = getObjectTypeForOperation(
+            operation,
+            fullMetadata,
           );
 
-          // Find the intersection of parameter values and primary keys
-          const found = Object.values(params).findIndex(val => {
-            if (pks.includes(val)) {
-              primaryKey = val;
-              return true;
-            }
-            return false;
-          }) !== -1;
-          if (!found) {
-            throw new Error("Could not find primary key");
-          }
-          // Create object data from parameters, excluding the primary key and objectToModifyParameter
-          const objectData: Record<string, unknown> = {};
-          for (const [key, value] of Object.entries(params)) {
-            if (key !== "primaryKey_" && key !== "objectToModifyParameter") {
-              const param = actionType.parameters[key];
-              objectData[key] = toDataValue(value, param);
-            }
-          }
-          if (primaryKey !== undefined) {
-            batch.modifyObject(objectTypeApiName, primaryKey, objectData);
-            handleObjectLinks(
-              batch,
-              fullMetadata,
-              objectTypeApiName,
-              primaryKey,
-              params,
+          const primaryKey = extractAndDelete(
+            params,
+            "objectToModifyParameter",
+          );
+
+          const targetObject = batch.getObject(
+            objectType.apiName,
+            primaryKey,
+          );
+          invariant(
+            targetObject,
+            `Could not find object ${objectType.apiName} with PK ${primaryKey}`,
+          );
+
+          if (objectType.primaryKey in params) {
+            // TODO Is this true? Or are you allowed to change the PK value?
+            invariant(
+              params[objectType.primaryKey] === primaryKey,
+              `If the primary key is provided, it must match the 'objectToModifyParameter'`,
             );
+            // delete the key since we don't store it directly on the object
+            delete params[objectType.primaryKey];
           }
+
+          const objectData = paramsToDataValues(params, actionType);
+          batch.modifyObject(objectType.apiName, primaryKey, objectData);
+
+          // TODO: this shouldn't send params but the actual object!
+          handleObjectLinks(
+            batch,
+            fullMetadata,
+            objectType.apiName,
+            primaryKey,
+            params,
+          );
 
           break;
         }
+
         case "deleteObject": {
+          const { objectType } = getObjectTypeForOperation(
+            operation,
+            fullMetadata,
+          );
+          const primaryKey = extractAndDelete(
+            params,
+            "objectToDeleteParameter",
+          );
+
           // Handle delete object operation
-          let objectTypeApiName: string;
-          let primaryKey: string | number | boolean;
-
-          if (typeof operation.objectTypeApiName === "string") {
-            objectTypeApiName = operation.objectTypeApiName;
-            primaryKey = params.primaryKey_;
-          } else {
-            // If objectTypeApiName is a parameter reference
-            const objectToDelete = params[operation.objectTypeApiName];
-            if (objectToDelete) {
-              objectTypeApiName = objectToDelete.objectTypeApiName
-                || objectToDelete;
-              primaryKey = objectToDelete.primaryKeyValue || params.primaryKey_;
-            } else {
-              // Default to the parameter name if not found
-              objectTypeApiName = operation.objectTypeApiName;
-              primaryKey = params.primaryKey_;
-            }
-          }
-
-          batch.deleteObject(objectTypeApiName, primaryKey);
+          batch.deleteObject(objectType.apiName, primaryKey);
           break;
         }
+
         case "createLink": {
           // Handle create link operation
           const aSideObjectTypeApiName = operation.aSideObjectTypeApiName;
@@ -186,6 +198,7 @@ function createActionImplementation(
           }
           break;
         }
+
         case "deleteLink": {
           // Handle delete link operation
           const aSideObjectTypeApiName = operation.aSideObjectTypeApiName;
@@ -209,6 +222,7 @@ function createActionImplementation(
           }
           break;
         }
+
         // Handle other operation types as needed
         case "createInterfaceObject":
         case "modifyInterfaceObject":
@@ -223,6 +237,39 @@ function createActionImplementation(
       }
     }
   };
+}
+
+function extractAndDelete<K extends string, O extends Record<K, any>>(
+  obj: O,
+  key: K,
+) {
+  const value = obj[key];
+  delete obj[key];
+  return value;
+}
+
+function getObjectTypeForOperation(
+  operation:
+    | Ontologies.CreateObjectRule
+    | Ontologies.ModifyObjectRule
+    | Ontologies.DeleteObjectRule,
+  fullMetadata: Ontologies.OntologyFullMetadata,
+) {
+  const objectTypeApiName = operation.objectTypeApiName;
+  const objectType = fullMetadata.objectTypes[objectTypeApiName];
+  invariant(objectType);
+  return objectType;
+}
+
+function paramsToDataValues(
+  params: Record<string, any>,
+  actionType: Ontologies.ActionTypeV2,
+) {
+  const objectData: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(params)) {
+    objectData[key] = toDataValue(value, actionType.parameters[key]);
+  }
+  return objectData;
 }
 
 function camelcase(apiName: string): string {
@@ -274,15 +321,11 @@ function handleObjectLinks(
   // HACK HACK HACK
   fullMetadata.objectTypes[objectTypeApiName].linkTypes.forEach(link => {
     const cardinality = link.cardinality;
+
     if (cardinality === "ONE") {
       // This means its a one to many and we are on the one side of the link
-      const foreignObjects = [...batch.getObjects(link.objectTypeApiName)];
-      foreignObjects.forEach(foreignObject => {
-        if (
-          Object.values(params).findIndex(val =>
-            val === foreignObject.__primaryKey
-          ) !== -1
-        ) {
+      for (const foreignObject of batch.getObjects(link.objectTypeApiName)) {
+        if (anyValueMatches(params, foreignObject.__primaryKey)) {
           batch.addLink(
             objectTypeApiName,
             primaryKey,
@@ -291,15 +334,11 @@ function handleObjectLinks(
             foreignObject.__primaryKey,
           );
         }
-      });
+      }
     } else {
       // This means its a one to many and we are on the many side of the link
-      const foreignObjects = [...batch.getObjects(link.objectTypeApiName)];
-      foreignObjects.forEach(foreignObject => {
-        if (
-          Object.values(foreignObject).findIndex(val => val === primaryKey)
-            !== -1
-        ) {
+      for (const foreignObject of batch.getObjects(link.objectTypeApiName)) {
+        if (anyValueMatches(foreignObject, primaryKey)) {
           batch.addLink(
             objectTypeApiName,
             primaryKey,
@@ -308,7 +347,14 @@ function handleObjectLinks(
             foreignObject.__primaryKey,
           );
         }
-      });
+      }
     }
   });
+}
+
+function anyValueMatches(
+  obj: BaseServerObject | Record<string, unknown>,
+  primaryKey: string | number | boolean,
+) {
+  return Object.values(obj).some(val => val === primaryKey);
 }
