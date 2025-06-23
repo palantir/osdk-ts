@@ -23,8 +23,11 @@ import type {
   PropertyKeys,
   WhereClause,
 } from "@osdk/api";
+import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
 import type { ActionSignatureFromDef } from "../actions/applyAction.js";
-import type { Client } from "../Client.js";
+import { additionalContext, type Client } from "../Client.js";
+import { createClientFromContext } from "../createClient.js";
+import { OBSERVABLE_USER_AGENT } from "../util/UserAgent.js";
 import type { Canonical } from "./internal/Canonical.js";
 import { ObservableClientImpl } from "./internal/ObservableClientImpl.js";
 import { Store } from "./internal/Store.js";
@@ -121,7 +124,29 @@ export interface ObservableClient {
 }
 
 export function createObservableClient(client: Client): ObservableClient {
-  return new ObservableClientImpl(new Store(client));
+  // First we need a modified client that adds an extra header so we know its
+  // an observable client
+  const tweakedClient = createClientFromContext({
+    ...client[additionalContext],
+
+    fetch: createFetchHeaderMutator(
+      client[additionalContext].fetch,
+      (headers) => {
+        headers.set(
+          "Fetch-User-Agent",
+          [
+            headers.get("Fetch-User-Agent"),
+            OBSERVABLE_USER_AGENT,
+          ].filter(x => x && x?.length > 0).join(" "),
+        );
+        return headers;
+      },
+    ),
+  });
+
+  // Then we use that client instead. Because the `client` does not hold
+  // any real state, this whole thing works.
+  return new ObservableClientImpl(new Store(tweakedClient));
 }
 
 export interface Unsubscribable {
