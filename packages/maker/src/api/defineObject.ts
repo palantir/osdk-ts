@@ -23,6 +23,8 @@ import {
 } from "./defineOntology.js";
 import type {
   InterfacePropertyType,
+  ObjectPropertyType,
+  ObjectPropertyTypeUserDefinition,
   ObjectType,
   ObjectTypeDefinition,
   PropertyTypeType,
@@ -43,7 +45,9 @@ export function defineObject(
   objectDef: ObjectTypeDefinition,
 ): ObjectType {
   const apiName = namespace + objectDef.apiName;
-  const propertyApiNames = (objectDef.properties ?? []).map(val => val.apiName);
+  const propertyApiNames = objectDef.properties
+    ? Object.keys(objectDef.properties)
+    : [];
   if (
     ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][apiName]
       !== undefined
@@ -62,9 +66,7 @@ export function defineObject(
   );
 
   invariant(
-    (objectDef.properties ?? []).filter(p =>
-      p.apiName === objectDef.primaryKeyPropertyApiName
-    ).every(p => !p.editOnly),
+    !(objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.editOnly),
     `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
   );
 
@@ -76,10 +78,12 @@ export function defineObject(
 
   // Validate that if object status is experimental, no property can have a status of active
   if (objectDef.status === "experimental") {
-    const activeProperties = (objectDef.properties ?? [])
-      .filter(property => property.status === "active")
-      .map(property => property.apiName);
-
+    const activeProperties: string[] = [];
+    propertyApiNames.forEach(apiName => {
+      if (objectDef.properties?.[apiName].status === "active") {
+        activeProperties.push(apiName);
+      }
+    });
     invariant(
       activeProperties.length === 0,
       `When object "${objectDef.apiName}" has experimental status, no properties can have "active" status, but found active properties: ${
@@ -100,15 +104,13 @@ export function defineObject(
     );
   }
   invariant(
-    (objectDef.properties ?? []).filter(p =>
-      p.apiName === objectDef.titlePropertyApiName
-    ).every(p => !isExotic(p.type)),
+    !isExotic(objectDef.properties?.[objectDef.titlePropertyApiName]?.type),
     `Title property ${objectDef.titlePropertyApiName} must be a primitive type`,
   );
   invariant(
-    (objectDef.properties ?? []).filter(p =>
-      p.apiName === objectDef.primaryKeyPropertyApiName
-    ).every(p => !isExotic(p.type)),
+    !isExotic(
+      objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.type,
+    ),
     `Primary key properties ${objectDef.primaryKeyPropertyApiName} can only be primitive types`,
   );
 
@@ -176,9 +178,19 @@ export function defineObject(
     }));
   });
 
+  const flattenedProperties: ObjectPropertyType[] = Object.entries(
+    objectDef.properties ?? {},
+  ).map(
+    ([apiName, property]) => convertObjectPropertyType(apiName, property),
+  );
   const finalObject: ObjectType = {
     ...objectDef,
+    properties: flattenedProperties,
     apiName: apiName,
+    displayName: objectDef.displayName
+      ?? convertToDisplayName(objectDef.apiName),
+    pluralDisplayName: objectDef.pluralDisplayName
+      ?? convertToDisplayName(objectDef.apiName) + "s",
     __type: OntologyEntityTypeEnum.OBJECT_TYPE,
   };
   updateOntology(finalObject);
@@ -186,7 +198,7 @@ export function defineObject(
 }
 
 export function isExotic(
-  type: PropertyTypeType,
+  type?: PropertyTypeType,
 ): type is PropertyTypeTypeExotic {
   if (typeof type === "string") {
     return ["geopoint", "geoshape", "mediaReference", "geotimeSeries"].includes(
@@ -212,9 +224,7 @@ function validateInterfaceImplProperty(
   mappedObjectProp: string,
   object: ObjectTypeDefinition,
 ): ValidationResult {
-  const objProp = object.properties?.find(prop =>
-    prop.apiName === mappedObjectProp
-  );
+  const objProp = object.properties?.[mappedObjectProp];
   if (objProp === undefined) {
     return {
       type: "invalid",
@@ -231,4 +241,20 @@ function validateInterfaceImplProperty(
   }
 
   return { type: "valid" };
+}
+
+function convertToDisplayName(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function convertObjectPropertyType(
+  apiName: string,
+  property: ObjectPropertyTypeUserDefinition,
+): ObjectPropertyType {
+  return {
+    apiName: apiName,
+    displayName: property.displayName ?? convertToDisplayName(apiName),
+    ...property,
+    type: property.type,
+  };
 }

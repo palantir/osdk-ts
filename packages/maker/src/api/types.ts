@@ -254,6 +254,31 @@ export interface ObjectTypeInner extends
   status?: ObjectTypeStatus;
 }
 
+export interface ObjectTypeInnerUserDefinition extends
+  Omit<
+    OntologyIrObjectType,
+    | "titlePropertyTypeRid"
+    | "propertyTypes"
+    | "allImplementsInterfaces"
+    | "implementsInterfaces2"
+    | "displayMetadata"
+    | "primaryKeys"
+    | "status"
+  >
+{
+  primaryKeyPropertyApiName: string;
+  properties: { [key: string]: ObjectPropertyTypeUserDefinition };
+  titlePropertyApiName: string;
+  implementsInterfaces: Array<InterfaceImplementation>;
+  description: string | undefined;
+  icon: { locator: BlueprintIcon; color: string } | undefined;
+  displayName?: string;
+  pluralDisplayName?: string;
+  visibility: Visibility;
+  editsEnabled: boolean;
+  status?: ObjectTypeStatus;
+}
+
 export type InterfaceImplementation = {
   implements: InterfaceType;
   propertyMapping: { interfaceProperty: string; mapsTo: string }[];
@@ -273,7 +298,20 @@ export type ObjectType =
     datasource?: ObjectTypeDatasourceDefinition;
     __type: OntologyEntityTypeEnum.OBJECT_TYPE;
   };
-export type ObjectTypeDefinition = Omit<ObjectType, "__type">;
+
+export type ObjectTypeUserDefinition =
+  & OntologyEntityBase
+  & RequiredFields<
+    Partial<ObjectTypeInnerUserDefinition>,
+    | "apiName"
+    | "primaryKeyPropertyApiName"
+    | "titlePropertyApiName"
+  >
+  & {
+    datasource?: ObjectTypeDatasourceDefinition;
+    __type: OntologyEntityTypeEnum.OBJECT_TYPE;
+  };
+export type ObjectTypeDefinition = Omit<ObjectTypeUserDefinition, "__type">;
 
 export interface ObjectPropertyTypeInner extends
   Omit<
@@ -304,6 +342,11 @@ export interface ObjectPropertyTypeInner extends
 export type ObjectPropertyType = RequiredFields<
   Partial<ObjectPropertyTypeInner>,
   "apiName" | "type" | "displayName"
+>;
+
+export type ObjectPropertyTypeUserDefinition = RequiredFields<
+  Partial<ObjectPropertyTypeInner>,
+  "type"
 >;
 
 export interface InterfacePropertyType {
