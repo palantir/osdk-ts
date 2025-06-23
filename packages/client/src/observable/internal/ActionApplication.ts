@@ -22,6 +22,7 @@ import type {
 import delay from "delay";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { type Changes } from "./Changes.js";
+import type { ObjectCacheKey } from "./ObjectQuery.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 import type { Store } from "./Store.js";
 
@@ -113,6 +114,19 @@ export class ActionApplication {
         }
       }
 
+      this.store.batch({}, (batch) => {
+        for (const { objectType, primaryKey } of deletedObjects ?? []) {
+          const cacheKey = this.store.getCacheKey<ObjectCacheKey>(
+            "object",
+            objectType,
+            primaryKey,
+          );
+          this.store.peekQuery(cacheKey)?.deleteFromStore(
+            "loaded", // this is probably not the best value to use
+            batch,
+          );
+        }
+      });
       await Promise.all(promisesToWait);
     } else {
       for (const apiName of editedObjectTypes) {

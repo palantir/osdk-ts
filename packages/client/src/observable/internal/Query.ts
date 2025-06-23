@@ -110,7 +110,7 @@ export abstract class Query<
     // if we are pending the first page/object we can just ignore this
     if (this.pendingFetch) {
       if (process.env.NODE_ENV !== "production") {
-        logger?.info("Fetch is already pending, using it");
+        logger?.debug("Fetch is already pending, using it");
       }
       await this.pendingFetch;
       return;
@@ -151,7 +151,7 @@ export abstract class Query<
     }
     this.pendingFetch = this._fetchAndStore()
       .finally(() => {
-        logger?.info("finally _fetchAndStore()");
+        logger?.debug("finally _fetchAndStore()");
         this.pendingFetch = undefined;
       });
 
