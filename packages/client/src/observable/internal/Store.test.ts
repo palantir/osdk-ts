@@ -1035,8 +1035,7 @@ describe(Store, () => {
       const sub = mockListSubCallback();
 
       store.observeList({
-        type: Employee,
-        where: { aBadPropertyThatDoesNotExist: "aBadValue" } as any,
+        type: { apiName: "notReal", type: "object" },
         orderBy: {},
       }, sub);
 
@@ -1045,6 +1044,7 @@ describe(Store, () => {
       expect(sub.error).toHaveBeenCalled();
       expect(sub.next).not.toHaveBeenCalled();
     });
+
     describe("batching", () => {
       it("groups requests for single objects", async () => {
         fauxFoundry.getDefaultDataStore().registerObject(Employee, {

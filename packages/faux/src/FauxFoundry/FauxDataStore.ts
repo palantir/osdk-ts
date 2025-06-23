@@ -661,6 +661,7 @@ export class FauxDataStore {
   }
 
   getObjectsOfType(apiName: string): Iterable<BaseServerObject> {
+    this.ontology.getObjectTypeFullMetadataOrThrow(apiName);
     return this.#objects
       .get(apiName)
       .values();
