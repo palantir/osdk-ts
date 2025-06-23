@@ -19,6 +19,8 @@ import { updateOntology } from "./defineOntology.js";
 import type { LinkType, LinkTypeDefinition } from "./types.js";
 import { OntologyEntityTypeEnum } from "./types.js";
 
+const typeIdPattern = /([a-z][a-z0-9\\-]*)/;
+
 export function defineLink(
   linkDefinition: LinkTypeDefinition,
 ): LinkType {
@@ -29,6 +31,11 @@ export function defineLink(
     invariant(
       foreignKey !== undefined,
       `Foreign key ${linkDefinition.manyForeignKeyProperty} on link ${linkDefinition.apiName} does not exist on object ${linkDefinition.toMany.object.apiName}}`,
+    );
+
+    invariant(
+      typeIdPattern.test(linkDefinition.apiName),
+      `Top level link api names are expected to match the regex pattern ([a-z][a-z0-9\\-]*) ${linkDefinition.apiName} does not match`,
     );
 
     const typesMatch =

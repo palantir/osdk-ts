@@ -119,7 +119,7 @@ export async function toDataValue(
 
   if (isPoint(value)) {
     return await toDataValue(
-      value.coordinates.reverse().join(),
+      `${value.coordinates[1]},${value.coordinates[0]}`,
       client,
       actionMetadata,
     );

@@ -49,6 +49,7 @@ import type {
 import * as fs from "fs";
 import * as path from "path";
 import invariant from "tiny-invariant";
+import { fileURLToPath } from "url";
 import { isExotic } from "./defineObject.js";
 import {
   convertNullabilityToDataConstraint,
@@ -667,7 +668,7 @@ function convertLink(
     definition = {
       type: "oneToMany",
       oneToMany: {
-        cardinalityHint: "ONE_TO_ONE",
+        cardinalityHint: "ONE_TO_MANY",
         manyToOneLinkMetadata: linkType.toMany.metadata,
         objectTypeRidManySide: linkType.toMany.object.apiName,
         objectTypeRidOneSide: linkType.one.object.apiName,
@@ -1245,8 +1246,16 @@ function dependencyInjectionString(): string {
   const namespaceNoDot: string = namespace.endsWith(".")
     ? namespace.slice(0, -1)
     : namespace;
+
+  const currentFilePath = fileURLToPath(import.meta.url);
+  let packageJsonDirPath = path.join(currentFilePath, "..", "..", "..");
+  if (!currentFilePath.endsWith(".ts")) {
+    packageJsonDirPath = path.join(packageJsonDirPath, "..");
+  }
+  const packageJsonFilePath = path.join(packageJsonDirPath, "package.json");
+
   const packageJson = JSON.parse(
-    fs.readFileSync("package.json", "utf-8"),
+    fs.readFileSync(packageJsonFilePath, "utf-8"),
   );
   const currentPackageVersion: string = packageJson.version ?? "";
 

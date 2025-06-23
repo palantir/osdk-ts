@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-import type { FauxFoundry } from "@osdk/faux";
+import type {
+  BaseServerObject,
+  FauxActionImpl,
+  FauxDataStoreBatch,
+  FauxFoundry,
+} from "@osdk/faux";
 import type * as Ontologies from "@osdk/foundry.ontologies";
-import type { FauxActionImpl } from "./FauxFoundryTypes.js";
+import { inspect } from "node:util";
+import invariant from "tiny-invariant";
+
+inspect.defaultOptions = {
+  colors: true,
+  depth: Infinity,
+};
 
 export function registerOntologyFullMetadata(
   ontology: ReturnType<FauxFoundry["getOntology"]>,
@@ -28,7 +39,10 @@ export function registerOntologyFullMetadata(
   });
   // Register action types with implementations
   Object.values(ontologyFullMetadata.actionTypes).forEach((actionType) => {
-    const implementation = createActionImplementation(actionType);
+    const implementation = createActionImplementation(
+      actionType,
+      ontologyFullMetadata,
+    );
     const actionTypeWithCamelCaseApiName = {
       ...actionType,
       apiName: camelcase(actionType.apiName),
@@ -48,43 +62,17 @@ export function registerOntologyFullMetadata(
   });
 }
 
+// NOTE: The ontology full metadata is not sufficient for doing this properly.
+
 /**
  * Creates a fake implementation for an action type based on its operations
  */
 function createActionImplementation(
   actionType: Ontologies.ActionTypeV2,
+  fullMetadata: Ontologies.OntologyFullMetadata,
 ): FauxActionImpl {
   return (
-    batch: {
-      addObject: (
-        objectType: string,
-        primaryKey: string | number | boolean,
-        object: Record<string, unknown>,
-      ) => void;
-      modifyObject: (
-        objectType: string,
-        primaryKey: string | number | boolean,
-        update: Record<string, unknown>,
-      ) => void;
-      deleteObject: (
-        objectType: string,
-        primaryKey: string | number | boolean,
-      ) => void;
-      addLink: (
-        leftObjectType: string,
-        leftPrimaryKey: string | number | boolean,
-        leftLinkName: string,
-        rightObjectType: string,
-        rightPrimaryKey: string | number | boolean,
-      ) => void;
-      removeLink: (
-        leftObjectType: string,
-        leftPrimaryKey: string | number | boolean,
-        leftLinkName: string,
-        rightObjectType: string,
-        rightPrimaryKey: string | number | boolean,
-      ) => void;
-    },
+    batch,
     payload: {
       parameters: Record<string, any>;
     },
@@ -98,80 +86,95 @@ function createActionImplementation(
       switch (operation.type) {
         case "createObject": {
           // Handle create object operation
-          const objectTypeApiName = operation.objectTypeApiName;
-          const primaryKey = params.primaryKey_;
+          const objectType = getObjectTypeForOperation(
+            operation,
+            fullMetadata,
+          );
 
-          // Create object data from parameters, excluding the primary key
-          const objectData: Record<string, unknown> = {};
-          for (const [key, value] of Object.entries(params)) {
-            if (key !== "primaryKey_") {
-              const param = actionType.parameters[key];
-              objectData[key] = toDataValue(value, param);
-            }
-          }
+          // we don't store the PK with the other properties
+          const primaryKeyProp = objectType.objectType.primaryKey;
+          const primaryKey = extractAndDelete(params, primaryKeyProp);
 
-          batch.addObject(objectTypeApiName, primaryKey, objectData);
+          // Create object data from parameters
+          const objectData = paramsToDataValues(params, actionType);
+          batch.addObject(
+            objectType.objectType.apiName,
+            primaryKey,
+            objectData,
+          );
+
+          // TODO: this shouldn't send params but the actual object!
+          handleObjectLinks(
+            batch,
+            fullMetadata,
+            objectType.objectType.apiName,
+            primaryKey,
+            params,
+          );
           break;
         }
+
         case "modifyObject": {
           // Handle modify object operation
-          let objectTypeApiName: string;
-          let primaryKey: string | number | boolean;
+          const { objectType } = getObjectTypeForOperation(
+            operation,
+            fullMetadata,
+          );
 
-          if (typeof operation.objectTypeApiName === "string") {
-            objectTypeApiName = operation.objectTypeApiName;
-            primaryKey = params.primaryKey_;
-          } else {
-            // If objectTypeApiName is a parameter reference
-            const objectToModify = params[operation.objectTypeApiName];
-            if (objectToModify) {
-              objectTypeApiName = objectToModify.objectTypeApiName
-                || objectToModify;
-              primaryKey = objectToModify.primaryKeyValue || params.primaryKey_;
-            } else {
-              // Default to the parameter name if not found
-              objectTypeApiName = operation.objectTypeApiName;
-              primaryKey = params.primaryKey_;
-            }
+          const primaryKey = extractAndDelete(
+            params,
+            "objectToModifyParameter",
+          );
+
+          const targetObject = batch.getObject(
+            objectType.apiName,
+            primaryKey,
+          );
+          invariant(
+            targetObject,
+            `Could not find object ${objectType.apiName} with PK ${primaryKey}`,
+          );
+
+          if (objectType.primaryKey in params) {
+            // TODO Is this true? Or are you allowed to change the PK value?
+            invariant(
+              params[objectType.primaryKey] === primaryKey,
+              `If the primary key is provided, it must match the 'objectToModifyParameter'`,
+            );
+            // delete the key since we don't store it directly on the object
+            delete params[objectType.primaryKey];
           }
 
-          // Create object data from parameters, excluding the primary key and objectToModifyParameter
-          const objectData: Record<string, unknown> = {};
-          for (const [key, value] of Object.entries(params)) {
-            if (key !== "primaryKey_" && key !== "objectToModifyParameter") {
-              const param = actionType.parameters[key];
-              objectData[key] = toDataValue(value, param);
-            }
-          }
+          const objectData = paramsToDataValues(params, actionType);
+          batch.modifyObject(objectType.apiName, primaryKey, objectData);
 
-          batch.modifyObject(objectTypeApiName, primaryKey, objectData);
+          // TODO: this shouldn't send params but the actual object!
+          handleObjectLinks(
+            batch,
+            fullMetadata,
+            objectType.apiName,
+            primaryKey,
+            params,
+          );
+
           break;
         }
+
         case "deleteObject": {
+          const { objectType } = getObjectTypeForOperation(
+            operation,
+            fullMetadata,
+          );
+          const primaryKey = extractAndDelete(
+            params,
+            "objectToDeleteParameter",
+          );
+
           // Handle delete object operation
-          let objectTypeApiName: string;
-          let primaryKey: string | number | boolean;
-
-          if (typeof operation.objectTypeApiName === "string") {
-            objectTypeApiName = operation.objectTypeApiName;
-            primaryKey = params.primaryKey_;
-          } else {
-            // If objectTypeApiName is a parameter reference
-            const objectToDelete = params[operation.objectTypeApiName];
-            if (objectToDelete) {
-              objectTypeApiName = objectToDelete.objectTypeApiName
-                || objectToDelete;
-              primaryKey = objectToDelete.primaryKeyValue || params.primaryKey_;
-            } else {
-              // Default to the parameter name if not found
-              objectTypeApiName = operation.objectTypeApiName;
-              primaryKey = params.primaryKey_;
-            }
-          }
-
-          batch.deleteObject(objectTypeApiName, primaryKey);
+          batch.deleteObject(objectType.apiName, primaryKey);
           break;
         }
+
         case "createLink": {
           // Handle create link operation
           const aSideObjectTypeApiName = operation.aSideObjectTypeApiName;
@@ -195,6 +198,7 @@ function createActionImplementation(
           }
           break;
         }
+
         case "deleteLink": {
           // Handle delete link operation
           const aSideObjectTypeApiName = operation.aSideObjectTypeApiName;
@@ -218,6 +222,7 @@ function createActionImplementation(
           }
           break;
         }
+
         // Handle other operation types as needed
         case "createInterfaceObject":
         case "modifyInterfaceObject":
@@ -234,6 +239,39 @@ function createActionImplementation(
   };
 }
 
+function extractAndDelete<K extends string, O extends Record<K, any>>(
+  obj: O,
+  key: K,
+) {
+  const value = obj[key];
+  delete obj[key];
+  return value;
+}
+
+function getObjectTypeForOperation(
+  operation:
+    | Ontologies.CreateObjectRule
+    | Ontologies.ModifyObjectRule
+    | Ontologies.DeleteObjectRule,
+  fullMetadata: Ontologies.OntologyFullMetadata,
+) {
+  const objectTypeApiName = operation.objectTypeApiName;
+  const objectType = fullMetadata.objectTypes[objectTypeApiName];
+  invariant(objectType);
+  return objectType;
+}
+
+function paramsToDataValues(
+  params: Record<string, any>,
+  actionType: Ontologies.ActionTypeV2,
+) {
+  const objectData: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(params)) {
+    objectData[key] = toDataValue(value, actionType.parameters[key]);
+  }
+  return objectData;
+}
+
 function camelcase(apiName: string): string {
   return apiName
     .toLowerCase()
@@ -241,7 +279,7 @@ function camelcase(apiName: string): string {
 }
 
 function toDataValue(value: any, param: Ontologies.ActionParameterV2): unknown {
-  if (param.dataType.type === "geoshape" && typeof value === "string") {
+  if (param.dataType.type === "geohash" && typeof value === "string") {
     return latLonStringToGeoJSON(value);
   }
   return value;
@@ -268,4 +306,55 @@ function latLonStringToGeoJSON(latLonStr: string) {
     type: "Point",
     coordinates: [lon, lat], // GeoJSON uses [longitude, latitude]
   };
+}
+
+/**
+ * Handles linking objects based on parameter values and existing objects
+ */
+function handleObjectLinks(
+  batch: FauxDataStoreBatch,
+  fullMetadata: Ontologies.OntologyFullMetadata,
+  objectTypeApiName: string,
+  primaryKey: string | number | boolean,
+  params: Record<string, unknown>,
+): void {
+  // HACK HACK HACK
+  fullMetadata.objectTypes[objectTypeApiName].linkTypes.forEach(link => {
+    const cardinality = link.cardinality;
+
+    if (cardinality === "ONE") {
+      // This means its a one to many and we are on the one side of the link
+      for (const foreignObject of batch.getObjects(link.objectTypeApiName)) {
+        if (anyValueMatches(params, foreignObject.__primaryKey)) {
+          batch.addLink(
+            objectTypeApiName,
+            primaryKey,
+            link.apiName,
+            link.objectTypeApiName,
+            foreignObject.__primaryKey,
+          );
+        }
+      }
+    } else {
+      // This means its a one to many and we are on the many side of the link
+      for (const foreignObject of batch.getObjects(link.objectTypeApiName)) {
+        if (anyValueMatches(foreignObject, primaryKey)) {
+          batch.addLink(
+            objectTypeApiName,
+            primaryKey,
+            link.apiName,
+            link.objectTypeApiName,
+            foreignObject.__primaryKey,
+          );
+        }
+      }
+    }
+  });
+}
+
+function anyValueMatches(
+  obj: BaseServerObject | Record<string, unknown>,
+  primaryKey: string | number | boolean,
+) {
+  return Object.values(obj).some(val => val === primaryKey);
 }

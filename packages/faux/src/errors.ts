@@ -87,9 +87,7 @@ export function ObjectNotFoundError(
     errorInstanceId,
     parameters: {
       objectType,
-      primaryKey: {
-        employeeId: primaryKey,
-      },
+      primaryKey,
     },
   };
 }

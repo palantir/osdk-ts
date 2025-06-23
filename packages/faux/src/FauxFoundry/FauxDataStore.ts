@@ -661,6 +661,7 @@ export class FauxDataStore {
   }
 
   getObjectsOfType(apiName: string): Iterable<BaseServerObject> {
+    this.ontology.getObjectTypeFullMetadataOrThrow(apiName);
     return this.#objects
       .get(apiName)
       .values();
@@ -676,7 +677,7 @@ export class FauxDataStore {
     // caching off the important properties
     let objects = getObjectsFromSet(this, parsedBody.objectSet, undefined);
 
-    if (!objects) {
+    if (!objects || objects.length === 0) {
       return {
         data: [],
         totalCount: "0",

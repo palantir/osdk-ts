@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition, ActionEditResponse } from "@osdk/api";
+import type {
+  ActionDefinition,
+  ActionEditResponse,
+  ActionReturnTypeForOptions,
+} from "@osdk/api";
 import delay from "delay";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
-import { type Changes, createChangedObjects } from "./Changes.js";
+import { type Changes } from "./Changes.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 import type { Store } from "./Store.js";
@@ -29,7 +33,9 @@ export class ActionApplication {
 
   applyAction: <Q extends ActionDefinition<any>>(
     action: Q,
-    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
+    args:
+      | Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
+      | Array<Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]>,
     opts?: Store.ApplyActionOptions,
   ) => Promise<ActionEditResponse> = async (
     action,
@@ -46,6 +52,23 @@ export class ActionApplication {
 
     return await (async () => {
       try {
+        if (Array.isArray(args)) {
+          if (process.env.NODE_ENV !== "production") {
+            logger?.debug("applying action to multiple args", args);
+          }
+
+          const results: ActionReturnTypeForOptions<{ $returnEdits: true }> =
+            await this.store
+              .client(action).batchApplyAction(
+                args,
+                { $returnEdits: true },
+              );
+
+          await this.#invalidateActionEditResponse(results);
+
+          return results;
+        }
+
         // The types for client get confused when we dynamically applyAction so we
         // have to deal with the `any` here and force cast it to what it should be.
         // TODO: Update the types so this doesn't happen!
@@ -76,58 +99,39 @@ export class ActionApplication {
   };
 
   #invalidateActionEditResponse = async (
-    value: ActionEditResponse,
-  ): Promise<ActionEditResponse> => {
-    const typesToInvalidate = new Set<string>();
-
+    { deletedObjects, modifiedObjects, addedObjects, editedObjectTypes, type }:
+      ActionEditResponse,
+  ): Promise<void> => {
     let changes: Changes | undefined;
-    if (value.type === "edits") {
+    if (type === "edits") {
       const promisesToWait: Promise<any>[] = [];
-      // TODO we need an backend update for deletes
-      for (const obj of value.modifiedObjects) {
-        promisesToWait.push(
-          this.store.invalidateObject(obj.objectType, obj.primaryKey),
-        );
+
+      for (const list of [deletedObjects, modifiedObjects, addedObjects]) {
+        for (const obj of list ?? []) {
+          promisesToWait.push(
+            this.store.invalidateObject(obj.objectType, obj.primaryKey),
+          );
+        }
       }
 
-      for (const obj of value.addedObjects) {
-        promisesToWait.push(
-          this.store.invalidateObject(obj.objectType, obj.primaryKey),
-        );
-
-        typesToInvalidate.add(obj.objectType);
-      }
-
-      await Promise.all(promisesToWait);
-
-      // the action invocation just gives back object ids,
-      // but the invalidateObject calls above should have put the
-      // actual objects in the cache
-      const changes = createChangedObjects();
-      for (const changeType of ["addedObjects", "modifiedObjects"] as const) {
-        for (const { objectType, primaryKey } of (value[changeType] ?? [])) {
+      this.store.batch({}, (batch) => {
+        for (const { objectType, primaryKey } of deletedObjects ?? []) {
           const cacheKey = this.store.getCacheKey<ObjectCacheKey>(
             "object",
             objectType,
             primaryKey,
           );
-          // N.B. this probably isn't right. `getValue`() will give you the "top"
-          // value but I think we want the "truth" guaranteed.
-          const obj = this.store.getValue(cacheKey);
-          if (obj && obj.value) {
-            changes[changeType].set(objectType, obj.value);
-            (changeType === "addedObjects" ? changes.added : changes.modified)
-              .add(cacheKey);
-          }
+          this.store.peekQuery(cacheKey)?.deleteFromStore(
+            "loaded", // this is probably not the best value to use
+            batch,
+          );
         }
-      }
+      });
+      await Promise.all(promisesToWait);
     } else {
-      for (const apiName of value.editedObjectTypes) {
-        typesToInvalidate.add(apiName.toString());
+      for (const apiName of editedObjectTypes) {
         await this.store.invalidateObjectType(apiName as string, changes);
       }
     }
-
-    return value;
   };
 }

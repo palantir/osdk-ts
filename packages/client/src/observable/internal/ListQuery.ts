@@ -302,6 +302,7 @@ export class ListQuery extends BaseListQuery<
         switchMap(listEntry => {
           return combineLatest({
             resolvedList: listEntry?.value?.data == null
+                || listEntry.value.data.length === 0
               ? of([])
               : combineLatest(
                 listEntry.value.data.map(cacheKey =>
@@ -333,7 +334,7 @@ export class ListQuery extends BaseListQuery<
 
   protected async _fetchAndStore(): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "_fetchAndStore" }).info(
+      this.logger?.child({ methodName: "_fetchAndStore" }).debug(
         "fetching pages",
       );
     }
@@ -500,13 +501,6 @@ export class ListQuery extends BaseListQuery<
     try {
       const relevantObjects = this._extractRelevantObjects(changes);
 
-      if (
-        relevantObjects.added.all.length === 0
-        && relevantObjects.modified.all.length === 0
-      ) {
-        return;
-      }
-
       // If we got purely strict matches we can just update the list and move
       // on with our lives. But if we got sorta matches, then we need to revalidate
       // the list so we preemptively set it to loading to avoid thrashing the store.
@@ -532,7 +526,8 @@ export class ListQuery extends BaseListQuery<
           relevantObjects.added.strictMatches,
         );
 
-        const toRemove = new Set<ObjectCacheKey>();
+        // anything thats been deleted can be removed, so start there
+        const toRemove = new Set<CacheKey>(changes.deleted);
 
         // deal with the modified objects
         for (const obj of relevantObjects.modified.all) {
@@ -606,6 +601,18 @@ export class ListQuery extends BaseListQuery<
     }
   };
 
+  #matchType(obj: ObjectHolder | InterfaceHolder): false | "strict" | "sorta" {
+    // if its a strict match we can just insert it into place
+    if (objectMatchesWhereClause(obj, this.#whereClause, true)) {
+      return "strict";
+    }
+    // sorta match means it used a filter we cannot use on the frontend
+    if (objectMatchesWhereClause(obj, this.#whereClause, false)) {
+      return "sorta";
+    }
+    return false;
+  }
+
   protected _extractRelevantObjects(
     changes: Changes,
   ): ExtractRelevantObjectsResult {
@@ -617,25 +624,9 @@ export class ListQuery extends BaseListQuery<
     // categorize
     for (const group of Object.values(relevantObjects)) {
       for (const obj of group.all ?? []) {
-        // if its a strict match we can just insert it into place
-        const strictMatch = objectMatchesWhereClause(
-          obj,
-          this.#whereClause,
-          true,
-        );
-
-        if (strictMatch) {
-          group.strictMatches.add(obj);
-        } else {
-          // sorta match means it used a filter we cannot use on the frontend
-          const sortaMatch = objectMatchesWhereClause(
-            obj,
-            this.#whereClause,
-            false,
-          );
-          if (sortaMatch) {
-            group.sortaMatches.add(obj);
-          }
+        const matchType = this.#matchType(obj);
+        if (matchType) {
+          group[`${matchType}Matches`].add(obj);
         }
       }
     }
@@ -646,15 +637,18 @@ export class ListQuery extends BaseListQuery<
   #extractRelevantObjectsForTypeInterface(
     changes: Changes,
   ): ExtractRelevantObjectsResult {
-    const added = Array.from(changes.addedObjects).filter(([, object]) => {
+    const matchesApiName = ([, object]: [unknown, ObjectHolder]) => {
       return this.#apiName in object[ObjectDefRef].interfaceMap;
-    }).map(([, object]) => object.$as(this.#apiName));
+    };
 
-    const modified = Array.from(changes.modifiedObjects).filter(
-      ([, object]) => {
-        return this.#apiName in object[ObjectDefRef].interfaceMap;
-      },
-    ).map(([, object]) => object.$as(this.#apiName));
+    const added = Array.from(changes.addedObjects).filter(matchesApiName).map((
+      [, object],
+    ) => object.$as(this.#apiName));
+
+    const modified = Array.from(changes.modifiedObjects).filter(matchesApiName)
+      .map((
+        [, object],
+      ) => object.$as(this.#apiName));
 
     return {
       added: {
@@ -754,7 +748,7 @@ export class ListQuery extends BaseListQuery<
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child(
         { methodName: "onOutOfDate" },
-      ).info("");
+      ).debug("");
     }
   }
 

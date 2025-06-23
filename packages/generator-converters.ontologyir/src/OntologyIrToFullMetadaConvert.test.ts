@@ -2821,7 +2821,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "displayName": "Delete [DC3] Distribution Center Proposal",
             "operations": [
               {
-                "objectTypeApiName": "objectToDeleteParameter",
+                "objectTypeApiName": "Dc3DistributionCenterProposal",
                 "type": "deleteObject",
               },
             ],
@@ -2846,7 +2846,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "displayName": "Delete [DC3] Distribution Route Analysis",
             "operations": [
               {
-                "objectTypeApiName": "objectToDeleteParameter",
+                "objectTypeApiName": "Dc3DistributionRouteAnalysis",
                 "type": "deleteObject",
               },
             ],
@@ -2871,7 +2871,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "displayName": "Delete [DC3] Restaurant",
             "operations": [
               {
-                "objectTypeApiName": "objectToDeleteParameter",
+                "objectTypeApiName": "Dc3Restaurant",
                 "type": "deleteObject",
               },
             ],
@@ -2896,7 +2896,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "displayName": "Modify [DC3] Distribution Center Proposal",
             "operations": [
               {
-                "objectTypeApiName": "objectToModifyParameter",
+                "objectTypeApiName": "Dc3DistributionCenterProposal",
                 "type": "modifyObject",
               },
             ],
@@ -2953,7 +2953,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "displayName": "Modify [DC3] Distribution Route Analysis",
             "operations": [
               {
-                "objectTypeApiName": "objectToModifyParameter",
+                "objectTypeApiName": "Dc3DistributionRouteAnalysis",
                 "type": "modifyObject",
               },
             ],
@@ -3010,7 +3010,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "displayName": "Modify [DC3] Restaurant",
             "operations": [
               {
-                "objectTypeApiName": "objectToModifyParameter",
+                "objectTypeApiName": "Dc3Restaurant",
                 "type": "modifyObject",
               },
             ],
@@ -3069,9 +3069,9 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "implementsInterfaces2": {},
             "linkTypes": [
               {
-                "apiName": "Dc3DistributionCenterProposalToDistributionRoute",
+                "apiName": "distributionRouteAnalysis",
                 "cardinality": "MANY",
-                "displayName": "Dc3DistributionCenterProposalToDistributionRoute",
+                "displayName": "Distribution Route Analysis",
                 "linkTypeRid": "ri.Dc3DistributionCenterProposal.Dc3DistributionCenterProposalToDistributionRoute.Dc3DistributionRouteAnalysis",
                 "objectTypeApiName": "Dc3DistributionRouteAnalysis",
                 "status": "ACTIVE",
@@ -3149,17 +3149,17 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "implementsInterfaces2": {},
             "linkTypes": [
               {
-                "apiName": "Dc3RestaurantToDistributionRoute",
+                "apiName": "restaurant",
                 "cardinality": "ONE",
-                "displayName": "Dc3RestaurantToDistributionRoute",
+                "displayName": "Restaurant",
                 "linkTypeRid": "ri.Dc3Restaurant.Dc3RestaurantToDistributionRoute.Dc3DistributionRouteAnalysis",
                 "objectTypeApiName": "Dc3Restaurant",
                 "status": "ACTIVE",
               },
               {
-                "apiName": "Dc3DistributionCenterProposalToDistributionRoute",
+                "apiName": "distributionCenterProposal",
                 "cardinality": "ONE",
-                "displayName": "Dc3DistributionCenterProposalToDistributionRoute",
+                "displayName": "Distribution Center Proposal",
                 "linkTypeRid": "ri.Dc3DistributionCenterProposal.Dc3DistributionCenterProposalToDistributionRoute.Dc3DistributionRouteAnalysis",
                 "objectTypeApiName": "Dc3DistributionCenterProposal",
                 "status": "ACTIVE",
@@ -3237,9 +3237,9 @@ describe(OntologyIrToFullMetadataConverter, () => {
             "implementsInterfaces2": {},
             "linkTypes": [
               {
-                "apiName": "Dc3RestaurantToDistributionRoute",
+                "apiName": "distributionRouteAnalysis",
                 "cardinality": "MANY",
-                "displayName": "Dc3RestaurantToDistributionRoute",
+                "displayName": "Distribution Route Analysis",
                 "linkTypeRid": "ri.Dc3Restaurant.Dc3RestaurantToDistributionRoute.Dc3DistributionRouteAnalysis",
                 "objectTypeApiName": "Dc3DistributionRouteAnalysis",
                 "status": "ACTIVE",
