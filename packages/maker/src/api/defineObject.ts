@@ -181,7 +181,7 @@ export function defineObject(
   const flattenedProperties: ObjectPropertyType[] = Object.entries(
     objectDef.properties ?? {},
   ).map(
-    ([apiName, property]) => convertObjectPropertyType(apiName, property),
+    ([apiName, property]) => convertUserObjectPropertyType(apiName, property),
   );
   const finalObject: ObjectType = {
     ...objectDef,
@@ -190,7 +190,7 @@ export function defineObject(
     displayName: objectDef.displayName
       ?? convertToDisplayName(objectDef.apiName),
     pluralDisplayName: objectDef.pluralDisplayName
-      ?? convertToDisplayName(objectDef.apiName) + "s",
+      ?? convertToPluralDisplayName(objectDef.apiName),
     __type: OntologyEntityTypeEnum.OBJECT_TYPE,
   };
   updateOntology(finalObject);
@@ -243,11 +243,7 @@ function validateInterfaceImplProperty(
   return { type: "valid" };
 }
 
-function convertToDisplayName(s: string): string {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
-function convertObjectPropertyType(
+function convertUserObjectPropertyType(
   apiName: string,
   property: ObjectPropertyTypeUserDefinition,
 ): ObjectPropertyType {
@@ -257,4 +253,13 @@ function convertObjectPropertyType(
     ...property,
     type: property.type,
   };
+}
+
+export function convertToDisplayName(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+// TODO: edge cases
+export function convertToPluralDisplayName(s: string): string {
+  return convertToDisplayName(s) + "s";
 }

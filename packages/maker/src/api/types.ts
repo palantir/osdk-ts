@@ -495,15 +495,23 @@ export interface OneToManyLinkTypeDefinition {
   one: OneToManyObjectLinkReference;
   toMany: OneToManyObjectLinkReference;
   manyForeignKeyProperty: ObjectTypePropertyApiName;
-  cardinality: "OneToMany" | "OneToOne" | undefined;
+  cardinality?: "OneToMany" | "OneToOne" | undefined;
   editsEnabled?: boolean;
   status?: OntologyIrLinkTypeStatus;
   redacted?: boolean;
 }
 
+export interface LinkTypeMetadataUserDefinition {
+  apiName: string;
+  displayName?: string;
+  pluralDisplayName?: string;
+  visibility?: Visibility;
+  groupDisplayName?: string;
+}
+
 export interface OneToManyObjectLinkReference {
-  object: ObjectTypeDefinition;
-  metadata: LinkTypeMetadata;
+  object: ObjectType;
+  metadata: LinkTypeMetadata | LinkTypeMetadataUserDefinition;
 }
 
 export interface ManyToManyLinkTypeDefinition {
@@ -516,8 +524,8 @@ export interface ManyToManyLinkTypeDefinition {
 }
 
 export interface ManyToManyObjectLinkReference {
-  object: ObjectTypeDefinition;
-  metadata: LinkTypeMetadata;
+  object: ObjectType;
+  metadata: LinkTypeMetadata | LinkTypeMetadataUserDefinition;
 }
 
 export type LinkSideMetadata = OptionalFields<
