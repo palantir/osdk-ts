@@ -1,5 +1,16 @@
 # @osdk/shared.test
 
+## 0.1.0-beta.2
+
+### Minor Changes
+
+- e99a614: Split FauxFoundry to its own package
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.6
+- @osdk/generator-converters@2.3.0-beta.6
+
 ## 2.3.0-beta.5
 
 ### Patch Changes

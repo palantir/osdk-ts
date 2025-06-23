@@ -1,5 +1,16 @@
 # @osdk/example-generator
 
+## 0.11.0-beta.6
+
+### Minor Changes
+
+- 7901ae0: Remove unstable suffix from widget packages
+
+### Patch Changes
+
+- @osdk/create-widget@3.0.0-beta.4
+- @osdk/create-app@2.3.0-beta.6
+
 ## 0.11.0-beta.5
 
 ### Patch Changes

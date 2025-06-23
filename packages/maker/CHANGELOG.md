@@ -1,5 +1,19 @@
 # @osdk/maker
 
+## 0.11.0-beta.7
+
+### Minor Changes
+
+- 77674dd: Remove alias
+- c305ea8: link id sanitation
+- ab2ef22: Fix dependency injection
+- 1608ba5: Make modify action params optional
+- dc7d201: Fix geopoint bug
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.6
+
 ## 0.11.0-beta.6
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @osdk/widget.api
 
+## 3.0.0-beta.4
+
+### Minor Changes
+
+- 7901ae0: Remove unstable suffix from widget packages
+
 ## 3.0.0-beta.3
 
 ### Minor Changes

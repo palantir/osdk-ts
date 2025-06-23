@@ -1,5 +1,17 @@
 # @osdk/shared.test
 
+## 2.3.0-beta.6
+
+### Minor Changes
+
+- e99a614: Split FauxFoundry to its own package
+- 2c800e5: Fix bug where we sent over longitude/latitude for geohash properties, when the backend actually expects latitude/longitude.
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.6
+- @osdk/generator-converters@2.3.0-beta.6
+
 ## 2.3.0-beta.5
 
 ### Patch Changes

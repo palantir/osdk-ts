@@ -1,5 +1,21 @@
 # @osdk/client
 
+## 2.3.0-beta.6
+
+### Minor Changes
+
+- 9839eab: Bumps conjure-lite
+- cd911a6: Properly handles lat,long strings in action arguments
+- 2c800e5: Fix bug where we sent over longitude/latitude for geohash properties, when the backend actually expects latitude/longitude.
+- cd911a6: ObservableClient can now do optimistic writes for deletes
+
+### Patch Changes
+
+- Updated dependencies [9839eab]
+  - @osdk/client.unstable@2.3.0-beta.6
+  - @osdk/api@2.3.0-beta.6
+  - @osdk/generator-converters@2.3.0-beta.6
+
 ## 2.3.0-beta.5
 
 ### Patch Changes
