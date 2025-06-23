@@ -334,7 +334,7 @@ export class ListQuery extends BaseListQuery<
 
   protected async _fetchAndStore(): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "_fetchAndStore" }).info(
+      this.logger?.child({ methodName: "_fetchAndStore" }).debug(
         "fetching pages",
       );
     }
@@ -748,7 +748,7 @@ export class ListQuery extends BaseListQuery<
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child(
         { methodName: "onOutOfDate" },
-      ).info("");
+      ).debug("");
     }
   }
 
