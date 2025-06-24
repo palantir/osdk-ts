@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { getObjectTypeSemanticSearchStatus } from "./OntologyMetadataSearchService/getObjectTypeSemanticSearchStatus.js";
 export { objectTypes } from "./OntologyMetadataSearchService/objectTypes.js";
 export { searchActionTypes } from "./OntologyMetadataSearchService/searchActionTypes.js";
 export { searchInterfaceTypes } from "./OntologyMetadataSearchService/searchInterfaceTypes.js";

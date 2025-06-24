@@ -180,7 +180,8 @@ export type ActionParameterAllowedValues =
   | { type: "geoshape" }
   | { type: "geotimeSeriesReference" }
   | { type: "interfaceObjectQuery" }
-  | { type: "redacted" };
+  | { type: "redacted" }
+  | { type: "struct" };
 
 export interface ActionTypeInner {
   apiName: ActionTypeApiName;
@@ -193,6 +194,7 @@ export interface ActionTypeInner {
   status: ActionStatus;
   formContentOrdering: Array<OntologyIrFormContent>;
   validation: Array<OntologyIrValidationRule>;
+  // TODO(jcai): I guess I need to add parameterValidations / actionValidation here?
   typeClasses: Array<TypeClass>;
 }
 

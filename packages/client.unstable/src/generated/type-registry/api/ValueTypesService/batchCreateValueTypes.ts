@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,18 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { BatchCreateValueTypesRequest } from "../BatchCreateValueTypesRequest.js";
-import type { BatchCreateValueTypesResponse } from "../BatchCreateValueTypesResponse.js";
+import type {
+  BatchCreateValueTypesRequest as _api_BatchCreateValueTypesRequest,
+  BatchCreateValueTypesResponse as _api_BatchCreateValueTypesResponse,
+} from "../__components.js";
 
 /**
  * Creates multiple new Value Types.
  */
 export async function batchCreateValueTypes(
   ctx: ConjureContext,
-  request: BatchCreateValueTypesRequest,
-): Promise<BatchCreateValueTypesResponse> {
+  request: _api_BatchCreateValueTypesRequest,
+): Promise<_api_BatchCreateValueTypesResponse> {
   return conjureFetch(
     ctx,
     `/type-registry/value-types/batch-create-value-types`,

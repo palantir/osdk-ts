@@ -957,6 +957,7 @@ function convertActionValidation(
           }]).map((rule, idx) => [idx, rule]),
       ),
     },
+    // TODO(jcai): add parameterValidation stuff
     parameterValidations: Object.fromEntries(
       (action.parameters ?? []).map(p => {
         return [
@@ -967,7 +968,7 @@ function convertActionValidation(
                 renderHint: renderHintFromBaseType(p),
                 visibility: { type: "editable", editable: {} },
               },
-              validation: {
+              validation: { // needs to be diff for structs, but OntologyIrAllowedParameterValues needs to be re-synced
                 allowedValues: extractAllowedValues(p),
                 required: convertParameterRequirementConstraint(
                   p.validation.required,
@@ -1176,6 +1177,7 @@ function renderHintFromBaseType(
     case "geotimeSeriesReference":
     case "geotimeSeriesReferenceList":
       return { type: "dropdown", dropdown: {} };
+      // TODO(jcai): update this
     case "struct":
     case "structList":
       throw new Error("Structs are not supported yet");

@@ -42,15 +42,6 @@ import type {
   ObjectTypeId as _api_ObjectTypeId,
   ObjectTypeRid as _api_ObjectTypeRid,
   OneToManyLinkCardinalityHint as _api_OneToManyLinkCardinalityHint,
-  OntologyIrActionType as _api_OntologyIrActionType,
-  OntologyIrInterfaceType as _api_OntologyIrInterfaceType,
-  OntologyIrLinkType as _api_OntologyIrLinkType,
-  OntologyIrManyToManyLinkTypeDatasource
-    as _api_OntologyIrManyToManyLinkTypeDatasource,
-  OntologyIrObjectType as _api_OntologyIrObjectType,
-  OntologyIrObjectTypeDatasource as _api_OntologyIrObjectTypeDatasource,
-  OntologyIrSharedPropertyType as _api_OntologyIrSharedPropertyType,
-  OntologyIrType as _api_OntologyIrType,
   OntologyPackageRid as _api_OntologyPackageRid,
   ParameterId as _api_ParameterId,
   ParameterRid as _api_ParameterRid,
@@ -75,23 +66,14 @@ import type {
   EntityConfig as _api_entitymetadata_EntityConfig,
   LinkTypeEntityMetadata as _api_entitymetadata_LinkTypeEntityMetadata,
   ObjectTypeAlias as _api_entitymetadata_ObjectTypeAlias,
-  OntologyIrLinkTypeEntityMetadata
-    as _api_entitymetadata_OntologyIrLinkTypeEntityMetadata,
   PatchApplicationStrategy as _api_entitymetadata_PatchApplicationStrategy,
   StorageBackend as _api_entitymetadata_StorageBackend,
 } from "../entitymetadata/__components.js";
 import type { EntityProvenance as _api_entitymetadata_provenance_EntityProvenance } from "../entitymetadata/provenance/__components.js";
 import type { RuleSet as _api_formatting_RuleSet } from "../formatting/__components.js";
-import type {
-  OntologyIrSchemaTransition
-    as _api_schemamigrations_OntologyIrSchemaTransition,
-  SchemaTransition as _api_schemamigrations_SchemaTransition,
-} from "../schemamigrations/__components.js";
+import type { SchemaTransition as _api_schemamigrations_SchemaTransition } from "../schemamigrations/__components.js";
 import type { ObjectTypeGothamMapping as _api_typemapping_ObjectTypeGothamMapping } from "../typemapping/__components.js";
-import type {
-  BaseParameterType as _api_types_BaseParameterType,
-  OntologyIrBaseParameterType as _api_types_OntologyIrBaseParameterType,
-} from "../types/__components.js";
+import type { BaseParameterType as _api_types_BaseParameterType } from "../types/__components.js";
 export type ActionParameterShapeId = string;
 export interface ActionTypeBlockDataV2 {
   actionType: _api_ActionType;
@@ -378,155 +360,12 @@ export interface OntologyBlockDataV2 {
     SharedPropertyTypeBlockDataV2
   >;
 }
-export interface OntologyIrActionTypeBlockDataV2 {
-  actionType: _api_OntologyIrActionType;
-}
-export interface OntologyIrBlockPermissionInformation {
-  actionTypes: Record<_api_ActionTypeApiName, ActionTypePermissionInformation>;
-  linkTypes: Record<_api_LinkTypeId, LinkTypePermissionInformation>;
-  objectTypes: Record<_api_ObjectTypeApiName, ObjectTypePermissionInformation>;
-}
-export interface OntologyIrImportedActionType {
-  apiName: _api_ActionTypeApiName;
-  description?: string | null | undefined;
-  displayName: string;
-  parameters: Array<OntologyIrImportedParameter>;
-}
-export interface OntologyIrImportedInterfaceType {
-  apiName: _api_InterfaceTypeApiName;
-  description?: string | null | undefined;
-  displayName: string;
-  links: Array<ImportedInterfaceLinkType>;
-  properties: Array<OntologyIrImportedSharedPropertyType>;
-}
-export interface OntologyIrImportedObjectType {
-  apiName: _api_ObjectTypeApiName;
-  description?: string | null | undefined;
-  displayName: string;
-  propertyTypes: Array<OntologyIrImportedPropertyType>;
-}
-export interface OntologyIrImportedParameter {
-  description?: string | null | undefined;
-  displayName: string;
-  id: _api_ParameterId;
-  type: _api_types_OntologyIrBaseParameterType;
-}
-export interface OntologyIrImportedPropertyType {
-  apiName: _api_ObjectTypeFieldApiName;
-  description?: string | null | undefined;
-  displayName: string;
-  sharedPropertyType?: _api_ObjectTypeFieldApiName | null | undefined;
-  type: _api_OntologyIrType;
-}
-export interface OntologyIrImportedSharedPropertyType {
-  apiName: _api_ObjectTypeFieldApiName;
-  description?: string | null | undefined;
-  displayName: string;
-  type: _api_OntologyIrType;
-}
-export interface OntologyIrImportedTypes {
-  actionTypes: Array<OntologyIrImportedActionType>;
-  interfaceTypes: Array<OntologyIrImportedInterfaceType>;
-  linkTypes: Array<ImportedLinkType>;
-  objectTypes: Array<OntologyIrImportedObjectType>;
-  sharedPropertyTypes: Array<OntologyIrImportedSharedPropertyType>;
-}
-export interface OntologyIrInterfaceTypeBlockDataV2 {
-  interfaceType: _api_OntologyIrInterfaceType;
-}
-export interface OntologyIrKnownMarketplaceIdentifiers {
-  actionParameterIds: Record<
-    _api_ActionTypeApiName,
-    Record<_api_ParameterId, BlockInternalId>
-  >;
-  actionParameters: Record<_api_ParameterRid, BlockInternalId>;
-  actionTypes: Record<_api_ActionTypeApiName, BlockInternalId>;
-  datasourceColumns: Record<BlockInternalId, any>;
-  datasources: Record<BlockInternalId, any>;
-  filesDatasources: Record<BlockInternalId, any>;
-  functions: Record<
-    _api_FunctionRid,
-    Record<_api_FunctionVersion, BlockInternalId>
-  >;
-  geotimeSeriesSyncs: Record<GeotimeSeriesIntegrationName, BlockInternalId>;
-  groupIds: Record<_api_GroupId, BlockInternalId>;
-  interfaceLinkTypes: Record<_api_InterfaceLinkTypeApiName, BlockInternalId>;
-  interfaceTypes: Record<_api_InterfaceTypeApiName, BlockInternalId>;
-  linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
-  linkTypes: Record<_api_LinkTypeId, BlockInternalId>;
-  objectTypeIds: Record<_api_ObjectTypeApiName, BlockInternalId>;
-  objectTypes: Record<_api_ObjectTypeApiName, BlockInternalId>;
-  propertyTypeIds: Record<
-    _api_ObjectTypeApiName,
-    Record<_api_ObjectTypeFieldApiName, BlockInternalId>
-  >;
-  propertyTypes: Record<_api_ObjectTypeFieldApiName, BlockInternalId>;
-  shapeIdForInstallPrefix?: BlockShapeId | null | undefined;
-  shapeIdForOntologyAllowSchemaMigrations?: BlockShapeId | null | undefined;
-  sharedPropertyTypes: Record<_api_ObjectTypeFieldApiName, BlockInternalId>;
-  timeSeriesSyncs: Record<TimeSeriesSyncName, BlockInternalId>;
-  valueTypes: Record<
-    _api_ValueTypeRid,
-    Record<_api_ValueTypeVersionId, BlockInternalId>
-  >;
-  webhooks: Record<_api_WebhookRid, BlockInternalId>;
-  workshopModules: Record<_api_ModuleRid, BlockInternalId>;
-}
-export interface OntologyIrLinkTypeBlockDataV2 {
-  datasources: Array<_api_OntologyIrManyToManyLinkTypeDatasource>;
-  entityMetadata?:
-    | _api_entitymetadata_OntologyIrLinkTypeEntityMetadata
-    | null
-    | undefined;
-  linkType: _api_OntologyIrLinkType;
-}
-/**
- * Local overridden alias of OMS public API representation of ObjectTypeEntityMetadata. In OMS API we model
- * editsResolutionStrategies field as non-optional, but Marketplace ontology block data uploaded to
- * artifacts faces similar constraints as our internal StorageObjectTypeEntityMetadata and we need to provide
- * runtime conversion with default value.
- */
-export interface OntologyIrMarketplaceObjectTypeEntityMetadata {
-  arePatchesEnabled: boolean;
-}
 /**
  * Property reference containing the api name of the object
  */
 export interface OntologyIrObjectPropertyReference {
   apiName: _api_ObjectTypeFieldApiName;
   object: _api_ObjectTypeApiName;
-}
-export interface OntologyIrObjectsWritebackDataset {
-  columnMapping: Record<_api_ObjectTypeFieldApiName, _api_ColumnName>;
-  objectTypeRid: _api_ObjectTypeApiName;
-  outputMode: OutputMode;
-  rid: WritebackDatasetRid;
-  spec: WritebackDatasetSpec;
-}
-export interface OntologyIrObjectTypeBlockDataV2 {
-  datasources: Array<_api_OntologyIrObjectTypeDatasource>;
-  entityMetadata?:
-    | OntologyIrMarketplaceObjectTypeEntityMetadata
-    | null
-    | undefined;
-  objectType: _api_OntologyIrObjectType;
-}
-export interface OntologyIrOntologyBlockDataV2 {
-  actionTypes: Record<_api_ActionTypeApiName, OntologyIrActionTypeBlockDataV2>;
-  blockPermissionInformation?:
-    | OntologyIrBlockPermissionInformation
-    | null
-    | undefined;
-  interfaceTypes: Record<
-    _api_InterfaceTypeApiName,
-    OntologyIrInterfaceTypeBlockDataV2
-  >;
-  linkTypes: Record<_api_LinkTypeId, OntologyIrLinkTypeBlockDataV2>;
-  objectTypes: Record<_api_ObjectTypeApiName, OntologyIrObjectTypeBlockDataV2>;
-  sharedPropertyTypes: Record<
-    _api_ObjectTypeFieldApiName,
-    OntologyIrSharedPropertyTypeBlockDataV2
-  >;
 }
 /**
  * Because complex objects can't be used as map keys over the wire, this is used in many to many link dataset datasource
@@ -541,20 +380,6 @@ export interface OntologyIrPropertyToColumnMapping {
 export interface OntologyIrPropertyToPropertyMapping {
   from: OntologyIrObjectPropertyReference;
   to: OntologyIrObjectPropertyReference;
-}
-export interface OntologyIrSchemaMigrationBlockData {
-  propertyTypeRidsToIds: Record<
-    _api_ObjectTypeFieldApiName,
-    _api_ObjectTypeFieldApiName
-  >;
-  schemaMigrations: OntologyIrSchemaTransitionsWithSchemaVersion;
-}
-export interface OntologyIrSchemaTransitionsWithSchemaVersion {
-  schemaTransitions: Array<_api_schemamigrations_OntologyIrSchemaTransition>;
-  schemaVersion: _api_SchemaVersion;
-}
-export interface OntologyIrSharedPropertyTypeBlockDataV2 {
-  sharedPropertyType: _api_OntologyIrSharedPropertyType;
 }
 export type OutputMode = "RESTRICTED_VIEW" | "DATASET";
 export interface PatchesConfiguration {

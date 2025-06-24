@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ParameterId } from "@osdk/client.unstable";
+import type {
+  ParameterId,
+  OntologyIrBaseParameterType_struct,
+  DelegateToAllowedStructFieldValues, // TODO(jcai): woo! this exists!
+ } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import {
   namespace,
@@ -110,6 +114,34 @@ export function defineCreateInterfaceObjectAction(
               [id, prop],
             ) => [id, { type: "parameterId", parameterId: id }]),
           ),
+          // need new field here: structFieldValues
+          /*
+                        {
+                            "type": "modifyInterfaceRule",
+                            "modifyInterfaceRule": {
+                                "interfaceObjectToModify": "com.palantir.defense.ontology.mil2525CSymbol",
+                                "sharedPropertyValues": {},
+                                "structFieldValues": {
+                                    "ri.ontology.main.shared-property.566fc910-e9a2-4c74-a775-94e80a5472f0": {
+                                        "ri.ontology.main.struct-field.095d8bab-b48e-4090-90e3-761d1b7c654c": {
+                                            "type": "structParameterFieldValue",
+                                            "structParameterFieldValue": {
+                                                "parameterId": "com.palantir.defense.ontology.mil2525Speed",
+                                                "structFieldApiName": "speedValue"
+                                            }
+                                        },
+                                        "ri.ontology.main.struct-field.de6a3818-0226-4dc5-a0a0-90f92386019e": {
+                                            "type": "structParameterFieldValue",
+                                            "structParameterFieldValue": {
+                                                "parameterId": "com.palantir.defense.ontology.mil2525Speed",
+                                                "structFieldApiName": "speedUnit"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+          */
         },
       },
     ],
@@ -117,6 +149,10 @@ export function defineCreateInterfaceObjectAction(
       ? {
         validation: [
           createValidationRule(validation),
+          // TODO(jcai): 
+          // this just does interfaceObjectQuery for allowedValues
+          // no need to do any structFieldValidations
+          // and metadata -> parameters -> interfaceReference, no need for anything else
         ],
       }
       : {}),
@@ -140,6 +176,12 @@ export function defineCreateObjectAction(
         validation: {
           required: true,
           allowedValues: extractAllowedValuesFromType(prop.type),
+          // TODO(jcai): this is where metadata -> parameters -> validation goes
+          // parameters -> struct -> type struct w structFieldTypes
+          // parameters -> struct -> displayMetadata w structFieldsV2 (apiName and displayName)
+          // deletes -> objectQuery
+          // delete interface -> deleteObjectRule but w allowedValues interfaceObjectQuery
+          // metadata > parameters -> interfaceReference"
         },
       })) ?? []),
     ],
@@ -150,18 +192,42 @@ export function defineCreateObjectAction(
         objectTypeId: objectType.apiName,
         propertyValues: objectType.properties
           ? Object.fromEntries(
-            objectType.properties.map(
+            objectType.properties.filter(prop => !(typeof prop.type === "object" && prop.type?.type === "struct")).map(
               p => [p.apiName, { type: "parameterId", parameterId: p.apiName }],
             ),
           )
           : {},
-        structFieldValues: {},
+        structFieldValues: objectType.properties
+          ? Object.fromEntries(
+            objectType.properties.filter(prop => (typeof prop.type === "object" && prop.type?.type === "struct")).map(
+              (prop) => {
+                // we know this but it is making me do this grr -- make less gross later
+                if (typeof prop.type === "object" && prop.type?.type === "struct") {
+                  // link OMS rid generation logic
+                  const structFieldMapping = Object.fromEntries(
+                    Object.entries(prop.type.structDefinition).map((
+                      [fieldName, _fieldType],
+                    ) => [
+                      "ri.ontology-metadata.temp.struct-field." + fieldName,
+                      { parameterId: prop.apiName, structFieldApiName: fieldName },
+                    ]),
+                  )
+                  return [prop.apiName, structFieldMapping];
+                }
+                return [];
+              }
+            ),
+          )
+          : {}
       },
     }],
     ...(validation
       ? {
         validation: [
-          createValidationRule(validation),
+          createValidationRule(validation), // TODO(jcai): this validation's
+          // parameterValidations must have struct -> allowedValues struct delegate
+          // default seems to be editable, textInput, blah blah
+          // and also parameterValidations -> structFieldValidations w base type
         ],
       }
       : {}),
@@ -244,6 +310,7 @@ export function defineModifyInterfaceObjectAction(
       ? {
         validation: [
           createValidationRule(validation),
+          // TODO(jcai): probs need to do same thing here as we do for OTs? maybe??
         ],
       }
       : {}),
@@ -298,14 +365,26 @@ export function defineModifyObjectAction(
               ),
             )
             : {},
-          structFieldValues: {},
+          structFieldValues: {}, // TODO(jcai): struct things go here :)
         },
       },
     ],
     ...(validation
       ? {
         validation: [
-          createValidationRule(validation),
+          createValidationRule(validation), // TODO(jcai): this validation's
+          // parameterValidations must have struct -> allowedValues struct delegate
+          // default seems to be editable, textInput, blah blah
+          // and also parameterValidations -> structFieldValidations w base type
+          // what about parameterValidations???
+          // modify -> objectQuery
+          // create -> structFieldValidations
+          // modifyInterface -> interfaceObjectQuery (no need for structFieldValidations, weirdly)
+          // metadata - parameters -> interfaceReference
+          // same structFieldValues
+          // addInterface -> parametrValidation, allowedValues is objectTypeReference
+          // metadata -> parameters -> objectTypeReference
+          // rn do actions on interfaces work at all...
         ],
       }
       : {}),
@@ -558,7 +637,7 @@ function extractAllowedValuesFromType(
             ? { type: "cbacMarking" }
             : { type: "mandatoryMarking" };
         case "struct":
-          throw new Error("Structs are not supported yet");
+          return { type: "struct" };
         default:
           throw new Error("Unknown type");
       }
@@ -575,7 +654,7 @@ function extractActionParameterType(
       case "marking":
         return maybeAddList("marking", pt);
       case "struct":
-        throw new Error("Structs are not supported yet");
+        return ((pt.array ?? false) ? "structList" : "struct") as ActionParameterType;
       default:
         throw new Error(`Unknown type`);
     }
@@ -601,7 +680,7 @@ function extractActionParameterType(
 }
 
 function maybeAddList(
-  type: ActionParameterTypePrimitive,
+  type: ActionParameterType,
   pt: SharedPropertyType | ObjectPropertyType,
 ): ActionParameterType {
   return ((pt.array ?? false) ? type + "List" : type) as ActionParameterType;

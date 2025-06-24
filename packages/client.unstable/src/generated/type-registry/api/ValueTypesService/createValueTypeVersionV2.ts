@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,20 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { CreateValueTypeVersionRequestV2 } from "../CreateValueTypeVersionRequestV2.js";
-import type { CreateValueTypeVersionResponse } from "../CreateValueTypeVersionResponse.js";
-import type { ValueTypeRid } from "../ValueTypeRid.js";
+import type {
+  CreateValueTypeVersionRequestV2 as _api_CreateValueTypeVersionRequestV2,
+  CreateValueTypeVersionResponse as _api_CreateValueTypeVersionResponse,
+  ValueTypeRid as _api_ValueTypeRid,
+} from "../__components.js";
 
 /**
  * Creates a new value type version for an already existing Value Type.
  */
 export async function createValueTypeVersionV2(
   ctx: ConjureContext,
-  valueTypeRid: ValueTypeRid,
-  request: CreateValueTypeVersionRequestV2,
-): Promise<CreateValueTypeVersionResponse> {
+  valueTypeRid: _api_ValueTypeRid,
+  request: _api_CreateValueTypeVersionRequestV2,
+): Promise<_api_CreateValueTypeVersionResponse> {
   return conjureFetch(
     ctx,
     `/type-registry/value-types/version/v2/${valueTypeRid}`,

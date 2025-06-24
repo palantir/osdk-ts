@@ -490,6 +490,7 @@ export interface DerivedPropertyMultiHopLinkExceedsMaximumStepCountError {
   objectTypeId?: _api_ObjectTypeId | null | undefined;
   objectTypeRid?: _api_ObjectTypeRid | null | undefined;
   propertyTypeIds: Array<_api_PropertyTypeId>;
+  propertyTypeRids: Array<_api_PropertyTypeRid>;
 }
 /**
  * Multi-hop link derived properties must specify at least one step.
@@ -507,6 +508,9 @@ export interface DerivedPropertyTypeDependOnAnotherDerivedPropertyError {
   objectTypeRid?: _api_ObjectTypeRid | null | undefined;
   propertyTypeId?: _api_PropertyTypeId | null | undefined;
   propertyTypeRid?: _api_PropertyTypeRid | null | undefined;
+}
+export interface DiscardChangesErrorStatus {
+  errors: Array<_api_validation_OntologyValidationError>;
 }
 /**
  * Request to discard changes made to the specified entities on a branch.
@@ -528,6 +532,25 @@ export interface DiscardChangesRequest {
  * Return type for the discardChangesOnBranch endpoint.
  */
 export interface DiscardChangesResponse {
+  ontologyVersion: _api_OntologyVersion;
+}
+export interface DiscardChangesResponseV2_success {
+  type: "success";
+  success: DiscardChangesSuccessStatus;
+}
+
+export interface DiscardChangesResponseV2_failure {
+  type: "failure";
+  failure: DiscardChangesErrorStatus;
+}
+/**
+ * Return type for the discardChangesOnBranchV2 endpoint.
+ */
+export type DiscardChangesResponseV2 =
+  | DiscardChangesResponseV2_success
+  | DiscardChangesResponseV2_failure;
+
+export interface DiscardChangesSuccessStatus {
   ontologyVersion: _api_OntologyVersion;
 }
 export interface EntityIndexingConfiguration {
@@ -586,9 +609,13 @@ export type ForeignKeyConstraintError =
  */
 export interface ForeignPropertyTypeInDerivedPropertyDefinitionNotFoundError {
   foreignObjectType: _api_ObjectTypeRid;
+  foreignObjectTypeId?: _api_ObjectTypeId | null | undefined;
   foreignPropertyTypeId?: _api_PropertyTypeId | null | undefined;
   foreignPropertyTypeRid?: _api_PropertyTypeRid | null | undefined;
   objectType: _api_ObjectTypeRid;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  propertyTypeId?: _api_PropertyTypeId | null | undefined;
+  propertyTypeRid?: _api_PropertyTypeRid | null | undefined;
 }
 export interface FoundrySchemaConstraintError_columnMissingFromBackingDatasourceForObjectType {
   type: "columnMissingFromBackingDatasourceForObjectType";
@@ -793,6 +820,12 @@ export interface InterfaceImplementationError_objectTypeImplementsTooManyInterfa
   objectTypeImplementsTooManyInterfacesError:
     ObjectTypeImplementsTooManyInterfacesError;
 }
+
+export interface InterfaceImplementationError_localPropertyUsedToImplementStructInterfaceProperty {
+  type: "localPropertyUsedToImplementStructInterfaceProperty";
+  localPropertyUsedToImplementStructInterfaceProperty:
+    LocalPropertyUsedToImplementStructInterfaceProperty;
+}
 /**
  * A type representing validation errors associated with interface implementations. Since we only validate on
  * branches, we use RIDs instead of the ID/RID union.
@@ -809,7 +842,8 @@ export type InterfaceImplementationError =
   | InterfaceImplementationError_interfaceLinkTypeImplementedTooOften
   | InterfaceImplementationError_invalidCardinalityImplementingInterfaceLinkType
   | InterfaceImplementationError_invalidLinkedEntityImplementingInterfaceLinkType
-  | InterfaceImplementationError_objectTypeImplementsTooManyInterfacesError;
+  | InterfaceImplementationError_objectTypeImplementsTooManyInterfacesError
+  | InterfaceImplementationError_localPropertyUsedToImplementStructInterfaceProperty;
 
 /**
  * The object type specifies an interface link mapping for an interface link which does not exist.
@@ -1012,6 +1046,8 @@ export interface LinkTypeInDerivedPropertyDefinitionNotFoundOrDeletedError {
   linkTypeId?: _api_LinkTypeId | null | undefined;
   linkTypeRid?: _api_LinkTypeRid | null | undefined;
   objectType: _api_ObjectTypeRid;
+  propertyTypeIds: Array<_api_PropertyTypeId>;
+  propertyTypeRids: Array<_api_PropertyTypeRid>;
 }
 /**
  * An error when the properties of a link type reference the same backing column.
@@ -1092,6 +1128,19 @@ export interface LocalAndSharedPropertyTypesConflictingApiNamesError {
   objectTypeId?: _api_ObjectTypeId | null | undefined;
   propertyTypeId?: _api_PropertyTypeId | null | undefined;
   propertyTypeRid: _api_PropertyTypeRid;
+}
+/**
+ * Local properties cannot implement interface properties that are struct shared property types. In order to
+ * implement a struct shared property type of an interface, the shared property type needs to be used directly on
+ * the implementing object type.
+ */
+export interface LocalPropertyUsedToImplementStructInterfaceProperty {
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  objectTypeRid: _api_ObjectTypeRid;
+  propertyTypeId?: _api_PropertyTypeId | null | undefined;
+  propertyTypeRid: _api_PropertyTypeRid;
+  sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
 }
 /**
  * An error representing when a many-to-many link type datasource has a column referencing a primary key that
@@ -1452,6 +1501,7 @@ export interface ObjectTypeWithUnmappedTitlePropertyError {
 }
 export interface OntologyBranch {
   branchDetails: OntologyBranchDetails;
+  draftOntologyVersion?: _api_OntologyVersion | null | undefined;
   latestOntologyVersion: _api_OntologyVersion;
   ontologyRid: _api_OntologyRid;
   rid: _api_OntologyBranchRid;

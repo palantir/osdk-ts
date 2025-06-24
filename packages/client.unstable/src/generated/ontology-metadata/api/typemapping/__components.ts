@@ -577,91 +577,6 @@ export interface ObjectTypeGothamMappingModification {
 export interface ObjectTypeHasUnavailableRepresentativePropertyTypes {
   unavailablePropertyTypes: Array<GothamPropertyTypeUnavailable>;
 }
-export interface OntologyIrGothamPropertyDatasourceMapping_property {
-  type: "property";
-  property: OntologyIrGothamPropertyDatasourceMappingProperty;
-}
-
-export interface OntologyIrGothamPropertyDatasourceMapping_struct {
-  type: "struct";
-  struct: OntologyIrGothamPropertyDatasourceMappingStruct;
-}
-export type OntologyIrGothamPropertyDatasourceMapping =
-  | OntologyIrGothamPropertyDatasourceMapping_property
-  | OntologyIrGothamPropertyDatasourceMapping_struct;
-
-export interface OntologyIrGothamPropertyDatasourceMappingProperty {
-  propertyMappings: Record<
-    GothamDatasourceMetadata,
-    _api_ObjectTypeFieldApiName
-  >;
-}
-export interface OntologyIrGothamPropertyDatasourceMappingStruct {
-  propertyMappings: Record<GothamDatasourceMetadata, _api_StructFieldRid>;
-}
-/**
- * A foundry property that represents a property level intrinsic in Gotham. These are read from TypeClasses.
- * The propertyMappings field stores which other properties this intrinsic should be set for in Gotham.
- */
-export interface OntologyIrGothamPropertyIntrinsicMapping {
-  gothamIntrinsicType: GothamIntrinsic;
-  propertyMappings: Array<_api_ObjectTypeFieldApiName>;
-}
-/**
- * The propertyMappings field stores which properties populate the intrinsic values for specific Gotham
- * intrinsics.
- *
- * A foundry property that represents a property level intrinsic in Gotham. These are read from TypeClasses.
- */
-export interface OntologyIrGothamPropertyIntrinsicMappingV2 {
-  propertyMappings: Record<GothamIntrinsicV2, _api_ObjectTypeFieldApiName>;
-}
-/**
- * The propertyMappings field stores which struct fields populate the Gotham intrinsic values for this property.
- * Struct fields that are marked as intrinsics here will be ignored during type mapping. This means if you had a
- * struct like {age: int, startDate: timestamp (intrinsic), location: geohash (intrinsic)}, Gotham would ignore
- * the latter 2 fields and map this as an integer property type, not a struct property type.
- */
-export interface OntologyIrGothamPropertyIntrinsicMappingV3 {
-  propertyMappings: Record<GothamIntrinsicV2, _api_StructFieldRid>;
-}
-export interface OntologyIrObjectTypeGothamMapping {
-  dataSource?: _api_ObjectTypeFieldApiName | null | undefined;
-  gothamMappingEnabled?: boolean | null | undefined;
-  gothamTitleProperty?: _api_ObjectTypeFieldApiName | null | undefined;
-  objectLevelIntrinsics: Record<
-    _api_ObjectTypeFieldApiName,
-    GothamObjectIntrinsicMapping
-  >;
-  objectLevelIntrinsicsV2: Record<
-    GothamIntrinsicV2,
-    _api_ObjectTypeFieldApiName
-  >;
-  parentType: GothamOntologyParentType;
-  parentTypeUri?: GothamOntologyParentTypeUri | null | undefined;
-  propertyLevelDatasources: Record<
-    _api_ObjectTypeFieldApiName,
-    OntologyIrGothamPropertyDatasourceMapping
-  >;
-  propertyLevelIntrinsics: Record<
-    _api_ObjectTypeFieldApiName,
-    OntologyIrGothamPropertyIntrinsicMapping
-  >;
-  propertyLevelIntrinsicsV2: Record<
-    _api_ObjectTypeFieldApiName,
-    OntologyIrGothamPropertyIntrinsicMappingV2
-  >;
-  propertyLevelIntrinsicsV3: Record<
-    _api_ObjectTypeFieldApiName,
-    OntologyIrGothamPropertyIntrinsicMappingV3
-  >;
-  propertyMapping: Record<
-    _api_ObjectTypeFieldApiName,
-    PropertyTypeGothamMapping
-  >;
-  revDbIntegrationState: RevDbIntegrationState;
-  uri: GothamObjectTypeUri;
-}
 export interface PropertyTypeGothamMapping {
   structApiNameToComponentUriMapping: Record<
     _api_ObjectTypeFieldApiName,
@@ -669,7 +584,11 @@ export interface PropertyTypeGothamMapping {
   >;
   uri: GothamPropertyTypeUri;
 }
-export type RevDbIntegrationState = "ENABLED" | "PAUSED" | "DISABLED";
+export type RevDbIntegrationState =
+  | "ENABLED"
+  | "PAUSED"
+  | "DISABLED"
+  | "DISABLED_ALLOW_WRITES";
 export interface SharedPropertyTypeGothamMapping {
   structApiNameToComponentUriMapping: Record<
     _api_ObjectTypeFieldApiName,

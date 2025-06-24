@@ -16,7 +16,6 @@
 
 import type {
   BuilderPipelineRid as _api_BuilderPipelineRid,
-  ObjectTypeApiName as _api_ObjectTypeApiName,
   ObjectTypeRid as _api_ObjectTypeRid,
 } from "../../__components.js";
 
@@ -89,43 +88,6 @@ export type MarketplaceBlockSetInstallationRid = string;
 export interface MarketplaceEntityProvenance {
   installationRid: MarketplaceBlockSetInstallationRid;
 }
-/**
- * Edits History
- */
-export interface OntologyIrEditsHistoryProvenance {
-  objectTypeRid: _api_ObjectTypeApiName;
-}
-/**
- * Information describing the provenance of an ontology entity.
- */
-export interface OntologyIrEntityProvenance {
-  source: OntologyIrEntityProvenanceSource;
-}
-export interface OntologyIrEntityProvenanceSource_builder {
-  type: "builder";
-  builder: BuilderEntityProvenance;
-}
-
-export interface OntologyIrEntityProvenanceSource_marketplace {
-  type: "marketplace";
-  marketplace: MarketplaceEntityProvenance;
-}
-
-export interface OntologyIrEntityProvenanceSource_editsHistory {
-  type: "editsHistory";
-  editsHistory: OntologyIrEditsHistoryProvenance;
-}
-/**
- * Information describing the source provenance of an ontology entity modeled as an extensible union.
- * Each service or client which defines the definition of an ontology entity can declare their custom
- * representation of provenance metadata. Examples may include references to resources, their versions,
- * timestamps etc.
- */
-export type OntologyIrEntityProvenanceSource =
-  | OntologyIrEntityProvenanceSource_builder
-  | OntologyIrEntityProvenanceSource_marketplace
-  | OntologyIrEntityProvenanceSource_editsHistory;
-
 /**
  * Provenance of an entity originating from ontology metadata application (OMA).
  */
