@@ -568,29 +568,16 @@ const departmentToEmployeesLink = defineLink({
   one: {
     object: departmentObject, // The "one" side of the relationship
     metadata: {
-      displayMetadata: {
-        displayName: "Department",
-        pluralDisplayName: "Departments",
-        visibility: "NORMAL",
-      },
       apiName: "department",
-      typeClasses: [],
     },
   },
   toMany: {
     object: employeeObject, // The "many" side of the relationship
     metadata: {
-      displayMetadata: {
-        displayName: "Employee",
-        pluralDisplayName: "Employees",
-        visibility: "NORMAL",
-      },
       apiName: "employees",
-      typeClasses: [],
     },
   },
   manyForeignKeyProperty: "departmentId", // Property on employeeObject that refers to departmentObject
-  cardinality: "OneToMany",
 });
 ```
 
@@ -603,25 +590,13 @@ const productToCategoriesLink = defineLink({
   many: {
     object: productObject, // One side of the many-to-many relationship
     metadata: {
-      displayMetadata: {
-        displayName: "Product",
-        pluralDisplayName: "Products",
-        visibility: "NORMAL",
-      },
       apiName: "products",
-      typeClasses: [],
     },
   },
   toMany: {
     object: categoryObject, // Other side of the many-to-many relationship
     metadata: {
-      displayMetadata: {
-        displayName: "Category",
-        pluralDisplayName: "Categories",
-        visibility: "NORMAL",
-      },
       apiName: "categories",
-      typeClasses: [],
     },
   },
 });
