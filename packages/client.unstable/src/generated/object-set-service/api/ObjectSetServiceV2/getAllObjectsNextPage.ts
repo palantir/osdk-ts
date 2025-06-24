@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { Backend } from "../Backend.js";
-import type { GetAllObjectsNextPageRequest } from "../GetAllObjectsNextPageRequest.js";
-import type { GetAllObjectsNextPageResponse } from "../GetAllObjectsNextPageResponse.js";
+import type {
+  Backend as _api_Backend,
+  GetAllObjectsNextPageRequest as _api_GetAllObjectsNextPageRequest,
+  GetAllObjectsNextPageResponse as _api_GetAllObjectsNextPageResponse,
+} from "../__components.js";
 
 /**
  * Returns the next page of all `FoundryObject`s of an evaluated object set.
@@ -34,8 +36,8 @@ import type { GetAllObjectsNextPageResponse } from "../GetAllObjectsNextPageResp
  */
 export async function getAllObjectsNextPage(
   ctx: ConjureContext,
-  request: GetAllObjectsNextPageRequest,
-  backend: Backend | undefined,
-): Promise<GetAllObjectsNextPageResponse> {
+  request: _api_GetAllObjectsNextPageRequest,
+  backend: _api_Backend | null | undefined,
+): Promise<_api_GetAllObjectsNextPageResponse> {
   return conjureFetch(ctx, `/objectSets/objects/all/next`, "POST", request);
 }

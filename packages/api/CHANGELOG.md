@@ -1,5 +1,29 @@
 # @osdk/api
 
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+## 2.3.0-beta.6
+
+## 2.3.0-beta.5
+
+### Minor Changes
+
+- e8c4aed: Fixes breaks introduced between 2.1 and 2.2
+
+## 2.3.0-beta.4
+
+### Minor Changes
+
+- 43c5547: Add 'getMediaReference' method to Media
+- ef46ed6: Add protection for dropping unsupported enums instead of throwing"
+- 3b5ccaa: Fix orderBy argument on object load methods
+
+## 2.3.0-beta.3
+
 ## 2.3.0-beta.2
 
 ## 2.2.0-beta.23

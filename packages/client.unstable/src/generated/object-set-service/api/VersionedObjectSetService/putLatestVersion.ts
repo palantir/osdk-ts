@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,20 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { LatestVersionResponse } from "../LatestVersionResponse.js";
-import type { UpdateLatestVersionRequest } from "../UpdateLatestVersionRequest.js";
-import type { VersionedObjectSetRid } from "../VersionedObjectSetRid.js";
+import type {
+  LatestVersionResponse as _api_LatestVersionResponse,
+  UpdateLatestVersionRequest as _api_UpdateLatestVersionRequest,
+  VersionedObjectSetRid as _api_VersionedObjectSetRid,
+} from "../__components.js";
 
 /**
  * Updates the latest version of this versioned object set to be the supplied object set.
  */
 export async function putLatestVersion(
   ctx: ConjureContext,
-  versionedObjectSetRid: VersionedObjectSetRid,
-  request: UpdateLatestVersionRequest,
-): Promise<LatestVersionResponse> {
+  versionedObjectSetRid: _api_VersionedObjectSetRid,
+  request: _api_UpdateLatestVersionRequest,
+): Promise<_api_LatestVersionResponse> {
   return conjureFetch(
     ctx,
     `/versionedObjectSets/${versionedObjectSetRid}/latestVersion`,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,19 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { Backend } from "../Backend.js";
-import type { GetTopObjectsInitialPageRequest } from "../GetTopObjectsInitialPageRequest.js";
-import type { GetTopObjectsInitialPageResponse } from "../GetTopObjectsInitialPageResponse.js";
+import type {
+  Backend as _api_Backend,
+  GetTopObjectsInitialPageRequest as _api_GetTopObjectsInitialPageRequest,
+  GetTopObjectsInitialPageResponse as _api_GetTopObjectsInitialPageResponse,
+} from "../__components.js";
 
 /**
  * Deprecated. Do not use, use ObjectSetServiceV2 instead.
  */
 export async function getTopObjectsInitialPage(
   ctx: ConjureContext,
-  request: GetTopObjectsInitialPageRequest,
-  backend: Backend | undefined,
-): Promise<GetTopObjectsInitialPageResponse> {
+  request: _api_GetTopObjectsInitialPageRequest,
+  backend: _api_Backend | null | undefined,
+): Promise<_api_GetTopObjectsInitialPageResponse> {
   return conjureFetch(ctx, `/objectSets/objects/top/initial`, "POST", request);
 }

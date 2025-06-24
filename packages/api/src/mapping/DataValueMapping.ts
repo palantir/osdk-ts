@@ -15,7 +15,7 @@
  */
 
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
-import type { MediaReference } from "../object/Media.js";
+import type { MediaReference, MediaUpload } from "../object/Media.js";
 import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
 
 /**
@@ -73,7 +73,7 @@ export interface DataValueClientToWire {
   string: string;
   timestamp: string;
   set: Set<any>;
-  mediaReference: MediaReference;
+  mediaReference: MediaReference | MediaUpload;
   twoDimensionalAggregation: {
     key: AllowedBucketKeyTypes;
     value: AllowedBucketTypes;

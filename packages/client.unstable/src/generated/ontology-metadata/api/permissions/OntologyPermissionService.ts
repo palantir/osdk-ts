@@ -39,6 +39,7 @@ export { getSuggestedRolesForManyToManyLinkTypeDatasource } from "./OntologyPerm
 export { getSuggestedRolesForObjectType } from "./OntologyPermissionService/getSuggestedRolesForObjectType.js";
 export { getSuggestedRolesForObjectTypeDatasource } from "./OntologyPermissionService/getSuggestedRolesForObjectTypeDatasource.js";
 export { getWorkflowPermissions } from "./OntologyPermissionService/getWorkflowPermissions.js";
+export { migrateEntitiesToProjects } from "./OntologyPermissionService/migrateEntitiesToProjects.js";
 export { updateEntitiesInPackage } from "./OntologyPermissionService/updateEntitiesInPackage.js";
 export { updateEntityRoles } from "./OntologyPermissionService/updateEntityRoles.js";
 export { updatePackageRoles } from "./OntologyPermissionService/updatePackageRoles.js";

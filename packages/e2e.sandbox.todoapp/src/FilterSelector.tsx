@@ -1,18 +1,18 @@
 import type { WhereClause } from "@osdk/api";
 import React from "react";
 import { Button } from "./Button.js";
-import type { Todo } from "./generatedNoCheck2/index.js";
+import type { TodoLike } from "./generatedNoCheck2/index.js";
 import { H2 } from "./H2.js";
 
-const whereClauses: WhereClause<Todo>[] = [
+const whereClauses: WhereClause<TodoLike>[] = [
   {},
-  { title: { $startsWith: "ea " } },
-  { title: { $startsWith: "cool " } },
+  { name: { $startsWith: "ea " } },
+  { name: { $startsWith: "cool " } },
   { isComplete: true },
 ];
 
 interface FilterSelectorProps {
-  setFilter: (filter: WhereClause<Todo>) => void;
+  setFilter: (filter: WhereClause<TodoLike>) => void;
   heading?: string;
 }
 

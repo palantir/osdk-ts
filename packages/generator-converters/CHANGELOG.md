@@ -1,5 +1,48 @@
 # @osdk/generator-converters
 
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/api@2.3.0-beta.7
+
+## 2.3.0-beta.6
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.6
+
+## 2.3.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [e8c4aed]
+  - @osdk/api@2.3.0-beta.5
+
+## 2.3.0-beta.4
+
+### Minor Changes
+
+- ef46ed6: Add protection for dropping unsupported enums instead of throwing"
+
+### Patch Changes
+
+- Updated dependencies [43c5547]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [3b5ccaa]
+  - @osdk/api@2.3.0-beta.4
+
+## 2.3.0-beta.3
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.3
+
 ## 2.3.0-beta.2
 
 ### Patch Changes

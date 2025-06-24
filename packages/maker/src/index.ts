@@ -16,6 +16,7 @@
 
 export { default as default } from "./cli/main.js";
 
+export { addDependency } from "./api/addDependency.js";
 export {
   defineAction,
   defineCreateInterfaceObjectAction,

@@ -30,9 +30,10 @@ export function importSharedPropertyType(
     apiName: string;
     packageName?: string;
     typeHint: PropertyTypeType;
+    array?: boolean;
   },
 ): SharedPropertyType {
-  const { apiName, packageName, typeHint } = opts;
+  const { apiName, packageName, typeHint, array } = opts;
   const fullApiName = packageName === undefined
     ? apiName
     : `${packageName}.${apiName}`;
@@ -51,6 +52,7 @@ export function importSharedPropertyType(
     apiName: fullApiName,
     type: typeHint,
     nonNameSpacedApiName: apiName,
+    array: array ?? false,
     __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
   };
   importOntologyEntity(spt);

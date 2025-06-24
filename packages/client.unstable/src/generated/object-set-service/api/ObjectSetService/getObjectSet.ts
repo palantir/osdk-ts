@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,17 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetObjectSetResponse } from "../GetObjectSetResponse.js";
-import type { ObjectSetRid } from "../ObjectSetRid.js";
+import type {
+  GetObjectSetResponse as _api_GetObjectSetResponse,
+  ObjectSetRid as _api_ObjectSetRid,
+} from "../__components.js";
 
 /**
  * Returns the definition of this object set.
  */
 export async function getObjectSet(
   ctx: ConjureContext,
-  objectSetRid: ObjectSetRid,
-): Promise<GetObjectSetResponse> {
+  objectSetRid: _api_ObjectSetRid,
+): Promise<_api_GetObjectSetResponse> {
   return conjureFetch(ctx, `/objectSets/${objectSetRid}`, "GET");
 }

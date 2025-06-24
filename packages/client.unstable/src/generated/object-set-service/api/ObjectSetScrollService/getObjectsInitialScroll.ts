@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,19 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetObjectsInitialScrollRequest } from "../GetObjectsInitialScrollRequest.js";
-import type { GetObjectsScrollResponse } from "../GetObjectsScrollResponse.js";
+import type {
+  GetObjectsInitialScrollRequest as _api_GetObjectsInitialScrollRequest,
+  GetObjectsScrollResponse as _api_GetObjectsScrollResponse,
+} from "../__components.js";
 
 /**
  * Request for the first scroll of ObjectRid(s).
+ *
+ * WARNING: Throws if the object set references object types containing object type derived properties (OTDPs).
  */
 export async function getObjectsInitialScroll(
   ctx: ConjureContext,
-  request: GetObjectsInitialScrollRequest,
-): Promise<GetObjectsScrollResponse> {
+  request: _api_GetObjectsInitialScrollRequest,
+): Promise<_api_GetObjectsScrollResponse> {
   return conjureFetch(ctx, `/scroll/initial`, "POST", request);
 }

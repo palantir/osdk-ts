@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
+import type { FauxDataStore, FauxOntology } from "@osdk/faux";
+import { FauxFoundry } from "@osdk/faux";
 import invariant from "tiny-invariant";
-import type { FauxDataStore } from "../FauxFoundry/FauxDataStore.js";
-import { FauxFoundry } from "../FauxFoundry/FauxFoundry.js";
-import type { FauxOntology } from "../FauxFoundry/FauxOntology.js";
 import { registerLazyActions } from "./actions.js";
 import { ActionTypeWithUnsupportedTypes, editTodo } from "./actionTypes.js";
 import { BarInterface, FooInterface } from "./interfaceTypes.js";

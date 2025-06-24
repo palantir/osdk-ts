@@ -1,5 +1,19 @@
 # @osdk/generator-utils
 
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+## 2.3.0-beta.6
+
+## 2.3.0-beta.5
+
+## 2.3.0-beta.4
+
+## 2.3.0-beta.3
+
 ## 2.3.0-beta.2
 
 ## 2.2.0-beta.23

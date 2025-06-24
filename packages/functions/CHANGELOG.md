@@ -1,5 +1,48 @@
 # @osdk/functions
 
+## 1.1.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [2a23cca]
+- Updated dependencies [f8db93d]
+  - @osdk/client@2.3.0-beta.7
+
+## 1.1.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [9839eab]
+- Updated dependencies [cd911a6]
+- Updated dependencies [2c800e5]
+- Updated dependencies [cd911a6]
+  - @osdk/client@2.3.0-beta.6
+
+## 1.1.0-beta.5
+
+### Patch Changes
+
+- @osdk/client@2.3.0-beta.5
+
+## 1.1.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [43c5547]
+- Updated dependencies [3736624]
+- Updated dependencies [3b5ccaa]
+  - @osdk/client@2.3.0-beta.4
+
+## 1.1.0-beta.3
+
+### Patch Changes
+
+- @osdk/client@2.3.0-beta.3
+
 ## 1.1.0-beta.2
 
 ### Patch Changes

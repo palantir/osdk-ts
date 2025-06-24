@@ -181,8 +181,9 @@ export async function applyAction<
       return response.validation as ActionReturnTypeForOptions<Op>;
     }
 
-    if (response.validation?.result === "INVALID") {
-      throw new ActionValidationError(response.validation);
+    if (response.validation && response.validation?.result === "INVALID") {
+      const validation = response.validation;
+      throw new ActionValidationError(validation);
     }
 
     const edits = response.edits;

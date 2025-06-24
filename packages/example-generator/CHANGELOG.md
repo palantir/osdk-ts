@@ -1,5 +1,49 @@
 # @osdk/example-generator
 
+## 0.11.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/create-widget@3.0.0-beta.5
+  - @osdk/create-app@2.3.0-beta.7
+
+## 0.11.0-beta.6
+
+### Minor Changes
+
+- 7901ae0: Remove unstable suffix from widget packages
+
+### Patch Changes
+
+- @osdk/create-widget@3.0.0-beta.4
+- @osdk/create-app@2.3.0-beta.6
+
+## 0.11.0-beta.5
+
+### Patch Changes
+
+- @osdk/create-app@2.3.0-beta.5
+- @osdk/create-widget@3.0.0-beta.3
+
+## 0.11.0-beta.4
+
+### Patch Changes
+
+- @osdk/create-app@2.3.0-beta.4
+- @osdk/create-widget@2.2.0-beta.2
+
+## 0.11.0-beta.3
+
+### Patch Changes
+
+- @osdk/create-app@2.3.0-beta.3
+- @osdk/create-widget@2.2.0-beta.1
+
 ## 0.11.0-beta.2
 
 ### Patch Changes

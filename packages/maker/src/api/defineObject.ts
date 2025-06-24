@@ -60,6 +60,14 @@ export function defineObject(
     propertyApiNames.includes(objectDef.primaryKeyPropertyApiName),
     `Primary key property ${objectDef.primaryKeyPropertyApiName} does not exist on object ${objectDef.apiName}`,
   );
+
+  invariant(
+    (objectDef.properties ?? []).filter(p =>
+      p.apiName === objectDef.primaryKeyPropertyApiName
+    ).every(p => !p.editOnly),
+    `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
+  );
+
   const retentionPeriod = (objectDef.datasource as any)?.retentionPeriod;
   invariant(
     retentionPeriod === undefined || ISO_8601_DURATION.test(retentionPeriod),
@@ -146,12 +154,8 @@ export function defineObject(
     )
       .map<ValidationResult>(validateProperty);
     const extendsValidations = interfaceImpl.implements.extendsInterfaces
-      .flatMap(interfaceApiName =>
-        Object.entries(
-          ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][
-            interfaceApiName
-          ].propertiesV2 as Record<string, InterfacePropertyType>,
-        ).map(validateProperty)
+      .flatMap(interfaceType =>
+        Object.entries(interfaceType.propertiesV2).map(validateProperty)
       );
 
     const allFailedValidations = baseValidations.concat(
@@ -227,4 +231,21 @@ function validateInterfaceImplProperty(
   }
 
   return { type: "valid" };
+}
+
+export function convertToDisplayName(s: string | undefined | null): string {
+  return s === undefined || s == null
+    ? ""
+    : s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+// TODO: edge cases
+export function convertToPluralDisplayName(
+  s: string | undefined | null,
+): string {
+  return s === undefined || s == null
+    ? ""
+    : s.endsWith("s")
+    ? convertToDisplayName(s)
+    : convertToDisplayName(s) + "s";
 }

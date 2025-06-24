@@ -121,6 +121,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/foundry-config-json",
       "@osdk/generator-converters",
+      "@osdk/generator-converters.ontologyir",
       "@osdk/generator-utils",
       "@osdk/generator",
       "@osdk/maker",
@@ -130,8 +131,10 @@ const archetypeRules = archetypes(
       "@osdk/shared.net.fetch",
       "@osdk/shared.net",
       "@osdk/typescript-sdk-docs",
-      "@osdk/widget.api.unstable",
-      "@osdk/widget.client.unstable",
+      "@osdk/widget.api",
+      "@osdk/widget.client",
+      "@osdk/vite-plugin-oac",
+      "@osdk/faux",
     ],
     {
       ...LIBRARY_RULES,
@@ -256,7 +259,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "vitePlugin",
     [
-      "@osdk/widget.vite-plugin.unstable",
+      "@osdk/widget.vite-plugin",
     ],
     {
       ...LIBRARY_RULES,
@@ -268,7 +271,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "reactLibrary",
     [
-      "@osdk/widget.client-react.unstable",
+      "@osdk/widget.client-react",
       "@osdk/react",
     ],
     {

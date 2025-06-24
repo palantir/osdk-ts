@@ -1,5 +1,61 @@
 # @osdk/foundry-sdk-generator
 
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [2a23cca]
+- Updated dependencies [f8db93d]
+  - @osdk/client@2.3.0-beta.7
+  - @osdk/generator@2.3.0-beta.7
+  - @osdk/api@2.3.0-beta.7
+
+## 2.3.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [9839eab]
+- Updated dependencies [cd911a6]
+- Updated dependencies [2c800e5]
+- Updated dependencies [cd911a6]
+  - @osdk/client@2.3.0-beta.6
+  - @osdk/api@2.3.0-beta.6
+  - @osdk/generator@2.3.0-beta.6
+
+## 2.3.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [e8c4aed]
+  - @osdk/api@2.3.0-beta.5
+  - @osdk/client@2.3.0-beta.5
+  - @osdk/generator@2.3.0-beta.5
+
+## 2.3.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [43c5547]
+- Updated dependencies [fe00f84]
+- Updated dependencies [3736624]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [3b5ccaa]
+  - @osdk/client@2.3.0-beta.4
+  - @osdk/api@2.3.0-beta.4
+  - @osdk/generator@2.3.0-beta.4
+
+## 2.3.0-beta.3
+
+### Patch Changes
+
+- @osdk/client@2.3.0-beta.3
+- @osdk/api@2.3.0-beta.3
+- @osdk/generator@2.3.0-beta.3
+
 ## 2.3.0-beta.2
 
 ### Patch Changes

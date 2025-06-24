@@ -9,6 +9,7 @@ export { createStructPerson } from './actions/createStructPerson.js';
 export { createStructPersonOpiTeam } from './actions/createStructPersonOpiTeam.js';
 export { createTestGeoAction } from './actions/createTestGeoAction.js';
 export { createTodo } from './actions/createTodo.js';
+export { createUnstructuredImageExample } from './actions/createUnstructuredImageExample.js';
 export { deleteFooInterface } from './actions/deleteFooInterface.js';
 export { deleteInterfaceForTest } from './actions/deleteInterfaceForTest.js';
 export { deleteOsdkTestObject } from './actions/deleteOsdkTestObject.js';

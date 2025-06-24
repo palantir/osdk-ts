@@ -30,6 +30,7 @@ export namespace Todo {
     readonly isComplete: $PropType['boolean'] | undefined;
     /**
      *   display name: 'Title',
+     *
      *   description: The text of the todo
      */
     readonly title: $PropType['string'] | undefined;
@@ -67,6 +68,7 @@ export interface Todo extends $ObjectTypeDefinition {
       name: 'todo';
       color: 'blue';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -84,6 +86,7 @@ export interface Todo extends $ObjectTypeDefinition {
       isComplete: $PropertyDef<'boolean', 'nullable', 'single'>;
       /**
        *   display name: 'Title',
+       *
        *   description: The text of the todo
        */
       title: $PropertyDef<'string', 'nullable', 'single'>;
@@ -92,6 +95,7 @@ export interface Todo extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'id';
     type: 'object';
+    visibility: undefined;
   };
 }
 

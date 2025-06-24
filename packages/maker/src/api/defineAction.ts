@@ -27,6 +27,8 @@ import {
   type ActionParameterTypePrimitive,
   type ActionType,
   type ActionTypeDefinition,
+  type ActionValidationDefinition,
+  type ActionValidationRule,
   type InterfaceType,
   type ObjectPropertyType,
   type ObjectType,
@@ -38,6 +40,7 @@ import {
 export function defineCreateInterfaceObjectAction(
   interfaceType: InterfaceType,
   objectType?: ObjectType,
+  validation?: ActionValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `create-${
@@ -110,11 +113,19 @@ export function defineCreateInterfaceObjectAction(
         },
       },
     ],
+    ...(validation
+      ? {
+        validation: [
+          createValidationRule(validation),
+        ],
+      }
+      : {}),
   });
 }
 
 export function defineCreateObjectAction(
   objectType: ObjectType,
+  validation?: ActionValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `create-object-${
@@ -147,12 +158,20 @@ export function defineCreateObjectAction(
         structFieldValues: {},
       },
     }],
+    ...(validation
+      ? {
+        validation: [
+          createValidationRule(validation),
+        ],
+      }
+      : {}),
   });
 }
 
 export function defineModifyInterfaceObjectAction(
   interfaceType: InterfaceType,
   objectType?: ObjectType,
+  validation?: ActionValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `modify-${
@@ -221,11 +240,19 @@ export function defineModifyInterfaceObjectAction(
         },
       },
     ],
+    ...(validation
+      ? {
+        validation: [
+          createValidationRule(validation),
+        ],
+      }
+      : {}),
   });
 }
 
 export function defineModifyObjectAction(
   objectType: ObjectType,
+  validation?: ActionValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `modify-object-${
@@ -250,7 +277,7 @@ export function defineModifyObjectAction(
         displayName: prop.displayName,
         type: extractActionParameterType(prop),
         validation: {
-          required: true,
+          required: false,
           allowedValues: extractAllowedValuesFromType(prop.type),
         },
       })) ?? []),
@@ -275,11 +302,19 @@ export function defineModifyObjectAction(
         },
       },
     ],
+    ...(validation
+      ? {
+        validation: [
+          createValidationRule(validation),
+        ],
+      }
+      : {}),
   });
 }
 
 export function defineDeleteObjectAction(
   objectType: ObjectType,
+  validation?: ActionValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `delete-object-${
@@ -309,6 +344,13 @@ export function defineDeleteObjectAction(
         },
       },
     ],
+    ...(validation
+      ? {
+        validation: [
+          createValidationRule(validation),
+        ],
+      }
+      : {}),
   });
 }
 
@@ -502,6 +544,7 @@ function extractAllowedValuesFromType(
     case "string":
       return { type: "text" };
     case "geopoint":
+      return { type: "geohash" };
     case "geoshape":
       return { type: "geoshape" };
     case "mediaReference":
@@ -547,7 +590,7 @@ function extractActionParameterType(
     case "short":
       return maybeAddList("integer", pt);
     case "geopoint":
-      return maybeAddList("geoshape", pt);
+      return maybeAddList("geohash", pt);
     case "float":
       return maybeAddList("double", pt);
     case "geotimeSeries":
@@ -612,4 +655,56 @@ function kebab(s: string): string {
 
 function sanitize(s: string): string {
   return s.includes(".") ? s : namespace + s;
+}
+
+function createValidationRule(
+  actionValidation: ActionValidationDefinition,
+): ActionValidationRule {
+  if (!("type" in actionValidation)) {
+    return actionValidation;
+  }
+  switch (actionValidation.type) {
+    case "group":
+      return {
+        condition: {
+          type: "comparison",
+          comparison: {
+            operator: "EQUALS",
+            left: {
+              type: "userProperty",
+              userProperty: {
+                userId: {
+                  type: "currentUser",
+                  currentUser: {},
+                },
+                propertyValue: {
+                  type: "groupIds",
+                  groupIds: {},
+                },
+              },
+            },
+            right: {
+              type: "staticValue",
+              staticValue: {
+                type: "stringList",
+                stringList: {
+                  strings: [
+                    actionValidation.name,
+                  ],
+                },
+              },
+            },
+          },
+        },
+        displayMetadata: {
+          failureMessage:
+            "Insufficient permissions. Missing organization membership required to submit action",
+          typeClasses: [],
+        },
+      };
+    default:
+      throw new Error(
+        `Unknown action validation type: ${actionValidation.type}`,
+      );
+  }
 }

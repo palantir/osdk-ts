@@ -1,5 +1,37 @@
 # @osdk/client.unstable
 
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+## 2.3.0-beta.6
+
+### Minor Changes
+
+- 9839eab: Reverts #1617
+
+## 2.3.0-beta.5
+
+### Minor Changes
+
+- d6bccdf: Add marketplace API
+
+## 2.3.0-beta.4
+
+### Minor Changes
+
+- cc2ce5f: add module-group api
+- a6c01ff: Add object-sentinel API
+- 3408ea9: Update object set service API
+
+## 2.3.0-beta.3
+
+### Minor Changes
+
+- 474f4ca: Group permissions for OAC actions
+
 ## 2.3.0-beta.2
 
 ## 2.2.0-beta.23

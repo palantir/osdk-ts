@@ -22,6 +22,7 @@ export namespace BoundariesUsState {
   export interface Props {
     /**
      *   display name: 'Geometry10M',
+     *
      *   description: geoshape
      */
     readonly geometry10M: $PropType['geoshape'] | undefined;
@@ -71,6 +72,7 @@ export interface BoundariesUsState extends $ObjectTypeDefinition {
       name: 'usState';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -80,6 +82,7 @@ export interface BoundariesUsState extends $ObjectTypeDefinition {
     properties: {
       /**
        *   display name: 'Geometry10M',
+       *
        *   description: geoshape
        */
       geometry10M: $PropertyDef<'geoshape', 'nullable', 'single'>;
@@ -100,6 +103,7 @@ export interface BoundariesUsState extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'usState';
     type: 'object';
+    visibility: undefined;
   };
 }
 

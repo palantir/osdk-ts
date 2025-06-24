@@ -435,6 +435,7 @@ describe.each([
         rid: "",
         type: "interface",
         implements: [],
+        description: undefined,
       } satisfies InterfaceMetadata;
 
       const fooInterfaceOsdkDef = {
@@ -471,6 +472,9 @@ describe.each([
         displayName: "",
         links: {},
         rid: "",
+        icon: undefined,
+        visibility: undefined,
+        description: undefined,
       } satisfies FetchedObjectTypeDefinition;
 
       it("Correctly updates the interface and underlying object", () => {

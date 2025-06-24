@@ -76,6 +76,8 @@ import type {
   InterfaceLinkTypeCardinality as _api_InterfaceLinkTypeCardinality,
   InterfaceLinkTypeMetadata as _api_InterfaceLinkTypeMetadata,
   InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest,
+  InterfacePropertyTypeRidOrIdInRequest
+    as _api_InterfacePropertyTypeRidOrIdInRequest,
   InterfaceTypeApiName as _api_InterfaceTypeApiName,
   InterfaceTypeDisplayMetadata as _api_InterfaceTypeDisplayMetadata,
   InterfaceTypeIdInRequest as _api_InterfaceTypeIdInRequest,
@@ -565,6 +567,18 @@ export interface InterfacePropertyImplementationModification {
   propertyTypeId: _api_PropertyTypeId;
   sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
 }
+export interface InterfacePropertyTypeModification_sharedPropertyBasedPropertyType {
+  type: "sharedPropertyBasedPropertyType";
+  sharedPropertyBasedPropertyType: SharedPropertyBasedPropertyTypeModification;
+}
+export type InterfacePropertyTypeModification =
+  InterfacePropertyTypeModification_sharedPropertyBasedPropertyType;
+
+export interface InterfacePropertyTypeModificationWithRidOrIdInRequest {
+  interfacePropertyTypeModification: InterfacePropertyTypeModification;
+  interfacePropertyTypeRidOrIdInRequest:
+    _api_InterfacePropertyTypeRidOrIdInRequest;
+}
 export interface InterfaceSharedPropertyTypeModification {
   required: boolean;
   sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
@@ -576,6 +590,7 @@ export interface InterfaceTypeModification {
   links: Array<InterfaceLinkTypeModification>;
   properties: Array<_api_SharedPropertyTypeRidOrIdInRequest>;
   propertiesV2: Array<InterfaceSharedPropertyTypeModification>;
+  propertiesV3: Array<InterfacePropertyTypeModificationWithRidOrIdInRequest>;
   status: _api_InterfaceTypeStatus;
 }
 /**
@@ -882,6 +897,11 @@ export interface ObjectTypeDatasourceModificationDefinition_streamV2 {
   streamV2: ObjectTypeStreamDatasourceV2Modification;
 }
 
+export interface ObjectTypeDatasourceModificationDefinition_streamV3 {
+  type: "streamV3";
+  streamV3: ObjectTypeStreamDatasourceV3Modification;
+}
+
 export interface ObjectTypeDatasourceModificationDefinition_restrictedStream {
   type: "restrictedStream";
   restrictedStream: ObjectTypeRestrictedStreamDatasourceModification;
@@ -953,6 +973,7 @@ export type ObjectTypeDatasourceModificationDefinition =
   | ObjectTypeDatasourceModificationDefinition_dataset
   | ObjectTypeDatasourceModificationDefinition_stream
   | ObjectTypeDatasourceModificationDefinition_streamV2
+  | ObjectTypeDatasourceModificationDefinition_streamV3
   | ObjectTypeDatasourceModificationDefinition_restrictedStream
   | ObjectTypeDatasourceModificationDefinition_restrictedView
   | ObjectTypeDatasourceModificationDefinition_timeSeries
@@ -1143,6 +1164,15 @@ export interface ObjectTypeStreamDatasourceModification {
 }
 export interface ObjectTypeStreamDatasourceV2Modification {
   propertyMapping: Record<_api_PropertyTypeId, _api_ColumnName>;
+  propertySecurityGroups?:
+    | _api_PropertySecurityGroupsModification
+    | null
+    | undefined;
+  retentionPolicy?: _api_RetentionPolicy | null | undefined;
+  streamLocator: _api_StreamLocator;
+}
+export interface ObjectTypeStreamDatasourceV3Modification {
+  propertyMapping: Record<_api_PropertyTypeId, _api_PropertyTypeMappingInfo>;
   propertySecurityGroups?:
     | _api_PropertySecurityGroupsModification
     | null
@@ -1589,6 +1619,10 @@ export interface ReadOnlyV1V2Modification {
 }
 export interface SensorTraitModification {
   readingPropertyTypeId: _api_PropertyTypeId;
+}
+export interface SharedPropertyBasedPropertyTypeModification {
+  requireImplementation: boolean;
+  sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
 }
 export interface SharedPropertyTypeModification {
   aliases?:

@@ -10,6 +10,7 @@ export {
   createStructPersonOpiTeam,
   createTestGeoAction,
   createTodo,
+  createUnstructuredImageExample,
   deleteFooInterface,
   deleteInterfaceForTest,
   deleteOsdkTestObject,
@@ -41,6 +42,7 @@ export {
   StructPersonOpisTeam,
   TestGeoAction,
   Todo,
+  UnstructuredImageExample,
   Venture,
   WeatherStation,
 } from './ontology/objects.js';

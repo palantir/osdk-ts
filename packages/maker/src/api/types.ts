@@ -196,6 +196,17 @@ export interface ActionTypeInner {
   typeClasses: Array<TypeClass>;
 }
 
+export type ActionValidationRule = OntologyIrValidationRule;
+
+export type ActionValidationDefinition =
+  | GroupValidationRule
+  | OntologyIrValidationRule;
+
+export type GroupValidationRule = {
+  type: "group";
+  name: string;
+};
+
 export type ActionStatus =
   | "active"
   | "experimental"
@@ -280,13 +291,14 @@ export interface ObjectPropertyTypeInner extends
 {
   type: PropertyTypeType;
   array?: boolean;
-  valueType: string | ValueTypeDefinitionVersion;
+  valueType: ValueTypeDefinitionVersion;
   sharedPropertyType: SharedPropertyType;
   description: string | undefined;
   displayName: string;
   visibility: Visibility;
   nullability?: Nullability;
   status?: ObjectTypeStatus;
+  editOnly?: boolean;
 }
 
 export type ObjectPropertyType = RequiredFields<
@@ -307,12 +319,14 @@ export interface InterfaceType extends
     // these things don't need to exist as the system works fine without them (I'm told)
     | "allProperties"
     | "allLinks"
+    | "extendsInterfaces"
     | "allExtendsInterfaces"
     | "propertiesV2"
     | "allPropertiesV2"
   >
 {
   propertiesV2: Record<string, InterfacePropertyType>;
+  extendsInterfaces: Array<InterfaceType>;
   status: InterfaceTypeStatus;
   __type: OntologyEntityTypeEnum.INTERFACE_TYPE;
 }
@@ -333,7 +347,7 @@ export interface Nullability {
   noNulls: boolean;
 }
 
-type TypeClass = { kind: string; name: string };
+export type TypeClass = { kind: string; name: string };
 
 export interface SharedPropertyType extends OntologyEntityBase, PropertyType {
   apiName: string;
@@ -421,13 +435,13 @@ export type LinkType =
 
 export type LinkTypeDefinition =
   | Omit<
-    OntologyEntityBase & OneToManyLinkTypeDefinition & {
+    OntologyEntityBase & OneToManyLinkTypeUserDefinition & {
       __type: OntologyEntityTypeEnum.LINK_TYPE;
     },
     "__type"
   >
   | Omit<
-    OntologyEntityBase & ManyToManyLinkTypeDefinition & {
+    OntologyEntityBase & ManyToManyLinkTypeUserDefinition & {
       __type: OntologyEntityTypeEnum.LINK_TYPE;
     },
     "__type"
@@ -449,6 +463,18 @@ export interface OneToManyObjectLinkReference {
   metadata: LinkTypeMetadata;
 }
 
+export interface OneToManyLinkTypeUserDefinition {
+  apiName: LinkTypeId;
+  one: OneToManyObjectLinkReferenceUserDefinition;
+  toMany: OneToManyObjectLinkReferenceUserDefinition;
+  manyForeignKeyProperty: ObjectTypePropertyApiName;
+}
+
+export interface OneToManyObjectLinkReferenceUserDefinition {
+  object: ObjectType;
+  metadata: LinkTypeMetadataUserDefinition;
+}
+
 export interface ManyToManyLinkTypeDefinition {
   apiName: LinkTypeId;
   many: ManyToManyObjectLinkReference;
@@ -461,6 +487,25 @@ export interface ManyToManyLinkTypeDefinition {
 export interface ManyToManyObjectLinkReference {
   object: ObjectTypeDefinition;
   metadata: LinkTypeMetadata;
+}
+
+export interface ManyToManyLinkTypeUserDefinition {
+  apiName: LinkTypeId;
+  many: ManyToManyObjectLinkReferenceUserDefinition;
+  toMany: ManyToManyObjectLinkReferenceUserDefinition;
+}
+
+export interface ManyToManyObjectLinkReferenceUserDefinition {
+  object: ObjectType;
+  metadata: LinkTypeMetadataUserDefinition;
+}
+
+export interface LinkTypeMetadataUserDefinition {
+  apiName: string;
+  displayName?: string;
+  pluralDisplayName?: string;
+  visibility?: Visibility;
+  groupDisplayName?: string;
 }
 
 export type LinkSideMetadata = OptionalFields<
@@ -668,9 +713,14 @@ export interface ObjectTypeDatasourceDefinition_stream {
   retentionPeriod?: string;
 }
 
+export interface ObjectTypeDatasourceDefinition_restrictedView {
+  type: "restrictedView";
+}
+
 export type ObjectTypeDatasourceDefinition =
   | ObjectTypeDatasourceDefinition_stream
-  | ObjectTypeDatasourceDefinition_dataset;
+  | ObjectTypeDatasourceDefinition_dataset
+  | ObjectTypeDatasourceDefinition_restrictedView;
 
 export type ActionParameterTypePrimitive =
   | "boolean"
