@@ -435,13 +435,13 @@ export type LinkType =
 
 export type LinkTypeDefinition =
   | Omit<
-    OntologyEntityBase & OneToManyLinkTypeDefinition & {
+    OntologyEntityBase & OneToManyLinkTypeUserDefinition & {
       __type: OntologyEntityTypeEnum.LINK_TYPE;
     },
     "__type"
   >
   | Omit<
-    OntologyEntityBase & ManyToManyLinkTypeDefinition & {
+    OntologyEntityBase & ManyToManyLinkTypeUserDefinition & {
       __type: OntologyEntityTypeEnum.LINK_TYPE;
     },
     "__type"
@@ -463,6 +463,18 @@ export interface OneToManyObjectLinkReference {
   metadata: LinkTypeMetadata;
 }
 
+export interface OneToManyLinkTypeUserDefinition {
+  apiName: LinkTypeId;
+  one: OneToManyObjectLinkReferenceUserDefinition;
+  toMany: OneToManyObjectLinkReferenceUserDefinition;
+  manyForeignKeyProperty: ObjectTypePropertyApiName;
+}
+
+export interface OneToManyObjectLinkReferenceUserDefinition {
+  object: ObjectType;
+  metadata: LinkTypeMetadataUserDefinition;
+}
+
 export interface ManyToManyLinkTypeDefinition {
   apiName: LinkTypeId;
   many: ManyToManyObjectLinkReference;
@@ -475,6 +487,25 @@ export interface ManyToManyLinkTypeDefinition {
 export interface ManyToManyObjectLinkReference {
   object: ObjectTypeDefinition;
   metadata: LinkTypeMetadata;
+}
+
+export interface ManyToManyLinkTypeUserDefinition {
+  apiName: LinkTypeId;
+  many: ManyToManyObjectLinkReferenceUserDefinition;
+  toMany: ManyToManyObjectLinkReferenceUserDefinition;
+}
+
+export interface ManyToManyObjectLinkReferenceUserDefinition {
+  object: ObjectType;
+  metadata: LinkTypeMetadataUserDefinition;
+}
+
+export interface LinkTypeMetadataUserDefinition {
+  apiName: string;
+  displayName?: string;
+  pluralDisplayName?: string;
+  visibility?: Visibility;
+  groupDisplayName?: string;
 }
 
 export type LinkSideMetadata = OptionalFields<
