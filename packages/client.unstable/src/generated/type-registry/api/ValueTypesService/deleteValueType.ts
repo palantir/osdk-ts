@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,14 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { ValueTypeRid } from "../ValueTypeRid.js";
+import type { ValueTypeRid as _api_ValueTypeRid } from "../__components.js";
 
 /**
  * Deletes a value type. Only a deprecated value type that has passed a deadline can be deleted.
  */
 export async function deleteValueType(
   ctx: ConjureContext,
-  valueTypeRid: ValueTypeRid,
+  valueTypeRid: _api_ValueTypeRid,
 ): Promise<void> {
   return conjureFetch(
     ctx,

@@ -19,8 +19,6 @@ import type {
   LinkTypeRid as _api_LinkTypeRid,
   ObjectDbRid as _api_ObjectDbRid,
   ObjectDbSyncRid as _api_ObjectDbSyncRid,
-  ObjectTypeApiName as _api_ObjectTypeApiName,
-  ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
   ObjectTypeRid as _api_ObjectTypeRid,
   OntologyBranchRid as _api_OntologyBranchRid,
   OntologyRid as _api_OntologyRid,
@@ -552,55 +550,6 @@ export interface ObjectTypeSystemEntityMetadata {
 export interface ObjectTypeSystemEntityMetadataModification {
   entityMigrationStatus?: EntityMigrationStatusModification | null | undefined;
   syncMetadata?: SyncMetadataModification | null | undefined;
-}
-export interface OntologyIrEditsHistory_config {
-  type: "config";
-  config: OntologyIrEditsHistoryConfig;
-}
-
-export interface OntologyIrEditsHistory_none {
-  type: "none";
-  none: NoEditsHistory;
-}
-export type OntologyIrEditsHistory =
-  | OntologyIrEditsHistory_config
-  | OntologyIrEditsHistory_none;
-
-/**
- * Edits history tracking is enabled for this entity with the specified configuration. All action edits
- * for objects of this object type will be available for querying from the point the history was enabled.
- */
-export interface OntologyIrEditsHistoryConfig {
-  store: _api_ObjectTypeApiName;
-}
-/**
- * Wrapper for multiple strategies as objects can have multiple datasources.
- */
-export interface OntologyIrEditsResolutionStrategies {
-  strategies: Record<_api_DatasourceRid, OntologyIrEditsResolutionStrategy>;
-}
-export interface OntologyIrEditsResolutionStrategy_timestampProperty {
-  type: "timestampProperty";
-  timestampProperty: OntologyIrTimestampPropertyStrategy;
-}
-/**
- * The strategy used when resolving conflicts between user edits and datasource values.
- */
-export type OntologyIrEditsResolutionStrategy =
-  OntologyIrEditsResolutionStrategy_timestampProperty;
-
-/**
- * Contains additional metadata associated with a LinkType.
- */
-export interface OntologyIrLinkTypeEntityMetadata {
-  arePatchesEnabled: boolean;
-}
-/**
- * For this strategy, the datasource value should be used when the time in the given timestamp property is
- * more recent than the time the patch is applied.
- */
-export interface OntologyIrTimestampPropertyStrategy {
-  timestampPropertyRid: _api_ObjectTypeFieldApiName;
 }
 export interface PatchApplicationStrategy_datasourceScopedLiveness {
   type: "datasourceScopedLiveness";

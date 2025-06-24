@@ -252,6 +252,14 @@ export interface FuzzinessAuto {
  */
 export interface FuzzinessOff {
 }
+/**
+ * Response containing the availability of semantic search on object types for the requesting user.
+ * If semantic search is not available, the response will contain the primary reason why.
+ */
+export interface GetObjectTypeSemanticSearchStatusResponse {
+  disabledReason?: SemanticSearchUnavailableReason | null | undefined;
+  semanticSearchEnabled: boolean;
+}
 export interface InterfaceTypeClause_and {
   type: "and";
   and: Array<InterfaceTypeClause>;
@@ -737,6 +745,17 @@ export type ObjectTypeStatusFilter =
 export type ObjectTypeTargetStorageBackendFilter =
   | "OBJECT_STORAGE_V1"
   | "OBJECT_STORAGE_V2";
+
+/**
+ * Reasons why semantic search might be unavailable.
+ */
+export type SemanticSearchUnavailableReason =
+  | "SEMANTIC_SEARCH_FEATURE_NOT_SUPPORTED_IN_ENVIRONMENT"
+  | "EMBEDDINGS_NOT_ENABLED_FOR_INDEX"
+  | "MISSING_EMBEDDINGS_METADATA_FOR_INDEX"
+  | "EMBEDDING_SERVICE_NOT_CONFIGURED"
+  | "NO_PERMISSION_TO_USE_EMBEDDING_MODEL"
+  | "NO_PERMISSION_TO_SEARCH_INDEX";
 export interface SharedPropertyTypeClause_and {
   type: "and";
   and: Array<SharedPropertyTypeClause>;

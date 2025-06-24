@@ -425,6 +425,7 @@ export interface RegisterDependencyRequest {
   dependent: Dependent;
   globalBranchRid?: _api_GlobalBranchRid | null | undefined;
   ontologyEntities: ProvenanceDependentOntologyEntities;
+  shouldForwardToFds?: boolean | null | undefined;
   tags: Array<Tag>;
 }
 /**
@@ -444,6 +445,7 @@ export type Tag = "LATEST_SAVED" | "LATEST_PUBLISHED";
 export interface TagDependentRequest {
   dependent: Dependent;
   globalBranchRid?: _api_GlobalBranchRid | null | undefined;
+  shouldForwardToFds?: boolean | null | undefined;
   tags: Array<Tag>;
 }
 /**

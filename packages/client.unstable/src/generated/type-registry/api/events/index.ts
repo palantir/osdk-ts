@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-export type { ValueTypeCreated } from "./ValueTypeCreated.js";
-export type { ValueTypeDeleted } from "./ValueTypeDeleted.js";
-export type { ValueTypeMetadataUpdated } from "./ValueTypeMetadataUpdated.js";
-export type { ValueTypeModificationEvent } from "./ValueTypeModificationEvent.js";
-export type { ValueTypeVersionCreated } from "./ValueTypeVersionCreated.js";
+export type {
+  ValueTypeCreated,
+  ValueTypeDeleted,
+  ValueTypeMetadataUpdated,
+  ValueTypeMissing,
+  ValueTypeModificationEvent,
+  ValueTypeVersionCreated,
+} from "./__components.js";

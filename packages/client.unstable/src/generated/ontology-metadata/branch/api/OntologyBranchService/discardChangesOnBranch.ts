@@ -28,6 +28,9 @@ import type {
  * Discards the changes applied on the specified entities on the specified branch, such that they are unmodified
  * and match the state of the entities at the point of branching off of the default branch. This will be treated
  * as an Ontology modification and as such will result in a new OntologyVersion.
+ *
+ * Discards go through the same validations as creates/updates/deletes. If a validation check fails, this endpoint
+ * throws.
  */
 export async function discardChangesOnBranch(
   ctx: ConjureContext,

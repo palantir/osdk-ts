@@ -23,8 +23,5 @@ export type {
   EntityProvenanceSource,
   MarketplaceBlockSetInstallationRid,
   MarketplaceEntityProvenance,
-  OntologyIrEditsHistoryProvenance,
-  OntologyIrEntityProvenance,
-  OntologyIrEntityProvenanceSource,
   OntologyMetadataAppEntityProvenance,
 } from "./__components.js";

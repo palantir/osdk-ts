@@ -36,8 +36,10 @@ import type {
   PhraseMatchMode as _api_PhraseMatchMode,
   PropertyId as _api_PropertyId,
   PropertyTypeRid as _api_PropertyTypeRid,
+  RelativePointInTime as _api_RelativePointInTime,
   StringFilterValue as _api_StringFilterValue,
   TimestampFilterValue as _api_TimestampFilterValue,
+  TimeZoneId as _api_TimeZoneId,
   Vector as _api_Vector,
 } from "../../__components.js";
 
@@ -69,6 +71,7 @@ export type BoundType = "INCLUSIVE" | "EXCLUSIVE";
 export interface DateRangeFilter {
   lowerBound?: Bound | null | undefined;
   property: _api_PropertyTypeRid;
+  relativeDateMetadata?: RelativeDateRangeFilterMetadata | null | undefined;
   upperBound?: Bound | null | undefined;
 }
 /**
@@ -384,8 +387,18 @@ export type LogicalObjectSetFilter =
  */
 export type LogicalObjectSetId = string;
 export interface LogicalObjectSetRequest {
+  logicalObjectSetRequestOptions?:
+    | LogicalObjectSetRequestOptions
+    | null
+    | undefined;
   objectSet: _api_ObjectSet;
   objectSetContext: _api_ObjectSetContext;
+}
+/**
+ * Optional features to toggle when requesting a logical object set.
+ */
+export interface LogicalObjectSetRequestOptions {
+  returnRelativeTimeFiltersMetadata?: boolean | null | undefined;
 }
 export interface LogicalObjectSetResponse {
   objectSets: Array<NamedLogicalObjectSet>;
@@ -501,6 +514,21 @@ export interface RangeFilter {
 export interface ReferenceObjectSet {
   id: LogicalObjectSetId;
 }
+/**
+ * Metadata describing a date range that is defined relative to the time a query is executed, aligned to calendar days in a specified time zone. This is used by DateRangeFilter to specify date bounds that shift dynamically based on when the query is run, rather than using fixed dates.
+ */
+export interface RelativeDateRangeFilterMetadata {
+  sinceRelativePointInTime?: _api_RelativePointInTime | null | undefined;
+  timeZoneId: _api_TimeZoneId;
+  untilRelativePointInTime?: _api_RelativePointInTime | null | undefined;
+}
+/**
+ * Metadata describing a time range that is defined relative to the time a query is executed. This is used in TimeRangeFilter to specify bounds that move in relation to "now" (the query time),  rather than being fixed timestamps. Either or both of the lower and upper bounds can be specified  using millisecond offsets from the query time.
+ */
+export interface RelativeTimeRangeFilterMetadata {
+  sinceRelativeMillis?: number | null | undefined;
+  untilRelativeMillis?: number | null | undefined;
+}
 export interface SelectExpression_singleObjectSet {
   type: "singleObjectSet";
   singleObjectSet: ReferenceObjectSet;
@@ -530,6 +558,7 @@ export interface TermsFilter {
 export interface TimeRangeFilter {
   lowerBound?: Bound | null | undefined;
   property: _api_PropertyTypeRid;
+  relativeTimeMetadata?: RelativeTimeRangeFilterMetadata | null | undefined;
   upperBound?: Bound | null | undefined;
 }
 /**

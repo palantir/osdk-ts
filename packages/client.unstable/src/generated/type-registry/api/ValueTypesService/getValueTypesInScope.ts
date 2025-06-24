@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,18 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetValueTypesInScopeRequest } from "../GetValueTypesInScopeRequest.js";
-import type { GetValueTypesInScopeResponse } from "../GetValueTypesInScopeResponse.js";
+import type {
+  GetValueTypesInScopeRequest as _api_GetValueTypesInScopeRequest,
+  GetValueTypesInScopeResponse as _api_GetValueTypesInScopeResponse,
+} from "../__components.js";
 
 /**
  * Returns the set of Value Type Rids available within a scope defined by the request.
  */
 export async function getValueTypesInScope(
   ctx: ConjureContext,
-  request: GetValueTypesInScopeRequest,
-): Promise<GetValueTypesInScopeResponse> {
+  request: _api_GetValueTypesInScopeRequest,
+): Promise<_api_GetValueTypesInScopeResponse> {
   return conjureFetch(
     ctx,
     `/type-registry/value-types/get-value-types-in-scope`,
