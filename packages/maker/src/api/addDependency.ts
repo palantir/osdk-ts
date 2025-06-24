@@ -14,18 +14,33 @@
  * limitations under the License.
  */
 
-import { lt } from "semver-ts";
+import * as fs from "fs";
+import * as path from "path";
 import { dependencies } from "./defineOntology.js";
 
-export function addDependency(
-  namespace: string,
-  version: string,
-): void {
-  if (
-    version !== ""
-    && (dependencies[namespace] === undefined
-      || lt(dependencies[namespace], version))
-  ) {
-    dependencies[namespace] = version;
+const MAX_SEARCH_DEPTH = 5;
+
+export function addDependency(namespace: string, fileInPackage: string): void {
+  let dir = path.dirname(fileInPackage);
+  let packageJsonPath = null;
+
+  for (let i = 0; i < MAX_SEARCH_DEPTH; i++) {
+    const candidate = path.join(dir, "package.json");
+    if (fs.existsSync(candidate)) {
+      packageJsonPath = candidate;
+      break;
+    }
+    const parentDir = path.dirname(dir);
+    if (parentDir === dir) break;
+    dir = parentDir;
   }
+
+  if (!packageJsonPath) {
+    throw new Error(
+      `Could not find a package.json within ${MAX_SEARCH_DEPTH} parent directories of ${fileInPackage}`,
+    );
+  }
+
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+  dependencies[namespace] = packageJson.version ?? "";
 }

@@ -49,7 +49,6 @@ import type {
 import * as fs from "fs";
 import * as path from "path";
 import invariant from "tiny-invariant";
-import { fileURLToPath } from "url";
 import { isExotic } from "./defineObject.js";
 import {
   convertNullabilityToDataConstraint,
@@ -1247,17 +1246,10 @@ function dependencyInjectionString(): string {
     ? namespace.slice(0, -1)
     : namespace;
 
-  const currentFilePath = fileURLToPath(import.meta.url);
-  let packageJsonDirPath = path.join(currentFilePath, "..", "..", "..");
-  if (!currentFilePath.endsWith(".ts")) {
-    packageJsonDirPath = path.join(packageJsonDirPath, "..");
-  }
-  const packageJsonFilePath = path.join(packageJsonDirPath, "package.json");
+  return `
+import { fileURLToPath } from "url";
+import { addDependency } from '@osdk/maker';
 
-  const packageJson = JSON.parse(
-    fs.readFileSync(packageJsonFilePath, "utf-8"),
-  );
-  const currentPackageVersion: string = packageJson.version ?? "";
-
-  return `import { addDependency } from '@osdk/maker';\n\naddDependency("${namespaceNoDot}", "${currentPackageVersion}");\n`;
+addDependency("${namespaceNoDot}", fileURLToPath(import.meta.url));
+`;
 }
