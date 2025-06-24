@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.11.0-beta.10
+
+### Minor Changes
+
+- 99b90af: Fix dependency injection to use OAC version and not maker version
+
 ## 0.11.0-beta.9
 
 ### Minor Changes
