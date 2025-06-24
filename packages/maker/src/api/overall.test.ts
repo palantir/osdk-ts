@@ -16,7 +16,9 @@
 
 import * as fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import { beforeEach, describe, expect, it } from "vitest";
+import { addDependency } from "./addDependency.js";
 import {
   defineAction,
   defineCreateInterfaceObjectAction,
@@ -7340,6 +7342,62 @@ describe("Ontology Defining", () => {
         export const childInterface: InterfaceType = wrapWithProxy(childInterface_base);
                 "
       `);
+      fs.rmSync(path.join(generatedDir, ".."), {
+        recursive: true,
+        force: true,
+      });
+    });
+  });
+  describe("Dependencies", () => {
+    it("Correctly adds dependencies", async () => {
+      const generatedDir = path.resolve(path.join(
+        __dirname,
+        "..",
+        "generatedNoCheck",
+        "correctly_adds_dependencies",
+      ));
+      await defineOntology(
+        "com.palantir.",
+        () => {
+          addDependency("com.palantir", fileURLToPath(import.meta.url));
+          defineInterface({
+            apiName: "myInterface",
+            properties: {
+              property1: "string",
+            },
+          });
+        },
+        generatedDir,
+        path.join(generatedDir, "dependencies.json"),
+      );
+
+      const packageJson = JSON.parse(
+        fs.readFileSync(
+          path.join(__dirname, "..", "..", "package.json"),
+          "utf8",
+        ),
+      );
+      expect(packageJson.version).toBeDefined();
+
+      expect(
+        fs.readFileSync(path.join(generatedDir, "dependencies.json"), "utf8"),
+      ).toMatchInlineSnapshot(`
+        "{
+          "com.palantir": "${packageJson.version}"
+        }"
+      `);
+
+      expect(
+        fs.readFileSync(path.join(generatedDir, "index.ts"), "utf8"),
+      )
+        .toContain(
+          `addDependency("com.palantir", fileURLToPath(import.meta.url));`,
+        );
+
+      fs.rmSync(path.join(generatedDir, ".."), {
+        recursive: true,
+        force: true,
+      });
     });
   });
 });
