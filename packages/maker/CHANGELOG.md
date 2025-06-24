@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.11.0-beta.9
+
+### Minor Changes
+
+- 508ecd6: Improve defineLink syntax
+
 ## 0.11.0-beta.8
 
 ### Minor Changes
