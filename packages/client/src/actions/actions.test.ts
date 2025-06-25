@@ -21,8 +21,7 @@ import type {
   MediaReference,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type {
-  Person} from "@osdk/client.test.ontology";
+import type { Person } from "@osdk/client.test.ontology";
 import {
   $Actions,
   actionTakesAttachment,
@@ -34,7 +33,7 @@ import {
   deleteBarInterface,
   deleteFooInterface,
   Employee,
-  moveOffice
+  moveOffice,
 } from "@osdk/client.test.ontology";
 import type {
   BatchApplyActionResponseV2,

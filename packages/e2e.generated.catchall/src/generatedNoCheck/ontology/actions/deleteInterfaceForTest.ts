@@ -13,6 +13,7 @@ export namespace deleteInterfaceForTest {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     InterfaceForTest: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: ActionMetadata.DataType.Interface<InterfaceForTest>;

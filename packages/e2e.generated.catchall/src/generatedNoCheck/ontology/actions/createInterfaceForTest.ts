@@ -12,6 +12,7 @@ export namespace createInterfaceForTest {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     interface_for_test_type: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'objectType';
