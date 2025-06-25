@@ -143,7 +143,7 @@ export async function toDataValue(
 
   if (isPoint(value)) {
     return await toDataValue(
-      value.coordinates.join(),
+      `${value.coordinates[1]},${value.coordinates[0]}`,
       client,
       actionMetadata,
       parameterName,
