@@ -20,8 +20,6 @@ import "./main.css";
 import { createRoot } from "react-dom/client";
 import { App } from "./app.js";
 
-const root = document.querySelector("body")!;
+const root = document.getElementById("root")!;
 
-createRoot(root).render(
-  <App />,
-);
+createRoot(root).render(<App />);
