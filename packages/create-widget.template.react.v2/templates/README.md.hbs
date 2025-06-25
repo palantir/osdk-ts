@@ -26,7 +26,7 @@ A `.palantir/widgets.config.json` manifest file containing metadata about your w
 Run the following command or equivalent with your preferred package manager to deploy the production build of your widgets:
 
 ```sh
-npx @osdk/cli@beta unstable widgetset deploy
+npx @osdk/cli@latest unstable widgetset deploy
 ```
 
 By default the `package-json` strategy is used for determining the version for your widgets from the `version` field in this project's `package.json` file. Remember to update this field and rerun the build command to update the manifest file when deploying a new version.
