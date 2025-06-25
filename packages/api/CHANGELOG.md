@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.3.0-beta.8
+
+### Minor Changes
+
+- 12d599f: Export ObjectIdentifiers to ensure Osdk.Instance can be used with typeof
+
 ## 2.3.0-beta.7
 
 ### Minor Changes

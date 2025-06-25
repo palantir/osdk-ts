@@ -1,5 +1,11 @@
 # @osdk/functions
 
+## 1.1.0-beta.8
+
+### Patch Changes
+
+- @osdk/client@2.3.0-beta.8
+
 ## 1.1.0-beta.7
 
 ### Minor Changes
