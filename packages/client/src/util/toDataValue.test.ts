@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ActionMetadata, ObjectTypeDefinition } from "@osdk/api";
+import type {
+  ActionMetadata,
+  MediaUpload,
+  ObjectTypeDefinition,
+} from "@osdk/api";
 import { Employee, Task } from "@osdk/client.test.ontology";
 import type { MediaReference } from "@osdk/foundry.core";
 import type { SetupServer } from "@osdk/shared.test";
@@ -38,7 +42,6 @@ import { toDataValue } from "./toDataValue.js";
 describe(toDataValue, () => {
   let client: Client;
   let clientCtx: MinimalClient;
-  let mockActionMetadata: ActionMetadata;
   let apiServer: SetupServer;
 
   const mockFetch: MockedFunction<typeof globalThis.fetch> = vi.fn();
@@ -65,12 +68,6 @@ describe(toDataValue, () => {
       testSetup.auth,
       {},
     );
-
-    // toDataValue only needs the apiName right now, update this if that changes
-    const fakeActionMetadata = {
-      apiName: "createUnstructuredImageExampleObject",
-    };
-    mockActionMetadata = fakeActionMetadata as ActionMetadata;
 
     return () => {
       testSetup.apiServer.close();
@@ -264,7 +261,12 @@ describe(toDataValue, () => {
           },
         ),
       );
-      const converted = await toDataValue(file, clientCtx, mockActionMetadata);
+      const converted = await toDataValue(
+        file,
+        clientCtx,
+        mockActionMetadata,
+        mockParameterName,
+      );
       expect(isMediaReference(converted)).toBe(true);
     });
   });
