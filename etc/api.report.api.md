@@ -120,8 +120,7 @@ export namespace ActionParam {
         	};
     	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
-    	// Warning: (ae-forgotten-export) The symbol "ObjectIdentifiers" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export type ObjectType<T extends ObjectTypeDefinition> = ObjectIdentifiers<T> | OsdkObjectPrimaryKeyType<T>;
@@ -729,6 +728,12 @@ export namespace NullabilityAdherence {
     	// (undocumented)
     export type Default = "throw";
 }
+
+// @public (undocumented)
+export type ObjectIdentifiers<Q extends ObjectOrInterfaceDefinition> = {
+    	readonly $apiName: Q["apiName"]
+    	readonly $primaryKey: PrimaryKeyType<Q>
+};
 
 // @public (undocumented)
 export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
