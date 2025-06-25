@@ -7,7 +7,7 @@ import { createRoot } from "react-dom/client";
 import MainConfig from "./main.config.js";
 import { Widget } from "./Widget.js";
 
-const root = document.querySelector("body")!;
+const root = document.getElementById("root")!;
 
 createRoot(root).render(
   <Theme>
