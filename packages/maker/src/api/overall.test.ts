@@ -253,6 +253,7 @@ describe("Ontology Defining", () => {
                   "allLinks": [],
                   "allProperties": [],
                   "allPropertiesV2": {},
+                  "allPropertiesV3": {},
                   "apiName": "com.palantir.Foo",
                   "displayMetadata": {
                     "description": "Foo",
@@ -301,6 +302,8 @@ describe("Ontology Defining", () => {
                       },
                     },
                   },
+                  "propertiesV3": {},
+                  "searchable": undefined,
                   "status": {
                     "active": {},
                     "type": "active",
@@ -453,6 +456,7 @@ describe("Ontology Defining", () => {
                 "allLinks": [],
                 "allProperties": [],
                 "allPropertiesV2": {},
+                "allPropertiesV3": {},
                 "apiName": "com.palantir.childInterface",
                 "displayMetadata": {
                   "description": "childInterface",
@@ -503,6 +507,8 @@ describe("Ontology Defining", () => {
                     },
                   },
                 },
+                "propertiesV3": {},
+                "searchable": undefined,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -515,6 +521,7 @@ describe("Ontology Defining", () => {
                 "allLinks": [],
                 "allProperties": [],
                 "allPropertiesV2": {},
+                "allPropertiesV3": {},
                 "apiName": "com.palantir.parentInterface",
                 "displayMetadata": {
                   "description": "parentInterface",
@@ -563,6 +570,8 @@ describe("Ontology Defining", () => {
                     },
                   },
                 },
+                "propertiesV3": {},
+                "searchable": undefined,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -673,6 +682,7 @@ describe("Ontology Defining", () => {
                   "allLinks": [],
                   "allProperties": [],
                   "allPropertiesV2": {},
+                  "allPropertiesV3": {},
                   "apiName": "com.palantir.parentInterface",
                   "displayMetadata": {
                     "description": "parentInterface",
@@ -721,6 +731,8 @@ describe("Ontology Defining", () => {
                       },
                     },
                   },
+                  "propertiesV3": {},
+                  "searchable": undefined,
                   "status": {
                     "active": {},
                     "type": "active",
@@ -802,6 +814,7 @@ describe("Ontology Defining", () => {
                 "allLinks": [],
                 "allProperties": [],
                 "allPropertiesV2": {},
+                "allPropertiesV3": {},
                 "apiName": "com.palantir.childInterface",
                 "displayMetadata": {
                   "description": "childInterface",
@@ -852,6 +865,8 @@ describe("Ontology Defining", () => {
                     },
                   },
                 },
+                "propertiesV3": {},
+                "searchable": undefined,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -864,6 +879,7 @@ describe("Ontology Defining", () => {
                 "allLinks": [],
                 "allProperties": [],
                 "allPropertiesV2": {},
+                "allPropertiesV3": {},
                 "apiName": "com.palantir.parentInterface",
                 "displayMetadata": {
                   "description": "parentInterface",
@@ -912,6 +928,8 @@ describe("Ontology Defining", () => {
                     },
                   },
                 },
+                "propertiesV3": {},
+                "searchable": undefined,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -998,6 +1016,54 @@ describe("Ontology Defining", () => {
         }
       `);
     });
+
+    it("supports specifying searchable", () => {
+      const parentInterface = defineInterface({
+        apiName: "parentInterface",
+        searchable: false,
+      });
+
+      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+          {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {
+              "com.palantir.parentInterface": {
+                "interfaceType": {
+                  "allExtendsInterfaces": [],
+                  "allLinks": [],
+                  "allProperties": [],
+                  "allPropertiesV2": {},
+                  "allPropertiesV3": {},
+                  "apiName": "com.palantir.parentInterface",
+                  "displayMetadata": {
+                    "description": "parentInterface",
+                    "displayName": "parentInterface",
+                    "icon": undefined,
+                  },
+                  "extendsInterfaces": [],
+                  "links": [],
+                  "properties": [],
+                  "propertiesV2": {},
+                  "propertiesV3": {},
+                  "searchable": false,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                },
+              },
+            },
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          }
+        `);
+    });
   });
 
   describe("ILTs", () => {
@@ -1032,6 +1098,7 @@ describe("Ontology Defining", () => {
                 "allLinks": [],
                 "allProperties": [],
                 "allPropertiesV2": {},
+                "allPropertiesV3": {},
                 "apiName": "com.palantir.A",
                 "displayMetadata": {
                   "description": "A",
@@ -1056,6 +1123,8 @@ describe("Ontology Defining", () => {
                 ],
                 "properties": [],
                 "propertiesV2": {},
+                "propertiesV3": {},
+                "searchable": undefined,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -1068,6 +1137,7 @@ describe("Ontology Defining", () => {
                 "allLinks": [],
                 "allProperties": [],
                 "allPropertiesV2": {},
+                "allPropertiesV3": {},
                 "apiName": "com.palantir.B",
                 "displayMetadata": {
                   "description": "B",
@@ -1078,6 +1148,8 @@ describe("Ontology Defining", () => {
                 "links": [],
                 "properties": [],
                 "propertiesV2": {},
+                "propertiesV3": {},
+                "searchable": undefined,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -1114,6 +1186,7 @@ describe("Ontology Defining", () => {
                 "allLinks": [],
                 "allProperties": [],
                 "allPropertiesV2": {},
+                "allPropertiesV3": {},
                 "apiName": "com.palantir.A",
                 "displayMetadata": {
                   "description": "A",
@@ -1138,6 +1211,8 @@ describe("Ontology Defining", () => {
                 ],
                 "properties": [],
                 "propertiesV2": {},
+                "propertiesV3": {},
+                "searchable": undefined,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -1150,6 +1225,7 @@ describe("Ontology Defining", () => {
                 "allLinks": [],
                 "allProperties": [],
                 "allPropertiesV2": {},
+                "allPropertiesV3": {},
                 "apiName": "com.palantir.B",
                 "displayMetadata": {
                   "description": "B",
@@ -1160,6 +1236,8 @@ describe("Ontology Defining", () => {
                 "links": [],
                 "properties": [],
                 "propertiesV2": {},
+                "propertiesV3": {},
+                "searchable": undefined,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -1223,6 +1301,7 @@ describe("Ontology Defining", () => {
               "allLinks": [],
               "allProperties": [],
               "allPropertiesV2": {},
+              "allPropertiesV3": {},
               "apiName": "com.palantir.FooInterface",
               "displayMetadata": {
                 "description": "Foo Interface",
@@ -1277,6 +1356,8 @@ describe("Ontology Defining", () => {
                   },
                 },
               },
+              "propertiesV3": {},
+              "searchable": undefined,
               "status": {
                 "active": {},
                 "type": "active",
@@ -1444,6 +1525,7 @@ describe("Ontology Defining", () => {
               "allLinks": [],
               "allProperties": [],
               "allPropertiesV2": {},
+              "allPropertiesV3": {},
               "apiName": "com.palantir.interface",
               "displayMetadata": {
                 "description": "interface",
@@ -1492,6 +1574,8 @@ describe("Ontology Defining", () => {
                   },
                 },
               },
+              "propertiesV3": {},
+              "searchable": undefined,
               "status": {
                 "active": {},
                 "type": "active",
@@ -1703,6 +1787,7 @@ describe("Ontology Defining", () => {
                 "allLinks": [],
                 "allProperties": [],
                 "allPropertiesV2": {},
+                "allPropertiesV3": {},
                 "apiName": "com.palantir.interface",
                 "displayMetadata": {
                   "description": "interface",
@@ -1751,6 +1836,8 @@ describe("Ontology Defining", () => {
                     },
                   },
                 },
+                "propertiesV3": {},
+                "searchable": undefined,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -4574,6 +4661,7 @@ describe("Ontology Defining", () => {
                   "allLinks": [],
                   "allProperties": [],
                   "allPropertiesV2": {},
+                  "allPropertiesV3": {},
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -4622,6 +4710,8 @@ describe("Ontology Defining", () => {
                       },
                     },
                   },
+                  "propertiesV3": {},
+                  "searchable": undefined,
                   "status": {
                     "active": {},
                     "type": "active",
@@ -5900,6 +5990,7 @@ describe("Ontology Defining", () => {
                 "allLinks": [],
                 "allProperties": [],
                 "allPropertiesV2": {},
+                "allPropertiesV3": {},
                 "apiName": "com.palantir.exampleInterface",
                 "displayMetadata": {
                   "description": "exampleInterface",
@@ -5948,6 +6039,8 @@ describe("Ontology Defining", () => {
                     },
                   },
                 },
+                "propertiesV3": {},
+                "searchable": undefined,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -6851,6 +6944,7 @@ describe("Ontology Defining", () => {
                   "allLinks": [],
                   "allProperties": [],
                   "allPropertiesV2": {},
+                  "allPropertiesV3": {},
                   "apiName": "com.palantir.myInterface",
                   "displayMetadata": {
                     "description": "myInterface",
@@ -6890,6 +6984,8 @@ describe("Ontology Defining", () => {
                       },
                     },
                   },
+                  "propertiesV3": {},
+                  "searchable": undefined,
                   "status": {
                     "active": {},
                     "type": "active",
@@ -6959,6 +7055,7 @@ describe("Ontology Defining", () => {
                   "allLinks": [],
                   "allProperties": [],
                   "allPropertiesV2": {},
+                  "allPropertiesV3": {},
                   "apiName": "com.palantir.myInterface",
                   "displayMetadata": {
                     "description": "myInterface",
@@ -6998,6 +7095,8 @@ describe("Ontology Defining", () => {
                       },
                     },
                   },
+                  "propertiesV3": {},
+                  "searchable": undefined,
                   "status": {
                     "active": {},
                     "type": "active",

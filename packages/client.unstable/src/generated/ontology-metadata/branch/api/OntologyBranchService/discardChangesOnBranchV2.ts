@@ -21,7 +21,7 @@ import type {
 } from "../../../api/__components.js";
 import type {
   DiscardChangesRequest as _branch_api_DiscardChangesRequest,
-  DiscardChangesResponse as _branch_api_DiscardChangesResponse,
+  DiscardChangesResponseV2 as _branch_api_DiscardChangesResponseV2,
 } from "../__components.js";
 
 /**
@@ -30,17 +30,17 @@ import type {
  * as an Ontology modification and as such will result in a new OntologyVersion.
  *
  * Discards go through the same validations as creates/updates/deletes. If a validation check fails, this endpoint
- * throws.
+ * returns an ErrorStatus with a list of OntologyValidationErrors.
  */
-export async function discardChangesOnBranch(
+export async function discardChangesOnBranchV2(
   ctx: ConjureContext,
   ontologyRid: _api_OntologyRid,
   ontologyBranchRid: _api_OntologyBranchRid,
   request: _branch_api_DiscardChangesRequest,
-): Promise<_branch_api_DiscardChangesResponse> {
+): Promise<_branch_api_DiscardChangesResponseV2> {
   return conjureFetch(
     ctx,
-    `/ontology/branch/${ontologyRid}/${ontologyBranchRid}/discardChanges`,
+    `/ontology/branch/${ontologyRid}/${ontologyBranchRid}/discardChangesV2`,
     "POST",
     request,
   );

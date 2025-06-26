@@ -799,6 +799,9 @@ function convertInterface(
     allLinks: [],
     allProperties: [],
     allPropertiesV2: {},
+    // TODO(mwalther): Support propertiesV3
+    propertiesV3: {},
+    allPropertiesV3: {},
     properties: [],
   };
 }

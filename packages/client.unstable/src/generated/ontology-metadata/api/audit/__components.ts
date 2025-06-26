@@ -270,6 +270,8 @@ import type {
 import type { LoadObjectTypeSchemaMigrationsRequest as _api_schemamigrations_LoadObjectTypeSchemaMigrationsRequest } from "../schemamigrations/__components.js";
 import type {
   ActionTypeSearchRequest as _api_search_ActionTypeSearchRequest,
+  GetObjectTypeSemanticSearchStatusResponse
+    as _api_search_GetObjectTypeSemanticSearchStatusResponse,
   InterfaceTypeSearchRequest as _api_search_InterfaceTypeSearchRequest,
   ObjectTypeSearchRequest as _api_search_ObjectTypeSearchRequest,
   ObjectTypeSearchRequestV2 as _api_search_ObjectTypeSearchRequestV2,
@@ -631,6 +633,7 @@ export type OntologyMetadataAuditEvent =
   | "ONTOLOGY_METADATA_SERVICE_GET_MODIFICATION_HISTORY"
   | "ONTOLOGY_METADATA_SERVICE_GET_ENTITY_MODIFICATION_HISTORY"
   | "ONTOLOGY_METADATA_SERVICE_GET_ENTITY_MODIFICATION_HISTORY_V2"
+  | "ONTOLOGY_METADATA_SERVICE_GET_OBJECT_TYPE_SEMANTIC_SEARCH_STATUS"
   | "ONTOLOGY_METADATA_SERVICE_GET_ONTOLOGY_RIDS_FOR_ONTOLOGY_ENTITIES"
   | "ONTOLOGY_METADATA_SERVICE_GET_ORGANIZATION_RIDS_FOR_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_GET_RELATIONS_FOR_OBJECT_TYPES"
@@ -846,6 +849,11 @@ export interface OntologyMetadataServiceGetModifiedEntitiesRequestParams {
 export interface OntologyMetadataServiceGetModifiedEntitiesResponseParams {
   ontologyRid: _api_OntologyRid;
   response: _api_modification_GetModifiedEntitiesResponse;
+}
+export interface OntologyMetadataServiceGetObjectTypeSemanticSearchStatusRequestParams {
+}
+export interface OntologyMetadataServiceGetObjectTypeSemanticSearchStatusResponseParams {
+  response: _api_search_GetObjectTypeSemanticSearchStatusResponse;
 }
 export interface OntologyMetadataServiceGetObjectTypesForInterfaceTypesRequestParams {
   request: _api_GetObjectTypesForInterfaceTypesRequest;
