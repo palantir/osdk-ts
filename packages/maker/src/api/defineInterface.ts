@@ -53,6 +53,7 @@ export type InterfaceTypeDefinition = {
     PropertyBase | PropertyWithOptional
   >;
   extends?: InterfaceType | InterfaceType[];
+  searchable?: boolean;
 };
 
 export function defineInterface(
@@ -129,6 +130,7 @@ export function defineInterface(
     links: [],
     status,
     propertiesV2: properties,
+    searchable: interfaceDef.searchable ?? true,
     __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
   };
 

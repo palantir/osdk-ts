@@ -44,6 +44,7 @@ export type {
   DecimalType,
   DecimalValue,
   DefaultTimezone,
+  DelegateToValueTypeRenderHint,
   DoubleListType,
   DoubleListValue,
   DoubleType,

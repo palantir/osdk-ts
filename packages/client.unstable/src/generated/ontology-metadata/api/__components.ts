@@ -879,6 +879,7 @@ export interface ActionTypeMetadata {
     | undefined;
   rid: ActionTypeRid;
   sections: Record<SectionId, Section>;
+  stagingMediaSetRid?: MediaSetRid | null | undefined;
   status: ActionTypeStatus;
   submissionConfiguration?: ActionSubmissionConfiguration | null | undefined;
   version: ActionTypeVersion;
@@ -902,6 +903,7 @@ export interface ActionTypeMetadataModification {
     | undefined;
   rid: ActionTypeRid;
   sections: Record<SectionId, Section>;
+  stagingMediaSetRid?: MediaSetRid | null | undefined;
   status: ActionTypeStatus;
   submissionConfiguration?: ActionSubmissionConfiguration | null | undefined;
   version: ActionTypeVersion;
@@ -3374,6 +3376,7 @@ export interface GetActionTypesForInterfaceTypeRequest {
   ontologyVersion?: OntologyVersion | null | undefined;
   pageSize?: number | null | undefined;
   pageToken?: GetActionTypesForInterfaceTypePageToken | null | undefined;
+  versionReference?: VersionReference | null | undefined;
 }
 /**
  * Response to GetActionTypesForInterfaceTypeRequest.
@@ -3396,6 +3399,7 @@ export interface GetActionTypesForObjectTypeRequest {
   ontologyVersion?: OntologyVersion | null | undefined;
   pageSize?: number | null | undefined;
   pageToken?: GetActionTypesForObjectTypePageToken | null | undefined;
+  versionReference?: VersionReference | null | undefined;
 }
 /**
  * Response to GetActionTypesForObjectTypeRequest.
@@ -3431,6 +3435,10 @@ export interface GetLinkMetadataForObjectTypesResponse {
  * Request to batch get LinkType(s) for ObjectType(s).
  */
 export interface GetLinkTypesForObjectTypesRequest {
+  includeLinkTypesForDerivedPropertyLinkDefinitions?:
+    | boolean
+    | null
+    | undefined;
   includeObjectTypesWithoutSearchableDatasources?: boolean | null | undefined;
   loadRedacted?: boolean | null | undefined;
   objectTypeBranches: Record<
@@ -3452,6 +3460,7 @@ export interface GetLinkTypesForObjectTypesResponse {
 export interface GetObjectTypesForInterfaceTypesRequest {
   interfaceTypeRids: Array<InterfaceTypeRid>;
   ontologyVersion?: OntologyVersion | null | undefined;
+  versionReference?: VersionReference | null | undefined;
 }
 /**
  * Response to GetObjectTypesForInterfaceTypesRequest.
@@ -3468,6 +3477,7 @@ export interface GetObjectTypesForInterfaceTypesResponse {
 export interface GetObjectTypesForSharedPropertyTypesRequest {
   ontologyVersion?: OntologyVersion | null | undefined;
   sharedPropertyTypeRids: Array<SharedPropertyTypeRid>;
+  versionReference?: VersionReference | null | undefined;
 }
 /**
  * Response to GetObjectTypesForSharedPropertyTypesRequest.
@@ -3656,6 +3666,19 @@ export interface InterfaceParameterPropertyValueModification {
 export interface InterfacePropertyImplementation {
   propertyTypeRid: PropertyTypeRid;
 }
+export interface InterfacePropertyType_sharedPropertyBasedPropertyType {
+  type: "sharedPropertyBasedPropertyType";
+  sharedPropertyBasedPropertyType: SharedPropertyBasedPropertyType;
+}
+export type InterfacePropertyType =
+  InterfacePropertyType_sharedPropertyBasedPropertyType;
+
+export type InterfacePropertyTypeApiName = string;
+export interface InterfacePropertyTypeDisplayMetadata {
+  description?: string | null | undefined;
+  displayName: string;
+  visibility: Visibility;
+}
 /**
  * Reference to a InterfacePropertyType. Used when referencing an InterfacePropertyType in the same request it is
  * created in.
@@ -3696,13 +3719,19 @@ export interface InterfaceType {
   allLinks: Array<InterfaceLinkType>;
   allProperties: Array<SharedPropertyType>;
   allPropertiesV2: Record<SharedPropertyTypeRid, InterfaceSharedPropertyType>;
+  allPropertiesV3: Record<
+    InterfacePropertyTypeRid,
+    ResolvedInterfacePropertyType
+  >;
   apiName: InterfaceTypeApiName;
   displayMetadata: InterfaceTypeDisplayMetadata;
   extendsInterfaces: Array<InterfaceTypeRid>;
   links: Array<InterfaceLinkType>;
   properties: Array<SharedPropertyType>;
   propertiesV2: Record<SharedPropertyTypeRid, InterfaceSharedPropertyType>;
+  propertiesV3: Record<InterfacePropertyTypeRid, InterfacePropertyType>;
   rid: InterfaceTypeRid;
+  searchable?: boolean | null | undefined;
   status: InterfaceTypeStatus;
 }
 /**
@@ -3885,6 +3914,7 @@ export interface LabelledValue {
 export type LanguageAnalyzer =
   | "FRENCH"
   | "JAPANESE"
+  | "KOREAN"
   | "ARABIC"
   | "COMBINED_ARABIC_ENGLISH";
 
@@ -3959,6 +3989,7 @@ export type LinkMetadata = LinkMetadata_linkType | LinkMetadata_softLink;
  */
 export interface LinkType {
   definition: LinkDefinition;
+  description?: string | null | undefined;
   id: LinkTypeId;
   redacted?: boolean | null | undefined;
   rid: LinkTypeRid;
@@ -4636,9 +4667,10 @@ export interface LongTypeRangeConstraint {
   min?: LongTypeDataValue | null | undefined;
 }
 /**
- * All mandatory marking properties linked to this datasource must only contain values within this set. It must have at least one marking specified. Note that Organization MarkingIds are not allowed in this set.
+ * Contains a set of markings that represent the mandatory security of this datasource.
  */
 export interface MandatoryMarkingConstraint {
+  allowEmptyMarkings?: boolean | null | undefined;
   markingIds: Array<MarkingId>;
 }
 export interface ManyToManyJoinDefinition {
@@ -4812,6 +4844,8 @@ export interface MissingAffectedObjectTypesForFunctionRule {
   functionRid: FunctionRid;
   functionVersion: SemanticFunctionVersion;
   missingAffectedObjectTypes: Array<ObjectTypeRid>;
+}
+export interface MissingParameterValueType {
 }
 export interface ModifyInterfaceRule {
   interfaceObjectToModify: ParameterId;
@@ -6353,6 +6387,7 @@ export interface OntologyIrActionTypeMetadata {
   parameterOrdering: Array<ParameterId>;
   parameters: Record<ParameterId, OntologyIrParameter>;
   sections: Record<SectionId, OntologyIrSection>;
+  stagingMediaSetRid?: MediaSetRid | null | undefined;
   status: OntologyIrActionTypeStatus;
 }
 export interface OntologyIrActionTypeRichTextComponent_message {
@@ -7096,6 +7131,13 @@ export interface OntologyIrInterfaceParameterPropertyValue {
 export interface OntologyIrInterfacePropertyImplementation {
   propertyTypeRid: ObjectTypeFieldApiName;
 }
+export interface OntologyIrInterfacePropertyType_sharedPropertyBasedPropertyType {
+  type: "sharedPropertyBasedPropertyType";
+  sharedPropertyBasedPropertyType: OntologyIrSharedPropertyBasedPropertyType;
+}
+export type OntologyIrInterfacePropertyType =
+  OntologyIrInterfacePropertyType_sharedPropertyBasedPropertyType;
+
 export interface OntologyIrInterfaceSharedPropertyType {
   required: boolean;
   sharedPropertyType: OntologyIrSharedPropertyType;
@@ -7112,6 +7154,10 @@ export interface OntologyIrInterfaceType {
     ObjectTypeFieldApiName,
     OntologyIrInterfaceSharedPropertyType
   >;
+  allPropertiesV3: Record<
+    InterfacePropertyTypeApiName,
+    OntologyIrResolvedInterfacePropertyType
+  >;
   apiName: InterfaceTypeApiName;
   displayMetadata: InterfaceTypeDisplayMetadata;
   extendsInterfaces: Array<InterfaceTypeApiName>;
@@ -7121,6 +7167,11 @@ export interface OntologyIrInterfaceType {
     ObjectTypeFieldApiName,
     OntologyIrInterfaceSharedPropertyType
   >;
+  propertiesV3: Record<
+    InterfacePropertyTypeApiName,
+    OntologyIrInterfacePropertyType
+  >;
+  searchable?: boolean | null | undefined;
   status: OntologyIrInterfaceTypeStatus;
 }
 export interface OntologyIrInterfaceTypeStatus_experimental {
@@ -7204,6 +7255,7 @@ export type OntologyIrLinkedEntityTypeId =
  */
 export interface OntologyIrLinkType {
   definition: OntologyIrLinkDefinition;
+  description?: string | null | undefined;
   id: LinkTypeId;
   redacted?: boolean | null | undefined;
   status: OntologyIrLinkTypeStatus;
@@ -8453,6 +8505,16 @@ export interface OntologyIrRegexCondition {
   value: OntologyIrConditionValue;
 }
 /**
+ * All information about the shape of the interface property. For now this all comes from shared properties, but
+ * in the future it can also come from property constraints defined on the interface.
+ */
+export interface OntologyIrResolvedInterfacePropertyType {
+  apiName: InterfacePropertyTypeApiName;
+  displayMetadata: InterfacePropertyTypeDisplayMetadata;
+  rid: InterfacePropertyTypeApiName;
+  type: OntologyIrType;
+}
+/**
  * A URL target for a Foundry rid with query params.
  */
 export interface OntologyIrRidUrlTarget {
@@ -8638,6 +8700,10 @@ export type OntologyIrSeriesValueMetadata =
   | OntologyIrSeriesValueMetadata_numericOrNonNumeric
   | OntologyIrSeriesValueMetadata_numericOrNonNumericV2;
 
+export interface OntologyIrSharedPropertyBasedPropertyType {
+  requireImplementation: boolean;
+  sharedPropertyType: OntologyIrSharedPropertyType;
+}
 /**
  * A property type that can be shared across object types.
  */
@@ -10344,7 +10410,19 @@ export interface ParameterValueTypeOrEmpty_valueType {
   type: "valueType";
   valueType: ParameterValueType;
 }
-export type ParameterValueTypeOrEmpty = ParameterValueTypeOrEmpty_valueType;
+
+export interface ParameterValueTypeOrEmpty_missingParameterValueType {
+  type: "missingParameterValueType";
+  missingParameterValueType: MissingParameterValueType;
+}
+/**
+ * When a value type is deleted, and it is present on an action type's parameter, the parameter's allowed values
+ * will become MissingParameterValueType. When users try to run an action with MissingParameterValueType, Actions
+ * will throw an error.
+ */
+export type ParameterValueTypeOrEmpty =
+  | ParameterValueTypeOrEmpty_valueType
+  | ParameterValueTypeOrEmpty_missingParameterValueType;
 
 export interface PartialObjectType {
   authorizationRidColumnLocator?: ColumnLocator | null | undefined;
@@ -11055,6 +11133,16 @@ export type RenderingSettings =
   | RenderingSettings_anyNotificationRenderingCanFail;
 
 /**
+ * All information about the shape of the interface property. For now this all comes from shared properties, but
+ * in the future it can also come from property constraints defined on the interface.
+ */
+export interface ResolvedInterfacePropertyType {
+  apiName: InterfacePropertyTypeApiName;
+  displayMetadata: InterfacePropertyTypeDisplayMetadata;
+  rid: InterfacePropertyTypeRid;
+  type: Type;
+}
+/**
  * An rid identifying a Foundry restricted view. This rid is a randomly generated identifier and is safe to log.
  */
 export type RestrictedViewRid = string;
@@ -11714,6 +11802,10 @@ export type SeriesValueMetadata =
 
 export interface SharedPropertiesSummary {
   visibleEntities: number;
+}
+export interface SharedPropertyBasedPropertyType {
+  requireImplementation: boolean;
+  sharedPropertyType: SharedPropertyType;
 }
 /**
  * A property type that can be shared across object types.

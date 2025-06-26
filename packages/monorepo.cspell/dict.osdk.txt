@@ -2,6 +2,7 @@ dpaquin
 forwardslash
 haptics
 mediaset
+mwalther
 Nativewind
 osdk
 palantirfoundry

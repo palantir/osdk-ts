@@ -31,7 +31,12 @@ function generateConjure() {
     formatTypescript "$OUT_DIR" "$PACKAGE_PATH"
 }
 
-generateConjure "/Volumes/git/foundry/object-set-service/object-set-service-api/build/conjure-transform-output/object-set-service-api.conjure.json" "${SCRIPT_DIR}/../packages/client.unstable" "object-set-service"
+if [[ -z "$CONJURE_PATH" || -z "$SERVICE_NAME" ]]; then
+    echo "Error: Must set \$CONJURE_PATH (e.g. /Volumes/git/foundry/object-set-service/object-set-service-api/build/conjure-transform-output/object-set-service-api.conjure.json) and \$SERVICE_NAME (e.g. object-set-service)"
+  exit 1;
+fi
+
+generateConjure "${CONJURE_PATH}" "${SCRIPT_DIR}/../packages/client.unstable" "${SERVICE_NAME}"
 
 # Reset git changes if the generated files are only changed by copyright year
 git status --porcelain --untracked-files=no | while read line; do

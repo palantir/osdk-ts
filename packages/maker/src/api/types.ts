@@ -323,6 +323,8 @@ export interface InterfaceType extends
     | "allExtendsInterfaces"
     | "propertiesV2"
     | "allPropertiesV2"
+    | "propertiesV3"
+    | "allPropertiesV3"
   >
 {
   propertiesV2: Record<string, InterfacePropertyType>;
