@@ -1,5 +1,12 @@
 # @osdk/widget.client-react
 
+## 3.0.0-beta.6
+
+### Patch Changes
+
+- @osdk/client@2.3.0-beta.8
+- @osdk/widget.client@3.0.0-beta.6
+
 ## 3.0.0-beta.5
 
 ### Minor Changes

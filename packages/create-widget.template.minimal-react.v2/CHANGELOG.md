@@ -1,5 +1,12 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.0.0-beta.6
+
+### Minor Changes
+
+- b8936de: Use root id rather than body for widgets react-dom
+- ed598cb: Use latest rather than beta tags for widget template README commands referencing @osdk/cli
+
 ## 3.0.0-beta.5
 
 ### Minor Changes
