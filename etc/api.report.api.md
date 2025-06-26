@@ -120,8 +120,7 @@ export namespace ActionParam {
         	};
     	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
-    	// Warning: (ae-forgotten-export) The symbol "ObjectIdentifiers" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export type ObjectType<T extends ObjectTypeDefinition> = ObjectIdentifiers<T> | OsdkObjectPrimaryKeyType<T>;
@@ -731,6 +730,12 @@ export namespace NullabilityAdherence {
 }
 
 // @public (undocumented)
+export type ObjectIdentifiers<Q extends ObjectOrInterfaceDefinition> = {
+    	readonly $apiName: Q["apiName"]
+    	readonly $primaryKey: PrimaryKeyType<Q>
+};
+
+// @public (undocumented)
 export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
     	// Warning: (ae-forgotten-export) The symbol "Icon" needs to be exported by the entry point index.d.ts
     //
@@ -908,14 +913,11 @@ export namespace Osdk {
 }
 
 // @public (undocumented)
-export interface OsdkBase<Q extends ObjectOrInterfaceDefinition> extends ObjectIdentifiers<Q> {
-    	// (undocumented)
-    readonly $objectSpecifier: ObjectSpecifier<Q>;
-    	// (undocumented)
-    readonly $objectType: string;
-    	// (undocumented)
-    readonly $title: string | undefined;
-}
+export type OsdkBase<Q extends ObjectOrInterfaceDefinition> = ObjectIdentifiers<Q> & {
+    	readonly $objectSpecifier: ObjectSpecifier<Q>
+    	readonly $objectType: string
+    	readonly $title: string | undefined
+};
 
 // @public @deprecated (undocumented)
 export type OsdkObject<N extends string> = {
