@@ -130,7 +130,7 @@ export function defineInterface(
     links: [],
     status,
     propertiesV2: properties,
-    searchable: interfaceDef.searchable,
+    searchable: interfaceDef.searchable ?? true,
     __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
   };
 

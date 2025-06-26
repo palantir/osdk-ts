@@ -303,7 +303,7 @@ describe("Ontology Defining", () => {
                     },
                   },
                   "propertiesV3": {},
-                  "searchable": undefined,
+                  "searchable": true,
                   "status": {
                     "active": {},
                     "type": "active",
@@ -508,7 +508,7 @@ describe("Ontology Defining", () => {
                   },
                 },
                 "propertiesV3": {},
-                "searchable": undefined,
+                "searchable": true,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -571,7 +571,7 @@ describe("Ontology Defining", () => {
                   },
                 },
                 "propertiesV3": {},
-                "searchable": undefined,
+                "searchable": true,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -732,7 +732,7 @@ describe("Ontology Defining", () => {
                     },
                   },
                   "propertiesV3": {},
-                  "searchable": undefined,
+                  "searchable": true,
                   "status": {
                     "active": {},
                     "type": "active",
@@ -866,7 +866,7 @@ describe("Ontology Defining", () => {
                   },
                 },
                 "propertiesV3": {},
-                "searchable": undefined,
+                "searchable": true,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -929,7 +929,7 @@ describe("Ontology Defining", () => {
                   },
                 },
                 "propertiesV3": {},
-                "searchable": undefined,
+                "searchable": true,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -1124,7 +1124,7 @@ describe("Ontology Defining", () => {
                 "properties": [],
                 "propertiesV2": {},
                 "propertiesV3": {},
-                "searchable": undefined,
+                "searchable": true,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -1149,7 +1149,7 @@ describe("Ontology Defining", () => {
                 "properties": [],
                 "propertiesV2": {},
                 "propertiesV3": {},
-                "searchable": undefined,
+                "searchable": true,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -1212,7 +1212,7 @@ describe("Ontology Defining", () => {
                 "properties": [],
                 "propertiesV2": {},
                 "propertiesV3": {},
-                "searchable": undefined,
+                "searchable": true,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -1237,7 +1237,7 @@ describe("Ontology Defining", () => {
                 "properties": [],
                 "propertiesV2": {},
                 "propertiesV3": {},
-                "searchable": undefined,
+                "searchable": true,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -1357,7 +1357,7 @@ describe("Ontology Defining", () => {
                 },
               },
               "propertiesV3": {},
-              "searchable": undefined,
+              "searchable": true,
               "status": {
                 "active": {},
                 "type": "active",
@@ -1575,7 +1575,7 @@ describe("Ontology Defining", () => {
                 },
               },
               "propertiesV3": {},
-              "searchable": undefined,
+              "searchable": true,
               "status": {
                 "active": {},
                 "type": "active",
@@ -1837,7 +1837,7 @@ describe("Ontology Defining", () => {
                   },
                 },
                 "propertiesV3": {},
-                "searchable": undefined,
+                "searchable": true,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -4711,7 +4711,7 @@ describe("Ontology Defining", () => {
                     },
                   },
                   "propertiesV3": {},
-                  "searchable": undefined,
+                  "searchable": true,
                   "status": {
                     "active": {},
                     "type": "active",
@@ -6040,7 +6040,7 @@ describe("Ontology Defining", () => {
                   },
                 },
                 "propertiesV3": {},
-                "searchable": undefined,
+                "searchable": true,
                 "status": {
                   "active": {},
                   "type": "active",
@@ -6985,7 +6985,7 @@ describe("Ontology Defining", () => {
                     },
                   },
                   "propertiesV3": {},
-                  "searchable": undefined,
+                  "searchable": true,
                   "status": {
                     "active": {},
                     "type": "active",
@@ -7096,7 +7096,7 @@ describe("Ontology Defining", () => {
                     },
                   },
                   "propertiesV3": {},
-                  "searchable": undefined,
+                  "searchable": true,
                   "status": {
                     "active": {},
                     "type": "active",
@@ -7210,6 +7210,7 @@ describe("Ontology Defining", () => {
               }
             }
           },
+          "searchable": true,
           "__type": OntologyEntityTypeEnum.INTERFACE_TYPE
         } as unknown as InterfaceType;
                 
@@ -7276,6 +7277,7 @@ describe("Ontology Defining", () => {
                     }
                   }
                 },
+                "searchable": true,
                 "__type": OntologyEntityTypeEnum.INTERFACE_TYPE
               },
               "propertyMapping": [
@@ -7404,6 +7406,7 @@ describe("Ontology Defining", () => {
                   }
                 }
               },
+              "searchable": true,
               "__type": OntologyEntityTypeEnum.INTERFACE_TYPE
             }
           ],
@@ -7435,6 +7438,7 @@ describe("Ontology Defining", () => {
               }
             }
           },
+          "searchable": true,
           "__type": OntologyEntityTypeEnum.INTERFACE_TYPE
         } as unknown as InterfaceType;
                 
