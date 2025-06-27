@@ -41,7 +41,7 @@
     "babel-plugin-dev-expression": "^0.2.3",
     "babel-plugin-minify-dead-code-elimination": "^0.5.2",
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
-    "cspell": "^8.17.5",
+    "cspell": "^9.1.2",
     "dprint": "^0.47.6",
     "esbuild-plugin-babel": "^0.2.3",
     "eslint": "^9.21.0",
