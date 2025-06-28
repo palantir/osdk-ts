@@ -33,6 +33,7 @@ import {
   type ObjectPropertyType,
   type ObjectType,
   OntologyEntityTypeEnum,
+  type OrganizationId,
   type PropertyTypeType,
   type SharedPropertyType,
 } from "./types.js";
@@ -702,9 +703,63 @@ function createValidationRule(
           typeClasses: [],
         },
       };
+
+    case "organization":
+      return {
+        condition: {
+          type: "comparison",
+          comparison: {
+            operator: "INTERSECTS",
+            left: {
+              type: "userProperty",
+              userProperty: {
+                userId: {
+                  type: "currentUser",
+                  currentUser: {},
+                },
+                propertyValue: {
+                  type: "organizationMarkingIds",
+                  organizationMarkingIds: {},
+                },
+              },
+            },
+            right: {
+              type: "staticValue",
+              staticValue: {
+                type: "stringList",
+                stringList: {
+                  strings: [
+                    getOrganizationId(actionValidation.name),
+                  ],
+                },
+              },
+            },
+          },
+        },
+        displayMetadata: {
+          failureMessage:
+            "Insufficient permissions. Missing organization membership required to submit action",
+          typeClasses: [],
+        },
+      };
     default:
       throw new Error(
-        `Unknown action validation type: ${actionValidation.type}`,
+        `Unknown action validation type: ${actionValidation["type"]}`,
       );
+  }
+}
+
+function getOrganizationId(organizationName: OrganizationId): string {
+  if (typeof organizationName === "string") {
+    switch (organizationName) {
+      case "palantir":
+        return "87ef507e-f954-457e-ad68-e0df71ef7567";
+      case "pretzel":
+        return "ebdec844-f3ce-41a0-a330-d92365a79530";
+      default:
+        throw new Error(`Unknown organization: ${organizationName}`);
+    }
+  } else {
+    return organizationName.id;
   }
 }
