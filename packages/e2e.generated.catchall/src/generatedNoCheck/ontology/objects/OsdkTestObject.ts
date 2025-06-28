@@ -70,7 +70,7 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
       color: '#4C90F0';
       name: 'cube';
     };
-    implements: ['FooInterface', 'OsdkTestInterface'];
+    implements: ['FooInterface', 'OsdkTestInterface', 'InterfaceForTest'];
     interfaceMap: {
       FooInterface: {
         name: 'osdkObjectName';
@@ -78,6 +78,9 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
       };
       OsdkTestInterface: {
         objectDescription: 'description';
+      };
+      InterfaceForTest: {
+        interfaceForTestProperty: 'osdkObjectName';
       };
     };
     inverseInterfaceMap: {
@@ -87,6 +90,9 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
       };
       OsdkTestInterface: {
         description: 'objectDescription';
+      };
+      InterfaceForTest: {
+        osdkObjectName: 'interfaceForTestProperty';
       };
     };
     links: {};

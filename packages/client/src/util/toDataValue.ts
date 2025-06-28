@@ -25,9 +25,10 @@ import {
 import { isMediaReference, isMediaUpload } from "../object/mediaUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isInterfaceActionParam } from "./interfaceUtils.js";
-import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
-import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
-import { isPoint } from "./isPoint.js";
+import { isObjectSpecifiersObject } from "./type-verifiers/isObjectSpecifiersObject.js";
+import { isObjectTypeDefinition } from "./type-verifiers/isObjectTypeDefinition.js";
+import { isOntologyObjectV2 } from "./type-verifiers/isOntologyObjectV2.js";
+import { isPoint } from "./type-verifiers/isPoint.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
@@ -40,6 +41,7 @@ export async function toDataValue(
   value: unknown,
   client: MinimalClient,
   actionMetadata: ActionMetadata,
+  parameterName: string,
 ): Promise<DataValue> {
   if (value == null) {
     // typeof null is 'object' so do this first
@@ -56,14 +58,16 @@ export async function toDataValue(
     ) {
       const converted = [];
       for (const value of values) {
-        converted.push(await toDataValue(value, client, actionMetadata));
+        converted.push(
+          await toDataValue(value, client, actionMetadata, parameterName),
+        );
       }
       return converted;
     }
     const promiseArray = Array.from(
       value,
       async (innerValue) =>
-        await toDataValue(innerValue, client, actionMetadata),
+        await toDataValue(innerValue, client, actionMetadata, parameterName),
     );
     return Promise.all(promiseArray);
   }
@@ -77,7 +81,12 @@ export async function toDataValue(
         filename: value.name,
       },
     );
-    return await toDataValue(attachment.rid, client, actionMetadata);
+    return await toDataValue(
+      attachment.rid,
+      client,
+      actionMetadata,
+      parameterName,
+    );
   }
 
   if (isAttachmentFile(value)) {
@@ -88,7 +97,12 @@ export async function toDataValue(
         filename: value.name as string,
       },
     );
-    return await toDataValue(attachment.rid, client, actionMetadata);
+    return await toDataValue(
+      attachment.rid,
+      client,
+      actionMetadata,
+      parameterName,
+    );
   }
 
   // new media item upload interface, very similar to how attachments work above
@@ -105,16 +119,26 @@ export async function toDataValue(
           preview: true,
         },
       );
-    return await toDataValue(mediaRef, client, actionMetadata);
+    return await toDataValue(mediaRef, client, actionMetadata, parameterName);
   }
 
   // objects just send the JSON'd primaryKey
   if (isOntologyObjectV2(value)) {
-    return await toDataValue(value.__primaryKey, client, actionMetadata);
+    return await toDataValue(
+      value.__primaryKey,
+      client,
+      actionMetadata,
+      parameterName,
+    );
   }
 
   if (isObjectSpecifiersObject(value)) {
-    return await toDataValue(value.$primaryKey, client, actionMetadata);
+    return await toDataValue(
+      value.$primaryKey,
+      client,
+      actionMetadata,
+      parameterName,
+    );
   }
 
   if (isPoint(value)) {
@@ -122,6 +146,7 @@ export async function toDataValue(
       `${value.coordinates[1]},${value.coordinates[0]}`,
       client,
       actionMetadata,
+      parameterName,
     );
   }
 
@@ -139,9 +164,19 @@ export async function toDataValue(
 
   if (isInterfaceActionParam(value)) {
     return {
-      objectTypeApiName: value.$objectType,
+      objectTypeApiName: isObjectTypeDefinition(value.$objectType)
+        ? value.$objectType.apiName
+        : value.$objectType,
       primaryKeyValue: value.$primaryKey,
     };
+  }
+
+  if (
+    parameterName in actionMetadata.parameters
+    && (actionMetadata.parameters[parameterName].type === "objectType")
+    && isObjectTypeDefinition(value)
+  ) {
+    return value.apiName;
   }
 
   // TODO (during queries implementation)
@@ -153,7 +188,12 @@ export async function toDataValue(
     return Object.entries(value).reduce(
       async (promisedAcc, [key, structValue]) => {
         const acc = await promisedAcc;
-        acc[key] = await toDataValue(structValue, client, actionMetadata);
+        acc[key] = await toDataValue(
+          structValue,
+          client,
+          actionMetadata,
+          parameterName,
+        );
         return acc;
       },
       Promise.resolve({} as { [key: string]: DataValue }),

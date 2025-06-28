@@ -16,6 +16,8 @@
 
 import type { Osdk } from "@osdk/api";
 import {
+  $Actions,
+  $Objects,
   createFooInterface,
   FooInterface,
   OsdkTestObject,
@@ -100,6 +102,25 @@ export async function runInterfacesTest(): Promise<void> {
 
   const result = await client(createFooInterface).applyAction({
     createdInterface: "testObject",
+  });
+
+  /** Interface Action Tests */
+
+  const createInterfaceResult = await client($Actions.createInterfaceForTest)
+    .applyAction({
+      interface_for_test_type: $Objects.OsdkTestObject,
+    }, { $returnEdits: true });
+
+  invariant(
+    createInterfaceResult.addedObjects
+      && createInterfaceResult.addedObjects.length > 0,
+  );
+
+  await client($Actions.deleteInterfaceForTest).applyAction({
+    InterfaceForTest: {
+      $objectType: $Objects.OsdkTestObject,
+      $primaryKey: createInterfaceResult.addedObjects[0].primaryKey,
+    },
   });
 }
 

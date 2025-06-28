@@ -19,7 +19,9 @@ import type {
   ActionValidationResponse,
   AttachmentUpload,
   MediaReference,
+  ObjectTypeDefinition,
 } from "@osdk/api";
+import type { Person } from "@osdk/client.test.ontology";
 import {
   $Actions,
   actionTakesAttachment,
@@ -418,7 +420,7 @@ describe.each([
     expectTypeOf<
       {
         deletedInterface: {
-          $objectType: "Employee" | "Person";
+          $objectType: "Employee" | "Person" | Employee | Person;
           $primaryKey: string | number;
         };
       }
@@ -435,7 +437,7 @@ describe.each([
 
     expectTypeOf<{
       deletedInterface: {
-        $objectType: "Employee" | "Person";
+        $objectType: "Employee" | "Person" | Employee | Person;
         $primaryKey: string | number;
       };
     }[]>().toMatchTypeOf<InferredBatchParamType>();
@@ -462,7 +464,7 @@ describe.each([
     expectTypeOf<
       {
         deletedInterface: {
-          $objectType: string;
+          $objectType: string | ObjectTypeDefinition;
           $primaryKey: string | number;
         };
       }
@@ -495,7 +497,7 @@ describe.each([
 
     expectTypeOf<
       {
-        createdInterface: string;
+        createdInterface: string | ObjectTypeDefinition;
       }
     >().toMatchTypeOf<
       InferredParamType
@@ -509,7 +511,7 @@ describe.each([
     >[0];
 
     expectTypeOf<{
-      createdInterface: string;
+      createdInterface: string | ObjectTypeDefinition;
     }[]>().toMatchTypeOf<InferredBatchParamType>();
 
     const result = await client(createFooInterface).applyAction({
