@@ -23,6 +23,7 @@ import {
 } from "./defineOntology.js";
 import type {
   InterfacePropertyType,
+  InterfaceType,
   ObjectType,
   ObjectTypeDefinition,
   PropertyTypeType,
@@ -113,11 +114,13 @@ export function defineObject(
   );
 
   objectDef.implementsInterfaces?.forEach(interfaceImpl => {
+    const allInterfaceProperties = getAllInterfaceProperties(
+      interfaceImpl.implements,
+    );
     const nonExistentInterfaceProperties: ValidationResult[] = interfaceImpl
       .propertyMapping.map(val => val.interfaceProperty).filter(
         interfaceProperty =>
-          interfaceImpl.implements.propertiesV2[interfaceProperty]
-            === undefined,
+          allInterfaceProperties[interfaceProperty] === undefined,
       ).map(interfaceProp => ({
         type: "invalid",
         reason:
@@ -248,4 +251,15 @@ export function convertToPluralDisplayName(
     : s.endsWith("s")
     ? convertToDisplayName(s)
     : convertToDisplayName(s) + "s";
+}
+
+function getAllInterfaceProperties(interfaceType: InterfaceType) {
+  let properties = interfaceType.propertiesV2;
+  interfaceType.extendsInterfaces.forEach(ext => {
+    properties = {
+      ...properties,
+      ...getAllInterfaceProperties(ext),
+    };
+  });
+  return properties;
 }
