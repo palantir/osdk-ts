@@ -2038,6 +2038,11 @@ export interface ValidationError_genericOntologyMetadataError {
   type: "genericOntologyMetadataError";
   genericOntologyMetadataError: _api_GenericOntologyMetadataError;
 }
+
+export interface ValidationError_ontologyValidationError {
+  type: "ontologyValidationError";
+  ontologyValidationError: _api_validation_OntologyValidationError;
+}
 export type ValidationError =
   | ValidationError_foreignKeyConstraint
   | ValidationError_foundrySchemaConstraint
@@ -2051,7 +2056,8 @@ export type ValidationError =
   | ValidationError_objectTypePropertyConstraint
   | ValidationError_propertySecurityGroupsConstraint
   | ValidationError_mergeConstraint
-  | ValidationError_genericOntologyMetadataError;
+  | ValidationError_genericOntologyMetadataError
+  | ValidationError_ontologyValidationError;
 
 export interface ValueTypeUsageError_propertyTypeValueTypeUsageError {
   type: "propertyTypeValueTypeUsageError";
