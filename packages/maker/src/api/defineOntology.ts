@@ -1251,7 +1251,7 @@ function dependencyInjectionString(): string {
 
   return `
 import { fileURLToPath } from "url";
-import { addDependency } from '@osdk/maker';
+import { addDependency } from "@osdk/maker";
 
 addDependency("${namespaceNoDot}", fileURLToPath(import.meta.url));
 `;
