@@ -130,19 +130,25 @@ export default async function main(
 
   if (commandLineOpts.generateFunctionsOsdk !== undefined) {
     // Generate full ontology metadata for functions OSDK
+    const functionsOsdkRootDir = path.resolve(
+      commandLineOpts.generateFunctionsOsdk,
+      "functionsCodegen",
+    );
     const fullMetadata = OntologyIrToFullMetadataConverter
       .getFullMetadataFromIr(ontology.ontology.blockData);
     const fullMetadataOutputDir = path.join(
       commandLineOpts.generateFunctionsOsdk,
+      "functionsCodegen",
       ".ontology.json",
     );
     consola.info(`Saving full ontology metadata to ${fullMetadataOutputDir}`);
+    await fs.mkdir(functionsOsdkRootDir, { recursive: true });
     await fs.writeFile(
       fullMetadataOutputDir,
       JSON.stringify(fullMetadata, null, 2),
     );
 
-    await fullMetadataToOsdk(commandLineOpts.generateFunctionsOsdk);
+    await fullMetadataToOsdk(functionsOsdkRootDir);
   }
 }
 
@@ -176,8 +182,7 @@ async function fullMetadataToOsdk(
   // First create a clean temporary directory to generate the SDK into
   const functionOsdkDir = path.join(
     workDir,
-    ".osdkFunctions",
-    "src",
+    ".functionsOsdk",
   );
   await fs.rm(functionOsdkDir, { recursive: true, force: true });
   await fs.mkdir(functionOsdkDir, { recursive: true });
