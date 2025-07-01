@@ -4311,7 +4311,12 @@ describe("Ontology Defining", () => {
                           "addInterfaceRule": {
                             "interfaceApiName": "com.palantir.exampleInterface",
                             "objectTypeParameter": "objectTypeParameter",
-                            "sharedPropertyValues": {},
+                            "sharedPropertyValues": {
+                              "com.palantir.property1": {
+                                "parameterId": "com.palantir.property1",
+                                "type": "parameterId",
+                              },
+                            },
                           },
                           "type": "addInterfaceRule",
                         },
@@ -4484,7 +4489,12 @@ describe("Ontology Defining", () => {
                         {
                           "modifyInterfaceRule": {
                             "interfaceObjectToModifyParameter": "interfaceObjectToModifyParameter",
-                            "sharedPropertyValues": {},
+                            "sharedPropertyValues": {
+                              "com.palantir.property1": {
+                                "parameterId": "com.palantir.property1",
+                                "type": "parameterId",
+                              },
+                            },
                           },
                           "type": "modifyInterfaceRule",
                         },
@@ -5656,7 +5666,12 @@ describe("Ontology Defining", () => {
                           "addInterfaceRule": {
                             "interfaceApiName": "com.palantir.exampleInterface",
                             "objectTypeParameter": "objectTypeParameter",
-                            "sharedPropertyValues": {},
+                            "sharedPropertyValues": {
+                              "com.palantir.property1": {
+                                "parameterId": "com.palantir.property1",
+                                "type": "parameterId",
+                              },
+                            },
                           },
                           "type": "addInterfaceRule",
                         },
@@ -5818,7 +5833,12 @@ describe("Ontology Defining", () => {
                         {
                           "modifyInterfaceRule": {
                             "interfaceObjectToModifyParameter": "interfaceObjectToModifyParameter",
-                            "sharedPropertyValues": {},
+                            "sharedPropertyValues": {
+                              "com.palantir.property1": {
+                                "parameterId": "com.palantir.property1",
+                                "type": "parameterId",
+                              },
+                            },
                           },
                           "type": "modifyInterfaceRule",
                         },

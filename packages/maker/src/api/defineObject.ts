@@ -244,7 +244,7 @@ export function convertToPluralDisplayName(
     : convertToDisplayName(s) + "s";
 }
 
-function getAllInterfaceProperties(
+export function getAllInterfaceProperties(
   interfaceType: InterfaceType,
 ): Record<string, InterfacePropertyType> {
   let properties = interfaceType.propertiesV2;
