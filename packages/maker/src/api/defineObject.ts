@@ -16,11 +16,9 @@
 
 import invariant from "tiny-invariant";
 import {
-  extractNamespace,
   namespace,
   ontologyDefinition,
   updateOntology,
-  withoutNamespace,
 } from "./defineOntology.js";
 import type {
   InterfacePropertyType,
@@ -115,7 +113,7 @@ export function defineObject(
   );
 
   objectDef.implementsInterfaces?.forEach(interfaceImpl => {
-    const allInterfaceProperties = getAllInterfacePropertiesNoNamespace(
+    const allInterfaceProperties = getAllInterfaceProperties(
       interfaceImpl.implements,
     );
     const nonExistentInterfaceProperties: ValidationResult[] = interfaceImpl
@@ -125,7 +123,7 @@ export function defineObject(
       ).map(interfaceProp => ({
         type: "invalid",
         reason:
-          `Interface property ${interfaceImpl.implements.apiName}.${interfaceProp} referenced in ${objectDef.apiName} object does not exist`,
+          `Interface property ${interfaceProp} referenced in ${objectDef.apiName} object does not exist`,
       }));
 
     const interfaceToObjectProperties = Object.fromEntries(
@@ -137,7 +135,7 @@ export function defineObject(
       interfaceProp: [string, InterfacePropertyType],
     ): ValidationResult => {
       if (
-        interfaceProp[1].sharedPropertyType.nonNameSpacedApiName
+        interfaceProp[1].sharedPropertyType.apiName
           in interfaceToObjectProperties
       ) {
         return validateInterfaceImplProperty(
@@ -148,8 +146,8 @@ export function defineObject(
       }
       return {
         type: "invalid",
-        reason: `Interface property ${interfaceImpl.implements.apiName}.${
-          interfaceProp[1].sharedPropertyType.nonNameSpacedApiName
+        reason: `Interface property ${
+          interfaceProp[1].sharedPropertyType.apiName
         } not implemented by ${objectDef.apiName} object definition`,
       };
     };
@@ -170,14 +168,6 @@ export function defineObject(
       allFailedValidations.length === 0,
       "\n" + allFailedValidations.map(formatValidationErrors).join("\n"),
     );
-
-    interfaceImpl.propertyMapping = interfaceImpl.propertyMapping.map((
-      mapping,
-    ) => ({
-      interfaceProperty: extractNamespace(interfaceImpl.implements.apiName)
-        + mapping.interfaceProperty,
-      mapsTo: mapping.mapsTo,
-    }));
   });
 
   const finalObject: ObjectType = {
@@ -254,18 +244,12 @@ export function convertToPluralDisplayName(
     : convertToDisplayName(s) + "s";
 }
 
-function getAllInterfacePropertiesNoNamespace(
+function getAllInterfaceProperties(
   interfaceType: InterfaceType,
 ): Record<string, InterfacePropertyType> {
-  const localProperties = Object.fromEntries(
-    Object.entries(interfaceType.propertiesV2).map(([apiName, property]) => [
-      withoutNamespace(apiName),
-      property,
-    ]),
-  );
-
-  return interfaceType.extendsInterfaces.reduce(
-    (acc, ext) => ({ ...getAllInterfacePropertiesNoNamespace(ext), ...acc }),
-    localProperties,
-  );
+  let properties = interfaceType.propertiesV2;
+  interfaceType.extendsInterfaces.forEach(ext => {
+    properties = { ...properties, ...getAllInterfaceProperties(ext) };
+  });
+  return properties;
 }
