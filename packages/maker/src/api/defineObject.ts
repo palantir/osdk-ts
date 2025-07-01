@@ -20,9 +20,11 @@ import {
   namespace,
   ontologyDefinition,
   updateOntology,
+  withoutNamespace,
 } from "./defineOntology.js";
 import type {
   InterfacePropertyType,
+  InterfaceType,
   ObjectType,
   ObjectTypeDefinition,
   PropertyTypeType,
@@ -113,11 +115,13 @@ export function defineObject(
   );
 
   objectDef.implementsInterfaces?.forEach(interfaceImpl => {
+    const allInterfaceProperties = getAllInterfacePropertiesNoNamespace(
+      interfaceImpl.implements,
+    );
     const nonExistentInterfaceProperties: ValidationResult[] = interfaceImpl
       .propertyMapping.map(val => val.interfaceProperty).filter(
         interfaceProperty =>
-          interfaceImpl.implements.propertiesV2[interfaceProperty]
-            === undefined,
+          allInterfaceProperties[interfaceProperty] === undefined,
       ).map(interfaceProp => ({
         type: "invalid",
         reason:
@@ -248,4 +252,20 @@ export function convertToPluralDisplayName(
     : s.endsWith("s")
     ? convertToDisplayName(s)
     : convertToDisplayName(s) + "s";
+}
+
+function getAllInterfacePropertiesNoNamespace(
+  interfaceType: InterfaceType,
+): Record<string, InterfacePropertyType> {
+  const localProperties = Object.fromEntries(
+    Object.entries(interfaceType.propertiesV2).map(([apiName, property]) => [
+      withoutNamespace(apiName),
+      property,
+    ]),
+  );
+
+  return interfaceType.extendsInterfaces.reduce(
+    (acc, ext) => ({ ...getAllInterfacePropertiesNoNamespace(ext), ...acc }),
+    localProperties,
+  );
 }

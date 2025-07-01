@@ -7450,6 +7450,434 @@ describe("Ontology Defining", () => {
         force: true,
       });
     });
+    it("Extended interface properties are checked in object type property mapping", () => {
+      const parentInterface = defineInterface({
+        apiName: "parentInterface",
+        properties: {
+          property1: "string",
+        },
+      });
+      const childInterface = defineInterface({
+        apiName: "childInterface",
+        properties: {
+          property2: "string",
+        },
+        extends: [parentInterface],
+      });
+      const objectDef = defineObject({
+        apiName: "objectDef",
+        primaryKeyPropertyApiName: "property1",
+        titlePropertyApiName: "property1",
+        displayName: "objectDef",
+        pluralDisplayName: "objectDefs",
+        properties: [
+          {
+            apiName: "property1",
+            type: "string",
+            displayName: "property1",
+          },
+          {
+            apiName: "property2",
+            type: "string",
+            displayName: "property2",
+          },
+        ],
+        implementsInterfaces: [
+          {
+            implements: childInterface,
+            propertyMapping: [
+              {
+                interfaceProperty: "property1",
+                mapsTo: "property1",
+              },
+              {
+                interfaceProperty: "property2",
+                mapsTo: "property2",
+              },
+            ],
+          },
+        ],
+      });
+
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "blockData": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {
+              "com.palantir.childInterface": {
+                "interfaceType": {
+                  "allExtendsInterfaces": [],
+                  "allLinks": [],
+                  "allProperties": [],
+                  "allPropertiesV2": {},
+                  "allPropertiesV3": {},
+                  "apiName": "com.palantir.childInterface",
+                  "displayMetadata": {
+                    "description": "childInterface",
+                    "displayName": "childInterface",
+                    "icon": undefined,
+                  },
+                  "extendsInterfaces": [
+                    "com.palantir.parentInterface",
+                  ],
+                  "links": [],
+                  "properties": [],
+                  "propertiesV2": {
+                    "com.palantir.property2": {
+                      "required": true,
+                      "sharedPropertyType": {
+                        "aliases": [],
+                        "apiName": "com.palantir.property2",
+                        "baseFormatter": undefined,
+                        "dataConstraints": undefined,
+                        "displayMetadata": {
+                          "description": undefined,
+                          "displayName": "property2",
+                          "visibility": "NORMAL",
+                        },
+                        "gothamMapping": undefined,
+                        "indexedForSearch": true,
+                        "type": {
+                          "string": {
+                            "analyzerOverride": undefined,
+                            "enableAsciiFolding": undefined,
+                            "isLongText": false,
+                            "supportsEfficientLeadingWildcard": false,
+                            "supportsExactMatching": true,
+                          },
+                          "type": "string",
+                        },
+                        "typeClasses": [
+                          {
+                            "kind": "render_hint",
+                            "name": "SELECTABLE",
+                          },
+                          {
+                            "kind": "render_hint",
+                            "name": "SORTABLE",
+                          },
+                        ],
+                        "valueType": undefined,
+                      },
+                    },
+                  },
+                  "propertiesV3": {},
+                  "searchable": true,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                },
+              },
+              "com.palantir.parentInterface": {
+                "interfaceType": {
+                  "allExtendsInterfaces": [],
+                  "allLinks": [],
+                  "allProperties": [],
+                  "allPropertiesV2": {},
+                  "allPropertiesV3": {},
+                  "apiName": "com.palantir.parentInterface",
+                  "displayMetadata": {
+                    "description": "parentInterface",
+                    "displayName": "parentInterface",
+                    "icon": undefined,
+                  },
+                  "extendsInterfaces": [],
+                  "links": [],
+                  "properties": [],
+                  "propertiesV2": {
+                    "com.palantir.property1": {
+                      "required": true,
+                      "sharedPropertyType": {
+                        "aliases": [],
+                        "apiName": "com.palantir.property1",
+                        "baseFormatter": undefined,
+                        "dataConstraints": undefined,
+                        "displayMetadata": {
+                          "description": undefined,
+                          "displayName": "property1",
+                          "visibility": "NORMAL",
+                        },
+                        "gothamMapping": undefined,
+                        "indexedForSearch": true,
+                        "type": {
+                          "string": {
+                            "analyzerOverride": undefined,
+                            "enableAsciiFolding": undefined,
+                            "isLongText": false,
+                            "supportsEfficientLeadingWildcard": false,
+                            "supportsExactMatching": true,
+                          },
+                          "type": "string",
+                        },
+                        "typeClasses": [
+                          {
+                            "kind": "render_hint",
+                            "name": "SELECTABLE",
+                          },
+                          {
+                            "kind": "render_hint",
+                            "name": "SORTABLE",
+                          },
+                        ],
+                        "valueType": undefined,
+                      },
+                    },
+                  },
+                  "propertiesV3": {},
+                  "searchable": true,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                },
+              },
+            },
+            "linkTypes": {},
+            "objectTypes": {
+              "com.palantir.objectDef": {
+                "datasources": [
+                  {
+                    "datasource": {
+                      "datasetV2": {
+                        "datasetRid": "com.palantir.objectDef",
+                        "propertyMapping": {
+                          "property1": {
+                            "column": "property1",
+                            "type": "column",
+                          },
+                          "property2": {
+                            "column": "property2",
+                            "type": "column",
+                          },
+                        },
+                      },
+                      "type": "datasetV2",
+                    },
+                    "editsConfiguration": {
+                      "onlyAllowPrivilegedEdits": false,
+                    },
+                    "redacted": false,
+                    "rid": "ri.ontology.main.datasource.com.palantir.objectDef",
+                  },
+                ],
+                "entityMetadata": {
+                  "arePatchesEnabled": false,
+                },
+                "objectType": {
+                  "allImplementsInterfaces": {},
+                  "apiName": "com.palantir.objectDef",
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "objectDef",
+                    "groupDisplayName": undefined,
+                    "icon": {
+                      "blueprint": {
+                        "color": "#2D72D2",
+                        "locator": "cube",
+                      },
+                      "type": "blueprint",
+                    },
+                    "pluralDisplayName": "objectDefs",
+                    "visibility": "NORMAL",
+                  },
+                  "implementsInterfaces2": [
+                    {
+                      "interfaceTypeApiName": "com.palantir.childInterface",
+                      "properties": {
+                        "com.palantir.property1": {
+                          "propertyTypeRid": "property1",
+                        },
+                        "com.palantir.property2": {
+                          "propertyTypeRid": "property2",
+                        },
+                      },
+                    },
+                  ],
+                  "primaryKeys": [
+                    "property1",
+                  ],
+                  "propertyTypes": {
+                    "property1": {
+                      "apiName": "property1",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "property1",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "property2": {
+                      "apiName": "property2",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "property2",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                  },
+                  "redacted": false,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "titlePropertyTypeRid": "property1",
+                },
+              },
+            },
+            "sharedPropertyTypes": {
+              "com.palantir.property1": {
+                "sharedPropertyType": {
+                  "aliases": [],
+                  "apiName": "com.palantir.property1",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "property1",
+                    "visibility": "NORMAL",
+                  },
+                  "gothamMapping": undefined,
+                  "indexedForSearch": true,
+                  "type": {
+                    "string": {
+                      "analyzerOverride": undefined,
+                      "enableAsciiFolding": undefined,
+                      "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
+                      "supportsExactMatching": true,
+                    },
+                    "type": "string",
+                  },
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
+                  "valueType": undefined,
+                },
+              },
+              "com.palantir.property2": {
+                "sharedPropertyType": {
+                  "aliases": [],
+                  "apiName": "com.palantir.property2",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "property2",
+                    "visibility": "NORMAL",
+                  },
+                  "gothamMapping": undefined,
+                  "indexedForSearch": true,
+                  "type": {
+                    "string": {
+                      "analyzerOverride": undefined,
+                      "enableAsciiFolding": undefined,
+                      "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
+                      "supportsExactMatching": true,
+                    },
+                    "type": "string",
+                  },
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
+                  "valueType": undefined,
+                },
+              },
+            },
+          },
+          "importedTypes": {
+            "actionTypes": [],
+            "interfaceTypes": [],
+            "linkTypes": [],
+            "objectTypes": [],
+            "sharedPropertyTypes": [],
+          },
+        }
+      `);
+    });
   });
   describe("Dependencies", () => {
     it("Correctly adds dependencies", async () => {
