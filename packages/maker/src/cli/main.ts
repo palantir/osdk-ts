@@ -130,25 +130,18 @@ export default async function main(
 
   if (commandLineOpts.generateFunctionsOsdk !== undefined) {
     // Generate full ontology metadata for functions OSDK
-    const functionsOsdkRootDir = path.resolve(
-      commandLineOpts.generateFunctionsOsdk,
-      "functionsCodegen",
-    );
     const fullMetadata = OntologyIrToFullMetadataConverter
       .getFullMetadataFromIr(ontology.ontology.blockData);
-    const fullMetadataOutputDir = path.join(
-      commandLineOpts.generateFunctionsOsdk,
-      "functionsCodegen",
-      ".ontology.json",
+    consola.info(
+      `Saving full ontology metadata to ${commandLineOpts.generateFunctionsOsdk}`,
     );
-    consola.info(`Saving full ontology metadata to ${fullMetadataOutputDir}`);
-    await fs.mkdir(functionsOsdkRootDir, { recursive: true });
+
     await fs.writeFile(
-      fullMetadataOutputDir,
+      path.join(commandLineOpts.generateFunctionsOsdk, ".ontology.json"),
       JSON.stringify(fullMetadata, null, 2),
     );
 
-    await fullMetadataToOsdk(functionsOsdkRootDir);
+    await fullMetadataToOsdk(commandLineOpts.generateFunctionsOsdk);
   }
 }
 
@@ -182,22 +175,13 @@ async function fullMetadataToOsdk(
   // First create a clean temporary directory to generate the SDK into
   const functionOsdkDir = path.join(
     workDir,
-    ".functionsOsdk",
+    "generated",
   );
   await fs.rm(functionOsdkDir, { recursive: true, force: true });
   await fs.mkdir(functionOsdkDir, { recursive: true });
 
-  // The osdk cli currently mutes package.json files which we don't want in this case
-  // so we give it a fake package.json file
-  // await fs.writeFile(
-  //   path.join(functionOsdkDir, "..", "package.json"),
-  //   JSON.stringify({}, null, 2),
-  //   { encoding: "utf-8" },
-  // );
-
   try {
-    // Then generate the source code for the osdk
-    const srcDir = path.join(functionOsdkDir, "src");
+    // Generate the source code for the osdk
     const { stdout, stderr, exitCode } = await execa("pnpm", [
       "exec",
       "osdk",
@@ -205,7 +189,7 @@ async function fullMetadataToOsdk(
       "typescript",
       "generate",
       "--outDir",
-      srcDir,
+      functionOsdkDir,
       "--ontologyPath",
       path.join(workDir, ".ontology.json"),
       "--beta",
@@ -216,7 +200,6 @@ async function fullMetadataToOsdk(
       "dev",
     ]);
   } catch (error) {
-    // Make sure to clean up temp directory even if there's an error
     await fs.rm(functionOsdkDir, { recursive: true, force: true });
     throw error;
   }
