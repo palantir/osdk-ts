@@ -151,17 +151,10 @@ export function defineObject(
         } not implemented by ${objectDef.apiName} object definition`,
       };
     };
-    const baseValidations = Object.entries(
-      interfaceImpl.implements.propertiesV2,
-    )
-      .map<ValidationResult>(validateProperty);
-    const extendsValidations = interfaceImpl.implements.extendsInterfaces
-      .flatMap(interfaceType =>
-        Object.entries(interfaceType.propertiesV2).map(validateProperty)
-      );
-
-    const allFailedValidations = baseValidations.concat(
-      extendsValidations,
+    const validations = Object.entries(
+      getAllInterfaceProperties(interfaceImpl.implements),
+    ).map(validateProperty);
+    const allFailedValidations = validations.concat(
       nonExistentInterfaceProperties,
     ).filter(val => val.type === "invalid");
     invariant(

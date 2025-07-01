@@ -79,7 +79,7 @@ export function defineCreateInterfaceObjectAction(
             },
         },
       },
-      ...Object.entries(interfaceType.propertiesV2).map((
+      ...Object.entries(getAllInterfaceProperties(interfaceType)).map((
         [id, prop],
       ) => ({
         id,
@@ -207,7 +207,7 @@ export function defineModifyInterfaceObjectAction(
             },
         },
       },
-      ...Object.entries(interfaceType.propertiesV2).map((
+      ...Object.entries(getAllInterfaceProperties(interfaceType)).map((
         [id, prop],
       ) => ({
         id,
