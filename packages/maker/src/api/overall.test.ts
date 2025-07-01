@@ -1755,6 +1755,12 @@ describe("Ontology Defining", () => {
         properties: [
           { apiName: "bar", type: "string", displayName: "Bar" },
           {
+            apiName: "arrayProp",
+            type: "string",
+            array: true,
+            displayName: "Array Property Test",
+          },
+          {
             apiName: "geopoint",
             type: {
               type: "struct",
@@ -1854,6 +1860,10 @@ describe("Ontology Defining", () => {
                     "datasetV2": {
                       "datasetRid": "com.palantir.foo",
                       "propertyMapping": {
+                        "arrayProp": {
+                          "column": "arrayProp",
+                          "type": "column",
+                        },
                         "bar": {
                           "column": "bar",
                           "type": "column",
@@ -1919,6 +1929,51 @@ describe("Ontology Defining", () => {
                   "bar",
                 ],
                 "propertyTypes": {
+                  "arrayProp": {
+                    "apiName": "arrayProp",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Array Property Test",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "array": {
+                        "subtype": {
+                          "string": {
+                            "analyzerOverride": undefined,
+                            "enableAsciiFolding": undefined,
+                            "isLongText": false,
+                            "supportsEfficientLeadingWildcard": false,
+                            "supportsExactMatching": true,
+                          },
+                          "type": "string",
+                        },
+                      },
+                      "type": "array",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
                   "bar": {
                     "apiName": "bar",
                     "baseFormatter": undefined,
