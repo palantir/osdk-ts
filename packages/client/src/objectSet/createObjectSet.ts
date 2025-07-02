@@ -174,6 +174,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           objectType,
           objectSet,
           { ...args, $pageSize: 10000, $nextPageToken },
+          true,
         );
         $nextPageToken = result.nextPageToken;
 
