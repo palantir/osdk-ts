@@ -641,7 +641,14 @@ function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
     indexedForSearch: property.indexedForSearch ?? true,
     ruleSetBinding: undefined,
     baseFormatter: property.baseFormatter,
-    type: convertType(property.type),
+    type: property.array
+      ? {
+        type: "array" as const,
+        array: {
+          subtype: convertType(property.type),
+        },
+      }
+      : convertType(property.type),
     typeClasses: property.typeClasses
       ?? (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
     status: convertObjectStatus(property.status),
