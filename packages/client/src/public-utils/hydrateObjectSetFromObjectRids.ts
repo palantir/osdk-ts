@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition, ObjectSet } from "@osdk/api";
 import type { Client } from "../Client.js";
 import { additionalContext } from "../Client.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
@@ -28,7 +28,7 @@ import { createObjectSet } from "../objectSet/createObjectSet.js";
  */
 export function hydrateObjectSetFromObjectRids<
   T extends ObjectOrInterfaceDefinition,
->(client: Client, definition: T, rids: string[]) {
+>(client: Client, definition: T, rids: string[]): ObjectSet<T> {
   return createObjectSet(definition, client[additionalContext], {
     type: "intersect",
     objectSets: [
