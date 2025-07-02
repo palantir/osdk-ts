@@ -119,6 +119,7 @@ async function fetchInterfacePage<
   interfaceType: Q,
   args: FetchPageArgs<Q, L, R, any, S, T>,
   objectSet: ObjectSet,
+  useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
   if (args.$__UNSTABLE_useOldInterfaceApis) {
     const result = await OntologiesV2.OntologyInterfaces
@@ -158,6 +159,7 @@ async function fetchInterfacePage<
       ),
       select: ((args?.$select as string[] | undefined) ?? []),
       excludeRid: !args?.$includeRid,
+      snapshot: useSnapshot,
     }),
     { preview: true },
   );
@@ -190,6 +192,7 @@ export async function fetchPageInternal<
   objectType: Q,
   objectSet: ObjectSet,
   args: FetchPageArgs<Q, L, R, A, S, T> = {},
+  useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(
@@ -197,6 +200,7 @@ export async function fetchPageInternal<
       objectType,
       args,
       objectSet,
+      useSnapshot,
     ) as any; // fixme
   } else {
     return await fetchObjectPage(
@@ -204,6 +208,7 @@ export async function fetchPageInternal<
       objectType,
       args,
       objectSet,
+      useSnapshot,
     ) as any; // fixme
   }
 }
@@ -314,6 +319,7 @@ export async function fetchObjectPage<
   objectType: Q,
   args: FetchPageArgs<Q, L, R, Augments, S, T>,
   objectSet: ObjectSet,
+  useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
   const r = await OntologiesV2.OntologyObjectSets.load(
     addUserAgentAndRequestContextHeaders(client, objectType),
@@ -323,6 +329,7 @@ export async function fetchObjectPage<
       // We have to do the following case because LoadObjectSetRequestV2 isn't readonly
       select: ((args?.$select as string[] | undefined) ?? []), // FIXME?
       excludeRid: !args?.$includeRid,
+      snapshot: useSnapshot,
     }),
   );
 
