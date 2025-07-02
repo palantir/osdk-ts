@@ -7922,7 +7922,7 @@ describe("Ontology Defining", () => {
         fs.readFileSync(path.join(generatedDir, "index.ts"), "utf8"),
       )
         .toContain(
-          `addDependency("com.palantir", fileURLToPath(import.meta.url));`,
+          `addDependency("com.palantir", new URL(import.meta.url).pathname);`,
         );
 
       fs.rmSync(path.join(generatedDir, ".."), {

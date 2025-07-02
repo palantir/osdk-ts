@@ -1249,10 +1249,8 @@ function dependencyInjectionString(): string {
     ? namespace.slice(0, -1)
     : namespace;
 
-  return `
-import { fileURLToPath } from "url";
-import { addDependency } from "@osdk/maker";
+  return `import { addDependency } from "@osdk/maker";
 
-addDependency("${namespaceNoDot}", fileURLToPath(import.meta.url));
+addDependency("${namespaceNoDot}", new URL(import.meta.url).pathname);
 `;
 }
