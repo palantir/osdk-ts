@@ -72,7 +72,7 @@ export function defineInterface(
     >(
       ([propApiName, type]) => {
         if (typeof type === "object" && "propertyDefinition" in type) {
-          return [propApiName, {
+          return [namespace + propApiName, {
             required: type.required,
             sharedPropertyType: unifyBasePropertyDefinition(
               namespace,
