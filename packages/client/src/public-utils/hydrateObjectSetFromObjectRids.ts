@@ -20,10 +20,10 @@ import { additionalContext } from "../Client.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 
 /**
- * Creates an OSDK object set from an object set RID.
+ * Creates an OSDK object set from object RIDs.
  * @param client - An OSDK client.
  * @param definition - An OSDK object or interface definition.
- * @param rids - An array of object rids
+ * @param rids - An array of object RIDs.
  * @returns An OSDK object set.
  */
 export function hydrateObjectSetFromObjectRids<
