@@ -387,6 +387,7 @@ export type {
   ObjectTypePropertyReferencedPropertyMustBeDifferent,
   ObjectTypePropertySecurityGroupReferencesNonExistentProperty,
   ObjectTypePropertySecurityGroupsNotSupportedOnBranches,
+  ObjectTypePropertySecurityGroupsNotSupportedWithMaterializations,
   ObjectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources,
   ObjectTypePropertyTypeDescriptionTooLong,
   ObjectTypePropertyTypeDisplayNameTooLong,
