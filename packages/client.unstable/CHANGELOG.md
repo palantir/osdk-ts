@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.3.0-beta.9
+
+### Minor Changes
+
+- 7d232fb: Added searchable field to interface definitions
+
 ## 2.3.0-beta.8
 
 ## 2.3.0-beta.7
