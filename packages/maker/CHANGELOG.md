@@ -1,5 +1,19 @@
 # @osdk/maker
 
+## 0.11.0-beta.12
+
+### Minor Changes
+
+- 1847bcb: Support arrays in OT props
+- 3ae0cfd: Remove import/dep from codegen
+- 7d232fb: Added searchable field to interface definitions
+- 60b0029: Check extended interfaces when validating object property mapping
+- 0abeec3: Make codegen prettier
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.9
+
 ## 0.11.0-beta.11
 
 ### Patch Changes
