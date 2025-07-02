@@ -37,6 +37,7 @@ export class FauxFoundry {
   readonly baseUrl: string;
   readonly defaultOntologyRid: any;
   readonly logger: Logger | undefined;
+  strict: boolean;
 
   constructor(
     baseUrl: string,
@@ -46,8 +47,9 @@ export class FauxFoundry {
       description: "The default ontology",
       rid: `ri.ontology.main.ontology.${crypto.randomUUID()}`,
     },
-    { logger }: { logger?: Logger } = {},
+    { logger, strict }: { logger?: Logger; strict?: boolean } = {},
   ) {
+    this.strict = strict ?? true;
     this.baseUrl = baseUrl;
     this.#handlers = createFauxFoundryHandlers(baseUrl, this);
     this.createOntology(defaultOntology);
@@ -113,7 +115,7 @@ export class FauxFoundry {
     const ontology = this.getOntology(ontologyApiNameOrRid); // will throw
     const dataStore = this.#dataStoresByOntologyApiName.get(ontology.apiName);
     if (!dataStore) {
-      const ret = new FauxDataStore(ontology, this.attachments);
+      const ret = new FauxDataStore(ontology, this.attachments, this.strict);
       this.setDataStore(ontologyApiNameOrRid, ret);
       return ret;
     }

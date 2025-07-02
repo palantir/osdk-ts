@@ -131,10 +131,16 @@ export class FauxDataStore {
         return new Map<MediaItemRid, MediaMetadataAndContent>();
       }),
   );
+  #strict: boolean;
 
-  constructor(fauxOntology: FauxOntology, attachments: FauxAttachmentStore) {
+  constructor(
+    fauxOntology: FauxOntology,
+    attachments: FauxAttachmentStore,
+    strict: boolean,
+  ) {
     this.#fauxOntology = fauxOntology;
     this.#attachments = attachments;
+    this.#strict = strict;
   }
 
   /**
@@ -308,8 +314,99 @@ export class FauxDataStore {
   }
 
   replaceObjectOrThrow(x: BaseServerObject): void {
-    this.#assertObjectExists(x.__apiName, x.__primaryKey);
+    const objectType = this.ontology.getObjectTypeFullMetadataOrThrow(
+      x.__apiName,
+    );
+    const oldObject = this.getObjectOrThrow(x.__apiName, x.__primaryKey);
+
+    const linksToUpdate: Array<
+      {
+        srcSide: OntologiesV2.LinkTypeSideV2;
+        srcLocator: ObjectLocator;
+        dstSide: OntologiesV2.LinkTypeSideV2;
+        dstLocator: ObjectLocator;
+      }
+    > = [];
+
+    const linksToRemove: Array<{
+      srcSide: OntologiesV2.LinkTypeSideV2;
+      srcLocator: ObjectLocator;
+      dstSide: OntologiesV2.LinkTypeSideV2;
+      dstLocator: ObjectLocator;
+    }> = [];
+
+    for (const linkDef of objectType.linkTypes) {
+      if (linkDef.cardinality === "ONE") {
+        invariant(
+          this.#strict && linkDef.foreignKeyPropertyApiName,
+          `Error examining ${objectType.objectType.apiName}.${linkDef.apiName}: ONE side of links should have a foreign key. `,
+        );
+
+        const fkName = linkDef.foreignKeyPropertyApiName;
+        const fkValue = x[fkName];
+        const oldFkValue = oldObject[fkName];
+
+        if (oldObject[fkName] !== x[fkName]) {
+          const dstSide = this.ontology.getOtherLinkTypeSideV2OrThrow(
+            objectType.objectType.apiName,
+            linkDef.apiName,
+          );
+          const dstLocator = objectLocator({
+            __apiName: dstSide.objectTypeApiName,
+            __primaryKey: fkValue,
+          });
+
+          const target = this.getObject(dstSide.objectTypeApiName, fkValue);
+
+          if (fkValue != null && !target) {
+            // eslint-disable-next-line no-console
+            console.log(
+              `WARNING! Setting a FK value to a non-existent object: ${dstLocator}`,
+            );
+          }
+
+          if (fkValue != null) {
+            linksToUpdate.push({
+              dstSide,
+              dstLocator,
+              srcSide: linkDef,
+              srcLocator: objectLocator(x),
+            });
+          } else {
+            linksToRemove.push({
+              srcLocator: objectLocator(x),
+              srcSide: linkDef,
+              dstLocator: objectLocator({
+                __apiName: dstSide.objectTypeApiName,
+                __primaryKey: oldFkValue,
+              }),
+              dstSide,
+            });
+          }
+        }
+      }
+    }
+
     this.#objects.get(x.__apiName).set(String(x.__primaryKey), x);
+    for (const { srcSide, srcLocator, dstSide, dstLocator } of linksToUpdate) {
+      this.#updateSingleLinkSide(
+        srcSide,
+        srcLocator,
+        dstSide,
+        dstLocator,
+      );
+      this.#updateSingleLinkSide(
+        dstSide,
+        dstLocator,
+        srcSide,
+        srcLocator,
+      );
+    }
+
+    for (const { srcSide, srcLocator, dstSide, dstLocator } of linksToRemove) {
+      this.#removeSingleSideOfLink(srcLocator, srcSide, dstLocator);
+      this.#removeSingleSideOfLink(dstLocator, dstSide, srcLocator);
+    }
   }
 
   /** Throws if the object does not already exist */
@@ -322,11 +419,14 @@ export class FauxDataStore {
   }
 
   registerLink(
-    src: BaseServerObject,
+    tmpSrc: BaseServerObject,
     srcLinkName: string,
-    dst: BaseServerObject,
+    tmpDst: BaseServerObject,
     destLinkName: string,
   ): void {
+    const src = this.getObjectOrThrow(tmpSrc.__apiName, tmpSrc.__primaryKey);
+    const dst = this.getObjectOrThrow(tmpDst.__apiName, tmpDst.__primaryKey);
+
     const srcLocator = objectLocator(src);
     const dstLocator = objectLocator(dst);
     const [srcSide, dstSide] = this.#fauxOntology.getBothLinkTypeSides(
@@ -343,6 +443,36 @@ export class FauxDataStore {
       dstSide.apiName === destLinkName,
       `Link name mismatch on dst side. Expected ${destLinkName} but found ${dstSide.apiName}`,
     );
+
+    if (this.#strict) {
+      const oneSide = srcSide.cardinality === "ONE"
+        ? { object: src, link: srcSide }
+        : dstSide.cardinality === "ONE"
+        ? { object: dst, link: dstSide }
+        : undefined;
+      const manySide = oneSide
+        ? (srcSide.cardinality === "MANY"
+          ? { object: src, link: srcSide }
+          : { object: dst, link: dstSide })
+        : undefined;
+
+      if (oneSide && manySide) {
+        invariant(
+          oneSide.link.foreignKeyPropertyApiName,
+          `Expected to find a foreignKeyPropertyApiName on the one side: ${oneSide.object.__apiName}.${oneSide.link.apiName}`,
+        );
+
+        const newObj = {
+          ...oneSide.object,
+          [oneSide.link.foreignKeyPropertyApiName]:
+            manySide.object.__primaryKey,
+        };
+
+        // This method call will also do the work to update the sides
+        this.replaceObjectOrThrow(newObj);
+        return;
+      }
+    }
 
     this.#updateSingleLinkSide(
       srcSide,
@@ -376,6 +506,31 @@ export class FauxDataStore {
       dstSide.apiName === dstLinkName,
       `Link name mismatch on dst side. Expected ${dstLinkName} but found ${dstSide.apiName}`,
     );
+
+    if (this.#strict) {
+      const { oneSide, manySide } = extractOneManySide(
+        srcSide,
+        src,
+        dstSide,
+        dst,
+      );
+
+      if (oneSide && manySide) {
+        invariant(
+          oneSide.link.foreignKeyPropertyApiName,
+          `Expected to find a foreignKeyPropertyApiName on the one side: ${oneSide.object.__apiName}.${oneSide.link.apiName}`,
+        );
+
+        const newObj = {
+          ...oneSide.object,
+          [oneSide.link.foreignKeyPropertyApiName]: undefined,
+        };
+
+        // This method call will also do the work to update the sides
+        this.replaceObjectOrThrow(newObj);
+        return;
+      }
+    }
 
     this.#removeSingleSideOfLink(srcLocator, srcSide, dstLocator);
     this.#removeSingleSideOfLink(dstLocator, dstSide, srcLocator);
@@ -850,4 +1005,22 @@ export class FauxDataStore {
       },
     };
   }
+}
+function extractOneManySide(
+  srcSide: OntologiesV2.LinkTypeSideV2,
+  src: BaseServerObject,
+  dstSide: OntologiesV2.LinkTypeSideV2,
+  dst: BaseServerObject,
+) {
+  const oneSide = srcSide.cardinality === "ONE"
+    ? { object: src, link: srcSide }
+    : dstSide.cardinality === "ONE"
+    ? { object: dst, link: dstSide }
+    : undefined;
+  const manySide = oneSide
+    ? (srcSide.cardinality === "MANY"
+      ? { object: src, link: srcSide }
+      : { object: dst, link: dstSide })
+    : undefined;
+  return { oneSide, manySide };
 }
