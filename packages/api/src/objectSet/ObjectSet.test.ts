@@ -68,6 +68,9 @@ export function createMockObjectSet<
     pivotTo: vi.fn(() => {
       return fauxObjectSet;
     }),
+    nearestNeighbors: vi.fn(() => {
+      return fauxObjectSet;
+    }),
   } as any as $ObjectSet<Q>;
 
   return fauxObjectSet;
@@ -169,6 +172,8 @@ describe("ObjectSet", () => {
             "performanceScore",
             "mediaReference",
             "lastUpdated",
+            "skillSet",
+            "skillSetEmbedding",
           ],
         });
 
@@ -197,6 +202,8 @@ describe("ObjectSet", () => {
             "performanceScore",
             "mediaReference",
             "lastUpdated",
+            "skillSet",
+            "skillSetEmbedding",
           ],
         });
     });
@@ -552,6 +559,8 @@ describe("ObjectSet", () => {
             "hourlyRate",
             "dateOfJoining",
             "lastUpdated",
+            "skillSet",
+            "skillSetEmbedding",
           ],
         });
 
@@ -1292,6 +1301,53 @@ describe("ObjectSet", () => {
       });
 
       // it("allows correctly typed property keys off the base OT", () => {});
+    });
+  });
+
+  describe("nearestNeighbors", () => {
+    it("has correct nearest neighbors object set query return type", () => {
+      const nearestNeighborsObjectSet = fauxObjectSet.nearestNeighbors(
+        "textQuery",
+        3,
+        "skillSetEmbedding",
+      );
+      expectTypeOf(nearestNeighborsObjectSet).toEqualTypeOf<
+        $ObjectSet<EmployeeApiTest>
+      >();
+    });
+
+    it("allows text queries", async () => {
+      const nearestNeighborsObjectSet = fauxObjectSet.nearestNeighbors(
+        "textQuery",
+        3,
+        "skillSetEmbedding",
+      );
+      const { data: employees } = await nearestNeighborsObjectSet.fetchPage();
+      expectTypeOf(employees).toEqualTypeOf<
+        Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>>[]
+      >();
+    });
+
+    it("allows vector queries", async () => {
+      const vectorQuery = Array.from({ length: 1536 }, () => 0.3);
+      const nearestNeighborsObjectSet = fauxObjectSet.nearestNeighbors(
+        vectorQuery,
+        3,
+        "skillSetEmbedding",
+      );
+      const { data: employees } = await nearestNeighborsObjectSet.fetchPage();
+      expectTypeOf(employees).toEqualTypeOf<
+        Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>>[]
+      >();
+    });
+
+    it("only supports queries on vector properties", () => {
+      fauxObjectSet.nearestNeighbors(
+        "textQuery",
+        3,
+        // @ts-expect-error
+        "skillSet",
+      );
     });
   });
 });
