@@ -204,13 +204,3 @@ async function fullMetadataToOsdk(
     throw error;
   }
 }
-
-async function compileOsdk() {
-  const { stdout, stderr, exitCode } = await execa("pnpm", [
-    "exec",
-    "tsc",
-  ], {
-    cwd: ".osdk",
-  });
-  return exitCode;
-}
