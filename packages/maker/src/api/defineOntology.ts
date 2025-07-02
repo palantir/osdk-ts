@@ -483,7 +483,7 @@ function convertObject(
         interfaceTypeApiName: impl.implements.apiName,
         properties: Object.fromEntries(
           impl.propertyMapping.map(
-            mapping => [mapping.interfaceProperty, {
+            mapping => [addNamespaceIfNone(mapping.interfaceProperty), {
               propertyTypeRid: mapping.mapsTo,
             }],
           ),
@@ -1255,4 +1255,8 @@ import { addDependency } from "@osdk/maker";
 
 addDependency("${namespaceNoDot}", fileURLToPath(import.meta.url));
 `;
+}
+
+export function addNamespaceIfNone(apiName: string): string {
+  return apiName.includes(".") ? apiName : namespace + apiName;
 }

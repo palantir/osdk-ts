@@ -16,6 +16,7 @@
 
 import invariant from "tiny-invariant";
 import {
+  addNamespaceIfNone,
   namespace,
   ontologyDefinition,
   updateOntology,
@@ -119,7 +120,8 @@ export function defineObject(
     const nonExistentInterfaceProperties: ValidationResult[] = interfaceImpl
       .propertyMapping.map(val => val.interfaceProperty).filter(
         interfaceProperty =>
-          allInterfaceProperties[interfaceProperty] === undefined,
+          allInterfaceProperties[addNamespaceIfNone(interfaceProperty)]
+            === undefined,
       ).map(interfaceProp => ({
         type: "invalid",
         reason:
@@ -128,7 +130,10 @@ export function defineObject(
 
     const interfaceToObjectProperties = Object.fromEntries(
       interfaceImpl.propertyMapping.map(
-        mapping => [mapping.interfaceProperty, mapping.mapsTo],
+        mapping => [
+          addNamespaceIfNone(mapping.interfaceProperty),
+          mapping.mapsTo,
+        ],
       ),
     );
     const validateProperty = (

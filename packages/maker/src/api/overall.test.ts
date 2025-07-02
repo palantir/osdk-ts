@@ -1775,7 +1775,7 @@ describe("Ontology Defining", () => {
         implementsInterfaces: [{
           implements: sample,
           propertyMapping: [{
-            interfaceProperty: "com.palantir.foo",
+            interfaceProperty: "foo",
             mapsTo: "bar",
           }],
         }],
