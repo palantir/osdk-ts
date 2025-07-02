@@ -16,11 +16,10 @@
 
 import invariant from "tiny-invariant";
 import {
-  extractNamespace,
+  addNamespaceIfNone,
   namespace,
   ontologyDefinition,
   updateOntology,
-  withoutNamespace,
 } from "./defineOntology.js";
 import type {
   InterfacePropertyType,
@@ -115,29 +114,33 @@ export function defineObject(
   );
 
   objectDef.implementsInterfaces?.forEach(interfaceImpl => {
-    const allInterfaceProperties = getAllInterfacePropertiesNoNamespace(
+    const allInterfaceProperties = getAllInterfaceProperties(
       interfaceImpl.implements,
     );
     const nonExistentInterfaceProperties: ValidationResult[] = interfaceImpl
       .propertyMapping.map(val => val.interfaceProperty).filter(
         interfaceProperty =>
-          allInterfaceProperties[interfaceProperty] === undefined,
+          allInterfaceProperties[addNamespaceIfNone(interfaceProperty)]
+            === undefined,
       ).map(interfaceProp => ({
         type: "invalid",
         reason:
-          `Interface property ${interfaceImpl.implements.apiName}.${interfaceProp} referenced in ${objectDef.apiName} object does not exist`,
+          `Interface property ${interfaceProp} referenced in ${objectDef.apiName} object does not exist`,
       }));
 
     const interfaceToObjectProperties = Object.fromEntries(
       interfaceImpl.propertyMapping.map(
-        mapping => [mapping.interfaceProperty, mapping.mapsTo],
+        mapping => [
+          addNamespaceIfNone(mapping.interfaceProperty),
+          mapping.mapsTo,
+        ],
       ),
     );
     const validateProperty = (
       interfaceProp: [string, InterfacePropertyType],
     ): ValidationResult => {
       if (
-        interfaceProp[1].sharedPropertyType.nonNameSpacedApiName
+        interfaceProp[1].sharedPropertyType.apiName
           in interfaceToObjectProperties
       ) {
         return validateInterfaceImplProperty(
@@ -148,36 +151,21 @@ export function defineObject(
       }
       return {
         type: "invalid",
-        reason: `Interface property ${interfaceImpl.implements.apiName}.${
-          interfaceProp[1].sharedPropertyType.nonNameSpacedApiName
+        reason: `Interface property ${
+          interfaceProp[1].sharedPropertyType.apiName
         } not implemented by ${objectDef.apiName} object definition`,
       };
     };
-    const baseValidations = Object.entries(
-      interfaceImpl.implements.propertiesV2,
-    )
-      .map<ValidationResult>(validateProperty);
-    const extendsValidations = interfaceImpl.implements.extendsInterfaces
-      .flatMap(interfaceType =>
-        Object.entries(interfaceType.propertiesV2).map(validateProperty)
-      );
-
-    const allFailedValidations = baseValidations.concat(
-      extendsValidations,
+    const validations = Object.entries(
+      getAllInterfaceProperties(interfaceImpl.implements),
+    ).map(validateProperty);
+    const allFailedValidations = validations.concat(
       nonExistentInterfaceProperties,
     ).filter(val => val.type === "invalid");
     invariant(
       allFailedValidations.length === 0,
       "\n" + allFailedValidations.map(formatValidationErrors).join("\n"),
     );
-
-    interfaceImpl.propertyMapping = interfaceImpl.propertyMapping.map((
-      mapping,
-    ) => ({
-      interfaceProperty: extractNamespace(interfaceImpl.implements.apiName)
-        + mapping.interfaceProperty,
-      mapsTo: mapping.mapsTo,
-    }));
   });
 
   const finalObject: ObjectType = {
@@ -254,18 +242,12 @@ export function convertToPluralDisplayName(
     : convertToDisplayName(s) + "s";
 }
 
-function getAllInterfacePropertiesNoNamespace(
+export function getAllInterfaceProperties(
   interfaceType: InterfaceType,
 ): Record<string, InterfacePropertyType> {
-  const localProperties = Object.fromEntries(
-    Object.entries(interfaceType.propertiesV2).map(([apiName, property]) => [
-      withoutNamespace(apiName),
-      property,
-    ]),
-  );
-
-  return interfaceType.extendsInterfaces.reduce(
-    (acc, ext) => ({ ...getAllInterfacePropertiesNoNamespace(ext), ...acc }),
-    localProperties,
-  );
+  let properties = interfaceType.propertiesV2;
+  interfaceType.extendsInterfaces.forEach(ext => {
+    properties = { ...properties, ...getAllInterfaceProperties(ext) };
+  });
+  return properties;
 }
