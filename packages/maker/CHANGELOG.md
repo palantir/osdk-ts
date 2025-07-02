@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.11.0-beta.13
+
+### Minor Changes
+
+- 402aa94: Use namespaced api names for interface properties
+
 ## 0.11.0-beta.12
 
 ### Minor Changes
