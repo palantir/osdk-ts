@@ -6165,189 +6165,28 @@ describe("Ontology Defining", () => {
     });
 
     it("Actions with group permissions are properly defined", () => {
-      const color = "#13C9BA"; // turquoise4
-
-      const materielId = defineSharedPropertyType({
-        apiName: "materielId",
-        description:
-          "[Palantir Defense Ontology] A string property type which captures materiel ID.",
-        displayName: "Materiel Id",
-        type: "string",
-      });
-
-      const materielIdType = defineSharedPropertyType({
-        apiName: "materielIdType",
-        description:
-          "[Palantir Defense Ontology] A string property type which captures the materiel ID type (e.g., NSN).",
-        displayName: "Materiel Id Type",
-        type: "string",
-      });
-
-      const materielName = defineSharedPropertyType({
-        apiName: "materielName",
-        description:
-          "[Palantir Defense Ontology] A string property type which captures the name of a materiel.",
-        displayName: "Materiel Name",
-        type: "string",
-      });
-
-      const materielTaxonomyIds = defineSharedPropertyType({
-        apiName: "materielTaxonomyIds",
-        array: true,
-        description:
-          "[Palantir Defense Ontology] An array of strings used to capture materiel taxonomy IDs.",
-        displayName: "Materiel Taxonomy Ids",
-        type: "string",
-      });
-
-      const testStructLocation = defineSharedPropertyType({
-        apiName: "testStructLocation",
-        displayName: "Test Struct Location",
-        type: {
-          type: "struct",
-          structDefinition: {
-            lat: "double",
-            lng: "double",
-          },
-        },
-      });
-
-      const jcTestValueType = defineValueType({
-        apiName: "jcTestValueType",
-        displayName: "jc Test Value Type",
-        description: "jc Test Value Type",
-        type: {
-          type: "string",
-          constraints: [
-            {
-              constraint: {
-                type: "oneOf",
-                oneOf: {
-                  values: [
-                    "jc1",
-                    "jc2",
-                    "jc3",
-                  ],
-                  useIgnoreCase: true,
-                },
-              },
-            },
-          ],
-        },
-        version: "1.0.0",
-      });
-
-      const testValueType = defineSharedPropertyType({
-        apiName: "testValueType",
-        displayName: "Test Value Type",
-        description: "Test Value Type",
-        type: "string",
-        valueType: jcTestValueType,
-      });
-
-      const materielInterface = defineInterface({
-        apiName: "materielInterface",
-        displayName: "Materiel",
-        description:
-          "[Palantir Defense Ontology] Represents a specific instance of equipment, supply, or other materiel used in military operations.",
-        status: { type: "experimental" },
-        icon: { color: color, locator: "waves" },
-        properties: {
-          materielId: materielId,
-          materielIdType: materielIdType,
-          materielName: materielName,
-          materielTaxonomyIds: materielTaxonomyIds,
-          testStructLocation: testStructLocation, // -- uncomment --> materielId SPT already exists invariant error
-          testValueType: testValueType, // -- uncomment --> materielId SPT already exists invariant error
-        },
-      });
-
-      const materiel = defineObject({
-        apiName: "materiel",
+      const sampleObject = defineObject({
+        apiName: "sampleObject",
+        displayName: "Test Object",
+        description: "Sample object description",
         primaryKeyPropertyApiName: "id",
-        titlePropertyApiName: "id",
-        displayName: "Materiel",
-        pluralDisplayName: "Materiel",
-        status: "experimental",
-        description:
-          "[Defense Ontology] Notional implementation of a specific instance of equipment, supply, or other materiel used in military operations.",
-        icon: { color: color, locator: "waves" },
-        visibility: "NORMAL",
-        editsEnabled: true,
-        properties: [
-          {
-            apiName: "id",
-            type: "string",
-            description: "Unique identifier for the materiel",
-            displayName: "Id",
-            status: "experimental",
-          },
-          {
-            apiName: "materielIdType",
-            type: "string",
-            description:
-              "A string property type which captures the materiel ID type (e.g., NSN).",
-            displayName: "Materiel Id Type",
-            status: "experimental",
-          },
-          {
-            apiName: "materielName",
-            type: "string",
-            description:
-              "A string property type which captures the name of a materiel.",
-            displayName: "Materiel Name",
-            status: "experimental",
-          },
-          {
-            apiName: "materielTaxonomyIds",
-            type: "string",
-            array: true,
-            description:
-              "An array of strings used to capture materiel taxonomy IDs.",
-            displayName: "Materiel Taxonomy Ids",
-            status: "experimental",
-          },
-          {
-            apiName: "testStructLocation",
-            type: {
-              type: "struct",
-              structDefinition: {
-                lat: "double",
-                lng: "double",
-              },
-            },
-            description:
-              "A struct property type that captures a location with latitude and longitude.",
-            displayName: "Test Struct Location",
-            status: "experimental",
-          },
-          {
-            apiName: "testValueType",
-            type: "string",
-            valueType: jcTestValueType,
-            description:
-              "A string property type that uses a custom value type for testing purposes.",
-            displayName: "Test Value Type",
-            status: "experimental",
-          },
-        ],
-        implementsInterfaces: [{
-          implements: materielInterface,
-          propertyMapping: [
-            { interfaceProperty: "materielId", mapsTo: "id" },
-            { interfaceProperty: "materielIdType", mapsTo: "materielIdType" },
-            { interfaceProperty: "materielName", mapsTo: "materielName" },
-            {
-              interfaceProperty: "materielTaxonomyIds",
-              mapsTo: "materielTaxonomyIds",
-            },
-            {
-              interfaceProperty: "testStructLocation",
-              mapsTo: "testStructLocation",
-            },
-            { interfaceProperty: "testValueType", mapsTo: "testValueType" },
-          ],
+        pluralDisplayName: "tests",
+        titlePropertyApiName: "name",
+        properties: [{
+          apiName: "name",
+          type: "string",
+          displayName: "Name",
+          description: "The name of the test object",
+        }, {
+          apiName: "id",
+          type: "string",
+          displayName: "ID",
+          description: "The ID of the test object",
         }],
+      });
+      const createAction = defineCreateObjectAction(sampleObject, {
+        type: "group",
+        name: "testGroup",
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
