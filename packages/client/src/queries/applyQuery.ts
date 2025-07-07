@@ -294,10 +294,14 @@ async function getRequiredDefinitions(
     }
 
     case "map": {
-      for (const value of [dataType.keyType, dataType.valueType]) {
-        for (
-          const [type, objectDef] of await getRequiredDefinitions(value, client)
-        ) {
+      const types = [dataType.keyType, dataType.valueType];
+
+      const allDefs = await Promise.all(
+        types.map(value => getRequiredDefinitions(value, client)),
+      );
+
+      for (const defs of allDefs) {
+        for (const [type, objectDef] of defs) {
           result.set(type, objectDef);
         }
       }
@@ -305,10 +309,14 @@ async function getRequiredDefinitions(
     }
 
     case "struct": {
-      for (const value of Object.values(dataType.struct)) {
-        for (
-          const [type, objectDef] of await getRequiredDefinitions(value, client)
-        ) {
+      const structValues = Object.values(dataType.struct);
+
+      const allDefs = await Promise.all(
+        structValues.map(value => getRequiredDefinitions(value, client)),
+      );
+
+      for (const defs of allDefs) {
+        for (const [type, objectDef] of defs) {
           result.set(type, objectDef);
         }
       }
