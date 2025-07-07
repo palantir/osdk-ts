@@ -28,8 +28,12 @@ import type {
   OntologyIrType,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
+import * as ts from "typescript";
+import * as path from "path";
 import { hash } from "node:crypto";
 import type { ApiName } from "./ApiName.js";
+import { FunctionDiscoverer } from "@foundry/functions-typescript-osdk-discovery";
+import { IDataType } from "@palantir/function-registry-api/functions-api-types/dataType.js";
 
 /**
  * TypeScript equivalent of OntologyIrToFullMetadataConverter.java
@@ -68,6 +72,86 @@ export class OntologyIrToFullMetadataConverter {
       },
     };
   }
+
+  static getFullMetadataFromFunction(
+    filePath: string,
+    apiName: string,
+    rid: string,
+    version: string,
+  ): any {
+    const srcDir = "/Volumes/git/osdk-ts/packages/generator-converters.ontologyir/src";
+    const tsConfigFilePath = path.join(srcDir, "tsconfig.json");
+    const program = this.createProgram(tsConfigFilePath, srcDir);
+    const entryPointPath = path.join(srcDir, "index.ts");
+    const fullFilePath = path.join(srcDir, filePath);
+    
+    // Initialize FunctionDiscoverer with the program
+    const fd = new FunctionDiscoverer(program, entryPointPath, fullFilePath);
+    
+    // Discover functions using the provided filePath as the functionsDirectoryPath
+    const functions = fd.discover();
+
+    functions.discoveredFunctions.forEach((func) => {
+      const queryType: Ontologies.QueryTypeV2 = {
+        apiName: apiName,
+        rid: rid,
+        version: version,
+        parameters: func.inputs.reduce((acc, input) => {
+          acc[input.name] = {
+            dataType: this.convertDataType(input.dataType),
+          };
+          return acc;
+        }, {} as Record<ApiName, Ontologies.QueryParameterV2>),
+        output: this.convertDataType(func.output.single.dataType),
+      };  
+    });
+
+    return functions;
+  }
+
+  static convertDataType(dataType: IDataType): Ontologies.QueryDataType {
+    switch (dataType.type) {
+      case "string":
+        return { type: "string" };
+      case "boolean":
+        return { type: "boolean" };
+      case "integer":
+        return { type: "integer" };
+      case "long":
+        return { type: "long" };
+      case "float":
+        return { type: "float" };
+      case "double":
+        return { type: "double" };
+      case "date":
+        return { type: "date" };
+      case "timestamp":
+        return { type: "timestamp" };
+      case "attachment":
+        return { type: "attachment" };
+      case "set":
+        return { type: "set", subType: this.convertDataType(dataType.set.elementsType) };
+      case "objectSet":
+        return { type: "objectSet", objectApiName: dataType.objectSet.objectTypeId };
+      case "list":
+        return { type: "array", subType: this.convertDataType(dataType.list.elementsType) };
+      case "functionCustomType":
+        return { type: "object", objectApiName: dataType.functionCustomType, objectTypeApiName: dataType.functionCustomType };
+      case "object":
+        return { type: "object", objectApiName: dataType.object.objectTypeId, objectTypeApiName: dataType.object.objectTypeId };
+      default:
+        console.log(dataType.type);
+        throw new Error(`Unsupported data type: ${dataType.type}`);
+    }
+  }
+  
+
+  static createProgram(tsConfigFilePath: string, projectDir: string): ts.Program {
+    const { config } = ts.readConfigFile(tsConfigFilePath, ts.sys.readFile);
+    const { options, fileNames, errors } = ts.parseJsonConfigFileContent(config, ts.sys, projectDir);
+    return ts.createProgram({ options, rootNames: fileNames, configFileParsingDiagnostics: errors });
+  }
+
 
   /**
    * Convert IR object types to OSDK format

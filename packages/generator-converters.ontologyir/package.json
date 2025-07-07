@@ -43,15 +43,17 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@foundry/functions-typescript-osdk-discovery": "file:/Users/ethana/Downloads/foundry-functions-typescript-osdk-discovery-0.52.0.tgz",
     "@osdk/client.unstable": "workspace:~",
-    "@osdk/foundry.ontologies": "2.24.0"
+    "@osdk/foundry.ontologies": "2.24.0",
+    "@palantir/function-registry-api": "file:/Users/ethana/Downloads/function-registry-api-503.600.0.tgz"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/node": "^24.0.3",
     "ts-expect": "^1.3.0",
-    "typescript": "~5.5.4",
+    "typescript": "~5.7.3",
     "vitest": "^3.0.5"
   },
   "publishConfig": {
