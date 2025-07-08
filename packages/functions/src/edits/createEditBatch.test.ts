@@ -88,6 +88,10 @@ describe(createEditBatch, () => {
       $primaryKey: 1,
     });
     editBatch.link(taskInstance, "Todos", { $apiName: "Todo", $primaryKey: 0 });
+    editBatch.link(taskInstance, "Todos", [
+      { $apiName: "Todo", $primaryKey: 1 },
+      { $apiName: "Todo", $primaryKey: 2 },
+    ]);
     editBatch.unlink({ $apiName: "Task", $primaryKey: 2 }, "Todos", {
       $apiName: "Todo",
       $primaryKey: 0,
@@ -96,7 +100,7 @@ describe(createEditBatch, () => {
     editBatch.unlink(
       { $apiName: "Office", $primaryKey: "2" },
       "occupants",
-      employeeInstance,
+      [employeeInstance, { $apiName: "Employee", $primaryKey: 3 }],
     );
 
     expect(editBatch.getEdits()).toEqual([
@@ -178,6 +182,18 @@ describe(createEditBatch, () => {
         target: { $apiName: "Todo", $primaryKey: 0 },
       },
       {
+        type: "addLink",
+        apiName: "Todos",
+        source: { $apiName: "Task", $primaryKey: 2 },
+        target: { $apiName: "Todo", $primaryKey: 1 },
+      },
+      {
+        type: "addLink",
+        apiName: "Todos",
+        source: { $apiName: "Task", $primaryKey: 2 },
+        target: { $apiName: "Todo", $primaryKey: 2 },
+      },
+      {
         type: "removeLink",
         apiName: "Todos",
         source: { $apiName: "Task", $primaryKey: 2 },
@@ -195,12 +211,25 @@ describe(createEditBatch, () => {
         source: { $apiName: "Office", $primaryKey: "2" },
         target: { $apiName: "Employee", $primaryKey: 2 },
       },
+      {
+        type: "removeLink",
+        apiName: "occupants",
+        source: { $apiName: "Office", $primaryKey: "2" },
+        target: { $apiName: "Employee", $primaryKey: 3 },
+      },
     ]);
   });
 
   it("prevents bad link edits", () => {
     // @ts-expect-error
     editBatch.link(taskInstance, "RP", officeInstance); // Linking to Office instead of Person
+
+    editBatch.link(
+      taskInstance,
+      "RP",
+      // @ts-expect-error
+      [personInstance],
+    ); // Using list for non-multiplicity link
 
     editBatch.link(
       { $apiName: "Task", $primaryKey: 2 },
@@ -226,6 +255,13 @@ describe(createEditBatch, () => {
   it("prevents bad unlink edits", () => {
     // @ts-expect-error
     editBatch.unlink(taskInstance, "RP", officeInstance); // Unlinking Office instead of Person
+
+    editBatch.unlink(
+      taskInstance,
+      "RP",
+      // @ts-expect-error
+      [personInstance],
+    ); // Using list for non-multiplicity link
 
     editBatch.unlink(
       { $apiName: "Task", $primaryKey: 2 },
