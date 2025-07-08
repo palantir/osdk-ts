@@ -26,7 +26,7 @@ import type {
 } from "./types.js";
 
 // Helper type for literal "apiName" values without resorting to expensive type inference.
-export interface ObjectTypeDefinitionForLocator<OL extends ObjectLocator<any>>
+interface ObjectTypeDefinitionForLocator<OL extends ObjectLocator<any>>
   extends ObjectTypeDefinition
 {
   apiName: OL["$apiName"];
