@@ -302,7 +302,7 @@ function convertToWireImportedTypes(
       apiName: i.interfaceType.apiName,
       displayName: i.interfaceType.displayMetadata.displayName,
       description: i.interfaceType.displayMetadata.description,
-      properties: Object.values(i.interfaceType.allPropertiesV2).map(p => ({
+      properties: Object.values(i.interfaceType.propertiesV2).map(p => ({
         apiName: p.sharedPropertyType.apiName,
         displayName: p.sharedPropertyType.displayMetadata.displayName,
         description: p.sharedPropertyType.displayMetadata.description,
