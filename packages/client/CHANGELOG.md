@@ -1,5 +1,20 @@
 # @osdk/client
 
+## 2.3.0-beta.10
+
+### Minor Changes
+
+- 991dbd4: Async function metadata
+- 266b756: Add consistency for async iter calls.
+- 8d69555: Add hydrateObjectSetFromObjectRids util.
+
+### Patch Changes
+
+- Updated dependencies [0cc9cad]
+  - @osdk/client.unstable@2.3.0-beta.10
+  - @osdk/api@2.3.0-beta.10
+  - @osdk/generator-converters@2.3.0-beta.10
+
 ## 2.3.0-beta.9
 
 ### Minor Changes

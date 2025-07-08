@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.11.0-beta.14
+
+### Minor Changes
+
+- 79cb6eb: Fix imported interface properties in IR
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.10
+
 ## 0.11.0-beta.13
 
 ### Minor Changes
