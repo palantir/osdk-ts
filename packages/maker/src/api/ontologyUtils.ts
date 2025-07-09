@@ -18,6 +18,7 @@ import type {
   OntologyIrCondition,
   OntologyIrConditionalOverride,
   OntologyIrParameterValidationBlockOverride,
+  ParameterVisibility,
 } from "@osdk/client.unstable";
 
 import type {
@@ -26,14 +27,31 @@ import type {
   ConditionDefinition,
 } from "./types.js";
 
-export function convertVisibility(
+export function convertActionVisibility(
   visibility: "editable" | "disabled" | "hidden" | undefined,
-): any {
-  const vis = visibility ?? "editable";
-  return {
-    type: vis,
-    [vis]: {},
-  };
+): ParameterVisibility {
+  switch (visibility) {
+    case "editable":
+      return {
+        type: "editable",
+        editable: {},
+      };
+    case "disabled":
+      return {
+        type: "disabled",
+        disabled: {},
+      };
+    case "hidden":
+      return {
+        type: "hidden",
+        hidden: {},
+      };
+    default:
+      return {
+        type: "editable",
+        editable: {},
+      };
+  }
 }
 
 export function convertActionParameterConditionalOverride(

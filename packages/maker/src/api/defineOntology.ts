@@ -52,7 +52,7 @@ import invariant from "tiny-invariant";
 import { isExotic } from "./defineObject.js";
 import {
   convertActionParameterConditionalOverride,
-  convertVisibility,
+  convertActionVisibility,
 } from "./ontologyUtils.js";
 import {
   convertNullabilityToDataConstraint,
@@ -978,7 +978,9 @@ function convertActionValidation(
             defaultValidation: {
               display: {
                 renderHint: renderHintFromBaseType(p),
-                visibility: convertVisibility(p.validation.defaultVisibility),
+                visibility: convertActionVisibility(
+                  p.validation.defaultVisibility,
+                ),
               },
               validation: {
                 allowedValues: extractAllowedValues(p),

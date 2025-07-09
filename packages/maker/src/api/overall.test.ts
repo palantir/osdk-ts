@@ -6881,39 +6881,34 @@ describe("Ontology Defining", () => {
           typeClasses: [],
         },
         condition: {
-          type: "and",
-          conditions: [
-            {
-              type: "comparison",
-              comparison: {
-                operator: "INTERSECTS",
-                left: {
-                  type: "userProperty",
-                  userProperty: {
-                    userId: {
-                      type: "currentUser",
-                      currentUser: {},
-                    },
-                    propertyValue: {
-                      type: "organizationMarkingIds",
-                      organizationMarkingIds: {},
-                    },
-                  },
+          type: "comparison",
+          comparison: {
+            operator: "INTERSECTS",
+            left: {
+              type: "userProperty",
+              userProperty: {
+                userId: {
+                  type: "currentUser",
+                  currentUser: {},
                 },
-                right: {
-                  type: "staticValue",
-                  staticValue: {
-                    type: "stringList",
-                    stringList: {
-                      strings: [
-                        "87ef507e-f954-457e-ad68-e0df71ef7567",
-                      ],
-                    },
-                  },
+                propertyValue: {
+                  type: "organizationMarkingIds",
+                  organizationMarkingIds: {},
                 },
               },
             },
-          ],
+            right: {
+              type: "staticValue",
+              staticValue: {
+                type: "stringList",
+                stringList: {
+                  strings: [
+                    "87ef507e-f954-457e-ad68-e0df71ef7567",
+                  ],
+                },
+              },
+            },
+          },
         },
       });
 
@@ -6950,41 +6945,34 @@ describe("Ontology Defining", () => {
                         "rules": {
                           "0": {
                             "condition": {
-                              "and": {
-                                "conditions": [
-                                  {
-                                    "comparison": {
-                                      "left": {
-                                        "type": "userProperty",
-                                        "userProperty": {
-                                          "propertyValue": {
-                                            "organizationMarkingIds": {},
-                                            "type": "organizationMarkingIds",
-                                          },
-                                          "userId": {
-                                            "currentUser": {},
-                                            "type": "currentUser",
-                                          },
-                                        },
-                                      },
-                                      "operator": "INTERSECTS",
-                                      "right": {
-                                        "staticValue": {
-                                          "stringList": {
-                                            "strings": [
-                                              "87ef507e-f954-457e-ad68-e0df71ef7567",
-                                            ],
-                                          },
-                                          "type": "stringList",
-                                        },
-                                        "type": "staticValue",
-                                      },
+                              "comparison": {
+                                "left": {
+                                  "type": "userProperty",
+                                  "userProperty": {
+                                    "propertyValue": {
+                                      "organizationMarkingIds": {},
+                                      "type": "organizationMarkingIds",
                                     },
-                                    "type": "comparison",
+                                    "userId": {
+                                      "currentUser": {},
+                                      "type": "currentUser",
+                                    },
                                   },
-                                ],
+                                },
+                                "operator": "INTERSECTS",
+                                "right": {
+                                  "staticValue": {
+                                    "stringList": {
+                                      "strings": [
+                                        "87ef507e-f954-457e-ad68-e0df71ef7567",
+                                      ],
+                                    },
+                                    "type": "stringList",
+                                  },
+                                  "type": "staticValue",
+                                },
                               },
-                              "type": "and",
+                              "type": "comparison",
                             },
                             "displayMetadata": {
                               "failureMessage": "Insufficient permissions. Missing organization membership required to submit action",
