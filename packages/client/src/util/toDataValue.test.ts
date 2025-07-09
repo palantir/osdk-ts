@@ -269,7 +269,11 @@ describe(toDataValue, () => {
   });
 
   it("Converts CLEAR_DATA to null", async () => {
-    const converted = await toDataValue(CLEAR_DATA, clientCtx);
+    const converted = await toDataValue(
+      CLEAR_DATA,
+      clientCtx,
+      mockActionMetadata,
+    );
     expect(converted).toBeNull();
   });
 
@@ -277,7 +281,11 @@ describe(toDataValue, () => {
     const clearData = Symbol.for("CLEAR_DATA") as symbol & {
       __type: "CLEAR_DATA";
     };
-    const converted = await toDataValue(clearData, clientCtx);
+    const converted = await toDataValue(
+      clearData,
+      clientCtx,
+      mockActionMetadata,
+    );
     expect(converted).toEqual(null);
   });
 });
