@@ -4183,144 +4183,145 @@ describe("Ontology Defining", () => {
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
-      {
-        "blockData": {
-          "actionTypes": {
-            "com.palantir.foo": {
-              "actionType": {
-                "actionTypeLogic": {
-                  "logic": {
-                    "rules": [
-                      {
-                        "addInterfaceRule": {
-                          "interfaceApiName": "com.palantir.foo",
-                          "objectTypeParameter": "param1",
-                          "sharedPropertyValues": {},
-                        },
-                        "type": "addInterfaceRule",
-                      },
-                    ],
-                  },
-                  "validation": {
-                    "actionTypeLevelValidation": {
-                      "rules": {
-                        "0": {
-                          "condition": {
-                            "true": {},
-                            "type": "true",
+        {
+          "blockData": {
+            "actionTypes": {
+              "com.palantir.foo": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "addInterfaceRule": {
+                            "interfaceApiName": "com.palantir.foo",
+                            "objectTypeParameter": "param1",
+                            "sharedPropertyValues": {},
                           },
-                          "displayMetadata": {
-                            "failureMessage": "",
-                            "typeClasses": [],
-                          },
+                          "type": "addInterfaceRule",
                         },
-                      },
+                      ],
                     },
-                    "parameterValidations": {
-                      "param1": {
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "checkbox": {},
-                              "type": "checkbox",
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
                             },
-                            "visibility": {
-                              "editable": {},
-                              "type": "editable",
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
                             },
                           },
-                          "validation": {
-                            "allowedValues": {
-                              "boolean": {
-                                "boolean": {},
+                        },
+                      },
+                      "parameterValidations": {
+                        "param1": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "checkbox": {},
+                                "type": "checkbox",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "boolean": {
+                                  "boolean": {},
+                                  "type": "boolean",
+                                },
                                 "type": "boolean",
                               },
-                              "type": "boolean",
-                            },
-                            "required": {
-                              "required": {},
-                              "type": "required",
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
                             },
                           },
                         },
                       },
                     },
                   },
-                },
-                "metadata": {
-                  "apiName": "com.palantir.foo",
-                  "displayMetadata": {
-                    "configuration": {
-                      "defaultLayout": "FORM",
-                      "displayAndFormat": {
-                        "table": {
-                          "columnWidthByParameterRid": {},
-                          "enableFileImport": true,
-                          "fitHorizontally": false,
-                          "frozenColumnCount": 0,
-                          "rowHeightInLines": 1,
+                  "metadata": {
+                    "apiName": "com.palantir.foo",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "exampleAction",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "param1",
+                    ],
+                    "parameters": {
+                      "param1": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "param1",
+                          "typeClasses": [],
+                        },
+                        "id": "param1",
+                        "type": {
+                          "boolean": {},
+                          "type": "boolean",
                         },
                       },
-                      "enableLayoutUserSwitch": false,
                     },
-                    "description": "",
-                    "displayName": "exampleAction",
-                    "icon": {
-                      "blueprint": {
-                        "color": "#000000",
-                        "locator": "edit",
-                      },
-                      "type": "blueprint",
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
                     },
-                    "successMessage": [],
-                    "typeClasses": [],
-                  },
-                  "formContentOrdering": [],
-                  "parameterOrdering": [
-                    "param1",
-                  ],
-                  "parameters": {
-                    "param1": {
-                      "displayMetadata": {
-                        "description": "",
-                        "displayName": "param1",
-                        "typeClasses": [],
-                      },
-                      "id": "param1",
-                      "type": {
-                        "boolean": {},
-                        "type": "boolean",
-                      },
-                    },
-                  },
-                  "sections": {},
-                  "status": {
-                    "active": {},
-                    "type": "active",
                   },
                 },
               },
             },
-          },
-          "blockPermissionInformation": {
-            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
-          "interfaceTypes": {},
-          "linkTypes": {},
-          "objectTypes": {},
-          "sharedPropertyTypes": {},
-        },
-        "importedTypes": {
-          "actionTypes": [],
-          "interfaceTypes": [],
-          "linkTypes": [],
-          "objectTypes": [],
-          "sharedPropertyTypes": [],
-        },
-      }
-        `);
+          "importedTypes": {
+            "actionTypes": [],
+            "interfaceTypes": [],
+            "linkTypes": [],
+            "objectTypes": [],
+            "sharedPropertyTypes": [],
+          },
+        }
+      `);
     });
     it("Simple interface actions (with object types) are properly defined", () => {
       const exampleInterface = defineInterface({
@@ -4394,6 +4395,7 @@ describe("Ontology Defining", () => {
                       },
                       "parameterValidations": {
                         "com.palantir.property1": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -4421,6 +4423,7 @@ describe("Ontology Defining", () => {
                           },
                         },
                         "objectTypeParameter": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -4572,6 +4575,7 @@ describe("Ontology Defining", () => {
                       },
                       "parameterValidations": {
                         "com.palantir.property1": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -4599,6 +4603,7 @@ describe("Ontology Defining", () => {
                           },
                         },
                         "interfaceObjectToModifyParameter": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -4960,148 +4965,149 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-         "blockData": {
-           "actionTypes": {
-             "com.palantir.foo": {
-               "actionType": {
-                 "actionTypeLogic": {
-                   "logic": {
-                     "rules": [
-                       {
-                         "addOrModifyObjectRuleV2": {
-                           "objectToModify": "objectToModifyParameter",
-                           "propertyValues": {
-                             "bar": {
-                               "parameterId": "param1",
-                               "type": "parameterId",
-                             },
-                           },
-                           "structFieldValues": {},
-                         },
-                         "type": "addOrModifyObjectRuleV2",
-                       },
-                     ],
-                   },
-                   "validation": {
-                     "actionTypeLevelValidation": {
-                       "rules": {
-                         "0": {
-                           "condition": {
-                             "true": {},
-                             "type": "true",
-                           },
-                           "displayMetadata": {
-                             "failureMessage": "",
-                             "typeClasses": [],
-                           },
-                         },
-                       },
-                     },
-                     "parameterValidations": {
-                       "param1": {
-                         "defaultValidation": {
-                           "display": {
-                             "renderHint": {
-                               "checkbox": {},
-                               "type": "checkbox",
-                             },
-                             "visibility": {
-                               "editable": {},
-                               "type": "editable",
-                             },
-                           },
-                           "validation": {
-                             "allowedValues": {
-                               "boolean": {
-                                 "boolean": {},
-                                 "type": "boolean",
-                               },
-                               "type": "boolean",
-                             },
-                             "required": {
-                               "required": {},
-                               "type": "required",
-                             },
-                           },
-                         },
-                       },
-                     },
-                   },
-                 },
-                 "metadata": {
-                   "apiName": "com.palantir.foo",
-                   "displayMetadata": {
-                     "configuration": {
-                       "defaultLayout": "FORM",
-                       "displayAndFormat": {
-                         "table": {
-                           "columnWidthByParameterRid": {},
-                           "enableFileImport": true,
-                           "fitHorizontally": false,
-                           "frozenColumnCount": 0,
-                           "rowHeightInLines": 1,
-                         },
-                       },
-                       "enableLayoutUserSwitch": false,
-                     },
-                     "description": "",
-                     "displayName": "exampleAction",
-                     "icon": {
-                       "blueprint": {
-                         "color": "#000000",
-                         "locator": "edit",
-                       },
-                       "type": "blueprint",
-                     },
-                     "successMessage": [],
-                     "typeClasses": [],
-                   },
-                   "formContentOrdering": [],
-                   "parameterOrdering": [
-                     "param1",
-                   ],
-                   "parameters": {
-                     "param1": {
-                       "displayMetadata": {
-                         "description": "",
-                         "displayName": "param1",
-                         "typeClasses": [],
-                       },
-                       "id": "param1",
-                       "type": {
-                         "boolean": {},
-                         "type": "boolean",
-                       },
-                     },
-                   },
-                   "sections": {},
-                   "status": {
-                     "active": {},
-                     "type": "active",
-                   },
-                 },
-               },
-             },
-           },
-           "blockPermissionInformation": {
-             "actionTypes": {},
-             "linkTypes": {},
-             "objectTypes": {},
-           },
-           "interfaceTypes": {},
-           "linkTypes": {},
-           "objectTypes": {},
-           "sharedPropertyTypes": {},
-         },
-         "importedTypes": {
-           "actionTypes": [],
-           "interfaceTypes": [],
-           "linkTypes": [],
-           "objectTypes": [],
-           "sharedPropertyTypes": [],
-         },
-       }
-`);
+          "blockData": {
+            "actionTypes": {
+              "com.palantir.foo": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "addOrModifyObjectRuleV2": {
+                            "objectToModify": "objectToModifyParameter",
+                            "propertyValues": {
+                              "bar": {
+                                "parameterId": "param1",
+                                "type": "parameterId",
+                              },
+                            },
+                            "structFieldValues": {},
+                          },
+                          "type": "addOrModifyObjectRuleV2",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "param1": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "checkbox": {},
+                                "type": "checkbox",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "boolean": {
+                                  "boolean": {},
+                                  "type": "boolean",
+                                },
+                                "type": "boolean",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.foo",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "exampleAction",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "param1",
+                    ],
+                    "parameters": {
+                      "param1": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "param1",
+                          "typeClasses": [],
+                        },
+                        "id": "param1",
+                        "type": {
+                          "boolean": {},
+                          "type": "boolean",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+            },
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedTypes": {
+            "actionTypes": [],
+            "interfaceTypes": [],
+            "linkTypes": [],
+            "objectTypes": [],
+            "sharedPropertyTypes": [],
+          },
+        }
+      `);
     });
 
     it("Simple concrete actions are properly defined", () => {
@@ -5169,6 +5175,7 @@ describe("Ontology Defining", () => {
                       },
                       "parameterValidations": {
                         "bar": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -5282,6 +5289,7 @@ describe("Ontology Defining", () => {
                       },
                       "parameterValidations": {
                         "objectToDeleteParameter": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -5404,6 +5412,7 @@ describe("Ontology Defining", () => {
                       },
                       "parameterValidations": {
                         "bar": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -5431,6 +5440,7 @@ describe("Ontology Defining", () => {
                           },
                         },
                         "objectToModifyParameter": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -5749,6 +5759,7 @@ describe("Ontology Defining", () => {
                       },
                       "parameterValidations": {
                         "com.palantir.property1": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -5776,6 +5787,7 @@ describe("Ontology Defining", () => {
                           },
                         },
                         "objectTypeParameter": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -5916,6 +5928,7 @@ describe("Ontology Defining", () => {
                       },
                       "parameterValidations": {
                         "com.palantir.property1": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -5943,6 +5956,7 @@ describe("Ontology Defining", () => {
                           },
                         },
                         "interfaceObjectToModifyParameter": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -6260,6 +6274,7 @@ describe("Ontology Defining", () => {
                       },
                       "parameterValidations": {
                         "id": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -6287,6 +6302,7 @@ describe("Ontology Defining", () => {
                           },
                         },
                         "name": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -6685,6 +6701,7 @@ describe("Ontology Defining", () => {
                       },
                       "parameterValidations": {
                         "id": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -6712,6 +6729,7 @@ describe("Ontology Defining", () => {
                           },
                         },
                         "name": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
