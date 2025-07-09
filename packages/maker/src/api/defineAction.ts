@@ -22,13 +22,14 @@ import {
   ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
+import { convertConditionDefinition } from "./ontologyUtils.js";
 import {
+  type ActionLevelValidationDefinition,
   type ActionParameterAllowedValues,
   type ActionParameterType,
   type ActionParameterTypePrimitive,
   type ActionType,
   type ActionTypeDefinition,
-  type ActionValidationDefinition,
   type ActionValidationRule,
   type InterfaceType,
   type ObjectPropertyType,
@@ -41,7 +42,7 @@ import {
 export function defineCreateInterfaceObjectAction(
   interfaceType: InterfaceType,
   objectType?: ObjectType,
-  validation?: ActionValidationDefinition,
+  validation?: ActionLevelValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `create-${
@@ -117,7 +118,7 @@ export function defineCreateInterfaceObjectAction(
     ...(validation
       ? {
         validation: [
-          createValidationRule(validation),
+          convertValidationRule(validation),
         ],
       }
       : {}),
@@ -126,7 +127,7 @@ export function defineCreateInterfaceObjectAction(
 
 export function defineCreateObjectAction(
   objectType: ObjectType,
-  validation?: ActionValidationDefinition,
+  validation?: ActionLevelValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `create-object-${
@@ -162,7 +163,7 @@ export function defineCreateObjectAction(
     ...(validation
       ? {
         validation: [
-          createValidationRule(validation),
+          convertValidationRule(validation),
         ],
       }
       : {}),
@@ -172,7 +173,7 @@ export function defineCreateObjectAction(
 export function defineModifyInterfaceObjectAction(
   interfaceType: InterfaceType,
   objectType?: ObjectType,
-  validation?: ActionValidationDefinition,
+  validation?: ActionLevelValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `modify-${
@@ -244,7 +245,7 @@ export function defineModifyInterfaceObjectAction(
     ...(validation
       ? {
         validation: [
-          createValidationRule(validation),
+          convertValidationRule(validation),
         ],
       }
       : {}),
@@ -253,7 +254,7 @@ export function defineModifyInterfaceObjectAction(
 
 export function defineModifyObjectAction(
   objectType: ObjectType,
-  validation?: ActionValidationDefinition,
+  validation?: ActionLevelValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `modify-object-${
@@ -306,7 +307,7 @@ export function defineModifyObjectAction(
     ...(validation
       ? {
         validation: [
-          createValidationRule(validation),
+          convertValidationRule(validation),
         ],
       }
       : {}),
@@ -315,7 +316,7 @@ export function defineModifyObjectAction(
 
 export function defineDeleteObjectAction(
   objectType: ObjectType,
-  validation?: ActionValidationDefinition,
+  validation?: ActionLevelValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `delete-object-${
@@ -348,7 +349,7 @@ export function defineDeleteObjectAction(
     ...(validation
       ? {
         validation: [
-          createValidationRule(validation),
+          convertValidationRule(validation),
         ],
       }
       : {}),
@@ -658,54 +659,14 @@ function sanitize(s: string): string {
   return s.includes(".") ? s : namespace + s;
 }
 
-function createValidationRule(
-  actionValidation: ActionValidationDefinition,
+function convertValidationRule(
+  actionValidation: ActionLevelValidationDefinition,
 ): ActionValidationRule {
-  if (!("type" in actionValidation)) {
-    return actionValidation;
-  }
-  switch (actionValidation.type) {
-    case "group":
-      return {
-        condition: {
-          type: "comparison",
-          comparison: {
-            operator: "EQUALS",
-            left: {
-              type: "userProperty",
-              userProperty: {
-                userId: {
-                  type: "currentUser",
-                  currentUser: {},
-                },
-                propertyValue: {
-                  type: "groupIds",
-                  groupIds: {},
-                },
-              },
-            },
-            right: {
-              type: "staticValue",
-              staticValue: {
-                type: "stringList",
-                stringList: {
-                  strings: [
-                    actionValidation.name,
-                  ],
-                },
-              },
-            },
-          },
-        },
-        displayMetadata: {
-          failureMessage:
-            "Insufficient permissions. Missing organization membership required to submit action",
-          typeClasses: [],
-        },
-      };
-    default:
-      throw new Error(
-        `Unknown action validation type: ${actionValidation.type}`,
-      );
-  }
+  return {
+    condition: convertConditionDefinition(actionValidation.condition),
+    displayMetadata: actionValidation.displayMetadata ?? {
+      failureMessage: "Did not satisfy validation",
+      typeClasses: [],
+    },
+  };
 }

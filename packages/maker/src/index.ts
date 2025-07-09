@@ -36,6 +36,7 @@ export { defineValueType } from "./api/defineValueType.js";
 export { importOntologyEntity } from "./api/importOntologyEntity.js";
 export type {
   ActionType,
+  ConditionDefinition,
   InterfaceType,
   LinkType,
   ObjectType,

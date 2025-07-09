@@ -51,6 +51,10 @@ import * as path from "path";
 import invariant from "tiny-invariant";
 import { isExotic } from "./defineObject.js";
 import {
+  convertActionParameterConditionalOverride,
+  convertActionVisibility,
+} from "./ontologyUtils.js";
+import {
   convertNullabilityToDataConstraint,
   convertType,
   convertValueType,
@@ -971,11 +975,12 @@ function convertActionValidation(
         return [
           p.id,
           {
-            conditionalOverrides: [],
             defaultValidation: {
               display: {
                 renderHint: renderHintFromBaseType(p),
-                visibility: { type: "editable", editable: {} },
+                visibility: convertActionVisibility(
+                  p.validation.defaultVisibility,
+                ),
               },
               validation: {
                 allowedValues: extractAllowedValues(p),
@@ -984,6 +989,13 @@ function convertActionValidation(
                 ),
               },
             },
+            conditionalOverrides: p.validation.conditionalOverrides?.map(
+              (override) =>
+                convertActionParameterConditionalOverride(
+                  override,
+                  p.validation,
+                ),
+            ) ?? [],
           },
         ];
       }),

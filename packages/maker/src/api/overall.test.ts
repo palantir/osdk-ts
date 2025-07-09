@@ -5110,6 +5110,288 @@ describe("Ontology Defining", () => {
       `);
     });
 
+    it("Conditional overrides on actions are properly defined", () => {
+      const exampleAction = defineAction({
+        apiName: "foo",
+        displayName: "exampleAction",
+        status: "active",
+        rules: [{
+          type: "modifyObjectRule",
+          modifyObjectRule: {
+            objectToModify: "objectToModifyParameter",
+            propertyValues: {
+              "bar": {
+                type: "parameterId",
+                parameterId: "param1",
+              },
+            },
+            structFieldValues: {},
+          },
+        }],
+        parameters: [{
+          id: "param1",
+          displayName: "param1",
+          type: "boolean",
+          validation: {
+            required: true,
+            allowedValues: { type: "boolean" },
+            defaultVisibility: "editable",
+            conditionalOverrides: [
+              {
+                type: "visibility",
+                condition: {
+                  type: "group",
+                  name: "myGroup",
+                },
+              },
+            ],
+          },
+        }, {
+          id: "objectToModifyParameter",
+          displayName: "objectToModifyParameter",
+          type: "objectTypeReference",
+          validation: {
+            required: true,
+            allowedValues: { type: "objectTypeReference", interfaceTypes: [] },
+            defaultVisibility: "editable",
+          },
+        }],
+      });
+
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "blockData": {
+            "actionTypes": {
+              "com.palantir.foo": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "modifyObjectRule": {
+                            "objectToModify": "objectToModifyParameter",
+                            "propertyValues": {
+                              "bar": {
+                                "parameterId": "param1",
+                                "type": "parameterId",
+                              },
+                            },
+                            "structFieldValues": {},
+                          },
+                          "type": "modifyObjectRule",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "objectToModifyParameter": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "dropdown": {},
+                                "type": "dropdown",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "objectTypeReference": {
+                                  "objectTypeReference": {
+                                    "interfaceTypeRids": [],
+                                  },
+                                  "type": "objectTypeReference",
+                                },
+                                "type": "objectTypeReference",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                        "param1": {
+                          "conditionalOverrides": [
+                            {
+                              "condition": {
+                                "comparison": {
+                                  "left": {
+                                    "type": "userProperty",
+                                    "userProperty": {
+                                      "propertyValue": {
+                                        "groupIds": {},
+                                        "type": "groupIds",
+                                      },
+                                      "userId": {
+                                        "currentUser": {},
+                                        "type": "currentUser",
+                                      },
+                                    },
+                                  },
+                                  "operator": "INTERSECTS",
+                                  "right": {
+                                    "staticValue": {
+                                      "stringList": {
+                                        "strings": [
+                                          "myGroup",
+                                        ],
+                                      },
+                                      "type": "stringList",
+                                    },
+                                    "type": "staticValue",
+                                  },
+                                },
+                                "type": "comparison",
+                              },
+                              "parameterBlockOverrides": [
+                                {
+                                  "type": "visibility",
+                                  "visibility": {
+                                    "visibility": {
+                                      "hidden": {},
+                                      "type": "hidden",
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                          ],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "checkbox": {},
+                                "type": "checkbox",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "boolean": {
+                                  "boolean": {},
+                                  "type": "boolean",
+                                },
+                                "type": "boolean",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.foo",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "exampleAction",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "param1",
+                      "objectToModifyParameter",
+                    ],
+                    "parameters": {
+                      "objectToModifyParameter": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "objectToModifyParameter",
+                          "typeClasses": [],
+                        },
+                        "id": "objectToModifyParameter",
+                        "type": {
+                          "objectTypeReference": {},
+                          "type": "objectTypeReference",
+                        },
+                      },
+                      "param1": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "param1",
+                          "typeClasses": [],
+                        },
+                        "id": "param1",
+                        "type": {
+                          "boolean": {},
+                          "type": "boolean",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+            },
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedTypes": {
+            "actionTypes": [],
+            "interfaceTypes": [],
+            "linkTypes": [],
+            "objectTypes": [],
+            "sharedPropertyTypes": [],
+          },
+        }
+      `);
+    });
+
     it("Simple concrete actions are properly defined", () => {
       const exampleObjectType = defineObject({
         titlePropertyApiName: "bar",
@@ -6199,8 +6481,10 @@ describe("Ontology Defining", () => {
         }],
       });
       const createAction = defineCreateObjectAction(sampleObject, {
-        type: "group",
-        name: "testGroup",
+        condition: {
+          type: "group",
+          name: "testGroup",
+        },
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -6250,7 +6534,7 @@ describe("Ontology Defining", () => {
                                     },
                                   },
                                 },
-                                "operator": "EQUALS",
+                                "operator": "INTERSECTS",
                                 "right": {
                                   "staticValue": {
                                     "stringList": {
@@ -6266,7 +6550,7 @@ describe("Ontology Defining", () => {
                               "type": "comparison",
                             },
                             "displayMetadata": {
-                              "failureMessage": "Insufficient permissions. Missing organization membership required to submit action",
+                              "failureMessage": "Did not satisfy validation",
                               "typeClasses": [],
                             },
                           },
@@ -6624,7 +6908,6 @@ describe("Ontology Defining", () => {
                 },
               },
             },
-            displayMetadata: null,
           },
         },
       });
@@ -6663,7 +6946,6 @@ describe("Ontology Defining", () => {
                           "0": {
                             "condition": {
                               "comparison": {
-                                "displayMetadata": null,
                                 "left": {
                                   "type": "userProperty",
                                   "userProperty": {
