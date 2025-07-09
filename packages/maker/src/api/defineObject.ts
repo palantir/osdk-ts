@@ -214,7 +214,7 @@ function validateInterfaceImplProperty(
         `Object property mapped to interface does not exist. Object Property Mapped: ${mappedObjectProp}`,
     };
   }
-  if (spt.type !== objProp?.type) {
+  if (JSON.stringify(spt.type) !== JSON.stringify(objProp?.type)) {
     return {
       type: "invalid",
       reason:
