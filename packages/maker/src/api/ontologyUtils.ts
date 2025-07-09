@@ -29,28 +29,11 @@ import type {
 export function convertVisibility(
   visibility: "editable" | "disabled" | "hidden" | undefined,
 ): any {
-  switch (visibility) {
-    case "editable":
-      return {
-        type: "editable",
-        editable: {},
-      };
-    case "disabled":
-      return {
-        type: "disabled",
-        disabled: {},
-      };
-    case "hidden":
-      return {
-        type: "hidden",
-        hidden: {},
-      };
-    default:
-      return {
-        type: "editable",
-        editable: {},
-      };
-  }
+  const vis = visibility ?? "editable";
+  return {
+    type: vis,
+    [vis]: {},
+  };
 }
 
 export function convertActionParameterConditionalOverride(
