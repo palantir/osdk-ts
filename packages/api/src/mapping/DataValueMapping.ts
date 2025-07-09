@@ -16,6 +16,7 @@
 
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
 import type { MediaReference, MediaUpload } from "../object/Media.js";
+import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
 
 /**
  * Map from the DataValue type to the typescript type that we return
@@ -82,7 +83,7 @@ export interface DataValueClientToWire {
     groups: { key: AllowedBucketKeyTypes; value: AllowedBucketTypes }[];
   }[];
   struct: Record<string, any>;
-  objectType: string;
+  objectType: string | ObjectTypeDefinition;
   geohash: GeoJSON.Point;
   geoshape: GeoJSON.GeoJSON;
 }
