@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/client";
+import type { CompileTimeMetadata, ObjectTypeDefinition } from "@osdk/client";
 import type {
   AddLink,
   AnyEdit,
@@ -43,7 +43,12 @@ export type AddLinkTargets<
   X extends AnyEdit,
   SOL extends ObjectLocator<any>,
   A extends string,
-> = X extends AddLink<ObjectTypeDefinitionForLocator<SOL>, A> ? X["target"]
+> = X extends AddLink<ObjectTypeDefinitionForLocator<SOL>, A>
+  ? (X extends AddLink<infer OTD, A>
+    ? (CompileTimeMetadata<OTD>["links"][A]["multiplicity"] extends true
+      ? Array<X["target"]> | X["target"]
+      : X["target"])
+    : never)
   : never;
 
 // RemoveLink helper types
@@ -60,7 +65,12 @@ export type RemoveLinkTargets<
   X extends AnyEdit,
   SOL extends ObjectLocator<any>,
   A extends string,
-> = X extends RemoveLink<ObjectTypeDefinitionForLocator<SOL>, A> ? X["target"]
+> = X extends RemoveLink<ObjectTypeDefinitionForLocator<SOL>, A>
+  ? (X extends RemoveLink<infer OTD, A>
+    ? (CompileTimeMetadata<OTD>["links"][A]["multiplicity"] extends true
+      ? Array<X["target"]> | X["target"]
+      : X["target"])
+    : never)
   : never;
 
 // CreateObject helper types
