@@ -16,4 +16,5 @@ export async function assertThrowsExpectedError(
       throw err;
     }
   }
+  throw new Error("Expected error not thrown");
 }

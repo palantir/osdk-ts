@@ -159,10 +159,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         clientCtx,
         {
           type: "nearestNeighbors",
-          objectSet: {
-            type: "base",
-            objectType: objectType.apiName,
-          },
+          objectSet,
           propertyIdentifier: {
             type: "property",
             apiName: property as PropertyApiName,

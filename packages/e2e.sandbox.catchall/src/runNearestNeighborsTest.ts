@@ -36,7 +36,7 @@ export async function runNearestNeighborsTest(): Promise<void> {
     10,
     "embedding",
   ).fetchPage();
-  result.data.map(s => console.log(s.orderTitle));
+  result.data.forEach(s => console.log(s.orderTitle));
   validateCount(10, result.data);
 
   // Fetch page with errors
