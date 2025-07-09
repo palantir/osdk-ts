@@ -39,6 +39,7 @@ import type {
   OntologyIrBaseParameterType_structList,
   OntologyIrBaseParameterType_timestamp,
   OntologyIrBaseParameterType_timestampList,
+  OntologyIrCondition,
   OntologyIrConditionValue,
   OntologyIrFormContent,
   OntologyIrInterfaceType,
@@ -53,6 +54,7 @@ import type {
   SectionId,
   SharedPropertyTypeGothamMapping,
   StructFieldType,
+  ValidationRuleDisplayMetadata,
   ValueTypeApiName,
   ValueTypeDataConstraint,
   ValueTypeDisplayMetadata,
@@ -143,7 +145,40 @@ export interface ActionParameter {
 export interface ActionParameterValidation {
   allowedValues: ActionParameterAllowedValues;
   required: ActionParameterRequirementConstraint;
+  defaultVisibility?: "editable" | "disabled" | "hidden";
+  conditionalOverrides?: Array<ActionParameterConditionalOverride>;
 }
+
+// TODO(ethana): add more commonly used conditions - parameter matching, organizations, etc.
+export type ConditionDefinition =
+  | UnionCondition
+  | OntologyIrCondition
+  | GroupValidationRule;
+
+export type UnionCondition = {
+  type: "and" | "or";
+  conditions: Array<ConditionDefinition>;
+};
+
+export type ActionParameterConditionalOverride =
+  | VisibilityOverride
+  | DisabledOverride
+  | RequiredOverride;
+
+export type VisibilityOverride = {
+  type: "visibility";
+  condition: ConditionDefinition;
+};
+
+export type DisabledOverride = {
+  type: "disabled";
+  condition: ConditionDefinition;
+};
+
+export type RequiredOverride = {
+  type: "required";
+  condition: ConditionDefinition;
+};
 
 export type ActionParameterRequirementConstraint =
   | boolean
@@ -198,9 +233,10 @@ export interface ActionTypeInner {
 
 export type ActionValidationRule = OntologyIrValidationRule;
 
-export type ActionValidationDefinition =
-  | GroupValidationRule
-  | OntologyIrValidationRule;
+export type ActionLevelValidationDefinition = {
+  condition: ConditionDefinition;
+  displayMetadata?: ValidationRuleDisplayMetadata;
+};
 
 export type GroupValidationRule = {
   type: "group";

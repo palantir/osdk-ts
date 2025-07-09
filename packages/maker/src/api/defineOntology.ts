@@ -51,6 +51,10 @@ import * as path from "path";
 import invariant from "tiny-invariant";
 import { isExotic } from "./defineObject.js";
 import {
+  convertActionParameterConditionalOverride,
+  convertVisibility,
+} from "./ontologyUtils.js";
+import {
   convertNullabilityToDataConstraint,
   convertType,
   convertValueType,
@@ -302,7 +306,7 @@ function convertToWireImportedTypes(
       apiName: i.interfaceType.apiName,
       displayName: i.interfaceType.displayMetadata.displayName,
       description: i.interfaceType.displayMetadata.description,
-      properties: Object.values(i.interfaceType.propertiesV2).map(p => ({
+      properties: Object.values(i.interfaceType.allPropertiesV2).map(p => ({
         apiName: p.sharedPropertyType.apiName,
         displayName: p.sharedPropertyType.displayMetadata.displayName,
         description: p.sharedPropertyType.displayMetadata.description,
@@ -971,11 +975,10 @@ function convertActionValidation(
         return [
           p.id,
           {
-            conditionalOverrides: [],
             defaultValidation: {
               display: {
                 renderHint: renderHintFromBaseType(p),
-                visibility: { type: "editable", editable: {} },
+                visibility: convertVisibility(p.validation.defaultVisibility),
               },
               validation: {
                 allowedValues: extractAllowedValues(p),
@@ -984,6 +987,13 @@ function convertActionValidation(
                 ),
               },
             },
+            conditionalOverrides: p.validation.conditionalOverrides?.map(
+              (override) =>
+                convertActionParameterConditionalOverride(
+                  override,
+                  p.validation,
+                ),
+            ) ?? [],
           },
         ];
       }),
