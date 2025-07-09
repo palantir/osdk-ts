@@ -28,7 +28,7 @@ import { createObjectSet } from "../objectSet/createObjectSet.js";
  */
 export function hydrateObjectSetFromObjectRids<
   T extends ObjectOrInterfaceDefinition,
->(client: Client, definition: T, rids: string[]): ObjectSet<T> {
+>(client: Client, definition: T, rids: readonly string[]): ObjectSet<T> {
   return createObjectSet(definition, client[additionalContext], {
     type: "intersect",
     objectSets: [
@@ -38,8 +38,12 @@ export function hydrateObjectSetFromObjectRids<
       },
       {
         type: "static",
-        objects: rids,
+        objects: asMutableArray(rids),
       },
     ],
   });
+}
+
+function asMutableArray<T>(array: readonly T[]): T[] {
+  return array as T[];
 }
