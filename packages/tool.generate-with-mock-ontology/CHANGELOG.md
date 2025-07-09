@@ -1,5 +1,74 @@
 # @osdk/tool.generate-with-mock-ontology
 
+## 0.3.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [991dbd4]
+- Updated dependencies [266b756]
+- Updated dependencies [8d69555]
+  - @osdk/client@2.3.0-beta.10
+  - @osdk/api@2.3.0-beta.10
+
+## 0.3.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [5a15cfd]
+  - @osdk/client@2.3.0-beta.9
+  - @osdk/api@2.3.0-beta.9
+
+## 0.3.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [12d599f]
+  - @osdk/api@2.3.0-beta.8
+  - @osdk/client@2.3.0-beta.8
+
+## 0.3.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [2a23cca]
+- Updated dependencies [f8db93d]
+  - @osdk/client@2.3.0-beta.7
+  - @osdk/api@2.3.0-beta.7
+
+## 0.3.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [9839eab]
+- Updated dependencies [cd911a6]
+- Updated dependencies [2c800e5]
+- Updated dependencies [cd911a6]
+  - @osdk/client@2.3.0-beta.6
+  - @osdk/api@2.3.0-beta.6
+
+## 0.3.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [e8c4aed]
+  - @osdk/api@2.3.0-beta.5
+  - @osdk/client@2.3.0-beta.5
+
+## 0.3.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [43c5547]
+- Updated dependencies [3736624]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [3b5ccaa]
+  - @osdk/client@2.3.0-beta.4
+  - @osdk/api@2.3.0-beta.4
+
 ## 0.3.0-beta.3
 
 ### Patch Changes

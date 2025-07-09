@@ -829,6 +829,8 @@ export type DefaultTimezone =
   | DefaultTimezone_localTimezone
   | DefaultTimezone_setTimezone;
 
+export interface DelegateToValueTypeRenderHint {
+}
 /**
  * DoubleListType specifies that this parameter must be a list of Doubles.
  */
@@ -1703,6 +1705,14 @@ export interface ParameterRenderHint_mandatoryMarkingPicker {
   type: "mandatoryMarkingPicker";
   mandatoryMarkingPicker: MandatoryMarkingPicker;
 }
+
+export interface ParameterRenderHint_valueTypeRenderHint {
+  type: "valueTypeRenderHint";
+  valueTypeRenderHint: DelegateToValueTypeRenderHint;
+}
+/**
+ * When the parameter is tied to a value type, we will enforce the type of render hint on the front end
+ */
 export type ParameterRenderHint =
   | ParameterRenderHint_dropdown
   | ParameterRenderHint_userDropdown
@@ -1715,7 +1725,8 @@ export type ParameterRenderHint =
   | ParameterRenderHint_filePicker
   | ParameterRenderHint_resourcePicker
   | ParameterRenderHint_cbacMarkingPicker
-  | ParameterRenderHint_mandatoryMarkingPicker;
+  | ParameterRenderHint_mandatoryMarkingPicker
+  | ParameterRenderHint_valueTypeRenderHint;
 
 export interface ParameterRequired {
 }

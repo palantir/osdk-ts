@@ -291,7 +291,7 @@ export interface ObjectPropertyTypeInner extends
 {
   type: PropertyTypeType;
   array?: boolean;
-  valueType: string | ValueTypeDefinitionVersion;
+  valueType: ValueTypeDefinitionVersion;
   sharedPropertyType: SharedPropertyType;
   description: string | undefined;
   displayName: string;
@@ -319,12 +319,16 @@ export interface InterfaceType extends
     // these things don't need to exist as the system works fine without them (I'm told)
     | "allProperties"
     | "allLinks"
+    | "extendsInterfaces"
     | "allExtendsInterfaces"
     | "propertiesV2"
     | "allPropertiesV2"
+    | "propertiesV3"
+    | "allPropertiesV3"
   >
 {
   propertiesV2: Record<string, InterfacePropertyType>;
+  extendsInterfaces: Array<InterfaceType>;
   status: InterfaceTypeStatus;
   __type: OntologyEntityTypeEnum.INTERFACE_TYPE;
 }
@@ -433,13 +437,13 @@ export type LinkType =
 
 export type LinkTypeDefinition =
   | Omit<
-    OntologyEntityBase & OneToManyLinkTypeDefinition & {
+    OntologyEntityBase & OneToManyLinkTypeUserDefinition & {
       __type: OntologyEntityTypeEnum.LINK_TYPE;
     },
     "__type"
   >
   | Omit<
-    OntologyEntityBase & ManyToManyLinkTypeDefinition & {
+    OntologyEntityBase & ManyToManyLinkTypeUserDefinition & {
       __type: OntologyEntityTypeEnum.LINK_TYPE;
     },
     "__type"
@@ -461,6 +465,18 @@ export interface OneToManyObjectLinkReference {
   metadata: LinkTypeMetadata;
 }
 
+export interface OneToManyLinkTypeUserDefinition {
+  apiName: LinkTypeId;
+  one: OneToManyObjectLinkReferenceUserDefinition;
+  toMany: OneToManyObjectLinkReferenceUserDefinition;
+  manyForeignKeyProperty: ObjectTypePropertyApiName;
+}
+
+export interface OneToManyObjectLinkReferenceUserDefinition {
+  object: ObjectType;
+  metadata: LinkTypeMetadataUserDefinition;
+}
+
 export interface ManyToManyLinkTypeDefinition {
   apiName: LinkTypeId;
   many: ManyToManyObjectLinkReference;
@@ -473,6 +489,25 @@ export interface ManyToManyLinkTypeDefinition {
 export interface ManyToManyObjectLinkReference {
   object: ObjectTypeDefinition;
   metadata: LinkTypeMetadata;
+}
+
+export interface ManyToManyLinkTypeUserDefinition {
+  apiName: LinkTypeId;
+  many: ManyToManyObjectLinkReferenceUserDefinition;
+  toMany: ManyToManyObjectLinkReferenceUserDefinition;
+}
+
+export interface ManyToManyObjectLinkReferenceUserDefinition {
+  object: ObjectType;
+  metadata: LinkTypeMetadataUserDefinition;
+}
+
+export interface LinkTypeMetadataUserDefinition {
+  apiName: string;
+  displayName?: string;
+  pluralDisplayName?: string;
+  visibility?: Visibility;
+  groupDisplayName?: string;
 }
 
 export type LinkSideMetadata = OptionalFields<

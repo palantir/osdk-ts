@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { Backend } from "../Backend.js";
-import type { GetAllObjectsInitialPageRequest } from "../GetAllObjectsInitialPageRequest.js";
-import type { GetAllObjectsInitialPageResponse } from "../GetAllObjectsInitialPageResponse.js";
+import type {
+  Backend as _api_Backend,
+  GetAllObjectsInitialPageRequest as _api_GetAllObjectsInitialPageRequest,
+  GetAllObjectsInitialPageResponse as _api_GetAllObjectsInitialPageResponse,
+} from "../__components.js";
 
 /**
  * Returns an initial page of all `FoundryObject`s of an evaluated object set.
@@ -34,8 +36,8 @@ import type { GetAllObjectsInitialPageResponse } from "../GetAllObjectsInitialPa
  */
 export async function getAllObjectsInitialPage(
   ctx: ConjureContext,
-  request: GetAllObjectsInitialPageRequest,
-  backend: Backend | undefined,
-): Promise<GetAllObjectsInitialPageResponse> {
+  request: _api_GetAllObjectsInitialPageRequest,
+  backend: _api_Backend | null | undefined,
+): Promise<_api_GetAllObjectsInitialPageResponse> {
   return conjureFetch(ctx, `/objectSets/objects/all/initial`, "POST", request);
 }

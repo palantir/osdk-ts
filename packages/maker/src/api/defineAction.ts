@@ -16,6 +16,7 @@
 
 import type { ParameterId } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+import { getAllInterfaceProperties } from "./defineObject.js";
 import {
   namespace,
   ontologyDefinition,
@@ -78,7 +79,7 @@ export function defineCreateInterfaceObjectAction(
             },
         },
       },
-      ...Object.entries(interfaceType.propertiesV2).map((
+      ...Object.entries(getAllInterfaceProperties(interfaceType)).map((
         [id, prop],
       ) => ({
         id,
@@ -106,7 +107,7 @@ export function defineCreateInterfaceObjectAction(
           interfaceApiName: interfaceType.apiName,
           objectTypeParameter: "objectTypeParameter",
           sharedPropertyValues: Object.fromEntries(
-            Object.entries(interfaceType.propertiesV2).map((
+            Object.entries(getAllInterfaceProperties(interfaceType)).map((
               [id, prop],
             ) => [id, { type: "parameterId", parameterId: id }]),
           ),
@@ -206,7 +207,7 @@ export function defineModifyInterfaceObjectAction(
             },
         },
       },
-      ...Object.entries(interfaceType.propertiesV2).map((
+      ...Object.entries(getAllInterfaceProperties(interfaceType)).map((
         [id, prop],
       ) => ({
         id,
@@ -233,7 +234,7 @@ export function defineModifyInterfaceObjectAction(
         modifyInterfaceRule: {
           interfaceObjectToModifyParameter: "interfaceObjectToModifyParameter",
           sharedPropertyValues: Object.fromEntries(
-            Object.entries(interfaceType.propertiesV2).map((
+            Object.entries(getAllInterfaceProperties(interfaceType)).map((
               [id, prop],
             ) => [id, { type: "parameterId", parameterId: id }]),
           ),
@@ -277,7 +278,7 @@ export function defineModifyObjectAction(
         displayName: prop.displayName,
         type: extractActionParameterType(prop),
         validation: {
-          required: true,
+          required: false,
           allowedValues: extractAllowedValuesFromType(prop.type),
         },
       })) ?? []),
@@ -453,8 +454,8 @@ function referencedParameterIds(
             if (v.type === "parameterId") {
               parameterIds.add(v.parameterId);
             }
-            rule.addInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
             delete rule.addInterfaceRule.sharedPropertyValues[k];
+            rule.addInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
           },
         );
         break;
@@ -467,8 +468,8 @@ function referencedParameterIds(
             if (v.type === "parameterId") {
               parameterIds.add(v.parameterId);
             }
-            rule.modifyInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
             delete rule.modifyInterfaceRule.sharedPropertyValues[k];
+            rule.modifyInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
           },
         );
         break;
@@ -544,6 +545,7 @@ function extractAllowedValuesFromType(
     case "string":
       return { type: "text" };
     case "geopoint":
+      return { type: "geohash" };
     case "geoshape":
       return { type: "geoshape" };
     case "mediaReference":
@@ -589,7 +591,7 @@ function extractActionParameterType(
     case "short":
       return maybeAddList("integer", pt);
     case "geopoint":
-      return maybeAddList("geoshape", pt);
+      return maybeAddList("geohash", pt);
     case "float":
       return maybeAddList("double", pt);
     case "geotimeSeries":

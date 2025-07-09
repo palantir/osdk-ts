@@ -52,6 +52,7 @@ import type { SharedClientContext } from '@osdk/shared.client2';
 import { SingleLinkAccessor } from '@osdk/api';
 import { ThreeDimensionalAggregation } from '@osdk/api';
 import { TwoDimensionalAggregation } from '@osdk/api';
+import type { ValidateActionResponseV2 } from '@osdk/foundry.ontologies';
 import { VersionBound } from '@osdk/api';
 import { WhereClause } from '@osdk/api';
 
@@ -67,9 +68,9 @@ export { ActionReturnTypeForOptions }
 
 // @public (undocumented)
 export class ActionValidationError extends Error {
-    	constructor(validation: ActionValidationResponse);
+    	constructor(validation: ValidateActionResponseV2);
     	// (undocumented)
-    validation: ActionValidationResponse;
+    validation: ValidateActionResponseV2;
 }
 
 export { ActionValidationResponse }

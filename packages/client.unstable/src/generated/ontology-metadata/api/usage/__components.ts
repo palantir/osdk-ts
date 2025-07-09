@@ -21,6 +21,7 @@ import type {
   ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
   ObjectTypeIdentifier as _api_ObjectTypeIdentifier,
   ObjectTypeRid as _api_ObjectTypeRid,
+  OrganizationRid as _api_OrganizationRid,
   PropertyTypeId as _api_PropertyTypeId,
   PropertyTypeRid as _api_PropertyTypeRid,
   UserId as _api_UserId,
@@ -131,6 +132,7 @@ export interface GetUsageRequest {
 export interface GetUsageRequestV2 {
   endDay?: string | null | undefined;
   ontologyEntityIdentifiers: OntologyEntityIdentifiers;
+  orgRid?: _api_OrganizationRid | null | undefined;
   startDay?: string | null | undefined;
   usageTypes: Array<UsageType>;
   userAgents: Array<UserAgent>;

@@ -187,6 +187,11 @@ async function extractRdpDefinitionInternal(
       // Static and reference object sets are always intersected with a base object set, so we can just return no child object type.
       return { definitions: {} };
     // We don't have to worry about new object sets being added and doing a runtime break and breaking people since the OSDK is always constructing these.
+    case "interfaceLinkSearchAround":
+      invariant(
+        false,
+        `Unsupported object set type for Runtime Derived Properties`,
+      );
     default:
       const _: never = objectSet;
       invariant(

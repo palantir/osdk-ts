@@ -94,6 +94,7 @@ import type {
   MarkingId as _api_MarkingId,
   MarkingPropertyType as _api_MarkingPropertyType,
   MediaReferencePropertyType as _api_MediaReferencePropertyType,
+  MediaSetRid as _api_MediaSetRid,
   MediaSetViewLocator as _api_MediaSetViewLocator,
   MediaSourceRid as _api_MediaSourceRid,
   ObjectTypeApiName as _api_ObjectTypeApiName,
@@ -135,6 +136,7 @@ import type {
   StringPropertyType as _api_StringPropertyType,
   StructFieldAlias as _api_StructFieldAlias,
   StructFieldDisplayMetadata as _api_StructFieldDisplayMetadata,
+  StructFieldRid as _api_StructFieldRid,
   TableRid as _api_TableRid,
   TimeSeriesSyncRid as _api_TimeSeriesSyncRid,
   TimestampPropertyType as _api_TimestampPropertyType,
@@ -269,6 +271,7 @@ export interface ActionTypeModification {
   sectionsToCreate: Record<_api_SectionRid, PutSectionRequestWithId>;
   sectionsToDelete: Array<_api_SectionRid>;
   sectionsToUpdate: Record<_api_SectionRid, _api_EditSectionRequest>;
+  stagingMediaSetRid?: _api_MediaSetRid | null | undefined;
   status?: _api_ActionTypeStatus | null | undefined;
   submissionConfiguration?:
     | _api_ActionSubmissionConfiguration
@@ -591,6 +594,7 @@ export interface InterfaceTypeModification {
   properties: Array<_api_SharedPropertyTypeRidOrIdInRequest>;
   propertiesV2: Array<InterfaceSharedPropertyTypeModification>;
   propertiesV3: Array<InterfacePropertyTypeModificationWithRidOrIdInRequest>;
+  searchable?: boolean | null | undefined;
   status: _api_InterfaceTypeStatus;
 }
 /**
@@ -642,6 +646,7 @@ export interface LinkTypeEntityMetadataModifyRequest {
 }
 export interface LinkTypeModification {
   definition: LinkDefinitionModification;
+  description?: string | null | undefined;
   linkTypeId: _api_LinkTypeId;
   status?: _api_LinkTypeStatus | null | undefined;
 }
@@ -1427,6 +1432,7 @@ export interface OntologyModificationRequest {
     _api_SharedPropertyTypeRid,
     SharedPropertyTypeModification
   >;
+  shouldDeploy?: boolean | null | undefined;
   typeGroupsToCreate: Record<_api_TypeGroupIdInRequest, TypeGroupModification>;
   typeGroupsToCreateInProject: Record<
     _api_TypeGroupIdInRequest,
@@ -1670,6 +1676,7 @@ export interface StructFieldTypeModification {
   apiName: _api_ObjectTypeFieldApiName;
   displayMetadata: _api_StructFieldDisplayMetadata;
   fieldType: TypeForModification;
+  rid?: _api_StructFieldRid | null | undefined;
   typeClasses: Array<_api_TypeClass>;
 }
 export interface StructPropertyTypeModification {

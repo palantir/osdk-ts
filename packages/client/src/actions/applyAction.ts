@@ -135,7 +135,11 @@ export async function applyAction<
       action.apiName,
       {
         requests: parameters
-          ? await remapBatchActionParams(parameters, client)
+          ? await remapBatchActionParams(
+            parameters,
+            client,
+            await client.ontologyProvider.getActionDefinition(action.apiName),
+          )
           : [],
         options: {
           returnEdits: options?.$returnEdits ? "ALL" : "NONE",
@@ -158,6 +162,7 @@ export async function applyAction<
             CompileTimeActionMetadata<AD>["parameters"]
           >,
           client,
+          await client.ontologyProvider.getActionDefinition(action.apiName),
         ),
         options: {
           mode: (options as ApplyActionOptions)?.$validateOnly
@@ -175,8 +180,9 @@ export async function applyAction<
       return response.validation as ActionReturnTypeForOptions<Op>;
     }
 
-    if (response.validation?.result === "INVALID") {
-      throw new ActionValidationError(response.validation);
+    if (response.validation && response.validation?.result === "INVALID") {
+      const validation = response.validation;
+      throw new ActionValidationError(validation);
     }
 
     const edits = response.edits;
@@ -191,6 +197,7 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
     | OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>
     | undefined,
   client: MinimalClient,
+  actionMetadata: ActionMetadata,
 ): Promise<Record<string, DataValue>> {
   if (params == null) {
     return {};
@@ -198,7 +205,7 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
 
   const parameterMap: { [parameterName: string]: unknown } = {};
   for (const [key, value] of Object.entries(params)) {
-    parameterMap[key] = await toDataValue(value, client);
+    parameterMap[key] = await toDataValue(value, client, actionMetadata);
   }
 
   return parameterMap;
@@ -209,10 +216,13 @@ async function remapBatchActionParams<
 >(
   params: OsdkActionParameters<CompileTimeActionMetadata<AD>["parameters"]>[],
   client: MinimalClient,
+  actionMetadata: ActionMetadata,
 ) {
   const remappedParams = await Promise.all(params.map(
     async param => {
-      return { parameters: await remapActionParams<AD>(param, client) };
+      return {
+        parameters: await remapActionParams<AD>(param, client, actionMetadata),
+      };
     },
   ));
 

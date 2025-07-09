@@ -1,5 +1,23 @@
 # @osdk/create-app
 
+## 2.3.0-beta.10
+
+## 2.3.0-beta.9
+
+## 2.3.0-beta.8
+
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+## 2.3.0-beta.6
+
+## 2.3.0-beta.5
+
+## 2.3.0-beta.4
+
 ## 2.3.0-beta.3
 
 ## 2.3.0-beta.2

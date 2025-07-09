@@ -17,6 +17,7 @@
 export { createOntologyBranch } from "./OntologyBranchService/createOntologyBranch.js";
 export { createOntologyServiceBranch } from "./OntologyBranchService/createOntologyServiceBranch.js";
 export { discardChangesOnBranch } from "./OntologyBranchService/discardChangesOnBranch.js";
+export { discardChangesOnBranchV2 } from "./OntologyBranchService/discardChangesOnBranchV2.js";
 export { dryRunMergeOntologyBranch } from "./OntologyBranchService/dryRunMergeOntologyBranch.js";
 export { findConflicts } from "./OntologyBranchService/findConflicts.js";
 export { getOntologyBranchRid } from "./OntologyBranchService/getOntologyBranchRid.js";

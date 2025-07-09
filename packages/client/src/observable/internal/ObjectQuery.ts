@@ -27,6 +27,7 @@ import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";
 import { Query } from "./Query.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
+import { tombstone } from "./tombstone.js";
 
 export interface ObjectEntry extends Entry<ObjectCacheKey> {}
 
@@ -102,7 +103,7 @@ export class ObjectQuery extends Query<
 
   async _fetchAndStore(): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "_fetchAndStore" }).info(
+      this.logger?.child({ methodName: "_fetchAndStore" }).debug(
         "calling _fetchAndStore",
       );
     }
@@ -141,6 +142,40 @@ export class ObjectQuery extends Query<
     }
     const ret = batch.write(this.cacheKey, data, status);
     batch.changes.registerObject(this.cacheKey, data, /* isNew */ !entry);
+
+    return ret;
+  }
+
+  deleteFromStore(
+    status: Status,
+    batch: BatchContext,
+  ): Entry<ObjectCacheKey> | undefined {
+    const entry = batch.read(this.cacheKey);
+
+    if (entry && deepEqual(tombstone, entry.value)) {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "deleteFromStore" }).debug(
+          `Object was deep equal, just setting status`,
+        );
+      }
+      // must do a "full write" here so that the lastUpdated is updated but we
+      // don't want to retrigger anyone's memoization on the value!
+      return batch.write(this.cacheKey, entry.value, status);
+    }
+
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "deleteFromStore" }).debug(
+        JSON.stringify({ status }),
+      );
+    }
+
+    // if there is no entry then there is nothing to do
+    if (!entry || !entry.value) {
+      return;
+    }
+
+    const ret = batch.delete(this.cacheKey, status);
+    batch.changes.deleteObject(this.cacheKey);
 
     return ret;
   }

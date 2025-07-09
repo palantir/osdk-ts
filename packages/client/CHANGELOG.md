@@ -1,5 +1,102 @@
 # @osdk/client
 
+## 2.3.0-beta.10
+
+### Minor Changes
+
+- 991dbd4: Async function metadata
+- 266b756: Add consistency for async iter calls.
+- 8d69555: Add hydrateObjectSetFromObjectRids util.
+
+### Patch Changes
+
+- Updated dependencies [0cc9cad]
+  - @osdk/client.unstable@2.3.0-beta.10
+  - @osdk/api@2.3.0-beta.10
+  - @osdk/generator-converters@2.3.0-beta.10
+
+## 2.3.0-beta.9
+
+### Minor Changes
+
+- 5a15cfd: Added fixed dependency to API for beta package.
+
+### Patch Changes
+
+- Updated dependencies [7d232fb]
+  - @osdk/client.unstable@2.3.0-beta.9
+  - @osdk/api@2.3.0-beta.9
+  - @osdk/generator-converters@2.3.0-beta.9
+
+## 2.3.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [12d599f]
+  - @osdk/api@2.3.0-beta.8
+  - @osdk/generator-converters@2.3.0-beta.8
+  - @osdk/client.unstable@2.3.0-beta.8
+
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- 2a23cca: ObservableClient now adds to the fetch-user-agent
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/generator-converters@2.3.0-beta.7
+  - @osdk/client.unstable@2.3.0-beta.7
+  - @osdk/api@2.3.0-beta.7
+
+## 2.3.0-beta.6
+
+### Minor Changes
+
+- 9839eab: Bumps conjure-lite
+- cd911a6: Properly handles lat,long strings in action arguments
+- 2c800e5: Fix bug where we sent over longitude/latitude for geohash properties, when the backend actually expects latitude/longitude.
+- cd911a6: ObservableClient can now do optimistic writes for deletes
+
+### Patch Changes
+
+- Updated dependencies [9839eab]
+  - @osdk/client.unstable@2.3.0-beta.6
+  - @osdk/api@2.3.0-beta.6
+  - @osdk/generator-converters@2.3.0-beta.6
+
+## 2.3.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [d6bccdf]
+- Updated dependencies [e8c4aed]
+  - @osdk/client.unstable@2.3.0-beta.5
+  - @osdk/api@2.3.0-beta.5
+  - @osdk/generator-converters@2.3.0-beta.5
+
+## 2.3.0-beta.4
+
+### Minor Changes
+
+- 43c5547: Add 'getMediaReference' method to Media
+- 3736624: Ensure count operations return numbers
+- 3b5ccaa: Fix orderBy argument on object load methods
+
+### Patch Changes
+
+- Updated dependencies [43c5547]
+- Updated dependencies [cc2ce5f]
+- Updated dependencies [a6c01ff]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [3408ea9]
+- Updated dependencies [3b5ccaa]
+  - @osdk/api@2.3.0-beta.4
+  - @osdk/client.unstable@2.3.0-beta.4
+  - @osdk/generator-converters@2.3.0-beta.4
+
 ## 2.3.0-beta.3
 
 ### Patch Changes

@@ -30,4 +30,7 @@ export interface OptimisticBuilder {
     primaryKey: PrimaryKeyType<T>,
     properties: Pick<Osdk.Instance<T>, PropertyKeys<T>>,
   ) => this;
+  deleteObject: <T extends ObjectTypeDefinition>(
+    value: Osdk.Instance<T>,
+  ) => this;
 }

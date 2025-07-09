@@ -1,5 +1,11 @@
 # @osdk/tool.release
 
+## 0.8.0-beta.2
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
 ## 0.7.0-beta.3
 
 ### Minor Changes

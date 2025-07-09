@@ -130,6 +130,13 @@ export function createClientInternal(
     objectSetFactory,
   );
 
+  return createClientFromContext(clientCtx);
+}
+
+/**
+ * @internal
+ */
+export function createClientFromContext(clientCtx: MinimalClient) {
   function clientFn<
     T extends
       | ObjectOrInterfaceDefinition
@@ -146,7 +153,7 @@ export function createClientInternal(
     : never
   {
     if (o.type === "object" || o.type === "interface") {
-      return objectSetFactory(o, clientCtx) as any;
+      return clientCtx.objectSetFactory(o, clientCtx) as any;
     } else if (o.type === "action") {
       return new ActionInvoker(
         clientCtx,

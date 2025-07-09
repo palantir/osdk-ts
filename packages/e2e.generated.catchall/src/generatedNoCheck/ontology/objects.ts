@@ -20,5 +20,6 @@ export { StructPerson } from './objects/StructPerson.js';
 export { StructPersonOpisTeam } from './objects/StructPersonOpisTeam.js';
 export { TestGeoAction } from './objects/TestGeoAction.js';
 export { Todo } from './objects/Todo.js';
+export { UnstructuredImageExample } from './objects/UnstructuredImageExample.js';
 export { Venture } from './objects/Venture.js';
 export { WeatherStation } from './objects/WeatherStation.js';

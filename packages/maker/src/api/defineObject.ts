@@ -16,13 +16,14 @@
 
 import invariant from "tiny-invariant";
 import {
-  extractNamespace,
+  addNamespaceIfNone,
   namespace,
   ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
 import type {
   InterfacePropertyType,
+  InterfaceType,
   ObjectType,
   ObjectTypeDefinition,
   PropertyTypeType,
@@ -113,27 +114,33 @@ export function defineObject(
   );
 
   objectDef.implementsInterfaces?.forEach(interfaceImpl => {
+    const allInterfaceProperties = getAllInterfaceProperties(
+      interfaceImpl.implements,
+    );
     const nonExistentInterfaceProperties: ValidationResult[] = interfaceImpl
       .propertyMapping.map(val => val.interfaceProperty).filter(
         interfaceProperty =>
-          interfaceImpl.implements.propertiesV2[interfaceProperty]
+          allInterfaceProperties[addNamespaceIfNone(interfaceProperty)]
             === undefined,
       ).map(interfaceProp => ({
         type: "invalid",
         reason:
-          `Interface property ${interfaceImpl.implements.apiName}.${interfaceProp} referenced in ${objectDef.apiName} object does not exist`,
+          `Interface property ${interfaceProp} referenced in ${objectDef.apiName} object does not exist`,
       }));
 
     const interfaceToObjectProperties = Object.fromEntries(
       interfaceImpl.propertyMapping.map(
-        mapping => [mapping.interfaceProperty, mapping.mapsTo],
+        mapping => [
+          addNamespaceIfNone(mapping.interfaceProperty),
+          mapping.mapsTo,
+        ],
       ),
     );
     const validateProperty = (
       interfaceProp: [string, InterfacePropertyType],
     ): ValidationResult => {
       if (
-        interfaceProp[1].sharedPropertyType.nonNameSpacedApiName
+        interfaceProp[1].sharedPropertyType.apiName
           in interfaceToObjectProperties
       ) {
         return validateInterfaceImplProperty(
@@ -144,40 +151,21 @@ export function defineObject(
       }
       return {
         type: "invalid",
-        reason: `Interface property ${interfaceImpl.implements.apiName}.${
-          interfaceProp[1].sharedPropertyType.nonNameSpacedApiName
+        reason: `Interface property ${
+          interfaceProp[1].sharedPropertyType.apiName
         } not implemented by ${objectDef.apiName} object definition`,
       };
     };
-    const baseValidations = Object.entries(
-      interfaceImpl.implements.propertiesV2,
-    )
-      .map<ValidationResult>(validateProperty);
-    const extendsValidations = interfaceImpl.implements.extendsInterfaces
-      .flatMap(interfaceApiName =>
-        Object.entries(
-          ontologyDefinition[OntologyEntityTypeEnum.INTERFACE_TYPE][
-            interfaceApiName
-          ].propertiesV2 as Record<string, InterfacePropertyType>,
-        ).map(validateProperty)
-      );
-
-    const allFailedValidations = baseValidations.concat(
-      extendsValidations,
+    const validations = Object.entries(
+      getAllInterfaceProperties(interfaceImpl.implements),
+    ).map(validateProperty);
+    const allFailedValidations = validations.concat(
       nonExistentInterfaceProperties,
     ).filter(val => val.type === "invalid");
     invariant(
       allFailedValidations.length === 0,
       "\n" + allFailedValidations.map(formatValidationErrors).join("\n"),
     );
-
-    interfaceImpl.propertyMapping = interfaceImpl.propertyMapping.map((
-      mapping,
-    ) => ({
-      interfaceProperty: extractNamespace(interfaceImpl.implements.apiName)
-        + mapping.interfaceProperty,
-      mapsTo: mapping.mapsTo,
-    }));
   });
 
   const finalObject: ObjectType = {
@@ -226,7 +214,7 @@ function validateInterfaceImplProperty(
         `Object property mapped to interface does not exist. Object Property Mapped: ${mappedObjectProp}`,
     };
   }
-  if (spt.type !== objProp?.type) {
+  if (JSON.stringify(spt.type) !== JSON.stringify(objProp?.type)) {
     return {
       type: "invalid",
       reason:
@@ -235,4 +223,31 @@ function validateInterfaceImplProperty(
   }
 
   return { type: "valid" };
+}
+
+export function convertToDisplayName(s: string | undefined | null): string {
+  return s === undefined || s == null
+    ? ""
+    : s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+// TODO: edge cases
+export function convertToPluralDisplayName(
+  s: string | undefined | null,
+): string {
+  return s === undefined || s == null
+    ? ""
+    : s.endsWith("s")
+    ? convertToDisplayName(s)
+    : convertToDisplayName(s) + "s";
+}
+
+export function getAllInterfaceProperties(
+  interfaceType: InterfaceType,
+): Record<string, InterfacePropertyType> {
+  let properties = interfaceType.propertiesV2;
+  interfaceType.extendsInterfaces.forEach(ext => {
+    properties = { ...properties, ...getAllInterfaceProperties(ext) };
+  });
+  return properties;
 }

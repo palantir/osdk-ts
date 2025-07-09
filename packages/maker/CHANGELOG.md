@@ -1,5 +1,110 @@
 # @osdk/maker
 
+## 0.11.0-beta.14
+
+### Minor Changes
+
+- 79cb6eb: Fix imported interface properties in IR
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.10
+
+## 0.11.0-beta.13
+
+### Minor Changes
+
+- 402aa94: Use namespaced api names for interface properties
+
+## 0.11.0-beta.12
+
+### Minor Changes
+
+- 1847bcb: Support arrays in OT props
+- 3ae0cfd: Remove import/dep from codegen
+- 7d232fb: Added searchable field to interface definitions
+- 60b0029: Check extended interfaces when validating object property mapping
+- 0abeec3: Make codegen prettier
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.9
+
+## 0.11.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [12d599f]
+  - @osdk/api@2.3.0-beta.8
+
+## 0.11.0-beta.10
+
+### Minor Changes
+
+- 99b90af: Fix dependency injection to use OAC version and not maker version
+
+## 0.11.0-beta.9
+
+### Minor Changes
+
+- 508ecd6: Improve defineLink syntax
+
+## 0.11.0-beta.8
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/api@2.3.0-beta.7
+
+## 0.11.0-beta.7
+
+### Minor Changes
+
+- 77674dd: Remove alias
+- c305ea8: link id sanitation
+- ab2ef22: Fix dependency injection
+- 1608ba5: Make modify action params optional
+- dc7d201: Fix geopoint bug
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.6
+
+## 0.11.0-beta.6
+
+### Minor Changes
+
+- e34ee12: Add output dir CLI flag
+- 37cdc7e: Propagate interface extension to static objects
+- 982d3ce: Start tracking and injecting OAC dependencies
+
+### Patch Changes
+
+- Updated dependencies [e8c4aed]
+  - @osdk/api@2.3.0-beta.5
+
+## 0.11.0-beta.5
+
+### Minor Changes
+
+- 4d13e4d: Restricted view datasources in OAC
+- b8d0526: OAC edit only properties for dataset backed objects
+- 0d5feaa: Docs for maker
+- e20c5d6: Validate edit only properties are not primary keys
+- 27cdb1d: Adding concrete object value type support
+- c177bf0: Update property default typeClasses to match SPT default typeClasses
+
+### Patch Changes
+
+- Updated dependencies [43c5547]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [3b5ccaa]
+  - @osdk/api@2.3.0-beta.4
+
 ## 0.11.0-beta.4
 
 ### Minor Changes

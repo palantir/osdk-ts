@@ -28,9 +28,11 @@ export async function uploadSnapshotVersion(
 ): Promise<Version> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/uploadSnapshot?version=${version}&preview=true${
+    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/uploadSnapshot?version=${
+      encodeURIComponent(version)
+    }&preview=true${
       snapshotId !== ""
-        ? `&snapshotIdentifier=${snapshotId}`
+        ? `&snapshotIdentifier=${encodeURIComponent(snapshotId)}`
         : ""
     }`;
 

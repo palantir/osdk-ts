@@ -15,10 +15,13 @@
  */
 
 import { CLEAR_DATA } from "@osdk/api";
+import type { ActionMetadata, MediaUpload } from "@osdk/api";
 import { Employee, Task } from "@osdk/client.test.ontology";
 import type { MediaReference } from "@osdk/foundry.core";
+import type { SetupServer } from "@osdk/shared.test";
 import {
   LegacyFauxFoundry,
+  MockOntologiesV2,
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
@@ -29,12 +32,15 @@ import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAttachmentUpload } from "../object/AttachmentUpload.js";
+import { isMediaReference } from "../object/mediaUpload.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import { toDataValue } from "./toDataValue.js";
 
 describe(toDataValue, () => {
   let client: Client;
   let clientCtx: MinimalClient;
+  let mockActionMetadata: ActionMetadata;
+  let apiServer: SetupServer;
 
   const mockFetch: MockedFunction<typeof globalThis.fetch> = vi.fn();
 
@@ -42,12 +48,20 @@ describe(toDataValue, () => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
     ({ client } = testSetup);
 
+    apiServer = testSetup.apiServer;
+
     clientCtx = createMinimalClient(
       { ontologyRid: testSetup.fauxFoundry.defaultOntologyRid },
       testSetup.fauxFoundry.baseUrl,
       testSetup.auth,
       {},
     );
+
+    // toDataValue only needs the apiName right now, update this if that changes
+    const fakeActionMetadata = {
+      apiName: "createUnstructuredImageExampleObject",
+    };
+    mockActionMetadata = fakeActionMetadata as ActionMetadata;
 
     return () => {
       testSetup.apiServer.close();
@@ -64,7 +78,11 @@ describe(toDataValue, () => {
       string: "string",
       timestamp: "2024-01-01T00:00:00Z",
     };
-    const convertedBasic = await toDataValue(basic, clientCtx);
+    const convertedBasic = await toDataValue(
+      basic,
+      clientCtx,
+      mockActionMetadata,
+    );
     expect(convertedBasic).toEqual(basic);
   });
 
@@ -73,11 +91,15 @@ describe(toDataValue, () => {
     const attachmentArray = [attachment];
     const attachmentSet = new Set(attachmentArray);
 
-    const recursiveConversion = await toDataValue({
-      attachment,
-      attachmentArray,
-      attachmentSet,
-    }, clientCtx);
+    const recursiveConversion = await toDataValue(
+      {
+        attachment,
+        attachmentArray,
+        attachmentSet,
+      },
+      clientCtx,
+      mockActionMetadata,
+    );
 
     expect(recursiveConversion).toEqual({
       attachment: "rid",
@@ -93,7 +115,11 @@ describe(toDataValue, () => {
       },
     };
 
-    const recursiveConversion = await toDataValue(struct, clientCtx);
+    const recursiveConversion = await toDataValue(
+      struct,
+      clientCtx,
+      mockActionMetadata,
+    );
 
     expect(recursiveConversion).toEqual({
       inner: { attachment: "rid" },
@@ -102,7 +128,11 @@ describe(toDataValue, () => {
 
   it("maps an ontology object into just its primary key", async () => {
     const employee = stubData.employee1;
-    const ontologyConversion = await toDataValue(employee, clientCtx);
+    const ontologyConversion = await toDataValue(
+      employee,
+      clientCtx,
+      mockActionMetadata,
+    );
     expect(ontologyConversion).toEqual(
       stubData.employee1.__primaryKey,
     );
@@ -110,7 +140,11 @@ describe(toDataValue, () => {
 
   it("maps an ontology object into just its primary key with osdk wrapper", async () => {
     const task = await client(Employee).fetchOne(50030);
-    const ontologyConversion = await toDataValue(task, clientCtx);
+    const ontologyConversion = await toDataValue(
+      task,
+      clientCtx,
+      mockActionMetadata,
+    );
     expect(ontologyConversion).toEqual(
       task.$primaryKey,
     );
@@ -134,19 +168,31 @@ describe(toDataValue, () => {
       },
     }
   `;
-    const objectSetConversion = await toDataValue(clientObjectSet, clientCtx);
+    const objectSetConversion = await toDataValue(
+      clientObjectSet,
+      clientCtx,
+      mockActionMetadata,
+    );
     expect(objectSetConversion).toMatchInlineSnapshot(
       expected,
     );
 
-    const definitionConversion = await toDataValue(definition, clientCtx);
+    const definitionConversion = await toDataValue(
+      definition,
+      clientCtx,
+      mockActionMetadata,
+    );
     expect(definitionConversion).toMatchInlineSnapshot(expected);
   });
 
   it("converts blob attachment uploads correctly", async () => {
     const blob = new Blob([JSON.stringify({ "hi": "mom" })]);
     const attachmentUpload = createAttachmentUpload(blob, "file1.txt");
-    const converted = await toDataValue(attachmentUpload, clientCtx);
+    const converted = await toDataValue(
+      attachmentUpload,
+      clientCtx,
+      mockActionMetadata,
+    );
 
     expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
   });
@@ -162,8 +208,43 @@ describe(toDataValue, () => {
       { name: "file1.txt" },
     );
 
-    const converted = await toDataValue(file, clientCtx);
+    const converted = await toDataValue(file, clientCtx, mockActionMetadata);
     expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
+  });
+
+  it("converts media uploads correctly", async () => {
+    const file: MediaUpload = {
+      data: new Blob([
+        JSON.stringify({ name: "Hello World" }, null, 2),
+      ], {
+        type: "application/json",
+      }),
+      path: "file.txt",
+    };
+
+    // TODO: Mock MediaUpload properly in FauxFoundry
+    apiServer.boundary(async () => {
+      apiServer.use(
+        MockOntologiesV2.MediaReferenceProperties.uploadMedia(
+          "https://stack.palantir.com",
+          () => {
+            return {
+              mimeType: "application/json",
+              reference: {
+                type: "mediaSetViewItem",
+                mediaSetViewItem: {
+                  mediaItemRid: "media-item-rid",
+                  mediaSetRid: "media-set-rid",
+                  mediaSetViewRid: "media-set-view-rid",
+                },
+              },
+            };
+          },
+        ),
+      );
+      const converted = await toDataValue(file, clientCtx, mockActionMetadata);
+      expect(isMediaReference(converted)).toBe(true);
+    });
   });
 
   it("converts media reference correctly", async () => {
@@ -179,7 +260,11 @@ describe(toDataValue, () => {
       },
     };
 
-    const converted = await toDataValue(mediaReference, clientCtx);
+    const converted = await toDataValue(
+      mediaReference,
+      clientCtx,
+      mockActionMetadata,
+    );
     expect(converted).toEqual(mediaReference);
   });
 

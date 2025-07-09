@@ -1,5 +1,74 @@
 # @osdk/shared.test
 
+## 2.3.0-beta.10
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.10
+- @osdk/generator-converters@2.3.0-beta.10
+
+## 2.3.0-beta.9
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.9
+- @osdk/generator-converters@2.3.0-beta.9
+
+## 2.3.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [12d599f]
+  - @osdk/api@2.3.0-beta.8
+  - @osdk/generator-converters@2.3.0-beta.8
+
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/generator-converters@2.3.0-beta.7
+  - @osdk/api@2.3.0-beta.7
+
+## 2.3.0-beta.6
+
+### Minor Changes
+
+- e99a614: Split FauxFoundry to its own package
+- 2c800e5: Fix bug where we sent over longitude/latitude for geohash properties, when the backend actually expects latitude/longitude.
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.6
+- @osdk/generator-converters@2.3.0-beta.6
+
+## 2.3.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [e8c4aed]
+  - @osdk/api@2.3.0-beta.5
+  - @osdk/generator-converters@2.3.0-beta.5
+
+## 2.3.0-beta.4
+
+### Minor Changes
+
+- 43c5547: Add 'getMediaReference' method to Media
+- 3736624: Ensure count operations return numbers
+
+### Patch Changes
+
+- Updated dependencies [43c5547]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [3b5ccaa]
+  - @osdk/api@2.3.0-beta.4
+  - @osdk/generator-converters@2.3.0-beta.4
+
 ## 2.3.0-beta.3
 
 ### Patch Changes
