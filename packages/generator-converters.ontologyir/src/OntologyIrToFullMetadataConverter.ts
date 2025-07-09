@@ -33,7 +33,8 @@ import * as path from "path";
 import { hash } from "node:crypto";
 import type { ApiName } from "./ApiName.js";
 import { FunctionDiscoverer } from "@foundry/functions-typescript-osdk-discovery";
-import { IDataType } from "@palantir/function-registry-api/functions-api-types/dataType.js";
+import { IDataType, IDataType_FunctionCustomType } from "@palantir/function-registry-api/functions-api-types/dataType.js";
+// import { IDiscoveredFunction } from "@foundry/functions-typescript-discovery-common";
 
 /**
  * TypeScript equivalent of OntologyIrToFullMetadataConverter.java
@@ -91,25 +92,28 @@ export class OntologyIrToFullMetadataConverter {
     // Discover functions using the provided filePath as the functionsDirectoryPath
     const functions = fd.discover();
 
-    functions.discoveredFunctions.forEach((func) => {
+  functions.discoveredFunctions.forEach((func) => {    
       const queryType: Ontologies.QueryTypeV2 = {
         apiName: apiName,
         rid: rid,
         version: version,
         parameters: func.inputs.reduce((acc, input) => {
           acc[input.name] = {
-            dataType: this.convertDataType(input.dataType),
+            dataType: this.convertDataType(input.dataType, func.customTypes),
           };
           return acc;
         }, {} as Record<ApiName, Ontologies.QueryParameterV2>),
-        output: this.convertDataType(func.output.single.dataType),
+        output: this.convertDataType(func.output.single.dataType, func.customTypes),
       };  
     });
 
     return functions;
   }
 
-  static convertDataType(dataType: IDataType): Ontologies.QueryDataType {
+  static convertDataType(dataType: IDataType, customTypes: any, required?: boolean): Ontologies.QueryDataType {
+    if (required === false) {
+      return { type: "union", unionTypes: [this.convertDataType(dataType, customTypes), { type: "null" }] };
+    }
     switch (dataType.type) {
       case "string":
         return { type: "string" };
@@ -129,19 +133,37 @@ export class OntologyIrToFullMetadataConverter {
         return { type: "timestamp" };
       case "attachment":
         return { type: "attachment" };
+      case "optionalType": 
+        return { type: "union", unionTypes: [this.convertDataType(dataType.optionalType.wrappedType, customTypes), { type: "null" }] }
       case "set":
-        return { type: "set", subType: this.convertDataType(dataType.set.elementsType) };
+        return { type: "set", subType: this.convertDataType(dataType.set.elementsType, customTypes) };
       case "objectSet":
         return { type: "objectSet", objectApiName: dataType.objectSet.objectTypeId };
       case "list":
-        return { type: "array", subType: this.convertDataType(dataType.list.elementsType) };
+        return { type: "array", subType: this.convertDataType(dataType.list.elementsType, customTypes) };
       case "functionCustomType":
-        return { type: "object", objectApiName: dataType.functionCustomType, objectTypeApiName: dataType.functionCustomType };
+        return this.convertFunctionCustomType(dataType.functionCustomType, customTypes);
+        // return { type: "object", objectApiName: dataType.functionCustomType, objectTypeApiName: dataType.functionCustomType };
       case "object":
         return { type: "object", objectApiName: dataType.object.objectTypeId, objectTypeApiName: dataType.object.objectTypeId };
       default:
         console.log(dataType.type);
         throw new Error(`Unsupported data type: ${dataType.type}`);
+    }
+  }
+
+  static convertFunctionCustomType(functionId: string, customTypes: any): Ontologies.QueryDataType {
+    const fieldMetadata = customTypes[functionId].fieldMetadata
+    const fields = customTypes[functionId].fields
+    const structFields = Object.keys(fields).map(key => {
+      return {
+        name: key,
+        fieldType: this.convertDataType(fields[key], customTypes, fieldMetadata[key].required ?? true),
+      }
+    })
+    return {
+      type: "struct",
+      fields: structFields
     }
   }
   

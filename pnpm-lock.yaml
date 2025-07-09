@@ -3292,6 +3292,9 @@ importers:
 
   packages/generator-converters.ontologyir:
     dependencies:
+      '@foundry/functions-typescript-discovery-common':
+        specifier: file:/Users/ethana/Downloads/foundry-functions-typescript-discovery-common-0.19.0.tgz
+        version: file:../../../Users/ethana/Downloads/foundry-functions-typescript-discovery-common-0.19.0.tgz
       '@foundry/functions-typescript-osdk-discovery':
         specifier: file:/Users/ethana/Downloads/foundry-functions-typescript-osdk-discovery-0.52.0.tgz
         version: file:../../../Users/ethana/Downloads/foundry-functions-typescript-osdk-discovery-0.52.0.tgz(@osdk/api@2.3.0-beta.8)(@osdk/client@2.3.0-beta.8)(@osdk/functions@1.0.1(@osdk/client@2.3.0-beta.8))
@@ -5503,7 +5506,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {node: '>=0.10.0'}
+    engines: {'0': node >=0.10.0}
 
   '@expo/cli@0.21.8':
     resolution: {integrity: sha512-gU+NlL/XS9r7LEfLhjDDKuv3jEtOh+rVnk/k7Lp8WrUwaMCoEGfmQpSqLXetFCCC4UFXSaj1cdMGoy2UBw4rew==}
@@ -5596,6 +5599,10 @@ packages:
 
   '@foundry/functions-typescript-discovery-common@0.19.0':
     resolution: {integrity: sha512-5SStyHKFYwlSLMYCq1pjjTInSRkoipDC4+KgSqAUc5VlKi1W2UJJ2/xqC7barb7Yy3H5gEn7a9bMrbgmG1NMTw==, tarball: https://artifactory.palantir.build/artifactory/api/npm/all-npm/@foundry/functions-typescript-discovery-common/-/@foundry/foundry-functions-typescript-discovery-common-0.19.0.tgz}
+
+  '@foundry/functions-typescript-discovery-common@file:../../../Users/ethana/Downloads/foundry-functions-typescript-discovery-common-0.19.0.tgz':
+    resolution: {integrity: sha512-5SStyHKFYwlSLMYCq1pjjTInSRkoipDC4+KgSqAUc5VlKi1W2UJJ2/xqC7barb7Yy3H5gEn7a9bMrbgmG1NMTw==, tarball: file:../../../Users/ethana/Downloads/foundry-functions-typescript-discovery-common-0.19.0.tgz}
+    version: 0.19.0
 
   '@foundry/functions-typescript-osdk-discovery@file:../../../Users/ethana/Downloads/foundry-functions-typescript-osdk-discovery-0.52.0.tgz':
     resolution: {integrity: sha512-KKhVxC907Uki2lUnqffySsavf0qfCxjyj1aX+97m4o063jz4/Otn0RSuhUFtWh0wNhxCrP2ZvXQj0+TKS1rI6w==, tarball: file:../../../Users/ethana/Downloads/foundry-functions-typescript-osdk-discovery-0.52.0.tgz}
@@ -16079,6 +16086,13 @@ snapshots:
   '@floating-ui/utils@0.2.8': {}
 
   '@foundry/functions-typescript-discovery-common@0.19.0':
+    dependencies:
+      tslib: 2.6.3
+      typescript: 5.7.3
+      uuid: 3.4.0
+      yargs: 17.7.2
+
+  '@foundry/functions-typescript-discovery-common@file:../../../Users/ethana/Downloads/foundry-functions-typescript-discovery-common-0.19.0.tgz':
     dependencies:
       tslib: 2.6.3
       typescript: 5.7.3

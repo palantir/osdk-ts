@@ -4,6 +4,6 @@ interface MyParam {
     param3?: string | undefined;
 }
 
-export default function(param: MyParam): null {
-    return null;
+export default function(param: MyParam): MyParam {
+    return param;
 }
