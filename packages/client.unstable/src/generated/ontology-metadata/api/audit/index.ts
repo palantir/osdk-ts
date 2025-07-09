@@ -125,8 +125,6 @@ export type {
   OntologyMetadataServiceGetActionTypeUsageResultParams,
   OntologyMetadataServiceGetDeprecationUsageRequestParams,
   OntologyMetadataServiceGetDeprecationUsageResultParams,
-  OntologyMetadataServiceGetEntityDelegateDatasetRequestParams,
-  OntologyMetadataServiceGetEntityDelegateDatasetResponseParams,
   OntologyMetadataServiceGetEntityModificationHistoryRequestParams,
   OntologyMetadataServiceGetEntityModificationHistoryResultParams,
   OntologyMetadataServiceGetEntityModificationHistoryV2RequestParams,

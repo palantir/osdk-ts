@@ -310,7 +310,6 @@ export interface RgbColor {
  */
 export interface Rule {
   condition: Condition;
-  name?: string | null | undefined;
   style: FormatStyle;
 }
 /**

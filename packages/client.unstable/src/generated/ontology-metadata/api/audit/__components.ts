@@ -42,8 +42,6 @@ import type {
   GetActionTypesForObjectTypeRequest as _api_GetActionTypesForObjectTypeRequest,
   GetActionTypesForObjectTypeResponse
     as _api_GetActionTypesForObjectTypeResponse,
-  GetEntityDelegateDatasetRequest as _api_GetEntityDelegateDatasetRequest,
-  GetEntityDelegateDatasetResponse as _api_GetEntityDelegateDatasetResponse,
   GetFeatureConfigurationsResponse as _api_GetFeatureConfigurationsResponse,
   GetLinkTypesForObjectTypesRequest as _api_GetLinkTypesForObjectTypesRequest,
   GetObjectTypesForInterfaceTypesRequest
@@ -653,7 +651,6 @@ export type OntologyMetadataAuditEvent =
   | "ONTOLOGY_METADATA_SERVICE_LOAD_ALL_INTERFACE_TYPES_FROM_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_LOAD_ALL_TYPE_GROUPS_FROM_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_LOAD_ONTOLOGY_DATASOURCES"
-  | "ONTOLOGY_METADATA_SERVICE_GET_ENTITY_DELEGATE_DATASET"
   | "ONTOLOGY_METADATA_SERVICE_MODIFY_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_DRY_RUN_MODIFY_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_MODIFICATION"
@@ -811,12 +808,6 @@ export interface OntologyMetadataServiceGetDeprecationUsageRequestParams {
 }
 export interface OntologyMetadataServiceGetDeprecationUsageResultParams {
   response: _api_usage_GetDeprecationUsageResponse;
-}
-export interface OntologyMetadataServiceGetEntityDelegateDatasetRequestParams {
-  request: _api_GetEntityDelegateDatasetRequest;
-}
-export interface OntologyMetadataServiceGetEntityDelegateDatasetResponseParams {
-  response: _api_GetEntityDelegateDatasetResponse;
 }
 export interface OntologyMetadataServiceGetEntityModificationHistoryRequestParams {
   ontologyRid: _api_OntologyRid;

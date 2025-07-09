@@ -1279,12 +1279,6 @@ export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMulti
     ObjectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources;
 }
 
-export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMaterializations {
-  type: "objectTypePropertySecurityGroupsNotSupportedWithMaterializations";
-  objectTypePropertySecurityGroupsNotSupportedWithMaterializations:
-    ObjectTypePropertySecurityGroupsNotSupportedWithMaterializations;
-}
-
 export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedOnBranches {
   type: "objectTypePropertySecurityGroupsNotSupportedOnBranches";
   objectTypePropertySecurityGroupsNotSupportedOnBranches:
@@ -3450,7 +3444,6 @@ export type ErrorType =
   | ErrorType_objectTypeNullablePropertyInSecurityGroupGranularPolicyMarkingCondition
   | ErrorType_objectTypeInvalidNumberOfPropertyReferencesInPropertySecurityGroup
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources
-  | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMaterializations
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedOnBranches
   | ErrorType_objectTypePropertyIncompatibleBackingColumnType
   | ErrorType_objectTypeStructColumnFieldMissingFromBackingDatasource
@@ -5238,11 +5231,6 @@ export interface ObjectTypePropertySecurityGroupReferencesNonExistentProperty {
  * Property security groups are not yet supported on branches.
  */
 export interface ObjectTypePropertySecurityGroupsNotSupportedOnBranches {
-}
-/**
- * Property security groups are not yet supported for Object Types that have Materializations.
- */
-export interface ObjectTypePropertySecurityGroupsNotSupportedWithMaterializations {
 }
 /**
  * Property security groups are not yet supported with MDOs.

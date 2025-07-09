@@ -860,13 +860,6 @@ export interface ActionTypeLogic {
   validation: ActionValidation;
   webhooks?: ActionWebhooks | null | undefined;
 }
-export interface ActionTypeLogicRequest {
-  logic: ActionLogic;
-  notifications: Array<ActionNotification>;
-  revert?: ActionRevert | null | undefined;
-  validation: ActionValidationRequest;
-  webhooks?: ActionWebhooks | null | undefined;
-}
 /**
  * An ActionType defines the schema of the edits that can be made to Phonograph.
  */
@@ -919,7 +912,7 @@ export interface ActionTypeMetadataModification {
  * Action type shape for requests. Ensures backend compatibility with the usePlugin LLM endpoint.
  */
 export interface ActionTypeModificationRequest {
-  actionTypeLogic: ActionTypeLogicRequest;
+  actionTypeLogic: ActionTypeLogic;
   metadata: ActionTypeMetadataModification;
 }
 /**
@@ -1117,11 +1110,6 @@ export type ActionTypeVersion = string;
 export interface ActionValidation {
   actionTypeLevelValidation: ActionTypeLevelValidation;
   parameterValidations: Record<ParameterId, ConditionalValidationBlock>;
-  sectionValidations: Record<SectionId, SectionDisplayBlock>;
-}
-export interface ActionValidationRequest {
-  actionTypeLevelValidation: ActionTypeLevelValidation;
-  parameterValidations: Record<ParameterId, ConditionalValidationBlockRequest>;
   sectionValidations: Record<SectionId, SectionDisplayBlock>;
 }
 /**
@@ -1602,161 +1590,6 @@ export type AllowedParameterValuesModification =
   | AllowedParameterValuesModification_struct
   | AllowedParameterValuesModification_valueType;
 
-export interface AllowedParameterValuesRequest_oneOf {
-  type: "oneOf";
-  oneOf: ParameterValueOneOfOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_range {
-  type: "range";
-  range: ParameterRangeOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_objectQuery {
-  type: "objectQuery";
-  objectQuery: ParameterObjectQueryOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_interfaceObjectQuery {
-  type: "interfaceObjectQuery";
-  interfaceObjectQuery: ParameterInterfaceObjectQueryOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_objectPropertyValue {
-  type: "objectPropertyValue";
-  objectPropertyValue: ParameterObjectPropertyValueOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_interfacePropertyValue {
-  type: "interfacePropertyValue";
-  interfacePropertyValue: ParameterInterfacePropertyValueOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_objectList {
-  type: "objectList";
-  objectList: ParameterObjectListOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_user {
-  type: "user";
-  user: ParameterMultipassUserOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_multipassGroup {
-  type: "multipassGroup";
-  multipassGroup: ParameterMultipassGroupOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_text {
-  type: "text";
-  text: ParameterFreeTextOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_datetime {
-  type: "datetime";
-  datetime: ParameterDateTimeRangeOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_boolean {
-  type: "boolean";
-  boolean: ParameterBooleanOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_objectSetRid {
-  type: "objectSetRid";
-  objectSetRid: ParameterObjectSetRidOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_attachment {
-  type: "attachment";
-  attachment: ParameterAttachmentOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_cbacMarking {
-  type: "cbacMarking";
-  cbacMarking: ParameterCbacMarkingOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_mandatoryMarking {
-  type: "mandatoryMarking";
-  mandatoryMarking: ParameterMandatoryMarkingOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_mediaReference {
-  type: "mediaReference";
-  mediaReference: ParameterMediaReferenceOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_objectTypeReference {
-  type: "objectTypeReference";
-  objectTypeReference: ParameterObjectTypeReferenceOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_timeSeriesReference {
-  type: "timeSeriesReference";
-  timeSeriesReference: ParameterTimeSeriesReferenceOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_geohash {
-  type: "geohash";
-  geohash: ParameterGeohashOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_geoshape {
-  type: "geoshape";
-  geoshape: ParameterGeoshapeOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_geotimeSeriesReference {
-  type: "geotimeSeriesReference";
-  geotimeSeriesReference: ParameterGeotimeSeriesReferenceOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_redacted {
-  type: "redacted";
-  redacted: Redacted;
-}
-
-export interface AllowedParameterValuesRequest_struct {
-  type: "struct";
-  struct: ParameterStructOrEmpty;
-}
-
-export interface AllowedParameterValuesRequest_valueType {
-  type: "valueType";
-  valueType: ParameterValueTypeOrEmpty;
-}
-/**
- * This type is used to decouple AllowParameterValues from the request type, should only be used within
- * ActionTypeModificationRequest, PutParameterRequest, and EditParameterRequest object.
- */
-export type AllowedParameterValuesRequest =
-  | AllowedParameterValuesRequest_oneOf
-  | AllowedParameterValuesRequest_range
-  | AllowedParameterValuesRequest_objectQuery
-  | AllowedParameterValuesRequest_interfaceObjectQuery
-  | AllowedParameterValuesRequest_objectPropertyValue
-  | AllowedParameterValuesRequest_interfacePropertyValue
-  | AllowedParameterValuesRequest_objectList
-  | AllowedParameterValuesRequest_user
-  | AllowedParameterValuesRequest_multipassGroup
-  | AllowedParameterValuesRequest_text
-  | AllowedParameterValuesRequest_datetime
-  | AllowedParameterValuesRequest_boolean
-  | AllowedParameterValuesRequest_objectSetRid
-  | AllowedParameterValuesRequest_attachment
-  | AllowedParameterValuesRequest_cbacMarking
-  | AllowedParameterValuesRequest_mandatoryMarking
-  | AllowedParameterValuesRequest_mediaReference
-  | AllowedParameterValuesRequest_objectTypeReference
-  | AllowedParameterValuesRequest_timeSeriesReference
-  | AllowedParameterValuesRequest_geohash
-  | AllowedParameterValuesRequest_geoshape
-  | AllowedParameterValuesRequest_geotimeSeriesReference
-  | AllowedParameterValuesRequest_redacted
-  | AllowedParameterValuesRequest_struct
-  | AllowedParameterValuesRequest_valueType;
-
 export interface AllowedStructFieldValues_oneOf {
   type: "oneOf";
   oneOf: ParameterValueOneOfOrEmpty;
@@ -1842,9 +1675,6 @@ export interface AllowedValuesOverride {
 }
 export interface AllowedValuesOverrideModification {
   allowedValues: AllowedParameterValuesModification;
-}
-export interface AllowedValuesOverrideRequest {
-  allowedValues: AllowedParameterValuesRequest;
 }
 export interface Analyzer_notAnalyzed {
   type: "notAnalyzed";
@@ -2311,10 +2141,6 @@ export interface ConditionalOverrideModification {
   condition: ConditionModification;
   parameterBlockOverrides: Array<ParameterValidationBlockOverrideModification>;
 }
-export interface ConditionalOverrideRequest {
-  condition: Condition;
-  parameterBlockOverrides: Array<ParameterValidationBlockOverrideRequest>;
-}
 export interface ConditionalValidationBlock {
   conditionalOverrides: Array<ConditionalOverride>;
   defaultValidation: ParameterValidationBlock;
@@ -2329,14 +2155,6 @@ export interface ConditionalValidationBlockModification {
   structFieldValidations: Record<
     _api_types_StructParameterFieldApiName,
     StructFieldConditionalValidationBlockModification
-  >;
-}
-export interface ConditionalValidationBlockRequest {
-  conditionalOverrides: Array<ConditionalOverrideRequest>;
-  defaultValidation: ParameterValidationBlockRequest;
-  structFieldValidations: Record<
-    _api_types_StructParameterFieldApiName,
-    StructFieldConditionalValidationBlock
   >;
 }
 /**
@@ -3116,7 +2934,7 @@ export interface EditParameterRequest {
   displayMetadata: ParameterDisplayMetadata;
   id: ParameterId;
   type: _api_types_BaseParameterType;
-  validation: ConditionalValidationBlockRequest;
+  validation: ConditionalValidationBlock;
 }
 /**
  * Request to edit an existing parameter
@@ -3589,12 +3407,6 @@ export interface GetActionTypesForObjectTypeRequest {
 export interface GetActionTypesForObjectTypeResponse {
   actionTypes: Array<ActionType>;
   nextPageToken?: GetActionTypesForObjectTypePageToken | null | undefined;
-}
-export interface GetEntityDelegateDatasetRequest {
-  ontologyEntityRid: ObjectOrLinkTypeRid;
-}
-export interface GetEntityDelegateDatasetResponse {
-  delegateDataset: OntologySparkDelegateDataset;
 }
 /**
  * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
@@ -5504,10 +5316,6 @@ export interface ObjectDisplayMetadata {
 }
 export interface ObjectMonitoringFrontendConsumer {
 }
-/**
- * A rid that is either an ObjectType rid or LinkType rid.
- */
-export type ObjectOrLinkTypeRid = string;
 export interface ObjectParameterPropertyValue {
   parameterId: ParameterId;
   propertyTypeId: PropertyTypeId;
@@ -7054,6 +6862,7 @@ export interface OntologyIrConditionalOverride {
   parameterBlockOverrides: Array<OntologyIrParameterValidationBlockOverride>;
 }
 export interface OntologyIrConditionalValidationBlock {
+  conditionalOverrides: Array<OntologyIrConditionalOverride>;
   defaultValidation: OntologyIrParameterValidationBlock;
 }
 export interface OntologyIrConditionValue_parameterId {
@@ -9641,15 +9450,6 @@ export interface OntologyRidsForEntitiesResponse {
   ontologyRids: Record<string, OntologyRid>;
 }
 /**
- * Delegate dataset for an ontology entity, including dataset, branch, type, and ontology version.
- */
-export interface OntologySparkDelegateDataset {
-  branchId: BranchId;
-  datasetRid: DatasetRid;
-  ontologyDatasetType: OntologyDatasetType;
-  ontologyVersion: OntologyVersion;
-}
-/**
  * ResourceIdentifier for the ontology spark input manager.
  */
 export type OntologySparkInputManagerRid = string;
@@ -10554,35 +10354,6 @@ export type ParameterValidationBlockOverrideModification =
   | ParameterValidationBlockOverrideModification_allowedValues
   | ParameterValidationBlockOverrideModification_prefill;
 
-export interface ParameterValidationBlockOverrideRequest_parameterRequired {
-  type: "parameterRequired";
-  parameterRequired: ParameterRequiredOverride;
-}
-
-export interface ParameterValidationBlockOverrideRequest_visibility {
-  type: "visibility";
-  visibility: VisibilityOverride;
-}
-
-export interface ParameterValidationBlockOverrideRequest_allowedValues {
-  type: "allowedValues";
-  allowedValues: AllowedValuesOverrideRequest;
-}
-
-export interface ParameterValidationBlockOverrideRequest_prefill {
-  type: "prefill";
-  prefill: ParameterPrefillOverride;
-}
-export type ParameterValidationBlockOverrideRequest =
-  | ParameterValidationBlockOverrideRequest_parameterRequired
-  | ParameterValidationBlockOverrideRequest_visibility
-  | ParameterValidationBlockOverrideRequest_allowedValues
-  | ParameterValidationBlockOverrideRequest_prefill;
-
-export interface ParameterValidationBlockRequest {
-  display: ParameterValidationDisplayMetadata;
-  validation: ParameterValidationRequest;
-}
 /**
  * These values provide details about how parameter fields should be displayed in the form. They are not used to
  * evaluate correctness of submitted parameters.
@@ -10615,10 +10386,6 @@ export interface ParameterValidationNotFoundError {
 export interface ParameterValidationReferencesLaterParametersError {
   actionTypeIdentifier: ActionTypeIdentifier;
   idsToIdsReferencedTooEarly: Record<ParameterId, Array<ParameterId>>;
-}
-export interface ParameterValidationRequest {
-  allowedValues: AllowedParameterValuesRequest;
-  required: _api_types_ParameterRequiredConfiguration;
 }
 export interface ParameterValueOneOf {
   labelledValues: Array<LabelledValue>;
@@ -11212,7 +10979,7 @@ export interface PutActionTypeRequest {
 export interface PutParameterRequest {
   displayMetadata: ParameterDisplayMetadata;
   type: _api_types_BaseParameterType;
-  validation: ConditionalValidationBlockRequest;
+  validation: ConditionalValidationBlock;
 }
 /**
  * A PutParameterRequestModification is used to create or modify Parameters.
