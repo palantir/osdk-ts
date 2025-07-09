@@ -5140,13 +5140,8 @@ describe("Ontology Defining", () => {
               {
                 type: "visibility",
                 condition: {
-                  type: "and",
-                  conditions: [
-                    {
-                      type: "group",
-                      name: "myGroup",
-                    },
-                  ],
+                  type: "group",
+                  name: "myGroup",
                 },
               },
             ],
@@ -5237,41 +5232,34 @@ describe("Ontology Defining", () => {
                           "conditionalOverrides": [
                             {
                               "condition": {
-                                "and": {
-                                  "conditions": [
-                                    {
-                                      "comparison": {
-                                        "left": {
-                                          "type": "userProperty",
-                                          "userProperty": {
-                                            "propertyValue": {
-                                              "groupIds": {},
-                                              "type": "groupIds",
-                                            },
-                                            "userId": {
-                                              "currentUser": {},
-                                              "type": "currentUser",
-                                            },
-                                          },
-                                        },
-                                        "operator": "INTERSECTS",
-                                        "right": {
-                                          "staticValue": {
-                                            "stringList": {
-                                              "strings": [
-                                                "myGroup",
-                                              ],
-                                            },
-                                            "type": "stringList",
-                                          },
-                                          "type": "staticValue",
-                                        },
+                                "comparison": {
+                                  "left": {
+                                    "type": "userProperty",
+                                    "userProperty": {
+                                      "propertyValue": {
+                                        "groupIds": {},
+                                        "type": "groupIds",
                                       },
-                                      "type": "comparison",
+                                      "userId": {
+                                        "currentUser": {},
+                                        "type": "currentUser",
+                                      },
                                     },
-                                  ],
+                                  },
+                                  "operator": "INTERSECTS",
+                                  "right": {
+                                    "staticValue": {
+                                      "stringList": {
+                                        "strings": [
+                                          "myGroup",
+                                        ],
+                                      },
+                                      "type": "stringList",
+                                    },
+                                    "type": "staticValue",
+                                  },
                                 },
-                                "type": "and",
+                                "type": "comparison",
                               },
                               "parameterBlockOverrides": [
                                 {
@@ -6494,13 +6482,8 @@ describe("Ontology Defining", () => {
       });
       const createAction = defineCreateObjectAction(sampleObject, {
         condition: {
-          type: "and",
-          conditions: [
-            {
-              type: "group",
-              name: "testGroup",
-            },
-          ],
+          type: "group",
+          name: "testGroup",
         },
       });
 
@@ -6537,41 +6520,34 @@ describe("Ontology Defining", () => {
                         "rules": {
                           "0": {
                             "condition": {
-                              "and": {
-                                "conditions": [
-                                  {
-                                    "comparison": {
-                                      "left": {
-                                        "type": "userProperty",
-                                        "userProperty": {
-                                          "propertyValue": {
-                                            "groupIds": {},
-                                            "type": "groupIds",
-                                          },
-                                          "userId": {
-                                            "currentUser": {},
-                                            "type": "currentUser",
-                                          },
-                                        },
-                                      },
-                                      "operator": "INTERSECTS",
-                                      "right": {
-                                        "staticValue": {
-                                          "stringList": {
-                                            "strings": [
-                                              "testGroup",
-                                            ],
-                                          },
-                                          "type": "stringList",
-                                        },
-                                        "type": "staticValue",
-                                      },
+                              "comparison": {
+                                "left": {
+                                  "type": "userProperty",
+                                  "userProperty": {
+                                    "propertyValue": {
+                                      "groupIds": {},
+                                      "type": "groupIds",
                                     },
-                                    "type": "comparison",
+                                    "userId": {
+                                      "currentUser": {},
+                                      "type": "currentUser",
+                                    },
                                   },
-                                ],
+                                },
+                                "operator": "INTERSECTS",
+                                "right": {
+                                  "staticValue": {
+                                    "stringList": {
+                                      "strings": [
+                                        "testGroup",
+                                      ],
+                                    },
+                                    "type": "stringList",
+                                  },
+                                  "type": "staticValue",
+                                },
                               },
-                              "type": "and",
+                              "type": "comparison",
                             },
                             "displayMetadata": {
                               "failureMessage": "Did not satisfy validation",
