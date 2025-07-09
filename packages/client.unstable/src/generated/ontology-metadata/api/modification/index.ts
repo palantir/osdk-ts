@@ -58,6 +58,8 @@ export type {
   InterfaceLinkTypeImplementationModification,
   InterfaceLinkTypeModification,
   InterfacePropertyImplementationModification,
+  InterfacePropertyImplementationModificationV2,
+  InterfacePropertyTypeImplementationModification,
   InterfacePropertyTypeModification,
   InterfacePropertyTypeModificationWithRidOrIdInRequest,
   InterfaceSharedPropertyTypeModification,

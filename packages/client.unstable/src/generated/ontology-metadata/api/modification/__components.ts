@@ -570,6 +570,18 @@ export interface InterfacePropertyImplementationModification {
   propertyTypeId: _api_PropertyTypeId;
   sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
 }
+export interface InterfacePropertyImplementationModificationV2 {
+  interfacePropertyTypeRidOrIdInRequest:
+    _api_InterfacePropertyTypeRidOrIdInRequest;
+  propertyImplementation: InterfacePropertyTypeImplementationModification;
+}
+export interface InterfacePropertyTypeImplementationModification_propertyTypeId {
+  type: "propertyTypeId";
+  propertyTypeId: _api_PropertyTypeId;
+}
+export type InterfacePropertyTypeImplementationModification =
+  InterfacePropertyTypeImplementationModification_propertyTypeId;
+
 export interface InterfacePropertyTypeModification_sharedPropertyBasedPropertyType {
   type: "sharedPropertyBasedPropertyType";
   sharedPropertyBasedPropertyType: SharedPropertyBasedPropertyTypeModification;
@@ -1076,6 +1088,7 @@ export interface ObjectTypeInterfaceImplementationModification {
   interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
   links: Array<InterfaceLinkTypeImplementationModification>;
   properties: Array<InterfacePropertyImplementationModification>;
+  propertiesV2: Array<InterfacePropertyImplementationModificationV2>;
 }
 /**
  * Object type datasource that is backed by media.

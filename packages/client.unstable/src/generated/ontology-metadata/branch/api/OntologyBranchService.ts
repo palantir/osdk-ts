@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { bulkLoadOntologyBranches } from "./OntologyBranchService/bulkLoadOntologyBranches.js";
 export { createOntologyBranch } from "./OntologyBranchService/createOntologyBranch.js";
 export { createOntologyServiceBranch } from "./OntologyBranchService/createOntologyServiceBranch.js";
 export { discardChangesOnBranch } from "./OntologyBranchService/discardChangesOnBranch.js";
