@@ -971,6 +971,7 @@ function convertActionValidation(
         return [
           p.id,
           {
+            conditionalOverrides: [],
             defaultValidation: {
               display: {
                 renderHint: renderHintFromBaseType(p),
