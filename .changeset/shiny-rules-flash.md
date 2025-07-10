@@ -3,4 +3,4 @@
 "@osdk/api": patch
 ---
 
-Remove selection RDPs from the API
+Remove Calculated RDPs and Media
