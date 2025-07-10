@@ -22,6 +22,16 @@
 
 ## 0.27.0-beta.2
 
+## 0.26.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 21e33a5: Upgrade consola to 3.4.0
+- 889e84b: Release
+- 0e0935e: Added api:use-ontologies-read/write to the default scope initialization
+- 317b555: Release
+
 ## 0.26.0-beta.23
 
 ### Minor Changes
