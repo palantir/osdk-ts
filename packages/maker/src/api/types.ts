@@ -133,6 +133,15 @@ export type ActionType =
 
 export type ActionTypeDefinition = Omit<ActionType, "__type">;
 
+export type ActionTypeUserDefinition = {
+  objectType: ObjectType;
+  apiName?: string;
+  displayName?: string;
+  status?: ActionStatus;
+  parameters?: Record<string, ActionParameterValidation>;
+  actionLevelValidation?: ActionLevelValidationDefinition;
+};
+
 export interface ActionParameter {
   id: ParameterId;
   displayName: string;
