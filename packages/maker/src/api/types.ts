@@ -309,7 +309,22 @@ export type ObjectType =
     datasource?: ObjectTypeDatasourceDefinition;
     __type: OntologyEntityTypeEnum.OBJECT_TYPE;
   };
-export type ObjectTypeDefinition = Omit<ObjectType, "__type">;
+
+export type ObjectTypeDefinition = {
+  apiName: string;
+  primaryKeyPropertyApiName: string;
+  displayName: string;
+  pluralDisplayName: string;
+  titlePropertyApiName: string;
+  properties?: { [key: string]: ObjectPropertyTypeUserDefinition };
+  implementsInterfaces?: Array<InterfaceImplementation>;
+  description?: string;
+  icon?: { locator: BlueprintIcon; color: string };
+  visibility?: Visibility;
+  editsEnabled?: boolean;
+  status?: ObjectTypeStatus;
+  datasource?: ObjectTypeDatasourceDefinition;
+};
 
 export interface ObjectPropertyTypeInner extends
   Omit<
@@ -340,6 +355,11 @@ export interface ObjectPropertyTypeInner extends
 export type ObjectPropertyType = RequiredFields<
   Partial<ObjectPropertyTypeInner>,
   "apiName" | "type" | "displayName"
+>;
+
+export type ObjectPropertyTypeUserDefinition = RequiredFields<
+  Partial<ObjectPropertyTypeInner>,
+  "type"
 >;
 
 export interface InterfacePropertyType {
@@ -497,7 +517,7 @@ export interface OneToManyLinkTypeDefinition {
 }
 
 export interface OneToManyObjectLinkReference {
-  object: ObjectTypeDefinition;
+  object: ObjectType;
   metadata: LinkTypeMetadata;
 }
 
@@ -523,7 +543,7 @@ export interface ManyToManyLinkTypeDefinition {
 }
 
 export interface ManyToManyObjectLinkReference {
-  object: ObjectTypeDefinition;
+  object: ObjectType;
   metadata: LinkTypeMetadata;
 }
 
