@@ -326,7 +326,7 @@ export interface DataValueClientToWire {
     	// (undocumented)
     marking: string;
     	// (undocumented)
-    mediaReference: MediaReference | MediaUpload;
+    mediaReference: MediaReference;
     	// (undocumented)
     null: null;
     	// (undocumented)
@@ -719,14 +719,6 @@ export interface MediaReference {
             			readToken?: string
             		}
         	};
-}
-
-// @public
-export interface MediaUpload {
-    	// (undocumented)
-    readonly data: Blob;
-    	// (undocumented)
-    readonly path: string;
 }
 
 // @public (undocumented)
