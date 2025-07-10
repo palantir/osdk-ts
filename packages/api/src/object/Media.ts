@@ -46,6 +46,14 @@ export interface MediaReference {
 }
 
 /**
+ * Object for uploading Media
+ */
+export interface MediaUpload {
+  readonly path: string;
+  readonly data: Blob;
+}
+
+/**
  * Metadata of a media item
  */
 export interface MediaMetadata {

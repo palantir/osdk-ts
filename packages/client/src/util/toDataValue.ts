@@ -22,7 +22,7 @@ import {
   isAttachmentFile,
   isAttachmentUpload,
 } from "../object/AttachmentUpload.js";
-import { isMediaReference } from "../object/mediaUpload.js";
+import { isMediaReference, isMediaUpload } from "../object/mediaUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isInterfaceActionParam } from "./interfaceUtils.js";
 import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
@@ -89,6 +89,23 @@ export async function toDataValue(
       },
     );
     return await toDataValue(attachment.rid, client, actionMetadata);
+  }
+
+  // new media item upload interface, very similar to how attachments work above
+
+  if (isMediaUpload(value)) {
+    const mediaRef = await OntologiesV2.MediaReferenceProperties
+      .uploadMedia(
+        client,
+        await client.ontologyRid,
+        actionMetadata.apiName,
+        value.data,
+        {
+          mediaItemPath: value.path,
+          preview: true,
+        },
+      );
+    return await toDataValue(mediaRef, client, actionMetadata);
   }
 
   // objects just send the JSON'd primaryKey

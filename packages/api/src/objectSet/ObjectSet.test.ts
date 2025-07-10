@@ -17,6 +17,7 @@
 import { describe, expectTypeOf, it, test, vi } from "vitest";
 
 import type {
+  DerivedProperty,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet as $ObjectSet,
@@ -257,7 +258,7 @@ describe("ObjectSet", () => {
     it("can be sub-selected", () => {
       const objectWithUndefinedRdp = fauxObjectSet.withProperties({
         "derivedPropertyName": (base) =>
-          base.pivotTo("lead").aggregate("dateOfJoining:max"),
+          base.pivotTo("lead").selectProperty("employeeId"),
       }).fetchOne(3, {
         $select: ["derivedPropertyName"],
       });
@@ -266,13 +267,13 @@ describe("ObjectSet", () => {
     test("multiple properties", async () => {
       const withFamily = fauxObjectSet.withProperties({
         "mom": (base) => base.pivotTo("lead").aggregate("$count"),
-        "dad": (base) => base.pivotTo("lead").aggregate("dateOfJoining:max"),
+        "dad": (base) => base.pivotTo("lead").selectProperty("fullName"),
         "sister": (base) => base.pivotTo("lead").aggregate("class:collectList"),
       });
       expectTypeOf(withFamily).toEqualTypeOf<
         $ObjectSet<EmployeeApiTest, {
           mom: "integer";
-          dad: "datetime" | undefined;
+          dad: "string" | undefined;
           sister: "string"[] | undefined;
         }>
       >();
@@ -302,14 +303,13 @@ describe("ObjectSet", () => {
         });
 
         const withParents = withMom.withProperties({
-          "dad": (base) =>
-            base.pivotTo("lead").aggregate("fullName:approximateDistinct"),
+          "dad": (base) => base.pivotTo("lead").selectProperty("fullName"),
         });
 
         expectTypeOf(withParents).toEqualTypeOf<
           $ObjectSet<EmployeeApiTest, {
             mom: "integer";
-            dad: "integer";
+            dad: "string" | undefined;
           }>
         >();
       });
@@ -344,6 +344,7 @@ describe("ObjectSet", () => {
           const withAggregations = fauxObjectSet.withProperties({
             "collectSet": (base) =>
               base.pivotTo("lead").aggregate("class:collectSet"),
+            "select": (base) => base.pivotTo("lead").selectProperty("fullName"),
             "collectList": (base) =>
               base.pivotTo("lead").aggregate("class:collectList"),
             "min": (base) => base.pivotTo("lead").aggregate("employeeId:max"),
@@ -366,6 +367,7 @@ describe("ObjectSet", () => {
                 PropertyKeys<EmployeeApiTest>,
                 {
                   collectSet: "string"[] | undefined;
+                  select: "string" | undefined;
                   collectList: "string"[] | undefined;
                   min: "double" | undefined;
                   max: "double" | undefined;
@@ -382,6 +384,7 @@ describe("ObjectSet", () => {
     describe("fetch functions return correct Osdk.Instance", () => {
       const withFamily = fauxObjectSet.withProperties({
         "mom": (base) => base.pivotTo("lead").aggregate("$count"),
+        "dad": (base) => base.pivotTo("lead").selectProperty("fullName"),
         "sister": (base) => base.pivotTo("lead").aggregate("class:collectList"),
       });
 
@@ -398,6 +401,7 @@ describe("ObjectSet", () => {
             PropertyKeys<EmployeeApiTest>,
             {
               mom: "integer";
+              dad: "string" | undefined;
               sister: "string"[] | undefined;
             }
           >
@@ -411,6 +415,7 @@ describe("ObjectSet", () => {
           PropertyKeys<EmployeeApiTest>,
           {
             mom: "integer";
+            dad: "string" | undefined;
             sister: "string"[] | undefined;
           }
         > = whereResults.data[0];
@@ -427,6 +432,7 @@ describe("ObjectSet", () => {
               PropertyKeys<EmployeeApiTest>,
               {
                 mom: "integer";
+                dad: "string" | undefined;
                 sister: "string"[] | undefined;
               }
             >
@@ -442,6 +448,7 @@ describe("ObjectSet", () => {
             PropertyKeys<EmployeeApiTest>,
             {
               mom: "integer";
+              dad: "string" | undefined;
               sister: "string"[] | undefined;
             }
           >
@@ -453,6 +460,7 @@ describe("ObjectSet", () => {
           PropertyKeys<EmployeeApiTest>,
           {
             mom: "integer";
+            dad: "string" | undefined;
             sister: "string"[] | undefined;
           }
         > = await withFamily.fetchOne(1);
@@ -469,6 +477,7 @@ describe("ObjectSet", () => {
               PropertyKeys<EmployeeApiTest>,
               {
                 mom: "integer";
+                dad: "string" | undefined;
                 sister: "string"[] | undefined;
               }
             >
@@ -487,6 +496,7 @@ describe("ObjectSet", () => {
               PropertyKeys<EmployeeApiTest>,
               {
                 mom: "integer";
+                dad: "string" | undefined;
                 sister: "string"[] | undefined;
               }
             >
@@ -495,13 +505,14 @@ describe("ObjectSet", () => {
 
       it("Works with selecting all RDPs", async () => {
         const withFamilyResults = await withFamily.fetchPage({
-          $select: ["mom", "sister"],
+          $select: ["mom", "dad", "sister"],
         });
 
         expectTypeOf<typeof withFamilyResults["data"][0]>()
           .toEqualTypeOf<
             Osdk.Instance<EmployeeApiTest, never, never, {
               mom: "integer";
+              dad: "string" | undefined;
               sister: "string"[] | undefined;
             }>
           >();
@@ -744,6 +755,543 @@ describe("ObjectSet", () => {
           "dateOfJoining:exactDistinct": "desc",
         },
       });
+    });
+  });
+  describe("expressions", () => {
+    "Test all property types";
+    describe("numeric expressions", () => {
+      it("provides correct methods off of selected numeric derived property definitions", () => {
+        const objectSet = fauxObjectSet.withProperties({
+          "myProp1": (base) => {
+            const selectedInteger = base.pivotTo("lead").selectProperty(
+              "employeeId",
+            );
+
+            expectTypeOf(selectedInteger).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "integer" | undefined,
+                EmployeeApiTest
+              >
+            >;
+
+            selectedInteger.add(1);
+            selectedInteger.subtract(1);
+            selectedInteger.multiply(1);
+            selectedInteger.divide(1);
+            selectedInteger.abs();
+            selectedInteger.negate();
+            selectedInteger.max(1);
+            selectedInteger.min(1);
+
+            // @ts-expect-error
+            selectedInteger.extractPart("1");
+
+            expectTypeOf(
+              base.pivotTo("lead").selectProperty(
+                "performanceScore",
+              ),
+            ).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "double" | undefined,
+                EmployeeApiTest
+              >
+            >();
+            expectTypeOf(
+              base.pivotTo("lead").selectProperty(
+                "rank",
+              ),
+            ).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "short" | undefined,
+                EmployeeApiTest
+              >
+            >();
+            expectTypeOf(
+              base.pivotTo("lead").selectProperty(
+                "yearsOfExperience",
+              ),
+            ).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "long" | undefined,
+                EmployeeApiTest
+              >
+            >();
+            expectTypeOf(
+              base.pivotTo("lead").selectProperty(
+                "hourlyRate",
+              ),
+            ).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "float" | undefined,
+                EmployeeApiTest
+              >
+            >();
+
+            return selectedInteger;
+          },
+        });
+      });
+
+      it("provides correct methods off of selection definitions", () => {
+        const objectSet = fauxObjectSet.withProperties({
+          "myProp1": (base) => {
+            const selectedInteger = base.pivotTo("lead").selectProperty(
+              "employeeId",
+            );
+
+            expectTypeOf(selectedInteger).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "integer" | undefined,
+                EmployeeApiTest
+              >
+            >;
+
+            selectedInteger.add(1);
+            selectedInteger.subtract(1);
+            selectedInteger.multiply(1);
+            selectedInteger.divide(1);
+            selectedInteger.abs();
+            selectedInteger.negate();
+            selectedInteger.max(1);
+            selectedInteger.min(1);
+
+            // @ts-expect-error
+            selectedInteger.extractPart("1");
+
+            expectTypeOf(
+              base.pivotTo("lead").selectProperty(
+                "performanceScore",
+              ),
+            ).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "double" | undefined,
+                EmployeeApiTest
+              >
+            >();
+            expectTypeOf(
+              base.pivotTo("lead").selectProperty(
+                "rank",
+              ),
+            ).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "short" | undefined,
+                EmployeeApiTest
+              >
+            >();
+            expectTypeOf(
+              base.pivotTo("lead").selectProperty(
+                "yearsOfExperience",
+              ),
+            ).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "long" | undefined,
+                EmployeeApiTest
+              >
+            >();
+            expectTypeOf(
+              base.pivotTo("lead").selectProperty(
+                "hourlyRate",
+              ),
+            ).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "float" | undefined,
+                EmployeeApiTest
+              >
+            >();
+
+            return selectedInteger;
+          },
+        });
+      });
+
+      it("provides correct methods off of aggregated properties", () => {
+        const objectSet = fauxObjectSet.withProperties({
+          "myProp1": (base) => {
+            const maxAggregation = base.pivotTo("lead").aggregate(
+              "employeeId:max",
+            );
+
+            expectTypeOf(maxAggregation).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "integer" | undefined,
+                EmployeeApiTest
+              >
+            >;
+
+            maxAggregation.add(1);
+            maxAggregation.subtract(1);
+            maxAggregation.multiply(1);
+            maxAggregation.divide(1);
+            maxAggregation.abs();
+            maxAggregation.negate();
+            maxAggregation.max(1);
+            maxAggregation.min(1);
+
+            expectTypeOf(
+              base.pivotTo("peeps").aggregate("employeeId:sum"),
+            ).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "double" | undefined,
+                EmployeeApiTest
+              >
+            >();
+
+            expectTypeOf(
+              base.pivotTo("peeps").aggregate("employeeId:avg"),
+            ).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "double" | undefined,
+                EmployeeApiTest
+              >
+            >();
+
+            expectTypeOf(
+              base.pivotTo("peeps").aggregate("employeeId:min"),
+            ).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "integer" | undefined,
+                EmployeeApiTest
+              >
+            >();
+
+            const collectList = base.pivotTo("peeps").aggregate(
+              "employeeId:collectList",
+            );
+            expectTypeOf(
+              collectList,
+            ).toEqualTypeOf<
+              DerivedProperty.Definition<
+                "integer"[] | undefined,
+                EmployeeApiTest
+              >
+            >();
+
+            // @ts-expect-error
+            collectList.plus(1);
+
+            expectTypeOf(
+              base.pivotTo("peeps").aggregate(
+                "employeeId:collectList",
+              ),
+            ).toEqualTypeOf<
+              DerivedProperty.Definition<
+                "integer"[] | undefined,
+                EmployeeApiTest
+              >
+            >();
+
+            return maxAggregation;
+          },
+        });
+      });
+
+      it("correctly coerces numeric types", () => {
+        const objectSet = fauxObjectSet.withProperties({
+          "myProp1": (base) => {
+            const intAndLong = base.pivotTo("lead").selectProperty("employeeId")
+              .add(base.selectProperty("yearsOfExperience")).add(
+                base.selectProperty("employeeId"),
+              );
+            expectTypeOf(intAndLong).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<"long", EmployeeApiTest>
+            >();
+
+            const intAndDouble = base.pivotTo("lead").selectProperty(
+              "employeeId",
+            )
+              .add(base.selectProperty("performanceScore")).add(
+                base.selectProperty("employeeId"),
+              );
+            expectTypeOf(intAndDouble).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "double",
+                EmployeeApiTest
+              >
+            >();
+
+            const longAndDouble = base.pivotTo("lead").selectProperty(
+              "yearsOfExperience",
+            )
+              .add(base.selectProperty("performanceScore")).add(
+                base.selectProperty("yearsOfExperience"),
+              );
+            expectTypeOf(longAndDouble).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "double",
+                EmployeeApiTest
+              >
+            >();
+
+            const longAndLong = base.pivotTo("lead").selectProperty(
+              "yearsOfExperience",
+            )
+              .add(base.selectProperty("yearsOfExperience"));
+            expectTypeOf(longAndLong).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<"long", EmployeeApiTest>
+            >();
+
+            const intAndInt = base.pivotTo("lead").selectProperty("employeeId")
+              .add(base.selectProperty("employeeId"));
+            expectTypeOf(intAndInt).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "integer",
+                EmployeeApiTest
+              >
+            >();
+
+            const intLongDoubleChain = base.pivotTo("lead").selectProperty(
+              "employeeId",
+            ).add(base.selectProperty("yearsOfExperience")).add(
+              base.selectProperty("employeeId"),
+            ).add(
+              base.selectProperty("performanceScore"),
+            ).add(base.selectProperty("employeeId"));
+            expectTypeOf(intLongDoubleChain).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "double",
+                EmployeeApiTest
+              >
+            >();
+
+            const shortAndIntReturnsInt = base.pivotTo("lead").selectProperty(
+              "rank",
+            ).add(base.selectProperty("employeeId"));
+            expectTypeOf(shortAndIntReturnsInt).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "integer",
+                EmployeeApiTest
+              >
+            >();
+
+            const shortAndFloatReturnsDouble = base.pivotTo("lead")
+              .selectProperty(
+                "rank",
+              ).add(base.selectProperty("hourlyRate"));
+            expectTypeOf(shortAndFloatReturnsDouble).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "double",
+                EmployeeApiTest
+              >
+            >();
+
+            return intLongDoubleChain;
+          },
+        });
+      });
+
+      it("allows adding number literals as a double", () => {
+        const objectSet = fauxObjectSet.withProperties({
+          "myProp1": (base) => {
+            const plus = base.pivotTo("lead").selectProperty("employeeId")
+              .add(1);
+            expectTypeOf(plus).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "double",
+                EmployeeApiTest
+              >
+            >();
+
+            return plus;
+          },
+        });
+      });
+
+      it("allows adding literals via base.constant", () => {
+        const objectSet = fauxObjectSet.withProperties({
+          "myProp1": (base) => {
+            const plus = base.pivotTo("lead").selectProperty("employeeId")
+              .add(base.constant.double(1));
+            expectTypeOf(plus).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "double",
+                EmployeeApiTest
+              >
+            >();
+
+            const intPlusIntReturnsInt = base.pivotTo("lead").selectProperty(
+              "employeeId",
+            )
+              .add(base.constant.integer(1));
+            expectTypeOf(intPlusIntReturnsInt).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "integer",
+                EmployeeApiTest
+              >
+            >();
+
+            return plus;
+          },
+        });
+      });
+
+      it("allows correctly typed nested property definitions", () => {
+        const objectSet = fauxObjectSet.withProperties({
+          "myProp1": (base) => {
+            const nested = base.pivotTo("lead").selectProperty("employeeId")
+              .add(
+                base.pivotTo("peeps").aggregate("employeeId:sum"),
+              );
+            expectTypeOf(nested).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "double",
+                EmployeeApiTest
+              >
+            >();
+
+            return nested;
+          },
+        });
+      });
+
+      it("allows correctly types property keys off the linked OT", () => {
+        const objectSet = fauxObjectSet.withProperties({
+          "myProp1": (base) => {
+            const nested = base.pivotTo("lead").selectProperty("employeeId")
+              .add(
+                base.selectProperty("performanceScore"),
+              );
+            expectTypeOf(nested).toEqualTypeOf<
+              DerivedProperty.NumericPropertyDefinition<
+                "double",
+                EmployeeApiTest
+              >
+            >();
+
+            return nested;
+          },
+        });
+      });
+
+      // it("allows correctly types property keys off the base OT", () => {});
+    });
+    describe("datetime expressions", () => {
+      it("provides correct methods off of datetime selections", () => {
+        const objectSet = fauxObjectSet.withProperties({
+          "myProp1": (base) => {
+            const selectedDatetime = base.pivotTo("lead").selectProperty(
+              "dateOfJoining",
+            );
+
+            expectTypeOf(selectedDatetime).toEqualTypeOf<
+              DerivedProperty.DatetimePropertyDefinition<
+                "datetime" | undefined,
+                EmployeeApiTest
+              >
+            >();
+
+            selectedDatetime.max(base.selectProperty("dateOfJoining"));
+            selectedDatetime.min(base.selectProperty("lastUpdated"));
+
+            expectTypeOf(base.pivotTo("lead").selectProperty("lastUpdated"))
+              .toEqualTypeOf<
+                DerivedProperty.DatetimePropertyDefinition<
+                  "timestamp" | undefined,
+                  EmployeeApiTest
+                >
+              >();
+
+            return selectedDatetime;
+          },
+        });
+      });
+
+      it("correctly coerces datetime types", () => {
+        const objectSet = fauxObjectSet.withProperties({
+          "myProp1": (base) => {
+            const max = base.pivotTo("lead").selectProperty("dateOfJoining")
+              .max(base.selectProperty("lastUpdated"));
+            expectTypeOf(max).toEqualTypeOf<
+              DerivedProperty.DatetimePropertyDefinition<
+                "timestamp",
+                EmployeeApiTest
+              >
+            >();
+
+            const min = base.pivotTo("lead").selectProperty("dateOfJoining")
+              .min(base.selectProperty("dateOfJoining"));
+            expectTypeOf(min).toEqualTypeOf<
+              DerivedProperty.DatetimePropertyDefinition<
+                "datetime",
+                EmployeeApiTest
+              >
+            >();
+
+            return max;
+          },
+        });
+      });
+
+      it("allows adding literals via base.constant", () => {
+        const objectSet = fauxObjectSet.withProperties({
+          "myProp1": (base) => {
+            const dateAndDateReturnDate = base.pivotTo("lead").selectProperty(
+              "dateOfJoining",
+            )
+              .min(base.constant.datetime("2025-01-01T00:00:00Z"));
+            expectTypeOf(dateAndDateReturnDate).toEqualTypeOf<
+              DerivedProperty.DatetimePropertyDefinition<
+                "datetime",
+                EmployeeApiTest
+              >
+            >();
+
+            const dateAndTimeReturnTime = base.pivotTo("lead").selectProperty(
+              "dateOfJoining",
+            )
+              .min(base.constant.timestamp("2025-01-01T00:00:00Z"));
+            expectTypeOf(dateAndTimeReturnTime).toEqualTypeOf<
+              DerivedProperty.DatetimePropertyDefinition<
+                "timestamp",
+                EmployeeApiTest
+              >
+            >();
+
+            return dateAndTimeReturnTime;
+          },
+        });
+      });
+
+      it("allows correctly typed nested property definitions", () => {
+        const objectSet = fauxObjectSet.withProperties({
+          "myProp1": (base) => {
+            const nested = base.pivotTo("lead").selectProperty("dateOfJoining")
+              .min(
+                base.pivotTo("lead").pivotTo("lead").selectProperty(
+                  "lastUpdated",
+                ),
+              );
+            expectTypeOf(nested).toEqualTypeOf<
+              DerivedProperty.DatetimePropertyDefinition<
+                "timestamp",
+                EmployeeApiTest
+              >
+            >();
+
+            return nested;
+          },
+        });
+      });
+
+      it("allows correctly typed property keys off the linked OT", () => {
+        const objectSet = fauxObjectSet.withProperties({
+          "myProp1": (base) => {
+            const nested = base.pivotTo("lead").selectProperty("dateOfJoining")
+              .min(
+                base.selectProperty("lastUpdated"),
+              );
+            expectTypeOf(nested).toEqualTypeOf<
+              DerivedProperty.DatetimePropertyDefinition<
+                "timestamp",
+                EmployeeApiTest
+              >
+            >();
+
+            return nested;
+          },
+        });
+      });
+
+      // it("allows correctly typed property keys off the base OT", () => {});
     });
   });
 });
