@@ -736,7 +736,17 @@ function validateActionCondition(
         );
       }
       break;
-    default:
+    case "comparison":
+    case "group":
+    case "not":
+    case "markings":
+    case "regex":
+    case "redacted":
+    case "true":
       break;
+    default:
+      throw new Error(
+        `Unknown condition type on parameter ${currentParameterId}`,
+      );
   }
 }
