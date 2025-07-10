@@ -178,8 +178,6 @@ export function convertConditionDefinition(
           },
         },
       };
-    // TODO(ethan): there are some complex validations that we can perform on this.
-    // Enforce that referenced parameters are listed later than the parameter that this validation belongs to in the parameters array
     case "parameter":
       return {
         type: "comparison",
