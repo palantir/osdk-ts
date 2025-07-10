@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Media, MediaReference } from "@osdk/api";
+import type { Media, MediaReference, MediaUpload } from "@osdk/api";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
 import { $Actions, MnayanOsdkMediaObject } from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
@@ -80,6 +80,16 @@ async function runCreateMediaReferenceTest(
     });
 }
 
+async function runUploadMediaTest(data: Blob): Promise<void> {
+  const payload: MediaUpload = { data, path: "test15.png" };
+
+  const result = await client($Actions.createUnstructuredImageExample)
+    .applyAction({
+      media_reference: payload,
+      path: "test15.png",
+    }, { $returnEdits: true });
+}
+
 export async function runMediaTest(): Promise<void> {
   const result = await client(MnayanOsdkMediaObject).fetchOne(
     "7c2aa4e0-9cd6-48c1-9d09-653249feb4e7",
@@ -113,6 +123,11 @@ export async function runMediaTest(): Promise<void> {
       $returnEdits: true,
     });
   console.log("SUCCESS: Applying Media Reference via Function Backed Action");
+
+  // test direct media upload
+  console.log("Testing Media Upload Type");
+  await runUploadMediaTest(testImage);
+  console.log("SUCCESS: Testing Media Upload Type");
 }
 
 void runMediaTest();
