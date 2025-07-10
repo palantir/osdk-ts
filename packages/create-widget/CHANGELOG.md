@@ -18,10 +18,10 @@
 
 ### Patch Changes
 
--   322c5bc: Simulated release
--   21e33a5: Upgrade consola to 3.4.0
--   317b555: Release
--   ffc1e6e: Add --repository option to create-widget
+- 322c5bc: Simulated release
+- 21e33a5: Upgrade consola to 3.4.0
+- 317b555: Release
+- ffc1e6e: Add --repository option to create-widget
 
 ## 2.1.0-beta.11
 

@@ -68,46 +68,46 @@
 
 ### Patch Changes
 
--   322c5bc: Simulated release
--   18ba34f: Adds the ability to generate and execute functions at pinned versions
--   889e84b: Release
--   317b555: Release
--   Updated dependencies [322c5bc]
--   Updated dependencies [c6bee50]
--   Updated dependencies [7416ce4]
--   Updated dependencies [7170fd1]
--   Updated dependencies [12843cb]
--   Updated dependencies [18ba34f]
--   Updated dependencies [6abf078]
--   Updated dependencies [f82767c]
--   Updated dependencies [56aa502]
--   Updated dependencies [0e874b1]
--   Updated dependencies [abe4897]
--   Updated dependencies [63b2e63]
--   Updated dependencies [cddfbf9]
--   Updated dependencies [7416ce4]
--   Updated dependencies [23ea0e4]
--   Updated dependencies [26c2d95]
--   Updated dependencies [488b51c]
--   Updated dependencies [71462e9]
--   Updated dependencies [fccd9ac]
--   Updated dependencies [5665b18]
--   Updated dependencies [46cede4]
--   Updated dependencies [761e69d]
--   Updated dependencies [889e84b]
--   Updated dependencies [a6e5f89]
--   Updated dependencies [ed69666]
--   Updated dependencies [4183a55]
--   Updated dependencies [70b4464]
--   Updated dependencies [791e655]
--   Updated dependencies [317b555]
--   Updated dependencies [63b2e63]
--   Updated dependencies [a146ce4]
--   Updated dependencies [3d0ab11]
--   Updated dependencies [805df40]
--   Updated dependencies [5467a0f]
--   Updated dependencies [63b2e63]
-    -   @osdk/api@2.2.0
+- 322c5bc: Simulated release
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+- 889e84b: Release
+- 317b555: Release
+- Updated dependencies [322c5bc]
+- Updated dependencies [c6bee50]
+- Updated dependencies [7416ce4]
+- Updated dependencies [7170fd1]
+- Updated dependencies [12843cb]
+- Updated dependencies [18ba34f]
+- Updated dependencies [6abf078]
+- Updated dependencies [f82767c]
+- Updated dependencies [56aa502]
+- Updated dependencies [0e874b1]
+- Updated dependencies [abe4897]
+- Updated dependencies [63b2e63]
+- Updated dependencies [cddfbf9]
+- Updated dependencies [7416ce4]
+- Updated dependencies [23ea0e4]
+- Updated dependencies [26c2d95]
+- Updated dependencies [488b51c]
+- Updated dependencies [71462e9]
+- Updated dependencies [fccd9ac]
+- Updated dependencies [5665b18]
+- Updated dependencies [46cede4]
+- Updated dependencies [761e69d]
+- Updated dependencies [889e84b]
+- Updated dependencies [a6e5f89]
+- Updated dependencies [ed69666]
+- Updated dependencies [4183a55]
+- Updated dependencies [70b4464]
+- Updated dependencies [791e655]
+- Updated dependencies [317b555]
+- Updated dependencies [63b2e63]
+- Updated dependencies [a146ce4]
+- Updated dependencies [3d0ab11]
+- Updated dependencies [805df40]
+- Updated dependencies [5467a0f]
+- Updated dependencies [63b2e63]
+  - @osdk/api@2.2.0
 
 ## 2.2.0-beta.23
 

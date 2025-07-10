@@ -4,11 +4,11 @@
 
 ### Patch Changes
 
--   322c5bc: Simulated release
--   ad93d55: Include deep inspect information about unknown errors
--   Updated dependencies [322c5bc]
--   Updated dependencies [ad93d55]
-    -   @osdk/shared.net.errors@2.2.0
+- 322c5bc: Simulated release
+- ad93d55: Include deep inspect information about unknown errors
+- Updated dependencies [322c5bc]
+- Updated dependencies [ad93d55]
+  - @osdk/shared.net.errors@2.2.0
 
 ## 1.2.0-beta.2
 

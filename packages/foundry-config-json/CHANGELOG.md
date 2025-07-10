@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
--   322c5bc: Simulated release
+- 322c5bc: Simulated release
 
 ## 1.0.0
 

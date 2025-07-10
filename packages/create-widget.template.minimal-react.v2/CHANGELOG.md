@@ -28,8 +28,8 @@
 
 ### Patch Changes
 
--   322c5bc: Simulated release
--   317b555: Release
+- 322c5bc: Simulated release
+- 317b555: Release
 
 ## 2.1.0-beta.11
 

@@ -4,12 +4,12 @@
 
 ### Patch Changes
 
--   322c5bc: Simulated release
--   Updated dependencies [322c5bc]
--   Updated dependencies [322c5bc]
--   Updated dependencies [ad93d55]
-    -   @osdk/shared.net.errors@2.2.0
-    -   @osdk/shared.net.fetch@1.2.0
+- 322c5bc: Simulated release
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [ad93d55]
+  - @osdk/shared.net.errors@2.2.0
+  - @osdk/shared.net.fetch@1.2.0
 
 ## 1.2.0-beta.2
 

@@ -35,14 +35,14 @@
 
 ### Patch Changes
 
--   322c5bc: Simulated release
--   fb5452c: Write site url to Jemma custom metadata file when present
--   ad93d55: Include deep inspect information about unknown errors
--   21e33a5: Upgrade consola to 3.4.0
--   889e84b: Release
--   6c1c377: Switch unstable widgets command to preview endpoints
--   317b555: Release
--   3876e2d: Fix a bug where --auto-version is required without foundry.config.json preventing --version from being usable.
+- 322c5bc: Simulated release
+- fb5452c: Write site url to Jemma custom metadata file when present
+- ad93d55: Include deep inspect information about unknown errors
+- 21e33a5: Upgrade consola to 3.4.0
+- 889e84b: Release
+- 6c1c377: Switch unstable widgets command to preview endpoints
+- 317b555: Release
+- 3876e2d: Fix a bug where --auto-version is required without foundry.config.json preventing --version from being usable.
 
 ## 0.26.0-beta.23
 

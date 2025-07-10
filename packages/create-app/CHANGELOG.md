@@ -26,15 +26,15 @@
 
 ### Patch Changes
 
--   322c5bc: Simulated release
--   1444362: Read environment variables from index.html meta tags
--   e75819c: Add comments to env files in templates
--   21e33a5: Upgrade consola to 3.4.0
--   fa02507: Use options overload when initializing client in create-app templates and standardize formatting
--   770ec64: Drop Next.js templates
--   1d0e72a: Ensure tutorials are not shown by cli
--   889e84b: Release
--   317b555: Release
+- 322c5bc: Simulated release
+- 1444362: Read environment variables from index.html meta tags
+- e75819c: Add comments to env files in templates
+- 21e33a5: Upgrade consola to 3.4.0
+- fa02507: Use options overload when initializing client in create-app templates and standardize formatting
+- 770ec64: Drop Next.js templates
+- 1d0e72a: Ensure tutorials are not shown by cli
+- 889e84b: Release
+- 317b555: Release
 
 ## 2.2.0-beta.23
 
