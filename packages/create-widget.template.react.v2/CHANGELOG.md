@@ -24,6 +24,15 @@
 
 ## 2.2.0-beta.2
 
+## 2.1.0
+
+### Patch Changes
+
+-   322c5bc: Simulated release
+-   d4c962c: Fix typos for widgets libraries
+-   fa02507: Use options overload when initializing client in create-app templates and standardize formatting
+-   317b555: Release
+
 ## 2.1.0-beta.11
 
 ## 2.1.0-beta.10

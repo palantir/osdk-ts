@@ -70,6 +70,46 @@
 - @osdk/generator@2.3.0-beta.2
 - @osdk/cli.common@0.27.0-beta.2
 
+## 0.26.0
+
+### Patch Changes
+
+-   322c5bc: Simulated release
+-   b68adea: Add support for inherited interfaces.
+-   12843cb: Add ability to load all underlying properties of an interface.
+-   18ba34f: Adds the ability to generate and execute functions at pinned versions
+-   21e33a5: Upgrade consola to 3.4.0
+-   63b2e63: Update Platform SDK Dependencies
+-   7416ce4: Update Platform SDK Dependencies
+-   889e84b: Release
+-   791e655: Add support for geoshape and geohash action parameters.
+-   317b555: Release
+-   cc380b5: Use the latest Platform APIs
+-   Updated dependencies [322c5bc]
+-   Updated dependencies [322c5bc]
+-   Updated dependencies [322c5bc]
+-   Updated dependencies [b61e9f5]
+-   Updated dependencies [b68adea]
+-   Updated dependencies [12843cb]
+-   Updated dependencies [18ba34f]
+-   Updated dependencies [21e33a5]
+-   Updated dependencies [63b2e63]
+-   Updated dependencies [7416ce4]
+-   Updated dependencies [430dee3]
+-   Updated dependencies [49a91dc]
+-   Updated dependencies [889e84b]
+-   Updated dependencies [67e772e]
+-   Updated dependencies [0e0935e]
+-   Updated dependencies [791e655]
+-   Updated dependencies [317b555]
+-   Updated dependencies [63b2e63]
+-   Updated dependencies [cc380b5]
+-   Updated dependencies [3d0ab11]
+-   Updated dependencies [805df40]
+    -   @osdk/cli.common@0.26.0
+    -   @osdk/generator@2.2.0
+    -   @osdk/shared.client.impl@1.2.0
+
 ## 0.26.0-beta.23
 
 ### Patch Changes
