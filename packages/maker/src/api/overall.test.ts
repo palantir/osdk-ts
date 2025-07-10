@@ -5133,6 +5133,15 @@ describe("Ontology Defining", () => {
           },
         }],
         parameters: [{
+          id: "param2",
+          displayName: "param2",
+          type: "string",
+          validation: {
+            required: true,
+            allowedValues: { type: "text" },
+            defaultVisibility: "editable",
+          },
+        }, {
           id: "param1",
           displayName: "param1",
           type: "boolean",
@@ -5165,15 +5174,6 @@ describe("Ontology Defining", () => {
                 },
               },
             ],
-          },
-        }, {
-          id: "param2",
-          displayName: "param2",
-          type: "string",
-          validation: {
-            required: true,
-            allowedValues: { type: "text" },
-            defaultVisibility: "editable",
           },
         }, {
           id: "objectToModifyParameter",
@@ -5418,8 +5418,8 @@ describe("Ontology Defining", () => {
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
-                      "param1",
                       "param2",
+                      "param1",
                       "objectToModifyParameter",
                     ],
                     "parameters": {
@@ -5488,6 +5488,257 @@ describe("Ontology Defining", () => {
           },
         }
       `);
+    });
+
+    it("Parameter conditions are correctly validated on actions", () => {
+      expect(() =>
+        defineAction({
+          apiName: "foo",
+          displayName: "exampleAction",
+          status: "active",
+          rules: [{
+            type: "modifyObjectRule",
+            modifyObjectRule: {
+              objectToModify: "objectToModifyParameter",
+              propertyValues: {
+                "bar": {
+                  type: "parameterId",
+                  parameterId: "param1",
+                },
+                "foo": {
+                  type: "parameterId",
+                  parameterId: "param2",
+                },
+              },
+              structFieldValues: {},
+            },
+          }],
+          parameters: [{
+            id: "param1",
+            displayName: "param1",
+            type: "boolean",
+            validation: {
+              required: true,
+              allowedValues: { type: "boolean" },
+              defaultVisibility: "editable",
+              conditionalOverrides: [
+                {
+                  type: "visibility",
+                  condition: {
+                    type: "and",
+                    conditions: [
+                      {
+                        type: "group",
+                        name: "myGroup",
+                      },
+                      {
+                        type: "parameter",
+                        parameterId: "param2",
+                        matches: {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: "foobar",
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          }, {
+            id: "param2",
+            displayName: "param2",
+            type: "string",
+            validation: {
+              required: true,
+              allowedValues: { type: "text" },
+              defaultVisibility: "editable",
+            },
+          }, {
+            id: "objectToModifyParameter",
+            displayName: "objectToModifyParameter",
+            type: "objectTypeReference",
+            validation: {
+              required: true,
+              allowedValues: {
+                type: "objectTypeReference",
+                interfaceTypes: [],
+              },
+              defaultVisibility: "editable",
+            },
+          }],
+        })
+      ).toThrowError(
+        `Invariant failed: Parameter condition on param1 is referencing later parameter param2`,
+      );
+
+      expect(() =>
+        defineAction({
+          apiName: "foo",
+          displayName: "exampleAction",
+          status: "active",
+          rules: [{
+            type: "modifyObjectRule",
+            modifyObjectRule: {
+              objectToModify: "objectToModifyParameter",
+              propertyValues: {
+                "bar": {
+                  type: "parameterId",
+                  parameterId: "param1",
+                },
+                "foo": {
+                  type: "parameterId",
+                  parameterId: "param2",
+                },
+              },
+              structFieldValues: {},
+            },
+          }],
+          parameters: [{
+            id: "param1",
+            displayName: "param1",
+            type: "boolean",
+            validation: {
+              required: true,
+              allowedValues: { type: "boolean" },
+              defaultVisibility: "editable",
+              conditionalOverrides: [
+                {
+                  type: "visibility",
+                  condition: {
+                    type: "and",
+                    conditions: [
+                      {
+                        type: "group",
+                        name: "myGroup",
+                      },
+                      {
+                        type: "parameter",
+                        parameterId: "param1",
+                        matches: {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: "foobar",
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          }, {
+            id: "param2",
+            displayName: "param2",
+            type: "string",
+            validation: {
+              required: true,
+              allowedValues: { type: "text" },
+              defaultVisibility: "editable",
+            },
+          }, {
+            id: "objectToModifyParameter",
+            displayName: "objectToModifyParameter",
+            type: "objectTypeReference",
+            validation: {
+              required: true,
+              allowedValues: {
+                type: "objectTypeReference",
+                interfaceTypes: [],
+              },
+              defaultVisibility: "editable",
+            },
+          }],
+        })
+      ).toThrowError(
+        `Invariant failed: Parameter condition on param1 is referencing itself`,
+      );
+
+      expect(() =>
+        defineAction({
+          apiName: "foo",
+          displayName: "exampleAction",
+          status: "active",
+          rules: [{
+            type: "modifyObjectRule",
+            modifyObjectRule: {
+              objectToModify: "objectToModifyParameter",
+              propertyValues: {
+                "bar": {
+                  type: "parameterId",
+                  parameterId: "param1",
+                },
+                "foo": {
+                  type: "parameterId",
+                  parameterId: "param2",
+                },
+              },
+              structFieldValues: {},
+            },
+          }],
+          parameters: [{
+            id: "param1",
+            displayName: "param1",
+            type: "boolean",
+            validation: {
+              required: true,
+              allowedValues: { type: "boolean" },
+              defaultVisibility: "editable",
+              conditionalOverrides: [
+                {
+                  type: "visibility",
+                  condition: {
+                    type: "and",
+                    conditions: [
+                      {
+                        type: "group",
+                        name: "myGroup",
+                      },
+                      {
+                        type: "parameter",
+                        parameterId: "unknownParam",
+                        matches: {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: "foobar",
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          }, {
+            id: "param2",
+            displayName: "param2",
+            type: "string",
+            validation: {
+              required: true,
+              allowedValues: { type: "text" },
+              defaultVisibility: "editable",
+            },
+          }, {
+            id: "objectToModifyParameter",
+            displayName: "objectToModifyParameter",
+            type: "objectTypeReference",
+            validation: {
+              required: true,
+              allowedValues: {
+                type: "objectTypeReference",
+                interfaceTypes: [],
+              },
+              defaultVisibility: "editable",
+            },
+          }],
+        })
+      ).toThrowError(
+        `Invariant failed: Parameter condition on param1 is referencing unknown parameter unknownParam`,
+      );
     });
 
     it("Simple concrete actions are properly defined", () => {

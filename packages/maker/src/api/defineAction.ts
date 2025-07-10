@@ -25,12 +25,14 @@ import {
 import { convertConditionDefinition } from "./ontologyUtils.js";
 import {
   type ActionLevelValidationDefinition,
+  type ActionParameter,
   type ActionParameterAllowedValues,
   type ActionParameterType,
   type ActionParameterTypePrimitive,
   type ActionType,
   type ActionTypeDefinition,
   type ActionValidationRule,
+  type ConditionDefinition,
   type InterfaceType,
   type ObjectPropertyType,
   type ObjectType,
@@ -421,6 +423,7 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
     apiName: apiName,
     __type: OntologyEntityTypeEnum.ACTION_TYPE,
   } as ActionType;
+  validateActionValidation(fullAction);
   updateOntology(fullAction);
   return fullAction;
 }
@@ -669,4 +672,71 @@ function convertValidationRule(
       typeClasses: [],
     },
   };
+}
+
+function validateActionValidation(action: ActionType): void {
+  const seenParameterIds = new Set<ParameterId>();
+  action.parameters?.forEach(param => {
+    param.validation.conditionalOverrides?.forEach(override => {
+      validateActionCondition(
+        override.condition,
+        param.id,
+        seenParameterIds,
+        action.parameters,
+      );
+    });
+    seenParameterIds.add(param.id);
+  });
+}
+
+function validateActionCondition(
+  condition: ConditionDefinition,
+  currentParameterId: ParameterId,
+  seenParameterIds: Set<ParameterId>,
+  parameters?: ActionParameter[],
+): void {
+  switch (condition.type) {
+    case "parameter":
+      const overrideParamId = condition.parameterId;
+      invariant(
+        parameters?.some(p => p.id === overrideParamId),
+        `Parameter condition on ${currentParameterId} is referencing unknown parameter ${overrideParamId}`,
+      );
+      invariant(
+        overrideParamId !== currentParameterId,
+        `Parameter condition on ${currentParameterId} is referencing itself`,
+      );
+      invariant(
+        seenParameterIds.has(overrideParamId),
+        `Parameter condition on ${currentParameterId} is referencing later parameter ${overrideParamId}`,
+      );
+      break;
+    case "and":
+      // this will not catch the niche edge case where users use the full syntax for unions
+      if ("conditions" in condition) {
+        condition.conditions.forEach(c =>
+          validateActionCondition(
+            c,
+            currentParameterId,
+            seenParameterIds,
+            parameters,
+          )
+        );
+      }
+      break;
+    case "or":
+      if ("conditions" in condition) {
+        condition.conditions.forEach(c =>
+          validateActionCondition(
+            c,
+            currentParameterId,
+            seenParameterIds,
+            parameters,
+          )
+        );
+      }
+      break;
+    default:
+      break;
+  }
 }
