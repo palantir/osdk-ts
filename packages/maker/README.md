@@ -369,28 +369,12 @@ const personObject = defineObject({
   pluralDisplayName: "People",
   titlePropertyApiName: "name", // Property to use as the title
   primaryKeyPropertyApiName: "id", // Property to use as the primary key
-  properties: [
-    {
-      apiName: "id",
-      type: "string",
-      displayName: "ID",
-    },
-    {
-      apiName: "name",
-      type: "string",
-      displayName: "Name",
-    },
-    {
-      apiName: "email",
-      type: "string",
-      displayName: "Email",
-    },
-    {
-      apiName: "age",
-      type: "integer",
-      displayName: "Age",
-    },
-  ],
+  properties: {
+    "id": { type: "string", displayName: "ID" },
+    "name": { type: "string" },
+    "email": { type: "string" },
+    "age": { type: "integer" },
+  },
 });
 ```
 
@@ -404,38 +388,14 @@ const employeeObject = defineObject({
   pluralDisplayName: "Employees",
   titlePropertyApiName: "name",
   primaryKeyPropertyApiName: "id",
-  properties: [
-    {
-      apiName: "id",
-      type: "string",
-      displayName: "ID",
-    },
-    {
-      apiName: "name",
-      type: "string",
-      displayName: "Name",
-    },
-    {
-      apiName: "email",
-      type: "string",
-      displayName: "Email",
-    },
-    {
-      apiName: "department",
-      type: "string",
-      displayName: "Department",
-    },
-    {
-      apiName: "hireDate",
-      type: "date",
-      displayName: "Hire Date",
-    },
-    {
-      apiName: "isActive",
-      type: "boolean",
-      displayName: "Active",
-    },
-  ],
+  properties: {
+    "id": { type: "string", displayName: "ID" },
+    "name": { type: "string" },
+    "email": { type: "string" },
+    "department": { type: "string" },
+    "hireDate": { type: "date", displayName: "Hire Date" },
+    "isActive": { type: "boolean" },
+  },
   implementsInterfaces: [
     {
       implements: employeeInterface,
@@ -461,19 +421,10 @@ const customerObject = defineObject({
   pluralDisplayName: "Customers",
   titlePropertyApiName: "name",
   primaryKeyPropertyApiName: "id",
-  properties: [
-    {
-      apiName: "id",
-      type: "string",
-      displayName: "ID",
-    },
-    {
-      apiName: "name",
-      type: "string",
-      displayName: "Name",
-    },
-    {
-      apiName: "address",
+  properties: {
+    "id": { type: "string", displayName: "ID" },
+    "name": { type: "string" },
+    "address": {
       type: {
         type: "struct",
         structDefinition: {
@@ -486,7 +437,7 @@ const customerObject = defineObject({
       },
       displayName: "Address",
     },
-  ],
+  },
 });
 ```
 
@@ -500,23 +451,11 @@ const eventObject = defineObject({
   pluralDisplayName: "Events",
   titlePropertyApiName: "eventName",
   primaryKeyPropertyApiName: "eventId",
-  properties: [
-    {
-      apiName: "eventId",
-      type: "string",
-      displayName: "Event ID",
-    },
-    {
-      apiName: "eventName",
-      type: "string",
-      displayName: "Event Name",
-    },
-    {
-      apiName: "timestamp",
-      type: "timestamp",
-      displayName: "Timestamp",
-    },
-  ],
+  properties: {
+    "eventId": { type: "string", displayName: "Event ID" },
+    "eventName": { type: "string", displayName: "Event Name" },
+    "timestamp": { type: "timestamp" },
+  },
   datasource: {
     type: "stream",
     retentionPeriod: "P90D", // 90 days retention (ISO 8601 duration format)
@@ -530,23 +469,11 @@ const productObject = defineObject({
   pluralDisplayName: "Products",
   titlePropertyApiName: "name",
   primaryKeyPropertyApiName: "id",
-  properties: [
-    {
-      apiName: "id",
-      type: "string",
-      displayName: "ID",
-    },
-    {
-      apiName: "name",
-      type: "string",
-      displayName: "Name",
-    },
-    {
-      apiName: "price",
-      type: "decimal",
-      displayName: "Price",
-    },
-  ],
+  properties: {
+    "id": { type: "string", displayName: "ID" },
+    "name": { type: "string" },
+    "price": { type: "decimal" },
+  },
   datasource: {
     type: "dataset",
   },

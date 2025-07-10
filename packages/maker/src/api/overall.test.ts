@@ -99,14 +99,13 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Test Objects",
         apiName: "testObject",
         primaryKeyPropertyApiName: "constrainedString",
-        properties: [
-          {
-            apiName: "constrainedString",
+        properties: {
+          "constrainedString": {
             type: "string",
             displayName: "Constrained String",
             valueType: testStringValueType,
           },
-        ],
+        },
       });
 
       const ontology = dumpOntologyFullMetadata();
@@ -1678,7 +1677,7 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "Foo",
           apiName: "foo",
           primaryKeyPropertyApiName: "bar",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: { "bar": { type: "string" } },
         });
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Title property fizz is not defined on object foo]`,
@@ -1691,7 +1690,7 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "Foo",
           apiName: "foo",
           primaryKeyPropertyApiName: "fizz",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: { "bar": { type: "string" } },
         });
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Primary key property fizz does not exist on object foo]`,
@@ -1704,7 +1703,7 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "Foo",
           apiName: "foo",
           primaryKeyPropertyApiName: "bar",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: { "bar": { type: "string" } },
           implementsInterfaces: [{
             implements: sample,
             propertyMapping: [{
@@ -1724,7 +1723,7 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "Foo",
           apiName: "foo",
           primaryKeyPropertyApiName: "bar",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: { "bar": { type: "string" } },
           implementsInterfaces: [{
             implements: sample,
             propertyMapping: [{
@@ -1758,26 +1757,21 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [
-          { apiName: "bar", type: "string", displayName: "Bar" },
-          {
-            apiName: "arrayProp",
+        properties: {
+          "bar": { type: "string", displayName: "Bar" },
+          "arrayProp": {
             type: "string",
             array: true,
             displayName: "Array Property Test",
           },
-          {
-            apiName: "geopoint",
+          "geopoint": {
             type: {
               type: "struct",
-              structDefinition: {
-                lat: "double",
-                lng: "double",
-              },
+              structDefinition: { lat: "double", lng: "double" },
             },
             displayName: "geopoint",
           },
-        ],
+        },
         implementsInterfaces: [{
           implements: sample,
           propertyMapping: [{
@@ -2135,7 +2129,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+        properties: { "bar": { type: "string" } },
       });
 
       const otherObject = defineObject({
@@ -2144,11 +2138,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Fizz",
         apiName: "fizz",
         primaryKeyPropertyApiName: "fizz",
-        properties: [{ apiName: "fizz", type: "string", displayName: "Fizz" }, {
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: { "fizz": { type: "string" }, "bar": { type: "string" } },
       });
 
       defineLink({
@@ -2487,7 +2477,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+        properties: { "bar": { type: "string" } },
       });
 
       const otherObject = defineObject({
@@ -2496,11 +2486,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Fizz",
         apiName: "fizz",
         primaryKeyPropertyApiName: "fizz",
-        properties: [{ apiName: "fizz", type: "string", displayName: "Fizz" }, {
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: { "fizz": { type: "string" }, "bar": { type: "string" } },
       });
 
       defineLink({
@@ -2882,7 +2868,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+        properties: { "bar": { type: "string" } },
       });
 
       const otherObject = defineObject({
@@ -2891,11 +2877,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Fizz",
         apiName: "fizz",
         primaryKeyPropertyApiName: "fizz",
-        properties: [{ apiName: "fizz", type: "string", displayName: "Fizz" }, {
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: { "fizz": { type: "string" }, "bar": { type: "string" } },
       });
 
       defineLink({
@@ -3230,7 +3212,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "datasetBackedObject",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+        properties: { "bar": { type: "string" } },
         datasource: { type: "dataset" },
       });
 
@@ -3240,11 +3222,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "streamBackedObjectNoRetention",
         apiName: "fizz",
         primaryKeyPropertyApiName: "fizz",
-        properties: [{ apiName: "fizz", type: "string", displayName: "Fizz" }, {
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: { "fizz": { type: "string" }, "bar": { type: "string" } },
         datasource: { type: "stream" },
       });
 
@@ -3254,7 +3232,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "streamBackedObjectWithRetention",
         apiName: "buzz",
         primaryKeyPropertyApiName: "buzz",
-        properties: [{ apiName: "buzz", type: "string", displayName: "Buzz" }],
+        properties: { "buzz": { type: "string" } },
         datasource: { type: "stream", retentionPeriod: "PT1H" },
       });
 
@@ -3617,11 +3595,9 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: {
+          "bar": { type: "string" },
+        },
         datasource: { type: "restrictedView" },
       });
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -3753,16 +3729,15 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "fizz",
-        properties: [{
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-          editOnly: true,
-        }, {
-          apiName: "fizz",
-          type: "string",
-          displayName: "Fizz",
-        }],
+        properties: {
+          "bar": {
+            type: "string",
+            editOnly: true,
+          },
+          "fizz": {
+            type: "string",
+          },
+        },
       });
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
@@ -3938,12 +3913,7 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "Foo",
           apiName: "foo",
           primaryKeyPropertyApiName: "bar",
-          properties: [{
-            apiName: "bar",
-            type: "string",
-            displayName: "Bar",
-            editOnly: true,
-          }],
+          properties: { "bar": { type: "string", editOnly: true } },
         });
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Primary key property bar on object foo cannot be edit-only]`,
@@ -3958,11 +3928,7 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "streamBackedObjectWithRetention",
           apiName: "buzz",
           primaryKeyPropertyApiName: "buzz",
-          properties: [{
-            apiName: "buzz",
-            type: "string",
-            displayName: "Buzz",
-          }],
+          properties: { "buzz": { type: "string" } },
           datasource: {
             type: "stream",
             retentionPeriod: "bad retention period string",
@@ -3980,15 +3946,10 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "exampleObject",
         apiName: "fizz",
         primaryKeyPropertyApiName: "bar",
-        properties: [{
-          apiName: "fizz",
-          type: "mediaReference",
-          displayName: "Fizz",
-        }, {
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: {
+          "fizz": { type: "mediaReference" },
+          "bar": { type: "string" },
+        },
         datasource: { type: "stream" },
       });
 
@@ -4337,11 +4298,9 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "exampleObjectTypes",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: {
+          "bar": { type: "string" },
+        },
       });
 
       const createActionWithObjectType = defineCreateInterfaceObjectAction(
@@ -5399,11 +5358,9 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "exampleObjectTypes",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: {
+          "bar": { type: "string" },
+        },
       });
 
       const createObjectActionType = defineCreateObjectAction(
@@ -5948,17 +5905,13 @@ describe("Ontology Defining", () => {
         primaryKeyPropertyApiName: "id",
         pluralDisplayName: "tests",
         titlePropertyApiName: "name",
-        properties: [{
-          apiName: "name",
-          type: "string",
-          displayName: "Name",
-          description: "The name of the test object",
-        }, {
-          apiName: "id",
-          type: "string",
-          displayName: "ID",
-          description: "The ID of the test object",
-        }],
+        properties: {
+          "name": {
+            type: "string",
+            description: "The name of the test object",
+          },
+          "id": { type: "string", description: "The ID of the test object" },
+        },
       });
       expect(() =>
         defineAction({
@@ -6468,17 +6421,17 @@ describe("Ontology Defining", () => {
         primaryKeyPropertyApiName: "id",
         pluralDisplayName: "tests",
         titlePropertyApiName: "name",
-        properties: [{
-          apiName: "name",
-          type: "string",
-          displayName: "Name",
-          description: "The name of the test object",
-        }, {
-          apiName: "id",
-          type: "string",
-          displayName: "ID",
-          description: "The ID of the test object",
-        }],
+        properties: {
+          "name": {
+            type: "string",
+            description: "The name of the test object",
+          },
+          "id": {
+            type: "string",
+            displayName: "ID",
+            description: "The ID of the test object",
+          },
+        },
       });
       const createAction = defineCreateObjectAction(sampleObject, {
         condition: {
@@ -6862,17 +6815,17 @@ describe("Ontology Defining", () => {
         primaryKeyPropertyApiName: "id",
         pluralDisplayName: "tests",
         titlePropertyApiName: "name",
-        properties: [{
-          apiName: "name",
-          type: "string",
-          displayName: "Name",
-          description: "The name of the test object",
-        }, {
-          apiName: "id",
-          type: "string",
-          displayName: "ID",
-          description: "The ID of the test object",
-        }],
+        properties: {
+          "name": {
+            type: "string",
+            description: "The name of the test object",
+          },
+          "id": {
+            type: "string",
+            displayName: "ID",
+            description: "The ID of the test object",
+          },
+        },
       });
       const createAction = defineCreateObjectAction(sampleObject, {
         displayMetadata: {
@@ -7522,7 +7475,7 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "myObjects",
           apiName: "myObject",
           primaryKeyPropertyApiName: "bar",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: { "bar": { type: "string" } },
           implementsInterfaces: [{
             implements: myInterface,
             propertyMapping: [{
@@ -7603,8 +7556,8 @@ describe("Ontology Defining", () => {
           "primaryKeyPropertyApiName": "bar",
           "properties": [
             {
-              "apiName": "bar",
               "type": "string",
+              "apiName": "bar",
               "displayName": "Bar"
             }
           ],
@@ -7837,18 +7790,10 @@ describe("Ontology Defining", () => {
         titlePropertyApiName: "property1",
         displayName: "objectDef",
         pluralDisplayName: "objectDefs",
-        properties: [
-          {
-            apiName: "property1",
-            type: "string",
-            displayName: "property1",
-          },
-          {
-            apiName: "property2",
-            type: "string",
-            displayName: "property2",
-          },
-        ],
+        properties: {
+          "property1": { type: "string", displayName: "property1" },
+          "property2": { type: "string", displayName: "property2" },
+        },
         implementsInterfaces: [
           {
             implements: childInterface,
