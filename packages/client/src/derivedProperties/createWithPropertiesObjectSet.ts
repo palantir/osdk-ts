@@ -22,13 +22,9 @@ import type {
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
-import { derivedPropertyDefinitionFactory } from "./derivedPropertyDefinitionFactory.js";
 
 type WithConstSelect<Q extends ObjectOrInterfaceDefinition> =
-  & DerivedProperty.SelectPropertyBuilder<Q, false>
-  & {
-    constant: DerivedProperty.Builder<Q, true>["constant"];
-  };
+  DerivedProperty.AggregateBuilder<Q, false>;
 
 /** @internal */
 export function createWithPropertiesObjectSet<
@@ -107,51 +103,9 @@ export function createWithPropertiesObjectSet<
         objectSet: objectSet,
         operation: aggregationOperationDefinition,
       };
-      const selectorResult: DerivedProperty.Definition<any, any> =
-        derivedPropertyDefinitionFactory(wrappedObjectSet, definitionMap);
+      const selectorResult = {} as DerivedProperty.Definition<any, any>;
       definitionMap.set(selectorResult, wrappedObjectSet);
       return selectorResult as any;
-    },
-    selectProperty: (name) => {
-      if (fromBaseObjectSet) {
-        const wrappedObjectSet: DerivedPropertyDefinition = {
-          type: "property",
-          apiName: name,
-        };
-        const selectorResult: DerivedProperty.Definition<any, any> =
-          derivedPropertyDefinitionFactory(wrappedObjectSet, definitionMap);
-        definitionMap.set(selectorResult, wrappedObjectSet);
-        return selectorResult as any;
-      }
-      const wrappedObjectSet: DerivedPropertyDefinition = {
-        type: "selection",
-        objectSet: objectSet,
-        operation: {
-          type: "get",
-          selectedPropertyApiName: name,
-        },
-      };
-      const selectorResult: DerivedProperty.Definition<any, any> =
-        derivedPropertyDefinitionFactory(wrappedObjectSet, definitionMap);
-      definitionMap.set(selectorResult, wrappedObjectSet);
-      return selectorResult as any;
-    },
-    constant: {
-      double: (value) => {
-        invariant(false, "Not supported");
-      },
-      integer: (value) => {
-        invariant(false, "Not supported");
-      },
-      long: (value) => {
-        invariant(false, "Not supported");
-      },
-      datetime: (value) => {
-        invariant(false, "Not supported");
-      },
-      timestamp: (value) => {
-        invariant(false, "Not supported");
-      },
     },
   };
 }

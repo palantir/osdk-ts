@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { MediaReference, MediaUpload } from "@osdk/api";
+import type { MediaReference } from "@osdk/api";
 
 export function isMediaReference(o: any): o is MediaReference {
   return typeof o === `object`
@@ -27,13 +27,4 @@ export function isMediaReference(o: any): o is MediaReference {
     && typeof o.reference.mediaSetViewItem.mediaSetRid === "string"
     && typeof o.reference.mediaSetViewItem.mediaSetViewRid === "string"
     && typeof o.reference.mediaSetViewItem.mediaItemRid === "string";
-}
-
-export function isMediaUpload(o: any): o is MediaUpload {
-  return typeof o === "object"
-    && "path" in o
-    && typeof o.path === "string"
-    && "data" in o
-    && typeof o.data === "object"
-    && o.data instanceof Blob;
 }
