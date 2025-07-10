@@ -92,7 +92,8 @@ export class OntologyIrToFullMetadataConverter {
     // Discover functions using the provided filePath as the functionsDirectoryPath
     const functions = fd.discover();
 
-  functions.discoveredFunctions.forEach((func) => {    
+    let queries: Ontologies.QueryTypeV2[] = [];
+    functions.discoveredFunctions.forEach((func) => {    
       const queryType: Ontologies.QueryTypeV2 = {
         apiName: apiName,
         rid: rid,
@@ -105,13 +106,14 @@ export class OntologyIrToFullMetadataConverter {
         }, {} as Record<ApiName, Ontologies.QueryParameterV2>),
         output: this.convertDataType(func.output.single.dataType, func.customTypes),
       };  
+      queries.push(queryType);
     });
 
-    return functions;
+    return queries;
   }
 
   static convertDataType(dataType: IDataType, customTypes: any, required?: boolean): Ontologies.QueryDataType {
-    if (required === false) {
+    if (required === false && dataType.type !== "optionalType") {
       return { type: "union", unionTypes: [this.convertDataType(dataType, customTypes), { type: "null" }] };
     }
     switch (dataType.type) {
@@ -143,11 +145,9 @@ export class OntologyIrToFullMetadataConverter {
         return { type: "array", subType: this.convertDataType(dataType.list.elementsType, customTypes) };
       case "functionCustomType":
         return this.convertFunctionCustomType(dataType.functionCustomType, customTypes);
-        // return { type: "object", objectApiName: dataType.functionCustomType, objectTypeApiName: dataType.functionCustomType };
       case "object":
         return { type: "object", objectApiName: dataType.object.objectTypeId, objectTypeApiName: dataType.object.objectTypeId };
       default:
-        console.log(dataType.type);
         throw new Error(`Unsupported data type: ${dataType.type}`);
     }
   }
