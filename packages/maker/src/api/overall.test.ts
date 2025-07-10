@@ -5124,6 +5124,10 @@ describe("Ontology Defining", () => {
                 type: "parameterId",
                 parameterId: "param1",
               },
+              "foo": {
+                type: "parameterId",
+                parameterId: "param2",
+              },
             },
             structFieldValues: {},
           },
@@ -5140,11 +5144,36 @@ describe("Ontology Defining", () => {
               {
                 type: "visibility",
                 condition: {
-                  type: "group",
-                  name: "myGroup",
+                  type: "and",
+                  conditions: [
+                    {
+                      type: "group",
+                      name: "myGroup",
+                    },
+                    {
+                      type: "parameter",
+                      parameterId: "param2",
+                      matches: {
+                        type: "staticValue",
+                        staticValue: {
+                          type: "string",
+                          string: "foobar",
+                        },
+                      },
+                    },
+                  ],
                 },
               },
             ],
+          },
+        }, {
+          id: "param2",
+          displayName: "param2",
+          type: "string",
+          validation: {
+            required: true,
+            allowedValues: { type: "text" },
+            defaultVisibility: "editable",
           },
         }, {
           id: "objectToModifyParameter",
@@ -5173,6 +5202,10 @@ describe("Ontology Defining", () => {
                             "propertyValues": {
                               "bar": {
                                 "parameterId": "param1",
+                                "type": "parameterId",
+                              },
+                              "foo": {
+                                "parameterId": "param2",
                                 "type": "parameterId",
                               },
                             },
@@ -5232,34 +5265,58 @@ describe("Ontology Defining", () => {
                           "conditionalOverrides": [
                             {
                               "condition": {
-                                "comparison": {
-                                  "left": {
-                                    "type": "userProperty",
-                                    "userProperty": {
-                                      "propertyValue": {
-                                        "groupIds": {},
-                                        "type": "groupIds",
+                                "and": {
+                                  "conditions": [
+                                    {
+                                      "comparison": {
+                                        "left": {
+                                          "type": "userProperty",
+                                          "userProperty": {
+                                            "propertyValue": {
+                                              "groupIds": {},
+                                              "type": "groupIds",
+                                            },
+                                            "userId": {
+                                              "currentUser": {},
+                                              "type": "currentUser",
+                                            },
+                                          },
+                                        },
+                                        "operator": "INTERSECTS",
+                                        "right": {
+                                          "staticValue": {
+                                            "stringList": {
+                                              "strings": [
+                                                "myGroup",
+                                              ],
+                                            },
+                                            "type": "stringList",
+                                          },
+                                          "type": "staticValue",
+                                        },
                                       },
-                                      "userId": {
-                                        "currentUser": {},
-                                        "type": "currentUser",
-                                      },
+                                      "type": "comparison",
                                     },
-                                  },
-                                  "operator": "INTERSECTS",
-                                  "right": {
-                                    "staticValue": {
-                                      "stringList": {
-                                        "strings": [
-                                          "myGroup",
-                                        ],
+                                    {
+                                      "comparison": {
+                                        "left": {
+                                          "parameterId": "param2",
+                                          "type": "parameterId",
+                                        },
+                                        "operator": "EQUALS",
+                                        "right": {
+                                          "staticValue": {
+                                            "string": "foobar",
+                                            "type": "string",
+                                          },
+                                          "type": "staticValue",
+                                        },
                                       },
-                                      "type": "stringList",
+                                      "type": "comparison",
                                     },
-                                    "type": "staticValue",
-                                  },
+                                  ],
                                 },
-                                "type": "comparison",
+                                "type": "and",
                               },
                               "parameterBlockOverrides": [
                                 {
@@ -5292,6 +5349,34 @@ describe("Ontology Defining", () => {
                                   "type": "boolean",
                                 },
                                 "type": "boolean",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                        "param2": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
                               },
                               "required": {
                                 "required": {},
@@ -5334,6 +5419,7 @@ describe("Ontology Defining", () => {
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "param1",
+                      "param2",
                       "objectToModifyParameter",
                     ],
                     "parameters": {
@@ -5359,6 +5445,18 @@ describe("Ontology Defining", () => {
                         "type": {
                           "boolean": {},
                           "type": "boolean",
+                        },
+                      },
+                      "param2": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "param2",
+                          "typeClasses": [],
+                        },
+                        "id": "param2",
+                        "type": {
+                          "string": {},
+                          "type": "string",
                         },
                       },
                     },

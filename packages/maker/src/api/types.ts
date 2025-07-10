@@ -153,7 +153,8 @@ export interface ActionParameterValidation {
 export type ConditionDefinition =
   | UnionCondition
   | OntologyIrCondition
-  | GroupValidationRule;
+  | GroupValidationRule
+  | ParameterValidationRule;
 
 export type UnionCondition = {
   type: "and" | "or";
@@ -241,6 +242,12 @@ export type ActionLevelValidationDefinition = {
 export type GroupValidationRule = {
   type: "group";
   name: string;
+};
+
+export type ParameterValidationRule = {
+  type: "parameter";
+  parameterId: string;
+  matches: OntologyIrConditionValue;
 };
 
 export type ActionStatus =
