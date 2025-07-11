@@ -27,7 +27,6 @@ import {
 } from "./defineOntology.js";
 import { convertConditionDefinition } from "./ontologyUtils.js";
 import {
-  ObjectPropertyTypeUserDefinition,
   type ActionLevelValidationDefinition,
   type ActionParameter,
   type ActionParameterAllowedValues,
@@ -40,6 +39,7 @@ import {
   type ConditionDefinition,
   type InterfaceType,
   type ObjectPropertyType,
+  type ObjectPropertyTypeUserDefinition,
   type ObjectTypeDefinition,
   OntologyEntityTypeEnum,
   type PropertyTypeType,
