@@ -83,6 +83,8 @@ export interface PublicOauthClientOptions {
    * Allows for an additional value to be appended to the local storage key for the refresh token.
    */
   refreshTokenMarker?: string;
+
+  goFn?: (url: string | URL) => void;
 }
 
 /**
@@ -113,6 +115,7 @@ export function createPublicOauthClient(
  * @param {string[]} scopes - OAuth scopes to request. If not provided, defaults to `["api:read-data", "api:write-data", "api:use-ontologies-read", "api:use-ontologies-write"]`
  * @param {typeof globalThis.fetch} fetchFn - Custom fetch function to use for requests (defaults to `globalThis.fetch`)
  * @param {string} ctxPath - Context path for the authorization server (defaults to "multipass")
+ * @param {Function} goFn - Function to use for navigation (defaults to `window.location.assign`)
  * @returns {PublicOauthClient} A client that can be used as a token provider
  */
 export function createPublicOauthClient(
@@ -125,6 +128,7 @@ export function createPublicOauthClient(
   scopes?: string[],
   fetchFn?: typeof globalThis.fetch,
   ctxPath?: string,
+  goFn?: (url: string | URL) => void,
 ): PublicOauthClient;
 export function createPublicOauthClient(
   client_id: string,
@@ -136,6 +140,7 @@ export function createPublicOauthClient(
   scopes?: string[],
   fetchFn?: typeof globalThis.fetch,
   ctxPath?: string,
+  goFn?: (url: string | URL) => void,
 ): PublicOauthClient {
   let refreshTokenMarker: string | undefined;
   let joinedScopes: string;
@@ -147,6 +152,7 @@ export function createPublicOauthClient(
     fetchFn,
     ctxPath,
     refreshTokenMarker,
+    goFn,
   } = processOptionsAndAssignDefaults(
     url,
     redirect_uri,
@@ -156,6 +162,7 @@ export function createPublicOauthClient(
     scopes,
     fetchFn,
     ctxPath,
+    goFn,
   ));
 
   const client: Client = {
@@ -177,7 +184,10 @@ export function createPublicOauthClient(
 
   // as an arrow function, `useHistory` is known to be a boolean
   const go = async (x: string) => {
-    if (useHistory) {
+    if (goFn) {
+      goFn(x);
+      return;
+    } else if (useHistory) {
       window.history.replaceState({}, "", x);
       return;
     } else window.location.assign(x);
