@@ -4,4 +4,4 @@
 "@osdk/api": patch
 ---
 
-Add CLEAR_DATA enum to optional action params
+Add NULL_VALUE enum to optional action params
