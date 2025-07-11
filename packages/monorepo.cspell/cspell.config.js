@@ -54,6 +54,7 @@ const cspell = {
     ".git/**",
     ".gitignore",
     "**/.turbo/**/*",
+    ".*ignore",
 
     // Ignore these files for now
     "_gitignore",
