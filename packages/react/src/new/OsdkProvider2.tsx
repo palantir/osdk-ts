@@ -20,6 +20,7 @@ import {
   type ObservableClient,
 } from "@osdk/client/unstable-do-not-use";
 import React, { useMemo } from "react";
+import { OsdkContext } from "../OsdkContext.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 interface OsdkProviderOptions {
@@ -39,7 +40,9 @@ export function OsdkProvider2({
   );
   return (
     <OsdkContext2.Provider value={{ client, observableClient }}>
-      {children}
+      <OsdkContext.Provider value={{ client }}>
+        {children}
+      </OsdkContext.Provider>
     </OsdkContext2.Provider>
   );
 }
