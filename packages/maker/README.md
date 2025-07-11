@@ -573,7 +573,9 @@ Actions define operations that can be performed on objects and interfaces.
 import { defineCreateObjectAction } from "@osdk/maker";
 
 // Define an action to create an employee
-const createEmployeeAction = defineCreateObjectAction({ objectType: employeeObject });
+const createEmployeeAction = defineCreateObjectAction({
+  objectType: employeeObject,
+});
 ```
 
 ### Modify Object Action
@@ -582,7 +584,9 @@ const createEmployeeAction = defineCreateObjectAction({ objectType: employeeObje
 import { defineModifyObjectAction } from "@osdk/maker";
 
 // Define an action to modify an employee
-const modifyEmployeeAction = defineModifyObjectAction({ objectType: employeeObject });
+const modifyEmployeeAction = defineModifyObjectAction({
+  objectType: employeeObject,
+});
 ```
 
 ### Delete Object Action
@@ -591,7 +595,9 @@ const modifyEmployeeAction = defineModifyObjectAction({ objectType: employeeObje
 import { defineDeleteObjectAction } from "@osdk/maker";
 
 // Define an action to delete an employee
-const deleteEmployeeAction = defineDeleteObjectAction({ objectType: employeeObject });
+const deleteEmployeeAction = defineDeleteObjectAction({
+  objectType: employeeObject,
+});
 ```
 
 ### Interface Actions
@@ -617,17 +623,22 @@ const modifyPersonAction = defineModifyInterfaceObjectAction(personInterface);
 
 ### Custom Action
 
-More customization such as security/submission criteria, constraints on parameter values, parameter overrides, etc. 
+More customization such as security/submission criteria, constraints on parameter values, parameter overrides, etc.
 can also be added.
 
 ```typescript
-import { defineObject, ConditionDefinition, ActionParameterValidation, defineModifyObjectAction } from "@osdk/maker";
+import {
+  defineObject,
+  ConditionDefinition,
+  ActionParameterValidation,
+  defineModifyObjectAction
+} from "@osdk/maker";
 
 const employeeObject = defineObject({
   apiName: "employee",
   displayName: "Employee",
   pluralDisplayName: "Employees",
-  titlePropertyApiName: "name", 
+  titlePropertyApiName: "name",
   primaryKeyPropertyApiName: "id",
   properties: {
     "id": { type: "string", displayName: "ID" },
@@ -644,7 +655,7 @@ const mustBeManagerCondition: ConditionDefinition = {
 const mustBeInTeamCondition: ConditionDefinition = {
   type: "group",
   name: "teamGroup",
-}
+};
 
 const teamEqualsSalesParameterCondition: ConditionDefinition = {
   type: "parameter",
@@ -656,7 +667,7 @@ const teamEqualsSalesParameterCondition: ConditionDefinition = {
       string: "sales",
     },
   },
-}
+};
 
 const makeDealsVisible: ActionParameterValidation = {
   type: "hidden",
@@ -667,7 +678,7 @@ const makeDealsVisible: ActionParameterValidation = {
       teamEqualsSalesParameterCondition,
     ],
   },
-}
+};
 
 const modifyObjectActionType = defineModifyObjectAction(
   {
@@ -682,7 +693,7 @@ const modifyObjectActionType = defineModifyObjectAction(
         conditionalOverrides: [
           makeDealsVisible,
         ],
-      }
+      },
     },
   },
 );
