@@ -26,7 +26,7 @@ import {
   updateOntology,
 } from "./defineOntology.js";
 import { convertConditionDefinition } from "./ontologyUtils.js";
-import {
+import type {
   ObjectPropertyTypeUserDefinition,
   type ActionLevelValidationDefinition,
   type ActionParameter,
@@ -149,7 +149,7 @@ export function defineCreateObjectAction(
         id,
         displayName: def.objectType.properties?.[id].displayName
           ?? convertToDisplayName(id),
-        type: extractActionParameterType(def.objectType.properties?.[id]),
+        type: extractActionParameterType(def.objectType.properties?.[id]!),
         validation: (validation != null)
           ? {
             ...validation,
@@ -307,7 +307,7 @@ export function defineModifyObjectAction(
         id,
         displayName: def.objectType.properties?.[id].displayName
           ?? convertToDisplayName(id),
-        type: extractActionParameterType(def.objectType.properties?.[id]),
+        type: extractActionParameterType(def.objectType.properties?.[id]!),
         validation: (validation != null)
           ? {
             ...validation,
@@ -641,12 +641,8 @@ function extractActionParameterType(
   pt:
     | SharedPropertyType
     | ObjectPropertyType
-    | ObjectPropertyTypeUserDefinition
-    | undefined,
+    | ObjectPropertyTypeUserDefinition,
 ): ActionParameterType {
-  if (pt === undefined) {
-    throw new Error("Property type is undefined");
-  }
   const typeType = pt.type;
   if (typeof typeType === "object") {
     switch (typeType.type) {
