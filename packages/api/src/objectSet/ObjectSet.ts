@@ -513,6 +513,10 @@ interface Subscribe<
   ) => { unsubscribe: () => void };
 }
 
+interface ToString {
+  readonly toString: () => string;
+}
+
 interface ObjectSetCleanedTypes<
   Q extends ObjectOrInterfaceDefinition,
   D extends Record<string, SimplePropertyDef>,
@@ -524,6 +528,7 @@ interface ObjectSetCleanedTypes<
   SetArithmetic<MERGED>,
   PivotTo<Q>,
   FetchOne<Q, D>,
-  Subscribe<MERGED>
+  Subscribe<MERGED>,
+  ToString
 {
 }
