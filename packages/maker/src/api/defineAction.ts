@@ -16,7 +16,9 @@
 
 import type { ParameterId } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
-import { getAllInterfaceProperties } from "./defineObject.js";
+import {
+  getAllInterfaceProperties,
+} from "./defineObject.js";
 import {
   namespace,
   ontologyDefinition,
@@ -25,11 +27,13 @@ import {
 import { convertConditionDefinition } from "./ontologyUtils.js";
 import {
   type ActionLevelValidationDefinition,
+  type ActionParameter,
   type ActionParameterAllowedValues,
   type ActionParameterType,
   type ActionParameterTypePrimitive,
   type ActionType,
   type ActionTypeDefinition,
+  type ActionTypeUserDefinition,
   type ActionValidationRule,
   type InterfaceType,
   type ObjectPropertyType,
@@ -122,6 +126,47 @@ export function defineCreateInterfaceObjectAction(
         ],
       }
       : {}),
+  });
+}
+
+export function temp(def: ActionTypeUserDefinition): ActionType {
+  Object.keys(def.parameters ?? {}).forEach(id => {
+    invariant(
+      def.objectType.properties?.[id] !== undefined,
+      `Property ${id} does not exist on ${def.objectType.apiName}`,
+    );
+  });
+
+  const parameters: Array<ActionParameter> = def.parameters
+    ? [
+      ...(def.parameters
+        ? Object.entries(def.parameters).map(([id, validation]) => ({
+          id,
+          displayName: def.objectType.properties?.[id].displayName,
+          type: def.objectType.properties?.[id].type,
+          validation,
+        }))
+        : []),
+      ...(def.objectType.properties?.map(prop => ({
+        id: prop.apiName,
+        displayName: prop.displayName,
+        type: extractActionParameterType(prop),
+        validation: {
+          required: true,
+          allowedValues: extractAllowedValuesFromType(prop.type),
+        },
+      })) ?? []),
+    ]
+    : [];
+  return defineAction({
+    apiName: def.apiName
+      ?? `create-object-${
+        kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
+      }`,
+    displayName: def.displayName ?? `Create ${def.objectType.displayName}`,
+    parameters: [],
+    rules: [],
+    status: def.status ?? "active",
   });
 }
 
