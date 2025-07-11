@@ -985,7 +985,7 @@ function convertActionValidation(
               validation: {
                 allowedValues: extractAllowedValues(p),
                 required: convertParameterRequirementConstraint(
-                  p.validation.required,
+                  p.validation.required!,
                 ),
               },
             },
@@ -1207,11 +1207,8 @@ function renderHintFromBaseType(
 }
 
 function convertParameterRequirementConstraint(
-  required: ActionParameterRequirementConstraint | undefined,
+  required: ActionParameterRequirementConstraint,
 ): ParameterRequiredConfiguration {
-  if (required === undefined) {
-    return { type: "notRequired", notRequired: {} };
-  }
   if (typeof required === "boolean") {
     return required
       ? { type: "required", required: {} }

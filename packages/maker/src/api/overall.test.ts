@@ -23,7 +23,9 @@ import {
   defineAction,
   defineCreateInterfaceObjectAction,
   defineCreateObjectAction,
+  defineDeleteObjectAction,
   defineModifyInterfaceObjectAction,
+  defineModifyObjectAction,
 } from "./defineAction.js";
 import { importSharedPropertyType } from "./defineImportSpt.js";
 import { defineInterface } from "./defineInterface.js";
@@ -5081,24 +5083,11 @@ describe("Ontology Defining", () => {
                 type: "parameterId",
                 parameterId: "param1",
               },
-              "foo": {
-                type: "parameterId",
-                parameterId: "param2",
-              },
             },
             structFieldValues: {},
           },
         }],
         parameters: [{
-          id: "param2",
-          displayName: "param2",
-          type: "string",
-          validation: {
-            required: true,
-            allowedValues: { type: "text" },
-            defaultVisibility: "editable",
-          },
-        }, {
           id: "param1",
           displayName: "param1",
           type: "boolean",
@@ -5110,24 +5099,8 @@ describe("Ontology Defining", () => {
               {
                 type: "visibility",
                 condition: {
-                  type: "and",
-                  conditions: [
-                    {
-                      type: "group",
-                      name: "myGroup",
-                    },
-                    {
-                      type: "parameter",
-                      parameterId: "param2",
-                      matches: {
-                        type: "staticValue",
-                        staticValue: {
-                          type: "string",
-                          string: "foobar",
-                        },
-                      },
-                    },
-                  ],
+                  type: "group",
+                  name: "myGroup",
                 },
               },
             ],
@@ -5159,10 +5132,6 @@ describe("Ontology Defining", () => {
                             "propertyValues": {
                               "bar": {
                                 "parameterId": "param1",
-                                "type": "parameterId",
-                              },
-                              "foo": {
-                                "parameterId": "param2",
                                 "type": "parameterId",
                               },
                             },
@@ -5222,58 +5191,34 @@ describe("Ontology Defining", () => {
                           "conditionalOverrides": [
                             {
                               "condition": {
-                                "and": {
-                                  "conditions": [
-                                    {
-                                      "comparison": {
-                                        "left": {
-                                          "type": "userProperty",
-                                          "userProperty": {
-                                            "propertyValue": {
-                                              "groupIds": {},
-                                              "type": "groupIds",
-                                            },
-                                            "userId": {
-                                              "currentUser": {},
-                                              "type": "currentUser",
-                                            },
-                                          },
-                                        },
-                                        "operator": "INTERSECTS",
-                                        "right": {
-                                          "staticValue": {
-                                            "stringList": {
-                                              "strings": [
-                                                "myGroup",
-                                              ],
-                                            },
-                                            "type": "stringList",
-                                          },
-                                          "type": "staticValue",
-                                        },
+                                "comparison": {
+                                  "left": {
+                                    "type": "userProperty",
+                                    "userProperty": {
+                                      "propertyValue": {
+                                        "groupIds": {},
+                                        "type": "groupIds",
                                       },
-                                      "type": "comparison",
-                                    },
-                                    {
-                                      "comparison": {
-                                        "left": {
-                                          "parameterId": "param2",
-                                          "type": "parameterId",
-                                        },
-                                        "operator": "EQUALS",
-                                        "right": {
-                                          "staticValue": {
-                                            "string": "foobar",
-                                            "type": "string",
-                                          },
-                                          "type": "staticValue",
-                                        },
+                                      "userId": {
+                                        "currentUser": {},
+                                        "type": "currentUser",
                                       },
-                                      "type": "comparison",
                                     },
-                                  ],
+                                  },
+                                  "operator": "INTERSECTS",
+                                  "right": {
+                                    "staticValue": {
+                                      "stringList": {
+                                        "strings": [
+                                          "myGroup",
+                                        ],
+                                      },
+                                      "type": "stringList",
+                                    },
+                                    "type": "staticValue",
+                                  },
                                 },
-                                "type": "and",
+                                "type": "comparison",
                               },
                               "parameterBlockOverrides": [
                                 {
@@ -5306,34 +5251,6 @@ describe("Ontology Defining", () => {
                                   "type": "boolean",
                                 },
                                 "type": "boolean",
-                              },
-                              "required": {
-                                "required": {},
-                                "type": "required",
-                              },
-                            },
-                          },
-                        },
-                        "param2": {
-                          "conditionalOverrides": [],
-                          "defaultValidation": {
-                            "display": {
-                              "renderHint": {
-                                "textInput": {},
-                                "type": "textInput",
-                              },
-                              "visibility": {
-                                "editable": {},
-                                "type": "editable",
-                              },
-                            },
-                            "validation": {
-                              "allowedValues": {
-                                "text": {
-                                  "text": {},
-                                  "type": "text",
-                                },
-                                "type": "text",
                               },
                               "required": {
                                 "required": {},
@@ -5375,7 +5292,6 @@ describe("Ontology Defining", () => {
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
-                      "param2",
                       "param1",
                       "objectToModifyParameter",
                     ],
@@ -5402,18 +5318,6 @@ describe("Ontology Defining", () => {
                         "type": {
                           "boolean": {},
                           "type": "boolean",
-                        },
-                      },
-                      "param2": {
-                        "displayMetadata": {
-                          "description": "",
-                          "displayName": "param2",
-                          "typeClasses": [],
-                        },
-                        "id": "param2",
-                        "type": {
-                          "string": {},
-                          "type": "string",
                         },
                       },
                     },
@@ -5447,257 +5351,6 @@ describe("Ontology Defining", () => {
       `);
     });
 
-    it("Parameter conditions are correctly validated on actions", () => {
-      expect(() =>
-        defineAction({
-          apiName: "foo",
-          displayName: "exampleAction",
-          status: "active",
-          rules: [{
-            type: "modifyObjectRule",
-            modifyObjectRule: {
-              objectToModify: "objectToModifyParameter",
-              propertyValues: {
-                "bar": {
-                  type: "parameterId",
-                  parameterId: "param1",
-                },
-                "foo": {
-                  type: "parameterId",
-                  parameterId: "param2",
-                },
-              },
-              structFieldValues: {},
-            },
-          }],
-          parameters: [{
-            id: "param1",
-            displayName: "param1",
-            type: "boolean",
-            validation: {
-              required: true,
-              allowedValues: { type: "boolean" },
-              defaultVisibility: "editable",
-              conditionalOverrides: [
-                {
-                  type: "visibility",
-                  condition: {
-                    type: "and",
-                    conditions: [
-                      {
-                        type: "group",
-                        name: "myGroup",
-                      },
-                      {
-                        type: "parameter",
-                        parameterId: "param2",
-                        matches: {
-                          type: "staticValue",
-                          staticValue: {
-                            type: "string",
-                            string: "foobar",
-                          },
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          }, {
-            id: "param2",
-            displayName: "param2",
-            type: "string",
-            validation: {
-              required: true,
-              allowedValues: { type: "text" },
-              defaultVisibility: "editable",
-            },
-          }, {
-            id: "objectToModifyParameter",
-            displayName: "objectToModifyParameter",
-            type: "objectTypeReference",
-            validation: {
-              required: true,
-              allowedValues: {
-                type: "objectTypeReference",
-                interfaceTypes: [],
-              },
-              defaultVisibility: "editable",
-            },
-          }],
-        })
-      ).toThrowError(
-        `Invariant failed: Parameter condition on param1 is referencing later parameter param2`,
-      );
-
-      expect(() =>
-        defineAction({
-          apiName: "foo",
-          displayName: "exampleAction",
-          status: "active",
-          rules: [{
-            type: "modifyObjectRule",
-            modifyObjectRule: {
-              objectToModify: "objectToModifyParameter",
-              propertyValues: {
-                "bar": {
-                  type: "parameterId",
-                  parameterId: "param1",
-                },
-                "foo": {
-                  type: "parameterId",
-                  parameterId: "param2",
-                },
-              },
-              structFieldValues: {},
-            },
-          }],
-          parameters: [{
-            id: "param1",
-            displayName: "param1",
-            type: "boolean",
-            validation: {
-              required: true,
-              allowedValues: { type: "boolean" },
-              defaultVisibility: "editable",
-              conditionalOverrides: [
-                {
-                  type: "visibility",
-                  condition: {
-                    type: "and",
-                    conditions: [
-                      {
-                        type: "group",
-                        name: "myGroup",
-                      },
-                      {
-                        type: "parameter",
-                        parameterId: "param1",
-                        matches: {
-                          type: "staticValue",
-                          staticValue: {
-                            type: "string",
-                            string: "foobar",
-                          },
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          }, {
-            id: "param2",
-            displayName: "param2",
-            type: "string",
-            validation: {
-              required: true,
-              allowedValues: { type: "text" },
-              defaultVisibility: "editable",
-            },
-          }, {
-            id: "objectToModifyParameter",
-            displayName: "objectToModifyParameter",
-            type: "objectTypeReference",
-            validation: {
-              required: true,
-              allowedValues: {
-                type: "objectTypeReference",
-                interfaceTypes: [],
-              },
-              defaultVisibility: "editable",
-            },
-          }],
-        })
-      ).toThrowError(
-        `Invariant failed: Parameter condition on param1 is referencing itself`,
-      );
-
-      expect(() =>
-        defineAction({
-          apiName: "foo",
-          displayName: "exampleAction",
-          status: "active",
-          rules: [{
-            type: "modifyObjectRule",
-            modifyObjectRule: {
-              objectToModify: "objectToModifyParameter",
-              propertyValues: {
-                "bar": {
-                  type: "parameterId",
-                  parameterId: "param1",
-                },
-                "foo": {
-                  type: "parameterId",
-                  parameterId: "param2",
-                },
-              },
-              structFieldValues: {},
-            },
-          }],
-          parameters: [{
-            id: "param1",
-            displayName: "param1",
-            type: "boolean",
-            validation: {
-              required: true,
-              allowedValues: { type: "boolean" },
-              defaultVisibility: "editable",
-              conditionalOverrides: [
-                {
-                  type: "visibility",
-                  condition: {
-                    type: "and",
-                    conditions: [
-                      {
-                        type: "group",
-                        name: "myGroup",
-                      },
-                      {
-                        type: "parameter",
-                        parameterId: "unknownParam",
-                        matches: {
-                          type: "staticValue",
-                          staticValue: {
-                            type: "string",
-                            string: "foobar",
-                          },
-                        },
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          }, {
-            id: "param2",
-            displayName: "param2",
-            type: "string",
-            validation: {
-              required: true,
-              allowedValues: { type: "text" },
-              defaultVisibility: "editable",
-            },
-          }, {
-            id: "objectToModifyParameter",
-            displayName: "objectToModifyParameter",
-            type: "objectTypeReference",
-            validation: {
-              required: true,
-              allowedValues: {
-                type: "objectTypeReference",
-                interfaceTypes: [],
-              },
-              defaultVisibility: "editable",
-            },
-          }],
-        })
-      ).toThrowError(
-        `Invariant failed: Parameter condition on param1 is referencing unknown parameter unknownParam`,
-      );
-    });
-
     it("Simple concrete actions are properly defined", () => {
       const exampleObjectType = defineObject({
         titlePropertyApiName: "bar",
@@ -5715,12 +5368,16 @@ describe("Ontology Defining", () => {
           objectType: exampleObjectType,
         },
       );
-      // const modifyObjectActionType = defineModifyObjectAction(
-      //   exampleObjectType,
-      // );
-      // const deleteObjectActionType = defineDeleteObjectAction(
-      //   exampleObjectType,
-      // );
+      const modifyObjectActionType = defineModifyObjectAction(
+        {
+          objectType: exampleObjectType,
+        },
+      );
+      const deleteObjectActionType = defineDeleteObjectAction(
+        {
+          objectType: exampleObjectType,
+        },
+      );
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
@@ -6021,8 +5678,8 @@ describe("Ontology Defining", () => {
                                 "type": "text",
                               },
                               "required": {
-                                "notRequired": {},
-                                "type": "notRequired",
+                                "required": {},
+                                "type": "required",
                               },
                             },
                           },
@@ -6190,6 +5847,497 @@ describe("Ontology Defining", () => {
                       "displayMetadata": {
                         "description": undefined,
                         "displayName": "Bar",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                  },
+                  "redacted": false,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "titlePropertyTypeRid": "bar",
+                },
+              },
+            },
+            "sharedPropertyTypes": {},
+          },
+          "importedTypes": {
+            "actionTypes": [],
+            "interfaceTypes": [],
+            "linkTypes": [],
+            "objectTypes": [],
+            "sharedPropertyTypes": [],
+          },
+        }
+      `);
+    });
+
+    it("Customizations on CRUD actions are properly defined", () => {
+      const exampleObjectType = defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "exampleObjectType",
+        pluralDisplayName: "exampleObjectTypes",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          "bar": { type: "string" },
+          "fizz": { type: "string" },
+        },
+      });
+
+      const createObjectActionType = defineCreateObjectAction(
+        {
+          objectType: exampleObjectType,
+          actionLevelValidation: {
+            condition: {
+              type: "group",
+              name: "actionLevelGroup",
+            },
+          },
+          parameters: {
+            "bar": null,
+            "fizz": {
+              required: false,
+              conditionalOverrides: [
+                {
+                  type: "required",
+                  condition: {
+                    type: "and",
+                    conditions: [
+                      {
+                        type: "group",
+                        name: "parameterLevelGroup",
+                      },
+                      {
+                        type: "parameter",
+                        parameterId: "bar",
+                        matches: {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: "bar",
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        },
+      );
+
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "blockData": {
+            "actionTypes": {
+              "com.palantir.create-object-foo": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "addObjectRule": {
+                            "objectTypeId": "com.palantir.foo",
+                            "propertyValues": {
+                              "bar": {
+                                "parameterId": "bar",
+                                "type": "parameterId",
+                              },
+                              "fizz": {
+                                "parameterId": "fizz",
+                                "type": "parameterId",
+                              },
+                            },
+                            "structFieldValues": {},
+                          },
+                          "type": "addObjectRule",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "comparison": {
+                                "left": {
+                                  "type": "userProperty",
+                                  "userProperty": {
+                                    "propertyValue": {
+                                      "groupIds": {},
+                                      "type": "groupIds",
+                                    },
+                                    "userId": {
+                                      "currentUser": {},
+                                      "type": "currentUser",
+                                    },
+                                  },
+                                },
+                                "operator": "INTERSECTS",
+                                "right": {
+                                  "staticValue": {
+                                    "stringList": {
+                                      "strings": [
+                                        "actionLevelGroup",
+                                      ],
+                                    },
+                                    "type": "stringList",
+                                  },
+                                  "type": "staticValue",
+                                },
+                              },
+                              "type": "comparison",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "Did not satisfy validation",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "bar": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                        "fizz": {
+                          "conditionalOverrides": [
+                            {
+                              "condition": {
+                                "and": {
+                                  "conditions": [
+                                    {
+                                      "comparison": {
+                                        "left": {
+                                          "type": "userProperty",
+                                          "userProperty": {
+                                            "propertyValue": {
+                                              "groupIds": {},
+                                              "type": "groupIds",
+                                            },
+                                            "userId": {
+                                              "currentUser": {},
+                                              "type": "currentUser",
+                                            },
+                                          },
+                                        },
+                                        "operator": "INTERSECTS",
+                                        "right": {
+                                          "staticValue": {
+                                            "stringList": {
+                                              "strings": [
+                                                "parameterLevelGroup",
+                                              ],
+                                            },
+                                            "type": "stringList",
+                                          },
+                                          "type": "staticValue",
+                                        },
+                                      },
+                                      "type": "comparison",
+                                    },
+                                    {
+                                      "comparison": {
+                                        "left": {
+                                          "parameterId": "bar",
+                                          "type": "parameterId",
+                                        },
+                                        "operator": "EQUALS",
+                                        "right": {
+                                          "staticValue": {
+                                            "string": "bar",
+                                            "type": "string",
+                                          },
+                                          "type": "staticValue",
+                                        },
+                                      },
+                                      "type": "comparison",
+                                    },
+                                  ],
+                                },
+                                "type": "and",
+                              },
+                              "parameterBlockOverrides": [
+                                {
+                                  "parameterRequired": {
+                                    "required": {
+                                      "required": {},
+                                      "type": "required",
+                                    },
+                                  },
+                                  "type": "parameterRequired",
+                                },
+                              ],
+                            },
+                          ],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "notRequired": {},
+                                "type": "notRequired",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.create-object-foo",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "Create exampleObjectType",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "bar",
+                      "fizz",
+                    ],
+                    "parameters": {
+                      "bar": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Bar",
+                          "typeClasses": [],
+                        },
+                        "id": "bar",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                      "fizz": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Fizz",
+                          "typeClasses": [],
+                        },
+                        "id": "fizz",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+            },
+            "blockPermissionInformation": {
+              "actionTypes": {
+                "com.palantir.create-object-foo": {
+                  "restrictionStatus": {
+                    "hasRolesApplied": true,
+                    "ontologyPackageRid": null,
+                    "publicProject": false,
+                  },
+                },
+              },
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {
+              "com.palantir.foo": {
+                "datasources": [
+                  {
+                    "datasource": {
+                      "datasetV2": {
+                        "datasetRid": "com.palantir.foo",
+                        "propertyMapping": {
+                          "bar": {
+                            "column": "bar",
+                            "type": "column",
+                          },
+                          "fizz": {
+                            "column": "fizz",
+                            "type": "column",
+                          },
+                        },
+                      },
+                      "type": "datasetV2",
+                    },
+                    "editsConfiguration": {
+                      "onlyAllowPrivilegedEdits": false,
+                    },
+                    "redacted": false,
+                    "rid": "ri.ontology.main.datasource.com.palantir.foo",
+                  },
+                ],
+                "entityMetadata": {
+                  "arePatchesEnabled": false,
+                },
+                "objectType": {
+                  "allImplementsInterfaces": {},
+                  "apiName": "com.palantir.foo",
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "exampleObjectType",
+                    "groupDisplayName": undefined,
+                    "icon": {
+                      "blueprint": {
+                        "color": "#2D72D2",
+                        "locator": "cube",
+                      },
+                      "type": "blueprint",
+                    },
+                    "pluralDisplayName": "exampleObjectTypes",
+                    "visibility": "NORMAL",
+                  },
+                  "implementsInterfaces2": [],
+                  "primaryKeys": [
+                    "bar",
+                  ],
+                  "propertyTypes": {
+                    "bar": {
+                      "apiName": "bar",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Bar",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "fizz": {
+                      "apiName": "fizz",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Fizz",
                         "visibility": "NORMAL",
                       },
                       "indexedForSearch": true,
