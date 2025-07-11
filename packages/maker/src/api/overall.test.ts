@@ -5081,11 +5081,24 @@ describe("Ontology Defining", () => {
                 type: "parameterId",
                 parameterId: "param1",
               },
+              "foo": {
+                type: "parameterId",
+                parameterId: "param2",
+              },
             },
             structFieldValues: {},
           },
         }],
         parameters: [{
+          id: "param2",
+          displayName: "param2",
+          type: "string",
+          validation: {
+            required: true,
+            allowedValues: { type: "text" },
+            defaultVisibility: "editable",
+          },
+        }, {
           id: "param1",
           displayName: "param1",
           type: "boolean",
@@ -5097,8 +5110,24 @@ describe("Ontology Defining", () => {
               {
                 type: "visibility",
                 condition: {
-                  type: "group",
-                  name: "myGroup",
+                  type: "and",
+                  conditions: [
+                    {
+                      type: "group",
+                      name: "myGroup",
+                    },
+                    {
+                      type: "parameter",
+                      parameterId: "param2",
+                      matches: {
+                        type: "staticValue",
+                        staticValue: {
+                          type: "string",
+                          string: "foobar",
+                        },
+                      },
+                    },
+                  ],
                 },
               },
             ],
@@ -5130,6 +5159,10 @@ describe("Ontology Defining", () => {
                             "propertyValues": {
                               "bar": {
                                 "parameterId": "param1",
+                                "type": "parameterId",
+                              },
+                              "foo": {
+                                "parameterId": "param2",
                                 "type": "parameterId",
                               },
                             },
@@ -5189,34 +5222,58 @@ describe("Ontology Defining", () => {
                           "conditionalOverrides": [
                             {
                               "condition": {
-                                "comparison": {
-                                  "left": {
-                                    "type": "userProperty",
-                                    "userProperty": {
-                                      "propertyValue": {
-                                        "groupIds": {},
-                                        "type": "groupIds",
+                                "and": {
+                                  "conditions": [
+                                    {
+                                      "comparison": {
+                                        "left": {
+                                          "type": "userProperty",
+                                          "userProperty": {
+                                            "propertyValue": {
+                                              "groupIds": {},
+                                              "type": "groupIds",
+                                            },
+                                            "userId": {
+                                              "currentUser": {},
+                                              "type": "currentUser",
+                                            },
+                                          },
+                                        },
+                                        "operator": "INTERSECTS",
+                                        "right": {
+                                          "staticValue": {
+                                            "stringList": {
+                                              "strings": [
+                                                "myGroup",
+                                              ],
+                                            },
+                                            "type": "stringList",
+                                          },
+                                          "type": "staticValue",
+                                        },
                                       },
-                                      "userId": {
-                                        "currentUser": {},
-                                        "type": "currentUser",
-                                      },
+                                      "type": "comparison",
                                     },
-                                  },
-                                  "operator": "INTERSECTS",
-                                  "right": {
-                                    "staticValue": {
-                                      "stringList": {
-                                        "strings": [
-                                          "myGroup",
-                                        ],
+                                    {
+                                      "comparison": {
+                                        "left": {
+                                          "parameterId": "param2",
+                                          "type": "parameterId",
+                                        },
+                                        "operator": "EQUALS",
+                                        "right": {
+                                          "staticValue": {
+                                            "string": "foobar",
+                                            "type": "string",
+                                          },
+                                          "type": "staticValue",
+                                        },
                                       },
-                                      "type": "stringList",
+                                      "type": "comparison",
                                     },
-                                    "type": "staticValue",
-                                  },
+                                  ],
                                 },
-                                "type": "comparison",
+                                "type": "and",
                               },
                               "parameterBlockOverrides": [
                                 {
@@ -5249,6 +5306,34 @@ describe("Ontology Defining", () => {
                                   "type": "boolean",
                                 },
                                 "type": "boolean",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                        "param2": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
                               },
                               "required": {
                                 "required": {},
@@ -5290,6 +5375,7 @@ describe("Ontology Defining", () => {
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
+                      "param2",
                       "param1",
                       "objectToModifyParameter",
                     ],
@@ -5316,6 +5402,18 @@ describe("Ontology Defining", () => {
                         "type": {
                           "boolean": {},
                           "type": "boolean",
+                        },
+                      },
+                      "param2": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "param2",
+                          "typeClasses": [],
+                        },
+                        "id": "param2",
+                        "type": {
+                          "string": {},
+                          "type": "string",
                         },
                       },
                     },
@@ -5347,6 +5445,257 @@ describe("Ontology Defining", () => {
           },
         }
       `);
+    });
+
+    it("Parameter conditions are correctly validated on actions", () => {
+      expect(() =>
+        defineAction({
+          apiName: "foo",
+          displayName: "exampleAction",
+          status: "active",
+          rules: [{
+            type: "modifyObjectRule",
+            modifyObjectRule: {
+              objectToModify: "objectToModifyParameter",
+              propertyValues: {
+                "bar": {
+                  type: "parameterId",
+                  parameterId: "param1",
+                },
+                "foo": {
+                  type: "parameterId",
+                  parameterId: "param2",
+                },
+              },
+              structFieldValues: {},
+            },
+          }],
+          parameters: [{
+            id: "param1",
+            displayName: "param1",
+            type: "boolean",
+            validation: {
+              required: true,
+              allowedValues: { type: "boolean" },
+              defaultVisibility: "editable",
+              conditionalOverrides: [
+                {
+                  type: "visibility",
+                  condition: {
+                    type: "and",
+                    conditions: [
+                      {
+                        type: "group",
+                        name: "myGroup",
+                      },
+                      {
+                        type: "parameter",
+                        parameterId: "param2",
+                        matches: {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: "foobar",
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          }, {
+            id: "param2",
+            displayName: "param2",
+            type: "string",
+            validation: {
+              required: true,
+              allowedValues: { type: "text" },
+              defaultVisibility: "editable",
+            },
+          }, {
+            id: "objectToModifyParameter",
+            displayName: "objectToModifyParameter",
+            type: "objectTypeReference",
+            validation: {
+              required: true,
+              allowedValues: {
+                type: "objectTypeReference",
+                interfaceTypes: [],
+              },
+              defaultVisibility: "editable",
+            },
+          }],
+        })
+      ).toThrowError(
+        `Invariant failed: Parameter condition on param1 is referencing later parameter param2`,
+      );
+
+      expect(() =>
+        defineAction({
+          apiName: "foo",
+          displayName: "exampleAction",
+          status: "active",
+          rules: [{
+            type: "modifyObjectRule",
+            modifyObjectRule: {
+              objectToModify: "objectToModifyParameter",
+              propertyValues: {
+                "bar": {
+                  type: "parameterId",
+                  parameterId: "param1",
+                },
+                "foo": {
+                  type: "parameterId",
+                  parameterId: "param2",
+                },
+              },
+              structFieldValues: {},
+            },
+          }],
+          parameters: [{
+            id: "param1",
+            displayName: "param1",
+            type: "boolean",
+            validation: {
+              required: true,
+              allowedValues: { type: "boolean" },
+              defaultVisibility: "editable",
+              conditionalOverrides: [
+                {
+                  type: "visibility",
+                  condition: {
+                    type: "and",
+                    conditions: [
+                      {
+                        type: "group",
+                        name: "myGroup",
+                      },
+                      {
+                        type: "parameter",
+                        parameterId: "param1",
+                        matches: {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: "foobar",
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          }, {
+            id: "param2",
+            displayName: "param2",
+            type: "string",
+            validation: {
+              required: true,
+              allowedValues: { type: "text" },
+              defaultVisibility: "editable",
+            },
+          }, {
+            id: "objectToModifyParameter",
+            displayName: "objectToModifyParameter",
+            type: "objectTypeReference",
+            validation: {
+              required: true,
+              allowedValues: {
+                type: "objectTypeReference",
+                interfaceTypes: [],
+              },
+              defaultVisibility: "editable",
+            },
+          }],
+        })
+      ).toThrowError(
+        `Invariant failed: Parameter condition on param1 is referencing itself`,
+      );
+
+      expect(() =>
+        defineAction({
+          apiName: "foo",
+          displayName: "exampleAction",
+          status: "active",
+          rules: [{
+            type: "modifyObjectRule",
+            modifyObjectRule: {
+              objectToModify: "objectToModifyParameter",
+              propertyValues: {
+                "bar": {
+                  type: "parameterId",
+                  parameterId: "param1",
+                },
+                "foo": {
+                  type: "parameterId",
+                  parameterId: "param2",
+                },
+              },
+              structFieldValues: {},
+            },
+          }],
+          parameters: [{
+            id: "param1",
+            displayName: "param1",
+            type: "boolean",
+            validation: {
+              required: true,
+              allowedValues: { type: "boolean" },
+              defaultVisibility: "editable",
+              conditionalOverrides: [
+                {
+                  type: "visibility",
+                  condition: {
+                    type: "and",
+                    conditions: [
+                      {
+                        type: "group",
+                        name: "myGroup",
+                      },
+                      {
+                        type: "parameter",
+                        parameterId: "unknownParam",
+                        matches: {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: "foobar",
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          }, {
+            id: "param2",
+            displayName: "param2",
+            type: "string",
+            validation: {
+              required: true,
+              allowedValues: { type: "text" },
+              defaultVisibility: "editable",
+            },
+          }, {
+            id: "objectToModifyParameter",
+            displayName: "objectToModifyParameter",
+            type: "objectTypeReference",
+            validation: {
+              required: true,
+              allowedValues: {
+                type: "objectTypeReference",
+                interfaceTypes: [],
+              },
+              defaultVisibility: "editable",
+            },
+          }],
+        })
+      ).toThrowError(
+        `Invariant failed: Parameter condition on param1 is referencing unknown parameter unknownParam`,
+      );
     });
 
     it("Simple concrete actions are properly defined", () => {

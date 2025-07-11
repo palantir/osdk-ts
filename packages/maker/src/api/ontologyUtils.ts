@@ -178,6 +178,18 @@ export function convertConditionDefinition(
           },
         },
       };
+    case "parameter":
+      return {
+        type: "comparison",
+        comparison: {
+          operator: "EQUALS",
+          left: {
+            type: "parameterId",
+            parameterId: condition.parameterId,
+          },
+          right: condition.matches,
+        },
+      };
     default:
       return condition;
   }
