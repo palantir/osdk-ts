@@ -112,14 +112,14 @@ export namespace ActionMetadata {
 // @public
 export namespace ActionParam {
     	// (undocumented)
-    export type ClearDataType = typeof CLEAR_DATA;
-    	// (undocumented)
     export type InterfaceType<T extends InterfaceDefinition> = {
         		$objectType: CompileTimeMetadata<T> extends {
             			implementedBy: infer U
             		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
         		$primaryKey: string | number
         	};
+    	// (undocumented)
+    export type NullValueType = typeof NULL_VALUE;
     	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
     	// Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
@@ -277,11 +277,6 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 
 // @public (undocumented)
 export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
-
-// @public (undocumented)
-export const CLEAR_DATA: symbol & {
-    	__type: "CLEAR_DATA"
-};
 
 // @public (undocumented)
 export type CompileTimeMetadata<T extends {
@@ -759,6 +754,11 @@ export interface MediaUpload {
     	// (undocumented)
     readonly path: string;
 }
+
+// @public (undocumented)
+export const NULL_VALUE: symbol & {
+    	__type: "NULL_VALUE"
+};
 
 // @public (undocumented)
 export type NullabilityAdherence = false | "throw" | "drop";

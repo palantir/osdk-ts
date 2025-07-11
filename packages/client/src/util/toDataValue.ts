@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CLEAR_DATA } from "@osdk/api";
+import { NULL_VALUE } from "@osdk/api";
 import type { ActionMetadata } from "@osdk/api";
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
@@ -49,7 +49,7 @@ export async function toDataValue(
     return value;
   }
 
-  if (value === CLEAR_DATA) {
+  if (value === NULL_VALUE) {
     return null;
   }
 

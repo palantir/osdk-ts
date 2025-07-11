@@ -175,7 +175,7 @@ export async function generatePerActionDataFiles(
               const value = (ogValue.multiplicity
                 ? `ReadonlyArray<${getActionParamType(ogValue.type)}>`
                 : `${getActionParamType(ogValue.type)}`)
-                + (ogValue.nullable ? " | ActionParam.ClearDataType" : "");
+                + (ogValue.nullable ? " | ActionParam.NullValueType" : "");
               jsDocBlock.push(
                 `* @param {${getActionParamType(ogValue.type)}} ${
                   ogValue.nullable ? `[${ogKey}]` : ogKey

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export const CLEAR_DATA: symbol & { __type: "CLEAR_DATA" } = Symbol.for(
-  "CLEAR_DATA",
-) as symbol & { __type: "CLEAR_DATA" };
+export const NULL_VALUE: symbol & { __type: "NULL_VALUE" } = Symbol.for(
+  "NULL_VALUE",
+) as symbol & { __type: "NULL_VALUE" };

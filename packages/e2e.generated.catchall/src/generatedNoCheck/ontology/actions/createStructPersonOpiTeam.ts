@@ -37,7 +37,7 @@ export namespace createStructPersonOpiTeam {
   export interface Params {
     readonly address?:
       | ActionParam.StructType<{ city: 'string'; state: 'string'; zipcode: 'integer' }>
-      | ActionParam.ClearDataType;
+      | ActionParam.NullValueType;
 
     readonly age: ActionParam.PrimitiveType<'integer'>;
 

@@ -14,7 +14,6 @@ import { ApplyActionOptions } from '@osdk/api';
 import { ApplyBatchActionOptions } from '@osdk/api';
 import { Attachment } from '@osdk/api';
 import type { AttachmentUpload } from '@osdk/api';
-import { CLEAR_DATA } from '@osdk/api';
 import { CompileTimeMetadata } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/api';
 import type { DataValueWireToClient } from '@osdk/api';
@@ -25,6 +24,7 @@ import type { InterfaceMetadata } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import { Logger } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
+import { NULL_VALUE } from '@osdk/api';
 import { ObjectMetadata } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/api';
@@ -80,8 +80,6 @@ export { ApplyActionOptions }
 export { ApplyBatchActionOptions }
 
 export { Attachment }
-
-export { CLEAR_DATA }
 
 // Warning: (ae-forgotten-export) The symbol "OldSharedClient" needs to be exported by the entry point index.d.ts
 //
@@ -143,6 +141,8 @@ export { InterfaceDefinition }
 export { isOk }
 
 export { Logger }
+
+export { NULL_VALUE }
 
 export { ObjectMetadata }
 
