@@ -85,6 +85,26 @@ export const employeeObjectType: ObjectTypeV2 = {
       },
       rid: "rid",
     },
+    skillSet: {
+      description: "The skills of the employee",
+      dataType: {
+        type: "string",
+      },
+      rid: "rid",
+    },
+    skillSetEmbedding: {
+      description: "Vectorized skill set",
+      dataType: {
+        type: "vector",
+        dimension: 1536,
+        supportsSearchWith: [{ "value": "COSINE_SIMILARITY" }],
+        embeddingModel: {
+          type: "lms",
+          value: "OPENAI_TEXT_EMBEDDING_ADA_002",
+        },
+      },
+      rid: "rid",
+    },
   },
   rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
   status: "ACTIVE",
