@@ -16,6 +16,7 @@
 
 import type {
   ActionDefinition,
+  ActionValidationResponse,
   InterfaceDefinition,
   ObjectTypeDefinition,
   PrimaryKeyType,
@@ -48,6 +49,7 @@ export class ObservableClientImpl implements ObservableClient {
     ) as typeof this.observeObject;
     this.observeList = store.observeList.bind(store) as typeof this.observeList;
     this.applyAction = store.applyAction.bind(store);
+    this.validateAction = store.validateAction.bind(store);
     this.canonicalizeWhereClause = store.canonicalizeWhereClause.bind(
       store,
     ) as typeof this.canonicalizeWhereClause;
@@ -70,6 +72,11 @@ export class ObservableClientImpl implements ObservableClient {
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
     opts?: ObservableClient.ApplyActionOptions,
   ) => Promise<unknown>;
+
+  public validateAction: <Q extends ActionDefinition<any>>(
+    action: Q,
+    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
+  ) => Promise<ActionValidationResponse>;
 
   public canonicalizeWhereClause: <
     T extends ObjectTypeDefinition | InterfaceDefinition,

@@ -188,6 +188,91 @@ function TodoView({ todo }: TodoProps) {
 }
 ```
 
+## Validate Actions Without Executing
+
+The `useOsdkAction` hook provides a `validateAction` function that allows you to check if an action would be valid without actually executing it. This is useful for pre-validation, displaying warnings, or implementing custom UI logic based on action validity.
+
+```tsx
+import { $Actions } from "@my/osdk";
+import { useOsdkAction } from "@osdk/react/experimental";
+import React from "react";
+
+function TodoForm() {
+  const [title, setTitle] = React.useState("");
+  const [assignee, setAssignee] = React.useState("");
+
+  const {
+    applyAction,
+    validateAction,
+    isValidating,
+    validationResult,
+    isPending,
+    error,
+  } = useOsdkAction($Actions.createTodo);
+
+  // Validate whenever inputs change
+  React.useEffect(() => {
+    if (title || assignee) {
+      validateAction({
+        title,
+        assignee,
+      });
+    }
+  }, [title, assignee, validateAction]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validationResult?.result === "VALID") {
+      await applyAction({ title, assignee });
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="Todo title"
+      />
+      <input
+        type="text"
+        value={assignee}
+        onChange={(e) => setAssignee(e.target.value)}
+        placeholder="Assignee"
+      />
+
+      {isValidating && <span>Validating...</span>}
+
+      {validationResult?.result === "INVALID" && (
+        <div style={{ color: "red" }}>
+          Invalid: {validationResult.reasons?.join(", ")}
+        </div>
+      )}
+
+      <button
+        type="submit"
+        disabled={isPending
+          || isValidating
+          || validationResult?.result !== "VALID"}
+      >
+        Create Todo
+      </button>
+
+      {error && <div style={{ color: "red" }}>Error: {error.message}</div>}
+    </form>
+  );
+}
+```
+
+Key features:
+
+- `validateAction`: Function to validate action parameters without executing
+- `isValidating`: Boolean indicating if validation is in progress
+- `validationResult`: Contains the validation result (`{ result: "VALID" | "INVALID", reasons?: string[] }`)
+- Calling `validateAction` while a previous validation is in progress will cancel the previous one
+- Validation and execution are mutually exclusive - starting one will cancel the other
+
 ## Optimistic Updates
 
 With optimistic updates, you can change the internal cache of the ObservationClient while you wait for the action to be performed.
