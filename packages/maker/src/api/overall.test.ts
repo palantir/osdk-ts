@@ -4237,6 +4237,12 @@ describe("Ontology Defining", () => {
                       "successMessage": [],
                       "typeClasses": [],
                     },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "param1",
@@ -4455,6 +4461,14 @@ describe("Ontology Defining", () => {
                       "successMessage": [],
                       "typeClasses": [],
                     },
+                    "entities": {
+                      "affectedInterfaceTypes": [
+                        "com.palantir.exampleInterface",
+                      ],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "objectTypeParameter",
@@ -4634,6 +4648,14 @@ describe("Ontology Defining", () => {
                       },
                       "successMessage": [],
                       "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [
+                        "com.palantir.exampleInterface",
+                      ],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
@@ -5021,6 +5043,12 @@ describe("Ontology Defining", () => {
                       "successMessage": [],
                       "typeClasses": [],
                     },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "param1",
@@ -5374,6 +5402,12 @@ describe("Ontology Defining", () => {
                       },
                       "successMessage": [],
                       "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
@@ -5821,6 +5855,14 @@ describe("Ontology Defining", () => {
                       "successMessage": [],
                       "typeClasses": [],
                     },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.foo",
+                      ],
+                      "typeGroups": [],
+                    },
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "bar",
@@ -5934,6 +5976,14 @@ describe("Ontology Defining", () => {
                       },
                       "successMessage": [],
                       "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.foo",
+                      ],
+                      "typeGroups": [],
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
@@ -6085,6 +6135,14 @@ describe("Ontology Defining", () => {
                       },
                       "successMessage": [],
                       "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.foo",
+                      ],
+                      "typeGroups": [],
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
@@ -6433,6 +6491,14 @@ describe("Ontology Defining", () => {
                       "successMessage": [],
                       "typeClasses": [],
                     },
+                    "entities": {
+                      "affectedInterfaceTypes": [
+                        "com.palantir.exampleInterface",
+                      ],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "objectTypeParameter",
@@ -6597,6 +6663,14 @@ describe("Ontology Defining", () => {
                       },
                       "successMessage": [],
                       "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [
+                        "com.palantir.exampleInterface",
+                      ],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
@@ -6945,6 +7019,14 @@ describe("Ontology Defining", () => {
                       },
                       "successMessage": [],
                       "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.sampleObject",
+                      ],
+                      "typeGroups": [],
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
@@ -7370,6 +7452,14 @@ describe("Ontology Defining", () => {
                       },
                       "successMessage": [],
                       "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.sampleObject",
+                      ],
+                      "typeGroups": [],
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
