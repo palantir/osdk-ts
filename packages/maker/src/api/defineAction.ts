@@ -17,6 +17,7 @@
 import type { ParameterId } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import {
+  convertToDisplayName,
   getAllInterfaceProperties,
 } from "./defineObject.js";
 import {
@@ -25,7 +26,8 @@ import {
   updateOntology,
 } from "./defineOntology.js";
 import { convertConditionDefinition } from "./ontologyUtils.js";
-import {
+import type {
+  ObjectPropertyTypeUserDefinition,
   type ActionLevelValidationDefinition,
   type ActionParameter,
   type ActionParameterAllowedValues,
@@ -38,6 +40,7 @@ import {
   type InterfaceType,
   type ObjectPropertyType,
   type ObjectType,
+  type ObjectTypeDefinition,
   OntologyEntityTypeEnum,
   type PropertyTypeType,
   type SharedPropertyType,
@@ -45,7 +48,7 @@ import {
 
 export function defineCreateInterfaceObjectAction(
   interfaceType: InterfaceType,
-  objectType?: ObjectType,
+  objectType?: ObjectTypeDefinition,
   validation?: ActionLevelValidationDefinition,
 ): ActionType {
   return defineAction({
@@ -137,78 +140,142 @@ export function temp(def: ActionTypeUserDefinition): ActionType {
     );
   });
 
-  const parameters: Array<ActionParameter> = def.parameters
-    ? [
-      ...(def.parameters
-        ? Object.entries(def.parameters).map(([id, validation]) => ({
-          id,
-          displayName: def.objectType.properties?.[id].displayName,
-          type: def.objectType.properties?.[id].type,
-          validation,
-        }))
-        : []),
-      ...(def.objectType.properties?.map(prop => ({
-        id: prop.apiName,
-        displayName: prop.displayName,
+  const parameters: Array<ActionParameter> = [
+    ...(def.parameters
+      // only create supplied parameters
+      ? Object.entries(def.parameters).map(([id, validation]) => ({
+        id,
+        displayName: def.objectType.properties?.[id].displayName
+          ?? convertToDisplayName(id),
+        type: extractActionParameterType(def.objectType.properties?.[id]),
+        validation: (validation != null)
+          ? {
+            ...validation,
+            allowedValues: validation.allowedValues
+              ?? extractAllowedValuesFromType(
+                def.objectType.properties?.[id].type!,
+              ),
+            required: validation.required ?? true,
+          }
+          : {
+            required: true,
+            allowedValues: extractAllowedValuesFromType(
+              def.objectType.properties?.[id].type!,
+            ),
+          },
+      }))
+      // default to creating all parameters
+      : Object.values(def.objectType.properties ?? {}).map(prop => ({
+        id: prop.apiName!,
+        displayName: prop.displayName!,
         type: extractActionParameterType(prop),
         validation: {
           required: true,
           allowedValues: extractAllowedValuesFromType(prop.type),
         },
       })) ?? []),
-    ]
-    : [];
+  ];
+
   return defineAction({
     apiName: def.apiName
       ?? `create-object-${
         kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
       }`,
     displayName: def.displayName ?? `Create ${def.objectType.displayName}`,
-    parameters: [],
-    rules: [],
+    parameters: parameters,
     status: def.status ?? "active",
+    rules: [{
+      type: "addObjectRule",
+      addObjectRule: {
+        objectTypeId: def.objectType.apiName,
+        propertyValues: Object.fromEntries(
+          parameters.map(
+            p => [p.id, { type: "parameterId", parameterId: p.id }],
+          ),
+        ),
+        structFieldValues: {},
+      },
+    }],
+    ...(def.actionLevelValidation
+      ? {
+        validation: [
+          convertValidationRule(def.actionLevelValidation),
+        ],
+      }
+      : {}),
   });
 }
 
 export function defineCreateObjectAction(
-  objectType: ObjectType,
-  validation?: ActionLevelValidationDefinition,
+  def: ActionTypeUserDefinition,
 ): ActionType {
-  return defineAction({
-    apiName: `create-object-${
-      kebab(objectType.apiName.split(".").pop() ?? objectType.apiName)
-    }`,
-    displayName: `Create ${objectType.displayName}`,
-    parameters: [
-      ...(objectType.properties?.map(prop => ({
-        id: prop.apiName,
-        displayName: prop.displayName,
+  Object.keys(def.parameters ?? {}).forEach(id => {
+    invariant(
+      def.objectType.properties?.[id] !== undefined,
+      `Property ${id} does not exist on ${def.objectType.apiName}`,
+    );
+  });
+
+  const parameters: Array<ActionParameter> = [
+    ...(def.parameters
+      // only create supplied parameters
+      ? Object.entries(def.parameters).map(([id, validation]) => ({
+        id,
+        displayName: def.objectType.properties?.[id].displayName
+          ?? convertToDisplayName(id),
+        type: extractActionParameterType(def.objectType.properties?.[id]),
+        validation: (validation != null)
+          ? {
+            ...validation,
+            allowedValues: validation.allowedValues
+              ?? extractAllowedValuesFromType(
+                def.objectType.properties?.[id].type!,
+              ),
+            required: validation.required ?? true,
+          }
+          : {
+            required: true,
+            allowedValues: extractAllowedValuesFromType(
+              def.objectType.properties?.[id].type!,
+            ),
+          },
+      }))
+      // default to creating all parameters
+      : Object.values(def.objectType.properties ?? {}).map(prop => ({
+        id: prop.apiName!,
+        displayName: prop.displayName!,
         type: extractActionParameterType(prop),
         validation: {
           required: true,
           allowedValues: extractAllowedValuesFromType(prop.type),
         },
       })) ?? []),
-    ],
-    status: "active",
+  ];
+
+  return defineAction({
+    apiName: def.apiName
+      ?? `create-object-${
+        kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
+      }`,
+    displayName: def.displayName ?? `Create ${def.objectType.displayName}`,
+    parameters: parameters,
+    status: def.status ?? "active",
     rules: [{
       type: "addObjectRule",
       addObjectRule: {
-        objectTypeId: objectType.apiName,
-        propertyValues: objectType.properties
-          ? Object.fromEntries(
-            objectType.properties.map(
-              p => [p.apiName, { type: "parameterId", parameterId: p.apiName }],
-            ),
-          )
-          : {},
+        objectTypeId: def.objectType.apiName,
+        propertyValues: Object.fromEntries(
+          parameters.map(
+            p => [p.id, { type: "parameterId", parameterId: p.id }],
+          ),
+        ),
         structFieldValues: {},
       },
     }],
-    ...(validation
+    ...(def.actionLevelValidation
       ? {
         validation: [
-          convertValidationRule(validation),
+          convertValidationRule(def.actionLevelValidation),
         ],
       }
       : {}),
@@ -217,7 +284,7 @@ export function defineCreateObjectAction(
 
 export function defineModifyInterfaceObjectAction(
   interfaceType: InterfaceType,
-  objectType?: ObjectType,
+  objectType?: ObjectTypeDefinition,
   validation?: ActionLevelValidationDefinition,
 ): ActionType {
   return defineAction({
@@ -614,8 +681,15 @@ function extractAllowedValuesFromType(
 }
 
 function extractActionParameterType(
-  pt: SharedPropertyType | ObjectPropertyType,
+  pt:
+    | SharedPropertyType
+    | ObjectPropertyType
+    | ObjectPropertyTypeUserDefinition
+    | undefined,
 ): ActionParameterType {
+  if (pt === undefined) {
+    throw new Error("Property type is undefined");
+  }
   const typeType = pt.type;
   if (typeof typeType === "object") {
     switch (typeType.type) {
@@ -649,7 +723,10 @@ function extractActionParameterType(
 
 function maybeAddList(
   type: ActionParameterTypePrimitive,
-  pt: SharedPropertyType | ObjectPropertyType,
+  pt:
+    | SharedPropertyType
+    | ObjectPropertyType
+    | ObjectPropertyTypeUserDefinition,
 ): ActionParameterType {
   return ((pt.array ?? false) ? type + "List" : type) as ActionParameterType;
 }

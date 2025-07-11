@@ -138,7 +138,7 @@ export type ActionTypeUserDefinition = {
   apiName?: string;
   displayName?: string;
   status?: ActionStatus;
-  parameters?: Record<string, ActionParameterValidation | {}>;
+  parameters?: Record<string, ActionParameterValidation | null>;
   actionLevelValidation?: ActionLevelValidationDefinition;
 };
 
@@ -152,8 +152,8 @@ export interface ActionParameter {
 }
 
 export interface ActionParameterValidation {
-  allowedValues: ActionParameterAllowedValues;
-  required: ActionParameterRequirementConstraint;
+  allowedValues?: ActionParameterAllowedValues;
+  required?: ActionParameterRequirementConstraint;
   defaultVisibility?: "editable" | "disabled" | "hidden";
   conditionalOverrides?: Array<ActionParameterConditionalOverride>;
 }
@@ -526,7 +526,7 @@ export interface OneToManyLinkTypeDefinition {
 }
 
 export interface OneToManyObjectLinkReference {
-  object: ObjectType;
+  object: ObjectTypeDefinition;
   metadata: LinkTypeMetadata;
 }
 
@@ -538,7 +538,7 @@ export interface OneToManyLinkTypeUserDefinition {
 }
 
 export interface OneToManyObjectLinkReferenceUserDefinition {
-  object: ObjectType;
+  object: ObjectTypeDefinition;
   metadata: LinkTypeMetadataUserDefinition;
 }
 
@@ -552,7 +552,7 @@ export interface ManyToManyLinkTypeDefinition {
 }
 
 export interface ManyToManyObjectLinkReference {
-  object: ObjectType;
+  object: ObjectTypeDefinition;
   metadata: LinkTypeMetadata;
 }
 
@@ -563,7 +563,7 @@ export interface ManyToManyLinkTypeUserDefinition {
 }
 
 export interface ManyToManyObjectLinkReferenceUserDefinition {
-  object: ObjectType;
+  object: ObjectTypeDefinition;
   metadata: LinkTypeMetadataUserDefinition;
 }
 

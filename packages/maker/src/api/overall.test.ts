@@ -23,9 +23,7 @@ import {
   defineAction,
   defineCreateInterfaceObjectAction,
   defineCreateObjectAction,
-  defineDeleteObjectAction,
   defineModifyInterfaceObjectAction,
-  defineModifyObjectAction,
 } from "./defineAction.js";
 import { importSharedPropertyType } from "./defineImportSpt.js";
 import { defineInterface } from "./defineInterface.js";
@@ -5364,14 +5362,16 @@ describe("Ontology Defining", () => {
       });
 
       const createObjectActionType = defineCreateObjectAction(
-        exampleObjectType,
+        {
+          objectType: exampleObjectType,
+        },
       );
-      const modifyObjectActionType = defineModifyObjectAction(
-        exampleObjectType,
-      );
-      const deleteObjectActionType = defineDeleteObjectAction(
-        exampleObjectType,
-      );
+      // const modifyObjectActionType = defineModifyObjectAction(
+      //   exampleObjectType,
+      // );
+      // const deleteObjectActionType = defineDeleteObjectAction(
+      //   exampleObjectType,
+      // );
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
@@ -6433,10 +6433,13 @@ describe("Ontology Defining", () => {
           },
         },
       });
-      const createAction = defineCreateObjectAction(sampleObject, {
-        condition: {
-          type: "group",
-          name: "testGroup",
+      const createAction = defineCreateObjectAction({
+        objectType: sampleObject,
+        actionLevelValidation: {
+          condition: {
+            type: "group",
+            name: "testGroup",
+          },
         },
       });
 
@@ -6827,37 +6830,40 @@ describe("Ontology Defining", () => {
           },
         },
       });
-      const createAction = defineCreateObjectAction(sampleObject, {
-        displayMetadata: {
-          failureMessage:
-            "Insufficient permissions. Missing organization membership required to submit action",
-          typeClasses: [],
-        },
-        condition: {
-          type: "comparison",
-          comparison: {
-            operator: "INTERSECTS",
-            left: {
-              type: "userProperty",
-              userProperty: {
-                userId: {
-                  type: "currentUser",
-                  currentUser: {},
-                },
-                propertyValue: {
-                  type: "organizationMarkingIds",
-                  organizationMarkingIds: {},
+      const createAction = defineCreateObjectAction({
+        objectType: sampleObject,
+        actionLevelValidation: {
+          displayMetadata: {
+            failureMessage:
+              "Insufficient permissions. Missing organization membership required to submit action",
+            typeClasses: [],
+          },
+          condition: {
+            type: "comparison",
+            comparison: {
+              operator: "INTERSECTS",
+              left: {
+                type: "userProperty",
+                userProperty: {
+                  userId: {
+                    type: "currentUser",
+                    currentUser: {},
+                  },
+                  propertyValue: {
+                    type: "organizationMarkingIds",
+                    organizationMarkingIds: {},
+                  },
                 },
               },
-            },
-            right: {
-              type: "staticValue",
-              staticValue: {
-                type: "stringList",
-                stringList: {
-                  strings: [
-                    "87ef507e-f954-457e-ad68-e0df71ef7567",
-                  ],
+              right: {
+                type: "staticValue",
+                staticValue: {
+                  type: "stringList",
+                  stringList: {
+                    strings: [
+                      "87ef507e-f954-457e-ad68-e0df71ef7567",
+                    ],
+                  },
                 },
               },
             },
