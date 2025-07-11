@@ -103,6 +103,12 @@ export function defineCreateInterfaceObjectAction(
     status: interfaceType.status.type !== "deprecated"
       ? interfaceType.status.type
       : interfaceType.status,
+    entities: {
+      affectedInterfaceTypes: [interfaceType.apiName],
+      affectedObjectTypes: [],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [
       {
         type: "addInterfaceRule",
@@ -148,6 +154,12 @@ export function defineCreateObjectAction(
       })) ?? []),
     ],
     status: "active",
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [{
       type: "addObjectRule",
       addObjectRule: {
@@ -231,6 +243,12 @@ export function defineModifyInterfaceObjectAction(
     status: interfaceType.status.type !== "deprecated"
       ? interfaceType.status.type
       : interfaceType.status,
+    entities: {
+      affectedInterfaceTypes: [interfaceType.apiName],
+      affectedObjectTypes: [],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [
       {
         type: "modifyInterfaceRule",
@@ -287,6 +305,12 @@ export function defineModifyObjectAction(
       })) ?? []),
     ],
     status: "active",
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [
       {
         type: "modifyObjectRule",
@@ -340,6 +364,12 @@ export function defineDeleteObjectAction(
       },
     ],
     status: "active",
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [
       {
         type: "deleteObjectRule",
@@ -418,9 +448,16 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
       );
     }
   });
+
   const fullAction = {
     ...actionDef,
     apiName: apiName,
+    entities: actionDef.entities ?? {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     __type: OntologyEntityTypeEnum.ACTION_TYPE,
   } as ActionType;
   validateActionValidation(fullAction);
