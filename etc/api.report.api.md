@@ -119,6 +119,8 @@ export namespace ActionParam {
         		$primaryKey: string | number
         	};
     	// (undocumented)
+    export type NullValueType = typeof NULL_VALUE;
+    	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
     	// Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
     //
@@ -752,6 +754,11 @@ export interface MediaUpload {
     	// (undocumented)
     readonly path: string;
 }
+
+// @public (undocumented)
+export const NULL_VALUE: symbol & {
+    	__type: "NULL_VALUE"
+};
 
 // @public (undocumented)
 export type NullabilityAdherence = false | "throw" | "drop";
