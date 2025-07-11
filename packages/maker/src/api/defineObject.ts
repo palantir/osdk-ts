@@ -44,7 +44,7 @@ const ISO_8601_DATETIME =
 
 export function defineObject(
   objectDef: ObjectTypeDefinition,
-): ObjectType {
+): ObjectTypeDefinition {
   const apiName = namespace + objectDef.apiName;
   const propertyApiNames = objectDef.properties
     ? Object.keys(objectDef.properties)
@@ -175,7 +175,7 @@ export function defineObject(
   const flattenedProperties: Array<ObjectPropertyType> = Object.entries(
     objectDef.properties ?? {},
   ).map(([apiName, property]) =>
-    convertUserObjectPropertyType(apiName, property)
+    convertUserObjectPropertyType(property.apiName ?? apiName, property)
   );
 
   const finalObject: ObjectType = {
@@ -185,7 +185,8 @@ export function defineObject(
     properties: flattenedProperties,
   };
   updateOntology(finalObject);
-  return finalObject;
+  objectDef.apiName = apiName;
+  return objectDef;
 }
 
 export function isExotic(
@@ -268,6 +269,9 @@ function convertUserObjectPropertyType(
   apiName: string,
   property: ObjectPropertyTypeUserDefinition,
 ): ObjectPropertyType {
+  // fill in missing fields to be used by actions
+  property.apiName = apiName;
+  property.displayName = property.displayName ?? convertToDisplayName(apiName);
   return {
     ...property,
     apiName: apiName,

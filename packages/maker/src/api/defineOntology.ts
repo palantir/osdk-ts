@@ -985,7 +985,7 @@ function convertActionValidation(
               validation: {
                 allowedValues: extractAllowedValues(p),
                 required: convertParameterRequirementConstraint(
-                  p.validation.required,
+                  p.validation.required!,
                 ),
               },
             },
@@ -1042,7 +1042,7 @@ function convertActionSections(
 function extractAllowedValues(
   parameter: ActionParameter,
 ): OntologyIrAllowedParameterValues {
-  switch (parameter.validation.allowedValues.type) {
+  switch (parameter.validation.allowedValues!.type) {
     case "oneOf":
       return {
         type: "oneOf",
@@ -1128,7 +1128,7 @@ function extractAllowedValues(
       };
     default:
       const k: Partial<OntologyIrAllowedParameterValues["type"]> =
-        parameter.validation.allowedValues.type;
+        parameter.validation.allowedValues!.type;
       return {
         type: k,
         [k]: {
@@ -1178,9 +1178,9 @@ function renderHintFromBaseType(
       return { type: "filePicker", filePicker: {} };
     case "marking":
     case "markingList":
-      if (parameter.validation.allowedValues.type === "mandatoryMarking") {
+      if (parameter.validation.allowedValues?.type === "mandatoryMarking") {
         return { type: "mandatoryMarkingPicker", mandatoryMarkingPicker: {} };
-      } else if (parameter.validation.allowedValues.type === "cbacMarking") {
+      } else if (parameter.validation.allowedValues?.type === "cbacMarking") {
         return { type: "cbacMarkingPicker", cbacMarkingPicker: {} };
       } else {
         throw new Error(
