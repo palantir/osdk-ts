@@ -165,6 +165,19 @@ export function createPublicOauthClient(
     goFn,
   ));
 
+  // eslint-disable-next-line no-console
+  console.log("Hi", {
+    url,
+    redirect_uri,
+    useHistory,
+    loginPage,
+    postLoginPage,
+    scopes,
+    fetchFn,
+    ctxPath,
+    goFn,
+  });
+
   const client: Client = {
     client_id,
     token_endpoint_auth_method: "none",
@@ -323,7 +336,7 @@ export function createPublicOauthClient(
     saveLocal(client, {});
     saveSession(client, { codeVerifier, state, oldUrl });
 
-    window.location.assign(`${authServer
+    await go(`${authServer
       .authorization_endpoint!}?${new URLSearchParams({
       client_id,
       response_type: "code",
@@ -333,10 +346,6 @@ export function createPublicOauthClient(
       code_challenge_method: "S256",
       scope: `offline_access ${joinedScopes}`,
     })}`);
-
-    // Give time for redirect to happen
-    await delay(1000);
-    throw new Error("Unable to redirect");
   };
 
   /** Will throw if there is no token! */
