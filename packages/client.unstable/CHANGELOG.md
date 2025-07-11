@@ -48,6 +48,22 @@
 
 ## 2.3.0-beta.2
 
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 6eeb423: Simple create and modify actions for interfaces
+- a08bdfb: Support stream datasources in OAC
+- 10da391: Links as Code
+- 6ac8f0b: api bump
+- 5e8e839: Bump OMS API to include links in ontology IR
+- 889e84b: Release
+- ed69666: Update conjure-lite to 0.7.1
+- 395ae07: Actions as code
+- 37f8e60: api bump for concrete actions
+- 317b555: Release
+
 ## 2.2.0-beta.23
 
 ## 2.2.0-beta.22

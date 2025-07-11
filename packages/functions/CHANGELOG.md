@@ -71,6 +71,74 @@
 
 - @osdk/client@2.3.0-beta.2
 
+## 1.0.0
+
+### Patch Changes
+
+- cef1846: Relax peer dep for client.
+- 4dfd87a: Fix exports from @osdk/functions.unstable package
+- 0e874b1: Exporting more entities from functions package.
+- ea280a6: Created for functions usage.
+- 889e84b: Release
+- e8cdbb8: Add ontology edits API
+- eab3988: Rename @osdk/functions.unstable to @osdk/functions
+- 317b555: Release
+- 6f30353: Method params typing fix on EditBatch interface
+- 751e5b3: Use client as peer dep in functions package.
+- e38a2e5: Small improvements to functions ontology edits API
+- Updated dependencies [322c5bc]
+- Updated dependencies [b61e9f5]
+- Updated dependencies [7416ce4]
+- Updated dependencies [1ba3871]
+- Updated dependencies [12843cb]
+- Updated dependencies [18ba34f]
+- Updated dependencies [cdd3154]
+- Updated dependencies [56aa502]
+- Updated dependencies [abe4897]
+- Updated dependencies [63b2e63]
+- Updated dependencies [cddfbf9]
+- Updated dependencies [5a12181]
+- Updated dependencies [2ce3659]
+- Updated dependencies [7416ce4]
+- Updated dependencies [26c2d95]
+- Updated dependencies [430dee3]
+- Updated dependencies [397f906]
+- Updated dependencies [488b51c]
+- Updated dependencies [fccd9ac]
+- Updated dependencies [5665b18]
+- Updated dependencies [761e69d]
+- Updated dependencies [889e84b]
+- Updated dependencies [62e5965]
+- Updated dependencies [ed69666]
+- Updated dependencies [c92fe73]
+- Updated dependencies [2517750]
+- Updated dependencies [4183a55]
+- Updated dependencies [1e16dcb]
+- Updated dependencies [70b4464]
+- Updated dependencies [2f6206c]
+- Updated dependencies [81c0d8c]
+- Updated dependencies [81c0d8c]
+- Updated dependencies [791e655]
+- Updated dependencies [317b555]
+- Updated dependencies [879b6c3]
+- Updated dependencies [63b2e63]
+- Updated dependencies [2517750]
+- Updated dependencies [1e16dcb]
+- Updated dependencies [f4370e3]
+- Updated dependencies [ea4e4b1]
+- Updated dependencies [a146ce4]
+- Updated dependencies [cc380b5]
+- Updated dependencies [e873024]
+- Updated dependencies [88591f7]
+- Updated dependencies [751e5b3]
+- Updated dependencies [805df40]
+- Updated dependencies [fe0cc43]
+- Updated dependencies [2517750]
+- Updated dependencies [5467a0f]
+- Updated dependencies [2517750]
+- Updated dependencies [63b2e63]
+  - @osdk/client@2.2.0
+
 ## 1.0.0-beta.17
 
 ### Patch Changes

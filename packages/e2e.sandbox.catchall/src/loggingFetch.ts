@@ -21,7 +21,7 @@ export async function loggingFetch(
   input: RequestInfo | URL,
   init?: RequestInit | undefined,
 ): Promise<Response> {
-  let url = new URL(
+  const url = new URL(
     (typeof input === "string")
       ? input
       : (input instanceof URL)
