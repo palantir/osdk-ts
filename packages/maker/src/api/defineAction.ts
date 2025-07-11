@@ -26,7 +26,7 @@ import {
   updateOntology,
 } from "./defineOntology.js";
 import { convertConditionDefinition } from "./ontologyUtils.js";
-import type {
+import {
   ObjectPropertyTypeUserDefinition,
   type ActionLevelValidationDefinition,
   type ActionParameter,
