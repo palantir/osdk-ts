@@ -1,7 +1,7 @@
 {
   "name": "@osdk/tool.generate-with-mock-ontology",
   "private": true,
-  "version": "0.3.0-beta.10",
+  "version": "0.3.0-rc.11",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
