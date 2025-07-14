@@ -346,7 +346,7 @@ describe("ObjectSet", () => {
       });
 
       it(
-        "collectToSet, collectToList, selectProperty, and numeric aggregations are nullable",
+        "collectSet, collectList, selectProperty, and numeric aggregations are nullable",
         async () => {
           const withAggregations = fauxObjectSet.withProperties({
             "collectSet": (base) =>
