@@ -1,5 +1,13 @@
 # @osdk/functions
 
+## 1.1.0-beta.11
+
+### Patch Changes
+
+- 16e4b78: Added support for lists in EditBatch for links
+- Updated dependencies [f82cff2]
+  - @osdk/client@2.3.0-beta.11
+
 ## 1.1.0-beta.10
 
 ### Patch Changes

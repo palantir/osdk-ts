@@ -1,5 +1,16 @@
 # @osdk/client
 
+## 2.3.0-beta.11
+
+### Patch Changes
+
+- f82cff2: Remove Calculated RDPs and Media
+- Updated dependencies [43554b4]
+- Updated dependencies [f82cff2]
+  - @osdk/client.unstable@2.3.0-beta.11
+  - @osdk/api@2.3.0-beta.11
+  - @osdk/generator-converters@2.3.0-beta.11
+
 ## 2.3.0-beta.10
 
 ### Minor Changes

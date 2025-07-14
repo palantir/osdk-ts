@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.3.0-beta.11
+
+### Patch Changes
+
+- 43554b4: OMS Api bump
+
 ## 2.3.0-beta.10
 
 ### Minor Changes
