@@ -44,4 +44,10 @@ export async function runWithPropertiesTest(): Promise<void> {
   );
 }
 
-void runWithPropertiesTest();
+console.log(
+  client(StateTerritory).withProperties({
+    "countryName": (base) =>
+      base.pivotTo("country1").selectProperty("airportCountryName"),
+  }).toString(),
+);
+// void runWithPropertiesTest();
