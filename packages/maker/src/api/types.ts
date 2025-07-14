@@ -27,6 +27,7 @@ import type {
   InterfaceTypeStatus,
   LinkTypeDisplayMetadata,
   LinkTypeMetadata,
+  OntologyIrActionTypeEntities,
   OntologyIrBaseParameterType_decimal,
   OntologyIrBaseParameterType_decimalList,
   OntologyIrBaseParameterType_interfaceReference,
@@ -227,6 +228,7 @@ export interface ActionTypeInner {
   rules: Array<OntologyIrLogicRule>;
   sections: Record<SectionId, Array<ParameterId>>;
   status: ActionStatus;
+  entities: OntologyIrActionTypeEntities;
   formContentOrdering: Array<OntologyIrFormContent>;
   validation: Array<OntologyIrValidationRule>;
   typeClasses: Array<TypeClass>;

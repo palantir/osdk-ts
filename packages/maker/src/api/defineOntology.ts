@@ -596,16 +596,18 @@ function buildPropertyMapping(
 ): Record<string, PropertyTypeMappingInfo> {
   return Object.fromEntries(
     properties.map((prop) => {
-      prop.type;
+      // editOnly
+      if (prop.editOnly) {
+        return [prop.apiName, { type: "editOnly", editOnly: {} }];
+      }
+      // structs
       if (typeof prop.type === "object" && prop.type?.type === "struct") {
         const structMapping = {
           type: "struct",
           struct: {
             column: prop.apiName,
             mapping: Object.fromEntries(
-              Object.entries(prop.type.structDefinition).map((
-                [fieldName, _fieldType],
-              ) => [
+              Object.keys(prop.type.structDefinition).map((fieldName) => [
                 fieldName,
                 { apiName: fieldName, mappings: {} },
               ]),
@@ -613,14 +615,9 @@ function buildPropertyMapping(
           },
         };
         return [prop.apiName, structMapping];
-      } else {
-        return [
-          prop.apiName,
-          prop.editOnly
-            ? { type: "editOnly", editOnly: {} }
-            : { type: "column", column: prop.apiName },
-        ];
       }
+      // default: column mapping
+      return [prop.apiName, { type: "column", column: prop.apiName }];
     }),
   );
 }
@@ -952,6 +949,7 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
             [action.status]: {},
           } as unknown as ActionTypeStatus
           : action.status,
+        entities: action.entities,
       },
     },
   };
