@@ -19,7 +19,7 @@ import type { AuthlessClient } from "./AuthlessClient.js";
 /**
  * @returns an Authless Client which can be used as a public token provider
  */
-export function createAuthlessClient(): AuthlessClient {
+export function createAuthless(): AuthlessClient {
   return async () => {
     return "PUBLIC";
   };
