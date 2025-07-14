@@ -22,7 +22,6 @@ import type {
   OntologyIrActionValidation,
   OntologyIrAllowedParameterValues,
   OntologyIrBaseParameterType,
-  OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrLinkDefinition,
   OntologyIrLinkTypeBlockDataV2,
@@ -408,6 +407,7 @@ function convertObject(
       status: convertObjectStatus(objectType.status),
       redacted: false,
       implementsInterfaces2: implementations.map(impl => ({
+        interfaceTypeRid: impl.implements.apiName,
         interfaceTypeApiName: impl.implements.apiName,
         linksV2: {},
         propertiesV2: {},
@@ -418,6 +418,8 @@ function convertObject(
             }],
           ),
         ),
+        propertiesV2: {},
+        linksV2: {},
       })),
       allImplementsInterfaces: {},
     },
@@ -756,9 +758,8 @@ function cleanAndValidateLinkTypeId(apiName: string): string {
 function convertInterface(
   interfaceType: InterfaceType,
 ): OntologyIrMarketplaceInterfaceType {
-  const { __type, ...other } = interfaceType;
   return {
-    ...other,
+    ...interfaceType,
     propertiesV2: Object.fromEntries(
       Object.values(interfaceType.propertiesV2)
         .map((
@@ -768,10 +769,19 @@ function convertInterface(
           sharedPropertyType: convertSpt(spt.sharedPropertyType),
         }]),
     ),
+    displayMetadata: {
+      displayName: interfaceType.displayMetadata.displayName,
+      description: interfaceType.displayMetadata.description,
+    },
     extendsInterfaces: interfaceType.extendsInterfaces.map(i => i.apiName),
     // these are omitted from our internal types but we need to re-add them for the final json
+    allExtendsInterfaces: [],
+    allLinks: [],
+    allProperties: [],
+    allPropertiesV2: {},
     // TODO(mwalther): Support propertiesV3
     propertiesV3: {},
+    allPropertiesV3: {},
     properties: [],
   };
 }
@@ -931,7 +941,6 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
             [action.status]: {},
           } as unknown as ActionTypeStatus
           : action.status,
-        entities: action.entities,
       },
     },
   };
@@ -1066,7 +1075,7 @@ function convertActionSections(
 export function extractAllowedValues(
   allowedValues: ActionParameterAllowedValues,
 ): OntologyIrAllowedParameterValues {
-  switch (allowedValues.type) {
+  switch (parameter.validation.allowedValues!.type) {
     case "oneOf":
       return {
         type: "oneOf",
@@ -1153,7 +1162,7 @@ export function extractAllowedValues(
       };
     default:
       const k: Partial<OntologyIrAllowedParameterValues["type"]> =
-        allowedValues!.type;
+        parameter.validation.allowedValues!.type;
       return {
         type: k,
         [k]: {

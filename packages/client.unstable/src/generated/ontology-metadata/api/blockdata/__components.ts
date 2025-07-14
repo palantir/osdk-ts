@@ -415,7 +415,6 @@ export interface OntologyIrMarketplaceInterfaceType {
     _api_InterfacePropertyTypeApiName,
     OntologyIrMarketplaceInterfacePropertyType
   >;
-  rid: _api_InterfaceTypeApiName;
   searchable?: boolean | null | undefined;
   status: _api_OntologyIrInterfaceTypeStatus;
 }
