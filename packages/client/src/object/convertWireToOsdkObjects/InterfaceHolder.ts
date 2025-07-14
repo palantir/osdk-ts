@@ -25,7 +25,7 @@ export interface InterfaceHolder<
   [InterfaceDefRef]: InterfaceMetadata;
 
   readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
-    readonly object: ObjectMetadata;
-    readonly interface: InterfaceMetadata;
+    readonly ObjectMetadata: ObjectMetadata;
+    readonly InterfaceMetadata: InterfaceMetadata;
   };
 }

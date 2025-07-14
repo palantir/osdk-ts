@@ -43,7 +43,7 @@ export interface BaseHolder {
   ) => this;
 
   readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
-    readonly object: ObjectMetadata;
+    readonly ObjectMetadata: ObjectMetadata;
   };
 
   // [key: `$$${string}`]: any;

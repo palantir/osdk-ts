@@ -220,11 +220,11 @@ export namespace Osdk {
 
       readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends
         ObjectTypeDefinition ? {
-          object: Q;
+          ObjectMetadata: Q;
         }
         : {
-          object: ObjectMetadata;
-          interface: InterfaceMetadata;
+          ObjectMetadata: ObjectMetadata;
+          InterfaceMetadata: InterfaceMetadata;
         };
     }
     // We are hiding the $rid field if it wasn't requested as we want to discourage its use

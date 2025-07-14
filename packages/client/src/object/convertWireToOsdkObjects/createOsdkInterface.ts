@@ -70,8 +70,8 @@ export function createOsdkInterface<
       },
       "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
         value: {
-          "object": underlying[ObjectDefRef],
-          "interface": interfaceDef,
+          "ObjectMetadata": underlying[ObjectDefRef],
+          "InterfaceMetadata": interfaceDef,
         },
         enumerable: false,
       },
