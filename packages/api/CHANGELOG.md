@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.3.0-beta.11
+
+### Minor Changes
+
+- 67b54b6: Add NULL_VALUE enum to optional action params
+
 ## 2.3.0-beta.10
 
 ## 2.3.0-beta.9

@@ -1,5 +1,20 @@
 # @osdk/client
 
+## 2.3.0-beta.11
+
+### Minor Changes
+
+- efc5522: Change hydrateObjectSetFromObjectRids to take in readonly rids.
+- 67b54b6: Add NULL_VALUE enum to optional action params
+
+### Patch Changes
+
+- Updated dependencies [43554b4]
+- Updated dependencies [67b54b6]
+  - @osdk/client.unstable@2.3.0-beta.11
+  - @osdk/api@2.3.0-beta.11
+  - @osdk/generator-converters@2.3.0-beta.11
+
 ## 2.3.0-beta.10
 
 ### Minor Changes

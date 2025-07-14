@@ -1,5 +1,16 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.3.0-beta.11
+
+### Minor Changes
+
+- 43554b4: OMS Api bump
+
+### Patch Changes
+
+- Updated dependencies [43554b4]
+  - @osdk/client.unstable@2.3.0-beta.11
+
 ## 2.3.0-beta.10
 
 ### Patch Changes

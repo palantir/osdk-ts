@@ -1,5 +1,19 @@
 # @osdk/maker
 
+## 0.11.0-beta.15
+
+### Minor Changes
+
+- c3a2134: Object properties are now maps
+- 2d75f0f: Conditional overrides and usability improvements
+- 1b87f44: parameter matching condition
+- 2157ec6: Add entities metadata for actions, and enable editOnly struct props
+
+### Patch Changes
+
+- Updated dependencies [67b54b6]
+  - @osdk/api@2.3.0-beta.11
+
 ## 0.11.0-beta.14
 
 ### Minor Changes
