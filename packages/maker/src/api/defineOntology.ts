@@ -22,7 +22,6 @@ import type {
   OntologyIrActionValidation,
   OntologyIrAllowedParameterValues,
   OntologyIrBaseParameterType,
-  OntologyIrImportedTypes,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrLinkDefinition,
@@ -271,108 +270,7 @@ function convertToWireOntologyIr(
 ): OntologyIr {
   return {
     blockData: convertToWireBlockData(ontology),
-    importedTypes: convertToWireImportedTypes(importedTypes),
-  };
-}
-
-function convertToWireImportedTypes(
-  importedTypes: OntologyDefinition,
-): OntologyIrImportedTypes {
-  const asBlockData = convertToWireBlockData(importedTypes); // this just makes things easier to work with
-  return {
-    sharedPropertyTypes: Object.values(asBlockData.sharedPropertyTypes).map(
-      spt => ({
-        apiName: spt.sharedPropertyType.apiName,
-        displayName: spt.sharedPropertyType.displayMetadata.displayName,
-        description: spt.sharedPropertyType.displayMetadata.description,
-        type: spt.sharedPropertyType.type,
-      }),
-    ),
-    objectTypes: Object.values(
-      asBlockData.objectTypes,
-    ).map(ot => ({
-      apiName: ot.objectType.apiName,
-      displayName: ot.objectType.displayMetadata.displayName,
-      description: ot.objectType.displayMetadata.description,
-      propertyTypes: Object.values(ot.objectType.propertyTypes).map(p => ({
-        apiName: p.apiName,
-        displayName: p.displayMetadata.displayName,
-        description: p.displayMetadata.description,
-        type: p.type,
-        sharedPropertyType: p.sharedPropertyTypeApiName,
-      })),
-    })),
-    interfaceTypes: Object.values(asBlockData.interfaceTypes).map(i => ({
-      apiName: i.interfaceType.apiName,
-      displayName: i.interfaceType.displayMetadata.displayName,
-      description: i.interfaceType.displayMetadata.description,
-      properties: Object.values(i.interfaceType.propertiesV2).map(p => ({
-        apiName: p.sharedPropertyType.apiName,
-        displayName: p.sharedPropertyType.displayMetadata.displayName,
-        description: p.sharedPropertyType.displayMetadata.description,
-        type: p.sharedPropertyType.type,
-      })),
-      links: i.interfaceType.allLinks.map(l => ({
-        apiName: l.metadata.apiName,
-        displayName: l.metadata.displayName,
-        description: l.metadata.description,
-        cardinality: l.cardinality,
-        required: l.required,
-      })),
-    })),
-    actionTypes: Object.values(asBlockData.actionTypes).map(a => ({
-      apiName: a.actionType.metadata.apiName,
-      displayName: a.actionType.metadata.displayMetadata.displayName,
-      description: a.actionType.metadata.displayMetadata.description,
-      parameters: Object.values(a.actionType.metadata.parameters).map(p => ({
-        id: p.id,
-        displayName: p.displayMetadata.displayName,
-        description: p.displayMetadata.description,
-        type: p.type,
-      })),
-    })),
-    linkTypes: Object.values(asBlockData.linkTypes).map(l => {
-      if (l.linkType.definition.type === "oneToMany") {
-        return {
-          id: l.linkType.id,
-          definition: {
-            type: "oneToMany",
-            "oneToMany": {
-              objectTypeApiNameOneSide:
-                l.linkType.definition.oneToMany.objectTypeRidOneSide,
-              objectTypeApiNameManySide:
-                l.linkType.definition.oneToMany.objectTypeRidManySide,
-              manyToOneLinkDisplayName:
-                l.linkType.definition.oneToMany.manyToOneLinkMetadata
-                  .displayMetadata.displayName,
-              oneToManyLinkDisplayName:
-                l.linkType.definition.oneToMany.oneToManyLinkMetadata
-                  .displayMetadata.displayName,
-              cardinality: l.linkType.definition.oneToMany.cardinalityHint,
-            },
-          },
-        };
-      } else {
-        return {
-          id: l.linkType.id,
-          definition: {
-            type: "manyToMany",
-            "manyToMany": {
-              objectTypeApiNameA:
-                l.linkType.definition.manyToMany.objectTypeRidA,
-              objectTypeApiNameB:
-                l.linkType.definition.manyToMany.objectTypeRidB,
-              objectTypeAToBLinkDisplayName:
-                l.linkType.definition.manyToMany.objectTypeAToBLinkMetadata
-                  .displayMetadata.displayName,
-              objectTypeBToALinkDisplayName:
-                l.linkType.definition.manyToMany.objectTypeBToALinkMetadata
-                  .displayMetadata.displayName,
-            },
-          },
-        };
-      }
-    }),
+    importedTypes: convertToWireBlockData(importedTypes),
   };
 }
 

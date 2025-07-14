@@ -15,7 +15,6 @@
  */
 
 import type {
-  OntologyIrImportedTypes,
   OntologyIrOntologyBlockDataV2,
 } from "./generated/ontology-metadata/api/blockdata/index.js";
 import type { BaseType } from "./generated/type-registry/api/BaseType.js";
@@ -33,7 +32,7 @@ export type { OntologyIrOntologyBlockDataV2 } from "./generated/ontology-metadat
 
 export interface OntologyIr {
   blockData: OntologyIrOntologyBlockDataV2;
-  importedTypes: OntologyIrImportedTypes;
+  importedTypes: OntologyIrOntologyBlockDataV2;
 }
 
 export type ApiNameValueTypeReference = {
