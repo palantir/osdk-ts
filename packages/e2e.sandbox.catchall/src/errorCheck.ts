@@ -8,13 +8,15 @@ export async function assertThrowsExpectedError(
     await callable();
   } catch (err) {
     if (err instanceof PalantirApiError) {
-      if (err.errorName !== expectedErrorName) {
-        const msg = `Expected ${expectedErrorName} error, got ${err.errorName}`;
-        throw new Error(msg);
+      if (err.errorName === expectedErrorName) {
+        return;
       }
+      throw new Error(
+        `Expected ${expectedErrorName} error, got ${err.errorName}`,
+      );
     } else {
-      throw err;
+      throw new Error(`Expected PalantirApiError got ${err}`);
     }
   }
-  throw new Error("Expected error not thrown");
+  throw new Error(`Expected error not thrown: ${expectedErrorName}`);
 }
