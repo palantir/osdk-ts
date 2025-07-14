@@ -95,8 +95,10 @@ export type CreatableObjectTypeProperties<
 > = X extends CreateObject<OTD> ? X["properties"] : never;
 
 // DeleteObject helper types
-export type DeletableObjectLocators<X extends AnyEdit> = X extends
-  DeleteObject<infer OTD> ? ObjectLocator<OTD> : never;
+export type DeletableObjectOrInterfaceLocators<X extends AnyEdit> = X extends
+  DeleteObject<infer OTD> ? ObjectLocator<OTD>
+  : X extends UpdateInterface<infer ID> ? InterfaceLocator<ID>
+  : never;
 
 // UpdateObject helper types
 export type UpdatableObjectOrInterfaceLocators<X extends AnyEdit> = X extends
@@ -138,7 +140,7 @@ export interface EditBatch<
     properties: CreatableObjectTypeProperties<X, OTD>,
   ) => void;
 
-  delete: <OL extends DeletableObjectLocators<X>>(obj: OL) => void;
+  delete: <OL extends DeletableObjectOrInterfaceLocators<X>>(obj: OL) => void;
 
   update: <OL extends UpdatableObjectOrInterfaceLocators<X>>(
     obj: OL,

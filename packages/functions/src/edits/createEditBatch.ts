@@ -21,7 +21,7 @@ import type {
   AddLinkTargets,
   CreatableObjectTypeProperties,
   CreatableObjectTypes,
-  DeletableObjectLocators,
+  DeletableObjectOrInterfaceLocators,
   EditBatch,
   RemoveLinkApiNames,
   RemoveLinkSources,
@@ -102,7 +102,18 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     } as unknown as X);
   }
 
-  public delete<OL extends DeletableObjectLocators<X>>(obj: OL): void {
+  public delete<OL extends DeletableObjectOrInterfaceLocators<X>>(
+    obj: OL,
+  ): void {
+    if (isInterfaceLocator(obj)) {
+      this.edits.push({
+        type: "deleteInterface",
+        obj,
+      } as unknown as X);
+
+      return;
+    }
+
     this.edits.push({
       type: "deleteObject",
       obj,

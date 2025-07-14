@@ -50,7 +50,9 @@ export namespace Edits {
     L extends keyof CompileTimeMetadata<S>["links"],
   > = AddLink<S, L> | RemoveLink<S, L>;
 
-  export type Interface<S extends InterfaceDefinition> = UpdateInterface<S>;
+  export type Interface<S extends InterfaceDefinition> =
+    | UpdateInterface<S>
+    | DeleteInterface<S>;
 }
 
 export interface AddLink<
@@ -100,6 +102,11 @@ export interface DeleteObject<S extends ObjectTypeDefinition> {
   obj: ObjectLocator<S>;
 }
 
+export interface DeleteInterface<S extends InterfaceDefinition> {
+  type: "deleteInterface";
+  obj: InterfaceLocator<S>;
+}
+
 export interface UpdateObject<S extends ObjectTypeDefinition> {
   type: "updateObject";
   obj: ObjectLocator<S>;
@@ -133,7 +140,8 @@ export type AnyEdit =
   | CreateObject<any>
   | DeleteObject<any>
   | UpdateObject<any>
-  | UpdateInterface<any>;
+  | UpdateInterface<any>
+  | DeleteInterface<any>;
 
 export function isInterfaceLocator(obj: any): obj is InterfaceLocator<any> {
   return obj != null && typeof obj === "object"

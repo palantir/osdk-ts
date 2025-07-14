@@ -90,6 +90,7 @@ describe(createEditBatch, () => {
       $objectType: "FooObjectType",
       $primaryKey: 22,
     }, { fooSpt: "fooSpt2" });
+    editBatch.delete(taskInstance);
 
     editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
       $apiName: "Person",
@@ -185,6 +186,14 @@ describe(createEditBatch, () => {
           $objectType: "FooObjectType",
         },
         properties: { fooSpt: "fooSpt2" },
+      },
+      {
+        type: "deleteInterface",
+        obj: {
+          $apiName: "FooInterface",
+          $primaryKey: 21,
+          $objectType: "FooObjectType",
+        },
       },
       {
         type: "addLink",
