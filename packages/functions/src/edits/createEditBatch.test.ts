@@ -15,7 +15,11 @@
  */
 
 import type { Client, Osdk } from "@osdk/client";
-import type { Employee, Person } from "@osdk/client.test.ontology";
+import type {
+  Employee,
+  FooInterface,
+  Person,
+} from "@osdk/client.test.ontology";
 import { Office, Task } from "@osdk/client.test.ontology";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createEditBatch } from "./createEditBatch.js";
@@ -27,7 +31,8 @@ type TestEditScope =
   | Edits.Object<Office>
   | Edits.Link<Task, "RP">
   | Edits.Link<Task, "Todos">
-  | Edits.Link<Office, "occupants">;
+  | Edits.Link<Office, "occupants">
+  | Edits.Interface<FooInterface>;
 
 describe(createEditBatch, () => {
   const taskInstance = {
@@ -49,6 +54,12 @@ describe(createEditBatch, () => {
     $apiName: "Employee",
     $primaryKey: 2,
   } as Osdk.Instance<Employee>;
+
+  const fooInterfaceInstance = {
+    $apiName: "FooInterface",
+    $primaryKey: 21,
+    $objectType: "FooObjectType",
+  } as Osdk.Instance<FooInterface>;
 
   let client: Client;
 
@@ -73,6 +84,12 @@ describe(createEditBatch, () => {
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Office, { officeId: "3", capacity: 2 });
     editBatch.update({ $apiName: "Office", $primaryKey: "3" }, { capacity: 4 });
+    editBatch.update(fooInterfaceInstance, { fooSpt: "fooSpt" });
+    editBatch.update({
+      $apiName: "FooInterface",
+      $objectType: "FooObjectType",
+      $primaryKey: 22,
+    }, { fooSpt: "fooSpt2" });
 
     editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
       $apiName: "Person",
@@ -150,6 +167,24 @@ describe(createEditBatch, () => {
         type: "updateObject",
         obj: { $apiName: "Office", $primaryKey: "3" },
         properties: { capacity: 4 },
+      },
+      {
+        type: "updateInterface",
+        obj: {
+          $apiName: "FooInterface",
+          $primaryKey: 21,
+          $objectType: "FooObjectType",
+        },
+        properties: { fooSpt: "fooSpt" },
+      },
+      {
+        type: "updateInterface",
+        obj: {
+          $apiName: "FooInterface",
+          $primaryKey: 22,
+          $objectType: "FooObjectType",
+        },
+        properties: { fooSpt: "fooSpt2" },
       },
       {
         type: "addLink",
