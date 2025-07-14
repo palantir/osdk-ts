@@ -139,6 +139,8 @@ describe("intellisense", () => {
       "employeeStatus",
       "fullName",
       "office",
+      "skillSet",
+      "skillSetEmbedding",
       "startDate",
     ]);
 
