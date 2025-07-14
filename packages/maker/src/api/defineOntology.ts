@@ -22,11 +22,11 @@ import type {
   OntologyIrActionValidation,
   OntologyIrAllowedParameterValues,
   OntologyIrBaseParameterType,
-  OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrLinkDefinition,
   OntologyIrLinkTypeBlockDataV2,
   OntologyIrManyToManyLinkTypeDatasource,
+  OntologyIrMarketplaceInterfaceType,
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
@@ -382,6 +382,7 @@ function convertObject(
       status: convertObjectStatus(objectType.status),
       redacted: false,
       implementsInterfaces2: implementations.map(impl => ({
+        interfaceTypeRid: impl.implements.apiName,
         interfaceTypeApiName: impl.implements.apiName,
         properties: Object.fromEntries(
           impl.propertyMapping.map(
@@ -390,6 +391,8 @@ function convertObject(
             }],
           ),
         ),
+        propertiesV2: {},
+        linksV2: {},
       })),
       allImplementsInterfaces: {},
     },
@@ -686,10 +689,9 @@ function cleanAndValidateLinkTypeId(apiName: string): string {
 
 function convertInterface(
   interfaceType: InterfaceType,
-): OntologyIrInterfaceType {
-  const { __type, ...other } = interfaceType;
+): OntologyIrMarketplaceInterfaceType {
   return {
-    ...other,
+    ...interfaceType,
     propertiesV2: Object.fromEntries(
       Object.values(interfaceType.propertiesV2)
         .map((
@@ -699,16 +701,16 @@ function convertInterface(
           sharedPropertyType: convertSpt(spt.sharedPropertyType),
         }]),
     ),
+    displayMetadata: {
+      displayName: interfaceType.displayMetadata.displayName,
+      description: interfaceType.displayMetadata.description,
+    },
     extendsInterfaces: interfaceType.extendsInterfaces.map(i => i.apiName),
     // these are omitted from our internal types but we need to re-add them for the final json
-    allExtendsInterfaces: [],
-    allLinks: [],
-    allProperties: [],
-    allPropertiesV2: {},
+    links: [],
+    properties: [],
     // TODO(mwalther): Support propertiesV3
     propertiesV3: {},
-    allPropertiesV3: {},
-    properties: [],
   };
 }
 
@@ -847,7 +849,6 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
             [action.status]: {},
           } as unknown as ActionTypeStatus
           : action.status,
-        entities: action.entities,
       },
     },
   };
@@ -881,7 +882,7 @@ function convertActionValidation(
               validation: {
                 allowedValues: extractAllowedValues(p),
                 required: convertParameterRequirementConstraint(
-                  p.validation.required,
+                  p.validation.required!,
                 ),
               },
             },
@@ -938,7 +939,7 @@ function convertActionSections(
 function extractAllowedValues(
   parameter: ActionParameter,
 ): OntologyIrAllowedParameterValues {
-  switch (parameter.validation.allowedValues.type) {
+  switch (parameter.validation.allowedValues!.type) {
     case "oneOf":
       return {
         type: "oneOf",
@@ -1024,7 +1025,7 @@ function extractAllowedValues(
       };
     default:
       const k: Partial<OntologyIrAllowedParameterValues["type"]> =
-        parameter.validation.allowedValues.type;
+        parameter.validation.allowedValues!.type;
       return {
         type: k,
         [k]: {
@@ -1074,9 +1075,9 @@ function renderHintFromBaseType(
       return { type: "filePicker", filePicker: {} };
     case "marking":
     case "markingList":
-      if (parameter.validation.allowedValues.type === "mandatoryMarking") {
+      if (parameter.validation.allowedValues?.type === "mandatoryMarking") {
         return { type: "mandatoryMarkingPicker", mandatoryMarkingPicker: {} };
-      } else if (parameter.validation.allowedValues.type === "cbacMarking") {
+      } else if (parameter.validation.allowedValues?.type === "cbacMarking") {
         return { type: "cbacMarkingPicker", cbacMarkingPicker: {} };
       } else {
         throw new Error(

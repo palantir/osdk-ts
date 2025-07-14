@@ -22,7 +22,6 @@ import type {
   DataConstraint,
   ExampleValue,
   FailureMessage,
-  ImportedTypes,
   InterfaceTypeApiName,
   InterfaceTypeStatus,
   LinkTypeDisplayMetadata,
@@ -43,10 +42,10 @@ import type {
   OntologyIrCondition,
   OntologyIrConditionValue,
   OntologyIrFormContent,
-  OntologyIrInterfaceType,
   OntologyIrLabelledValue,
   OntologyIrLinkTypeStatus,
   OntologyIrLogicRule,
+  OntologyIrMarketplaceInterfaceType,
   OntologyIrObjectType,
   OntologyIrParameterDateRangeValue,
   OntologyIrPropertyType,
@@ -64,27 +63,7 @@ import type {
   Visibility,
 } from "@osdk/client.unstable";
 
-import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import type { BlueprintIcon } from "./iconNames.js";
-
-export interface Ontology extends
-  Omit<
-    OntologyFullMetadata,
-    | "ontology"
-    | "sharedPropertyTypes"
-    | "interfaceTypes"
-    | "objectTypes"
-    | "actionTypes"
-  >
-{
-  interfaceTypes: Record<string, InterfaceType>;
-  sharedPropertyTypes: Record<string, SharedPropertyType>;
-  objectTypes: Record<string, ObjectType>;
-  valueTypes: Record<string, ValueTypeDefinitionVersion[]>;
-  linkTypes: Record<string, LinkType>;
-  actionTypes: Record<string, ActionType>;
-  importedTypes: ImportedTypes;
-}
 
 export interface OntologyEntityBase {
   __type: OntologyEntityTypeEnum;
@@ -378,18 +357,13 @@ export interface InterfacePropertyType {
 export interface InterfaceType extends
   OntologyEntityBase,
   Omit<
-    OntologyIrInterfaceType,
+    OntologyIrMarketplaceInterfaceType,
     // we want our simplified representation
     | "properties"
     // these things don't need to exist as the system works fine without them (I'm told)
-    | "allProperties"
-    | "allLinks"
-    | "extendsInterfaces"
-    | "allExtendsInterfaces"
     | "propertiesV2"
-    | "allPropertiesV2"
     | "propertiesV3"
-    | "allPropertiesV3"
+    | "extendsInterfaces"
   >
 {
   propertiesV2: Record<string, InterfacePropertyType>;
