@@ -6242,6 +6242,14 @@ describe("Ontology Defining", () => {
                       "successMessage": [],
                       "typeClasses": [],
                     },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.foo",
+                      ],
+                      "typeGroups": [],
+                    },
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "bar",
