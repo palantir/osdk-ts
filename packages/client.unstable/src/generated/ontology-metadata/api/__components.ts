@@ -3799,8 +3799,6 @@ export interface IconReference {
   locator: string;
   source: string;
 }
-export interface ImageModality {
-}
 export interface ImplementingLinkType {
   linkTypeRid: LinkTypeRid;
   startingFromLinkTypeSide: _api_types_LinkTypeSide;
@@ -7560,6 +7558,31 @@ export interface OntologyIrInterfaceSharedPropertyType {
   required: boolean;
   sharedPropertyType: OntologyIrSharedPropertyType;
 }
+export interface OntologyIrInterfaceTypeStatus_experimental {
+  type: "experimental";
+  experimental: ExperimentalInterfaceTypeStatus;
+}
+
+export interface OntologyIrInterfaceTypeStatus_active {
+  type: "active";
+  active: ActiveInterfaceTypeStatus;
+}
+
+export interface OntologyIrInterfaceTypeStatus_deprecated {
+  type: "deprecated";
+  deprecated: OntologyIrDeprecatedInterfaceTypeStatus;
+}
+
+export interface OntologyIrInterfaceTypeStatus_example {
+  type: "example";
+  example: ExampleInterfaceTypeStatus;
+}
+export type OntologyIrInterfaceTypeStatus =
+  | OntologyIrInterfaceTypeStatus_experimental
+  | OntologyIrInterfaceTypeStatus_active
+  | OntologyIrInterfaceTypeStatus_deprecated
+  | OntologyIrInterfaceTypeStatus_example;
+
 /**
  * Represents a link between two ObjectTypes with an intermediary ObjectType acting as a bridge.
  * This LinkType can be used to jump from ObjectType A to B without specifying two separate search-arounds.
