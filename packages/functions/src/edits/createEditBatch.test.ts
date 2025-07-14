@@ -16,7 +16,7 @@
 
 import type { Client, Osdk } from "@osdk/client";
 import type { Employee, Person } from "@osdk/client.test.ontology";
-import { Office, Task } from "@osdk/client.test.ontology";
+import { Office, Task, FooInterface } from "@osdk/client.test.ontology";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createEditBatch } from "./createEditBatch.js";
 import type { EditBatch } from "./EditBatch.js";
@@ -27,7 +27,8 @@ type TestEditScope =
   | Edits.Object<Office>
   | Edits.Link<Task, "RP">
   | Edits.Link<Task, "Todos">
-  | Edits.Link<Office, "occupants">;
+  | Edits.Link<Office, "occupants">
+  | Edits.Interface<FooInterface>;
 
 describe(createEditBatch, () => {
   const taskInstance = {

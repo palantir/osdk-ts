@@ -31,6 +31,7 @@ export type {
   ObjectSet,
   ObjectSpecifier,
   ObjectTypeDefinition,
+  ObjectOrInterfaceDefinition,
   Osdk,
   OsdkObject,
   OsdkObjectPropertyType,
