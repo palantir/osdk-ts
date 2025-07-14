@@ -628,10 +628,10 @@ can also be added.
 
 ```typescript
 import {
-  defineObject,
-  ConditionDefinition,
   ActionParameterValidation,
-  defineModifyObjectAction
+  ConditionDefinition,
+  defineModifyObjectAction,
+  defineObject,
 } from "@osdk/maker";
 
 const employeeObject = defineObject({
@@ -650,7 +650,7 @@ const employeeObject = defineObject({
 const mustBeManagerCondition: ConditionDefinition = {
   type: "group",
   name: "managerGroup", // Actual group assigned during installation
-}
+};
 
 const mustBeInTeamCondition: ConditionDefinition = {
   type: "group",
@@ -698,6 +698,3 @@ const modifyObjectActionType = defineModifyObjectAction(
   },
 );
 ```
-
-
-
