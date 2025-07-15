@@ -1803,7 +1803,6 @@ describe("Ontology Defining", () => {
                 "implementsInterfaces2": [
                   {
                     "interfaceTypeApiName": "com.palantir.interface",
-                    "interfaceTypeRid": "com.palantir.interface",
                     "linksV2": {},
                     "properties": {
                       "com.palantir.foo": {
@@ -8378,7 +8377,6 @@ describe("Ontology Defining", () => {
                   "implementsInterfaces2": [
                     {
                       "interfaceTypeApiName": "com.palantir.childInterface",
-                      "interfaceTypeRid": "com.palantir.childInterface",
                       "linksV2": {},
                       "properties": {
                         "com.palantir.iProperty1": {
