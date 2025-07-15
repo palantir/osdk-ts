@@ -276,7 +276,7 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 }
 
 // @public (undocumented)
-export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
+export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
 
 // @public (undocumented)
 export type CompileTimeMetadata<T extends {
@@ -858,6 +858,49 @@ export interface ObjectSet<
 > extends ObjectSetCleanedTypes<Q, ExtractRdp<UNUSED_OR_RDP>, MergeObjectSet<Q, ExtractRdp<UNUSED_OR_RDP>>> {}
 
 // @public (undocumented)
+export namespace ObjectSetArgs {
+    	// (undocumented)
+    export interface AsyncIter<
+    		Q extends ObjectOrInterfaceDefinition,
+    		K extends PropertyKeys<Q> = never,
+    		T extends boolean = false,
+    		RDP_KEYS extends string = never
+    	> extends Select<K, RDP_KEYS>, OrderBy<K> {
+        		// (undocumented)
+        $__UNSTABLE_useOldInterfaceApis?: boolean;
+        		// (undocumented)
+        $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
+        	}
+    	// (undocumented)
+    export interface FetchPage<
+    		Q extends ObjectOrInterfaceDefinition,
+    		K extends PropertyKeys<Q> = never,
+    		T extends boolean = false,
+    		RDP_KEYS extends string = never
+    	> extends AsyncIter<Q, K, T, RDP_KEYS> {
+        		// (undocumented)
+        $nextPageToken?: string;
+        		// (undocumented)
+        $pageSize?: number;
+        	}
+    	// (undocumented)
+    export interface OrderBy<L extends string = never> {
+        		// (undocumented)
+        $orderBy?: { [K in L]? : "asc" | "desc" };
+        	}
+    	// (undocumented)
+    export interface Select<
+    		OBJECT_KEYS extends string = never,
+    		RDP_KEYS extends string = never
+    	> {
+        		// (undocumented)
+        $includeRid?: boolean;
+        		// (undocumented)
+        $select?: readonly (OBJECT_KEYS | RDP_KEYS)[];
+        	}
+}
+
+// @public (undocumented)
 export interface ObjectSetQueryDataType<T_Target extends ObjectTypeDefinition = never> extends BaseQueryDataTypeDefinition<"objectSet"> {
     	// (undocumented)
     __OsdkTargetType?: T_Target;
@@ -1086,6 +1129,8 @@ export interface PropertyValueWireToClient {
     stringTimeseries: TimeSeriesProperty<string>;
     	// (undocumented)
     timestamp: string;
+    	// (undocumented)
+    vector: number[];
 }
 
 // Warning: (ae-forgotten-export) The symbol "PrimitiveDataType" needs to be exported by the entry point index.d.ts

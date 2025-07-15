@@ -1780,11 +1780,12 @@ versions:
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-
+            
+            const maxObjectsInList = 75; // Adjust this value as needed between 1 and 100
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:collectToList", 75)
+                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:collectList", maxObjectsInList)
                 })
       derivedPropertyCollectToSetAggregation:
         - template: |-
@@ -1792,10 +1793,11 @@ versions:
             // Edit this import if your client location differs
             import { client } from "./client";
 
+            const maxObjectsInSet = 75; // Adjust this value as needed between 1 and 100
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:collectToSet", 75)
+                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:collectSet", maxObjectsInSet)
                 })
       derivedPropertyCountAggregation:
         - template: |-

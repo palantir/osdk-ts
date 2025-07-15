@@ -131,7 +131,7 @@ async function loadOntology(
     apiNamespace,
     async () => {
       const jiti = createJiti(import.meta.filename, {
-        moduleCache: false,
+        moduleCache: true,
         debug: false,
         importMeta: import.meta,
       });
