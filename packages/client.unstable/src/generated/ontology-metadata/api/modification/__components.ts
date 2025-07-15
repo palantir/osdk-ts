@@ -71,6 +71,7 @@ import type {
   GeotimeSeriesIntegrationRid as _api_GeotimeSeriesIntegrationRid,
   GeotimeSeriesReferencePropertyType as _api_GeotimeSeriesReferencePropertyType,
   GroupId as _api_GroupId,
+  Icon as _api_Icon,
   InlineActionDisplayOptions as _api_InlineActionDisplayOptions,
   IntegerPropertyType as _api_IntegerPropertyType,
   InterfaceLinkTypeCardinality as _api_InterfaceLinkTypeCardinality,
@@ -79,7 +80,6 @@ import type {
   InterfacePropertyTypeRidOrIdInRequest
     as _api_InterfacePropertyTypeRidOrIdInRequest,
   InterfaceTypeApiName as _api_InterfaceTypeApiName,
-  InterfaceTypeDisplayMetadata as _api_InterfaceTypeDisplayMetadata,
   InterfaceTypeIdInRequest as _api_InterfaceTypeIdInRequest,
   InterfaceTypeRid as _api_InterfaceTypeRid,
   InterfaceTypeRidOrIdInRequest as _api_InterfaceTypeRidOrIdInRequest,
@@ -598,9 +598,17 @@ export interface InterfaceSharedPropertyTypeModification {
   required: boolean;
   sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
 }
+/**
+ * This includes metadata which can be used by front-ends when displaying an interface.
+ */
+export interface InterfaceTypeDisplayMetadataModification {
+  description?: string | null | undefined;
+  displayName: string;
+  icon?: _api_Icon | null | undefined;
+}
 export interface InterfaceTypeModification {
   apiName: _api_InterfaceTypeApiName;
-  displayMetadata: _api_InterfaceTypeDisplayMetadata;
+  displayMetadata: InterfaceTypeDisplayMetadataModification;
   extendsInterfaces: Array<_api_InterfaceTypeRidOrIdInRequest>;
   links: Array<InterfaceLinkTypeModification>;
   properties: Array<_api_SharedPropertyTypeRidOrIdInRequest>;
