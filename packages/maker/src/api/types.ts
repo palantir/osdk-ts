@@ -454,7 +454,7 @@ type PropertyTypeTypeMarking = {
   markingType: "MANDATORY" | "CBAC";
 };
 
-type PropertyTypeTypeStruct = {
+export type PropertyTypeTypeStruct = {
   type: "struct";
   structDefinition: {
     [api_name: string]:
