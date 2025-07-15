@@ -1,5 +1,19 @@
 # @osdk/maker
 
+## 0.12.0-beta.2
+
+### Minor Changes
+
+- 8bb08eb: Turn on module cache
+- 5994895: Interface struct properties are skipped in crud actions
+
+### Patch Changes
+
+- Updated dependencies [29d2ada]
+- Updated dependencies [8c95154]
+- Updated dependencies [c32dcf2]
+  - @osdk/api@2.4.0-beta.2
+
 ## 0.11.0-beta.14
 
 ### Minor Changes

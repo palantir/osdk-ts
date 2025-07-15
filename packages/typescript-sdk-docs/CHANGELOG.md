@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.3.0-beta.2
+
+### Minor Changes
+
+- 29d2ada: Fix type in docs and tests
+
 ## 0.2.0-beta.3
 
 ### Minor Changes
