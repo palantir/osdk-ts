@@ -248,7 +248,6 @@ describe("Ontology Defining", () => {
             "interfaceTypes": {
               "com.palantir.Foo": {
                 "interfaceType": {
-                  "__type": "INTERFACE_TYPE",
                   "apiName": "com.palantir.Foo",
                   "displayMetadata": {
                     "description": "Foo",
@@ -446,7 +445,6 @@ describe("Ontology Defining", () => {
           "interfaceTypes": {
             "com.palantir.childInterface": {
               "interfaceType": {
-                "__type": "INTERFACE_TYPE",
                 "apiName": "com.palantir.childInterface",
                 "displayMetadata": {
                   "description": "childInterface",
@@ -506,7 +504,6 @@ describe("Ontology Defining", () => {
             },
             "com.palantir.parentInterface": {
               "interfaceType": {
-                "__type": "INTERFACE_TYPE",
                 "apiName": "com.palantir.parentInterface",
                 "displayMetadata": {
                   "description": "parentInterface",
@@ -662,7 +659,6 @@ describe("Ontology Defining", () => {
           "interfaceTypes": {
             "com.palantir.parentInterface": {
               "interfaceType": {
-                "__type": "INTERFACE_TYPE",
                 "apiName": "com.palantir.parentInterface",
                 "displayMetadata": {
                   "description": "parentInterface",
@@ -789,7 +785,6 @@ describe("Ontology Defining", () => {
           "interfaceTypes": {
             "com.palantir.childInterface": {
               "interfaceType": {
-                "__type": "INTERFACE_TYPE",
                 "apiName": "com.palantir.childInterface",
                 "displayMetadata": {
                   "description": "childInterface",
@@ -849,7 +844,6 @@ describe("Ontology Defining", () => {
             },
             "com.palantir.parentInterface": {
               "interfaceType": {
-                "__type": "INTERFACE_TYPE",
                 "apiName": "com.palantir.parentInterface",
                 "displayMetadata": {
                   "description": "parentInterface",
@@ -1003,7 +997,6 @@ describe("Ontology Defining", () => {
           "interfaceTypes": {
             "com.palantir.parentInterface": {
               "interfaceType": {
-                "__type": "INTERFACE_TYPE",
                 "apiName": "com.palantir.parentInterface",
                 "displayMetadata": {
                   "description": "parentInterface",
@@ -1058,7 +1051,6 @@ describe("Ontology Defining", () => {
           "interfaceTypes": {
             "com.palantir.A": {
               "interfaceType": {
-                "__type": "INTERFACE_TYPE",
                 "apiName": "com.palantir.A",
                 "displayMetadata": {
                   "description": "A",
@@ -1078,7 +1070,6 @@ describe("Ontology Defining", () => {
             },
             "com.palantir.B": {
               "interfaceType": {
-                "__type": "INTERFACE_TYPE",
                 "apiName": "com.palantir.B",
                 "displayMetadata": {
                   "description": "B",
@@ -1122,7 +1113,6 @@ describe("Ontology Defining", () => {
           "interfaceTypes": {
             "com.palantir.A": {
               "interfaceType": {
-                "__type": "INTERFACE_TYPE",
                 "apiName": "com.palantir.A",
                 "displayMetadata": {
                   "description": "A",
@@ -1142,7 +1132,6 @@ describe("Ontology Defining", () => {
             },
             "com.palantir.B": {
               "interfaceType": {
-                "__type": "INTERFACE_TYPE",
                 "apiName": "com.palantir.B",
                 "displayMetadata": {
                   "description": "B",
@@ -1213,7 +1202,6 @@ describe("Ontology Defining", () => {
         "interfaceTypes": {
           "com.palantir.FooInterface": {
             "interfaceType": {
-              "__type": "INTERFACE_TYPE",
               "apiName": "com.palantir.FooInterface",
               "displayMetadata": {
                 "description": "Foo Interface",
@@ -1426,7 +1414,6 @@ describe("Ontology Defining", () => {
         "interfaceTypes": {
           "com.palantir.interface": {
             "interfaceType": {
-              "__type": "INTERFACE_TYPE",
               "apiName": "com.palantir.interface",
               "displayMetadata": {
                 "description": "interface",
@@ -1693,7 +1680,6 @@ describe("Ontology Defining", () => {
           "interfaceTypes": {
             "com.palantir.interface": {
               "interfaceType": {
-                "__type": "INTERFACE_TYPE",
                 "apiName": "com.palantir.interface",
                 "displayMetadata": {
                   "description": "interface",
@@ -4151,6 +4137,12 @@ describe("Ontology Defining", () => {
                       "successMessage": [],
                       "typeClasses": [],
                     },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "param1",
@@ -4374,6 +4366,14 @@ describe("Ontology Defining", () => {
                       "successMessage": [],
                       "typeClasses": [],
                     },
+                    "entities": {
+                      "affectedInterfaceTypes": [
+                        "com.palantir.exampleInterface",
+                      ],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "objectTypeParameter",
@@ -4554,6 +4554,14 @@ describe("Ontology Defining", () => {
                       "successMessage": [],
                       "typeClasses": [],
                     },
+                    "entities": {
+                      "affectedInterfaceTypes": [
+                        "com.palantir.exampleInterface",
+                      ],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "interfaceObjectToModifyParameter",
@@ -4604,7 +4612,6 @@ describe("Ontology Defining", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
-                  "__type": "INTERFACE_TYPE",
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -4939,6 +4946,12 @@ describe("Ontology Defining", () => {
                       },
                       "successMessage": [],
                       "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
@@ -5298,6 +5311,12 @@ describe("Ontology Defining", () => {
                       },
                       "successMessage": [],
                       "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
@@ -5750,6 +5769,14 @@ describe("Ontology Defining", () => {
                       "successMessage": [],
                       "typeClasses": [],
                     },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.foo",
+                      ],
+                      "typeGroups": [],
+                    },
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "bar",
@@ -5863,6 +5890,14 @@ describe("Ontology Defining", () => {
                       },
                       "successMessage": [],
                       "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.foo",
+                      ],
+                      "typeGroups": [],
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
@@ -6014,6 +6049,14 @@ describe("Ontology Defining", () => {
                       },
                       "successMessage": [],
                       "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.foo",
+                      ],
+                      "typeGroups": [],
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
@@ -6367,6 +6410,14 @@ describe("Ontology Defining", () => {
                       "successMessage": [],
                       "typeClasses": [],
                     },
+                    "entities": {
+                      "affectedInterfaceTypes": [
+                        "com.palantir.exampleInterface",
+                      ],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "objectTypeParameter",
@@ -6532,6 +6583,14 @@ describe("Ontology Defining", () => {
                       "successMessage": [],
                       "typeClasses": [],
                     },
+                    "entities": {
+                      "affectedInterfaceTypes": [
+                        "com.palantir.exampleInterface",
+                      ],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "interfaceObjectToModifyParameter",
@@ -6582,7 +6641,6 @@ describe("Ontology Defining", () => {
             "interfaceTypes": {
               "com.palantir.exampleInterface": {
                 "interfaceType": {
-                  "__type": "INTERFACE_TYPE",
                   "apiName": "com.palantir.exampleInterface",
                   "displayMetadata": {
                     "description": "exampleInterface",
@@ -6879,6 +6937,14 @@ describe("Ontology Defining", () => {
                       },
                       "successMessage": [],
                       "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.sampleObject",
+                      ],
+                      "typeGroups": [],
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
@@ -7310,6 +7376,14 @@ describe("Ontology Defining", () => {
                       "successMessage": [],
                       "typeClasses": [],
                     },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.sampleObject",
+                      ],
+                      "typeGroups": [],
+                    },
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "name",
@@ -7550,7 +7624,6 @@ describe("Ontology Defining", () => {
             "interfaceTypes": {
               "com.palantir.myInterface": {
                 "interfaceType": {
-                  "__type": "INTERFACE_TYPE",
                   "apiName": "com.palantir.myInterface",
                   "displayMetadata": {
                     "description": "myInterface",
@@ -7673,7 +7746,6 @@ describe("Ontology Defining", () => {
             "interfaceTypes": {
               "com.palantir.myInterface": {
                 "interfaceType": {
-                  "__type": "INTERFACE_TYPE",
                   "apiName": "com.palantir.myInterface",
                   "displayMetadata": {
                     "description": "myInterface",
@@ -8140,7 +8212,6 @@ describe("Ontology Defining", () => {
             "interfaceTypes": {
               "com.palantir.childInterface": {
                 "interfaceType": {
-                  "__type": "INTERFACE_TYPE",
                   "apiName": "com.palantir.childInterface",
                   "displayMetadata": {
                     "description": "childInterface",
@@ -8200,7 +8271,6 @@ describe("Ontology Defining", () => {
               },
               "com.palantir.parentInterface": {
                 "interfaceType": {
-                  "__type": "INTERFACE_TYPE",
                   "apiName": "com.palantir.parentInterface",
                   "displayMetadata": {
                     "description": "parentInterface",
