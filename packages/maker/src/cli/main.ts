@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { consola } from "consola";
+import { execa } from "execa";
 import { createJiti } from "jiti";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
@@ -36,6 +38,7 @@ export default async function main(
     valueTypesOutput: string;
     outputDir?: string;
     dependencies?: string;
+    generateFunctionsOsdk?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -85,6 +88,11 @@ export default async function main(
         type: "string",
         coerce: path.resolve,
       },
+      generateFunctionsOsdk: {
+        describe: "Output folder for generated OSDK for functions",
+        type: "string",
+        coerce: path.resolve,
+      },
     })
     .parseAsync();
   let apiNamespace = "";
@@ -119,6 +127,22 @@ export default async function main(
       JSON.stringify(ontology.valueType, null, 2),
     );
   }
+
+  if (commandLineOpts.generateFunctionsOsdk !== undefined) {
+    // Generate full ontology metadata for functions OSDK
+    const fullMetadata = OntologyIrToFullMetadataConverter
+      .getFullMetadataFromIr(ontology.ontology.blockData);
+    consola.info(
+      `Saving full ontology metadata to ${commandLineOpts.generateFunctionsOsdk}`,
+    );
+
+    await fs.writeFile(
+      path.join(commandLineOpts.generateFunctionsOsdk, ".ontology.json"),
+      JSON.stringify(fullMetadata, null, 2),
+    );
+
+    await fullMetadataToOsdk(commandLineOpts.generateFunctionsOsdk);
+  }
 }
 
 async function loadOntology(
@@ -143,4 +167,40 @@ async function loadOntology(
     dependencyFile,
   );
   return q;
+}
+
+async function fullMetadataToOsdk(
+  workDir: string,
+): Promise<void> {
+  // First create a clean temporary directory to generate the SDK into
+  const functionOsdkDir = path.join(
+    workDir,
+    "generated",
+  );
+  await fs.rm(functionOsdkDir, { recursive: true, force: true });
+  await fs.mkdir(functionOsdkDir, { recursive: true });
+
+  try {
+    // Generate the source code for the osdk
+    const { stdout, stderr, exitCode } = await execa("pnpm", [
+      "exec",
+      "osdk",
+      "unstable",
+      "typescript",
+      "generate",
+      "--outDir",
+      functionOsdkDir,
+      "--ontologyPath",
+      path.join(workDir, ".ontology.json"),
+      "--beta",
+      "true",
+      "--packageType",
+      "module",
+      "--version",
+      "dev",
+    ]);
+  } catch (error) {
+    await fs.rm(functionOsdkDir, { recursive: true, force: true });
+    throw error;
+  }
 }
