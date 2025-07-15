@@ -22,6 +22,7 @@ import type {
 } from "@osdk/api";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAsyncClientCache } from "../object/Cache.js";
+import { deepFreeze } from "../util/deepFreeze.js";
 import { loadActionMetadata } from "./loadActionMetadata.js";
 import { loadFullObjectMetadata } from "./loadFullObjectMetadata.js";
 import { loadInterfaceMetadata } from "./loadInterfaceMetadata.js";
@@ -59,14 +60,14 @@ export const createStandardOntologyProviderFactory: (
         [InterfaceDefinitions]: interfaceDefs,
       };
 
-      return fullObjectDef;
+      return deepFreeze(fullObjectDef);
     }
 
     async function loadInterface(
       client: MinimalClient,
       key: string,
     ) {
-      return loadInterfaceMetadata(client, key);
+      return deepFreeze(await loadInterfaceMetadata(client, key));
     }
 
     async function loadQuery(
