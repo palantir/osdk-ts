@@ -7,6 +7,7 @@ import type { TodoLike } from "./generatedNoCheck2/index.js";
 import { H1 } from "./H2.js";
 import { Section } from "./Section.js";
 import TodoList from "./TodoList.js";
+import ValidateActionDemo from "./ValidateActionDemo.js";
 
 function App() {
   const [whereClause, setWhereClause] = React.useState<WhereClause<TodoLike>>(
@@ -29,11 +30,9 @@ function App() {
             <CreateTodoForm />
           </Section>
 
-          {
-            /* <Section>
-            <SpecificTodo />
-          </Section> */
-          }
+          <Section>
+            <ValidateActionDemo />
+          </Section>
 
           <Section>
             <FilterSelector
@@ -41,12 +40,6 @@ function App() {
               heading="<-- Filter"
             />
           </Section>
-          {
-            /*
-          <Section>
-            <SpecificTodo />
-          </Section> */
-          }
         </div>
       </div>
     </main>
