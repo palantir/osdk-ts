@@ -382,7 +382,6 @@ function convertObject(
       status: convertObjectStatus(objectType.status),
       redacted: false,
       implementsInterfaces2: implementations.map(impl => ({
-        interfaceTypeRid: impl.implements.apiName,
         interfaceTypeApiName: impl.implements.apiName,
         properties: Object.fromEntries(
           impl.propertyMapping.map(
