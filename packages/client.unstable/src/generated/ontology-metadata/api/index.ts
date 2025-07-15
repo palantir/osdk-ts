@@ -392,7 +392,6 @@ export type {
   InterfaceObjectParameterStructListFieldValueModification,
   InterfaceParameterPropertyValue,
   InterfaceParameterPropertyValueModification,
-  InterfaceParameterPropertyValueModificationV2,
   InterfaceParameterPropertyValueV2,
   InterfacePropertyImplementation,
   InterfacePropertyLogicRuleValue,
