@@ -191,6 +191,11 @@ export interface ActionLogValue_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValue;
 }
 
+export interface ActionLogValue_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueV2;
+}
+
 export interface ActionLogValue_editedObjects {
   type: "editedObjects";
   editedObjects: ObjectTypeId;
@@ -274,6 +279,7 @@ export type ActionLogValue =
   | ActionLogValue_parameterValue
   | ActionLogValue_objectParameterPropertyValue
   | ActionLogValue_interfaceParameterPropertyValue
+  | ActionLogValue_interfaceParameterPropertyValueV2
   | ActionLogValue_editedObjects
   | ActionLogValue_allEditedObjects
   | ActionLogValue_actionTypeRid
@@ -2423,6 +2429,11 @@ export interface ConditionValue_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValue;
 }
 
+export interface ConditionValue_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueV2;
+}
+
 export interface ConditionValue_userProperty {
   type: "userProperty";
   userProperty: UserProperty;
@@ -2437,6 +2448,7 @@ export type ConditionValue =
   | ConditionValue_staticValue
   | ConditionValue_objectParameterPropertyValue
   | ConditionValue_interfaceParameterPropertyValue
+  | ConditionValue_interfaceParameterPropertyValueV2
   | ConditionValue_userProperty
   | ConditionValue_parameterLength;
 
@@ -3860,6 +3872,10 @@ export interface InterfaceParameterPropertyValueModification {
   parameterId: ParameterId;
   sharedPropertyTypeRidOrIdInRequest: SharedPropertyTypeRidOrIdInRequest;
 }
+export interface InterfaceParameterPropertyValueV2 {
+  interfacePropertyTypeRid: InterfacePropertyTypeRid;
+  parameterId: ParameterId;
+}
 export interface InterfacePropertyImplementation {
   propertyTypeRid: PropertyTypeRid;
 }
@@ -3975,7 +3991,7 @@ export interface InterfaceTypeDeletedEvent {
 export interface InterfaceTypeDisplayMetadata {
   description?: string | null | undefined;
   displayName: string;
-  icon?: Icon | null | undefined;
+  icon: Icon;
 }
 export interface InterfaceTypeError_interfaceTypesNotFound {
   type: "interfaceTypesNotFound";
@@ -4776,6 +4792,11 @@ export interface LogicRuleValue_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValue;
 }
 
+export interface LogicRuleValue_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueV2;
+}
+
 export interface LogicRuleValue_currentUser {
   type: "currentUser";
   currentUser: CurrentUser;
@@ -4804,6 +4825,7 @@ export type LogicRuleValue =
   | LogicRuleValue_staticValue
   | LogicRuleValue_objectParameterPropertyValue
   | LogicRuleValue_interfaceParameterPropertyValue
+  | LogicRuleValue_interfaceParameterPropertyValueV2
   | LogicRuleValue_currentUser
   | LogicRuleValue_currentTime
   | LogicRuleValue_uniqueIdentifier
@@ -6415,6 +6437,12 @@ export interface OntologyIrActionLogValue_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: OntologyIrInterfaceParameterPropertyValue;
 }
 
+export interface OntologyIrActionLogValue_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2:
+    OntologyIrInterfaceParameterPropertyValueV2;
+}
+
 export interface OntologyIrActionLogValue_editedObjects {
   type: "editedObjects";
   editedObjects: ObjectTypeApiName;
@@ -6498,6 +6526,7 @@ export type OntologyIrActionLogValue =
   | OntologyIrActionLogValue_parameterValue
   | OntologyIrActionLogValue_objectParameterPropertyValue
   | OntologyIrActionLogValue_interfaceParameterPropertyValue
+  | OntologyIrActionLogValue_interfaceParameterPropertyValueV2
   | OntologyIrActionLogValue_editedObjects
   | OntologyIrActionLogValue_allEditedObjects
   | OntologyIrActionLogValue_actionTypeRid
@@ -7361,6 +7390,10 @@ export interface OntologyIrInterfaceLinkType {
 export interface OntologyIrInterfaceParameterPropertyValue {
   parameterId: ParameterId;
   sharedPropertyTypeRid: ObjectTypeFieldApiName;
+}
+export interface OntologyIrInterfaceParameterPropertyValueV2 {
+  interfacePropertyTypeRid: InterfacePropertyTypeApiName;
+  parameterId: ParameterId;
 }
 export interface OntologyIrInterfacePropertyImplementation {
   propertyTypeRid: ObjectTypeFieldApiName;
@@ -10326,6 +10359,11 @@ export interface ParameterPrefill_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValue;
 }
 
+export interface ParameterPrefill_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueV2;
+}
+
 export interface ParameterPrefill_objectQueryPrefill {
   type: "objectQueryPrefill";
   objectQueryPrefill: ObjectQueryPrefill;
@@ -10353,6 +10391,7 @@ export type ParameterPrefill =
   | ParameterPrefill_staticObject
   | ParameterPrefill_objectParameterPropertyValue
   | ParameterPrefill_interfaceParameterPropertyValue
+  | ParameterPrefill_interfaceParameterPropertyValueV2
   | ParameterPrefill_objectQueryPrefill
   | ParameterPrefill_objectQueryPropertyValue
   | ParameterPrefill_objectSetRidPrefill
