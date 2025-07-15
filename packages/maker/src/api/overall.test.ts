@@ -4291,10 +4291,20 @@ describe("Ontology Defining", () => {
       `);
     });
     it("Simple interface actions (with object types) are properly defined", () => {
+      const exampleStructPropertyType = defineSharedPropertyType({
+        apiName: "property2",
+        type: {
+          type: "struct",
+          structDefinition: {
+            simpleProperty: "string",
+          },
+        },
+      });
       const exampleInterface = defineInterface({
         apiName: "exampleInterface",
         properties: {
           property1: "string",
+          property2: exampleStructPropertyType,
         },
       });
 
@@ -4759,6 +4769,50 @@ describe("Ontology Defining", () => {
                         "valueType": undefined,
                       },
                     },
+                    "com.palantir.property2": {
+                      "required": true,
+                      "sharedPropertyType": {
+                        "aliases": [],
+                        "apiName": "com.palantir.property2",
+                        "baseFormatter": undefined,
+                        "dataConstraints": undefined,
+                        "displayMetadata": {
+                          "description": undefined,
+                          "displayName": "property2",
+                          "visibility": "NORMAL",
+                        },
+                        "gothamMapping": undefined,
+                        "indexedForSearch": true,
+                        "type": {
+                          "struct": {
+                            "structFields": [
+                              {
+                                "aliases": [],
+                                "apiName": "simpleProperty",
+                                "displayMetadata": {
+                                  "description": undefined,
+                                  "displayName": "simpleProperty",
+                                },
+                                "fieldType": {
+                                  "string": {
+                                    "analyzerOverride": undefined,
+                                    "enableAsciiFolding": undefined,
+                                    "isLongText": false,
+                                    "supportsEfficientLeadingWildcard": false,
+                                    "supportsExactMatching": true,
+                                  },
+                                  "type": "string",
+                                },
+                                "typeClasses": [],
+                              },
+                            ],
+                          },
+                          "type": "struct",
+                        },
+                        "typeClasses": [],
+                        "valueType": undefined,
+                      },
+                    },
                   },
                   "propertiesV3": {},
                   "searchable": true,
@@ -4902,6 +4956,49 @@ describe("Ontology Defining", () => {
                       "name": "SORTABLE",
                     },
                   ],
+                  "valueType": undefined,
+                },
+              },
+              "com.palantir.property2": {
+                "sharedPropertyType": {
+                  "aliases": [],
+                  "apiName": "com.palantir.property2",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "property2",
+                    "visibility": "NORMAL",
+                  },
+                  "gothamMapping": undefined,
+                  "indexedForSearch": true,
+                  "type": {
+                    "struct": {
+                      "structFields": [
+                        {
+                          "aliases": [],
+                          "apiName": "simpleProperty",
+                          "displayMetadata": {
+                            "description": undefined,
+                            "displayName": "simpleProperty",
+                          },
+                          "fieldType": {
+                            "string": {
+                              "analyzerOverride": undefined,
+                              "enableAsciiFolding": undefined,
+                              "isLongText": false,
+                              "supportsEfficientLeadingWildcard": false,
+                              "supportsExactMatching": true,
+                            },
+                            "type": "string",
+                          },
+                          "typeClasses": [],
+                        },
+                      ],
+                    },
+                    "type": "struct",
+                  },
+                  "typeClasses": [],
                   "valueType": undefined,
                 },
               },
