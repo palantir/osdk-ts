@@ -285,11 +285,22 @@ export function createDefinition(
         `{
         ${
           stringify(definition.links, {
-            "*": (definition) =>
-              `$ObjectMetadata.Link<${
-                ontology.requireObjectType(definition.targetType)
-                  .getImportedDefinitionIdentifier(true)
-              }, ${definition.multiplicity}>`,
+            "*": (linkDefinition) =>
+              definition.type === "interface"
+                ? `$InterfaceMetadata.Link<${
+                  linkDefinition.targetType === "interface"
+                    ? ontology.requireInterfaceType(
+                      (linkDefinition as any).targetTypeApiName,
+                    )
+                      .getImportedDefinitionIdentifier(true)
+                    : ontology.requireObjectType(
+                      (linkDefinition as any).targetTypeApiName,
+                    ).getImportedDefinitionIdentifier(true)
+                }, ${linkDefinition.multiplicity}>`
+                : `$ObjectMetadata.Link<${
+                  ontology.requireObjectType(linkDefinition.targetType)
+                    .getImportedDefinitionIdentifier(true)
+                }, ${linkDefinition.multiplicity}>`,
           })
         }
       }`,

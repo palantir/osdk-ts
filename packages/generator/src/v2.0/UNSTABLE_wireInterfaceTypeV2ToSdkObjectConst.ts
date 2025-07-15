@@ -21,6 +21,7 @@ import invariant from "tiny-invariant";
 import { extractNamespace } from "../GenerateContext/EnhancedBase.js";
 import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
+import { getObjectImports } from "../shared/getObjectImports.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
 import type { Identifiers } from "./wireObjectTypeV2ToSdkObjectConstV2.js";
@@ -38,12 +39,26 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   ontology: EnhancedOntologyDefinition,
   v2: boolean = false,
   forInternalUse: boolean = false,
+  currentFilePath: string = "",
 ) {
   const definition = deleteUndefineds(
     __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
       interfaceDef.raw,
       v2,
     ),
+  );
+  const uniqueLinkTargetTypes = new Set(
+    definition.links
+      ? Object.values(definition.links).map(a =>
+        a.targetType === "object"
+          ? ontology.requireObjectType(
+            a.targetTypeApiName,
+          )
+          : ontology.requireInterfaceType(
+            a.targetTypeApiName,
+          )
+      )
+      : [],
   );
 
   const objectDefIdentifier = interfaceDef.getDefinitionIdentifier(v2);
@@ -128,35 +143,43 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   function getV2Types(forInternalUse: boolean = false) {
     return `import type {
       InterfaceDefinition as $InterfaceDefinition,
+      InterfaceMetadata as $InterfaceMetadata,
       ObjectSet as $ObjectSet, 
       Osdk as $Osdk,
       PropertyValueWireToClient as $PropType,
     } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
     
         ${
-      Object.keys(definition.links).length === 0
-        ? `export type ${osdkObjectLinksIdentifier} = {};`
-        : `
+      definition.links
+        ? Object.keys(definition.links).length > 0
+          ? `
         export interface ${osdkObjectLinksIdentifier}  {
 ${
-          stringify(definition.links, {
-            "*": (definition) => {
-              const linkTarget = ontology.requireObjectType(
-                definition.targetType,
-              )
-                .getImportedDefinitionIdentifier(v2);
+            stringify(definition.links, {
+              "*": (definition) => {
+                const linkTarget = definition.targetType === "object"
+                  ? ontology.requireObjectType(
+                    definition.targetTypeApiName,
+                  )
+                    .getImportedDefinitionIdentifier(v2)
+                  : ontology.requireInterfaceType(
+                    definition.targetTypeApiName,
+                  )
+                    .getImportedDefinitionIdentifier(v2);
 
-              return `${
-                definition.multiplicity
-                  ? `${linkTarget}["objectSet"]`
-                  : `SingleLinkAccessor<${linkTarget}>`
-              }
+                return `${
+                  definition.multiplicity
+                    ? `${linkTarget}.ObjectSet`
+                    : `${linkTarget}.ObjectSet`
+                }
           `;
-            },
-          })
-        }
+              },
+            })
+          }
     }
     `
+          : `export type ${osdkObjectLinksIdentifier} = {};`
+        : `export type ${osdkObjectLinksIdentifier} = {};`
     }
 
     export namespace ${interfaceDef.shortApiName} {
@@ -181,9 +204,14 @@ ${
 
   // FIXME: We need to fill in the imports
   // if we want links to work
-  const imports: string[] = [];
+  const imports: string = getObjectImports(
+    uniqueLinkTargetTypes,
+    definition.apiName,
+    currentFilePath,
+    true,
+  );
   definition;
-  return `${imports.join("\n")}
+  return `${imports}
     ${v2 ? getV2Types(forInternalUse) : ""}
 
     export const ${interfaceDef.shortApiName}: ${interfaceDef.shortApiName} = {

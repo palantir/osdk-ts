@@ -2170,6 +2170,172 @@
       "rid": "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",
       "status": "ACTIVE"
     },
+    "com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernList": {
+      "rid": "ri.ontology.main.interface.7d459ce8-bb84-4ea5-9039-71560d82b53f",
+      "apiName": "com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernList",
+      "displayName": "Collateral Concern List",
+      "description": "A list of entities that can be considered as collateral concerns.",
+      "properties": {
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListDescription": {
+          "rid": "ri.ontology.main.shared-property.c5d03cd9-eaae-4872-9385-9e5aeef8eb0e",
+          "apiName": "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListDescription",
+          "displayName": "Description",
+          "description": "The description of a collateral concern list.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListName": {
+          "rid": "ri.ontology.main.shared-property.7c94a726-f81d-417a-80f7-3ea17031693e",
+          "apiName": "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListName",
+          "displayName": "Name",
+          "description": "The name of a collateral concern list.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        }
+      },
+      "allProperties": {
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListDescription": {
+          "rid": "ri.ontology.main.shared-property.c5d03cd9-eaae-4872-9385-9e5aeef8eb0e",
+          "apiName": "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListDescription",
+          "displayName": "Description",
+          "description": "The description of a collateral concern list.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListName": {
+          "rid": "ri.ontology.main.shared-property.7c94a726-f81d-417a-80f7-3ea17031693e",
+          "apiName": "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListName",
+          "displayName": "Name",
+          "description": "The name of a collateral concern list.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        }
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": [
+        "GenericCollateralConcernList"
+      ],
+      "links": {
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity": {
+          "rid": "ri.ontology.main.interface-link.a91c9d55-1fc3-43dc-8efd-0f71ebf42e22",
+          "apiName": "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity",
+          "displayName": "Entities",
+          "description": "Collateral concern lists have a many-to-many relationship with collateral concern entities.",
+          "linkedEntityApiName": {
+            "type": "interfaceTypeApiName",
+            "apiName": "com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate"
+          },
+          "cardinality": "MANY",
+          "required": true
+        }
+      },
+      "allLinks": {
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity": {
+          "rid": "ri.ontology.main.interface-link.a91c9d55-1fc3-43dc-8efd-0f71ebf42e22",
+          "apiName": "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity",
+          "displayName": "Entities",
+          "description": "Collateral concern lists have a many-to-many relationship with collateral concern entities.",
+          "linkedEntityApiName": {
+            "type": "interfaceTypeApiName",
+            "apiName": "com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate"
+          },
+          "cardinality": "MANY",
+          "required": true
+        }
+      }
+    },
+    "com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate": {
+      "rid": "ri.ontology.main.interface.81202dc9-3dcb-4031-b102-bfdb01a0e17c",
+      "apiName": "com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate",
+      "displayName": "Collateral Concern Candidate",
+      "description": "Represents entities that can be considered as collateral concerns.",
+      "properties": {
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernName": {
+          "rid": "ri.ontology.main.shared-property.8dba55dd-b6d8-4f10-b948-dd7edd90326b",
+          "apiName": "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernName",
+          "displayName": "Name",
+          "description": "The name of a collateral concern entity.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernDescription": {
+          "rid": "ri.ontology.main.shared-property.c9a9f33c-9e31-48a7-9b47-3fb198988fd7",
+          "apiName": "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernDescription",
+          "displayName": "Description",
+          "description": "The description of a collateral concern entity.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        }
+      },
+      "allProperties": {
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernName": {
+          "rid": "ri.ontology.main.shared-property.8dba55dd-b6d8-4f10-b948-dd7edd90326b",
+          "apiName": "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernName",
+          "displayName": "Name",
+          "description": "The name of a collateral concern entity.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernDescription": {
+          "rid": "ri.ontology.main.shared-property.c9a9f33c-9e31-48a7-9b47-3fb198988fd7",
+          "apiName": "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernDescription",
+          "displayName": "Description",
+          "description": "The description of a collateral concern entity.",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        }
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": [
+        "GenericCollateralConcernCandidate"
+      ],
+      "links": {
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList": {
+          "rid": "ri.ontology.main.interface-link.e21d5d03-4772-4740-ba4d-1c7027836421",
+          "apiName": "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList",
+          "displayName": "Collateral Concern Lists",
+          "description": "Collateral concern entities have a many-to-many relationship with collateral concern lists.",
+          "linkedEntityApiName": {
+            "type": "interfaceTypeApiName",
+            "apiName": "com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernList"
+          },
+          "cardinality": "MANY",
+          "required": true
+        }
+      },
+      "allLinks": {
+        "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList": {
+          "rid": "ri.ontology.main.interface-link.e21d5d03-4772-4740-ba4d-1c7027836421",
+          "apiName": "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList",
+          "displayName": "Collateral Concern Lists",
+          "description": "Collateral concern entities have a many-to-many relationship with collateral concern lists.",
+          "linkedEntityApiName": {
+            "type": "interfaceTypeApiName",
+            "apiName": "com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernList"
+          },
+          "cardinality": "MANY",
+          "required": true
+        }
+      }
+    },
     "InterfaceNoProps": {
       "apiName": "InterfaceNoProps",
       "displayName": "FInterfaceNoProps",
