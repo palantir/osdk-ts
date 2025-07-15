@@ -37,7 +37,10 @@ export type {
   PossibleWhereClauseFilters,
   WhereClause,
 } from "./aggregate/WhereClause.js";
-export type { OsdkObjectPropertyType } from "./Definitions.js";
+export type {
+  OsdkObjectCreatePropertyType,
+  OsdkObjectPropertyType,
+} from "./Definitions.js";
 export type {
   OsdkObjectLinksObject,
   SingleLinkAccessor,
