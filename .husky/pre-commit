@@ -1,2 +1,6 @@
+# Check if the git user email is checkpoint@cline.bot
+if [ "$(git config user.email)" = "checkpoint@cline.bot" ]; then
+  exit 0
+fi
 
 TERM=dumb npx lint-staged

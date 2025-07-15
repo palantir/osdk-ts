@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { ObjectMetadata } from "@osdk/api";
 import type { ObjectSet } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
+import type { DerivedPropertyRuntimeMetadata } from "../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function extractRdpDefinition(
   clientCtx: MinimalClient,
   objectSet: ObjectSet,
 ): Promise<
-  Record<string, ObjectMetadata.Property>
+  DerivedPropertyRuntimeMetadata
 > {
   return (await extractRdpDefinitionInternal(
     clientCtx,
@@ -41,7 +41,7 @@ async function extractRdpDefinitionInternal(
   methodInputObjectType: string | undefined,
 ): Promise<
   {
-    definitions: Record<string, ObjectMetadata.Property>;
+    definitions: DerivedPropertyRuntimeMetadata;
     childObjectType?: string;
   }
 > {
@@ -83,6 +83,10 @@ async function extractRdpDefinitionInternal(
         const [name, definition] of Object.entries(objectSet.derivedProperties)
       ) {
         if (definition.type !== "selection") {
+          definitions[name] = {
+            selectedOrCollectedPropertyType: undefined,
+            definition,
+          };
           continue;
         }
 
@@ -107,11 +111,18 @@ async function extractRdpDefinitionInternal(
               operationLevelObjectType,
             );
 
-            definitions[name] =
-              objDef.properties[definition.operation.selectedPropertyApiName];
+            definitions[name] = {
+              selectedOrCollectedPropertyType:
+                objDef.properties[definition.operation.selectedPropertyApiName],
+              definition,
+            };
+            break;
 
           default:
-            continue;
+            definitions[name] = {
+              selectedOrCollectedPropertyType: undefined,
+              definition,
+            };
         }
       }
       return { definitions, childObjectType };
@@ -176,6 +187,11 @@ async function extractRdpDefinitionInternal(
       // Static and reference object sets are always intersected with a base object set, so we can just return no child object type.
       return { definitions: {} };
     // We don't have to worry about new object sets being added and doing a runtime break and breaking people since the OSDK is always constructing these.
+    case "interfaceLinkSearchAround":
+      invariant(
+        false,
+        `Unsupported object set type for Runtime Derived Properties`,
+      );
     default:
       const _: never = objectSet;
       invariant(

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,18 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetBulkLatestVersionRequest } from "../GetBulkLatestVersionRequest.js";
-import type { GetBulkLatestVersionResponse } from "../GetBulkLatestVersionResponse.js";
+import type {
+  GetBulkLatestVersionRequest as _api_GetBulkLatestVersionRequest,
+  GetBulkLatestVersionResponse as _api_GetBulkLatestVersionResponse,
+} from "../__components.js";
 
 /**
  * Returns the latest versions of requested versioned object sets.
  */
 export async function getBulkLatestVersion(
   ctx: ConjureContext,
-  request: GetBulkLatestVersionRequest,
-): Promise<GetBulkLatestVersionResponse> {
+  request: _api_GetBulkLatestVersionRequest,
+): Promise<_api_GetBulkLatestVersionResponse> {
   return conjureFetch(
     ctx,
     `/bulk/versionedObjectSets/latestVersion`,

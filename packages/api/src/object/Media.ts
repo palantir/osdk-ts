@@ -23,6 +23,10 @@ export interface Media {
    * Fetches content of a media reference property
    */
   fetchContents(): Promise<Response>;
+  /**
+   * Returns the media reference
+   */
+  getMediaReference(): MediaReference;
 }
 
 /**
@@ -36,8 +40,17 @@ export interface MediaReference {
       mediaItemRid: string;
       mediaSetRid: string;
       mediaSetViewRid: string;
+      readToken?: string;
     };
   };
+}
+
+/**
+ * Object for uploading Media
+ */
+export interface MediaUpload {
+  readonly path: string;
+  readonly data: Blob;
 }
 
 /**

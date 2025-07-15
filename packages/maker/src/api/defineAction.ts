@@ -16,17 +16,23 @@
 
 import type { ParameterId } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+import { getAllInterfaceProperties } from "./defineObject.js";
 import {
   namespace,
   ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
+import { convertConditionDefinition } from "./ontologyUtils.js";
 import {
+  type ActionLevelValidationDefinition,
+  type ActionParameter,
   type ActionParameterAllowedValues,
   type ActionParameterType,
   type ActionParameterTypePrimitive,
   type ActionType,
   type ActionTypeDefinition,
+  type ActionValidationRule,
+  type ConditionDefinition,
   type InterfaceType,
   type ObjectPropertyType,
   type ObjectType,
@@ -38,6 +44,7 @@ import {
 export function defineCreateInterfaceObjectAction(
   interfaceType: InterfaceType,
   objectType?: ObjectType,
+  validation?: ActionLevelValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `create-${
@@ -75,7 +82,7 @@ export function defineCreateInterfaceObjectAction(
             },
         },
       },
-      ...Object.entries(interfaceType.propertiesV2).map((
+      ...Object.entries(getAllInterfaceProperties(interfaceType)).map((
         [id, prop],
       ) => ({
         id,
@@ -96,6 +103,12 @@ export function defineCreateInterfaceObjectAction(
     status: interfaceType.status.type !== "deprecated"
       ? interfaceType.status.type
       : interfaceType.status,
+    entities: {
+      affectedInterfaceTypes: [interfaceType.apiName],
+      affectedObjectTypes: [],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [
       {
         type: "addInterfaceRule",
@@ -103,18 +116,26 @@ export function defineCreateInterfaceObjectAction(
           interfaceApiName: interfaceType.apiName,
           objectTypeParameter: "objectTypeParameter",
           sharedPropertyValues: Object.fromEntries(
-            Object.entries(interfaceType.propertiesV2).map((
+            Object.entries(getAllInterfaceProperties(interfaceType)).map((
               [id, prop],
             ) => [id, { type: "parameterId", parameterId: id }]),
           ),
         },
       },
     ],
+    ...(validation
+      ? {
+        validation: [
+          convertValidationRule(validation),
+        ],
+      }
+      : {}),
   });
 }
 
 export function defineCreateObjectAction(
   objectType: ObjectType,
+  validation?: ActionLevelValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `create-object-${
@@ -133,6 +154,12 @@ export function defineCreateObjectAction(
       })) ?? []),
     ],
     status: "active",
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [{
       type: "addObjectRule",
       addObjectRule: {
@@ -147,12 +174,20 @@ export function defineCreateObjectAction(
         structFieldValues: {},
       },
     }],
+    ...(validation
+      ? {
+        validation: [
+          convertValidationRule(validation),
+        ],
+      }
+      : {}),
   });
 }
 
 export function defineModifyInterfaceObjectAction(
   interfaceType: InterfaceType,
   objectType?: ObjectType,
+  validation?: ActionLevelValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `modify-${
@@ -187,7 +222,7 @@ export function defineModifyInterfaceObjectAction(
             },
         },
       },
-      ...Object.entries(interfaceType.propertiesV2).map((
+      ...Object.entries(getAllInterfaceProperties(interfaceType)).map((
         [id, prop],
       ) => ({
         id,
@@ -208,24 +243,38 @@ export function defineModifyInterfaceObjectAction(
     status: interfaceType.status.type !== "deprecated"
       ? interfaceType.status.type
       : interfaceType.status,
+    entities: {
+      affectedInterfaceTypes: [interfaceType.apiName],
+      affectedObjectTypes: [],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [
       {
         type: "modifyInterfaceRule",
         modifyInterfaceRule: {
           interfaceObjectToModifyParameter: "interfaceObjectToModifyParameter",
           sharedPropertyValues: Object.fromEntries(
-            Object.entries(interfaceType.propertiesV2).map((
+            Object.entries(getAllInterfaceProperties(interfaceType)).map((
               [id, prop],
             ) => [id, { type: "parameterId", parameterId: id }]),
           ),
         },
       },
     ],
+    ...(validation
+      ? {
+        validation: [
+          convertValidationRule(validation),
+        ],
+      }
+      : {}),
   });
 }
 
 export function defineModifyObjectAction(
   objectType: ObjectType,
+  validation?: ActionLevelValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `modify-object-${
@@ -250,12 +299,18 @@ export function defineModifyObjectAction(
         displayName: prop.displayName,
         type: extractActionParameterType(prop),
         validation: {
-          required: true,
+          required: false,
           allowedValues: extractAllowedValuesFromType(prop.type),
         },
       })) ?? []),
     ],
     status: "active",
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [
       {
         type: "modifyObjectRule",
@@ -275,11 +330,19 @@ export function defineModifyObjectAction(
         },
       },
     ],
+    ...(validation
+      ? {
+        validation: [
+          convertValidationRule(validation),
+        ],
+      }
+      : {}),
   });
 }
 
 export function defineDeleteObjectAction(
   objectType: ObjectType,
+  validation?: ActionLevelValidationDefinition,
 ): ActionType {
   return defineAction({
     apiName: `delete-object-${
@@ -301,6 +364,12 @@ export function defineDeleteObjectAction(
       },
     ],
     status: "active",
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [
       {
         type: "deleteObjectRule",
@@ -309,6 +378,13 @@ export function defineDeleteObjectAction(
         },
       },
     ],
+    ...(validation
+      ? {
+        validation: [
+          convertValidationRule(validation),
+        ],
+      }
+      : {}),
   });
 }
 
@@ -372,11 +448,19 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
       );
     }
   });
+
   const fullAction = {
     ...actionDef,
     apiName: apiName,
+    entities: actionDef.entities ?? {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     __type: OntologyEntityTypeEnum.ACTION_TYPE,
   } as ActionType;
+  validateActionValidation(fullAction);
   updateOntology(fullAction);
   return fullAction;
 }
@@ -411,8 +495,8 @@ function referencedParameterIds(
             if (v.type === "parameterId") {
               parameterIds.add(v.parameterId);
             }
-            rule.addInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
             delete rule.addInterfaceRule.sharedPropertyValues[k];
+            rule.addInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
           },
         );
         break;
@@ -425,8 +509,8 @@ function referencedParameterIds(
             if (v.type === "parameterId") {
               parameterIds.add(v.parameterId);
             }
-            rule.modifyInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
             delete rule.modifyInterfaceRule.sharedPropertyValues[k];
+            rule.modifyInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
           },
         );
         break;
@@ -502,6 +586,7 @@ function extractAllowedValuesFromType(
     case "string":
       return { type: "text" };
     case "geopoint":
+      return { type: "geohash" };
     case "geoshape":
       return { type: "geoshape" };
     case "mediaReference":
@@ -547,7 +632,7 @@ function extractActionParameterType(
     case "short":
       return maybeAddList("integer", pt);
     case "geopoint":
-      return maybeAddList("geoshape", pt);
+      return maybeAddList("geohash", pt);
     case "float":
       return maybeAddList("double", pt);
     case "geotimeSeries":
@@ -612,4 +697,93 @@ function kebab(s: string): string {
 
 function sanitize(s: string): string {
   return s.includes(".") ? s : namespace + s;
+}
+
+function convertValidationRule(
+  actionValidation: ActionLevelValidationDefinition,
+): ActionValidationRule {
+  return {
+    condition: convertConditionDefinition(actionValidation.condition),
+    displayMetadata: actionValidation.displayMetadata ?? {
+      failureMessage: "Did not satisfy validation",
+      typeClasses: [],
+    },
+  };
+}
+
+function validateActionValidation(action: ActionType): void {
+  const seenParameterIds = new Set<ParameterId>();
+  action.parameters?.forEach(param => {
+    param.validation.conditionalOverrides?.forEach(override => {
+      validateActionCondition(
+        override.condition,
+        param.id,
+        seenParameterIds,
+        action.parameters,
+      );
+    });
+    seenParameterIds.add(param.id);
+  });
+}
+
+function validateActionCondition(
+  condition: ConditionDefinition,
+  currentParameterId: ParameterId,
+  seenParameterIds: Set<ParameterId>,
+  parameters?: ActionParameter[],
+): void {
+  switch (condition.type) {
+    case "parameter":
+      const overrideParamId = condition.parameterId;
+      invariant(
+        parameters?.some(p => p.id === overrideParamId),
+        `Parameter condition on ${currentParameterId} is referencing unknown parameter ${overrideParamId}`,
+      );
+      invariant(
+        overrideParamId !== currentParameterId,
+        `Parameter condition on ${currentParameterId} is referencing itself`,
+      );
+      invariant(
+        seenParameterIds.has(overrideParamId),
+        `Parameter condition on ${currentParameterId} is referencing later parameter ${overrideParamId}`,
+      );
+      break;
+    case "and":
+      // this will not catch the niche edge case where users use the full syntax for unions
+      if ("conditions" in condition) {
+        condition.conditions.forEach(c =>
+          validateActionCondition(
+            c,
+            currentParameterId,
+            seenParameterIds,
+            parameters,
+          )
+        );
+      }
+      break;
+    case "or":
+      if ("conditions" in condition) {
+        condition.conditions.forEach(c =>
+          validateActionCondition(
+            c,
+            currentParameterId,
+            seenParameterIds,
+            parameters,
+          )
+        );
+      }
+      break;
+    case "comparison":
+    case "group":
+    case "not":
+    case "markings":
+    case "regex":
+    case "redacted":
+    case "true":
+      break;
+    default:
+      throw new Error(
+        `Unknown condition type on parameter ${currentParameterId}`,
+      );
+  }
 }

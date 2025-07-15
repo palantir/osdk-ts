@@ -27,6 +27,7 @@ import type {
   InterfaceTypeStatus,
   LinkTypeDisplayMetadata,
   LinkTypeMetadata,
+  OntologyIrActionTypeEntities,
   OntologyIrBaseParameterType_decimal,
   OntologyIrBaseParameterType_decimalList,
   OntologyIrBaseParameterType_interfaceReference,
@@ -39,6 +40,7 @@ import type {
   OntologyIrBaseParameterType_structList,
   OntologyIrBaseParameterType_timestamp,
   OntologyIrBaseParameterType_timestampList,
+  OntologyIrCondition,
   OntologyIrConditionValue,
   OntologyIrFormContent,
   OntologyIrInterfaceType,
@@ -53,6 +55,7 @@ import type {
   SectionId,
   SharedPropertyTypeGothamMapping,
   StructFieldType,
+  ValidationRuleDisplayMetadata,
   ValueTypeApiName,
   ValueTypeDataConstraint,
   ValueTypeDisplayMetadata,
@@ -143,7 +146,41 @@ export interface ActionParameter {
 export interface ActionParameterValidation {
   allowedValues: ActionParameterAllowedValues;
   required: ActionParameterRequirementConstraint;
+  defaultVisibility?: "editable" | "disabled" | "hidden";
+  conditionalOverrides?: Array<ActionParameterConditionalOverride>;
 }
+
+// TODO(ethana): add more commonly used conditions - parameter matching, organizations, etc.
+export type ConditionDefinition =
+  | UnionCondition
+  | OntologyIrCondition
+  | GroupValidationRule
+  | ParameterValidationRule;
+
+export type UnionCondition = {
+  type: "and" | "or";
+  conditions: Array<ConditionDefinition>;
+};
+
+export type ActionParameterConditionalOverride =
+  | VisibilityOverride
+  | DisabledOverride
+  | RequiredOverride;
+
+export type VisibilityOverride = {
+  type: "visibility";
+  condition: ConditionDefinition;
+};
+
+export type DisabledOverride = {
+  type: "disabled";
+  condition: ConditionDefinition;
+};
+
+export type RequiredOverride = {
+  type: "required";
+  condition: ConditionDefinition;
+};
 
 export type ActionParameterRequirementConstraint =
   | boolean
@@ -191,10 +228,29 @@ export interface ActionTypeInner {
   rules: Array<OntologyIrLogicRule>;
   sections: Record<SectionId, Array<ParameterId>>;
   status: ActionStatus;
+  entities: OntologyIrActionTypeEntities;
   formContentOrdering: Array<OntologyIrFormContent>;
   validation: Array<OntologyIrValidationRule>;
   typeClasses: Array<TypeClass>;
 }
+
+export type ActionValidationRule = OntologyIrValidationRule;
+
+export type ActionLevelValidationDefinition = {
+  condition: ConditionDefinition;
+  displayMetadata?: ValidationRuleDisplayMetadata;
+};
+
+export type GroupValidationRule = {
+  type: "group";
+  name: string;
+};
+
+export type ParameterValidationRule = {
+  type: "parameter";
+  parameterId: string;
+  matches: OntologyIrConditionValue;
+};
 
 export type ActionStatus =
   | "active"
@@ -262,7 +318,22 @@ export type ObjectType =
     datasource?: ObjectTypeDatasourceDefinition;
     __type: OntologyEntityTypeEnum.OBJECT_TYPE;
   };
-export type ObjectTypeDefinition = Omit<ObjectType, "__type">;
+
+export type ObjectTypeDefinition = {
+  apiName: string;
+  primaryKeyPropertyApiName: string;
+  displayName: string;
+  pluralDisplayName: string;
+  titlePropertyApiName: string;
+  properties?: { [key: string]: ObjectPropertyTypeUserDefinition };
+  implementsInterfaces?: Array<InterfaceImplementation>;
+  description?: string;
+  icon?: { locator: BlueprintIcon; color: string };
+  visibility?: Visibility;
+  editsEnabled?: boolean;
+  status?: ObjectTypeStatus;
+  datasource?: ObjectTypeDatasourceDefinition;
+};
 
 export interface ObjectPropertyTypeInner extends
   Omit<
@@ -280,18 +351,24 @@ export interface ObjectPropertyTypeInner extends
 {
   type: PropertyTypeType;
   array?: boolean;
-  valueType: string | ValueTypeDefinitionVersion;
+  valueType: ValueTypeDefinitionVersion;
   sharedPropertyType: SharedPropertyType;
   description: string | undefined;
   displayName: string;
   visibility: Visibility;
   nullability?: Nullability;
   status?: ObjectTypeStatus;
+  editOnly?: boolean;
 }
 
 export type ObjectPropertyType = RequiredFields<
   Partial<ObjectPropertyTypeInner>,
   "apiName" | "type" | "displayName"
+>;
+
+export type ObjectPropertyTypeUserDefinition = RequiredFields<
+  Partial<ObjectPropertyTypeInner>,
+  "type"
 >;
 
 export interface InterfacePropertyType {
@@ -307,12 +384,16 @@ export interface InterfaceType extends
     // these things don't need to exist as the system works fine without them (I'm told)
     | "allProperties"
     | "allLinks"
+    | "extendsInterfaces"
     | "allExtendsInterfaces"
     | "propertiesV2"
     | "allPropertiesV2"
+    | "propertiesV3"
+    | "allPropertiesV3"
   >
 {
   propertiesV2: Record<string, InterfacePropertyType>;
+  extendsInterfaces: Array<InterfaceType>;
   status: InterfaceTypeStatus;
   __type: OntologyEntityTypeEnum.INTERFACE_TYPE;
 }
@@ -333,7 +414,7 @@ export interface Nullability {
   noNulls: boolean;
 }
 
-type TypeClass = { kind: string; name: string };
+export type TypeClass = { kind: string; name: string };
 
 export interface SharedPropertyType extends OntologyEntityBase, PropertyType {
   apiName: string;
@@ -421,13 +502,13 @@ export type LinkType =
 
 export type LinkTypeDefinition =
   | Omit<
-    OntologyEntityBase & OneToManyLinkTypeDefinition & {
+    OntologyEntityBase & OneToManyLinkTypeUserDefinition & {
       __type: OntologyEntityTypeEnum.LINK_TYPE;
     },
     "__type"
   >
   | Omit<
-    OntologyEntityBase & ManyToManyLinkTypeDefinition & {
+    OntologyEntityBase & ManyToManyLinkTypeUserDefinition & {
       __type: OntologyEntityTypeEnum.LINK_TYPE;
     },
     "__type"
@@ -445,8 +526,20 @@ export interface OneToManyLinkTypeDefinition {
 }
 
 export interface OneToManyObjectLinkReference {
-  object: ObjectTypeDefinition;
+  object: ObjectType;
   metadata: LinkTypeMetadata;
+}
+
+export interface OneToManyLinkTypeUserDefinition {
+  apiName: LinkTypeId;
+  one: OneToManyObjectLinkReferenceUserDefinition;
+  toMany: OneToManyObjectLinkReferenceUserDefinition;
+  manyForeignKeyProperty: ObjectTypePropertyApiName;
+}
+
+export interface OneToManyObjectLinkReferenceUserDefinition {
+  object: ObjectType;
+  metadata: LinkTypeMetadataUserDefinition;
 }
 
 export interface ManyToManyLinkTypeDefinition {
@@ -459,8 +552,27 @@ export interface ManyToManyLinkTypeDefinition {
 }
 
 export interface ManyToManyObjectLinkReference {
-  object: ObjectTypeDefinition;
+  object: ObjectType;
   metadata: LinkTypeMetadata;
+}
+
+export interface ManyToManyLinkTypeUserDefinition {
+  apiName: LinkTypeId;
+  many: ManyToManyObjectLinkReferenceUserDefinition;
+  toMany: ManyToManyObjectLinkReferenceUserDefinition;
+}
+
+export interface ManyToManyObjectLinkReferenceUserDefinition {
+  object: ObjectType;
+  metadata: LinkTypeMetadataUserDefinition;
+}
+
+export interface LinkTypeMetadataUserDefinition {
+  apiName: string;
+  displayName?: string;
+  pluralDisplayName?: string;
+  visibility?: Visibility;
+  groupDisplayName?: string;
 }
 
 export type LinkSideMetadata = OptionalFields<
@@ -668,9 +780,14 @@ export interface ObjectTypeDatasourceDefinition_stream {
   retentionPeriod?: string;
 }
 
+export interface ObjectTypeDatasourceDefinition_restrictedView {
+  type: "restrictedView";
+}
+
 export type ObjectTypeDatasourceDefinition =
   | ObjectTypeDatasourceDefinition_stream
-  | ObjectTypeDatasourceDefinition_dataset;
+  | ObjectTypeDatasourceDefinition_dataset
+  | ObjectTypeDatasourceDefinition_restrictedView;
 
 export type ActionParameterTypePrimitive =
   | "boolean"

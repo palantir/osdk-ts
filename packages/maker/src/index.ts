@@ -16,6 +16,7 @@
 
 export { default as default } from "./cli/main.js";
 
+export { addDependency } from "./api/addDependency.js";
 export {
   defineAction,
   defineCreateInterfaceObjectAction,
@@ -35,6 +36,7 @@ export { defineValueType } from "./api/defineValueType.js";
 export { importOntologyEntity } from "./api/importOntologyEntity.js";
 export type {
   ActionType,
+  ConditionDefinition,
   InterfaceType,
   LinkType,
   ObjectType,

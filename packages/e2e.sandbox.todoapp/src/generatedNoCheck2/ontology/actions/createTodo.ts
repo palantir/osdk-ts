@@ -12,16 +12,19 @@ export namespace createTodo {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     is_complete: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'boolean';
     };
     location: {
+      description: undefined;
       multiplicity: false;
       nullable: true;
       type: 'string';
     };
     Todo: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';
@@ -34,7 +37,7 @@ export namespace createTodo {
   export interface Params {
     readonly is_complete: ActionParam.PrimitiveType<'boolean'>;
 
-    readonly location?: ActionParam.PrimitiveType<'string'>;
+    readonly location?: ActionParam.PrimitiveType<'string'> | ActionParam.NullValueType;
 
     readonly Todo: ActionParam.PrimitiveType<'string'>;
   }

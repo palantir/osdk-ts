@@ -583,7 +583,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | ActionParam.NullValueType;
           }
 
           // Represents a fqn of the action
@@ -659,7 +659,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo>;
+            readonly object?: ActionParam.ObjectType<Todo> | ActionParam.NullValueType;
           }
 
           // Represents a fqn of the action
@@ -731,6 +731,7 @@ describe("generator", () => {
           export interface Props {
             /**
              *   display name: 'Sum Property',
+             *
              *   description: Some property
              */
             readonly SomeProperty: $PropType['string'] | undefined;
@@ -769,6 +770,7 @@ describe("generator", () => {
             properties: {
               /**
                *   display name: 'Sum Property',
+               *
                *   description: Some property
                */
               SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
@@ -869,6 +871,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'email';
             type: 'object';
+            visibility: undefined;
           };
         }
 
@@ -905,6 +908,7 @@ describe("generator", () => {
           export interface Props {
             /**
              *   display name: 'Body',
+             *
              *   description: The text of the todo
              */
             readonly body: $PropType['string'] | undefined;
@@ -970,6 +974,7 @@ describe("generator", () => {
             properties: {
               /**
                *   display name: 'Body',
+               *
                *   description: The text of the todo
                */
               body: $PropertyDef<'string', 'nullable', 'single'>;
@@ -986,6 +991,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'body';
             type: 'object';
+            visibility: undefined;
           };
         }
 
@@ -1225,7 +1231,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | ActionParam.NullValueType;
           }
 
           // Represents a fqn of the action
@@ -1301,7 +1307,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo>;
+            readonly object?: ActionParam.ObjectType<Todo> | ActionParam.NullValueType;
           }
 
           // Represents a fqn of the action
@@ -1373,6 +1379,7 @@ describe("generator", () => {
           export interface Props {
             /**
              *   display name: 'Sum Property',
+             *
              *   description: Some property
              */
             readonly SomeProperty: $PropType['string'] | undefined;
@@ -1411,6 +1418,7 @@ describe("generator", () => {
             properties: {
               /**
                *   display name: 'Sum Property',
+               *
                *   description: Some property
                */
               SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
@@ -1511,6 +1519,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'email';
             type: 'object';
+            visibility: undefined;
           };
         }
 
@@ -1547,6 +1556,7 @@ describe("generator", () => {
           export interface Props {
             /**
              *   display name: 'Body',
+             *
              *   description: The text of the todo
              */
             readonly body: $PropType['string'] | undefined;
@@ -1612,6 +1622,7 @@ describe("generator", () => {
             properties: {
               /**
                *   display name: 'Body',
+               *
                *   description: The text of the todo
                */
               body: $PropertyDef<'string', 'nullable', 'single'>;
@@ -1628,6 +1639,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'body';
             type: 'object';
+            visibility: undefined;
           };
         }
 
@@ -2000,6 +2012,7 @@ describe("generator", () => {
               linksType: UsesForeignSpt.Links;
               strictProps: UsesForeignSpt.StrictProps;
               apiName: 'UsesForeignSpt';
+              description: undefined;
               displayName: 'Uses Foreign Spt';
               icon: {
                 type: 'blueprint';
@@ -2027,6 +2040,7 @@ describe("generator", () => {
               status: 'ACTIVE';
               titleProperty: 'id';
               type: 'object';
+              visibility: undefined;
             };
           }
 
@@ -2073,11 +2087,13 @@ describe("generator", () => {
             // Represents the definition of the parameters for the action
             export type ParamsDefinition = {
               body: {
+                description: undefined;
                 multiplicity: false;
                 nullable: false;
                 type: 'string';
               };
               task: {
+                description: undefined;
                 multiplicity: false;
                 nullable: false;
                 type: ActionMetadata.DataType.Object<$Imported$com$example$dep$Task>;
@@ -2278,6 +2294,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'email';
             type: 'object';
+            visibility: undefined;
           };
         }
 
@@ -2314,6 +2331,7 @@ describe("generator", () => {
           export interface Props {
             /**
              *   display name: 'Body',
+             *
              *   description: The text of the todo
              */
             readonly body: $PropType['string'] | undefined;
@@ -2379,6 +2397,7 @@ describe("generator", () => {
             properties: {
               /**
                *   display name: 'Body',
+               *
                *   description: The text of the todo
                */
               body: $PropertyDef<'string', 'nullable', 'single'>;
@@ -2395,6 +2414,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'body';
             type: 'object';
+            visibility: undefined;
           };
         }
 
@@ -2618,6 +2638,7 @@ describe("generator", () => {
             linksType: OsdkObjectLinks$SomeInterface;
             strictProps: SomeInterface.StrictProps;
             apiName: 'com.example.dep.SomeInterface';
+            description: undefined;
             displayName: 'Sum Interface';
             implementedBy: [];
             implements: [];
@@ -2702,6 +2723,7 @@ describe("generator", () => {
             linksType: Task.Links;
             strictProps: Task.StrictProps;
             apiName: 'com.example.dep.Task';
+            description: undefined;
             displayName: 'Task';
             icon: {
               type: 'blueprint';
@@ -2729,6 +2751,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'taskId';
             type: 'object';
+            visibility: undefined;
           };
         }
 

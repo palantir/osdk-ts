@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,17 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetObjectTypesRequest } from "../GetObjectTypesRequest.js";
-import type { GetObjectTypesResponse } from "../GetObjectTypesResponse.js";
+import type {
+  GetObjectTypesRequest as _api_GetObjectTypesRequest,
+  GetObjectTypesResponse as _api_GetObjectTypesResponse,
+} from "../__components.js";
 
 /**
  * Deprecated, do not use. Use ObjectSetService instead.
  */
 export async function getObjectTypes(
   ctx: ConjureContext,
-  request: GetObjectTypesRequest,
-): Promise<GetObjectTypesResponse> {
+  request: _api_GetObjectTypesRequest,
+): Promise<_api_GetObjectTypesResponse> {
   return conjureFetch(ctx, `/objectSets/objectTypes`, "POST", request);
 }

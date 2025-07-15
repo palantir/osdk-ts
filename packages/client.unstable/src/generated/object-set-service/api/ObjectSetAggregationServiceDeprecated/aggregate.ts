@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,19 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { AggregateRequest } from "../AggregateRequest.js";
-import type { AggregateResponse } from "../AggregateResponse.js";
-import type { Backend } from "../Backend.js";
+import type {
+  AggregateRequest as _api_AggregateRequest,
+  AggregateResponse as _api_AggregateResponse,
+  Backend as _api_Backend,
+} from "../__components.js";
 
 /**
  * Deprecated, do not use. Use ObjectSetAggregationService instead.
  */
 export async function aggregate(
   ctx: ConjureContext,
-  request: AggregateRequest,
-  backend: Backend | undefined,
-): Promise<AggregateResponse> {
+  request: _api_AggregateRequest,
+  backend: _api_Backend | null | undefined,
+): Promise<_api_AggregateResponse> {
   return conjureFetch(ctx, `/aggregate`, "POST", request);
 }

@@ -50,7 +50,7 @@ export interface ActionMetadata {
     	// Warning: (ae-forgotten-export) The symbol "ReleaseStatus" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    status: ReleaseStatus;
+    status: ReleaseStatus | undefined;
     	// (undocumented)
     type: "action";
 }
@@ -119,9 +119,10 @@ export namespace ActionParam {
         		$primaryKey: string | number
         	};
     	// (undocumented)
+    export type NullValueType = typeof NULL_VALUE;
+    	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
-    	// Warning: (ae-forgotten-export) The symbol "ObjectIdentifiers" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export type ObjectType<T extends ObjectTypeDefinition> = ObjectIdentifiers<T> | OsdkObjectPrimaryKeyType<T>;
@@ -227,13 +228,13 @@ export type ApplyBatchActionOptions = {
 // @public (undocumented)
 export interface AsyncIterArgs<
 	Q extends ObjectOrInterfaceDefinition,
-	K extends PropertyKeys<Q> = PropertyKeys<Q>,
+	K extends string = PropertyKeys<Q>,
 	R extends boolean = false,
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
 	RDP_KEYS extends string = never
-> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+> extends SelectArg<Q, K, R, S, RDP_KEYS>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
@@ -327,7 +328,7 @@ export interface DataValueClientToWire {
     	// (undocumented)
     marking: string;
     	// (undocumented)
-    mediaReference: MediaReference;
+    mediaReference: MediaReference | MediaUpload;
     	// (undocumented)
     null: null;
     	// (undocumented)
@@ -532,7 +533,7 @@ export const DurationMapping: {
 // @public (undocumented)
 export interface FetchPageArgs<
 	Q extends ObjectOrInterfaceDefinition,
-	K extends PropertyKeys<Q> = PropertyKeys<Q>,
+	K extends string = PropertyKeys<Q>,
 	R extends boolean = false,
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
@@ -716,6 +717,7 @@ export namespace Logger {
 export interface Media {
     	fetchContents(): Promise<Response>;
     	fetchMetadata(): Promise<MediaMetadata_2>;
+    	getMediaReference(): MediaReference;
 }
 
 // @public
@@ -740,9 +742,23 @@ export interface MediaReference {
             			mediaItemRid: string
             			mediaSetRid: string
             			mediaSetViewRid: string
+            			readToken?: string
             		}
         	};
 }
+
+// @public
+export interface MediaUpload {
+    	// (undocumented)
+    readonly data: Blob;
+    	// (undocumented)
+    readonly path: string;
+}
+
+// @public (undocumented)
+export const NULL_VALUE: symbol & {
+    	__type: "NULL_VALUE"
+};
 
 // @public (undocumented)
 export type NullabilityAdherence = false | "throw" | "drop";
@@ -754,11 +770,17 @@ export namespace NullabilityAdherence {
 }
 
 // @public (undocumented)
+export type ObjectIdentifiers<Q extends ObjectOrInterfaceDefinition> = {
+    	readonly $apiName: Q["apiName"]
+    	readonly $primaryKey: PrimaryKeyType<Q>
+};
+
+// @public (undocumented)
 export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
     	// Warning: (ae-forgotten-export) The symbol "Icon" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    icon?: Icon;
+    icon: Icon | undefined;
     	// (undocumented)
     interfaceMap: Record<string, Record<string, string>>;
     	// (undocumented)
@@ -770,7 +792,7 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
     	// (undocumented)
     primaryKeyType: PrimaryKeyTypes;
     	// (undocumented)
-    status: ReleaseStatus;
+    status: ReleaseStatus | undefined;
     	// (undocumented)
     titleProperty: keyof this["properties"];
     	// (undocumented)
@@ -778,7 +800,7 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
     	// Warning: (ae-forgotten-export) The symbol "ObjectTypeVisibility" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    visibility?: ObjectTypeVisibility;
+    visibility: ObjectTypeVisibility | undefined;
 }
 
 // @public (undocumented)
@@ -937,14 +959,11 @@ export namespace Osdk {
 }
 
 // @public (undocumented)
-export interface OsdkBase<Q extends ObjectOrInterfaceDefinition> extends ObjectIdentifiers<Q> {
-    	// (undocumented)
-    readonly $objectSpecifier: ObjectSpecifier<Q>;
-    	// (undocumented)
-    readonly $objectType: string;
-    	// (undocumented)
-    readonly $title: string | undefined;
-}
+export type OsdkBase<Q extends ObjectOrInterfaceDefinition> = ObjectIdentifiers<Q> & {
+    	readonly $objectSpecifier: ObjectSpecifier<Q>
+    	readonly $objectType: string
+    	readonly $title: string | undefined
+};
 
 // @public @deprecated (undocumented)
 export type OsdkObject<N extends string> = {
@@ -1200,9 +1219,10 @@ export type Result<V> = OkResult<V> | ErrorResult;
 // @public (undocumented)
 export interface SelectArg<
 	Q extends ObjectOrInterfaceDefinition,
-	L extends PropertyKeys<Q> = PropertyKeys<Q>,
+	L extends string = PropertyKeys<Q>,
 	R extends boolean = false,
-	S extends NullabilityAdherence = NullabilityAdherence.Default
+	S extends NullabilityAdherence = NullabilityAdherence.Default,
+	RDP_KEYS extends string = never
 > {
     	// (undocumented)
     $includeRid?: R;
@@ -1218,7 +1238,7 @@ export type SelectArgToKeys<
 
 // @public (undocumented)
 export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
-    	fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L> : Osdk.Instance<T>>;
+    	fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L & PropertyKeys<T>> : Osdk.Instance<T>>;
     	fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<Result<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L> : Osdk.Instance<T>>>;
 }
 

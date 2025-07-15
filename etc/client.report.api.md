@@ -24,6 +24,7 @@ import type { InterfaceMetadata } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import { Logger } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
+import { NULL_VALUE } from '@osdk/api';
 import { ObjectMetadata } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/api';
@@ -51,6 +52,7 @@ import type { SharedClientContext } from '@osdk/shared.client2';
 import { SingleLinkAccessor } from '@osdk/api';
 import { ThreeDimensionalAggregation } from '@osdk/api';
 import { TwoDimensionalAggregation } from '@osdk/api';
+import type { ValidateActionResponseV2 } from '@osdk/foundry.ontologies';
 import { VersionBound } from '@osdk/api';
 import { WhereClause } from '@osdk/api';
 
@@ -66,9 +68,9 @@ export { ActionReturnTypeForOptions }
 
 // @public (undocumented)
 export class ActionValidationError extends Error {
-    	constructor(validation: ActionValidationResponse);
+    	constructor(validation: ValidateActionResponseV2);
     	// (undocumented)
-    validation: ActionValidationResponse;
+    validation: ValidateActionResponseV2;
 }
 
 export { ActionValidationResponse }
@@ -139,6 +141,8 @@ export { InterfaceDefinition }
 export { isOk }
 
 export { Logger }
+
+export { NULL_VALUE }
 
 export { ObjectMetadata }
 

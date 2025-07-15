@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,18 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { CreateVersionedObjectSetResponse } from "../CreateVersionedObjectSetResponse.js";
-import type { CreateVersionedObjectSetWithParentRequest } from "../CreateVersionedObjectSetWithParentRequest.js";
+import type {
+  CreateVersionedObjectSetResponse as _api_CreateVersionedObjectSetResponse,
+  CreateVersionedObjectSetWithParentRequest
+    as _api_CreateVersionedObjectSetWithParentRequest,
+} from "../__components.js";
 
 /**
  * Creates a versioned object set with the given parent rid.
  */
 export async function createVersionedObjectSetWithParent(
   ctx: ConjureContext,
-  request: CreateVersionedObjectSetWithParentRequest,
-): Promise<CreateVersionedObjectSetResponse> {
+  request: _api_CreateVersionedObjectSetWithParentRequest,
+): Promise<_api_CreateVersionedObjectSetResponse> {
   return conjureFetch(ctx, `/versionedObjectSetsWithParent`, "POST", request);
 }

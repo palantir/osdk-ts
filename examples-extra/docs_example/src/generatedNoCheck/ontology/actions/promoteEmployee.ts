@@ -12,16 +12,19 @@ export namespace promoteEmployee {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     employeeId: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'integer';
     };
     newCompensation: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'double';
     };
     newTitle: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';

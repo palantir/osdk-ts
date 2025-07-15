@@ -1,5 +1,101 @@
 # @osdk/example-generator
 
+## 0.11.0-beta.10
+
+### Patch Changes
+
+- @osdk/create-app@2.3.0-beta.10
+- @osdk/create-widget@3.0.0-beta.6
+
+## 0.11.0-beta.9
+
+### Patch Changes
+
+- @osdk/create-app@2.3.0-beta.9
+- @osdk/create-widget@3.0.0-beta.6
+
+## 0.11.0-beta.8
+
+### Patch Changes
+
+- @osdk/create-widget@3.0.0-beta.6
+- @osdk/create-app@2.3.0-beta.8
+
+## 0.11.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/create-widget@3.0.0-beta.5
+  - @osdk/create-app@2.3.0-beta.7
+
+## 0.11.0-beta.6
+
+### Minor Changes
+
+- 7901ae0: Remove unstable suffix from widget packages
+
+### Patch Changes
+
+- @osdk/create-widget@3.0.0-beta.4
+- @osdk/create-app@2.3.0-beta.6
+
+## 0.11.0-beta.5
+
+### Patch Changes
+
+- @osdk/create-app@2.3.0-beta.5
+- @osdk/create-widget@3.0.0-beta.3
+
+## 0.11.0-beta.4
+
+### Patch Changes
+
+- @osdk/create-app@2.3.0-beta.4
+- @osdk/create-widget@2.2.0-beta.2
+
+## 0.11.0-beta.3
+
+### Patch Changes
+
+- @osdk/create-app@2.3.0-beta.3
+- @osdk/create-widget@2.2.0-beta.1
+
+## 0.11.0-beta.2
+
+### Patch Changes
+
+- @osdk/create-app@2.3.0-beta.2
+- @osdk/create-widget@2.2.0-beta.1
+
+## 0.10.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 1444362: Read environment variables from index.html meta tags
+- 21e33a5: Upgrade consola to 3.4.0
+- d4c962c: Fix typos for widgets libraries
+- 889e84b: Release
+- 317b555: Release
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [1444362]
+- Updated dependencies [e75819c]
+- Updated dependencies [21e33a5]
+- Updated dependencies [fa02507]
+- Updated dependencies [770ec64]
+- Updated dependencies [1d0e72a]
+- Updated dependencies [889e84b]
+- Updated dependencies [317b555]
+- Updated dependencies [ffc1e6e]
+  - @osdk/create-app@2.2.0
+  - @osdk/create-widget@2.1.0
+
 ## 0.10.0-beta.23
 
 ### Patch Changes

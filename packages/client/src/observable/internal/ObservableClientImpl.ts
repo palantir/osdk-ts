@@ -38,10 +38,10 @@ import type { Store } from "./Store.js";
  * @internal
  */
 export class ObservableClientImpl implements ObservableClient {
-  #store: Store;
+  __experimentalStore: Store;
 
   constructor(store: Store) {
-    this.#store = store;
+    this.__experimentalStore = store;
 
     this.observeObject = store.observeObject.bind(
       store,

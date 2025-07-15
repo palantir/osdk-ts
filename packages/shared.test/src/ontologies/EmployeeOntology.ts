@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { FauxOntology } from "../FauxFoundry/FauxOntology.js";
+import type { FauxOntology } from "@osdk/faux";
 import { FooInterface } from "../stubs/interfaceTypes.js";
 import {
   employeeObjectWithLinkTypes,

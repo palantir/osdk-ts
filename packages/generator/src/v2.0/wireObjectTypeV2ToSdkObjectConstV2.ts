@@ -24,7 +24,6 @@ import { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
 import { propertyJsdoc } from "../shared/propertyJsdoc.js";
-import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
 
 /** @internal */
@@ -49,12 +48,10 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     ),
   );
 
-  const definition = deleteUndefineds(
-    wireObjectTypeFullMetadataToSdkObjectMetadata(
-      object.raw,
-      true,
-      consola,
-    ),
+  const definition = wireObjectTypeFullMetadataToSdkObjectMetadata(
+    object.raw,
+    true,
+    consola,
   );
 
   const objectDefIdentifier = object.getDefinitionIdentifier(true);
@@ -221,14 +218,19 @@ export function createProps(
     return `export type StrictProps = Props`;
   }
   const definition = type.getCleanedUpDefinition(true);
+  const propertyMetadata = type instanceof EnhancedObjectType
+    ? type.raw.objectType.properties
+    : undefined;
   return `export interface ${identifier} {
 ${
     stringify(definition.properties, {
       "*": (propertyDefinition, _, apiName) => {
         return [
-          `${propertyJsdoc(propertyDefinition, { apiName })}readonly "${
-            maybeStripNamespace(type, apiName)
-          }"`,
+          `${
+            propertyJsdoc(propertyDefinition, propertyMetadata?.[apiName], {
+              apiName,
+            })
+          }readonly "${maybeStripNamespace(type, apiName)}"`,
           (typeof propertyDefinition.type === "object"
             ? remapStructType(propertyDefinition.type)
             : `$PropType[${JSON.stringify(propertyDefinition.type)}]`)
@@ -260,6 +262,9 @@ export function createDefinition(
   }: Identifiers,
 ) {
   const definition = object.getCleanedUpDefinition(true);
+  const propertyMetadata = object instanceof EnhancedObjectType
+    ? object.raw.objectType.properties
+    : undefined;
   return `
     export interface ${identifier} extends ${
     object instanceof EnhancedObjectType
@@ -293,9 +298,11 @@ export function createDefinition(
         stringify(definition.properties, {
           "*": (propertyDefinition, _, apiName) =>
             [
-              `${propertyJsdoc(propertyDefinition, { apiName })}"${
-                maybeStripNamespace(object, apiName)
-              }"`,
+              `${
+                propertyJsdoc(propertyDefinition, propertyMetadata?.[apiName], {
+                  apiName,
+                })
+              }"${maybeStripNamespace(object, apiName)}"`,
               `$PropertyDef<${JSON.stringify(propertyDefinition.type)}, "${
                 propertyDefinition.nullable ? "nullable" : "non-nullable"
               }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,

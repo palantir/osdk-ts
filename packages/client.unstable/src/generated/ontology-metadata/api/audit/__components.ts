@@ -42,6 +42,8 @@ import type {
   GetActionTypesForObjectTypeRequest as _api_GetActionTypesForObjectTypeRequest,
   GetActionTypesForObjectTypeResponse
     as _api_GetActionTypesForObjectTypeResponse,
+  GetEntityDelegateDatasetRequest as _api_GetEntityDelegateDatasetRequest,
+  GetEntityDelegateDatasetResponse as _api_GetEntityDelegateDatasetResponse,
   GetFeatureConfigurationsResponse as _api_GetFeatureConfigurationsResponse,
   GetLinkTypesForObjectTypesRequest as _api_GetLinkTypesForObjectTypesRequest,
   GetObjectTypesForInterfaceTypesRequest
@@ -270,6 +272,8 @@ import type {
 import type { LoadObjectTypeSchemaMigrationsRequest as _api_schemamigrations_LoadObjectTypeSchemaMigrationsRequest } from "../schemamigrations/__components.js";
 import type {
   ActionTypeSearchRequest as _api_search_ActionTypeSearchRequest,
+  GetObjectTypeSemanticSearchStatusResponse
+    as _api_search_GetObjectTypeSemanticSearchStatusResponse,
   InterfaceTypeSearchRequest as _api_search_InterfaceTypeSearchRequest,
   ObjectTypeSearchRequest as _api_search_ObjectTypeSearchRequest,
   ObjectTypeSearchRequestV2 as _api_search_ObjectTypeSearchRequestV2,
@@ -631,6 +635,7 @@ export type OntologyMetadataAuditEvent =
   | "ONTOLOGY_METADATA_SERVICE_GET_MODIFICATION_HISTORY"
   | "ONTOLOGY_METADATA_SERVICE_GET_ENTITY_MODIFICATION_HISTORY"
   | "ONTOLOGY_METADATA_SERVICE_GET_ENTITY_MODIFICATION_HISTORY_V2"
+  | "ONTOLOGY_METADATA_SERVICE_GET_OBJECT_TYPE_SEMANTIC_SEARCH_STATUS"
   | "ONTOLOGY_METADATA_SERVICE_GET_ONTOLOGY_RIDS_FOR_ONTOLOGY_ENTITIES"
   | "ONTOLOGY_METADATA_SERVICE_GET_ORGANIZATION_RIDS_FOR_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_GET_RELATIONS_FOR_OBJECT_TYPES"
@@ -648,6 +653,7 @@ export type OntologyMetadataAuditEvent =
   | "ONTOLOGY_METADATA_SERVICE_LOAD_ALL_INTERFACE_TYPES_FROM_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_LOAD_ALL_TYPE_GROUPS_FROM_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_LOAD_ONTOLOGY_DATASOURCES"
+  | "ONTOLOGY_METADATA_SERVICE_GET_ENTITY_DELEGATE_DATASET"
   | "ONTOLOGY_METADATA_SERVICE_MODIFY_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_DRY_RUN_MODIFY_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_MODIFICATION"
@@ -702,6 +708,7 @@ export type OntologyMetadataAuditEvent =
   | "ONTOLOGY_PERMISSION_SERVICE_GET_SUGGESTED_ROLES_FOR_LINK_TYPE"
   | "ONTOLOGY_PERMISSION_SERVICE_GET_SUGGESTED_ROLES_FOR_LINK_TYPE_DATASOURCE"
   | "ONTOLOGY_PERMISSION_SERVICE_GET_SUGGESTED_ROLES_FOR_ACTION_TYPE"
+  | "ONTOLOGY_PERMISSION_SERVICE_MIGRATE_ENTITIES_TO_PROJECT"
   | "ONTOLOGY_PROVENANCE_SERVICE_REGISTER_DEPENDENCY"
   | "ONTOLOGY_PROVENANCE_SERVICE_TAG_DEPENDENT"
   | "ONTOLOGY_PROVENANCE_SERVICE_GET_DEPENDENTS"
@@ -805,6 +812,12 @@ export interface OntologyMetadataServiceGetDeprecationUsageRequestParams {
 export interface OntologyMetadataServiceGetDeprecationUsageResultParams {
   response: _api_usage_GetDeprecationUsageResponse;
 }
+export interface OntologyMetadataServiceGetEntityDelegateDatasetRequestParams {
+  request: _api_GetEntityDelegateDatasetRequest;
+}
+export interface OntologyMetadataServiceGetEntityDelegateDatasetResponseParams {
+  response: _api_GetEntityDelegateDatasetResponse;
+}
 export interface OntologyMetadataServiceGetEntityModificationHistoryRequestParams {
   ontologyRid: _api_OntologyRid;
   request: _api_modification_GetEntityModificationHistoryRequest;
@@ -845,6 +858,11 @@ export interface OntologyMetadataServiceGetModifiedEntitiesRequestParams {
 export interface OntologyMetadataServiceGetModifiedEntitiesResponseParams {
   ontologyRid: _api_OntologyRid;
   response: _api_modification_GetModifiedEntitiesResponse;
+}
+export interface OntologyMetadataServiceGetObjectTypeSemanticSearchStatusRequestParams {
+}
+export interface OntologyMetadataServiceGetObjectTypeSemanticSearchStatusResponseParams {
+  response: _api_search_GetObjectTypeSemanticSearchStatusResponse;
 }
 export interface OntologyMetadataServiceGetObjectTypesForInterfaceTypesRequestParams {
   request: _api_GetObjectTypesForInterfaceTypesRequest;

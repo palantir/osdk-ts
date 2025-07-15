@@ -247,6 +247,32 @@
         }
       ]
     },
+    "create-unstructured-image-example": {
+      "apiName": "create-unstructured-image-example",
+      "displayName": "Creates an Unstructured Image Example Object",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "path": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "media_reference": {
+          "dataType": {
+            "type": "mediaReference"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.9d28a423-b11e-485f-8a4c-f8b4131c0b85",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "UnstructuredImageExample"
+        }
+      ]
+    },
     "assign-employee-1": {
       "apiName": "assign-employee-1",
       "description": "Assigns an employee to a venture",
@@ -484,15 +510,24 @@
         "primaryKey": "airportCountryName",
         "properties": {
           "airportCountryName": {
-            "displayName": "airportCountryName",
+            "displayName": "Airport Country Name",
             "dataType": {
               "type": "string"
+            },
+            "status": {
+              "type": "deprecated",
+              "message": "This property is deprecated.",
+              "deadline": "2024-12-31",
+              "replacedBy": "newProperty"
             }
           },
           "airportCountryIsoCode": {
             "displayName": "airportCountryIsoCode",
             "dataType": {
               "type": "string"
+            },
+            "status": {
+              "type": "experimental"
             }
           }
         },
@@ -1172,6 +1207,41 @@
         },
         "titleProperty": "path",
         "pluralDisplayName": "Mnayan OSDKMedia Objects"
+      },
+      "linkTypes": []
+    },
+    "UnstructuredImageExample": {
+      "objectType": {
+        "apiName": "UnstructuredImageExample",
+        "primaryKey": "mediaItemRid",
+        "displayName": "Unstructured Image Example",
+        "description": "Media OT for OSDK e2e testing",
+        "properties": {
+          "mediaItemRid": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "path": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "mediaReference": {
+            "dataType": {
+              "type": "mediaReference"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "rid.a.b.c.d",
+        "icon": {
+          "type": "blueprint",
+          "name": "object",
+          "color": "color"
+        },
+        "titleProperty": "path",
+        "pluralDisplayName": "Unstructured Image Examples"
       },
       "linkTypes": []
     },

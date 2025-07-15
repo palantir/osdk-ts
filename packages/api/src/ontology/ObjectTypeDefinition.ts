@@ -37,7 +37,7 @@ export type ObjectInterfaceBaseMetadata = {
   type: "object" | "interface";
   apiName: string;
   displayName: string;
-  description?: string;
+  description: string | undefined;
   properties: Record<any, ObjectMetadata.Property>;
   links: Record<
     string,
@@ -69,10 +69,10 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
   primaryKeyApiName: keyof this["properties"];
   titleProperty: keyof this["properties"];
   primaryKeyType: PrimaryKeyTypes;
-  icon?: Icon;
-  visibility?: ObjectTypeVisibility;
+  icon: Icon | undefined;
+  visibility: ObjectTypeVisibility | undefined;
   pluralDisplayName: string;
-  status: ReleaseStatus;
+  status: ReleaseStatus | undefined;
   interfaceMap: Record<
     /* InterfaceType api name */ string,
     Record<

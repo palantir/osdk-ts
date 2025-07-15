@@ -165,6 +165,36 @@ export type BranchType = BranchType_builder;
 export interface BuilderServiceBranch {
   builderPipelineRid: _api_BuilderPipelineRid;
 }
+export interface BulkLoadOntologyBranchEntry_branch {
+  type: "branch";
+  branch: _api_OntologyBranchRid;
+}
+
+export interface BulkLoadOntologyBranchEntry_proposal {
+  type: "proposal";
+  proposal: _api_OntologyProposalRid;
+}
+
+export interface BulkLoadOntologyBranchEntry_ontologyRidAndVersion {
+  type: "ontologyRidAndVersion";
+  ontologyRidAndVersion: OntologyRidAndVersion;
+}
+export type BulkLoadOntologyBranchEntry =
+  | BulkLoadOntologyBranchEntry_branch
+  | BulkLoadOntologyBranchEntry_proposal
+  | BulkLoadOntologyBranchEntry_ontologyRidAndVersion;
+
+export interface BulkLoadOntologyBranchesRequest {
+  entries: Array<BulkLoadOntologyBranchEntry>;
+}
+export interface BulkLoadOntologyBranchesResponse {
+  results: Array<BulkLoadOntologyBranchResult>;
+}
+export interface BulkLoadOntologyBranchResult {
+  entry: BulkLoadOntologyBranchEntry;
+  ontologyBranch: OntologyBranch;
+  versionedBranchDetails: VersionedBranchDetails;
+}
 export interface ClosedStatusV2 {
 }
 /**
@@ -490,6 +520,7 @@ export interface DerivedPropertyMultiHopLinkExceedsMaximumStepCountError {
   objectTypeId?: _api_ObjectTypeId | null | undefined;
   objectTypeRid?: _api_ObjectTypeRid | null | undefined;
   propertyTypeIds: Array<_api_PropertyTypeId>;
+  propertyTypeRids: Array<_api_PropertyTypeRid>;
 }
 /**
  * Multi-hop link derived properties must specify at least one step.
@@ -507,6 +538,50 @@ export interface DerivedPropertyTypeDependOnAnotherDerivedPropertyError {
   objectTypeRid?: _api_ObjectTypeRid | null | undefined;
   propertyTypeId?: _api_PropertyTypeId | null | undefined;
   propertyTypeRid?: _api_PropertyTypeRid | null | undefined;
+}
+export interface DiscardChangesErrorStatus {
+  errors: Array<_api_validation_OntologyValidationError>;
+}
+/**
+ * Request to discard changes made to the specified entities on a branch.
+ */
+export interface DiscardChangesRequest {
+  actionTypeRids: Array<_api_ActionTypeRid>;
+  expectedOntologyVersion?: _api_OntologyVersion | null | undefined;
+  interfaceTypeRids: Array<_api_InterfaceTypeRid>;
+  linkTypeDatasourceRids: Array<_api_DatasourceRid>;
+  linkTypeRids: Array<_api_LinkTypeRid>;
+  objectTypeDatasourceRids: Array<_api_DatasourceRid>;
+  objectTypeRids: Array<_api_ObjectTypeRid>;
+  ruleSetRids: Array<_api_RuleSetRid>;
+  sharedPropertyTypeRids: Array<_api_SharedPropertyTypeRid>;
+  typeGroupRids: Array<_api_TypeGroupRid>;
+  workflowRids: Array<_workflow_api_WorkflowRid>;
+}
+/**
+ * Return type for the discardChangesOnBranch endpoint.
+ */
+export interface DiscardChangesResponse {
+  ontologyVersion: _api_OntologyVersion;
+}
+export interface DiscardChangesResponseV2_success {
+  type: "success";
+  success: DiscardChangesSuccessStatus;
+}
+
+export interface DiscardChangesResponseV2_failure {
+  type: "failure";
+  failure: DiscardChangesErrorStatus;
+}
+/**
+ * Return type for the discardChangesOnBranchV2 endpoint.
+ */
+export type DiscardChangesResponseV2 =
+  | DiscardChangesResponseV2_success
+  | DiscardChangesResponseV2_failure;
+
+export interface DiscardChangesSuccessStatus {
+  ontologyVersion: _api_OntologyVersion;
 }
 export interface EntityIndexingConfiguration {
   objectTypes: Record<
@@ -564,9 +639,13 @@ export type ForeignKeyConstraintError =
  */
 export interface ForeignPropertyTypeInDerivedPropertyDefinitionNotFoundError {
   foreignObjectType: _api_ObjectTypeRid;
+  foreignObjectTypeId?: _api_ObjectTypeId | null | undefined;
   foreignPropertyTypeId?: _api_PropertyTypeId | null | undefined;
   foreignPropertyTypeRid?: _api_PropertyTypeRid | null | undefined;
   objectType: _api_ObjectTypeRid;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  propertyTypeId?: _api_PropertyTypeId | null | undefined;
+  propertyTypeRid?: _api_PropertyTypeRid | null | undefined;
 }
 export interface FoundrySchemaConstraintError_columnMissingFromBackingDatasourceForObjectType {
   type: "columnMissingFromBackingDatasourceForObjectType";
@@ -771,6 +850,12 @@ export interface InterfaceImplementationError_objectTypeImplementsTooManyInterfa
   objectTypeImplementsTooManyInterfacesError:
     ObjectTypeImplementsTooManyInterfacesError;
 }
+
+export interface InterfaceImplementationError_localPropertyUsedToImplementStructInterfaceProperty {
+  type: "localPropertyUsedToImplementStructInterfaceProperty";
+  localPropertyUsedToImplementStructInterfaceProperty:
+    LocalPropertyUsedToImplementStructInterfaceProperty;
+}
 /**
  * A type representing validation errors associated with interface implementations. Since we only validate on
  * branches, we use RIDs instead of the ID/RID union.
@@ -787,7 +872,8 @@ export type InterfaceImplementationError =
   | InterfaceImplementationError_interfaceLinkTypeImplementedTooOften
   | InterfaceImplementationError_invalidCardinalityImplementingInterfaceLinkType
   | InterfaceImplementationError_invalidLinkedEntityImplementingInterfaceLinkType
-  | InterfaceImplementationError_objectTypeImplementsTooManyInterfacesError;
+  | InterfaceImplementationError_objectTypeImplementsTooManyInterfacesError
+  | InterfaceImplementationError_localPropertyUsedToImplementStructInterfaceProperty;
 
 /**
  * The object type specifies an interface link mapping for an interface link which does not exist.
@@ -990,6 +1076,8 @@ export interface LinkTypeInDerivedPropertyDefinitionNotFoundOrDeletedError {
   linkTypeId?: _api_LinkTypeId | null | undefined;
   linkTypeRid?: _api_LinkTypeRid | null | undefined;
   objectType: _api_ObjectTypeRid;
+  propertyTypeIds: Array<_api_PropertyTypeId>;
+  propertyTypeRids: Array<_api_PropertyTypeRid>;
 }
 /**
  * An error when the properties of a link type reference the same backing column.
@@ -1070,6 +1158,19 @@ export interface LocalAndSharedPropertyTypesConflictingApiNamesError {
   objectTypeId?: _api_ObjectTypeId | null | undefined;
   propertyTypeId?: _api_PropertyTypeId | null | undefined;
   propertyTypeRid: _api_PropertyTypeRid;
+}
+/**
+ * Local properties cannot implement interface properties that are struct shared property types. In order to
+ * implement a struct shared property type of an interface, the shared property type needs to be used directly on
+ * the implementing object type.
+ */
+export interface LocalPropertyUsedToImplementStructInterfaceProperty {
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
+  objectTypeRid: _api_ObjectTypeRid;
+  propertyTypeId?: _api_PropertyTypeId | null | undefined;
+  propertyTypeRid: _api_PropertyTypeRid;
+  sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
 }
 /**
  * An error representing when a many-to-many link type datasource has a column referencing a primary key that
@@ -1266,6 +1367,12 @@ export interface MissingPropertyDataTypeSchemaMigrationError {
   targetType: _api_Type;
 }
 /**
+ * Property security groups are not yet supported with MDOs.
+ */
+export interface MissingPropertySecurityGroupTypeError {
+  objectTypeRid: _api_ObjectTypeRid;
+}
+/**
  * The object implementing the interface does not have all required shared properties.
  */
 export interface MissingSharedPropertyError {
@@ -1295,6 +1402,12 @@ export interface NonDefaultOntologyBranchDetails {
  * changes on the ontology branch.
  */
 export interface NonIndexedBranchConfig {
+}
+/**
+ * Property security groups are not yet supported with MDOs.
+ */
+export interface NonUniquePropertySecurityGroupNamesError {
+  objectTypeRid: _api_ObjectTypeRid;
 }
 /**
  * All property types in each object type must be mapped to a datasource or explicitly labeled as edit-only (if the object type backing datasource supports edit-only).
@@ -1418,6 +1531,7 @@ export interface ObjectTypeWithUnmappedTitlePropertyError {
 }
 export interface OntologyBranch {
   branchDetails: OntologyBranchDetails;
+  draftOntologyVersion?: _api_OntologyVersion | null | undefined;
   latestOntologyVersion: _api_OntologyVersion;
   ontologyRid: _api_OntologyRid;
   rid: _api_OntologyBranchRid;
@@ -1548,6 +1662,10 @@ export interface OntologyProposalV2 {
   status: ProposalStatusV2;
   taskDetails: ProposalTaskDetails;
 }
+export interface OntologyRidAndVersion {
+  rid: _api_OntologyRid;
+  version: _api_OntologyVersion;
+}
 export interface OpenStatusV2 {
 }
 export interface OwnerIdentifier_builder {
@@ -1598,6 +1716,14 @@ export interface PrimaryKeyIsDerivedError {
   objectType: _api_ObjectTypeRid;
   primaryKeyPropertyTypesThatAreDerived: Array<_api_PropertyTypeId>;
 }
+/**
+ * A property specified in the datasource definition is not mapped to a property security group or is mapped
+ * to more than one property security group.
+ */
+export interface PrimaryKeyReferencesInMultiplePropertySecurityGroupsError {
+  objectTypeRid: _api_ObjectTypeRid;
+  primaryKeys: Array<_api_PropertyTypeRid>;
+}
 export interface PropertySecurityGroupsConstraintError_unmappedPropertiesInPropertySecurityGroup {
   type: "unmappedPropertiesInPropertySecurityGroup";
   unmappedPropertiesInPropertySecurityGroup:
@@ -1608,6 +1734,22 @@ export interface PropertySecurityGroupsConstraintError_invalidNumberOfPropertyRe
   type: "invalidNumberOfPropertyReferencesInPropertySecurityGroup";
   invalidNumberOfPropertyReferencesInPropertySecurityGroup:
     InvalidNumberOfPropertyReferencesInPropertySecurityGroupError;
+}
+
+export interface PropertySecurityGroupsConstraintError_primaryKeyReferencesInMultiplePropertySecurityGroups {
+  type: "primaryKeyReferencesInMultiplePropertySecurityGroups";
+  primaryKeyReferencesInMultiplePropertySecurityGroups:
+    PrimaryKeyReferencesInMultiplePropertySecurityGroupsError;
+}
+
+export interface PropertySecurityGroupsConstraintError_missingPropertySecurityGroupType {
+  type: "missingPropertySecurityGroupType";
+  missingPropertySecurityGroupType: MissingPropertySecurityGroupTypeError;
+}
+
+export interface PropertySecurityGroupsConstraintError_nonUniquePropertySecurityGroupNames {
+  type: "nonUniquePropertySecurityGroupNames";
+  nonUniquePropertySecurityGroupNames: NonUniquePropertySecurityGroupNamesError;
 }
 
 export interface PropertySecurityGroupsConstraintError_unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError {
@@ -1621,6 +1763,9 @@ export interface PropertySecurityGroupsConstraintError_unexpectedPropertyTypeRef
 export type PropertySecurityGroupsConstraintError =
   | PropertySecurityGroupsConstraintError_unmappedPropertiesInPropertySecurityGroup
   | PropertySecurityGroupsConstraintError_invalidNumberOfPropertyReferencesInPropertySecurityGroup
+  | PropertySecurityGroupsConstraintError_primaryKeyReferencesInMultiplePropertySecurityGroups
+  | PropertySecurityGroupsConstraintError_missingPropertySecurityGroupType
+  | PropertySecurityGroupsConstraintError_nonUniquePropertySecurityGroupNames
   | PropertySecurityGroupsConstraintError_unexpectedPropertyTypeReferencedInSecurityGroupGranularPolicyError;
 
 /**
@@ -1927,6 +2072,11 @@ export interface ValidationError_genericOntologyMetadataError {
   type: "genericOntologyMetadataError";
   genericOntologyMetadataError: _api_GenericOntologyMetadataError;
 }
+
+export interface ValidationError_ontologyValidationError {
+  type: "ontologyValidationError";
+  ontologyValidationError: _api_validation_OntologyValidationError;
+}
 export type ValidationError =
   | ValidationError_foreignKeyConstraint
   | ValidationError_foundrySchemaConstraint
@@ -1940,7 +2090,8 @@ export type ValidationError =
   | ValidationError_objectTypePropertyConstraint
   | ValidationError_propertySecurityGroupsConstraint
   | ValidationError_mergeConstraint
-  | ValidationError_genericOntologyMetadataError;
+  | ValidationError_genericOntologyMetadataError
+  | ValidationError_ontologyValidationError;
 
 export interface ValueTypeUsageError_propertyTypeValueTypeUsageError {
   type: "propertyTypeValueTypeUsageError";

@@ -32,6 +32,7 @@ import * as child_process from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import * as semver from "semver";
 
 const rootPackageJson = JSON.parse(
   await fs.readFile(
@@ -121,6 +122,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/foundry-config-json",
       "@osdk/generator-converters",
+      "@osdk/generator-converters.ontologyir",
       "@osdk/generator-utils",
       "@osdk/generator",
       "@osdk/maker",
@@ -130,8 +132,10 @@ const archetypeRules = archetypes(
       "@osdk/shared.net.fetch",
       "@osdk/shared.net",
       "@osdk/typescript-sdk-docs",
-      "@osdk/widget.api.unstable",
-      "@osdk/widget.client.unstable",
+      "@osdk/widget.api",
+      "@osdk/widget.client",
+      "@osdk/vite-plugin-oac",
+      "@osdk/faux",
     ],
     {
       ...LIBRARY_RULES,
@@ -256,7 +260,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "vitePlugin",
     [
-      "@osdk/widget.vite-plugin.unstable",
+      "@osdk/widget.vite-plugin",
     ],
     {
       ...LIBRARY_RULES,
@@ -268,7 +272,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "reactLibrary",
     [
-      "@osdk/widget.client-react.unstable",
+      "@osdk/widget.client-react",
       "@osdk/react",
     ],
     {
@@ -548,6 +552,53 @@ const allLocalDepsMustNotBePrivate = createRuleFactory({
   validateOptions: () => {}, // no options right now
 });
 
+const setWorkspaceDepRangeForPrereleases = createRuleFactory({
+  name: "setWorkspaceDepRangeForPrereleases",
+  check: async (context) => {
+    const packageJson = context.getPackageJson();
+    const packageJsonPath = context.getPackageJsonPath();
+
+    if (packageJson.name !== "@osdk/client") return;
+
+    if (!packageJson.version) {
+      context.addError({
+        message: "package.json is missing a version field",
+        file: packageJsonPath,
+      });
+      return;
+    }
+    const packageJsonVersion = String(packageJson.version) ?? "";
+
+    const isPrerelease = !!semver.prerelease(packageJsonVersion);
+
+    const depField = "dependencies";
+    const depName = "@osdk/api";
+
+    if (depName in packageJson.dependencies) {
+      const current = packageJson.dependencies[depName];
+      const expected = isPrerelease ? "workspace:*" : "workspace:~";
+      if (current !== expected) {
+        context.addError({
+          message: `@osdk/client is ${
+            isPrerelease ? "a prerelease" : "stable"
+          }, so its dependency on @osdk/api should be '${expected}', found '${current}'`,
+          longMessage:
+            `Set dependencies['${depName}'] to '${expected}' in @osdk/client (currently version ${packageJson.version})`,
+          file: packageJsonPath,
+          fixer: () => {
+            let updated = context.getPackageJson();
+            if (updated[depField]?.[depName] === current) {
+              updated[depField][depName] = expected;
+              context.host.writeJson(packageJsonPath, updated);
+            }
+          },
+        });
+      }
+    }
+  },
+  validateOptions: () => {},
+});
+
 const cache = new Map();
 
 /**
@@ -715,6 +766,8 @@ function standardPackageRules(shared, options) {
     disallowWorkspaceCaret({ ...shared }),
 
     ...minimalPackageRules(shared, options),
+
+    setWorkspaceDepRangeForPrereleases({ ...shared }),
 
     ...ifTrue(options.framework === "vite", [
       packageScript({
