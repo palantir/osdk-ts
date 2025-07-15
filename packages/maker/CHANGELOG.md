@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.12.0-beta.3
+
+### Minor Changes
+
+- 988bf66: Use block data type for imports
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.3
+
 ## 0.12.0-beta.2
 
 ### Minor Changes
