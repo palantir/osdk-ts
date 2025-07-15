@@ -812,140 +812,154 @@ describe("convertWireToOsdkObjects", () => {
         )
           .toMatchInlineSnapshot(
             `
-        {
-          "apiName": "Employee",
-          "description": "A full-time or part-time 
+            {
+              "apiName": "Employee",
+              "description": "A full-time or part-time 
 
-         employee of our firm",
-          "displayName": "Employee",
-          "icon": {
-            "color": "blue",
-            "name": "person",
-            "type": "blueprint",
-          },
-          "implements": [
-            "FooInterface",
-          ],
-          "interfaceMap": {
-            "FooInterface": {
-              "fooSpt": "fullName",
-            },
-          },
-          "inverseInterfaceMap": {
-            "FooInterface": {
-              "fullName": "fooSpt",
-            },
-          },
-          "links": {
-            "lead": {
-              "multiplicity": false,
-              "targetType": "Employee",
-            },
-            "officeLink": {
-              "multiplicity": false,
-              "targetType": "Office",
-            },
-            "peeps": {
-              "multiplicity": true,
-              "targetType": "Employee",
-            },
-          },
-          "pluralDisplayName": "Employees",
-          "primaryKeyApiName": "employeeId",
-          "primaryKeyType": "integer",
-          "properties": {
-            "class": {
-              "description": "",
-              "displayName": undefined,
-              "multiplicity": false,
-              "nullable": true,
-              "type": "string",
-            },
-            "employeeId": {
-              "description": undefined,
-              "displayName": undefined,
-              "multiplicity": false,
-              "nullable": false,
-              "type": "integer",
-            },
-            "employeeLocation": {
-              "description": "Geotime series reference of the location of the employee",
-              "displayName": undefined,
-              "multiplicity": false,
-              "nullable": true,
-              "type": "geotimeSeriesReference",
-            },
-            "employeeSensor": {
-              "description": "TimeSeries sensor of the status of the employee",
-              "displayName": undefined,
-              "multiplicity": false,
-              "nullable": true,
-              "type": "sensorTimeseries",
-            },
-            "employeeStatus": {
-              "description": "TimeSeries of the status of the employee",
-              "displayName": undefined,
-              "multiplicity": false,
-              "nullable": true,
-              "type": "stringTimeseries",
-            },
-            "fullName": {
-              "description": undefined,
-              "displayName": undefined,
-              "multiplicity": false,
-              "nullable": true,
-              "type": "string",
-            },
-            "office": {
-              "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
-         This is some more text.",
-              "displayName": undefined,
-              "multiplicity": false,
-              "nullable": true,
-              "type": "string",
-            },
-            "startDate": {
-              "description": "The date the employee was hired (most recently, if they were re-hired)",
-              "displayName": undefined,
-              "multiplicity": false,
-              "nullable": true,
-              "type": "datetime",
-            },
-          },
-          "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
-          "status": "ACTIVE",
-          "titleProperty": "fullName",
-          "type": "object",
-          "visibility": "NORMAL",
-          Symbol(InterfaceDefinitions): {
-            "FooInterface": {
-              "def": {
-                "apiName": "FooInterface",
-                "description": "Interface for Foo",
-                "displayName": "Foo Interface",
-                "implementedBy": [
-                  "Employee",
-                  "Person",
-                ],
-                "implements": [],
-                "links": {},
-                "properties": {
-                  "fooSpt": {
-                    "description": "A foo",
-                    "displayName": "Foo",
-                    "multiplicity": false,
-                    "nullable": true,
-                    "type": "string",
-                  },
-                },
-                "rid": "ri.interface.main.interface.1",
-                "type": "interface",
+             employee of our firm",
+              "displayName": "Employee",
+              "icon": {
+                "color": "blue",
+                "name": "person",
+                "type": "blueprint",
               },
-              "handler": undefined,
-            },
-          },
-        }
-      `,
+              "implements": [
+                "FooInterface",
+              ],
+              "interfaceMap": {
+                "FooInterface": {
+                  "fooSpt": "fullName",
+                },
+              },
+              "inverseInterfaceMap": {
+                "FooInterface": {
+                  "fullName": "fooSpt",
+                },
+              },
+              "links": {
+                "lead": {
+                  "multiplicity": false,
+                  "targetType": "Employee",
+                },
+                "officeLink": {
+                  "multiplicity": false,
+                  "targetType": "Office",
+                },
+                "peeps": {
+                  "multiplicity": true,
+                  "targetType": "Employee",
+                },
+              },
+              "pluralDisplayName": "Employees",
+              "primaryKeyApiName": "employeeId",
+              "primaryKeyType": "integer",
+              "properties": {
+                "class": {
+                  "description": "",
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "string",
+                },
+                "employeeId": {
+                  "description": undefined,
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": false,
+                  "type": "integer",
+                },
+                "employeeLocation": {
+                  "description": "Geotime series reference of the location of the employee",
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "geotimeSeriesReference",
+                },
+                "employeeSensor": {
+                  "description": "TimeSeries sensor of the status of the employee",
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "sensorTimeseries",
+                },
+                "employeeStatus": {
+                  "description": "TimeSeries of the status of the employee",
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "stringTimeseries",
+                },
+                "fullName": {
+                  "description": undefined,
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "string",
+                },
+                "office": {
+                  "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
+             This is some more text.",
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "string",
+                },
+                "skillSet": {
+                  "description": "The skills of the employee",
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "string",
+                },
+                "skillSetEmbedding": {
+                  "description": "Vectorized skill set",
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "vector",
+                },
+                "startDate": {
+                  "description": "The date the employee was hired (most recently, if they were re-hired)",
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "datetime",
+                },
+              },
+              "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
+              "status": "ACTIVE",
+              "titleProperty": "fullName",
+              "type": "object",
+              "visibility": "NORMAL",
+              Symbol(InterfaceDefinitions): {
+                "FooInterface": {
+                  "def": {
+                    "apiName": "FooInterface",
+                    "description": "Interface for Foo",
+                    "displayName": "Foo Interface",
+                    "implementedBy": [
+                      "Employee",
+                      "Person",
+                    ],
+                    "implements": [],
+                    "links": {},
+                    "properties": {
+                      "fooSpt": {
+                        "description": "A foo",
+                        "displayName": "Foo",
+                        "multiplicity": false,
+                        "nullable": true,
+                        "type": "string",
+                      },
+                    },
+                    "rid": "ri.interface.main.interface.1",
+                    "type": "interface",
+                  },
+                  "handler": undefined,
+                },
+              },
+            }
+          `,
           );
       });
 
