@@ -30,6 +30,7 @@ import type {
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
+  OntologyIrOneToManyLinkDefinition,
   OntologyIrOntologyBlockDataV2,
   OntologyIrParameter,
   OntologyIrPropertyType,
@@ -71,6 +72,7 @@ import type {
   LinkType,
   ObjectPropertyType,
   ObjectType,
+  OneToManyLinkTypeDefinition,
   OntologyDefinition,
   OntologyEntityType,
   SharedPropertyType,
@@ -575,7 +577,7 @@ function convertLink(
     definition = {
       type: "oneToMany",
       oneToMany: {
-        cardinalityHint: "ONE_TO_MANY",
+        cardinalityHint: convertCardinality(linkType.cardinality),
         manyToOneLinkMetadata: linkType.toMany.metadata,
         objectTypeRidManySide: linkType.toMany.object.apiName,
         objectTypeRidOneSide: linkType.one.object.apiName,
@@ -1175,4 +1177,13 @@ addDependency("${namespaceNoDot}", new URL(import.meta.url).pathname);
 
 export function addNamespaceIfNone(apiName: string): string {
   return apiName.includes(".") ? apiName : namespace + apiName;
+}
+
+function convertCardinality(
+  cardinality: OneToManyLinkTypeDefinition["cardinality"],
+): OntologyIrOneToManyLinkDefinition["cardinalityHint"] {
+  if (cardinality === "OneToMany" || cardinality === undefined) {
+    return "ONE_TO_MANY";
+  }
+  return "ONE_TO_ONE";
 }
