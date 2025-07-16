@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-import type { CompileTimeMetadata, ObjectTypeDefinition } from "@osdk/client";
+import type {
+  CompileTimeMetadata,
+  InterfaceDefinition,
+  ObjectTypeDefinition,
+} from "@osdk/client";
 import type {
   AddLink,
   AnyEdit,
   CreateObject,
   DeleteObject,
+  InterfaceLocator,
   ObjectLocator,
   RemoveLink,
+  UpdateInterface,
   UpdateObject,
 } from "./types.js";
 
@@ -30,6 +36,12 @@ interface ObjectTypeDefinitionForLocator<OL extends ObjectLocator<any>>
   extends ObjectTypeDefinition
 {
   apiName: OL["$apiName"];
+}
+
+interface InterfaceDefinitionForLocator<IL extends ObjectLocator<any>>
+  extends InterfaceDefinition
+{
+  apiName: IL["$apiName"];
 }
 
 // AddLink helper types
@@ -83,17 +95,23 @@ export type CreatableObjectTypeProperties<
 > = X extends CreateObject<OTD> ? X["properties"] : never;
 
 // DeleteObject helper types
-export type DeletableObjectLocators<X extends AnyEdit> = X extends
-  DeleteObject<infer OTD> ? ObjectLocator<OTD> : never;
+export type DeletableObjectOrInterfaceLocators<X extends AnyEdit> = X extends
+  DeleteObject<infer OTD> ? ObjectLocator<OTD>
+  : X extends UpdateInterface<infer ID> ? InterfaceLocator<ID>
+  : never;
 
 // UpdateObject helper types
-export type UpdatableObjectLocators<X extends AnyEdit> = X extends
-  UpdateObject<infer OTD> ? ObjectLocator<OTD> : never;
+export type UpdatableObjectOrInterfaceLocators<X extends AnyEdit> = X extends
+  UpdateObject<infer OTD> ? ObjectLocator<OTD>
+  : X extends UpdateInterface<infer ID> ? InterfaceLocator<ID>
+  : never;
 
-export type UpdatableObjectLocatorProperties<
+export type UpdatableObjectOrInterfaceLocatorProperties<
   X extends AnyEdit,
   OL extends ObjectLocator<any>,
 > = X extends UpdateObject<ObjectTypeDefinitionForLocator<OL>> ? X["properties"]
+  : X extends UpdateInterface<InterfaceDefinitionForLocator<OL>>
+    ? X["properties"]
   : never;
 
 export interface EditBatch<
@@ -122,11 +140,11 @@ export interface EditBatch<
     properties: CreatableObjectTypeProperties<X, OTD>,
   ) => void;
 
-  delete: <OL extends DeletableObjectLocators<X>>(obj: OL) => void;
+  delete: <OL extends DeletableObjectOrInterfaceLocators<X>>(obj: OL) => void;
 
-  update: <OL extends UpdatableObjectLocators<X>>(
+  update: <OL extends UpdatableObjectOrInterfaceLocators<X>>(
     obj: OL,
-    properties: UpdatableObjectLocatorProperties<X, OL>,
+    properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>,
   ) => void;
 
   getEdits: () => X[];

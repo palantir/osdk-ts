@@ -21,15 +21,16 @@ import type {
   AddLinkTargets,
   CreatableObjectTypeProperties,
   CreatableObjectTypes,
-  DeletableObjectLocators,
+  DeletableObjectOrInterfaceLocators,
   EditBatch,
   RemoveLinkApiNames,
   RemoveLinkSources,
   RemoveLinkTargets,
-  UpdatableObjectLocatorProperties,
-  UpdatableObjectLocators,
+  UpdatableObjectOrInterfaceLocatorProperties,
+  UpdatableObjectOrInterfaceLocators,
 } from "./EditBatch.js";
 import type { AnyEdit } from "./types.js";
+import { isInterfaceLocator } from "./types.js";
 
 class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
   private edits: X[] = [];
@@ -101,17 +102,38 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     } as unknown as X);
   }
 
-  public delete<OL extends DeletableObjectLocators<X>>(obj: OL): void {
+  public delete<OL extends DeletableObjectOrInterfaceLocators<X>>(
+    obj: OL,
+  ): void {
+    if (isInterfaceLocator(obj)) {
+      this.edits.push({
+        type: "deleteInterface",
+        obj,
+      } as unknown as X);
+
+      return;
+    }
+
     this.edits.push({
       type: "deleteObject",
       obj,
     } as unknown as X);
   }
 
-  public update<OL extends UpdatableObjectLocators<X>>(
+  public update<OL extends UpdatableObjectOrInterfaceLocators<X>>(
     obj: OL,
-    properties: UpdatableObjectLocatorProperties<X, OL>,
+    properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>,
   ): void {
+    if (isInterfaceLocator(obj)) {
+      this.edits.push({
+        type: "updateInterface",
+        obj,
+        properties,
+      } as unknown as X);
+
+      return;
+    }
+
     this.edits.push({
       type: "updateObject",
       obj,
