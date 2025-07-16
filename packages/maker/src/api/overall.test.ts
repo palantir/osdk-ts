@@ -5983,8 +5983,7 @@ describe("Ontology Defining", () => {
               name: "actionLevelGroup",
             },
           },
-          parameters: {
-            "bar": null,
+          parameterLevelValidations: {
             "fizz": {
               required: false,
               conditionalOverrides: [
@@ -6017,10 +6016,147 @@ describe("Ontology Defining", () => {
         },
       );
 
+      const createObjectActionTypeWithExcludedProps = defineCreateObjectAction(
+        {
+          apiName: "create-excluded-action",
+          objectType: exampleObjectType,
+          excludedProperties: ["fizz"],
+        },
+      );
+
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
           "blockData": {
             "actionTypes": {
+              "com.palantir.create-excluded-action": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "addObjectRule": {
+                            "objectTypeId": "com.palantir.foo",
+                            "propertyValues": {
+                              "bar": {
+                                "parameterId": "bar",
+                                "type": "parameterId",
+                              },
+                            },
+                            "structFieldValues": {},
+                          },
+                          "type": "addObjectRule",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "bar": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.create-excluded-action",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "Create exampleObjectType",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.foo",
+                      ],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "bar",
+                    ],
+                    "parameters": {
+                      "bar": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Bar",
+                          "typeClasses": [],
+                        },
+                        "id": "bar",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
               "com.palantir.create-object-foo": {
                 "actionType": {
                   "actionTypeLogic": {

@@ -644,6 +644,7 @@ const employeeObject = defineObject({
     "id": { type: "string", displayName: "ID" },
     "team": { type: "string" },
     "numDeals": { type: "integer" },
+    "experience": { type: "integer" },
   },
 });
 
@@ -686,8 +687,7 @@ const modifyObjectActionType = defineModifyObjectAction(
     actionLevelValidation: {
       condition: mustBeManagerCondition,
     },
-    parameters: {
-      "team": null, // Default validation
+    parameterLevelValidations: {
       "numDeals": {
         hidden: true,
         conditionalOverrides: [
@@ -695,6 +695,7 @@ const modifyObjectActionType = defineModifyObjectAction(
         ],
       },
     },
+    excludedProperties: ["experience"],
   },
 );
 ```

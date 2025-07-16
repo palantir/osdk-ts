@@ -141,29 +141,39 @@ export function defineCreateInterfaceObjectAction(
 export function defineCreateObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
-  Object.keys(def.parameters ?? {}).forEach(id => {
+  Object.keys(def.parameterLevelValidations ?? {}).forEach(id => {
+    invariant(
+      def.objectType.properties?.[id] !== undefined,
+      `Property ${id} does not exist on ${def.objectType.apiName}`,
+    );
+  });
+  (def.excludedProperties ?? []).forEach(id => {
     invariant(
       def.objectType.properties?.[id] !== undefined,
       `Property ${id} does not exist on ${def.objectType.apiName}`,
     );
   });
 
-  const parameters: Array<ActionParameter> = [
-    ...(def.parameters
-      // only create supplied parameters
-      ? Object.entries(def.parameters).map(([id, validation]) => ({
+  const parameterNames: Set<ParameterId> = new Set(
+    Object.keys(def.objectType.properties ?? {}).filter(id =>
+      !def.excludedProperties?.includes(id)
+    ),
+  );
+  const parameters: Array<ActionParameter> = Array.from(parameterNames).map(
+    id => (
+      {
         id,
         displayName: def.objectType.properties?.[id].displayName
           ?? convertToDisplayName(id),
         type: extractActionParameterType(def.objectType.properties?.[id]!),
-        validation: (validation != null)
+        validation: (def.parameterLevelValidations?.[id] !== undefined)
           ? {
-            ...validation,
-            allowedValues: validation.allowedValues
+            ...def.parameterLevelValidations?.[id],
+            allowedValues: def.parameterLevelValidations?.[id].allowedValues
               ?? extractAllowedValuesFromType(
                 def.objectType.properties?.[id].type!,
               ),
-            required: validation.required ?? true,
+            required: def.parameterLevelValidations?.[id].required ?? true,
           }
           : {
             required: true,
@@ -171,18 +181,9 @@ export function defineCreateObjectAction(
               def.objectType.properties?.[id].type!,
             ),
           },
-      }))
-      // default to creating all parameters
-      : Object.values(def.objectType.properties ?? {}).map(prop => ({
-        id: prop.apiName!,
-        displayName: prop.displayName!,
-        type: extractActionParameterType(prop),
-        validation: {
-          required: true,
-          allowedValues: extractAllowedValuesFromType(prop.type),
-        },
-      })) ?? []),
-  ];
+      }
+    ),
+  );
 
   return defineAction({
     apiName: def.apiName
@@ -311,29 +312,39 @@ export function defineModifyInterfaceObjectAction(
 export function defineModifyObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
-  Object.keys(def.parameters ?? {}).forEach(id => {
+  Object.keys(def.parameterLevelValidations ?? {}).forEach(id => {
+    invariant(
+      def.objectType.properties?.[id] !== undefined,
+      `Property ${id} does not exist on ${def.objectType.apiName}`,
+    );
+  });
+  (def.excludedProperties ?? []).forEach(id => {
     invariant(
       def.objectType.properties?.[id] !== undefined,
       `Property ${id} does not exist on ${def.objectType.apiName}`,
     );
   });
 
-  const parameters: Array<ActionParameter> = [
-    ...(def.parameters
-      // only create supplied parameters
-      ? Object.entries(def.parameters).map(([id, validation]) => ({
+  const parameterNames: Set<ParameterId> = new Set(
+    Object.keys(def.objectType.properties ?? {}).filter(id =>
+      !def.excludedProperties?.includes(id)
+    ),
+  );
+  const parameters: Array<ActionParameter> = Array.from(parameterNames).map(
+    id => (
+      {
         id,
         displayName: def.objectType.properties?.[id].displayName
           ?? convertToDisplayName(id),
         type: extractActionParameterType(def.objectType.properties?.[id]!),
-        validation: (validation != null)
+        validation: (def.parameterLevelValidations?.[id] !== undefined)
           ? {
-            ...validation,
-            allowedValues: validation.allowedValues
+            ...def.parameterLevelValidations?.[id],
+            allowedValues: def.parameterLevelValidations?.[id].allowedValues
               ?? extractAllowedValuesFromType(
                 def.objectType.properties?.[id].type!,
               ),
-            required: validation.required ?? true,
+            required: def.parameterLevelValidations?.[id].required ?? true,
           }
           : {
             required: true,
@@ -341,18 +352,9 @@ export function defineModifyObjectAction(
               def.objectType.properties?.[id].type!,
             ),
           },
-      }))
-      // default to creating all parameters
-      : Object.values(def.objectType.properties ?? {}).map(prop => ({
-        id: prop.apiName!,
-        displayName: prop.displayName!,
-        type: extractActionParameterType(prop),
-        validation: {
-          required: true,
-          allowedValues: extractAllowedValuesFromType(prop.type),
-        },
-      })) ?? []),
-  ];
+      }
+    ),
+  );
 
   return defineAction({
     apiName: def.apiName
@@ -407,10 +409,6 @@ export function defineModifyObjectAction(
 export function defineDeleteObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
-  invariant(
-    def.parameters === undefined,
-    "Delete object action cannot have parameters",
-  );
   return defineAction({
     apiName: def.apiName
       ?? `delete-object-${

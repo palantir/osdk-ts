@@ -139,8 +139,9 @@ export type ActionTypeUserDefinition = {
   apiName?: string;
   displayName?: string;
   status?: ActionStatus;
-  parameters?: Record<string, ActionParameterValidation | null>;
+  parameterLevelValidations?: Record<string, ActionParameterValidation>;
   actionLevelValidation?: ActionLevelValidationDefinition;
+  excludedProperties?: Array<ParameterId>;
 };
 
 export interface ActionParameter {
