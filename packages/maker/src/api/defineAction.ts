@@ -15,6 +15,7 @@
  */
 
 import type { ParameterId } from "@osdk/client.unstable";
+import { consola } from "consola";
 import invariant from "tiny-invariant";
 import {
   convertToDisplayName,
@@ -43,6 +44,7 @@ import {
   type ObjectTypeDefinition,
   OntologyEntityTypeEnum,
   type PropertyTypeType,
+  type PropertyTypeTypeStruct,
   type SharedPropertyType,
 } from "./types.js";
 
@@ -51,6 +53,16 @@ export function defineCreateInterfaceObjectAction(
   objectType?: ObjectTypeDefinition,
   validation?: ActionLevelValidationDefinition,
 ): ActionType {
+  const allProperties = Object.entries(getAllInterfaceProperties(interfaceType))
+    .filter(([_, prop]) => !isStruct(prop.sharedPropertyType.type));
+  if (
+    allProperties.length
+      !== Object.entries(getAllInterfaceProperties(interfaceType)).length
+  ) {
+    consola.info(
+      `Some properties on ${interfaceType.apiName} were skipped in the create action because they are structs`,
+    );
+  }
   return defineAction({
     apiName: `create-${
       kebab(interfaceType.apiName.split(".").pop() ?? interfaceType.apiName)
@@ -87,7 +99,7 @@ export function defineCreateInterfaceObjectAction(
             },
         },
       },
-      ...Object.entries(getAllInterfaceProperties(interfaceType)).map((
+      ...allProperties.map((
         [id, prop],
       ) => ({
         id,
@@ -121,8 +133,8 @@ export function defineCreateInterfaceObjectAction(
           interfaceApiName: interfaceType.apiName,
           objectTypeParameter: "objectTypeParameter",
           sharedPropertyValues: Object.fromEntries(
-            Object.entries(getAllInterfaceProperties(interfaceType)).map((
-              [id, prop],
+            allProperties.map((
+              [id, _prop],
             ) => [id, { type: "parameterId", parameterId: id }]),
           ),
         },
@@ -154,10 +166,10 @@ export function defineCreateObjectAction(
     );
   });
 
-  const parameterNames: Set<ParameterId> = new Set(
-    Object.keys(def.objectType.properties ?? {}).filter(id =>
+  const parameterNames = Object.keys(def.objectType.properties ?? {}).filter(
+    id =>
       !def.excludedProperties?.includes(id)
-    ),
+      && !isStruct(def.objectType.properties?.[id].type!),
   );
   const parameters: Array<ActionParameter> = Array.from(parameterNames).map(
     id => (
@@ -226,6 +238,16 @@ export function defineModifyInterfaceObjectAction(
   objectType?: ObjectTypeDefinition,
   validation?: ActionLevelValidationDefinition,
 ): ActionType {
+  const allProperties = Object.entries(getAllInterfaceProperties(interfaceType))
+    .filter(([_, prop]) => !isStruct(prop.sharedPropertyType.type));
+  if (
+    allProperties.length
+      !== Object.entries(getAllInterfaceProperties(interfaceType)).length
+  ) {
+    consola.info(
+      `Some properties on ${interfaceType.apiName} were skipped in the modify action because they are structs`,
+    );
+  }
   return defineAction({
     apiName: `modify-${
       kebab(interfaceType.apiName.split(".").pop() ?? interfaceType.apiName)
@@ -259,7 +281,7 @@ export function defineModifyInterfaceObjectAction(
             },
         },
       },
-      ...Object.entries(getAllInterfaceProperties(interfaceType)).map((
+      ...allProperties.map((
         [id, prop],
       ) => ({
         id,
@@ -292,8 +314,8 @@ export function defineModifyInterfaceObjectAction(
         modifyInterfaceRule: {
           interfaceObjectToModifyParameter: "interfaceObjectToModifyParameter",
           sharedPropertyValues: Object.fromEntries(
-            Object.entries(getAllInterfaceProperties(interfaceType)).map((
-              [id, prop],
+            allProperties.map((
+              [id, _prop],
             ) => [id, { type: "parameterId", parameterId: id }]),
           ),
         },
@@ -325,10 +347,10 @@ export function defineModifyObjectAction(
     );
   });
 
-  const parameterNames: Set<ParameterId> = new Set(
-    Object.keys(def.objectType.properties ?? {}).filter(id =>
+  const parameterNames = Object.keys(def.objectType.properties ?? {}).filter(
+    id =>
       !def.excludedProperties?.includes(id)
-    ),
+      && !isStruct(def.objectType.properties?.[id].type!),
   );
   const parameters: Array<ActionParameter> = Array.from(parameterNames).map(
     id => (
@@ -355,7 +377,6 @@ export function defineModifyObjectAction(
       }
     ),
   );
-
   return defineAction({
     apiName: def.apiName
       ?? `modify-object-${
@@ -755,6 +776,10 @@ function isActionParameterTypePrimitive(
     "geotimeSeriesReference",
     "geotimeSeriesReferenceList",
   ].includes(type);
+}
+
+function isStruct(type: PropertyTypeType): type is PropertyTypeTypeStruct {
+  return typeof type === "object" && type.type === "struct";
 }
 
 function kebab(s: string): string {

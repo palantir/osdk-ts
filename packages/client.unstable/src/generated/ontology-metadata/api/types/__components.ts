@@ -968,6 +968,29 @@ export interface InterfaceReferenceType {
 export interface InterfaceReferenceTypeModification {
   interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
 }
+export type IntermediaryLinkTypeSide = "A_SIDE" | "B_SIDE";
+export interface LinkTypeSide_oneToManyLinkTypeSide {
+  type: "oneToManyLinkTypeSide";
+  oneToManyLinkTypeSide: OneToManyLinkTypeSide;
+}
+
+export interface LinkTypeSide_manyToManyLinkTypeSide {
+  type: "manyToManyLinkTypeSide";
+  manyToManyLinkTypeSide: ManyToManyLinkTypeSide;
+}
+
+export interface LinkTypeSide_intermediaryLinkTypeSide {
+  type: "intermediaryLinkTypeSide";
+  intermediaryLinkTypeSide: IntermediaryLinkTypeSide;
+}
+/**
+ * Specifies a side of a link type to indicate a direction for the traversal of object sets.
+ */
+export type LinkTypeSide =
+  | LinkTypeSide_oneToManyLinkTypeSide
+  | LinkTypeSide_manyToManyLinkTypeSide
+  | LinkTypeSide_intermediaryLinkTypeSide;
+
 /**
  * Optionally specifies the min and max parameter list lengths permitted for a parameter. This type is only
  * usable with list type parameters.
@@ -1003,6 +1026,8 @@ export interface LongType {
 export type LongValue = number;
 export interface MandatoryMarkingPicker {
 }
+export type ManyToManyLinkTypeSide = "A_SIDE" | "B_SIDE";
+
 /**
  * MarkingListType specifies that this parameter must be a list of Markings.
  */
@@ -1121,6 +1146,7 @@ export interface ObjectTypeReferenceType {
 export interface ObjectTypeValue {
   objectTypeId: _api_ObjectTypeId;
 }
+export type OneToManyLinkTypeSide = "ONE_SIDE" | "MANY_SIDE";
 export interface OntologyIrBaseParameterType_boolean {
   type: "boolean";
   boolean: BooleanType;

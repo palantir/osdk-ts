@@ -131,9 +131,9 @@
     "@osdk-foundry-config-json-simulatedRelease",
     "@osdk-foundry-sdk-generator-simulatedRelease",
     "@osdk-functions-simulatedRelease",
-    "@osdk-generator-simulatedRelease",
     "@osdk-generator-converters-simulatedRelease",
     "@osdk-generator-converters.ontologyir-simulatedRelease",
+    "@osdk-generator-simulatedRelease",
     "@osdk-generator-utils-simulatedRelease",
     "@osdk-maker-simulatedRelease",
     "@osdk-monorepo.api-extractor-simulatedRelease",
@@ -153,8 +153,16 @@
     "@osdk-version-updater-simulatedRelease",
     "@osdk-vite-plugin-oac-simulatedRelease",
     "@osdk-widget.api-simulatedRelease",
-    "@osdk-widget.client-simulatedRelease",
     "@osdk-widget.client-react-simulatedRelease",
-    "@osdk-widget.vite-plugin-simulatedRelease"
+    "@osdk-widget.client-simulatedRelease",
+    "@osdk-widget.vite-plugin-simulatedRelease",
+    "bitter-gifts-count",
+    "floppy-toys-throw",
+    "giant-parks-invent",
+    "orange-teeth-march",
+    "pretty-dingos-train",
+    "rude-melons-smoke",
+    "solid-planes-arrive",
+    "validate-action-feature"
   ]
 }

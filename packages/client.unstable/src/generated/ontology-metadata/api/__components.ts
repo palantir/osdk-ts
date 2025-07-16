@@ -57,6 +57,7 @@ import type {
   ConditionValueId as _api_types_ConditionValueId,
   DataValue as _api_types_DataValue,
   Intent as _api_types_Intent,
+  LinkTypeSide as _api_types_LinkTypeSide,
   NowValue as _api_types_NowValue,
   OntologyIrBaseParameterType as _api_types_OntologyIrBaseParameterType,
   OntologyIrDataValue as _api_types_OntologyIrDataValue,
@@ -190,6 +191,11 @@ export interface ActionLogValue_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValue;
 }
 
+export interface ActionLogValue_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueV2;
+}
+
 export interface ActionLogValue_editedObjects {
   type: "editedObjects";
   editedObjects: ObjectTypeId;
@@ -273,6 +279,7 @@ export type ActionLogValue =
   | ActionLogValue_parameterValue
   | ActionLogValue_objectParameterPropertyValue
   | ActionLogValue_interfaceParameterPropertyValue
+  | ActionLogValue_interfaceParameterPropertyValueV2
   | ActionLogValue_editedObjects
   | ActionLogValue_allEditedObjects
   | ActionLogValue_actionTypeRid
@@ -1185,6 +1192,10 @@ export interface AddInterfaceLinkRuleModification {
   targetObject: ParameterId;
 }
 export interface AddInterfaceRule {
+  interfacePropertyValues: Record<
+    InterfacePropertyTypeRid,
+    InterfacePropertyLogicRuleValue
+  >;
   interfaceTypeRid: InterfaceTypeRid;
   objectType: ParameterId;
   sharedPropertyValues: Record<SharedPropertyTypeRid, LogicRuleValue>;
@@ -1422,7 +1433,7 @@ export interface AllowedParameterValues_struct {
 
 export interface AllowedParameterValues_valueType {
   type: "valueType";
-  valueType: ParameterValueTypeOrEmpty;
+  valueType: ParameterValueTypeWithVersionIdOrEmpty;
 }
 export type AllowedParameterValues =
   | AllowedParameterValues_oneOf
@@ -2418,6 +2429,11 @@ export interface ConditionValue_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValue;
 }
 
+export interface ConditionValue_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueV2;
+}
+
 export interface ConditionValue_userProperty {
   type: "userProperty";
   userProperty: UserProperty;
@@ -2432,6 +2448,7 @@ export type ConditionValue =
   | ConditionValue_staticValue
   | ConditionValue_objectParameterPropertyValue
   | ConditionValue_interfaceParameterPropertyValue
+  | ConditionValue_interfaceParameterPropertyValueV2
   | ConditionValue_userProperty
   | ConditionValue_parameterLength;
 
@@ -3757,6 +3774,10 @@ export interface IconReference {
   locator: string;
   source: string;
 }
+export interface ImplementingLinkType {
+  linkTypeRid: LinkTypeRid;
+  startingFromLinkTypeSide: _api_types_LinkTypeSide;
+}
 export interface ImportedOntologyEntitiesForProjectSpanOntologies {
   sourceOntologyEntities: Array<string>;
   targetOntologyEntities: Array<string>;
@@ -3851,9 +3872,26 @@ export interface InterfaceParameterPropertyValueModification {
   parameterId: ParameterId;
   sharedPropertyTypeRidOrIdInRequest: SharedPropertyTypeRidOrIdInRequest;
 }
+export interface InterfaceParameterPropertyValueV2 {
+  interfacePropertyTypeRid: InterfacePropertyTypeRid;
+  parameterId: ParameterId;
+}
 export interface InterfacePropertyImplementation {
   propertyTypeRid: PropertyTypeRid;
 }
+export interface InterfacePropertyLogicRuleValue_logicRuleValue {
+  type: "logicRuleValue";
+  logicRuleValue: LogicRuleValue;
+}
+
+export interface InterfacePropertyLogicRuleValue_structLogicRuleValue {
+  type: "structLogicRuleValue";
+  structLogicRuleValue: Record<StructFieldRid, StructFieldLogicRuleValue>;
+}
+export type InterfacePropertyLogicRuleValue =
+  | InterfacePropertyLogicRuleValue_logicRuleValue
+  | InterfacePropertyLogicRuleValue_structLogicRuleValue;
+
 export interface InterfacePropertyType_sharedPropertyBasedPropertyType {
   type: "sharedPropertyBasedPropertyType";
   sharedPropertyBasedPropertyType: SharedPropertyBasedPropertyType;
@@ -3872,6 +3910,12 @@ export interface InterfacePropertyTypeDisplayMetadata {
  * created in.
  */
 export type InterfacePropertyTypeIdInRequest = string;
+export interface InterfacePropertyTypeImplementation_propertyTypeRid {
+  type: "propertyTypeRid";
+  propertyTypeRid: PropertyTypeRid;
+}
+export type InterfacePropertyTypeImplementation =
+  InterfacePropertyTypeImplementation_propertyTypeRid;
 
 /**
  * A rid identifying an InterfacePropertyType. This rid is generated randomly and is safe for logging purposes.
@@ -3947,7 +3991,7 @@ export interface InterfaceTypeDeletedEvent {
 export interface InterfaceTypeDisplayMetadata {
   description?: string | null | undefined;
   displayName: string;
-  icon?: Icon | null | undefined;
+  icon: Icon;
 }
 export interface InterfaceTypeError_interfaceTypesNotFound {
   type: "interfaceTypesNotFound";
@@ -4748,6 +4792,11 @@ export interface LogicRuleValue_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValue;
 }
 
+export interface LogicRuleValue_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueV2;
+}
+
 export interface LogicRuleValue_currentUser {
   type: "currentUser";
   currentUser: CurrentUser;
@@ -4776,6 +4825,7 @@ export type LogicRuleValue =
   | LogicRuleValue_staticValue
   | LogicRuleValue_objectParameterPropertyValue
   | LogicRuleValue_interfaceParameterPropertyValue
+  | LogicRuleValue_interfaceParameterPropertyValueV2
   | LogicRuleValue_currentUser
   | LogicRuleValue_currentTime
   | LogicRuleValue_uniqueIdentifier
@@ -5037,6 +5087,10 @@ export interface MissingParameterValueType {
 }
 export interface ModifyInterfaceRule {
   interfaceObjectToModify: ParameterId;
+  interfacePropertyValues: Record<
+    InterfacePropertyTypeRid,
+    InterfacePropertyLogicRuleValue
+  >;
   sharedPropertyValues: Record<SharedPropertyTypeRid, LogicRuleValue>;
   structFieldValues: Record<
     SharedPropertyTypeRid,
@@ -5958,7 +6012,12 @@ export interface ObjectTypeInterfaceImplementation {
   interfaceTypeApiName: InterfaceTypeApiName;
   interfaceTypeRid: InterfaceTypeRid;
   links: Record<InterfaceLinkTypeRid, Array<LinkTypeId>>;
+  linksV2: Record<InterfaceLinkTypeRid, Array<ImplementingLinkType>>;
   properties: Record<SharedPropertyTypeRid, InterfacePropertyImplementation>;
+  propertiesV2: Record<
+    InterfacePropertyTypeRid,
+    InterfacePropertyTypeImplementation
+  >;
 }
 /**
  * Request to load an ObjectType.
@@ -6378,6 +6437,12 @@ export interface OntologyIrActionLogValue_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: OntologyIrInterfaceParameterPropertyValue;
 }
 
+export interface OntologyIrActionLogValue_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2:
+    OntologyIrInterfaceParameterPropertyValueV2;
+}
+
 export interface OntologyIrActionLogValue_editedObjects {
   type: "editedObjects";
   editedObjects: ObjectTypeApiName;
@@ -6461,6 +6526,7 @@ export type OntologyIrActionLogValue =
   | OntologyIrActionLogValue_parameterValue
   | OntologyIrActionLogValue_objectParameterPropertyValue
   | OntologyIrActionLogValue_interfaceParameterPropertyValue
+  | OntologyIrActionLogValue_interfaceParameterPropertyValueV2
   | OntologyIrActionLogValue_editedObjects
   | OntologyIrActionLogValue_allEditedObjects
   | OntologyIrActionLogValue_actionTypeRid
@@ -6821,7 +6887,7 @@ export interface OntologyIrAllowedParameterValues_redacted {
 
 export interface OntologyIrAllowedParameterValues_valueType {
   type: "valueType";
-  valueType: ParameterValueTypeOrEmpty;
+  valueType: ParameterValueTypeWithVersionIdOrEmpty;
 }
 export type OntologyIrAllowedParameterValues =
   | OntologyIrAllowedParameterValues_oneOf
@@ -7306,6 +7372,10 @@ export interface OntologyIrFunctionRule {
   functionRid: FunctionRid;
   functionVersion: SemanticFunctionVersion;
 }
+export interface OntologyIrImplementingLinkType {
+  linkTypeRid: LinkTypeId;
+  startingFromLinkTypeSide: _api_types_LinkTypeSide;
+}
 export interface OntologyIrInlineActionType {
   displayOptions: InlineActionDisplayOptions;
   parameterId?: ParameterId | null | undefined;
@@ -7321,51 +7391,36 @@ export interface OntologyIrInterfaceParameterPropertyValue {
   parameterId: ParameterId;
   sharedPropertyTypeRid: ObjectTypeFieldApiName;
 }
+export interface OntologyIrInterfaceParameterPropertyValueV2 {
+  interfacePropertyTypeRid: InterfacePropertyTypeApiName;
+  parameterId: ParameterId;
+}
 export interface OntologyIrInterfacePropertyImplementation {
   propertyTypeRid: ObjectTypeFieldApiName;
 }
-export interface OntologyIrInterfacePropertyType_sharedPropertyBasedPropertyType {
-  type: "sharedPropertyBasedPropertyType";
-  sharedPropertyBasedPropertyType: OntologyIrSharedPropertyBasedPropertyType;
+export interface OntologyIrInterfacePropertyLogicRuleValue_logicRuleValue {
+  type: "logicRuleValue";
+  logicRuleValue: OntologyIrLogicRuleValue;
 }
-export type OntologyIrInterfacePropertyType =
-  OntologyIrInterfacePropertyType_sharedPropertyBasedPropertyType;
+
+export interface OntologyIrInterfacePropertyLogicRuleValue_structLogicRuleValue {
+  type: "structLogicRuleValue";
+  structLogicRuleValue: Record<StructFieldRid, StructFieldLogicRuleValue>;
+}
+export type OntologyIrInterfacePropertyLogicRuleValue =
+  | OntologyIrInterfacePropertyLogicRuleValue_logicRuleValue
+  | OntologyIrInterfacePropertyLogicRuleValue_structLogicRuleValue;
+
+export interface OntologyIrInterfacePropertyTypeImplementation_propertyTypeRid {
+  type: "propertyTypeRid";
+  propertyTypeRid: ObjectTypeFieldApiName;
+}
+export type OntologyIrInterfacePropertyTypeImplementation =
+  OntologyIrInterfacePropertyTypeImplementation_propertyTypeRid;
 
 export interface OntologyIrInterfaceSharedPropertyType {
   required: boolean;
   sharedPropertyType: OntologyIrSharedPropertyType;
-}
-/**
- * Represents a collection of properties that object types can implement. If an object type implements an
- * interface, it is guaranteed to have the conform to the interface shape.
- */
-export interface OntologyIrInterfaceType {
-  allExtendsInterfaces: Array<InterfaceTypeApiName>;
-  allLinks: Array<OntologyIrInterfaceLinkType>;
-  allProperties: Array<OntologyIrSharedPropertyType>;
-  allPropertiesV2: Record<
-    ObjectTypeFieldApiName,
-    OntologyIrInterfaceSharedPropertyType
-  >;
-  allPropertiesV3: Record<
-    InterfacePropertyTypeApiName,
-    OntologyIrResolvedInterfacePropertyType
-  >;
-  apiName: InterfaceTypeApiName;
-  displayMetadata: InterfaceTypeDisplayMetadata;
-  extendsInterfaces: Array<InterfaceTypeApiName>;
-  links: Array<OntologyIrInterfaceLinkType>;
-  properties: Array<OntologyIrSharedPropertyType>;
-  propertiesV2: Record<
-    ObjectTypeFieldApiName,
-    OntologyIrInterfaceSharedPropertyType
-  >;
-  propertiesV3: Record<
-    InterfacePropertyTypeApiName,
-    OntologyIrInterfacePropertyType
-  >;
-  searchable?: boolean | null | undefined;
-  status: OntologyIrInterfaceTypeStatus;
 }
 export interface OntologyIrInterfaceTypeStatus_experimental {
   type: "experimental";
@@ -8131,9 +8186,17 @@ export interface OntologyIrObjectTypeGeotimeSeriesDatasource {
  */
 export interface OntologyIrObjectTypeInterfaceImplementation {
   interfaceTypeApiName: InterfaceTypeApiName;
+  linksV2: Record<
+    InterfaceLinkTypeApiName,
+    Array<OntologyIrImplementingLinkType>
+  >;
   properties: Record<
     ObjectTypeFieldApiName,
     OntologyIrInterfacePropertyImplementation
+  >;
+  propertiesV2: Record<
+    InterfacePropertyTypeApiName,
+    OntologyIrInterfacePropertyTypeImplementation
   >;
 }
 /**
@@ -8698,16 +8761,6 @@ export interface OntologyIrRegexCondition {
   value: OntologyIrConditionValue;
 }
 /**
- * All information about the shape of the interface property. For now this all comes from shared properties, but
- * in the future it can also come from property constraints defined on the interface.
- */
-export interface OntologyIrResolvedInterfacePropertyType {
-  apiName: InterfacePropertyTypeApiName;
-  displayMetadata: InterfacePropertyTypeDisplayMetadata;
-  rid: InterfacePropertyTypeApiName;
-  type: OntologyIrType;
-}
-/**
  * A URL target for a Foundry rid with query params.
  */
 export interface OntologyIrRidUrlTarget {
@@ -8893,10 +8946,6 @@ export type OntologyIrSeriesValueMetadata =
   | OntologyIrSeriesValueMetadata_numericOrNonNumeric
   | OntologyIrSeriesValueMetadata_numericOrNonNumericV2;
 
-export interface OntologyIrSharedPropertyBasedPropertyType {
-  requireImplementation: boolean;
-  sharedPropertyType: OntologyIrSharedPropertyType;
-}
 /**
  * A property type that can be shared across object types.
  */
@@ -10310,6 +10359,11 @@ export interface ParameterPrefill_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValue;
 }
 
+export interface ParameterPrefill_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueV2;
+}
+
 export interface ParameterPrefill_objectQueryPrefill {
   type: "objectQueryPrefill";
   objectQueryPrefill: ObjectQueryPrefill;
@@ -10337,6 +10391,7 @@ export type ParameterPrefill =
   | ParameterPrefill_staticObject
   | ParameterPrefill_objectParameterPropertyValue
   | ParameterPrefill_interfaceParameterPropertyValue
+  | ParameterPrefill_interfaceParameterPropertyValueV2
   | ParameterPrefill_objectQueryPrefill
   | ParameterPrefill_objectQueryPropertyValue
   | ParameterPrefill_objectSetRidPrefill
@@ -10653,11 +10708,34 @@ export interface ParameterValueTypeOrEmpty_missingParameterValueType {
 /**
  * When a value type is deleted, and it is present on an action type's parameter, the parameter's allowed values
  * will become MissingParameterValueType. When users try to run an action with MissingParameterValueType, Actions
- * will throw an error.
+ * will return an invalid validation response. However, if the parameter is not required, a null value will pass
+ * validations.
  */
 export type ParameterValueTypeOrEmpty =
   | ParameterValueTypeOrEmpty_valueType
   | ParameterValueTypeOrEmpty_missingParameterValueType;
+
+export interface ParameterValueTypeWithVersionId {
+  valueType: ValueTypeWithVersionId;
+}
+export interface ParameterValueTypeWithVersionIdOrEmpty_valueType {
+  type: "valueType";
+  valueType: ParameterValueTypeWithVersionId;
+}
+
+export interface ParameterValueTypeWithVersionIdOrEmpty_missingParameterValueType {
+  type: "missingParameterValueType";
+  missingParameterValueType: MissingParameterValueType;
+}
+/**
+ * When a value type is deleted, and it is present on an action type's parameter, the parameter's allowed values
+ * will become MissingParameterValueType. When users try to run an action with MissingParameterValueType, Actions
+ * will return an invalid validation response. However, if the parameter is not required, a null value will pass
+ * validations.
+ */
+export type ParameterValueTypeWithVersionIdOrEmpty =
+  | ParameterValueTypeWithVersionIdOrEmpty_valueType
+  | ParameterValueTypeWithVersionIdOrEmpty_missingParameterValueType;
 
 export interface PartialObjectType {
   authorizationRidColumnLocator?: ColumnLocator | null | undefined;
@@ -13415,8 +13493,15 @@ export interface ValueReferenceSource_propertyTypeRid {
 }
 export type ValueReferenceSource = ValueReferenceSource_propertyTypeRid;
 
+/**
+ * When a user adds a value type to a parameter, the versionId will be empty, and the backend
+ * will default to the latest version. When the user then updates the action type again, the
+ * backend expects that the frontend will provide the current version of the value type that's in
+ * use by the parameter.
+ */
 export interface ValueType {
   valueTypeRid: ValueTypeRid;
+  valueTypeVersionId?: ValueTypeVersionId | null | undefined;
 }
 export interface ValueTypeApiNameReference {
   apiName: string;
@@ -13445,6 +13530,13 @@ export interface ValueTypeReference {
 export type ValueTypeRid = string;
 export type ValueTypeVersionId = string;
 
+/**
+ * Used in response with versionId of a value type always included.
+ */
+export interface ValueTypeWithVersionId {
+  valueTypeRid: ValueTypeRid;
+  valueTypeVersionId: ValueTypeVersionId;
+}
 /**
  * Represents a fixed size vector of floats. These can be used for vector similarity searches.
  */

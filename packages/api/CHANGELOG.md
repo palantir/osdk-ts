@@ -1,5 +1,15 @@
 # @osdk/api
 
+## 2.4.0-beta.3
+
+## 2.4.0-beta.2
+
+### Minor Changes
+
+- 29d2ada: Fix type in docs and tests
+- 8c95154: Add nearestNeighbor support
+- c32dcf2: Add a metadata field to all loaded objects
+
 ## 2.3.0-beta.10
 
 ## 2.3.0-beta.9
