@@ -156,6 +156,7 @@
     "@osdk-widget.client-react-simulatedRelease",
     "@osdk-widget.client-simulatedRelease",
     "@osdk-widget.vite-plugin-simulatedRelease",
+    "bitter-gifts-count",
     "floppy-toys-throw",
     "giant-parks-invent",
     "orange-teeth-march",
