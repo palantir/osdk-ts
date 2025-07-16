@@ -149,13 +149,22 @@ export function defineCreateObjectAction(
   objectType: ObjectType,
   validation?: ActionLevelValidationDefinition,
 ): ActionType {
+  const filteredProperties =
+    objectType.properties?.filter(prop => !isStruct(prop.type)) ?? [];
+  if (
+    filteredProperties.length !== (objectType.properties?.length ?? 0)
+  ) {
+    consola.info(
+      `Some properties on ${objectType.apiName} were skipped in the create action because they are structs`,
+    );
+  }
   return defineAction({
     apiName: `create-object-${
       kebab(objectType.apiName.split(".").pop() ?? objectType.apiName)
     }`,
     displayName: `Create ${objectType.displayName}`,
     parameters: [
-      ...(objectType.properties?.map(prop => ({
+      ...filteredProperties.map(prop => ({
         id: prop.apiName,
         displayName: prop.displayName,
         type: extractActionParameterType(prop),
@@ -163,7 +172,7 @@ export function defineCreateObjectAction(
           required: true,
           allowedValues: extractAllowedValuesFromType(prop.type),
         },
-      })) ?? []),
+      })),
     ],
     status: "active",
     entities: {
@@ -176,9 +185,9 @@ export function defineCreateObjectAction(
       type: "addObjectRule",
       addObjectRule: {
         objectTypeId: objectType.apiName,
-        propertyValues: objectType.properties
+        propertyValues: filteredProperties.length > 0
           ? Object.fromEntries(
-            objectType.properties.map(
+            filteredProperties.map(
               p => [p.apiName, { type: "parameterId", parameterId: p.apiName }],
             ),
           )
@@ -298,6 +307,15 @@ export function defineModifyObjectAction(
   objectType: ObjectType,
   validation?: ActionLevelValidationDefinition,
 ): ActionType {
+  const filteredProperties =
+    objectType.properties?.filter(prop => !isStruct(prop.type)) ?? [];
+  if (
+    filteredProperties.length !== (objectType.properties?.length ?? 0)
+  ) {
+    consola.info(
+      `Some properties on ${objectType.apiName} were skipped in the modify action because they are structs`,
+    );
+  }
   return defineAction({
     apiName: `modify-object-${
       kebab(objectType.apiName.split(".").pop() ?? objectType.apiName)
@@ -316,7 +334,7 @@ export function defineModifyObjectAction(
           required: true,
         },
       },
-      ...(objectType.properties?.map(prop => ({
+      ...filteredProperties.map(prop => ({
         id: prop.apiName,
         displayName: prop.displayName,
         type: extractActionParameterType(prop),
@@ -324,7 +342,7 @@ export function defineModifyObjectAction(
           required: false,
           allowedValues: extractAllowedValuesFromType(prop.type),
         },
-      })) ?? []),
+      })),
     ],
     status: "active",
     entities: {
@@ -338,9 +356,9 @@ export function defineModifyObjectAction(
         type: "modifyObjectRule",
         modifyObjectRule: {
           objectToModify: "objectToModifyParameter",
-          propertyValues: objectType.properties
+          propertyValues: filteredProperties.length > 0
             ? Object.fromEntries(
-              objectType.properties.map(
+              filteredProperties.map(
                 p => [p.apiName, {
                   type: "parameterId",
                   parameterId: p.apiName,
