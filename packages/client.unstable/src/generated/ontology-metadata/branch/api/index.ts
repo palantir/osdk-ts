@@ -73,7 +73,6 @@ export type {
   InterfaceLinkNotFoundError,
   InterfaceLinkTypeImplementedTooOftenError,
   InterfacePropertyNotFound,
-  InterfacePropertyTypeNotFound,
   InvalidCardinalityImplementingInterfaceLinkTypeError,
   InvalidConflictingDefinitionsImplementingInterfaceLinkTypeError,
   InvalidDataConstraintsError,
