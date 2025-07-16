@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.12.0-beta.4
+
+### Minor Changes
+
+- e647175: Skip struct props for object create + modify actions
+
 ## 0.12.0-beta.3
 
 ### Minor Changes
