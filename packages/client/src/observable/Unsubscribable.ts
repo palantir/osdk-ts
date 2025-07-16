@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-import type { InterfaceHolder } from "../object/convertWireToOsdkObjects/InterfaceHolder.js";
-import type { ObjectHolder } from "../object/convertWireToOsdkObjects/ObjectHolder.js";
-import type { ObserveObjectsCallbackArgs } from "./ObservableClient.js";
-
-export interface ListPayload
-  extends Omit<ObserveObjectsCallbackArgs<any>, "resolvedList">
-{
-  resolvedList: Array<ObjectHolder | InterfaceHolder>;
+export interface Unsubscribable {
+  unsubscribe: () => void;
 }

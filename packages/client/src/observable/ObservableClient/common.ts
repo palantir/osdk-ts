@@ -14,12 +14,28 @@
  * limitations under the License.
  */
 
-import type { InterfaceHolder } from "../object/convertWireToOsdkObjects/InterfaceHolder.js";
-import type { ObjectHolder } from "../object/convertWireToOsdkObjects/ObjectHolder.js";
-import type { ObserveObjectsCallbackArgs } from "./ObservableClient.js";
+import type {
+  InterfaceDefinition,
+  ObjectTypeDefinition,
+  PropertyKeys,
+} from "@osdk/api";
 
-export interface ListPayload
-  extends Omit<ObserveObjectsCallbackArgs<any>, "resolvedList">
-{
-  resolvedList: Array<ObjectHolder | InterfaceHolder>;
+export type Status = "init" | "loading" | "loaded" | "error";
+
+export interface Observer<T> {
+  next: (value: T) => void;
+  error: (err: any) => void;
+  complete: () => void;
 }
+
+export interface CommonObserveOptions {
+  dedupeInterval?: number;
+}
+
+export interface ObserveOptions {
+  mode?: "offline" | "force";
+}
+
+export type OrderBy<Q extends ObjectTypeDefinition | InterfaceDefinition> = {
+  [K in PropertyKeys<Q>]?: "asc" | "desc" | undefined;
+};

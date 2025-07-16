@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import type { InterfaceHolder } from "../object/convertWireToOsdkObjects/InterfaceHolder.js";
-import type { ObjectHolder } from "../object/convertWireToOsdkObjects/ObjectHolder.js";
-import type { ObserveObjectsCallbackArgs } from "./ObservableClient.js";
+/*
+  Brainstorming how this might work:
 
-export interface ListPayload
-  extends Omit<ObserveObjectsCallbackArgs<any>, "resolvedList">
-{
-  resolvedList: Array<ObjectHolder | InterfaceHolder>;
+  ```ts
+  const {data} = useOsdkObjects(...);
+  const {links} = useLinks(data, "myLinkName");
+*/
+
+export function useLinks(): void {
+  throw new Error("useLinks is not yet implemented");
 }

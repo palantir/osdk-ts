@@ -18,9 +18,11 @@ import type {
   ActionDefinition,
   ActionEditResponse,
   ActionValidationResponse,
+  CompileTimeMetadata,
   InterfaceDefinition,
   Logger,
   ObjectTypeDefinition,
+  Osdk,
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
@@ -30,14 +32,17 @@ import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
+import type { SpecificLinkPayload } from "../LinkPayload.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type {
+  ObserveLinkOptions,
   ObserveListOptions,
   ObserveObjectOptions,
   OrderBy,
   Unsubscribable,
 } from "../ObservableClient.js";
+import type { ObserveLink } from "../ObservableClient/ObserveLink.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./ActionApplication.js";
 import type { CacheKey } from "./CacheKey.js";
@@ -49,6 +54,11 @@ import {
   DEBUG_ONLY__changesToString,
 } from "./Changes.js";
 import { Entry, Layer } from "./Layer.js";
+import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
+import {
+  isSpecificLinkCacheKey,
+  SpecificLinkQuery,
+} from "./links/SpecificLinkQuery.js";
 import type { ListCacheKey, ListQueryOptions } from "./ListQuery.js";
 import { isListCacheKey, ListQuery } from "./ListQuery.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
@@ -421,6 +431,58 @@ export class Store {
     };
   }
 
+  public observeLinks<
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+    L extends keyof CompileTimeMetadata<T>["links"] & string,
+  >(
+    objects: Osdk.Instance<T> | Array<Osdk.Instance<T>>,
+    linkName: L,
+    options: ObserveLink.Options<
+      CompileTimeMetadata<T>["links"][L]["targetType"]
+    >,
+    subFn: Observer<SpecificLinkPayload>,
+  ): Unsubscribable {
+    const store = this;
+
+    // Convert to array if single object provided
+    const objectsArray = Array.isArray(objects) ? objects : [objects];
+
+    if (objectsArray.length === 0) {
+      // No objects to observe links for, return empty subscription
+      return { unsubscribe: () => {} };
+    }
+
+    const subsAndQueries = objectsArray.map(obj => {
+      const query = store.getSpecificLinkQuery(
+        { type: "object", apiName: obj.$apiName },
+        objectsArray[0].$primaryKey,
+        linkName,
+        options.where ?? {},
+        options.orderBy ?? {},
+        options,
+      );
+
+      store.retain(query.cacheKey);
+
+      if (options.mode !== "offline") {
+        query.revalidate(options.mode === "force").catch((x: unknown) => {
+          subFn.error(x);
+        });
+      }
+
+      return [query.subscribe(subFn), query] as const;
+    });
+
+    return {
+      unsubscribe: () => {
+        subsAndQueries.forEach(([sub, query]) => {
+          sub.unsubscribe();
+          store.release(query.cacheKey);
+        });
+      },
+    };
+  }
+
   peekQuery<K extends CacheKey>(
     cacheKey: K,
   ): K["__cacheKey"]["query"] | undefined {
@@ -437,6 +499,39 @@ export class Store {
       this.#queries.set(cacheKey, query);
     }
     return query;
+  }
+
+  public getSpecificLinkQuery<
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+  >(
+    srcDef: Pick<T, "type" | "apiName">,
+    pk: PrimaryKeyType<T>,
+    linkName: keyof CompileTimeMetadata<T>["links"] & string,
+    where: WhereClause<T>,
+    orderBy: Record<string, "asc" | "desc" | undefined>,
+    opts: ObserveLinkOptions<T>,
+  ): SpecificLinkQuery {
+    const { apiName, type } = srcDef;
+
+    const canonWhere = this.whereCanonicalizer.canonicalize(where);
+    const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy);
+    const linkCacheKey = this.getCacheKey<SpecificLinkCacheKey>(
+      "specificLink",
+      apiName,
+      pk,
+      linkName,
+      canonWhere,
+      canonOrderBy,
+    );
+
+    return this.#getQuery(linkCacheKey, () => {
+      return new SpecificLinkQuery(
+        this,
+        this.getSubject(linkCacheKey),
+        linkCacheKey,
+        opts as ObserveLinkOptions<ObjectTypeDefinition>,
+      );
+    });
   }
 
   public getListQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
@@ -548,7 +643,7 @@ export class Store {
         const newTopValue = this.#topLayer.get(cacheKey);
 
         if (oldTopValue !== newTopValue) {
-          this.#cacheKeyToSubject.get(cacheKey)?.next({
+          this.getSubject(cacheKey)?.next({
             // eslint-disable-next-line @typescript-eslint/no-misused-spread
             ...newValue,
             isOptimistic:
@@ -665,7 +760,19 @@ export class Store {
     const promises: Array<Promise<void>> = [];
 
     for (const cacheKey of this.#truthLayer.keys()) {
+      // This logic should probably not be stored here
       if (isListCacheKey(cacheKey)) {
+        if (!changes || !changes.modified.has(cacheKey)) {
+          // FIXME: this doesn't check for apiName matching
+          const promise = this.peekQuery(cacheKey)?.revalidate(true);
+
+          if (promise) {
+            promises.push(promise);
+            changes?.modified.add(cacheKey);
+          }
+        }
+      } else if (isSpecificLinkCacheKey(cacheKey)) {
+        // FIXME: this doesn't check for apiName matching
         if (!changes || !changes.modified.has(cacheKey)) {
           const promise = this.peekQuery(cacheKey)?.revalidate(true);
 

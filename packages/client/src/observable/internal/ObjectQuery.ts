@@ -21,7 +21,10 @@ import { BehaviorSubject, connectable, map } from "rxjs";
 import { additionalContext } from "../../Client.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
-import type { CommonObserveOptions, Status } from "../ObservableClient.js";
+import type {
+  CommonObserveOptions,
+  Status,
+} from "../ObservableClient/common.js";
 import { getBulkObjectLoader } from "./BulkObjectLoader.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Entry } from "./Layer.js";

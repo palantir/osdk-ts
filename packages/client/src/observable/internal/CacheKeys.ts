@@ -18,6 +18,7 @@ import { Trie } from "@wry/trie";
 import invariant from "tiny-invariant";
 import { DEBUG_CACHE_KEYS } from "../DebugFlags.js";
 import type { CacheKey } from "./CacheKey.js";
+import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
 import type { ListCacheKey } from "./ListQuery.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import type { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
@@ -94,6 +95,29 @@ export class CacheKeys {
           whereCanonicalizer.canonicalize(where),
           orderByCanonicalizer.canonicalize(orderBy),
         ]) as ListCacheKey;
+      },
+    );
+    this.#registerCacheKeyFactory<SpecificLinkCacheKey>(
+      "specificLink",
+      (sourceObjectType, sourcePk, linkName) => {
+        if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
+          // eslint-disable-next-line no-console
+          console.debug(
+            `CacheKeys.get([specificLink, ${sourceObjectType}, ${sourcePk}, ${linkName}]) -- already exists? `,
+            this.#cacheKeys.peekArray([
+              "specificLink",
+              sourceObjectType,
+              sourcePk,
+              linkName,
+            ]) != null,
+          );
+        }
+        return this.#cacheKeys.lookupArray([
+          "specificLink",
+          sourceObjectType,
+          sourcePk,
+          linkName,
+        ]) as SpecificLinkCacheKey;
       },
     );
   }

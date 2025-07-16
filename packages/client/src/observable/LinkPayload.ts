@@ -16,10 +16,13 @@
 
 import type { InterfaceHolder } from "../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../object/convertWireToOsdkObjects/ObjectHolder.js";
-import type { ObserveObjectsCallbackArgs } from "./ObservableClient.js";
+import type { ObserveLinkCallbackArgs } from "./ObservableClient.js";
 
-export interface ListPayload
-  extends Omit<ObserveObjectsCallbackArgs<any>, "resolvedList">
+/**
+ * Internal type to keep the generic insanity down internal to the observable code
+ */
+export interface SpecificLinkPayload
+  extends Omit<ObserveLinkCallbackArgs<any>, "resolvedLinks">
 {
-  resolvedList: Array<ObjectHolder | InterfaceHolder>;
+  resolvedLinks: Array<ObjectHolder | InterfaceHolder>;
 }

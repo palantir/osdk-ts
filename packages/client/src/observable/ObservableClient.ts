@@ -32,28 +32,19 @@ import { OBSERVABLE_USER_AGENT } from "../util/UserAgent.js";
 import type { Canonical } from "./internal/Canonical.js";
 import { ObservableClientImpl } from "./internal/ObservableClientImpl.js";
 import { Store } from "./internal/Store.js";
+import type {
+  CommonObserveOptions,
+  ObserveOptions,
+  Observer,
+  Status,
+} from "./ObservableClient/common.js";
+import type { ObserveLinks } from "./ObservableClient/ObserveLink.js";
 import type { OptimisticBuilder } from "./OptimisticBuilder.js";
-
-export type Status = "init" | "loading" | "loaded" | "error";
-
-export interface Observer<T> {
-  next: (value: T) => void;
-  error: (err: any) => void;
-  complete: () => void;
-}
 
 export namespace ObservableClient {
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
   }
-}
-
-export interface CommonObserveOptions {
-  dedupeInterval?: number;
-}
-
-export interface ObserveOptions {
-  mode?: "offline" | "force";
 }
 
 export interface ObserveObjectOptions<
@@ -78,14 +69,26 @@ export interface ObserveListOptions<
   streamUpdates?: boolean;
 }
 
-export interface ObserveObjectArgs<T extends ObjectTypeDefinition> {
+export interface ObserveLinkOptions<
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
+> extends CommonObserveOptions, ObserveOptions {
+  type: Pick<Q, "apiName" | "type">;
+  where?: WhereClause<Q>;
+  pageSize?: number;
+  orderBy?: OrderBy<Q>;
+  invalidationMode?: "in-place" | "wait" | "reset";
+  expectedLength?: number;
+  // streamUpdates?: boolean;
+}
+
+export interface ObserveObjectCallbackArgs<T extends ObjectTypeDefinition> {
   object: Osdk.Instance<T> | undefined;
   isOptimistic: boolean;
   status: Status;
   lastUpdated: number;
 }
 
-export interface ObserveObjectsArgs<
+export interface ObserveObjectsCallbackArgs<
   T extends ObjectTypeDefinition | InterfaceDefinition,
 > {
   resolvedList: Array<Osdk.Instance<T>>;
@@ -96,17 +99,31 @@ export interface ObserveObjectsArgs<
   status: Status;
 }
 
-export interface ObservableClient {
+/**
+ * User facing callback args for `observeLink`
+ */
+export interface ObserveLinkCallbackArgs<
+  T extends ObjectTypeDefinition | InterfaceDefinition,
+> {
+  resolvedLinks: Osdk.Instance<T>[];
+  isOptimistic: boolean;
+  lastUpdated: number;
+  fetchMore: () => Promise<unknown>;
+  hasMore: boolean;
+  status: Status;
+}
+
+export interface ObservableClient extends ObserveLinks {
   observeObject<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveOptions,
-    subFn: Observer<ObserveObjectArgs<T>>,
+    subFn: Observer<ObserveObjectCallbackArgs<T>>,
   ): Unsubscribable;
 
   observeList<T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
-    subFn: Observer<ObserveObjectsArgs<T>>,
+    subFn: Observer<ObserveObjectsCallbackArgs<T>>,
   ): Unsubscribable;
 
   applyAction: <Q extends ActionDefinition<any>>(

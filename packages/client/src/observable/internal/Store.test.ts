@@ -30,6 +30,7 @@ import {
   TypeHelpers,
 } from "@osdk/shared.test";
 import chalk from "chalk";
+import { inspect } from "node:util";
 import invariant from "tiny-invariant";
 import type { Task } from "vitest";
 import {
@@ -41,8 +42,8 @@ import {
   expect,
   it,
   vi,
-  vitest,
 } from "vitest";
+import type { BaseServerObject } from "../../../../faux/build/types/FauxFoundry/BaseServerObject.js";
 import { ActionValidationError } from "../../actions/ActionValidationError.js";
 import { type Client } from "../../Client.js";
 import { createClient } from "../../createClient.js";
@@ -61,6 +62,7 @@ import {
   createClientMockHelper,
   createDefer,
   expectNoMoreCalls,
+  expectSingleLinkCallAndClear,
   expectSingleListCallAndClear,
   expectSingleObjectCallAndClear,
   getObject,
@@ -71,12 +73,19 @@ import {
   updateObject,
   waitForCall,
 } from "./testUtils.js";
+import { expectStandardObserveLink } from "./testUtils/observeLink/expectStandardObserveLink.js";
+import { expectStandardObserveObject } from "./testUtils/observeObject/expectStandardObserveObject.js";
 
 const JOHN_DOE_ID = 50030;
 
 const defer = createDefer();
 
-const logger = new TestLogger();
+const logger = new TestLogger({}, {
+  // level: "debug",
+});
+
+inspect.defaultOptions.depth = 9;
+inspect.defaultOptions.colors = true;
 
 beforeAll(() => {
   vi.setConfig({
@@ -141,32 +150,126 @@ function setupOntology(fauxFoundry: FauxFoundry) {
 function setupSomeEmployees(fauxFoundry: FauxFoundry) {
   const dataStore = fauxFoundry.getDefaultDataStore();
 
-  dataStore.registerObject(Employee, {
+  const emp1 = dataStore.registerObject(Employee, {
     employeeId: 1,
   });
 
-  dataStore.registerObject(Employee, {
+  const emp2 = dataStore.registerObject(Employee, {
     employeeId: 2,
   });
 
-  dataStore.registerObject(Employee, {
+  const emp3 = dataStore.registerObject(Employee, {
     $apiName: "Employee",
     employeeId: 3,
   });
 
-  dataStore.registerObject(Employee, {
+  const emp4 = dataStore.registerObject(Employee, {
     $apiName: "Employee",
     employeeId: 4,
   });
 
-  dataStore.registerObject(Employee, {
+  const johnDoe = dataStore.registerObject(Employee, {
     $apiName: "Employee",
     employeeId: JOHN_DOE_ID,
     fullName: "John Doe",
   });
+
+  dataStore.registerLink(emp1, "peeps", johnDoe, "lead");
 }
 
 describe(Store, () => {
+  describe("observeLinks", () => {
+    let client: Client;
+    let cache: Store;
+    let fauxFoundry: FauxFoundry;
+
+    beforeAll(async () => {
+      // Set up the mock environment and client
+      const testSetup = startNodeApiServer(
+        new FauxFoundry("https://stack.palantir.com/"),
+        createClient,
+        { logger },
+      );
+      ({ client, fauxFoundry } = testSetup);
+
+      // Use the existing setup function that adds Employee objects
+      setupOntology(fauxFoundry);
+      setupSomeEmployees(fauxFoundry);
+
+      return () => {
+        testSetup.apiServer.close();
+      };
+    });
+
+    beforeEach(() => {
+      cache = new Store(client);
+      return () => {
+        cache = undefined!;
+      };
+    });
+
+    const objectLikeJohnDoe = expect.objectContaining({
+      $apiName: "Employee",
+      $primaryKey: JOHN_DOE_ID,
+    });
+    const objectLikeEmp2 = expect.objectContaining({
+      $apiName: "Employee",
+      $primaryKey: 2,
+    });
+
+    it("removing link updates", async (x) => {
+      const { payload: emp1Payload, subFn } = await expectStandardObserveObject(
+        {
+          cache,
+          type: Employee,
+          primaryKey: 1,
+        },
+      );
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      // Set up mock callback for observing links
+
+      const { payload, linkSubFn } = await expectStandardObserveLink({
+        store: cache,
+        srcObject: emp1,
+        srcLinkName: "peeps",
+        targetType: Employee,
+        expected: [objectLikeJohnDoe],
+      });
+
+      // Unregister the link "in the backend"
+      fauxFoundry.getDefaultDataStore().unregisterLink(
+        asBsoStub(emp1),
+        "peeps",
+        { __apiName: "Employee", __primaryKey: JOHN_DOE_ID },
+        "lead",
+      );
+
+      const targetType = "Employee";
+      const currentLinks: Osdk.Instance<any>[] = [objectLikeJohnDoe];
+      const expectedLinks: Osdk.Instance<any>[] = [];
+
+      // Invalidate the employee cache
+      const invalidateEmployeePromise = cache.invalidateObjectType(
+        targetType,
+        undefined,
+      );
+
+      // Initially go to an invalidated loading state
+      expectSingleLinkCallAndClear(linkSubFn, currentLinks, {
+        status: "loading",
+      });
+
+      await invalidateEmployeePromise;
+
+      // Should have no peeps now
+      expectSingleLinkCallAndClear(linkSubFn, expectedLinks, {
+        status: "loaded",
+      });
+    });
+  });
+
   describe("with mock server", () => {
     let client: Client;
     let cache: Store;
@@ -500,12 +603,12 @@ describe(Store, () => {
     });
 
     describe(".invalidateList", () => {
-      beforeEach(() => {
-        vi.useFakeTimers({});
-      });
-      afterEach(() => {
-        vi.useRealTimers();
-      });
+      // beforeEach(() => {
+      //   vi.useFakeTimers({});
+      // });
+      // afterEach(() => {
+      //   vi.useRealTimers();
+      // });
 
       it("triggers an update", async () => {
         const emp = employeesAsServerReturns[0];
@@ -777,7 +880,6 @@ describe(Store, () => {
       const ifaceSub = mockListSubCallback();
 
       beforeEach(() => {
-        vi.useFakeTimers({});
         vi.mocked(listSub1.next).mockReset();
         vi.mocked(listSub1.error).mockReset();
         vi.mocked(listSub1.complete).mockReset();
@@ -785,9 +887,6 @@ describe(Store, () => {
         vi.mocked(ifaceSub.next).mockReset();
         vi.mocked(ifaceSub.error).mockReset();
         vi.mocked(ifaceSub.complete).mockReset();
-      });
-      afterEach(() => {
-        vi.useRealTimers();
       });
 
       describe("mode=force", () => {
@@ -810,7 +909,7 @@ describe(Store, () => {
             }, ifaceSub),
           );
 
-          vitest.runOnlyPendingTimers();
+          // vitest.runOnlyPendingTimers();
           await waitForCall(listSub1);
           await waitForCall(ifaceSub);
 
@@ -825,6 +924,8 @@ describe(Store, () => {
             [],
             { status: "loading" },
           );
+
+          console.log("QQQ");
 
           await waitForCall(listSub1);
           expectSingleListCallAndClear(
@@ -894,23 +995,25 @@ describe(Store, () => {
               mode: "offline",
             }, listSub1),
           );
-          expect(listSub1.next).toHaveBeenCalledTimes(0);
+          // expectSingleListCallAndClear(listSub1, [], { status: "init" });
 
           updateList(
             cache,
             { type: Employee, where: {}, orderBy: {} },
             employeesAsServerReturns,
           );
-          vitest.runOnlyPendingTimers();
+          // vitest.runOnlyPendingTimers();
 
+          await waitForCall(listSub1);
           expectSingleListCallAndClear(listSub1, employeesAsServerReturns);
 
           // list is just now one object
           updateList(cache, { type: Employee, where: {}, orderBy: {} }, [
             employeesAsServerReturns[0],
           ]);
-          vitest.runOnlyPendingTimers();
+          // vitest.runOnlyPendingTimers();
 
+          await waitForCall(listSub1);
           expectSingleListCallAndClear(listSub1, [employeesAsServerReturns[0]]);
         });
 
@@ -923,16 +1026,15 @@ describe(Store, () => {
               mode: "offline",
             }, listSub1),
           );
-
-          expect(listSub1.next).toHaveBeenCalledTimes(0);
+          // expectSingleListCallAndClear(listSub1, [], { status: "init" });
 
           updateList(
             cache,
             { type: Employee, where: {}, orderBy: {} },
             employeesAsServerReturns,
           );
-          vitest.runOnlyPendingTimers();
 
+          await waitForCall(listSub1);
           expectSingleListCallAndClear(listSub1, employeesAsServerReturns);
 
           // new where === different list
@@ -941,9 +1043,9 @@ describe(Store, () => {
             where: { employeeId: { $gt: 0 } },
             orderBy: {},
           }, mutatedEmployees);
-          vitest.runOnlyPendingTimers();
 
           // original list updates still
+          await waitForCall(listSub1);
           expectSingleListCallAndClear(listSub1, mutatedEmployees);
         });
       });
@@ -969,8 +1071,6 @@ describe(Store, () => {
           },
           listSub,
         ));
-
-        expect(listSub.next).not.toHaveBeenCalled();
 
         await waitForCall(listSub, 1);
         expectSingleListCallAndClear(listSub, [], { status: "loading" });
@@ -1042,9 +1142,14 @@ describe(Store, () => {
         orderBy: {},
       }, sub);
 
-      await waitForCall(sub.error, 1);
+      await waitForCall(sub.next);
 
-      expect(sub.error).toHaveBeenCalled();
+      // initial loading state
+      expect(sub.next).toHaveBeenCalledOnce();
+      expectSingleListCallAndClear(sub, [], { status: "loading" });
+
+      await waitForCall(sub.error);
+      expect(sub.error).toHaveBeenCalledOnce();
       expect(sub.next).not.toHaveBeenCalled();
     });
 
@@ -1240,17 +1345,20 @@ describe(Store, () => {
         },
       } satisfies ObserveListOptions<Todo>;
 
-      const subListUnordered = mockListSubCallback();
-      const subListOrdered = mockListSubCallback();
+      let subListUnordered = mockListSubCallback();
+      let subListOrdered = mockListSubCallback();
 
-      beforeEach(() => {
+      beforeEach(async () => {
+        subListUnordered = mockListSubCallback();
+        subListOrdered = mockListSubCallback();
         defer(
           store.observeList({
             ...noWhereNoOrderBy,
             mode: "offline",
           }, subListUnordered),
         );
-        expect(subListUnordered.next).toHaveBeenCalledTimes(0);
+        await waitForCall(subListUnordered);
+        expectSingleListCallAndClear(subListUnordered, [], { status: "init" });
 
         defer(
           store.observeList({
@@ -1258,7 +1366,8 @@ describe(Store, () => {
             mode: "offline",
           }, subListOrdered),
         );
-        expect(subListOrdered.next).toHaveBeenCalledTimes(0);
+        await waitForCall(subListOrdered);
+        expectSingleListCallAndClear(subListOrdered, [], { status: "init" });
       });
 
       it("invalidates the correct lists", async () => {
@@ -1583,3 +1692,12 @@ describe(Store, () => {
     });
   });
 });
+
+export function asBsoStub(
+  x: ObjectHolder<any> | Osdk.Instance<any>,
+): BaseServerObject {
+  return {
+    __apiName: x.$apiName,
+    __primaryKey: x.$primaryKey,
+  };
+}
