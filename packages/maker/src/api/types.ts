@@ -533,6 +533,7 @@ export interface OneToManyLinkTypeUserDefinition {
   one: OneToManyObjectLinkReferenceUserDefinition;
   toMany: OneToManyObjectLinkReferenceUserDefinition;
   manyForeignKeyProperty: ObjectTypePropertyApiName;
+  cardinality: "OneToMany" | "OneToOne" | undefined;
 }
 
 export interface OneToManyObjectLinkReferenceUserDefinition {

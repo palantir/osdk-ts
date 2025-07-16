@@ -72,7 +72,9 @@ export function defineLink(
       toMany: convertUserManyToManyLinkDefinition(linkDefinition.toMany),
     };
   const linkType: LinkType = {
-    cardinality: "one" in linkDefinition ? "OneToMany" : undefined,
+    cardinality: "one" in linkDefinition
+      ? linkDefinition.cardinality
+      : undefined,
     ...fullLinkDefinition,
     __type: OntologyEntityTypeEnum.LINK_TYPE,
   };
