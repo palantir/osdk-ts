@@ -513,7 +513,7 @@ export class ObjectSetListenerWebsocket {
           o.object.__apiName,
           sub.interfaceApiName,
         ),
-      ) as Array<Osdk.Instance<any, never, any>>;
+      ) as Array<Osdk.Instance<any>>;
       const singleOsdkObject = osdkObjectArray[0] ?? undefined;
       return singleOsdkObject != null
         ? {

@@ -26,6 +26,7 @@ export {
   Employee,
   FintrafficAis,
   GtfsTripTrackObject,
+  MatthewvsDevOrderEmbedding,
   McAirportStruct,
   MnayanOsdkMediaObject,
   MtaBus,

@@ -15,6 +15,7 @@
  */
 
 import type { ParameterId } from "@osdk/client.unstable";
+import { consola } from "consola";
 import invariant from "tiny-invariant";
 import { getAllInterfaceProperties } from "./defineObject.js";
 import {
@@ -38,6 +39,7 @@ import {
   type ObjectType,
   OntologyEntityTypeEnum,
   type PropertyTypeType,
+  type PropertyTypeTypeStruct,
   type SharedPropertyType,
 } from "./types.js";
 
@@ -46,6 +48,16 @@ export function defineCreateInterfaceObjectAction(
   objectType?: ObjectType,
   validation?: ActionLevelValidationDefinition,
 ): ActionType {
+  const allProperties = Object.entries(getAllInterfaceProperties(interfaceType))
+    .filter(([_, prop]) => !isStruct(prop.sharedPropertyType.type));
+  if (
+    allProperties.length
+      !== Object.entries(getAllInterfaceProperties(interfaceType)).length
+  ) {
+    consola.info(
+      `Some properties on ${interfaceType.apiName} were skipped in the create action because they are structs`,
+    );
+  }
   return defineAction({
     apiName: `create-${
       kebab(interfaceType.apiName.split(".").pop() ?? interfaceType.apiName)
@@ -82,7 +94,7 @@ export function defineCreateInterfaceObjectAction(
             },
         },
       },
-      ...Object.entries(getAllInterfaceProperties(interfaceType)).map((
+      ...allProperties.map((
         [id, prop],
       ) => ({
         id,
@@ -103,6 +115,12 @@ export function defineCreateInterfaceObjectAction(
     status: interfaceType.status.type !== "deprecated"
       ? interfaceType.status.type
       : interfaceType.status,
+    entities: {
+      affectedInterfaceTypes: [interfaceType.apiName],
+      affectedObjectTypes: [],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [
       {
         type: "addInterfaceRule",
@@ -110,8 +128,8 @@ export function defineCreateInterfaceObjectAction(
           interfaceApiName: interfaceType.apiName,
           objectTypeParameter: "objectTypeParameter",
           sharedPropertyValues: Object.fromEntries(
-            Object.entries(getAllInterfaceProperties(interfaceType)).map((
-              [id, prop],
+            allProperties.map((
+              [id, _prop],
             ) => [id, { type: "parameterId", parameterId: id }]),
           ),
         },
@@ -148,6 +166,12 @@ export function defineCreateObjectAction(
       })) ?? []),
     ],
     status: "active",
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [{
       type: "addObjectRule",
       addObjectRule: {
@@ -177,6 +201,16 @@ export function defineModifyInterfaceObjectAction(
   objectType?: ObjectType,
   validation?: ActionLevelValidationDefinition,
 ): ActionType {
+  const allProperties = Object.entries(getAllInterfaceProperties(interfaceType))
+    .filter(([_, prop]) => !isStruct(prop.sharedPropertyType.type));
+  if (
+    allProperties.length
+      !== Object.entries(getAllInterfaceProperties(interfaceType)).length
+  ) {
+    consola.info(
+      `Some properties on ${interfaceType.apiName} were skipped in the modify action because they are structs`,
+    );
+  }
   return defineAction({
     apiName: `modify-${
       kebab(interfaceType.apiName.split(".").pop() ?? interfaceType.apiName)
@@ -210,7 +244,7 @@ export function defineModifyInterfaceObjectAction(
             },
         },
       },
-      ...Object.entries(getAllInterfaceProperties(interfaceType)).map((
+      ...allProperties.map((
         [id, prop],
       ) => ({
         id,
@@ -231,14 +265,20 @@ export function defineModifyInterfaceObjectAction(
     status: interfaceType.status.type !== "deprecated"
       ? interfaceType.status.type
       : interfaceType.status,
+    entities: {
+      affectedInterfaceTypes: [interfaceType.apiName],
+      affectedObjectTypes: [],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [
       {
         type: "modifyInterfaceRule",
         modifyInterfaceRule: {
           interfaceObjectToModifyParameter: "interfaceObjectToModifyParameter",
           sharedPropertyValues: Object.fromEntries(
-            Object.entries(getAllInterfaceProperties(interfaceType)).map((
-              [id, prop],
+            allProperties.map((
+              [id, _prop],
             ) => [id, { type: "parameterId", parameterId: id }]),
           ),
         },
@@ -287,6 +327,12 @@ export function defineModifyObjectAction(
       })) ?? []),
     ],
     status: "active",
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [
       {
         type: "modifyObjectRule",
@@ -340,6 +386,12 @@ export function defineDeleteObjectAction(
       },
     ],
     status: "active",
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [
       {
         type: "deleteObjectRule",
@@ -418,9 +470,16 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
       );
     }
   });
+
   const fullAction = {
     ...actionDef,
     apiName: apiName,
+    entities: actionDef.entities ?? {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     __type: OntologyEntityTypeEnum.ACTION_TYPE,
   } as ActionType;
   validateActionValidation(fullAction);
@@ -648,6 +707,10 @@ function isActionParameterTypePrimitive(
     "geotimeSeriesReference",
     "geotimeSeriesReferenceList",
   ].includes(type);
+}
+
+function isStruct(type: PropertyTypeType): type is PropertyTypeTypeStruct {
+  return typeof type === "object" && type.type === "struct";
 }
 
 function kebab(s: string): string {
