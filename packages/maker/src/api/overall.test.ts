@@ -5753,6 +5753,12 @@ describe("Ontology Defining", () => {
         primaryKeyPropertyApiName: "bar",
         properties: {
           "bar": { type: "string" },
+          "structProp": {
+            type: {
+              type: "struct",
+              structDefinition: { simpleProperty: "string" },
+            },
+          },
         },
       });
 
@@ -6215,6 +6221,18 @@ describe("Ontology Defining", () => {
                             "column": "bar",
                             "type": "column",
                           },
+                          "structProp": {
+                            "struct": {
+                              "column": "structProp",
+                              "mapping": {
+                                "simpleProperty": {
+                                  "apiName": "simpleProperty",
+                                  "mappings": {},
+                                },
+                              },
+                            },
+                            "type": "struct",
+                          },
                         },
                       },
                       "type": "datasetV2",
@@ -6289,6 +6307,53 @@ describe("Ontology Defining", () => {
                           "name": "SORTABLE",
                         },
                       ],
+                      "valueType": undefined,
+                    },
+                    "structProp": {
+                      "apiName": "structProp",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "StructProp",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "struct": {
+                          "structFields": [
+                            {
+                              "aliases": [],
+                              "apiName": "simpleProperty",
+                              "displayMetadata": {
+                                "description": undefined,
+                                "displayName": "simpleProperty",
+                              },
+                              "fieldType": {
+                                "string": {
+                                  "analyzerOverride": undefined,
+                                  "enableAsciiFolding": undefined,
+                                  "isLongText": false,
+                                  "supportsEfficientLeadingWildcard": false,
+                                  "supportsExactMatching": true,
+                                },
+                                "type": "string",
+                              },
+                              "typeClasses": [],
+                            },
+                          ],
+                        },
+                        "type": "struct",
+                      },
+                      "typeClasses": [],
                       "valueType": undefined,
                     },
                   },
