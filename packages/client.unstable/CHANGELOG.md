@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.4.0-beta.4
+
+### Minor Changes
+
+- a01b8d4: Revert import block data changes
+
 ## 2.4.0-beta.3
 
 ### Minor Changes

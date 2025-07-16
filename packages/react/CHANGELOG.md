@@ -1,5 +1,18 @@
 # @osdkkit/react
 
+## 0.6.0-beta.3
+
+### Minor Changes
+
+- 47f1bf1: Add backward compatibility to OsdkProvider2 by also providing OsdkContext
+
+  OsdkProvider2 now provides both OsdkContext2 and the original OsdkContext, enabling existing hooks like useOsdkClient and useOsdkMetadata to work with OsdkProvider2. This allows OsdkProvider2 to serve as a complete replacement for OsdkProvider while maintaining backward compatibility.
+
+### Patch Changes
+
+- @osdk/client@2.4.0-beta.4
+- @osdk/api@2.4.0-beta.4
+
 ## 0.6.0-beta.2
 
 ### Minor Changes
