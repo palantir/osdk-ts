@@ -26,12 +26,14 @@ import deepEqual from "fast-deep-equal";
 import groupBy from "object.groupby";
 import type { Connectable, Observable, Subscription } from "rxjs";
 import {
-  auditTime,
+  asapScheduler,
   combineLatest,
   connectable,
+  distinctUntilChanged,
   map,
   of,
   ReplaySubject,
+  scheduled,
   switchMap,
 } from "rxjs";
 import invariant from "tiny-invariant";
@@ -45,7 +47,10 @@ import type {
   ObjectHolder,
 } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ListPayload } from "../ListPayload.js";
-import type { CommonObserveOptions, Status } from "../ObservableClient.js";
+import type {
+  CommonObserveOptions,
+  Status,
+} from "../ObservableClient/common.js";
 import {
   type CacheKey,
   DEBUG_ONLY__cacheKeysToString as DEBUG_ONLY__cacheKeysToString,
@@ -161,9 +166,19 @@ abstract class BaseListQuery<
     const entry = batch.read(this.cacheKey);
 
     if (entry && deepEqual(data, entry.value)) {
+      if (entry.status === status) {
+        // nothing to set full stop
+        if (process.env.NODE_ENV !== "production") {
+          this.logger?.child({ methodName: "writeToStore" }).debug(
+            `Object was deep equal and status was equal. Skipping`,
+          );
+          return entry;
+        }
+      }
+
       if (process.env.NODE_ENV !== "production") {
         this.logger?.child({ methodName: "writeToStore" }).debug(
-          `Object was deep equal, just setting status`,
+          `Object was deep equal but status was new. Just using the new status`,
         );
       }
       return batch.write(this.cacheKey, entry.value, status);
@@ -300,26 +315,33 @@ export class ListQuery extends BaseListQuery<
     return connectable<ListPayload>(
       subject.pipe(
         switchMap(listEntry => {
-          return combineLatest({
-            resolvedList: listEntry?.value?.data == null
-                || listEntry.value.data.length === 0
-              ? of([])
-              : combineLatest(
-                listEntry.value.data.map(cacheKey =>
-                  this.store.getSubject(cacheKey).pipe(
-                    map(objectEntry => objectEntry?.value!),
-                  )
-                ),
+          const resolvedList = listEntry?.value?.data == null
+              || listEntry.value.data.length === 0
+            ? of([])
+            : combineLatest(
+              listEntry.value.data.map(cacheKey =>
+                this.store.getSubject(cacheKey).pipe(
+                  // subscribeOn(asyncScheduler),
+                  map(objectEntry => objectEntry?.value!),
+                  distinctUntilChanged(),
+                )
               ),
-            isOptimistic: of(listEntry.isOptimistic),
-            fetchMore: of(this.fetchMore),
-            hasMore: of(this.#nextPageToken != null),
-            status: of(listEntry.status),
-            lastUpdated: of(listEntry.lastUpdated),
-          });
+            );
+
+          // wrapping in a scheduled means we won't emit this data right away but
+          // rather on the next microtask
+          return scheduled(
+            combineLatest({
+              resolvedList,
+              isOptimistic: of(listEntry.isOptimistic),
+              fetchMore: of(this.fetchMore),
+              hasMore: of(this.#nextPageToken != null),
+              status: of(listEntry.status),
+              lastUpdated: of(listEntry.lastUpdated),
+            }),
+            asapScheduler,
+          );
         }),
-        // like throttle but returns the tail
-        auditTime(0),
       ),
       {
         resetOnDisconnect: false,
@@ -491,6 +513,9 @@ export class ListQuery extends BaseListQuery<
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
         DEBUG_ONLY__changesToString(changes),
+      );
+      this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
+        `Already in changes? ${changes.modified.has(this.cacheKey)}`,
       );
     }
 

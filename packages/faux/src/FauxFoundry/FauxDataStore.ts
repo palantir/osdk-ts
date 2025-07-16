@@ -200,7 +200,7 @@ export class FauxDataStore {
   registerObject<T extends ObjectTypeDefinition>(
     objectType: T,
     obj: ObjectTypeCreatable<T> | ObjectTypeCreatableWithoutApiName<T>,
-  ): void;
+  ): BaseServerObject;
   /**
    * Version of register object generally used in shared.test
    * @param obj A raw server side representation of an object
@@ -211,7 +211,7 @@ export class FauxDataStore {
   registerObject(
     objectType: string | ObjectTypeDefinition | BaseServerObject,
     anyObj?: BaseServerObject | BaseObjectTypeCreatable,
-  ): void {
+  ): BaseServerObject {
     let bso: BaseServerObject;
     // obj = { ...obj }; // make a copy so we can mutate it
 
@@ -267,6 +267,8 @@ export class FauxDataStore {
       String(bso.__primaryKey),
       Object.freeze({ ...bso }),
     );
+
+    return bso;
   }
 
   #osdkCreatableToBso(
