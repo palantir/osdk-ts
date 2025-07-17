@@ -5042,7 +5042,6 @@ describe("Ontology Defining", () => {
                   "implementsInterfaces2": [
                     {
                       "interfaceTypeApiName": "com.palantir.exampleInterface",
-                      "linksV2": {},
                       "properties": {
                         "com.palantir.mySpt": {
                           "propertyTypeRid": "bar",
@@ -5054,7 +5053,6 @@ describe("Ontology Defining", () => {
                           "propertyTypeRid": "property2",
                         },
                       },
-                      "propertiesV2": {},
                     },
                   ],
                   "primaryKeys": [
