@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.12.0-beta.6
+
+### Minor Changes
+
+- 3dcd9b1: Modify object actions cannot modify pk
+
 ## 0.12.0-beta.5
 
 ### Minor Changes
