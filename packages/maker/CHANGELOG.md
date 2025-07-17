@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.12.0-beta.7
+
+### Minor Changes
+
+- 75fbd09: Type classes and list validation for object actions
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.5
+
 ## 0.12.0-beta.6
 
 ### Minor Changes

@@ -1,5 +1,15 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.4.0-beta.5
+
+### Minor Changes
+
+- 1c1c2c4: Properly handles one to many links
+
+### Patch Changes
+
+- @osdk/client.unstable@2.4.0-beta.5
+
 ## 2.4.0-beta.4
 
 ### Patch Changes
