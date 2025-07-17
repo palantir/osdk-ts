@@ -168,8 +168,11 @@ export function defineCreateObjectAction(
         id: prop.apiName,
         displayName: prop.displayName,
         type: extractActionParameterType(prop),
+        typeClasses: prop.typeClasses ?? [],
         validation: {
-          required: true,
+          required: (prop.array ?? false)
+            ? { listLength: {} }
+            : true,
           allowedValues: extractAllowedValuesFromType(prop.type),
         },
       })),
@@ -342,8 +345,11 @@ export function defineModifyObjectAction(
         id: prop.apiName,
         displayName: prop.displayName,
         type: extractActionParameterType(prop),
+        typeClasses: prop.typeClasses ?? [],
         validation: {
-          required: false,
+          required: (prop.array ?? false)
+            ? { listLength: {} }
+            : false,
           allowedValues: extractAllowedValuesFromType(prop.type),
         },
       })),
