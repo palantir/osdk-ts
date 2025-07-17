@@ -307,13 +307,17 @@ export function defineModifyObjectAction(
   objectType: ObjectType,
   validation?: ActionLevelValidationDefinition,
 ): ActionType {
-  const filteredProperties =
-    objectType.properties?.filter(prop => !isStruct(prop.type)) ?? [];
-  if (
-    filteredProperties.length !== (objectType.properties?.length ?? 0)
-  ) {
-    consola.info(
-      `Some properties on ${objectType.apiName} were skipped in the modify action because they are structs`,
+  const properties = objectType.properties ?? [];
+
+  const filteredProperties = properties.filter(
+    prop =>
+      !isStruct(prop.type)
+      && prop.apiName !== objectType.primaryKeyPropertyApiName,
+  );
+
+  if (filteredProperties.length < properties.length) {
+    consola.warn(
+      `Some properties on ${objectType.apiName} were skipped in the modify action because they were structs, or were the object's primary key which cannot be edited.`,
     );
   }
   return defineAction({
