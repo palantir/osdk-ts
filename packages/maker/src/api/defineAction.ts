@@ -172,7 +172,7 @@ export function defineCreateObjectAction(
         validation: {
           required: (prop.array ?? false)
             ? { listLength: {} }
-            : true,
+            : prop.nullability?.noNulls ?? true,
           allowedValues: extractAllowedValuesFromType(prop.type),
         },
       })),
@@ -349,7 +349,7 @@ export function defineModifyObjectAction(
         validation: {
           required: (prop.array ?? false)
             ? { listLength: {} }
-            : false,
+            : prop.nullability?.noNulls ?? false,
           allowedValues: extractAllowedValuesFromType(prop.type),
         },
       })),

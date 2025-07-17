@@ -8096,6 +8096,821 @@ describe("Ontology Defining", () => {
         }
       `);
     });
+
+    it("Array property validation is correctly structured for actions", () => {
+      const objectWithArrays = defineObject({
+        apiName: "objectWithArrays",
+        displayName: "Object With Arrays",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        pluralDisplayName: "Objects With Arrays",
+        properties: {
+          "id": { type: "string", displayName: "ID" },
+          "tags": { type: "string", array: true, displayName: "Tags" },
+          "numbers": { type: "integer", array: true, displayName: "Numbers" },
+          "singleValue": { type: "string", displayName: "Single Value" },
+        },
+      });
+
+      const createAction = defineCreateObjectAction(objectWithArrays);
+      const modifyAction = defineModifyObjectAction(objectWithArrays);
+
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "blockData": {
+            "actionTypes": {
+              "com.palantir.create-object-object-with-arrays": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "addObjectRule": {
+                            "objectTypeId": "com.palantir.objectWithArrays",
+                            "propertyValues": {
+                              "id": {
+                                "parameterId": "id",
+                                "type": "parameterId",
+                              },
+                              "numbers": {
+                                "parameterId": "numbers",
+                                "type": "parameterId",
+                              },
+                              "singleValue": {
+                                "parameterId": "singleValue",
+                                "type": "parameterId",
+                              },
+                              "tags": {
+                                "parameterId": "tags",
+                                "type": "parameterId",
+                              },
+                            },
+                            "structFieldValues": {},
+                          },
+                          "type": "addObjectRule",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "id": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                        "numbers": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "numericInput": {},
+                                "type": "numericInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "range": {
+                                  "range": {},
+                                  "type": "range",
+                                },
+                                "type": "range",
+                              },
+                              "required": {
+                                "listLengthValidation": {
+                                  "maxLength": undefined,
+                                  "minLength": undefined,
+                                },
+                                "type": "listLengthValidation",
+                              },
+                            },
+                          },
+                        },
+                        "singleValue": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                        "tags": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "listLengthValidation": {
+                                  "maxLength": undefined,
+                                  "minLength": undefined,
+                                },
+                                "type": "listLengthValidation",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.create-object-object-with-arrays",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "Create Object With Arrays",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.objectWithArrays",
+                      ],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "id",
+                      "tags",
+                      "numbers",
+                      "singleValue",
+                    ],
+                    "parameters": {
+                      "id": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "ID",
+                          "typeClasses": [],
+                        },
+                        "id": "id",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                      "numbers": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Numbers",
+                          "typeClasses": [],
+                        },
+                        "id": "numbers",
+                        "type": {
+                          "integerList": {},
+                          "type": "integerList",
+                        },
+                      },
+                      "singleValue": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Single Value",
+                          "typeClasses": [],
+                        },
+                        "id": "singleValue",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                      "tags": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Tags",
+                          "typeClasses": [],
+                        },
+                        "id": "tags",
+                        "type": {
+                          "stringList": {},
+                          "type": "stringList",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+              "com.palantir.modify-object-object-with-arrays": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "modifyObjectRule": {
+                            "objectToModify": "objectToModifyParameter",
+                            "propertyValues": {
+                              "numbers": {
+                                "parameterId": "numbers",
+                                "type": "parameterId",
+                              },
+                              "singleValue": {
+                                "parameterId": "singleValue",
+                                "type": "parameterId",
+                              },
+                              "tags": {
+                                "parameterId": "tags",
+                                "type": "parameterId",
+                              },
+                            },
+                            "structFieldValues": {},
+                          },
+                          "type": "modifyObjectRule",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "numbers": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "numericInput": {},
+                                "type": "numericInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "range": {
+                                  "range": {},
+                                  "type": "range",
+                                },
+                                "type": "range",
+                              },
+                              "required": {
+                                "listLengthValidation": {
+                                  "maxLength": undefined,
+                                  "minLength": undefined,
+                                },
+                                "type": "listLengthValidation",
+                              },
+                            },
+                          },
+                        },
+                        "objectToModifyParameter": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "dropdown": {},
+                                "type": "dropdown",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "objectQuery": {
+                                  "objectQuery": {},
+                                  "type": "objectQuery",
+                                },
+                                "type": "objectQuery",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                        "singleValue": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "notRequired": {},
+                                "type": "notRequired",
+                              },
+                            },
+                          },
+                        },
+                        "tags": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "listLengthValidation": {
+                                  "maxLength": undefined,
+                                  "minLength": undefined,
+                                },
+                                "type": "listLengthValidation",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.modify-object-object-with-arrays",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "Modify Object With Arrays",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.objectWithArrays",
+                      ],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "objectToModifyParameter",
+                      "tags",
+                      "numbers",
+                      "singleValue",
+                    ],
+                    "parameters": {
+                      "numbers": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Numbers",
+                          "typeClasses": [],
+                        },
+                        "id": "numbers",
+                        "type": {
+                          "integerList": {},
+                          "type": "integerList",
+                        },
+                      },
+                      "objectToModifyParameter": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Modify object",
+                          "typeClasses": [],
+                        },
+                        "id": "objectToModifyParameter",
+                        "type": {
+                          "objectReference": {
+                            "objectTypeId": "com.palantir.objectWithArrays",
+                          },
+                          "type": "objectReference",
+                        },
+                      },
+                      "singleValue": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Single Value",
+                          "typeClasses": [],
+                        },
+                        "id": "singleValue",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                      "tags": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Tags",
+                          "typeClasses": [],
+                        },
+                        "id": "tags",
+                        "type": {
+                          "stringList": {},
+                          "type": "stringList",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+            },
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {
+              "com.palantir.objectWithArrays": {
+                "datasources": [
+                  {
+                    "datasource": {
+                      "datasetV2": {
+                        "datasetRid": "com.palantir.objectWithArrays",
+                        "propertyMapping": {
+                          "id": {
+                            "column": "id",
+                            "type": "column",
+                          },
+                          "numbers": {
+                            "column": "numbers",
+                            "type": "column",
+                          },
+                          "singleValue": {
+                            "column": "singleValue",
+                            "type": "column",
+                          },
+                          "tags": {
+                            "column": "tags",
+                            "type": "column",
+                          },
+                        },
+                      },
+                      "type": "datasetV2",
+                    },
+                    "editsConfiguration": {
+                      "onlyAllowPrivilegedEdits": false,
+                    },
+                    "redacted": false,
+                    "rid": "ri.ontology.main.datasource.com.palantir.objectWithArrays",
+                  },
+                ],
+                "entityMetadata": {
+                  "arePatchesEnabled": false,
+                },
+                "objectType": {
+                  "allImplementsInterfaces": {},
+                  "apiName": "com.palantir.objectWithArrays",
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "Object With Arrays",
+                    "groupDisplayName": undefined,
+                    "icon": {
+                      "blueprint": {
+                        "color": "#2D72D2",
+                        "locator": "cube",
+                      },
+                      "type": "blueprint",
+                    },
+                    "pluralDisplayName": "Objects With Arrays",
+                    "visibility": "NORMAL",
+                  },
+                  "implementsInterfaces2": [],
+                  "primaryKeys": [
+                    "id",
+                  ],
+                  "propertyTypes": {
+                    "id": {
+                      "apiName": "id",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "ID",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "numbers": {
+                      "apiName": "numbers",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Numbers",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "array": {
+                          "subtype": {
+                            "integer": {},
+                            "type": "integer",
+                          },
+                        },
+                        "type": "array",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "singleValue": {
+                      "apiName": "singleValue",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Single Value",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "tags": {
+                      "apiName": "tags",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Tags",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "array": {
+                          "subtype": {
+                            "string": {
+                              "analyzerOverride": undefined,
+                              "enableAsciiFolding": undefined,
+                              "isLongText": false,
+                              "supportsEfficientLeadingWildcard": false,
+                              "supportsExactMatching": true,
+                            },
+                            "type": "string",
+                          },
+                        },
+                        "type": "array",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                  },
+                  "redacted": false,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "titlePropertyTypeRid": "id",
+                },
+              },
+            },
+            "sharedPropertyTypes": {},
+          },
+          "importedTypes": {
+            "actionTypes": [],
+            "interfaceTypes": [],
+            "linkTypes": [],
+            "objectTypes": [],
+            "sharedPropertyTypes": [],
+          },
+        }
+      `);
+    });
   });
   describe("Imports", () => {
     it("Legacy importing works", () => {
