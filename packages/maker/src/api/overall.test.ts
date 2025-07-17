@@ -4204,9 +4204,14 @@ describe("Ontology Defining", () => {
           },
         },
       });
+      const mySpt = defineSharedPropertyType({
+        apiName: "mySpt",
+        type: "string",
+      });
       const exampleInterface = defineInterface({
         apiName: "exampleInterface",
         properties: {
+          mySpt,
           property1: "string",
           property2: exampleStructPropertyType,
         },
@@ -4220,7 +4225,31 @@ describe("Ontology Defining", () => {
         primaryKeyPropertyApiName: "bar",
         properties: {
           "bar": { type: "string" },
+          "property1": { type: "string" },
+          "property2": {
+            type: {
+              type: "struct",
+              structDefinition: { simpleProperty: "string" },
+            },
+          },
         },
+        implementsInterfaces: [{
+          implements: exampleInterface,
+          propertyMapping: [
+            {
+              interfaceProperty: "com.palantir.mySpt",
+              mapsTo: "bar",
+            },
+            {
+              interfaceProperty: "com.palantir.property1",
+              mapsTo: "property1",
+            },
+            {
+              interfaceProperty: "com.palantir.property2",
+              mapsTo: "property2",
+            },
+          ],
+        }],
       });
 
       const createActionWithObjectType = defineCreateInterfaceObjectAction(
@@ -4247,6 +4276,10 @@ describe("Ontology Defining", () => {
                             "interfaceApiName": "com.palantir.exampleInterface",
                             "objectTypeParameter": "objectTypeParameter",
                             "sharedPropertyValues": {
+                              "com.palantir.mySpt": {
+                                "parameterId": "com.palantir.mySpt",
+                                "type": "parameterId",
+                              },
                               "com.palantir.property1": {
                                 "parameterId": "com.palantir.property1",
                                 "type": "parameterId",
@@ -4273,6 +4306,34 @@ describe("Ontology Defining", () => {
                         },
                       },
                       "parameterValidations": {
+                        "com.palantir.mySpt": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
                         "com.palantir.property1": {
                           "conditionalOverrides": [],
                           "defaultValidation": {
@@ -4386,9 +4447,22 @@ describe("Ontology Defining", () => {
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "objectTypeParameter",
+                      "com.palantir.mySpt",
                       "com.palantir.property1",
                     ],
                     "parameters": {
+                      "com.palantir.mySpt": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "mySpt",
+                          "typeClasses": [],
+                        },
+                        "id": "com.palantir.mySpt",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
                       "com.palantir.property1": {
                         "displayMetadata": {
                           "description": "",
@@ -4435,6 +4509,10 @@ describe("Ontology Defining", () => {
                           "modifyInterfaceRule": {
                             "interfaceObjectToModifyParameter": "interfaceObjectToModifyParameter",
                             "sharedPropertyValues": {
+                              "com.palantir.mySpt": {
+                                "parameterId": "com.palantir.mySpt",
+                                "type": "parameterId",
+                              },
                               "com.palantir.property1": {
                                 "parameterId": "com.palantir.property1",
                                 "type": "parameterId",
@@ -4461,6 +4539,34 @@ describe("Ontology Defining", () => {
                         },
                       },
                       "parameterValidations": {
+                        "com.palantir.mySpt": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
                         "com.palantir.property1": {
                           "conditionalOverrides": [],
                           "defaultValidation": {
@@ -4574,9 +4680,22 @@ describe("Ontology Defining", () => {
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "interfaceObjectToModifyParameter",
+                      "com.palantir.mySpt",
                       "com.palantir.property1",
                     ],
                     "parameters": {
+                      "com.palantir.mySpt": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "mySpt",
+                          "typeClasses": [],
+                        },
+                        "id": "com.palantir.mySpt",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
                       "com.palantir.property1": {
                         "displayMetadata": {
                           "description": "",
@@ -4630,6 +4749,43 @@ describe("Ontology Defining", () => {
                   "links": [],
                   "properties": [],
                   "propertiesV2": {
+                    "com.palantir.mySpt": {
+                      "required": true,
+                      "sharedPropertyType": {
+                        "aliases": [],
+                        "apiName": "com.palantir.mySpt",
+                        "baseFormatter": undefined,
+                        "dataConstraints": undefined,
+                        "displayMetadata": {
+                          "description": undefined,
+                          "displayName": "mySpt",
+                          "visibility": "NORMAL",
+                        },
+                        "gothamMapping": undefined,
+                        "indexedForSearch": true,
+                        "type": {
+                          "string": {
+                            "analyzerOverride": undefined,
+                            "enableAsciiFolding": undefined,
+                            "isLongText": false,
+                            "supportsEfficientLeadingWildcard": false,
+                            "supportsExactMatching": true,
+                          },
+                          "type": "string",
+                        },
+                        "typeClasses": [
+                          {
+                            "kind": "render_hint",
+                            "name": "SELECTABLE",
+                          },
+                          {
+                            "kind": "render_hint",
+                            "name": "SORTABLE",
+                          },
+                        ],
+                        "valueType": undefined,
+                      },
+                    },
                     "com.palantir.property1": {
                       "required": true,
                       "sharedPropertyType": {
@@ -4734,6 +4890,22 @@ describe("Ontology Defining", () => {
                             "column": "bar",
                             "type": "column",
                           },
+                          "property1": {
+                            "column": "property1",
+                            "type": "column",
+                          },
+                          "property2": {
+                            "struct": {
+                              "column": "property2",
+                              "mapping": {
+                                "simpleProperty": {
+                                  "apiName": "simpleProperty",
+                                  "mappings": {},
+                                },
+                              },
+                            },
+                            "type": "struct",
+                          },
                         },
                       },
                       "type": "datasetV2",
@@ -4765,7 +4937,24 @@ describe("Ontology Defining", () => {
                     "pluralDisplayName": "exampleObjectTypes",
                     "visibility": "NORMAL",
                   },
-                  "implementsInterfaces2": [],
+                  "implementsInterfaces2": [
+                    {
+                      "interfaceTypeApiName": "com.palantir.exampleInterface",
+                      "linksV2": {},
+                      "properties": {
+                        "com.palantir.mySpt": {
+                          "propertyTypeRid": "bar",
+                        },
+                        "com.palantir.property1": {
+                          "propertyTypeRid": "property1",
+                        },
+                        "com.palantir.property2": {
+                          "propertyTypeRid": "property2",
+                        },
+                      },
+                      "propertiesV2": {},
+                    },
+                  ],
                   "primaryKeys": [
                     "bar",
                   ],
@@ -4810,6 +4999,93 @@ describe("Ontology Defining", () => {
                       ],
                       "valueType": undefined,
                     },
+                    "property1": {
+                      "apiName": "property1",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Property1",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "property2": {
+                      "apiName": "property2",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Property2",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "struct": {
+                          "structFields": [
+                            {
+                              "aliases": [],
+                              "apiName": "simpleProperty",
+                              "displayMetadata": {
+                                "description": undefined,
+                                "displayName": "simpleProperty",
+                              },
+                              "fieldType": {
+                                "string": {
+                                  "analyzerOverride": undefined,
+                                  "enableAsciiFolding": undefined,
+                                  "isLongText": false,
+                                  "supportsEfficientLeadingWildcard": false,
+                                  "supportsExactMatching": true,
+                                },
+                                "type": "string",
+                              },
+                              "typeClasses": [],
+                            },
+                          ],
+                        },
+                        "type": "struct",
+                      },
+                      "typeClasses": [],
+                      "valueType": undefined,
+                    },
                   },
                   "redacted": false,
                   "status": {
@@ -4821,6 +5097,42 @@ describe("Ontology Defining", () => {
               },
             },
             "sharedPropertyTypes": {
+              "com.palantir.mySpt": {
+                "sharedPropertyType": {
+                  "aliases": [],
+                  "apiName": "com.palantir.mySpt",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "mySpt",
+                    "visibility": "NORMAL",
+                  },
+                  "gothamMapping": undefined,
+                  "indexedForSearch": true,
+                  "type": {
+                    "string": {
+                      "analyzerOverride": undefined,
+                      "enableAsciiFolding": undefined,
+                      "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
+                      "supportsExactMatching": true,
+                    },
+                    "type": "string",
+                  },
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
+                  "valueType": undefined,
+                },
+              },
               "com.palantir.property1": {
                 "sharedPropertyType": {
                   "aliases": [],
@@ -6037,12 +6349,7 @@ describe("Ontology Defining", () => {
                         {
                           "modifyObjectRule": {
                             "objectToModify": "objectToModifyParameter",
-                            "propertyValues": {
-                              "bar": {
-                                "parameterId": "bar",
-                                "type": "parameterId",
-                              },
-                            },
+                            "propertyValues": {},
                             "structFieldValues": {},
                           },
                           "type": "modifyObjectRule",
@@ -6065,34 +6372,6 @@ describe("Ontology Defining", () => {
                         },
                       },
                       "parameterValidations": {
-                        "bar": {
-                          "conditionalOverrides": [],
-                          "defaultValidation": {
-                            "display": {
-                              "renderHint": {
-                                "textInput": {},
-                                "type": "textInput",
-                              },
-                              "visibility": {
-                                "editable": {},
-                                "type": "editable",
-                              },
-                            },
-                            "validation": {
-                              "allowedValues": {
-                                "text": {
-                                  "text": {},
-                                  "type": "text",
-                                },
-                                "type": "text",
-                              },
-                              "required": {
-                                "notRequired": {},
-                                "type": "notRequired",
-                              },
-                            },
-                          },
-                        },
                         "objectToModifyParameter": {
                           "conditionalOverrides": [],
                           "defaultValidation": {
@@ -6163,21 +6442,8 @@ describe("Ontology Defining", () => {
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "objectToModifyParameter",
-                      "bar",
                     ],
                     "parameters": {
-                      "bar": {
-                        "displayMetadata": {
-                          "description": "",
-                          "displayName": "Bar",
-                          "typeClasses": [],
-                        },
-                        "id": "bar",
-                        "type": {
-                          "string": {},
-                          "type": "string",
-                        },
-                      },
                       "objectToModifyParameter": {
                         "displayMetadata": {
                           "description": "",
