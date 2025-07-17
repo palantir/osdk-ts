@@ -114,6 +114,7 @@ export class EnhancedOntologyDefinition {
       fullApiName: string,
       localOnly?: L,
     ): L extends true ? this[K][string] : ForeignType => {
+      // console.log("ok now im trying to require, ", type, this[type]);
       const ret = this[type][fullApiName];
       if (!ret) {
         const [apiNamespace, shortApiName] = extractNamespace(fullApiName);
