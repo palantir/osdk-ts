@@ -445,6 +445,276 @@
     }
   },
   "objectTypes": {
+    "EsongIssues": {
+      "objectType": {
+        "apiName": "EsongIssues",
+        "displayName": "[esong] Issues",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "[esong] Issues",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "id",
+        "properties": {
+          "id": {
+            "displayName": "Id",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.e573401d-7b77-4363-bd42-a8e613bb37b8",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "numComments": {
+            "displayName": "Num Comments",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.7e19312c-70f1-419a-88ef-d240271940d1",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "pdsTicket": {
+            "displayName": "Pds Ticket",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.30be4798-4e87-490c-8573-dd6c63ade9b1",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "status": {
+            "displayName": "Status",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.6455e41e-d8be-4477-af32-fadf06169415",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "pdsTicketId": {
+            "displayName": "Pds Ticket Id",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.1e310f6c-cb8a-460c-b413-3d19ed1d8915",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "title": {
+            "displayName": "Title",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.be06b046-9dcc-443d-9ed0-2c4511761284",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "label": {
+            "displayName": "Label",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.7622a49d-a8f0-4916-a45c-a7ff31d78d2d",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "createdAt": {
+            "displayName": "Created At",
+            "dataType": {
+              "type": "date"
+            },
+            "rid": "ri.ontology.main.property.1dd3a051-cc63-4e15-8e0f-55e49a9b29e9",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.9e50a0d3-5b89-41f5-a894-b0e9bb388950",
+        "titleProperty": "title",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [
+        {
+          "apiName": "esongPds",
+          "displayName": "[esong] Pds",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "EsongPds",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "pdsTicketId",
+          "linkTypeRid": "ri.ontology.main.relation.dc8e30bb-f515-40d7-9d6c-6ad3439bcd08"
+        },
+        {
+          "apiName": "esongPdsM2m",
+          "displayName": "[esong] Pd",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "EsongPds",
+          "cardinality": "MANY",
+          "linkTypeRid": "ri.ontology.main.relation.00bf78d1-c6ef-4df7-8050-5499a71b57fb"
+        }
+      ],
+      "implementsInterfaces": [
+        "EsongInterfaceWithIlts",
+        "EsongInterfaceA",
+        "EsongInterfaceC"
+      ],
+      "implementsInterfaces2": {
+        "EsongInterfaceC": {
+          "properties": {
+            "esongId": "label"
+          }
+        },
+        "EsongInterfaceWithIlts": {
+          "properties": {
+            "esongId": "title"
+          }
+        },
+        "EsongInterfaceA": {
+          "properties": {
+            "esongSptA": "label"
+          }
+        }
+      },
+      "sharedPropertyTypeMapping": {
+        "label": "label"
+      }
+    },
+    "EsongPds": {
+      "objectType": {
+        "apiName": "EsongPds",
+        "displayName": "[esong] Pds",
+        "status": "EXPERIMENTAL",
+        "description": "asdaaaaa",
+        "pluralDisplayName": "[esong] Pds",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "id",
+        "properties": {
+          "assignee": {
+            "displayName": "Assignee",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.9e9a74a5-d7e2-4053-af81-0ab52c1bc169",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "id": {
+            "displayName": "Id",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.f5cde78b-85c1-4de6-97f9-cf83ea0302fa",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "priority": {
+            "displayName": "Priority",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.397fe50b-fcb2-4b13-8ccd-3f4459caa46e",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "status": {
+            "displayName": "Status",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.95b93fa4-fda1-4e9d-b8ee-8924e28419b3",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "title": {
+            "displayName": "Title",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.cc0f7992-b809-41cb-bb26-66b6493049ab",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "cipherTest": {
+            "displayName": "Cipher test",
+            "dataType": {
+              "type": "cipherText"
+            },
+            "rid": "ri.ontology.main.property.57a0220e-329b-4210-a40a-1d818c5d618c",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "createdAt": {
+            "displayName": "Created At",
+            "dataType": {
+              "type": "date"
+            },
+            "rid": "ri.ontology.main.property.9feabe35-8592-4d1f-8beb-fc231c9dbcf9",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.afa55844-81e8-4a1f-9b8e-bf51a9938a4d",
+        "titleProperty": "title",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [
+        {
+          "apiName": "esongIssues",
+          "displayName": "[esong] Issues",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "EsongIssues",
+          "cardinality": "ONE",
+          "linkTypeRid": "ri.ontology.main.relation.dc8e30bb-f515-40d7-9d6c-6ad3439bcd08"
+        },
+        {
+          "apiName": "esongIssuesM2m",
+          "displayName": "[esong] Issue",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "EsongIssues",
+          "cardinality": "MANY",
+          "linkTypeRid": "ri.ontology.main.relation.00bf78d1-c6ef-4df7-8050-5499a71b57fb"
+        }
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    },
     "StateTerritory": {
       "objectType": {
         "apiName": "StateTerritory",
@@ -2333,6 +2603,67 @@
           },
           "cardinality": "MANY",
           "required": true
+        }
+      }
+    },
+    "EsongInterfaceA": {
+      "rid": "ri.ontology.main.interface.3f52b54b-dab9-41f1-b02c-4eba39846673",
+      "apiName": "EsongInterfaceA",
+      "displayName": "[esong] Interface A",
+      "description": "",
+      "properties": {
+        "esongSptA": {
+          "rid": "ri.ontology.main.shared-property.b37450de-4a7b-402c-879f-fa1803ac6a21",
+          "apiName": "esongSptA",
+          "displayName": "[esong] SPT A",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "allProperties": {
+        "esongSptA": {
+          "rid": "ri.ontology.main.shared-property.b37450de-4a7b-402c-879f-fa1803ac6a21",
+          "apiName": "esongSptA",
+          "displayName": "[esong] SPT A",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": [
+        "EsongIssues"
+      ],
+      "links": {
+        "esongPds": {
+          "rid": "ri.ontology.main.interface-link.753bc7f9-4cf5-4cd6-af49-d92891df84c4",
+          "apiName": "esongPds",
+          "displayName": "[esong] Pds",
+          "description": "",
+          "linkedEntityApiName": {
+            "type": "objectTypeApiName",
+            "apiName": "EsongPds"
+          },
+          "cardinality": "ONE",
+          "required": false
+        }
+      },
+      "allLinks": {
+        "esongPds": {
+          "rid": "ri.ontology.main.interface-link.753bc7f9-4cf5-4cd6-af49-d92891df84c4",
+          "apiName": "esongPds",
+          "displayName": "[esong] Pds",
+          "description": "",
+          "linkedEntityApiName": {
+            "type": "objectTypeApiName",
+            "apiName": "EsongPds"
+          },
+          "cardinality": "ONE",
+          "required": false
         }
       }
     },
