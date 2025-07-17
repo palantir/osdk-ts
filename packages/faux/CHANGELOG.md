@@ -1,5 +1,16 @@
 # @osdk/shared.test
 
+## 0.2.0-beta.5
+
+### Minor Changes
+
+- 1c1c2c4: Properly handles one to many links
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.5
+- @osdk/generator-converters@2.4.0-beta.5
+
 ## 0.2.0-beta.4
 
 ### Patch Changes

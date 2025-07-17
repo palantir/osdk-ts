@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.3.0-beta.3
+
+### Minor Changes
+
+- d8cdf4d: fix aggregation doc example
+
 ## 0.3.0-beta.2
 
 ### Minor Changes
