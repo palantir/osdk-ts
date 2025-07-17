@@ -3,4 +3,4 @@
 "@osdk/maker": patch
 ---
 
-Use block data type for imports
+Revert import block data changes

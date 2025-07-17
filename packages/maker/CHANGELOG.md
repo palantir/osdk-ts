@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.12.0-beta.5
+
+### Minor Changes
+
+- a01b8d4: Revert import block data changes
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.4
+
 ## 0.12.0-beta.4
 
 ### Minor Changes

@@ -63,7 +63,6 @@ export type {
   InterfacePropertyTypeModification,
   InterfacePropertyTypeModificationWithRidOrIdInRequest,
   InterfaceSharedPropertyTypeModification,
-  InterfaceTypeDisplayMetadataModification,
   InterfaceTypeModification,
   IntermediaryLinkDefinitionModification,
   LinkDefinitionModification,

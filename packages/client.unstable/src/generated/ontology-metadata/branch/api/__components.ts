@@ -27,8 +27,6 @@ import type {
   GeotimeSeriesIntegrationRid as _api_GeotimeSeriesIntegrationRid,
   GlobalBranchRid as _api_GlobalBranchRid,
   InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest,
-  InterfacePropertyTypeRidOrIdInRequest
-    as _api_InterfacePropertyTypeRidOrIdInRequest,
   InterfaceTypeRid as _api_InterfaceTypeRid,
   InterfaceTypeRidOrIdInRequest as _api_InterfaceTypeRidOrIdInRequest,
   LinkedEntityTypeRidOrIdInRequest as _api_LinkedEntityTypeRidOrIdInRequest,
@@ -906,16 +904,6 @@ export interface InterfacePropertyNotFound {
   sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
 }
 /**
- * The object type specifies an implementation mapping for an interface property which does not exist.
- */
-export interface InterfacePropertyTypeNotFound {
-  interfacePropertyTypeRidOrIdInRequest:
-    _api_InterfacePropertyTypeRidOrIdInRequest;
-  interfaceRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
-  objectTypeId?: _api_ObjectTypeId | null | undefined;
-  objectTypeRid?: _api_ObjectTypeRid | null | undefined;
-}
-/**
  * An interface link type with a SINGLE cardinality is implemented by a link type with a many-to-many or a
  * one-to-many cardinality.
  */
@@ -1039,11 +1027,6 @@ export interface InvalidPropertyImplementationError_interfacePropertyNotFound {
   type: "interfacePropertyNotFound";
   interfacePropertyNotFound: InterfacePropertyNotFound;
 }
-
-export interface InvalidPropertyImplementationError_interfacePropertyTypeNotFound {
-  type: "interfacePropertyTypeNotFound";
-  interfacePropertyTypeNotFound: InterfacePropertyTypeNotFound;
-}
 export type InvalidPropertyImplementationError =
   | InvalidPropertyImplementationError_invalidPropertyType
   | InvalidPropertyImplementationError_invalidTypeClasses
@@ -1051,8 +1034,7 @@ export type InvalidPropertyImplementationError =
   | InvalidPropertyImplementationError_invalidValueType
   | InvalidPropertyImplementationError_invalidIsIndexedForSearch
   | InvalidPropertyImplementationError_propertyIdNotFound
-  | InvalidPropertyImplementationError_interfacePropertyNotFound
-  | InvalidPropertyImplementationError_interfacePropertyTypeNotFound;
+  | InvalidPropertyImplementationError_interfacePropertyNotFound;
 
 /**
  * Expected local property implementing interface property to have the same type, but it did not.
