@@ -46,7 +46,7 @@ describe(FauxDataStore, () => {
         displayName: "foo",
         rid: "ri.foo",
       });
-      fauxDataStore = new FauxDataStore(fauxOntology, attachmentsStore);
+      fauxDataStore = new FauxDataStore(fauxOntology, attachmentsStore, true);
 
       const Employee = {
         implementsInterfaces: [],
@@ -65,6 +65,7 @@ describe(FauxDataStore, () => {
           cardinality: "ONE",
           displayName: "Lead",
           linkTypeRid: "rid.link-type.327",
+          foreignKeyPropertyApiName: "leadId",
         }],
         objectType: {
           apiName: "Employee",
@@ -84,6 +85,12 @@ describe(FauxDataStore, () => {
               rid: "ri.id",
               displayName: "id",
               description: "id",
+            },
+            leadId: {
+              dataType: { type: "string" },
+              rid: "ri.leadId",
+              displayName: "leadId",
+              description: "leadId",
             },
           },
           status: "ACTIVE",
@@ -134,6 +141,15 @@ describe(FauxDataStore, () => {
 
       // set b's lead to c
       fauxDataStore.registerLink(c, "peeps", b, "lead");
+      expect(fauxDataStore.getObject(b.__apiName, b.__primaryKey))
+        .toMatchInlineSnapshot(`
+          {
+            "__apiName": "Employee",
+            "__primaryKey": "b",
+            "id": "b",
+            "leadId": "c",
+          }
+        `);
       expect(getLeadsAndPeeps("b")).toMatchObject({
         lead: c,
         peeps: [a],
@@ -149,6 +165,10 @@ describe(FauxDataStore, () => {
         lead: d,
         peeps: [a], // b's peeps should not change
       });
+      expect(fauxDataStore.getObject(b.__apiName, b.__primaryKey))
+        .toMatchObject({
+          leadId: "d",
+        });
       expect(getLeadsAndPeeps("c")).toMatchObject({
         lead: d,
         peeps: [], // c should no longer have b as a peep
@@ -160,6 +180,15 @@ describe(FauxDataStore, () => {
 
       // remove b's lead
       fauxDataStore.unregisterLink(d, "peeps", b, "lead");
+      expect(fauxDataStore.getObject(b.__apiName, b.__primaryKey))
+        .toMatchInlineSnapshot(`
+          {
+            "__apiName": "Employee",
+            "__primaryKey": "b",
+            "id": "b",
+            "leadId": undefined,
+          }
+        `);
       expect(getLeadsAndPeeps("b")).toMatchObject({
         lead: undefined,
         peeps: [a], // b's peeps should not change

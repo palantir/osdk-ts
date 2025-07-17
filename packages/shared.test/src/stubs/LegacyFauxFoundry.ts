@@ -42,7 +42,7 @@ export class LegacyFauxFoundry extends FauxFoundry {
   constructor(
     baseUrl: string = "https://stack.palantir.com/",
   ) {
-    super(baseUrl, defaultOntologyMetadata);
+    super(baseUrl, defaultOntologyMetadata, { strict: false });
 
     //
     // Setup the ontology

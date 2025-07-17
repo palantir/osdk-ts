@@ -29,6 +29,7 @@ import type {
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
 import { hash } from "node:crypto";
+import invariant from "tiny-invariant";
 import type { ApiName } from "./ApiName.js";
 
 /**
@@ -232,19 +233,33 @@ export class OntologyIrToFullMetadataConverter {
         }
         case "oneToMany": {
           const linkDef = linkType.definition.oneToMany;
-          const manySide: Ontologies.LinkTypeSideV2 = {
-            apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
-            displayName:
-              linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
-            objectTypeApiName: linkDef.objectTypeRidOneSide,
-            cardinality: "ONE",
+
+          invariant(
+            linkDef.oneSidePrimaryKeyToManySidePropertyMapping.length === 1,
+          );
+
+          const common = {
             linkTypeRid:
               `ri.${linkDef.objectTypeRidOneSide}.${linkType.id}.${linkDef.objectTypeRidManySide}`,
             status: linkStatus,
           };
 
+          const manySide: Ontologies.LinkTypeSideV2 = {
+            ...common,
+            apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
+            displayName:
+              linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
+            objectTypeApiName: linkDef.objectTypeRidOneSide,
+            cardinality: "ONE",
+            // This should only exist on the one side and it should be the property on this object
+            // that points to the PK on the other object
+            foreignKeyPropertyApiName:
+              linkDef.oneSidePrimaryKeyToManySidePropertyMapping[0].to
+                .apiName,
+          };
+
           const oneSide: Ontologies.LinkTypeSideV2 = {
-            ...manySide,
+            ...common,
             cardinality: "MANY",
             apiName: linkDef.manyToOneLinkMetadata.apiName ?? "",
             displayName:

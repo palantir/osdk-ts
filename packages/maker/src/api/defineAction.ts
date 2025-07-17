@@ -188,7 +188,14 @@ export function defineCreateObjectAction(
             required: def.parameterLevelValidations?.[id].required ?? true,
           }
           : {
-            required: true,
+            required: (def.objectType.properties?.[id].array ?? false)
+              ? {
+                listLength: def.objectType.properties?.[id].nullability
+                    ?.noEmptyCollections
+                  ? { min: 1 }
+                  : {},
+              }
+              : def.objectType.properties?.[id].nullability?.noNulls ?? true,
             allowedValues: extractAllowedValuesFromType(
               def.objectType.properties?.[id].type!,
             ),
@@ -350,7 +357,8 @@ export function defineModifyObjectAction(
   const parameterNames = Object.keys(def.objectType.properties ?? {}).filter(
     id =>
       !def.excludedProperties?.includes(id)
-      && !isStruct(def.objectType.properties?.[id].type!),
+      && !isStruct(def.objectType.properties?.[id].type!)
+      && id !== def.objectType.primaryKeyPropertyApiName,
   );
   const parameters: Array<ActionParameter> = Array.from(parameterNames).map(
     id => (
@@ -366,10 +374,17 @@ export function defineModifyObjectAction(
               ?? extractAllowedValuesFromType(
                 def.objectType.properties?.[id].type!,
               ),
-            required: def.parameterLevelValidations?.[id].required ?? true,
+            required: def.parameterLevelValidations?.[id].required ?? false,
           }
           : {
-            required: true,
+            required: (def.objectType.properties?.[id].array ?? false)
+              ? {
+                listLength: def.objectType.properties?.[id].nullability
+                    ?.noEmptyCollections
+                  ? { min: 1 }
+                  : {},
+              }
+              : def.objectType.properties?.[id].nullability?.noNulls ?? false,
             allowedValues: extractAllowedValuesFromType(
               def.objectType.properties?.[id].type!,
             ),
