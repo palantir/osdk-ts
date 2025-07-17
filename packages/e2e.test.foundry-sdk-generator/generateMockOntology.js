@@ -77,6 +77,7 @@ async function setup() {
     ],
     interfaceTypes: [
       "FooInterface",
+      "BarInterface",
     ],
     linkTypes: ["employee.peeps", "employee.lead", "employee.officeLink"],
     palantirOnlyTest: true,

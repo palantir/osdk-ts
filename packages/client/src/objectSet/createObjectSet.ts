@@ -304,11 +304,17 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return clientCtx.objectSetFactory(
         objectType,
         clientCtx,
-        {
-          type: "searchAround",
-          objectSet,
-          link,
-        },
+        objectType.type === "object"
+          ? {
+            type: "searchAround",
+            objectSet,
+            link,
+          }
+          : {
+            type: "interfaceLinkSearchAround",
+            objectSet,
+            interfaceLink: link,
+          },
       );
     };
   }
