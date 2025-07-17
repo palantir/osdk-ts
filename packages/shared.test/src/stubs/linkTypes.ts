@@ -37,6 +37,7 @@ export const leadLinkType: LinkTypeSideV2 = {
   cardinality: "ONE",
   displayName: "Lead",
   linkTypeRid: peepsLinkType.linkTypeRid,
+  foreignKeyPropertyApiName: "leadId",
 };
 
 export const officeLinkType: LinkTypeSideV2 = {
