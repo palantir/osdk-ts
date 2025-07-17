@@ -171,7 +171,11 @@ export function defineCreateObjectAction(
         typeClasses: prop.typeClasses ?? [],
         validation: {
           required: (prop.array ?? false)
-            ? { listLength: {} }
+            ? {
+              listLength: prop.nullability?.noEmptyCollections
+                ? { min: 1 }
+                : {},
+            }
             : prop.nullability?.noNulls ?? true,
           allowedValues: extractAllowedValuesFromType(prop.type),
         },
@@ -348,7 +352,11 @@ export function defineModifyObjectAction(
         typeClasses: prop.typeClasses ?? [],
         validation: {
           required: (prop.array ?? false)
-            ? { listLength: {} }
+            ? {
+              listLength: prop.nullability?.noEmptyCollections
+                ? { min: 1 }
+                : {},
+            }
             : prop.nullability?.noNulls ?? false,
           allowedValues: extractAllowedValuesFromType(prop.type),
         },
