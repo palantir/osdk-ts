@@ -718,6 +718,7 @@ describe("generator", () => {
 
         import type {
           InterfaceDefinition as $InterfaceDefinition,
+          InterfaceMetadata as $InterfaceMetadata,
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
@@ -1366,6 +1367,7 @@ describe("generator", () => {
 
         import type {
           InterfaceDefinition as $InterfaceDefinition,
+          InterfaceMetadata as $InterfaceMetadata,
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
@@ -2592,6 +2594,7 @@ describe("generator", () => {
 
         import type {
           InterfaceDefinition as $InterfaceDefinition,
+          InterfaceMetadata as $InterfaceMetadata,
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
