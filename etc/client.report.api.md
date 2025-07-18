@@ -32,6 +32,7 @@ import { ObjectSpecifier } from '@osdk/api';
 import { ObjectTypeDefinition } from '@osdk/api';
 import { Osdk } from '@osdk/api';
 import { OsdkObject } from '@osdk/api';
+import { OsdkObjectCreatePropertyType } from '@osdk/api';
 import { OsdkObjectPropertyType } from '@osdk/api';
 import { PageResult } from '@osdk/api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
@@ -152,6 +153,8 @@ export { ObjectTypeDefinition }
 export { Osdk }
 
 export { OsdkObject }
+
+export { OsdkObjectCreatePropertyType }
 
 export { OsdkObjectPropertyType }
 
