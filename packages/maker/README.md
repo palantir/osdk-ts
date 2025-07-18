@@ -628,7 +628,7 @@ can also be added.
 
 ```typescript
 import {
-  ActionParameterValidation,
+  ActionParameterConditionalOverride,
   ConditionDefinition,
   defineModifyObjectAction,
   defineObject,
@@ -670,8 +670,8 @@ const teamEqualsSalesParameterCondition: ConditionDefinition = {
   },
 };
 
-const makeDealsVisible: ActionParameterValidation = {
-  type: "hidden",
+const makeDealsVisible: ActionParameterConditionalOverride = {
+  type: "visibility",
   condition: {
     type: "and",
     conditions: [
@@ -689,7 +689,7 @@ const modifyObjectActionType = defineModifyObjectAction(
     },
     parameterLevelValidations: {
       "numDeals": {
-        hidden: true,
+        defaultVisibility: "hidden",
         conditionalOverrides: [
           makeDealsVisible,
         ],
