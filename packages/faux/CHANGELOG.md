@@ -1,5 +1,54 @@
 # @osdk/shared.test
 
+## 0.2.0-beta.5
+
+### Minor Changes
+
+- 1c1c2c4: Properly handles one to many links
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.5
+- @osdk/generator-converters@2.4.0-beta.5
+
+## 0.2.0-beta.4
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.4
+- @osdk/generator-converters@2.4.0-beta.4
+
+## 0.2.0-beta.3
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.3
+- @osdk/generator-converters@2.4.0-beta.3
+
+## 0.2.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [29d2ada]
+- Updated dependencies [8c95154]
+- Updated dependencies [c32dcf2]
+  - @osdk/api@2.4.0-beta.2
+  - @osdk/generator-converters@2.4.0-beta.2
+
+## 0.1.0-beta.6
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.10
+- @osdk/generator-converters@2.3.0-beta.10
+
+## 0.1.0-beta.5
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.9
+- @osdk/generator-converters@2.3.0-beta.9
+
 ## 0.1.0-beta.4
 
 ### Patch Changes

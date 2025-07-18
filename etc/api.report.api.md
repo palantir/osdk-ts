@@ -119,6 +119,8 @@ export namespace ActionParam {
         		$primaryKey: string | number
         	};
     	// (undocumented)
+    export type NullValueType = typeof NULL_VALUE;
+    	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
     	// Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
     //
@@ -274,7 +276,7 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 }
 
 // @public (undocumented)
-export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference";
+export type BaseWirePropertyTypes = "string" | "datetime" | "double" | "boolean" | "integer" | "timestamp" | "short" | "long" | "float" | "decimal" | "byte" | "marking" | "mediaReference" | "numericTimeseries" | "stringTimeseries" | "sensorTimeseries" | "attachment" | "geopoint" | "geoshape" | "geotimeSeriesReference" | "vector";
 
 // @public (undocumented)
 export type CompileTimeMetadata<T extends {
@@ -754,6 +756,11 @@ export interface MediaUpload {
 }
 
 // @public (undocumented)
+export const NULL_VALUE: symbol & {
+    	__type: "NULL_VALUE"
+};
+
+// @public (undocumented)
 export type NullabilityAdherence = false | "throw" | "drop";
 
 // @public (undocumented)
@@ -851,6 +858,49 @@ export interface ObjectSet<
 > extends ObjectSetCleanedTypes<Q, ExtractRdp<UNUSED_OR_RDP>, MergeObjectSet<Q, ExtractRdp<UNUSED_OR_RDP>>> {}
 
 // @public (undocumented)
+export namespace ObjectSetArgs {
+    	// (undocumented)
+    export interface AsyncIter<
+    		Q extends ObjectOrInterfaceDefinition,
+    		K extends PropertyKeys<Q> = never,
+    		T extends boolean = false,
+    		RDP_KEYS extends string = never
+    	> extends Select<K, RDP_KEYS>, OrderBy<K> {
+        		// (undocumented)
+        $__UNSTABLE_useOldInterfaceApis?: boolean;
+        		// (undocumented)
+        $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
+        	}
+    	// (undocumented)
+    export interface FetchPage<
+    		Q extends ObjectOrInterfaceDefinition,
+    		K extends PropertyKeys<Q> = never,
+    		T extends boolean = false,
+    		RDP_KEYS extends string = never
+    	> extends AsyncIter<Q, K, T, RDP_KEYS> {
+        		// (undocumented)
+        $nextPageToken?: string;
+        		// (undocumented)
+        $pageSize?: number;
+        	}
+    	// (undocumented)
+    export interface OrderBy<L extends string = never> {
+        		// (undocumented)
+        $orderBy?: { [K in L]? : "asc" | "desc" };
+        	}
+    	// (undocumented)
+    export interface Select<
+    		OBJECT_KEYS extends string = never,
+    		RDP_KEYS extends string = never
+    	> {
+        		// (undocumented)
+        $includeRid?: boolean;
+        		// (undocumented)
+        $select?: readonly (OBJECT_KEYS | RDP_KEYS)[];
+        	}
+}
+
+// @public (undocumented)
 export interface ObjectSetQueryDataType<T_Target extends ObjectTypeDefinition = never> extends BaseQueryDataTypeDefinition<"objectSet"> {
     	// (undocumented)
     __OsdkTargetType?: T_Target;
@@ -940,6 +990,12 @@ export namespace Osdk {
             		} ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never
         		readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
         		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>
+        		readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends ObjectTypeDefinition ? {
+            			ObjectMetadata: Q
+            		} : {
+            			ObjectMetadata: ObjectMetadata
+            			InterfaceMetadata: InterfaceMetadata
+            		}
         	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         		readonly $rid: string
         	} : {});
@@ -1087,6 +1143,8 @@ export interface PropertyValueWireToClient {
     stringTimeseries: TimeSeriesProperty<string>;
     	// (undocumented)
     timestamp: string;
+    	// (undocumented)
+    vector: number[];
 }
 
 // Warning: (ae-forgotten-export) The symbol "PrimitiveDataType" needs to be exported by the entry point index.d.ts

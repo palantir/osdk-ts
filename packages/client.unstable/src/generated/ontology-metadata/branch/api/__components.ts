@@ -165,6 +165,36 @@ export type BranchType = BranchType_builder;
 export interface BuilderServiceBranch {
   builderPipelineRid: _api_BuilderPipelineRid;
 }
+export interface BulkLoadOntologyBranchEntry_branch {
+  type: "branch";
+  branch: _api_OntologyBranchRid;
+}
+
+export interface BulkLoadOntologyBranchEntry_proposal {
+  type: "proposal";
+  proposal: _api_OntologyProposalRid;
+}
+
+export interface BulkLoadOntologyBranchEntry_ontologyRidAndVersion {
+  type: "ontologyRidAndVersion";
+  ontologyRidAndVersion: OntologyRidAndVersion;
+}
+export type BulkLoadOntologyBranchEntry =
+  | BulkLoadOntologyBranchEntry_branch
+  | BulkLoadOntologyBranchEntry_proposal
+  | BulkLoadOntologyBranchEntry_ontologyRidAndVersion;
+
+export interface BulkLoadOntologyBranchesRequest {
+  entries: Array<BulkLoadOntologyBranchEntry>;
+}
+export interface BulkLoadOntologyBranchesResponse {
+  results: Array<BulkLoadOntologyBranchResult>;
+}
+export interface BulkLoadOntologyBranchResult {
+  entry: BulkLoadOntologyBranchEntry;
+  ontologyBranch: OntologyBranch;
+  versionedBranchDetails: VersionedBranchDetails;
+}
 export interface ClosedStatusV2 {
 }
 /**
@@ -1632,6 +1662,10 @@ export interface OntologyProposalV2 {
   status: ProposalStatusV2;
   taskDetails: ProposalTaskDetails;
 }
+export interface OntologyRidAndVersion {
+  rid: _api_OntologyRid;
+  version: _api_OntologyVersion;
+}
 export interface OpenStatusV2 {
 }
 export interface OwnerIdentifier_builder {
@@ -2038,6 +2072,11 @@ export interface ValidationError_genericOntologyMetadataError {
   type: "genericOntologyMetadataError";
   genericOntologyMetadataError: _api_GenericOntologyMetadataError;
 }
+
+export interface ValidationError_ontologyValidationError {
+  type: "ontologyValidationError";
+  ontologyValidationError: _api_validation_OntologyValidationError;
+}
 export type ValidationError =
   | ValidationError_foreignKeyConstraint
   | ValidationError_foundrySchemaConstraint
@@ -2051,7 +2090,8 @@ export type ValidationError =
   | ValidationError_objectTypePropertyConstraint
   | ValidationError_propertySecurityGroupsConstraint
   | ValidationError_mergeConstraint
-  | ValidationError_genericOntologyMetadataError;
+  | ValidationError_genericOntologyMetadataError
+  | ValidationError_ontologyValidationError;
 
 export interface ValueTypeUsageError_propertyTypeValueTypeUsageError {
   type: "propertyTypeValueTypeUsageError";

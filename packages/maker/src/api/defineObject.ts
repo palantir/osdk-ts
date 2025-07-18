@@ -16,15 +16,16 @@
 
 import invariant from "tiny-invariant";
 import {
-  extractNamespace,
+  addNamespaceIfNone,
   namespace,
   ontologyDefinition,
   updateOntology,
-  withoutNamespace,
 } from "./defineOntology.js";
 import type {
   InterfacePropertyType,
   InterfaceType,
+  ObjectPropertyType,
+  ObjectPropertyTypeUserDefinition,
   ObjectType,
   ObjectTypeDefinition,
   PropertyTypeType,
@@ -45,7 +46,9 @@ export function defineObject(
   objectDef: ObjectTypeDefinition,
 ): ObjectType {
   const apiName = namespace + objectDef.apiName;
-  const propertyApiNames = (objectDef.properties ?? []).map(val => val.apiName);
+  const propertyApiNames = objectDef.properties
+    ? Object.keys(objectDef.properties)
+    : [];
   if (
     ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][apiName]
       !== undefined
@@ -64,9 +67,7 @@ export function defineObject(
   );
 
   invariant(
-    (objectDef.properties ?? []).filter(p =>
-      p.apiName === objectDef.primaryKeyPropertyApiName
-    ).every(p => !p.editOnly),
+    !(objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.editOnly),
     `Primary key property ${objectDef.primaryKeyPropertyApiName} on object ${objectDef.apiName} cannot be edit-only`,
   );
 
@@ -78,10 +79,14 @@ export function defineObject(
 
   // Validate that if object status is experimental, no property can have a status of active
   if (objectDef.status === "experimental") {
-    const activeProperties = (objectDef.properties ?? [])
-      .filter(property => property.status === "active")
-      .map(property => property.apiName);
-
+    const activeProperties: string[] = [];
+    Object.entries(objectDef.properties ?? {}).forEach(
+      ([apiName, property]) => {
+        if (property.status === "active") {
+          activeProperties.push(apiName);
+        }
+      },
+    );
     invariant(
       activeProperties.length === 0,
       `When object "${objectDef.apiName}" has experimental status, no properties can have "active" status, but found active properties: ${
@@ -102,42 +107,44 @@ export function defineObject(
     );
   }
   invariant(
-    (objectDef.properties ?? []).filter(p =>
-      p.apiName === objectDef.titlePropertyApiName
-    ).every(p => !isExotic(p.type)),
+    !isExotic(objectDef.properties?.[objectDef.titlePropertyApiName]?.type),
     `Title property ${objectDef.titlePropertyApiName} must be a primitive type`,
   );
   invariant(
-    (objectDef.properties ?? []).filter(p =>
-      p.apiName === objectDef.primaryKeyPropertyApiName
-    ).every(p => !isExotic(p.type)),
-    `Primary key properties ${objectDef.primaryKeyPropertyApiName} can only be primitive types`,
+    !isExotic(
+      objectDef.properties?.[objectDef.primaryKeyPropertyApiName]?.type,
+    ),
+    `Primary key property ${objectDef.primaryKeyPropertyApiName} can only be primitive types`,
   );
 
   objectDef.implementsInterfaces?.forEach(interfaceImpl => {
-    const allInterfaceProperties = getAllInterfacePropertiesNoNamespace(
+    const allInterfaceProperties = getAllInterfaceProperties(
       interfaceImpl.implements,
     );
     const nonExistentInterfaceProperties: ValidationResult[] = interfaceImpl
       .propertyMapping.map(val => val.interfaceProperty).filter(
         interfaceProperty =>
-          allInterfaceProperties[interfaceProperty] === undefined,
+          allInterfaceProperties[addNamespaceIfNone(interfaceProperty)]
+            === undefined,
       ).map(interfaceProp => ({
         type: "invalid",
         reason:
-          `Interface property ${interfaceImpl.implements.apiName}.${interfaceProp} referenced in ${objectDef.apiName} object does not exist`,
+          `Interface property ${interfaceProp} referenced in ${objectDef.apiName} object does not exist`,
       }));
 
     const interfaceToObjectProperties = Object.fromEntries(
       interfaceImpl.propertyMapping.map(
-        mapping => [mapping.interfaceProperty, mapping.mapsTo],
+        mapping => [
+          addNamespaceIfNone(mapping.interfaceProperty),
+          mapping.mapsTo,
+        ],
       ),
     );
     const validateProperty = (
       interfaceProp: [string, InterfacePropertyType],
     ): ValidationResult => {
       if (
-        interfaceProp[1].sharedPropertyType.nonNameSpacedApiName
+        interfaceProp[1].sharedPropertyType.apiName
           in interfaceToObjectProperties
       ) {
         return validateInterfaceImplProperty(
@@ -148,50 +155,45 @@ export function defineObject(
       }
       return {
         type: "invalid",
-        reason: `Interface property ${interfaceImpl.implements.apiName}.${
-          interfaceProp[1].sharedPropertyType.nonNameSpacedApiName
+        reason: `Interface property ${
+          interfaceProp[1].sharedPropertyType.apiName
         } not implemented by ${objectDef.apiName} object definition`,
       };
     };
-    const baseValidations = Object.entries(
-      interfaceImpl.implements.propertiesV2,
-    )
-      .map<ValidationResult>(validateProperty);
-    const extendsValidations = interfaceImpl.implements.extendsInterfaces
-      .flatMap(interfaceType =>
-        Object.entries(interfaceType.propertiesV2).map(validateProperty)
-      );
-
-    const allFailedValidations = baseValidations.concat(
-      extendsValidations,
+    const validations = Object.entries(
+      getAllInterfaceProperties(interfaceImpl.implements),
+    ).map(validateProperty);
+    const allFailedValidations = validations.concat(
       nonExistentInterfaceProperties,
     ).filter(val => val.type === "invalid");
     invariant(
       allFailedValidations.length === 0,
       "\n" + allFailedValidations.map(formatValidationErrors).join("\n"),
     );
-
-    interfaceImpl.propertyMapping = interfaceImpl.propertyMapping.map((
-      mapping,
-    ) => ({
-      interfaceProperty: extractNamespace(interfaceImpl.implements.apiName)
-        + mapping.interfaceProperty,
-      mapsTo: mapping.mapsTo,
-    }));
   });
+
+  const flattenedProperties: Array<ObjectPropertyType> = Object.entries(
+    objectDef.properties ?? {},
+  ).map(([apiName, property]) =>
+    convertUserObjectPropertyType(apiName, property)
+  );
 
   const finalObject: ObjectType = {
     ...objectDef,
     apiName: apiName,
     __type: OntologyEntityTypeEnum.OBJECT_TYPE,
+    properties: flattenedProperties,
   };
   updateOntology(finalObject);
   return finalObject;
 }
 
 export function isExotic(
-  type: PropertyTypeType,
+  type: PropertyTypeType | undefined,
 ): type is PropertyTypeTypeExotic {
+  if (type === undefined) {
+    return false;
+  }
   if (typeof type === "string") {
     return ["geopoint", "geoshape", "mediaReference", "geotimeSeries"].includes(
       type,
@@ -216,9 +218,7 @@ function validateInterfaceImplProperty(
   mappedObjectProp: string,
   object: ObjectTypeDefinition,
 ): ValidationResult {
-  const objProp = object.properties?.find(prop =>
-    prop.apiName === mappedObjectProp
-  );
+  const objProp = object.properties?.[mappedObjectProp];
   if (objProp === undefined) {
     return {
       type: "invalid",
@@ -226,7 +226,7 @@ function validateInterfaceImplProperty(
         `Object property mapped to interface does not exist. Object Property Mapped: ${mappedObjectProp}`,
     };
   }
-  if (spt.type !== objProp?.type) {
+  if (JSON.stringify(spt.type) !== JSON.stringify(objProp?.type)) {
     return {
       type: "invalid",
       reason:
@@ -254,18 +254,24 @@ export function convertToPluralDisplayName(
     : convertToDisplayName(s) + "s";
 }
 
-function getAllInterfacePropertiesNoNamespace(
+export function getAllInterfaceProperties(
   interfaceType: InterfaceType,
 ): Record<string, InterfacePropertyType> {
-  const localProperties = Object.fromEntries(
-    Object.entries(interfaceType.propertiesV2).map(([apiName, property]) => [
-      withoutNamespace(apiName),
-      property,
-    ]),
-  );
+  let properties = interfaceType.propertiesV2;
+  interfaceType.extendsInterfaces.forEach(ext => {
+    properties = { ...properties, ...getAllInterfaceProperties(ext) };
+  });
+  return properties;
+}
 
-  return interfaceType.extendsInterfaces.reduce(
-    (acc, ext) => ({ ...getAllInterfacePropertiesNoNamespace(ext), ...acc }),
-    localProperties,
-  );
+function convertUserObjectPropertyType(
+  apiName: string,
+  property: ObjectPropertyTypeUserDefinition,
+): ObjectPropertyType {
+  return {
+    ...property,
+    apiName: apiName,
+    displayName: property.displayName ?? convertToDisplayName(apiName),
+    type: property.type,
+  };
 }

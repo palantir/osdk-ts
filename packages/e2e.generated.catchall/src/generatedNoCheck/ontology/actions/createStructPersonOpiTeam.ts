@@ -35,7 +35,9 @@ export namespace createStructPersonOpiTeam {
    * Create a struct person on the OPI team
    */
   export interface Params {
-    readonly address?: ActionParam.StructType<{ city: 'string'; state: 'string'; zipcode: 'integer' }>;
+    readonly address?:
+      | ActionParam.StructType<{ city: 'string'; state: 'string'; zipcode: 'integer' }>
+      | ActionParam.NullValueType;
 
     readonly age: ActionParam.PrimitiveType<'integer'>;
 

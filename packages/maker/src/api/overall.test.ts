@@ -99,14 +99,13 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Test Objects",
         apiName: "testObject",
         primaryKeyPropertyApiName: "constrainedString",
-        properties: [
-          {
-            apiName: "constrainedString",
+        properties: {
+          "constrainedString": {
             type: "string",
             displayName: "Constrained String",
             valueType: testStringValueType,
           },
-        ],
+        },
       });
 
       const ontology = dumpOntologyFullMetadata();
@@ -1678,7 +1677,7 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "Foo",
           apiName: "foo",
           primaryKeyPropertyApiName: "bar",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: { "bar": { type: "string" } },
         });
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Title property fizz is not defined on object foo]`,
@@ -1691,7 +1690,7 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "Foo",
           apiName: "foo",
           primaryKeyPropertyApiName: "fizz",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: { "bar": { type: "string" } },
         });
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Primary key property fizz does not exist on object foo]`,
@@ -1704,10 +1703,13 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "Foo",
           apiName: "foo",
           primaryKeyPropertyApiName: "bar",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: { "bar": { type: "string" } },
           implementsInterfaces: [{
             implements: sample,
-            propertyMapping: [{ interfaceProperty: "foo", mapsTo: "fizz" }],
+            propertyMapping: [{
+              interfaceProperty: "com.palantir.foo",
+              mapsTo: "fizz",
+            }],
           }],
         });
       }).toThrowErrorMatchingInlineSnapshot(
@@ -1721,17 +1723,20 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "Foo",
           apiName: "foo",
           primaryKeyPropertyApiName: "bar",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: { "bar": { type: "string" } },
           implementsInterfaces: [{
             implements: sample,
-            propertyMapping: [{ interfaceProperty: "fizz", mapsTo: "bar" }, {
-              interfaceProperty: "foo",
+            propertyMapping: [{
+              interfaceProperty: "com.palantir.fizz",
+              mapsTo: "bar",
+            }, {
+              interfaceProperty: "com.palantir.foo",
               mapsTo: "bar",
             }],
           }],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: \nOntology Definition Error: Interface property com.palantir.interface.fizz referenced in foo object does not exist\n]`,
+        `[Error: Invariant failed: \nOntology Definition Error: Interface property com.palantir.fizz referenced in foo object does not exist\n]`,
       );
     });
 
@@ -1752,29 +1757,27 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [
-          { apiName: "bar", type: "string", displayName: "Bar" },
-          {
-            apiName: "arrayProp",
+        properties: {
+          "bar": { type: "string", displayName: "Bar" },
+          "arrayProp": {
             type: "string",
             array: true,
             displayName: "Array Property Test",
           },
-          {
-            apiName: "geopoint",
+          "geopoint": {
             type: {
               type: "struct",
-              structDefinition: {
-                lat: "double",
-                lng: "double",
-              },
+              structDefinition: { lat: "double", lng: "double" },
             },
             displayName: "geopoint",
           },
-        ],
+        },
         implementsInterfaces: [{
           implements: sample,
-          propertyMapping: [{ interfaceProperty: "foo", mapsTo: "bar" }],
+          propertyMapping: [{
+            interfaceProperty: "foo",
+            mapsTo: "bar",
+          }],
         }],
       });
 
@@ -2126,7 +2129,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+        properties: { "bar": { type: "string" } },
       });
 
       const otherObject = defineObject({
@@ -2135,11 +2138,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Fizz",
         apiName: "fizz",
         primaryKeyPropertyApiName: "fizz",
-        properties: [{ apiName: "fizz", type: "string", displayName: "Fizz" }, {
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: { "fizz": { type: "string" }, "bar": { type: "string" } },
       });
 
       defineLink({
@@ -2478,7 +2477,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+        properties: { "bar": { type: "string" } },
       });
 
       const otherObject = defineObject({
@@ -2487,11 +2486,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Fizz",
         apiName: "fizz",
         primaryKeyPropertyApiName: "fizz",
-        properties: [{ apiName: "fizz", type: "string", displayName: "Fizz" }, {
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: { "fizz": { type: "string" }, "bar": { type: "string" } },
       });
 
       defineLink({
@@ -2873,7 +2868,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+        properties: { "bar": { type: "string" } },
       });
 
       const otherObject = defineObject({
@@ -2882,11 +2877,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Fizz",
         apiName: "fizz",
         primaryKeyPropertyApiName: "fizz",
-        properties: [{ apiName: "fizz", type: "string", displayName: "Fizz" }, {
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: { "fizz": { type: "string" }, "bar": { type: "string" } },
       });
 
       defineLink({
@@ -3221,7 +3212,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "datasetBackedObject",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+        properties: { "bar": { type: "string" } },
         datasource: { type: "dataset" },
       });
 
@@ -3231,11 +3222,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "streamBackedObjectNoRetention",
         apiName: "fizz",
         primaryKeyPropertyApiName: "fizz",
-        properties: [{ apiName: "fizz", type: "string", displayName: "Fizz" }, {
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: { "fizz": { type: "string" }, "bar": { type: "string" } },
         datasource: { type: "stream" },
       });
 
@@ -3245,7 +3232,7 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "streamBackedObjectWithRetention",
         apiName: "buzz",
         primaryKeyPropertyApiName: "buzz",
-        properties: [{ apiName: "buzz", type: "string", displayName: "Buzz" }],
+        properties: { "buzz": { type: "string" } },
         datasource: { type: "stream", retentionPeriod: "PT1H" },
       });
 
@@ -3608,11 +3595,9 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: {
+          "bar": { type: "string" },
+        },
         datasource: { type: "restrictedView" },
       });
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -3744,16 +3729,15 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "Foo",
         apiName: "foo",
         primaryKeyPropertyApiName: "fizz",
-        properties: [{
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-          editOnly: true,
-        }, {
-          apiName: "fizz",
-          type: "string",
-          displayName: "Fizz",
-        }],
+        properties: {
+          "bar": {
+            type: "string",
+            editOnly: true,
+          },
+          "fizz": {
+            type: "string",
+          },
+        },
       });
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
@@ -3929,12 +3913,7 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "Foo",
           apiName: "foo",
           primaryKeyPropertyApiName: "bar",
-          properties: [{
-            apiName: "bar",
-            type: "string",
-            displayName: "Bar",
-            editOnly: true,
-          }],
+          properties: { "bar": { type: "string", editOnly: true } },
         });
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Primary key property bar on object foo cannot be edit-only]`,
@@ -3949,11 +3928,7 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "streamBackedObjectWithRetention",
           apiName: "buzz",
           primaryKeyPropertyApiName: "buzz",
-          properties: [{
-            apiName: "buzz",
-            type: "string",
-            displayName: "Buzz",
-          }],
+          properties: { "buzz": { type: "string" } },
           datasource: {
             type: "stream",
             retentionPeriod: "bad retention period string",
@@ -3971,15 +3946,10 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "exampleObject",
         apiName: "fizz",
         primaryKeyPropertyApiName: "bar",
-        properties: [{
-          apiName: "fizz",
-          type: "mediaReference",
-          displayName: "Fizz",
-        }, {
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
+        properties: {
+          "fizz": { type: "mediaReference" },
+          "bar": { type: "string" },
+        },
         datasource: { type: "stream" },
       });
 
@@ -4174,150 +4144,172 @@ describe("Ontology Defining", () => {
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
-      {
-        "blockData": {
-          "actionTypes": {
-            "com.palantir.foo": {
-              "actionType": {
-                "actionTypeLogic": {
-                  "logic": {
-                    "rules": [
-                      {
-                        "addInterfaceRule": {
-                          "interfaceApiName": "com.palantir.foo",
-                          "objectTypeParameter": "param1",
-                          "sharedPropertyValues": {},
-                        },
-                        "type": "addInterfaceRule",
-                      },
-                    ],
-                  },
-                  "validation": {
-                    "actionTypeLevelValidation": {
-                      "rules": {
-                        "0": {
-                          "condition": {
-                            "true": {},
-                            "type": "true",
+        {
+          "blockData": {
+            "actionTypes": {
+              "com.palantir.foo": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "addInterfaceRule": {
+                            "interfaceApiName": "com.palantir.foo",
+                            "objectTypeParameter": "param1",
+                            "sharedPropertyValues": {},
                           },
-                          "displayMetadata": {
-                            "failureMessage": "",
-                            "typeClasses": [],
-                          },
+                          "type": "addInterfaceRule",
                         },
-                      },
+                      ],
                     },
-                    "parameterValidations": {
-                      "param1": {
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "checkbox": {},
-                              "type": "checkbox",
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
                             },
-                            "visibility": {
-                              "editable": {},
-                              "type": "editable",
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
                             },
                           },
-                          "validation": {
-                            "allowedValues": {
-                              "boolean": {
-                                "boolean": {},
+                        },
+                      },
+                      "parameterValidations": {
+                        "param1": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "checkbox": {},
+                                "type": "checkbox",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "boolean": {
+                                  "boolean": {},
+                                  "type": "boolean",
+                                },
                                 "type": "boolean",
                               },
-                              "type": "boolean",
-                            },
-                            "required": {
-                              "required": {},
-                              "type": "required",
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
                             },
                           },
                         },
                       },
                     },
                   },
-                },
-                "metadata": {
-                  "apiName": "com.palantir.foo",
-                  "displayMetadata": {
-                    "configuration": {
-                      "defaultLayout": "FORM",
-                      "displayAndFormat": {
-                        "table": {
-                          "columnWidthByParameterRid": {},
-                          "enableFileImport": true,
-                          "fitHorizontally": false,
-                          "frozenColumnCount": 0,
-                          "rowHeightInLines": 1,
+                  "metadata": {
+                    "apiName": "com.palantir.foo",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "exampleAction",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "param1",
+                    ],
+                    "parameters": {
+                      "param1": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "param1",
+                          "typeClasses": [],
+                        },
+                        "id": "param1",
+                        "type": {
+                          "boolean": {},
+                          "type": "boolean",
                         },
                       },
-                      "enableLayoutUserSwitch": false,
                     },
-                    "description": "",
-                    "displayName": "exampleAction",
-                    "icon": {
-                      "blueprint": {
-                        "color": "#000000",
-                        "locator": "edit",
-                      },
-                      "type": "blueprint",
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
                     },
-                    "successMessage": [],
-                    "typeClasses": [],
-                  },
-                  "formContentOrdering": [],
-                  "parameterOrdering": [
-                    "param1",
-                  ],
-                  "parameters": {
-                    "param1": {
-                      "displayMetadata": {
-                        "description": "",
-                        "displayName": "param1",
-                        "typeClasses": [],
-                      },
-                      "id": "param1",
-                      "type": {
-                        "boolean": {},
-                        "type": "boolean",
-                      },
-                    },
-                  },
-                  "sections": {},
-                  "status": {
-                    "active": {},
-                    "type": "active",
                   },
                 },
               },
             },
-          },
-          "blockPermissionInformation": {
-            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
             "linkTypes": {},
             "objectTypes": {},
+            "sharedPropertyTypes": {},
           },
-          "interfaceTypes": {},
-          "linkTypes": {},
-          "objectTypes": {},
-          "sharedPropertyTypes": {},
-        },
-        "importedTypes": {
-          "actionTypes": [],
-          "interfaceTypes": [],
-          "linkTypes": [],
-          "objectTypes": [],
-          "sharedPropertyTypes": [],
-        },
-      }
-        `);
+          "importedTypes": {
+            "actionTypes": [],
+            "interfaceTypes": [],
+            "linkTypes": [],
+            "objectTypes": [],
+            "sharedPropertyTypes": [],
+          },
+        }
+      `);
     });
     it("Simple interface actions (with object types) are properly defined", () => {
+      const exampleStructPropertyType = defineSharedPropertyType({
+        apiName: "property2",
+        type: {
+          type: "struct",
+          structDefinition: {
+            simpleProperty: "string",
+          },
+        },
+      });
+      const mySpt = defineSharedPropertyType({
+        apiName: "mySpt",
+        type: "string",
+      });
       const exampleInterface = defineInterface({
         apiName: "exampleInterface",
         properties: {
+          mySpt,
           property1: "string",
+          property2: exampleStructPropertyType,
         },
       });
 
@@ -4327,10 +4319,32 @@ describe("Ontology Defining", () => {
         pluralDisplayName: "exampleObjectTypes",
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
-        properties: [{
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
+        properties: {
+          "bar": { type: "string" },
+          "property1": { type: "string" },
+          "property2": {
+            type: {
+              type: "struct",
+              structDefinition: { simpleProperty: "string" },
+            },
+          },
+        },
+        implementsInterfaces: [{
+          implements: exampleInterface,
+          propertyMapping: [
+            {
+              interfaceProperty: "com.palantir.mySpt",
+              mapsTo: "bar",
+            },
+            {
+              interfaceProperty: "com.palantir.property1",
+              mapsTo: "property1",
+            },
+            {
+              interfaceProperty: "com.palantir.property2",
+              mapsTo: "property2",
+            },
+          ],
         }],
       });
 
@@ -4358,8 +4372,12 @@ describe("Ontology Defining", () => {
                             "interfaceApiName": "com.palantir.exampleInterface",
                             "objectTypeParameter": "objectTypeParameter",
                             "sharedPropertyValues": {
+                              "com.palantir.mySpt": {
+                                "parameterId": "com.palantir.mySpt",
+                                "type": "parameterId",
+                              },
                               "com.palantir.property1": {
-                                "parameterId": "property1",
+                                "parameterId": "com.palantir.property1",
                                 "type": "parameterId",
                               },
                             },
@@ -4384,7 +4402,64 @@ describe("Ontology Defining", () => {
                         },
                       },
                       "parameterValidations": {
+                        "com.palantir.mySpt": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                        "com.palantir.property1": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
                         "objectTypeParameter": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -4418,33 +4493,6 @@ describe("Ontology Defining", () => {
                                   "type": "oneOf",
                                 },
                                 "type": "oneOf",
-                              },
-                              "required": {
-                                "required": {},
-                                "type": "required",
-                              },
-                            },
-                          },
-                        },
-                        "property1": {
-                          "defaultValidation": {
-                            "display": {
-                              "renderHint": {
-                                "textInput": {},
-                                "type": "textInput",
-                              },
-                              "visibility": {
-                                "editable": {},
-                                "type": "editable",
-                              },
-                            },
-                            "validation": {
-                              "allowedValues": {
-                                "text": {
-                                  "text": {},
-                                  "type": "text",
-                                },
-                                "type": "text",
                               },
                               "required": {
                                 "required": {},
@@ -4484,12 +4532,45 @@ describe("Ontology Defining", () => {
                       "successMessage": [],
                       "typeClasses": [],
                     },
+                    "entities": {
+                      "affectedInterfaceTypes": [
+                        "com.palantir.exampleInterface",
+                      ],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "objectTypeParameter",
-                      "property1",
+                      "com.palantir.mySpt",
+                      "com.palantir.property1",
                     ],
                     "parameters": {
+                      "com.palantir.mySpt": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "mySpt",
+                          "typeClasses": [],
+                        },
+                        "id": "com.palantir.mySpt",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                      "com.palantir.property1": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "property1",
+                          "typeClasses": [],
+                        },
+                        "id": "com.palantir.property1",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
                       "objectTypeParameter": {
                         "displayMetadata": {
                           "description": "",
@@ -4504,18 +4585,6 @@ describe("Ontology Defining", () => {
                             ],
                           },
                           "type": "objectTypeReference",
-                        },
-                      },
-                      "property1": {
-                        "displayMetadata": {
-                          "description": "",
-                          "displayName": "property1",
-                          "typeClasses": [],
-                        },
-                        "id": "property1",
-                        "type": {
-                          "string": {},
-                          "type": "string",
                         },
                       },
                     },
@@ -4536,8 +4605,12 @@ describe("Ontology Defining", () => {
                           "modifyInterfaceRule": {
                             "interfaceObjectToModifyParameter": "interfaceObjectToModifyParameter",
                             "sharedPropertyValues": {
+                              "com.palantir.mySpt": {
+                                "parameterId": "com.palantir.mySpt",
+                                "type": "parameterId",
+                              },
                               "com.palantir.property1": {
-                                "parameterId": "property1",
+                                "parameterId": "com.palantir.property1",
                                 "type": "parameterId",
                               },
                             },
@@ -4562,7 +4635,64 @@ describe("Ontology Defining", () => {
                         },
                       },
                       "parameterValidations": {
+                        "com.palantir.mySpt": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                        "com.palantir.property1": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
                         "interfaceObjectToModifyParameter": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -4604,33 +4734,6 @@ describe("Ontology Defining", () => {
                             },
                           },
                         },
-                        "property1": {
-                          "defaultValidation": {
-                            "display": {
-                              "renderHint": {
-                                "textInput": {},
-                                "type": "textInput",
-                              },
-                              "visibility": {
-                                "editable": {},
-                                "type": "editable",
-                              },
-                            },
-                            "validation": {
-                              "allowedValues": {
-                                "text": {
-                                  "text": {},
-                                  "type": "text",
-                                },
-                                "type": "text",
-                              },
-                              "required": {
-                                "required": {},
-                                "type": "required",
-                              },
-                            },
-                          },
-                        },
                       },
                     },
                   },
@@ -4662,12 +4765,45 @@ describe("Ontology Defining", () => {
                       "successMessage": [],
                       "typeClasses": [],
                     },
+                    "entities": {
+                      "affectedInterfaceTypes": [
+                        "com.palantir.exampleInterface",
+                      ],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "interfaceObjectToModifyParameter",
-                      "property1",
+                      "com.palantir.mySpt",
+                      "com.palantir.property1",
                     ],
                     "parameters": {
+                      "com.palantir.mySpt": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "mySpt",
+                          "typeClasses": [],
+                        },
+                        "id": "com.palantir.mySpt",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                      "com.palantir.property1": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "property1",
+                          "typeClasses": [],
+                        },
+                        "id": "com.palantir.property1",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
                       "interfaceObjectToModifyParameter": {
                         "displayMetadata": {
                           "description": "",
@@ -4682,16 +4818,2316 @@ describe("Ontology Defining", () => {
                           "type": "interfaceReference",
                         },
                       },
-                      "property1": {
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+            },
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {
+              "com.palantir.exampleInterface": {
+                "interfaceType": {
+                  "allExtendsInterfaces": [],
+                  "allLinks": [],
+                  "allProperties": [],
+                  "allPropertiesV2": {},
+                  "allPropertiesV3": {},
+                  "apiName": "com.palantir.exampleInterface",
+                  "displayMetadata": {
+                    "description": "exampleInterface",
+                    "displayName": "exampleInterface",
+                    "icon": undefined,
+                  },
+                  "extendsInterfaces": [],
+                  "links": [],
+                  "properties": [],
+                  "propertiesV2": {
+                    "com.palantir.mySpt": {
+                      "required": true,
+                      "sharedPropertyType": {
+                        "aliases": [],
+                        "apiName": "com.palantir.mySpt",
+                        "baseFormatter": undefined,
+                        "dataConstraints": undefined,
+                        "displayMetadata": {
+                          "description": undefined,
+                          "displayName": "mySpt",
+                          "visibility": "NORMAL",
+                        },
+                        "gothamMapping": undefined,
+                        "indexedForSearch": true,
+                        "type": {
+                          "string": {
+                            "analyzerOverride": undefined,
+                            "enableAsciiFolding": undefined,
+                            "isLongText": false,
+                            "supportsEfficientLeadingWildcard": false,
+                            "supportsExactMatching": true,
+                          },
+                          "type": "string",
+                        },
+                        "typeClasses": [
+                          {
+                            "kind": "render_hint",
+                            "name": "SELECTABLE",
+                          },
+                          {
+                            "kind": "render_hint",
+                            "name": "SORTABLE",
+                          },
+                        ],
+                        "valueType": undefined,
+                      },
+                    },
+                    "com.palantir.property1": {
+                      "required": true,
+                      "sharedPropertyType": {
+                        "aliases": [],
+                        "apiName": "com.palantir.property1",
+                        "baseFormatter": undefined,
+                        "dataConstraints": undefined,
+                        "displayMetadata": {
+                          "description": undefined,
+                          "displayName": "property1",
+                          "visibility": "NORMAL",
+                        },
+                        "gothamMapping": undefined,
+                        "indexedForSearch": true,
+                        "type": {
+                          "string": {
+                            "analyzerOverride": undefined,
+                            "enableAsciiFolding": undefined,
+                            "isLongText": false,
+                            "supportsEfficientLeadingWildcard": false,
+                            "supportsExactMatching": true,
+                          },
+                          "type": "string",
+                        },
+                        "typeClasses": [
+                          {
+                            "kind": "render_hint",
+                            "name": "SELECTABLE",
+                          },
+                          {
+                            "kind": "render_hint",
+                            "name": "SORTABLE",
+                          },
+                        ],
+                        "valueType": undefined,
+                      },
+                    },
+                    "com.palantir.property2": {
+                      "required": true,
+                      "sharedPropertyType": {
+                        "aliases": [],
+                        "apiName": "com.palantir.property2",
+                        "baseFormatter": undefined,
+                        "dataConstraints": undefined,
+                        "displayMetadata": {
+                          "description": undefined,
+                          "displayName": "property2",
+                          "visibility": "NORMAL",
+                        },
+                        "gothamMapping": undefined,
+                        "indexedForSearch": true,
+                        "type": {
+                          "struct": {
+                            "structFields": [
+                              {
+                                "aliases": [],
+                                "apiName": "simpleProperty",
+                                "displayMetadata": {
+                                  "description": undefined,
+                                  "displayName": "simpleProperty",
+                                },
+                                "fieldType": {
+                                  "string": {
+                                    "analyzerOverride": undefined,
+                                    "enableAsciiFolding": undefined,
+                                    "isLongText": false,
+                                    "supportsEfficientLeadingWildcard": false,
+                                    "supportsExactMatching": true,
+                                  },
+                                  "type": "string",
+                                },
+                                "typeClasses": [],
+                              },
+                            ],
+                          },
+                          "type": "struct",
+                        },
+                        "typeClasses": [],
+                        "valueType": undefined,
+                      },
+                    },
+                  },
+                  "propertiesV3": {},
+                  "searchable": true,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                },
+              },
+            },
+            "linkTypes": {},
+            "objectTypes": {
+              "com.palantir.foo": {
+                "datasources": [
+                  {
+                    "datasource": {
+                      "datasetV2": {
+                        "datasetRid": "com.palantir.foo",
+                        "propertyMapping": {
+                          "bar": {
+                            "column": "bar",
+                            "type": "column",
+                          },
+                          "property1": {
+                            "column": "property1",
+                            "type": "column",
+                          },
+                          "property2": {
+                            "struct": {
+                              "column": "property2",
+                              "mapping": {
+                                "simpleProperty": {
+                                  "apiName": "simpleProperty",
+                                  "mappings": {},
+                                },
+                              },
+                            },
+                            "type": "struct",
+                          },
+                        },
+                      },
+                      "type": "datasetV2",
+                    },
+                    "editsConfiguration": {
+                      "onlyAllowPrivilegedEdits": false,
+                    },
+                    "redacted": false,
+                    "rid": "ri.ontology.main.datasource.com.palantir.foo",
+                  },
+                ],
+                "entityMetadata": {
+                  "arePatchesEnabled": false,
+                },
+                "objectType": {
+                  "allImplementsInterfaces": {},
+                  "apiName": "com.palantir.foo",
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "exampleObjectType",
+                    "groupDisplayName": undefined,
+                    "icon": {
+                      "blueprint": {
+                        "color": "#2D72D2",
+                        "locator": "cube",
+                      },
+                      "type": "blueprint",
+                    },
+                    "pluralDisplayName": "exampleObjectTypes",
+                    "visibility": "NORMAL",
+                  },
+                  "implementsInterfaces2": [
+                    {
+                      "interfaceTypeApiName": "com.palantir.exampleInterface",
+                      "properties": {
+                        "com.palantir.mySpt": {
+                          "propertyTypeRid": "bar",
+                        },
+                        "com.palantir.property1": {
+                          "propertyTypeRid": "property1",
+                        },
+                        "com.palantir.property2": {
+                          "propertyTypeRid": "property2",
+                        },
+                      },
+                    },
+                  ],
+                  "primaryKeys": [
+                    "bar",
+                  ],
+                  "propertyTypes": {
+                    "bar": {
+                      "apiName": "bar",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Bar",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "property1": {
+                      "apiName": "property1",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Property1",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "property2": {
+                      "apiName": "property2",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Property2",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "struct": {
+                          "structFields": [
+                            {
+                              "aliases": [],
+                              "apiName": "simpleProperty",
+                              "displayMetadata": {
+                                "description": undefined,
+                                "displayName": "simpleProperty",
+                              },
+                              "fieldType": {
+                                "string": {
+                                  "analyzerOverride": undefined,
+                                  "enableAsciiFolding": undefined,
+                                  "isLongText": false,
+                                  "supportsEfficientLeadingWildcard": false,
+                                  "supportsExactMatching": true,
+                                },
+                                "type": "string",
+                              },
+                              "typeClasses": [],
+                            },
+                          ],
+                        },
+                        "type": "struct",
+                      },
+                      "typeClasses": [],
+                      "valueType": undefined,
+                    },
+                  },
+                  "redacted": false,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "titlePropertyTypeRid": "bar",
+                },
+              },
+            },
+            "sharedPropertyTypes": {
+              "com.palantir.mySpt": {
+                "sharedPropertyType": {
+                  "aliases": [],
+                  "apiName": "com.palantir.mySpt",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "mySpt",
+                    "visibility": "NORMAL",
+                  },
+                  "gothamMapping": undefined,
+                  "indexedForSearch": true,
+                  "type": {
+                    "string": {
+                      "analyzerOverride": undefined,
+                      "enableAsciiFolding": undefined,
+                      "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
+                      "supportsExactMatching": true,
+                    },
+                    "type": "string",
+                  },
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
+                  "valueType": undefined,
+                },
+              },
+              "com.palantir.property1": {
+                "sharedPropertyType": {
+                  "aliases": [],
+                  "apiName": "com.palantir.property1",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "property1",
+                    "visibility": "NORMAL",
+                  },
+                  "gothamMapping": undefined,
+                  "indexedForSearch": true,
+                  "type": {
+                    "string": {
+                      "analyzerOverride": undefined,
+                      "enableAsciiFolding": undefined,
+                      "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
+                      "supportsExactMatching": true,
+                    },
+                    "type": "string",
+                  },
+                  "typeClasses": [
+                    {
+                      "kind": "render_hint",
+                      "name": "SELECTABLE",
+                    },
+                    {
+                      "kind": "render_hint",
+                      "name": "SORTABLE",
+                    },
+                  ],
+                  "valueType": undefined,
+                },
+              },
+              "com.palantir.property2": {
+                "sharedPropertyType": {
+                  "aliases": [],
+                  "apiName": "com.palantir.property2",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "property2",
+                    "visibility": "NORMAL",
+                  },
+                  "gothamMapping": undefined,
+                  "indexedForSearch": true,
+                  "type": {
+                    "struct": {
+                      "structFields": [
+                        {
+                          "aliases": [],
+                          "apiName": "simpleProperty",
+                          "displayMetadata": {
+                            "description": undefined,
+                            "displayName": "simpleProperty",
+                          },
+                          "fieldType": {
+                            "string": {
+                              "analyzerOverride": undefined,
+                              "enableAsciiFolding": undefined,
+                              "isLongText": false,
+                              "supportsEfficientLeadingWildcard": false,
+                              "supportsExactMatching": true,
+                            },
+                            "type": "string",
+                          },
+                          "typeClasses": [],
+                        },
+                      ],
+                    },
+                    "type": "struct",
+                  },
+                  "typeClasses": [],
+                  "valueType": undefined,
+                },
+              },
+            },
+          },
+          "importedTypes": {
+            "actionTypes": [],
+            "interfaceTypes": [],
+            "linkTypes": [],
+            "objectTypes": [],
+            "sharedPropertyTypes": [],
+          },
+        }
+      `);
+    });
+
+    it("Concrete actions are properly defined", () => {
+      const exampleAction = defineAction({
+        apiName: "foo",
+        displayName: "exampleAction",
+        status: "active",
+        rules: [{
+          type: "addOrModifyObjectRuleV2",
+          addOrModifyObjectRuleV2: {
+            objectToModify: "objectToModifyParameter",
+            propertyValues: {
+              "bar": {
+                type: "parameterId",
+                parameterId: "param1",
+              },
+            },
+            structFieldValues: {},
+          },
+        }],
+        parameters: [{
+          id: "param1",
+          displayName: "param1",
+          type: "boolean",
+          validation: { required: true, allowedValues: { type: "boolean" } },
+        }],
+      });
+
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "blockData": {
+            "actionTypes": {
+              "com.palantir.foo": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "addOrModifyObjectRuleV2": {
+                            "objectToModify": "objectToModifyParameter",
+                            "propertyValues": {
+                              "bar": {
+                                "parameterId": "param1",
+                                "type": "parameterId",
+                              },
+                            },
+                            "structFieldValues": {},
+                          },
+                          "type": "addOrModifyObjectRuleV2",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "param1": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "checkbox": {},
+                                "type": "checkbox",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "boolean": {
+                                  "boolean": {},
+                                  "type": "boolean",
+                                },
+                                "type": "boolean",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.foo",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "exampleAction",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "param1",
+                    ],
+                    "parameters": {
+                      "param1": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "param1",
+                          "typeClasses": [],
+                        },
+                        "id": "param1",
+                        "type": {
+                          "boolean": {},
+                          "type": "boolean",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+            },
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedTypes": {
+            "actionTypes": [],
+            "interfaceTypes": [],
+            "linkTypes": [],
+            "objectTypes": [],
+            "sharedPropertyTypes": [],
+          },
+        }
+      `);
+    });
+
+    it("Conditional overrides on actions are properly defined", () => {
+      const exampleAction = defineAction({
+        apiName: "foo",
+        displayName: "exampleAction",
+        status: "active",
+        rules: [{
+          type: "modifyObjectRule",
+          modifyObjectRule: {
+            objectToModify: "objectToModifyParameter",
+            propertyValues: {
+              "bar": {
+                type: "parameterId",
+                parameterId: "param1",
+              },
+              "foo": {
+                type: "parameterId",
+                parameterId: "param2",
+              },
+            },
+            structFieldValues: {},
+          },
+        }],
+        parameters: [{
+          id: "param2",
+          displayName: "param2",
+          type: "string",
+          validation: {
+            required: true,
+            allowedValues: { type: "text" },
+            defaultVisibility: "editable",
+          },
+        }, {
+          id: "param1",
+          displayName: "param1",
+          type: "boolean",
+          validation: {
+            required: true,
+            allowedValues: { type: "boolean" },
+            defaultVisibility: "editable",
+            conditionalOverrides: [
+              {
+                type: "visibility",
+                condition: {
+                  type: "and",
+                  conditions: [
+                    {
+                      type: "group",
+                      name: "myGroup",
+                    },
+                    {
+                      type: "parameter",
+                      parameterId: "param2",
+                      matches: {
+                        type: "staticValue",
+                        staticValue: {
+                          type: "string",
+                          string: "foobar",
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        }, {
+          id: "objectToModifyParameter",
+          displayName: "objectToModifyParameter",
+          type: "objectTypeReference",
+          validation: {
+            required: true,
+            allowedValues: { type: "objectTypeReference", interfaceTypes: [] },
+            defaultVisibility: "editable",
+          },
+        }],
+      });
+
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "blockData": {
+            "actionTypes": {
+              "com.palantir.foo": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "modifyObjectRule": {
+                            "objectToModify": "objectToModifyParameter",
+                            "propertyValues": {
+                              "bar": {
+                                "parameterId": "param1",
+                                "type": "parameterId",
+                              },
+                              "foo": {
+                                "parameterId": "param2",
+                                "type": "parameterId",
+                              },
+                            },
+                            "structFieldValues": {},
+                          },
+                          "type": "modifyObjectRule",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "objectToModifyParameter": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "dropdown": {},
+                                "type": "dropdown",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "objectTypeReference": {
+                                  "objectTypeReference": {
+                                    "interfaceTypeRids": [],
+                                  },
+                                  "type": "objectTypeReference",
+                                },
+                                "type": "objectTypeReference",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                        "param1": {
+                          "conditionalOverrides": [
+                            {
+                              "condition": {
+                                "and": {
+                                  "conditions": [
+                                    {
+                                      "comparison": {
+                                        "left": {
+                                          "type": "userProperty",
+                                          "userProperty": {
+                                            "propertyValue": {
+                                              "groupIds": {},
+                                              "type": "groupIds",
+                                            },
+                                            "userId": {
+                                              "currentUser": {},
+                                              "type": "currentUser",
+                                            },
+                                          },
+                                        },
+                                        "operator": "INTERSECTS",
+                                        "right": {
+                                          "staticValue": {
+                                            "stringList": {
+                                              "strings": [
+                                                "myGroup",
+                                              ],
+                                            },
+                                            "type": "stringList",
+                                          },
+                                          "type": "staticValue",
+                                        },
+                                      },
+                                      "type": "comparison",
+                                    },
+                                    {
+                                      "comparison": {
+                                        "left": {
+                                          "parameterId": "param2",
+                                          "type": "parameterId",
+                                        },
+                                        "operator": "EQUALS",
+                                        "right": {
+                                          "staticValue": {
+                                            "string": "foobar",
+                                            "type": "string",
+                                          },
+                                          "type": "staticValue",
+                                        },
+                                      },
+                                      "type": "comparison",
+                                    },
+                                  ],
+                                },
+                                "type": "and",
+                              },
+                              "parameterBlockOverrides": [
+                                {
+                                  "type": "visibility",
+                                  "visibility": {
+                                    "visibility": {
+                                      "hidden": {},
+                                      "type": "hidden",
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                          ],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "checkbox": {},
+                                "type": "checkbox",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "boolean": {
+                                  "boolean": {},
+                                  "type": "boolean",
+                                },
+                                "type": "boolean",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                        "param2": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.foo",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "exampleAction",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "param2",
+                      "param1",
+                      "objectToModifyParameter",
+                    ],
+                    "parameters": {
+                      "objectToModifyParameter": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "objectToModifyParameter",
+                          "typeClasses": [],
+                        },
+                        "id": "objectToModifyParameter",
+                        "type": {
+                          "objectTypeReference": {},
+                          "type": "objectTypeReference",
+                        },
+                      },
+                      "param1": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "param1",
+                          "typeClasses": [],
+                        },
+                        "id": "param1",
+                        "type": {
+                          "boolean": {},
+                          "type": "boolean",
+                        },
+                      },
+                      "param2": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "param2",
+                          "typeClasses": [],
+                        },
+                        "id": "param2",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+            },
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedTypes": {
+            "actionTypes": [],
+            "interfaceTypes": [],
+            "linkTypes": [],
+            "objectTypes": [],
+            "sharedPropertyTypes": [],
+          },
+        }
+      `);
+    });
+
+    it("Parameter conditions are correctly validated on actions", () => {
+      expect(() =>
+        defineAction({
+          apiName: "foo",
+          displayName: "exampleAction",
+          status: "active",
+          rules: [{
+            type: "modifyObjectRule",
+            modifyObjectRule: {
+              objectToModify: "objectToModifyParameter",
+              propertyValues: {
+                "bar": {
+                  type: "parameterId",
+                  parameterId: "param1",
+                },
+                "foo": {
+                  type: "parameterId",
+                  parameterId: "param2",
+                },
+              },
+              structFieldValues: {},
+            },
+          }],
+          parameters: [{
+            id: "param1",
+            displayName: "param1",
+            type: "boolean",
+            validation: {
+              required: true,
+              allowedValues: { type: "boolean" },
+              defaultVisibility: "editable",
+              conditionalOverrides: [
+                {
+                  type: "visibility",
+                  condition: {
+                    type: "and",
+                    conditions: [
+                      {
+                        type: "group",
+                        name: "myGroup",
+                      },
+                      {
+                        type: "parameter",
+                        parameterId: "param2",
+                        matches: {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: "foobar",
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          }, {
+            id: "param2",
+            displayName: "param2",
+            type: "string",
+            validation: {
+              required: true,
+              allowedValues: { type: "text" },
+              defaultVisibility: "editable",
+            },
+          }, {
+            id: "objectToModifyParameter",
+            displayName: "objectToModifyParameter",
+            type: "objectTypeReference",
+            validation: {
+              required: true,
+              allowedValues: {
+                type: "objectTypeReference",
+                interfaceTypes: [],
+              },
+              defaultVisibility: "editable",
+            },
+          }],
+        })
+      ).toThrowError(
+        `Invariant failed: Parameter condition on param1 is referencing later parameter param2`,
+      );
+
+      expect(() =>
+        defineAction({
+          apiName: "foo",
+          displayName: "exampleAction",
+          status: "active",
+          rules: [{
+            type: "modifyObjectRule",
+            modifyObjectRule: {
+              objectToModify: "objectToModifyParameter",
+              propertyValues: {
+                "bar": {
+                  type: "parameterId",
+                  parameterId: "param1",
+                },
+                "foo": {
+                  type: "parameterId",
+                  parameterId: "param2",
+                },
+              },
+              structFieldValues: {},
+            },
+          }],
+          parameters: [{
+            id: "param1",
+            displayName: "param1",
+            type: "boolean",
+            validation: {
+              required: true,
+              allowedValues: { type: "boolean" },
+              defaultVisibility: "editable",
+              conditionalOverrides: [
+                {
+                  type: "visibility",
+                  condition: {
+                    type: "and",
+                    conditions: [
+                      {
+                        type: "group",
+                        name: "myGroup",
+                      },
+                      {
+                        type: "parameter",
+                        parameterId: "param1",
+                        matches: {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: "foobar",
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          }, {
+            id: "param2",
+            displayName: "param2",
+            type: "string",
+            validation: {
+              required: true,
+              allowedValues: { type: "text" },
+              defaultVisibility: "editable",
+            },
+          }, {
+            id: "objectToModifyParameter",
+            displayName: "objectToModifyParameter",
+            type: "objectTypeReference",
+            validation: {
+              required: true,
+              allowedValues: {
+                type: "objectTypeReference",
+                interfaceTypes: [],
+              },
+              defaultVisibility: "editable",
+            },
+          }],
+        })
+      ).toThrowError(
+        `Invariant failed: Parameter condition on param1 is referencing itself`,
+      );
+
+      expect(() =>
+        defineAction({
+          apiName: "foo",
+          displayName: "exampleAction",
+          status: "active",
+          rules: [{
+            type: "modifyObjectRule",
+            modifyObjectRule: {
+              objectToModify: "objectToModifyParameter",
+              propertyValues: {
+                "bar": {
+                  type: "parameterId",
+                  parameterId: "param1",
+                },
+                "foo": {
+                  type: "parameterId",
+                  parameterId: "param2",
+                },
+              },
+              structFieldValues: {},
+            },
+          }],
+          parameters: [{
+            id: "param1",
+            displayName: "param1",
+            type: "boolean",
+            validation: {
+              required: true,
+              allowedValues: { type: "boolean" },
+              defaultVisibility: "editable",
+              conditionalOverrides: [
+                {
+                  type: "visibility",
+                  condition: {
+                    type: "and",
+                    conditions: [
+                      {
+                        type: "group",
+                        name: "myGroup",
+                      },
+                      {
+                        type: "parameter",
+                        parameterId: "unknownParam",
+                        matches: {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: "foobar",
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          }, {
+            id: "param2",
+            displayName: "param2",
+            type: "string",
+            validation: {
+              required: true,
+              allowedValues: { type: "text" },
+              defaultVisibility: "editable",
+            },
+          }, {
+            id: "objectToModifyParameter",
+            displayName: "objectToModifyParameter",
+            type: "objectTypeReference",
+            validation: {
+              required: true,
+              allowedValues: {
+                type: "objectTypeReference",
+                interfaceTypes: [],
+              },
+              defaultVisibility: "editable",
+            },
+          }],
+        })
+      ).toThrowError(
+        `Invariant failed: Parameter condition on param1 is referencing unknown parameter unknownParam`,
+      );
+    });
+
+    it("Simple concrete actions are properly defined", () => {
+      const exampleObjectType = defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "exampleObjectType",
+        pluralDisplayName: "exampleObjectTypes",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          "bar": { type: "string" },
+          "structProp": {
+            type: {
+              type: "struct",
+              structDefinition: { simpleProperty: "string" },
+            },
+          },
+        },
+      });
+
+      const createObjectActionType = defineCreateObjectAction(
+        exampleObjectType,
+      );
+      const modifyObjectActionType = defineModifyObjectAction(
+        exampleObjectType,
+      );
+      const deleteObjectActionType = defineDeleteObjectAction(
+        exampleObjectType,
+      );
+
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "blockData": {
+            "actionTypes": {
+              "com.palantir.create-object-foo": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "addObjectRule": {
+                            "objectTypeId": "com.palantir.foo",
+                            "propertyValues": {
+                              "bar": {
+                                "parameterId": "bar",
+                                "type": "parameterId",
+                              },
+                            },
+                            "structFieldValues": {},
+                          },
+                          "type": "addObjectRule",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "bar": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.create-object-foo",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "Create exampleObjectType",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.foo",
+                      ],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "bar",
+                    ],
+                    "parameters": {
+                      "bar": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Bar",
+                          "typeClasses": [],
+                        },
+                        "id": "bar",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+              "com.palantir.delete-object-foo": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "deleteObjectRule": {
+                            "objectToDelete": "objectToDeleteParameter",
+                          },
+                          "type": "deleteObjectRule",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "objectToDeleteParameter": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "dropdown": {},
+                                "type": "dropdown",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "objectQuery": {
+                                  "objectQuery": {},
+                                  "type": "objectQuery",
+                                },
+                                "type": "objectQuery",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.delete-object-foo",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "Delete exampleObjectType",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.foo",
+                      ],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "objectToDeleteParameter",
+                    ],
+                    "parameters": {
+                      "objectToDeleteParameter": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Delete object",
+                          "typeClasses": [],
+                        },
+                        "id": "objectToDeleteParameter",
+                        "type": {
+                          "objectReference": {
+                            "objectTypeId": "com.palantir.foo",
+                          },
+                          "type": "objectReference",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+              "com.palantir.modify-object-foo": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "modifyObjectRule": {
+                            "objectToModify": "objectToModifyParameter",
+                            "propertyValues": {},
+                            "structFieldValues": {},
+                          },
+                          "type": "modifyObjectRule",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "objectToModifyParameter": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "dropdown": {},
+                                "type": "dropdown",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "objectQuery": {
+                                  "objectQuery": {},
+                                  "type": "objectQuery",
+                                },
+                                "type": "objectQuery",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.modify-object-foo",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "Modify exampleObjectType",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.foo",
+                      ],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "objectToModifyParameter",
+                    ],
+                    "parameters": {
+                      "objectToModifyParameter": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Modify object",
+                          "typeClasses": [],
+                        },
+                        "id": "objectToModifyParameter",
+                        "type": {
+                          "objectReference": {
+                            "objectTypeId": "com.palantir.foo",
+                          },
+                          "type": "objectReference",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+            },
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {
+              "com.palantir.foo": {
+                "datasources": [
+                  {
+                    "datasource": {
+                      "datasetV2": {
+                        "datasetRid": "com.palantir.foo",
+                        "propertyMapping": {
+                          "bar": {
+                            "column": "bar",
+                            "type": "column",
+                          },
+                          "structProp": {
+                            "struct": {
+                              "column": "structProp",
+                              "mapping": {
+                                "simpleProperty": {
+                                  "apiName": "simpleProperty",
+                                  "mappings": {},
+                                },
+                              },
+                            },
+                            "type": "struct",
+                          },
+                        },
+                      },
+                      "type": "datasetV2",
+                    },
+                    "editsConfiguration": {
+                      "onlyAllowPrivilegedEdits": false,
+                    },
+                    "redacted": false,
+                    "rid": "ri.ontology.main.datasource.com.palantir.foo",
+                  },
+                ],
+                "entityMetadata": {
+                  "arePatchesEnabled": false,
+                },
+                "objectType": {
+                  "allImplementsInterfaces": {},
+                  "apiName": "com.palantir.foo",
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "exampleObjectType",
+                    "groupDisplayName": undefined,
+                    "icon": {
+                      "blueprint": {
+                        "color": "#2D72D2",
+                        "locator": "cube",
+                      },
+                      "type": "blueprint",
+                    },
+                    "pluralDisplayName": "exampleObjectTypes",
+                    "visibility": "NORMAL",
+                  },
+                  "implementsInterfaces2": [],
+                  "primaryKeys": [
+                    "bar",
+                  ],
+                  "propertyTypes": {
+                    "bar": {
+                      "apiName": "bar",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Bar",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "structProp": {
+                      "apiName": "structProp",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "StructProp",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "struct": {
+                          "structFields": [
+                            {
+                              "aliases": [],
+                              "apiName": "simpleProperty",
+                              "displayMetadata": {
+                                "description": undefined,
+                                "displayName": "simpleProperty",
+                              },
+                              "fieldType": {
+                                "string": {
+                                  "analyzerOverride": undefined,
+                                  "enableAsciiFolding": undefined,
+                                  "isLongText": false,
+                                  "supportsEfficientLeadingWildcard": false,
+                                  "supportsExactMatching": true,
+                                },
+                                "type": "string",
+                              },
+                              "typeClasses": [],
+                            },
+                          ],
+                        },
+                        "type": "struct",
+                      },
+                      "typeClasses": [],
+                      "valueType": undefined,
+                    },
+                  },
+                  "redacted": false,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "titlePropertyTypeRid": "bar",
+                },
+              },
+            },
+            "sharedPropertyTypes": {},
+          },
+          "importedTypes": {
+            "actionTypes": [],
+            "interfaceTypes": [],
+            "linkTypes": [],
+            "objectTypes": [],
+            "sharedPropertyTypes": [],
+          },
+        }
+      `);
+    });
+
+    it("ModifyObjectRule requires objectToModify parameter", () => {
+      const sampleObject = defineObject({
+        apiName: "sampleObject",
+        displayName: "Test Object",
+        description: "Sample object description",
+        primaryKeyPropertyApiName: "id",
+        pluralDisplayName: "tests",
+        titlePropertyApiName: "name",
+        properties: {
+          "name": {
+            type: "string",
+            description: "The name of the test object",
+          },
+          "id": { type: "string", description: "The ID of the test object" },
+        },
+      });
+      expect(() =>
+        defineAction({
+          apiName: "foo",
+          displayName: "exampleAction",
+          status: "active",
+          rules: [{
+            type: "modifyObjectRule",
+            modifyObjectRule: {
+              objectToModify: "sampleObject",
+              propertyValues: {
+                "name": {
+                  type: "parameterId",
+                  parameterId: "name",
+                },
+              },
+              structFieldValues: {},
+            },
+          }],
+          parameters: [{
+            id: "name",
+            displayName: "Name",
+            type: "string",
+            validation: { required: true, allowedValues: { type: "text" } },
+          }],
+        })
+      ).toThrowError(
+        "Invariant failed: Object to modify parameter must be defined in parameters",
+      );
+    });
+
+    it("Simple interface actions (without object types) are properly defined", () => {
+      const exampleInterface = defineInterface({
+        apiName: "exampleInterface",
+        properties: {
+          property1: "string",
+        },
+      });
+      const createAction = defineCreateInterfaceObjectAction(exampleInterface);
+      const modifyAction = defineModifyInterfaceObjectAction(exampleInterface);
+
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "blockData": {
+            "actionTypes": {
+              "com.palantir.create-example-interface": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "addInterfaceRule": {
+                            "interfaceApiName": "com.palantir.exampleInterface",
+                            "objectTypeParameter": "objectTypeParameter",
+                            "sharedPropertyValues": {
+                              "com.palantir.property1": {
+                                "parameterId": "com.palantir.property1",
+                                "type": "parameterId",
+                              },
+                            },
+                          },
+                          "type": "addInterfaceRule",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "com.palantir.property1": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                        "objectTypeParameter": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "dropdown": {},
+                                "type": "dropdown",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "objectTypeReference": {
+                                  "objectTypeReference": {
+                                    "interfaceTypeRids": [
+                                      "com.palantir.exampleInterface",
+                                    ],
+                                  },
+                                  "type": "objectTypeReference",
+                                },
+                                "type": "objectTypeReference",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.create-example-interface",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "Create exampleInterface",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [
+                        "com.palantir.exampleInterface",
+                      ],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "objectTypeParameter",
+                      "com.palantir.property1",
+                    ],
+                    "parameters": {
+                      "com.palantir.property1": {
                         "displayMetadata": {
                           "description": "",
                           "displayName": "property1",
                           "typeClasses": [],
                         },
-                        "id": "property1",
+                        "id": "com.palantir.property1",
                         "type": {
                           "string": {},
                           "type": "string",
+                        },
+                      },
+                      "objectTypeParameter": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Object type to create",
+                          "typeClasses": [],
+                        },
+                        "id": "objectTypeParameter",
+                        "type": {
+                          "objectTypeReference": {
+                            "interfaceTypeRids": [
+                              "com.palantir.exampleInterface",
+                            ],
+                          },
+                          "type": "objectTypeReference",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+              "com.palantir.modify-example-interface": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "modifyInterfaceRule": {
+                            "interfaceObjectToModifyParameter": "interfaceObjectToModifyParameter",
+                            "sharedPropertyValues": {
+                              "com.palantir.property1": {
+                                "parameterId": "com.palantir.property1",
+                                "type": "parameterId",
+                              },
+                            },
+                          },
+                          "type": "modifyInterfaceRule",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "com.palantir.property1": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                        "interfaceObjectToModifyParameter": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "dropdown": {},
+                                "type": "dropdown",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "interfaceObjectQuery": {
+                                  "interfaceObjectQuery": {},
+                                  "type": "interfaceObjectQuery",
+                                },
+                                "type": "interfaceObjectQuery",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.modify-example-interface",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "Modify exampleInterface",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [
+                        "com.palantir.exampleInterface",
+                      ],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "interfaceObjectToModifyParameter",
+                      "com.palantir.property1",
+                    ],
+                    "parameters": {
+                      "com.palantir.property1": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "property1",
+                          "typeClasses": [],
+                        },
+                        "id": "com.palantir.property1",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                      "interfaceObjectToModifyParameter": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Object type to modify",
+                          "typeClasses": [],
+                        },
+                        "id": "interfaceObjectToModifyParameter",
+                        "type": {
+                          "interfaceReference": {
+                            "interfaceTypeRid": "com.palantir.exampleInterface",
+                          },
+                          "type": "interfaceReference",
                         },
                       },
                     },
@@ -4775,104 +7211,7 @@ describe("Ontology Defining", () => {
               },
             },
             "linkTypes": {},
-            "objectTypes": {
-              "com.palantir.foo": {
-                "datasources": [
-                  {
-                    "datasource": {
-                      "datasetV2": {
-                        "datasetRid": "com.palantir.foo",
-                        "propertyMapping": {
-                          "bar": {
-                            "column": "bar",
-                            "type": "column",
-                          },
-                        },
-                      },
-                      "type": "datasetV2",
-                    },
-                    "editsConfiguration": {
-                      "onlyAllowPrivilegedEdits": false,
-                    },
-                    "redacted": false,
-                    "rid": "ri.ontology.main.datasource.com.palantir.foo",
-                  },
-                ],
-                "entityMetadata": {
-                  "arePatchesEnabled": false,
-                },
-                "objectType": {
-                  "allImplementsInterfaces": {},
-                  "apiName": "com.palantir.foo",
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "exampleObjectType",
-                    "groupDisplayName": undefined,
-                    "icon": {
-                      "blueprint": {
-                        "color": "#2D72D2",
-                        "locator": "cube",
-                      },
-                      "type": "blueprint",
-                    },
-                    "pluralDisplayName": "exampleObjectTypes",
-                    "visibility": "NORMAL",
-                  },
-                  "implementsInterfaces2": [],
-                  "primaryKeys": [
-                    "bar",
-                  ],
-                  "propertyTypes": {
-                    "bar": {
-                      "apiName": "bar",
-                      "baseFormatter": undefined,
-                      "dataConstraints": undefined,
-                      "displayMetadata": {
-                        "description": undefined,
-                        "displayName": "Bar",
-                        "visibility": "NORMAL",
-                      },
-                      "indexedForSearch": true,
-                      "inlineAction": undefined,
-                      "ruleSetBinding": undefined,
-                      "sharedPropertyTypeApiName": undefined,
-                      "sharedPropertyTypeRid": undefined,
-                      "status": {
-                        "active": {},
-                        "type": "active",
-                      },
-                      "type": {
-                        "string": {
-                          "analyzerOverride": undefined,
-                          "enableAsciiFolding": undefined,
-                          "isLongText": false,
-                          "supportsEfficientLeadingWildcard": false,
-                          "supportsExactMatching": true,
-                        },
-                        "type": "string",
-                      },
-                      "typeClasses": [
-                        {
-                          "kind": "render_hint",
-                          "name": "SELECTABLE",
-                        },
-                        {
-                          "kind": "render_hint",
-                          "name": "SORTABLE",
-                        },
-                      ],
-                      "valueType": undefined,
-                    },
-                  },
-                  "redacted": false,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                  "titlePropertyTypeRid": "bar",
-                },
-              },
-            },
+            "objectTypes": {},
             "sharedPropertyTypes": {
               "com.palantir.property1": {
                 "sharedPropertyType": {
@@ -4923,1238 +7262,6 @@ describe("Ontology Defining", () => {
       `);
     });
 
-    it("Concrete actions are properly defined", () => {
-      const exampleAction = defineAction({
-        apiName: "foo",
-        displayName: "exampleAction",
-        status: "active",
-        rules: [{
-          type: "addOrModifyObjectRuleV2",
-          addOrModifyObjectRuleV2: {
-            objectToModify: "objectToModifyParameter",
-            propertyValues: {
-              "bar": {
-                type: "parameterId",
-                parameterId: "param1",
-              },
-            },
-            structFieldValues: {},
-          },
-        }],
-        parameters: [{
-          id: "param1",
-          displayName: "param1",
-          type: "boolean",
-          validation: { required: true, allowedValues: { type: "boolean" } },
-        }],
-      });
-
-      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
-        {
-         "blockData": {
-           "actionTypes": {
-             "com.palantir.foo": {
-               "actionType": {
-                 "actionTypeLogic": {
-                   "logic": {
-                     "rules": [
-                       {
-                         "addOrModifyObjectRuleV2": {
-                           "objectToModify": "objectToModifyParameter",
-                           "propertyValues": {
-                             "bar": {
-                               "parameterId": "param1",
-                               "type": "parameterId",
-                             },
-                           },
-                           "structFieldValues": {},
-                         },
-                         "type": "addOrModifyObjectRuleV2",
-                       },
-                     ],
-                   },
-                   "validation": {
-                     "actionTypeLevelValidation": {
-                       "rules": {
-                         "0": {
-                           "condition": {
-                             "true": {},
-                             "type": "true",
-                           },
-                           "displayMetadata": {
-                             "failureMessage": "",
-                             "typeClasses": [],
-                           },
-                         },
-                       },
-                     },
-                     "parameterValidations": {
-                       "param1": {
-                         "defaultValidation": {
-                           "display": {
-                             "renderHint": {
-                               "checkbox": {},
-                               "type": "checkbox",
-                             },
-                             "visibility": {
-                               "editable": {},
-                               "type": "editable",
-                             },
-                           },
-                           "validation": {
-                             "allowedValues": {
-                               "boolean": {
-                                 "boolean": {},
-                                 "type": "boolean",
-                               },
-                               "type": "boolean",
-                             },
-                             "required": {
-                               "required": {},
-                               "type": "required",
-                             },
-                           },
-                         },
-                       },
-                     },
-                   },
-                 },
-                 "metadata": {
-                   "apiName": "com.palantir.foo",
-                   "displayMetadata": {
-                     "configuration": {
-                       "defaultLayout": "FORM",
-                       "displayAndFormat": {
-                         "table": {
-                           "columnWidthByParameterRid": {},
-                           "enableFileImport": true,
-                           "fitHorizontally": false,
-                           "frozenColumnCount": 0,
-                           "rowHeightInLines": 1,
-                         },
-                       },
-                       "enableLayoutUserSwitch": false,
-                     },
-                     "description": "",
-                     "displayName": "exampleAction",
-                     "icon": {
-                       "blueprint": {
-                         "color": "#000000",
-                         "locator": "edit",
-                       },
-                       "type": "blueprint",
-                     },
-                     "successMessage": [],
-                     "typeClasses": [],
-                   },
-                   "formContentOrdering": [],
-                   "parameterOrdering": [
-                     "param1",
-                   ],
-                   "parameters": {
-                     "param1": {
-                       "displayMetadata": {
-                         "description": "",
-                         "displayName": "param1",
-                         "typeClasses": [],
-                       },
-                       "id": "param1",
-                       "type": {
-                         "boolean": {},
-                         "type": "boolean",
-                       },
-                     },
-                   },
-                   "sections": {},
-                   "status": {
-                     "active": {},
-                     "type": "active",
-                   },
-                 },
-               },
-             },
-           },
-           "blockPermissionInformation": {
-             "actionTypes": {},
-             "linkTypes": {},
-             "objectTypes": {},
-           },
-           "interfaceTypes": {},
-           "linkTypes": {},
-           "objectTypes": {},
-           "sharedPropertyTypes": {},
-         },
-         "importedTypes": {
-           "actionTypes": [],
-           "interfaceTypes": [],
-           "linkTypes": [],
-           "objectTypes": [],
-           "sharedPropertyTypes": [],
-         },
-       }
-`);
-    });
-
-    it("Simple concrete actions are properly defined", () => {
-      const exampleObjectType = defineObject({
-        titlePropertyApiName: "bar",
-        displayName: "exampleObjectType",
-        pluralDisplayName: "exampleObjectTypes",
-        apiName: "foo",
-        primaryKeyPropertyApiName: "bar",
-        properties: [{
-          apiName: "bar",
-          type: "string",
-          displayName: "Bar",
-        }],
-      });
-
-      const createObjectActionType = defineCreateObjectAction(
-        exampleObjectType,
-      );
-      const modifyObjectActionType = defineModifyObjectAction(
-        exampleObjectType,
-      );
-      const deleteObjectActionType = defineDeleteObjectAction(
-        exampleObjectType,
-      );
-
-      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
-        {
-          "blockData": {
-            "actionTypes": {
-              "com.palantir.create-object-foo": {
-                "actionType": {
-                  "actionTypeLogic": {
-                    "logic": {
-                      "rules": [
-                        {
-                          "addObjectRule": {
-                            "objectTypeId": "com.palantir.foo",
-                            "propertyValues": {
-                              "bar": {
-                                "parameterId": "bar",
-                                "type": "parameterId",
-                              },
-                            },
-                            "structFieldValues": {},
-                          },
-                          "type": "addObjectRule",
-                        },
-                      ],
-                    },
-                    "validation": {
-                      "actionTypeLevelValidation": {
-                        "rules": {
-                          "0": {
-                            "condition": {
-                              "true": {},
-                              "type": "true",
-                            },
-                            "displayMetadata": {
-                              "failureMessage": "",
-                              "typeClasses": [],
-                            },
-                          },
-                        },
-                      },
-                      "parameterValidations": {
-                        "bar": {
-                          "defaultValidation": {
-                            "display": {
-                              "renderHint": {
-                                "textInput": {},
-                                "type": "textInput",
-                              },
-                              "visibility": {
-                                "editable": {},
-                                "type": "editable",
-                              },
-                            },
-                            "validation": {
-                              "allowedValues": {
-                                "text": {
-                                  "text": {},
-                                  "type": "text",
-                                },
-                                "type": "text",
-                              },
-                              "required": {
-                                "required": {},
-                                "type": "required",
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                  "metadata": {
-                    "apiName": "com.palantir.create-object-foo",
-                    "displayMetadata": {
-                      "configuration": {
-                        "defaultLayout": "FORM",
-                        "displayAndFormat": {
-                          "table": {
-                            "columnWidthByParameterRid": {},
-                            "enableFileImport": true,
-                            "fitHorizontally": false,
-                            "frozenColumnCount": 0,
-                            "rowHeightInLines": 1,
-                          },
-                        },
-                        "enableLayoutUserSwitch": false,
-                      },
-                      "description": "",
-                      "displayName": "Create exampleObjectType",
-                      "icon": {
-                        "blueprint": {
-                          "color": "#000000",
-                          "locator": "edit",
-                        },
-                        "type": "blueprint",
-                      },
-                      "successMessage": [],
-                      "typeClasses": [],
-                    },
-                    "formContentOrdering": [],
-                    "parameterOrdering": [
-                      "bar",
-                    ],
-                    "parameters": {
-                      "bar": {
-                        "displayMetadata": {
-                          "description": "",
-                          "displayName": "Bar",
-                          "typeClasses": [],
-                        },
-                        "id": "bar",
-                        "type": {
-                          "string": {},
-                          "type": "string",
-                        },
-                      },
-                    },
-                    "sections": {},
-                    "status": {
-                      "active": {},
-                      "type": "active",
-                    },
-                  },
-                },
-              },
-              "com.palantir.delete-object-foo": {
-                "actionType": {
-                  "actionTypeLogic": {
-                    "logic": {
-                      "rules": [
-                        {
-                          "deleteObjectRule": {
-                            "objectToDelete": "objectToDeleteParameter",
-                          },
-                          "type": "deleteObjectRule",
-                        },
-                      ],
-                    },
-                    "validation": {
-                      "actionTypeLevelValidation": {
-                        "rules": {
-                          "0": {
-                            "condition": {
-                              "true": {},
-                              "type": "true",
-                            },
-                            "displayMetadata": {
-                              "failureMessage": "",
-                              "typeClasses": [],
-                            },
-                          },
-                        },
-                      },
-                      "parameterValidations": {
-                        "objectToDeleteParameter": {
-                          "defaultValidation": {
-                            "display": {
-                              "renderHint": {
-                                "dropdown": {},
-                                "type": "dropdown",
-                              },
-                              "visibility": {
-                                "editable": {},
-                                "type": "editable",
-                              },
-                            },
-                            "validation": {
-                              "allowedValues": {
-                                "objectQuery": {
-                                  "objectQuery": {},
-                                  "type": "objectQuery",
-                                },
-                                "type": "objectQuery",
-                              },
-                              "required": {
-                                "required": {},
-                                "type": "required",
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                  "metadata": {
-                    "apiName": "com.palantir.delete-object-foo",
-                    "displayMetadata": {
-                      "configuration": {
-                        "defaultLayout": "FORM",
-                        "displayAndFormat": {
-                          "table": {
-                            "columnWidthByParameterRid": {},
-                            "enableFileImport": true,
-                            "fitHorizontally": false,
-                            "frozenColumnCount": 0,
-                            "rowHeightInLines": 1,
-                          },
-                        },
-                        "enableLayoutUserSwitch": false,
-                      },
-                      "description": "",
-                      "displayName": "Delete exampleObjectType",
-                      "icon": {
-                        "blueprint": {
-                          "color": "#000000",
-                          "locator": "edit",
-                        },
-                        "type": "blueprint",
-                      },
-                      "successMessage": [],
-                      "typeClasses": [],
-                    },
-                    "formContentOrdering": [],
-                    "parameterOrdering": [
-                      "objectToDeleteParameter",
-                    ],
-                    "parameters": {
-                      "objectToDeleteParameter": {
-                        "displayMetadata": {
-                          "description": "",
-                          "displayName": "Delete object",
-                          "typeClasses": [],
-                        },
-                        "id": "objectToDeleteParameter",
-                        "type": {
-                          "objectReference": {
-                            "objectTypeId": "com.palantir.foo",
-                          },
-                          "type": "objectReference",
-                        },
-                      },
-                    },
-                    "sections": {},
-                    "status": {
-                      "active": {},
-                      "type": "active",
-                    },
-                  },
-                },
-              },
-              "com.palantir.modify-object-foo": {
-                "actionType": {
-                  "actionTypeLogic": {
-                    "logic": {
-                      "rules": [
-                        {
-                          "modifyObjectRule": {
-                            "objectToModify": "objectToModifyParameter",
-                            "propertyValues": {
-                              "bar": {
-                                "parameterId": "bar",
-                                "type": "parameterId",
-                              },
-                            },
-                            "structFieldValues": {},
-                          },
-                          "type": "modifyObjectRule",
-                        },
-                      ],
-                    },
-                    "validation": {
-                      "actionTypeLevelValidation": {
-                        "rules": {
-                          "0": {
-                            "condition": {
-                              "true": {},
-                              "type": "true",
-                            },
-                            "displayMetadata": {
-                              "failureMessage": "",
-                              "typeClasses": [],
-                            },
-                          },
-                        },
-                      },
-                      "parameterValidations": {
-                        "bar": {
-                          "defaultValidation": {
-                            "display": {
-                              "renderHint": {
-                                "textInput": {},
-                                "type": "textInput",
-                              },
-                              "visibility": {
-                                "editable": {},
-                                "type": "editable",
-                              },
-                            },
-                            "validation": {
-                              "allowedValues": {
-                                "text": {
-                                  "text": {},
-                                  "type": "text",
-                                },
-                                "type": "text",
-                              },
-                              "required": {
-                                "notRequired": {},
-                                "type": "notRequired",
-                              },
-                            },
-                          },
-                        },
-                        "objectToModifyParameter": {
-                          "defaultValidation": {
-                            "display": {
-                              "renderHint": {
-                                "dropdown": {},
-                                "type": "dropdown",
-                              },
-                              "visibility": {
-                                "editable": {},
-                                "type": "editable",
-                              },
-                            },
-                            "validation": {
-                              "allowedValues": {
-                                "objectQuery": {
-                                  "objectQuery": {},
-                                  "type": "objectQuery",
-                                },
-                                "type": "objectQuery",
-                              },
-                              "required": {
-                                "required": {},
-                                "type": "required",
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                  "metadata": {
-                    "apiName": "com.palantir.modify-object-foo",
-                    "displayMetadata": {
-                      "configuration": {
-                        "defaultLayout": "FORM",
-                        "displayAndFormat": {
-                          "table": {
-                            "columnWidthByParameterRid": {},
-                            "enableFileImport": true,
-                            "fitHorizontally": false,
-                            "frozenColumnCount": 0,
-                            "rowHeightInLines": 1,
-                          },
-                        },
-                        "enableLayoutUserSwitch": false,
-                      },
-                      "description": "",
-                      "displayName": "Modify exampleObjectType",
-                      "icon": {
-                        "blueprint": {
-                          "color": "#000000",
-                          "locator": "edit",
-                        },
-                        "type": "blueprint",
-                      },
-                      "successMessage": [],
-                      "typeClasses": [],
-                    },
-                    "formContentOrdering": [],
-                    "parameterOrdering": [
-                      "objectToModifyParameter",
-                      "bar",
-                    ],
-                    "parameters": {
-                      "bar": {
-                        "displayMetadata": {
-                          "description": "",
-                          "displayName": "Bar",
-                          "typeClasses": [],
-                        },
-                        "id": "bar",
-                        "type": {
-                          "string": {},
-                          "type": "string",
-                        },
-                      },
-                      "objectToModifyParameter": {
-                        "displayMetadata": {
-                          "description": "",
-                          "displayName": "Modify object",
-                          "typeClasses": [],
-                        },
-                        "id": "objectToModifyParameter",
-                        "type": {
-                          "objectReference": {
-                            "objectTypeId": "com.palantir.foo",
-                          },
-                          "type": "objectReference",
-                        },
-                      },
-                    },
-                    "sections": {},
-                    "status": {
-                      "active": {},
-                      "type": "active",
-                    },
-                  },
-                },
-              },
-            },
-            "blockPermissionInformation": {
-              "actionTypes": {},
-              "linkTypes": {},
-              "objectTypes": {},
-            },
-            "interfaceTypes": {},
-            "linkTypes": {},
-            "objectTypes": {
-              "com.palantir.foo": {
-                "datasources": [
-                  {
-                    "datasource": {
-                      "datasetV2": {
-                        "datasetRid": "com.palantir.foo",
-                        "propertyMapping": {
-                          "bar": {
-                            "column": "bar",
-                            "type": "column",
-                          },
-                        },
-                      },
-                      "type": "datasetV2",
-                    },
-                    "editsConfiguration": {
-                      "onlyAllowPrivilegedEdits": false,
-                    },
-                    "redacted": false,
-                    "rid": "ri.ontology.main.datasource.com.palantir.foo",
-                  },
-                ],
-                "entityMetadata": {
-                  "arePatchesEnabled": false,
-                },
-                "objectType": {
-                  "allImplementsInterfaces": {},
-                  "apiName": "com.palantir.foo",
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "exampleObjectType",
-                    "groupDisplayName": undefined,
-                    "icon": {
-                      "blueprint": {
-                        "color": "#2D72D2",
-                        "locator": "cube",
-                      },
-                      "type": "blueprint",
-                    },
-                    "pluralDisplayName": "exampleObjectTypes",
-                    "visibility": "NORMAL",
-                  },
-                  "implementsInterfaces2": [],
-                  "primaryKeys": [
-                    "bar",
-                  ],
-                  "propertyTypes": {
-                    "bar": {
-                      "apiName": "bar",
-                      "baseFormatter": undefined,
-                      "dataConstraints": undefined,
-                      "displayMetadata": {
-                        "description": undefined,
-                        "displayName": "Bar",
-                        "visibility": "NORMAL",
-                      },
-                      "indexedForSearch": true,
-                      "inlineAction": undefined,
-                      "ruleSetBinding": undefined,
-                      "sharedPropertyTypeApiName": undefined,
-                      "sharedPropertyTypeRid": undefined,
-                      "status": {
-                        "active": {},
-                        "type": "active",
-                      },
-                      "type": {
-                        "string": {
-                          "analyzerOverride": undefined,
-                          "enableAsciiFolding": undefined,
-                          "isLongText": false,
-                          "supportsEfficientLeadingWildcard": false,
-                          "supportsExactMatching": true,
-                        },
-                        "type": "string",
-                      },
-                      "typeClasses": [
-                        {
-                          "kind": "render_hint",
-                          "name": "SELECTABLE",
-                        },
-                        {
-                          "kind": "render_hint",
-                          "name": "SORTABLE",
-                        },
-                      ],
-                      "valueType": undefined,
-                    },
-                  },
-                  "redacted": false,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                  "titlePropertyTypeRid": "bar",
-                },
-              },
-            },
-            "sharedPropertyTypes": {},
-          },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
-          },
-        }
-      `);
-    });
-
-    it("ModifyObjectRule requires objectToModify parameter", () => {
-      const sampleObject = defineObject({
-        apiName: "sampleObject",
-        displayName: "Test Object",
-        description: "Sample object description",
-        primaryKeyPropertyApiName: "id",
-        pluralDisplayName: "tests",
-        titlePropertyApiName: "name",
-        properties: [{
-          apiName: "name",
-          type: "string",
-          displayName: "Name",
-          description: "The name of the test object",
-        }, {
-          apiName: "id",
-          type: "string",
-          displayName: "ID",
-          description: "The ID of the test object",
-        }],
-      });
-      expect(() =>
-        defineAction({
-          apiName: "foo",
-          displayName: "exampleAction",
-          status: "active",
-          rules: [{
-            type: "modifyObjectRule",
-            modifyObjectRule: {
-              objectToModify: "sampleObject",
-              propertyValues: {
-                "name": {
-                  type: "parameterId",
-                  parameterId: "name",
-                },
-              },
-              structFieldValues: {},
-            },
-          }],
-          parameters: [{
-            id: "name",
-            displayName: "Name",
-            type: "string",
-            validation: { required: true, allowedValues: { type: "text" } },
-          }],
-        })
-      ).toThrowError(
-        "Invariant failed: Object to modify parameter must be defined in parameters",
-      );
-    });
-
-    it("Simple interface actions (without object types) are properly defined", () => {
-      const exampleInterface = defineInterface({
-        apiName: "exampleInterface",
-        properties: {
-          property1: "string",
-        },
-      });
-      const createAction = defineCreateInterfaceObjectAction(exampleInterface);
-      const modifyAction = defineModifyInterfaceObjectAction(exampleInterface);
-
-      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
-      {
-        "blockData": {
-          "actionTypes": {
-            "com.palantir.create-example-interface": {
-              "actionType": {
-                "actionTypeLogic": {
-                  "logic": {
-                    "rules": [
-                      {
-                        "addInterfaceRule": {
-                          "interfaceApiName": "com.palantir.exampleInterface",
-                          "objectTypeParameter": "objectTypeParameter",
-                          "sharedPropertyValues": {
-                            "com.palantir.property1": {
-                              "parameterId": "property1",
-                              "type": "parameterId",
-                            },
-                          },
-                        },
-                        "type": "addInterfaceRule",
-                      },
-                    ],
-                  },
-                  "validation": {
-                    "actionTypeLevelValidation": {
-                      "rules": {
-                        "0": {
-                          "condition": {
-                            "true": {},
-                            "type": "true",
-                          },
-                          "displayMetadata": {
-                            "failureMessage": "",
-                            "typeClasses": [],
-                          },
-                        },
-                      },
-                    },
-                    "parameterValidations": {
-                      "objectTypeParameter": {
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "dropdown": {},
-                              "type": "dropdown",
-                            },
-                            "visibility": {
-                              "editable": {},
-                              "type": "editable",
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "objectTypeReference": {
-                                "objectTypeReference": {
-                                  "interfaceTypeRids": [
-                                    "com.palantir.exampleInterface",
-                                  ],
-                                },
-                                "type": "objectTypeReference",
-                              },
-                              "type": "objectTypeReference",
-                            },
-                            "required": {
-                              "required": {},
-                              "type": "required",
-                            },
-                          },
-                        },
-                      },
-                      "property1": {
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "textInput": {},
-                              "type": "textInput",
-                            },
-                            "visibility": {
-                              "editable": {},
-                              "type": "editable",
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "text": {
-                                "text": {},
-                                "type": "text",
-                              },
-                              "type": "text",
-                            },
-                            "required": {
-                              "required": {},
-                              "type": "required",
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                "metadata": {
-                  "apiName": "com.palantir.create-example-interface",
-                  "displayMetadata": {
-                    "configuration": {
-                      "defaultLayout": "FORM",
-                      "displayAndFormat": {
-                        "table": {
-                          "columnWidthByParameterRid": {},
-                          "enableFileImport": true,
-                          "fitHorizontally": false,
-                          "frozenColumnCount": 0,
-                          "rowHeightInLines": 1,
-                        },
-                      },
-                      "enableLayoutUserSwitch": false,
-                    },
-                    "description": "",
-                    "displayName": "Create exampleInterface",
-                    "icon": {
-                      "blueprint": {
-                        "color": "#000000",
-                        "locator": "edit",
-                      },
-                      "type": "blueprint",
-                    },
-                    "successMessage": [],
-                    "typeClasses": [],
-                  },
-                  "formContentOrdering": [],
-                  "parameterOrdering": [
-                    "objectTypeParameter",
-                    "property1",
-                  ],
-                  "parameters": {
-                    "objectTypeParameter": {
-                      "displayMetadata": {
-                        "description": "",
-                        "displayName": "Object type to create",
-                        "typeClasses": [],
-                      },
-                      "id": "objectTypeParameter",
-                      "type": {
-                        "objectTypeReference": {
-                          "interfaceTypeRids": [
-                            "com.palantir.exampleInterface",
-                          ],
-                        },
-                        "type": "objectTypeReference",
-                      },
-                    },
-                    "property1": {
-                      "displayMetadata": {
-                        "description": "",
-                        "displayName": "property1",
-                        "typeClasses": [],
-                      },
-                      "id": "property1",
-                      "type": {
-                        "string": {},
-                        "type": "string",
-                      },
-                    },
-                  },
-                  "sections": {},
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                },
-              },
-            },
-            "com.palantir.modify-example-interface": {
-              "actionType": {
-                "actionTypeLogic": {
-                  "logic": {
-                    "rules": [
-                      {
-                        "modifyInterfaceRule": {
-                          "interfaceObjectToModifyParameter": "interfaceObjectToModifyParameter",
-                          "sharedPropertyValues": {
-                            "com.palantir.property1": {
-                              "parameterId": "property1",
-                              "type": "parameterId",
-                            },
-                          },
-                        },
-                        "type": "modifyInterfaceRule",
-                      },
-                    ],
-                  },
-                  "validation": {
-                    "actionTypeLevelValidation": {
-                      "rules": {
-                        "0": {
-                          "condition": {
-                            "true": {},
-                            "type": "true",
-                          },
-                          "displayMetadata": {
-                            "failureMessage": "",
-                            "typeClasses": [],
-                          },
-                        },
-                      },
-                    },
-                    "parameterValidations": {
-                      "interfaceObjectToModifyParameter": {
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "dropdown": {},
-                              "type": "dropdown",
-                            },
-                            "visibility": {
-                              "editable": {},
-                              "type": "editable",
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "interfaceObjectQuery": {
-                                "interfaceObjectQuery": {},
-                                "type": "interfaceObjectQuery",
-                              },
-                              "type": "interfaceObjectQuery",
-                            },
-                            "required": {
-                              "required": {},
-                              "type": "required",
-                            },
-                          },
-                        },
-                      },
-                      "property1": {
-                        "defaultValidation": {
-                          "display": {
-                            "renderHint": {
-                              "textInput": {},
-                              "type": "textInput",
-                            },
-                            "visibility": {
-                              "editable": {},
-                              "type": "editable",
-                            },
-                          },
-                          "validation": {
-                            "allowedValues": {
-                              "text": {
-                                "text": {},
-                                "type": "text",
-                              },
-                              "type": "text",
-                            },
-                            "required": {
-                              "required": {},
-                              "type": "required",
-                            },
-                          },
-                        },
-                      },
-                    },
-                  },
-                },
-                "metadata": {
-                  "apiName": "com.palantir.modify-example-interface",
-                  "displayMetadata": {
-                    "configuration": {
-                      "defaultLayout": "FORM",
-                      "displayAndFormat": {
-                        "table": {
-                          "columnWidthByParameterRid": {},
-                          "enableFileImport": true,
-                          "fitHorizontally": false,
-                          "frozenColumnCount": 0,
-                          "rowHeightInLines": 1,
-                        },
-                      },
-                      "enableLayoutUserSwitch": false,
-                    },
-                    "description": "",
-                    "displayName": "Modify exampleInterface",
-                    "icon": {
-                      "blueprint": {
-                        "color": "#000000",
-                        "locator": "edit",
-                      },
-                      "type": "blueprint",
-                    },
-                    "successMessage": [],
-                    "typeClasses": [],
-                  },
-                  "formContentOrdering": [],
-                  "parameterOrdering": [
-                    "interfaceObjectToModifyParameter",
-                    "property1",
-                  ],
-                  "parameters": {
-                    "interfaceObjectToModifyParameter": {
-                      "displayMetadata": {
-                        "description": "",
-                        "displayName": "Object type to modify",
-                        "typeClasses": [],
-                      },
-                      "id": "interfaceObjectToModifyParameter",
-                      "type": {
-                        "interfaceReference": {
-                          "interfaceTypeRid": "com.palantir.exampleInterface",
-                        },
-                        "type": "interfaceReference",
-                      },
-                    },
-                    "property1": {
-                      "displayMetadata": {
-                        "description": "",
-                        "displayName": "property1",
-                        "typeClasses": [],
-                      },
-                      "id": "property1",
-                      "type": {
-                        "string": {},
-                        "type": "string",
-                      },
-                    },
-                  },
-                  "sections": {},
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                },
-              },
-            },
-          },
-          "blockPermissionInformation": {
-            "actionTypes": {},
-            "linkTypes": {},
-            "objectTypes": {},
-          },
-          "interfaceTypes": {
-            "com.palantir.exampleInterface": {
-              "interfaceType": {
-                "allExtendsInterfaces": [],
-                "allLinks": [],
-                "allProperties": [],
-                "allPropertiesV2": {},
-                "allPropertiesV3": {},
-                "apiName": "com.palantir.exampleInterface",
-                "displayMetadata": {
-                  "description": "exampleInterface",
-                  "displayName": "exampleInterface",
-                  "icon": undefined,
-                },
-                "extendsInterfaces": [],
-                "links": [],
-                "properties": [],
-                "propertiesV2": {
-                  "com.palantir.property1": {
-                    "required": true,
-                    "sharedPropertyType": {
-                      "aliases": [],
-                      "apiName": "com.palantir.property1",
-                      "baseFormatter": undefined,
-                      "dataConstraints": undefined,
-                      "displayMetadata": {
-                        "description": undefined,
-                        "displayName": "property1",
-                        "visibility": "NORMAL",
-                      },
-                      "gothamMapping": undefined,
-                      "indexedForSearch": true,
-                      "type": {
-                        "string": {
-                          "analyzerOverride": undefined,
-                          "enableAsciiFolding": undefined,
-                          "isLongText": false,
-                          "supportsEfficientLeadingWildcard": false,
-                          "supportsExactMatching": true,
-                        },
-                        "type": "string",
-                      },
-                      "typeClasses": [
-                        {
-                          "kind": "render_hint",
-                          "name": "SELECTABLE",
-                        },
-                        {
-                          "kind": "render_hint",
-                          "name": "SORTABLE",
-                        },
-                      ],
-                      "valueType": undefined,
-                    },
-                  },
-                },
-                "propertiesV3": {},
-                "searchable": true,
-                "status": {
-                  "active": {},
-                  "type": "active",
-                },
-              },
-            },
-          },
-          "linkTypes": {},
-          "objectTypes": {},
-          "sharedPropertyTypes": {
-            "com.palantir.property1": {
-              "sharedPropertyType": {
-                "aliases": [],
-                "apiName": "com.palantir.property1",
-                "baseFormatter": undefined,
-                "dataConstraints": undefined,
-                "displayMetadata": {
-                  "description": undefined,
-                  "displayName": "property1",
-                  "visibility": "NORMAL",
-                },
-                "gothamMapping": undefined,
-                "indexedForSearch": true,
-                "type": {
-                  "string": {
-                    "analyzerOverride": undefined,
-                    "enableAsciiFolding": undefined,
-                    "isLongText": false,
-                    "supportsEfficientLeadingWildcard": false,
-                    "supportsExactMatching": true,
-                  },
-                  "type": "string",
-                },
-                "typeClasses": [
-                  {
-                    "kind": "render_hint",
-                    "name": "SELECTABLE",
-                  },
-                  {
-                    "kind": "render_hint",
-                    "name": "SORTABLE",
-                  },
-                ],
-                "valueType": undefined,
-              },
-            },
-          },
-        },
-        "importedTypes": {
-          "actionTypes": [],
-          "interfaceTypes": [],
-          "linkTypes": [],
-          "objectTypes": [],
-          "sharedPropertyTypes": [],
-        },
-      }
-        `);
-    });
-
     it("Actions with group permissions are properly defined", () => {
       const sampleObject = defineObject({
         apiName: "sampleObject",
@@ -6163,21 +7270,23 @@ describe("Ontology Defining", () => {
         primaryKeyPropertyApiName: "id",
         pluralDisplayName: "tests",
         titlePropertyApiName: "name",
-        properties: [{
-          apiName: "name",
-          type: "string",
-          displayName: "Name",
-          description: "The name of the test object",
-        }, {
-          apiName: "id",
-          type: "string",
-          displayName: "ID",
-          description: "The ID of the test object",
-        }],
+        properties: {
+          "name": {
+            type: "string",
+            description: "The name of the test object",
+          },
+          "id": {
+            type: "string",
+            displayName: "ID",
+            description: "The ID of the test object",
+          },
+        },
       });
       const createAction = defineCreateObjectAction(sampleObject, {
-        type: "group",
-        name: "testGroup",
+        condition: {
+          type: "group",
+          name: "testGroup",
+        },
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -6227,7 +7336,7 @@ describe("Ontology Defining", () => {
                                     },
                                   },
                                 },
-                                "operator": "EQUALS",
+                                "operator": "INTERSECTS",
                                 "right": {
                                   "staticValue": {
                                     "stringList": {
@@ -6243,7 +7352,7 @@ describe("Ontology Defining", () => {
                               "type": "comparison",
                             },
                             "displayMetadata": {
-                              "failureMessage": "Insufficient permissions. Missing organization membership required to submit action",
+                              "failureMessage": "Did not satisfy validation",
                               "typeClasses": [],
                             },
                           },
@@ -6251,6 +7360,7 @@ describe("Ontology Defining", () => {
                       },
                       "parameterValidations": {
                         "id": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -6278,6 +7388,7 @@ describe("Ontology Defining", () => {
                           },
                         },
                         "name": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -6334,6 +7445,14 @@ describe("Ontology Defining", () => {
                       },
                       "successMessage": [],
                       "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.sampleObject",
+                      ],
+                      "typeGroups": [],
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
@@ -6553,17 +7672,17 @@ describe("Ontology Defining", () => {
         primaryKeyPropertyApiName: "id",
         pluralDisplayName: "tests",
         titlePropertyApiName: "name",
-        properties: [{
-          apiName: "name",
-          type: "string",
-          displayName: "Name",
-          description: "The name of the test object",
-        }, {
-          apiName: "id",
-          type: "string",
-          displayName: "ID",
-          description: "The ID of the test object",
-        }],
+        properties: {
+          "name": {
+            type: "string",
+            description: "The name of the test object",
+          },
+          "id": {
+            type: "string",
+            displayName: "ID",
+            description: "The ID of the test object",
+          },
+        },
       });
       const createAction = defineCreateObjectAction(sampleObject, {
         displayMetadata: {
@@ -6599,7 +7718,6 @@ describe("Ontology Defining", () => {
                 },
               },
             },
-            displayMetadata: null,
           },
         },
       });
@@ -6638,7 +7756,6 @@ describe("Ontology Defining", () => {
                           "0": {
                             "condition": {
                               "comparison": {
-                                "displayMetadata": null,
                                 "left": {
                                   "type": "userProperty",
                                   "userProperty": {
@@ -6676,6 +7793,7 @@ describe("Ontology Defining", () => {
                       },
                       "parameterValidations": {
                         "id": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -6703,6 +7821,7 @@ describe("Ontology Defining", () => {
                           },
                         },
                         "name": {
+                          "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
                               "renderHint": {
@@ -6759,6 +7878,14 @@ describe("Ontology Defining", () => {
                       },
                       "successMessage": [],
                       "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.sampleObject",
+                      ],
+                      "typeGroups": [],
                     },
                     "formContentOrdering": [],
                     "parameterOrdering": [
@@ -6954,6 +8081,821 @@ describe("Ontology Defining", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "name",
+                },
+              },
+            },
+            "sharedPropertyTypes": {},
+          },
+          "importedTypes": {
+            "actionTypes": [],
+            "interfaceTypes": [],
+            "linkTypes": [],
+            "objectTypes": [],
+            "sharedPropertyTypes": [],
+          },
+        }
+      `);
+    });
+
+    it("Array property validation is correctly structured for actions", () => {
+      const objectWithArrays = defineObject({
+        apiName: "objectWithArrays",
+        displayName: "Object With Arrays",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        pluralDisplayName: "Objects With Arrays",
+        properties: {
+          "id": { type: "string", displayName: "ID" },
+          "tags": { type: "string", array: true, displayName: "Tags" },
+          "numbers": { type: "integer", array: true, displayName: "Numbers" },
+          "singleValue": { type: "string", displayName: "Single Value" },
+        },
+      });
+
+      const createAction = defineCreateObjectAction(objectWithArrays);
+      const modifyAction = defineModifyObjectAction(objectWithArrays);
+
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "blockData": {
+            "actionTypes": {
+              "com.palantir.create-object-object-with-arrays": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "addObjectRule": {
+                            "objectTypeId": "com.palantir.objectWithArrays",
+                            "propertyValues": {
+                              "id": {
+                                "parameterId": "id",
+                                "type": "parameterId",
+                              },
+                              "numbers": {
+                                "parameterId": "numbers",
+                                "type": "parameterId",
+                              },
+                              "singleValue": {
+                                "parameterId": "singleValue",
+                                "type": "parameterId",
+                              },
+                              "tags": {
+                                "parameterId": "tags",
+                                "type": "parameterId",
+                              },
+                            },
+                            "structFieldValues": {},
+                          },
+                          "type": "addObjectRule",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "id": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                        "numbers": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "numericInput": {},
+                                "type": "numericInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "range": {
+                                  "range": {},
+                                  "type": "range",
+                                },
+                                "type": "range",
+                              },
+                              "required": {
+                                "listLengthValidation": {
+                                  "maxLength": undefined,
+                                  "minLength": undefined,
+                                },
+                                "type": "listLengthValidation",
+                              },
+                            },
+                          },
+                        },
+                        "singleValue": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                        "tags": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "listLengthValidation": {
+                                  "maxLength": undefined,
+                                  "minLength": undefined,
+                                },
+                                "type": "listLengthValidation",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.create-object-object-with-arrays",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "Create Object With Arrays",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.objectWithArrays",
+                      ],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "id",
+                      "tags",
+                      "numbers",
+                      "singleValue",
+                    ],
+                    "parameters": {
+                      "id": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "ID",
+                          "typeClasses": [],
+                        },
+                        "id": "id",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                      "numbers": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Numbers",
+                          "typeClasses": [],
+                        },
+                        "id": "numbers",
+                        "type": {
+                          "integerList": {},
+                          "type": "integerList",
+                        },
+                      },
+                      "singleValue": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Single Value",
+                          "typeClasses": [],
+                        },
+                        "id": "singleValue",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                      "tags": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Tags",
+                          "typeClasses": [],
+                        },
+                        "id": "tags",
+                        "type": {
+                          "stringList": {},
+                          "type": "stringList",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+              "com.palantir.modify-object-object-with-arrays": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "modifyObjectRule": {
+                            "objectToModify": "objectToModifyParameter",
+                            "propertyValues": {
+                              "numbers": {
+                                "parameterId": "numbers",
+                                "type": "parameterId",
+                              },
+                              "singleValue": {
+                                "parameterId": "singleValue",
+                                "type": "parameterId",
+                              },
+                              "tags": {
+                                "parameterId": "tags",
+                                "type": "parameterId",
+                              },
+                            },
+                            "structFieldValues": {},
+                          },
+                          "type": "modifyObjectRule",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "numbers": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "numericInput": {},
+                                "type": "numericInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "range": {
+                                  "range": {},
+                                  "type": "range",
+                                },
+                                "type": "range",
+                              },
+                              "required": {
+                                "listLengthValidation": {
+                                  "maxLength": undefined,
+                                  "minLength": undefined,
+                                },
+                                "type": "listLengthValidation",
+                              },
+                            },
+                          },
+                        },
+                        "objectToModifyParameter": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "dropdown": {},
+                                "type": "dropdown",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "objectQuery": {
+                                  "objectQuery": {},
+                                  "type": "objectQuery",
+                                },
+                                "type": "objectQuery",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                        "singleValue": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "notRequired": {},
+                                "type": "notRequired",
+                              },
+                            },
+                          },
+                        },
+                        "tags": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "listLengthValidation": {
+                                  "maxLength": undefined,
+                                  "minLength": undefined,
+                                },
+                                "type": "listLengthValidation",
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.modify-object-object-with-arrays",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "Modify Object With Arrays",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.objectWithArrays",
+                      ],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "objectToModifyParameter",
+                      "tags",
+                      "numbers",
+                      "singleValue",
+                    ],
+                    "parameters": {
+                      "numbers": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Numbers",
+                          "typeClasses": [],
+                        },
+                        "id": "numbers",
+                        "type": {
+                          "integerList": {},
+                          "type": "integerList",
+                        },
+                      },
+                      "objectToModifyParameter": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Modify object",
+                          "typeClasses": [],
+                        },
+                        "id": "objectToModifyParameter",
+                        "type": {
+                          "objectReference": {
+                            "objectTypeId": "com.palantir.objectWithArrays",
+                          },
+                          "type": "objectReference",
+                        },
+                      },
+                      "singleValue": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Single Value",
+                          "typeClasses": [],
+                        },
+                        "id": "singleValue",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                      "tags": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Tags",
+                          "typeClasses": [],
+                        },
+                        "id": "tags",
+                        "type": {
+                          "stringList": {},
+                          "type": "stringList",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+            },
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {
+              "com.palantir.objectWithArrays": {
+                "datasources": [
+                  {
+                    "datasource": {
+                      "datasetV2": {
+                        "datasetRid": "com.palantir.objectWithArrays",
+                        "propertyMapping": {
+                          "id": {
+                            "column": "id",
+                            "type": "column",
+                          },
+                          "numbers": {
+                            "column": "numbers",
+                            "type": "column",
+                          },
+                          "singleValue": {
+                            "column": "singleValue",
+                            "type": "column",
+                          },
+                          "tags": {
+                            "column": "tags",
+                            "type": "column",
+                          },
+                        },
+                      },
+                      "type": "datasetV2",
+                    },
+                    "editsConfiguration": {
+                      "onlyAllowPrivilegedEdits": false,
+                    },
+                    "redacted": false,
+                    "rid": "ri.ontology.main.datasource.com.palantir.objectWithArrays",
+                  },
+                ],
+                "entityMetadata": {
+                  "arePatchesEnabled": false,
+                },
+                "objectType": {
+                  "allImplementsInterfaces": {},
+                  "apiName": "com.palantir.objectWithArrays",
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "Object With Arrays",
+                    "groupDisplayName": undefined,
+                    "icon": {
+                      "blueprint": {
+                        "color": "#2D72D2",
+                        "locator": "cube",
+                      },
+                      "type": "blueprint",
+                    },
+                    "pluralDisplayName": "Objects With Arrays",
+                    "visibility": "NORMAL",
+                  },
+                  "implementsInterfaces2": [],
+                  "primaryKeys": [
+                    "id",
+                  ],
+                  "propertyTypes": {
+                    "id": {
+                      "apiName": "id",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "ID",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "numbers": {
+                      "apiName": "numbers",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Numbers",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "array": {
+                          "subtype": {
+                            "integer": {},
+                            "type": "integer",
+                          },
+                        },
+                        "type": "array",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "singleValue": {
+                      "apiName": "singleValue",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Single Value",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "tags": {
+                      "apiName": "tags",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Tags",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "array": {
+                          "subtype": {
+                            "string": {
+                              "analyzerOverride": undefined,
+                              "enableAsciiFolding": undefined,
+                              "isLongText": false,
+                              "supportsEfficientLeadingWildcard": false,
+                              "supportsExactMatching": true,
+                            },
+                            "type": "string",
+                          },
+                        },
+                        "type": "array",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                  },
+                  "redacted": false,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "titlePropertyTypeRid": "id",
                 },
               },
             },
@@ -7213,10 +9155,13 @@ describe("Ontology Defining", () => {
           pluralDisplayName: "myObjects",
           apiName: "myObject",
           primaryKeyPropertyApiName: "bar",
-          properties: [{ apiName: "bar", type: "string", displayName: "Bar" }],
+          properties: { "bar": { type: "string" } },
           implementsInterfaces: [{
             implements: myInterface,
-            propertyMapping: [{ interfaceProperty: "mySpt", mapsTo: "bar" }],
+            propertyMapping: [{
+              interfaceProperty: "com.my.package.mySpt",
+              mapsTo: "bar",
+            }],
           }],
         });
       }, generatedDir);
@@ -7244,7 +9189,7 @@ describe("Ontology Defining", () => {
             "active": {}
           },
           "propertiesV2": {
-            "mySpt": {
+            "com.my.package.mySpt": {
               "required": true,
               "sharedPropertyType": {
                 "apiName": "com.my.package.mySpt",
@@ -7291,8 +9236,8 @@ describe("Ontology Defining", () => {
           "primaryKeyPropertyApiName": "bar",
           "properties": [
             {
-              "apiName": "bar",
               "type": "string",
+              "apiName": "bar",
               "displayName": "Bar"
             }
           ],
@@ -7311,7 +9256,7 @@ describe("Ontology Defining", () => {
                   "active": {}
                 },
                 "propertiesV2": {
-                  "mySpt": {
+                  "com.my.package.mySpt": {
                     "required": true,
                     "sharedPropertyType": {
                       "apiName": "com.my.package.mySpt",
@@ -7439,7 +9384,7 @@ describe("Ontology Defining", () => {
                 "active": {}
               },
               "propertiesV2": {
-                "property1": {
+                "com.palantir.property1": {
                   "required": true,
                   "sharedPropertyType": {
                     "apiName": "com.palantir.property1",
@@ -7471,7 +9416,7 @@ describe("Ontology Defining", () => {
             "active": {}
           },
           "propertiesV2": {
-            "property2": {
+            "com.palantir.property2": {
               "required": true,
               "sharedPropertyType": {
                 "apiName": "com.palantir.property2",
@@ -7509,13 +9454,13 @@ describe("Ontology Defining", () => {
       const parentInterface = defineInterface({
         apiName: "parentInterface",
         properties: {
-          property1: "string",
+          iProperty1: "string",
         },
       });
       const childInterface = defineInterface({
         apiName: "childInterface",
         properties: {
-          property2: "string",
+          iProperty2: "string",
         },
         extends: [parentInterface],
       });
@@ -7525,28 +9470,20 @@ describe("Ontology Defining", () => {
         titlePropertyApiName: "property1",
         displayName: "objectDef",
         pluralDisplayName: "objectDefs",
-        properties: [
-          {
-            apiName: "property1",
-            type: "string",
-            displayName: "property1",
-          },
-          {
-            apiName: "property2",
-            type: "string",
-            displayName: "property2",
-          },
-        ],
+        properties: {
+          "property1": { type: "string", displayName: "property1" },
+          "property2": { type: "string", displayName: "property2" },
+        },
         implementsInterfaces: [
           {
             implements: childInterface,
             propertyMapping: [
               {
-                interfaceProperty: "property1",
+                interfaceProperty: "com.palantir.iProperty1",
                 mapsTo: "property1",
               },
               {
-                interfaceProperty: "property2",
+                interfaceProperty: "com.palantir.iProperty2",
                 mapsTo: "property2",
               },
             ],
@@ -7583,16 +9520,16 @@ describe("Ontology Defining", () => {
                   "links": [],
                   "properties": [],
                   "propertiesV2": {
-                    "com.palantir.property2": {
+                    "com.palantir.iProperty2": {
                       "required": true,
                       "sharedPropertyType": {
                         "aliases": [],
-                        "apiName": "com.palantir.property2",
+                        "apiName": "com.palantir.iProperty2",
                         "baseFormatter": undefined,
                         "dataConstraints": undefined,
                         "displayMetadata": {
                           "description": undefined,
-                          "displayName": "property2",
+                          "displayName": "iProperty2",
                           "visibility": "NORMAL",
                         },
                         "gothamMapping": undefined,
@@ -7646,16 +9583,16 @@ describe("Ontology Defining", () => {
                   "links": [],
                   "properties": [],
                   "propertiesV2": {
-                    "com.palantir.property1": {
+                    "com.palantir.iProperty1": {
                       "required": true,
                       "sharedPropertyType": {
                         "aliases": [],
-                        "apiName": "com.palantir.property1",
+                        "apiName": "com.palantir.iProperty1",
                         "baseFormatter": undefined,
                         "dataConstraints": undefined,
                         "displayMetadata": {
                           "description": undefined,
-                          "displayName": "property1",
+                          "displayName": "iProperty1",
                           "visibility": "NORMAL",
                         },
                         "gothamMapping": undefined,
@@ -7745,10 +9682,10 @@ describe("Ontology Defining", () => {
                     {
                       "interfaceTypeApiName": "com.palantir.childInterface",
                       "properties": {
-                        "com.palantir.property1": {
+                        "com.palantir.iProperty1": {
                           "propertyTypeRid": "property1",
                         },
-                        "com.palantir.property2": {
+                        "com.palantir.iProperty2": {
                           "propertyTypeRid": "property2",
                         },
                       },
@@ -7849,15 +9786,15 @@ describe("Ontology Defining", () => {
               },
             },
             "sharedPropertyTypes": {
-              "com.palantir.property1": {
+              "com.palantir.iProperty1": {
                 "sharedPropertyType": {
                   "aliases": [],
-                  "apiName": "com.palantir.property1",
+                  "apiName": "com.palantir.iProperty1",
                   "baseFormatter": undefined,
                   "dataConstraints": undefined,
                   "displayMetadata": {
                     "description": undefined,
-                    "displayName": "property1",
+                    "displayName": "iProperty1",
                     "visibility": "NORMAL",
                   },
                   "gothamMapping": undefined,
@@ -7885,15 +9822,15 @@ describe("Ontology Defining", () => {
                   "valueType": undefined,
                 },
               },
-              "com.palantir.property2": {
+              "com.palantir.iProperty2": {
                 "sharedPropertyType": {
                   "aliases": [],
-                  "apiName": "com.palantir.property2",
+                  "apiName": "com.palantir.iProperty2",
                   "baseFormatter": undefined,
                   "dataConstraints": undefined,
                   "displayMetadata": {
                     "description": undefined,
-                    "displayName": "property2",
+                    "displayName": "iProperty2",
                     "visibility": "NORMAL",
                   },
                   "gothamMapping": undefined,

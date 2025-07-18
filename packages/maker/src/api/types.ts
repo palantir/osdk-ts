@@ -27,6 +27,7 @@ import type {
   InterfaceTypeStatus,
   LinkTypeDisplayMetadata,
   LinkTypeMetadata,
+  OntologyIrActionTypeEntities,
   OntologyIrBaseParameterType_decimal,
   OntologyIrBaseParameterType_decimalList,
   OntologyIrBaseParameterType_interfaceReference,
@@ -39,6 +40,7 @@ import type {
   OntologyIrBaseParameterType_structList,
   OntologyIrBaseParameterType_timestamp,
   OntologyIrBaseParameterType_timestampList,
+  OntologyIrCondition,
   OntologyIrConditionValue,
   OntologyIrFormContent,
   OntologyIrInterfaceType,
@@ -53,6 +55,7 @@ import type {
   SectionId,
   SharedPropertyTypeGothamMapping,
   StructFieldType,
+  ValidationRuleDisplayMetadata,
   ValueTypeApiName,
   ValueTypeDataConstraint,
   ValueTypeDisplayMetadata,
@@ -143,7 +146,41 @@ export interface ActionParameter {
 export interface ActionParameterValidation {
   allowedValues: ActionParameterAllowedValues;
   required: ActionParameterRequirementConstraint;
+  defaultVisibility?: "editable" | "disabled" | "hidden";
+  conditionalOverrides?: Array<ActionParameterConditionalOverride>;
 }
+
+// TODO(ethana): add more commonly used conditions - parameter matching, organizations, etc.
+export type ConditionDefinition =
+  | UnionCondition
+  | OntologyIrCondition
+  | GroupValidationRule
+  | ParameterValidationRule;
+
+export type UnionCondition = {
+  type: "and" | "or";
+  conditions: Array<ConditionDefinition>;
+};
+
+export type ActionParameterConditionalOverride =
+  | VisibilityOverride
+  | DisabledOverride
+  | RequiredOverride;
+
+export type VisibilityOverride = {
+  type: "visibility";
+  condition: ConditionDefinition;
+};
+
+export type DisabledOverride = {
+  type: "disabled";
+  condition: ConditionDefinition;
+};
+
+export type RequiredOverride = {
+  type: "required";
+  condition: ConditionDefinition;
+};
 
 export type ActionParameterRequirementConstraint =
   | boolean
@@ -191,6 +228,7 @@ export interface ActionTypeInner {
   rules: Array<OntologyIrLogicRule>;
   sections: Record<SectionId, Array<ParameterId>>;
   status: ActionStatus;
+  entities: OntologyIrActionTypeEntities;
   formContentOrdering: Array<OntologyIrFormContent>;
   validation: Array<OntologyIrValidationRule>;
   typeClasses: Array<TypeClass>;
@@ -198,13 +236,20 @@ export interface ActionTypeInner {
 
 export type ActionValidationRule = OntologyIrValidationRule;
 
-export type ActionValidationDefinition =
-  | GroupValidationRule
-  | OntologyIrValidationRule;
+export type ActionLevelValidationDefinition = {
+  condition: ConditionDefinition;
+  displayMetadata?: ValidationRuleDisplayMetadata;
+};
 
 export type GroupValidationRule = {
   type: "group";
   name: string;
+};
+
+export type ParameterValidationRule = {
+  type: "parameter";
+  parameterId: string;
+  matches: OntologyIrConditionValue;
 };
 
 export type ActionStatus =
@@ -273,7 +318,22 @@ export type ObjectType =
     datasource?: ObjectTypeDatasourceDefinition;
     __type: OntologyEntityTypeEnum.OBJECT_TYPE;
   };
-export type ObjectTypeDefinition = Omit<ObjectType, "__type">;
+
+export type ObjectTypeDefinition = {
+  apiName: string;
+  primaryKeyPropertyApiName: string;
+  displayName: string;
+  pluralDisplayName: string;
+  titlePropertyApiName: string;
+  properties?: { [key: string]: ObjectPropertyTypeUserDefinition };
+  implementsInterfaces?: Array<InterfaceImplementation>;
+  description?: string;
+  icon?: { locator: BlueprintIcon; color: string };
+  visibility?: Visibility;
+  editsEnabled?: boolean;
+  status?: ObjectTypeStatus;
+  datasource?: ObjectTypeDatasourceDefinition;
+};
 
 export interface ObjectPropertyTypeInner extends
   Omit<
@@ -304,6 +364,11 @@ export interface ObjectPropertyTypeInner extends
 export type ObjectPropertyType = RequiredFields<
   Partial<ObjectPropertyTypeInner>,
   "apiName" | "type" | "displayName"
+>;
+
+export type ObjectPropertyTypeUserDefinition = RequiredFields<
+  Partial<ObjectPropertyTypeInner>,
+  "type"
 >;
 
 export interface InterfacePropertyType {
@@ -389,7 +454,7 @@ type PropertyTypeTypeMarking = {
   markingType: "MANDATORY" | "CBAC";
 };
 
-type PropertyTypeTypeStruct = {
+export type PropertyTypeTypeStruct = {
   type: "struct";
   structDefinition: {
     [api_name: string]:
@@ -461,7 +526,7 @@ export interface OneToManyLinkTypeDefinition {
 }
 
 export interface OneToManyObjectLinkReference {
-  object: ObjectTypeDefinition;
+  object: ObjectType;
   metadata: LinkTypeMetadata;
 }
 
@@ -470,6 +535,7 @@ export interface OneToManyLinkTypeUserDefinition {
   one: OneToManyObjectLinkReferenceUserDefinition;
   toMany: OneToManyObjectLinkReferenceUserDefinition;
   manyForeignKeyProperty: ObjectTypePropertyApiName;
+  cardinality?: "OneToMany" | "OneToOne" | undefined;
 }
 
 export interface OneToManyObjectLinkReferenceUserDefinition {
@@ -487,7 +553,7 @@ export interface ManyToManyLinkTypeDefinition {
 }
 
 export interface ManyToManyObjectLinkReference {
-  object: ObjectTypeDefinition;
+  object: ObjectType;
   metadata: LinkTypeMetadata;
 }
 

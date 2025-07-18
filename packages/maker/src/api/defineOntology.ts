@@ -31,6 +31,7 @@ import type {
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
+  OntologyIrOneToManyLinkDefinition,
   OntologyIrOntologyBlockDataV2,
   OntologyIrParameter,
   OntologyIrPropertyType,
@@ -51,6 +52,10 @@ import * as path from "path";
 import invariant from "tiny-invariant";
 import { isExotic } from "./defineObject.js";
 import {
+  convertActionParameterConditionalOverride,
+  convertActionVisibility,
+} from "./ontologyUtils.js";
+import {
   convertNullabilityToDataConstraint,
   convertType,
   convertValueType,
@@ -68,6 +73,7 @@ import type {
   LinkType,
   ObjectPropertyType,
   ObjectType,
+  OneToManyLinkTypeDefinition,
   OntologyDefinition,
   OntologyEntityType,
   SharedPropertyType,
@@ -302,7 +308,7 @@ function convertToWireImportedTypes(
       apiName: i.interfaceType.apiName,
       displayName: i.interfaceType.displayMetadata.displayName,
       description: i.interfaceType.displayMetadata.description,
-      properties: Object.values(i.interfaceType.allPropertiesV2).map(p => ({
+      properties: Object.values(i.interfaceType.propertiesV2).map(p => ({
         apiName: p.sharedPropertyType.apiName,
         displayName: p.sharedPropertyType.displayMetadata.displayName,
         description: p.sharedPropertyType.displayMetadata.description,
@@ -483,7 +489,7 @@ function convertObject(
         interfaceTypeApiName: impl.implements.apiName,
         properties: Object.fromEntries(
           impl.propertyMapping.map(
-            mapping => [mapping.interfaceProperty, {
+            mapping => [addNamespaceIfNone(mapping.interfaceProperty), {
               propertyTypeRid: mapping.mapsTo,
             }],
           ),
@@ -592,16 +598,18 @@ function buildPropertyMapping(
 ): Record<string, PropertyTypeMappingInfo> {
   return Object.fromEntries(
     properties.map((prop) => {
-      prop.type;
+      // editOnly
+      if (prop.editOnly) {
+        return [prop.apiName, { type: "editOnly", editOnly: {} }];
+      }
+      // structs
       if (typeof prop.type === "object" && prop.type?.type === "struct") {
         const structMapping = {
           type: "struct",
           struct: {
             column: prop.apiName,
             mapping: Object.fromEntries(
-              Object.entries(prop.type.structDefinition).map((
-                [fieldName, _fieldType],
-              ) => [
+              Object.keys(prop.type.structDefinition).map((fieldName) => [
                 fieldName,
                 { apiName: fieldName, mappings: {} },
               ]),
@@ -609,14 +617,9 @@ function buildPropertyMapping(
           },
         };
         return [prop.apiName, structMapping];
-      } else {
-        return [
-          prop.apiName,
-          prop.editOnly
-            ? { type: "editOnly", editOnly: {} }
-            : { type: "column", column: prop.apiName },
-        ];
       }
+      // default: column mapping
+      return [prop.apiName, { type: "column", column: prop.apiName }];
     }),
   );
 }
@@ -674,7 +677,7 @@ function convertLink(
     definition = {
       type: "oneToMany",
       oneToMany: {
-        cardinalityHint: "ONE_TO_MANY",
+        cardinalityHint: convertCardinality(linkType.cardinality),
         manyToOneLinkMetadata: linkType.toMany.metadata,
         objectTypeRidManySide: linkType.toMany.object.apiName,
         objectTypeRidOneSide: linkType.one.object.apiName,
@@ -948,6 +951,7 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
             [action.status]: {},
           } as unknown as ActionTypeStatus
           : action.status,
+        entities: action.entities,
       },
     },
   };
@@ -974,7 +978,9 @@ function convertActionValidation(
             defaultValidation: {
               display: {
                 renderHint: renderHintFromBaseType(p),
-                visibility: { type: "editable", editable: {} },
+                visibility: convertActionVisibility(
+                  p.validation.defaultVisibility,
+                ),
               },
               validation: {
                 allowedValues: extractAllowedValues(p),
@@ -983,6 +989,13 @@ function convertActionValidation(
                 ),
               },
             },
+            conditionalOverrides: p.validation.conditionalOverrides?.map(
+              (override) =>
+                convertActionParameterConditionalOverride(
+                  override,
+                  p.validation,
+                ),
+            ) ?? [],
           },
         ];
       }),
@@ -1260,4 +1273,17 @@ function dependencyInjectionString(): string {
 
 addDependency("${namespaceNoDot}", new URL(import.meta.url).pathname);
 `;
+}
+
+export function addNamespaceIfNone(apiName: string): string {
+  return apiName.includes(".") ? apiName : namespace + apiName;
+}
+
+function convertCardinality(
+  cardinality: OneToManyLinkTypeDefinition["cardinality"],
+): OntologyIrOneToManyLinkDefinition["cardinalityHint"] {
+  if (cardinality === "OneToMany" || cardinality === undefined) {
+    return "ONE_TO_MANY";
+  }
+  return "ONE_TO_ONE";
 }

@@ -70,23 +70,23 @@ export function defineInterface(
     Object.entries(interfaceDef.properties ?? {}).map<
       [string, { required: boolean; sharedPropertyType: SharedPropertyType }]
     >(
-      ([apiName, type]) => {
+      ([propApiName, type]) => {
         if (typeof type === "object" && "propertyDefinition" in type) {
-          return [apiName, {
+          return [namespace + propApiName, {
             required: type.required,
             sharedPropertyType: unifyBasePropertyDefinition(
               namespace,
-              apiName,
+              propApiName,
               type.propertyDefinition,
             ),
           }];
         }
 
-        return [apiName, {
+        return [namespace + propApiName, {
           required: true,
           sharedPropertyType: unifyBasePropertyDefinition(
             namespace,
-            apiName,
+            propApiName,
             type,
           ),
         }];

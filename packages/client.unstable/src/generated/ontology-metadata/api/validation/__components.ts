@@ -1279,6 +1279,12 @@ export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMulti
     ObjectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources;
 }
 
+export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMaterializations {
+  type: "objectTypePropertySecurityGroupsNotSupportedWithMaterializations";
+  objectTypePropertySecurityGroupsNotSupportedWithMaterializations:
+    ObjectTypePropertySecurityGroupsNotSupportedWithMaterializations;
+}
+
 export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedOnBranches {
   type: "objectTypePropertySecurityGroupsNotSupportedOnBranches";
   objectTypePropertySecurityGroupsNotSupportedOnBranches:
@@ -2353,6 +2359,12 @@ export interface ErrorType_objectTypePropertySecurityGroupReferencesNonExistentP
     ObjectTypePropertySecurityGroupReferencesNonExistentProperty;
 }
 
+export interface ErrorType_objectTypeReferencedTypeGroupsDoNotExist {
+  type: "objectTypeReferencedTypeGroupsDoNotExist";
+  objectTypeReferencedTypeGroupsDoNotExist:
+    ObjectTypeReferencedTypeGroupsDoNotExist;
+}
+
 export interface ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds {
   type: "ruleSetBindingReferencingMissingPropertyTypeIds";
   ruleSetBindingReferencingMissingPropertyTypeIds:
@@ -3291,6 +3303,11 @@ export interface ErrorType_typeGroupDescriptionTooLong {
   typeGroupDescriptionTooLong: TypeGroupDescriptionTooLong;
 }
 
+export interface ErrorType_typeGroupDisplayNameAlreadyExists {
+  type: "typeGroupDisplayNameAlreadyExists";
+  typeGroupDisplayNameAlreadyExists: TypeGroupDisplayNameAlreadyExists;
+}
+
 export interface ErrorType_propertySecurityGroupNameTooLong {
   type: "propertySecurityGroupNameTooLong";
   propertySecurityGroupNameTooLong: PropertySecurityGroupNameTooLong;
@@ -3329,6 +3346,13 @@ export interface ErrorType_parentObjectTypeBranchIndexingConfigCanOnlyBeSetForOb
     "parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch";
   parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch:
     ParentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch;
+}
+
+export interface ErrorType_structSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions {
+  type:
+    "structSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions";
+  structSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions:
+    StructSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions;
 }
 /**
  * A union that represents all possible ontology modification validation errors.
@@ -3444,6 +3468,7 @@ export type ErrorType =
   | ErrorType_objectTypeNullablePropertyInSecurityGroupGranularPolicyMarkingCondition
   | ErrorType_objectTypeInvalidNumberOfPropertyReferencesInPropertySecurityGroup
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources
+  | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMaterializations
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedOnBranches
   | ErrorType_objectTypePropertyIncompatibleBackingColumnType
   | ErrorType_objectTypeStructColumnFieldMissingFromBackingDatasource
@@ -3627,6 +3652,7 @@ export type ErrorType =
   | ErrorType_objectTypePropertyDataTypeChangeMissingSchemaMigration
   | ErrorType_objectTypeDeletedDatasourceMissingSchemaMigration
   | ErrorType_objectTypePropertySecurityGroupReferencesNonExistentProperty
+  | ErrorType_objectTypeReferencedTypeGroupsDoNotExist
   | ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds
   | ErrorType_ruleSetCountExceeded
   | ErrorType_ruleSetNameTooLong
@@ -3790,13 +3816,15 @@ export type ErrorType =
   | ErrorType_typeGroupCountExceeded
   | ErrorType_typeGroupDisplayNameTooLong
   | ErrorType_typeGroupDescriptionTooLong
+  | ErrorType_typeGroupDisplayNameAlreadyExists
   | ErrorType_propertySecurityGroupNameTooLong
   | ErrorType_primaryKeyReferencesInMultiplePropertySecurityGroups
   | ErrorType_missingPropertySecurityGroupTypes
   | ErrorType_nonUniquePropertySecurityGroupNames
   | ErrorType_objectEditsCannotBeCopiedForObjectTypeOnBranchNeedsRebasing
   | ErrorType_objectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches
-  | ErrorType_parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch;
+  | ErrorType_parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch
+  | ErrorType_structSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions;
 
 export interface IndeterminateErrorCategory {
 }
@@ -4171,7 +4199,21 @@ export interface InvalidSharedPropertyTypeWithIdentifier {
   errorCategory: SharedPropertyTypeErrorCategory;
   identifier: _api_SharedPropertyTypeRidOrIdInRequest;
 }
+export interface InvalidTypeGroupDefinition_indeterminate {
+  type: "indeterminate";
+  indeterminate: IndeterminateErrorCategory;
+}
+export type InvalidTypeGroupDefinition =
+  InvalidTypeGroupDefinition_indeterminate;
+
+export interface InvalidTypeGroupReference_notFound {
+  type: "notFound";
+  notFound: NotFoundErrorCategory;
+}
+export type InvalidTypeGroupReference = InvalidTypeGroupReference_notFound;
+
 export interface InvalidTypeGroupWithIdentifier {
+  errorCategory: TypeGroupErrorCategory;
   identifier: _api_TypeGroupRidOrIdInRequest;
 }
 /**
@@ -5233,6 +5275,11 @@ export interface ObjectTypePropertySecurityGroupReferencesNonExistentProperty {
 export interface ObjectTypePropertySecurityGroupsNotSupportedOnBranches {
 }
 /**
+ * Property security groups are not yet supported for Object Types that have Materializations.
+ */
+export interface ObjectTypePropertySecurityGroupsNotSupportedWithMaterializations {
+}
+/**
  * Property security groups are not yet supported with MDOs.
  */
 export interface ObjectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources {
@@ -5316,6 +5363,11 @@ export interface ObjectTypeReferencedPropertyMustBeDifferent {
  * Referenced PropertyTypeId has the incorrect type.
  */
 export interface ObjectTypeReferencedPropertyTypeMismatch {
+}
+/**
+ * The TypeGroup referenced in an ObjectType does not exist in the ontology.
+ */
+export interface ObjectTypeReferencedTypeGroupsDoNotExist {
 }
 /**
  * Required interface link type is missing an implementation.
@@ -5879,6 +5931,12 @@ export interface SharedPropertyTypeValueTypeUsageMismatchStructField {
 export interface SharedPropertyTypeValueTypeUsageMissingStructField {
 }
 /**
+ * A modification to a struct shared property type's fields breaks the object type struct property it backs.
+ * This is caused by struct field API name or base type changes on the struct shared property type.
+ */
+export interface StructSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions {
+}
+/**
  * The count of type groups exceeds the allowed limit.
  */
 export interface TypeGroupCountExceeded {
@@ -5889,10 +5947,28 @@ export interface TypeGroupCountExceeded {
 export interface TypeGroupDescriptionTooLong {
 }
 /**
+ * The TypeGroup display name already exists in the ontology.
+ */
+export interface TypeGroupDisplayNameAlreadyExists {
+}
+/**
  * The display name of a type group exceeds the maximum length.
  */
 export interface TypeGroupDisplayNameTooLong {
 }
+export interface TypeGroupErrorCategory_reference {
+  type: "reference";
+  reference: InvalidTypeGroupReference;
+}
+
+export interface TypeGroupErrorCategory_definition {
+  type: "definition";
+  definition: InvalidTypeGroupDefinition;
+}
+export type TypeGroupErrorCategory =
+  | TypeGroupErrorCategory_reference
+  | TypeGroupErrorCategory_definition;
+
 /**
  * The archetype ID of a workflow exceeds the maximum length.
  */

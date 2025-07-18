@@ -42,12 +42,24 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     apiName: A,
     target: AddLinkTargets<X, SOL, A>,
   ): void {
-    this.edits.push({
-      type: "addLink",
-      source,
-      apiName,
-      target,
-    } as unknown as X);
+    if (!Array.isArray(target)) {
+      this.edits.push({
+        type: "addLink",
+        source,
+        apiName,
+        target,
+      } as unknown as X);
+      return;
+    }
+
+    for (const elem of target) {
+      this.edits.push({
+        type: "addLink",
+        source,
+        apiName,
+        target: elem,
+      } as unknown as X);
+    }
   }
 
   public unlink<
@@ -58,12 +70,24 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     apiName: A,
     target: RemoveLinkTargets<X, SOL, A>,
   ): void {
-    this.edits.push({
-      type: "removeLink",
-      source,
-      apiName,
-      target,
-    } as unknown as X);
+    if (!Array.isArray(target)) {
+      this.edits.push({
+        type: "removeLink",
+        source,
+        apiName,
+        target,
+      } as unknown as X);
+      return;
+    }
+
+    for (const elem of target) {
+      this.edits.push({
+        type: "removeLink",
+        source,
+        apiName,
+        target: elem,
+      } as unknown as X);
+    }
   }
 
   public create<OTD extends CreatableObjectTypes<X>>(
