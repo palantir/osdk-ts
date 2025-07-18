@@ -134,6 +134,16 @@ export type ActionType =
 
 export type ActionTypeDefinition = Omit<ActionType, "__type">;
 
+export type ActionTypeUserDefinition = {
+  objectType: ObjectTypeDefinition;
+  apiName?: string;
+  displayName?: string;
+  status?: ActionStatus;
+  parameterLevelValidations?: Record<string, ActionParameterValidation>;
+  actionLevelValidation?: ActionLevelValidationDefinition;
+  excludedProperties?: Array<ParameterId>;
+};
+
 export interface ActionParameter {
   id: ParameterId;
   displayName: string;
@@ -144,8 +154,8 @@ export interface ActionParameter {
 }
 
 export interface ActionParameterValidation {
-  allowedValues: ActionParameterAllowedValues;
-  required: ActionParameterRequirementConstraint;
+  allowedValues?: ActionParameterAllowedValues;
+  required?: ActionParameterRequirementConstraint;
   defaultVisibility?: "editable" | "disabled" | "hidden";
   conditionalOverrides?: Array<ActionParameterConditionalOverride>;
 }
@@ -526,7 +536,7 @@ export interface OneToManyLinkTypeDefinition {
 }
 
 export interface OneToManyObjectLinkReference {
-  object: ObjectType;
+  object: ObjectTypeDefinition;
   metadata: LinkTypeMetadata;
 }
 
@@ -539,7 +549,7 @@ export interface OneToManyLinkTypeUserDefinition {
 }
 
 export interface OneToManyObjectLinkReferenceUserDefinition {
-  object: ObjectType;
+  object: ObjectTypeDefinition;
   metadata: LinkTypeMetadataUserDefinition;
 }
 
@@ -553,7 +563,7 @@ export interface ManyToManyLinkTypeDefinition {
 }
 
 export interface ManyToManyObjectLinkReference {
-  object: ObjectType;
+  object: ObjectTypeDefinition;
   metadata: LinkTypeMetadata;
 }
 
@@ -564,7 +574,7 @@ export interface ManyToManyLinkTypeUserDefinition {
 }
 
 export interface ManyToManyObjectLinkReferenceUserDefinition {
-  object: ObjectType;
+  object: ObjectTypeDefinition;
   metadata: LinkTypeMetadataUserDefinition;
 }
 
