@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import type { Client, Osdk } from "@osdk/client";
+import type { Attachment, Client, Osdk } from "@osdk/client";
 import type { Employee, Person } from "@osdk/client.test.ontology";
-import { Office, Task } from "@osdk/client.test.ontology";
+import {
+  objectTypeWithAllPropertyTypes,
+  Office,
+  Task,
+} from "@osdk/client.test.ontology";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createEditBatch } from "./createEditBatch.js";
 import type { EditBatch } from "./EditBatch.js";
@@ -27,7 +31,8 @@ type TestEditScope =
   | Edits.Object<Office>
   | Edits.Link<Task, "RP">
   | Edits.Link<Task, "Todos">
-  | Edits.Link<Office, "occupants">;
+  | Edits.Link<Office, "occupants">
+  | Edits.Object<objectTypeWithAllPropertyTypes>;
 
 describe(createEditBatch, () => {
   const taskInstance = {
@@ -60,6 +65,11 @@ describe(createEditBatch, () => {
   });
 
   it("collects all edits", () => {
+    editBatch.create(objectTypeWithAllPropertyTypes, {
+      id: 0,
+      attachment: "ri.foo",
+      attachment2: { rid: "ri.bar" } as Attachment,
+    });
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Task, { id: 1, name: "My Other Task Name" });
     editBatch.create(Task, { id: 3 });
@@ -104,6 +114,15 @@ describe(createEditBatch, () => {
     );
 
     expect(editBatch.getEdits()).toEqual([
+      {
+        type: "createObject",
+        obj: objectTypeWithAllPropertyTypes,
+        properties: {
+          id: 0,
+          attachment: "ri.foo",
+          attachment2: { rid: "ri.bar" },
+        },
+      },
       {
         type: "createObject",
         obj: Task,
