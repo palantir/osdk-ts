@@ -467,7 +467,7 @@ function convertObject(
     : undefined;
 
   const mandatoryInputGroup = mandatoryMarkingNames.length > 0
-    ? mandatoryMarkingNames.reduce((l, r) => l + " " + r)
+    ? mandatoryMarkingNames.reduce((l, r) => l + "/" + r)
     : undefined;
 
   const objectDatasource = buildDatasource(
