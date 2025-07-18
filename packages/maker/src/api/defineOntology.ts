@@ -23,11 +23,11 @@ import type {
   OntologyIrAllowedParameterValues,
   OntologyIrBaseParameterType,
   OntologyIrImportedTypes,
-  OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrLinkDefinition,
   OntologyIrLinkTypeBlockDataV2,
   OntologyIrManyToManyLinkTypeDatasource,
+  OntologyIrMarketplaceInterfaceType,
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
@@ -314,7 +314,7 @@ function convertToWireImportedTypes(
         description: p.sharedPropertyType.displayMetadata.description,
         type: p.sharedPropertyType.type,
       })),
-      links: i.interfaceType.allLinks.map(l => ({
+      links: i.interfaceType.links.map(l => ({
         apiName: l.metadata.apiName,
         displayName: l.metadata.displayName,
         description: l.metadata.description,
@@ -452,12 +452,32 @@ function convertObject(
     (objectType.properties ?? [])
       .flatMap(prop => extractPropertyDatasource(prop, objectType.apiName));
 
+  const classificationGroupMarkingNames = extractMarkingGroups(
+    objectType.properties ?? [],
+    "CBAC",
+  );
+
+  const mandatoryMarkingNames = extractMarkingGroups(
+    objectType.properties ?? [],
+    "MANDATORY",
+  );
+
+  const classificationInputGroup = classificationGroupMarkingNames.length > 0
+    ? classificationGroupMarkingNames.reduce((l, r) => l + "/" + r)
+    : undefined;
+
+  const mandatoryInputGroup = mandatoryMarkingNames.length > 0
+    ? mandatoryMarkingNames.reduce((l, r) => l + "/" + r)
+    : undefined;
+
   const objectDatasource = buildDatasource(
     objectType.apiName,
     convertDatasourceDefinition(
       objectType,
       objectType.properties ?? [],
     ),
+    classificationInputGroup,
+    mandatoryInputGroup,
   );
 
   const implementations = objectType.implementsInterfaces ?? [];
@@ -487,6 +507,8 @@ function convertObject(
       redacted: false,
       implementsInterfaces2: implementations.map(impl => ({
         interfaceTypeApiName: impl.implements.apiName,
+        linksV2: {},
+        propertiesV2: {},
         properties: Object.fromEntries(
           impl.propertyMapping.map(
             mapping => [addNamespaceIfNone(mapping.interfaceProperty), {
@@ -538,7 +560,26 @@ function extractPropertyDatasource(
 function buildDatasource(
   apiName: string,
   definition: OntologyIrObjectTypeDatasourceDefinition,
+  classificationMarkingGroupName?: string,
+  mandatoryMarkingGroupName?: string,
 ): OntologyIrObjectTypeDatasource {
+  const needsSecurity = classificationMarkingGroupName !== undefined
+    || mandatoryMarkingGroupName !== undefined;
+
+  const securityConfig = needsSecurity
+    ? {
+      classificationConstraint: classificationMarkingGroupName
+        ? {
+          markingGroupName: classificationMarkingGroupName,
+        }
+        : undefined,
+      markingConstraint: mandatoryMarkingGroupName
+        ? {
+          markingGroupName: mandatoryMarkingGroupName,
+        }
+        : undefined,
+    }
+    : undefined;
   return ({
     rid: "ri.ontology.main.datasource.".concat(apiName),
     datasource: definition,
@@ -546,6 +587,7 @@ function buildDatasource(
       onlyAllowPrivilegedEdits: false,
     },
     redacted: false,
+    ...((securityConfig !== undefined) && { dataSecurity: securityConfig }),
   });
 }
 
@@ -591,6 +633,27 @@ function convertDatasourceDefinition(
         },
       };
   }
+}
+
+/**
+ * Extracts marking group names of a specific type from object properties
+ */
+function extractMarkingGroups(
+  properties: ObjectPropertyType[],
+  markingType: "CBAC" | "MANDATORY",
+): string[] {
+  return properties
+    .map(prop => {
+      if (
+        typeof prop.type === "object"
+        && prop.type.type === "marking"
+        && prop.type.markingType === markingType
+      ) {
+        return prop.type.markingInputGroupName;
+      }
+      return undefined;
+    })
+    .filter((val): val is string => val !== undefined);
 }
 
 function buildPropertyMapping(
@@ -790,7 +853,7 @@ function cleanAndValidateLinkTypeId(apiName: string): string {
 
 function convertInterface(
   interfaceType: InterfaceType,
-): OntologyIrInterfaceType {
+): OntologyIrMarketplaceInterfaceType {
   const { __type, ...other } = interfaceType;
   return {
     ...other,
@@ -805,13 +868,8 @@ function convertInterface(
     ),
     extendsInterfaces: interfaceType.extendsInterfaces.map(i => i.apiName),
     // these are omitted from our internal types but we need to re-add them for the final json
-    allExtendsInterfaces: [],
-    allLinks: [],
-    allProperties: [],
-    allPropertiesV2: {},
     // TODO(mwalther): Support propertiesV3
     propertiesV3: {},
-    allPropertiesV3: {},
     properties: [],
   };
 }
