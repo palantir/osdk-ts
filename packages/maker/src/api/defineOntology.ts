@@ -463,7 +463,7 @@ function convertObject(
   );
 
   const classificationInputGroup = classificationGroupMarkingNames.length > 0
-    ? classificationGroupMarkingNames.reduce((l, r) => l + " " + r)
+    ? classificationGroupMarkingNames.reduce((l, r) => l + "/" + r)
     : undefined;
 
   const mandatoryInputGroup = mandatoryMarkingNames.length > 0
