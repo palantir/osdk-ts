@@ -113,6 +113,7 @@ export interface PropertyValueWireToCreate {
   stringTimeseries: TimeSeriesProperty<string>;
   sensorTimeseries: TimeSeriesProperty<string | number>;
   geotimeSeriesReference: GeotimeSeriesProperty<GeoJSON.Point>;
+  vector: number[];
 }
 
 export type GetCreatePropertyValueFromWire<
