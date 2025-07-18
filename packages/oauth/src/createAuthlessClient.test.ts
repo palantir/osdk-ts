@@ -15,17 +15,17 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { createAuthless } from "./createAuthlessClient.js";
+import { createAuthlessClient } from "./createAuthless.js";
 
-describe(createAuthless, () => {
+describe(createAuthlessClient, () => {
   it("should return \"PUBLIC\" when called", async () => {
-    const authlessClientProvider = createAuthless();
+    const authlessClientProvider = createAuthlessClient();
     const result = await authlessClientProvider();
     expect(result).toBe("PUBLIC");
   });
 
   it("should return a Promise", () => {
-    const authlessClientProvider = createAuthless();
+    const authlessClientProvider = createAuthlessClient();
     const resultPromise = authlessClientProvider();
     expect(resultPromise).toBeInstanceOf(Promise);
   });

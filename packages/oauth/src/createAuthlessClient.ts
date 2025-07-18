@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import type { AuthlessClient } from "./AuthlessClient.js";
-
 /**
  * @returns an Authless Client which can be used as a public token provider
  */
-export function createAuthless(): AuthlessClient {
+export function createAuthlessClient(): () => Promise<String> {
   return async () => {
     return "PUBLIC";
   };
