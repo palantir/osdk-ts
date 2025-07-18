@@ -43,10 +43,10 @@ import type {
   OntologyIrCondition,
   OntologyIrConditionValue,
   OntologyIrFormContent,
-  OntologyIrInterfaceType,
   OntologyIrLabelledValue,
   OntologyIrLinkTypeStatus,
   OntologyIrLogicRule,
+  OntologyIrMarketplaceInterfaceType,
   OntologyIrObjectType,
   OntologyIrParameterDateRangeValue,
   OntologyIrPropertyType,
@@ -378,7 +378,7 @@ export interface InterfacePropertyType {
 export interface InterfaceType extends
   OntologyEntityBase,
   Omit<
-    OntologyIrInterfaceType,
+    OntologyIrMarketplaceInterfaceType,
     // we want our simplified representation
     | "properties"
     // these things don't need to exist as the system works fine without them (I'm told)
@@ -452,6 +452,7 @@ export type PropertyTypeTypeExotic =
 type PropertyTypeTypeMarking = {
   type: "marking";
   markingType: "MANDATORY" | "CBAC";
+  markingInputGroupName: string;
 };
 
 export type PropertyTypeTypeStruct = {

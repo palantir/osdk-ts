@@ -71,6 +71,7 @@ import type {
   GeotimeSeriesIntegrationRid as _api_GeotimeSeriesIntegrationRid,
   GeotimeSeriesReferencePropertyType as _api_GeotimeSeriesReferencePropertyType,
   GroupId as _api_GroupId,
+  Icon as _api_Icon,
   InlineActionDisplayOptions as _api_InlineActionDisplayOptions,
   IntegerPropertyType as _api_IntegerPropertyType,
   InterfaceLinkTypeCardinality as _api_InterfaceLinkTypeCardinality,
@@ -79,7 +80,6 @@ import type {
   InterfacePropertyTypeRidOrIdInRequest
     as _api_InterfacePropertyTypeRidOrIdInRequest,
   InterfaceTypeApiName as _api_InterfaceTypeApiName,
-  InterfaceTypeDisplayMetadata as _api_InterfaceTypeDisplayMetadata,
   InterfaceTypeIdInRequest as _api_InterfaceTypeIdInRequest,
   InterfaceTypeRid as _api_InterfaceTypeRid,
   InterfaceTypeRidOrIdInRequest as _api_InterfaceTypeRidOrIdInRequest,
@@ -89,6 +89,7 @@ import type {
   LinkTypeMetadata as _api_LinkTypeMetadata,
   LinkTypePeeringMetadataV1 as _api_LinkTypePeeringMetadataV1,
   LinkTypeRid as _api_LinkTypeRid,
+  LinkTypeRidOrId as _api_LinkTypeRidOrId,
   LinkTypeStatus as _api_LinkTypeStatus,
   LongPropertyType as _api_LongPropertyType,
   MarkingId as _api_MarkingId,
@@ -203,6 +204,7 @@ import type {
   SharedPropertyTypeGothamMappingModification
     as _api_typemapping_SharedPropertyTypeGothamMappingModification,
 } from "../typemapping/__components.js";
+import type { LinkTypeSide as _api_types_LinkTypeSide } from "../types/__components.js";
 import type { OntologyValidationError as _api_validation_OntologyValidationError } from "../validation/__components.js";
 
 /**
@@ -539,6 +541,10 @@ export interface GetModifiedEntitiesResponse {
   diff: OntologyDiff;
   newOntologyVesion: _api_OntologyVersion;
 }
+export interface ImplementingLinkTypeModification {
+  linkTypeRidOrId: _api_LinkTypeRidOrId;
+  linkTypeSide?: _api_types_LinkTypeSide | null | undefined;
+}
 /**
  * A request to import SharedPropertyTypes into another ontology
  */
@@ -558,6 +564,10 @@ export interface InlineActionTypeModification {
 export interface InterfaceLinkTypeImplementationModification {
   interfaceLinkTypeRidOrIdInRequest: _api_InterfaceLinkTypeRidOrIdInRequest;
   linkTypeIds: Array<_api_LinkTypeId>;
+}
+export interface InterfaceLinkTypeImplementationModificationV2 {
+  interfaceLinkTypeRidOrIdInRequest: _api_InterfaceLinkTypeRidOrIdInRequest;
+  linkTypes: Array<ImplementingLinkTypeModification>;
 }
 export interface InterfaceLinkTypeModification {
   cardinality: _api_InterfaceLinkTypeCardinality;
@@ -598,9 +608,17 @@ export interface InterfaceSharedPropertyTypeModification {
   required: boolean;
   sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
 }
+/**
+ * This includes metadata which can be used by front-ends when displaying an interface.
+ */
+export interface InterfaceTypeDisplayMetadataModification {
+  description?: string | null | undefined;
+  displayName: string;
+  icon?: _api_Icon | null | undefined;
+}
 export interface InterfaceTypeModification {
   apiName: _api_InterfaceTypeApiName;
-  displayMetadata: _api_InterfaceTypeDisplayMetadata;
+  displayMetadata: InterfaceTypeDisplayMetadataModification;
   extendsInterfaces: Array<_api_InterfaceTypeRidOrIdInRequest>;
   links: Array<InterfaceLinkTypeModification>;
   properties: Array<_api_SharedPropertyTypeRidOrIdInRequest>;
@@ -1087,6 +1105,7 @@ export interface ObjectTypeIndexingSettingsModification {
 export interface ObjectTypeInterfaceImplementationModification {
   interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
   links: Array<InterfaceLinkTypeImplementationModification>;
+  linksV2: Array<InterfaceLinkTypeImplementationModificationV2>;
   properties: Array<InterfacePropertyImplementationModification>;
   propertiesV2: Array<InterfacePropertyImplementationModificationV2>;
 }
