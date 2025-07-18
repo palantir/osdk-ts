@@ -452,34 +452,22 @@ function convertObject(
     (objectType.properties ?? [])
       .flatMap(prop => extractPropertyDatasource(prop, objectType.apiName));
 
-  const classificationGroupMarkingNames = (objectType.properties ?? []).map(
-    prop => {
-      if (
-        typeof prop.type === "object" && prop.type.type === "marking"
-        && prop.type.markingType === "CBAC"
-      ) {
-        return prop.type.markingInputGroupName;
-      }
-      return undefined;
-    },
-  ).filter(val => val !== undefined);
+  const classificationGroupMarkingNames = extractMarkingGroups(
+    objectType.properties ?? [],
+    "CBAC",
+  );
 
-  const mandatoryMarkingNames = (objectType.properties ?? []).map(prop => {
-    if (
-      typeof prop.type === "object" && prop.type.type === "marking"
-      && prop.type.markingType === "MANDATORY"
-    ) {
-      return prop.type.markingInputGroupName;
-    }
-    return undefined;
-  }).filter(val => val !== undefined);
+  const mandatoryMarkingNames = extractMarkingGroups(
+    objectType.properties ?? [],
+    "MANDATORY",
+  );
 
   const classificationInputGroup = classificationGroupMarkingNames.length > 0
     ? classificationGroupMarkingNames.reduce((l, r) => l + " " + r)
     : undefined;
 
   const mandatoryInputGroup = mandatoryMarkingNames.length > 0
-    ? classificationGroupMarkingNames.reduce((l, r) => l + " " + r)
+    ? mandatoryMarkingNames.reduce((l, r) => l + " " + r)
     : undefined;
 
   const objectDatasource = buildDatasource(
@@ -578,27 +566,28 @@ function buildDatasource(
   const needsSecurity = classificationMarkingGroupName !== undefined
     || mandatoryMarkingGroupName !== undefined;
 
+  const securityConfig = needsSecurity
+    ? {
+      classificationConstraint: classificationMarkingGroupName
+        ? {
+          markingGroupName: classificationMarkingGroupName,
+        }
+        : undefined,
+      markingConstraint: mandatoryMarkingGroupName
+        ? {
+          markingGroupName: mandatoryMarkingGroupName,
+        }
+        : undefined,
+    }
+    : undefined;
   return ({
     rid: "ri.ontology.main.datasource.".concat(apiName),
     datasource: definition,
     editsConfiguration: {
       onlyAllowPrivilegedEdits: false,
     },
-    dataSecurity: needsSecurity
-      ? {
-        classificationConstraint: classificationMarkingGroupName
-          ? {
-            markingGroupName: classificationMarkingGroupName,
-          }
-          : undefined,
-        markingConstraint: mandatoryMarkingGroupName
-          ? {
-            markingGroupName: mandatoryMarkingGroupName,
-          }
-          : undefined,
-      }
-      : undefined,
     redacted: false,
+    ...((securityConfig !== undefined) && { dataSecurity: securityConfig }),
   });
 }
 
@@ -644,6 +633,27 @@ function convertDatasourceDefinition(
         },
       };
   }
+}
+
+/**
+ * Extracts marking group names of a specific type from object properties
+ */
+function extractMarkingGroups(
+  properties: ObjectPropertyType[],
+  markingType: "CBAC" | "MANDATORY",
+): string[] {
+  return properties
+    .map(prop => {
+      if (
+        typeof prop.type === "object"
+        && prop.type.type === "marking"
+        && prop.type.markingType === markingType
+      ) {
+        return prop.type.markingInputGroupName;
+      }
+      return undefined;
+    })
+    .filter((val): val is string => val !== undefined);
 }
 
 function buildPropertyMapping(
