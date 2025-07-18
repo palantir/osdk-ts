@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { createAuthlessClient } from "./createAuthless.js";
+import { createAuthlessClient } from "./createAuthlessClient.js";
 
 describe(createAuthlessClient, () => {
   it("should return \"PUBLIC\" when called", async () => {
