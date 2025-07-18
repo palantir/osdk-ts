@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.4.0-beta.6
+
+### Minor Changes
+
+- 764e5f1: Add marking constraints
+
 ## 2.4.0-beta.5
 
 ## 2.4.0-beta.4
