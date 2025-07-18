@@ -15,6 +15,7 @@
  */
 
 import type {
+  Attachment,
   CompileTimeMetadata,
   ObjectMetadata,
   ObjectTypeDefinition,
@@ -72,13 +73,19 @@ type PartialForOptionalProperties<T> =
     [K in keyof T as undefined extends T[K] ? never : K]-?: T[K];
   };
 
+interface EditBatchPropertyValueMappingOverrides {
+  attachment: Attachment | string; // Allow users to pass in RIDs as well
+}
+
 export interface CreateObject<S extends ObjectTypeDefinition> {
   type: "createObject";
   obj: S;
   properties: PartialForOptionalProperties<
     {
       [P in PropertyKeys<S>]: OsdkObjectPropertyType<
-        CompileTimeMetadata<S>["properties"][P]
+        CompileTimeMetadata<S>["properties"][P],
+        true, // strict enforce nullable
+        EditBatchPropertyValueMappingOverrides
       >;
     }
   >;
@@ -99,7 +106,11 @@ export interface UpdateObject<S extends ObjectTypeDefinition> {
           PropertyKeys<S>,
           CompileTimeMetadata<S>["primaryKeyApiName"]
         >
-      ]: OsdkObjectPropertyType<CompileTimeMetadata<S>["properties"][P]>;
+      ]: OsdkObjectPropertyType<
+        CompileTimeMetadata<S>["properties"][P],
+        true, // strict enforce nullable
+        EditBatchPropertyValueMappingOverrides
+      >;
     }
   >;
 }

@@ -48,14 +48,23 @@ export interface PropertyValueWireToClient {
   vector: number[];
 }
 
+export type PropertyValueMappingOverrides = Partial<
+  Record<keyof PropertyValueWireToClient, any>
+>;
+
 export type GetClientPropertyValueFromWire<
   T extends
     | keyof PropertyValueWireToClient
     | Record<string, keyof PropertyValueWireToClient>,
-> = T extends keyof PropertyValueWireToClient ? PropertyValueWireToClient[T]
-  : T extends Record<string, keyof PropertyValueWireToClient>
-    ? { [K in keyof T]: PropertyValueWireToClient[T[K]] }
-  : never;
+  O extends PropertyValueMappingOverrides = {},
+> = T extends keyof O ? O[T] : (
+  T extends keyof PropertyValueWireToClient ? PropertyValueWireToClient[T]
+    : T extends Record<string, keyof PropertyValueWireToClient> ? {
+        [K in keyof T]: T[K] extends keyof O ? O[T[K]]
+          : PropertyValueWireToClient[T[K]];
+      }
+    : never
+);
 
 /**
  * Map from the PropertyDefinition type to the typescript type that we accept
