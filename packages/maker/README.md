@@ -638,7 +638,7 @@ const employeeObject = defineObject({
   apiName: "employee",
   displayName: "Employee",
   pluralDisplayName: "Employees",
-  titlePropertyApiName: "name",
+  titlePropertyApiName: "id",
   primaryKeyPropertyApiName: "id",
   properties: {
     "id": { type: "string", displayName: "ID" },
