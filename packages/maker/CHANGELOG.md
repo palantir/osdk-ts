@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.12.0-beta.8
+
+### Minor Changes
+
+- 764e5f1: Add marking constraints
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.6
+
 ## 0.12.0-beta.7
 
 ### Minor Changes
