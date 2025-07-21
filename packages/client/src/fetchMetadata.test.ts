@@ -178,7 +178,13 @@ describe("FetchMetadata", () => {
           "Person",
         ],
         "implements": [],
-        "links": {},
+        "links": {
+          "toBar": {
+            "multiplicity": true,
+            "targetType": "interface",
+            "targetTypeApiName": "BarInterface",
+          },
+        },
         "properties": {
           "fooSpt": {
             "description": "A foo",
