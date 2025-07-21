@@ -808,7 +808,7 @@ function convertLink(
               apiName: linkType.toMany.object.primaryKeyPropertyApiName,
               object: linkType.toMany.object.apiName,
             },
-            column: linkType.many.object.primaryKeyPropertyApiName,
+            column: linkType.toMany.object.primaryKeyPropertyApiName,
           }],
         },
       },
