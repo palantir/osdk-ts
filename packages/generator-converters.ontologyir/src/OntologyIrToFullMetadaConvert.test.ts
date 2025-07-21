@@ -20,11 +20,8 @@ import { OntologyIrToFullMetadataConverter } from "./OntologyIrToFullMetadataCon
 describe(OntologyIrToFullMetadataConverter, () => {
   it("functions metadata", async () => {
     const result = OntologyIrToFullMetadataConverter
-      .getFullMetadataFromFunction(
+      .getOsdkQueryTypes(
         "testFunctions",
-        "testFunction",
-        "ri.00000",
-        "1.0.0",
       );
     expect(result).toMatchInlineSnapshot(``);
   });

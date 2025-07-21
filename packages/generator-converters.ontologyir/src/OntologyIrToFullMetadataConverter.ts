@@ -34,6 +34,7 @@ import { hash } from "node:crypto";
 import type { ApiName } from "./ApiName.js";
 import { FunctionDiscoverer } from "@foundry/functions-typescript-osdk-discovery";
 import { IDataType, IDataType_FunctionCustomType } from "@palantir/function-registry-api/functions-api-types/dataType.js";
+import { QueryTypeV2, VersionedQueryTypeApiName } from "@osdk/foundry.ontologies";
 // import { IDiscoveredFunction } from "@foundry/functions-typescript-discovery-common";
 
 /**
@@ -74,17 +75,47 @@ export class OntologyIrToFullMetadataConverter {
     };
   }
 
-  static getFullMetadataFromFunction(
-    filePath: string,
-    apiName: string,
-    rid: string,
-    version: string,
-  ): any {
+  // includes functions
+  static getFullMetadataFromIrAndFunctions(
+    ir: OntologyIrOntologyBlockDataV2,
+    srcDir: string,
+  ): Ontologies.OntologyFullMetadata {
+    const interfaceTypes = this.getOsdkInterfaceTypes(
+      Object.values(ir.interfaceTypes),
+    );
+    const sharedPropertyTypes = this.getOsdkSharedPropertyTypes(
+      Object.values(ir.sharedPropertyTypes),
+    );
+    const objectTypes = this.getOsdkObjectTypes(
+      Object.values(ir.objectTypes),
+      Object.values(ir.linkTypes),
+    );
+    const actionTypes = this.getOsdkActionTypes(Object.values(ir.actionTypes));
+    const queryTypes = this.getOsdkQueryTypes(srcDir);
+
+    return {
+      interfaceTypes,
+      sharedPropertyTypes,
+      objectTypes,
+      queryTypes,
+      actionTypes,
+      ontology: {
+        apiName: "ontology",
+        rid: `ri.00000`,
+        displayName: "ontology",
+        description: "",
+      },
+    };
+  }
+
+  static getOsdkQueryTypes(
+    functionsDir: string,
+  ): Record<Ontologies.VersionedQueryTypeApiName, Ontologies.QueryTypeV2> {
     const srcDir = "/Volumes/git/osdk-ts/packages/generator-converters.ontologyir/src";
     const tsConfigFilePath = path.join(srcDir, "tsconfig.json");
     const program = this.createProgram(tsConfigFilePath, srcDir);
     const entryPointPath = path.join(srcDir, "index.ts");
-    const fullFilePath = path.join(srcDir, filePath);
+    const fullFilePath = path.join(srcDir, functionsDir);
     
     // Initialize FunctionDiscoverer with the program
     const fd = new FunctionDiscoverer(program, entryPointPath, fullFilePath);
@@ -95,9 +126,9 @@ export class OntologyIrToFullMetadataConverter {
     let queries: Ontologies.QueryTypeV2[] = [];
     functions.discoveredFunctions.forEach((func) => {    
       const queryType: Ontologies.QueryTypeV2 = {
-        apiName: apiName,
-        rid: rid,
-        version: version,
+        apiName: func.locator.type === "typescriptOsdk" ? func.locator.typescriptOsdk.functionName : "placeholder",
+        rid: "placeholder.rid",
+        version: "0.0.0",
         parameters: func.inputs.reduce((acc, input) => {
           acc[input.name] = {
             dataType: this.convertDataType(input.dataType, func.customTypes),
@@ -108,8 +139,10 @@ export class OntologyIrToFullMetadataConverter {
       };  
       queries.push(queryType);
     });
-
-    return queries;
+    return queries.reduce((acc, query) => {
+      acc[query.apiName as string] = query;
+      return acc;
+    }, {} as Record<Ontologies.VersionedQueryTypeApiName, Ontologies.QueryTypeV2>);
   }
 
   static convertDataType(dataType: IDataType, customTypes: any, required?: boolean): Ontologies.QueryDataType {
