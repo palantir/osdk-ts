@@ -284,24 +284,27 @@ export function createDefinition(
       links: (_value) =>
         `{
         ${
-          stringify(definition.links, {
-            "*": (linkDefinition) =>
-              definition.type === "interface"
-                ? `$InterfaceMetadata.Link<${
+          definition.type === "interface"
+            ? stringify(definition.links, {
+              "*": (linkDefinition) =>
+                `$InterfaceMetadata.Link<${
                   linkDefinition.targetType === "interface"
                     ? ontology.requireInterfaceType(
-                      (linkDefinition as any).targetTypeApiName,
+                      linkDefinition.targetTypeApiName,
                     )
                       .getImportedDefinitionIdentifier(true)
                     : ontology.requireObjectType(
-                      (linkDefinition as any).targetTypeApiName,
+                      linkDefinition.targetTypeApiName,
                     ).getImportedDefinitionIdentifier(true)
-                }, ${linkDefinition.multiplicity}>`
-                : `$ObjectMetadata.Link<${
+                }, ${linkDefinition.multiplicity}>`,
+            })
+            : stringify(definition.links, {
+              "*": (linkDefinition) =>
+                `$ObjectMetadata.Link<${
                   ontology.requireObjectType(linkDefinition.targetType)
                     .getImportedDefinitionIdentifier(true)
                 }, ${linkDefinition.multiplicity}>`,
-          })
+            })
         }
       }`,
       properties: (_value) => (`{
