@@ -147,6 +147,10 @@ const cspell = {
         "Clooney",
         "Itask",
         "Mobi",
+
+        // Authless client
+        "Authless",
+        "authless",
       ],
       ignoreWords: [
         // it's an NPM package
