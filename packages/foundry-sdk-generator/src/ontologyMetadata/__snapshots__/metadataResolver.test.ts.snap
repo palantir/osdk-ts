@@ -130,7 +130,19 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
     "interfaceTypes": {
       "FooInterface": {
         "allExtendsInterfaces": [],
-        "allLinks": {},
+        "allLinks": {
+          "toBar": {
+            "apiName": "toBar",
+            "cardinality": "MANY",
+            "displayName": "bars",
+            "linkedEntityApiName": {
+              "apiName": "BarInterface",
+              "type": "interfaceTypeApiName",
+            },
+            "required": true,
+            "rid": "ri.interface.link.main.2",
+          },
+        },
         "allProperties": {
           "fooSpt": {
             "apiName": "fooSpt",
@@ -151,7 +163,19 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
           "Employee",
           "Person",
         ],
-        "links": {},
+        "links": {
+          "toBar": {
+            "apiName": "toBar",
+            "cardinality": "MANY",
+            "displayName": "bars",
+            "linkedEntityApiName": {
+              "apiName": "BarInterface",
+              "type": "interfaceTypeApiName",
+            },
+            "required": true,
+            "rid": "ri.interface.link.main.2",
+          },
+        },
         "properties": {
           "fooSpt": {
             "apiName": "fooSpt",
@@ -602,7 +626,19 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
     "interfaceTypes": {
       "FooInterface": {
         "allExtendsInterfaces": [],
-        "allLinks": {},
+        "allLinks": {
+          "toBar": {
+            "apiName": "toBar",
+            "cardinality": "MANY",
+            "displayName": "bars",
+            "linkedEntityApiName": {
+              "apiName": "BarInterface",
+              "type": "interfaceTypeApiName",
+            },
+            "required": true,
+            "rid": "ri.interface.link.main.2",
+          },
+        },
         "allProperties": {
           "fooSpt": {
             "apiName": "fooSpt",
@@ -623,7 +659,19 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
           "Employee",
           "Person",
         ],
-        "links": {},
+        "links": {
+          "toBar": {
+            "apiName": "toBar",
+            "cardinality": "MANY",
+            "displayName": "bars",
+            "linkedEntityApiName": {
+              "apiName": "BarInterface",
+              "type": "interfaceTypeApiName",
+            },
+            "required": true,
+            "rid": "ri.interface.link.main.2",
+          },
+        },
         "properties": {
           "fooSpt": {
             "apiName": "fooSpt",
