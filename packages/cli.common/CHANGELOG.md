@@ -1,5 +1,7 @@
 # @osdk/cli.common
 
+## 0.28.0-beta.7
+
 ## 0.28.0-beta.6
 
 ## 0.28.0-beta.5

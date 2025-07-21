@@ -1,5 +1,17 @@
 # @osdk/foundry-sdk-generator
 
+## 2.4.0-beta.7
+
+### Minor Changes
+
+- af0ea3c: Add package rid as optional generator argument.
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.7
+- @osdk/client@2.4.0-beta.7
+- @osdk/generator@2.4.0-beta.7
+
 ## 2.4.0-beta.6
 
 ### Patch Changes
