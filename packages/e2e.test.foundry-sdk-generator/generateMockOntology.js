@@ -82,6 +82,7 @@ async function setup() {
     palantirOnlyTest: true,
     _: [],
     $0: "",
+    packageRid: "ri.third-party-applications.main.sdk-package.123",
   };
 
   await generatePackageCommand.handler({
