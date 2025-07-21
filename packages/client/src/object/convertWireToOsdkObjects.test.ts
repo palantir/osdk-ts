@@ -942,7 +942,13 @@ describe("convertWireToOsdkObjects", () => {
                       "Person",
                     ],
                     "implements": [],
-                    "links": {},
+                    "links": {
+                      "toBar": {
+                        "multiplicity": true,
+                        "targetType": "interface",
+                        "targetTypeApiName": "BarInterface",
+                      },
+                    },
                     "properties": {
                       "fooSpt": {
                         "description": "A foo",
@@ -1013,29 +1019,35 @@ describe("convertWireToOsdkObjects", () => {
         )
           .toMatchInlineSnapshot(
             `
-          {
-            "apiName": "FooInterface",
-            "description": "Interface for Foo",
-            "displayName": "Foo Interface",
-            "implementedBy": [
-              "Employee",
-              "Person",
-            ],
-            "implements": [],
-            "links": {},
-            "properties": {
-              "fooSpt": {
-                "description": "A foo",
-                "displayName": "Foo",
-                "multiplicity": false,
-                "nullable": true,
-                "type": "string",
+            {
+              "apiName": "FooInterface",
+              "description": "Interface for Foo",
+              "displayName": "Foo Interface",
+              "implementedBy": [
+                "Employee",
+                "Person",
+              ],
+              "implements": [],
+              "links": {
+                "toBar": {
+                  "multiplicity": true,
+                  "targetType": "interface",
+                  "targetTypeApiName": "BarInterface",
+                },
               },
-            },
-            "rid": "ri.interface.main.interface.1",
-            "type": "interface",
-          }
-        `,
+              "properties": {
+                "fooSpt": {
+                  "description": "A foo",
+                  "displayName": "Foo",
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "string",
+                },
+              },
+              "rid": "ri.interface.main.interface.1",
+              "type": "interface",
+            }
+          `,
           );
       });
       it("$experimental_metadata is not enumerable", async () => {
