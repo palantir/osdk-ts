@@ -1,5 +1,21 @@
 # @osdk/create-app.template-packager
 
+## 2.4.0-beta.7
+
+## 2.4.0-beta.6
+
+## 2.4.0-beta.5
+
+## 2.4.0-beta.4
+
+## 2.4.0-beta.3
+
+## 2.4.0-beta.2
+
+## 2.3.0-beta.10
+
+## 2.3.0-beta.9
+
 ## 2.3.0-beta.8
 
 ## 2.3.0-beta.7
@@ -17,6 +33,15 @@
 ## 2.3.0-beta.3
 
 ## 2.3.0-beta.2
+
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 21e33a5: Upgrade consola to 3.4.0
+- 889e84b: Release
+- 317b555: Release
 
 ## 2.2.0-beta.23
 

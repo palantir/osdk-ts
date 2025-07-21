@@ -583,7 +583,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | ActionParam.NullValueType;
           }
 
           // Represents a fqn of the action
@@ -659,7 +659,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo>;
+            readonly object?: ActionParam.ObjectType<Todo> | ActionParam.NullValueType;
           }
 
           // Represents a fqn of the action
@@ -1232,7 +1232,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | ActionParam.NullValueType;
           }
 
           // Represents a fqn of the action
@@ -1308,7 +1308,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo>;
+            readonly object?: ActionParam.ObjectType<Todo> | ActionParam.NullValueType;
           }
 
           // Represents a fqn of the action

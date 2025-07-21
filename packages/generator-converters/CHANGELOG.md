@@ -1,5 +1,60 @@
 # @osdk/generator-converters
 
+## 2.4.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.7
+
+## 2.4.0-beta.6
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.6
+
+## 2.4.0-beta.5
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.5
+
+## 2.4.0-beta.4
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.4
+
+## 2.4.0-beta.3
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.3
+
+## 2.4.0-beta.2
+
+### Minor Changes
+
+- 8c95154: Add nearestNeighbor support
+
+### Patch Changes
+
+- Updated dependencies [29d2ada]
+- Updated dependencies [8c95154]
+- Updated dependencies [c32dcf2]
+  - @osdk/api@2.4.0-beta.2
+
+## 2.3.0-beta.10
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.10
+
+## 2.3.0-beta.9
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.9
+
 ## 2.3.0-beta.8
 
 ### Patch Changes
@@ -55,6 +110,58 @@
 ### Patch Changes
 
 - @osdk/api@2.3.0-beta.2
+
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- b68adea: Add support for inherited interfaces.
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+- abe4897: Removes support for boolean primary keys
+- 63b2e63: Update Platform SDK Dependencies
+- 7416ce4: Update Platform SDK Dependencies
+- 889e84b: Release
+- 791e655: Add support for geoshape and geohash action parameters.
+- 317b555: Release
+- 63b2e63: Supports generating queries for entrySet function types
+- 3d0ab11: Add protection for dropping unsupported enums instead of throwing"
+- Updated dependencies [322c5bc]
+- Updated dependencies [c6bee50]
+- Updated dependencies [7416ce4]
+- Updated dependencies [7170fd1]
+- Updated dependencies [12843cb]
+- Updated dependencies [18ba34f]
+- Updated dependencies [6abf078]
+- Updated dependencies [f82767c]
+- Updated dependencies [56aa502]
+- Updated dependencies [0e874b1]
+- Updated dependencies [abe4897]
+- Updated dependencies [63b2e63]
+- Updated dependencies [cddfbf9]
+- Updated dependencies [7416ce4]
+- Updated dependencies [23ea0e4]
+- Updated dependencies [26c2d95]
+- Updated dependencies [488b51c]
+- Updated dependencies [71462e9]
+- Updated dependencies [fccd9ac]
+- Updated dependencies [5665b18]
+- Updated dependencies [46cede4]
+- Updated dependencies [761e69d]
+- Updated dependencies [889e84b]
+- Updated dependencies [a6e5f89]
+- Updated dependencies [ed69666]
+- Updated dependencies [4183a55]
+- Updated dependencies [70b4464]
+- Updated dependencies [791e655]
+- Updated dependencies [317b555]
+- Updated dependencies [63b2e63]
+- Updated dependencies [a146ce4]
+- Updated dependencies [3d0ab11]
+- Updated dependencies [805df40]
+- Updated dependencies [5467a0f]
+- Updated dependencies [63b2e63]
+  - @osdk/api@2.2.0
 
 ## 2.2.0-beta.23
 

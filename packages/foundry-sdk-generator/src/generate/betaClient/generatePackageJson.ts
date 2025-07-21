@@ -26,6 +26,7 @@ export async function generatePackageJson(options: {
     { dependencyName: string; dependencyVersion: string }
   >;
   beta: boolean;
+  packageRid?: string;
 }): Promise<
   {
     name: string;
@@ -44,6 +45,7 @@ export async function generatePackageJson(options: {
     version: options.packageVersion,
     main: "./cjs/index.js",
     types: "./cjs/index.d.ts",
+    osdk: { packageRid: options.packageRid },
     exports: {
       ".": {
         script: {

@@ -1,5 +1,81 @@
 # @osdk/foundry-sdk-generator
 
+## 2.4.0-beta.7
+
+### Minor Changes
+
+- af0ea3c: Add package rid as optional generator argument.
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.7
+- @osdk/client@2.4.0-beta.7
+- @osdk/generator@2.4.0-beta.7
+
+## 2.4.0-beta.6
+
+### Patch Changes
+
+- @osdk/client@2.4.0-beta.6
+- @osdk/api@2.4.0-beta.6
+- @osdk/generator@2.4.0-beta.6
+
+## 2.4.0-beta.5
+
+### Patch Changes
+
+- @osdk/client@2.4.0-beta.5
+- @osdk/api@2.4.0-beta.5
+- @osdk/generator@2.4.0-beta.5
+
+## 2.4.0-beta.4
+
+### Patch Changes
+
+- @osdk/client@2.4.0-beta.4
+- @osdk/api@2.4.0-beta.4
+- @osdk/generator@2.4.0-beta.4
+
+## 2.4.0-beta.3
+
+### Patch Changes
+
+- @osdk/client@2.4.0-beta.3
+- @osdk/api@2.4.0-beta.3
+- @osdk/generator@2.4.0-beta.3
+
+## 2.4.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [29d2ada]
+- Updated dependencies [8c95154]
+- Updated dependencies [c32dcf2]
+- Updated dependencies [37c7c0b]
+  - @osdk/api@2.4.0-beta.2
+  - @osdk/client@2.4.0-beta.2
+  - @osdk/generator@2.4.0-beta.2
+
+## 2.3.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [991dbd4]
+- Updated dependencies [266b756]
+- Updated dependencies [8d69555]
+  - @osdk/client@2.3.0-beta.10
+  - @osdk/api@2.3.0-beta.10
+  - @osdk/generator@2.3.0-beta.10
+
+## 2.3.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [5a15cfd]
+  - @osdk/client@2.3.0-beta.9
+  - @osdk/api@2.3.0-beta.9
+  - @osdk/generator@2.3.0-beta.9
+
 ## 2.3.0-beta.8
 
 ### Patch Changes
@@ -72,6 +148,99 @@
 - @osdk/api@2.3.0-beta.2
 - @osdk/client@2.3.0-beta.2
 - @osdk/generator@2.3.0-beta.2
+
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 12843cb: Add ability to load all underlying properties of an interface.
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+- 21e33a5: Upgrade consola to 3.4.0
+- b9bc65e: Improved validation for query map types
+- 63b2e63: Update Platform SDK Dependencies
+- 7416ce4: Update Platform SDK Dependencies
+- fbaeff5: Add support for marking types when loading action parameters.
+- 889e84b: Release
+- 67e772e: Fixes action parameter generation to enforce strict fields
+- a72bf30: Fix normalization of paths for generator on windows.
+- 791e655: Add support for geoshape and geohash action parameters.
+- 317b555: Release
+- cc380b5: Use the latest Platform APIs
+- 26a850c: Fix windows generation bug.
+- 5774599: Fix resolution of new action parameter type.
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [b61e9f5]
+- Updated dependencies [b68adea]
+- Updated dependencies [c6bee50]
+- Updated dependencies [7416ce4]
+- Updated dependencies [1ba3871]
+- Updated dependencies [7170fd1]
+- Updated dependencies [12843cb]
+- Updated dependencies [18ba34f]
+- Updated dependencies [6abf078]
+- Updated dependencies [f82767c]
+- Updated dependencies [cdd3154]
+- Updated dependencies [21e33a5]
+- Updated dependencies [56aa502]
+- Updated dependencies [0e874b1]
+- Updated dependencies [abe4897]
+- Updated dependencies [63b2e63]
+- Updated dependencies [cddfbf9]
+- Updated dependencies [5a12181]
+- Updated dependencies [2ce3659]
+- Updated dependencies [7416ce4]
+- Updated dependencies [23ea0e4]
+- Updated dependencies [26c2d95]
+- Updated dependencies [430dee3]
+- Updated dependencies [49a91dc]
+- Updated dependencies [397f906]
+- Updated dependencies [488b51c]
+- Updated dependencies [71462e9]
+- Updated dependencies [fccd9ac]
+- Updated dependencies [5665b18]
+- Updated dependencies [46cede4]
+- Updated dependencies [761e69d]
+- Updated dependencies [889e84b]
+- Updated dependencies [a6e5f89]
+- Updated dependencies [62e5965]
+- Updated dependencies [ed69666]
+- Updated dependencies [67e772e]
+- Updated dependencies [c92fe73]
+- Updated dependencies [2517750]
+- Updated dependencies [4183a55]
+- Updated dependencies [1e16dcb]
+- Updated dependencies [70b4464]
+- Updated dependencies [2f6206c]
+- Updated dependencies [81c0d8c]
+- Updated dependencies [81c0d8c]
+- Updated dependencies [791e655]
+- Updated dependencies [317b555]
+- Updated dependencies [879b6c3]
+- Updated dependencies [63b2e63]
+- Updated dependencies [2517750]
+- Updated dependencies [1e16dcb]
+- Updated dependencies [f4370e3]
+- Updated dependencies [ea4e4b1]
+- Updated dependencies [a146ce4]
+- Updated dependencies [cc380b5]
+- Updated dependencies [3d0ab11]
+- Updated dependencies [e873024]
+- Updated dependencies [88591f7]
+- Updated dependencies [751e5b3]
+- Updated dependencies [805df40]
+- Updated dependencies [fe0cc43]
+- Updated dependencies [2517750]
+- Updated dependencies [5467a0f]
+- Updated dependencies [2517750]
+- Updated dependencies [63b2e63]
+  - @osdk/api@2.2.0
+  - @osdk/client@2.2.0
+  - @osdk/generator@2.2.0
+  - @osdk/shared.client.impl@1.2.0
 
 ## 2.2.0-beta.23
 

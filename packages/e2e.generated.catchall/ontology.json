@@ -2147,6 +2147,57 @@
         }
       },
       "linkTypes": []
+    },
+    "MatthewvsDevOrderEmbedding": {
+      "objectType": {
+        "apiName": "MatthewvsDevOrderEmbedding",
+        "primaryKey": "orderId",
+        "displayName": "[matthewvs-dev] Order Embedding",
+        "description": "A venture",
+        "properties": {
+          "orderId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "orderTitle": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "embedding": {
+            "displayName": "Embedding",
+            "dataType": {
+              "type": "vector",
+              "dimension": 1536,
+              "supportsSearchWith": [
+                {
+                  "value": "COSINE_SIMILARITY"
+                }
+              ],
+              "embeddingModel": {
+                "type": "lms",
+                "value": "OPENAI_TEXT_EMBEDDING_ADA_002"
+              }
+            },
+            "rid": "ri.ontology.main.property.de94ac47-509e-4094-913e-5c66f370abc8",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "icon": {
+          "type": "blueprint",
+          "name": "ventureIcon",
+          "color": "color"
+        },
+        "rid": "rid.a.b.c.d",
+        "status": "ACTIVE",
+        "titleProperty": "orderTitle",
+        "pluralDisplayName": "[matthewvs-dev] Order Embeddings"
+      },
+      "linkTypes": []
     }
   },
   "queryTypes": {

@@ -1,5 +1,21 @@
 # @osdk/create-app.template.tutorial-todo-aip-app.beta
 
+## 2.4.0-beta.7
+
+## 2.4.0-beta.6
+
+## 2.4.0-beta.5
+
+## 2.4.0-beta.4
+
+## 2.4.0-beta.3
+
+## 2.4.0-beta.2
+
+## 2.3.0-beta.10
+
+## 2.3.0-beta.9
+
 ## 2.3.0-beta.8
 
 ## 2.3.0-beta.7
@@ -21,6 +37,18 @@
 ### Minor Changes
 
 - 595a81c: Remove dangling comma in root render function
+
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 1444362: Read environment variables from index.html meta tags
+- fa02507: Use options overload when initializing client in create-app templates and standardize formatting
+- 49422cd: add commented lines to show users where to get the client from
+- 889e84b: Release
+- 317b555: Release
+- 2e8e351: Update template to use new OsdkProvider
 
 ## 2.2.0-beta.23
 

@@ -36,6 +36,7 @@ export {
   EsongPds,
   FintrafficAis,
   GtfsTripTrackObject,
+  MatthewvsDevOrderEmbedding,
   McAirportStruct,
   MnayanOsdkMediaObject,
   MtaBus,

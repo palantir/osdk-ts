@@ -23,14 +23,15 @@ import type {
   OntologyIrAllowedParameterValues,
   OntologyIrBaseParameterType,
   OntologyIrImportedTypes,
-  OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrLinkDefinition,
   OntologyIrLinkTypeBlockDataV2,
   OntologyIrManyToManyLinkTypeDatasource,
+  OntologyIrMarketplaceInterfaceType,
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
+  OntologyIrOneToManyLinkDefinition,
   OntologyIrOntologyBlockDataV2,
   OntologyIrParameter,
   OntologyIrPropertyType,
@@ -51,6 +52,10 @@ import * as path from "path";
 import invariant from "tiny-invariant";
 import { isExotic } from "./defineObject.js";
 import {
+  convertActionParameterConditionalOverride,
+  convertActionVisibility,
+} from "./ontologyUtils.js";
+import {
   convertNullabilityToDataConstraint,
   convertType,
   convertValueType,
@@ -68,6 +73,7 @@ import type {
   LinkType,
   ObjectPropertyType,
   ObjectType,
+  OneToManyLinkTypeDefinition,
   OntologyDefinition,
   OntologyEntityType,
   SharedPropertyType,
@@ -302,13 +308,13 @@ function convertToWireImportedTypes(
       apiName: i.interfaceType.apiName,
       displayName: i.interfaceType.displayMetadata.displayName,
       description: i.interfaceType.displayMetadata.description,
-      properties: Object.values(i.interfaceType.allPropertiesV2).map(p => ({
+      properties: Object.values(i.interfaceType.propertiesV2).map(p => ({
         apiName: p.sharedPropertyType.apiName,
         displayName: p.sharedPropertyType.displayMetadata.displayName,
         description: p.sharedPropertyType.displayMetadata.description,
         type: p.sharedPropertyType.type,
       })),
-      links: i.interfaceType.allLinks.map(l => ({
+      links: i.interfaceType.links.map(l => ({
         apiName: l.metadata.apiName,
         displayName: l.metadata.displayName,
         description: l.metadata.description,
@@ -446,12 +452,32 @@ function convertObject(
     (objectType.properties ?? [])
       .flatMap(prop => extractPropertyDatasource(prop, objectType.apiName));
 
+  const classificationGroupMarkingNames = extractMarkingGroups(
+    objectType.properties ?? [],
+    "CBAC",
+  );
+
+  const mandatoryMarkingNames = extractMarkingGroups(
+    objectType.properties ?? [],
+    "MANDATORY",
+  );
+
+  const classificationInputGroup = classificationGroupMarkingNames.length > 0
+    ? classificationGroupMarkingNames.reduce((l, r) => l + "/" + r)
+    : undefined;
+
+  const mandatoryInputGroup = mandatoryMarkingNames.length > 0
+    ? mandatoryMarkingNames.reduce((l, r) => l + "/" + r)
+    : undefined;
+
   const objectDatasource = buildDatasource(
     objectType.apiName,
     convertDatasourceDefinition(
       objectType,
       objectType.properties ?? [],
     ),
+    classificationInputGroup,
+    mandatoryInputGroup,
   );
 
   const implementations = objectType.implementsInterfaces ?? [];
@@ -481,9 +507,11 @@ function convertObject(
       redacted: false,
       implementsInterfaces2: implementations.map(impl => ({
         interfaceTypeApiName: impl.implements.apiName,
+        linksV2: {},
+        propertiesV2: {},
         properties: Object.fromEntries(
           impl.propertyMapping.map(
-            mapping => [mapping.interfaceProperty, {
+            mapping => [addNamespaceIfNone(mapping.interfaceProperty), {
               propertyTypeRid: mapping.mapsTo,
             }],
           ),
@@ -532,7 +560,26 @@ function extractPropertyDatasource(
 function buildDatasource(
   apiName: string,
   definition: OntologyIrObjectTypeDatasourceDefinition,
+  classificationMarkingGroupName?: string,
+  mandatoryMarkingGroupName?: string,
 ): OntologyIrObjectTypeDatasource {
+  const needsSecurity = classificationMarkingGroupName !== undefined
+    || mandatoryMarkingGroupName !== undefined;
+
+  const securityConfig = needsSecurity
+    ? {
+      classificationConstraint: classificationMarkingGroupName
+        ? {
+          markingGroupName: classificationMarkingGroupName,
+        }
+        : undefined,
+      markingConstraint: mandatoryMarkingGroupName
+        ? {
+          markingGroupName: mandatoryMarkingGroupName,
+        }
+        : undefined,
+    }
+    : undefined;
   return ({
     rid: "ri.ontology.main.datasource.".concat(apiName),
     datasource: definition,
@@ -540,6 +587,7 @@ function buildDatasource(
       onlyAllowPrivilegedEdits: false,
     },
     redacted: false,
+    ...((securityConfig !== undefined) && { dataSecurity: securityConfig }),
   });
 }
 
@@ -587,21 +635,44 @@ function convertDatasourceDefinition(
   }
 }
 
+/**
+ * Extracts marking group names of a specific type from object properties
+ */
+function extractMarkingGroups(
+  properties: ObjectPropertyType[],
+  markingType: "CBAC" | "MANDATORY",
+): string[] {
+  return properties
+    .map(prop => {
+      if (
+        typeof prop.type === "object"
+        && prop.type.type === "marking"
+        && prop.type.markingType === markingType
+      ) {
+        return prop.type.markingInputGroupName;
+      }
+      return undefined;
+    })
+    .filter((val): val is string => val !== undefined);
+}
+
 function buildPropertyMapping(
   properties: ObjectPropertyType[],
 ): Record<string, PropertyTypeMappingInfo> {
   return Object.fromEntries(
     properties.map((prop) => {
-      prop.type;
+      // editOnly
+      if (prop.editOnly) {
+        return [prop.apiName, { type: "editOnly", editOnly: {} }];
+      }
+      // structs
       if (typeof prop.type === "object" && prop.type?.type === "struct") {
         const structMapping = {
           type: "struct",
           struct: {
             column: prop.apiName,
             mapping: Object.fromEntries(
-              Object.entries(prop.type.structDefinition).map((
-                [fieldName, _fieldType],
-              ) => [
+              Object.keys(prop.type.structDefinition).map((fieldName) => [
                 fieldName,
                 { apiName: fieldName, mappings: {} },
               ]),
@@ -609,14 +680,9 @@ function buildPropertyMapping(
           },
         };
         return [prop.apiName, structMapping];
-      } else {
-        return [
-          prop.apiName,
-          prop.editOnly
-            ? { type: "editOnly", editOnly: {} }
-            : { type: "column", column: prop.apiName },
-        ];
       }
+      // default: column mapping
+      return [prop.apiName, { type: "column", column: prop.apiName }];
     }),
   );
 }
@@ -641,7 +707,14 @@ function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
     indexedForSearch: property.indexedForSearch ?? true,
     ruleSetBinding: undefined,
     baseFormatter: property.baseFormatter,
-    type: convertType(property.type),
+    type: property.array
+      ? {
+        type: "array" as const,
+        array: {
+          subtype: convertType(property.type),
+        },
+      }
+      : convertType(property.type),
     typeClasses: property.typeClasses
       ?? (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
     status: convertObjectStatus(property.status),
@@ -667,7 +740,7 @@ function convertLink(
     definition = {
       type: "oneToMany",
       oneToMany: {
-        cardinalityHint: "ONE_TO_MANY",
+        cardinalityHint: convertCardinality(linkType.cardinality),
         manyToOneLinkMetadata: linkType.toMany.metadata,
         objectTypeRidManySide: linkType.toMany.object.apiName,
         objectTypeRidOneSide: linkType.one.object.apiName,
@@ -780,7 +853,7 @@ function cleanAndValidateLinkTypeId(apiName: string): string {
 
 function convertInterface(
   interfaceType: InterfaceType,
-): OntologyIrInterfaceType {
+): OntologyIrMarketplaceInterfaceType {
   const { __type, ...other } = interfaceType;
   return {
     ...other,
@@ -795,10 +868,8 @@ function convertInterface(
     ),
     extendsInterfaces: interfaceType.extendsInterfaces.map(i => i.apiName),
     // these are omitted from our internal types but we need to re-add them for the final json
-    allExtendsInterfaces: [],
-    allLinks: [],
-    allProperties: [],
-    allPropertiesV2: {},
+    // TODO(mwalther): Support propertiesV3
+    propertiesV3: {},
     properties: [],
   };
 }
@@ -938,6 +1009,7 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
             [action.status]: {},
           } as unknown as ActionTypeStatus
           : action.status,
+        entities: action.entities,
       },
     },
   };
@@ -964,15 +1036,24 @@ function convertActionValidation(
             defaultValidation: {
               display: {
                 renderHint: renderHintFromBaseType(p),
-                visibility: { type: "editable", editable: {} },
+                visibility: convertActionVisibility(
+                  p.validation.defaultVisibility,
+                ),
               },
               validation: {
                 allowedValues: extractAllowedValues(p),
                 required: convertParameterRequirementConstraint(
-                  p.validation.required,
+                  p.validation.required!,
                 ),
               },
             },
+            conditionalOverrides: p.validation.conditionalOverrides?.map(
+              (override) =>
+                convertActionParameterConditionalOverride(
+                  override,
+                  p.validation,
+                ),
+            ) ?? [],
           },
         ];
       }),
@@ -1019,7 +1100,7 @@ function convertActionSections(
 function extractAllowedValues(
   parameter: ActionParameter,
 ): OntologyIrAllowedParameterValues {
-  switch (parameter.validation.allowedValues.type) {
+  switch (parameter.validation.allowedValues!.type) {
     case "oneOf":
       return {
         type: "oneOf",
@@ -1105,7 +1186,7 @@ function extractAllowedValues(
       };
     default:
       const k: Partial<OntologyIrAllowedParameterValues["type"]> =
-        parameter.validation.allowedValues.type;
+        parameter.validation.allowedValues!.type;
       return {
         type: k,
         [k]: {
@@ -1155,9 +1236,9 @@ function renderHintFromBaseType(
       return { type: "filePicker", filePicker: {} };
     case "marking":
     case "markingList":
-      if (parameter.validation.allowedValues.type === "mandatoryMarking") {
+      if (parameter.validation.allowedValues?.type === "mandatoryMarking") {
         return { type: "mandatoryMarkingPicker", mandatoryMarkingPicker: {} };
-      } else if (parameter.validation.allowedValues.type === "cbacMarking") {
+      } else if (parameter.validation.allowedValues?.type === "cbacMarking") {
         return { type: "cbacMarkingPicker", cbacMarkingPicker: {} };
       } else {
         throw new Error(
@@ -1246,10 +1327,21 @@ function dependencyInjectionString(): string {
     ? namespace.slice(0, -1)
     : namespace;
 
-  return `
-import { fileURLToPath } from "url";
-import { addDependency } from '@osdk/maker';
+  return `import { addDependency } from "@osdk/maker";
 
-addDependency("${namespaceNoDot}", fileURLToPath(import.meta.url));
+addDependency("${namespaceNoDot}", new URL(import.meta.url).pathname);
 `;
+}
+
+export function addNamespaceIfNone(apiName: string): string {
+  return apiName.includes(".") ? apiName : namespace + apiName;
+}
+
+function convertCardinality(
+  cardinality: OneToManyLinkTypeDefinition["cardinality"],
+): OntologyIrOneToManyLinkDefinition["cardinalityHint"] {
+  if (cardinality === "OneToMany" || cardinality === undefined) {
+    return "ONE_TO_MANY";
+  }
+  return "ONE_TO_ONE";
 }

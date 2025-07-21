@@ -1,6 +1,6 @@
 {
   "name": "@osdk/generator-converters.ontologyir",
-  "version": "2.3.0-beta.8",
+  "version": "2.4.0-beta.7",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -44,7 +44,8 @@
   },
   "dependencies": {
     "@osdk/client.unstable": "workspace:~",
-    "@osdk/foundry.ontologies": "2.24.0"
+    "@osdk/foundry.ontologies": "2.24.0",
+    "tiny-invariant": "^1.3.3"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",

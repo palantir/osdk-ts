@@ -50,7 +50,7 @@ export type {
   VersionBound,
   WhereClause,
 } from "@osdk/api";
-export { isOk } from "@osdk/api";
+export { isOk, NULL_VALUE } from "@osdk/api";
 export { PalantirApiError } from "@osdk/shared.net.errors";
 
 export { ActionValidationError } from "./actions/ActionValidationError.js";

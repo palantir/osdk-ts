@@ -15,33 +15,54 @@
  */
 
 import type { ParameterId } from "@osdk/client.unstable";
+import { consola } from "consola";
 import invariant from "tiny-invariant";
+import {
+  convertToDisplayName,
+  getAllInterfaceProperties,
+} from "./defineObject.js";
 import {
   namespace,
   ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
+import { convertConditionDefinition } from "./ontologyUtils.js";
 import {
+  type ActionLevelValidationDefinition,
+  type ActionParameter,
   type ActionParameterAllowedValues,
   type ActionParameterType,
   type ActionParameterTypePrimitive,
   type ActionType,
   type ActionTypeDefinition,
-  type ActionValidationDefinition,
+  type ActionTypeUserDefinition,
   type ActionValidationRule,
+  type ConditionDefinition,
   type InterfaceType,
   type ObjectPropertyType,
-  type ObjectType,
+  type ObjectPropertyTypeUserDefinition,
+  type ObjectTypeDefinition,
   OntologyEntityTypeEnum,
   type PropertyTypeType,
+  type PropertyTypeTypeStruct,
   type SharedPropertyType,
 } from "./types.js";
 
 export function defineCreateInterfaceObjectAction(
   interfaceType: InterfaceType,
-  objectType?: ObjectType,
-  validation?: ActionValidationDefinition,
+  objectType?: ObjectTypeDefinition,
+  validation?: ActionLevelValidationDefinition,
 ): ActionType {
+  const allProperties = Object.entries(getAllInterfaceProperties(interfaceType))
+    .filter(([_, prop]) => !isStruct(prop.sharedPropertyType.type));
+  if (
+    allProperties.length
+      !== Object.entries(getAllInterfaceProperties(interfaceType)).length
+  ) {
+    consola.info(
+      `Some properties on ${interfaceType.apiName} were skipped in the create action because they are structs`,
+    );
+  }
   return defineAction({
     apiName: `create-${
       kebab(interfaceType.apiName.split(".").pop() ?? interfaceType.apiName)
@@ -78,7 +99,7 @@ export function defineCreateInterfaceObjectAction(
             },
         },
       },
-      ...Object.entries(interfaceType.propertiesV2).map((
+      ...allProperties.map((
         [id, prop],
       ) => ({
         id,
@@ -99,6 +120,12 @@ export function defineCreateInterfaceObjectAction(
     status: interfaceType.status.type !== "deprecated"
       ? interfaceType.status.type
       : interfaceType.status,
+    entities: {
+      affectedInterfaceTypes: [interfaceType.apiName],
+      affectedObjectTypes: [],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [
       {
         type: "addInterfaceRule",
@@ -106,8 +133,8 @@ export function defineCreateInterfaceObjectAction(
           interfaceApiName: interfaceType.apiName,
           objectTypeParameter: "objectTypeParameter",
           sharedPropertyValues: Object.fromEntries(
-            Object.entries(interfaceType.propertiesV2).map((
-              [id, prop],
+            allProperties.map((
+              [id, _prop],
             ) => [id, { type: "parameterId", parameterId: id }]),
           ),
         },
@@ -116,7 +143,7 @@ export function defineCreateInterfaceObjectAction(
     ...(validation
       ? {
         validation: [
-          createValidationRule(validation),
+          convertValidationRule(validation),
         ],
       }
       : {}),
@@ -124,44 +151,89 @@ export function defineCreateInterfaceObjectAction(
 }
 
 export function defineCreateObjectAction(
-  objectType: ObjectType,
-  validation?: ActionValidationDefinition,
+  def: ActionTypeUserDefinition,
 ): ActionType {
+  Object.keys(def.parameterLevelValidations ?? {}).forEach(id => {
+    invariant(
+      def.objectType.properties?.[id] !== undefined,
+      `Property ${id} does not exist on ${def.objectType.apiName}`,
+    );
+  });
+  (def.excludedProperties ?? []).forEach(id => {
+    invariant(
+      def.objectType.properties?.[id] !== undefined,
+      `Property ${id} does not exist on ${def.objectType.apiName}`,
+    );
+  });
+
+  const parameterNames = Object.keys(def.objectType.properties ?? {}).filter(
+    id =>
+      !def.excludedProperties?.includes(id)
+      && !isStruct(def.objectType.properties?.[id].type!),
+  );
+  const parameters: Array<ActionParameter> = Array.from(parameterNames).map(
+    id => (
+      {
+        id,
+        displayName: def.objectType.properties?.[id].displayName
+          ?? convertToDisplayName(id),
+        type: extractActionParameterType(def.objectType.properties?.[id]!),
+        validation: (def.parameterLevelValidations?.[id] !== undefined)
+          ? {
+            ...def.parameterLevelValidations?.[id],
+            allowedValues: def.parameterLevelValidations?.[id].allowedValues
+              ?? extractAllowedValuesFromType(
+                def.objectType.properties?.[id].type!,
+              ),
+            required: def.parameterLevelValidations?.[id].required ?? true,
+          }
+          : {
+            required: (def.objectType.properties?.[id].array ?? false)
+              ? {
+                listLength: def.objectType.properties?.[id].nullability
+                    ?.noEmptyCollections
+                  ? { min: 1 }
+                  : {},
+              }
+              : def.objectType.properties?.[id].nullability?.noNulls ?? true,
+            allowedValues: extractAllowedValuesFromType(
+              def.objectType.properties?.[id].type!,
+            ),
+          },
+      }
+    ),
+  );
+
   return defineAction({
-    apiName: `create-object-${
-      kebab(objectType.apiName.split(".").pop() ?? objectType.apiName)
-    }`,
-    displayName: `Create ${objectType.displayName}`,
-    parameters: [
-      ...(objectType.properties?.map(prop => ({
-        id: prop.apiName,
-        displayName: prop.displayName,
-        type: extractActionParameterType(prop),
-        validation: {
-          required: true,
-          allowedValues: extractAllowedValuesFromType(prop.type),
-        },
-      })) ?? []),
-    ],
-    status: "active",
+    apiName: def.apiName
+      ?? `create-object-${
+        kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
+      }`,
+    displayName: def.displayName ?? `Create ${def.objectType.displayName}`,
+    parameters: parameters,
+    status: def.status ?? "active",
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [def.objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [{
       type: "addObjectRule",
       addObjectRule: {
-        objectTypeId: objectType.apiName,
-        propertyValues: objectType.properties
-          ? Object.fromEntries(
-            objectType.properties.map(
-              p => [p.apiName, { type: "parameterId", parameterId: p.apiName }],
-            ),
-          )
-          : {},
+        objectTypeId: def.objectType.apiName,
+        propertyValues: Object.fromEntries(
+          parameters.map(
+            p => [p.id, { type: "parameterId", parameterId: p.id }],
+          ),
+        ),
         structFieldValues: {},
       },
     }],
-    ...(validation
+    ...(def.actionLevelValidation
       ? {
         validation: [
-          createValidationRule(validation),
+          convertValidationRule(def.actionLevelValidation),
         ],
       }
       : {}),
@@ -170,9 +242,19 @@ export function defineCreateObjectAction(
 
 export function defineModifyInterfaceObjectAction(
   interfaceType: InterfaceType,
-  objectType?: ObjectType,
-  validation?: ActionValidationDefinition,
+  objectType?: ObjectTypeDefinition,
+  validation?: ActionLevelValidationDefinition,
 ): ActionType {
+  const allProperties = Object.entries(getAllInterfaceProperties(interfaceType))
+    .filter(([_, prop]) => !isStruct(prop.sharedPropertyType.type));
+  if (
+    allProperties.length
+      !== Object.entries(getAllInterfaceProperties(interfaceType)).length
+  ) {
+    consola.info(
+      `Some properties on ${interfaceType.apiName} were skipped in the modify action because they are structs`,
+    );
+  }
   return defineAction({
     apiName: `modify-${
       kebab(interfaceType.apiName.split(".").pop() ?? interfaceType.apiName)
@@ -206,7 +288,7 @@ export function defineModifyInterfaceObjectAction(
             },
         },
       },
-      ...Object.entries(interfaceType.propertiesV2).map((
+      ...allProperties.map((
         [id, prop],
       ) => ({
         id,
@@ -227,14 +309,20 @@ export function defineModifyInterfaceObjectAction(
     status: interfaceType.status.type !== "deprecated"
       ? interfaceType.status.type
       : interfaceType.status,
+    entities: {
+      affectedInterfaceTypes: [interfaceType.apiName],
+      affectedObjectTypes: [],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     rules: [
       {
         type: "modifyInterfaceRule",
         modifyInterfaceRule: {
           interfaceObjectToModifyParameter: "interfaceObjectToModifyParameter",
           sharedPropertyValues: Object.fromEntries(
-            Object.entries(interfaceType.propertiesV2).map((
-              [id, prop],
+            allProperties.map((
+              [id, _prop],
             ) => [id, { type: "parameterId", parameterId: id }]),
           ),
         },
@@ -243,7 +331,7 @@ export function defineModifyInterfaceObjectAction(
     ...(validation
       ? {
         validation: [
-          createValidationRule(validation),
+          convertValidationRule(validation),
         ],
       }
       : {}),
@@ -251,61 +339,103 @@ export function defineModifyInterfaceObjectAction(
 }
 
 export function defineModifyObjectAction(
-  objectType: ObjectType,
-  validation?: ActionValidationDefinition,
+  def: ActionTypeUserDefinition,
 ): ActionType {
+  Object.keys(def.parameterLevelValidations ?? {}).forEach(id => {
+    invariant(
+      def.objectType.properties?.[id] !== undefined,
+      `Property ${id} does not exist on ${def.objectType.apiName}`,
+    );
+  });
+  (def.excludedProperties ?? []).forEach(id => {
+    invariant(
+      def.objectType.properties?.[id] !== undefined,
+      `Property ${id} does not exist on ${def.objectType.apiName}`,
+    );
+  });
+
+  const parameterNames = Object.keys(def.objectType.properties ?? {}).filter(
+    id =>
+      !def.excludedProperties?.includes(id)
+      && !isStruct(def.objectType.properties?.[id].type!)
+      && id !== def.objectType.primaryKeyPropertyApiName,
+  );
+  const parameters: Array<ActionParameter> = Array.from(parameterNames).map(
+    id => (
+      {
+        id,
+        displayName: def.objectType.properties?.[id].displayName
+          ?? convertToDisplayName(id),
+        type: extractActionParameterType(def.objectType.properties?.[id]!),
+        validation: (def.parameterLevelValidations?.[id] !== undefined)
+          ? {
+            ...def.parameterLevelValidations?.[id],
+            allowedValues: def.parameterLevelValidations?.[id].allowedValues
+              ?? extractAllowedValuesFromType(
+                def.objectType.properties?.[id].type!,
+              ),
+            required: def.parameterLevelValidations?.[id].required ?? false,
+          }
+          : {
+            required: (def.objectType.properties?.[id].array ?? false)
+              ? {
+                listLength: def.objectType.properties?.[id].nullability
+                    ?.noEmptyCollections
+                  ? { min: 1 }
+                  : {},
+              }
+              : def.objectType.properties?.[id].nullability?.noNulls ?? false,
+            allowedValues: extractAllowedValuesFromType(
+              def.objectType.properties?.[id].type!,
+            ),
+          },
+      }
+    ),
+  );
   return defineAction({
-    apiName: `modify-object-${
-      kebab(objectType.apiName.split(".").pop() ?? objectType.apiName)
-    }`,
-    displayName: `Modify ${objectType.displayName}`,
+    apiName: def.apiName
+      ?? `modify-object-${
+        kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
+      }`,
+    displayName: def.displayName ?? `Modify ${def.objectType.displayName}`,
     parameters: [
       {
         id: "objectToModifyParameter",
         displayName: "Modify object",
         type: {
           type: "objectReference",
-          objectReference: { objectTypeId: objectType.apiName },
+          objectReference: { objectTypeId: def.objectType.apiName },
         },
         validation: {
           allowedValues: { type: "objectQuery" },
           required: true,
         },
       },
-      ...(objectType.properties?.map(prop => ({
-        id: prop.apiName,
-        displayName: prop.displayName,
-        type: extractActionParameterType(prop),
-        validation: {
-          required: false,
-          allowedValues: extractAllowedValuesFromType(prop.type),
-        },
-      })) ?? []),
+      ...parameters,
     ],
-    status: "active",
-    rules: [
-      {
-        type: "modifyObjectRule",
-        modifyObjectRule: {
-          objectToModify: "objectToModifyParameter",
-          propertyValues: objectType.properties
-            ? Object.fromEntries(
-              objectType.properties.map(
-                p => [p.apiName, {
-                  type: "parameterId",
-                  parameterId: p.apiName,
-                }],
-              ),
-            )
-            : {},
-          structFieldValues: {},
-        },
+    status: def.status ?? "active",
+    rules: [{
+      type: "modifyObjectRule",
+      modifyObjectRule: {
+        objectToModify: "objectToModifyParameter",
+        propertyValues: Object.fromEntries(
+          parameters.map(
+            p => [p.id, { type: "parameterId", parameterId: p.id }],
+          ),
+        ),
+        structFieldValues: {},
       },
-    ],
-    ...(validation
+    }],
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [def.objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
+    ...(def.actionLevelValidation
       ? {
         validation: [
-          createValidationRule(validation),
+          convertValidationRule(def.actionLevelValidation),
         ],
       }
       : {}),
@@ -313,21 +443,21 @@ export function defineModifyObjectAction(
 }
 
 export function defineDeleteObjectAction(
-  objectType: ObjectType,
-  validation?: ActionValidationDefinition,
+  def: ActionTypeUserDefinition,
 ): ActionType {
   return defineAction({
-    apiName: `delete-object-${
-      kebab(objectType.apiName.split(".").pop() ?? objectType.apiName)
-    }`,
-    displayName: `Delete ${objectType.displayName}`,
+    apiName: def.apiName
+      ?? `delete-object-${
+        kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
+      }`,
+    displayName: def.displayName ?? `Delete ${def.objectType.displayName}`,
     parameters: [
       {
         id: "objectToDeleteParameter",
         displayName: "Delete object",
         type: {
           type: "objectReference",
-          objectReference: { objectTypeId: objectType.apiName },
+          objectReference: { objectTypeId: def.objectType.apiName },
         },
         validation: {
           required: true,
@@ -335,19 +465,23 @@ export function defineDeleteObjectAction(
         },
       },
     ],
-    status: "active",
-    rules: [
-      {
-        type: "deleteObjectRule",
-        deleteObjectRule: {
-          objectToDelete: "objectToDeleteParameter",
-        },
+    status: def.status ?? "active",
+    rules: [{
+      type: "deleteObjectRule",
+      deleteObjectRule: {
+        objectToDelete: "objectToDeleteParameter",
       },
-    ],
-    ...(validation
+    }],
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [def.objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
+    ...(def.actionLevelValidation
       ? {
         validation: [
-          createValidationRule(validation),
+          convertValidationRule(def.actionLevelValidation),
         ],
       }
       : {}),
@@ -414,11 +548,19 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
       );
     }
   });
+
   const fullAction = {
     ...actionDef,
     apiName: apiName,
+    entities: actionDef.entities ?? {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
     __type: OntologyEntityTypeEnum.ACTION_TYPE,
   } as ActionType;
+  validateActionValidation(fullAction);
   updateOntology(fullAction);
   return fullAction;
 }
@@ -453,8 +595,8 @@ function referencedParameterIds(
             if (v.type === "parameterId") {
               parameterIds.add(v.parameterId);
             }
-            rule.addInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
             delete rule.addInterfaceRule.sharedPropertyValues[k];
+            rule.addInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
           },
         );
         break;
@@ -467,8 +609,8 @@ function referencedParameterIds(
             if (v.type === "parameterId") {
               parameterIds.add(v.parameterId);
             }
-            rule.modifyInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
             delete rule.modifyInterfaceRule.sharedPropertyValues[k];
+            rule.modifyInterfaceRule.sharedPropertyValues[sanitize(k)] = v;
           },
         );
         break;
@@ -567,7 +709,10 @@ function extractAllowedValuesFromType(
 }
 
 function extractActionParameterType(
-  pt: SharedPropertyType | ObjectPropertyType,
+  pt:
+    | SharedPropertyType
+    | ObjectPropertyType
+    | ObjectPropertyTypeUserDefinition,
 ): ActionParameterType {
   const typeType = pt.type;
   if (typeof typeType === "object") {
@@ -602,7 +747,10 @@ function extractActionParameterType(
 
 function maybeAddList(
   type: ActionParameterTypePrimitive,
-  pt: SharedPropertyType | ObjectPropertyType,
+  pt:
+    | SharedPropertyType
+    | ObjectPropertyType
+    | ObjectPropertyTypeUserDefinition,
 ): ActionParameterType {
   return ((pt.array ?? false) ? type + "List" : type) as ActionParameterType;
 }
@@ -645,6 +793,10 @@ function isActionParameterTypePrimitive(
   ].includes(type);
 }
 
+function isStruct(type: PropertyTypeType): type is PropertyTypeTypeStruct {
+  return typeof type === "object" && type.type === "struct";
+}
+
 function kebab(s: string): string {
   return s
     .replace(/([a-z])([A-Z])/g, "$1-$2")
@@ -657,54 +809,91 @@ function sanitize(s: string): string {
   return s.includes(".") ? s : namespace + s;
 }
 
-function createValidationRule(
-  actionValidation: ActionValidationDefinition,
+function convertValidationRule(
+  actionValidation: ActionLevelValidationDefinition,
 ): ActionValidationRule {
-  if (!("type" in actionValidation)) {
-    return actionValidation;
-  }
-  switch (actionValidation.type) {
+  return {
+    condition: convertConditionDefinition(actionValidation.condition),
+    displayMetadata: actionValidation.displayMetadata ?? {
+      failureMessage: "Did not satisfy validation",
+      typeClasses: [],
+    },
+  };
+}
+
+function validateActionValidation(action: ActionType): void {
+  const seenParameterIds = new Set<ParameterId>();
+  action.parameters?.forEach(param => {
+    param.validation.conditionalOverrides?.forEach(override => {
+      validateActionCondition(
+        override.condition,
+        param.id,
+        seenParameterIds,
+        action.parameters,
+      );
+    });
+    seenParameterIds.add(param.id);
+  });
+}
+
+function validateActionCondition(
+  condition: ConditionDefinition,
+  currentParameterId: ParameterId,
+  seenParameterIds: Set<ParameterId>,
+  parameters?: ActionParameter[],
+): void {
+  switch (condition.type) {
+    case "parameter":
+      const overrideParamId = condition.parameterId;
+      invariant(
+        parameters?.some(p => p.id === overrideParamId),
+        `Parameter condition on ${currentParameterId} is referencing unknown parameter ${overrideParamId}`,
+      );
+      invariant(
+        overrideParamId !== currentParameterId,
+        `Parameter condition on ${currentParameterId} is referencing itself`,
+      );
+      invariant(
+        seenParameterIds.has(overrideParamId),
+        `Parameter condition on ${currentParameterId} is referencing later parameter ${overrideParamId}`,
+      );
+      break;
+    case "and":
+      // this will not catch the niche edge case where users use the full syntax for unions
+      if ("conditions" in condition) {
+        condition.conditions.forEach(c =>
+          validateActionCondition(
+            c,
+            currentParameterId,
+            seenParameterIds,
+            parameters,
+          )
+        );
+      }
+      break;
+    case "or":
+      if ("conditions" in condition) {
+        condition.conditions.forEach(c =>
+          validateActionCondition(
+            c,
+            currentParameterId,
+            seenParameterIds,
+            parameters,
+          )
+        );
+      }
+      break;
+    case "comparison":
     case "group":
-      return {
-        condition: {
-          type: "comparison",
-          comparison: {
-            operator: "EQUALS",
-            left: {
-              type: "userProperty",
-              userProperty: {
-                userId: {
-                  type: "currentUser",
-                  currentUser: {},
-                },
-                propertyValue: {
-                  type: "groupIds",
-                  groupIds: {},
-                },
-              },
-            },
-            right: {
-              type: "staticValue",
-              staticValue: {
-                type: "stringList",
-                stringList: {
-                  strings: [
-                    actionValidation.name,
-                  ],
-                },
-              },
-            },
-          },
-        },
-        displayMetadata: {
-          failureMessage:
-            "Insufficient permissions. Missing organization membership required to submit action",
-          typeClasses: [],
-        },
-      };
+    case "not":
+    case "markings":
+    case "regex":
+    case "redacted":
+    case "true":
+      break;
     default:
       throw new Error(
-        `Unknown action validation type: ${actionValidation.type}`,
+        `Unknown condition type on parameter ${currentParameterId}`,
       );
   }
 }
