@@ -22,6 +22,7 @@ import type {
 import type {
   AddLink,
   AnyEdit,
+  CreateInterface,
   CreateObject,
   DeleteObject,
   InterfaceLocator,
@@ -94,13 +95,22 @@ export type CreatableObjectTypeProperties<
   OTD extends ObjectTypeDefinition,
 > = X extends CreateObject<OTD> ? X["properties"] : never;
 
+// CreateInterface helper types
+export type CreatableInterfaceTypes<X extends AnyEdit> = X extends
+  CreateInterface<infer ID> ? ID : never;
+
+export type CreatableInterfaceTypeProperties<
+  X extends AnyEdit,
+  ID extends InterfaceDefinition,
+> = X extends CreateInterface<ID> ? X["properties"] : never;
+
 // DeleteObject helper types
 export type DeletableObjectOrInterfaceLocators<X extends AnyEdit> = X extends
   DeleteObject<infer OTD> ? ObjectLocator<OTD>
   : X extends UpdateInterface<infer ID> ? InterfaceLocator<ID>
   : never;
 
-// UpdateObject helper types
+// UpdateObject and UpdateInterface helper types
 export type UpdatableObjectOrInterfaceLocators<X extends AnyEdit> = X extends
   UpdateObject<infer OTD> ? ObjectLocator<OTD>
   : X extends UpdateInterface<infer ID> ? InterfaceLocator<ID>
@@ -135,10 +145,16 @@ export interface EditBatch<
     target: RemoveLinkTargets<X, SOL, A>,
   ) => void;
 
-  create: <OTD extends CreatableObjectTypes<X>>(
+  create<OTD extends CreatableObjectTypes<X>>(
     obj: OTD,
     properties: CreatableObjectTypeProperties<X, OTD>,
-  ) => void;
+  ): void;
+
+  create<ID extends CreatableInterfaceTypes<X>>(
+    interfaceApiName: ID,
+    objectTypeApiName: string,
+    properties: CreatableInterfaceTypeProperties<X, ID>,
+  ): void;
 
   delete: <OL extends DeletableObjectOrInterfaceLocators<X>>(obj: OL) => void;
 

@@ -51,6 +51,7 @@ export namespace Edits {
   > = AddLink<S, L> | RemoveLink<S, L>;
 
   export type Interface<S extends InterfaceDefinition> =
+    | CreateInterface<S>
     | UpdateInterface<S>
     | DeleteInterface<S>;
 }
@@ -122,6 +123,19 @@ export interface UpdateObject<S extends ObjectTypeDefinition> {
   >;
 }
 
+export interface CreateInterface<S extends InterfaceDefinition> {
+  type: "createInterface";
+  interfaceApiName: S;
+  objectTypeApiName: string;
+  properties: PartialForOptionalProperties<
+    {
+      [P in PropertyKeys<S>]: OsdkObjectPropertyType<
+        CompileTimeMetadata<S>["properties"][P]
+      >;
+    }
+  >;
+}
+
 export interface UpdateInterface<S extends InterfaceDefinition> {
   type: "updateInterface";
   obj: InterfaceLocator<S>;
@@ -140,9 +154,13 @@ export type AnyEdit =
   | CreateObject<any>
   | DeleteObject<any>
   | UpdateObject<any>
+  | CreateInterface<any>
   | UpdateInterface<any>
   | DeleteInterface<any>;
 
+// Check if locator is for an interface by comparing $apiName and $objectType.
+// Both object types and interfaces store the object type API name in $objectType,
+// but interfaces store the interface API name in $apiName.
 export function isInterfaceLocator(obj: any): obj is InterfaceLocator<any> {
   return obj != null && typeof obj === "object"
     && typeof obj.$objectType === "string" && typeof obj.$apiName === "string"

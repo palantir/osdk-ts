@@ -15,12 +15,8 @@
  */
 
 import type { Client, Osdk } from "@osdk/client";
-import type {
-  Employee,
-  FooInterface,
-  Person,
-} from "@osdk/client.test.ontology";
-import { Office, Task } from "@osdk/client.test.ontology";
+import type { Employee, Person } from "@osdk/client.test.ontology";
+import { FooInterface, Office, Task } from "@osdk/client.test.ontology";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createEditBatch } from "./createEditBatch.js";
 import type { EditBatch } from "./EditBatch.js";
@@ -84,6 +80,9 @@ describe(createEditBatch, () => {
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Office, { officeId: "3", capacity: 2 });
     editBatch.update({ $apiName: "Office", $primaryKey: "3" }, { capacity: 4 });
+    editBatch.create(FooInterface, "FooObjectType", {
+      fooSpt: "created interface",
+    });
     editBatch.update(fooInterfaceInstance, { fooSpt: "fooSpt" });
     editBatch.update({
       $apiName: "FooInterface",
@@ -168,6 +167,12 @@ describe(createEditBatch, () => {
         type: "updateObject",
         obj: { $apiName: "Office", $primaryKey: "3" },
         properties: { capacity: 4 },
+      },
+      {
+        type: "createInterface",
+        interfaceApiName: FooInterface,
+        objectTypeApiName: "FooObjectType",
+        properties: { fooSpt: "created interface" },
       },
       {
         type: "updateInterface",
