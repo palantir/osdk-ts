@@ -38,9 +38,8 @@ export function defineLink(
   linkDefinition: LinkTypeDefinition,
 ): LinkType {
   if ("one" in linkDefinition) {
-    const foreignKey = linkDefinition.toMany.object.properties?.find(prop =>
-      prop.apiName === linkDefinition.manyForeignKeyProperty
-    );
+    const foreignKey = linkDefinition.toMany.object.properties
+      ?.[linkDefinition.manyForeignKeyProperty];
     invariant(
       foreignKey !== undefined,
       `Foreign key ${linkDefinition.manyForeignKeyProperty} on link ${linkDefinition.apiName} does not exist on object ${linkDefinition.toMany.object.apiName}}`,
@@ -51,10 +50,9 @@ export function defineLink(
       `Top level link api names are expected to match the regex pattern ([a-z][a-z0-9\\-]*) ${linkDefinition.apiName} does not match`,
     );
 
-    const typesMatch =
-      foreignKey.type === linkDefinition.one.object.properties?.find(prop =>
-        prop.apiName === linkDefinition.one.object.primaryKeyPropertyApiName
-      )?.type;
+    const typesMatch = foreignKey.type
+      === linkDefinition.one.object.properties
+        ?.[linkDefinition.one.object.primaryKeyPropertyApiName].type;
     invariant(
       typesMatch,
       `Link ${linkDefinition.apiName} has type mismatch between the one side's primary key and the foreign key on the many side`,
