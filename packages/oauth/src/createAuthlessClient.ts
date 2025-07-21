@@ -15,9 +15,11 @@
  */
 
 /**
- * @returns an Authless Client which can be used as a public token provider
+ * Use this function to initialize an authless client that returns a public token.
+ *
+ * @returns A token provider function that returns a Promise resolving to a public token
  */
-export function createAuthlessClient(): () => Promise<String> {
+export function createAuthlessClient(): () => Promise<string> {
   return async () => {
     return "PUBLIC";
   };
