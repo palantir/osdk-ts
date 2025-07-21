@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.12.0-beta.9
+
+### Minor Changes
+
+- ac0029e: Improve CRUD actions customization
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.7
+
 ## 0.12.0-beta.8
 
 ### Minor Changes
