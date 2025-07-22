@@ -59,6 +59,14 @@ export type {
 export type {
   PropertyValueWireToClient,
 } from "./mapping/PropertyValueMapping.js";
+export type {
+  Notification,
+  NotificationLink,
+  NotificationLinkTarget,
+  ObjectLinkTarget,
+  RidLinkTarget,
+  UrlLinkTarget,
+} from "./Notification.js";
 export type { Attachment, AttachmentUpload } from "./object/Attachment.js";
 export type {
   AsyncIterArgs,

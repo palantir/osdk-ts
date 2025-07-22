@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Notification } from "../Notification.js";
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
 import type { MediaReference, MediaUpload } from "../object/Media.js";
 
@@ -50,6 +51,7 @@ export interface DataValueWireToClient {
   objectType: string;
   geohash: GeoJSON.Point;
   geoshape: GeoJSON.GeoJSON;
+  notification: Notification;
 }
 
 /**

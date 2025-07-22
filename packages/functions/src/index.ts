@@ -33,12 +33,3 @@ export type {
 export { createEditBatch } from "./edits/createEditBatch.js";
 export type { EditBatch } from "./edits/EditBatch.js";
 export type { Edits } from "./edits/types.js";
-
-export type {
-  Notification,
-  NotificationLink,
-  NotificationLinkTarget,
-  ObjectLinkTarget,
-  RidLinkTarget,
-  UrlLinkTarget,
-} from "./Notification.js";

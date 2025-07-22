@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "./ontology/ObjectOrInterface.js";
+import type { Osdk } from "./OsdkObjectFrom.js";
 
 export interface Notification {
   platformNotification: PlatformNotification;
