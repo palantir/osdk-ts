@@ -97,12 +97,16 @@ export type CreatableObjectTypeProperties<
 
 // CreateInterface helper types
 export type CreatableInterfaceTypes<X extends AnyEdit> = X extends
-  CreateInterface<infer ID> ? ID : never;
+  CreateInterface<infer ID, ObjectTypeDefinition> ? ID : never;
+
+export type CreatableObjectTypesForInterface<X extends AnyEdit> = X extends
+  CreateInterface<InterfaceDefinition, infer OTD> ? OTD : never;
 
 export type CreatableInterfaceTypeProperties<
   X extends AnyEdit,
   ID extends InterfaceDefinition,
-> = X extends CreateInterface<ID> ? X["properties"] : never;
+> = X extends CreateInterface<ID, ObjectTypeDefinition> ? X["properties"]
+  : never;
 
 // DeleteObject helper types
 export type DeletableObjectOrInterfaceLocators<X extends AnyEdit> = X extends
@@ -150,9 +154,12 @@ export interface EditBatch<
     properties: CreatableObjectTypeProperties<X, OTD>,
   ): void;
 
-  create<ID extends CreatableInterfaceTypes<X>>(
-    interfaceApiName: ID,
-    objectTypeApiName: string,
+  create<
+    ID extends CreatableInterfaceTypes<X>,
+    OTD extends CreatableObjectTypesForInterface<X>,
+  >(
+    interfaceType: ID,
+    objectType: OTD,
     properties: CreatableInterfaceTypeProperties<X, ID>,
   ): void;
 

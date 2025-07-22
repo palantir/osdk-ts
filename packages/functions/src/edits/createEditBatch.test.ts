@@ -80,7 +80,7 @@ describe(createEditBatch, () => {
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Office, { officeId: "3", capacity: 2 });
     editBatch.update({ $apiName: "Office", $primaryKey: "3" }, { capacity: 4 });
-    editBatch.create(FooInterface, "FooObjectType", {
+    editBatch.create(FooInterface, Task, {
       fooSpt: "created interface",
     });
     editBatch.update(fooInterfaceInstance, { fooSpt: "fooSpt" });
@@ -170,8 +170,8 @@ describe(createEditBatch, () => {
       },
       {
         type: "createInterface",
-        interfaceApiName: FooInterface,
-        objectTypeApiName: "FooObjectType",
+        interfaceType: FooInterface,
+        objectType: Task,
         properties: { fooSpt: "created interface" },
       },
       {

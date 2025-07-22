@@ -123,10 +123,13 @@ export interface UpdateObject<S extends ObjectTypeDefinition> {
   >;
 }
 
-export interface CreateInterface<S extends InterfaceDefinition> {
+export interface CreateInterface<
+  S extends InterfaceDefinition,
+  OTD extends ObjectTypeDefinition = ObjectTypeDefinition,
+> {
   type: "createInterface";
-  interfaceApiName: S;
-  objectTypeApiName: string;
+  interfaceType: S;
+  objectType: OTD;
   properties: PartialForOptionalProperties<
     {
       [P in PropertyKeys<S>]: OsdkObjectPropertyType<

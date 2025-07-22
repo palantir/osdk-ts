@@ -23,6 +23,7 @@ import type {
   CreatableInterfaceTypes,
   CreatableObjectTypeProperties,
   CreatableObjectTypes,
+  CreatableObjectTypesForInterface,
   DeletableObjectOrInterfaceLocators,
   EditBatch,
   RemoveLinkApiNames,
@@ -97,30 +98,33 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     obj: OTD,
     properties: CreatableObjectTypeProperties<X, OTD>,
   ): void;
-  public create<ID extends CreatableInterfaceTypes<X>>(
-    interfaceApiName: ID,
-    objectTypeApiName: string,
+  public create<
+    ID extends CreatableInterfaceTypes<X>,
+    OTD extends CreatableObjectTypesForInterface<X>,
+  >(
+    interfaceType: ID,
+    objectType: OTD,
     properties: CreatableInterfaceTypeProperties<X, ID>,
   ): void;
   public create<T>(
-    objOrInterfaceApiName: T,
-    propertiesOrObjectTypeApiName: any,
+    objOrInterfaceType: T,
+    propertiesOrObjectType: any,
     maybeProperties?: any,
   ): void {
     if (arguments.length === 3) {
-      // Interface creation: create(interfaceApiName, objectTypeApiName, properties)
+      // Interface creation: create(interfaceType, objectType, properties)
       this.edits.push({
         type: "createInterface",
-        interfaceApiName: objOrInterfaceApiName,
-        objectTypeApiName: propertiesOrObjectTypeApiName,
+        interfaceType: objOrInterfaceType,
+        objectType: propertiesOrObjectType,
         properties: maybeProperties,
       } as unknown as X);
     } else {
-      // Object creation: create(objectTypeApiName, properties)
+      // Object creation: create(objectType, properties)
       this.edits.push({
         type: "createObject",
-        obj: objOrInterfaceApiName,
-        properties: propertiesOrObjectTypeApiName,
+        obj: objOrInterfaceType,
+        properties: propertiesOrObjectType,
       } as unknown as X);
     }
   }
