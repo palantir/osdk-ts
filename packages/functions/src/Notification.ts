@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
 
 export interface Notification {
   platformNotification: PlatformNotification;
@@ -43,9 +43,11 @@ export interface RidLinkTarget {
   rid: string;
 }
 
-export interface ObjectLinkTarget {
+export interface ObjectLinkTarget<
+  T extends ObjectOrInterfaceDefinition = ObjectOrInterfaceDefinition,
+> {
   type: "object";
-  object: Osdk.Instance;
+  object: Osdk.Instance<T>;
 }
 
 export interface UrlLinkTarget {
@@ -55,5 +57,5 @@ export interface UrlLinkTarget {
 
 export type NotificationLinkTarget =
   | RidLinkTarget
-  | ObjectLinkTarget
+  // | ObjectLinkTarget
   | UrlLinkTarget;
