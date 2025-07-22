@@ -57,5 +57,5 @@ export interface UrlLinkTarget {
 
 export type NotificationLinkTarget =
   | RidLinkTarget
-  // | ObjectLinkTarget
+  | ObjectLinkTarget
   | UrlLinkTarget;

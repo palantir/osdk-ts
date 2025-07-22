@@ -8,8 +8,10 @@ import { Attachment } from '@osdk/client';
 import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/client';
 import type { ObjectMetadata } from '@osdk/client';
+import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/client';
 import type { Osdk } from '@osdk/client';
+import type { Osdk as Osdk_2 } from '@osdk/api';
 import type { OsdkObjectPropertyType } from '@osdk/client';
 import type { PropertyKeys } from '@osdk/client';
 import { Range as Range_2 } from '@osdk/client';
@@ -104,7 +106,47 @@ export type Long<T extends string = string> = T & {
     	__longBrand?: void
 };
 
+// @public (undocumented)
+interface Notification_2 {
+    	// Warning: (ae-forgotten-export) The symbol "EmailNotification" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    emailNotification: EmailNotification;
+    	// Warning: (ae-forgotten-export) The symbol "PlatformNotification" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    platformNotification: PlatformNotification;
+}
+export { Notification_2 as Notification }
+
+// @public (undocumented)
+export interface NotificationLink {
+    	// (undocumented)
+    label: string;
+    	// (undocumented)
+    linkTarget: NotificationLinkTarget;
+}
+
+// @public (undocumented)
+export type NotificationLinkTarget = RidLinkTarget | ObjectLinkTarget | UrlLinkTarget;
+
+// @public (undocumented)
+export interface ObjectLinkTarget<T extends ObjectOrInterfaceDefinition = ObjectOrInterfaceDefinition> {
+    	// (undocumented)
+    object: Osdk_2.Instance<T>;
+    	// (undocumented)
+    type: "object";
+}
+
 export { Range_2 as Range }
+
+// @public (undocumented)
+export interface RidLinkTarget {
+    	// (undocumented)
+    rid: string;
+    	// (undocumented)
+    type: "rid";
+}
 
 export { ThreeDimensionalAggregation }
 
@@ -114,6 +156,14 @@ export type TimestampISOString<T extends string = string> = T & {
 };
 
 export { TwoDimensionalAggregation }
+
+// @public (undocumented)
+export interface UrlLinkTarget {
+    	// (undocumented)
+    type: "url";
+    	// (undocumented)
+    url: string;
+}
 
 // (No @packageDocumentation comment for this package)
 
