@@ -330,8 +330,6 @@ export interface DataValueClientToWire {
     	// (undocumented)
     mediaReference: MediaReference | MediaUpload;
     	// (undocumented)
-    notification: Notification_2;
-    	// (undocumented)
     null: null;
     	// (undocumented)
     objectType: string;
