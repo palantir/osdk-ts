@@ -1,6 +1,5 @@
 ---
-"@osdk/functions": minor
+"@osdk/functions": patch
 ---
-      
+
 Simulated release
-      

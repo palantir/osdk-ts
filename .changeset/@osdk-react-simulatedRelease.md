@@ -1,6 +1,5 @@
 ---
-"@osdk/react": minor
+"@osdk/react": patch
 ---
-      
+
 Simulated release
-      

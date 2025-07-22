@@ -1,6 +1,5 @@
 ---
-"@osdk/monorepo.cspell": minor
+"@osdk/monorepo.cspell": patch
 ---
-      
+
 Simulated release
-      
