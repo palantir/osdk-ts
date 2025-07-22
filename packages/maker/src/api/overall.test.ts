@@ -2467,7 +2467,7 @@ describe("Ontology Defining", () => {
                       ],
                       "objectTypeBPrimaryKeyMapping": [
                         {
-                          "column": "bar",
+                          "column": "fizz",
                           "property": {
                             "apiName": "fizz",
                             "object": "com.palantir.fizz",
