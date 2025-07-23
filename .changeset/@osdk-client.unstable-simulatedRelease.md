@@ -1,6 +1,5 @@
 ---
-"@osdk/client.unstable": minor
+"@osdk/client.unstable": patch
 ---
-      
+
 Simulated release
-      

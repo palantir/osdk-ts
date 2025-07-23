@@ -1,6 +1,5 @@
 ---
-"@osdk/client.unstable.tpsa": minor
+"@osdk/client.unstable.tpsa": patch
 ---
-      
+
 Simulated release
-      
