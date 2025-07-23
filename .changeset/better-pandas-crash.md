@@ -1,5 +1,5 @@
 ---
-"@osdk/api": minor
+"@osdk/functions": minor
 ---
 
 add notifications type
