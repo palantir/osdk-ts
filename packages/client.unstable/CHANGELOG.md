@@ -1,5 +1,43 @@
 # @osdk/client.unstable
 
+## 2.4.0-beta.7
+
+## 2.4.0-beta.6
+
+### Minor Changes
+
+- 764e5f1: Add marking constraints
+
+## 2.4.0-beta.5
+
+## 2.4.0-beta.4
+
+### Minor Changes
+
+- a01b8d4: Revert import block data changes
+
+## 2.4.0-beta.3
+
+### Minor Changes
+
+- 988bf66: Use block data type for imports
+
+## 2.4.0-beta.2
+
+## 2.3.0-beta.10
+
+### Minor Changes
+
+- 0cc9cad: oms api bump
+
+## 2.3.0-beta.9
+
+### Minor Changes
+
+- 7d232fb: Added searchable field to interface definitions
+
+## 2.3.0-beta.8
+
 ## 2.3.0-beta.7
 
 ### Minor Changes
@@ -33,6 +71,22 @@
 - 474f4ca: Group permissions for OAC actions
 
 ## 2.3.0-beta.2
+
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 6eeb423: Simple create and modify actions for interfaces
+- a08bdfb: Support stream datasources in OAC
+- 10da391: Links as Code
+- 6ac8f0b: api bump
+- 5e8e839: Bump OMS API to include links in ontology IR
+- 889e84b: Release
+- ed69666: Update conjure-lite to 0.7.1
+- 395ae07: Actions as code
+- 37f8e60: api bump for concrete actions
+- 317b555: Release
 
 ## 2.2.0-beta.23
 

@@ -1,5 +1,15 @@
 # @osdk/widget.vite-plugin
 
+## 3.0.0-beta.6
+
+### Minor Changes
+
+- b8936de: Use root id rather than body for widgets react-dom
+
+### Patch Changes
+
+- @osdk/widget.api@3.0.0-beta.6
+
 ## 3.0.0-beta.5
 
 ### Minor Changes

@@ -1,5 +1,19 @@
 # @osdk/oauth
 
+## 1.4.0-beta.2
+
+### Minor Changes
+
+- 8c8ecf0: Added Public Apps Support
+
+## 1.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- cbd4ea9: Discard refresh token if requested scopes have changed
+- 0e0935e: Added api:use-ontologies-read/write to the default scope initialization
+
 ## 1.2.0-beta.3
 
 ### Minor Changes

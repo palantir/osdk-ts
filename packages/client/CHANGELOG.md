@@ -1,5 +1,133 @@
 # @osdk/client
 
+## 2.4.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.7
+- @osdk/client.unstable@2.4.0-beta.7
+- @osdk/generator-converters@2.4.0-beta.7
+
+## 2.4.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [764e5f1]
+  - @osdk/client.unstable@2.4.0-beta.6
+  - @osdk/api@2.4.0-beta.6
+  - @osdk/generator-converters@2.4.0-beta.6
+
+## 2.4.0-beta.5
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.5
+- @osdk/client.unstable@2.4.0-beta.5
+- @osdk/generator-converters@2.4.0-beta.5
+
+## 2.4.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [a01b8d4]
+  - @osdk/client.unstable@2.4.0-beta.4
+  - @osdk/api@2.4.0-beta.4
+  - @osdk/generator-converters@2.4.0-beta.4
+
+## 2.4.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [988bf66]
+  - @osdk/client.unstable@2.4.0-beta.3
+  - @osdk/api@2.4.0-beta.3
+  - @osdk/generator-converters@2.4.0-beta.3
+
+## 2.4.0-beta.2
+
+### Minor Changes
+
+- 8c95154: Add nearestNeighbor support
+- c32dcf2: Add a metadata field to all loaded objects
+- 37c7c0b: Add validateAction support to useOsdkAction hook
+
+  The `useOsdkAction` hook in `@osdk/react` now provides a `validateAction` function that allows you to check if an action is valid without executing it. This is useful for providing real-time validation feedback to users before they commit to performing an action.
+
+  ### New features:
+
+  - **validateAction**: A new async function that validates action parameters without executing the action
+  - **isValidating**: A boolean state that indicates when validation is in progress
+  - **validationResult**: Contains the validation response from the server, including whether the action is valid and any validation errors
+
+  ### Example usage:
+
+  ```tsx
+  const { applyAction, validateAction, isValidating, validationResult } =
+    useOsdkAction(myAction);
+
+  // Validate without executing
+  await validateAction({ param1: "value" });
+
+  // Check validation result
+  if (validationResult?.result === "VALID") {
+    console.log("Action is valid!");
+  } else {
+    console.log("Validation failed:", validationResult);
+  }
+  ```
+
+  ### Implementation details:
+
+  - Multiple validation calls can be made - new calls automatically cancel previous pending validations
+  - Validation and action execution are mutually exclusive - you cannot validate while an action is being applied and vice versa
+  - The underlying `ObservableClient` in `@osdk/client` has been extended with a `validateAction` method to support this functionality
+
+### Patch Changes
+
+- Updated dependencies [29d2ada]
+- Updated dependencies [8c95154]
+- Updated dependencies [c32dcf2]
+  - @osdk/api@2.4.0-beta.2
+  - @osdk/generator-converters@2.4.0-beta.2
+  - @osdk/client.unstable@2.4.0-beta.2
+
+## 2.3.0-beta.10
+
+### Minor Changes
+
+- 991dbd4: Async function metadata
+- 266b756: Add consistency for async iter calls.
+- 8d69555: Add hydrateObjectSetFromObjectRids util.
+
+### Patch Changes
+
+- Updated dependencies [0cc9cad]
+  - @osdk/client.unstable@2.3.0-beta.10
+  - @osdk/api@2.3.0-beta.10
+  - @osdk/generator-converters@2.3.0-beta.10
+
+## 2.3.0-beta.9
+
+### Minor Changes
+
+- 5a15cfd: Added fixed dependency to API for beta package.
+
+### Patch Changes
+
+- Updated dependencies [7d232fb]
+  - @osdk/client.unstable@2.3.0-beta.9
+  - @osdk/api@2.3.0-beta.9
+  - @osdk/generator-converters@2.3.0-beta.9
+
+## 2.3.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [12d599f]
+  - @osdk/api@2.3.0-beta.8
+  - @osdk/generator-converters@2.3.0-beta.8
+  - @osdk/client.unstable@2.3.0-beta.8
+
 ## 2.3.0-beta.7
 
 ### Minor Changes
@@ -76,6 +204,117 @@
 - @osdk/api@2.3.0-beta.2
 - @osdk/client.unstable@2.3.0-beta.2
 - @osdk/generator-converters@2.3.0-beta.2
+
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- b61e9f5: Make Query Map Types Optional
+- 7416ce4: Adds deleted objects and links returned from applyAction
+- 1ba3871: Support $clone for interface objects
+- 12843cb: Add ability to load all underlying properties of an interface.
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+- cdd3154: Revert allowing explicitly passing undefined values to reset on actions
+- 56aa502: Improves exposed APIs
+- abe4897: Removes support for boolean primary keys
+- 63b2e63: Update Platform SDK Dependencies
+- cddfbf9: Adds default value option to group by
+- 5a12181: Quick fix for geohash params.
+- 2ce3659: Update underlying pagination size for async iter.
+- 7416ce4: Update Platform SDK Dependencies
+- 26c2d95: Add experimental function to load page of objects by rid.
+- 430dee3: JSdoc for object properties are generated
+- 397f906: Ensure count operations return numbers
+- 488b51c: Add support for using aggregations and GeoJSON types from runtime derived properties
+- fccd9ac: "Allow selecting derived properties"
+- 5665b18: Remove selection RDPs from the API
+- 761e69d: Added type safety to createMediaReference
+- 889e84b: Release
+- 62e5965: Removed unneeded lint statements.
+- ed69666: Update conjure-lite to 0.7.1
+- c92fe73: Add OsdkConfig utils to client/unstable
+- 2517750: observeList should work for interfaces and have the fully loaded content
+- 4183a55: Refactor OsdkBase to avoid breaks with type not being discoverable
+- 1e16dcb: Exposes MinimalLogger and BrowserLogger via @osdk/client/internal
+- 70b4464: Fix types for RDPs
+- 2f6206c: Improvements to @osdk/react
+- 81c0d8c: Client will now provide a default logger to console.error if none is provided
+- 81c0d8c: ObservableClient now queues up object loads for bulk processing
+- 791e655: Add support for geoshape and geohash action parameters.
+- 317b555: Release
+- 879b6c3: Include a more descriptive error message for multiple filters on a single property filter clause
+- 63b2e63: Supports generating queries for entrySet function types
+- 2517750: Provides efficient OrderByCanonicalizer
+- 1e16dcb: Default logging is error level only
+- f4370e3: Fixes error when using intersection, subtraction, or union object sets
+- ea4e4b1: Fix attachments to be upload sequentially rather than in parallel.
+- a146ce4: Cleanup RDP API
+- cc380b5: Use the latest Platform APIs
+- e873024: Fixes issues requiring msw and p-defer
+- 88591f7: Small fixes for ObjectSpecifier
+- 751e5b3: Use client as peer dep in functions package.
+- 805df40: Fix interface action types.
+- fe0cc43: Experimental react changes
+- 2517750: Initial internal architecture document for ObservableClient
+- 5467a0f: Fix orderBy argument on object load methods
+- 2517750: subscribe in ObservableClient now uses Observer
+- 63b2e63: Adds ObjectSpecifiers to generated OSDK objects
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [b68adea]
+- Updated dependencies [c6bee50]
+- Updated dependencies [7416ce4]
+- Updated dependencies [6eeb423]
+- Updated dependencies [7170fd1]
+- Updated dependencies [12843cb]
+- Updated dependencies [ad93d55]
+- Updated dependencies [a08bdfb]
+- Updated dependencies [18ba34f]
+- Updated dependencies [6abf078]
+- Updated dependencies [f82767c]
+- Updated dependencies [56aa502]
+- Updated dependencies [0e874b1]
+- Updated dependencies [abe4897]
+- Updated dependencies [63b2e63]
+- Updated dependencies [cddfbf9]
+- Updated dependencies [7416ce4]
+- Updated dependencies [23ea0e4]
+- Updated dependencies [26c2d95]
+- Updated dependencies [10da391]
+- Updated dependencies [488b51c]
+- Updated dependencies [71462e9]
+- Updated dependencies [6ac8f0b]
+- Updated dependencies [fccd9ac]
+- Updated dependencies [5e8e839]
+- Updated dependencies [5665b18]
+- Updated dependencies [46cede4]
+- Updated dependencies [761e69d]
+- Updated dependencies [889e84b]
+- Updated dependencies [a6e5f89]
+- Updated dependencies [ed69666]
+- Updated dependencies [4183a55]
+- Updated dependencies [70b4464]
+- Updated dependencies [395ae07]
+- Updated dependencies [37f8e60]
+- Updated dependencies [791e655]
+- Updated dependencies [317b555]
+- Updated dependencies [63b2e63]
+- Updated dependencies [a146ce4]
+- Updated dependencies [3d0ab11]
+- Updated dependencies [805df40]
+- Updated dependencies [5467a0f]
+- Updated dependencies [63b2e63]
+  - @osdk/api@2.2.0
+  - @osdk/client.unstable@2.2.0
+  - @osdk/generator-converters@2.2.0
+  - @osdk/shared.client.impl@1.2.0
+  - @osdk/shared.net.errors@2.2.0
+  - @osdk/shared.net.fetch@1.2.0
 
 ## 2.2.0-beta.23
 

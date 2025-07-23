@@ -1,5 +1,23 @@
 # @osdk/cli.common
 
+## 0.28.0-beta.7
+
+## 0.28.0-beta.6
+
+## 0.28.0-beta.5
+
+## 0.28.0-beta.4
+
+## 0.28.0-beta.3
+
+## 0.28.0-beta.2
+
+## 0.27.0-beta.10
+
+## 0.27.0-beta.9
+
+## 0.27.0-beta.8
+
 ## 0.27.0-beta.7
 
 ### Minor Changes
@@ -15,6 +33,16 @@
 ## 0.27.0-beta.3
 
 ## 0.27.0-beta.2
+
+## 0.26.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 21e33a5: Upgrade consola to 3.4.0
+- 889e84b: Release
+- 0e0935e: Added api:use-ontologies-read/write to the default scope initialization
+- 317b555: Release
 
 ## 0.26.0-beta.23
 

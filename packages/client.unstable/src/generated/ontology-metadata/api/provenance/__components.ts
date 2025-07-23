@@ -132,6 +132,21 @@ export type GetDependenciesPagingToken = string;
  * about the content of the paging token and it should not be parsed/modified.
  */
 export type GetDependenciesV2PagingToken = string;
+
+/**
+ * Request to obtain the stored offset of the AtlasEventLog for the FDS topic that is stored in the Internal Metadata Store
+ */
+export interface GetEventOffsetForFirstNonProxiedFdsEventRequest {
+  dependentType: OmsOpsDependentType;
+}
+/**
+ * Returns - the stored offset of the AtlasEventLog for the FDS topic that is stored in the Internal Metadata Store.
+ *
+ * Empty - if no value has been stored.
+ */
+export interface GetEventOffsetForFirstNonProxiedFdsEventResponse {
+  latestOffset?: number | null | undefined;
+}
 export type GetTaggedDependentsForOntologyEntityIdentifierPagingToken = string;
 
 /**
@@ -207,6 +222,21 @@ export type ObjectTypeWithProperties =
   | ObjectTypeWithProperties_objectTypeIdWithPropertyTypeIds
   | ObjectTypeWithProperties_objectTypeRidWithPropertyTypeRids;
 
+/**
+ * Dependent Types of OMS-OPS
+ */
+export type OmsOpsDependentType =
+  | "OBJECT_TYPE"
+  | "FUNCTION_TYPE"
+  | "SHARED_PROPERTY_TYPE"
+  | "MODELING_OBJECTIVE"
+  | "MONITOR"
+  | "MACHINERY"
+  | "OPUS"
+  | "QUIVER"
+  | "SLATE"
+  | "WORKSHOP"
+  | "THIRD_PARTY_APPLICATION";
 export interface OntologyEntityId_propertyType {
   type: "propertyType";
   propertyType: PropertyTypeIdWithObjectTypeId;
@@ -425,6 +455,7 @@ export interface RegisterDependencyRequest {
   dependent: Dependent;
   globalBranchRid?: _api_GlobalBranchRid | null | undefined;
   ontologyEntities: ProvenanceDependentOntologyEntities;
+  shouldForwardToFds?: boolean | null | undefined;
   tags: Array<Tag>;
 }
 /**
@@ -444,6 +475,7 @@ export type Tag = "LATEST_SAVED" | "LATEST_PUBLISHED";
 export interface TagDependentRequest {
   dependent: Dependent;
   globalBranchRid?: _api_GlobalBranchRid | null | undefined;
+  shouldForwardToFds?: boolean | null | undefined;
   tags: Array<Tag>;
 }
 /**

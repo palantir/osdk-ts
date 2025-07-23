@@ -1,8 +1,0 @@
-# Maker Package Setup
-
-Each define{something}.ts (except defineOntology.ts) file contains a method that updates the global ontologyDefinition state inside the defineOntology.ts file
-
-These methods all get a lot of their types from packages/maker/src/api/types.ts and packages/client.unstable/src/index.ts
-
-The types generated from packages/client.unstable/src/index.ts are auto-generated unless they are from blockDataIr.json. The auto generated ones should never be modified.
-

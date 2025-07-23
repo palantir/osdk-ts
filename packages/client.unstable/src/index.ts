@@ -48,6 +48,7 @@ export type {
   OntologyIrBaseParameterType_timestampList,
   ParameterRenderHint,
   ParameterRequiredConfiguration,
+  ParameterVisibility,
 } from "./generated/ontology-metadata/api/types/__components.js";
 
 export type * from "./generated/ontology-metadata/api/blockdata/__components.ts";

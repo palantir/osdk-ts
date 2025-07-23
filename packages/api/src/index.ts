@@ -22,6 +22,7 @@ export type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from "./actions/Actions.js";
+export { NULL_VALUE } from "./actions/NullValue.js";
 export type { ValidAggregationKeys } from "./aggregate/AggregatableKeys.js";
 export type { AggregateOpts } from "./aggregate/AggregateOpts.js";
 export type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "./aggregate/AggregateOptsThatErrors.js";
@@ -65,6 +66,7 @@ export type {
   Augments,
   FetchPageArgs,
   NullabilityAdherence,
+  ObjectSetArgs,
   SelectArg,
   SelectArgToKeys,
 } from "./object/FetchPageArgs.js";
@@ -119,7 +121,11 @@ export type {
   BaseWirePropertyTypes,
   WirePropertyTypes,
 } from "./ontology/WirePropertyTypes.js";
-export type { OsdkBase, PrimaryKeyType } from "./OsdkBase.js";
+export type {
+  ObjectIdentifiers,
+  OsdkBase,
+  PrimaryKeyType,
+} from "./OsdkBase.js";
 export type { OsdkObject } from "./OsdkObject.js";
 export type { ConvertProps, Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";

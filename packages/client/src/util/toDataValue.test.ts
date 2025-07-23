@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { NULL_VALUE } from "@osdk/api";
 import type {
   ActionMetadata,
   MediaUpload,
@@ -291,6 +292,27 @@ describe(toDataValue, () => {
       mockParameterName,
     );
     expect(converted).toEqual(mediaReference);
+  });
+
+  it("Converts NULL_VALUE to null", async () => {
+    const converted = await toDataValue(
+      NULL_VALUE,
+      clientCtx,
+      mockActionMetadata,
+    );
+    expect(converted).toBeNull();
+  });
+
+  it("Converts NULL_VALUE equivalents to null", async () => {
+    const clearData = Symbol.for("NULL_VALUE") as symbol & {
+      __type: "NULL_VALUE";
+    };
+    const converted = await toDataValue(
+      clearData,
+      clientCtx,
+      mockActionMetadata,
+    );
+    expect(converted).toEqual(null);
   });
 
   it("converts object type definitions for create interface actions correctly", async () => {

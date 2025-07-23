@@ -20,13 +20,17 @@ import type {
 } from "./definitions/LinkDefinitions.js";
 import type { NullabilityAdherence } from "./object/FetchPageArgs.js";
 import type { UnionIfTrue } from "./object/FetchPageResult.js";
-import type { InterfaceDefinition } from "./ontology/InterfaceDefinition.js";
+import type {
+  InterfaceDefinition,
+  InterfaceMetadata,
+} from "./ontology/InterfaceDefinition.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "./ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
+  ObjectMetadata,
   ObjectTypeDefinition,
 } from "./ontology/ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "./ontology/SimplePropertyDef.js";
@@ -213,6 +217,15 @@ export namespace Osdk {
             >["props"][K];
           },
       ) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>;
+
+      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends
+        ObjectTypeDefinition ? {
+          ObjectMetadata: Q;
+        }
+        : {
+          ObjectMetadata: ObjectMetadata;
+          InterfaceMetadata: InterfaceMetadata;
+        };
     }
     // We are hiding the $rid field if it wasn't requested as we want to discourage its use
     & (IsNever<OPTIONS> extends true ? {}

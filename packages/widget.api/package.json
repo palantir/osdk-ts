@@ -1,6 +1,6 @@
 {
   "name": "@osdk/widget.api",
-  "version": "3.0.0-beta.5",
+  "version": "3.1.0-beta.1",
   "description": "API contract between Foundry UIs that can embed custom widgets and the custom widgets themselves",
   "access": "public",
   "license": "Apache-2.0",

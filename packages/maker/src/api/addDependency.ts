@@ -20,7 +20,10 @@ import { dependencies } from "./defineOntology.js";
 
 const MAX_SEARCH_DEPTH = 5;
 
-export function addDependency(namespace: string, fileInPackage: string): void {
+export function addDependency(
+  namespaceNoDot: string,
+  fileInPackage: string,
+): void {
   let dir = path.dirname(fileInPackage);
   let packageJsonPath = null;
 
@@ -42,5 +45,5 @@ export function addDependency(namespace: string, fileInPackage: string): void {
   }
 
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
-  dependencies[namespace] = packageJson.version ?? "";
+  dependencies[namespaceNoDot] = packageJson.version ?? "";
 }

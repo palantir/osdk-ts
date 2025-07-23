@@ -800,6 +800,284 @@ describe("convertWireToOsdkObjects", () => {
 
     expect(result.length).toBe(1);
   });
+
+  describe("$metadata", () => {
+    describe("object", () => {
+      it("has an accessible object on $__experimental-metadata", async () => {
+        const { data: [employee] } = await client(Employee).fetchPage();
+        expect(employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata)
+          .toBeDefined();
+        expect(
+          employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.ObjectMetadata,
+        )
+          .toMatchInlineSnapshot(
+            `
+            {
+              "apiName": "Employee",
+              "description": "A full-time or part-time 
+
+             employee of our firm",
+              "displayName": "Employee",
+              "icon": {
+                "color": "blue",
+                "name": "person",
+                "type": "blueprint",
+              },
+              "implements": [
+                "FooInterface",
+              ],
+              "interfaceMap": {
+                "FooInterface": {
+                  "fooSpt": "fullName",
+                },
+              },
+              "inverseInterfaceMap": {
+                "FooInterface": {
+                  "fullName": "fooSpt",
+                },
+              },
+              "links": {
+                "lead": {
+                  "multiplicity": false,
+                  "targetType": "Employee",
+                },
+                "officeLink": {
+                  "multiplicity": false,
+                  "targetType": "Office",
+                },
+                "peeps": {
+                  "multiplicity": true,
+                  "targetType": "Employee",
+                },
+              },
+              "pluralDisplayName": "Employees",
+              "primaryKeyApiName": "employeeId",
+              "primaryKeyType": "integer",
+              "properties": {
+                "class": {
+                  "description": "",
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "string",
+                },
+                "employeeId": {
+                  "description": undefined,
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": false,
+                  "type": "integer",
+                },
+                "employeeLocation": {
+                  "description": "Geotime series reference of the location of the employee",
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "geotimeSeriesReference",
+                },
+                "employeeSensor": {
+                  "description": "TimeSeries sensor of the status of the employee",
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "sensorTimeseries",
+                },
+                "employeeStatus": {
+                  "description": "TimeSeries of the status of the employee",
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "stringTimeseries",
+                },
+                "fullName": {
+                  "description": undefined,
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "string",
+                },
+                "office": {
+                  "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
+             This is some more text.",
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "string",
+                },
+                "skillSet": {
+                  "description": "The skills of the employee",
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "string",
+                },
+                "skillSetEmbedding": {
+                  "description": "Vectorized skill set",
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "vector",
+                },
+                "startDate": {
+                  "description": "The date the employee was hired (most recently, if they were re-hired)",
+                  "displayName": undefined,
+                  "multiplicity": false,
+                  "nullable": true,
+                  "type": "datetime",
+                },
+              },
+              "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
+              "status": "ACTIVE",
+              "titleProperty": "fullName",
+              "type": "object",
+              "visibility": "NORMAL",
+              Symbol(InterfaceDefinitions): {
+                "FooInterface": {
+                  "def": {
+                    "apiName": "FooInterface",
+                    "description": "Interface for Foo",
+                    "displayName": "Foo Interface",
+                    "implementedBy": [
+                      "Employee",
+                      "Person",
+                    ],
+                    "implements": [],
+                    "links": {},
+                    "properties": {
+                      "fooSpt": {
+                        "description": "A foo",
+                        "displayName": "Foo",
+                        "multiplicity": false,
+                        "nullable": true,
+                        "type": "string",
+                      },
+                    },
+                    "rid": "ri.interface.main.interface.1",
+                    "type": "interface",
+                  },
+                  "handler": undefined,
+                },
+              },
+            }
+          `,
+          );
+      });
+
+      it("$experimental_metadata is not enumerable", async () => {
+        const { data: [employee] } = await client(Employee).fetchPage();
+
+        expect(
+          employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
+            .propertyIsEnumerable(
+              "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata",
+            ),
+        ).toEqual(
+          false,
+        );
+      });
+
+      it("returns frozen metadata", async () => {
+        const { data: [employee] } = await client(Employee).fetchPage();
+        expect(employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata)
+          .toBeDefined();
+        expect(
+          Object.isFrozen(
+            employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
+              .ObjectMetadata,
+          ),
+        ).toBe(true);
+      });
+
+      it("returns the same reference", async () => {
+        const { data: [employee] } = await client(Employee).fetchPage();
+        const { data: [employee2] } = await client(Employee).fetchPage();
+        expect(
+          employee.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata.ObjectMetadata,
+        )
+          .toBe(
+            employee2.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
+              .ObjectMetadata,
+          );
+      });
+    });
+
+    describe("interface", () => {
+      it("has an accessible interface on $__experimental-metadata", async () => {
+        const { data: [employee] } = await client(Employee).fetchPage();
+        const objAsFoo = employee.$as(FooInterface);
+        expect(objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata)
+          .toBeDefined();
+        expect(
+          objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
+            .InterfaceMetadata,
+        )
+          .toMatchInlineSnapshot(
+            `
+          {
+            "apiName": "FooInterface",
+            "description": "Interface for Foo",
+            "displayName": "Foo Interface",
+            "implementedBy": [
+              "Employee",
+              "Person",
+            ],
+            "implements": [],
+            "links": {},
+            "properties": {
+              "fooSpt": {
+                "description": "A foo",
+                "displayName": "Foo",
+                "multiplicity": false,
+                "nullable": true,
+                "type": "string",
+              },
+            },
+            "rid": "ri.interface.main.interface.1",
+            "type": "interface",
+          }
+        `,
+          );
+      });
+      it("$experimental_metadata is not enumerable", async () => {
+        const { data: [employee] } = await client(Employee).fetchPage();
+        const objAsFoo = employee.$as(FooInterface);
+        expect(
+          objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
+            .propertyIsEnumerable(
+              "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata",
+            ),
+        ).toEqual(
+          false,
+        );
+      });
+      it("returns frozen metadata", async () => {
+        const { data: [employee] } = await client(Employee).fetchPage();
+        const objAsFoo = employee.$as(FooInterface);
+        expect(objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata)
+          .toBeDefined();
+        expect(
+          Object.isFrozen(
+            objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
+              .InterfaceMetadata,
+          ),
+        ).toBe(true);
+      });
+      it("returns the same reference", async () => {
+        const { data: [employee] } = await client(Employee).fetchPage();
+        const objAsFoo = employee.$as(FooInterface);
+        const { data: [employee2] } = await client(Employee).fetchPage();
+        const objAsFoo2 = employee2.$as(FooInterface);
+        expect(
+          objAsFoo.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
+            .InterfaceMetadata,
+        )
+          .toBe(
+            objAsFoo2.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
+              .InterfaceMetadata,
+          );
+      });
+    });
+  });
 });
 
 describe("Osdk.Instance", () => {

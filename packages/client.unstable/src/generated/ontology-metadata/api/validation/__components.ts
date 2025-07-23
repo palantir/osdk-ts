@@ -259,6 +259,11 @@ export interface ActionTypeFormContentOrderingNotExactlySameAsParameterSet {
 export interface ActionTypeFormContentOrderingNotExactlySameAsSectionSet {
 }
 /**
+ * Action type uses function locators that do not resolve to the latest published version on the Foundry branch.
+ */
+export interface ActionTypeFunctionLocatorNotLatestPublishedOnFoundryBranch {
+}
+/**
  * ActionType has reverts enabled and a synchronous webhook.
  */
 export interface ActionTypeHasRevertsEnabledAndSynchronousWebhook {
@@ -971,16 +976,28 @@ export interface ErrorType_interfaceTypeContainsDuplicateProperties {
     InterfaceTypeContainsDuplicateProperties;
 }
 
+export interface ErrorType_interfacePropertyTypeRidNotMatchingSharedPropertyTypeRidLocator {
+  type: "interfacePropertyTypeRidNotMatchingSharedPropertyTypeRidLocator";
+  interfacePropertyTypeRidNotMatchingSharedPropertyTypeRidLocator:
+    InterfacePropertyTypeRidNotMatchingSharedPropertyTypeRidLocator;
+}
+
+export interface ErrorType_interfaceTypeModificationReferencesNonExistentInterfaceProperties {
+  type: "interfaceTypeModificationReferencesNonExistentInterfaceProperties";
+  interfaceTypeModificationReferencesNonExistentInterfaceProperties:
+    InterfaceTypeModificationReferencesNonExistentInterfaceProperties;
+}
+
 export interface ErrorType_interfaceTypeExtendedDoesNotExistOrDeleted {
   type: "interfaceTypeExtendedDoesNotExistOrDeleted";
   interfaceTypeExtendedDoesNotExistOrDeleted:
     InterfaceTypeExtendedDoesNotExistOrDeleted;
 }
 
-export interface ErrorType_interfaceTypeWithActiveStatusRemovingSharedPropertyTypes {
-  type: "interfaceTypeWithActiveStatusRemovingSharedPropertyTypes";
-  interfaceTypeWithActiveStatusRemovingSharedPropertyTypes:
-    InterfaceTypeWithActiveStatusRemovingSharedPropertyTypes;
+export interface ErrorType_interfaceTypeWithActiveStatusRemovingInterfacePropertyTypes {
+  type: "interfaceTypeWithActiveStatusRemovingInterfacePropertyTypes";
+  interfaceTypeWithActiveStatusRemovingInterfacePropertyTypes:
+    InterfaceTypeWithActiveStatusRemovingInterfacePropertyTypes;
 }
 
 export interface ErrorType_interfaceTypeInvalidApiName {
@@ -1265,6 +1282,12 @@ export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMulti
   type: "objectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources";
   objectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources:
     ObjectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources;
+}
+
+export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMaterializations {
+  type: "objectTypePropertySecurityGroupsNotSupportedWithMaterializations";
+  objectTypePropertySecurityGroupsNotSupportedWithMaterializations:
+    ObjectTypePropertySecurityGroupsNotSupportedWithMaterializations;
 }
 
 export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedOnBranches {
@@ -2160,6 +2183,12 @@ export interface ErrorType_objectTypeInterfaceImplementationDoesNotImplementAllP
     ObjectTypeInterfaceImplementationDoesNotImplementAllProperties;
 }
 
+export interface ErrorType_objectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct {
+  type: "objectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct";
+  objectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct:
+    ObjectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct;
+}
+
 export interface ErrorType_objectTypeInterfaceImplementationInvalidLinkedEntityImplementingLinkType {
   type:
     "objectTypeInterfaceImplementationInvalidLinkedEntityImplementingLinkType";
@@ -2303,6 +2332,42 @@ export interface ErrorType_objectTypeWithDerivedPropertiesMappedToGotham {
   type: "objectTypeWithDerivedPropertiesMappedToGotham";
   objectTypeWithDerivedPropertiesMappedToGotham:
     ObjectTypeWithDerivedPropertiesMappedToGotham;
+}
+
+export interface ErrorType_objectTypePrimaryKeyChangeMissingSchemaMigration {
+  type: "objectTypePrimaryKeyChangeMissingSchemaMigration";
+  objectTypePrimaryKeyChangeMissingSchemaMigration:
+    ObjectTypePrimaryKeyChangeMissingSchemaMigration;
+}
+
+export interface ErrorType_objectTypeDeletedPropertyTypeMissingSchemaMigration {
+  type: "objectTypeDeletedPropertyTypeMissingSchemaMigration";
+  objectTypeDeletedPropertyTypeMissingSchemaMigration:
+    ObjectTypeDeletedPropertyTypeMissingSchemaMigration;
+}
+
+export interface ErrorType_objectTypePropertyDataTypeChangeMissingSchemaMigration {
+  type: "objectTypePropertyDataTypeChangeMissingSchemaMigration";
+  objectTypePropertyDataTypeChangeMissingSchemaMigration:
+    ObjectTypePropertyDataTypeChangeMissingSchemaMigration;
+}
+
+export interface ErrorType_objectTypeDeletedDatasourceMissingSchemaMigration {
+  type: "objectTypeDeletedDatasourceMissingSchemaMigration";
+  objectTypeDeletedDatasourceMissingSchemaMigration:
+    ObjectTypeDeletedDatasourceMissingSchemaMigration;
+}
+
+export interface ErrorType_objectTypePropertySecurityGroupReferencesNonExistentProperty {
+  type: "objectTypePropertySecurityGroupReferencesNonExistentProperty";
+  objectTypePropertySecurityGroupReferencesNonExistentProperty:
+    ObjectTypePropertySecurityGroupReferencesNonExistentProperty;
+}
+
+export interface ErrorType_objectTypeReferencedTypeGroupsDoNotExist {
+  type: "objectTypeReferencedTypeGroupsDoNotExist";
+  objectTypeReferencedTypeGroupsDoNotExist:
+    ObjectTypeReferencedTypeGroupsDoNotExist;
 }
 
 export interface ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds {
@@ -3065,6 +3130,12 @@ export interface ErrorType_actionTypeActionLogSummaryTooManyMessageParts {
     ActionTypeActionLogSummaryTooManyMessageParts;
 }
 
+export interface ErrorType_actionTypeFunctionLocatorNotLatestPublishedOnFoundryBranch {
+  type: "actionTypeFunctionLocatorNotLatestPublishedOnFoundryBranch";
+  actionTypeFunctionLocatorNotLatestPublishedOnFoundryBranch:
+    ActionTypeFunctionLocatorNotLatestPublishedOnFoundryBranch;
+}
+
 export interface ErrorType_actionTypeCountExceeded {
   type: "actionTypeCountExceeded";
   actionTypeCountExceeded: ActionTypeCountExceeded;
@@ -3243,6 +3314,11 @@ export interface ErrorType_typeGroupDescriptionTooLong {
   typeGroupDescriptionTooLong: TypeGroupDescriptionTooLong;
 }
 
+export interface ErrorType_typeGroupDisplayNameAlreadyExists {
+  type: "typeGroupDisplayNameAlreadyExists";
+  typeGroupDisplayNameAlreadyExists: TypeGroupDisplayNameAlreadyExists;
+}
+
 export interface ErrorType_propertySecurityGroupNameTooLong {
   type: "propertySecurityGroupNameTooLong";
   propertySecurityGroupNameTooLong: PropertySecurityGroupNameTooLong;
@@ -3281,6 +3357,18 @@ export interface ErrorType_parentObjectTypeBranchIndexingConfigCanOnlyBeSetForOb
     "parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch";
   parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch:
     ParentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch;
+}
+
+export interface ErrorType_structSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions {
+  type:
+    "structSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions";
+  structSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions:
+    StructSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions;
+}
+
+export interface ErrorType_unexpectedValidationFailure {
+  type: "unexpectedValidationFailure";
+  unexpectedValidationFailure: UnexpectedValidationFailure;
 }
 /**
  * A union that represents all possible ontology modification validation errors.
@@ -3343,8 +3431,10 @@ export type ErrorType =
   | ErrorType_sensorLinkTypeLinkedSensorObjectTypeDoesNotHaveSensorTrait
   | ErrorType_interfaceTypeToDeleteIsReferencedByExistingTypes
   | ErrorType_interfaceTypeContainsDuplicateProperties
+  | ErrorType_interfacePropertyTypeRidNotMatchingSharedPropertyTypeRidLocator
+  | ErrorType_interfaceTypeModificationReferencesNonExistentInterfaceProperties
   | ErrorType_interfaceTypeExtendedDoesNotExistOrDeleted
-  | ErrorType_interfaceTypeWithActiveStatusRemovingSharedPropertyTypes
+  | ErrorType_interfaceTypeWithActiveStatusRemovingInterfacePropertyTypes
   | ErrorType_interfaceTypeInvalidApiName
   | ErrorType_interfaceTypeDeclaresRequiredParentPropertyAsOptional
   | ErrorType_interfaceTypeReferencedSharedPropertyTypesDoNotExistOrDeleted
@@ -3394,6 +3484,7 @@ export type ErrorType =
   | ErrorType_objectTypeNullablePropertyInSecurityGroupGranularPolicyMarkingCondition
   | ErrorType_objectTypeInvalidNumberOfPropertyReferencesInPropertySecurityGroup
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources
+  | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMaterializations
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedOnBranches
   | ErrorType_objectTypePropertyIncompatibleBackingColumnType
   | ErrorType_objectTypeStructColumnFieldMissingFromBackingDatasource
@@ -3545,6 +3636,7 @@ export type ErrorType =
   | ErrorType_objectTypeInterfaceImplementationValueTypeDoesNotMatch
   | ErrorType_objectTypeInterfaceImplementationImplementsPropertyThatDoesNotExist
   | ErrorType_objectTypeInterfaceImplementationDoesNotImplementAllProperties
+  | ErrorType_objectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct
   | ErrorType_objectTypeInterfaceImplementationInvalidLinkedEntityImplementingLinkType
   | ErrorType_objectTypeInterfaceImplementationLinkTypeImplementedMoreThanOnce
   | ErrorType_objectTypePropertyImplementationImplicitAndExplicit
@@ -3571,6 +3663,12 @@ export type ErrorType =
   | ErrorType_objectTypeMarkingPropertyTypesMustBeNonNullable
   | ErrorType_objectTypeCbacMarkingPropertyTypeMustBeNonEmpty
   | ErrorType_objectTypeWithDerivedPropertiesMappedToGotham
+  | ErrorType_objectTypePrimaryKeyChangeMissingSchemaMigration
+  | ErrorType_objectTypeDeletedPropertyTypeMissingSchemaMigration
+  | ErrorType_objectTypePropertyDataTypeChangeMissingSchemaMigration
+  | ErrorType_objectTypeDeletedDatasourceMissingSchemaMigration
+  | ErrorType_objectTypePropertySecurityGroupReferencesNonExistentProperty
+  | ErrorType_objectTypeReferencedTypeGroupsDoNotExist
   | ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds
   | ErrorType_ruleSetCountExceeded
   | ErrorType_ruleSetNameTooLong
@@ -3701,6 +3799,7 @@ export type ErrorType =
   | ErrorType_actionTypeActionLogRequiredButNotEnabled
   | ErrorType_actionTypeActionLogSummaryMessagePartTooLong
   | ErrorType_actionTypeActionLogSummaryTooManyMessageParts
+  | ErrorType_actionTypeFunctionLocatorNotLatestPublishedOnFoundryBranch
   | ErrorType_actionTypeCountExceeded
   | ErrorType_actionTypeButtonTextTooLong
   | ErrorType_actionTypeSuccessMessageTooLong
@@ -3734,13 +3833,16 @@ export type ErrorType =
   | ErrorType_typeGroupCountExceeded
   | ErrorType_typeGroupDisplayNameTooLong
   | ErrorType_typeGroupDescriptionTooLong
+  | ErrorType_typeGroupDisplayNameAlreadyExists
   | ErrorType_propertySecurityGroupNameTooLong
   | ErrorType_primaryKeyReferencesInMultiplePropertySecurityGroups
   | ErrorType_missingPropertySecurityGroupTypes
   | ErrorType_nonUniquePropertySecurityGroupNames
   | ErrorType_objectEditsCannotBeCopiedForObjectTypeOnBranchNeedsRebasing
   | ErrorType_objectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches
-  | ErrorType_parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch;
+  | ErrorType_parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch
+  | ErrorType_structSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions
+  | ErrorType_unexpectedValidationFailure;
 
 export interface IndeterminateErrorCategory {
 }
@@ -3758,6 +3860,11 @@ export interface InterfaceLinkTypeDescriptionTooLong {
  * The display name of an interface link type exceeds the maximum length.
  */
 export interface InterfaceLinkTypeDisplayNameTooLong {
+}
+/**
+ * The locator of the interface property type rid and the backing shared property type rid do not match.
+ */
+export interface InterfacePropertyTypeRidNotMatchingSharedPropertyTypeRidLocator {
 }
 /**
  * The interface contains duplicate properties. This may be due to declaring a property as both required and optional.
@@ -3839,6 +3946,11 @@ export interface InterfaceTypeInvalidApiNamePrefixes {
 export interface InterfaceTypeLinkedEntityTypeNotFound {
 }
 /**
+ * An interface modification cannot reference properties not previously present on the interface.
+ */
+export interface InterfaceTypeModificationReferencesNonExistentInterfaceProperties {
+}
+/**
  * An interface cannot refer to shared property types that do not exist or are deleted in the same request.
  */
 export interface InterfaceTypeReferencedSharedPropertyTypesDoNotExistOrDeleted {
@@ -3849,9 +3961,9 @@ export interface InterfaceTypeReferencedSharedPropertyTypesDoNotExistOrDeleted {
 export interface InterfaceTypeToDeleteIsReferencedByExistingTypes {
 }
 /**
- * Cannot remove shared property types from interfaces that have an active status.
+ * Cannot remove interface property types from interfaces that have an active status.
  */
-export interface InterfaceTypeWithActiveStatusRemovingSharedPropertyTypes {
+export interface InterfaceTypeWithActiveStatusRemovingInterfacePropertyTypes {
 }
 /**
  * The Intermediary LinkType is referencing ObjectTypes with a non-one-to-many relationship on one of the sides.
@@ -4105,7 +4217,21 @@ export interface InvalidSharedPropertyTypeWithIdentifier {
   errorCategory: SharedPropertyTypeErrorCategory;
   identifier: _api_SharedPropertyTypeRidOrIdInRequest;
 }
+export interface InvalidTypeGroupDefinition_indeterminate {
+  type: "indeterminate";
+  indeterminate: IndeterminateErrorCategory;
+}
+export type InvalidTypeGroupDefinition =
+  InvalidTypeGroupDefinition_indeterminate;
+
+export interface InvalidTypeGroupReference_notFound {
+  type: "notFound";
+  notFound: NotFoundErrorCategory;
+}
+export type InvalidTypeGroupReference = InvalidTypeGroupReference_notFound;
+
 export interface InvalidTypeGroupWithIdentifier {
+  errorCategory: TypeGroupErrorCategory;
   identifier: _api_TypeGroupRidOrIdInRequest;
 }
 /**
@@ -4546,6 +4672,16 @@ export interface ObjectTypeDatasourceUpdateModificationCannotChangeAssumedMarkin
 export interface ObjectTypeDatasourceWithoutPrimaryKeyColumn {
 }
 /**
+ * A datasource was deleted without the required schema migrations.
+ */
+export interface ObjectTypeDeletedDatasourceMissingSchemaMigration {
+}
+/**
+ * A property type was deleted without the required schema migrations.
+ */
+export interface ObjectTypeDeletedPropertyTypeMissingSchemaMigration {
+}
+/**
  * The derived property's base type has changed, either because the type it is deriving from has changed, or because the derived property definition has changed. However, the object type it belongs to is not part of the modification, so this change is not allowed. The object type must be modified in the same request for it to accept the new derived property base type. A no-op modification suffices.
  */
 export interface ObjectTypeDerivedPropertyBaseTypeChangedWhenObjectTypeIsNotModified {
@@ -4810,6 +4946,11 @@ export interface ObjectTypeInterfaceImplementationInvalidLinkedEntityImplementin
  * An interface link type constraint is fulfilled more than once for an interface and the multiple implementations are not the same. When an interface and its super interface are both explicitly implemented by an object type, the implementation for an inherited link on the interface must be the same as the implementation of the link for the super interface. Additionally, the implementation of two child interfaces of the same super interface must have the same implementation for any inherited links.
  */
 export interface ObjectTypeInterfaceImplementationLinkTypeImplementedMoreThanOnce {
+}
+/**
+ * The object type attempts to use a local property to implement a struct shared property on the interface.
+ */
+export interface ObjectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct {
 }
 /**
  * Expected local property implementing interface property to have the same type, but it did not.
@@ -5082,6 +5223,11 @@ export interface ObjectTypeOsv2WithMultipleClustersEnabled {
 export interface ObjectTypePhonographNumberOfReplicasTypeclassMustBeOnPrimaryKey {
 }
 /**
+ * There is a primary key change without a DropAllPatchesMigration.
+ */
+export interface ObjectTypePrimaryKeyChangeMissingSchemaMigration {
+}
+/**
  * Primary keys of type FLOAT, DOUBLE or DECIMAL are not allowed with writeback datasets.
  */
 export interface ObjectTypePrimaryKeyInvalidTypesWithWriteback {
@@ -5117,6 +5263,11 @@ export interface ObjectTypePrimaryKeyUsesEditOnlyPropertyTypeInDataBackedDatasou
 export interface ObjectTypePropertiesReferenceSameColumnName {
 }
 /**
+ * There is a change to the Type of a PropertyType (such as changing from an Integer to a String) that does not have a required schema migration associated with it.
+ */
+export interface ObjectTypePropertyDataTypeChangeMissingSchemaMigration {
+}
+/**
  * An object type implements multiple interfaces and explicitly provides some property mappings for some interfaces but not for others. It is required to explicitly provide property mappings for all interfaces or for none.
  */
 export interface ObjectTypePropertyImplementationImplicitAndExplicit {
@@ -5132,9 +5283,19 @@ export interface ObjectTypePropertyIncompatibleBackingColumnType {
 export interface ObjectTypePropertyReferencedPropertyMustBeDifferent {
 }
 /**
+ * A property security group references non-existent or deleted properties.
+ */
+export interface ObjectTypePropertySecurityGroupReferencesNonExistentProperty {
+}
+/**
  * Property security groups are not yet supported on branches.
  */
 export interface ObjectTypePropertySecurityGroupsNotSupportedOnBranches {
+}
+/**
+ * Property security groups are not yet supported for Object Types that have Materializations.
+ */
+export interface ObjectTypePropertySecurityGroupsNotSupportedWithMaterializations {
 }
 /**
  * Property security groups are not yet supported with MDOs.
@@ -5220,6 +5381,11 @@ export interface ObjectTypeReferencedPropertyMustBeDifferent {
  * Referenced PropertyTypeId has the incorrect type.
  */
 export interface ObjectTypeReferencedPropertyTypeMismatch {
+}
+/**
+ * The TypeGroup referenced in an ObjectType does not exist in the ontology.
+ */
+export interface ObjectTypeReferencedTypeGroupsDoNotExist {
 }
 /**
  * Required interface link type is missing an implementation.
@@ -5783,6 +5949,12 @@ export interface SharedPropertyTypeValueTypeUsageMismatchStructField {
 export interface SharedPropertyTypeValueTypeUsageMissingStructField {
 }
 /**
+ * A modification to a struct shared property type's fields breaks the object type struct property it backs.
+ * This is caused by struct field API name or base type changes on the struct shared property type.
+ */
+export interface StructSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions {
+}
+/**
  * The count of type groups exceeds the allowed limit.
  */
 export interface TypeGroupCountExceeded {
@@ -5793,9 +5965,32 @@ export interface TypeGroupCountExceeded {
 export interface TypeGroupDescriptionTooLong {
 }
 /**
+ * The TypeGroup display name already exists in the ontology.
+ */
+export interface TypeGroupDisplayNameAlreadyExists {
+}
+/**
  * The display name of a type group exceeds the maximum length.
  */
 export interface TypeGroupDisplayNameTooLong {
+}
+export interface TypeGroupErrorCategory_reference {
+  type: "reference";
+  reference: InvalidTypeGroupReference;
+}
+
+export interface TypeGroupErrorCategory_definition {
+  type: "definition";
+  definition: InvalidTypeGroupDefinition;
+}
+export type TypeGroupErrorCategory =
+  | TypeGroupErrorCategory_reference
+  | TypeGroupErrorCategory_definition;
+
+/**
+ * Unexpected Validation Failure in OMS.
+ */
+export interface UnexpectedValidationFailure {
 }
 /**
  * The archetype ID of a workflow exceeds the maximum length.
