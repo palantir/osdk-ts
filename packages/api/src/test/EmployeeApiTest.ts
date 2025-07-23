@@ -39,7 +39,9 @@ export namespace EmployeeApiTest {
     | "performanceScore"
     | "hourlyRate"
     | "dateOfJoining"
-    | "lastUpdated";
+    | "lastUpdated"
+    | "skillSet"
+    | "skillSetEmbedding";
 
   export interface Links {
     readonly lead: $SingleLinkAccessor<EmployeeApiTest>;
@@ -64,6 +66,8 @@ export namespace EmployeeApiTest {
     readonly hourlyRate: $PropType["float"] | undefined;
     readonly dateOfJoining: $PropType["datetime"] | undefined;
     readonly lastUpdated: $PropType["timestamp"] | undefined;
+    readonly skillSet: $PropType["string"] | undefined;
+    readonly skillSetEmbedding: $PropType["vector"] | undefined;
   }
   export type StrictProps = Props;
 
@@ -126,6 +130,8 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
       hourlyRate: $PropertyDef<"float", "nullable", "single">;
       dateOfJoining: $PropertyDef<"datetime", "nullable", "single">;
       lastUpdated: $PropertyDef<"timestamp", "nullable", "single">;
+      skillSet: $PropertyDef<"string", "nullable", "single">;
+      skillSetEmbedding: $PropertyDef<"vector", "nullable", "single">;
     };
     rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44";
     status: "ACTIVE";

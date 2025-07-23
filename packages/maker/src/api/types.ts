@@ -27,6 +27,7 @@ import type {
   InterfaceTypeStatus,
   LinkTypeDisplayMetadata,
   LinkTypeMetadata,
+  OntologyIrActionTypeEntities,
   OntologyIrBaseParameterType_decimal,
   OntologyIrBaseParameterType_decimalList,
   OntologyIrBaseParameterType_interfaceReference,
@@ -42,10 +43,10 @@ import type {
   OntologyIrCondition,
   OntologyIrConditionValue,
   OntologyIrFormContent,
-  OntologyIrInterfaceType,
   OntologyIrLabelledValue,
   OntologyIrLinkTypeStatus,
   OntologyIrLogicRule,
+  OntologyIrMarketplaceInterfaceType,
   OntologyIrObjectType,
   OntologyIrParameterDateRangeValue,
   OntologyIrPropertyType,
@@ -133,6 +134,16 @@ export type ActionType =
 
 export type ActionTypeDefinition = Omit<ActionType, "__type">;
 
+export type ActionTypeUserDefinition = {
+  objectType: ObjectTypeDefinition;
+  apiName?: string;
+  displayName?: string;
+  status?: ActionStatus;
+  parameterLevelValidations?: Record<string, ActionParameterValidation>;
+  actionLevelValidation?: ActionLevelValidationDefinition;
+  excludedProperties?: Array<ParameterId>;
+};
+
 export interface ActionParameter {
   id: ParameterId;
   displayName: string;
@@ -143,8 +154,8 @@ export interface ActionParameter {
 }
 
 export interface ActionParameterValidation {
-  allowedValues: ActionParameterAllowedValues;
-  required: ActionParameterRequirementConstraint;
+  allowedValues?: ActionParameterAllowedValues;
+  required?: ActionParameterRequirementConstraint;
   defaultVisibility?: "editable" | "disabled" | "hidden";
   conditionalOverrides?: Array<ActionParameterConditionalOverride>;
 }
@@ -227,6 +238,7 @@ export interface ActionTypeInner {
   rules: Array<OntologyIrLogicRule>;
   sections: Record<SectionId, Array<ParameterId>>;
   status: ActionStatus;
+  entities: OntologyIrActionTypeEntities;
   formContentOrdering: Array<OntologyIrFormContent>;
   validation: Array<OntologyIrValidationRule>;
   typeClasses: Array<TypeClass>;
@@ -376,7 +388,7 @@ export interface InterfacePropertyType {
 export interface InterfaceType extends
   OntologyEntityBase,
   Omit<
-    OntologyIrInterfaceType,
+    OntologyIrMarketplaceInterfaceType,
     // we want our simplified representation
     | "properties"
     // these things don't need to exist as the system works fine without them (I'm told)
@@ -450,9 +462,10 @@ export type PropertyTypeTypeExotic =
 type PropertyTypeTypeMarking = {
   type: "marking";
   markingType: "MANDATORY" | "CBAC";
+  markingInputGroupName: string;
 };
 
-type PropertyTypeTypeStruct = {
+export type PropertyTypeTypeStruct = {
   type: "struct";
   structDefinition: {
     [api_name: string]:
@@ -524,7 +537,7 @@ export interface OneToManyLinkTypeDefinition {
 }
 
 export interface OneToManyObjectLinkReference {
-  object: ObjectType;
+  object: ObjectTypeDefinition;
   metadata: LinkTypeMetadata;
 }
 
@@ -533,10 +546,11 @@ export interface OneToManyLinkTypeUserDefinition {
   one: OneToManyObjectLinkReferenceUserDefinition;
   toMany: OneToManyObjectLinkReferenceUserDefinition;
   manyForeignKeyProperty: ObjectTypePropertyApiName;
+  cardinality?: "OneToMany" | "OneToOne" | undefined;
 }
 
 export interface OneToManyObjectLinkReferenceUserDefinition {
-  object: ObjectType;
+  object: ObjectTypeDefinition;
   metadata: LinkTypeMetadataUserDefinition;
 }
 
@@ -550,7 +564,7 @@ export interface ManyToManyLinkTypeDefinition {
 }
 
 export interface ManyToManyObjectLinkReference {
-  object: ObjectType;
+  object: ObjectTypeDefinition;
   metadata: LinkTypeMetadata;
 }
 
@@ -561,7 +575,7 @@ export interface ManyToManyLinkTypeUserDefinition {
 }
 
 export interface ManyToManyObjectLinkReferenceUserDefinition {
-  object: ObjectType;
+  object: ObjectTypeDefinition;
   metadata: LinkTypeMetadataUserDefinition;
 }
 

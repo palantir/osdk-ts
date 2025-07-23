@@ -1,5 +1,81 @@
 # @osdk/maker
 
+## 0.12.0-beta.9
+
+### Minor Changes
+
+- ac0029e: Improve CRUD actions customization
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.7
+
+## 0.12.0-beta.8
+
+### Minor Changes
+
+- 764e5f1: Add marking constraints
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.6
+
+## 0.12.0-beta.7
+
+### Minor Changes
+
+- 75fbd09: Type classes and list validation for object actions
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.5
+
+## 0.12.0-beta.6
+
+### Minor Changes
+
+- 3dcd9b1: Modify object actions cannot modify pk
+
+## 0.12.0-beta.5
+
+### Minor Changes
+
+- a01b8d4: Revert import block data changes
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.4
+
+## 0.12.0-beta.4
+
+### Minor Changes
+
+- e647175: Skip struct props for object create + modify actions
+
+## 0.12.0-beta.3
+
+### Minor Changes
+
+- 988bf66: Use block data type for imports
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.3
+
+## 0.12.0-beta.2
+
+### Minor Changes
+
+- 8bb08eb: Turn on module cache
+- 5994895: Interface struct properties are skipped in crud actions
+
+### Patch Changes
+
+- Updated dependencies [29d2ada]
+- Updated dependencies [8c95154]
+- Updated dependencies [c32dcf2]
+  - @osdk/api@2.4.0-beta.2
+
 ## 0.11.0-beta.14
 
 ### Minor Changes

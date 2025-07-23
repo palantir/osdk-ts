@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceMetadata, Osdk } from "@osdk/api";
+import type { InterfaceMetadata, ObjectMetadata, Osdk } from "@osdk/api";
 import type { BaseHolder } from "./BaseHolder.js";
 import type { InterfaceDefRef } from "./InternalSymbols.js";
 
@@ -23,4 +23,9 @@ export interface InterfaceHolder<
   _Q extends Osdk.Instance<any> = never,
 > extends BaseHolder {
   [InterfaceDefRef]: InterfaceMetadata;
+
+  readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
+    readonly ObjectMetadata: ObjectMetadata;
+    readonly InterfaceMetadata: InterfaceMetadata;
+  };
 }

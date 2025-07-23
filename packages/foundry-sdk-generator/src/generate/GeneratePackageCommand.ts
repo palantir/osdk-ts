@@ -36,6 +36,7 @@ export interface generatePackageCommandArgs {
   outputDir: string;
   beta?: boolean;
   sdkPackages?: Map<string, string>;
+  packageRid?: string;
 }
 
 export class GeneratePackageCommand
@@ -146,6 +147,12 @@ export class GeneratePackageCommand
         hidden: true,
         default: false,
       })
+      .positional("packageRid", {
+        type: "string",
+        demandOption: false,
+        description: "The rid of the generated SDK",
+        default: undefined,
+      })
       .options("sdkPackages", {
         array: true,
         string: true,
@@ -218,6 +225,7 @@ export class GeneratePackageCommand
       beta: !!args.beta,
       ontologyJsonOnly: args.experimentalFeatures?.includes("ontologyJsonOnly")
         ?? false,
+      packageRid: args.packageRid,
     });
 
     const elapsedTime = Date.now() - timeStart;

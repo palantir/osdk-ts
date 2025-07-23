@@ -567,72 +567,15 @@ const personToAddressLink = defineInterfaceLinkConstraint({
 
 Actions define operations that can be performed on objects and interfaces.
 
-### Custom Action
-
-```typescript
-import { defineAction } from "@osdk/maker";
-
-// Define a custom action
-const markAsInactiveAction = defineAction({
-  apiName: "mark-as-inactive",
-  displayName: "Mark as Inactive",
-  parameters: [
-    {
-      id: "reason",
-      displayName: "Reason",
-      type: "string",
-      validation: {
-        required: true,
-        allowedValues: { type: "text" },
-      },
-    },
-    {
-      id: "effectiveDate",
-      displayName: "Effective Date",
-      type: "date",
-      validation: {
-        required: true,
-        allowedValues: { type: "datetime" },
-      },
-    },
-  ],
-  status: "active",
-  rules: [
-    {
-      type: "addOrModifyObjectRuleV2",
-      addOrModifyObjectRuleV2: {
-        objectToModify: "objectToModifyParameter",
-        propertyValues: {
-          "isActive": {
-            type: "staticValue",
-            staticValue: {
-              type: "boolean",
-              boolean: false,
-            },
-          },
-          "inactiveReason": {
-            type: "parameterId",
-            parameterId: "reason",
-          },
-          "inactiveDate": {
-            type: "parameterId",
-            parameterId: "effectiveDate",
-          },
-        },
-        structFieldValues: {},
-      },
-    },
-  ],
-});
-```
-
 ### Create Object Action
 
 ```typescript
 import { defineCreateObjectAction } from "@osdk/maker";
 
 // Define an action to create an employee
-const createEmployeeAction = defineCreateObjectAction(employeeObject);
+const createEmployeeAction = defineCreateObjectAction({
+  objectType: employeeObject,
+});
 ```
 
 ### Modify Object Action
@@ -641,7 +584,9 @@ const createEmployeeAction = defineCreateObjectAction(employeeObject);
 import { defineModifyObjectAction } from "@osdk/maker";
 
 // Define an action to modify an employee
-const modifyEmployeeAction = defineModifyObjectAction(employeeObject);
+const modifyEmployeeAction = defineModifyObjectAction({
+  objectType: employeeObject,
+});
 ```
 
 ### Delete Object Action
@@ -650,7 +595,9 @@ const modifyEmployeeAction = defineModifyObjectAction(employeeObject);
 import { defineDeleteObjectAction } from "@osdk/maker";
 
 // Define an action to delete an employee
-const deleteEmployeeAction = defineDeleteObjectAction(employeeObject);
+const deleteEmployeeAction = defineDeleteObjectAction({
+  objectType: employeeObject,
+});
 ```
 
 ### Interface Actions
@@ -672,4 +619,83 @@ const createEmployeePersonAction = defineCreateInterfaceObjectAction(
 
 // Define an action to modify objects implementing an interface
 const modifyPersonAction = defineModifyInterfaceObjectAction(personInterface);
+```
+
+### Custom Action
+
+More customization such as security/submission criteria, constraints on parameter values, parameter overrides, etc.
+can also be added.
+
+```typescript
+import {
+  ActionParameterConditionalOverride,
+  ConditionDefinition,
+  defineModifyObjectAction,
+  defineObject,
+} from "@osdk/maker";
+
+const employeeObject = defineObject({
+  apiName: "employee",
+  displayName: "Employee",
+  pluralDisplayName: "Employees",
+  titlePropertyApiName: "id",
+  primaryKeyPropertyApiName: "id",
+  properties: {
+    "id": { type: "string", displayName: "ID" },
+    "team": { type: "string" },
+    "numDeals": { type: "integer" },
+    "experience": { type: "integer" },
+  },
+});
+
+const mustBeManagerCondition: ConditionDefinition = {
+  type: "group",
+  name: "managerGroup", // Actual group assigned during installation
+};
+
+const mustBeInTeamCondition: ConditionDefinition = {
+  type: "group",
+  name: "teamGroup",
+};
+
+const teamEqualsSalesParameterCondition: ConditionDefinition = {
+  type: "parameter",
+  parameterId: "team",
+  matches: {
+    type: "staticValue",
+    staticValue: {
+      type: "string",
+      string: "sales",
+    },
+  },
+};
+
+const makeDealsVisible: ActionParameterConditionalOverride = {
+  type: "visibility",
+  condition: {
+    type: "and",
+    conditions: [
+      mustBeInTeamCondition,
+      teamEqualsSalesParameterCondition,
+    ],
+  },
+};
+
+const modifyObjectActionType = defineModifyObjectAction(
+  {
+    objectType: employeeObject,
+    actionLevelValidation: {
+      condition: mustBeManagerCondition,
+    },
+    parameterLevelValidations: {
+      "numDeals": {
+        defaultVisibility: "hidden",
+        conditionalOverrides: [
+          makeDealsVisible,
+        ],
+      },
+    },
+    excludedProperties: ["experience"],
+  },
+);
 ```

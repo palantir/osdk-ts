@@ -259,6 +259,11 @@ export interface ActionTypeFormContentOrderingNotExactlySameAsParameterSet {
 export interface ActionTypeFormContentOrderingNotExactlySameAsSectionSet {
 }
 /**
+ * Action type uses function locators that do not resolve to the latest published version on the Foundry branch.
+ */
+export interface ActionTypeFunctionLocatorNotLatestPublishedOnFoundryBranch {
+}
+/**
  * ActionType has reverts enabled and a synchronous webhook.
  */
 export interface ActionTypeHasRevertsEnabledAndSynchronousWebhook {
@@ -3125,6 +3130,12 @@ export interface ErrorType_actionTypeActionLogSummaryTooManyMessageParts {
     ActionTypeActionLogSummaryTooManyMessageParts;
 }
 
+export interface ErrorType_actionTypeFunctionLocatorNotLatestPublishedOnFoundryBranch {
+  type: "actionTypeFunctionLocatorNotLatestPublishedOnFoundryBranch";
+  actionTypeFunctionLocatorNotLatestPublishedOnFoundryBranch:
+    ActionTypeFunctionLocatorNotLatestPublishedOnFoundryBranch;
+}
+
 export interface ErrorType_actionTypeCountExceeded {
   type: "actionTypeCountExceeded";
   actionTypeCountExceeded: ActionTypeCountExceeded;
@@ -3353,6 +3364,11 @@ export interface ErrorType_structSharedPropertyFieldModificationsInconsistentWit
     "structSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions";
   structSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions:
     StructSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions;
+}
+
+export interface ErrorType_unexpectedValidationFailure {
+  type: "unexpectedValidationFailure";
+  unexpectedValidationFailure: UnexpectedValidationFailure;
 }
 /**
  * A union that represents all possible ontology modification validation errors.
@@ -3783,6 +3799,7 @@ export type ErrorType =
   | ErrorType_actionTypeActionLogRequiredButNotEnabled
   | ErrorType_actionTypeActionLogSummaryMessagePartTooLong
   | ErrorType_actionTypeActionLogSummaryTooManyMessageParts
+  | ErrorType_actionTypeFunctionLocatorNotLatestPublishedOnFoundryBranch
   | ErrorType_actionTypeCountExceeded
   | ErrorType_actionTypeButtonTextTooLong
   | ErrorType_actionTypeSuccessMessageTooLong
@@ -3824,7 +3841,8 @@ export type ErrorType =
   | ErrorType_objectEditsCannotBeCopiedForObjectTypeOnBranchNeedsRebasing
   | ErrorType_objectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches
   | ErrorType_parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch
-  | ErrorType_structSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions;
+  | ErrorType_structSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions
+  | ErrorType_unexpectedValidationFailure;
 
 export interface IndeterminateErrorCategory {
 }
@@ -5969,6 +5987,11 @@ export type TypeGroupErrorCategory =
   | TypeGroupErrorCategory_reference
   | TypeGroupErrorCategory_definition;
 
+/**
+ * Unexpected Validation Failure in OMS.
+ */
+export interface UnexpectedValidationFailure {
+}
 /**
  * The archetype ID of a workflow exceeds the maximum length.
  */

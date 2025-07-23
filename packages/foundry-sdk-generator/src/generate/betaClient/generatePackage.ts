@@ -41,6 +41,7 @@ export async function generatePackage(
     outputDir: string;
     beta: boolean;
     ontologyJsonOnly: boolean;
+    packageRid: string | undefined;
   },
 ): Promise<void> {
   const { consola } = await import("consola");
@@ -98,6 +99,7 @@ export async function generatePackage(
     dependencies: [],
     peerDependencies: resolvedPeerDependencies,
     beta: options.beta,
+    packageRid: options.packageRid,
   });
 
   const compilerOutput: Record<

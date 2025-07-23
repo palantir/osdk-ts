@@ -1,5 +1,50 @@
 # @osdk/generator
 
+## 2.4.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.7
+- @osdk/generator-converters@2.4.0-beta.7
+
+## 2.4.0-beta.6
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.6
+- @osdk/generator-converters@2.4.0-beta.6
+
+## 2.4.0-beta.5
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.5
+- @osdk/generator-converters@2.4.0-beta.5
+
+## 2.4.0-beta.4
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.4
+- @osdk/generator-converters@2.4.0-beta.4
+
+## 2.4.0-beta.3
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.3
+- @osdk/generator-converters@2.4.0-beta.3
+
+## 2.4.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [29d2ada]
+- Updated dependencies [8c95154]
+- Updated dependencies [c32dcf2]
+  - @osdk/api@2.4.0-beta.2
+  - @osdk/generator-converters@2.4.0-beta.2
+
 ## 2.3.0-beta.10
 
 ### Patch Changes
