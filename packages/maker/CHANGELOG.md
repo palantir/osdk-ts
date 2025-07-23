@@ -138,6 +138,81 @@
 
 - @osdk/api@2.3.0-beta.2
 
+## 0.10.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 6eeb423: Simple create and modify actions for interfaces
+- 4a02a1f: Make string more configurable
+- 38ad25b: Make properties nullable
+- 489ea17: Wire through nullability to SPT
+- 1a09a8e: Enforce that struct, mediaReference, and GTSR type SPTs cannot have render hints
+- 12843cb: Add ability to load all underlying properties of an interface.
+- a08bdfb: Support stream datasources in OAC
+- 0a41cec: Support optional interface properties
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+- 21e33a5: Upgrade consola to 3.4.0
+- 63b2e63: Update Platform SDK Dependencies
+- 75f6b51: Propagate required/optional fields from interfaces to actions
+- 7416ce4: Update Platform SDK Dependencies
+- 10da391: Links as Code
+- c0aa106: Add visibility field to shared property type in maker
+- 7bb2971: OAC support for actions on objects
+- f1b1188: OAC Imports v0
+- cff551a: Update OAC codegen
+- 5745d3e: Make Object PKs singular
+- ca5d920: Fix marking/list validation
+- e287c5b: Support marking types in SPTs in Interfaces in Actions
+- 5e8e839: Bump OMS API to include links in ontology IR
+- 24c4b12: Add geotime and mediaset datasources to OAC
+- 889e84b: Release
+- 395ae07: Actions as code
+- 94663ab: Change the status definitions for objects and add validation for timestamps.
+- 791e655: Add support for geoshape and geohash action parameters.
+- f12caa4: Fix marking list for modify action
+- 317b555: Release
+- c7f7a99: Export defineOntology method
+- 8f67e1e: OAC Struct Property Field Mapping Support
+- cc380b5: Use the latest Platform APIs
+- 340ba44: Fix test
+- Updated dependencies [322c5bc]
+- Updated dependencies [c6bee50]
+- Updated dependencies [7416ce4]
+- Updated dependencies [7170fd1]
+- Updated dependencies [12843cb]
+- Updated dependencies [18ba34f]
+- Updated dependencies [6abf078]
+- Updated dependencies [f82767c]
+- Updated dependencies [56aa502]
+- Updated dependencies [0e874b1]
+- Updated dependencies [abe4897]
+- Updated dependencies [63b2e63]
+- Updated dependencies [cddfbf9]
+- Updated dependencies [7416ce4]
+- Updated dependencies [23ea0e4]
+- Updated dependencies [26c2d95]
+- Updated dependencies [488b51c]
+- Updated dependencies [71462e9]
+- Updated dependencies [fccd9ac]
+- Updated dependencies [5665b18]
+- Updated dependencies [46cede4]
+- Updated dependencies [761e69d]
+- Updated dependencies [889e84b]
+- Updated dependencies [a6e5f89]
+- Updated dependencies [ed69666]
+- Updated dependencies [4183a55]
+- Updated dependencies [70b4464]
+- Updated dependencies [791e655]
+- Updated dependencies [317b555]
+- Updated dependencies [63b2e63]
+- Updated dependencies [a146ce4]
+- Updated dependencies [3d0ab11]
+- Updated dependencies [805df40]
+- Updated dependencies [5467a0f]
+- Updated dependencies [63b2e63]
+  - @osdk/api@2.2.0
+
 ## 0.10.0-beta.25
 
 ### Minor Changes

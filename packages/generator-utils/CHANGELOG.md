@@ -24,6 +24,14 @@
 
 ## 2.3.0-beta.2
 
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 889e84b: Release
+- 317b555: Release
+
 ## 2.2.0-beta.23
 
 ## 2.2.0-beta.22

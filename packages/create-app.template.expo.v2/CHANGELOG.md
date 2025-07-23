@@ -24,6 +24,16 @@
 
 ## 2.3.0-beta.2
 
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- fa02507: Use options overload when initializing client in create-app templates and standardize formatting
+- 889e84b: Release
+- 0e0935e: Added api:use-ontologies-read/write to the default scope initialization
+- 317b555: Release
+
 ## 2.2.0-beta.23
 
 ### Minor Changes

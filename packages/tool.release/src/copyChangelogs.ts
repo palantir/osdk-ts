@@ -18,6 +18,7 @@ import { getChangelogEntry } from "@changesets/release-utils";
 import consola from "consola";
 import type { Result } from "execa";
 import { execa } from "execa";
+import { existsSync } from "fs";
 import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
 import semver from "semver";
@@ -83,6 +84,13 @@ async function updateChangelog(
     "CHANGELOG.md",
   );
 
+  if (!existsSync(changelogPath)) {
+    consola.warn(
+      `Changelog file does not exist for ${packageName}, skipping update`,
+    );
+    return;
+  }
+
   const currentContent = await readFile(changelogPath, "utf-8");
 
   if (doesVersionExistInChangelog(currentContent, targetVersion)) {
@@ -145,6 +153,8 @@ export async function copyChangelogs(
   options: CopyChangelogOptions,
 ): Promise<void> {
   const { releaseBranch } = options;
+
+  consola.info(`Copying changelogs from branch: ${releaseBranch}`);
 
   /**
    * Fetches the target version of each package from the pre.json file
