@@ -19,7 +19,7 @@ import type {
   ObjectMetadata,
   ObjectTypeDefinition,
   Osdk,
-  OsdkObjectPropertyType,
+  OsdkObjectCreatePropertyType,
   PropertyKeys,
 } from "@osdk/client";
 
@@ -77,7 +77,7 @@ export interface CreateObject<S extends ObjectTypeDefinition> {
   obj: S;
   properties: PartialForOptionalProperties<
     {
-      [P in PropertyKeys<S>]: OsdkObjectPropertyType<
+      [P in PropertyKeys<S>]: OsdkObjectCreatePropertyType<
         CompileTimeMetadata<S>["properties"][P]
       >;
     }
@@ -99,7 +99,7 @@ export interface UpdateObject<S extends ObjectTypeDefinition> {
           PropertyKeys<S>,
           CompileTimeMetadata<S>["primaryKeyApiName"]
         >
-      ]: OsdkObjectPropertyType<CompileTimeMetadata<S>["properties"][P]>;
+      ]: OsdkObjectCreatePropertyType<CompileTimeMetadata<S>["properties"][P]>;
     }
   >;
 }
