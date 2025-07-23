@@ -3193,6 +3193,9 @@ importers:
 
   packages/functions:
     dependencies:
+      '@osdk/api':
+        specifier: workspace:~
+        version: link:../api
       '@osdk/client':
         specifier: workspace:^
         version: link:../client

@@ -389,8 +389,6 @@ export interface DataValueWireToClient {
     	// (undocumented)
     mediaReference: MediaReference;
     	// (undocumented)
-    notification: Notification_2;
-    	// (undocumented)
     null: null;
     	// (undocumented)
     objectType: string;
@@ -758,30 +756,6 @@ export interface MediaUpload {
 }
 
 // @public (undocumented)
-interface Notification_2 {
-    	// Warning: (ae-forgotten-export) The symbol "EmailNotification" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    emailNotification: EmailNotification;
-    	// Warning: (ae-forgotten-export) The symbol "PlatformNotification" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    platformNotification: PlatformNotification;
-}
-export { Notification_2 as Notification }
-
-// @public (undocumented)
-export interface NotificationLink {
-    	// (undocumented)
-    label: string;
-    	// (undocumented)
-    linkTarget: NotificationLinkTarget;
-}
-
-// @public (undocumented)
-export type NotificationLinkTarget = RidLinkTarget | ObjectLinkTarget | UrlLinkTarget;
-
-// @public (undocumented)
 export const NULL_VALUE: symbol & {
     	__type: "NULL_VALUE"
 };
@@ -800,14 +774,6 @@ export type ObjectIdentifiers<Q extends ObjectOrInterfaceDefinition> = {
     	readonly $apiName: Q["apiName"]
     	readonly $primaryKey: PrimaryKeyType<Q>
 };
-
-// @public (undocumented)
-export interface ObjectLinkTarget<T extends ObjectOrInterfaceDefinition = ObjectOrInterfaceDefinition> {
-    	// (undocumented)
-    object: Osdk.Instance<T>;
-    	// (undocumented)
-    type: "object";
-}
 
 // @public (undocumented)
 export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
@@ -1296,14 +1262,6 @@ export { Range_2 as Range }
 export type Result<V> = OkResult<V> | ErrorResult;
 
 // @public (undocumented)
-export interface RidLinkTarget {
-    	// (undocumented)
-    rid: string;
-    	// (undocumented)
-    type: "rid";
-}
-
-// @public (undocumented)
 export interface SelectArg<
 	Q extends ObjectOrInterfaceDefinition,
 	L extends string = PropertyKeys<Q>,
@@ -1445,14 +1403,6 @@ export type TwoDimensionalAggregation<
 
 // @public (undocumented)
 export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<AggregationValueTypes>;
-
-// @public (undocumented)
-export interface UrlLinkTarget {
-    	// (undocumented)
-    type: "url";
-    	// (undocumented)
-    url: string;
-}
 
 // Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "WITH_PROPERTIES_AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
