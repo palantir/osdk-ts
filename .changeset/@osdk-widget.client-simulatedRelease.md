@@ -1,6 +1,5 @@
 ---
-"@osdk/widget.client": minor
+"@osdk/widget.client": patch
 ---
-      
+
 Simulated release
-      

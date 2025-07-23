@@ -1,6 +1,5 @@
 ---
-"@osdk/generator-converters": minor
+"@osdk/generator-converters": patch
 ---
-      
+
 Simulated release
-      
