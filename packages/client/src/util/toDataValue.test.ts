@@ -299,6 +299,7 @@ describe(toDataValue, () => {
       NULL_VALUE,
       clientCtx,
       mockActionMetadata,
+      mockParameterName,
     );
     expect(converted).toBeNull();
   });
@@ -311,6 +312,7 @@ describe(toDataValue, () => {
       clearData,
       clientCtx,
       mockActionMetadata,
+      mockParameterName,
     );
     expect(converted).toEqual(null);
   });

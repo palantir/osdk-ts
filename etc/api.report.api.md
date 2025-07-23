@@ -1438,7 +1438,7 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 
 // Warnings were encountered during analysis:
 //
-// src/actions/Actions.ts:67:5 - (ae-forgotten-export) The symbol "ApiNameOrObjectTypeDefinition" needs to be exported by the entry point index.d.ts
+// src/actions/Actions.ts:68:5 - (ae-forgotten-export) The symbol "ApiNameOrObjectTypeDefinition" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/derivedProperties/DerivedProperty.ts:58:7 - (ae-forgotten-export) The symbol "DerivedPropertyCreator" needs to be exported by the entry point index.d.ts
