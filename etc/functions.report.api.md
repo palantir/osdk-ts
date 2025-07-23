@@ -11,7 +11,6 @@ import type { ObjectMetadata } from '@osdk/client';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/client';
 import type { Osdk } from '@osdk/client';
-import type { Osdk as Osdk_2 } from '@osdk/api';
 import type { OsdkObjectPropertyType } from '@osdk/client';
 import type { PropertyKeys } from '@osdk/client';
 import { Range as Range_2 } from '@osdk/client';
@@ -133,7 +132,7 @@ export type NotificationLinkTarget = RidLinkTarget | ObjectLinkTarget | UrlLinkT
 // @public (undocumented)
 export interface ObjectLinkTarget<T extends ObjectOrInterfaceDefinition = ObjectOrInterfaceDefinition> {
     	// (undocumented)
-    object: Osdk_2.Instance<T>;
+    object: Osdk.Instance<T>;
     	// (undocumented)
     type: "object";
 }

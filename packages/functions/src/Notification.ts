@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, Osdk } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { Osdk } from "@osdk/client";
 
 export interface Notification {
   platformNotification: PlatformNotification;
