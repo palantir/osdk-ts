@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.12.0-beta.10
+
+### Minor Changes
+
+- 4dffba1: Support extended string params in actions
+
+### Patch Changes
+
+- Updated dependencies [9f4fe9e]
+  - @osdk/api@2.4.0-beta.8
+
 ## 0.12.0-beta.9
 
 ### Minor Changes

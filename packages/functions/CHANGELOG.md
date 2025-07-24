@@ -1,5 +1,16 @@
 # @osdk/functions
 
+## 2.0.0-beta.8
+
+### Minor Changes
+
+- 9f4fe9e: Add new types mapping for internal creation workflow.
+
+### Patch Changes
+
+- Updated dependencies [9f4fe9e]
+  - @osdk/client@2.4.0-beta.8
+
 ## 2.0.0-beta.7
 
 ### Patch Changes
