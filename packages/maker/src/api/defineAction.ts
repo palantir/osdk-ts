@@ -719,6 +719,8 @@ function extractActionParameterType(
     switch (typeType.type) {
       case "marking":
         return maybeAddList("marking", pt);
+      case "string":
+        return maybeAddList("string", pt);
       case "struct":
         throw new Error("Structs are not supported yet");
       default:
