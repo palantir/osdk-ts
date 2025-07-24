@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.4.0-beta.8
+
+### Minor Changes
+
+- 9f4fe9e: Add new types mapping for internal creation workflow.
+
+### Patch Changes
+
+- Updated dependencies [9f4fe9e]
+  - @osdk/api@2.4.0-beta.8
+  - @osdk/generator-converters@2.4.0-beta.8
+  - @osdk/client.unstable@2.4.0-beta.8
+
 ## 2.4.0-beta.7
 
 ### Patch Changes

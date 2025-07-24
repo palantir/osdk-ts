@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.4.0-beta.8
+
+### Minor Changes
+
+- 9f4fe9e: Add new types mapping for internal creation workflow.
+
 ## 2.4.0-beta.7
 
 ## 2.4.0-beta.6
