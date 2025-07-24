@@ -7,8 +7,8 @@
 import { Attachment } from '@osdk/client';
 import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/client';
+import type { InterfaceDefinition } from '@osdk/client';
 import type { ObjectMetadata } from '@osdk/client';
-import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/client';
 import type { Osdk } from '@osdk/client';
 import type { OsdkObjectPropertyType } from '@osdk/client';
@@ -91,6 +91,16 @@ export namespace Edits {
 }
 
 // @public (undocumented)
+export interface EmailNotification {
+    	// (undocumented)
+    body: string;
+    	// (undocumented)
+    links: NotificationLink[];
+    	// (undocumented)
+    subject: string;
+}
+
+// @public (undocumented)
 export type Float<T extends number = number> = T & {
     	__floatBrand?: void
 };
@@ -107,13 +117,9 @@ export type Long<T extends string = string> = T & {
 
 // @public (undocumented)
 interface Notification_2 {
-    	// Warning: (ae-forgotten-export) The symbol "EmailNotification" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
+    	// (undocumented)
     emailNotification: EmailNotification;
-    	// Warning: (ae-forgotten-export) The symbol "PlatformNotification" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
+    	// (undocumented)
     platformNotification: PlatformNotification;
 }
 export { Notification_2 as Notification }
@@ -130,11 +136,21 @@ export interface NotificationLink {
 export type NotificationLinkTarget = RidLinkTarget | ObjectLinkTarget | UrlLinkTarget;
 
 // @public (undocumented)
-export interface ObjectLinkTarget<T extends ObjectOrInterfaceDefinition = ObjectOrInterfaceDefinition> {
+export interface ObjectLinkTarget<T extends ObjectTypeDefinition | InterfaceDefinition = ObjectTypeDefinition | InterfaceDefinition> {
     	// (undocumented)
     object: Osdk.Instance<T>;
     	// (undocumented)
     type: "object";
+}
+
+// @public (undocumented)
+export interface PlatformNotification {
+    	// (undocumented)
+    content: string;
+    	// (undocumented)
+    heading: string;
+    	// (undocumented)
+    links: NotificationLink[];
 }
 
 export { Range_2 as Range }

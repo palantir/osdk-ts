@@ -14,26 +14,32 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { Osdk } from "@osdk/client";
+import type {
+  InterfaceDefinition,
+  ObjectTypeDefinition,
+  Osdk,
+} from "@osdk/client";
 
 export interface Notification {
   platformNotification: PlatformNotification;
   emailNotification: EmailNotification;
 }
 
-interface EmailNotification {
+// Details for notifications sent via email.
+export interface EmailNotification {
   subject: string;
   body: string;
   links: NotificationLink[];
 }
 
-interface PlatformNotification {
+// Details for notifications displayed in Foundry.
+export interface PlatformNotification {
   heading: string;
   content: string;
   links: NotificationLink[];
 }
 
+// Notification Link Types
 export interface NotificationLink {
   label: string;
   linkTarget: NotificationLinkTarget;
@@ -45,7 +51,9 @@ export interface RidLinkTarget {
 }
 
 export interface ObjectLinkTarget<
-  T extends ObjectOrInterfaceDefinition = ObjectOrInterfaceDefinition,
+  T extends ObjectTypeDefinition | InterfaceDefinition =
+    | ObjectTypeDefinition
+    | InterfaceDefinition,
 > {
   type: "object";
   object: Osdk.Instance<T>;
