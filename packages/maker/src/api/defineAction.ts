@@ -699,6 +699,8 @@ function extractAllowedValuesFromType(
           return type.markingType === "CBAC"
             ? { type: "cbacMarking" }
             : { type: "mandatoryMarking" };
+        case "string":
+          return { type: "text" };
         case "struct":
           throw new Error("Structs are not supported yet");
         default:
@@ -719,6 +721,8 @@ function extractActionParameterType(
     switch (typeType.type) {
       case "marking":
         return maybeAddList("marking", pt);
+      case "string":
+        return maybeAddList("string", pt);
       case "struct":
         throw new Error("Structs are not supported yet");
       default:
