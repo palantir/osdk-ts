@@ -265,6 +265,8 @@ async function getSortedChangedPackagesInfo(
     }),
   );
 
+  await exec("pnpm", ["mrl", "check", "--fix"], { cwd });
+
   return changedPackagesInfo
     .filter((x) => x)
     .sort(sortChangelogEntries);
