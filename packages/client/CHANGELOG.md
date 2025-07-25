@@ -1,5 +1,54 @@
 # @osdk/client
 
+## 2.3.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 43c5547: Add 'getMediaReference' method to Media
+- bc0e186: Add new types mapping for internal creation workflow.
+- 991dbd4: Async function metadata
+- 266b756: Add consistency for async iter calls.
+- 2a23cca: ObservableClient now adds to the fetch-user-agent
+- 9839eab: Bumps conjure-lite
+- 3736624: Ensure count operations return numbers
+- 8d69555: Add hydrateObjectSetFromObjectRids util.
+- f82cff2: Remove Calculated RDPs and Media
+- 5a15cfd: Added fixed dependency to API for beta package.
+- cd911a6: Properly handles lat,long strings in action arguments
+- 2c800e5: Fix bug where we sent over longitude/latitude for geohash properties, when the backend actually expects latitude/longitude.
+- cd911a6: ObservableClient can now do optimistic writes for deletes
+- f8db93d: improve media upload (beta)
+- 3b5ccaa: Fix orderBy argument on object load methods
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [43c5547]
+- Updated dependencies [43554b4]
+- Updated dependencies [bc0e186]
+- Updated dependencies [cc2ce5f]
+- Updated dependencies [9839eab]
+- Updated dependencies [e8c4aed]
+- Updated dependencies [7d232fb]
+- Updated dependencies [474f4ca]
+- Updated dependencies [f82cff2]
+- Updated dependencies [a6c01ff]
+- Updated dependencies [0cc9cad]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [12d599f]
+- Updated dependencies [f8db93d]
+- Updated dependencies [3408ea9]
+- Updated dependencies [3b5ccaa]
+  - @osdk/api@2.3.0
+  - @osdk/client.unstable@2.3.0
+  - @osdk/generator-converters@2.3.0
+  - @osdk/shared.client.impl@1.3.0
+  - @osdk/shared.net.errors@2.3.0
+  - @osdk/shared.net.fetch@1.3.0
+
 ## 2.3.0-rc.11
 
 ### Patch Changes

@@ -1,5 +1,48 @@
 # @osdk/maker
 
+## 0.11.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- fea541b: Support old importing workflow
+- 77674dd: Remove alias
+- 508ecd6: Improve defineLink syntax
+- c305ea8: link id sanitation
+- 1847bcb: Support arrays in OT props
+- 79cb6eb: Fix imported interface properties in IR
+- 402aa94: Use namespaced api names for interface properties
+- 4d13e4d: Restricted view datasources in OAC
+- ab2ef22: Fix dependency injection
+- e34ee12: Add output dir CLI flag
+- b8d0526: OAC edit only properties for dataset backed objects
+- 3ae0cfd: Remove import/dep from codegen
+- 0d5feaa: Docs for maker
+- e20c5d6: Validate edit only properties are not primary keys
+- 37cdc7e: Propagate interface extension to static objects
+- 27cdb1d: Adding concrete object value type support
+- 7d232fb: Added searchable field to interface definitions
+- 1608ba5: Make modify action params optional
+- 474f4ca: Group permissions for OAC actions
+- 60b0029: Check extended interfaces when validating object property mapping
+- 3c840d9: Support array type SPTs in legacy OAC importing workflow
+- 0abeec3: Make codegen prettier
+- 982d3ce: Start tracking and injecting OAC dependencies
+- dc7d201: Fix geopoint bug
+- 99b90af: Fix dependency injection to use OAC version and not maker version
+- c177bf0: Update property default typeClasses to match SPT default typeClasses
+- f8db93d: improve media upload (beta)
+- Updated dependencies [322c5bc]
+- Updated dependencies [43c5547]
+- Updated dependencies [bc0e186]
+- Updated dependencies [e8c4aed]
+- Updated dependencies [f82cff2]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [12d599f]
+- Updated dependencies [f8db93d]
+- Updated dependencies [3b5ccaa]
+  - @osdk/api@2.3.0
+
 ## 0.11.0-rc.15
 
 ### Patch Changes

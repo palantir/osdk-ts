@@ -1,5 +1,21 @@
 # @osdk/widget.client
 
+## 3.0.0
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- 7901ae0: Remove unstable suffix from widget packages
+- 37b9066: createFoundryWidgetClient tries to use `window.__PALANTIR_WIDGET_API__`
+- d4803e5: Use window.parent instead of window.top for messaging
+- db62626: Remove unstable fetch proxy from widgets
+- f8db93d: improve media upload (beta)
+- Updated dependencies [7901ae0]
+- Updated dependencies [7901ae0]
+- Updated dependencies [db62626]
+- Updated dependencies [f8db93d]
+  - @osdk/widget.api@3.0.0
+
 ## 3.0.0-beta.6
 
 ### Patch Changes

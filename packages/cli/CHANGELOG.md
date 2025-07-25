@@ -1,5 +1,15 @@
 # @osdk/cli
 
+## 0.27.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 52ed4a8: Register "widgetset" CLI command out of unstable
+- 7901ae0: Remove unstable suffix from widget packages
+- cc844f6: Fix URI components encoding
+- f8db93d: improve media upload (beta)
+
 ## 0.27.0-rc.11
 
 ## 0.27.0-beta.10

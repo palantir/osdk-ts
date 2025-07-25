@@ -1,5 +1,12 @@
 # @osdk/create-app.template.react
 
+## 2.3.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- f8db93d: improve media upload (beta)
+
 ## 2.3.0-rc.11
 
 ## 2.3.0-beta.10
