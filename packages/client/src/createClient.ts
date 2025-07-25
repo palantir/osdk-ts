@@ -100,7 +100,8 @@ class QueryInvoker<Q extends QueryDefinition<any>>
 
 /** @internal */
 export function createClientInternal(
-  objectSetFactory: ObjectSetFactory<any, any>, // first so i can bind
+  objectSetFactory: ObjectSetFactory<any, any>,
+  transactionRid: string | undefined, // first so i can bind
   baseUrl: string,
   ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
@@ -286,12 +287,24 @@ export const createClient: (
   tokenProvider: () => Promise<string>,
   options?: {
     logger?: Logger;
+    transactionRid?: string;
   } | undefined,
   fetchFn?: typeof fetch | undefined,
 ) => Client = createClientInternal.bind(
   undefined,
   createObjectSet,
+  undefined,
 );
+
+export const createClientWithTransaction: (
+  transactionRid: string,
+  ...args: Parameters<typeof createClient>
+) => Client = (transactionRid, ...args) =>
+  createClientInternal(
+    createObjectSet,
+    transactionRid,
+    ...args,
+  ) as Client;
 
 function createWithRid(
   rids: string[],
