@@ -12,6 +12,7 @@ import type { ObjectMetadata } from '@osdk/client';
 import type { ObjectTypeDefinition } from '@osdk/client';
 import type { Osdk } from '@osdk/client';
 import type { OsdkObjectCreatePropertyType } from '@osdk/client';
+import type { OsdkObjectPropertyType } from '@osdk/client';
 import type { PropertyKeys } from '@osdk/client';
 import { Range as Range_2 } from '@osdk/client';
 import { ThreeDimensionalAggregation } from '@osdk/client';
@@ -40,11 +41,20 @@ export interface EditBatch<X extends AnyEdit = never> {
     // Warning: (ae-forgotten-export) The symbol "CreatableObjectTypeProperties" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    create: <OTD extends CreatableObjectTypes<X>>(obj: OTD, properties: CreatableObjectTypeProperties<X, OTD>) => void;
-    	// Warning: (ae-forgotten-export) The symbol "DeletableObjectLocators" needs to be exported by the entry point index.d.ts
+    create<OTD extends CreatableObjectTypes<X>>(obj: OTD, properties: CreatableObjectTypeProperties<X, OTD>): void;
+    	// Warning: (ae-forgotten-export) The symbol "CreatableInterfaceTypes" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "CreatableObjectTypesForInterface" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "CreatableInterfaceTypeProperties" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    delete: <OL extends DeletableObjectLocators<X>>(obj: OL) => void;
+    create<
+    		ID extends CreatableInterfaceTypes<X>,
+    		OTD extends CreatableObjectTypesForInterface<X>
+    	>(interfaceType: ID, objectType: OTD, properties: CreatableInterfaceTypeProperties<X, ID>): void;
+    	// Warning: (ae-forgotten-export) The symbol "DeletableObjectOrInterfaceLocators" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    delete: <OL extends DeletableObjectOrInterfaceLocators<X>>(obj: OL) => void;
     	// (undocumented)
     getEdits: () => X[];
     	// Warning: (ae-forgotten-export) The symbol "AddLinkSources" needs to be exported by the entry point index.d.ts
@@ -65,15 +75,21 @@ export interface EditBatch<X extends AnyEdit = never> {
     		SOL extends RemoveLinkSources<X>,
     		A extends RemoveLinkApiNames<X, SOL>
     	>(source: SOL, apiName: A, target: RemoveLinkTargets<X, SOL, A>) => void;
-    	// Warning: (ae-forgotten-export) The symbol "UpdatableObjectLocators" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "UpdatableObjectLocatorProperties" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "UpdatableObjectOrInterfaceLocators" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "UpdatableObjectOrInterfaceLocatorProperties" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    update: <OL extends UpdatableObjectLocators<X>>(obj: OL, properties: UpdatableObjectLocatorProperties<X, OL>) => void;
+    update: <OL extends UpdatableObjectOrInterfaceLocators<X>>(obj: OL, properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>) => void;
 }
 
 // @public (undocumented)
 export namespace Edits {
+    	// Warning: (ae-forgotten-export) The symbol "CreateInterface" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "UpdateInterface" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "DeleteInterface" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type Interface<S extends InterfaceDefinition> = CreateInterface<S> | UpdateInterface<S> | DeleteInterface<S>;
     	// Warning: (ae-forgotten-export) The symbol "AddLink" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "RemoveLink" needs to be exported by the entry point index.d.ts
     //
