@@ -1,5 +1,13 @@
 # @osdk/create-app.template.tutorial-todo-app.beta
 
+## 2.3.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 595a81c: Remove dangling comma in root render function
+- f8db93d: improve media upload (beta)
+
 ## 2.3.0-rc.11
 
 ## 2.3.0-beta.10

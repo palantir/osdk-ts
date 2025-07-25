@@ -1,5 +1,18 @@
 # @osdk/example-generator
 
+## 0.11.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 7901ae0: Remove unstable suffix from widget packages
+- f8db93d: improve media upload (beta)
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [f8db93d]
+  - @osdk/create-app@2.3.0
+  - @osdk/create-widget@3.0.0
+
 ## 0.11.0-rc.11
 
 ### Patch Changes

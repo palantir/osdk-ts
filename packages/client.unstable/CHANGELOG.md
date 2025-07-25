@@ -1,5 +1,20 @@
 # @osdk/client.unstable
 
+## 2.3.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 43554b4: OMS Api bump
+- cc2ce5f: add module-group api
+- 9839eab: Reverts #1617
+- 7d232fb: Added searchable field to interface definitions
+- 474f4ca: Group permissions for OAC actions
+- a6c01ff: Add object-sentinel API
+- 0cc9cad: oms api bump
+- f8db93d: improve media upload (beta)
+- 3408ea9: Update object set service API
+
 ## 2.3.0-rc.11
 
 ### Patch Changes

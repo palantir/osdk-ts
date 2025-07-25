@@ -1,5 +1,12 @@
 # @osdk/create-widget
 
+## 3.0.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- f8db93d: improve media upload (beta)
+
 ## 3.0.0-beta.6
 
 ## 3.0.0-beta.5

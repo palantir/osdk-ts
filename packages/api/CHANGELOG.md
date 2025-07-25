@@ -1,5 +1,19 @@
 # @osdk/api
 
+## 2.3.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 43c5547: Add 'getMediaReference' method to Media
+- bc0e186: Add new types mapping for internal creation workflow.
+- e8c4aed: Fixes breaks introduced between 2.1 and 2.2
+- f82cff2: Remove Calculated RDPs and Media
+- ef46ed6: Add protection for dropping unsupported enums instead of throwing"
+- 12d599f: Export ObjectIdentifiers to ensure Osdk.Instance can be used with typeof
+- f8db93d: improve media upload (beta)
+- 3b5ccaa: Fix orderBy argument on object load methods
+
 ## 2.3.0-rc.11
 
 ### Patch Changes

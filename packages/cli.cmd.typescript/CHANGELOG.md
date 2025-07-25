@@ -1,5 +1,21 @@
 # @osdk/cli.cmd.typescript
 
+## 0.27.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- f8db93d: improve media upload (beta)
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [fe00f84]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [f8db93d]
+  - @osdk/cli.common@0.27.0
+  - @osdk/generator@2.3.0
+  - @osdk/shared.client.impl@1.3.0
+
 ## 0.27.0-rc.11
 
 ### Patch Changes

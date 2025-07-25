@@ -1,5 +1,12 @@
 # @osdk/tool.release
 
+## 0.8.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- f8db93d: improve media upload (beta)
+
 ## 0.8.0-beta.2
 
 ### Minor Changes

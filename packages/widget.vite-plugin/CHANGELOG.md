@@ -1,5 +1,22 @@
 # @osdk/widget.vite-plugin
 
+## 3.0.0
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- b8936de: Use root id rather than body for widgets react-dom
+- 7901ae0: Remove unstable suffix from widget packages
+- f8db93d: improve media upload (beta)
+- 1bcfbbc: Bump fs-extra from 11.2.0 to 11.3.0
+- Updated dependencies [322c5bc]
+- Updated dependencies [7901ae0]
+- Updated dependencies [7901ae0]
+- Updated dependencies [db62626]
+- Updated dependencies [f8db93d]
+  - @osdk/foundry-config-json@1.2.0
+  - @osdk/widget.api@3.0.0
+
 ## 3.0.0-beta.6
 
 ### Minor Changes
