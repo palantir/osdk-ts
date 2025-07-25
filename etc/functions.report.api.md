@@ -7,6 +7,7 @@
 import { Attachment } from '@osdk/client';
 import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/client';
+import type { InterfaceDefinition } from '@osdk/client';
 import type { ObjectMetadata } from '@osdk/client';
 import type { ObjectTypeDefinition } from '@osdk/client';
 import type { Osdk } from '@osdk/client';
@@ -90,6 +91,16 @@ export namespace Edits {
 }
 
 // @public (undocumented)
+export interface EmailNotification {
+    	// (undocumented)
+    body: string;
+    	// (undocumented)
+    links: NotificationLink[];
+    	// (undocumented)
+    subject: string;
+}
+
+// @public (undocumented)
 export type Float<T extends number = number> = T & {
     	__floatBrand?: void
 };
@@ -104,7 +115,53 @@ export type Long<T extends string = string> = T & {
     	__longBrand?: void
 };
 
+// @public (undocumented)
+interface Notification_2 {
+    	// (undocumented)
+    emailNotification: EmailNotification;
+    	// (undocumented)
+    platformNotification: PlatformNotification;
+}
+export { Notification_2 as Notification }
+
+// @public (undocumented)
+export interface NotificationLink {
+    	// (undocumented)
+    label: string;
+    	// (undocumented)
+    linkTarget: NotificationLinkTarget;
+}
+
+// @public (undocumented)
+export type NotificationLinkTarget = RidLinkTarget | ObjectLinkTarget | UrlLinkTarget;
+
+// @public (undocumented)
+export interface ObjectLinkTarget<T extends ObjectTypeDefinition | InterfaceDefinition = ObjectTypeDefinition | InterfaceDefinition> {
+    	// (undocumented)
+    object: Osdk.Instance<T>;
+    	// (undocumented)
+    type: "object";
+}
+
+// @public (undocumented)
+export interface PlatformNotification {
+    	// (undocumented)
+    content: string;
+    	// (undocumented)
+    heading: string;
+    	// (undocumented)
+    links: NotificationLink[];
+}
+
 export { Range_2 as Range }
+
+// @public (undocumented)
+export interface RidLinkTarget {
+    	// (undocumented)
+    rid: string;
+    	// (undocumented)
+    type: "rid";
+}
 
 export { ThreeDimensionalAggregation }
 
@@ -114,6 +171,14 @@ export type TimestampISOString<T extends string = string> = T & {
 };
 
 export { TwoDimensionalAggregation }
+
+// @public (undocumented)
+export interface UrlLinkTarget {
+    	// (undocumented)
+    type: "url";
+    	// (undocumented)
+    url: string;
+}
 
 // (No @packageDocumentation comment for this package)
 
