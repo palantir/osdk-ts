@@ -1,5 +1,12 @@
 # @osdk/cli.common
 
+## 0.27.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- f8db93d: improve media upload (beta)
+
 ## 0.27.0-rc.11
 
 ## 0.27.0-beta.10

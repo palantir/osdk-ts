@@ -1,5 +1,25 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.3.0
+
+### Patch Changes
+
+- 43554b4: OMS Api bump
+- 9839eab: Introduces code to convert from ontology ir to ontology.json
+- ad18c80: Fixes link directions for oneToMany links
+- f8db93d: improve media upload (beta)
+- Updated dependencies [322c5bc]
+- Updated dependencies [43554b4]
+- Updated dependencies [cc2ce5f]
+- Updated dependencies [9839eab]
+- Updated dependencies [7d232fb]
+- Updated dependencies [474f4ca]
+- Updated dependencies [a6c01ff]
+- Updated dependencies [0cc9cad]
+- Updated dependencies [f8db93d]
+- Updated dependencies [3408ea9]
+  - @osdk/client.unstable@2.3.0
+
 ## 2.3.0-rc.11
 
 ### Patch Changes

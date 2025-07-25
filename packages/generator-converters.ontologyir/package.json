@@ -1,6 +1,6 @@
 {
   "name": "@osdk/generator-converters.ontologyir",
-  "version": "2.3.0-rc.11",
+  "version": "2.3.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",

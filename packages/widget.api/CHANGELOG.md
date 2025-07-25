@@ -1,5 +1,14 @@
 # @osdk/widget.api
 
+## 3.0.0
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- 7901ae0: Remove unstable suffix from widget packages
+- db62626: Remove unstable fetch proxy from widgets
+- f8db93d: improve media upload (beta)
+
 ## 3.0.0-beta.6
 
 ## 3.0.0-beta.5

@@ -1,5 +1,11 @@
 # @osdk/shared.net.errors
 
+## 2.3.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+
 ## 2.2.0
 
 ### Patch Changes
