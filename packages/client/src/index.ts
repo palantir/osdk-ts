@@ -26,6 +26,7 @@ export type {
   Attachment,
   CompileTimeMetadata,
   InterfaceDefinition,
+  InterfaceMetadata,
   Logger,
   ObjectMetadata,
   ObjectSet,

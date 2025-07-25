@@ -180,6 +180,8 @@ export async function convertWireToOsdkObjects2(
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
 
+  const isInterfaceScoped =
+    Object.keys(interfaceToObjectTypeMappings).length > 0;
   const ret = [];
   for (const rawObj of objects) {
     const objectDef = await client.ontologyProvider.getObjectDefinition(
@@ -187,8 +189,11 @@ export async function convertWireToOsdkObjects2(
     );
     invariant(objectDef, `Missing definition for '${rawObj.$apiName}'`);
 
-    const interfaceToObjMapping = interfaceApiName
-      ? interfaceToObjectTypeMappings[interfaceApiName as InterfaceTypeApiName][
+    const interfaceToObjMapping = (interfaceApiName
+        && isInterfaceScoped)
+      ? interfaceToObjectTypeMappings[
+        interfaceApiName as InterfaceTypeApiName
+      ][
         rawObj.$apiName
       ]
       : undefined;
@@ -234,7 +239,9 @@ export async function convertWireToOsdkObjects2(
       rawObj,
       derivedPropertyTypeByName,
     );
-    if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
+    if (
+      interfaceApiName && isInterfaceScoped
+    ) osdkObject = osdkObject.$as(interfaceApiName);
 
     ret.push(osdkObject);
   }

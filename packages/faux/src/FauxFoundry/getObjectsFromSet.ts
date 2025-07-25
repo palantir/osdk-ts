@@ -107,6 +107,18 @@ export function getObjectsFromSet(
       });
     }
 
+    case "interfaceLinkSearchAround": {
+      const base = getObjectsFromSet(ds, objectSet.objectSet, methodInput);
+      return base.flatMap(o => {
+        const ret = ds.getLinksOrThrow(
+          o.__apiName,
+          o.__primaryKey,
+          objectSet.interfaceLink,
+        );
+        return ret;
+      });
+    }
+
     case "static": {
       return objectSet.objects.map(x => ds.getObjectByRid(x)).filter(x =>
         x != null

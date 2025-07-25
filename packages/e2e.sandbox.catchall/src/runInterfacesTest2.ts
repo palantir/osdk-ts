@@ -14,62 +14,79 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
-import { Athlete, NbaPlayer } from "@osdk/e2e.generated.catchall";
-import invariant from "tiny-invariant";
-import type { TypeOf } from "ts-expect";
-import { expectType } from "ts-expect";
+import {
+  CollateralConcernList,
+  EsongInterfaceA,
+} from "@osdk/e2e.generated.catchall";
 import { dsClient } from "./client.js";
 
 export async function runInterfacesTest2(): Promise<void> {
-  const athletes = await dsClient(Athlete).where({
-    name22: { $eq: "Michael Jordan" },
-  }).fetchPage({ $includeAllBaseObjectProperties: true });
+  // console.log("here");
+  // const athletes = await dsClient(Athlete).where({
+  //   name22: { $eq: "Michael Jordan" },
+  // }).fetchPage({ $includeAllBaseObjectProperties: true });
+  // console.log("here2");
 
-  invariant(athletes.data.length > 0);
+  // invariant(athletes.data.length > 0);
 
-  const athlete1 = athletes.data[0];
-  console.log("interface scoped: ", athlete1);
+  // const athlete1 = athletes.data[0];
+  // console.log("interface scoped: ", athlete1);
 
-  const nbaPlayer = athlete1.$as(NbaPlayer);
-  console.log("object scoped should have all properties: ", nbaPlayer);
+  // const nbaPlayer = athlete1.$as(NbaPlayer);
+  // console.log("object scoped should have all properties: ", nbaPlayer);
 
-  expectType<
-    TypeOf<
-      Osdk.Instance<NbaPlayer>,
-      typeof nbaPlayer
-    >
-  >(true);
+  // expectType<
+  //   TypeOf<
+  //     Osdk.Instance<NbaPlayer>,
+  //     typeof nbaPlayer
+  //   >
+  // >(true);
 
-  const athletesSelected = await dsClient(Athlete).where({
-    name22: { $eq: "Michael Jordan" },
-  }).fetchPage({
-    $select: ["athleteId", "jerseyNumber", "name22"],
-    $includeAllBaseObjectProperties: true,
-  });
+  // const athletesSelected = await dsClient(Athlete).where({
+  //   name22: { $eq: "Michael Jordan" },
+  // }).fetchPage({
+  //   $select: ["athleteId", "jerseyNumber", "name22"],
+  //   $includeAllBaseObjectProperties: true,
+  // });
 
-  invariant(athletesSelected.data.length > 0);
-  const athleteSelected1 = athletesSelected.data[0];
-  console.log("again interface scoped: ", athleteSelected1);
+  // invariant(athletesSelected.data.length > 0);
+  // const athleteSelected1 = athletesSelected.data[0];
+  // console.log("again interface scoped: ", athleteSelected1);
 
-  const nbaPlayer1 = athleteSelected1.$as(NbaPlayer);
-  console.log("object scoped should have only selected: ", nbaPlayer1);
+  // const nbaPlayer1 = athleteSelected1.$as(NbaPlayer);
+  // console.log("object scoped should have only selected: ", nbaPlayer1);
 
-  expectType<
-    TypeOf<
-      Osdk.Instance<NbaPlayer, never, "id">,
-      typeof nbaPlayer1
-    >
-  >(true);
+  // expectType<
+  //   TypeOf<
+  //     Osdk.Instance<NbaPlayer, never, "id">,
+  //     typeof nbaPlayer1
+  //   >
+  // >(true);
 
   // You cannot specify both $select and $includeAllBaseObjectProperties
-  const athletesNotAllSelected = await dsClient(Athlete).where({
-    name22: { $eq: "Michael Jordan" },
-  }).fetchPage({
-    $select: ["athleteId", "name22"],
-    // @ts-expect-error
-    $includeAllBaseObjectProperties: true,
-  });
+  // const athletesNotAllSelected = await dsClient(Athlete).where({
+  //   name22: { $eq: "Michael Jordan" },
+  // }).fetchPage({
+  //   $select: ["athleteId", "name22"],
+  //   // @ts-expect-error
+  //   $includeAllBaseObjectProperties: true,
+  // });
+
+  // interface to interface
+  const concernList = await dsClient(CollateralConcernList).pivotTo(
+    "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity",
+  ).fetchPage();
+
+  // this will be empty because no implementations
+  console.log("linked entities", concernList.data);
+
+  // interface to object
+  const pds = await dsClient(EsongInterfaceA).pivotTo("esongPds").fetchPage();
+
+  console.log("linkedPds ticket: ", pds.data);
+
+  const interfaceA = await dsClient(EsongInterfaceA).fetchPage();
+  console.log("interfaceA instances: ", interfaceA);
 }
 
 void runInterfacesTest2();
