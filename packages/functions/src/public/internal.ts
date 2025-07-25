@@ -23,3 +23,5 @@ export type {
   RemoveLink,
   UpdateObject,
 } from "../edits/types.js";
+
+export { createWriteableClient } from "../transactions/createWriteableClient.js";
