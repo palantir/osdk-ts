@@ -111,7 +111,10 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     propertiesOrObjectType: any,
     maybeProperties?: any,
   ): void {
-    if (arguments.length === 3) {
+    if (
+      (objOrInterfaceType as { type: "object" | "interface" }).type
+        === "interface"
+    ) {
       // Interface creation: create(interfaceType, objectType, properties)
       this.edits.push({
         type: "createInterface",
