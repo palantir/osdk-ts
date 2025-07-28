@@ -37,20 +37,12 @@ export type Double<T extends number = number> = T & {
 
 // @public (undocumented)
 export interface EditBatch<X extends AnyEdit = never> {
-    	// Warning: (ae-forgotten-export) The symbol "CreatableObjectTypes" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "CreatableObjectTypeProperties" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "CreatableObjectOrInterfaceTypes" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "CreatableObjectOrInterfaceTypeProperties" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "AdditionalObjectTypeApiName" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    create<OTD extends CreatableObjectTypes<X>>(obj: OTD, properties: CreatableObjectTypeProperties<X, OTD>): void;
-    	// Warning: (ae-forgotten-export) The symbol "CreatableInterfaceTypes" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "CreatableObjectTypesForInterface" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "CreatableInterfaceTypeProperties" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
-    create<
-    		ID extends CreatableInterfaceTypes<X>,
-    		OTD extends CreatableObjectTypesForInterface<X>
-    	>(interfaceType: ID, objectType: OTD, properties: CreatableInterfaceTypeProperties<X, ID>): void;
+    create: <OI extends CreatableObjectOrInterfaceTypes<X>>(objectOrInterfaceType: OI, properties: CreatableObjectOrInterfaceTypeProperties<X, OI>, objectType?: AdditionalObjectTypeApiName<X, OI>) => void;
     	// Warning: (ae-forgotten-export) The symbol "DeletableObjectOrInterfaceLocators" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
