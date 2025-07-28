@@ -23,5 +23,8 @@ export default defineConfig({
     fakeTimers: {
       toFake: ["setTimeout", "clearTimeout", "Date"],
     },
+    env: {
+      FORCE_COLOR: "3",
+    },
   },
 });

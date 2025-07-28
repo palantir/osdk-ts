@@ -22,11 +22,13 @@ import type {
 import deepEqual from "fast-deep-equal";
 import type { Connectable, Observable, Subject } from "rxjs";
 import {
+  asapScheduler,
   combineLatest,
   connectable,
   map,
   of,
   ReplaySubject,
+  scheduled,
   switchMap,
 } from "rxjs";
 import { additionalContext } from "../../../Client.js";
@@ -97,24 +99,27 @@ export class SpecificLinkQuery extends Query<
     return connectable<SpecificLinkPayload>(
       subject.pipe(
         switchMap(listEntry => {
-          // console.log({ listEntry });
-          return combineLatest({
-            resolvedLinks: listEntry?.value?.data == null
-                || listEntry.value.data.length === 0
-              ? of([])
-              : combineLatest(
-                listEntry.value.data.map(cacheKey =>
-                  this.store.getSubject(cacheKey).pipe(
-                    map(objectEntry => objectEntry?.value!),
-                  )
-                ),
+          const resolvedLinks = listEntry?.value?.data == null
+              || listEntry.value.data.length === 0
+            ? of([])
+            : combineLatest(
+              listEntry.value.data.map(cacheKey =>
+                this.store.getSubject(cacheKey).pipe(
+                  map(objectEntry => objectEntry?.value!),
+                )
               ),
-            isOptimistic: of(listEntry.isOptimistic),
-            fetchMore: of(() => Promise.resolve()), // No pagination implemented yet
-            hasMore: of(false), // No pagination implemented yet
-            status: of(listEntry.status),
-            lastUpdated: of(listEntry.lastUpdated),
-          });
+            );
+          return scheduled(
+            combineLatest({
+              resolvedLinks,
+              isOptimistic: of(listEntry.isOptimistic),
+              fetchMore: of(() => Promise.resolve()), // No pagination implemented yet
+              hasMore: of(false), // No pagination implemented yet
+              status: of(listEntry.status),
+              lastUpdated: of(listEntry.lastUpdated),
+            }),
+            asapScheduler,
+          );
         }),
       ),
       {

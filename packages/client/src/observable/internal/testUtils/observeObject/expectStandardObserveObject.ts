@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition, PrimaryKeyType } from "@osdk/api";
 import { expect } from "vitest";
 import type { TypedObjectPayload } from "../../../ObjectPayload.js";
 import type { Store } from "../../Store.js";
@@ -45,7 +45,11 @@ const defer = createDefer();
 export async function expectStandardObserveObject<
   T extends ObjectTypeDefinition,
 >(
-  { cache, type, primaryKey }: { cache: Store; type: T; primaryKey: number },
+  { cache, type, primaryKey }: {
+    cache: Store;
+    type: T;
+    primaryKey: PrimaryKeyType<T>;
+  },
 ): Promise<{
   payload: TypedObjectPayload<T>;
   subFn: MockedSingleSubCallback;
