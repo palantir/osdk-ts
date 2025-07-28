@@ -67,12 +67,10 @@ describe("Timeseries", () => {
         );
     }
 
-    vi.useFakeTimers();
     vi.setSystemTime(new Date("2013-03-13"));
 
     return () => {
       testSetup.apiServer.close();
-      vi.useRealTimers();
     };
   });
 
