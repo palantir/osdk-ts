@@ -1,5 +1,13 @@
 # @osdk/shared.net.fetch
 
+## 1.3.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- Updated dependencies [322c5bc]
+  - @osdk/shared.net.errors@2.3.0
+
 ## 1.2.0
 
 ### Patch Changes

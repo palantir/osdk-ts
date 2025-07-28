@@ -1,5 +1,24 @@
 # @osdk/shared.test
 
+## 0.1.0
+
+### Patch Changes
+
+- e99a614: Split FauxFoundry to its own package
+- f8db93d: improve media upload (beta)
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [43c5547]
+- Updated dependencies [bc0e186]
+- Updated dependencies [e8c4aed]
+- Updated dependencies [f82cff2]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [12d599f]
+- Updated dependencies [f8db93d]
+- Updated dependencies [3b5ccaa]
+  - @osdk/api@2.3.0
+  - @osdk/generator-converters@2.3.0
+
 ## 0.1.0-rc.7
 
 ### Patch Changes

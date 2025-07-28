@@ -1,5 +1,40 @@
 # @osdk/foundry-sdk-generator
 
+## 2.3.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 95e8443: Add package rid as optional generator argument.
+- f8db93d: improve media upload (beta)
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [43c5547]
+- Updated dependencies [bc0e186]
+- Updated dependencies [fe00f84]
+- Updated dependencies [991dbd4]
+- Updated dependencies [266b756]
+- Updated dependencies [e8c4aed]
+- Updated dependencies [2a23cca]
+- Updated dependencies [9839eab]
+- Updated dependencies [3736624]
+- Updated dependencies [8d69555]
+- Updated dependencies [f82cff2]
+- Updated dependencies [5a15cfd]
+- Updated dependencies [cd911a6]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [2c800e5]
+- Updated dependencies [cd911a6]
+- Updated dependencies [12d599f]
+- Updated dependencies [f8db93d]
+- Updated dependencies [3b5ccaa]
+  - @osdk/api@2.3.0
+  - @osdk/client@2.3.0
+  - @osdk/generator@2.3.0
+  - @osdk/shared.client.impl@1.3.0
+
 ## 2.3.0-rc.11
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.0.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- b8936de: Use root id rather than body for widgets react-dom
+- 7901ae0: Remove unstable suffix from widget packages
+- ed598cb: Use latest rather than beta tags for widget template README commands referencing @osdk/cli
+- ba2171a: Fix create-widget templates workspace dependency version
+- f8db93d: improve media upload (beta)
+
 ## 3.0.0-beta.6
 
 ### Minor Changes
