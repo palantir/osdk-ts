@@ -14,81 +14,84 @@
  * limitations under the License.
  */
 
-import { OsdkTestObject } from "@osdk/e2e.generated.catchall";
+import {
+  BoundariesUsState,
+  OsdkTestObject,
+} from "@osdk/e2e.generated.catchall";
 import { client } from "./client.js";
 
 export async function runAggregationsTest(): Promise<void> {
-  // const testStringClause = await client(BoundariesUsState)
-  //   .where({
-  //     usState: {
-  //       $startsWith: "N",
-  //     },
-  //   }).fetchPage();
+  const testStringClause = await client(BoundariesUsState)
+    .where({
+      usState: {
+        $startsWith: "N",
+      },
+    }).fetchPage();
 
-  // console.log(testStringClause.data.map(data => data.usState));
+  console.log(testStringClause.data.map(data => data.usState));
 
-  // const testAggregateCountNoGroup = await client(BoundariesUsState)
-  //   .aggregate({
-  //     $select: {
-  //       $count: "unordered",
-  //       "latitude:max": "unordered",
-  //       "latitude:min": "unordered",
-  //       "latitude:avg": "unordered",
-  //     },
-  //   });
+  const testAggregateCountNoGroup = await client(BoundariesUsState)
+    .aggregate({
+      $select: {
+        $count: "unordered",
+        "latitude:max": "unordered",
+        "latitude:min": "unordered",
+        "latitude:avg": "unordered",
+      },
+    });
 
-  // // Should be 51 because it includes DC
-  // console.log(
-  //   testAggregateCountNoGroup.$count,
-  //   testAggregateCountNoGroup.latitude.avg,
-  //   testAggregateCountNoGroup.latitude.max,
-  //   testAggregateCountNoGroup.latitude.min,
-  // );
-  // const testAggregateCountWithGroups = await client(BoundariesUsState)
-  //   .aggregate({
-  //     $select: {
-  //       $count: "unordered",
-  //       "latitude:max": "unordered",
-  //       "latitude:min": "unordered",
-  //       "latitude:avg": "unordered",
-  //     },
-  //     $groupBy: {
-  //       usState: "exact",
-  //       longitude: {
-  //         $fixedWidth: 10,
-  //       },
-  //     },
-  //   });
+  // Should be 51 because it includes DC
+  console.log(
+    testAggregateCountNoGroup.$count,
+    testAggregateCountNoGroup.latitude.avg,
+    testAggregateCountNoGroup.latitude.max,
+    testAggregateCountNoGroup.latitude.min,
+  );
+  const testAggregateCountWithGroups = await client(BoundariesUsState)
+    .aggregate({
+      $select: {
+        $count: "unordered",
+        "latitude:max": "unordered",
+        "latitude:min": "unordered",
+        "latitude:avg": "unordered",
+      },
+      $groupBy: {
+        usState: "exact",
+        longitude: {
+          $fixedWidth: 10,
+        },
+      },
+    });
 
-  // const testAggregateCountWithFixedGroups = await client(BoundariesUsState)
-  //   .aggregate({
-  //     $select: {
-  //       $count: "unordered",
-  //       "latitude:max": "unordered",
-  //       "latitude:min": "unordered",
-  //       "latitude:avg": "unordered",
-  //     },
-  //     $groupBy: {
-  //       longitude: {
-  //         $exactWithLimit: 40,
-  //       },
-  //     },
-  //   });
+  const testAggregateCountWithFixedGroups = await client(BoundariesUsState)
+    .aggregate({
+      $select: {
+        $count: "unordered",
+        "latitude:max": "unordered",
+        "latitude:min": "unordered",
+        "latitude:avg": "unordered",
+      },
+      $groupBy: {
+        longitude: {
+          $exactWithLimit: 40,
+        },
+      },
+    });
 
-  // const testAggregateCountWithRangeGroups = await client(BoundariesUsState)
-  //   .aggregate({
-  //     $select: {
-  //       $count: "unordered",
-  //     },
-  //     $groupBy: {
-  //       latitude: {
-  //         $ranges: [[34, 39], [
-  //           39,
-  //           42,
-  //         ], [43, 45]],
-  //       },
-  //     },
-  //   });
+  const testAggregateCountWithRangeGroups = await client(BoundariesUsState)
+    .aggregate({
+      $select: {
+        $count: "unordered",
+      },
+      $groupBy: {
+        latitude: {
+          $ranges: [[34, 39], [
+            39,
+            42,
+          ], [43, 45]],
+        },
+      },
+    });
 
   const testExactMatchWithDefault = await client(OsdkTestObject).aggregate({
     $select: {
@@ -96,7 +99,7 @@ export async function runAggregationsTest(): Promise<void> {
     },
     $groupBy: {
       "description": {
-        "$exact": { $limit: 300, $defaultValue: "default_Value" },
+        "$exact": { $limit: 300, $defaultValue: "default_value" },
       },
     },
   });
@@ -110,25 +113,25 @@ export async function runAggregationsTest(): Promise<void> {
     },
   });
 
-  // console.log(
-  //   testAggregateCountWithGroups[0].$group.usState,
-  //   testAggregateCountWithGroups[0].$count,
-  //   testAggregateCountWithGroups[0].latitude.avg,
-  //   testAggregateCountWithGroups[0].latitude.max,
-  //   testAggregateCountWithGroups[0].latitude.min,
-  // );
+  console.log(
+    testAggregateCountWithGroups[0].$group.usState,
+    testAggregateCountWithGroups[0].$count,
+    testAggregateCountWithGroups[0].latitude.avg,
+    testAggregateCountWithGroups[0].latitude.max,
+    testAggregateCountWithGroups[0].latitude.min,
+  );
 
-  // console.log(testAggregateCountWithGroups[0].$group.longitude);
-  // console.log(
-  //   "Limit worked:",
-  //   testAggregateCountWithFixedGroups.length === 40,
-  // );
+  console.log(testAggregateCountWithGroups[0].$group.longitude);
+  console.log(
+    "Limit worked:",
+    testAggregateCountWithFixedGroups.length === 40,
+  );
 
-  // for (const group of testAggregateCountWithRangeGroups) {
-  //   console.log(
-  //     `start:${group.$group.latitude.startValue},end:${group.$group.latitude.endValue}:${group.$count}`,
-  //   );
-  // }
+  for (const group of testAggregateCountWithRangeGroups) {
+    console.log(
+      `start:${group.$group.latitude.startValue},end:${group.$group.latitude.endValue}:${group.$count}`,
+    );
+  }
 
   console.log(
     "Exact match with default value bucket: ",
