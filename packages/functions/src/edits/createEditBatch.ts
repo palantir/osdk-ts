@@ -16,7 +16,6 @@
 
 import type { Client } from "@osdk/client";
 import type {
-  AdditionalObjectTypeApiName,
   AddLinkApiNames,
   AddLinkSources,
   AddLinkTargets,
@@ -95,20 +94,12 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
   public create<OI extends CreatableObjectOrInterfaceTypes<X>>(
     objectOrInterfaceType: OI,
     properties: CreatableObjectOrInterfaceTypeProperties<X, OI>,
-    objectType?: AdditionalObjectTypeApiName<X, OI>,
   ): void {
     if (objectOrInterfaceType.type === "interface") {
-      if (objectType == null) {
-        throw new Error(
-          "An object type API name must be provided when creating an object through an interface.",
-        );
-      }
-
       this.edits.push({
         type: "createInterface",
         int: objectOrInterfaceType,
         properties,
-        objectType,
       } as unknown as X);
       return;
     }

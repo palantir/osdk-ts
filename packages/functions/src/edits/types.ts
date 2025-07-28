@@ -132,9 +132,10 @@ export interface CreateInterface<S extends InterfaceDefinition> {
       [P in PropertyKeys<S>]: OsdkObjectCreatePropertyType<
         CompileTimeMetadata<S>["properties"][P]
       >;
+    } & {
+      $objectType: string;
     }
   >;
-  objectType: string;
 }
 
 export interface UpdateInterface<S extends InterfaceDefinition> {

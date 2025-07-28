@@ -39,10 +39,9 @@ export type Double<T extends number = number> = T & {
 export interface EditBatch<X extends AnyEdit = never> {
     	// Warning: (ae-forgotten-export) The symbol "CreatableObjectOrInterfaceTypes" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "CreatableObjectOrInterfaceTypeProperties" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "AdditionalObjectTypeApiName" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    create: <OI extends CreatableObjectOrInterfaceTypes<X>>(objectOrInterfaceType: OI, properties: CreatableObjectOrInterfaceTypeProperties<X, OI>, objectType?: AdditionalObjectTypeApiName<X, OI>) => void;
+    create: <OI extends CreatableObjectOrInterfaceTypes<X>>(objectOrInterfaceType: OI, properties: CreatableObjectOrInterfaceTypeProperties<X, OI>) => void;
     	// Warning: (ae-forgotten-export) The symbol "DeletableObjectOrInterfaceLocators" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)

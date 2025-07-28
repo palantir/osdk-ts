@@ -100,12 +100,6 @@ export type CreatableObjectOrInterfaceTypeProperties<
     ? ID extends OI ? X["properties"] : never
   : never;
 
-export type AdditionalObjectTypeApiName<
-  X extends AnyEdit,
-  OI extends ObjectTypeDefinition | InterfaceDefinition,
-> = X extends CreateInterface<infer ID> ? ID extends OI ? string : never
-  : never;
-
 // DeleteObject helper types
 export type DeletableObjectOrInterfaceLocators<X extends AnyEdit> = X extends
   DeleteObject<infer OTD> ? ObjectLocator<OTD>
@@ -150,7 +144,6 @@ export interface EditBatch<
   create: <OI extends CreatableObjectOrInterfaceTypes<X>>(
     objectOrInterfaceType: OI,
     properties: CreatableObjectOrInterfaceTypeProperties<X, OI>,
-    objectType?: AdditionalObjectTypeApiName<X, OI>,
   ) => void;
 
   delete: <OL extends DeletableObjectOrInterfaceLocators<X>>(obj: OL) => void;
