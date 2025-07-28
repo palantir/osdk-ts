@@ -150,13 +150,17 @@ export type AggregateOpts<Q extends ObjectOrInterfaceDefinition> = {
     	$groupBy?: GroupByClause<Q>
 };
 
+// Warning: (ae-forgotten-export) The symbol "ContainsExactMatchWithNull" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "AggregateOptsThatErrors" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
 	Q extends ObjectOrInterfaceDefinition,
 	AO extends AggregateOpts<Q>
-> = SingleKeyObject<AO["$groupBy"]> extends never ? (AO["$select"] extends UnorderedAggregationClause<Q> ? AggregateOptsThatErrors<Q, AO> : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO> : {
+> = ContainsExactMatchWithNull<AO["$groupBy"]> extends true ? {
+    	$groupBy: AO["$groupBy"]
+    	$select: UnorderedAggregationClause<Q>
+} : SingleKeyObject<AO["$groupBy"]> extends never ? (AO["$select"] extends UnorderedAggregationClause<Q> ? AggregateOptsThatErrors<Q, AO> : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO> : {
     	$groupBy: AO["$groupBy"]
     	$select: UnorderedAggregationClause<Q>
 }) : AggregateOptsThatErrors<Q, AO>;
@@ -175,7 +179,7 @@ export type AggregationResultsWithGroups<
             	} ? {
             		startValue: T
             		endValue: T
-            	} : OsdkObjectPropertyType<CompileTimeMetadata<Q>["properties"][P], true> }
+            	} : MaybeNullable_2<G[P], OsdkObjectPropertyType<CompileTimeMetadata<Q>["properties"][P], true>> }
 } & AggregationResultsWithoutGroups<Q, A>)[];
 
 // Warning: (ae-forgotten-export) The symbol "ExtractPropName" needs to be exported by the entry point index.d.ts
@@ -1452,6 +1456,7 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 //
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
+// src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
 // src/derivedProperties/DerivedProperty.ts:58:7 - (ae-forgotten-export) The symbol "DerivedPropertyCreator" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
