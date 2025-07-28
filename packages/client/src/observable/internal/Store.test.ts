@@ -19,6 +19,7 @@ import {
   editTodo,
   Employee,
   FooInterface,
+  Office,
   Todo,
 } from "@osdk/client.test.ontology";
 import type { SetupServer } from "@osdk/shared.test";
@@ -175,6 +176,21 @@ function setupSomeEmployees(fauxFoundry: FauxFoundry) {
   });
 
   dataStore.registerLink(emp1, "peeps", johnDoe, "lead");
+
+  // Create offices
+  const office1 = dataStore.registerObject(Office, {
+    officeId: "101",
+    name: "Office 1",
+  });
+
+  const office2 = dataStore.registerObject(Office, {
+    officeId: "102",
+    name: "Office 2",
+  });
+
+  // Link employees to offices (Employee->Office: officeLink, Office->Employee: occupants)
+  dataStore.registerLink(emp1, "officeLink", office1, "occupants");
+  dataStore.registerLink(emp2, "officeLink", office2, "occupants");
 }
 
 describe(Store, () => {
@@ -250,12 +266,15 @@ describe(Store, () => {
       const currentLinks: Osdk.Instance<any>[] = [objectLikeJohnDoe];
       const expectedLinks: Osdk.Instance<any>[] = [];
 
+      testStage("Observing Employee 1's peeps");
+
       // Invalidate the employee cache
       const invalidateEmployeePromise = cache.invalidateObjectType(
         targetType,
         undefined,
       );
 
+      await waitForCall(linkSubFn);
       // Initially go to an invalidated loading state
       expectSingleLinkCallAndClear(linkSubFn, currentLinks, {
         status: "loading",
@@ -267,6 +286,93 @@ describe(Store, () => {
       expectSingleLinkCallAndClear(linkSubFn, expectedLinks, {
         status: "loaded",
       });
+    });
+
+    it("invalidating Employee type only invalidates links, not Office objects", async () => {
+      // Get an Office object that has Employee occupants
+      const { payload: office1Payload, subFn: officeSubFn } =
+        await expectStandardObserveObject(
+          {
+            cache,
+            type: Office,
+            primaryKey: "101",
+          },
+        );
+      const office1 = office1Payload?.object;
+      invariant(office1);
+
+      testStage("Observing Employee 1");
+
+      // Get an Employee object linked to the office
+      const { payload: emp1Payload, subFn: empSubFn } =
+        await expectStandardObserveObject(
+          {
+            cache,
+            type: Employee,
+            primaryKey: 1,
+          },
+        );
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      testStage("Observing Office 101's occupants");
+
+      // Set up observation of occupants link
+      const { linkSubFn: occupantsLinkSubFn } = await expectStandardObserveLink(
+        {
+          store: cache,
+          srcObject: office1,
+          srcLinkName: "occupants",
+          targetType: Employee,
+          expected: [expect.objectContaining({ $primaryKey: 1 })],
+        },
+      );
+
+      console.log("officeSubFn", inspect(officeSubFn.next.mock.calls));
+      console.log("empSubFn", inspect(empSubFn.next.mock.calls));
+      console.log(
+        "occupantsLinkSubFn",
+        inspect(occupantsLinkSubFn.next.mock.calls),
+      );
+
+      // Clear any initial calls
+      officeSubFn.next.mockClear();
+      empSubFn.next.mockClear();
+      occupantsLinkSubFn.next.mockClear();
+
+      testStage("Invalidating Employee object type");
+
+      // Invalidate the Employee object type
+      const invalidateEmployeePromise = cache.invalidateObjectType(
+        Employee,
+        undefined,
+      );
+
+      // The link should be invalidated (loading state)
+      await waitForCall(occupantsLinkSubFn, 1);
+      console.log(occupantsLinkSubFn.next.mock.calls[0]);
+      expectSingleLinkCallAndClear(
+        occupantsLinkSubFn,
+        [expect.objectContaining({ $primaryKey: 1 })],
+        { status: "loading" },
+      );
+
+      // The link should be revalidated (loaded state)
+      await waitForCall(occupantsLinkSubFn, 1);
+      expectSingleLinkCallAndClear(
+        occupantsLinkSubFn,
+        [expect.objectContaining({ $primaryKey: 1 })],
+        { status: "loaded" },
+      );
+
+      // The Employee object should also be invalidated and reloaded
+      await waitForCall(empSubFn, 1);
+
+      // The Office object should NOT have any calls
+      // This is the key verification - no calls should be made to the office subscription
+      expect(officeSubFn.next).not.toHaveBeenCalled();
+
+      await invalidateEmployeePromise;
     });
   });
 
