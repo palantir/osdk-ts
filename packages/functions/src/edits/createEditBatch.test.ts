@@ -91,9 +91,9 @@ describe(createEditBatch, () => {
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Office, { officeId: "3", capacity: 2 });
     editBatch.update({ $apiName: "Office", $primaryKey: "3" }, { capacity: 4 });
-    editBatch.create(FooInterface, Task, {
+    editBatch.create(FooInterface, {
       fooSpt: "created interface",
-    });
+    }, "Task");
     editBatch.update(fooInterfaceInstance, { fooSpt: "fooSpt" });
     editBatch.update({
       $apiName: "FooInterface",
@@ -190,8 +190,8 @@ describe(createEditBatch, () => {
       },
       {
         type: "createInterface",
-        interfaceType: FooInterface,
-        objectType: Task,
+        int: FooInterface,
+        objectType: "Task",
         properties: { fooSpt: "created interface" },
       },
       {
@@ -367,5 +367,10 @@ describe(createEditBatch, () => {
 
     // @ts-expect-error
     editBatch.update({ $apiName: "Task", $primaryKey: 2 }, { capacity: 4 }); // Using Office properties
+  });
+
+  it("prevents specifying an object type API name for non-interface creations", () => {
+    // @ts-expect-error
+    editBatch.create(Task, { id: 22 }, "Task");
   });
 });

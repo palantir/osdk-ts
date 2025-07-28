@@ -124,13 +124,9 @@ export interface UpdateObject<S extends ObjectTypeDefinition> {
   >;
 }
 
-export interface CreateInterface<
-  S extends InterfaceDefinition,
-  OTD extends ObjectTypeDefinition = ObjectTypeDefinition,
-> {
+export interface CreateInterface<S extends InterfaceDefinition> {
   type: "createInterface";
-  interfaceType: S;
-  objectType: OTD;
+  int: S;
   properties: PartialForOptionalProperties<
     {
       [P in PropertyKeys<S>]: OsdkObjectCreatePropertyType<
@@ -138,6 +134,7 @@ export interface CreateInterface<
       >;
     }
   >;
+  objectType: string;
 }
 
 export interface UpdateInterface<S extends InterfaceDefinition> {

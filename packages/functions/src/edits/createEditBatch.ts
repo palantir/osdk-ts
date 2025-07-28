@@ -16,14 +16,12 @@
 
 import type { Client } from "@osdk/client";
 import type {
+  AdditionalObjectTypeApiName,
   AddLinkApiNames,
   AddLinkSources,
   AddLinkTargets,
-  CreatableInterfaceTypeProperties,
-  CreatableInterfaceTypes,
-  CreatableObjectTypeProperties,
-  CreatableObjectTypes,
-  CreatableObjectTypesForInterface,
+  CreatableObjectOrInterfaceTypeProperties,
+  CreatableObjectOrInterfaceTypes,
   DeletableObjectOrInterfaceLocators,
   EditBatch,
   RemoveLinkApiNames,
@@ -94,42 +92,32 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     }
   }
 
-  public create<OTD extends CreatableObjectTypes<X>>(
-    obj: OTD,
-    properties: CreatableObjectTypeProperties<X, OTD>,
-  ): void;
-  public create<
-    ID extends CreatableInterfaceTypes<X>,
-    OTD extends CreatableObjectTypesForInterface<X>,
-  >(
-    interfaceType: ID,
-    objectType: OTD,
-    properties: CreatableInterfaceTypeProperties<X, ID>,
-  ): void;
-  public create<T>(
-    objOrInterfaceType: T,
-    propertiesOrObjectType: any,
-    maybeProperties?: any,
+  public create<OI extends CreatableObjectOrInterfaceTypes<X>>(
+    objectOrInterfaceType: OI,
+    properties: CreatableObjectOrInterfaceTypeProperties<X, OI>,
+    objectType?: AdditionalObjectTypeApiName<X, OI>,
   ): void {
-    if (
-      (objOrInterfaceType as { type: "object" | "interface" }).type
-        === "interface"
-    ) {
-      // Interface creation: create(interfaceType, objectType, properties)
+    if (objectOrInterfaceType.type === "interface") {
+      if (objectType == null) {
+        throw new Error(
+          "An object type API name must be provided when creating an object through an interface.",
+        );
+      }
+
       this.edits.push({
         type: "createInterface",
-        interfaceType: objOrInterfaceType,
-        objectType: propertiesOrObjectType,
-        properties: maybeProperties,
+        int: objectOrInterfaceType,
+        properties,
+        objectType,
       } as unknown as X);
-    } else {
-      // Object creation: create(objectType, properties)
-      this.edits.push({
-        type: "createObject",
-        obj: objOrInterfaceType,
-        properties: propertiesOrObjectType,
-      } as unknown as X);
+      return;
     }
+
+    this.edits.push({
+      type: "createObject",
+      obj: objectOrInterfaceType,
+      properties,
+    } as unknown as X);
   }
 
   public delete<OL extends DeletableObjectOrInterfaceLocators<X>>(

@@ -87,25 +87,23 @@ export type RemoveLinkTargets<
   : never;
 
 // CreateObject helper types
-export type CreatableObjectTypes<X extends AnyEdit> = X extends
-  CreateObject<infer OTD> ? OTD : never;
+export type CreatableObjectOrInterfaceTypes<X extends AnyEdit> = X extends
+  CreateObject<infer OTD> ? OTD
+  : X extends CreateInterface<infer ID> ? ID
+  : never;
 
-export type CreatableObjectTypeProperties<
+export type CreatableObjectOrInterfaceTypeProperties<
   X extends AnyEdit,
-  OTD extends ObjectTypeDefinition,
-> = X extends CreateObject<OTD> ? X["properties"] : never;
+  OI extends ObjectTypeDefinition | InterfaceDefinition,
+> = X extends CreateObject<infer OTD> ? OTD extends OI ? X["properties"] : never
+  : X extends CreateInterface<infer ID>
+    ? ID extends OI ? X["properties"] : never
+  : never;
 
-// CreateInterface helper types
-export type CreatableInterfaceTypes<X extends AnyEdit> = X extends
-  CreateInterface<infer ID, ObjectTypeDefinition> ? ID : never;
-
-export type CreatableObjectTypesForInterface<X extends AnyEdit> = X extends
-  CreateInterface<InterfaceDefinition, infer OTD> ? OTD : never;
-
-export type CreatableInterfaceTypeProperties<
+export type AdditionalObjectTypeApiName<
   X extends AnyEdit,
-  ID extends InterfaceDefinition,
-> = X extends CreateInterface<ID, ObjectTypeDefinition> ? X["properties"]
+  OI extends ObjectTypeDefinition | InterfaceDefinition,
+> = X extends CreateInterface<infer ID> ? ID extends OI ? string : never
   : never;
 
 // DeleteObject helper types
@@ -149,19 +147,11 @@ export interface EditBatch<
     target: RemoveLinkTargets<X, SOL, A>,
   ) => void;
 
-  create<OTD extends CreatableObjectTypes<X>>(
-    obj: OTD,
-    properties: CreatableObjectTypeProperties<X, OTD>,
-  ): void;
-
-  create<
-    ID extends CreatableInterfaceTypes<X>,
-    OTD extends CreatableObjectTypesForInterface<X>,
-  >(
-    interfaceType: ID,
-    objectType: OTD,
-    properties: CreatableInterfaceTypeProperties<X, ID>,
-  ): void;
+  create: <OI extends CreatableObjectOrInterfaceTypes<X>>(
+    objectOrInterfaceType: OI,
+    properties: CreatableObjectOrInterfaceTypeProperties<X, OI>,
+    objectType?: AdditionalObjectTypeApiName<X, OI>,
+  ) => void;
 
   delete: <OL extends DeletableObjectOrInterfaceLocators<X>>(obj: OL) => void;
 
