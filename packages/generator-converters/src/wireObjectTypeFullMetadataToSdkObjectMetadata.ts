@@ -94,7 +94,7 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
       ? [...objectTypeWithLink.implementsInterfaces].sort((a, b) =>
         a.localeCompare(b)
       )
-      : [],
+      : objectTypeWithLink.implementsInterfaces,
     interfaceMap,
     inverseInterfaceMap: Object.fromEntries(
       Object.entries(interfaceMap).map((

@@ -215,4 +215,30 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
     // Check that the links are sorted alphabetically by apiName
     expect(linkKeys).toEqual(["linkA", "linkC", "linkZ"]);
   });
+
+  it("preserves empty arrays", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: [],
+      implementsInterfaces2: {},
+      linkTypes: [],
+      objectType: {
+        apiName: "apiName",
+        description: "description",
+        displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+        },
+        rid: "rid",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    // Check that empty array is preserved
+    expect(result.implements).toEqual([]);
+  });
 });
