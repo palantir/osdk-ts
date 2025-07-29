@@ -301,6 +301,24 @@ describe(Store, () => {
       const office1 = office1Payload?.object;
       invariant(office1);
 
+      expect(await office1.$link.occupants.fetchPage()).toMatchInlineSnapshot(`
+        {
+          "data": [
+            {
+              "$apiName": "Employee",
+              "$objectSpecifier": "Employee:1",
+              "$objectType": "Employee",
+              "$primaryKey": 1,
+              "$title": undefined,
+              "employeeId": 1,
+              "office": "101",
+            },
+          ],
+          "nextPageToken": undefined,
+          "totalCount": undefined,
+        }
+      `);
+
       testStage("Observing Employee 1");
 
       // Get an Employee object linked to the office
