@@ -68,12 +68,16 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
       objectTypeWithLink.objectType
         .properties[objectTypeWithLink.objectType.primaryKey],
     ),
-    links: Object.fromEntries(objectTypeWithLink.linkTypes.map(linkType => {
-      return [linkType.apiName, {
-        multiplicity: linkType.cardinality === "MANY",
-        targetType: linkType.objectTypeApiName,
-      }];
-    })),
+    links: Object.fromEntries(
+      [...objectTypeWithLink.linkTypes].sort((a, b) =>
+        a.apiName.localeCompare(b.apiName)
+      ).map(linkType => {
+        return [linkType.apiName, {
+          multiplicity: linkType.cardinality === "MANY",
+          targetType: linkType.objectTypeApiName,
+        }];
+      }),
+    ),
     properties: Object.fromEntries(
       Object.entries(objectTypeWithLink.objectType.properties).map((
         [key, value],
@@ -84,9 +88,13 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
           !(v2 && objectTypeWithLink.objectType.primaryKey === key),
           log,
         ),
-      ]).filter(([key, value]) => value != null),
+      ]).filter(([_, value]) => value != null),
     ),
-    implements: objectTypeWithLink.implementsInterfaces as string[],
+    implements: objectTypeWithLink.implementsInterfaces
+      ? [...objectTypeWithLink.implementsInterfaces].sort((a, b) =>
+        a.localeCompare(b)
+      )
+      : [],
     interfaceMap,
     inverseInterfaceMap: Object.fromEntries(
       Object.entries(interfaceMap).map((

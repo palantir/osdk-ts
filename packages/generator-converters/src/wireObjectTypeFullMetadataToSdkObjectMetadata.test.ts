@@ -127,4 +127,92 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
     expect(result.visibility).toBeUndefined();
     expect(result.icon).toBeUndefined();
   });
+
+  it("sorts the implements array for stable output", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: ["InterfaceZ", "InterfaceA", "InterfaceC"],
+      implementsInterfaces2: {
+        "InterfaceZ": { properties: {} },
+        "InterfaceA": { properties: {} },
+        "InterfaceC": { properties: {} },
+      },
+      linkTypes: [],
+      objectType: {
+        apiName: "apiName",
+        description: "description",
+        displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+        },
+        rid: "rid",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    // Check that the array is sorted alphabetically
+    expect(result.implements).toEqual([
+      "InterfaceA",
+      "InterfaceC",
+      "InterfaceZ",
+    ]);
+  });
+
+  it("sorts the linkTypes array for stable output", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: [],
+      implementsInterfaces2: {},
+      linkTypes: [
+        {
+          apiName: "linkZ",
+          cardinality: "ONE",
+          objectTypeApiName: "TargetZ",
+          displayName: "LinkZ",
+          status: "ACTIVE",
+          linkTypeRid: "ridZ",
+        },
+        {
+          apiName: "linkA",
+          cardinality: "MANY",
+          objectTypeApiName: "TargetA",
+          displayName: "LinkA",
+          status: "ACTIVE",
+          linkTypeRid: "ridA",
+        },
+        {
+          apiName: "linkC",
+          cardinality: "ONE",
+          objectTypeApiName: "TargetC",
+          displayName: "LinkC",
+          status: "ACTIVE",
+          linkTypeRid: "ridC",
+        },
+      ],
+      objectType: {
+        apiName: "apiName",
+        description: "description",
+        displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+        },
+        rid: "rid",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    // Get the link keys in the order they appear in the result
+    const linkKeys = Object.keys(result.links);
+
+    // Check that the links are sorted alphabetically by apiName
+    expect(linkKeys).toEqual(["linkA", "linkC", "linkZ"]);
+  });
 });
