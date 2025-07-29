@@ -1,5 +1,11 @@
 # @osdk/functions
 
+## 1.2.0-beta.2
+
+### Minor Changes
+
+- 9be5e2b: add notification type
+
 ## 1.1.0-beta.10
 
 ### Patch Changes
