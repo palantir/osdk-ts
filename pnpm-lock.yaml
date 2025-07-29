@@ -2706,9 +2706,6 @@ importers:
       '@osdk/foundry':
         specifier: 2.24.0
         version: 2.24.0
-      '@osdk/functions':
-        specifier: workspace:~
-        version: link:../functions
       chalk:
         specifier: ^5.4.1
         version: 5.4.1
