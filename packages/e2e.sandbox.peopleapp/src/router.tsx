@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import PeopleApp from "./App.js";
-import { EmployeesPage } from "./pages/EmployeesPage.js";
-import { OfficesPage } from "./pages/OfficesPage.js";
+import { EmployeesPage } from "./app/employees/page.js";
+import { OfficesPage } from "./app/offices/page.js";
 
 const router = createBrowserRouter([
   {
