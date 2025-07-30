@@ -75,12 +75,12 @@ export interface EditBatch<X extends AnyEdit = never> {
 
 // @public (undocumented)
 export namespace Edits {
-    	// Warning: (ae-forgotten-export) The symbol "CreateInterface" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "UpdateInterface" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "DeleteInterface" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "CreateObjectForInterface" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "UpdateObjectForInterface" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "DeleteObjectForInterface" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    export type Interface<S extends InterfaceDefinition> = CreateInterface<S> | UpdateInterface<S> | DeleteInterface<S>;
+    export type Interface<S extends InterfaceDefinition> = CreateObjectForInterface<S> | UpdateObjectForInterface<S> | DeleteObjectForInterface<S>;
     	// Warning: (ae-forgotten-export) The symbol "AddLink" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "RemoveLink" needs to be exported by the entry point index.d.ts
     //
