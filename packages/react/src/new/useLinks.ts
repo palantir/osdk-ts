@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { LinkedType, LinkNames } from "@osdk/api";
 import type {
   CompileTimeMetadata,
   InterfaceDefinition,
@@ -85,14 +86,13 @@ export interface UseLinksResult<
  * @returns UseLinksResult with links data and metadata
  */
 export function useLinks<
-  T extends ObjectTypeDefinition | InterfaceDefinition,
-  L extends keyof CompileTimeMetadata<T>["links"] & string,
+  T extends ObjectTypeDefinition,
+  L extends LinkNames<T>,
 >(
   objects: Osdk.Instance<T> | Array<Osdk.Instance<T>>,
   linkName: L,
-  options: UseLinksOptions<CompileTimeMetadata<T>["links"][L]["targetType"]> =
-    {},
-): UseLinksResult<CompileTimeMetadata<T>["links"][L]["targetType"]> {
+  options: UseLinksOptions<LinkedType<T, L>> = {},
+): UseLinksResult<LinkedType<T, L>> {
   const { observableClient } = React.useContext(OsdkContext2);
 
   // Convert single object to array for consistent handling
