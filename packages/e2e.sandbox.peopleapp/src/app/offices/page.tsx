@@ -13,20 +13,25 @@ export function OfficesPage() {
     setSelectedOffice(office);
   };
 
+  const handleOfficeDeleted = () => {
+    setSelectedOffice(undefined);
+  };
+
   return (
     <div className="flex flex-row items-start text-left">
       <div className="min-w-96 mr-8">
         <Section>
-          <OfficesList
-            selectedOffice={selectedOffice}
-            onSelectOffice={handleOfficeClick}
-          />
+          <OfficesList selected={selectedOffice} onSelect={handleOfficeClick} />
         </Section>
       </div>
 
       <div className="w-96">
         <Section>
-          <OfficeDetails office={selectedOffice} />
+          <OfficeDetails
+            key={selectedOffice?.$primaryKey}
+            office={selectedOffice}
+            onOfficeDeleted={handleOfficeDeleted}
+          />
         </Section>
       </div>
     </div>

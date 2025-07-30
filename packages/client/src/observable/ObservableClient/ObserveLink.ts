@@ -60,7 +60,7 @@ export interface ObserveLinks {
     T extends ObjectTypeDefinition | InterfaceDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(
-    objects: Osdk.Instance<T> | Array<Osdk.Instance<T>>,
+    objects: Osdk.Instance<T> | ReadonlyArray<Osdk.Instance<T>>,
     linkName: L,
     options: ObserveLink.Options<
       CompileTimeMetadata<T>["links"][L]["targetType"]

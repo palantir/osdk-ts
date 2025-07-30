@@ -10,7 +10,7 @@ invariant(
 );
 invariant(import.meta.env.VITE_FOUNDRY_URL, "VITE_FOUNDRY_URL is required");
 
-const auth = createPublicOauthClient(
+export const auth = createPublicOauthClient(
   import.meta.env.VITE_FOUNDRY_CLIENT_ID,
   // import.meta.env.VITE_FOUNDRY_URL,
   "http://localhost:8080",
