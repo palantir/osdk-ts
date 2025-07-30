@@ -1,6 +1,6 @@
 import { useLinks } from "@osdk/react/experimental";
 import React from "react";
-import type { Employee} from "../generatedNoCheck2/index.js";
+import type { Employee } from "../generatedNoCheck2/index.js";
 import { H2 } from "./headers.js";
 
 interface EmployeeDetailsProps {
@@ -10,13 +10,11 @@ interface EmployeeDetailsProps {
 export function EmployeeDetails({ employee }: EmployeeDetailsProps) {
   // Only use useLinks when we have an employee to avoid unnecessary API calls
   const { links: officeLink, isLoading: isOfficeLoading, error: officeError } =
-    employee
-      ? useLinks(
-        employee,
-        "primaryOffice",
-        {},
-      )
-      : { links: undefined, isLoading: false, error: undefined };
+    useLinks(
+      employee ?? [],
+      "primaryOffice",
+      {},
+    );
 
   if (!employee) {
     return (
@@ -71,10 +69,10 @@ export function EmployeeDetails({ employee }: EmployeeDetailsProps) {
         ? (
           <div className="grid grid-cols-2 gap-2 mt-2">
             <div className="text-gray-600">Office Name:</div>
-            <div>{officeLink[0].name || "Unnamed office"}</div>
+            <div>{officeLink[0].name ?? "Unnamed office"}</div>
 
             <div className="text-gray-600">Office ID:</div>
-            <div>{officeLink[0].primaryKey_}</div>
+            <div>{officeLink[0].$primaryKey}</div>
 
             <div className="text-gray-600">Location:</div>
             <div>
