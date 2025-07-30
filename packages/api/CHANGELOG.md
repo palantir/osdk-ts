@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.4.0-beta.9
+
+### Minor Changes
+
+- 9101bad: Adds "includeNullValues" option for exact match filters
+
 ## 2.4.0-beta.8
 
 ### Minor Changes
