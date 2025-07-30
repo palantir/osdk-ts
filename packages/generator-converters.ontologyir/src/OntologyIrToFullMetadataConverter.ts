@@ -17,10 +17,10 @@
 import type {
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionTypeStatus,
-  OntologyIrInterfaceLinkType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrLinkTypeBlockDataV2,
   OntologyIrLinkTypeStatus,
+  OntologyIrMarketplaceInterfaceLinkType,
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeStatus,
   OntologyIrOntologyBlockDataV2,
@@ -664,7 +664,7 @@ export class OntologyIrToFullMetadataConverter {
    * Convert interface link types from IR
    */
   static getOsdkInterfaceLinkTypes(
-    ilts: OntologyIrInterfaceLinkType[],
+    ilts: OntologyIrMarketplaceInterfaceLinkType[],
   ): Record<ApiName, Ontologies.InterfaceLinkType> {
     const result: Record<ApiName, Ontologies.InterfaceLinkType> = {};
 

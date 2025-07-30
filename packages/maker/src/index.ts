@@ -35,6 +35,7 @@ export { defineSharedPropertyType } from "./api/defineSpt.js";
 export { defineValueType } from "./api/defineValueType.js";
 export { importOntologyEntity } from "./api/importOntologyEntity.js";
 export type {
+  ActionParameterAllowedValues,
   ActionParameterConditionalOverride,
   ActionParameterValidation,
   ActionType,

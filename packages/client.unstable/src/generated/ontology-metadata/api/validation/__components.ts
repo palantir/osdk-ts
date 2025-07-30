@@ -647,6 +647,11 @@ export interface ActionTypeValidationsOrderingContainsDuplicates {
  */
 export interface ActionTypeValidationsOrderingNotExactlySameAsValidationRuleSet {
 }
+/**
+ * Branch indexing config can only be set for many to many link types, as it isn't applicable for other link type types
+ */
+export interface BranchIndexingConfigCanOnlyBeSetForManyToManyLinkTypes {
+}
 export interface EasedPipelineBuilderError {
 }
 export interface ErrorData {
@@ -747,6 +752,11 @@ export interface ErrorType_linkTypeStatusAndObjectTypeStatusConflict {
 export interface ErrorType_linkTypeReferencedLinkTypesNotFound {
   type: "linkTypeReferencedLinkTypesNotFound";
   linkTypeReferencedLinkTypesNotFound: LinkTypeReferencedLinkTypesNotFound;
+}
+
+export interface ErrorType_objectTypeReferencedLinkTypesNotFound {
+  type: "objectTypeReferencedLinkTypesNotFound";
+  objectTypeReferencedLinkTypesNotFound: ObjectTypeReferencedLinkTypesNotFound;
 }
 
 export interface ErrorType_linkTypeReferencedLinkTypesDeleted {
@@ -986,6 +996,12 @@ export interface ErrorType_interfaceTypeModificationReferencesNonExistentInterfa
   type: "interfaceTypeModificationReferencesNonExistentInterfaceProperties";
   interfaceTypeModificationReferencesNonExistentInterfaceProperties:
     InterfaceTypeModificationReferencesNonExistentInterfaceProperties;
+}
+
+export interface ErrorType_interfaceTypeModificationReferencesNonExistentInterfaceLinkTypes {
+  type: "interfaceTypeModificationReferencesNonExistentInterfaceLinkTypes";
+  interfaceTypeModificationReferencesNonExistentInterfaceLinkTypes:
+    InterfaceTypeModificationReferencesNonExistentInterfaceLinkTypes;
 }
 
 export interface ErrorType_interfaceTypeExtendedDoesNotExistOrDeleted {
@@ -1300,6 +1316,12 @@ export interface ErrorType_objectTypePropertyIncompatibleBackingColumnType {
   type: "objectTypePropertyIncompatibleBackingColumnType";
   objectTypePropertyIncompatibleBackingColumnType:
     ObjectTypePropertyIncompatibleBackingColumnType;
+}
+
+export interface ErrorType_objectTypePropertyIncompatibleDecimalColumnType {
+  type: "objectTypePropertyIncompatibleDecimalColumnType";
+  objectTypePropertyIncompatibleDecimalColumnType:
+    ObjectTypePropertyIncompatibleDecimalColumnType;
 }
 
 export interface ErrorType_objectTypeStructColumnFieldMissingFromBackingDatasource {
@@ -2189,6 +2211,32 @@ export interface ErrorType_objectTypeInterfaceImplementationLocalPropertyUsedToI
     ObjectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct;
 }
 
+export interface ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeDoesNotReferenceObjectType {
+  type:
+    "objectTypeInterfaceImplementationImplementingLinkTypeDoesNotReferenceObjectType";
+  objectTypeInterfaceImplementationImplementingLinkTypeDoesNotReferenceObjectType:
+    ObjectTypeInterfaceImplementationImplementingLinkTypeDoesNotReferenceObjectType;
+}
+
+export interface ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeSideIsAmbiguous {
+  type: "objectTypeInterfaceImplementationImplementingLinkTypeSideIsAmbiguous";
+  objectTypeInterfaceImplementationImplementingLinkTypeSideIsAmbiguous:
+    ObjectTypeInterfaceImplementationImplementingLinkTypeSideIsAmbiguous;
+}
+
+export interface ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeSideDoesNotMatchLinkDefinitionType {
+  type:
+    "objectTypeInterfaceImplementationImplementingLinkTypeSideDoesNotMatchLinkDefinitionType";
+  objectTypeInterfaceImplementationImplementingLinkTypeSideDoesNotMatchLinkDefinitionType:
+    ObjectTypeInterfaceImplementationImplementingLinkTypeSideDoesNotMatchLinkDefinitionType;
+}
+
+export interface ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeSideIsIncorrect {
+  type: "objectTypeInterfaceImplementationImplementingLinkTypeSideIsIncorrect";
+  objectTypeInterfaceImplementationImplementingLinkTypeSideIsIncorrect:
+    ObjectTypeInterfaceImplementationImplementingLinkTypeSideIsIncorrect;
+}
+
 export interface ErrorType_objectTypeInterfaceImplementationInvalidLinkedEntityImplementingLinkType {
   type:
     "objectTypeInterfaceImplementationInvalidLinkedEntityImplementingLinkType";
@@ -2368,6 +2416,17 @@ export interface ErrorType_objectTypeReferencedTypeGroupsDoNotExist {
   type: "objectTypeReferencedTypeGroupsDoNotExist";
   objectTypeReferencedTypeGroupsDoNotExist:
     ObjectTypeReferencedTypeGroupsDoNotExist;
+}
+
+export interface ErrorType_objectTypeForbiddenTitleProperty {
+  type: "objectTypeForbiddenTitleProperty";
+  objectTypeForbiddenTitleProperty: ObjectTypeForbiddenTitleProperty;
+}
+
+export interface ErrorType_objectTypeTitlePropertyTypeIsDerivedProperty {
+  type: "objectTypeTitlePropertyTypeIsDerivedProperty";
+  objectTypeTitlePropertyTypeIsDerivedProperty:
+    ObjectTypeTitlePropertyTypeIsDerivedProperty;
 }
 
 export interface ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds {
@@ -3352,11 +3411,24 @@ export interface ErrorType_objectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaul
     ObjectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches;
 }
 
+export interface ErrorType_branchIndexingConfigCanOnlyBeSetForManyToManyLinkTypes {
+  type: "branchIndexingConfigCanOnlyBeSetForManyToManyLinkTypes";
+  branchIndexingConfigCanOnlyBeSetForManyToManyLinkTypes:
+    BranchIndexingConfigCanOnlyBeSetForManyToManyLinkTypes;
+}
+
 export interface ErrorType_parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch {
   type:
     "parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch";
   parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch:
     ParentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch;
+}
+
+export interface ErrorType_parentLinkTypeBranchIndexingConfigCanOnlyBeSetForLinkTypesPresentOnTheParentBranch {
+  type:
+    "parentLinkTypeBranchIndexingConfigCanOnlyBeSetForLinkTypesPresentOnTheParentBranch";
+  parentLinkTypeBranchIndexingConfigCanOnlyBeSetForLinkTypesPresentOnTheParentBranch:
+    ParentLinkTypeBranchIndexingConfigCanOnlyBeSetForLinkTypesPresentOnTheParentBranch;
 }
 
 export interface ErrorType_structSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions {
@@ -3369,6 +3441,12 @@ export interface ErrorType_structSharedPropertyFieldModificationsInconsistentWit
 export interface ErrorType_unexpectedValidationFailure {
   type: "unexpectedValidationFailure";
   unexpectedValidationFailure: UnexpectedValidationFailure;
+}
+
+export interface ErrorType_validationBlockOverrideContainsValueType {
+  type: "validationBlockOverrideContainsValueType";
+  validationBlockOverrideContainsValueType:
+    ValidationBlockOverrideContainsValueType;
 }
 /**
  * A union that represents all possible ontology modification validation errors.
@@ -3389,6 +3467,7 @@ export type ErrorType =
   | ErrorType_linkTypeDatasourceAlreadyExists
   | ErrorType_linkTypeStatusAndObjectTypeStatusConflict
   | ErrorType_linkTypeReferencedLinkTypesNotFound
+  | ErrorType_objectTypeReferencedLinkTypesNotFound
   | ErrorType_linkTypeReferencedLinkTypesDeleted
   | ErrorType_linkTypeHasMultipleDatasources
   | ErrorType_linkTypeToDeleteIsReferencedByExistingTypes
@@ -3433,6 +3512,7 @@ export type ErrorType =
   | ErrorType_interfaceTypeContainsDuplicateProperties
   | ErrorType_interfacePropertyTypeRidNotMatchingSharedPropertyTypeRidLocator
   | ErrorType_interfaceTypeModificationReferencesNonExistentInterfaceProperties
+  | ErrorType_interfaceTypeModificationReferencesNonExistentInterfaceLinkTypes
   | ErrorType_interfaceTypeExtendedDoesNotExistOrDeleted
   | ErrorType_interfaceTypeWithActiveStatusRemovingInterfacePropertyTypes
   | ErrorType_interfaceTypeInvalidApiName
@@ -3487,6 +3567,7 @@ export type ErrorType =
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMaterializations
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedOnBranches
   | ErrorType_objectTypePropertyIncompatibleBackingColumnType
+  | ErrorType_objectTypePropertyIncompatibleDecimalColumnType
   | ErrorType_objectTypeStructColumnFieldMissingFromBackingDatasource
   | ErrorType_objectTypeDatasourceSchemaNotFound
   | ErrorType_objectTypeColumnMissingFromBackingDatasource
@@ -3637,6 +3718,10 @@ export type ErrorType =
   | ErrorType_objectTypeInterfaceImplementationImplementsPropertyThatDoesNotExist
   | ErrorType_objectTypeInterfaceImplementationDoesNotImplementAllProperties
   | ErrorType_objectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct
+  | ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeDoesNotReferenceObjectType
+  | ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeSideIsAmbiguous
+  | ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeSideDoesNotMatchLinkDefinitionType
+  | ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeSideIsIncorrect
   | ErrorType_objectTypeInterfaceImplementationInvalidLinkedEntityImplementingLinkType
   | ErrorType_objectTypeInterfaceImplementationLinkTypeImplementedMoreThanOnce
   | ErrorType_objectTypePropertyImplementationImplicitAndExplicit
@@ -3669,6 +3754,8 @@ export type ErrorType =
   | ErrorType_objectTypeDeletedDatasourceMissingSchemaMigration
   | ErrorType_objectTypePropertySecurityGroupReferencesNonExistentProperty
   | ErrorType_objectTypeReferencedTypeGroupsDoNotExist
+  | ErrorType_objectTypeForbiddenTitleProperty
+  | ErrorType_objectTypeTitlePropertyTypeIsDerivedProperty
   | ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds
   | ErrorType_ruleSetCountExceeded
   | ErrorType_ruleSetNameTooLong
@@ -3840,9 +3927,12 @@ export type ErrorType =
   | ErrorType_nonUniquePropertySecurityGroupNames
   | ErrorType_objectEditsCannotBeCopiedForObjectTypeOnBranchNeedsRebasing
   | ErrorType_objectTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches
+  | ErrorType_branchIndexingConfigCanOnlyBeSetForManyToManyLinkTypes
   | ErrorType_parentObjectTypeBranchIndexingConfigCanOnlyBeSetForObjectTypesPresentOnTheParentBranch
+  | ErrorType_parentLinkTypeBranchIndexingConfigCanOnlyBeSetForLinkTypesPresentOnTheParentBranch
   | ErrorType_structSharedPropertyFieldModificationsInconsistentWithObjectTypeStructPropertyFieldDefinitions
-  | ErrorType_unexpectedValidationFailure;
+  | ErrorType_unexpectedValidationFailure
+  | ErrorType_validationBlockOverrideContainsValueType;
 
 export interface IndeterminateErrorCategory {
 }
@@ -3944,6 +4034,11 @@ export interface InterfaceTypeInvalidApiNamePrefixes {
  * A linked entity is not present in the ontology.
  */
 export interface InterfaceTypeLinkedEntityTypeNotFound {
+}
+/**
+ * An interface modification cannot reference interface link types not previously present on the interface.
+ */
+export interface InterfaceTypeModificationReferencesNonExistentInterfaceLinkTypes {
 }
 /**
  * An interface modification cannot reference properties not previously present on the interface.
@@ -4238,6 +4333,11 @@ export interface InvalidTypeGroupWithIdentifier {
  * Workflows are deprecated.
  */
 export interface InvalidWorkflowWithIdentifier {
+}
+/**
+ * Link type branch indexing config can only be set on non-default branches.
+ */
+export interface LinkTypeBranchIndexingConfigCanOnlyBeSetOnNonDefaultBranches {
 }
 /**
  * The user does not have permissions to edit privileged provenance on ontology entities metadata.
@@ -4818,6 +4918,11 @@ export type ObjectTypeErrorCategory =
 export interface ObjectTypeEventMetadataReferencesNonExistentProperty {
 }
 /**
+ * Having a title with the given type is not supported.
+ */
+export interface ObjectTypeForbiddenTitleProperty {
+}
+/**
  * The derived properties definition is referring to a foreign property type that does not exist or is deleted.
  */
 export interface ObjectTypeForeignPropertyTypeInDerivedPropertyDefinitionNotFound {
@@ -4921,6 +5026,30 @@ export interface ObjectTypeInterfaceImplementationConflictingPropertyImplementat
  * The object type was declared to implement the interface but is missing one or more shared property types from the interface.
  */
 export interface ObjectTypeInterfaceImplementationDoesNotImplementAllProperties {
+}
+/**
+ * An interface link type constraint is not fulfilled because the implementing link type does not reference the
+ * object type implementing the interface.
+ */
+export interface ObjectTypeInterfaceImplementationImplementingLinkTypeDoesNotReferenceObjectType {
+}
+/**
+ * An interface link type constraint is not fulfilled because the declared link type side does not match the
+ * link definition's type.
+ */
+export interface ObjectTypeInterfaceImplementationImplementingLinkTypeSideDoesNotMatchLinkDefinitionType {
+}
+/**
+ * An interface link type constraint is not fulfilled because the implementing link type is self-referential and
+ * a link type side was not specified in the implementation.
+ */
+export interface ObjectTypeInterfaceImplementationImplementingLinkTypeSideIsAmbiguous {
+}
+/**
+ * An interface link type constraint is not fulfilled because the object type is not connected to the end of the
+ * implementing link type specified in the link type side.
+ */
+export interface ObjectTypeInterfaceImplementationImplementingLinkTypeSideIsIncorrect {
 }
 /**
  * The object type implementing the interface has a property fulfilling the shared property that does not exist.
@@ -5278,6 +5407,11 @@ export interface ObjectTypePropertyImplementationImplicitAndExplicit {
 export interface ObjectTypePropertyIncompatibleBackingColumnType {
 }
 /**
+ * The property of the object type has a type that is incompatible with the type of the backing data.
+ */
+export interface ObjectTypePropertyIncompatibleDecimalColumnType {
+}
+/**
  * A referenced PropertyTypeId was the same as the referencing PropertyTypeId, which is not allowed.
  */
 export interface ObjectTypePropertyReferencedPropertyMustBeDifferent {
@@ -5366,6 +5500,11 @@ export interface ObjectTypeReferencedDatasourceNotFound {
  * ObjectTypes cannot reference deleted inline ActionTypes.
  */
 export interface ObjectTypeReferenceDeletedInlineActionTypes {
+}
+/**
+ * The request to modify the ontology has ObjectTypes referencing some missing LinkTypes.
+ */
+export interface ObjectTypeReferencedLinkTypesNotFound {
 }
 /**
  * Property references PropertyTypeId that does not exist on the ObjectType.
@@ -5563,6 +5702,11 @@ export interface ObjectTypeTimeseriesMetadataReferencesNonExistentProperty {
 export interface ObjectTypeTimeSeriesSyncRidIsNotTimeSeriesSync {
 }
 /**
+ * The title property type of an object type cannot be backed by a derived property.
+ */
+export interface ObjectTypeTitlePropertyTypeIsDerivedProperty {
+}
+/**
  * There is no corresponding property type for the given title property.
  */
 export interface ObjectTypeTitlePropertyTypeNotFound {
@@ -5688,6 +5832,11 @@ export interface OntologyValidationError {
   errorTags: Array<ErrorTag>;
   errorType: ErrorType;
   invalidEntities: Array<InvalidEntity>;
+}
+/**
+ * Parent link type branch indexing config can only be set for link types present on the parent branch.
+ */
+export interface ParentLinkTypeBranchIndexingConfigCanOnlyBeSetForLinkTypesPresentOnTheParentBranch {
 }
 /**
  * Parent object type branch indexing config can only be set for object types present on the parent branch.
@@ -5965,7 +6114,7 @@ export interface TypeGroupCountExceeded {
 export interface TypeGroupDescriptionTooLong {
 }
 /**
- * The TypeGroup display name already exists in the ontology.
+ * The TypeGroup display name already exists in the ontology (case-insensitive).
  */
 export interface TypeGroupDisplayNameAlreadyExists {
 }
@@ -5991,6 +6140,11 @@ export type TypeGroupErrorCategory =
  * Unexpected Validation Failure in OMS.
  */
 export interface UnexpectedValidationFailure {
+}
+/**
+ * Value Types are not allowed in parameter overrides.
+ */
+export interface ValidationBlockOverrideContainsValueType {
 }
 /**
  * The archetype ID of a workflow exceeds the maximum length.

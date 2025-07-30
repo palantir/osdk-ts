@@ -978,8 +978,8 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
         apiName: action.apiName,
         displayMetadata: {
           configuration: {
-            defaultLayout: "FORM",
-            displayAndFormat: {
+            defaultLayout: action.defaultFormat ?? "FORM",
+            displayAndFormat: action.displayAndFormat ?? {
               table: {
                 columnWidthByParameterRid: {},
                 enableFileImport: true,
@@ -988,7 +988,7 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
                 rowHeightInLines: 1,
               },
             },
-            enableLayoutUserSwitch: false,
+            enableLayoutUserSwitch: action.enableLayoutSwitch ?? false,
           },
           description: action.description ?? "",
           displayName: action.displayName,
@@ -1039,6 +1039,8 @@ function convertActionValidation(
                 visibility: convertActionVisibility(
                   p.validation.defaultVisibility,
                 ),
+                ...p.validation.defaultValue
+                  && { prefill: p.validation.defaultValue },
               },
               validation: {
                 allowedValues: extractAllowedValues(p),

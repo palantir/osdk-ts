@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-export type {
-  ActionTypeDescriptionGeneratorPluginRequest,
-  ActionTypeDescriptionGeneratorPluginResponse,
-  LanguageModelApiName,
-  LlmConfig,
-  OntologyLmsRequest,
-  OntologyLmsResponse,
-  StringPluginRequest,
-  StringPluginResponse,
-} from "./__components.js";
+import { type ConjureContext, conjureFetch } from "conjure-lite";
+import type {
+  PostOntologyBlockDataRequest as _api_blockdata_PostOntologyBlockDataRequest,
+  PostOntologyBlockDataResponse as _api_blockdata_PostOntologyBlockDataResponse,
+} from "../__components.js";
+export async function postOntologyBlockData(
+  ctx: ConjureContext,
+  request: _api_blockdata_PostOntologyBlockDataRequest,
+): Promise<_api_blockdata_PostOntologyBlockDataResponse> {
+  return conjureFetch(ctx, `/block-data/dummy/block-data`, "POST", request);
+}
