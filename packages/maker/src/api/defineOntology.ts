@@ -1140,10 +1140,10 @@ function extractAllowedValues(
           text: {
             ...(minLength === undefined
               ? {}
-              : { minimumLength: minLength }),
+              : { minLength: minLength }),
             ...(maxLength === undefined
               ? {}
-              : { maximumLength: maxLength }),
+              : { maxLength: maxLength }),
             ...(regex === undefined
               ? {}
               : { regex: { regex: regex, failureMessage: "Invalid input" } }),
