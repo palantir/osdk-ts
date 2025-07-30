@@ -1,0 +1,600 @@
+{
+  "ontology": {
+    "apiName": "ontology-d097f725-ab77-46cf-83c0-e3cb9186bff1",
+    "displayName": "EA Ontology",
+    "description": " Ontology",
+    "rid": "ri.ontology.main.ontology.a35bb7f9-2c57-4199-a1cd-af461d88bd6e"
+  },
+  "objectTypes": {
+    "Employee": {
+      "objectType": {
+        "apiName": "Employee",
+        "displayName": "Employee",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Employees",
+        "icon": {
+          "type": "blueprint",
+          "color": "#EC9A3C",
+          "name": "person"
+        },
+        "primaryKey": "employeeNumber",
+        "properties": {
+          "adUsername": {
+            "displayName": "Ad Username",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.155f0acb-1d4b-4e53-b952-e5e693de7773",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "businessArea": {
+            "displayName": "Business Area",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.b88c1035-10f9-44db-8eca-454571989e0f",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "businessTitle": {
+            "displayName": "Business Title",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.88f079c4-0131-4b43-aa9c-2949e96e94bf",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "department": {
+            "displayName": "Department",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.07692b78-e555-47df-ba98-ed982ecfb024",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "emailPrimaryWork": {
+            "displayName": "Email",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.bcd62f25-7678-4c29-bd9e-88a58d6815e8",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "employeeDocuments": {
+            "displayName": "employeeDocuments",
+            "dataType": {
+              "type": "mediaReference"
+            },
+            "rid": "ri.ontology.main.property.85c5ca7b-62f0-4cc4-8f7f-42e766f9d42d",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "employeeFile": {
+            "displayName": "Employee File",
+            "dataType": {
+              "type": "attachment"
+            },
+            "rid": "ri.ontology.main.property.36448a21-e6d4-4505-b166-c5d7579fda33",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "employeeMedia": {
+            "displayName": "Media",
+            "dataType": {
+              "type": "mediaReference"
+            },
+            "rid": "ri.ontology.main.property.250e9145-60fa-4385-aa28-95748f1e8c65",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "employeeNumber": {
+            "displayName": "Employee Number",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.feb75375-575a-4c8f-8393-2aefdad649b8",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "favoritePlaceArea": {
+            "displayName": "Favorite Place Area",
+            "dataType": {
+              "type": "geoshape"
+            },
+            "rid": "ri.ontology.main.property.6164fcb9-9973-498a-996c-69493fc0a21b",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "favPlace": {
+            "displayName": "Favorite Place",
+            "dataType": {
+              "type": "geopoint"
+            },
+            "rid": "ri.ontology.main.property.526b2272-927d-4169-a99d-96ce7d46cbc2",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "firstFullTimeStartDate": {
+            "displayName": "First Full Time Start Date",
+            "dataType": {
+              "type": "date"
+            },
+            "rid": "ri.ontology.main.property.abab33ff-3906-4857-a471-640ca86aafea",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "firstInternStartDate": {
+            "displayName": "First Intern Start Date",
+            "dataType": {
+              "type": "date"
+            },
+            "rid": "ri.ontology.main.property.48aa0c31-f9e6-4bcf-9b94-f32d519987e7",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "fullName": {
+            "displayName": "Full Name",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.540462d2-e23f-4a8a-9d24-a667f40d2cf9",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "jobProfile": {
+            "displayName": "Job Profile",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.7524bfa6-730f-4264-a23e-0f3894b28db8",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "jobTitle": {
+            "displayName": "Job Title",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.06a8a9ef-2152-4e68-b5ec-95df84f43630",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "latestVenture": {
+            "displayName": "Latest Venture ",
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "venture",
+                  "rid": "ri.ontology.main.struct-field.d53cef37-32c5-45fc-90c2-7b8bf674e0af",
+                  "dataType": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "apiName": "days",
+                  "rid": "ri.ontology.main.struct-field.fa69e97b-5b11-44fd-b6e9-629b960dd87c",
+                  "dataType": {
+                    "type": "integer"
+                  }
+                }
+              ]
+            },
+            "rid": "ri.ontology.main.property.24b2f036-9125-47c4-8025-54b9a7325df6",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "leadEmployeeNumber": {
+            "displayName": "Lead Employee Number",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.de185c6f-5ec6-42d2-aa54-0d920993fc6e",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "locationCity": {
+            "displayName": "Location City",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.df02d355-a626-468f-a274-cd0157613836",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "locationCountry": {
+            "displayName": "Location Country",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.a1ba0bca-26d2-4cee-821c-a23d47a181db",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "locationName": {
+            "displayName": "Location Name",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.ae4c1137-f978-424a-af97-4f78d76e2a17",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "locationRegion": {
+            "displayName": "Location Region",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.0cb19cfe-dddf-4041-87bb-a4aa89bcd225",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "locationType": {
+            "displayName": "Location Type",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.191eecb3-d6e6-430a-a174-1517046b037c",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "mentorEmployeeNumber": {
+            "displayName": "Mentor Employee Number",
+            "dataType": {
+              "type": "integer"
+            },
+            "rid": "ri.ontology.main.property.567984e8-5017-49f9-b3e4-0cb6842d56df",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "newProperty1": {
+            "displayName": "New property 1",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.5e8ce4e8-2356-47cc-80c2-406aa198fb01",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "preferredNameFirst": {
+            "displayName": "Preferred Name First",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.cfb065b0-58d0-47de-afb5-87e2bae07b9b",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "preferredNameLast": {
+            "displayName": "Preferred Name Last",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.bdd483cf-9064-49a9-b1b3-a3aeed097466",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "primaryOfficeId": {
+            "displayName": "Primary Office ID",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.4f41c0cc-9879-4b5d-85f5-6acf2616df6d",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "team": {
+            "displayName": "Team",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.d72f784b-f920-4fa6-8adf-ac54b39e45fe",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "workerType": {
+            "displayName": "Worker Type",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.f1f63351-46e2-411f-8ce1-3050e13ec9b6",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.ade16a88-ecc4-4f96-9751-ca1799247d64",
+        "titleProperty": "fullName",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [
+        {
+          "apiName": "lead",
+          "displayName": "Lead",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "Employee",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "leadEmployeeNumber",
+          "linkTypeRid": "ri.ontology.main.relation.a5c9bbf2-f26b-40c3-bfbd-e45df4691d88"
+        },
+        {
+          "apiName": "peeps",
+          "displayName": "Peep",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "Employee",
+          "cardinality": "MANY",
+          "linkTypeRid": "ri.ontology.main.relation.a5c9bbf2-f26b-40c3-bfbd-e45df4691d88"
+        },
+        {
+          "apiName": "primaryOffice",
+          "displayName": "Primary Office",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "Office",
+          "cardinality": "ONE",
+          "foreignKeyPropertyApiName": "primaryOfficeId",
+          "linkTypeRid": "ri.ontology.main.relation.3df7c685-c2e1-42ad-9de2-38b505a58980"
+        }
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {
+        "email": "emailPrimaryWork",
+        "employeeNumber": "employeeNumber",
+        "media": "employeeMedia"
+      }
+    },
+    "Office": {
+      "objectType": {
+        "apiName": "Office",
+        "displayName": "Office",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Offices",
+        "icon": {
+          "type": "blueprint",
+          "color": "#4C90F0",
+          "name": "cube"
+        },
+        "primaryKey": "primaryKey_",
+        "properties": {
+          "location": {
+            "displayName": "Location",
+            "dataType": {
+              "type": "geopoint"
+            },
+            "rid": "ri.ontology.main.property.d4eee188-477d-47e3-b170-59df9d3d36e4",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "name": {
+            "displayName": "Name",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.006b0bc0-2aeb-4332-b309-e92a866428f0",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
+          "primaryKey_": {
+            "displayName": "Primary Key",
+            "dataType": {
+              "type": "string"
+            },
+            "rid": "ri.ontology.main.property.b37fe505-9a6f-44dc-9175-2ee3d6d4d8cc",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          }
+        },
+        "rid": "ri.ontology.main.object-type.bbca9c02-5c6a-4d3a-8bf1-e4db0177ab5f",
+        "titleProperty": "name",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [
+        {
+          "apiName": "occupants",
+          "displayName": "Occupant",
+          "status": "EXPERIMENTAL",
+          "objectTypeApiName": "Employee",
+          "cardinality": "MANY",
+          "linkTypeRid": "ri.ontology.main.relation.3df7c685-c2e1-42ad-9de2-38b505a58980"
+        }
+      ],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {}
+    }
+  },
+  "actionTypes": {
+    "create-office": {
+      "apiName": "create-office",
+      "displayName": "Create Office",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "location": {
+          "displayName": "Location",
+          "dataType": {
+            "type": "geohash"
+          },
+          "required": true
+        },
+        "name": {
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.1149ae48-9a4a-45f1-92ba-90e046f7b3c7",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "Office"
+        }
+      ]
+    },
+    "delete-office": {
+      "apiName": "delete-office",
+      "displayName": "Delete Office",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "Office": {
+          "displayName": "Office",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Office",
+            "objectTypeApiName": "Office"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.72b40fca-42b6-4e09-99d1-a3d701808ce7",
+      "operations": [
+        {
+          "type": "deleteObject",
+          "objectTypeApiName": "Office"
+        }
+      ]
+    },
+    "edit-office": {
+      "apiName": "edit-office",
+      "displayName": "Edit Office",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "location": {
+          "displayName": "Location",
+          "dataType": {
+            "type": "geohash"
+          },
+          "required": true
+        },
+        "name": {
+          "displayName": "Name",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "Office": {
+          "displayName": "Office",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Office",
+            "objectTypeApiName": "Office"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.ae41d87b-933d-4983-ad91-fce7f4ff9f59",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Office"
+        }
+      ]
+    },
+    "modify-employee": {
+      "apiName": "modify-employee",
+      "displayName": "Modify Employee",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "employee": {
+          "displayName": "Employee",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Employee",
+            "objectTypeApiName": "Employee"
+          },
+          "required": true
+        },
+        "primary_office_id": {
+          "displayName": "Primary Office ID",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        }
+      },
+      "rid": "ri.actions.main.action-type.1e59bc2b-4f3a-47d1-82d2-7d0516c7c4ee",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Employee"
+        }
+      ]
+    }
+  },
+  "queryTypes": {},
+  "interfaceTypes": {},
+  "sharedPropertyTypes": {}
+}
