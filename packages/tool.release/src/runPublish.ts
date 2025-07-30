@@ -96,7 +96,7 @@ export async function runPublish({
       packages.map((x) => [x.packageJson.name, x]),
     );
 
-    for (let line of changesetPublishOutput.stdout.split("\n")) {
+    for (const line of changesetPublishOutput.stdout.split("\n")) {
       const match = line.match(newTagRegex);
       if (match == null) {
         continue;
@@ -132,7 +132,7 @@ export async function runPublish({
     const pkg = packages[0];
     const newTagRegex = /New tag:/;
 
-    for (let line of changesetPublishOutput.stdout.split("\n")) {
+    for (const line of changesetPublishOutput.stdout.split("\n")) {
       const match = line.match(newTagRegex);
 
       if (match) {

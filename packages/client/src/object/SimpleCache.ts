@@ -49,7 +49,7 @@ export function createSimpleCache<K, V>(
   : SimpleCache<K, V>
 {
   function get(key: K) {
-    let r = (map as Map<K, V>).get(key as any);
+    const r = (map as Map<K, V>).get(key as any);
     if (r === undefined && fn !== undefined) {
       return set(key, fn(key));
     } else {

@@ -77,6 +77,8 @@ export interface UseLinksResult<
   hasMore: boolean;
 }
 
+const emptyArray = Object.freeze([]);
+
 /**
  * Hook to observe links from an object or array of objects.
  *
@@ -89,26 +91,20 @@ export function useLinks<
   T extends ObjectTypeDefinition,
   L extends LinkNames<T>,
 >(
-  objects: Osdk.Instance<T> | Array<Osdk.Instance<T>>,
+  objects: Osdk.Instance<T> | Array<Osdk.Instance<T>> | undefined,
   linkName: L,
   options: UseLinksOptions<LinkedType<T, L>> = {},
 ): UseLinksResult<LinkedType<T, L>> {
   const { observableClient } = React.useContext(OsdkContext2);
 
   // Convert single object to array for consistent handling
-  const objectsArray = Array.isArray(objects) ? objects : [objects];
-
-  // If no objects are provided, return empty result
-  if (objectsArray.length === 0) {
-    return {
-      links: undefined,
-      isLoading: false,
-      error: undefined,
-      isOptimistic: false,
-      fetchMore: undefined,
-      hasMore: false,
-    };
-  }
+  const objectsArray: ReadonlyArray<Osdk.Instance<T>> = React.useMemo(() => {
+    return objects === undefined
+      ? emptyArray
+      : Array.isArray(objects)
+      ? objects
+      : [objects];
+  }, [objects]);
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
@@ -119,7 +115,7 @@ export function useLinks<
             linkName,
             {
               type: {
-                apiName: objectsArray[0].$objectType,
+                apiName: objectsArray?.[0]?.$objectType,
                 type: "object" as const,
               },
               where: options.where,

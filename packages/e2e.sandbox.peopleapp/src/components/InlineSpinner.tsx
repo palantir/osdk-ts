@@ -1,6 +1,6 @@
 import React from "react";
 
-export function InlineSpinner({ isLoading }: { isLoading: boolean }) {
+export function InlineSpinner({ isLoading = true }: { isLoading?: boolean }) {
   return (
     <div className="inline">
       {isLoading

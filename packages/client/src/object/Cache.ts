@@ -80,7 +80,7 @@ export function createClientCache<K, V extends {}>(
     if (cache.get(client.clientCacheKey) == null) {
       cache.set(client.clientCacheKey, new Map());
     }
-    let r = cache.get(client.clientCacheKey)!.get(key);
+    const r = cache.get(client.clientCacheKey)!.get(key);
     if (r === undefined && fn !== undefined) {
       return set(client, key, fn(client, key));
     } else {
