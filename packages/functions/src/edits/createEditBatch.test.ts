@@ -17,6 +17,7 @@
 import type { Attachment, Client, Osdk } from "@osdk/client";
 import type { Employee, Person } from "@osdk/client.test.ontology";
 import {
+  FooInterface,
   objectTypeWithAllPropertyTypes,
   Office,
   Task,
@@ -29,10 +30,11 @@ import type { Edits } from "./types.js";
 type TestEditScope =
   | Edits.Object<Task>
   | Edits.Object<Office>
+  | Edits.Object<objectTypeWithAllPropertyTypes>
   | Edits.Link<Task, "RP">
   | Edits.Link<Task, "Todos">
   | Edits.Link<Office, "occupants">
-  | Edits.Object<objectTypeWithAllPropertyTypes>;
+  | Edits.Interface<FooInterface>;
 
 describe(createEditBatch, () => {
   const taskInstance = {
@@ -54,6 +56,12 @@ describe(createEditBatch, () => {
     $apiName: "Employee",
     $primaryKey: 2,
   } as Osdk.Instance<Employee>;
+
+  const fooInterfaceInstance = {
+    $apiName: "FooInterface",
+    $primaryKey: 21,
+    $objectType: "FooObjectType",
+  } as Osdk.Instance<FooInterface>;
 
   let client: Client;
 
@@ -83,6 +91,17 @@ describe(createEditBatch, () => {
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Office, { officeId: "3", capacity: 2 });
     editBatch.update({ $apiName: "Office", $primaryKey: "3" }, { capacity: 4 });
+    editBatch.create(FooInterface, {
+      $objectType: "Task",
+      fooSpt: "created interface",
+    });
+    editBatch.update(fooInterfaceInstance, { fooSpt: "fooSpt" });
+    editBatch.update({
+      $apiName: "FooInterface",
+      $objectType: "FooObjectType",
+      $primaryKey: 22,
+    }, { fooSpt: "fooSpt2" });
+    editBatch.delete(fooInterfaceInstance);
 
     editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
       $apiName: "Person",
@@ -169,6 +188,37 @@ describe(createEditBatch, () => {
         type: "updateObject",
         obj: { $apiName: "Office", $primaryKey: "3" },
         properties: { capacity: 4 },
+      },
+      {
+        type: "createObjectForInterface",
+        int: FooInterface,
+        properties: { fooSpt: "created interface", $objectType: "Task" },
+      },
+      {
+        type: "updateObjectForInterface",
+        obj: {
+          $apiName: "FooInterface",
+          $primaryKey: 21,
+          $objectType: "FooObjectType",
+        },
+        properties: { fooSpt: "fooSpt" },
+      },
+      {
+        type: "updateObjectForInterface",
+        obj: {
+          $apiName: "FooInterface",
+          $primaryKey: 22,
+          $objectType: "FooObjectType",
+        },
+        properties: { fooSpt: "fooSpt2" },
+      },
+      {
+        type: "deleteObjectForInterface",
+        obj: {
+          $apiName: "FooInterface",
+          $primaryKey: 21,
+          $objectType: "FooObjectType",
+        },
       },
       {
         type: "addLink",
