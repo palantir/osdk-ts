@@ -12,6 +12,7 @@ import type { ObjectMetadata } from '@osdk/client';
 import type { ObjectTypeDefinition } from '@osdk/client';
 import type { Osdk } from '@osdk/client';
 import type { OsdkObjectCreatePropertyType } from '@osdk/client';
+import type { OsdkObjectPropertyType } from '@osdk/client';
 import type { PropertyKeys } from '@osdk/client';
 import { Range as Range_2 } from '@osdk/client';
 import { ThreeDimensionalAggregation } from '@osdk/client';
@@ -36,15 +37,15 @@ export type Double<T extends number = number> = T & {
 
 // @public (undocumented)
 export interface EditBatch<X extends AnyEdit = never> {
-    	// Warning: (ae-forgotten-export) The symbol "CreatableObjectTypes" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "CreatableObjectTypeProperties" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "CreatableObjectOrInterfaceTypes" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "CreatableObjectOrInterfaceTypeProperties" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    create: <OTD extends CreatableObjectTypes<X>>(obj: OTD, properties: CreatableObjectTypeProperties<X, OTD>) => void;
-    	// Warning: (ae-forgotten-export) The symbol "DeletableObjectLocators" needs to be exported by the entry point index.d.ts
+    create: <OI extends CreatableObjectOrInterfaceTypes<X>>(objectOrInterfaceType: OI, properties: CreatableObjectOrInterfaceTypeProperties<X, OI>) => void;
+    	// Warning: (ae-forgotten-export) The symbol "DeletableObjectOrInterfaceLocators" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    delete: <OL extends DeletableObjectLocators<X>>(obj: OL) => void;
+    delete: <OL extends DeletableObjectOrInterfaceLocators<X>>(obj: OL) => void;
     	// (undocumented)
     getEdits: () => X[];
     	// Warning: (ae-forgotten-export) The symbol "AddLinkSources" needs to be exported by the entry point index.d.ts
@@ -65,15 +66,21 @@ export interface EditBatch<X extends AnyEdit = never> {
     		SOL extends RemoveLinkSources<X>,
     		A extends RemoveLinkApiNames<X, SOL>
     	>(source: SOL, apiName: A, target: RemoveLinkTargets<X, SOL, A>) => void;
-    	// Warning: (ae-forgotten-export) The symbol "UpdatableObjectLocators" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "UpdatableObjectLocatorProperties" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "UpdatableObjectOrInterfaceLocators" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "UpdatableObjectOrInterfaceLocatorProperties" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    update: <OL extends UpdatableObjectLocators<X>>(obj: OL, properties: UpdatableObjectLocatorProperties<X, OL>) => void;
+    update: <OL extends UpdatableObjectOrInterfaceLocators<X>>(obj: OL, properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>) => void;
 }
 
 // @public (undocumented)
 export namespace Edits {
+    	// Warning: (ae-forgotten-export) The symbol "CreateObjectForInterface" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "UpdateObjectForInterface" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "DeleteObjectForInterface" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type Interface<S extends InterfaceDefinition> = CreateObjectForInterface<S> | UpdateObjectForInterface<S> | DeleteObjectForInterface<S>;
     	// Warning: (ae-forgotten-export) The symbol "AddLink" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "RemoveLink" needs to be exported by the entry point index.d.ts
     //
