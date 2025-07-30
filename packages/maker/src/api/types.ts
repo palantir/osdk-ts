@@ -142,7 +142,7 @@ export type ActionTypeUserDefinition = {
   apiName?: string;
   displayName?: string;
   status?: ActionStatus;
-  parameterLevelValidations?: Record<string, ActionParameterValidation>;
+  parameterConfiguration?: Record<string, ActionParameterValidation>;
   actionLevelValidation?: ActionLevelValidationDefinition;
   excludedProperties?: Array<ParameterId>;
   defaultFormat?: DisplayMetadataConfigurationDefaultLayout;

@@ -153,7 +153,7 @@ export function defineCreateInterfaceObjectAction(
 export function defineCreateObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
-  Object.keys(def.parameterLevelValidations ?? {}).forEach(id => {
+  Object.keys(def.parameterConfiguration ?? {}).forEach(id => {
     invariant(
       def.objectType.properties?.[id] !== undefined,
       `Property ${id} does not exist on ${def.objectType.apiName}`,
@@ -178,15 +178,15 @@ export function defineCreateObjectAction(
         displayName: def.objectType.properties?.[id].displayName
           ?? convertToDisplayName(id),
         type: extractActionParameterType(def.objectType.properties?.[id]!),
-        validation: (def.parameterLevelValidations?.[id] !== undefined)
+        validation: (def.parameterConfiguration?.[id] !== undefined)
           ? {
-            ...def.parameterLevelValidations?.[id],
-            allowedValues: def.parameterLevelValidations?.[id].allowedValues
+            ...def.parameterConfiguration?.[id],
+            allowedValues: def.parameterConfiguration?.[id].allowedValues
               ?? extractAllowedValuesFromType(
                 def.objectType.properties?.[id].type!,
               ),
-            required: def.parameterLevelValidations?.[id].required ?? true,
-            defaultValue: def.parameterLevelValidations?.[id].defaultValue,
+            required: def.parameterConfiguration?.[id].required ?? true,
+            defaultValue: def.parameterConfiguration?.[id].defaultValue,
           }
           : {
             required: (def.objectType.properties?.[id].array ?? false)
@@ -346,7 +346,7 @@ export function defineModifyInterfaceObjectAction(
 export function defineModifyObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
-  Object.keys(def.parameterLevelValidations ?? {}).forEach(id => {
+  Object.keys(def.parameterConfiguration ?? {}).forEach(id => {
     invariant(
       def.objectType.properties?.[id] !== undefined,
       `Property ${id} does not exist on ${def.objectType.apiName}`,
@@ -372,15 +372,15 @@ export function defineModifyObjectAction(
         displayName: def.objectType.properties?.[id].displayName
           ?? convertToDisplayName(id),
         type: extractActionParameterType(def.objectType.properties?.[id]!),
-        validation: (def.parameterLevelValidations?.[id] !== undefined)
+        validation: (def.parameterConfiguration?.[id] !== undefined)
           ? {
-            ...def.parameterLevelValidations?.[id],
-            allowedValues: def.parameterLevelValidations?.[id].allowedValues
+            ...def.parameterConfiguration?.[id],
+            allowedValues: def.parameterConfiguration?.[id].allowedValues
               ?? extractAllowedValuesFromType(
                 def.objectType.properties?.[id].type!,
               ),
-            required: def.parameterLevelValidations?.[id].required ?? false,
-            defaultValue: def.parameterLevelValidations?.[id].defaultValue,
+            required: def.parameterConfiguration?.[id].required ?? false,
+            defaultValue: def.parameterConfiguration?.[id].defaultValue,
           }
           : {
             required: (def.objectType.properties?.[id].array ?? false)

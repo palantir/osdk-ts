@@ -6374,7 +6374,7 @@ describe("Ontology Defining", () => {
               name: "actionLevelGroup",
             },
           },
-          parameterLevelValidations: {
+          parameterConfiguration: {
             "fizz": {
               required: false,
               conditionalOverrides: [
@@ -6426,7 +6426,7 @@ describe("Ontology Defining", () => {
               name: "actionLevelGroup",
             },
           },
-          parameterLevelValidations: {
+          parameterConfiguration: {
             "fizz": {
               required: false,
               conditionalOverrides: [
@@ -7394,7 +7394,7 @@ describe("Ontology Defining", () => {
       expect(() =>
         defineCreateObjectAction({
           objectType: exampleObjectType,
-          parameterLevelValidations: {
+          parameterConfiguration: {
             "buzz": {
               defaultValue: {
                 type: "staticValue",
