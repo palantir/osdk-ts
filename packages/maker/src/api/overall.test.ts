@@ -7937,41 +7937,6 @@ describe("Ontology Defining", () => {
         }
       `);
     });
-    // it("Actions with group permissions are properly defined", () => {
-    //   const sampleObject = defineObject({
-    //     apiName: "sampleObject",
-    //     displayName: "Test Object",
-    //     description: "Sample object description",
-    //     primaryKeyPropertyApiName: "id",
-    //     pluralDisplayName: "tests",
-    //     titlePropertyApiName: "name",
-    //     properties: {
-    //       "name": {
-    //         type: "string",
-    //         description: "The name of the test object",
-    //       },
-    //       "id": {
-    //         type: "string",
-    //         displayName: "ID",
-    //         description: "The ID of the test object",
-    //       },
-    //     },
-    //   });
-    //   const createAction = defineCreateObjectAction({
-    //     objectType: sampleObject,
-    //     parameterConfiguration: {
-    //       "name": {
-    //         allowedValues: {
-    //           type: "text",
-    //           minLength: 3,
-    //           maxLength: 50,
-    //         },
-    //       },
-    //     },
-    //   });
-
-    //   expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(``);
-    // });
 
     it("Actions with group permissions are properly defined", () => {
       const sampleObject = defineObject({
