@@ -687,7 +687,7 @@ const modifyObjectActionType = defineModifyObjectAction(
     actionLevelValidation: {
       condition: mustBeManagerCondition,
     },
-    parameterLevelValidations: {
+    parameterConfiguration: {
       "numDeals": {
         defaultVisibility: "hidden",
         conditionalOverrides: [
