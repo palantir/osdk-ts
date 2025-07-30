@@ -1,12 +1,12 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import App from "./App.js";
+import PeopleApp from "./App.js";
 import { EmployeesPage } from "./pages/EmployeesPage.js";
 import { OfficesPage } from "./pages/OfficesPage.js";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <PeopleApp />,
     children: [
       {
         path: "/",
