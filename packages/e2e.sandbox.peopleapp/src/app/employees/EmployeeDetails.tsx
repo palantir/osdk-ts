@@ -1,6 +1,9 @@
 import { useLinks } from "@osdk/react/experimental";
 import React from "react";
+import { ErrorMessage } from "../../components/ErrorMessage.js";
 import { H2 } from "../../components/headers.js";
+import { LoadingMessage } from "../../components/LoadingMessage.js";
+import { OfficeSelector } from "../../components/OfficeSelector.js";
 import type { Employee } from "../../generatedNoCheck2/index.js";
 
 interface EmployeeDetailsProps {
@@ -56,14 +59,25 @@ export function EmployeeDetails({ employee }: EmployeeDetailsProps) {
         </div>
       </div>
 
-      <H2>Office Information</H2>
+      <div className="flex justify-between items-center">
+        <H2>Office Information</H2>
+        {employee && (
+          <OfficeSelector
+            employee={employee}
+            currentOfficeId={officeLink && officeLink.length > 0
+              ? officeLink[0].$primaryKey
+              : null}
+          />
+        )}
+      </div>
+
       {isOfficeLoading
-        ? <div className="text-sm italic">Loading office information...</div>
+        ? <LoadingMessage message="Loading office information..." />
         : officeError
         ? (
-          <div className="text-sm text-red-500">
-            Error loading office: {officeError.message}
-          </div>
+          <ErrorMessage
+            message={`Error loading office: ${officeError.message}`}
+          />
         )
         : officeLink && officeLink.length > 0
         ? (

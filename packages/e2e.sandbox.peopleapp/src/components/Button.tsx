@@ -13,7 +13,7 @@ export function Button(
     onClick?: () => void;
     disabled?: boolean;
     active?: boolean;
-    variant?: "primary" | "secondary" | "tab";
+    variant?: "primary" | "secondary" | "tab" | "danger";
     type?: "button" | "submit" | "reset";
   },
 ) {
@@ -40,6 +40,12 @@ export function Button(
       }
         ${active && variant === "tab" ? "bg-blue-500 text-white" : ""}
         ${active && variant !== "tab" ? "bg-blue-700" : ""}
+        ${
+        !disabled && variant === "danger" && !active
+          ? "bg-red-500 hover:bg-red-700"
+          : ""
+      }
+        ${active && variant === "danger" ? "bg-red-700" : ""}
       `}
       aria-disabled={disabled}
       disabled={disabled}

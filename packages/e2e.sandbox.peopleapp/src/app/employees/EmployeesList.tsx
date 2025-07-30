@@ -1,55 +1,45 @@
 import { useOsdkObjects } from "@osdk/react/experimental";
+import { List } from "../../components/List.js";
+import { ListItem } from "../../components/ListItem.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
-interface EmployeesListProps {
-  selectedEmployee: Employee.OsdkInstance | undefined;
-  onSelectEmployee: (employee: Employee.OsdkInstance) => void;
+interface EmployeeListItemProps {
+  item: Employee.OsdkInstance;
+  isSelected: boolean;
+  onSelect: (employee: Employee.OsdkInstance) => void;
 }
 
-export function EmployeesList(
-  { selectedEmployee, onSelectEmployee }: EmployeesListProps,
+function EmployeeListItem(
+  { item: item, isSelected, onSelect }: EmployeeListItemProps,
 ) {
-  const { data, isLoading, error } = useOsdkObjects(Employee, {});
+  return (
+    <ListItem
+      isSelected={isSelected}
+      onClick={() => onSelect(item)}
+      primaryContent={item.fullName ?? "<full-name-missing>"}
+      secondaryContent={
+        <>
+          {item.adUsername ?? "<username-missing>"} - #{item.employeeNumber}
+        </>
+      }
+    />
+  );
+}
 
-  if (isLoading) {
-    return <div className="text-sm italic">Loading employees...</div>;
-  }
+interface EmployeesListProps {
+  selected: Employee.OsdkInstance | undefined;
+  onSelect: (employee: Employee.OsdkInstance) => void;
+}
 
-  if (error) {
-    return (
-      <div className="text-sm text-red-500">
-        Error loading employees: {error.message}
-      </div>
-    );
-  }
-
-  if (!data || data.length === 0) {
-    return <div className="text-sm italic">No employees found</div>;
-  }
+export function EmployeesList(props: EmployeesListProps) {
+  const employees = useOsdkObjects(Employee, {});
 
   return (
-    <ul className="list-none">
-      {data.map(employee => {
-        const isSelected =
-          selectedEmployee?.$primaryKey === employee.$primaryKey;
-        return (
-          <li
-            key={employee.$primaryKey}
-            className={`py-2 px-3 mb-1 rounded cursor-pointer hover:bg-gray-100 ${
-              isSelected ? "bg-blue-100 hover:bg-blue-100" : ""
-            }`}
-            onClick={() => onSelectEmployee(employee)}
-          >
-            <div className="font-medium">
-              {employee.fullName ?? "<full-name-missing>"}
-            </div>
-            <div className="text-sm text-gray-600">
-              {employee.adUsername ?? "<username-missing>"}{" "}
-              - #{employee.employeeNumber}
-            </div>
-          </li>
-        );
-      })}
-    </ul>
+    <List<Employee>
+      header="Employees"
+      items={employees}
+      Component={EmployeeListItem}
+      {...props}
+    />
   );
 }
