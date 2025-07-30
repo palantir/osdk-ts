@@ -7377,7 +7377,7 @@ describe("Ontology Defining", () => {
       `);
     });
 
-    it("Customizations on CRUD actions are properly defined", () => {
+    it("Static default action parameters must match type", () => {
       const exampleObjectType = defineObject({
         titlePropertyApiName: "bar",
         displayName: "exampleObjectType",
