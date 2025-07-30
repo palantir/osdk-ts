@@ -6402,9 +6402,18 @@ describe("Ontology Defining", () => {
                   },
                 },
               ],
+              defaultValue: {
+                type: "staticValue",
+                staticValue: {
+                  type: "string",
+                  string: "default_fizz",
+                },
+              },
             },
           },
           excludedProperties: ["buzz"],
+          defaultFormat: "TABLE",
+          enableLayoutSwitch: true,
         },
       );
 
@@ -6445,9 +6454,18 @@ describe("Ontology Defining", () => {
                   },
                 },
               ],
+              defaultValue: {
+                type: "staticValue",
+                staticValue: {
+                  type: "string",
+                  string: "default_fizz",
+                },
+              },
             },
           },
           excludedProperties: ["buzz"],
+          defaultFormat: "TABLE",
+          enableLayoutSwitch: true,
         },
       );
 
@@ -6625,6 +6643,13 @@ describe("Ontology Defining", () => {
                           ],
                           "defaultValidation": {
                             "display": {
+                              "prefill": {
+                                "staticValue": {
+                                  "string": "default_fizz",
+                                  "type": "string",
+                                },
+                                "type": "staticValue",
+                              },
                               "renderHint": {
                                 "textInput": {},
                                 "type": "textInput",
@@ -6684,7 +6709,7 @@ describe("Ontology Defining", () => {
                     "apiName": "com.palantir.create-object-foo",
                     "displayMetadata": {
                       "configuration": {
-                        "defaultLayout": "FORM",
+                        "defaultLayout": "TABLE",
                         "displayAndFormat": {
                           "table": {
                             "columnWidthByParameterRid": {},
@@ -6694,7 +6719,7 @@ describe("Ontology Defining", () => {
                             "rowHeightInLines": 1,
                           },
                         },
-                        "enableLayoutUserSwitch": false,
+                        "enableLayoutUserSwitch": true,
                       },
                       "description": "",
                       "displayName": "Create exampleObjectType",
@@ -6934,6 +6959,13 @@ describe("Ontology Defining", () => {
                           ],
                           "defaultValidation": {
                             "display": {
+                              "prefill": {
+                                "staticValue": {
+                                  "string": "default_fizz",
+                                  "type": "string",
+                                },
+                                "type": "staticValue",
+                              },
                               "renderHint": {
                                 "textInput": {},
                                 "type": "textInput",
@@ -6993,7 +7025,7 @@ describe("Ontology Defining", () => {
                     "apiName": "com.palantir.modify-object-foo",
                     "displayMetadata": {
                       "configuration": {
-                        "defaultLayout": "FORM",
+                        "defaultLayout": "TABLE",
                         "displayAndFormat": {
                           "table": {
                             "columnWidthByParameterRid": {},
@@ -7003,7 +7035,7 @@ describe("Ontology Defining", () => {
                             "rowHeightInLines": 1,
                           },
                         },
-                        "enableLayoutUserSwitch": false,
+                        "enableLayoutUserSwitch": true,
                       },
                       "description": "",
                       "displayName": "Modify exampleObjectType",
@@ -7343,6 +7375,40 @@ describe("Ontology Defining", () => {
           },
         }
       `);
+    });
+
+    it("Customizations on CRUD actions are properly defined", () => {
+      const exampleObjectType = defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "exampleObjectType",
+        pluralDisplayName: "exampleObjectTypes",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "primary",
+        properties: {
+          "bar": { type: "string" },
+          "fizz": { type: "string" },
+          "buzz": { type: "string" },
+          "primary": { type: "string" },
+        },
+      });
+      expect(() =>
+        defineCreateObjectAction({
+          objectType: exampleObjectType,
+          parameterLevelValidations: {
+            "buzz": {
+              defaultValue: {
+                type: "staticValue",
+                staticValue: {
+                  type: "boolean",
+                  boolean: true,
+                },
+              },
+            },
+          },
+        })
+      ).toThrowError(
+        "Invariant failed: Default static value for parameter buzz does not match type",
+      );
     });
 
     it("ModifyObjectRule requires objectToModify parameter", () => {

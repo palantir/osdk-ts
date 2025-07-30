@@ -14,13 +14,4 @@
  * limitations under the License.
  */
 
-export type {
-  ActionTypeDescriptionGeneratorPluginRequest,
-  ActionTypeDescriptionGeneratorPluginResponse,
-  LanguageModelApiName,
-  LlmConfig,
-  OntologyLmsRequest,
-  OntologyLmsResponse,
-  StringPluginRequest,
-  StringPluginResponse,
-} from "./__components.js";
+export { postOntologyBlockData } from "./OntologyBlockDataDummyService/postOntologyBlockData.js";

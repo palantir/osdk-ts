@@ -186,6 +186,7 @@ export function defineCreateObjectAction(
                 def.objectType.properties?.[id].type!,
               ),
             required: def.parameterLevelValidations?.[id].required ?? true,
+            defaultValue: def.parameterLevelValidations?.[id].defaultValue,
           }
           : {
             required: (def.objectType.properties?.[id].array ?? false)
@@ -237,6 +238,10 @@ export function defineCreateObjectAction(
         ],
       }
       : {}),
+    ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
+    ...(def.enableLayoutSwitch
+      && { enableLayoutSwitch: def.enableLayoutSwitch }),
+    ...(def.displayAndFormat && { displayAndFormat: def.displayAndFormat }),
   });
 }
 
@@ -375,6 +380,7 @@ export function defineModifyObjectAction(
                 def.objectType.properties?.[id].type!,
               ),
             required: def.parameterLevelValidations?.[id].required ?? false,
+            defaultValue: def.parameterLevelValidations?.[id].defaultValue,
           }
           : {
             required: (def.objectType.properties?.[id].array ?? false)
@@ -439,6 +445,10 @@ export function defineModifyObjectAction(
         ],
       }
       : {}),
+    ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
+    ...(def.enableLayoutSwitch
+      && { enableLayoutSwitch: def.enableLayoutSwitch }),
+    ...(def.displayAndFormat && { displayAndFormat: def.displayAndFormat }),
   });
 }
 
@@ -836,6 +846,12 @@ function validateActionValidation(action: ActionType): void {
         action.parameters,
       );
     });
+    if (param.validation.defaultValue?.type === "staticValue") {
+      invariant(
+        param.validation.defaultValue.staticValue.type === param.type,
+        `Default static value for parameter ${param.id} does not match type`,
+      );
+    }
     seenParameterIds.add(param.id);
   });
 }
