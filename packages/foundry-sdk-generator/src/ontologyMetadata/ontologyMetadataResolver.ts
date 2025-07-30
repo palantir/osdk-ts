@@ -688,6 +688,8 @@ export class OntologyMetadataResolver {
       case "null":
         return Result.ok({});
       case "unsupported":
+      case "interfaceObject":
+      case "interfaceObjectSet":
         return Result.err([
           `Unable to load query ${queryApiName} because it takes an unsupported parameter type: ${
             JSON.stringify(
@@ -743,7 +745,10 @@ export class OntologyMetadataResolver {
         ]);
       case "interfaceObject":
         if (
-          loadedInterfaceApiNames.has(actionTypeParameter.interfaceTypeApiName)
+          actionTypeParameter.interfaceTypeApiName != null
+          && loadedInterfaceApiNames.has(
+            actionTypeParameter.interfaceTypeApiName,
+          )
         ) {
           return Result.ok({});
         }
