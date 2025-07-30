@@ -1,6 +1,7 @@
 import { useOsdkObjects } from "@osdk/react/experimental";
 import { useState } from "react";
 import "./App.css";
+import { Button } from "./components/Button.js";
 import { EmployeeDetails } from "./components/EmployeeDetails.js";
 import { H1 } from "./components/headers.js";
 import { OfficeDetails } from "./components/OfficeDetails.js";
@@ -36,22 +37,20 @@ function App() {
       <H1>People App</H1>
 
       <div className="flex space-x-4 mb-6">
-        <button
-          className={`px-4 py-2 rounded ${
-            activeTab === "employees" ? "bg-blue-500 text-white" : "bg-gray-200"
-          }`}
+        <Button
+          variant="tab"
+          active={activeTab === "employees"}
           onClick={() => setActiveTab("employees")}
         >
           Employees
-        </button>
-        <button
-          className={`px-4 py-2 rounded ${
-            activeTab === "offices" ? "bg-blue-500 text-white" : "bg-gray-200"
-          }`}
+        </Button>
+        <Button
+          variant="tab"
+          active={activeTab === "offices"}
           onClick={() => setActiveTab("offices")}
         >
           Offices
-        </button>
+        </Button>
       </div>
 
       <div className="flex flex-row items-start text-left">
