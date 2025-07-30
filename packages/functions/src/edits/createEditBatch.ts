@@ -97,7 +97,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
   ): void {
     if (objectOrInterfaceType.type === "interface") {
       this.edits.push({
-        type: "createInterface",
+        type: "createObjectForInterface",
         int: objectOrInterfaceType,
         properties,
       } as unknown as X);
@@ -116,7 +116,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
   ): void {
     if (isInterfaceLocator(obj)) {
       this.edits.push({
-        type: "deleteInterface",
+        type: "deleteObjectForInterface",
         obj,
       } as unknown as X);
 
@@ -135,7 +135,7 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
   ): void {
     if (isInterfaceLocator(obj)) {
       this.edits.push({
-        type: "updateInterface",
+        type: "updateObjectForInterface",
         obj,
         properties,
       } as unknown as X);

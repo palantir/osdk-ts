@@ -22,14 +22,15 @@ import type {
 import type {
   AddLink,
   AnyEdit,
-  CreateInterface,
   CreateObject,
+  CreateObjectForInterface,
   DeleteObject,
+  DeleteObjectForInterface,
   InterfaceLocator,
   ObjectLocator,
   RemoveLink,
-  UpdateInterface,
   UpdateObject,
+  UpdateObjectForInterface,
 } from "./types.js";
 
 // Helper type for literal "apiName" values without resorting to expensive type inference.
@@ -89,34 +90,34 @@ export type RemoveLinkTargets<
 // CreateObject helper types
 export type CreatableObjectOrInterfaceTypes<X extends AnyEdit> = X extends
   CreateObject<infer OTD> ? OTD
-  : X extends CreateInterface<infer ID> ? ID
+  : X extends CreateObjectForInterface<infer ID> ? ID
   : never;
 
 export type CreatableObjectOrInterfaceTypeProperties<
   X extends AnyEdit,
   OI extends ObjectTypeDefinition | InterfaceDefinition,
 > = X extends CreateObject<infer OTD> ? OTD extends OI ? X["properties"] : never
-  : X extends CreateInterface<infer ID>
+  : X extends CreateObjectForInterface<infer ID>
     ? ID extends OI ? X["properties"] : never
   : never;
 
 // DeleteObject helper types
 export type DeletableObjectOrInterfaceLocators<X extends AnyEdit> = X extends
   DeleteObject<infer OTD> ? ObjectLocator<OTD>
-  : X extends UpdateInterface<infer ID> ? InterfaceLocator<ID>
+  : X extends DeleteObjectForInterface<infer ID> ? InterfaceLocator<ID>
   : never;
 
 // UpdateObject and UpdateInterface helper types
 export type UpdatableObjectOrInterfaceLocators<X extends AnyEdit> = X extends
   UpdateObject<infer OTD> ? ObjectLocator<OTD>
-  : X extends UpdateInterface<infer ID> ? InterfaceLocator<ID>
+  : X extends UpdateObjectForInterface<infer ID> ? InterfaceLocator<ID>
   : never;
 
 export type UpdatableObjectOrInterfaceLocatorProperties<
   X extends AnyEdit,
   OL extends ObjectLocator<any>,
 > = X extends UpdateObject<ObjectTypeDefinitionForLocator<OL>> ? X["properties"]
-  : X extends UpdateInterface<InterfaceDefinitionForLocator<OL>>
+  : X extends UpdateObjectForInterface<InterfaceDefinitionForLocator<OL>>
     ? X["properties"]
   : never;
 

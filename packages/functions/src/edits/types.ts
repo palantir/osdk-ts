@@ -52,9 +52,9 @@ export namespace Edits {
   > = AddLink<S, L> | RemoveLink<S, L>;
 
   export type Interface<S extends InterfaceDefinition> =
-    | CreateInterface<S>
-    | UpdateInterface<S>
-    | DeleteInterface<S>;
+    | CreateObjectForInterface<S>
+    | UpdateObjectForInterface<S>
+    | DeleteObjectForInterface<S>;
 }
 
 export interface AddLink<
@@ -104,8 +104,8 @@ export interface DeleteObject<S extends ObjectTypeDefinition> {
   obj: ObjectLocator<S>;
 }
 
-export interface DeleteInterface<S extends InterfaceDefinition> {
-  type: "deleteInterface";
+export interface DeleteObjectForInterface<S extends InterfaceDefinition> {
+  type: "deleteObjectForInterface";
   obj: InterfaceLocator<S>;
 }
 
@@ -124,8 +124,8 @@ export interface UpdateObject<S extends ObjectTypeDefinition> {
   >;
 }
 
-export interface CreateInterface<S extends InterfaceDefinition> {
-  type: "createInterface";
+export interface CreateObjectForInterface<S extends InterfaceDefinition> {
+  type: "createObjectForInterface";
   int: S;
   properties: PartialForOptionalProperties<
     {
@@ -138,8 +138,8 @@ export interface CreateInterface<S extends InterfaceDefinition> {
   >;
 }
 
-export interface UpdateInterface<S extends InterfaceDefinition> {
-  type: "updateInterface";
+export interface UpdateObjectForInterface<S extends InterfaceDefinition> {
+  type: "updateObjectForInterface";
   obj: InterfaceLocator<S>;
   properties: PartialForOptionalProperties<
     {
@@ -156,9 +156,9 @@ export type AnyEdit =
   | CreateObject<any>
   | DeleteObject<any>
   | UpdateObject<any>
-  | CreateInterface<any>
-  | UpdateInterface<any>
-  | DeleteInterface<any>;
+  | CreateObjectForInterface<any>
+  | UpdateObjectForInterface<any>
+  | DeleteObjectForInterface<any>;
 
 // Check if locator is for an interface by comparing $apiName and $objectType.
 // Both object types and interfaces store the object type API name in $objectType,

@@ -190,12 +190,12 @@ describe(createEditBatch, () => {
         properties: { capacity: 4 },
       },
       {
-        type: "createInterface",
+        type: "createObjectForInterface",
         int: FooInterface,
         properties: { fooSpt: "created interface", $objectType: "Task" },
       },
       {
-        type: "updateInterface",
+        type: "updateObjectForInterface",
         obj: {
           $apiName: "FooInterface",
           $primaryKey: 21,
@@ -204,7 +204,7 @@ describe(createEditBatch, () => {
         properties: { fooSpt: "fooSpt" },
       },
       {
-        type: "updateInterface",
+        type: "updateObjectForInterface",
         obj: {
           $apiName: "FooInterface",
           $primaryKey: 22,
@@ -213,7 +213,7 @@ describe(createEditBatch, () => {
         properties: { fooSpt: "fooSpt2" },
       },
       {
-        type: "deleteInterface",
+        type: "deleteObjectForInterface",
         obj: {
           $apiName: "FooInterface",
           $primaryKey: 21,
