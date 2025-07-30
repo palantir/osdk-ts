@@ -10,3 +10,4 @@
 ## Project Management
 
 - This project uses pnpm. DO NOT use npm
+- YOU ARE NOT ALLOWED TO USE `npm`. This project uses `pnpm`!
