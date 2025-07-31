@@ -1,12 +1,8 @@
 import { useOsdkObjects } from "@osdk/react/experimental";
 import { useState } from "react";
 import { $ } from "../foundryClient.js";
-import type {
-  Employee} from "../generatedNoCheck2/index.js";
-import {
-  modifyEmployee,
-  Office,
-} from "../generatedNoCheck2/index.js";
+import type { Employee } from "../generatedNoCheck2/index.js";
+import { modifyEmployee, Office } from "../generatedNoCheck2/index.js";
 import { Button } from "./Button.js";
 import { ErrorMessage } from "./ErrorMessage.js";
 import { InlineSpinner } from "./InlineSpinner.js";
