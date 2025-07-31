@@ -1,5 +1,11 @@
 # @osdk/functions
 
+## 1.1.1
+
+### Patch Changes
+
+- 47d35f7: Support Ontology interface edits
+
 ## 1.1.0
 
 ### Patch Changes
