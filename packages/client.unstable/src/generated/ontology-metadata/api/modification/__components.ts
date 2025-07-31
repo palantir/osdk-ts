@@ -305,6 +305,10 @@ export interface ArrayPropertyTypeModification {
   subtype: TypeForModification;
 }
 export interface BranchEntityIndexingConfigurationModification {
+  parentBranchManyToManyLinkTypes: Record<
+    _api_LinkTypeRid,
+    ManyToManyLinkTypeBranchIndexingConfiguration
+  >;
   parentBranchObjectTypes: Record<
     _api_ObjectTypeRid,
     ObjectTypeBranchIndexingConfiguration
@@ -739,6 +743,9 @@ export interface ManyToManyLinkDefinitionModification {
   objectTypeIdA: _api_ObjectTypeId;
   objectTypeIdB: _api_ObjectTypeId;
   peeringMetadata?: LinkTypePeeringMetadataModification | null | undefined;
+}
+export interface ManyToManyLinkTypeBranchIndexingConfiguration {
+  copyEditsMode: CopyEditsMode;
 }
 export interface ManyToManyLinkTypeDatasetDatasourceModification {
   datasetRid: _api_DatasetRid;

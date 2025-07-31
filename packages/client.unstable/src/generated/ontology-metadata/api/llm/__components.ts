@@ -30,17 +30,14 @@ export interface ActionTypeDescriptionGeneratorPluginRequest {
 export interface ActionTypeDescriptionGeneratorPluginResponse {
   descriptions: Array<string>;
 }
-/**
- * The supported language models to use for the completion request.
- */
-export type LanguageModel = "GPT_3_5" | "GPT_4" | "GPT_4_32K";
+export type LanguageModelApiName = string;
 
 /**
  * The configuration settings for the LLM.
  * This is used to override the default settings used to query the LLM for optimal performance.
  */
 export interface LlmConfig {
-  languageModel?: LanguageModel | null | undefined;
+  languageModelApiName?: LanguageModelApiName | null | undefined;
   maxTokens?: number | null | undefined;
   temperature?: number | "NaN" | "Infinity" | "-Infinity" | null | undefined;
 }

@@ -23,16 +23,27 @@ import type { UnorderedAggregationClause } from "./AggregationsClause.js";
 export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
   Q extends ObjectOrInterfaceDefinition,
   AO extends AggregateOpts<Q>,
-> = SingleKeyObject<AO["$groupBy"]> extends never ? (
-    AO["$select"] extends UnorderedAggregationClause<Q>
-      ? AggregateOptsThatErrors<Q, AO>
-      : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO>
-      : {
-        $groupBy: AO["$groupBy"];
-        $select: UnorderedAggregationClause<Q>;
-      }
-  )
+> = ContainsExactMatchWithNull<AO["$groupBy"]> extends true ? {
+    $groupBy: AO["$groupBy"];
+    $select: UnorderedAggregationClause<Q>;
+  }
+  : SingleKeyObject<AO["$groupBy"]> extends never ? (
+      AO["$select"] extends UnorderedAggregationClause<Q>
+        ? AggregateOptsThatErrors<Q, AO>
+        : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO>
+        : {
+          $groupBy: AO["$groupBy"];
+          $select: UnorderedAggregationClause<Q>;
+        }
+    )
   : AggregateOptsThatErrors<Q, AO>;
+
+type ContainsExactMatchWithNull<GB extends GroupByClause<any> | undefined> =
+  undefined extends GB ? false : {} extends GB ? false : {
+    [P in keyof GB]: GB[P] extends { $exact: { $includeNullValue: true } }
+      ? true
+      : false;
+  }[keyof GB];
 
 type AggregateOptsThatErrors<
   Q extends ObjectOrInterfaceDefinition,

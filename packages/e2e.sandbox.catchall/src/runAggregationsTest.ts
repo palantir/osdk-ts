@@ -98,7 +98,18 @@ export async function runAggregationsTest(): Promise<void> {
       $count: "unordered",
     },
     $groupBy: {
-      "description": { "$exact": { $defaultValue: "default", $limit: 300 } },
+      "description": {
+        "$exact": { $limit: 300, $defaultValue: "default_value" },
+      },
+    },
+  });
+
+  const testExactMatchWithNullBucket = await client(OsdkTestObject).aggregate({
+    $select: {
+      $count: "unordered",
+    },
+    $groupBy: {
+      "description": { "$exact": { $limit: 300, $includeNullValue: true } },
     },
   });
 
@@ -122,7 +133,12 @@ export async function runAggregationsTest(): Promise<void> {
     );
   }
 
-  console.log(testExactMatchWithDefault);
+  console.log(
+    "Exact match with default value bucket: ",
+    testExactMatchWithDefault,
+  );
+
+  console.log("Exact match with null bucket:", testExactMatchWithNullBucket);
 }
 
 void runAggregationsTest();

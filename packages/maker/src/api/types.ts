@@ -20,6 +20,8 @@ import type {
   ApiNameValueTypeReference,
   BaseType,
   DataConstraint,
+  DisplayMetadataConfigurationDefaultLayout,
+  DisplayMetadataConfigurationDisplayAndFormat,
   ExampleValue,
   FailureMessage,
   ImportedTypes,
@@ -49,6 +51,7 @@ import type {
   OntologyIrMarketplaceInterfaceType,
   OntologyIrObjectType,
   OntologyIrParameterDateRangeValue,
+  OntologyIrParameterPrefill,
   OntologyIrPropertyType,
   OntologyIrValidationRule,
   ParameterId,
@@ -139,9 +142,12 @@ export type ActionTypeUserDefinition = {
   apiName?: string;
   displayName?: string;
   status?: ActionStatus;
-  parameterLevelValidations?: Record<string, ActionParameterValidation>;
+  parameterConfiguration?: Record<string, ActionParameterValidation>;
   actionLevelValidation?: ActionLevelValidationDefinition;
   excludedProperties?: Array<ParameterId>;
+  defaultFormat?: DisplayMetadataConfigurationDefaultLayout;
+  enableLayoutSwitch?: boolean;
+  displayAndFormat?: DisplayMetadataConfigurationDisplayAndFormat;
 };
 
 export interface ActionParameter {
@@ -158,6 +164,7 @@ export interface ActionParameterValidation {
   required?: ActionParameterRequirementConstraint;
   defaultVisibility?: "editable" | "disabled" | "hidden";
   conditionalOverrides?: Array<ActionParameterConditionalOverride>;
+  defaultValue?: OntologyIrParameterPrefill;
 }
 
 // TODO(ethana): add more commonly used conditions - parameter matching, organizations, etc.
@@ -242,6 +249,9 @@ export interface ActionTypeInner {
   formContentOrdering: Array<OntologyIrFormContent>;
   validation: Array<OntologyIrValidationRule>;
   typeClasses: Array<TypeClass>;
+  defaultFormat: DisplayMetadataConfigurationDefaultLayout;
+  enableLayoutSwitch: boolean;
+  displayAndFormat: DisplayMetadataConfigurationDisplayAndFormat;
 }
 
 export type ActionValidationRule = OntologyIrValidationRule;

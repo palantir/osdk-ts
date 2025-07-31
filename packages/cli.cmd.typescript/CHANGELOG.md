@@ -1,5 +1,25 @@
 # @osdk/cli.cmd.typescript
 
+## 0.28.0-beta.10
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.9
+- @osdk/cli.common@0.28.0-beta.10
+
+## 0.28.0-beta.9
+
+### Patch Changes
+
+- @osdk/cli.common@0.28.0-beta.9
+
+## 0.28.0-beta.8
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.8
+- @osdk/cli.common@0.28.0-beta.8
+
 ## 0.28.0-beta.7
 
 ### Patch Changes

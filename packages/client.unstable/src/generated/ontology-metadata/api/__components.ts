@@ -313,6 +313,12 @@ export interface ActionLogValueModification_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValueModification;
 }
 
+export interface ActionLogValueModification_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2:
+    InterfaceParameterPropertyValueModificationV2;
+}
+
 export interface ActionLogValueModification_editedObjects {
   type: "editedObjects";
   editedObjects: ObjectTypeId;
@@ -396,6 +402,7 @@ export type ActionLogValueModification =
   | ActionLogValueModification_parameterValue
   | ActionLogValueModification_objectParameterPropertyValue
   | ActionLogValueModification_interfaceParameterPropertyValue
+  | ActionLogValueModification_interfaceParameterPropertyValueV2
   | ActionLogValueModification_editedObjects
   | ActionLogValueModification_allEditedObjects
   | ActionLogValueModification_actionTypeRid
@@ -1207,6 +1214,9 @@ export interface AddInterfaceRule {
   >;
 }
 export interface AddInterfaceRuleModification {
+  interfacePropertyTypeLogicRuleValueModifications: Array<
+    InterfacePropertyTypeLogicRuleValueModification
+  >;
   interfaceTypeRidOrIdInRequest: InterfaceTypeRidOrIdInRequest;
   objectType: ParameterId;
   sharedPropertyTypeLogicRuleValueModifications: Array<
@@ -2474,6 +2484,12 @@ export interface ConditionValueModification_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValueModification;
 }
 
+export interface ConditionValueModification_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2:
+    InterfaceParameterPropertyValueModificationV2;
+}
+
 export interface ConditionValueModification_userProperty {
   type: "userProperty";
   userProperty: UserProperty;
@@ -2488,6 +2504,7 @@ export type ConditionValueModification =
   | ConditionValueModification_staticValue
   | ConditionValueModification_objectParameterPropertyValue
   | ConditionValueModification_interfaceParameterPropertyValue
+  | ConditionValueModification_interfaceParameterPropertyValueV2
   | ConditionValueModification_userProperty
   | ConditionValueModification_parameterLength;
 
@@ -3208,7 +3225,12 @@ export interface EmbeddingModel_text {
   type: "text";
   text: TextEmbeddingModel;
 }
-export type EmbeddingModel = EmbeddingModel_text;
+
+export interface EmbeddingModel_multimodal {
+  type: "multimodal";
+  multimodal: MultimodalEmbeddingModel;
+}
+export type EmbeddingModel = EmbeddingModel_text | EmbeddingModel_multimodal;
 
 export interface Empty {
 }
@@ -3608,6 +3630,7 @@ export interface GetActionTypesForObjectTypeRequest {
 export interface GetActionTypesForObjectTypeResponse {
   actionTypes: Array<ActionType>;
   nextPageToken?: GetActionTypesForObjectTypePageToken | null | undefined;
+  resolvedBranch: ResolvedBranch;
 }
 export interface GetEntityDelegateDatasetRequest {
   ontologyEntityRid: ObjectOrLinkTypeRid;
@@ -3776,6 +3799,8 @@ export interface IconReference {
   locator: string;
   source: string;
 }
+export interface ImageModality {
+}
 export interface ImplementingLinkType {
   linkTypeRid: LinkTypeRid;
   startingFromLinkTypeSide: _api_types_LinkTypeSide;
@@ -3866,6 +3891,32 @@ export type InterfaceLinkTypeRidOrIdInRequest =
   | InterfaceLinkTypeRidOrIdInRequest_rid
   | InterfaceLinkTypeRidOrIdInRequest_idInRequest;
 
+/**
+ * Reference to a struct field of a struct property.
+ */
+export interface InterfaceObjectParameterStructFieldValue {
+  interfacePropertyTypeRid: InterfacePropertyTypeRid;
+  parameterId: ParameterId;
+  structFieldRid: StructFieldRid;
+}
+export interface InterfaceObjectParameterStructFieldValueModification {
+  interfacePropertyTypeRidOrIdInRequest: InterfacePropertyTypeRidOrIdInRequest;
+  parameterId: ParameterId;
+  structFieldApiNameOrRid: StructFieldApiNameOrRid;
+}
+/**
+ * Reference to a struct field of a struct list property.
+ */
+export interface InterfaceObjectParameterStructListFieldValue {
+  interfacePropertyTypeRid: InterfacePropertyTypeRid;
+  parameterId: ParameterId;
+  structFieldRid: StructFieldRid;
+}
+export interface InterfaceObjectParameterStructListFieldValueModification {
+  interfacePropertyTypeRidOrIdInRequest: InterfacePropertyTypeRidOrIdInRequest;
+  parameterId: ParameterId;
+  structFieldApiNameOrRid: StructFieldApiNameOrRid;
+}
 export interface InterfaceParameterPropertyValue {
   parameterId: ParameterId;
   sharedPropertyTypeRid: SharedPropertyTypeRid;
@@ -3873,6 +3924,13 @@ export interface InterfaceParameterPropertyValue {
 export interface InterfaceParameterPropertyValueModification {
   parameterId: ParameterId;
   sharedPropertyTypeRidOrIdInRequest: SharedPropertyTypeRidOrIdInRequest;
+}
+/**
+ * Used to reference interface properties. Note, these are curently unsupported on the actions backend.
+ */
+export interface InterfaceParameterPropertyValueModificationV2 {
+  interfacePropertyTypeRidOrIdInRequest: InterfacePropertyTypeRidOrIdInRequest;
+  parameterId: ParameterId;
 }
 export interface InterfaceParameterPropertyValueV2 {
   interfacePropertyTypeRid: InterfacePropertyTypeRid;
@@ -3919,6 +3977,11 @@ export interface InterfacePropertyTypeImplementation_propertyTypeRid {
 export type InterfacePropertyTypeImplementation =
   InterfacePropertyTypeImplementation_propertyTypeRid;
 
+export interface InterfacePropertyTypeLogicRuleValueModification {
+  interfacePropertyLogicRuleModification:
+    PrimitiveOrStructLogicRuleModification;
+  interfacePropertyTypeRidOrIdInRequest: InterfacePropertyTypeRidOrIdInRequest;
+}
 /**
  * A rid identifying an InterfacePropertyType. This rid is generated randomly and is safe for logging purposes.
  * The InterfacePropertyTypeRid for an InterfacePropertyType is immutable.
@@ -4865,6 +4928,12 @@ export interface LogicRuleValueModification_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValueModification;
 }
 
+export interface LogicRuleValueModification_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2:
+    InterfaceParameterPropertyValueModificationV2;
+}
+
 export interface LogicRuleValueModification_currentUser {
   type: "currentUser";
   currentUser: CurrentUser;
@@ -4893,6 +4962,7 @@ export type LogicRuleValueModification =
   | LogicRuleValueModification_staticValue
   | LogicRuleValueModification_objectParameterPropertyValue
   | LogicRuleValueModification_interfaceParameterPropertyValue
+  | LogicRuleValueModification_interfaceParameterPropertyValueV2
   | LogicRuleValueModification_currentUser
   | LogicRuleValueModification_currentTime
   | LogicRuleValueModification_uniqueIdentifier
@@ -5092,6 +5162,7 @@ export type MediaSourceRid =
   | MediaSourceRid_mediaSetRid
   | MediaSourceRid_datasetRid;
 
+export type MioEmbeddingModel = "GOOGLE_SIGLIP_2";
 export interface MissingAffectedObjectTypesForFunctionRule {
   functionRid: FunctionRid;
   functionVersion: SemanticFunctionVersion;
@@ -5099,6 +5170,26 @@ export interface MissingAffectedObjectTypesForFunctionRule {
 }
 export interface MissingParameterValueType {
 }
+export interface Modality_text {
+  type: "text";
+  text: TextModality;
+}
+
+export interface Modality_image {
+  type: "image";
+  image: ImageModality;
+}
+/**
+ * Represents the type of input data that can be embedded.
+ */
+export type Modality = Modality_text | Modality_image;
+
+export interface ModelWithSource_mio {
+  type: "mio";
+  mio: MioEmbeddingModel;
+}
+export type ModelWithSource = ModelWithSource_mio;
+
 export interface ModifyInterfaceRule {
   interfaceObjectToModify: ParameterId;
   interfacePropertyValues: Record<
@@ -5113,6 +5204,9 @@ export interface ModifyInterfaceRule {
 }
 export interface ModifyInterfaceRuleModification {
   interfaceObjectToModify: ParameterId;
+  interfacePropertyTypeLogicRuleValueModifications: Array<
+    InterfacePropertyTypeLogicRuleValueModification
+  >;
   sharedPropertyTypeLogicRuleValueModifications: Array<
     SharedPropertyTypeLogicRuleValueModification
   >;
@@ -5144,6 +5238,14 @@ export interface ModifyObjectRuleModification {
  * ResourceIdentifier for a Workshop Module.
  */
 export type ModuleRid = string;
+
+/**
+ * Represents an embedding model that can support different input types
+ */
+export interface MultimodalEmbeddingModel {
+  modelWithSource: ModelWithSource;
+  supportedModalities: Array<Modality>;
+}
 export interface MultipassUserFilter_groupFilter {
   type: "groupFilter";
   groupFilter: MultipassUserInGroupFilter;
@@ -6366,6 +6468,7 @@ export interface OntologyBulkLoadEntitiesRequest {
   actionTypes: Array<ActionTypeLoadRequestV2>;
   datasourceTypes: Array<DatasourceType>;
   entityMetadata?: EntityMetadataLoadRequest | null | undefined;
+  fallBackToOwningBranch?: boolean | null | undefined;
   includeEntityMetadata?: boolean | null | undefined;
   includeObjectTypeCount?: boolean | null | undefined;
   includeObjectTypesWithoutSearchableDatasources?: boolean | null | undefined;
@@ -7247,15 +7350,6 @@ export interface OntologyIrDeprecatedActionTypeStatus {
   replacedBy?: ActionTypeApiName | null | undefined;
 }
 /**
- * This status indicates that the interface is reaching the end of its life and will be removed as per the
- * deadline specified.
- */
-export interface OntologyIrDeprecatedInterfaceTypeStatus {
-  deadline: string;
-  message: string;
-  replacedBy?: InterfaceTypeApiName | null | undefined;
-}
-/**
  * This status indicates that the LinkType is reaching the end of its life and will be removed as per the deadline specified.
  */
 export interface OntologyIrDeprecatedLinkTypeStatus {
@@ -7414,11 +7508,21 @@ export interface OntologyIrInlineActionType {
   parameterId?: ParameterId | null | undefined;
   rid: ActionTypeApiName;
 }
-export interface OntologyIrInterfaceLinkType {
-  cardinality: InterfaceLinkTypeCardinality;
-  linkedEntityTypeId: OntologyIrLinkedEntityTypeId;
-  metadata: InterfaceLinkTypeMetadata;
-  required: boolean;
+/**
+ * Reference to a struct field of a struct property.
+ */
+export interface OntologyIrInterfaceObjectParameterStructFieldValue {
+  interfacePropertyTypeRid: InterfacePropertyTypeApiName;
+  parameterId: ParameterId;
+  structFieldRid: StructFieldRid;
+}
+/**
+ * Reference to a struct field of a struct list property.
+ */
+export interface OntologyIrInterfaceObjectParameterStructListFieldValue {
+  interfacePropertyTypeRid: InterfacePropertyTypeApiName;
+  parameterId: ParameterId;
+  structFieldRid: StructFieldRid;
 }
 export interface OntologyIrInterfaceParameterPropertyValue {
   parameterId: ParameterId;
@@ -7455,31 +7559,6 @@ export interface OntologyIrInterfaceSharedPropertyType {
   required: boolean;
   sharedPropertyType: OntologyIrSharedPropertyType;
 }
-export interface OntologyIrInterfaceTypeStatus_experimental {
-  type: "experimental";
-  experimental: ExperimentalInterfaceTypeStatus;
-}
-
-export interface OntologyIrInterfaceTypeStatus_active {
-  type: "active";
-  active: ActiveInterfaceTypeStatus;
-}
-
-export interface OntologyIrInterfaceTypeStatus_deprecated {
-  type: "deprecated";
-  deprecated: OntologyIrDeprecatedInterfaceTypeStatus;
-}
-
-export interface OntologyIrInterfaceTypeStatus_example {
-  type: "example";
-  example: ExampleInterfaceTypeStatus;
-}
-export type OntologyIrInterfaceTypeStatus =
-  | OntologyIrInterfaceTypeStatus_experimental
-  | OntologyIrInterfaceTypeStatus_active
-  | OntologyIrInterfaceTypeStatus_deprecated
-  | OntologyIrInterfaceTypeStatus_example;
-
 /**
  * Represents a link between two ObjectTypes with an intermediary ObjectType acting as a bridge.
  * This LinkType can be used to jump from ObjectType A to B without specifying two separate search-arounds.
@@ -8658,6 +8737,7 @@ export type OntologyIrParameterValidationBlockOverride =
  * evaluate correctness of submitted parameters.
  */
 export interface OntologyIrParameterValidationDisplayMetadata {
+  prefill?: OntologyIrParameterPrefill | null | undefined;
   renderHint: _api_types_ParameterRenderHint;
   visibility: _api_types_ParameterVisibility;
 }
@@ -9085,12 +9165,26 @@ export interface OntologyIrStructFieldPrefill_objectParameterStructListFieldValu
   objectParameterStructListFieldValue:
     OntologyIrObjectParameterStructListFieldValue;
 }
+
+export interface OntologyIrStructFieldPrefill_interfaceObjectParameterStructFieldValue {
+  type: "interfaceObjectParameterStructFieldValue";
+  interfaceObjectParameterStructFieldValue:
+    OntologyIrInterfaceObjectParameterStructFieldValue;
+}
+
+export interface OntologyIrStructFieldPrefill_interfaceObjectParameterStructListFieldValue {
+  type: "interfaceObjectParameterStructListFieldValue";
+  interfaceObjectParameterStructListFieldValue:
+    OntologyIrInterfaceObjectParameterStructListFieldValue;
+}
 /**
  * StructFieldPrefill specifies what should initially suggested to users for a struct parameter's field.
  */
 export type OntologyIrStructFieldPrefill =
   | OntologyIrStructFieldPrefill_objectParameterStructFieldValue
-  | OntologyIrStructFieldPrefill_objectParameterStructListFieldValue;
+  | OntologyIrStructFieldPrefill_objectParameterStructListFieldValue
+  | OntologyIrStructFieldPrefill_interfaceObjectParameterStructFieldValue
+  | OntologyIrStructFieldPrefill_interfaceObjectParameterStructListFieldValue;
 
 export interface OntologyIrStructFieldPrefillOverride {
   prefill: OntologyIrStructFieldPrefill;
@@ -10468,6 +10562,12 @@ export interface ParameterPrefillModification_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValueModification;
 }
 
+export interface ParameterPrefillModification_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2:
+    InterfaceParameterPropertyValueModificationV2;
+}
+
 export interface ParameterPrefillModification_objectQueryPrefill {
   type: "objectQueryPrefill";
   objectQueryPrefill: ObjectQueryPrefillModification;
@@ -10495,6 +10595,7 @@ export type ParameterPrefillModification =
   | ParameterPrefillModification_staticObject
   | ParameterPrefillModification_objectParameterPropertyValue
   | ParameterPrefillModification_interfaceParameterPropertyValue
+  | ParameterPrefillModification_interfaceParameterPropertyValueV2
   | ParameterPrefillModification_objectQueryPrefill
   | ParameterPrefillModification_objectQueryPropertyValue
   | ParameterPrefillModification_objectSetRidPrefill
@@ -10854,6 +10955,21 @@ export interface PrePostFix {
 }
 export interface PrimaryKeyPropertySecurityGroupType {
 }
+export interface PrimitiveOrStructLogicRuleModification_logicRuleValueModification {
+  type: "logicRuleValueModification";
+  logicRuleValueModification: LogicRuleValueModification;
+}
+
+export interface PrimitiveOrStructLogicRuleModification_structLogicRuleValueModification {
+  type: "structLogicRuleValueModification";
+  structLogicRuleValueModification: Array<
+    StructFieldLogicRuleValueMappingModification
+  >;
+}
+export type PrimitiveOrStructLogicRuleModification =
+  | PrimitiveOrStructLogicRuleModification_logicRuleValueModification
+  | PrimitiveOrStructLogicRuleModification_structLogicRuleValueModification;
+
 /**
  * The id of a Multipass Principal(Everyone/User/Group)
  */
@@ -11522,7 +11638,11 @@ export interface ResolvedInterfacePropertyType {
   type: Type;
 }
 export interface ResolvedInterfacePropertyTypeConstraints {
+  dataConstraints?: DataConstraints | null | undefined;
+  indexedForSearch: boolean;
   requireImplementation: boolean;
+  typeClasses: Array<TypeClass>;
+  valueType?: ValueTypeReference | null | undefined;
 }
 export interface ResolvedNonDefaultBranch {
   rid: OntologyBranchRid;
@@ -12496,6 +12616,7 @@ export interface StringPropertyType {
   isLongText: boolean;
   supportsEfficientLeadingWildcard?: boolean | null | undefined;
   supportsExactMatching: boolean;
+  supportsFullTextRegex?: boolean | null | undefined;
 }
 export interface StringTypeDataConstraints_regex {
   type: "regex";
@@ -12629,12 +12750,26 @@ export interface StructFieldPrefill_objectParameterStructListFieldValue {
   type: "objectParameterStructListFieldValue";
   objectParameterStructListFieldValue: ObjectParameterStructListFieldValue;
 }
+
+export interface StructFieldPrefill_interfaceObjectParameterStructFieldValue {
+  type: "interfaceObjectParameterStructFieldValue";
+  interfaceObjectParameterStructFieldValue:
+    InterfaceObjectParameterStructFieldValue;
+}
+
+export interface StructFieldPrefill_interfaceObjectParameterStructListFieldValue {
+  type: "interfaceObjectParameterStructListFieldValue";
+  interfaceObjectParameterStructListFieldValue:
+    InterfaceObjectParameterStructListFieldValue;
+}
 /**
  * StructFieldPrefill specifies what should initially suggested to users for a struct parameter's field.
  */
 export type StructFieldPrefill =
   | StructFieldPrefill_objectParameterStructFieldValue
-  | StructFieldPrefill_objectParameterStructListFieldValue;
+  | StructFieldPrefill_objectParameterStructListFieldValue
+  | StructFieldPrefill_interfaceObjectParameterStructFieldValue
+  | StructFieldPrefill_interfaceObjectParameterStructListFieldValue;
 
 export interface StructFieldPrefillModification_objectParameterStructFieldValue {
   type: "objectParameterStructFieldValue";
@@ -12646,12 +12781,26 @@ export interface StructFieldPrefillModification_objectParameterStructListFieldVa
   objectParameterStructListFieldValue:
     ObjectParameterStructListFieldValueModification;
 }
+
+export interface StructFieldPrefillModification_interfaceObjectParameterStructFieldValue {
+  type: "interfaceObjectParameterStructFieldValue";
+  interfaceObjectParameterStructFieldValue:
+    InterfaceObjectParameterStructFieldValueModification;
+}
+
+export interface StructFieldPrefillModification_interfaceObjectParameterStructListFieldValue {
+  type: "interfaceObjectParameterStructListFieldValue";
+  interfaceObjectParameterStructListFieldValue:
+    InterfaceObjectParameterStructListFieldValueModification;
+}
 /**
  * StructFieldPrefillModification specifies what should initially suggested to users for a struct parameter's field.
  */
 export type StructFieldPrefillModification =
   | StructFieldPrefillModification_objectParameterStructFieldValue
-  | StructFieldPrefillModification_objectParameterStructListFieldValue;
+  | StructFieldPrefillModification_objectParameterStructListFieldValue
+  | StructFieldPrefillModification_interfaceObjectParameterStructFieldValue
+  | StructFieldPrefillModification_interfaceObjectParameterStructListFieldValue;
 
 export interface StructFieldPrefillOverride {
   prefill: StructFieldPrefill;
@@ -12974,6 +13123,8 @@ export type TextEmbeddingModel =
   | TextEmbeddingModel_lms
   | TextEmbeddingModel_foundryLiveDeployment;
 
+export interface TextModality {
+}
 /**
  * A retention policy where the datasource will contain at least data from the specified time window.
  */
