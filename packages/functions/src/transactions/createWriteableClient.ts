@@ -21,14 +21,14 @@ import type {
   AddLinkApiNames,
   AddLinkSources,
   AddLinkTargets,
-  CreatableObjectTypeProperties,
-  CreatableObjectTypes,
-  DeletableObjectLocators,
+  CreatableObjectOrInterfaceTypeProperties,
+  CreatableObjectOrInterfaceTypes,
+  DeletableObjectOrInterfaceLocators,
   RemoveLinkApiNames,
   RemoveLinkSources,
   RemoveLinkTargets,
-  UpdatableObjectLocatorProperties,
-  UpdatableObjectLocators,
+  UpdatableObjectOrInterfaceLocatorProperties,
+  UpdatableObjectOrInterfaceLocators,
 } from "../edits/EditBatch.js";
 import type { AnyEdit } from "../edits/types.js";
 import type { WriteableClient, WriteMethods } from "./WriteableClient.js";
@@ -56,10 +56,23 @@ export function createWriteableClient<
           return;
         },
       },
+      unlink: {
+        value: async function<
+          SOL extends RemoveLinkSources<X>,
+          A extends RemoveLinkApiNames<X, SOL>,
+        >(
+          source: SOL,
+          apiName: A,
+          target: RemoveLinkTargets<X, SOL, A>,
+        ): Promise<void> {
+          await Promise.resolve();
+          return;
+        },
+      },
       create: {
-        value: async function<OTD extends CreatableObjectTypes<X>>(
+        value: async function<OTD extends CreatableObjectOrInterfaceTypes<X>>(
           obj: OTD,
-          properties: CreatableObjectTypeProperties<X, OTD>,
+          properties: CreatableObjectOrInterfaceTypeProperties<X, OTD>,
         ): Promise<void> {
           await Promise.resolve();
           return;
@@ -67,8 +80,8 @@ export function createWriteableClient<
       },
       update: {
         value: async function<
-          SOL extends UpdatableObjectLocators<X>,
-          OTD extends UpdatableObjectLocatorProperties<X, SOL>,
+          SOL extends UpdatableObjectOrInterfaceLocators<X>,
+          OTD extends UpdatableObjectOrInterfaceLocatorProperties<X, SOL>,
         >(
           locator: SOL,
           properties: OTD,
@@ -78,21 +91,8 @@ export function createWriteableClient<
         },
       },
       delete: {
-        value: async function<OL extends DeletableObjectLocators<X>>(
+        value: async function<OL extends DeletableObjectOrInterfaceLocators<X>>(
           obj: OL,
-        ): Promise<void> {
-          await Promise.resolve();
-          return;
-        },
-      },
-      unlink: {
-        value: async function<
-          SOL extends RemoveLinkSources<X>,
-          A extends RemoveLinkApiNames<X, SOL>,
-        >(
-          source: SOL,
-          apiName: A,
-          target: RemoveLinkTargets<X, SOL, A>,
         ): Promise<void> {
           await Promise.resolve();
           return;

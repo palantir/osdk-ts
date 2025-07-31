@@ -20,14 +20,14 @@ import type {
   AddLinkApiNames,
   AddLinkSources,
   AddLinkTargets,
-  CreatableObjectTypeProperties,
-  CreatableObjectTypes,
-  DeletableObjectLocators,
+  CreatableObjectOrInterfaceTypeProperties,
+  CreatableObjectOrInterfaceTypes,
+  DeletableObjectOrInterfaceLocators,
   RemoveLinkApiNames,
   RemoveLinkSources,
   RemoveLinkTargets,
-  UpdatableObjectLocatorProperties,
-  UpdatableObjectLocators,
+  UpdatableObjectOrInterfaceLocatorProperties,
+  UpdatableObjectOrInterfaceLocators,
 } from "../edits/EditBatch.js";
 import type { AnyEdit } from "../edits/types.js";
 
@@ -55,17 +55,17 @@ export interface WriteMethods<X extends AnyEdit = never> {
     target: RemoveLinkTargets<X, SOL, A>,
   ) => Promise<void>;
 
-  create: <OTD extends CreatableObjectTypes<X>>(
+  create: <OTD extends CreatableObjectOrInterfaceTypes<X>>(
     obj: OTD,
-    properties: CreatableObjectTypeProperties<X, OTD>,
+    properties: CreatableObjectOrInterfaceTypeProperties<X, OTD>,
   ) => Promise<void>;
 
-  delete: <OL extends DeletableObjectLocators<X>>(
+  delete: <OL extends DeletableObjectOrInterfaceLocators<X>>(
     obj: OL,
   ) => Promise<void>;
 
-  update: <OL extends UpdatableObjectLocators<X>>(
+  update: <OL extends UpdatableObjectOrInterfaceLocators<X>>(
     obj: OL,
-    properties: UpdatableObjectLocatorProperties<X, OL>,
+    properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>,
   ) => Promise<void>;
 }
