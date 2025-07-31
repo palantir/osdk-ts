@@ -39,7 +39,10 @@ export function createMinimalClient(
   metadata: MinimalClientParams["metadata"],
   baseUrl: string,
   tokenProvider: () => Promise<string>,
-  options: OntologyCachingOptions & { logger?: Logger } = {},
+  options: OntologyCachingOptions & {
+    logger?: Logger;
+    transactionRid?: string;
+  } = {},
   fetchFn: (
     input: Request | URL | string,
     init?: RequestInit | undefined,
@@ -77,6 +80,7 @@ export function createMinimalClient(
     objectFactory2: convertWireToOsdkObjects2,
     ontologyRid: metadata.ontologyRid,
     logger: options.logger,
+    transactionRid: options.transactionRid,
     clientCacheKey: {} as ClientCacheKey,
     requestContext: {},
   } satisfies Omit<
