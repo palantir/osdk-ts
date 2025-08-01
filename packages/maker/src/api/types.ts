@@ -148,6 +148,7 @@ export type ActionTypeUserDefinition = {
   defaultFormat?: DisplayMetadataConfigurationDefaultLayout;
   enableLayoutSwitch?: boolean;
   displayAndFormat?: DisplayMetadataConfigurationDisplayAndFormat;
+  parameterOrdering?: Array<string>;
 };
 
 export interface ActionParameter {
@@ -261,6 +262,7 @@ export interface ActionTypeInner {
   sections: Record<string, ActionSection>;
   status: ActionStatus;
   entities: OntologyIrActionTypeEntities;
+  parameterOrdering: Array<string>;
   formContentOrdering: Array<OntologyIrFormContent>;
   validation: Array<OntologyIrValidationRule>;
   typeClasses: Array<TypeClass>;

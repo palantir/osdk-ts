@@ -171,6 +171,17 @@ export function defineCreateObjectAction(
       !def.excludedProperties?.includes(id)
       && !isStruct(def.objectType.properties?.[id].type!),
   );
+  if (def.parameterOrdering) {
+    const sortedOrdering = [...def.parameterOrdering].sort();
+    const sortedParameterNames = [...parameterNames].sort();
+    invariant(
+      sortedOrdering.length === sortedParameterNames.length
+        && sortedOrdering.every((name, index) =>
+          name === sortedParameterNames[index]
+        ),
+      `Action parameter ordering for ${def.objectType.apiName} does not match non-excluded properties`,
+    );
+  }
   const parameters: Array<ActionParameter> = Array.from(parameterNames).map(
     id => (
       {
@@ -248,6 +259,7 @@ export function defineCreateObjectAction(
           def.sections.map(section => [section.id, section]),
         ),
       }),
+    ...(def.parameterOrdering && { parameterOrdering: def.parameterOrdering }),
   });
 }
 
@@ -371,6 +383,17 @@ export function defineModifyObjectAction(
       && !isStruct(def.objectType.properties?.[id].type!)
       && id !== def.objectType.primaryKeyPropertyApiName,
   );
+  if (def.parameterOrdering) {
+    const sortedOrdering = [...def.parameterOrdering].sort();
+    const sortedParameterNames = [...parameterNames].sort();
+    invariant(
+      sortedOrdering.length === sortedParameterNames.length
+        && sortedOrdering.every((name, index) =>
+          name === sortedParameterNames[index]
+        ),
+      `Action parameter ordering for ${def.objectType.apiName} does not match non-excluded properties`,
+    );
+  }
   const parameters: Array<ActionParameter> = Array.from(parameterNames).map(
     id => (
       {
@@ -455,6 +478,13 @@ export function defineModifyObjectAction(
     ...(def.enableLayoutSwitch
       && { enableLayoutSwitch: def.enableLayoutSwitch }),
     ...(def.displayAndFormat && { displayAndFormat: def.displayAndFormat }),
+    ...(def.sections
+      && {
+        sections: Object.fromEntries(
+          def.sections.map(section => [section.id, section]),
+        ),
+      }),
+    ...(def.parameterOrdering && { parameterOrdering: def.parameterOrdering }),
   });
 }
 
@@ -843,7 +873,15 @@ function convertValidationRule(
 
 function validateActionValidation(action: ActionType): void {
   const seenParameterIds = new Set<ParameterId>();
-  action.parameters?.forEach(param => {
+  const parameterMap: Record<string, ActionParameter> =
+    action.parameters?.reduce((acc, param) => {
+      acc[param.id] = param;
+      return acc;
+    }, {} as Record<string, ActionParameter>) ?? {};
+  const orderedParameters =
+    action.parameterOrdering?.map(id => parameterMap[id]) ?? action.parameters;
+
+  orderedParameters?.forEach(param => {
     param.validation.conditionalOverrides?.forEach(override => {
       validateActionCondition(
         override.condition,

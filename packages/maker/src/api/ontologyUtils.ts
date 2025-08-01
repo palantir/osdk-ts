@@ -226,6 +226,7 @@ export function convertConditionDefinition(
 
 export function getFormContentOrdering(
   action: ActionType,
+  parameterOrdering: string[],
 ): OntologyIrFormContent[] {
   if (!action.sections) return [];
   const parametersToSection = Object.fromEntries(
@@ -233,23 +234,25 @@ export function getFormContentOrdering(
       section.parameters.map(param => [param, sectionId])
     ),
   );
-
-  const ordering: OntologyIrFormContent[] = [];
-  (action.parameters ?? []).forEach(param => {
+  const seenIds = new Set<string>();
+  const formContentOrdering: OntologyIrFormContent[] = [];
+  parameterOrdering.forEach(param => {
     if (
-      param.id in parametersToSection
-      && !(parametersToSection[param.id] in ordering)
+      param in parametersToSection
+      && !(seenIds.has(parametersToSection[param]))
     ) {
-      ordering.push({
+      formContentOrdering.push({
         type: "sectionId",
-        sectionId: parametersToSection[param.id],
+        sectionId: parametersToSection[param],
       });
-    } else if (!(param.id in parametersToSection)) {
-      ordering.push({
+      seenIds.add(parametersToSection[param]);
+    } else if (!(param in parametersToSection)) {
+      formContentOrdering.push({
         type: "parameterId",
-        parameterId: param.id,
+        parameterId: param,
       });
+      seenIds.add(param);
     }
   });
-  return ordering;
+  return formContentOrdering;
 }

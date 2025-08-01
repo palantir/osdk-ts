@@ -968,6 +968,8 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
     convertActionParameters(action);
   const actionSections: Record<SectionId, OntologyIrSection> =
     convertActionSections(action);
+  const parameterOrdering = action.parameterOrdering
+    ?? (action.parameters ?? []).map(p => p.id);
   return {
     actionType: {
       actionTypeLogic: {
@@ -1001,8 +1003,8 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
           successMessage: [],
           typeClasses: action.typeClasses ?? [],
         },
-        formContentOrdering: getFormContentOrdering(action),
-        parameterOrdering: (action.parameters ?? []).map(p => p.id),
+        parameterOrdering: parameterOrdering,
+        formContentOrdering: getFormContentOrdering(action, parameterOrdering),
         parameters: actionParameters,
         sections: actionSections,
         status: typeof action.status === "string"
