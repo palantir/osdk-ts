@@ -17,14 +17,18 @@
 import type {
   OntologyIrCondition,
   OntologyIrConditionalOverride,
+  OntologyIrFormContent,
   OntologyIrParameterValidationBlockOverride,
+  OntologyIrSectionConditionalOverride,
   ParameterVisibility,
 } from "@osdk/client.unstable";
 
 import type {
   ActionParameterConditionalOverride,
   ActionParameterValidation,
+  ActionType,
   ConditionDefinition,
+  SectionConditionalOverride,
 } from "./types.js";
 
 export function convertActionVisibility(
@@ -117,6 +121,31 @@ export function convertActionParameterConditionalOverride(
   };
 }
 
+export function convertSectionConditionalOverride(
+  override: SectionConditionalOverride,
+  defaultVisibility: "visible" | "hidden",
+): OntologyIrSectionConditionalOverride {
+  return {
+    condition: convertConditionDefinition(override.condition),
+    sectionBlockOverrides: [
+      {
+        type: "visibility",
+        visibility: {
+          visibility: defaultVisibility === "visible"
+            ? {
+              type: "hidden",
+              hidden: {},
+            }
+            : {
+              type: "visible",
+              visible: {},
+            },
+        },
+      },
+    ],
+  };
+}
+
 export function convertConditionDefinition(
   condition: ConditionDefinition,
 ): OntologyIrCondition {
@@ -193,4 +222,34 @@ export function convertConditionDefinition(
     default:
       return condition;
   }
+}
+
+export function getFormContentOrdering(
+  action: ActionType,
+): OntologyIrFormContent[] {
+  if (!action.sections) return [];
+  const parametersToSection = Object.fromEntries(
+    Object.entries(action.sections).flatMap(([sectionId, section]) =>
+      section.parameters.map(param => [param, sectionId])
+    ),
+  );
+
+  const ordering: OntologyIrFormContent[] = [];
+  (action.parameters ?? []).forEach(param => {
+    if (
+      param.id in parametersToSection
+      && !(parametersToSection[param.id] in ordering)
+    ) {
+      ordering.push({
+        type: "sectionId",
+        sectionId: parametersToSection[param.id],
+      });
+    } else if (!(param.id in parametersToSection)) {
+      ordering.push({
+        type: "parameterId",
+        parameterId: param.id,
+      });
+    }
+  });
+  return ordering;
 }

@@ -55,7 +55,6 @@ import type {
   OntologyIrPropertyType,
   OntologyIrValidationRule,
   ParameterId,
-  SectionId,
   SharedPropertyTypeGothamMapping,
   StructFieldType,
   ValidationRuleDisplayMetadata,
@@ -145,6 +144,7 @@ export type ActionTypeUserDefinition = {
   parameterConfiguration?: Record<string, ActionParameterValidation>;
   actionLevelValidation?: ActionLevelValidationDefinition;
   excludedProperties?: Array<ParameterId>;
+  sections?: Array<ActionSection>;
   defaultFormat?: DisplayMetadataConfigurationDefaultLayout;
   enableLayoutSwitch?: boolean;
   displayAndFormat?: DisplayMetadataConfigurationDisplayAndFormat;
@@ -167,6 +167,19 @@ export interface ActionParameterValidation {
   defaultValue?: OntologyIrParameterPrefill;
 }
 
+export type ActionSection = {
+  id: string;
+  displayName: string;
+  parameters: Array<string>;
+  defaultVisibility?: "visible" | "hidden";
+  description?: string;
+  columnCount?: 1 | 2;
+  showTitleBar?: boolean;
+  collapsedByDefault?: boolean;
+  style?: "box" | "minimal";
+  conditionalOverrides?: Array<SectionConditionalOverride>;
+};
+
 // TODO(ethana): add more commonly used conditions - parameter matching, organizations, etc.
 export type ConditionDefinition =
   | UnionCondition
@@ -183,6 +196,8 @@ export type ActionParameterConditionalOverride =
   | VisibilityOverride
   | DisabledOverride
   | RequiredOverride;
+
+export type SectionConditionalOverride = VisibilityOverride;
 
 export type VisibilityOverride = {
   type: "visibility";
@@ -243,7 +258,7 @@ export interface ActionTypeInner {
   icon: { locator: BlueprintIcon; color: string };
   parameters: Array<ActionParameter>;
   rules: Array<OntologyIrLogicRule>;
-  sections: Record<SectionId, Array<ParameterId>>;
+  sections: Record<string, ActionSection>;
   status: ActionStatus;
   entities: OntologyIrActionTypeEntities;
   formContentOrdering: Array<OntologyIrFormContent>;

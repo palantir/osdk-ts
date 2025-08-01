@@ -242,6 +242,12 @@ export function defineCreateObjectAction(
     ...(def.enableLayoutSwitch
       && { enableLayoutSwitch: def.enableLayoutSwitch }),
     ...(def.displayAndFormat && { displayAndFormat: def.displayAndFormat }),
+    ...(def.sections
+      && {
+        sections: Object.fromEntries(
+          def.sections.map(section => [section.id, section]),
+        ),
+      }),
   });
 }
 
@@ -582,7 +588,7 @@ function referencedParameterIds(
 
   // section definitions
   Object.values(actionDef.sections ?? {})
-    .flatMap(p => p).forEach(pId => parameterIds.add(pId));
+    .flatMap(p => p.parameters).forEach(pId => parameterIds.add(pId));
 
   // form content ordering
   (actionDef.formContentOrdering ?? []).forEach(item => {

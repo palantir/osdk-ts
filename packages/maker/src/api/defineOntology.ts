@@ -50,10 +50,12 @@ import type {
 import * as fs from "fs";
 import * as path from "path";
 import invariant from "tiny-invariant";
-import { isExotic } from "./defineObject.js";
+import { convertToDisplayName, isExotic } from "./defineObject.js";
 import {
   convertActionParameterConditionalOverride,
   convertActionVisibility,
+  convertSectionConditionalOverride,
+  getFormContentOrdering,
 } from "./ontologyUtils.js";
 import {
   convertNullabilityToDataConstraint,
@@ -999,7 +1001,7 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
           successMessage: [],
           typeClasses: action.typeClasses ?? [],
         },
-        formContentOrdering: action.formContentOrdering ?? [],
+        formContentOrdering: getFormContentOrdering(action),
         parameterOrdering: (action.parameters ?? []).map(p => p.id),
         parameters: actionParameters,
         sections: actionSections,
@@ -1060,6 +1062,37 @@ function convertActionValidation(
         ];
       }),
     ),
+    sectionValidations: {
+      ...Object.fromEntries(
+        Object.entries(action.sections ?? {}).map((
+          [sectionId, section],
+        ) => [
+          section.id,
+          {
+            defaultDisplayMetadata: section.defaultVisibility === "hidden"
+              ? {
+                visibility: {
+                  type: "hidden",
+                  hidden: {},
+                },
+              }
+              : {
+                visibility: {
+                  type: "visible",
+                  visible: {},
+                },
+              },
+            conditionalOverrides: section.conditionalOverrides?.map(
+              (override) =>
+                convertSectionConditionalOverride(
+                  override,
+                  section.defaultVisibility ?? "visible",
+                ),
+            ) ?? [],
+          },
+        ]),
+      ),
+    },
   };
 }
 
@@ -1084,16 +1117,25 @@ function convertActionSections(
 ): Record<SectionId, OntologyIrSection> {
   return Object.fromEntries(
     Object.entries(action.sections ?? {}).map((
-      [sectionId, parameterIds],
+      [sectionId, section],
     ) => [sectionId, {
       id: sectionId,
-      content: parameterIds.map(p => ({ type: "parameterId", parameterId: p })),
+      content: section.parameters.map(p => ({
+        type: "parameterId",
+        parameterId: p,
+      })),
       displayMetadata: {
-        collapsedByDefault: false,
-        columnCount: 1,
-        description: "",
-        displayName: sectionId,
-        showTitleBar: true,
+        collapsedByDefault: section.collapsedByDefault ?? false,
+        columnCount: section.columnCount ?? 1,
+        description: section.description ?? "",
+        displayName: section.displayName ?? convertToDisplayName(sectionId),
+        showTitleBar: section.showTitleBar ?? true,
+        ...section.style
+          && {
+            style: section.style === "box"
+              ? { type: "box", box: {} }
+              : { type: "minimal", minimal: {} },
+          },
       },
     }]),
   );
