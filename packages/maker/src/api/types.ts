@@ -55,6 +55,7 @@ import type {
   OntologyIrPropertyType,
   OntologyIrValidationRule,
   ParameterId,
+  SectionId,
   SharedPropertyTypeGothamMapping,
   StructFieldType,
   ValidationRuleDisplayMetadata,
@@ -259,7 +260,7 @@ export interface ActionTypeInner {
   icon: { locator: BlueprintIcon; color: string };
   parameters: Array<ActionParameter>;
   rules: Array<OntologyIrLogicRule>;
-  sections: Record<string, ActionSection>;
+  sections: Record<SectionId, ActionSection>;
   status: ActionStatus;
   entities: OntologyIrActionTypeEntities;
   parameterOrdering: Array<string>;
