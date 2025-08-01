@@ -25,3 +25,7 @@
 ## Repository Best Practices
 
 - This is a mono repo. You can't run tests from the root. You must run them from the package they live in.
+
+## Code Maintenance Best Practices
+
+- Please do not fix diagnostic warnings in old code
