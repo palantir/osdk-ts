@@ -23,6 +23,7 @@ import {
   Employee,
   incrementPersonAge,
   incrementPersonAgeComplex,
+  queryAcceptsInterface,
   queryAcceptsObject,
   queryAcceptsObjectSets,
   queryTypeReturnsMap,
@@ -123,6 +124,19 @@ describe("queries", () => {
         $objectType: "Employee",
         $primaryKey: 50031,
         $objectSpecifier: "Employee:50031",
+      });
+    });
+    it("Works when passing in interfaces", async () => {
+      const result = await client(queryAcceptsInterface).executeFunction({
+        interfaceObject: { $objectType: "Employee", $primaryKey: 50030 },
+      });
+
+      expect(result).toEqual({
+        $apiName: "FooInterface",
+        $objectType: "Employee",
+        $primaryKey: 50031,
+        $objectSpecifier: "Employee:50031",
+        $title: undefined,
       });
     });
   });
@@ -369,6 +383,7 @@ describe("queries", () => {
       "addOne",
       "incrementPersonAge",
       "incrementPersonAgeComplex",
+      "queryAcceptsInterface",
       "queryAcceptsObject",
       "queryAcceptsObjectSets",
       "queryTypeReturnsArray",
