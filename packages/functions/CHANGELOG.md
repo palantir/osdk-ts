@@ -1,5 +1,15 @@
 # @osdk/functions
 
+## 1.1.2
+
+### Patch Changes
+
+- 00406bd: Exports interface edit types from internal package
+- d64e7a0: add notification type
+- 2be43df: Add experimental transactions shape
+- Updated dependencies [2be43df]
+  - @osdk/client@2.3.1
+
 ## 1.1.1
 
 ### Patch Changes
