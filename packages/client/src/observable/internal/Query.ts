@@ -23,7 +23,10 @@ import type {
   Subscription,
 } from "rxjs";
 import { additionalContext } from "../../Client.js";
-import type { CommonObserveOptions, Status } from "../ObservableClient.js";
+import type {
+  CommonObserveOptions,
+  Status,
+} from "../ObservableClient/common.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { Changes } from "./Changes.js";
 import type { Entry } from "./Layer.js";
@@ -151,7 +154,7 @@ export abstract class Query<
     }
     this.pendingFetch = this._fetchAndStore()
       .finally(() => {
-        logger?.debug("finally _fetchAndStore()");
+        logger?.debug("promise's finally for _fetchAndStore()");
         this.pendingFetch = undefined;
       });
 

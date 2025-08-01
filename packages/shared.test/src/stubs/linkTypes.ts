@@ -47,6 +47,7 @@ export const officeLinkType: LinkTypeSideV2 = {
   cardinality: "ONE",
   displayName: "Office",
   linkTypeRid: "rid.link-type.324",
+  foreignKeyPropertyApiName: "office",
 };
 
 export const occupants: LinkTypeSideV2 = {
