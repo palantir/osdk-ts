@@ -82,7 +82,7 @@ const JOHN_DOE_ID = 50030;
 const defer = createDefer();
 
 const logger = new TestLogger({}, {
-  // level: "debug",
+  level: "debug",
 });
 
 inspect.defaultOptions.depth = 9;
@@ -245,7 +245,6 @@ describe(Store, () => {
       invariant(emp1);
 
       // Set up mock callback for observing links
-
       const { payload, linkSubFn } = await expectStandardObserveLink({
         store: cache,
         srcObject: emp1,
@@ -346,13 +345,6 @@ describe(Store, () => {
         },
       );
 
-      console.log("officeSubFn", inspect(officeSubFn.next.mock.calls));
-      console.log("empSubFn", inspect(empSubFn.next.mock.calls));
-      console.log(
-        "occupantsLinkSubFn",
-        inspect(occupantsLinkSubFn.next.mock.calls),
-      );
-
       // Clear any initial calls
       officeSubFn.next.mockClear();
       empSubFn.next.mockClear();
@@ -361,6 +353,11 @@ describe(Store, () => {
       testStage("Invalidating Employee object type");
 
       // Invalidate the Employee object type
+      // This should cause:
+      //  - any object query for Employee to be invalidated
+      //  - any object list query for Employee to be invalidated
+      //  - any link queries where the source is an Employee to be invalidated
+      //  - any link queries where the target is an Employee to be invalidated
       const invalidateEmployeePromise = cache.invalidateObjectType(
         Employee,
         undefined,
@@ -369,28 +366,34 @@ describe(Store, () => {
       // The link should be invalidated (loading state)
       await waitForCall(occupantsLinkSubFn, 1);
       console.log(occupantsLinkSubFn.next.mock.calls[0]);
-      expectSingleLinkCallAndClear(
-        occupantsLinkSubFn,
-        [expect.objectContaining({ $primaryKey: 1 })],
-        { status: "loading" },
-      );
+      expectSingleLinkCallAndClear(occupantsLinkSubFn, [emp1], {
+        status: "loading",
+      });
+
+      // The employee should be invalidated (loading state)
+      await waitForCall(empSubFn, 1);
+      expectSingleObjectCallAndClear(empSubFn, emp1, "loading");
 
       // The link should be revalidated (loaded state)
       await waitForCall(occupantsLinkSubFn, 1);
-      expectSingleLinkCallAndClear(
-        occupantsLinkSubFn,
-        [expect.objectContaining({ $primaryKey: 1 })],
-        { status: "loaded" },
-      );
+      expectSingleLinkCallAndClear(occupantsLinkSubFn, [emp1], {
+        status: "loaded",
+      });
 
-      // The Employee object should also be invalidated and reloaded
+      // the Employee object should also be invalidated (loading state)
       await waitForCall(empSubFn, 1);
+      expectSingleObjectCallAndClear(empSubFn, emp1, "loaded");
 
       // The Office object should NOT have any calls
       // This is the key verification - no calls should be made to the office subscription
       expect(officeSubFn.next).not.toHaveBeenCalled();
 
       await invalidateEmployeePromise;
+
+      // ensure at the end of invalidation there are no new calls
+      expect(occupantsLinkSubFn.next).not.toHaveBeenCalled();
+      expect(empSubFn.next).not.toHaveBeenCalled();
+      expect(officeSubFn.next).not.toHaveBeenCalled();
     });
   });
 
@@ -852,8 +855,26 @@ describe(Store, () => {
         await waitForCall(subListFn, 1);
         expectSingleListCallAndClear(subListFn, employeesAsServerReturns);
 
-        await waitForCall(subFn, 1);
-        expectSingleObjectCallAndClear(subFn, emp, "loaded");
+        testStage("Check invalidation call for single sub");
+
+        await waitForCall(subFn, 2);
+        // First call is for loading state
+        expect(subFn.next).toHaveBeenNthCalledWith(
+          1,
+          objectPayloadContaining({
+            status: "loading",
+            object: staleEmp as unknown as ObjectHolder,
+          }),
+        );
+        // Second call is for loaded state with fresh data
+        expect(subFn.next).toHaveBeenNthCalledWith(
+          2,
+          objectPayloadContaining({
+            status: "loaded",
+            object: emp as unknown as ObjectHolder,
+          }),
+        );
+        subFn.next.mockClear();
 
         // we don't need this value to control the test but we want to make sure we don't have
         // any unhandled exceptions upon test completion
@@ -1749,7 +1770,7 @@ describe(Store, () => {
         $objectType: "Employee",
         $apiName: "Employee",
         $title: `truth ${i}`,
-      } as Osdk.Instance<Employee>));
+      } as Osdk.Instance<Employee> & ObjectHolder<Osdk.Instance<Employee>>));
 
       const cacheKeys = baseObjects.map((obj) =>
         store.getCacheKey("object", "Employee", obj.$primaryKey)

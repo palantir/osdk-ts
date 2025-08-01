@@ -21,3 +21,7 @@
 ## Security Best Practices
 
 - NEVER disable gpg signing unless I explicitly ask you to
+
+## Repository Best Practices
+
+- This is a mono repo. You can't run tests from the root. You must run them from the package they live in.

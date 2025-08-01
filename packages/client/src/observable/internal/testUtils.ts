@@ -416,7 +416,7 @@ export async function waitForCall(
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log(
-      "fails",
+      `We are going to fail waiting for ${times} calls because these are our calls: `,
       inspect(subFn.mock.calls, {
         depth: 9,
         colors: true,

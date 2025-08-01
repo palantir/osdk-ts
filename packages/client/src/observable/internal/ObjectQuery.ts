@@ -111,6 +111,10 @@ export class ObjectQuery extends Query<
       );
     }
 
+    // TODO: In the future, implement tracking of network requests to ensure
+    // we're not making unnecessary network calls. This would need dedicated
+    // tests separate from subscription notification tests.
+
     const obj = await getBulkObjectLoader(this.store.client)
       .fetch(this.#apiName, this.#pk);
 
@@ -127,9 +131,20 @@ export class ObjectQuery extends Query<
     const entry = batch.read(this.cacheKey);
 
     if (entry && deepEqual(data, entry.value)) {
+      // Check if both data AND status are the same
+      if (entry.status === status) {
+        if (process.env.NODE_ENV !== "production") {
+          this.logger?.child({ methodName: "writeToStore" }).debug(
+            `Object was deep equal and status unchanged (${status}), skipping update`,
+          );
+        }
+        // Return the existing entry without writing to avoid unnecessary notifications
+        return entry;
+      }
+
       if (process.env.NODE_ENV !== "production") {
         this.logger?.child({ methodName: "writeToStore" }).debug(
-          `Object was deep equal, just setting status`,
+          `Object was deep equal, just setting status (old status: ${entry.status}, new status: ${status})`,
         );
       }
       // must do a "full write" here so that the lastUpdated is updated but we
