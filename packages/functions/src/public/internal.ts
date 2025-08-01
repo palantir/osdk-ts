@@ -18,8 +18,12 @@ export type {
   AddLink,
   AnyEdit,
   CreateObject,
+  CreateObjectForInterface,
   DeleteObject,
+  DeleteObjectForInterface,
+  InterfaceLocator,
   ObjectLocator,
   RemoveLink,
   UpdateObject,
+  UpdateObjectForInterface,
 } from "../edits/types.js";
