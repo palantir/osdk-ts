@@ -60,7 +60,7 @@ export class BulkObjectLoader {
     this.#maxEntries = maxEntries;
   }
 
-  public fetch(
+  public async fetch(
     apiName: string,
     primaryKey: string | number | boolean,
   ): Promise<ObjectHolder> {
@@ -83,7 +83,7 @@ export class BulkObjectLoader {
       this.#loadObjects(apiName, entry.data);
     }
 
-    return deferred.promise;
+    return await deferred.promise;
   }
 
   #loadObjects(apiName: string, arr: InternalValue[]) {
@@ -114,7 +114,9 @@ export class BulkObjectLoader {
       if (object) {
         deferred.resolve(object);
       } else {
-        deferred.reject(new PalantirApiError("Object not found"));
+        deferred.reject(
+          new PalantirApiError(`Object not found: ${primaryKey}`),
+        );
       }
     }
   }
