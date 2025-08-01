@@ -25,6 +25,7 @@ import {
   asapScheduler,
   combineLatest,
   connectable,
+  distinctUntilChanged,
   map,
   of,
   ReplaySubject,
@@ -106,6 +107,7 @@ export class SpecificLinkQuery extends Query<
               listEntry.value.data.map(cacheKey =>
                 this.store.getSubject(cacheKey).pipe(
                   map(objectEntry => objectEntry?.value!),
+                  distinctUntilChanged(),
                 )
               ),
             );
@@ -177,27 +179,33 @@ export class SpecificLinkQuery extends Query<
         });
       } catch (e: unknown) {
         // Handle the case where fetching fails
-        this.logger?.child({ methodName: "_fetchAndStore" }).debug(
-          "Failed to fetch linked objects",
-          e,
-        );
+        if (process.env.NODE_ENV !== "production") {
+          this.logger?.child({ methodName: "_fetchAndStore" }).debug(
+            "Failed to fetch linked objects",
+            e,
+          );
+        }
 
         this.store.batch({}, (batch) => {
           this._updateLinks([], "loaded", batch);
         });
       }
     } catch (error: unknown) {
-      this.logger?.child({ methodName: "_fetchAndStore" }).error(
-        "Error fetching linked objects",
-        error,
-      );
+      // This is for unexpected errors in the outer try block
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "_fetchAndStore" }).error(
+          "Unexpected error fetching linked objects",
+          error,
+        );
+      }
 
+      // For unexpected errors, still finish with an error status
+      // but don't throw, as this will prevent the revalidation from completing
       this.store.batch({}, (batch) => {
         this.setStatus("error", batch);
       });
       throw error;
     }
-    // The duplicate catch block is now removed
   }
 
   writeToStore(
@@ -208,9 +216,20 @@ export class SpecificLinkQuery extends Query<
     const entry = batch.read(this.cacheKey);
 
     if (entry && deepEqual(data, entry.value)) {
+      // Check if both data AND status are the same
+      if (entry.status === status) {
+        if (process.env.NODE_ENV !== "production") {
+          this.logger?.child({ methodName: "writeToStore" }).debug(
+            `Links were deep equal and status unchanged (${status}), skipping update`,
+          );
+        }
+        // Return the existing entry without writing to avoid unnecessary notifications
+        return entry;
+      }
+
       if (process.env.NODE_ENV !== "production") {
         this.logger?.child({ methodName: "writeToStore" }).debug(
-          `Links were deep equal, just setting status`,
+          `Links were deep equal, just setting status (old status: ${entry.status}, new status: ${status})`,
         );
       }
       // Keep the same value but update status and lastUpdated
