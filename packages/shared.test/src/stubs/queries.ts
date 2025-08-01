@@ -24,6 +24,7 @@ import { employee1, employee2 } from "./objects.js";
 import {
   addOneQueryType,
   addOneQueryTypeOlderVersion,
+  queryTypeAcceptsInterfaces,
   queryTypeAcceptsObjects,
   queryTypeAcceptsObjectSets,
   queryTypeAcceptsThreeDimensionalAggregation,
@@ -121,6 +122,22 @@ export const queryTypeAcceptsObjectRequest: ExecuteQueryRequest = {
 
 export const queryTypeAcceptsObjectResponse: ExecuteQueryResponse = {
   value: employee2.__primaryKey,
+};
+
+export const queryTypeAcceptsInterfaceRequest: ExecuteQueryRequest = {
+  parameters: {
+    interfaceObject: {
+      objectTypeApiName: "Employee",
+      "primaryKeyValue": employee1.__primaryKey,
+    },
+  },
+};
+
+export const queryTypeAcceptsInterfaceResponse: ExecuteQueryResponse = {
+  value: {
+    objectTypeApiName: "Employee",
+    "primaryKeyValue": employee2.__primaryKey,
+  },
 };
 
 export const queryTypeAcceptsObjectSetRequest: ExecuteQueryRequest = {
@@ -343,6 +360,12 @@ const queryRequestHandlers: {
         queryTypeAcceptsObjectResponse,
     },
   },
+  [queryTypeAcceptsInterfaces.apiName]: {
+    [queryTypeAcceptsInterfaces.version]: {
+      [JSON.stringify(queryTypeAcceptsInterfaceRequest)]:
+        queryTypeAcceptsInterfaceResponse,
+    },
+  },
   [queryTypeAcceptsObjectSets.apiName]: {
     [queryTypeAcceptsObjectSets.version]: {
       [JSON.stringify(queryTypeAcceptsObjectSetRequest)]:
@@ -391,6 +414,7 @@ export function registerLazyQueries(fauxOntology: FauxOntology): void {
     queryTypeReturnsArray,
     queryTypeReturnsComplexStruct,
     queryTypeReturnsMap,
+    queryTypeAcceptsInterfaces,
   ];
 
   for (const queryType of Object.values(queryTypes)) {

@@ -15,8 +15,8 @@
  */
 
 import type {
+  ObjectOrInterfaceDefinition,
   ObjectSpecifier,
-  ObjectTypeDefinition,
   PrimaryKeyType,
 } from "@osdk/api";
 
@@ -29,9 +29,31 @@ import type {
  * @returns An Object Specifier
  */
 export function createObjectSpecifierFromPrimaryKey<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
 >(objectDef: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q> {
   return `${objectDef.apiName}:${primaryKey}` as ObjectSpecifier<Q>;
+}
+
+/**
+ * Creates an Object Specifier. An ObjectSpecifier is a string that uniquely identifies an object in the system,
+ * even when loading an interface object where primary key uniqueness is not guaranteed.
+ *
+ * @param objectDef - An Object Type Definition
+ * @param primaryKey - The value you want to use as the primary key
+ * @returns An Object Specifier
+ */
+export function createObjectSpecifierFromInterfaceSpecifier<
+  Q extends ObjectOrInterfaceDefinition,
+>(
+  interfaceDef: Q,
+  interfaceSpecifier: {
+    objectTypeApiName: string;
+    primaryKeyValue: PrimaryKeyType<Q>;
+  },
+): ObjectSpecifier<Q> {
+  return `${interfaceSpecifier.objectTypeApiName}:${interfaceSpecifier.primaryKeyValue}` as ObjectSpecifier<
+    Q
+  >;
 }
 
 /**
