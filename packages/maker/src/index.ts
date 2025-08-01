@@ -38,11 +38,13 @@ export type {
   ActionParameterAllowedValues,
   ActionParameterConditionalOverride,
   ActionParameterValidation,
+  ActionSection,
   ActionType,
   ConditionDefinition,
   InterfaceType,
   LinkType,
   ObjectType,
+  SectionConditionalOverride,
   SharedPropertyType,
   ValueTypeDefinitionVersion,
 } from "./api/types.js";
