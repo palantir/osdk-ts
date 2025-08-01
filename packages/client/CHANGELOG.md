@@ -1,5 +1,14 @@
 # @osdk/client
 
+## 2.3.1
+
+### Patch Changes
+
+- 2be43df: Add experimental transactions shape
+  - @osdk/api@2.3.1
+  - @osdk/client.unstable@2.3.1
+  - @osdk/generator-converters@2.3.1
+
 ## 2.3.0
 
 ### Patch Changes
