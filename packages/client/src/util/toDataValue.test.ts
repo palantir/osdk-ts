@@ -15,7 +15,11 @@
  */
 
 import { NULL_VALUE } from "@osdk/api";
-import type { ActionMetadata, MediaUpload } from "@osdk/api";
+import type {
+  ActionMetadata,
+  MediaUpload,
+  ObjectTypeDefinition,
+} from "@osdk/api";
 import { Employee, Task } from "@osdk/client.test.ontology";
 import type { MediaReference } from "@osdk/foundry.core";
 import type { SetupServer } from "@osdk/shared.test";
@@ -39,10 +43,19 @@ import { toDataValue } from "./toDataValue.js";
 describe(toDataValue, () => {
   let client: Client;
   let clientCtx: MinimalClient;
-  let mockActionMetadata: ActionMetadata;
   let apiServer: SetupServer;
 
   const mockFetch: MockedFunction<typeof globalThis.fetch> = vi.fn();
+
+  const mockActionMetadata = {
+    type: "action",
+    apiName: "",
+    parameters: {},
+    status: "ACTIVE",
+    rid: "",
+  } satisfies ActionMetadata;
+
+  const mockParameterName = "testParameter";
 
   beforeAll(() => {
     const testSetup = startNodeApiServer(new LegacyFauxFoundry(), createClient);
@@ -56,12 +69,6 @@ describe(toDataValue, () => {
       testSetup.auth,
       {},
     );
-
-    // toDataValue only needs the apiName right now, update this if that changes
-    const fakeActionMetadata = {
-      apiName: "createUnstructuredImageExampleObject",
-    };
-    mockActionMetadata = fakeActionMetadata as ActionMetadata;
 
     return () => {
       testSetup.apiServer.close();
@@ -82,6 +89,7 @@ describe(toDataValue, () => {
       basic,
       clientCtx,
       mockActionMetadata,
+      mockParameterName,
     );
     expect(convertedBasic).toEqual(basic);
   });
@@ -99,6 +107,7 @@ describe(toDataValue, () => {
       },
       clientCtx,
       mockActionMetadata,
+      mockParameterName,
     );
 
     expect(recursiveConversion).toEqual({
@@ -119,6 +128,7 @@ describe(toDataValue, () => {
       struct,
       clientCtx,
       mockActionMetadata,
+      mockParameterName,
     );
 
     expect(recursiveConversion).toEqual({
@@ -132,6 +142,7 @@ describe(toDataValue, () => {
       employee,
       clientCtx,
       mockActionMetadata,
+      mockParameterName,
     );
     expect(ontologyConversion).toEqual(
       stubData.employee1.__primaryKey,
@@ -144,6 +155,7 @@ describe(toDataValue, () => {
       task,
       clientCtx,
       mockActionMetadata,
+      mockParameterName,
     );
     expect(ontologyConversion).toEqual(
       task.$primaryKey,
@@ -172,6 +184,7 @@ describe(toDataValue, () => {
       clientObjectSet,
       clientCtx,
       mockActionMetadata,
+      mockParameterName,
     );
     expect(objectSetConversion).toMatchInlineSnapshot(
       expected,
@@ -181,6 +194,7 @@ describe(toDataValue, () => {
       definition,
       clientCtx,
       mockActionMetadata,
+      mockParameterName,
     );
     expect(definitionConversion).toMatchInlineSnapshot(expected);
   });
@@ -192,6 +206,7 @@ describe(toDataValue, () => {
       attachmentUpload,
       clientCtx,
       mockActionMetadata,
+      mockParameterName,
     );
 
     expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
@@ -208,7 +223,12 @@ describe(toDataValue, () => {
       { name: "file1.txt" },
     );
 
-    const converted = await toDataValue(file, clientCtx, mockActionMetadata);
+    const converted = await toDataValue(
+      file,
+      clientCtx,
+      mockActionMetadata,
+      mockParameterName,
+    );
     expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
   });
 
@@ -242,7 +262,12 @@ describe(toDataValue, () => {
           },
         ),
       );
-      const converted = await toDataValue(file, clientCtx, mockActionMetadata);
+      const converted = await toDataValue(
+        file,
+        clientCtx,
+        mockActionMetadata,
+        mockParameterName,
+      );
       expect(isMediaReference(converted)).toBe(true);
     });
   });
@@ -264,6 +289,7 @@ describe(toDataValue, () => {
       mediaReference,
       clientCtx,
       mockActionMetadata,
+      mockParameterName,
     );
     expect(converted).toEqual(mediaReference);
   });
@@ -273,6 +299,7 @@ describe(toDataValue, () => {
       NULL_VALUE,
       clientCtx,
       mockActionMetadata,
+      mockParameterName,
     );
     expect(converted).toBeNull();
   });
@@ -285,7 +312,60 @@ describe(toDataValue, () => {
       clearData,
       clientCtx,
       mockActionMetadata,
+      mockParameterName,
     );
     expect(converted).toEqual(null);
+  });
+
+  it("converts object type definitions for create interface actions correctly", async () => {
+    const otDef = {
+      apiName: "Employee",
+      type: "object",
+    } satisfies ObjectTypeDefinition;
+    const converted = await toDataValue(
+      otDef,
+      clientCtx,
+      {
+        "apiName": "interfaceTest",
+        parameters: { interfaceObjectTypeApiName: { type: "objectType" } },
+        type: "action",
+        status: "ACTIVE",
+        rid: "",
+      },
+      "interfaceObjectTypeApiName",
+    );
+    expect(converted).toEqual("Employee");
+  });
+
+  it("converts object type definitions for modify and delete interface actions correctly", async () => {
+    const otDef = {
+      apiName: "Employee",
+      type: "object",
+    } satisfies ObjectTypeDefinition;
+    const converted = await toDataValue(
+      {
+        $objectType: otDef,
+        $primaryKey: "hello",
+      },
+      clientCtx,
+      {
+        "apiName": "interfaceTest",
+        parameters: {
+          interfaceObjectTypeApiName: {
+            type: { type: "interface", interface: {} },
+          },
+        },
+        type: "action",
+        status: "ACTIVE",
+        rid: "",
+      },
+      "interfaceObjectTypeApiName",
+    );
+    expect(converted).toMatchInlineSnapshot(`
+      {
+        "objectTypeApiName": "Employee",
+        "primaryKeyValue": "hello",
+      }
+    `);
   });
 });

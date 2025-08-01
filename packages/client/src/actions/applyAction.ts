@@ -128,6 +128,11 @@ export async function applyAction<
     augmentRequestContext(client, _ => ({ finalMethodCall: "applyAction" })),
     action,
   );
+
+  const actionMetadata = await client.ontologyProvider.getActionDefinition(
+    action.apiName,
+  );
+
   if (Array.isArray(parameters)) {
     const response = await OntologiesV2.Actions.applyBatch(
       clientWithHeaders,
@@ -135,11 +140,7 @@ export async function applyAction<
       action.apiName,
       {
         requests: parameters
-          ? await remapBatchActionParams(
-            parameters,
-            client,
-            await client.ontologyProvider.getActionDefinition(action.apiName),
-          )
+          ? await remapBatchActionParams(parameters, client, actionMetadata)
           : [],
         options: {
           returnEdits: options?.$returnEdits ? "ALL" : "NONE",
@@ -162,7 +163,7 @@ export async function applyAction<
             CompileTimeActionMetadata<AD>["parameters"]
           >,
           client,
-          await client.ontologyProvider.getActionDefinition(action.apiName),
+          actionMetadata,
         ),
         options: {
           mode: (options as ApplyActionOptions)?.$validateOnly
@@ -205,7 +206,7 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
 
   const parameterMap: { [parameterName: string]: unknown } = {};
   for (const [key, value] of Object.entries(params)) {
-    parameterMap[key] = await toDataValue(value, client, actionMetadata);
+    parameterMap[key] = await toDataValue(value, client, actionMetadata, key);
   }
 
   return parameterMap;
