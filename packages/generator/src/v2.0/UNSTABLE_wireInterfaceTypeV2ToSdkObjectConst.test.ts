@@ -502,4 +502,43 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       "
     `);
   });
+
+  it("sorts the implements array for stable output", async () => {
+    // Test with multiple parent interfaces in non-alphabetical order
+    const ontology = enhanceOntology({
+      sanitized: simpleOntology("ontology", [
+        simpleInterface("Child", [simpleSpt("child")], [
+          "ParentZ",
+          "ParentA",
+          "ParentC",
+        ]),
+        simpleInterface("ParentZ", [simpleSpt("z")], []),
+        simpleInterface("ParentA", [simpleSpt("a")], []),
+        simpleInterface("ParentC", [simpleSpt("c")], []),
+      ]),
+      importExt: "",
+    });
+
+    const formattedCode = await format(
+      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
+        ontology.interfaceTypes.Child as EnhancedInterfaceType,
+        ontology,
+        true,
+        true,
+      ),
+      {
+        parser: "typescript",
+      },
+    );
+
+    // Extract the implements array from the generated code
+    const implementsMatch = formattedCode.match(/implements:\s*\[([^\]]+)\]/s);
+    expect(implementsMatch).not.toBeNull();
+
+    if (implementsMatch) {
+      const implementsStr = implementsMatch[1];
+      // Check that the array is sorted alphabetically
+      expect(implementsStr).toContain("\"ParentA\", \"ParentC\", \"ParentZ\"");
+    }
+  });
 });
