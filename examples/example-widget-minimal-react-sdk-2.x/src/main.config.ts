@@ -1,9 +1,8 @@
 import { defineConfig } from "@osdk/widget.client";
 
-/*
-  Any updates to the widget configuration in this file will not be reflected in dev mode until a new
-  version of the widget set is published.
-*/
+// Any updates to the widget configuration in this file such as new parameters
+// and events will not be reflected in dev mode. Publish a new version of the
+// widget set to start developing against configuration changes.
 
 export default defineConfig({
   id: "widgetId",
