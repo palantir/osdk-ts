@@ -4004,9 +4004,6 @@ importers:
       '@osdk/widget.api':
         specifier: workspace:~
         version: link:../widget.api
-      escodegen:
-        specifier: ^2.1.0
-        version: 2.1.0
       fs-extra:
         specifier: ^11.3.0
         version: 11.3.0
@@ -4032,12 +4029,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@types/escodegen':
-        specifier: ~0.0.10
-        version: 0.0.10
-      '@types/estree':
-        specifier: ^1.0.6
-        version: 1.0.7
       '@types/fs-extra':
         specifier: ^11.0.4
         version: 11.0.4
@@ -7486,9 +7477,6 @@ packages:
 
   '@types/core-js@2.5.8':
     resolution: {integrity: sha512-VgnAj6tIAhJhZdJ8/IpxdatM8G4OD3VWGlp6xIxUGENZlpbob9Ty4VVdC1FIEp0aK6DBscDDjyzy5FB60TuNqg==}
-
-  '@types/escodegen@0.0.10':
-    resolution: {integrity: sha512-IVvcNLEFbiL17qiGRGzyfx/u9K6lA5w6wcQSIgv2h4JG3ZAFIY1Be9ITTSPuARIxRpzW54s8OvcF6PdonBbDzg==}
 
   '@types/eslint-plugin-jsx-a11y@6.9.0':
     resolution: {integrity: sha512-5nw0sPyYGCsFibwjOXftxends8Nrh/JLgDtBWj6aJVcN14kHwy1yIy0o1MGLKfCcR27pvUFGgYG+hX2HSX16uA==}
@@ -18495,8 +18483,6 @@ snapshots:
   '@types/cookie@0.6.0': {}
 
   '@types/core-js@2.5.8': {}
-
-  '@types/escodegen@0.0.10': {}
 
   '@types/eslint-plugin-jsx-a11y@6.9.0':
     dependencies:

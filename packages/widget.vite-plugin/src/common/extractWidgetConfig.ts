@@ -15,102 +15,22 @@
  */
 
 import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
-import escodegen from "escodegen";
-import type { ObjectExpression } from "estree";
-import type { Rollup } from "vite";
+import type { ViteDevServer } from "vite";
 
-const DEFINE_CONFIG_FUNCTION = "defineConfig";
-
-export function extractWidgetConfig(
+export async function extractWidgetConfig(
   moduleId: string,
-  ast: Rollup.ProgramNode | null,
-): WidgetConfig<ParameterConfig> | undefined {
-  // Lightly traverse the AST of the config file to extract out the actual object
-  const defaultExport = ast?.body.find(
-    (node) => node.type === "ExportDefaultDeclaration",
-  );
-  if (defaultExport == null) {
-    throw new Error(
-      "Widget configuration object must be the default export in "
-        + moduleId,
-    );
-  }
+  server: ViteDevServer,
+): Promise<WidgetConfig<ParameterConfig>> {
+  try {
+    const configModule = await server.ssrLoadModule(moduleId);
+    const config = configModule.default;
 
-  /**
-   * export default defineConfig({
-   * })
-   */
-  if (
-    defaultExport.declaration.type === "CallExpression"
-    && defaultExport.declaration.callee.type === "Identifier"
-    && defaultExport.declaration.callee.name === DEFINE_CONFIG_FUNCTION
-    && defaultExport.declaration.arguments[0].type === "ObjectExpression"
-  ) {
-    return parseWidgetConfig(defaultExport.declaration.arguments[0]);
-  }
-
-  /**
-   * const MyConfig = defineConfig({
-   * })
-   * export default MyConfig;
-   */
-  if (defaultExport.declaration.type === "Identifier") {
-    const variableName = defaultExport.declaration.name;
-    for (const node of ast?.body ?? []) {
-      const declaration = node.type === "VariableDeclaration"
-        ? node
-        : node.type === "ExportNamedDeclaration"
-        ? node.declaration
-        : undefined;
-      if (
-        declaration == null
-        || declaration.type !== "VariableDeclaration"
-      ) {
-        continue;
-      }
-      if (
-        declaration.declarations.some(
-          (inner) =>
-            inner.id.type === "Identifier"
-            && inner.id.name === variableName,
-        )
-      ) {
-        const variableDeclarator = declaration.declarations.find(
-          (declarator) =>
-            declarator.id.type === "Identifier"
-            && declarator.id.name === variableName,
-        );
-        if (
-          variableDeclarator?.init?.type === "CallExpression"
-          && variableDeclarator.init.callee.type === "Identifier"
-          && variableDeclarator.init.callee.name === DEFINE_CONFIG_FUNCTION
-          && variableDeclarator.init.arguments[0].type
-            === "ObjectExpression"
-        ) {
-          return parseWidgetConfig(variableDeclarator.init.arguments[0]);
-        }
-      }
+    if (config == null) {
+      throw new Error(`No default export found in ${moduleId}`);
     }
+
+    return config as WidgetConfig<ParameterConfig>;
+  } catch (error) {
+    throw new Error(`Failed to load widget config from ${moduleId}: ${error}`);
   }
-}
-
-function parseWidgetConfig(
-  objectExpression: ObjectExpression,
-): WidgetConfig<ParameterConfig> {
-  // Convert from AST -> JS string
-  let widgetConfigString = escodegen.generate(objectExpression);
-  // The output JS string is not valid JSON, so we force it into JSON that we can then print out into a JSON file
-
-  // Wrap keys in double quotes
-  widgetConfigString = widgetConfigString.replace(/([^\s:]+):/g, "\"$1\":");
-  // Convert single quote string values to double quotes
-  widgetConfigString = widgetConfigString.replace(/: '(.+)'/g, ": \"$1\"");
-
-  // Convert single quote string values in arrays to double quotes
-  widgetConfigString = widgetConfigString.replace(
-    /: \['(.+)'\]/g,
-    ": [\"$1\"]",
-  );
-
-  return JSON.parse(widgetConfigString) as WidgetConfig<ParameterConfig>;
 }

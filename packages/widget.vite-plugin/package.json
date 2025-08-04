@@ -41,7 +41,6 @@
   "dependencies": {
     "@osdk/foundry-config-json": "workspace:~",
     "@osdk/widget.api": "workspace:~",
-    "escodegen": "^2.1.0",
     "fs-extra": "^11.3.0",
     "parse5": "^7.2.1",
     "picocolors": "^1.1.1",
@@ -55,8 +54,6 @@
     "@blueprintjs/icons": "^5.15.0",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@types/escodegen": "~0.0.10",
-    "@types/estree": "^1.0.6",
     "@types/fs-extra": "^11.0.4",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
