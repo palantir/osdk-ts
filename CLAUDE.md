@@ -2,6 +2,7 @@
 
 - NEVER solve a problem in typescript by using `any` without first asking the user. If you think you need to use `any` then you probably don't understand the problem and need to ask for help
 - These projects are almost exclusively esm and typescript. Don't assume that you are always looking for a `.js` file. It might be a `.ts` or `.tsx` file
+- To check if a certain package compiles in this monorepo, perform: `cd packages/the-package && pnpm turbo typecheck`
 
 ## React Best Practices
 
