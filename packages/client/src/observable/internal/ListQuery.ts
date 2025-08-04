@@ -141,7 +141,7 @@ abstract class BaseListQuery<
       );
     }
 
-    objectCacheKeys = this.#retainReleaseAppend(batch, append, objectCacheKeys);
+    objectCacheKeys = this.retainReleaseAppend(batch, append, objectCacheKeys);
     objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
     objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
 
@@ -162,37 +162,7 @@ abstract class BaseListQuery<
     return DEBUG_ONLY__cacheKeysToString(data.data);
   }
 
-  #retainReleaseAppend(
-    batch: BatchContext,
-    append: boolean,
-    objectCacheKeys: ObjectCacheKey[],
-  ): ObjectCacheKey[] {
-    const existingList = batch.read(this.cacheKey);
-
-    // whether its append or update we need to retain all the new objects
-    if (!batch.optimisticWrite) {
-      if (!append) {
-        // we need to release all the old objects
-        // N.B. the store keeps the cache keys around for a bit so we don't
-        // need to worry about them being GC'd before we re-retain them
-        for (const objectCacheKey of existingList?.value?.data ?? []) {
-          this.store.release(objectCacheKey);
-        }
-      }
-
-      for (const objectCacheKey of objectCacheKeys) {
-        this.store.retain(objectCacheKey);
-      }
-    }
-
-    if (append) {
-      objectCacheKeys = [
-        ...existingList?.value?.data ?? [],
-        ...objectCacheKeys,
-      ];
-    }
-    return objectCacheKeys;
-  }
+  // retainReleaseAppend now implemented in BaseCollectionQuery
 
   _dispose(): void {
     // eslint-disable-next-line no-console
