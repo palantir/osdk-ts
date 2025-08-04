@@ -33,6 +33,10 @@ export interface CollectionStorageData {
   data: ObjectCacheKey[];
 }
 
+/**
+ * Collection-specific sorting behavior is handled by subclasses
+ */
+
 // Empty base class as a starting point
 /**
  * Common parameters available for constructing a collection payload
@@ -68,6 +72,7 @@ export abstract class BaseCollectionQuery<
   PAYLOAD,
   O extends CommonObserveOptions,
 > extends Query<KEY, PAYLOAD, O> {
+  // Collection-specific behavior is implemented by subclasses
   /**
    * Token for the next page of results
    * @protected
