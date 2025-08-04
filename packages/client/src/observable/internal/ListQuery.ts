@@ -22,20 +22,8 @@ import type {
   Osdk,
   PropertyKeys,
 } from "@osdk/api";
-import deepEqual from "fast-deep-equal";
 import groupBy from "object.groupby";
-import type { Connectable, Observable, Subscription } from "rxjs";
-import {
-  asapScheduler,
-  combineLatest,
-  connectable,
-  distinctUntilChanged,
-  map,
-  of,
-  ReplaySubject,
-  scheduled,
-  switchMap,
-} from "rxjs";
+import { type Observable, type Subscription } from "rxjs";
 import invariant from "tiny-invariant";
 import { additionalContext, type Client } from "../../Client.js";
 import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
@@ -51,6 +39,10 @@ import type {
   CommonObserveOptions,
   Status,
 } from "../ObservableClient/common.js";
+import type {
+ CollectionStorageData ,
+  BaseCollectionQuery,
+  type CollectionConnectableParams } from "./BaseCollectionQuery.js";
 import {
   type CacheKey,
   DEBUG_ONLY__cacheKeysToString as DEBUG_ONLY__cacheKeysToString,
@@ -61,13 +53,12 @@ import type { Entry } from "./Layer.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "./objectMatchesWhereClause.js";
 import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
-import { Query } from "./Query.js";
+import type { Query } from "./Query.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
-interface ListStorageData {
-  data: ObjectCacheKey[];
-}
+
+interface ListStorageData extends CollectionStorageData {}
 
 export interface ListCacheKey extends
   CacheKey<
@@ -106,11 +97,10 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
 }>;
 
 abstract class BaseListQuery<
-  // THIS IS THE WRONG EXTENDS
   KEY extends ListCacheKey,
   PAYLOAD,
   O extends CommonObserveOptions,
-> extends Query<KEY, PAYLOAD, O> {
+> extends BaseCollectionQuery<KEY, PAYLOAD, O> {
   //
   // Per list type implementations
   //
@@ -158,42 +148,18 @@ abstract class BaseListQuery<
     return this.writeToStore({ data: objectCacheKeys }, status, batch);
   }
 
-  writeToStore(
-    data: ListStorageData,
-    status: Status,
-    batch: BatchContext,
-  ): Entry<KEY> {
-    const entry = batch.read(this.cacheKey);
-
-    if (entry && deepEqual(data, entry.value)) {
-      if (entry.status === status) {
-        // nothing to set full stop
-        if (process.env.NODE_ENV !== "production") {
-          this.logger?.child({ methodName: "writeToStore" }).debug(
-            `Object was deep equal and status was equal. Skipping`,
-          );
-          return entry;
-        }
-      }
-
-      if (process.env.NODE_ENV !== "production") {
-        this.logger?.child({ methodName: "writeToStore" }).debug(
-          `Object was deep equal but status was new. Just using the new status`,
-        );
-      }
-      return batch.write(this.cacheKey, entry.value, status);
-    }
-
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "writeToStore" }).debug(
-        `{status: ${status}},`,
-        DEBUG_ONLY__cacheKeysToString(data.data),
-      );
-    }
-
-    const ret = batch.write(this.cacheKey, data, status);
+  /**
+   * Register changes to the cache specific to ListQuery
+   */
+  protected registerCacheChanges(batch: BatchContext): void {
     batch.changes.registerList(this.cacheKey);
-    return ret;
+  }
+
+  /**
+   * Format the collection data for debug output
+   */
+  protected formatDebugOutput(data: CollectionStorageData): any {
+    return DEBUG_ONLY__cacheKeysToString(data.data);
   }
 
   #retainReleaseAppend(
@@ -255,9 +221,6 @@ export class ListQuery extends BaseListQuery<
 
   // this represents the minimum number of results we need to load if we revalidate
   #minNumResults = 0;
-
-  #nextPageToken?: string;
-  #pendingPageFetch?: Promise<unknown>;
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
   #sortFns: Array<
@@ -309,50 +272,22 @@ export class ListQuery extends BaseListQuery<
     return this.#whereClause;
   }
 
-  protected _createConnectable(
-    subject: Observable<SubjectPayload<ListCacheKey>>,
-  ): Connectable<ListPayload> {
-    return connectable<ListPayload>(
-      subject.pipe(
-        switchMap(listEntry => {
-          const resolvedList = listEntry?.value?.data == null
-              || listEntry.value.data.length === 0
-            ? of([])
-            : combineLatest(
-              listEntry.value.data.map(cacheKey =>
-                this.store.getSubject(cacheKey).pipe(
-                  // subscribeOn(asyncScheduler),
-                  map(objectEntry => objectEntry?.value!),
-                  distinctUntilChanged(),
-                )
-              ),
-            );
-
-          // wrapping in a scheduled means we won't emit this data right away but
-          // rather on the next microtask
-          return scheduled(
-            combineLatest({
-              resolvedList,
-              isOptimistic: of(listEntry.isOptimistic),
-              fetchMore: of(this.fetchMore),
-              hasMore: of(this.#nextPageToken != null),
-              status: of(listEntry.status),
-              lastUpdated: of(listEntry.lastUpdated),
-            }),
-            asapScheduler,
-          );
-        }),
-      ),
-      {
-        resetOnDisconnect: false,
-        connector: () => new ReplaySubject(1),
-      },
-    );
+  /**
+   * Creates a payload from collection parameters
+   * Implementation for list queries
+   */
+  protected createPayload(params: CollectionConnectableParams): ListPayload {
+    return {
+      resolvedList: params.resolvedData,
+      isOptimistic: params.isOptimistic,
+      fetchMore: this.fetchMore,
+      hasMore: this.nextPageToken != null,
+      status: params.status,
+      lastUpdated: params.lastUpdated,
+    };
   }
 
-  protected _preFetch(): void {
-    this.#nextPageToken = undefined;
-  }
+  // _preFetch() is now handled by BaseCollectionQuery
 
   protected async _fetchAndStore(): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
@@ -361,8 +296,7 @@ export class ListQuery extends BaseListQuery<
       );
     }
     while (true) {
-      const entry = await this.#fetchPageAndUpdate(
-        this.#objectSet,
+      const entry = await this.fetchPageAndUpdate(
         "loading",
         this.abortController?.signal,
       );
@@ -374,7 +308,7 @@ export class ListQuery extends BaseListQuery<
       invariant(entry.value?.data);
       const count = entry.value.data.length;
 
-      if (count > this.#minNumResults || this.#nextPageToken == null) {
+      if (count > this.#minNumResults || this.nextPageToken == null) {
         break;
       }
     }
@@ -385,47 +319,21 @@ export class ListQuery extends BaseListQuery<
     return Promise.resolve();
   }
 
-  fetchMore = (): Promise<unknown> => {
-    if (this.#pendingPageFetch) {
-      return this.#pendingPageFetch;
-    }
+  // fetchMore is now implemented in BaseCollectionQuery
 
-    if (this.pendingFetch) {
-      this.#pendingPageFetch = new Promise(async (res) => {
-        await this.pendingFetch;
-        res(this.fetchMore());
-      });
-      return this.#pendingPageFetch;
-    }
-
-    if (this.#nextPageToken == null) {
-      return Promise.resolve();
-    }
-
-    this.store.batch({}, (batch) => {
-      this.setStatus("loading", batch);
-    });
-
-    this.pendingFetch = this.#fetchPageAndUpdate(
-      this.#objectSet,
-      "loaded",
-      this.abortController?.signal,
-    ).finally(() => {
-      this.#pendingPageFetch = undefined;
-    });
-    return this.pendingFetch;
-  };
-
-  async #fetchPageAndUpdate(
-    objectSet: ObjectSet,
+  /**
+   * Implementation of abstract method from BaseCollectionQuery
+   * Fetches a page of data and updates the store
+   */
+  protected async fetchPageAndUpdate(
     status: Status,
     signal: AbortSignal | undefined,
   ): Promise<Entry<ListCacheKey> | undefined> {
-    const append = this.#nextPageToken != null;
+    const append = this.nextPageToken != null;
 
     try {
-      let { data, nextPageToken } = await objectSet.fetchPage({
-        $nextPageToken: this.#nextPageToken,
+      let { data, nextPageToken } = await this.#objectSet.fetchPage({
+        $nextPageToken: this.nextPageToken,
         $pageSize: this.options.pageSize,
         // For now this keeps the shared test code from falling apart
         // but shouldn't be needed ideally
@@ -438,7 +346,7 @@ export class ListQuery extends BaseListQuery<
         return;
       }
 
-      this.#nextPageToken = nextPageToken;
+      this.nextPageToken = nextPageToken;
 
       // Our caching really expects to have the full objects in the list
       // so we need to fetch them all here
