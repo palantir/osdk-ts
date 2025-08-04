@@ -34,6 +34,7 @@ import {
 import type { CacheKey } from "../CacheKey.js";
 import type { Changes } from "../Changes.js";
 import type { Entry } from "../Layer.js";
+import type { ObjectCacheKey } from "../ObjectQuery.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { BatchContext, Store, SubjectPayload } from "../Store.js";
 import { tombstone } from "../tombstone.js";
@@ -197,6 +198,18 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
    */
   protected registerCacheChanges(batch: BatchContext): void {
     batch.changes.modified.add(this.cacheKey);
+  }
+
+  /**
+   * Implementation of _sortCacheKeys for links
+   * Links don't have custom sorting logic
+   */
+  protected _sortCacheKeys(
+    objectCacheKeys: ObjectCacheKey[],
+    batch: BatchContext,
+  ): ObjectCacheKey[] {
+    // No custom sorting for links
+    return objectCacheKeys;
   }
 
   /**

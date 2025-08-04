@@ -557,7 +557,15 @@ export class ListQuery extends BaseListQuery<
     };
   }
 
-  _sortCacheKeys(
+  /**
+   * Implementation of abstract method from BaseListQuery
+   * Uses the sort strategy to sort cache keys
+   */
+  /**
+   * Implementation of abstract method from BaseListQuery
+   * Sorts the cache keys based on the orderBy clause
+   */
+  protected _sortCacheKeys(
     objectCacheKeys: ObjectCacheKey[],
     batch: BatchContext,
   ): ObjectCacheKey[] {
