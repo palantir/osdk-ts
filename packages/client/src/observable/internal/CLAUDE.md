@@ -34,13 +34,16 @@ Implements a stack-based approach to data management:
 
 ### Query System
 
-Abstract base class (`Query`) with specialized implementations:
+A hierarchical design with abstract base classes and specialized implementations:
 
-- `ObjectQuery`: Handles single object fetching and caching
-- `ListQuery`: Manages collections with filtering and sorting
-- `SpecificLinkQuery`: Handles relationship traversal and caching
+- `Query`: Base abstract class for all query types
+  - `ObjectQuery`: Handles single object fetching and caching
+  - `BaseCollectionQuery`: Abstract base for collection-based queries
+    - `BaseListQuery`: Abstract base for list-type collections
+      - `ListQuery`: Concrete implementation for filtered/sorted collections
+    - `SpecificLinkQuery`: Handles relationship traversal and caching
 
-Each query type manages its own cache keys, network requests, and subscription lifecycle.
+Each query type manages its own cache keys, network requests, and subscription lifecycle while inheriting common functionality from parent classes.
 
 ## Key Implementation Concepts
 
@@ -80,10 +83,21 @@ Sophisticated memory handling to prevent leaks:
 - Weak references for garbage collection
 - Subscription lifecycle management
 
+### Shared Collection Abstractions
+
+The `BaseCollectionQuery` provides common functionality for collection-based queries:
+
+- **Template Method Pattern**: Unified connectable creation with customizable payload formatting
+- **Object Storage**: Common method for storing objects in the cache
+- **Reference Counting**: Centralized retain/release/append logic for memory management
+- **Pagination**: Shared implementation for fetching multiple pages and handling tokens
+- **Proper Inheritance**: Collection-specific behaviors in subclasses with common interfaces
+
 ## Best Practices for Development
 
 1. Always operate within batch contexts when modifying cache
 2. Understand the layer system for implementing optimistic updates
 3. Use canonicalization for consistent cache key generation
 4. Handle proper subscription cleanup to prevent memory leaks
-5. Use the test utilities for reliable unit tests
+5. Leverage shared abstractions in BaseCollectionQuery when implementing new collection types
+6. Use the test utilities for reliable unit tests
