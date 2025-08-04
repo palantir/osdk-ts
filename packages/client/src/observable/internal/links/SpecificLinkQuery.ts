@@ -16,13 +16,13 @@
 
 import type {
   ObjectTypeDefinition,
+  Osdk,
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import { type Subject } from "rxjs";
 import { additionalContext } from "../../../Client.js";
-import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ObserveLinkOptions } from "../../ObservableClient.js";
 // Direct link queries without needing to fetch the source object first
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
@@ -34,7 +34,6 @@ import {
 import type { CacheKey } from "../CacheKey.js";
 import type { Changes } from "../Changes.js";
 import type { Entry } from "../Layer.js";
-import { storeOsdkInstances } from "../ObjectQuery.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { BatchContext, Store, SubjectPayload } from "../Store.js";
 import { tombstone } from "../tombstone.js";
@@ -164,7 +163,7 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
       // Store the linked objects in the cache
       const { retVal } = this.store.batch({}, (batch) => {
         return this._updateLinks(
-          response.data as Array<ObjectHolder>,
+          response.data as Array<Osdk.Instance<any>>,
           response.nextPageToken ? status : "loaded",
           batch,
         );
@@ -204,7 +203,7 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
    * Helper method to update the linked objects in the cache
    */
   _updateLinks(
-    objectHolders: Array<ObjectHolder>,
+    objectHolders: Array<Osdk.Instance<any>>,
     status: Status,
     batch: BatchContext,
   ): Entry<SpecificLinkCacheKey> {
@@ -215,10 +214,8 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
       );
     }
 
-    // First store the individual linked objects in their respective cache entries
-    const objectCacheKeys = objectHolders.length > 0
-      ? storeOsdkInstances(this.store, objectHolders, batch)
-      : [];
+    // Store the objects using the common method from BaseCollectionQuery
+    const objectCacheKeys = this.storeObjects(objectHolders, batch);
 
     // Then store the collection of object references in our link cache
     return this.writeToStore({ data: objectCacheKeys }, status, batch);

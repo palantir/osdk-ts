@@ -39,10 +39,11 @@ import type {
   CommonObserveOptions,
   Status,
 } from "../ObservableClient/common.js";
+import { BaseCollectionQuery } from "./BaseCollectionQuery.js";
 import type {
- CollectionStorageData ,
-  BaseCollectionQuery,
-  type CollectionConnectableParams } from "./BaseCollectionQuery.js";
+  CollectionConnectableParams,
+  CollectionStorageData,
+} from "./BaseCollectionQuery.js";
 import {
   type CacheKey,
   DEBUG_ONLY__cacheKeysToString as DEBUG_ONLY__cacheKeysToString,
@@ -51,12 +52,11 @@ import type { Canonical } from "./Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "./Changes.js";
 import type { Entry } from "./Layer.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "./objectMatchesWhereClause.js";
-import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";
+import type { ObjectCacheKey } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import type { Query } from "./Query.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
-
 
 interface ListStorageData extends CollectionStorageData {}
 
@@ -356,7 +356,7 @@ export class ListQuery extends BaseListQuery<
 
       const { retVal } = this.store.batch({}, (batch) => {
         return this._updateList(
-          storeOsdkInstances(this.store, data, batch),
+          this.storeObjects(data, batch),
           append,
           nextPageToken ? status : "loaded",
           batch,
@@ -718,7 +718,7 @@ export class ListQuery extends BaseListQuery<
           : objOrIface) as unknown as ObjectHolder;
 
       this.store.batch({}, (batch) => {
-        storeOsdkInstances(this.store, [object as Osdk.Instance<any>], batch);
+        this.storeObjects([object as Osdk.Instance<any>], batch);
       });
     } else if (state === "REMOVED") {
       this.#onOswRemoved(objOrIface, logger);
