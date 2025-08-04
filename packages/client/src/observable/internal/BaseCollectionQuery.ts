@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Osdk } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import { type Connectable, type Observable } from "rxjs";
 import type {
@@ -23,7 +24,7 @@ import type {
 import type { CacheKey } from "./CacheKey.js";
 import { createCollectionConnectable } from "./createCollectionConnectable.js";
 import type { Entry } from "./Layer.js";
-import type { ObjectCacheKey } from "./ObjectQuery.js";
+import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";
 import { Query } from "./Query.js";
 import type { BatchContext, SubjectPayload } from "./Store.js";
 
@@ -136,6 +137,24 @@ export abstract class BaseCollectionQuery<
    */
   protected formatDebugOutput(data: CollectionStorageData): any {
     return data;
+  }
+
+  /**
+   * Common method to store objects in the cache and return their cache keys
+   * Used by collection queries when storing object references
+   *
+   * @param objects Array of objects to store
+   * @param batch The batch context to use
+   * @returns Array of cache keys for the stored objects
+   */
+  protected storeObjects(
+    objects: Array<Osdk.Instance<any>>,
+    batch: BatchContext,
+  ): Array<ObjectCacheKey> {
+    // Store the individual objects in their respective cache entries
+    return objects.length > 0
+      ? storeOsdkInstances(this.store, objects, batch)
+      : [];
   }
 
   /**
