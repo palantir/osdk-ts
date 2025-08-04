@@ -189,8 +189,7 @@ export class ListQuery extends BaseListQuery<
   #apiName: string;
   #whereClause: Canonical<SimpleWhereClause>;
 
-  // this represents the minimum number of results we need to load if we revalidate
-  #minNumResults = 0;
+  // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
   #sortFns: Array<
@@ -236,6 +235,8 @@ export class ListQuery extends BaseListQuery<
     } as ObjectTypeDefinition)
       .where(this.#whereClause);
     this.#sortFns = createOrderBySortFns(this.#orderBy);
+    // Initialize the minResultsToLoad inherited from BaseCollectionQuery
+    this.minResultsToLoad = 0;
   }
 
   get canonicalWhere(): Canonical<SimpleWhereClause> {
@@ -257,37 +258,7 @@ export class ListQuery extends BaseListQuery<
     };
   }
 
-  // _preFetch() is now handled by BaseCollectionQuery
-
-  protected async _fetchAndStore(): Promise<void> {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "_fetchAndStore" }).debug(
-        "fetching pages",
-      );
-    }
-    while (true) {
-      const entry = await this.fetchPageAndUpdate(
-        "loading",
-        this.abortController?.signal,
-      );
-      if (!entry) {
-        // we were aborted
-        return;
-      }
-
-      invariant(entry.value?.data);
-      const count = entry.value.data.length;
-
-      if (count > this.#minNumResults || this.nextPageToken == null) {
-        break;
-      }
-    }
-    this.store.batch({}, (batch) => {
-      this.setStatus("loaded", batch);
-    });
-
-    return Promise.resolve();
-  }
+  // _preFetch() and _fetchAndStore are now implemented in BaseCollectionQuery
 
   // fetchMore is now implemented in BaseCollectionQuery
 
