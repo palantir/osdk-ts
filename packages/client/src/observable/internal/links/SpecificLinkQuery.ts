@@ -206,7 +206,7 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
    */
   protected _sortCacheKeys(
     objectCacheKeys: ObjectCacheKey[],
-    batch: BatchContext,
+    _batch: BatchContext, // Parameter unused but required by interface
   ): ObjectCacheKey[] {
     // No custom sorting for links
     return objectCacheKeys;
