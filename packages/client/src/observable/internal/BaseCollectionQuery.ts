@@ -269,8 +269,16 @@ export abstract class BaseCollectionQuery<
   };
 
   /**
+   * Minimum number of results to load initially
+   * May be overridden by subclasses for specific collection types
+   * @protected
+   */
+  protected minResultsToLoad: number = 0;
+
+  /**
    * Common _fetchAndStore implementation for pagination
    * Uses fetchPageAndUpdate to load the initial set of data
+   * Will load multiple pages if necessary to reach minResultsToLoad
    */
   protected async _fetchAndStore(): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
@@ -279,15 +287,23 @@ export abstract class BaseCollectionQuery<
       );
     }
 
-    // Initial fetch of data
-    const entry = await this.fetchPageAndUpdate(
-      "loading",
-      this.abortController?.signal,
-    );
+    // Keep fetching pages until we have the minimum number of results or no more pages
+    while (true) {
+      const entry = await this.fetchPageAndUpdate(
+        "loading",
+        this.abortController?.signal,
+      );
 
-    if (!entry) {
-      // we were aborted
-      return;
+      if (!entry) {
+        // we were aborted
+        return;
+      }
+
+      // Check if we have enough results or no more pages
+      const count = entry.value?.data.length || 0;
+      if (count >= this.minResultsToLoad || this.nextPageToken == null) {
+        break;
+      }
     }
 
     this.store.batch({}, (batch) => {
