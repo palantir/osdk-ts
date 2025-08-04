@@ -32,6 +32,12 @@ export async function generatePerInterfaceDataFiles(
 
   for (const obj of Object.values(ontology.interfaceTypes)) {
     if (obj instanceof ForeignType) continue;
+    const relPath = path.join(
+      ".",
+      "ontology",
+      "interfaces",
+      `${obj.shortApiName}.ts`,
+    );
 
     await fs.writeFile(
       path.join(interfacesDir, `${obj.shortApiName}.ts`),
@@ -46,6 +52,7 @@ export async function generatePerInterfaceDataFiles(
           ontology,
           true,
           forInternalUse,
+          relPath,
         )
       }
     `),

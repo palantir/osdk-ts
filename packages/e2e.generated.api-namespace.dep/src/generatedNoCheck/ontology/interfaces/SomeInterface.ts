@@ -3,6 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type {
   InterfaceDefinition as $InterfaceDefinition,
+  InterfaceMetadata as $InterfaceMetadata,
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
