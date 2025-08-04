@@ -158,6 +158,47 @@ export abstract class BaseCollectionQuery<
   }
 
   /**
+   * Common method for managing object reference counting and appending results
+   * Used by collection queries when updating object references
+   *
+   * @param batch The batch context to use
+   * @param append Whether to append to existing objects or replace them
+   * @param objectCacheKeys Array of object cache keys to process
+   * @returns The final array of object cache keys after retain/release/append
+   */
+  protected retainReleaseAppend(
+    batch: BatchContext,
+    append: boolean,
+    objectCacheKeys: ObjectCacheKey[],
+  ): ObjectCacheKey[] {
+    const existingList = batch.read(this.cacheKey);
+
+    // whether its append or update we need to retain all the new objects
+    if (!batch.optimisticWrite) {
+      if (!append) {
+        // we need to release all the old objects
+        // N.B. the store keeps the cache keys around for a bit so we don't
+        // need to worry about them being GC'd before we re-retain them
+        for (const objectCacheKey of existingList?.value?.data ?? []) {
+          this.store.release(objectCacheKey);
+        }
+      }
+
+      for (const objectCacheKey of objectCacheKeys) {
+        this.store.retain(objectCacheKey);
+      }
+    }
+
+    if (append) {
+      objectCacheKeys = [
+        ...existingList?.value?.data ?? [],
+        ...objectCacheKeys,
+      ];
+    }
+    return objectCacheKeys;
+  }
+
+  /**
    * Creates a payload from collection parameters
    * Implemented by subclasses to format their specific payload types
    *
