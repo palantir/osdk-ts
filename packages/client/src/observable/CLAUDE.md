@@ -90,6 +90,6 @@ The Observable Client is designed to be used with React hooks from @osdk/react:
 
 - **Store**: Central data storage system with multi-layer cache
 - **Layer System**: Manages truth layer and optimistic layers
-- **Query System**: Abstract base with specialized implementations
+- **Query System**: Hierarchical inheritance with shared abstractions for collection types
 - **Cache Keys**: Trie-based deduplication for memory efficiency
 - **Change Tracking**: MultiMap structure for efficient invalidation

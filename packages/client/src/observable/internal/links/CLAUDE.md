@@ -22,7 +22,7 @@ Cache keys are strongly typed and integrated with the global cache key system.
 
 Implements the query logic for retrieving and observing linked objects:
 
-- Extends the base `Query` class with link-specific behaviors
+- Extends the `BaseCollectionQuery` class with link-specific behaviors
 - Manages the full lifecycle: fetching, caching, invalidation, observation
 - Handles pagination for linked collections
 - Supports optimistic updates for links
@@ -38,6 +38,17 @@ Implements the query logic for retrieving and observing linked objects:
 7. Changes to linked objects automatically trigger updates
 
 ## Implementation Details
+
+### Inheritance Structure
+
+The `SpecificLinkQuery` inherits common collection functionality:
+
+- Extends `BaseCollectionQuery` to leverage shared collection behaviors
+- Implements the abstract methods defined in the base class:
+  - `createPayload`: Creates link-specific payload structure
+  - `registerCacheChanges`: Registers link-specific cache changes
+  - `_sortCacheKeys`: Provides link-specific sorting logic (none in this case)
+  - `fetchPageAndUpdate`: Implements link-specific page fetching
 
 ### Link Storage Format
 
