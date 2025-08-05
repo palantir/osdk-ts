@@ -55,7 +55,6 @@ import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "./obj
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import type { Query } from "./Query.js";
-import { removeDuplicates } from "./removeDuplicates.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
@@ -106,6 +105,9 @@ abstract class BaseListQuery<
   // Per list type implementations
   //
 
+  /**
+   * @deprecated Use sortCollection instead
+   */
   protected abstract _sortCacheKeys(
     objectCacheKeys: ObjectCacheKey[],
     batch: BatchContext,
@@ -131,22 +133,24 @@ abstract class BaseListQuery<
     status: Status,
     batch: BatchContext,
   ): Entry<ListCacheKey> {
-    if (process.env.NODE_ENV !== "production") {
-      const logger = process.env.NODE_ENV !== "production"
-        ? this.logger?.child({ methodName: "updateList" })
-        : this.logger;
-
-      logger?.debug(
-        `{status: ${status}}`,
-        JSON.stringify(objectCacheKeys, null, 2),
-      );
-    }
-
-    objectCacheKeys = this.retainReleaseAppend(batch, append, objectCacheKeys);
-    objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
-    objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
-
-    return this.writeToStore({ data: objectCacheKeys }, status, batch);
+    return this.updateCollection(
+      objectCacheKeys,
+      { append, status, sort: true },
+      batch
+    );
+  }
+  
+  /**
+   * Implementation of the abstract sortCollection method from BaseCollectionQuery
+   * Uses the list's sorting strategy
+   */
+  // Implementation for ListQuery class only
+  protected sortCollection(
+    objectCacheKeys: ObjectCacheKey[],
+    batch: BatchContext,
+  ): ObjectCacheKey[] {
+    // Implementation that accesses ListQuery's private properties directly
+    return this._sortCacheKeys(objectCacheKeys, batch);
   }
 
   /**
