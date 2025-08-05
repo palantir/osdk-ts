@@ -344,7 +344,7 @@ export function createDefer() {
 
 export function expectSingleLinkCallAndClear<T extends ObjectTypeDefinition>(
   subFn: MockedObject<Observer<SpecificLinkPayload | undefined>>,
-  resolvedLinks: ObjectHolder[] | Osdk.Instance<T>[],
+  resolvedList: ObjectHolder[] | Osdk.Instance<T>[],
   payloadOptions: Omit<Partial<SpecificLinkPayload>, "resolvedList"> = {},
 ): SpecificLinkPayload | undefined {
   if (vitest.isFakeTimers()) {
@@ -353,7 +353,7 @@ export function expectSingleLinkCallAndClear<T extends ObjectTypeDefinition>(
   expect(subFn.next).toHaveBeenCalledExactlyOnceWith(
     linkPayloadContaining({
       ...payloadOptions,
-      resolvedLinks: resolvedLinks as unknown as Array<
+      resolvedList: resolvedList as unknown as Array<
         ObjectHolder
       >,
     }),
@@ -578,7 +578,7 @@ export function linkPayloadContaining(
   return {
     fetchMore: x.fetchMore ?? expect.any(Function),
     hasMore: x.hasMore ?? expect.any(Boolean),
-    resolvedLinks: x.resolvedLinks ?? expect.anything(),
+    resolvedList: x.resolvedList ?? expect.anything(),
     isOptimistic: expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),

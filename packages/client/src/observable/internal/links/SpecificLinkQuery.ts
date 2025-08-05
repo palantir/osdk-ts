@@ -91,7 +91,7 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
     params: CollectionConnectableParams,
   ): SpecificLinkPayload {
     return {
-      resolvedLinks: params.resolvedData,
+      resolvedList: params.resolvedData,
       isOptimistic: params.isOptimistic,
       fetchMore: this.fetchMore,
       hasMore: this.nextPageToken != null,
@@ -212,7 +212,7 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
     // No custom sorting for links
     return objectCacheKeys;
   }
-  
+
   /**
    * Implementation of the abstract sortCollection method from BaseCollectionQuery
    * Links don't have custom sorting logic
@@ -236,7 +236,7 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
     return this.updateCollection(
       objectHolders,
       { append: false, status, sort: false },
-      batch
+      batch,
     );
   }
 
