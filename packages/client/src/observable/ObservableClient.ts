@@ -105,7 +105,7 @@ export interface ObserveObjectsCallbackArgs<
 export interface ObserveLinkCallbackArgs<
   T extends ObjectTypeDefinition | InterfaceDefinition,
 > {
-  resolvedLinks: Osdk.Instance<T>[];
+  resolvedList: Osdk.Instance<T>[];
   isOptimistic: boolean;
   lastUpdated: number;
   fetchMore: () => Promise<unknown>;
