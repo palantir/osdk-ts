@@ -36,7 +36,6 @@ import type { Changes } from "../Changes.js";
 import type { Entry } from "../Layer.js";
 import type { ObjectCacheKey } from "../ObjectQuery.js";
 import type { OptimisticId } from "../OptimisticId.js";
-import { removeDuplicates } from "../removeDuplicates.js";
 import type { BatchContext, Store, SubjectPayload } from "../Store.js";
 import { tombstone } from "../tombstone.js";
 import type { SpecificLinkCacheKey } from "./SpecificLinkCacheKey.js";
@@ -204,8 +203,21 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
   /**
    * Implementation of _sortCacheKeys for links
    * Links don't have custom sorting logic
+   * @deprecated Use sortCollection instead
    */
   protected _sortCacheKeys(
+    objectCacheKeys: ObjectCacheKey[],
+    _batch: BatchContext, // Parameter unused but required by interface
+  ): ObjectCacheKey[] {
+    // No custom sorting for links
+    return objectCacheKeys;
+  }
+  
+  /**
+   * Implementation of the abstract sortCollection method from BaseCollectionQuery
+   * Links don't have custom sorting logic
+   */
+  protected sortCollection(
     objectCacheKeys: ObjectCacheKey[],
     _batch: BatchContext, // Parameter unused but required by interface
   ): ObjectCacheKey[] {
@@ -221,21 +233,11 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
     status: Status,
     batch: BatchContext,
   ): Entry<SpecificLinkCacheKey> {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "_updateLinks" }).debug(
-        `Updating links with status: ${status}`,
-        objectHolders,
-      );
-    }
-
-    // Store the objects using the common method from BaseCollectionQuery
-    let objectCacheKeys = this.storeObjects(objectHolders, batch);
-
-    // Remove any duplicates that might exist
-    objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
-
-    // Then store the collection of object references in our link cache
-    return this.writeToStore({ data: objectCacheKeys }, status, batch);
+    return this.updateCollection(
+      objectHolders,
+      { append: false, status, sort: false },
+      batch
+    );
   }
 
   deleteFromStore(

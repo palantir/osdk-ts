@@ -26,6 +26,7 @@ import { createCollectionConnectable } from "./createCollectionConnectable.js";
 import type { Entry } from "./Layer.js";
 import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";
 import { Query } from "./Query.js";
+import { removeDuplicates } from "./removeDuplicates.js";
 import type { BatchContext, SubjectPayload } from "./Store.js";
 
 // Common interface for collection storage
@@ -330,4 +331,83 @@ export abstract class BaseCollectionQuery<
     status: Status,
     signal: AbortSignal | undefined,
   ): Promise<Entry<KEY> | undefined>;
+
+  /**
+   * Sort the collection items if needed
+   * @param objectCacheKeys - The cache keys to sort
+   * @param batch - The batch context
+   * @returns Sorted array of cache keys
+   */
+  protected abstract sortCollection(
+    objectCacheKeys: ObjectCacheKey[],
+    batch: BatchContext,
+  ): ObjectCacheKey[];
+
+  /**
+   * Unified method for updating collection data in the store
+   * Handles storing, sorting, deduplication, and reference counting
+   * 
+   * @param items - Either object cache keys or object instances to update
+   * @param options - Configuration options for the update
+   * @param batch - The batch context to use
+   * @returns The updated entry
+   */
+  protected updateCollection<T extends ObjectCacheKey | Osdk.Instance<any>>(
+    items: T[],
+    options: {
+      append?: boolean;
+      status: Status;
+      sort?: boolean;
+    },
+    batch: BatchContext,
+  ): Entry<KEY> {
+    if (process.env.NODE_ENV !== "production") {
+      const logger = process.env.NODE_ENV !== "production"
+        ? this.logger?.child({ methodName: "updateCollection" })
+        : this.logger;
+
+      logger?.debug(
+        `{status: ${options.status}, append: ${options.append}, sort: ${options.sort}}`,
+        JSON.stringify(items, null, 2),
+      );
+    }
+
+    // Step 1: Convert items to object cache keys if needed
+    let objectCacheKeys: ObjectCacheKey[];
+    
+    if (items.length === 0) {
+      objectCacheKeys = [];
+    } else if (this.isObjectInstance(items[0])) {
+      // Items are object instances, need to store them first
+      objectCacheKeys = this.storeObjects(items as Array<Osdk.Instance<any>>, batch);
+    } else {
+      // Items are already cache keys
+      objectCacheKeys = items as ObjectCacheKey[];
+    }
+
+    // Step 2: Handle retain/release/append logic
+    objectCacheKeys = this.retainReleaseAppend(
+      batch,
+      options.append ?? false,
+      objectCacheKeys
+    );
+
+    // Step 3: Sort if requested (and if subclass implements sorting)
+    if (options.sort ?? true) {
+      objectCacheKeys = this.sortCollection(objectCacheKeys, batch);
+    }
+
+    // Step 4: Remove duplicates
+    objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
+
+    // Step 5: Write to store
+    return this.writeToStore({ data: objectCacheKeys }, options.status, batch);
+  }
+
+  /**
+   * Type guard to check if an item is an object instance
+   */
+  private isObjectInstance(item: any): item is Osdk.Instance<any> {
+    return item != null && typeof item === 'object' && '$primaryKey' in item;
+  }
 }
