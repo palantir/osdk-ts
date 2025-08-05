@@ -55,6 +55,7 @@ import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "./obj
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import type { Query } from "./Query.js";
+import { removeDuplicates } from "./removeDuplicates.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
@@ -735,22 +736,6 @@ export class ListQuery extends BaseListQuery<
       });
     });
   }
-}
-
-function removeDuplicates(
-  objectCacheKeys: ObjectCacheKey[],
-  batch: BatchContext,
-) {
-  const visited = new Set<ObjectCacheKey>();
-  objectCacheKeys = objectCacheKeys.filter((key) => {
-    batch.read(key);
-    if (visited.has(key)) {
-      return false;
-    }
-    visited.add(key);
-    return true;
-  });
-  return objectCacheKeys;
 }
 
 function createOrderBySortFns(
