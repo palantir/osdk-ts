@@ -59,7 +59,8 @@ import {
   isSpecificLinkCacheKey,
   SpecificLinkQuery,
 } from "./links/SpecificLinkQuery.js";
-import type { ListCacheKey, ListQueryOptions } from "./ListQuery.js";
+import type { ListCacheKey } from "./ListCacheKey.js";
+import type { ListQueryOptions } from "./ListQuery.js";
 import { isListCacheKey, ListQuery } from "./ListQuery.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import { ObjectQuery } from "./ObjectQuery.js";

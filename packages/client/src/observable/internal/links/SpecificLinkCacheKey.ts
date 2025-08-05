@@ -15,17 +15,16 @@
  */
 
 import type { ObjectTypeDefinition, PrimaryKeyType } from "@osdk/api";
+import type { CollectionStorageData } from "../BaseCollectionQuery.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
-import type { ObjectCacheKey } from "../ObjectQuery.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { SpecificLinkQuery } from "./SpecificLinkQuery.js";
 
 /**
  * Storage data format for link query cache entries, similar to ListStorageData
  */
-export interface LinkStorageData {
-  data: ObjectCacheKey[];
+export interface LinkStorageData extends CollectionStorageData {
 }
 /**
  * Cache key for a specific link query that uniquely identifies:

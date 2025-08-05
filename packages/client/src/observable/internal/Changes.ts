@@ -19,7 +19,7 @@ import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectH
 import type { CacheKey } from "./CacheKey.js";
 import { DEBUG_ONLY__cacheKeyToString } from "./CacheKey.js";
 import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
-import type { ListCacheKey } from "./ListQuery.js";
+import type { ListCacheKey } from "./ListCacheKey.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 
 export class Changes {
