@@ -36,6 +36,7 @@ import type { Changes } from "../Changes.js";
 import type { Entry } from "../Layer.js";
 import type { ObjectCacheKey } from "../ObjectQuery.js";
 import type { OptimisticId } from "../OptimisticId.js";
+import { removeDuplicates } from "../removeDuplicates.js";
 import type { BatchContext, Store, SubjectPayload } from "../Store.js";
 import { tombstone } from "../tombstone.js";
 import type { SpecificLinkCacheKey } from "./SpecificLinkCacheKey.js";
@@ -228,7 +229,10 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
     }
 
     // Store the objects using the common method from BaseCollectionQuery
-    const objectCacheKeys = this.storeObjects(objectHolders, batch);
+    let objectCacheKeys = this.storeObjects(objectHolders, batch);
+
+    // Remove any duplicates that might exist
+    objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
 
     // Then store the collection of object references in our link cache
     return this.writeToStore({ data: objectCacheKeys }, status, batch);
