@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.12.0-beta.12
+
+### Minor Changes
+
+- 666787f: fix text allowed values name
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.10
+
 ## 0.12.0-beta.11
 
 ### Minor Changes

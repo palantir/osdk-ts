@@ -1,5 +1,18 @@
 # @osdk/functions
 
+## 1.2.0-beta.4
+
+### Minor Changes
+
+- b22a1fd: Support Ontology interface edits
+- d8cb63c: Exports interface edit types from internal package
+- f022ffe: Add experimental transactions shape
+
+### Patch Changes
+
+- Updated dependencies [f022ffe]
+  - @osdk/client@2.4.0-beta.10
+
 ## 1.2.0-beta.3
 
 ### Patch Changes
