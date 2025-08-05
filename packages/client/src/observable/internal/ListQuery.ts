@@ -51,28 +51,13 @@ import {
 import type { Canonical } from "./Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "./Changes.js";
 import type { Entry } from "./Layer.js";
+import type { ListCacheKey, ListStorageData } from "./ListCacheKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "./objectMatchesWhereClause.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import type { Query } from "./Query.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
-
-export interface ListStorageData extends CollectionStorageData {}
-
-export interface ListCacheKey extends
-  CacheKey<
-    "list",
-    ListStorageData,
-    ListQuery,
-    [
-      type: "object" | "interface",
-      apiName: string,
-      whereClause: Canonical<SimpleWhereClause>,
-      orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
-    ]
-  > //
-{}
 
 export interface BaseListCacheKey<
   T_Type extends string,
