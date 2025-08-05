@@ -39,10 +39,10 @@ import type {
   CommonObserveOptions,
   Status,
 } from "../ObservableClient/common.js";
-import { BaseCollectionQuery } from "./BaseCollectionQuery.js";
-import type {
-  CollectionConnectableParams,
-  CollectionStorageData,
+import {
+  BaseCollectionQuery,
+  type CollectionConnectableParams,
+  type CollectionStorageData,
 } from "./BaseCollectionQuery.js";
 import {
   type CacheKey,
@@ -58,7 +58,7 @@ import type { Query } from "./Query.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
-interface ListStorageData extends CollectionStorageData {}
+export interface ListStorageData extends CollectionStorageData {}
 
 export interface ListCacheKey extends
   CacheKey<
@@ -96,94 +96,7 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   sortaMatches: Set<(ObjectHolder | InterfaceHolder)>;
 }>;
 
-abstract class BaseListQuery<
-  KEY extends ListCacheKey,
-  PAYLOAD,
-  O extends CommonObserveOptions,
-> extends BaseCollectionQuery<KEY, PAYLOAD, O> {
-  //
-  // Per list type implementations
-  //
-
-  /**
-   * @deprecated Use sortCollection instead
-   */
-  protected abstract _sortCacheKeys(
-    objectCacheKeys: ObjectCacheKey[],
-    batch: BatchContext,
-  ): ObjectCacheKey[];
-
-  //
-  // Shared Implementations
-  //
-
-  /**
-   * Only intended to be "protected" and used by subclasses but exposed for
-   * testing.
-   *
-   * @param objectCacheKeys
-   * @param append
-   * @param status
-   * @param batch
-   * @returns
-   */
-  _updateList(
-    objectCacheKeys: Array<ObjectCacheKey>,
-    append: boolean,
-    status: Status,
-    batch: BatchContext,
-  ): Entry<ListCacheKey> {
-    return this.updateCollection(
-      objectCacheKeys,
-      { append, status, sort: true },
-      batch
-    );
-  }
-  
-  /**
-   * Implementation of the abstract sortCollection method from BaseCollectionQuery
-   * Uses the list's sorting strategy
-   */
-  // Implementation for ListQuery class only
-  protected sortCollection(
-    objectCacheKeys: ObjectCacheKey[],
-    batch: BatchContext,
-  ): ObjectCacheKey[] {
-    // Implementation that accesses ListQuery's private properties directly
-    return this._sortCacheKeys(objectCacheKeys, batch);
-  }
-
-  /**
-   * Register changes to the cache specific to ListQuery
-   */
-  protected registerCacheChanges(batch: BatchContext): void {
-    batch.changes.registerList(this.cacheKey);
-  }
-
-  /**
-   * Format the collection data for debug output
-   */
-  protected formatDebugOutput(data: CollectionStorageData): any {
-    return DEBUG_ONLY__cacheKeysToString(data.data);
-  }
-
-  // retainReleaseAppend now implemented in BaseCollectionQuery
-
-  _dispose(): void {
-    // eslint-disable-next-line no-console
-    console.log("DISPOSE LIST QUERY");
-    this.store.batch({}, (batch) => {
-      const entry = batch.read(this.cacheKey);
-      if (entry) {
-        for (const objectCacheKey of entry.value?.data ?? []) {
-          this.store.release(objectCacheKey);
-        }
-      }
-    });
-  }
-}
-
-export class ListQuery extends BaseListQuery<
+export class ListQuery extends BaseCollectionQuery<
   ListCacheKey,
   ListPayload,
   ListQueryOptions
@@ -203,6 +116,67 @@ export class ListQuery extends BaseListQuery<
       b: ObjectHolder | InterfaceHolder | undefined,
     ) => number
   >;
+
+  /**
+   * Updates the list with the given object cache keys
+   *
+   * @param objectCacheKeys Array of object cache keys to update the list with
+   * @param append Whether to append to the existing list or replace it
+   * @param status The status to set on the list
+   * @param batch The batch context to use for the update
+   * @returns The updated list entry
+   */
+  _updateList(
+    objectCacheKeys: Array<ObjectCacheKey>,
+    append: boolean,
+    status: Status,
+    batch: BatchContext,
+  ): Entry<ListCacheKey> {
+    return this.updateCollection(
+      objectCacheKeys,
+      { append, status, sort: true },
+      batch,
+    );
+  }
+
+  /**
+   * Implementation of the abstract sortCollection method from BaseCollectionQuery
+   * Sorts the collection based on the orderBy clause
+   */
+  protected sortCollection(
+    objectCacheKeys: ObjectCacheKey[],
+    batch: BatchContext,
+  ): ObjectCacheKey[] {
+    if (Object.keys(this.#orderBy).length > 0) {
+      objectCacheKeys = objectCacheKeys.sort((a, b) => {
+        for (const sortFn of this.#sortFns) {
+          const ret = sortFn(
+            batch.read(a)?.value?.$as(this.#apiName),
+            batch.read(b)?.value?.$as(this.#apiName),
+          );
+          if (ret !== 0) {
+            return ret;
+          }
+        }
+        return 0;
+      });
+    }
+    return objectCacheKeys;
+  }
+
+  /**
+   * Register changes to the cache specific to ListQuery
+   */
+  protected registerCacheChanges(batch: BatchContext): void {
+    batch.changes.registerList(this.cacheKey);
+  }
+
+  /**
+   * Format the collection data for debug output
+   */
+  protected formatDebugOutput(data: CollectionStorageData): any {
+    return DEBUG_ONLY__cacheKeysToString(data.data);
+  }
 
   constructor(
     store: Store,
@@ -278,7 +252,8 @@ export class ListQuery extends BaseListQuery<
     const append = this.nextPageToken != null;
 
     try {
-      let { data, nextPageToken } = await this.#objectSet.fetchPage({
+      let fetchedData;
+      const { data, nextPageToken } = await this.#objectSet.fetchPage({
         $nextPageToken: this.nextPageToken,
         $pageSize: this.options.pageSize,
         // For now this keeps the shared test code from falling apart
@@ -293,16 +268,20 @@ export class ListQuery extends BaseListQuery<
       }
 
       this.nextPageToken = nextPageToken;
+      fetchedData = data;
 
       // Our caching really expects to have the full objects in the list
       // so we need to fetch them all here
       if (this.#type === "interface") {
-        data = await reloadDataAsFullObjects(this.store.client, data);
+        fetchedData = await reloadDataAsFullObjects(
+          this.store.client,
+          fetchedData,
+        );
       }
 
       const { retVal } = this.store.batch({}, (batch) => {
         return this._updateList(
-          this.storeObjects(data, batch),
+          this.storeObjects(fetchedData, batch),
           append,
           nextPageToken ? status : "loaded",
           batch,
@@ -562,33 +541,17 @@ export class ListQuery extends BaseListQuery<
     };
   }
 
-  /**
-   * Implementation of abstract method from BaseListQuery
-   * Uses the sort strategy to sort cache keys
-   */
-  /**
-   * Implementation of abstract method from BaseListQuery
-   * Sorts the cache keys based on the orderBy clause
-   */
-  protected _sortCacheKeys(
-    objectCacheKeys: ObjectCacheKey[],
-    batch: BatchContext,
-  ): ObjectCacheKey[] {
-    if (Object.keys(this.#orderBy).length > 0) {
-      objectCacheKeys = objectCacheKeys.sort((a, b) => {
-        for (const sortFn of this.#sortFns) {
-          const ret = sortFn(
-            batch.read(a)?.value?.$as(this.#apiName),
-            batch.read(b)?.value?.$as(this.#apiName),
-          );
-          if (ret !== 0) {
-            return ret;
-          }
+  _dispose(): void {
+    // eslint-disable-next-line no-console
+    console.log("DISPOSE LIST QUERY");
+    this.store.batch({}, (batch) => {
+      const entry = batch.read(this.cacheKey);
+      if (entry) {
+        for (const objectCacheKey of entry.value?.data ?? []) {
+          this.store.release(objectCacheKey);
         }
-        return 0;
-      });
-    }
-    return objectCacheKeys;
+      }
+    });
   }
 
   registerStreamUpdates(sub: Subscription): void {
