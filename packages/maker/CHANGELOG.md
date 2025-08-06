@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.12.0-beta.13
+
+### Minor Changes
+
+- ed41359: Action sections in OAC
+
 ## 0.12.0-beta.12
 
 ### Minor Changes
