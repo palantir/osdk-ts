@@ -20,6 +20,7 @@ import type {
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
+  PageResult,
   PropertyKeys,
 } from "@osdk/api";
 import groupBy from "object.groupby";
@@ -41,7 +42,6 @@ import type {
 } from "../ObservableClient/common.js";
 import {
   BaseCollectionQuery,
-  type CollectionConnectableParams,
   type CollectionStorageData,
 } from "./BaseCollectionQuery.js";
 import {
@@ -104,6 +104,7 @@ export class ListQuery extends BaseCollectionQuery<
 
   /**
    * Updates the list with the given object cache keys
+   * Uses the unified updateList method from BaseCollectionQuery
    *
    * @param objectCacheKeys Array of object cache keys to update the list with
    * @param append Whether to append to the existing list or replace it
@@ -117,10 +118,12 @@ export class ListQuery extends BaseCollectionQuery<
     status: Status,
     batch: BatchContext,
   ): Entry<ListCacheKey> {
-    return this.updateCollection(
+    return this.updateList(
       objectCacheKeys,
-      { append, status, sort: true },
+      status,
       batch,
+      append,
+      true, // sort
     );
   }
 
@@ -207,81 +210,84 @@ export class ListQuery extends BaseCollectionQuery<
     return this.#whereClause;
   }
 
-  /**
-   * Creates a payload from collection parameters
-   * Implementation for list queries
-   */
-  protected createPayload(params: CollectionConnectableParams): ListPayload {
-    return {
-      resolvedList: params.resolvedData,
-      isOptimistic: params.isOptimistic,
-      fetchMore: this.fetchMore,
-      hasMore: this.nextPageToken != null,
-      status: params.status,
-      lastUpdated: params.lastUpdated,
-    };
-  }
-
   // _preFetch() and _fetchAndStore are now implemented in BaseCollectionQuery
 
   // fetchMore is now implemented in BaseCollectionQuery
 
   /**
-   * Implementation of abstract method from BaseCollectionQuery
-   * Fetches a page of data and updates the store
+   * Implements fetchPageData from BaseCollectionQuery template method
+   * Fetches a page of data
    */
-  protected async fetchPageAndUpdate(
-    status: Status,
+  protected async fetchPageData(
     signal: AbortSignal | undefined,
-  ): Promise<Entry<ListCacheKey> | undefined> {
+  ): Promise<PageResult<Osdk.Instance<any>> | undefined> {
     const append = this.nextPageToken != null;
 
-    try {
-      let fetchedData;
-      const { data, nextPageToken } = await this.#objectSet.fetchPage({
-        $nextPageToken: this.nextPageToken,
-        $pageSize: this.options.pageSize,
-        // For now this keeps the shared test code from falling apart
-        // but shouldn't be needed ideally
-        ...(Object.keys(this.#orderBy).length > 0
-          ? { $orderBy: this.#orderBy }
-          : {}),
-      });
+    // Fetch the data with pagination
+    const resp = await this.#objectSet.fetchPage({
+      $nextPageToken: this.nextPageToken,
+      $pageSize: this.options.pageSize,
+      // For now this keeps the shared test code from falling apart
+      // but shouldn't be needed ideally
+      ...(Object.keys(this.#orderBy).length > 0
+        ? { $orderBy: this.#orderBy }
+        : {}),
+    });
 
-      if (signal?.aborted) {
-        return;
-      }
-
-      this.nextPageToken = nextPageToken;
-      fetchedData = data;
-
-      // Our caching really expects to have the full objects in the list
-      // so we need to fetch them all here
-      if (this.#type === "interface") {
-        fetchedData = await reloadDataAsFullObjects(
-          this.store.client,
-          fetchedData,
-        );
-      }
-
-      const { retVal } = this.store.batch({}, (batch) => {
-        return this._updateList(
-          this.storeObjects(fetchedData, batch),
-          append,
-          nextPageToken ? status : "loaded",
-          batch,
-        );
-      });
-
-      return retVal;
-    } catch (e) {
-      this.logger?.error("error", e);
-      this.store.getSubject(this.cacheKey).error(e);
-
-      // rethrowing would result in many unhandled promise rejections
-      // which i don't think we want
-      // throw e;
+    if (signal?.aborted) {
+      throw new Error("Aborted");
     }
+
+    this.nextPageToken = resp.nextPageToken;
+    let fetchedData = resp.data;
+
+    // Our caching really expects to have the full objects in the list
+    // so we need to fetch them all here
+    if (this.#type === "interface") {
+      fetchedData = await reloadDataAsFullObjects(
+        this.store.client,
+        fetchedData,
+      );
+    }
+
+    return {
+      ...resp,
+      // might be replaced by interface
+      data: fetchedData,
+    };
+  }
+
+  /**
+   * Process and store fetched data
+   * Implementation for BaseCollectionQuery template method
+   */
+  protected processAndStoreFetchedData(
+    result: { data: any[]; nextPageToken?: string; append: boolean },
+    status: Status,
+    batch: BatchContext,
+  ): Entry<ListCacheKey> {
+    return this._updateList(
+      this.storeObjects(result.data, batch),
+      result.append,
+      result.nextPageToken ? status : "loaded",
+      batch,
+    );
+  }
+
+  /**
+   * Handle fetch errors by setting appropriate error state and notifying subscribers
+   */
+  protected handleFetchError(
+    error: unknown,
+    _status: Status,
+    batch: BatchContext,
+  ): Entry<ListCacheKey> {
+    this.logger?.error("error", error);
+    this.store.getSubject(this.cacheKey).error(error);
+
+    // We don't call super.handleFetchError because ListQuery has special error handling
+    // but we still use writeToStore to create a properly structured Entry
+    return this.writeToStore({ data: [] }, "error", batch);
   }
 
   /**

@@ -17,6 +17,7 @@
 import type {
   ObjectTypeDefinition,
   Osdk,
+  PageResult,
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
@@ -27,10 +28,7 @@ import type { ObserveLinkOptions } from "../../ObservableClient.js";
 // Direct link queries without needing to fetch the source object first
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
-import {
-  BaseCollectionQuery,
-  type CollectionConnectableParams,
-} from "../BaseCollectionQuery.js";
+import { BaseCollectionQuery } from "../BaseCollectionQuery.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Changes } from "../Changes.js";
 import type { Entry } from "../Layer.js";
@@ -83,114 +81,67 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
     [this.#sourceApiName, this.#sourcePk, this.#linkName] = cacheKey.otherKeys;
   }
 
-  /**
-   * Creates a payload from collection parameters
-   * Implementation for link queries
-   */
-  protected createPayload(
-    params: CollectionConnectableParams,
-  ): SpecificLinkPayload {
-    return {
-      resolvedList: params.resolvedData,
-      isOptimistic: params.isOptimistic,
-      fetchMore: this.fetchMore,
-      hasMore: this.nextPageToken != null,
-      status: params.status,
-      lastUpdated: params.lastUpdated,
-    };
-  }
-
   // _fetchAndStore is now implemented in BaseCollectionQuery
 
   /**
-   * Implementation of abstract method from BaseCollectionQuery
-   * Fetches a page of linked objects and updates the store
+   * Implements fetchPageData from the BaseCollectionQuery template method pattern
+   * Fetches a page of linked objects
    */
-  protected async fetchPageAndUpdate(
-    status: Status,
+  protected async fetchPageData(
     signal: AbortSignal | undefined,
-  ): Promise<Entry<SpecificLinkCacheKey> | undefined> {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "fetchPageAndUpdate" }).debug(
-        `Fetching links with status: ${status}`,
-      );
-    }
+  ): Promise<PageResult<Osdk.Instance<any>> | undefined> {
+    // Use the client API to create a query that pivots to linked objects
+    const client = this.store.client;
 
+    // First, get metadata for the source object to know the primary key field name
+    const sourceObjectDef = {
+      type: "object",
+      apiName: this.#sourceApiName,
+    } as ObjectTypeDefinition;
+
+    // Use the client's ontologyProvider to get metadata, which has built-in caching
+    const sourceMetadata = await client[additionalContext].ontologyProvider
+      .getObjectDefinition(this.#sourceApiName);
+
+    // Query for the specific source object
+    const sourceQuery = client(sourceObjectDef).where({
+      [sourceMetadata.primaryKeyApiName]: this.#sourcePk,
+    } as WhereClause<any>);
+
+    // Pivot to the linked objects
+    const linkQuery = sourceQuery.pivotTo(this.#linkName);
+
+    // Check for abort signal again before fetching
     if (signal?.aborted) {
-      return undefined;
+      throw new Error("Aborted");
     }
 
-    try {
-      // Use the client API to create a query that pivots to linked objects
-      const client = this.store.client;
+    // Fetch the linked objects with pagination
+    const response = await linkQuery.fetchPage({
+      $pageSize: this.options.pageSize || 100,
+      $nextPageToken: this.nextPageToken,
+    });
 
-      // First, get metadata for the source object to know the primary key field name
-      const sourceObjectDef = {
-        type: "object",
-        apiName: this.#sourceApiName,
-      } as ObjectTypeDefinition;
+    // Store the next page token for pagination
+    this.nextPageToken = response.nextPageToken;
 
-      // Use the client's ontologyProvider to get metadata, which has built-in caching
-      const sourceMetadata = await client[additionalContext].ontologyProvider
-        .getObjectDefinition(this.#sourceApiName);
+    return response;
+  }
 
-      // Query for the specific source object
-      const sourceQuery = client(sourceObjectDef).where({
-        [sourceMetadata.primaryKeyApiName]: this.#sourcePk,
-      } as WhereClause<any>);
-
-      // Pivot to the linked objects
-      const linkQuery = sourceQuery.pivotTo(this.#linkName);
-
-      // Check for abort signal again before fetching
-      if (signal?.aborted) {
-        return undefined;
-      }
-
-      // Fetch the linked objects with pagination
-      const response = await linkQuery.fetchPage({
-        $pageSize: this.options.pageSize || 100,
-        $nextPageToken: this.nextPageToken,
-      });
-
-      // Store the next page token for pagination
-      this.nextPageToken = response.nextPageToken;
-
-      // Final check for abort signal
-      if (signal?.aborted) {
-        return undefined;
-      }
-
-      // Store the linked objects in the cache
-      const { retVal } = this.store.batch({}, (batch) => {
-        return this._updateLinks(
-          response.data as Array<Osdk.Instance<any>>,
-          response.nextPageToken ? status : "loaded",
-          batch,
-        );
-      });
-
-      return retVal;
-    } catch (error: unknown) {
-      // Log any errors that occur
-      if (process.env.NODE_ENV !== "production") {
-        this.logger?.child({ methodName: "fetchPageAndUpdate" }).error(
-          "Error fetching linked objects",
-          error,
-        );
-      }
-
-      // For unexpected errors, write an empty list with error status
-      if (!signal?.aborted) {
-        const { retVal } = this.store.batch({}, (batch) => {
-          return this._updateLinks([], "error", batch);
-        });
-        return retVal;
-      }
-
-      // If aborted, just return undefined
-      return undefined;
-    }
+  /**
+   * Process and store the fetched data
+   * Implementation for the BaseCollectionQuery template method
+   */
+  protected processAndStoreFetchedData(
+    response: any,
+    status: Status,
+    batch: BatchContext,
+  ): Entry<SpecificLinkCacheKey> {
+    return this._updateList(
+      response.data as Array<Osdk.Instance<any>>,
+      response.nextPageToken ? status : "loaded",
+      batch,
+    );
   }
 
   /**
@@ -227,16 +178,19 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
 
   /**
    * Helper method to update the linked objects in the cache
+   * Uses the unified updateList method from BaseCollectionQuery
    */
-  _updateLinks(
+  _updateList(
     objectHolders: Array<Osdk.Instance<any>>,
     status: Status,
     batch: BatchContext,
   ): Entry<SpecificLinkCacheKey> {
-    return this.updateCollection(
+    return this.updateList(
       objectHolders,
-      { append: false, status, sort: false },
+      status,
       batch,
+      false, // append
+      false, // sort
     );
   }
 
