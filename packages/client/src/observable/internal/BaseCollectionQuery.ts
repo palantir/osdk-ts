@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/api";
+import type { Osdk, PageResult } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import { type Connectable, type Observable } from "rxjs";
+import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
+import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type {
   CommonObserveOptions,
   Status,
@@ -32,6 +34,42 @@ import type { BatchContext, SubjectPayload } from "./Store.js";
 // Common interface for collection storage
 export interface CollectionStorageData {
   data: ObjectCacheKey[];
+}
+
+/**
+ * Base interface for collection-based payloads (lists and links)
+ * Contains the common properties shared by all collection payload types
+ */
+export interface BaseCollectionPayload {
+  /**
+   * The resolved collection of objects
+   */
+  resolvedList: Array<ObjectHolder | InterfaceHolder>;
+
+  /**
+   * Whether the data is from an optimistic update
+   */
+  isOptimistic: boolean;
+
+  /**
+   * Function to fetch more items when available
+   */
+  fetchMore: () => Promise<unknown>;
+
+  /**
+   * Whether there are more items available to fetch
+   */
+  hasMore: boolean;
+
+  /**
+   * Current loading status
+   */
+  status: Status;
+
+  /**
+   * Timestamp of when the data was last updated
+   */
+  lastUpdated: number;
 }
 
 /**
@@ -206,14 +244,24 @@ export abstract class BaseCollectionQuery<
 
   /**
    * Creates a payload from collection parameters
-   * Implemented by subclasses to format their specific payload types
+   * Default implementation that covers common fields for all collection types
+   * Subclasses may override to add type-specific fields if needed
    *
    * @param params Common collection parameters
    * @returns A typed payload for the specific collection type
    */
-  protected abstract createPayload(
+  protected createPayload(
     params: CollectionConnectableParams,
-  ): PAYLOAD;
+  ): PAYLOAD {
+    return {
+      resolvedList: params.resolvedData,
+      isOptimistic: params.isOptimistic,
+      fetchMore: this.fetchMore,
+      hasMore: this.nextPageToken != null,
+      status: params.status,
+      lastUpdated: params.lastUpdated,
+    } as unknown as PAYLOAD; // Type assertion needed since we don't know exact subtype
+  }
 
   /**
    * Creates a connectable observable for this collection
@@ -320,17 +368,108 @@ export abstract class BaseCollectionQuery<
   }
 
   /**
-   * Abstract method for fetching a page of data and updating the store
-   * Implemented by subclasses to handle their specific data fetching logic
+   * Template method for fetching a page of data and updating the store
+   * Provides common error handling and abort signal checking
    *
    * @param status The status to set for the entry
    * @param signal Optional AbortSignal for cancellation
    * @returns A promise that resolves to the updated entry or undefined if aborted
    */
-  protected abstract fetchPageAndUpdate(
+  protected async fetchPageAndUpdate(
     status: Status,
     signal: AbortSignal | undefined,
-  ): Promise<Entry<KEY> | undefined>;
+  ): Promise<Entry<KEY> | undefined> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "fetchPageAndUpdate" }).debug(
+        `Fetching data with status: ${status}`,
+      );
+    }
+
+    // Early abort check
+    if (signal?.aborted) {
+      return undefined;
+    }
+
+    try {
+      // Call the subclass-specific implementation to fetch data
+      const result = await this.fetchPageData(signal);
+
+      // Check for abort again after fetch
+      if (signal?.aborted) {
+        return undefined;
+      }
+
+      // Store the fetched data using batch operations
+      const { retVal } = this.store.batch({}, (batch) => {
+        return this.processAndStoreFetchedData(result, status, batch);
+      });
+
+      return retVal;
+    } catch (error: unknown) {
+      // Log any errors that occur
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "fetchPageAndUpdate" }).error(
+          "Error fetching data",
+          error,
+        );
+      }
+
+      // For unexpected errors, write error status if not aborted
+      if (!signal?.aborted) {
+        const { retVal } = this.store.batch({}, (batch) => {
+          return this.handleFetchError(error, status, batch);
+        });
+        return retVal;
+      }
+
+      // If aborted, just return undefined
+      return undefined;
+    }
+  }
+
+  /**
+   * Abstract method that subclasses implement for their specific data fetching logic
+   *
+   * @param signal Optional AbortSignal for cancellation
+   * @returns A promise that resolves to the fetched data
+   */
+  protected abstract fetchPageData(
+    signal: AbortSignal | undefined,
+  ): Promise<PageResult<Osdk.Instance<any>> | undefined>;
+
+  /**
+   * Process and store fetched data in the store
+   * Default implementation that subclasses can override
+   *
+   * @param result The fetched data result
+   * @param status The status to set on the entry
+   * @param batch The batch context to use
+   * @returns The updated entry
+   */
+  protected abstract processAndStoreFetchedData(
+    result: any,
+    status: Status,
+    batch: BatchContext,
+  ): Entry<KEY>;
+
+  /**
+   * Handle fetch errors by setting appropriate error state
+   * Default implementation that subclasses can override
+   *
+   * @param error The error that occurred
+   * @param status The intended status if successful
+   * @param batch The batch context to use
+   * @returns The updated entry with error status
+   */
+  protected handleFetchError(
+    _error: unknown,
+    _status: Status,
+    batch: BatchContext,
+  ): Entry<KEY> {
+    // Default implementation writes an empty list with error status
+    // Most subclasses should be able to use this
+    return this.writeToStore({ data: [] }, "error", batch);
+  }
 
   /**
    * Sort the collection items if needed
@@ -346,7 +485,7 @@ export abstract class BaseCollectionQuery<
   /**
    * Unified method for updating collection data in the store
    * Handles storing, sorting, deduplication, and reference counting
-   * 
+   *
    * @param items - Either object cache keys or object instances to update
    * @param options - Configuration options for the update
    * @param batch - The batch context to use
@@ -374,12 +513,15 @@ export abstract class BaseCollectionQuery<
 
     // Step 1: Convert items to object cache keys if needed
     let objectCacheKeys: ObjectCacheKey[];
-    
+
     if (items.length === 0) {
       objectCacheKeys = [];
     } else if (this.isObjectInstance(items[0])) {
       // Items are object instances, need to store them first
-      objectCacheKeys = this.storeObjects(items as Array<Osdk.Instance<any>>, batch);
+      objectCacheKeys = this.storeObjects(
+        items as Array<Osdk.Instance<any>>,
+        batch,
+      );
     } else {
       // Items are already cache keys
       objectCacheKeys = items as ObjectCacheKey[];
@@ -389,7 +531,7 @@ export abstract class BaseCollectionQuery<
     objectCacheKeys = this.retainReleaseAppend(
       batch,
       options.append ?? false,
-      objectCacheKeys
+      objectCacheKeys,
     );
 
     // Step 3: Sort if requested (and if subclass implements sorting)
@@ -408,6 +550,31 @@ export abstract class BaseCollectionQuery<
    * Type guard to check if an item is an object instance
    */
   private isObjectInstance(item: any): item is Osdk.Instance<any> {
-    return item != null && typeof item === 'object' && '$primaryKey' in item;
+    return item != null && typeof item === "object" && "$primaryKey" in item;
+  }
+
+  /**
+   * Standard method to update a list of objects
+   * Handles common list update patterns for both ListQuery and SpecificLinkQuery
+   *
+   * @param items Objects or cache keys to add to the list
+   * @param status Status to set for the list
+   * @param batch Batch context to use
+   * @param append Whether to append to the existing list or replace it
+   * @param sort Whether to sort the list
+   * @returns The updated entry
+   */
+  protected updateList<T extends ObjectCacheKey | Osdk.Instance<any>>(
+    items: T[],
+    status: Status,
+    batch: BatchContext,
+    append: boolean = false,
+    sort: boolean = true,
+  ): Entry<KEY> {
+    return this.updateCollection(
+      items,
+      { append, status, sort },
+      batch,
+    );
   }
 }
