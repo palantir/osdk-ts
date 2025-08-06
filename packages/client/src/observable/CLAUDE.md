@@ -7,6 +7,7 @@ This directory contains the implementation of the Observable Client, a reactive 
 ### ObservableClient
 
 The main interface for reactive operations. It provides methods to:
+
 - `observeObject()` - Subscribe to single object changes
 - `observeList()` - Subscribe to filtered/sorted object collections with pagination
 - `observeLinks()` - Subscribe to object relationships
@@ -16,6 +17,7 @@ The main interface for reactive operations. It provides methods to:
 ### Reactive Pattern
 
 The Observable Client uses RxJS observables for reactive data flow:
+
 1. Components observe objects/lists/links
 2. Cache is checked for existing data
 3. Loading state is emitted if data is not available
@@ -26,12 +28,13 @@ The Observable Client uses RxJS observables for reactive data flow:
 ### Optimistic Updates
 
 When applying actions, you can provide optimistic updates:
+
 ```typescript
 applyAction({
   // Action parameters
   $optimisticUpdate: (ou) => {
     ou.updateObject(object.$clone({ property: newValue }));
-  }
+  },
 });
 ```
 

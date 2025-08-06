@@ -89,7 +89,7 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
    */
   protected async fetchPageData(
     signal: AbortSignal | undefined,
-  ): Promise<PageResult<Osdk.Instance<any>> | undefined> {
+  ): Promise<PageResult<Osdk.Instance<any>>> {
     // Use the client API to create a query that pivots to linked objects
     const client = this.store.client;
 
@@ -129,22 +129,6 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
   }
 
   /**
-   * Process and store the fetched data
-   * Implementation for the BaseCollectionQuery template method
-   */
-  protected processAndStoreFetchedData(
-    response: any,
-    status: Status,
-    batch: BatchContext,
-  ): Entry<SpecificLinkCacheKey> {
-    return this._updateList(
-      response.data as Array<Osdk.Instance<any>>,
-      response.nextPageToken ? status : "loaded",
-      batch,
-    );
-  }
-
-  /**
    * Register changes to the cache specific to SpecificLinkQuery
    */
   protected registerCacheChanges(batch: BatchContext): void {
@@ -152,46 +136,15 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
   }
 
   /**
-   * Implementation of _sortCacheKeys for links
+   * Implementation of _maybeSortCollection from BaseCollectionQuery
    * Links don't have custom sorting logic
-   * @deprecated Use sortCollection instead
    */
-  protected _sortCacheKeys(
+  protected _maybeSortCollection(
     objectCacheKeys: ObjectCacheKey[],
     _batch: BatchContext, // Parameter unused but required by interface
   ): ObjectCacheKey[] {
     // No custom sorting for links
     return objectCacheKeys;
-  }
-
-  /**
-   * Implementation of the abstract sortCollection method from BaseCollectionQuery
-   * Links don't have custom sorting logic
-   */
-  protected sortCollection(
-    objectCacheKeys: ObjectCacheKey[],
-    _batch: BatchContext, // Parameter unused but required by interface
-  ): ObjectCacheKey[] {
-    // No custom sorting for links
-    return objectCacheKeys;
-  }
-
-  /**
-   * Helper method to update the linked objects in the cache
-   * Uses the unified updateList method from BaseCollectionQuery
-   */
-  _updateList(
-    objectHolders: Array<Osdk.Instance<any>>,
-    status: Status,
-    batch: BatchContext,
-  ): Entry<SpecificLinkCacheKey> {
-    return this.updateList(
-      objectHolders,
-      status,
-      batch,
-      false, // append
-      false, // sort
-    );
   }
 
   deleteFromStore(

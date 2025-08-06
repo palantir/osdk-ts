@@ -43,11 +43,11 @@ These files provide TypeScript definitions that ensure type safety when using th
 // Example of type-safe link observation
 client.observeLinks(sourceObject, "employees", {
   orderBy: { name: "asc" },
-  where: { status: "active" }
+  where: { status: "active" },
 }, (args) => {
   // args.resolvedLinks are properly typed
   const employees = args.resolvedLinks;
-  
+
   // Type-safe pagination
   if (args.hasMore) {
     args.fetchMore();
@@ -62,9 +62,9 @@ The standard observer pattern is used throughout the system:
 ```typescript
 // Manual subscription example
 const subscription = client.observeObject(Person, "123", {
-  next: (data) => { /* handle update */ },
-  error: (err) => { /* handle error */ },
-  complete: () => { /* handle completion */ }
+  next: (data) => {/* handle update */},
+  error: (err) => {/* handle error */},
+  complete: () => {/* handle completion */},
 });
 
 // Remember to unsubscribe

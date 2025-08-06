@@ -23,7 +23,7 @@ import type {
   CommonObserveOptions,
   Status,
 } from "../ObservableClient/common.js";
-import type { CacheKey } from "./CacheKey.js";
+import { type CacheKey, DEBUG_ONLY__cacheKeysToString } from "./CacheKey.js";
 import { createCollectionConnectable } from "./createCollectionConnectable.js";
 import type { Entry } from "./Layer.js";
 import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";
@@ -160,7 +160,7 @@ export abstract class BaseCollectionQuery<
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child({ methodName: "writeToStore" }).debug(
         `{status: ${status}}`,
-        this.formatDebugOutput(data),
+        DEBUG_ONLY__cacheKeysToString(data.data),
       );
     }
 
@@ -174,14 +174,6 @@ export abstract class BaseCollectionQuery<
    * Implemented by subclasses to handle specific change registration
    */
   protected abstract registerCacheChanges(batch: BatchContext): void;
-
-  /**
-   * Format the collection data for debug output
-   * May be overridden by subclasses to provide more specific debug formatting
-   */
-  protected formatDebugOutput(data: CollectionStorageData): any {
-    return data;
-  }
 
   /**
    * Common method to store objects in the cache and return their cache keys
@@ -401,7 +393,15 @@ export abstract class BaseCollectionQuery<
 
       // Store the fetched data using batch operations
       const { retVal } = this.store.batch({}, (batch) => {
-        return this.processAndStoreFetchedData(result, status, batch);
+        const append = this.nextPageToken != null;
+        const finalStatus = result.nextPageToken ? status : "loaded";
+
+        return this._updateList(
+          this.storeObjects(result.data, batch),
+          finalStatus,
+          batch,
+          append,
+        );
       });
 
       return retVal;
@@ -435,22 +435,7 @@ export abstract class BaseCollectionQuery<
    */
   protected abstract fetchPageData(
     signal: AbortSignal | undefined,
-  ): Promise<PageResult<Osdk.Instance<any>> | undefined>;
-
-  /**
-   * Process and store fetched data in the store
-   * Default implementation that subclasses can override
-   *
-   * @param result The fetched data result
-   * @param status The status to set on the entry
-   * @param batch The batch context to use
-   * @returns The updated entry
-   */
-  protected abstract processAndStoreFetchedData(
-    result: any,
-    status: Status,
-    batch: BatchContext,
-  ): Entry<KEY>;
+  ): Promise<PageResult<Osdk.Instance<any>>>;
 
   /**
    * Handle fetch errors by setting appropriate error state
@@ -472,12 +457,12 @@ export abstract class BaseCollectionQuery<
   }
 
   /**
-   * Sort the collection items if needed
-   * @param objectCacheKeys - The cache keys to sort
+   * Maybe sort the collection items if the implementing class has sorting logic
+   * @param objectCacheKeys - The cache keys to potentially sort
    * @param batch - The batch context
-   * @returns Sorted array of cache keys
+   * @returns Sorted (or unchanged) array of cache keys
    */
-  protected abstract sortCollection(
+  protected abstract _maybeSortCollection(
     objectCacheKeys: ObjectCacheKey[],
     batch: BatchContext,
   ): ObjectCacheKey[];
@@ -496,7 +481,6 @@ export abstract class BaseCollectionQuery<
     options: {
       append?: boolean;
       status: Status;
-      sort?: boolean;
     },
     batch: BatchContext,
   ): Entry<KEY> {
@@ -506,7 +490,7 @@ export abstract class BaseCollectionQuery<
         : this.logger;
 
       logger?.debug(
-        `{status: ${options.status}, append: ${options.append}, sort: ${options.sort}}`,
+        `{status: ${options.status}, append: ${options.append}}`,
         JSON.stringify(items, null, 2),
       );
     }
@@ -534,10 +518,8 @@ export abstract class BaseCollectionQuery<
       objectCacheKeys,
     );
 
-    // Step 3: Sort if requested (and if subclass implements sorting)
-    if (options.sort ?? true) {
-      objectCacheKeys = this.sortCollection(objectCacheKeys, batch);
-    }
+    // Step 3: Sort if the subclass implements sorting
+    objectCacheKeys = this._maybeSortCollection(objectCacheKeys, batch);
 
     // Step 4: Remove duplicates
     objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
@@ -561,19 +543,17 @@ export abstract class BaseCollectionQuery<
    * @param status Status to set for the list
    * @param batch Batch context to use
    * @param append Whether to append to the existing list or replace it
-   * @param sort Whether to sort the list
    * @returns The updated entry
    */
-  protected updateList<T extends ObjectCacheKey | Osdk.Instance<any>>(
+  public _updateList<T extends ObjectCacheKey | Osdk.Instance<any>>(
     items: T[],
     status: Status,
     batch: BatchContext,
     append: boolean = false,
-    sort: boolean = true,
   ): Entry<KEY> {
     return this.updateCollection(
       items,
-      { append, status, sort },
+      { append, status },
       batch,
     );
   }
