@@ -39,12 +39,13 @@ const { payload, mockSub } = await expectStandardObserveObject({
   store,
   objectType: "Person",
   primaryKey: "123",
-  options: { /* observation options */ },
-  expectedObject: personObject
+  options: {/* observation options */},
+  expectedObject: personObject,
 });
 ```
 
 This validates:
+
 1. Initial loading state is emitted
 2. Loaded state arrives with expected object
 3. Proper error propagation
@@ -59,12 +60,13 @@ const { payload, mockSub } = await expectStandardObserveLink({
   store,
   sourceObject,
   linkName: "employees",
-  options: { /* link options */ },
-  expectedLinks: [emp1, emp2]
+  options: {/* link options */},
+  expectedLinks: [emp1, emp2],
 });
 ```
 
 This validates:
+
 1. Initial loading state with empty results
 2. Loaded state with expected linked objects
 3. Proper error handling

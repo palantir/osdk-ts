@@ -654,7 +654,7 @@ export function updateList<
 
   store.batch({ optimisticId }, (batch) => {
     const objectCacheKeys = storeOsdkInstances(store, objects, batch);
-    query._updateList(objectCacheKeys, false, "loaded", batch);
+    query._updateList(objectCacheKeys, "loaded", batch, false);
   });
 }
 
