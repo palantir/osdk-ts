@@ -40,14 +40,8 @@ import type {
   CommonObserveOptions,
   Status,
 } from "../ObservableClient/common.js";
-import {
-  BaseCollectionQuery,
-  type CollectionStorageData,
-} from "./BaseCollectionQuery.js";
-import {
-  type CacheKey,
-  DEBUG_ONLY__cacheKeysToString as DEBUG_ONLY__cacheKeysToString,
-} from "./CacheKey.js";
+import { BaseCollectionQuery } from "./BaseCollectionQuery.js";
+import { type CacheKey } from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "./Changes.js";
 import type { Entry } from "./Layer.js";
@@ -103,35 +97,10 @@ export class ListQuery extends BaseCollectionQuery<
   >;
 
   /**
-   * Updates the list with the given object cache keys
-   * Uses the unified updateList method from BaseCollectionQuery
-   *
-   * @param objectCacheKeys Array of object cache keys to update the list with
-   * @param append Whether to append to the existing list or replace it
-   * @param status The status to set on the list
-   * @param batch The batch context to use for the update
-   * @returns The updated list entry
-   */
-  _updateList(
-    objectCacheKeys: Array<ObjectCacheKey>,
-    append: boolean,
-    status: Status,
-    batch: BatchContext,
-  ): Entry<ListCacheKey> {
-    return this.updateList(
-      objectCacheKeys,
-      status,
-      batch,
-      append,
-      true, // sort
-    );
-  }
-
-  /**
-   * Implementation of the abstract sortCollection method from BaseCollectionQuery
+   * Implementation of _maybeSortCollection from BaseCollectionQuery
    * Sorts the collection based on the orderBy clause
    */
-  protected sortCollection(
+  protected _maybeSortCollection(
     objectCacheKeys: ObjectCacheKey[],
     batch: BatchContext,
   ): ObjectCacheKey[] {
@@ -157,13 +126,6 @@ export class ListQuery extends BaseCollectionQuery<
    */
   protected registerCacheChanges(batch: BatchContext): void {
     batch.changes.registerList(this.cacheKey);
-  }
-
-  /**
-   * Format the collection data for debug output
-   */
-  protected formatDebugOutput(data: CollectionStorageData): any {
-    return DEBUG_ONLY__cacheKeysToString(data.data);
   }
 
   constructor(
@@ -210,19 +172,13 @@ export class ListQuery extends BaseCollectionQuery<
     return this.#whereClause;
   }
 
-  // _preFetch() and _fetchAndStore are now implemented in BaseCollectionQuery
-
-  // fetchMore is now implemented in BaseCollectionQuery
-
   /**
    * Implements fetchPageData from BaseCollectionQuery template method
    * Fetches a page of data
    */
   protected async fetchPageData(
     signal: AbortSignal | undefined,
-  ): Promise<PageResult<Osdk.Instance<any>> | undefined> {
-    const append = this.nextPageToken != null;
-
+  ): Promise<PageResult<Osdk.Instance<any>>> {
     // Fetch the data with pagination
     const resp = await this.#objectSet.fetchPage({
       $nextPageToken: this.nextPageToken,
@@ -255,23 +211,6 @@ export class ListQuery extends BaseCollectionQuery<
       // might be replaced by interface
       data: fetchedData,
     };
-  }
-
-  /**
-   * Process and store fetched data
-   * Implementation for BaseCollectionQuery template method
-   */
-  protected processAndStoreFetchedData(
-    result: { data: any[]; nextPageToken?: string; append: boolean },
-    status: Status,
-    batch: BatchContext,
-  ): Entry<ListCacheKey> {
-    return this._updateList(
-      this.storeObjects(result.data, batch),
-      result.append,
-      result.nextPageToken ? status : "loaded",
-      batch,
-    );
   }
 
   /**
@@ -432,9 +371,9 @@ export class ListQuery extends BaseCollectionQuery<
 
         this._updateList(
           newList,
-          /* append */ false,
           status,
           batch,
+          /* append */ false,
         );
       });
 
