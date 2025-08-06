@@ -55,7 +55,24 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
   #sourcePk: PrimaryKeyType<ObjectTypeDefinition>;
   #linkName: string;
 
-  // We'll determine at runtime if this is a multi-link or single-link relation
+  /**
+   * Implementation of _maybeSortCollection from BaseCollectionQuery
+   * Links don't have custom sorting logic
+   */
+  protected _maybeSortCollection(
+    objectCacheKeys: ObjectCacheKey[],
+    _batch: BatchContext, // Parameter unused but required by interface
+  ): ObjectCacheKey[] {
+    // No custom sorting for links
+    return objectCacheKeys;
+  }
+
+  /**
+   * Register changes to the cache specific to SpecificLinkQuery
+   */
+  protected registerCacheChanges(batch: BatchContext): void {
+    batch.changes.modified.add(this.cacheKey);
+  }
 
   constructor(
     store: Store,
@@ -129,24 +146,8 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
   }
 
   /**
-   * Register changes to the cache specific to SpecificLinkQuery
+   * Removes a link query from the store
    */
-  protected registerCacheChanges(batch: BatchContext): void {
-    batch.changes.modified.add(this.cacheKey);
-  }
-
-  /**
-   * Implementation of _maybeSortCollection from BaseCollectionQuery
-   * Links don't have custom sorting logic
-   */
-  protected _maybeSortCollection(
-    objectCacheKeys: ObjectCacheKey[],
-    _batch: BatchContext, // Parameter unused but required by interface
-  ): ObjectCacheKey[] {
-    // No custom sorting for links
-    return objectCacheKeys;
-  }
-
   deleteFromStore(
     status: Status,
     batch: BatchContext,
@@ -200,6 +201,9 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
   };
 }
 
+/**
+ * Type guard to check if a cache key is a SpecificLinkCacheKey
+ */
 export function isSpecificLinkCacheKey(
   key: CacheKey,
 ): key is SpecificLinkCacheKey {
