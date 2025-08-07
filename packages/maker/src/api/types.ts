@@ -142,7 +142,7 @@ export type ActionTypeUserDefinition = {
   apiName?: string;
   displayName?: string;
   status?: ActionStatus;
-  parameterConfiguration?: Record<string, ActionParameterValidation>;
+  parameterConfiguration?: Record<string, ActionParameterConfiguration>;
   actionLevelValidation?: ActionLevelValidationDefinition;
   excludedProperties?: Array<ParameterId>;
   sections?: Array<ActionSection>;
@@ -159,14 +159,22 @@ export interface ActionParameter {
   validation: ActionParameterValidation;
   description?: string;
   typeClasses?: Array<TypeClass>;
+  defaultValue?: OntologyIrParameterPrefill;
 }
 
-export interface ActionParameterValidation {
+export type ActionParameterValidation = Omit<
+  ActionParameterConfiguration,
+  "displayName" | "defaultValue"
+>;
+
+export interface ActionParameterConfiguration {
   allowedValues?: ActionParameterAllowedValues;
   required?: ActionParameterRequirementConstraint;
   defaultVisibility?: "editable" | "disabled" | "hidden";
   conditionalOverrides?: Array<ActionParameterConditionalOverride>;
   defaultValue?: OntologyIrParameterPrefill;
+  displayName?: string;
+  description?: string;
 }
 
 export type ActionSection = {

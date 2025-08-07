@@ -186,7 +186,8 @@ export function defineCreateObjectAction(
     id => (
       {
         id,
-        displayName: def.objectType.properties?.[id].displayName
+        displayName: def.parameterConfiguration?.[id]?.displayName
+          ?? def.objectType.properties?.[id].displayName
           ?? convertToDisplayName(id),
         type: extractActionParameterType(def.objectType.properties?.[id]!),
         validation: (def.parameterConfiguration?.[id] !== undefined)
@@ -197,7 +198,6 @@ export function defineCreateObjectAction(
                 def.objectType.properties?.[id].type!,
               ),
             required: def.parameterConfiguration?.[id].required ?? true,
-            defaultValue: def.parameterConfiguration?.[id].defaultValue,
           }
           : {
             required: (def.objectType.properties?.[id].array ?? false)
@@ -212,6 +212,8 @@ export function defineCreateObjectAction(
               def.objectType.properties?.[id].type!,
             ),
           },
+        defaultValue: def.parameterConfiguration?.[id]?.defaultValue,
+        description: def.parameterConfiguration?.[id]?.description,
       }
     ),
   );
@@ -398,7 +400,8 @@ export function defineModifyObjectAction(
     id => (
       {
         id,
-        displayName: def.objectType.properties?.[id].displayName
+        displayName: def.parameterConfiguration?.[id]?.displayName
+          ?? def.objectType.properties?.[id].displayName
           ?? convertToDisplayName(id),
         type: extractActionParameterType(def.objectType.properties?.[id]!),
         validation: (def.parameterConfiguration?.[id] !== undefined)
@@ -409,7 +412,6 @@ export function defineModifyObjectAction(
                 def.objectType.properties?.[id].type!,
               ),
             required: def.parameterConfiguration?.[id].required ?? false,
-            defaultValue: def.parameterConfiguration?.[id].defaultValue,
           }
           : {
             required: (def.objectType.properties?.[id].array ?? false)
@@ -424,6 +426,8 @@ export function defineModifyObjectAction(
               def.objectType.properties?.[id].type!,
             ),
           },
+        defaultValue: def.parameterConfiguration?.[id]?.defaultValue,
+        description: def.parameterConfiguration?.[id]?.description,
       }
     ),
   );
@@ -890,9 +894,9 @@ function validateActionValidation(action: ActionType): void {
         action.parameters,
       );
     });
-    if (param.validation.defaultValue?.type === "staticValue") {
+    if (param.defaultValue?.type === "staticValue") {
       invariant(
-        param.validation.defaultValue.staticValue.type === param.type,
+        param.defaultValue.staticValue.type === param.type,
         `Default static value for parameter ${param.id} does not match type`,
       );
     }
