@@ -48,6 +48,7 @@ import type {
   OntologyIrLabelledValue,
   OntologyIrLinkTypeStatus,
   OntologyIrLogicRule,
+  OntologyIrLogicRuleValue,
   OntologyIrMarketplaceInterfaceType,
   OntologyIrObjectType,
   OntologyIrParameterDateRangeValue,
@@ -143,6 +144,7 @@ export type ActionTypeUserDefinition = {
   displayName?: string;
   status?: ActionStatus;
   parameterConfiguration?: Record<string, ActionParameterConfiguration>;
+  nonParameterMappings?: Record<string, MappingValue>;
   actionLevelValidation?: ActionLevelValidationDefinition;
   excludedProperties?: Array<ParameterId>;
   sections?: Array<ActionSection>;
@@ -188,6 +190,25 @@ export type ActionSection = {
   collapsedByDefault?: boolean;
   style?: "box" | "minimal";
   conditionalOverrides?: Array<SectionConditionalOverride>;
+};
+
+export type MappingValue =
+  | OntologyIrLogicRuleValue
+  | UuidMappingValue
+  | CurrentTimeMappingValue
+  | CurrentUserMappingValue;
+
+export type UuidMappingValue = {
+  type: "uuid";
+  linkId?: string;
+};
+
+export type CurrentTimeMappingValue = {
+  type: "currentTime";
+};
+
+export type CurrentUserMappingValue = {
+  type: "currentUser";
 };
 
 // TODO(ethana): add more commonly used conditions - parameter matching, organizations, etc.

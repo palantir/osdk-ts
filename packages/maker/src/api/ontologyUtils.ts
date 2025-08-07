@@ -18,16 +18,19 @@ import type {
   OntologyIrCondition,
   OntologyIrConditionalOverride,
   OntologyIrFormContent,
+  OntologyIrLogicRuleValue,
   OntologyIrParameterValidationBlockOverride,
   OntologyIrSectionConditionalOverride,
   ParameterVisibility,
 } from "@osdk/client.unstable";
 
+import { randomUUID } from "node:crypto";
 import type {
   ActionParameterConditionalOverride,
   ActionParameterValidation,
   ActionType,
   ConditionDefinition,
+  MappingValue,
   SectionConditionalOverride,
 } from "./types.js";
 
@@ -255,4 +258,37 @@ export function getFormContentOrdering(
     }
   });
   return formContentOrdering;
+}
+
+export function convertMappingValue(
+  value: MappingValue,
+): OntologyIrLogicRuleValue {
+  switch (value.type) {
+    case "uuid":
+      return {
+        type: "uniqueIdentifier",
+        uniqueIdentifier: {
+          linkId: value.linkId ?? randomUUID(),
+        },
+      };
+    case "currentTime":
+      return {
+        type: "currentTime",
+        currentTime: {},
+      };
+    case "currentUser":
+      return {
+        type: "currentUser",
+        currentUser: {},
+      };
+    case "uniqueIdentifier":
+      return {
+        type: "uniqueIdentifier",
+        uniqueIdentifier: {
+          linkId: value.uniqueIdentifier.linkId ?? randomUUID(),
+        },
+      };
+    default:
+      return value;
+  }
 }
