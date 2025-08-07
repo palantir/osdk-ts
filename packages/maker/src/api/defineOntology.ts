@@ -1043,8 +1043,8 @@ function convertActionValidation(
                 visibility: convertActionVisibility(
                   p.validation.defaultVisibility,
                 ),
-                ...p.validation.defaultValue
-                  && { prefill: p.validation.defaultValue },
+                ...p.defaultValue
+                  && { prefill: p.defaultValue },
               },
               validation: {
                 allowedValues: extractAllowedValues(p),

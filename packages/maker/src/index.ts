@@ -37,6 +37,7 @@ export { importOntologyEntity } from "./api/importOntologyEntity.js";
 export type {
   ActionParameterAllowedValues,
   ActionParameterConditionalOverride,
+  ActionParameterConfiguration,
   ActionParameterValidation,
   ActionSection,
   ActionType,

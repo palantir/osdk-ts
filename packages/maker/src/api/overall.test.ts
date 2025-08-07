@@ -6417,6 +6417,8 @@ describe("Ontology Defining", () => {
                   string: "default_fizz",
                 },
               },
+              displayName: "fizz_display",
+              description: "fizz_description",
             },
           },
           excludedProperties: ["buzz"],
@@ -6469,6 +6471,8 @@ describe("Ontology Defining", () => {
                   string: "default_fizz",
                 },
               },
+              displayName: "fizz_display",
+              description: "fizz_description",
             },
           },
           excludedProperties: ["buzz"],
@@ -6771,8 +6775,8 @@ describe("Ontology Defining", () => {
                       },
                       "fizz": {
                         "displayMetadata": {
-                          "description": "",
-                          "displayName": "Fizz",
+                          "description": "fizz_description",
+                          "displayName": "fizz_display",
                           "typeClasses": [],
                         },
                         "id": "fizz",
@@ -7088,8 +7092,8 @@ describe("Ontology Defining", () => {
                       },
                       "fizz": {
                         "displayMetadata": {
-                          "description": "",
-                          "displayName": "Fizz",
+                          "description": "fizz_description",
+                          "displayName": "fizz_display",
                           "typeClasses": [],
                         },
                         "id": "fizz",
