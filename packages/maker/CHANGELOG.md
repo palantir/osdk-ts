@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.12.0-beta.14
+
+### Minor Changes
+
+- d384b4c: Add custom display names and descriptions for action parameters in OAC
+- 02be685: Remove jiti
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.11
+
 ## 0.12.0-beta.13
 
 ### Minor Changes
