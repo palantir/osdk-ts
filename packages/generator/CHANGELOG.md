@@ -1,5 +1,17 @@
 # @osdk/generator
 
+## 2.4.0-beta.11
+
+### Minor Changes
+
+- f277b30: Ensure stable ordering of arrays in code generation for object types and interface types. Sort `implements`, `implementedBy` and `linkTypes` arrays alphabetically for consistent output.
+
+### Patch Changes
+
+- Updated dependencies [f277b30]
+  - @osdk/generator-converters@2.4.0-beta.11
+  - @osdk/api@2.4.0-beta.11
+
 ## 2.4.0-beta.10
 
 ### Patch Changes
