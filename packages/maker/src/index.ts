@@ -44,6 +44,7 @@ export type {
   ConditionDefinition,
   CurrentTimeMappingValue,
   CurrentUserMappingValue,
+  CustomMapping,
   InterfaceType,
   LinkType,
   MappingValue,

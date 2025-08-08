@@ -48,7 +48,11 @@ import type {
   OntologyIrLabelledValue,
   OntologyIrLinkTypeStatus,
   OntologyIrLogicRule,
-  OntologyIrLogicRuleValue,
+  OntologyIrLogicRuleValue_interfaceParameterPropertyValue,
+  OntologyIrLogicRuleValue_objectParameterPropertyValue,
+  OntologyIrLogicRuleValue_parameterId,
+  OntologyIrLogicRuleValue_staticValue,
+  OntologyIrLogicRuleValue_synchronousWebhookOutput,
   OntologyIrMarketplaceInterfaceType,
   OntologyIrObjectType,
   OntologyIrParameterDateRangeValue,
@@ -193,7 +197,7 @@ export type ActionSection = {
 };
 
 export type MappingValue =
-  | OntologyIrLogicRuleValue
+  | CustomMapping
   | UuidMappingValue
   | CurrentTimeMappingValue
   | CurrentUserMappingValue;
@@ -210,6 +214,13 @@ export type CurrentTimeMappingValue = {
 export type CurrentUserMappingValue = {
   type: "currentUser";
 };
+
+export type CustomMapping =
+  | OntologyIrLogicRuleValue_parameterId
+  | OntologyIrLogicRuleValue_staticValue
+  | OntologyIrLogicRuleValue_objectParameterPropertyValue
+  | OntologyIrLogicRuleValue_interfaceParameterPropertyValue
+  | OntologyIrLogicRuleValue_synchronousWebhookOutput;
 
 // TODO(ethana): add more commonly used conditions - parameter matching, organizations, etc.
 export type ConditionDefinition =

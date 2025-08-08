@@ -281,13 +281,6 @@ export function convertMappingValue(
         type: "currentUser",
         currentUser: {},
       };
-    case "uniqueIdentifier":
-      return {
-        type: "uniqueIdentifier",
-        uniqueIdentifier: {
-          linkId: value.uniqueIdentifier.linkId ?? randomUUID(),
-        },
-      };
     default:
       return value;
   }
