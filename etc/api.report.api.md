@@ -115,7 +115,9 @@ export namespace ActionParam {
     export type InterfaceType<T extends InterfaceDefinition> = {
         		$objectType: CompileTimeMetadata<T> extends {
             			implementedBy: infer U
-            		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
+            		} ? (U extends ReadonlyArray<never> ? ApiNameOrObjectTypeDefinition : U extends ReadonlyArray<string> ? U[number] | (ObjectTypeDefinition & {
+            			apiName: U[number]
+            		}) : string | ApiNameOrObjectTypeDefinition) : string | ApiNameOrObjectTypeDefinition
         		$primaryKey: string | number
         	};
     	// (undocumented)
@@ -336,7 +338,7 @@ export interface DataValueClientToWire {
     	// (undocumented)
     null: null;
     	// (undocumented)
-    objectType: string;
+    objectType: string | ObjectTypeDefinition;
     	// (undocumented)
     set: Set<any>;
     	// (undocumented)
@@ -1454,6 +1456,7 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 
 // Warnings were encountered during analysis:
 //
+// src/actions/Actions.ts:68:5 - (ae-forgotten-export) The symbol "ApiNameOrObjectTypeDefinition" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts

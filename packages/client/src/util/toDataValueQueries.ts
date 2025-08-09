@@ -23,8 +23,8 @@ import {
   isAttachmentUpload,
 } from "../object/AttachmentUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
-import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
 import { extractPrimaryKeyFromObjectSpecifier } from "./objectSpecifierUtils.js";
+import { isObjectSpecifiersObject } from "./type-verifiers/isObjectSpecifiersObject.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**

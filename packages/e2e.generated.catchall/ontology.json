@@ -442,6 +442,34 @@
           "objectTypeApiName": "StructPersonOpisTeam"
         }
       ]
+    },
+    "create-interface-for-test": {
+      "apiName": "create-interface-for-test",
+      "displayName": "Create InterfaceForTest",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "interface_for_test_type": {
+          "displayName": "InterfaceForTest Type",
+          "dataType": { "type": "objectType" },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.e4dc3be6-1bcb-4b49-a085-235f5bae50e2",
+      "operations": [{ "type": "createInterfaceObject", "interfaceTypeApiName": "InterfaceForTest" }]
+    },
+    "delete-interface-for-test": {
+      "apiName": "delete-interface-for-test",
+      "displayName": "Delete InterfaceForTest",
+      "status": "EXPERIMENTAL",
+      "parameters": {
+        "InterfaceForTest": {
+          "displayName": "InterfaceForTest",
+          "dataType": { "type": "interfaceObject", "interfaceTypeApiName": "InterfaceForTest" },
+          "required": true
+        }
+      },
+      "rid": "ri.actions.main.action-type.e36651f3-7fa4-4e5f-9d59-3d7cc80fb562",
+      "operations": [{ "type": "deleteInterfaceObject", "interfaceTypeApiName": "InterfaceForTest" }]
     }
   },
   "objectTypes": {
@@ -592,7 +620,7 @@
         "visibility": "NORMAL"
       },
       "linkTypes": [],
-      "implementsInterfaces": ["FooInterface", "OsdkTestInterface"],
+      "implementsInterfaces": ["FooInterface", "OsdkTestInterface", "InterfaceForTest"],
       "implementsInterfaces2": {
         "FooInterface": {
           "properties": {
@@ -603,6 +631,11 @@
         "OsdkTestInterface": {
           "properties": {
             "objectDescription": "description"
+          }
+        },
+        "InterfaceForTest": {
+          "properties": {
+            "interfaceForTestProperty": "osdkObjectName"
           }
         }
       },
@@ -2246,6 +2279,35 @@
       "rid": "ri.ontology.main.interface.06c534fd-4f68-44d9-b268-72729a47eaab",
       "status": "ACTIVE",
       "implementedByObjectTypes": ["OsdkTestObject"]
+    },
+    "InterfaceForTest": {
+      "rid": "ri.ontology.main.interface.5421299d-e8aa-458e-b640-e59a8d42a043",
+      "apiName": "InterfaceForTest",
+      "displayName": "InterfaceForTest",
+      "description": "",
+      "properties": {
+        "primaryKey_": {
+          "rid": "ri.ontology.main.shared-property.12eaa476-fa52-49c4-bed3-7613c9c7c465",
+          "apiName": "primaryKey_",
+          "displayName": "PrimaryKey",
+          "dataType": { "type": "string" },
+          "required": true
+        }
+      },
+      "allProperties": {
+        "primaryKey_": {
+          "rid": "ri.ontology.main.shared-property.12eaa476-fa52-49c4-bed3-7613c9c7c465",
+          "apiName": "primaryKey_",
+          "displayName": "PrimaryKey",
+          "dataType": { "type": "string" },
+          "required": true
+        }
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": ["InterfaceCreationTest", "OsdkTestObject"],
+      "links": {},
+      "allLinks": {}
     }
   },
 
