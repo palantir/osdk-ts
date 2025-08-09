@@ -29,6 +29,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import { Chalk } from "chalk";
+import { inspect } from "node:util";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
 import type { Observer } from "rxjs";
@@ -39,9 +40,11 @@ import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type { Client } from "../../Client.js";
 import { additionalContext } from "../../Client.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { SpecificLinkPayload } from "../LinkPayload.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
-import type { OrderBy, Status, Unsubscribable } from "../ObservableClient.js";
+import type { OrderBy, Status } from "../ObservableClient/common.js";
+import type { Unsubscribable } from "../Unsubscribable.js";
 import type { Entry } from "./Layer.js";
 import type { ListQueryOptions } from "./ListQuery.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
@@ -339,6 +342,28 @@ export function createDefer() {
   };
 }
 
+export function expectSingleLinkCallAndClear<T extends ObjectTypeDefinition>(
+  subFn: MockedObject<Observer<SpecificLinkPayload | undefined>>,
+  resolvedList: ObjectHolder[] | Osdk.Instance<T>[],
+  payloadOptions: Omit<Partial<SpecificLinkPayload>, "resolvedList"> = {},
+): SpecificLinkPayload | undefined {
+  if (vitest.isFakeTimers()) {
+    vitest.runOnlyPendingTimers();
+  }
+  expect(subFn.next).toHaveBeenCalledExactlyOnceWith(
+    linkPayloadContaining({
+      ...payloadOptions,
+      resolvedList: resolvedList as unknown as Array<
+        ObjectHolder
+      >,
+    }),
+  );
+
+  const ret = subFn.next.mock.calls[0][0];
+  subFn.next.mockClear();
+  return ret;
+}
+
 export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
   subFn: MockedObject<Observer<ListPayload | undefined>>,
   resolvedList: ObjectHolder[] | Osdk.Instance<T>[],
@@ -362,14 +387,17 @@ export function expectSingleObjectCallAndClear<T extends ObjectTypeDefinition>(
   subFn: MockedObject<Observer<ObjectPayload | undefined>>,
   object: Osdk.Instance<T> | undefined,
   status?: Status,
-): void {
+): ObjectPayload | undefined {
   expect(subFn.next).toHaveBeenCalledExactlyOnceWith(
     expect.objectContaining({
       object,
       status: status ?? expect.any(String),
     }),
   );
+
+  const ret = subFn.next.mock.calls[0][0];
   subFn.next.mockClear();
+  return ret;
 }
 
 export async function waitForCall(
@@ -382,8 +410,19 @@ export async function waitForCall(
   try {
     await vi.waitFor(() => {
       expect(subFn).toHaveBeenCalledTimes(times);
+    }, {
+      interval: 0,
     });
   } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(
+      `We are going to fail waiting for ${times} calls because these are our calls: `,
+      inspect(subFn.mock.calls, {
+        depth: 9,
+        colors: true,
+        compact: 2,
+      }),
+    );
     // we don't need the error, it will retrigger on the next line
     // and that provides better behavior in the vitest vscode
     // plugin. This places the error in the test itself instead of
@@ -404,10 +443,8 @@ export function expectNoMoreCalls(
 function createSubscriptionHelper() {
 }
 
-export function mockSingleSubCallback():
-  & MockedObject<
-    Observer<ObjectPayload | undefined>
-  >
+export type MockedSingleSubCallback =
+  & MockedObject<Observer<ObjectPayload | undefined>>
   & {
     // expectLoaded: (value: unknown) => Promise<void>;
     // expectLoading: (value: unknown) => Promise<void>;
@@ -415,8 +452,9 @@ export function mockSingleSubCallback():
       loading?: unknown;
       loaded: unknown;
     }) => Promise<void>;
-  }
-{
+  };
+
+export function mockSingleSubCallback(): MockedSingleSubCallback {
   const ret = mockObserver<ObjectPayload | undefined>();
 
   //   async function expectLoaded(value: unknown) {
@@ -476,10 +514,18 @@ export function mockObserver<T>(): MockedObject<Observer<T>> {
   };
 }
 
+// todo: find uses of this and replace with direct call to mockObserver<ListPayload | undefined>
 export function mockListSubCallback(): MockedObject<
   Observer<ListPayload | undefined>
 > {
   return mockObserver<ListPayload | undefined>();
+}
+
+// todo: find uses of this and replace with direct call to mockObserver<SpecificLinkPayload | undefined>
+export function mockLinkSubCallback(): MockedObject<
+  Observer<SpecificLinkPayload | undefined>
+> {
+  return mockObserver<SpecificLinkPayload | undefined>();
 }
 
 export function cacheEntryContaining(x: Partial<Entry<any>>): Entry<any> {
@@ -516,6 +562,19 @@ export function objectPayloadContaining(
 export function listPayloadContaining(
   x: Partial<ListPayload>,
 ): ListPayload {
+  return {
+    fetchMore: x.fetchMore ?? expect.any(Function),
+    hasMore: x.hasMore ?? expect.any(Boolean),
+    resolvedList: x.resolvedList ?? expect.anything(),
+    isOptimistic: expect.any(Boolean),
+    status: x.status ?? expect.anything(),
+    lastUpdated: x.lastUpdated ?? expect.anything(),
+  };
+}
+
+export function linkPayloadContaining(
+  x: Partial<SpecificLinkPayload>,
+): SpecificLinkPayload {
   return {
     fetchMore: x.fetchMore ?? expect.any(Function),
     hasMore: x.hasMore ?? expect.any(Boolean),
@@ -595,7 +654,7 @@ export function updateList<
 
   store.batch({ optimisticId }, (batch) => {
     const objectCacheKeys = storeOsdkInstances(store, objects, batch);
-    query._updateList(objectCacheKeys, false, "loaded", batch);
+    query._updateList(objectCacheKeys, "loaded", batch, false);
   });
 }
 

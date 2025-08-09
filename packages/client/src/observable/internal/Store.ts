@@ -18,9 +18,11 @@ import type {
   ActionDefinition,
   ActionEditResponse,
   ActionValidationResponse,
+  CompileTimeMetadata,
   InterfaceDefinition,
   Logger,
   ObjectTypeDefinition,
+  Osdk,
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
@@ -30,17 +32,19 @@ import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
+import type { SpecificLinkPayload } from "../LinkPayload.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
 import type {
+  ObserveLinkOptions,
   ObserveListOptions,
   ObserveObjectOptions,
   OrderBy,
   Unsubscribable,
 } from "../ObservableClient.js";
+import type { ObserveLink } from "../ObservableClient/ObserveLink.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./ActionApplication.js";
-import type { CacheKey } from "./CacheKey.js";
 import { CacheKeys } from "./CacheKeys.js";
 import type { Canonical } from "./Canonical.js";
 import {
@@ -48,8 +52,15 @@ import {
   createChangedObjects,
   DEBUG_ONLY__changesToString,
 } from "./Changes.js";
+import type { KnownCacheKey } from "./KnownCacheKey.js";
 import { Entry, Layer } from "./Layer.js";
-import type { ListCacheKey, ListQueryOptions } from "./ListQuery.js";
+import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
+import {
+  isSpecificLinkCacheKey,
+  SpecificLinkQuery,
+} from "./links/SpecificLinkQuery.js";
+import type { ListCacheKey } from "./ListCacheKey.js";
+import type { ListQueryOptions } from "./ListQuery.js";
 import { isListCacheKey, ListQuery } from "./ListQuery.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import { ObjectQuery } from "./ObjectQuery.js";
@@ -77,7 +88,7 @@ import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
     - [ ] reduce updates in react
 */
 
-export interface SubjectPayload<KEY extends CacheKey> extends Entry<KEY> {
+export interface SubjectPayload<KEY extends KnownCacheKey> extends Entry<KEY> {
   isOptimistic: boolean;
 }
 
@@ -86,17 +97,17 @@ export interface BatchContext {
   createLayerIfNeeded: () => void;
   optimisticWrite: boolean;
 
-  write: <K extends CacheKey<string, any, any>>(
+  write: <K extends KnownCacheKey>(
     k: K,
     v: Entry<K>["value"],
     status: Entry<K>["status"],
   ) => Entry<K>;
 
-  read: <K extends CacheKey<string, any, any>>(
+  read: <K extends KnownCacheKey>(
     k: K,
   ) => Entry<K> | undefined;
 
-  delete: <K extends CacheKey<string, any, any>>(
+  delete: <K extends KnownCacheKey>(
     k: K,
     status: Entry<K>["status"],
   ) => Entry<K>;
@@ -112,7 +123,7 @@ export namespace Store {
   }
 }
 
-function createInitEntry(cacheKey: CacheKey): Entry<any> {
+function createInitEntry(cacheKey: KnownCacheKey): Entry<any> {
   return {
     cacheKey,
     status: "init",
@@ -140,17 +151,17 @@ export class Store {
   // we can use a regular Map here because the refCounting will
   // handle cleanup.
   #queries: Map<
-    CacheKey,
+    KnownCacheKey,
     Query<any, any, any>
   > = new Map();
 
   #cacheKeyToSubject = new WeakMap<
-    CacheKey<string, any, any>,
+    KnownCacheKey,
     BehaviorSubject<SubjectPayload<any>>
   >();
   #cacheKeys: CacheKeys;
 
-  #refCounts = new RefCounts<CacheKey>(
+  #refCounts = new RefCounts<KnownCacheKey>(
     DEBUG_REFCOUNTS ? 15_000 : 60_000,
     (k) => this.#cleanupCacheKey(k),
   );
@@ -214,7 +225,7 @@ export class Store {
    * Called after a key is no longer retained and the timeout has elapsed
    * @param key
    */
-  #cleanupCacheKey = (key: CacheKey<string, any, any>) => {
+  #cleanupCacheKey = (key: KnownCacheKey) => {
     const subject = this.peekSubject(key);
 
     if (DEBUG_REFCOUNTS) {
@@ -271,7 +282,7 @@ export class Store {
     );
     // 1. collect all cache keys for a given layerId
     let currentLayer: Layer | undefined = this.#topLayer;
-    const cacheKeys = new Map<CacheKey<string, any, any>, Entry<any>>();
+    const cacheKeys = new Map<KnownCacheKey, Entry<any>>();
     while (currentLayer != null && currentLayer.parentLayer != null) {
       if (currentLayer.layerId === layerId) {
         for (const [k, v] of currentLayer.entries()) {
@@ -308,14 +319,14 @@ export class Store {
     }
   }
 
-  getCacheKey<K extends CacheKey<string, any, any>>(
+  getCacheKey<K extends KnownCacheKey>(
     type: K["type"],
     ...args: K["__cacheKey"]["args"]
   ): K {
     return this.#refCounts.register(this.#cacheKeys.get(type, ...args));
   }
 
-  peekSubject = <KEY extends CacheKey<string, any, any>>(
+  peekSubject = <KEY extends KnownCacheKey>(
     cacheKey: KEY,
   ):
     | BehaviorSubject<SubjectPayload<KEY>>
@@ -324,7 +335,7 @@ export class Store {
     return this.#cacheKeyToSubject.get(cacheKey);
   };
 
-  getSubject = <KEY extends CacheKey<string, any, any>>(
+  getSubject = <KEY extends KnownCacheKey>(
     cacheKey: KEY,
   ): BehaviorSubject<SubjectPayload<KEY>> => {
     let subject = this.#cacheKeyToSubject.get(cacheKey);
@@ -421,13 +432,65 @@ export class Store {
     };
   }
 
-  peekQuery<K extends CacheKey>(
+  public observeLinks<
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+    L extends keyof CompileTimeMetadata<T>["links"] & string,
+  >(
+    objects: Osdk.Instance<T> | Array<Osdk.Instance<T>>,
+    linkName: L,
+    options: ObserveLink.Options<
+      CompileTimeMetadata<T>["links"][L]["targetType"]
+    >,
+    subFn: Observer<SpecificLinkPayload>,
+  ): Unsubscribable {
+    const store = this;
+
+    // Convert to array if single object provided
+    const objectsArray = Array.isArray(objects) ? objects : [objects];
+
+    if (objectsArray.length === 0) {
+      // No objects to observe links for, return empty subscription
+      return { unsubscribe: () => {} };
+    }
+
+    const subsAndQueries = objectsArray.map(obj => {
+      const query = store.getSpecificLinkQuery(
+        { type: "object", apiName: obj.$apiName },
+        objectsArray[0].$primaryKey,
+        linkName,
+        options.where ?? {},
+        options.orderBy ?? {},
+        options,
+      );
+
+      store.retain(query.cacheKey);
+
+      if (options.mode !== "offline") {
+        query.revalidate(options.mode === "force").catch((x: unknown) => {
+          subFn.error(x);
+        });
+      }
+
+      return [query.subscribe(subFn), query] as const;
+    });
+
+    return {
+      unsubscribe: () => {
+        subsAndQueries.forEach(([sub, query]) => {
+          sub.unsubscribe();
+          store.release(query.cacheKey);
+        });
+      },
+    };
+  }
+
+  peekQuery<K extends KnownCacheKey>(
     cacheKey: K,
   ): K["__cacheKey"]["query"] | undefined {
     return this.#queries.get(cacheKey) as K["__cacheKey"]["query"] | undefined;
   }
 
-  #getQuery<K extends CacheKey>(
+  #getQuery<K extends KnownCacheKey>(
     cacheKey: K,
     createQuery: () => K["__cacheKey"]["query"],
   ): K["__cacheKey"]["query"] {
@@ -437,6 +500,39 @@ export class Store {
       this.#queries.set(cacheKey, query);
     }
     return query;
+  }
+
+  public getSpecificLinkQuery<
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+  >(
+    srcDef: Pick<T, "type" | "apiName">,
+    pk: PrimaryKeyType<T>,
+    linkName: keyof CompileTimeMetadata<T>["links"] & string,
+    where: WhereClause<T>,
+    orderBy: Record<string, "asc" | "desc" | undefined>,
+    opts: ObserveLinkOptions<T>,
+  ): SpecificLinkQuery {
+    const { apiName, type } = srcDef;
+
+    const canonWhere = this.whereCanonicalizer.canonicalize(where);
+    const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy);
+    const linkCacheKey = this.getCacheKey<SpecificLinkCacheKey>(
+      "specificLink",
+      apiName,
+      pk,
+      linkName,
+      canonWhere,
+      canonOrderBy,
+    );
+
+    return this.#getQuery(linkCacheKey, () => {
+      return new SpecificLinkQuery(
+        this,
+        this.getSubject(linkCacheKey),
+        linkCacheKey,
+        opts as ObserveLinkOptions<ObjectTypeDefinition>,
+      );
+    });
   }
 
   public getListQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
@@ -496,7 +592,7 @@ export class Store {
       ));
   }
 
-  public getValue<K extends CacheKey<string, any, any>>(
+  public getValue<K extends KnownCacheKey>(
     cacheKey: K,
   ): Entry<K> | undefined {
     return this.#topLayer.get(cacheKey);
@@ -548,7 +644,7 @@ export class Store {
         const newTopValue = this.#topLayer.get(cacheKey);
 
         if (oldTopValue !== newTopValue) {
-          this.#cacheKeyToSubject.get(cacheKey)?.next({
+          this.getSubject(cacheKey)?.next({
             // eslint-disable-next-line @typescript-eslint/no-misused-spread
             ...newValue,
             isOptimistic:
@@ -645,9 +741,15 @@ export class Store {
   }
 
   /**
-   * @param apiName
-   * @param changes The changes we know about / to update
-   * @returns
+   * Invalidates all cache entries for a specific object type.
+   * This will revalidate:
+   * 1. All objects of the specified type
+   * 2. All lists of the specified type
+   * 3. All links where the source object is of the specified type
+   *
+   * @param apiName - The API name of the object type to invalidate
+   * @param changes - Optional changes object to track what has been modified
+   * @returns Promise that resolves when all invalidations are complete
    */
   public invalidateObjectType<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
@@ -665,26 +767,65 @@ export class Store {
     const promises: Array<Promise<void>> = [];
 
     for (const cacheKey of this.#truthLayer.keys()) {
-      if (isListCacheKey(cacheKey)) {
-        if (!changes || !changes.modified.has(cacheKey)) {
-          const promise = this.peekQuery(cacheKey)?.revalidate(true);
+      if (changes && changes.modified.has(cacheKey)) {
+        continue;
+      }
+      const query = this.peekQuery(cacheKey);
+      if (!query) continue;
 
-          if (promise) {
-            promises.push(promise);
+      if (cacheKey.type === "object" && cacheKey.otherKeys[0] === apiName) {
+        promises.push(query.revalidate(true));
+        changes?.modified.add(cacheKey);
+      } else if (
+        isListCacheKey(cacheKey) && cacheKey.otherKeys[1] === apiName
+      ) {
+        // Only invalidate lists for the matching apiName
+        // ListCacheKey.otherKeys = [type, apiName, whereClause, orderByClause]
+
+        promises.push(query.revalidate(true));
+        changes?.modified.add(cacheKey);
+      } else if (isSpecificLinkCacheKey(cacheKey)) {
+        // We need to invalidate links in two cases:
+        // 1. When the source object type matches the apiName (direct invalidation)
+        // 2. When the target object type might be the invalidated type (affected by target changes)
+
+        const sourceObjectType = cacheKey.otherKeys[0];
+
+        // For case 1 - direct source object type match
+        if (sourceObjectType === apiName) {
+          promises.push(query.revalidate(true));
+          changes?.modified.add(cacheKey);
+        } else {
+          // For case 2 - check if the link's target type matches the invalidated type
+          // We need to use the ontology provider to get the link metadata
+          // Since this is async, we'll collect all the metadata check promises
+          const linkName = cacheKey.otherKeys[2];
+          promises.push((async () => {
+            // Get the source object metadata to determine link target type
+            const sourceMetadata = await this.client[additionalContext]
+              .ontologyProvider
+              .getObjectDefinition(sourceObjectType);
+
+            const linkDef = sourceMetadata.links?.[linkName];
+            if (!linkDef || linkDef.targetType !== apiName) return;
+
+            const promise = query.revalidate(true);
             changes?.modified.add(cacheKey);
-          }
+            return promise;
+          })());
         }
       }
     }
 
-    return Promise.all(promises).then(() => void 0);
+    // we use allSettled here because we don't care if it succeeds or fails, just that they all complete.
+    return Promise.allSettled(promises).then(() => void 0);
   }
 
-  retain(cacheKey: CacheKey<string, any, any>): void {
+  retain(cacheKey: KnownCacheKey): void {
     this.#refCounts.retain(cacheKey);
   }
 
-  release(cacheKey: CacheKey<string, any, any>): void {
+  release(cacheKey: KnownCacheKey): void {
     this.#refCounts.release(cacheKey);
   }
 }

@@ -24,6 +24,7 @@ import type * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { DefaultMap, MultiMap } from "mnemonist";
 import { randomUUID } from "node:crypto";
 import * as crypto from "node:crypto";
+import { inspect } from "node:util";
 import invariant from "tiny-invariant";
 import type { ReadonlyDeep } from "type-fest";
 import { InvalidRequest, ObjectNotFoundError } from "../errors.js";
@@ -200,7 +201,7 @@ export class FauxDataStore {
   registerObject<T extends ObjectTypeDefinition>(
     objectType: T,
     obj: ObjectTypeCreatable<T> | ObjectTypeCreatableWithoutApiName<T>,
-  ): void;
+  ): BaseServerObject;
   /**
    * Version of register object generally used in shared.test
    * @param obj A raw server side representation of an object
@@ -211,7 +212,7 @@ export class FauxDataStore {
   registerObject(
     objectType: string | ObjectTypeDefinition | BaseServerObject,
     anyObj?: BaseServerObject | BaseObjectTypeCreatable,
-  ): void {
+  ): BaseServerObject {
     let bso: BaseServerObject;
     // obj = { ...obj }; // make a copy so we can mutate it
 
@@ -267,6 +268,8 @@ export class FauxDataStore {
       String(bso.__primaryKey),
       Object.freeze({ ...bso }),
     );
+
+    return bso;
   }
 
   #osdkCreatableToBso(
@@ -339,7 +342,9 @@ export class FauxDataStore {
       if (linkDef.cardinality === "ONE") {
         invariant(
           this.#strict && linkDef.foreignKeyPropertyApiName,
-          `Error examining ${objectType.objectType.apiName}.${linkDef.apiName}: ONE side of links should have a foreign key. `,
+          `Error examining ${objectType.objectType.apiName}.${linkDef.apiName}: ONE side of links should have a foreign key. ${
+            inspect(linkDef, { colors: false })
+          }`,
         );
 
         const fkName = linkDef.foreignKeyPropertyApiName;
@@ -352,11 +357,11 @@ export class FauxDataStore {
             linkDef.apiName,
           );
           const dstLocator = objectLocator({
-            __apiName: dstSide.objectTypeApiName,
+            __apiName: linkDef.objectTypeApiName,
             __primaryKey: fkValue,
           });
 
-          const target = this.getObject(dstSide.objectTypeApiName, fkValue);
+          const target = this.getObject(linkDef.objectTypeApiName, fkValue);
 
           if (fkValue != null && !target) {
             // eslint-disable-next-line no-console
