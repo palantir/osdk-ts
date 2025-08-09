@@ -154,7 +154,6 @@ const cspell = {
       ],
       ignoreWords: [
         // it's an NPM package
-        "escodegen",
         "blueprintjs",
         "picocolors",
         // used in a RID template literal string

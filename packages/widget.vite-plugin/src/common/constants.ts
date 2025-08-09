@@ -21,3 +21,9 @@ export const FINISH_PATH: string = `${PALANTIR_PATH}/finish`;
 export const VITE_INJECTIONS_PATH: string =
   `${PALANTIR_PATH}/vite-injections.js`;
 export const CONFIG_FILE_SUFFIX = ".config";
+
+export const BUILD_PLUGIN_ID = "@osdk:widget-build-plugin";
+export const DEV_PLUGIN_ID = "@osdk:widget-dev-plugin";
+
+// Custom Vite mode for widget config module evaluation during build
+export const MODULE_EVALUATION_MODE = "build-module-evaluation-mode";
