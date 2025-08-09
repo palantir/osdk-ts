@@ -5,3 +5,4 @@ packages:
   - "examples-extra/basic/*"
   - "tests/*"
   - "benchmarks/*/*"
+  - ".claude/hooks"

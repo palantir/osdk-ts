@@ -17,6 +17,7 @@ groupable
 inbetween
 isModifierable
 Multimap
+nothrow
 objs
 onwarn
 pypi
