@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.12.0-beta.15
+
+### Minor Changes
+
+- a1736f3: Actions can have properties that are not mapped to parameters
+- c621638: Create or Modify actions in OAC
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.12
+
 ## 0.12.0-beta.14
 
 ### Minor Changes
