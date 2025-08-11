@@ -290,6 +290,12 @@ function convertToWireImportedTypes(
         displayName: spt.sharedPropertyType.displayMetadata.displayName,
         description: spt.sharedPropertyType.displayMetadata.description,
         type: spt.sharedPropertyType.type,
+        valueType: spt.sharedPropertyType.valueType === undefined
+          ? undefined
+          : {
+            apiName: spt.sharedPropertyType.valueType!.apiName,
+            version: spt.sharedPropertyType.valueType!.version,
+          },
       }),
     ),
     objectTypes: Object.values(
@@ -922,7 +928,10 @@ function convertSpt(
     gothamMapping: gothamMapping,
     indexedForSearch: true,
     typeClasses: typeClasses ?? [],
-    valueType: valueType,
+    valueType: valueType === undefined ? undefined : {
+      apiName: valueType.apiName,
+      version: valueType.version,
+    },
   };
 }
 

@@ -17,7 +17,6 @@
 import type {
   ActionTypeApiName,
   ActionTypeStatus_deprecated,
-  ApiNameValueTypeReference,
   BaseType,
   DataConstraint,
   DisplayMetadataConfigurationDefaultLayout,
@@ -65,6 +64,7 @@ import type {
   StructFieldType,
   ValidationRuleDisplayMetadata,
   ValueTypeApiName,
+  ValueTypeApiNameReference,
   ValueTypeDataConstraint,
   ValueTypeDisplayMetadata,
   ValueTypeStatus,
@@ -483,7 +483,7 @@ export interface PropertyType {
   array?: boolean;
   description?: string;
   displayName?: string;
-  valueType?: ApiNameValueTypeReference;
+  valueType?: ValueTypeApiNameReference;
   visibility?: Visibility;
   typeClasses?: TypeClass[];
   nullability?: Nullability;
