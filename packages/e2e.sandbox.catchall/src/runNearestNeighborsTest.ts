@@ -38,6 +38,17 @@ export async function runNearestNeighborsTest(): Promise<void> {
   ).fetchPage();
   result.data.forEach(s => console.log(s.orderTitle));
   validateCount(10, result.data);
+  //
+  const asyncIter = client(MatthewvsDevOrderEmbedding).nearestNeighbors(
+    "coffee",
+    10,
+    "embedding",
+  ).asyncIter({$orderBy: "relevance"})
+  // .asyncIter({$orderBy: "relevance"})
+
+  for await(const obj of asyncIter) {
+    console.log(obj)
+  }
 
   // Fetch page with errors
   const { value: resultWithErrors } = await client(MatthewvsDevOrderEmbedding)

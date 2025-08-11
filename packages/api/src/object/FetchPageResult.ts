@@ -55,8 +55,12 @@ export type FetchPageResult<
   Z extends ObjectSetArgs.OrderByOptions<L> = {},
 > = PageResult<
   PropertyKeys<Q> extends L
-    ? Z extends "relevance" ? WithOrderByRelevance<Osdk.Instance<Q, ExtractOptions<R, S, T>>> : Osdk.Instance<Q, ExtractOptions<R, S, T>>
-    : Z extends "relevance" ? WithOrderByRelevance<Osdk.Instance<Q, ExtractOptions<R, S, T>, L>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, L>
+    ? Z extends "relevance" 
+      ? WithOrderByRelevance<Osdk.Instance<Q, ExtractOptions<R, S, T>>>
+      : Osdk.Instance<Q, ExtractOptions<R, S, T>>
+    : Z extends "relevance" 
+      ? WithOrderByRelevance<Osdk.Instance<Q, ExtractOptions<R, S, T>, L>>
+      : Osdk.Instance<Q, ExtractOptions<R, S, T>, L>
 
 >;
 
@@ -71,19 +75,19 @@ export type SingleOsdkResult<
   RDPs extends Record<string, SimplePropertyDef> = {},
   T extends boolean = false,
   Z extends ObjectSetArgs.OrderByOptions<L> = {},
-> = Z extends "relevance" ? 
-WithOrderByRelevance<Osdk.Instance<
-  Q,
-  ExtractOptions<R, S, T>,
-  PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-  { [K in Extract<keyof RDPs, L>]: RDPs[K] }
->>: 
-Osdk.Instance<
-  Q,
-  ExtractOptions<R, S, T>,
-  PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-  { [K in Extract<keyof RDPs, L>]: RDPs[K] }
->;
+> = Z extends "relevance" 
+      ? WithOrderByRelevance<Osdk.Instance<
+        Q,
+        ExtractOptions<R, S, T>,
+        PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
+        { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+      >>
+    : Osdk.Instance<
+      Q,
+      ExtractOptions<R, S, T>,
+      PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
+      { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+    >;
 
 
 export type IsAny<T> = unknown extends T

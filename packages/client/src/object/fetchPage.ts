@@ -200,8 +200,7 @@ export async function fetchPageInternal<
     return await fetchInterfacePage(
       client,
       objectType,
-      // Interface doesn't support orer by relevance (KNN)
-      args as any,
+      args as FetchPageArgs<InterfaceDefinition, L, R, A, S, T, never, Z>,
       objectSet,
       useSnapshot,
     ) as any; // fixme
@@ -209,8 +208,7 @@ export async function fetchPageInternal<
     return await fetchObjectPage(
       client,
       objectType,
-      // TODO: whats wrong with this?
-      args as any,
+      args as FetchPageArgs<ObjectTypeDefinition, L, R, A, S, T, never, Z>,
       objectSet,
       useSnapshot,
     ) as any; // fixme
@@ -326,7 +324,7 @@ export async function fetchObjectPage<
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, Augments, S, T>,
+  args: FetchPageArgs<Q, L, R, Augments, S, T, never, Z>,
   objectSet: ObjectSet,
   useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T, Z>> {
@@ -350,6 +348,8 @@ export async function fetchObjectPage<
       undefined,
       await extractRdpDefinition(client, objectSet),
       args.$select,
+      false,
+      args.$orderBy === "relevance",
     ),
     nextPageToken: r.nextPageToken,
     totalCount: r.totalCount,

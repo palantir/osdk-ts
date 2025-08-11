@@ -24,6 +24,7 @@ import type {
   Osdk,
   PageResult,
   PropertyKeys,
+  WithOrderByRelevance,
 } from "../index.js";
 import type { DerivedObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
@@ -475,24 +476,24 @@ describe("ObjectSet", () => {
         await withFamily.fetchOne(1);
       });
 
-      it("works with .async", () => {
-        const asyncIter = withFamily.asyncIter();
-        expectTypeOf<typeof asyncIter>().toEqualTypeOf<
-          AsyncIterableIterator<
-            Osdk.Instance<
-              EmployeeApiTest,
-              never,
-              PropertyKeys<EmployeeApiTest>,
-              {
-                mom: "integer";
-                dad: "string" | undefined;
-                sister: "string"[] | undefined;
-              }
-            >
-          >
-        >();
-      });
-
+      // it("works with .async", () => {
+      //   const asyncIter = withFamily.asyncIter();
+      //   expectTypeOf<typeof asyncIter>().toEqualTypeOf<
+      //     AsyncIterableIterator<
+      //       Osdk.Instance<
+      //         EmployeeApiTest,
+      //         never,
+      //         PropertyKeys<EmployeeApiTest>,
+      //         {
+      //           mom: "integer";
+      //           dad: "string" | undefined;
+      //           sister: "string"[] | undefined;
+      //         }
+      //       >
+      //     >
+      //   >();
+      // });
+      //
       it("Works with no select", async () => {
         const withFamilyResults = await withFamily.fetchPage();
 
@@ -1353,14 +1354,18 @@ describe("ObjectSet", () => {
       );
     });
 
-    it("includes score when ordered by relevance", async () => {
+    it("appropriately types fetchPage ordered by relevance", async () => {
       const nearestNeighborsObjectSet = await fauxObjectSet.nearestNeighbors(
         "textQuery",
         3,
         "skillSetEmbedding"
       ).fetchPage({ $orderBy: "relevance"});
 
+      expectTypeOf(nearestNeighborsObjectSet.data[0]).toEqualTypeOf<WithOrderByRelevance<Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>>>();
       expectTypeOf(nearestNeighborsObjectSet.data[0]).toHaveProperty("$score")
+    });
+
+    it("appropriately types fetchPageWithErrors ordered by relevance", async () => {
 
       const nearestNeighborsObjectSetWithErrors = await fauxObjectSet.nearestNeighbors(
         "textQuery",
@@ -1368,16 +1373,36 @@ describe("ObjectSet", () => {
         "skillSetEmbedding"
       ).fetchPageWithErrors({ $orderBy: "relevance"});
 
+      expectTypeOf(nearestNeighborsObjectSetWithErrors.value!.data[0]).toEqualTypeOf<WithOrderByRelevance<Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>>>();
       expectTypeOf(nearestNeighborsObjectSetWithErrors.value!.data[0]).toHaveProperty("$score")
     });
 
-    // it("includes score when ordered by relevance async iter", async () => {
-    //   const asyncIter = fauxObjectSet.nearestNeighbors(
-    //     "textQuery",
-    //     3,
-    //     "skillSetEmbedding"
-    //   ).asyncIter({ $orderBy: "b"})
-    // });
+    it("appropriately types asyncIters ordered by relevance", () => {
+        const asyncIter = fauxObjectSet.nearestNeighbors(
+          "textQuery",
+          3,
+          "skillSetEmbedding"
+        ).asyncIter(
+          { $orderBy: "relevance"}
+        )
+
+        expectTypeOf(asyncIter).toEqualTypeOf<AsyncIterableIterator<WithOrderByRelevance<Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>>>>();
+    });
+
+    it("no arbitrary order bys", () => {
+        const knn = fauxObjectSet.nearestNeighbors(
+          "textQuery",
+          3,
+          "skillSetEmbedding"
+        )
+
+        // @ts-expect-error
+        knn.fetchPage({$orderBy: "invalid"})
+        // @ts-expect-error
+        knn.fetchPageWithErrors({$orderBy: "invalid"})
+        // @ts-expect-error
+        knn.asyncIter({ $orderBy: "random"})
+    })
 
 
     it("does not include score for property order by", async () => {

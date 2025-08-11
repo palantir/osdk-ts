@@ -52,7 +52,8 @@ export namespace ObjectSetArgs {
     K extends PropertyKeys<Q> = never,
     T extends boolean = false,
     RDP_KEYS extends string = never,
-    Z extends ObjectSetArgs.OrderByOptions<K> = {},
+    Z extends ObjectSetArgs.OrderByOptions<K> = never,
+
   > extends Select<K, RDP_KEYS>, OrderBy<Z, K> {
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
@@ -84,7 +85,7 @@ export interface SelectArg<
 export interface OrderByArg<
   Q extends ObjectOrInterfaceDefinition,
   L extends string = PropertyKeys<Q>,
-  Z extends ObjectSetArgs.OrderByOptions<L> = {},
+  Z extends ObjectSetArgs.OrderByOptions<L> = never,
 > extends ObjectSetArgs.OrderBy<Z, L> {
 }
 
@@ -117,7 +118,7 @@ export interface AsyncIterArgs<
   S extends NullabilityAdherence = NullabilityAdherence.Default,
   T extends boolean = false,
   RDP_KEYS extends string = never,
-  Z extends ObjectSetArgs.OrderByOptions<K> = {},
+  Z extends ObjectSetArgs.OrderByOptions<K> = never,
 > extends
   SelectArg<Q, K, R, S, RDP_KEYS>,
   OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, Z>

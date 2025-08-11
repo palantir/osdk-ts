@@ -59,10 +59,11 @@ export async function convertWireToOsdkObjects(
   derivedPropertyTypesByName: DerivedPropertyRuntimeMetadata,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
+  includeScore = false,
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
   // remove the __ prefixed properties and convert them to $ prefixed.
   // updates in place
-  fixObjectPropertiesInPlace(objects, forceRemoveRid);
+  fixObjectPropertiesInPlace(objects, forceRemoveRid, includeScore);
 
   const ifaceDef = interfaceApiName
     ? await client.ontologyProvider.getInterfaceDefinition(interfaceApiName)
@@ -344,6 +345,7 @@ function invariantInterfacesAsViews(
 function fixObjectPropertiesInPlace(
   objs: OntologyObjectV2[],
   forceRemoveRid: boolean,
+  includeScore: boolean = false,
 ): asserts objs is SimpleOsdkProperties[] {
   for (const obj of objs) {
     if (forceRemoveRid) {
@@ -353,6 +355,13 @@ function fixObjectPropertiesInPlace(
     if (obj.__rid) {
       obj.$rid = obj.__rid;
       delete obj.__rid;
+    }
+
+    if (obj.__score)  {
+      if (includeScore) {
+        obj.$score = obj.__score;
+      }
+      delete obj.__score
     }
 
     // Backend returns as __apiName but we want to stick to $ structure
