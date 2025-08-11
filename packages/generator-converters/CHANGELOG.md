@@ -1,5 +1,16 @@
 # @osdk/generator-converters
 
+## 2.4.0-beta.13
+
+### Minor Changes
+
+- 4bc848b: Add interface link support.
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/api@2.4.0-beta.13
+
 ## 2.4.0-beta.12
 
 ### Patch Changes
