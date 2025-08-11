@@ -130,7 +130,7 @@ export interface EsongIssues extends $ObjectTypeDefinition {
       color: '#4C90F0';
       name: 'cube';
     };
-    implements: ['EsongInterfaceWithIlts', 'EsongInterfaceA', 'EsongInterfaceC'];
+    implements: ['EsongInterfaceA', 'EsongInterfaceC', 'EsongInterfaceWithIlts'];
     interfaceMap: {
       EsongInterfaceC: {
         esongId: 'label';
