@@ -46,6 +46,7 @@ import type {
   PropertyTypeMappingInfo,
   RetentionPolicy,
   SectionId,
+  ValueTypeApiNameReference,
 } from "@osdk/client.unstable";
 import * as fs from "fs";
 import * as path from "path";
@@ -290,6 +291,8 @@ function convertToWireImportedTypes(
         displayName: spt.sharedPropertyType.displayMetadata.displayName,
         description: spt.sharedPropertyType.displayMetadata.description,
         type: spt.sharedPropertyType.type,
+        valueType: spt.sharedPropertyType
+          .valueType as ValueTypeApiNameReference,
       }),
     ),
     objectTypes: Object.values(
@@ -922,7 +925,7 @@ function convertSpt(
     gothamMapping: gothamMapping,
     indexedForSearch: true,
     typeClasses: typeClasses ?? [],
-    valueType: valueType,
+    valueType: valueType as ValueTypeApiNameReference,
   };
 }
 

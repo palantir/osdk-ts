@@ -36,11 +36,6 @@ export interface OntologyIr {
   importedTypes: OntologyIrImportedTypes;
 }
 
-export type ApiNameValueTypeReference = {
-  apiName: ValueTypeApiName;
-  version: ValueTypeVersion;
-};
-
 export type OntologyIrPackagedValueType = {
   version: ValueTypeVersion;
   baseType: BaseType;
