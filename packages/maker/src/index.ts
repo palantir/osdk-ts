@@ -21,6 +21,7 @@ export {
   defineAction,
   defineCreateInterfaceObjectAction,
   defineCreateObjectAction,
+  defineCreateOrModifyObjectAction,
   defineDeleteObjectAction,
   defineModifyInterfaceObjectAction,
   defineModifyObjectAction,

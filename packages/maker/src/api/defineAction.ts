@@ -184,41 +184,7 @@ export function defineCreateObjectAction(
       `Action parameter ordering for ${def.objectType.apiName} does not match non-excluded properties`,
     );
   }
-  const parameters: Array<ActionParameter> = Array.from(parameterNames).map(
-    id => (
-      {
-        id,
-        displayName: def.parameterConfiguration?.[id]?.displayName
-          ?? def.objectType.properties?.[id].displayName
-          ?? convertToDisplayName(id),
-        type: extractActionParameterType(def.objectType.properties?.[id]!),
-        validation: (def.parameterConfiguration?.[id] !== undefined)
-          ? {
-            ...def.parameterConfiguration?.[id],
-            allowedValues: def.parameterConfiguration?.[id].allowedValues
-              ?? extractAllowedValuesFromType(
-                def.objectType.properties?.[id].type!,
-              ),
-            required: def.parameterConfiguration?.[id].required ?? true,
-          }
-          : {
-            required: (def.objectType.properties?.[id].array ?? false)
-              ? {
-                listLength: def.objectType.properties?.[id].nullability
-                    ?.noEmptyCollections
-                  ? { min: 1 }
-                  : {},
-              }
-              : def.objectType.properties?.[id].nullability?.noNulls ?? true,
-            allowedValues: extractAllowedValuesFromType(
-              def.objectType.properties?.[id].type!,
-            ),
-          },
-        defaultValue: def.parameterConfiguration?.[id]?.defaultValue,
-        description: def.parameterConfiguration?.[id]?.description,
-      }
-    ),
-  );
+  const parameters = createParameters(def, parameterNames, true);
   const mappings = Object.fromEntries(
     Object.entries(def.nonParameterMappings ?? {}).map((
       [id, value],
@@ -405,41 +371,8 @@ export function defineModifyObjectAction(
       `Action parameter ordering for ${def.objectType.apiName} does not match non-excluded properties`,
     );
   }
-  const parameters: Array<ActionParameter> = Array.from(parameterNames).map(
-    id => (
-      {
-        id,
-        displayName: def.parameterConfiguration?.[id]?.displayName
-          ?? def.objectType.properties?.[id].displayName
-          ?? convertToDisplayName(id),
-        type: extractActionParameterType(def.objectType.properties?.[id]!),
-        validation: (def.parameterConfiguration?.[id] !== undefined)
-          ? {
-            ...def.parameterConfiguration?.[id],
-            allowedValues: def.parameterConfiguration?.[id].allowedValues
-              ?? extractAllowedValuesFromType(
-                def.objectType.properties?.[id].type!,
-              ),
-            required: def.parameterConfiguration?.[id].required ?? false,
-          }
-          : {
-            required: (def.objectType.properties?.[id].array ?? false)
-              ? {
-                listLength: def.objectType.properties?.[id].nullability
-                    ?.noEmptyCollections
-                  ? { min: 1 }
-                  : {},
-              }
-              : def.objectType.properties?.[id].nullability?.noNulls ?? false,
-            allowedValues: extractAllowedValuesFromType(
-              def.objectType.properties?.[id].type!,
-            ),
-          },
-        defaultValue: def.parameterConfiguration?.[id]?.defaultValue,
-        description: def.parameterConfiguration?.[id]?.description,
-      }
-    ),
-  );
+  const parameters = createParameters(def, parameterNames, false);
+
   const mappings = Object.fromEntries(
     Object.entries(def.nonParameterMappings ?? {}).map((
       [id, value],
@@ -556,6 +489,133 @@ export function defineDeleteObjectAction(
   });
 }
 
+export function defineCreateOrModifyObjectAction(
+  def: ActionTypeUserDefinition,
+): ActionType {
+  Object.keys(def.parameterConfiguration ?? {}).forEach(id => {
+    invariant(
+      def.objectType.properties?.[id] !== undefined,
+      `Property ${id} does not exist on ${def.objectType.apiName}`,
+    );
+  });
+  (def.excludedProperties ?? []).forEach(id => {
+    invariant(
+      def.objectType.properties?.[id] !== undefined,
+      `Property ${id} does not exist on ${def.objectType.apiName}`,
+    );
+  });
+
+  const parameterNames = Object.keys(def.objectType.properties ?? {}).filter(
+    id =>
+      !def.excludedProperties?.includes(id)
+      && !isStruct(def.objectType.properties?.[id].type!)
+      && id !== def.objectType.primaryKeyPropertyApiName,
+  );
+  if (def.parameterOrdering) {
+    const sortedOrdering = [...def.parameterOrdering].sort();
+    const sortedParameterNames = [...parameterNames].sort();
+    invariant(
+      sortedOrdering.length === sortedParameterNames.length
+        && sortedOrdering.every((name, index) =>
+          name === sortedParameterNames[index]
+        ),
+      `Action parameter ordering for ${def.objectType.apiName} does not match non-excluded properties`,
+    );
+  }
+  const parameters = createParameters(def, parameterNames, false);
+  parameters.forEach(
+    p => {
+      if (p.defaultValue === undefined) {
+        p.defaultValue = {
+          type: "objectParameterPropertyValue",
+          objectParameterPropertyValue: {
+            parameterId: "objectToCreateOrModifyParameter",
+            propertyTypeId: p.id,
+          },
+        };
+      }
+    },
+  );
+  const mappings = Object.fromEntries(
+    Object.entries(def.nonParameterMappings ?? {}).map((
+      [id, value],
+    ) => [id, convertMappingValue(value)]),
+  );
+
+  return defineAction({
+    apiName: def.apiName
+      ?? `create-or-modify-${
+        kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
+      }`,
+    displayName: def.displayName
+      ?? `Create or Modify ${def.objectType.displayName}`,
+    parameters: [
+      {
+        id: "objectToCreateOrModifyParameter",
+        displayName: "Create or modify object",
+        type: {
+          type: "objectReference",
+          objectReference: {
+            objectTypeId: def.objectType.apiName,
+            maybeCreateObjectOption:
+              !def.primaryKeyOption || def.primaryKeyOption === "autoGenerated"
+                ? {
+                  type: "autoGenerated",
+                  autoGenerated: {},
+                }
+                : {
+                  type: "userInput",
+                  userInput: {},
+                },
+          },
+        },
+        validation: {
+          allowedValues: { type: "objectQuery" },
+          required: true,
+        },
+      },
+      ...parameters,
+    ],
+    status: def.status ?? "active",
+    rules: [{
+      type: "addOrModifyObjectRuleV2",
+      addOrModifyObjectRuleV2: {
+        objectToModify: "objectToCreateOrModifyParameter",
+        propertyValues: Object.fromEntries(
+          parameters.map(
+            p => [p.id, { type: "parameterId", parameterId: p.id }],
+          ),
+        ),
+        structFieldValues: {},
+      },
+    }],
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [def.objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
+    ...(def.actionLevelValidation
+      ? {
+        validation: [
+          convertValidationRule(def.actionLevelValidation),
+        ],
+      }
+      : {}),
+    ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
+    ...(def.enableLayoutSwitch
+      && { enableLayoutSwitch: def.enableLayoutSwitch }),
+    ...(def.displayAndFormat && { displayAndFormat: def.displayAndFormat }),
+    ...(def.sections
+      && {
+        sections: Object.fromEntries(
+          def.sections.map(section => [section.id, section]),
+        ),
+      }),
+    ...(def.parameterOrdering && { parameterOrdering: def.parameterOrdering }),
+  });
+}
+
 export function defineAction(actionDef: ActionTypeDefinition): ActionType {
   const apiName = namespace + actionDef.apiName;
   const parameterIds = (actionDef.parameters ?? []).map(p => p.id);
@@ -631,6 +691,50 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
   validateActionValidation(fullAction);
   updateOntology(fullAction);
   return fullAction;
+}
+
+function createParameters(
+  def: ActionTypeUserDefinition,
+  parameterNames: string[],
+  defaultRequired: boolean,
+): Array<ActionParameter> {
+  return Array.from(parameterNames).map(
+    id => (
+      {
+        id,
+        displayName: def.parameterConfiguration?.[id]?.displayName
+          ?? def.objectType.properties?.[id].displayName
+          ?? convertToDisplayName(id),
+        type: extractActionParameterType(def.objectType.properties?.[id]!),
+        validation: (def.parameterConfiguration?.[id] !== undefined)
+          ? {
+            ...def.parameterConfiguration?.[id],
+            allowedValues: def.parameterConfiguration?.[id].allowedValues
+              ?? extractAllowedValuesFromType(
+                def.objectType.properties?.[id].type!,
+              ),
+            required: def.parameterConfiguration?.[id].required
+              ?? defaultRequired,
+          }
+          : {
+            required: (def.objectType.properties?.[id].array ?? false)
+              ? {
+                listLength: def.objectType.properties?.[id].nullability
+                    ?.noEmptyCollections
+                  ? { min: 1 }
+                  : {},
+              }
+              : def.objectType.properties?.[id].nullability?.noNulls
+                ?? defaultRequired,
+            allowedValues: extractAllowedValuesFromType(
+              def.objectType.properties?.[id].type!,
+            ),
+          },
+        defaultValue: def.parameterConfiguration?.[id]?.defaultValue,
+        description: def.parameterConfiguration?.[id]?.description,
+      }
+    ),
+  );
 }
 
 function referencedParameterIds(
