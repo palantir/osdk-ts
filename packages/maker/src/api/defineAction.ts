@@ -505,13 +505,27 @@ export function defineCreateOrModifyObjectAction(
     );
   }
   const parameters = createParameters(def, parameterNames, false);
+  parameters.forEach(
+    p => {
+      if (p.defaultValue === undefined) {
+        p.defaultValue = {
+          type: "objectParameterPropertyValue",
+          objectParameterPropertyValue: {
+            parameterId: "objectToCreateOrModifyParameter",
+            propertyTypeId: p.id,
+          },
+        };
+      }
+    },
+  );
 
   return defineAction({
     apiName: def.apiName
-      ?? `modify-object-${
+      ?? `create-or-modify-${
         kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
       }`,
-    displayName: def.displayName ?? `Modify ${def.objectType.displayName}`,
+    displayName: def.displayName
+      ?? `Create or Modify ${def.objectType.displayName}`,
     parameters: [
       {
         id: "objectToCreateOrModifyParameter",

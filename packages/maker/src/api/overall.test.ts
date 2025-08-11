@@ -23,6 +23,7 @@ import {
   defineAction,
   defineCreateInterfaceObjectAction,
   defineCreateObjectAction,
+  defineCreateOrModifyObjectAction,
   defineDeleteObjectAction,
   defineModifyInterfaceObjectAction,
   defineModifyObjectAction,
@@ -5793,6 +5794,11 @@ describe("Ontology Defining", () => {
           objectType: exampleObjectType,
         },
       );
+      const createOrModifyObjectActionType = defineCreateOrModifyObjectAction(
+        {
+          objectType: exampleObjectType,
+        },
+      );
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
@@ -5917,6 +5923,137 @@ describe("Ontology Defining", () => {
                         "type": {
                           "string": {},
                           "type": "string",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+              "com.palantir.create-or-modify-foo": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "addOrModifyObjectRuleV2": {
+                            "objectToModify": "objectToCreateOrModifyParameter",
+                            "propertyValues": {},
+                            "structFieldValues": {},
+                          },
+                          "type": "addOrModifyObjectRuleV2",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "objectToCreateOrModifyParameter": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "dropdown": {},
+                                "type": "dropdown",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "objectQuery": {
+                                  "objectQuery": {},
+                                  "type": "objectQuery",
+                                },
+                                "type": "objectQuery",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      "sectionValidations": {},
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.create-or-modify-foo",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "Create or Modify exampleObjectType",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.foo",
+                      ],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "objectToCreateOrModifyParameter",
+                    ],
+                    "parameters": {
+                      "objectToCreateOrModifyParameter": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Create or modify object",
+                          "typeClasses": [],
+                        },
+                        "id": "objectToCreateOrModifyParameter",
+                        "type": {
+                          "objectReference": {
+                            "maybeCreateObjectOption": {
+                              "autoGenerated": {},
+                              "type": "autoGenerated",
+                            },
+                            "objectTypeId": "com.palantir.foo",
+                          },
+                          "type": "objectReference",
                         },
                       },
                     },
@@ -6481,6 +6618,61 @@ describe("Ontology Defining", () => {
         },
       );
 
+      const createOrModifyObjectActionType = defineCreateOrModifyObjectAction(
+        {
+          objectType: exampleObjectType,
+          actionLevelValidation: {
+            condition: {
+              type: "group",
+              name: "actionLevelGroup",
+            },
+          },
+          parameterConfiguration: {
+            "fizz": {
+              required: false,
+              conditionalOverrides: [
+                {
+                  type: "required",
+                  condition: {
+                    type: "and",
+                    conditions: [
+                      {
+                        type: "group",
+                        name: "parameterLevelGroup",
+                      },
+                      {
+                        type: "parameter",
+                        parameterId: "bar",
+                        matches: {
+                          type: "staticValue",
+                          staticValue: {
+                            type: "string",
+                            string: "bar",
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              ],
+              defaultValue: {
+                type: "staticValue",
+                staticValue: {
+                  type: "string",
+                  string: "default_fizz",
+                },
+              },
+              displayName: "fizz_display",
+              description: "fizz_description",
+            },
+          },
+          excludedProperties: ["buzz"],
+          defaultFormat: "TABLE",
+          enableLayoutSwitch: true,
+          primaryKeyOption: "userInput",
+        },
+      );
+
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
           "blockData": {
@@ -6795,6 +6987,336 @@ describe("Ontology Defining", () => {
                         "type": {
                           "string": {},
                           "type": "string",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+              "com.palantir.create-or-modify-foo": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "addOrModifyObjectRuleV2": {
+                            "objectToModify": "objectToCreateOrModifyParameter",
+                            "propertyValues": {
+                              "bar": {
+                                "parameterId": "bar",
+                                "type": "parameterId",
+                              },
+                              "fizz": {
+                                "parameterId": "fizz",
+                                "type": "parameterId",
+                              },
+                            },
+                            "structFieldValues": {},
+                          },
+                          "type": "addOrModifyObjectRuleV2",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "comparison": {
+                                "left": {
+                                  "type": "userProperty",
+                                  "userProperty": {
+                                    "propertyValue": {
+                                      "groupIds": {},
+                                      "type": "groupIds",
+                                    },
+                                    "userId": {
+                                      "currentUser": {},
+                                      "type": "currentUser",
+                                    },
+                                  },
+                                },
+                                "operator": "INTERSECTS",
+                                "right": {
+                                  "staticValue": {
+                                    "stringList": {
+                                      "strings": [
+                                        "actionLevelGroup",
+                                      ],
+                                    },
+                                    "type": "stringList",
+                                  },
+                                  "type": "staticValue",
+                                },
+                              },
+                              "type": "comparison",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "Did not satisfy validation",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "bar": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "prefill": {
+                                "objectParameterPropertyValue": {
+                                  "parameterId": "objectToCreateOrModifyParameter",
+                                  "propertyTypeId": "bar",
+                                },
+                                "type": "objectParameterPropertyValue",
+                              },
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "notRequired": {},
+                                "type": "notRequired",
+                              },
+                            },
+                          },
+                        },
+                        "fizz": {
+                          "conditionalOverrides": [
+                            {
+                              "condition": {
+                                "and": {
+                                  "conditions": [
+                                    {
+                                      "comparison": {
+                                        "left": {
+                                          "type": "userProperty",
+                                          "userProperty": {
+                                            "propertyValue": {
+                                              "groupIds": {},
+                                              "type": "groupIds",
+                                            },
+                                            "userId": {
+                                              "currentUser": {},
+                                              "type": "currentUser",
+                                            },
+                                          },
+                                        },
+                                        "operator": "INTERSECTS",
+                                        "right": {
+                                          "staticValue": {
+                                            "stringList": {
+                                              "strings": [
+                                                "parameterLevelGroup",
+                                              ],
+                                            },
+                                            "type": "stringList",
+                                          },
+                                          "type": "staticValue",
+                                        },
+                                      },
+                                      "type": "comparison",
+                                    },
+                                    {
+                                      "comparison": {
+                                        "left": {
+                                          "parameterId": "bar",
+                                          "type": "parameterId",
+                                        },
+                                        "operator": "EQUALS",
+                                        "right": {
+                                          "staticValue": {
+                                            "string": "bar",
+                                            "type": "string",
+                                          },
+                                          "type": "staticValue",
+                                        },
+                                      },
+                                      "type": "comparison",
+                                    },
+                                  ],
+                                },
+                                "type": "and",
+                              },
+                              "parameterBlockOverrides": [
+                                {
+                                  "parameterRequired": {
+                                    "required": {
+                                      "required": {},
+                                      "type": "required",
+                                    },
+                                  },
+                                  "type": "parameterRequired",
+                                },
+                              ],
+                            },
+                          ],
+                          "defaultValidation": {
+                            "display": {
+                              "prefill": {
+                                "staticValue": {
+                                  "string": "default_fizz",
+                                  "type": "string",
+                                },
+                                "type": "staticValue",
+                              },
+                              "renderHint": {
+                                "textInput": {},
+                                "type": "textInput",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "text": {
+                                  "text": {},
+                                  "type": "text",
+                                },
+                                "type": "text",
+                              },
+                              "required": {
+                                "notRequired": {},
+                                "type": "notRequired",
+                              },
+                            },
+                          },
+                        },
+                        "objectToCreateOrModifyParameter": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "dropdown": {},
+                                "type": "dropdown",
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "objectQuery": {
+                                  "objectQuery": {},
+                                  "type": "objectQuery",
+                                },
+                                "type": "objectQuery",
+                              },
+                              "required": {
+                                "required": {},
+                                "type": "required",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      "sectionValidations": {},
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.create-or-modify-foo",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "TABLE",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": true,
+                      },
+                      "description": "",
+                      "displayName": "Create or Modify exampleObjectType",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.foo",
+                      ],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "objectToCreateOrModifyParameter",
+                      "bar",
+                      "fizz",
+                    ],
+                    "parameters": {
+                      "bar": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Bar",
+                          "typeClasses": [],
+                        },
+                        "id": "bar",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                      "fizz": {
+                        "displayMetadata": {
+                          "description": "fizz_description",
+                          "displayName": "fizz_display",
+                          "typeClasses": [],
+                        },
+                        "id": "fizz",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                      "objectToCreateOrModifyParameter": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Create or modify object",
+                          "typeClasses": [],
+                        },
+                        "id": "objectToCreateOrModifyParameter",
+                        "type": {
+                          "objectReference": {
+                            "maybeCreateObjectOption": {
+                              "type": "userInput",
+                              "userInput": {},
+                            },
+                            "objectTypeId": "com.palantir.foo",
+                          },
+                          "type": "objectReference",
                         },
                       },
                     },
@@ -7129,6 +7651,13 @@ describe("Ontology Defining", () => {
             "blockPermissionInformation": {
               "actionTypes": {
                 "com.palantir.create-object-foo": {
+                  "restrictionStatus": {
+                    "hasRolesApplied": true,
+                    "ontologyPackageRid": null,
+                    "publicProject": false,
+                  },
+                },
+                "com.palantir.create-or-modify-foo": {
                   "restrictionStatus": {
                     "hasRolesApplied": true,
                     "ontologyPackageRid": null,
