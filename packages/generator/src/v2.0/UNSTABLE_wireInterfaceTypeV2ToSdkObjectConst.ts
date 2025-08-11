@@ -202,8 +202,6 @@ ${
 `;
   }
 
-  // FIXME: We need to fill in the imports
-  // if we want links to work
   const imports: string = getObjectImports(
     uniqueLinkTargetTypes,
     definition.apiName,
