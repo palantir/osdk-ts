@@ -1,5 +1,14 @@
 # @osdk/client
 
+## 2.3.2
+
+### Patch Changes
+
+- 5faf3b8: Fix hydrate to support interface object sets.
+  - @osdk/api@2.3.2
+  - @osdk/client.unstable@2.3.2
+  - @osdk/generator-converters@2.3.2
+
 ## 2.3.1
 
 ### Patch Changes
