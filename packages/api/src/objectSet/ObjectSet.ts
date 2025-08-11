@@ -44,6 +44,7 @@ import type {
   ExtractOptions,
   ExtractRidOption,
   Osdk,
+  WithOrderByRelevance,
 } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
@@ -132,22 +133,27 @@ interface FetchPage<
 type ValidFetchPageArgs<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
+  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > = ObjectSetArgs.FetchPage<
   Q,
   PropertyKeys<Q>,
   boolean,
-  string & keyof RDPs
+  string & keyof RDPs,
+  Z
 >;
 
 type ValidAsyncIterArgs<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
+  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
+
 > =
   | ObjectSetArgs.AsyncIter<
     Q,
     PropertyKeys<Q>,
     false,
-    string & keyof RDPs
+    string & keyof RDPs,
+    Z
   >
   | AsyncIterArgs<
     Q,
@@ -156,7 +162,8 @@ type ValidAsyncIterArgs<
     any,
     any,
     true,
-    string & keyof RDPs
+    string & keyof RDPs,
+    Z
   >;
 
 interface FetchPageSignature<
@@ -181,11 +188,20 @@ interface FetchPageSignature<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
+    Z extends ObjectSetArgs.OrderByOptions<L> = {},
   >(
-    args?: FetchPageArgs<Q, L, R, A, S, T>,
+    args?: FetchPageArgs<Q, L, R, A, S, T, never, Z>,
   ): Promise<
     PageResult<
-      Osdk.Instance<
+  Z extends "relevance" ?
+      WithOrderByRelevance<Osdk.Instance<
+        Q,
+        ExtractOptions<R, S, T>,
+        NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+        SubSelectRDPs<RDPs, NonNullable<typeof args>>
+      >
+    > : 
+Osdk.Instance<
         Q,
         ExtractOptions<R, S, T>,
         NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
@@ -240,11 +256,18 @@ interface FetchPageWithErrorsSignature<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
+    Z extends ObjectSetArgs.OrderByOptions<L> = {},
   >(
-    args?: FetchPageArgs<Q, L, R, A, S, T>,
+    args?: FetchPageArgs<Q, L, R, A, S, T, never, Z>,
   ): Promise<
     Result<
       PageResult<
+        Z extends "relevance" ? WithOrderByRelevance<Osdk.Instance<
+          Q,
+          ExtractOptions<R, S, T>,
+          NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+          SubSelectRDPs<RDPs, NonNullable<typeof args>>
+        >> :
         Osdk.Instance<
           Q,
           ExtractOptions<R, S, T>,
@@ -279,6 +302,7 @@ interface Where<
 interface AsyncIterSignature<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > {
   /**
    * Returns an async iterator to load all objects of this type
@@ -290,7 +314,14 @@ interface AsyncIterSignature<
    */
   <X extends ValidAsyncIterArgs<Q, RDPs> = never>(
     args?: X,
-  ): AsyncIterableIterator<
+  ): AsyncIterableIterator< 
+  Z extends "relevance" ?
+    WithOrderByRelevance<Osdk.Instance<
+      Q,
+      ExtractOptions2<X>,
+      SubSelectKeys<Q, X>,
+      SubSelectRDPs<RDPs, X>
+    >>:
     Osdk.Instance<
       Q,
       ExtractOptions2<X>,
@@ -313,9 +344,17 @@ interface AsyncIterSignature<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
+    Z extends ObjectSetArgs.OrderByOptions<L> = {},
   >(
-    args?: AsyncIterArgs<Q, L, R, A, S, T>,
+    args?: AsyncIterArgs<Q, L, R, A, S, T, never, Z>,
   ): AsyncIterableIterator<
+  Z extends "relevance" ? 
+    WithOrderByRelevance<Osdk.Instance<
+      Q,
+      ExtractOptions<R, S, T>,
+      NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+      SubSelectRDPs<RDPs, NonNullable<typeof args>>
+    >>:
     Osdk.Instance<
       Q,
       ExtractOptions<R, S, T>,
@@ -328,8 +367,10 @@ interface AsyncIterSignature<
 interface AsyncIter<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
+
 > {
-  asyncIter: AsyncIterSignature<Q, RDPs>;
+  asyncIter: AsyncIterSignature<Q, RDPs, Z>;
 }
 
 interface WithProperties<

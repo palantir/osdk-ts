@@ -22,6 +22,7 @@ import type {
   InterfaceDefinition,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
+  ObjectSetArgs,
   ObjectTypeDefinition,
   PropertyKeys,
   Result,
@@ -187,30 +188,34 @@ export async function fetchPageInternal<
   A extends Augments,
   S extends NullabilityAdherence,
   T extends boolean,
+  Z extends ObjectSetArgs.OrderByOptions<L>,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, A, S, T> = {},
+  args: FetchPageArgs<Q, L, R, A, S, T, never, Z> = {},
   useSnapshot: boolean = false,
-): Promise<FetchPageResult<Q, L, R, S, T>> {
+): Promise<FetchPageResult<Q, L, R, S, T, Z>> {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(
       client,
       objectType,
-      args,
+      // Interface doesn't support orer by relevance (KNN)
+      args as any,
       objectSet,
       useSnapshot,
     ) as any; // fixme
-  } else {
+  } else if (objectType.type === "object"){
     return await fetchObjectPage(
       client,
       objectType,
-      args,
+      // TODO: whats wrong with this?
+      args as any,
       objectSet,
       useSnapshot,
     ) as any; // fixme
   }
+  throw new Error("Unsupported");
 }
 
 /** @internal */
@@ -284,7 +289,7 @@ function applyFetchArgs<
     pageSize?: PageSize;
   },
 >(
-  args: FetchPageArgs<any, any, any, any, any, any>,
+  args: FetchPageArgs<any, any, any, any, any, any, any, ObjectSetArgs.OrderByOptions<any>>,
   body: X,
 ): X {
   if (args?.$nextPageToken) {
@@ -295,13 +300,16 @@ function applyFetchArgs<
     body.pageSize = args.$pageSize;
   }
 
-  if (args?.$orderBy != null) {
-    body.orderBy = {
-      fields: Object.entries(args.$orderBy).map(([field, direction]) => ({
-        field,
-        direction,
-      })),
-    };
+  const orderBy = args?.$orderBy;
+  if (orderBy) {
+    body.orderBy = orderBy === "relevance"
+      ? { orderType: "relevance", fields: [] }
+      : {
+        fields: Object.entries(orderBy).map(([field, direction]) => ({
+          field,
+          direction,
+        })),
+      };
   }
 
   return body;
@@ -314,13 +322,14 @@ export async function fetchObjectPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
+  Z extends ObjectSetArgs.OrderByOptions<L>,
 >(
   client: MinimalClient,
   objectType: Q,
   args: FetchPageArgs<Q, L, R, Augments, S, T>,
   objectSet: ObjectSet,
   useSnapshot: boolean = false,
-): Promise<FetchPageResult<Q, L, R, S, T>> {
+): Promise<FetchPageResult<Q, L, R, S, T, Z>> {
   const r = await OntologiesV2.OntologyObjectSets.load(
     addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,
@@ -344,5 +353,5 @@ export async function fetchObjectPage<
     ),
     nextPageToken: r.nextPageToken,
     totalCount: r.totalCount,
-  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T>>;
+  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T, Z>>;
 }

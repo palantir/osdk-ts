@@ -180,6 +180,10 @@ export type Osdk<
       ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>
     >;
 
+export type WithOrderByRelevance<T extends Osdk.Instance<any>> = T & {
+  $score: number;
+};
+
 export namespace Osdk {
   export type Instance<
     Q extends ObjectOrInterfaceDefinition,
