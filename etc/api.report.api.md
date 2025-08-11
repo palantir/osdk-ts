@@ -810,6 +810,8 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
     	// (undocumented)
     inverseInterfaceMap: Record<string, Record<string, string>>;
     	// (undocumented)
+    links: Record<string, ObjectMetadata.Link<any, any>>;
+    	// (undocumented)
     pluralDisplayName: string;
     	// (undocumented)
     primaryKeyApiName: keyof this["properties"];
