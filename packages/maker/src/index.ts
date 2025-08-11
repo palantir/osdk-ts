@@ -43,11 +43,16 @@ export type {
   ActionSection,
   ActionType,
   ConditionDefinition,
+  CurrentTimeMappingValue,
+  CurrentUserMappingValue,
+  CustomMapping,
   InterfaceType,
   LinkType,
+  MappingValue,
   ObjectType,
   SectionConditionalOverride,
   SharedPropertyType,
+  UuidMappingValue,
   ValueTypeDefinitionVersion,
 } from "./api/types.js";
 export { OntologyEntityTypeEnum } from "./api/types.js";

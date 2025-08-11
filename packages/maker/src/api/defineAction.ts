@@ -26,7 +26,10 @@ import {
   ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
-import { convertConditionDefinition } from "./ontologyUtils.js";
+import {
+  convertConditionDefinition,
+  convertMappingValue,
+} from "./ontologyUtils.js";
 import {
   type ActionLevelValidationDefinition,
   type ActionParameter,
@@ -153,13 +156,11 @@ export function defineCreateInterfaceObjectAction(
 export function defineCreateObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
-  Object.keys(def.parameterConfiguration ?? {}).forEach(id => {
-    invariant(
-      def.objectType.properties?.[id] !== undefined,
-      `Property ${id} does not exist on ${def.objectType.apiName}`,
-    );
-  });
-  (def.excludedProperties ?? []).forEach(id => {
+  [
+    ...Object.keys(def.parameterConfiguration ?? {}),
+    ...Object.keys(def.nonParameterMappings ?? {}),
+    ...def.excludedProperties ?? [],
+  ].forEach(id => {
     invariant(
       def.objectType.properties?.[id] !== undefined,
       `Property ${id} does not exist on ${def.objectType.apiName}`,
@@ -168,7 +169,8 @@ export function defineCreateObjectAction(
 
   const parameterNames = Object.keys(def.objectType.properties ?? {}).filter(
     id =>
-      !def.excludedProperties?.includes(id)
+      !Object.keys(def.nonParameterMappings ?? {}).includes(id)
+      && !def.excludedProperties?.includes(id)
       && !isStruct(def.objectType.properties?.[id].type!),
   );
   if (def.parameterOrdering) {
@@ -183,6 +185,11 @@ export function defineCreateObjectAction(
     );
   }
   const parameters = createParameters(def, parameterNames, true);
+  const mappings = Object.fromEntries(
+    Object.entries(def.nonParameterMappings ?? {}).map((
+      [id, value],
+    ) => [id, convertMappingValue(value)]),
+  );
 
   return defineAction({
     apiName: def.apiName
@@ -202,11 +209,14 @@ export function defineCreateObjectAction(
       type: "addObjectRule",
       addObjectRule: {
         objectTypeId: def.objectType.apiName,
-        propertyValues: Object.fromEntries(
-          parameters.map(
-            p => [p.id, { type: "parameterId", parameterId: p.id }],
+        propertyValues: {
+          ...Object.fromEntries(
+            parameters.map(
+              p => [p.id, { type: "parameterId", parameterId: p.id }],
+            ),
           ),
-        ),
+          ...mappings,
+        },
         structFieldValues: {},
       },
     }],
@@ -332,13 +342,11 @@ export function defineModifyInterfaceObjectAction(
 export function defineModifyObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
-  Object.keys(def.parameterConfiguration ?? {}).forEach(id => {
-    invariant(
-      def.objectType.properties?.[id] !== undefined,
-      `Property ${id} does not exist on ${def.objectType.apiName}`,
-    );
-  });
-  (def.excludedProperties ?? []).forEach(id => {
+  [
+    ...Object.keys(def.parameterConfiguration ?? {}),
+    ...Object.keys(def.nonParameterMappings ?? {}),
+    ...def.excludedProperties ?? [],
+  ].forEach(id => {
     invariant(
       def.objectType.properties?.[id] !== undefined,
       `Property ${id} does not exist on ${def.objectType.apiName}`,
@@ -347,7 +355,8 @@ export function defineModifyObjectAction(
 
   const parameterNames = Object.keys(def.objectType.properties ?? {}).filter(
     id =>
-      !def.excludedProperties?.includes(id)
+      !Object.keys(def.nonParameterMappings ?? {}).includes(id)
+      && !def.excludedProperties?.includes(id)
       && !isStruct(def.objectType.properties?.[id].type!)
       && id !== def.objectType.primaryKeyPropertyApiName,
   );
@@ -363,6 +372,12 @@ export function defineModifyObjectAction(
     );
   }
   const parameters = createParameters(def, parameterNames, false);
+
+  const mappings = Object.fromEntries(
+    Object.entries(def.nonParameterMappings ?? {}).map((
+      [id, value],
+    ) => [id, convertMappingValue(value)]),
+  );
 
   return defineAction({
     apiName: def.apiName
@@ -390,11 +405,14 @@ export function defineModifyObjectAction(
       type: "modifyObjectRule",
       modifyObjectRule: {
         objectToModify: "objectToModifyParameter",
-        propertyValues: Object.fromEntries(
-          parameters.map(
-            p => [p.id, { type: "parameterId", parameterId: p.id }],
+        propertyValues: {
+          ...Object.fromEntries(
+            parameters.map(
+              p => [p.id, { type: "parameterId", parameterId: p.id }],
+            ),
           ),
-        ),
+          ...mappings,
+        },
         structFieldValues: {},
       },
     }],
@@ -517,6 +535,11 @@ export function defineCreateOrModifyObjectAction(
         };
       }
     },
+  );
+  const mappings = Object.fromEntries(
+    Object.entries(def.nonParameterMappings ?? {}).map((
+      [id, value],
+    ) => [id, convertMappingValue(value)]),
   );
 
   return defineAction({
