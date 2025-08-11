@@ -1,5 +1,19 @@
 # @osdk/cli
 
+## 0.28.0-beta.12
+
+## 0.28.0-beta.11
+
+## 0.28.0-beta.10
+
+## 0.28.0-beta.9
+
+### Minor Changes
+
+- dbd13b6: Remove @osdk/cli widgetset unstable command. The widgetset command is available without the unstable subcommand.
+
+## 0.28.0-beta.8
+
 ## 0.28.0-beta.7
 
 ## 0.28.0-beta.6

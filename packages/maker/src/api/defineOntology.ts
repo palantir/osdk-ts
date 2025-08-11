@@ -50,10 +50,12 @@ import type {
 import * as fs from "fs";
 import * as path from "path";
 import invariant from "tiny-invariant";
-import { isExotic } from "./defineObject.js";
+import { convertToDisplayName, isExotic } from "./defineObject.js";
 import {
   convertActionParameterConditionalOverride,
   convertActionVisibility,
+  convertSectionConditionalOverride,
+  getFormContentOrdering,
 } from "./ontologyUtils.js";
 import {
   convertNullabilityToDataConstraint,
@@ -808,7 +810,7 @@ function convertLink(
               apiName: linkType.toMany.object.primaryKeyPropertyApiName,
               object: linkType.toMany.object.apiName,
             },
-            column: linkType.many.object.primaryKeyPropertyApiName,
+            column: linkType.toMany.object.primaryKeyPropertyApiName,
           }],
         },
       },
@@ -966,6 +968,8 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
     convertActionParameters(action);
   const actionSections: Record<SectionId, OntologyIrSection> =
     convertActionSections(action);
+  const parameterOrdering = action.parameterOrdering
+    ?? (action.parameters ?? []).map(p => p.id);
   return {
     actionType: {
       actionTypeLogic: {
@@ -978,8 +982,8 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
         apiName: action.apiName,
         displayMetadata: {
           configuration: {
-            defaultLayout: "FORM",
-            displayAndFormat: {
+            defaultLayout: action.defaultFormat ?? "FORM",
+            displayAndFormat: action.displayAndFormat ?? {
               table: {
                 columnWidthByParameterRid: {},
                 enableFileImport: true,
@@ -988,7 +992,7 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
                 rowHeightInLines: 1,
               },
             },
-            enableLayoutUserSwitch: false,
+            enableLayoutUserSwitch: action.enableLayoutSwitch ?? false,
           },
           description: action.description ?? "",
           displayName: action.displayName,
@@ -999,8 +1003,8 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
           successMessage: [],
           typeClasses: action.typeClasses ?? [],
         },
-        formContentOrdering: action.formContentOrdering ?? [],
-        parameterOrdering: (action.parameters ?? []).map(p => p.id),
+        parameterOrdering: parameterOrdering,
+        formContentOrdering: getFormContentOrdering(action, parameterOrdering),
         parameters: actionParameters,
         sections: actionSections,
         status: typeof action.status === "string"
@@ -1039,6 +1043,8 @@ function convertActionValidation(
                 visibility: convertActionVisibility(
                   p.validation.defaultVisibility,
                 ),
+                ...p.defaultValue
+                  && { prefill: p.defaultValue },
               },
               validation: {
                 allowedValues: extractAllowedValues(p),
@@ -1058,6 +1064,37 @@ function convertActionValidation(
         ];
       }),
     ),
+    sectionValidations: {
+      ...Object.fromEntries(
+        Object.entries(action.sections ?? {}).map((
+          [sectionId, section],
+        ) => [
+          section.id,
+          {
+            defaultDisplayMetadata: section.defaultVisibility === "hidden"
+              ? {
+                visibility: {
+                  type: "hidden",
+                  hidden: {},
+                },
+              }
+              : {
+                visibility: {
+                  type: "visible",
+                  visible: {},
+                },
+              },
+            conditionalOverrides: section.conditionalOverrides?.map(
+              (override) =>
+                convertSectionConditionalOverride(
+                  override,
+                  section.defaultVisibility ?? "visible",
+                ),
+            ) ?? [],
+          },
+        ]),
+      ),
+    },
   };
 }
 
@@ -1082,16 +1119,25 @@ function convertActionSections(
 ): Record<SectionId, OntologyIrSection> {
   return Object.fromEntries(
     Object.entries(action.sections ?? {}).map((
-      [sectionId, parameterIds],
+      [sectionId, section],
     ) => [sectionId, {
       id: sectionId,
-      content: parameterIds.map(p => ({ type: "parameterId", parameterId: p })),
+      content: section.parameters.map(p => ({
+        type: "parameterId",
+        parameterId: p,
+      })),
       displayMetadata: {
-        collapsedByDefault: false,
-        columnCount: 1,
-        description: "",
-        displayName: sectionId,
-        showTitleBar: true,
+        collapsedByDefault: section.collapsedByDefault ?? false,
+        columnCount: section.columnCount ?? 1,
+        description: section.description ?? "",
+        displayName: section.displayName ?? convertToDisplayName(sectionId),
+        showTitleBar: section.showTitleBar ?? true,
+        ...section.style
+          && {
+            style: section.style === "box"
+              ? { type: "box", box: {} }
+              : { type: "minimal", minimal: {} },
+          },
       },
     }]),
   );
@@ -1138,10 +1184,10 @@ function extractAllowedValues(
           text: {
             ...(minLength === undefined
               ? {}
-              : { minimumLength: minLength }),
+              : { minLength: minLength }),
             ...(maxLength === undefined
               ? {}
-              : { maximumLength: maxLength }),
+              : { maxLength: maxLength }),
             ...(regex === undefined
               ? {}
               : { regex: { regex: regex, failureMessage: "Invalid input" } }),

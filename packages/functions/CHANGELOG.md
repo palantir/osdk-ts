@@ -1,43 +1,36 @@
 # @osdk/functions
 
-## 2.0.0-beta.7
+## 1.2.0-beta.5
 
 ### Patch Changes
 
-- @osdk/client@2.4.0-beta.7
+- @osdk/client@2.4.0-beta.11
 
-## 2.0.0-beta.6
+## 1.2.0-beta.4
 
-### Patch Changes
+### Minor Changes
 
-- @osdk/client@2.4.0-beta.6
-
-## 2.0.0-beta.5
-
-### Patch Changes
-
-- @osdk/client@2.4.0-beta.5
-
-## 2.0.0-beta.4
+- b22a1fd: Support Ontology interface edits
+- d8cb63c: Exports interface edit types from internal package
+- f022ffe: Add experimental transactions shape
 
 ### Patch Changes
 
-- @osdk/client@2.4.0-beta.4
+- Updated dependencies [f022ffe]
+  - @osdk/client@2.4.0-beta.10
 
-## 2.0.0-beta.3
-
-### Patch Changes
-
-- @osdk/client@2.4.0-beta.3
-
-## 2.0.0-beta.2
+## 1.2.0-beta.3
 
 ### Patch Changes
 
-- Updated dependencies [8c95154]
-- Updated dependencies [c32dcf2]
-- Updated dependencies [37c7c0b]
-  - @osdk/client@2.4.0-beta.2
+- Updated dependencies [9101bad]
+  - @osdk/client@2.4.0-beta.9
+
+## 1.2.0-beta.2
+
+### Minor Changes
+
+- 9be5e2b: add notification type
 
 ## 1.1.0-beta.10
 

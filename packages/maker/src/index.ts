@@ -35,14 +35,23 @@ export { defineSharedPropertyType } from "./api/defineSpt.js";
 export { defineValueType } from "./api/defineValueType.js";
 export { importOntologyEntity } from "./api/importOntologyEntity.js";
 export type {
+  ActionParameterAllowedValues,
   ActionParameterConditionalOverride,
+  ActionParameterConfiguration,
   ActionParameterValidation,
+  ActionSection,
   ActionType,
   ConditionDefinition,
+  CurrentTimeMappingValue,
+  CurrentUserMappingValue,
+  CustomMapping,
   InterfaceType,
   LinkType,
+  MappingValue,
   ObjectType,
+  SectionConditionalOverride,
   SharedPropertyType,
+  UuidMappingValue,
   ValueTypeDefinitionVersion,
 } from "./api/types.js";
 export { OntologyEntityTypeEnum } from "./api/types.js";

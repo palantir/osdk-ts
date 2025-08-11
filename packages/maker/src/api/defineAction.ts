@@ -26,7 +26,10 @@ import {
   ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
-import { convertConditionDefinition } from "./ontologyUtils.js";
+import {
+  convertConditionDefinition,
+  convertMappingValue,
+} from "./ontologyUtils.js";
 import {
   type ActionLevelValidationDefinition,
   type ActionParameter,
@@ -153,13 +156,11 @@ export function defineCreateInterfaceObjectAction(
 export function defineCreateObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
-  Object.keys(def.parameterLevelValidations ?? {}).forEach(id => {
-    invariant(
-      def.objectType.properties?.[id] !== undefined,
-      `Property ${id} does not exist on ${def.objectType.apiName}`,
-    );
-  });
-  (def.excludedProperties ?? []).forEach(id => {
+  [
+    ...Object.keys(def.parameterConfiguration ?? {}),
+    ...Object.keys(def.nonParameterMappings ?? {}),
+    ...def.excludedProperties ?? [],
+  ].forEach(id => {
     invariant(
       def.objectType.properties?.[id] !== undefined,
       `Property ${id} does not exist on ${def.objectType.apiName}`,
@@ -168,24 +169,37 @@ export function defineCreateObjectAction(
 
   const parameterNames = Object.keys(def.objectType.properties ?? {}).filter(
     id =>
-      !def.excludedProperties?.includes(id)
+      !Object.keys(def.nonParameterMappings ?? {}).includes(id)
+      && !def.excludedProperties?.includes(id)
       && !isStruct(def.objectType.properties?.[id].type!),
   );
+  if (def.parameterOrdering) {
+    const sortedOrdering = [...def.parameterOrdering].sort();
+    const sortedParameterNames = [...parameterNames].sort();
+    invariant(
+      sortedOrdering.length === sortedParameterNames.length
+        && sortedOrdering.every((name, index) =>
+          name === sortedParameterNames[index]
+        ),
+      `Action parameter ordering for ${def.objectType.apiName} does not match non-excluded properties`,
+    );
+  }
   const parameters: Array<ActionParameter> = Array.from(parameterNames).map(
     id => (
       {
         id,
-        displayName: def.objectType.properties?.[id].displayName
+        displayName: def.parameterConfiguration?.[id]?.displayName
+          ?? def.objectType.properties?.[id].displayName
           ?? convertToDisplayName(id),
         type: extractActionParameterType(def.objectType.properties?.[id]!),
-        validation: (def.parameterLevelValidations?.[id] !== undefined)
+        validation: (def.parameterConfiguration?.[id] !== undefined)
           ? {
-            ...def.parameterLevelValidations?.[id],
-            allowedValues: def.parameterLevelValidations?.[id].allowedValues
+            ...def.parameterConfiguration?.[id],
+            allowedValues: def.parameterConfiguration?.[id].allowedValues
               ?? extractAllowedValuesFromType(
                 def.objectType.properties?.[id].type!,
               ),
-            required: def.parameterLevelValidations?.[id].required ?? true,
+            required: def.parameterConfiguration?.[id].required ?? true,
           }
           : {
             required: (def.objectType.properties?.[id].array ?? false)
@@ -200,8 +214,15 @@ export function defineCreateObjectAction(
               def.objectType.properties?.[id].type!,
             ),
           },
+        defaultValue: def.parameterConfiguration?.[id]?.defaultValue,
+        description: def.parameterConfiguration?.[id]?.description,
       }
     ),
+  );
+  const mappings = Object.fromEntries(
+    Object.entries(def.nonParameterMappings ?? {}).map((
+      [id, value],
+    ) => [id, convertMappingValue(value)]),
   );
 
   return defineAction({
@@ -222,11 +243,14 @@ export function defineCreateObjectAction(
       type: "addObjectRule",
       addObjectRule: {
         objectTypeId: def.objectType.apiName,
-        propertyValues: Object.fromEntries(
-          parameters.map(
-            p => [p.id, { type: "parameterId", parameterId: p.id }],
+        propertyValues: {
+          ...Object.fromEntries(
+            parameters.map(
+              p => [p.id, { type: "parameterId", parameterId: p.id }],
+            ),
           ),
-        ),
+          ...mappings,
+        },
         structFieldValues: {},
       },
     }],
@@ -237,6 +261,17 @@ export function defineCreateObjectAction(
         ],
       }
       : {}),
+    ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
+    ...(def.enableLayoutSwitch
+      && { enableLayoutSwitch: def.enableLayoutSwitch }),
+    ...(def.displayAndFormat && { displayAndFormat: def.displayAndFormat }),
+    ...(def.sections
+      && {
+        sections: Object.fromEntries(
+          def.sections.map(section => [section.id, section]),
+        ),
+      }),
+    ...(def.parameterOrdering && { parameterOrdering: def.parameterOrdering }),
   });
 }
 
@@ -341,13 +376,11 @@ export function defineModifyInterfaceObjectAction(
 export function defineModifyObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
-  Object.keys(def.parameterLevelValidations ?? {}).forEach(id => {
-    invariant(
-      def.objectType.properties?.[id] !== undefined,
-      `Property ${id} does not exist on ${def.objectType.apiName}`,
-    );
-  });
-  (def.excludedProperties ?? []).forEach(id => {
+  [
+    ...Object.keys(def.parameterConfiguration ?? {}),
+    ...Object.keys(def.nonParameterMappings ?? {}),
+    ...def.excludedProperties ?? [],
+  ].forEach(id => {
     invariant(
       def.objectType.properties?.[id] !== undefined,
       `Property ${id} does not exist on ${def.objectType.apiName}`,
@@ -356,25 +389,38 @@ export function defineModifyObjectAction(
 
   const parameterNames = Object.keys(def.objectType.properties ?? {}).filter(
     id =>
-      !def.excludedProperties?.includes(id)
+      !Object.keys(def.nonParameterMappings ?? {}).includes(id)
+      && !def.excludedProperties?.includes(id)
       && !isStruct(def.objectType.properties?.[id].type!)
       && id !== def.objectType.primaryKeyPropertyApiName,
   );
+  if (def.parameterOrdering) {
+    const sortedOrdering = [...def.parameterOrdering].sort();
+    const sortedParameterNames = [...parameterNames].sort();
+    invariant(
+      sortedOrdering.length === sortedParameterNames.length
+        && sortedOrdering.every((name, index) =>
+          name === sortedParameterNames[index]
+        ),
+      `Action parameter ordering for ${def.objectType.apiName} does not match non-excluded properties`,
+    );
+  }
   const parameters: Array<ActionParameter> = Array.from(parameterNames).map(
     id => (
       {
         id,
-        displayName: def.objectType.properties?.[id].displayName
+        displayName: def.parameterConfiguration?.[id]?.displayName
+          ?? def.objectType.properties?.[id].displayName
           ?? convertToDisplayName(id),
         type: extractActionParameterType(def.objectType.properties?.[id]!),
-        validation: (def.parameterLevelValidations?.[id] !== undefined)
+        validation: (def.parameterConfiguration?.[id] !== undefined)
           ? {
-            ...def.parameterLevelValidations?.[id],
-            allowedValues: def.parameterLevelValidations?.[id].allowedValues
+            ...def.parameterConfiguration?.[id],
+            allowedValues: def.parameterConfiguration?.[id].allowedValues
               ?? extractAllowedValuesFromType(
                 def.objectType.properties?.[id].type!,
               ),
-            required: def.parameterLevelValidations?.[id].required ?? false,
+            required: def.parameterConfiguration?.[id].required ?? false,
           }
           : {
             required: (def.objectType.properties?.[id].array ?? false)
@@ -389,9 +435,17 @@ export function defineModifyObjectAction(
               def.objectType.properties?.[id].type!,
             ),
           },
+        defaultValue: def.parameterConfiguration?.[id]?.defaultValue,
+        description: def.parameterConfiguration?.[id]?.description,
       }
     ),
   );
+  const mappings = Object.fromEntries(
+    Object.entries(def.nonParameterMappings ?? {}).map((
+      [id, value],
+    ) => [id, convertMappingValue(value)]),
+  );
+
   return defineAction({
     apiName: def.apiName
       ?? `modify-object-${
@@ -418,11 +472,14 @@ export function defineModifyObjectAction(
       type: "modifyObjectRule",
       modifyObjectRule: {
         objectToModify: "objectToModifyParameter",
-        propertyValues: Object.fromEntries(
-          parameters.map(
-            p => [p.id, { type: "parameterId", parameterId: p.id }],
+        propertyValues: {
+          ...Object.fromEntries(
+            parameters.map(
+              p => [p.id, { type: "parameterId", parameterId: p.id }],
+            ),
           ),
-        ),
+          ...mappings,
+        },
         structFieldValues: {},
       },
     }],
@@ -439,6 +496,17 @@ export function defineModifyObjectAction(
         ],
       }
       : {}),
+    ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
+    ...(def.enableLayoutSwitch
+      && { enableLayoutSwitch: def.enableLayoutSwitch }),
+    ...(def.displayAndFormat && { displayAndFormat: def.displayAndFormat }),
+    ...(def.sections
+      && {
+        sections: Object.fromEntries(
+          def.sections.map(section => [section.id, section]),
+        ),
+      }),
+    ...(def.parameterOrdering && { parameterOrdering: def.parameterOrdering }),
   });
 }
 
@@ -572,7 +640,7 @@ function referencedParameterIds(
 
   // section definitions
   Object.values(actionDef.sections ?? {})
-    .flatMap(p => p).forEach(pId => parameterIds.add(pId));
+    .flatMap(p => p.parameters).forEach(pId => parameterIds.add(pId));
 
   // form content ordering
   (actionDef.formContentOrdering ?? []).forEach(item => {
@@ -699,6 +767,8 @@ function extractAllowedValuesFromType(
           return type.markingType === "CBAC"
             ? { type: "cbacMarking" }
             : { type: "mandatoryMarking" };
+        case "string":
+          return { type: "text" };
         case "struct":
           throw new Error("Structs are not supported yet");
         default:
@@ -719,6 +789,8 @@ function extractActionParameterType(
     switch (typeType.type) {
       case "marking":
         return maybeAddList("marking", pt);
+      case "string":
+        return maybeAddList("string", pt);
       case "struct":
         throw new Error("Structs are not supported yet");
       default:
@@ -823,7 +895,15 @@ function convertValidationRule(
 
 function validateActionValidation(action: ActionType): void {
   const seenParameterIds = new Set<ParameterId>();
-  action.parameters?.forEach(param => {
+  const parameterMap: Record<string, ActionParameter> =
+    action.parameters?.reduce((acc, param) => {
+      acc[param.id] = param;
+      return acc;
+    }, {} as Record<string, ActionParameter>) ?? {};
+  const orderedParameters =
+    action.parameterOrdering?.map(id => parameterMap[id]) ?? action.parameters;
+
+  orderedParameters?.forEach(param => {
     param.validation.conditionalOverrides?.forEach(override => {
       validateActionCondition(
         override.condition,
@@ -832,6 +912,12 @@ function validateActionValidation(action: ActionType): void {
         action.parameters,
       );
     });
+    if (param.defaultValue?.type === "staticValue") {
+      invariant(
+        param.defaultValue.staticValue.type === param.type,
+        `Default static value for parameter ${param.id} does not match type`,
+      );
+    }
     seenParameterIds.add(param.id);
   });
 }

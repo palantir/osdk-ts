@@ -1,5 +1,52 @@
 # @osdk/client
 
+## 2.4.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [f277b30]
+  - @osdk/generator-converters@2.4.0-beta.11
+  - @osdk/api@2.4.0-beta.11
+  - @osdk/client.unstable@2.4.0-beta.11
+
+## 2.4.0-beta.10
+
+### Minor Changes
+
+- f022ffe: Add experimental transactions shape
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.10
+- @osdk/client.unstable@2.4.0-beta.10
+- @osdk/generator-converters@2.4.0-beta.10
+
+## 2.4.0-beta.9
+
+### Minor Changes
+
+- 9101bad: Adds "includeNullValues" option for exact match filters
+
+### Patch Changes
+
+- Updated dependencies [9101bad]
+  - @osdk/api@2.4.0-beta.9
+  - @osdk/generator-converters@2.4.0-beta.9
+  - @osdk/client.unstable@2.4.0-beta.9
+
+## 2.4.0-beta.8
+
+### Minor Changes
+
+- 9f4fe9e: Add new types mapping for internal creation workflow.
+
+### Patch Changes
+
+- Updated dependencies [9f4fe9e]
+  - @osdk/api@2.4.0-beta.8
+  - @osdk/generator-converters@2.4.0-beta.8
+  - @osdk/client.unstable@2.4.0-beta.8
+
 ## 2.4.0-beta.7
 
 ### Patch Changes

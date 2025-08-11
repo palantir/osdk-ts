@@ -1,6 +1,6 @@
 {
   "name": "@osdk/maker",
-  "version": "0.12.0-beta.9",
+  "version": "0.12.0-beta.14",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@osdk/client.unstable": "workspace:~",
-    "@osdk/foundry.ontologies": "2.24.0",
+    "@osdk/foundry.ontologies": "2.25.0",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/node": "^20.0.0",

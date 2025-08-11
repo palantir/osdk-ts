@@ -150,13 +150,17 @@ export type AggregateOpts<Q extends ObjectOrInterfaceDefinition> = {
     	$groupBy?: GroupByClause<Q>
 };
 
+// Warning: (ae-forgotten-export) The symbol "ContainsExactMatchWithNull" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "AggregateOptsThatErrors" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
 	Q extends ObjectOrInterfaceDefinition,
 	AO extends AggregateOpts<Q>
-> = SingleKeyObject<AO["$groupBy"]> extends never ? (AO["$select"] extends UnorderedAggregationClause<Q> ? AggregateOptsThatErrors<Q, AO> : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO> : {
+> = ContainsExactMatchWithNull<AO["$groupBy"]> extends true ? {
+    	$groupBy: AO["$groupBy"]
+    	$select: UnorderedAggregationClause<Q>
+} : SingleKeyObject<AO["$groupBy"]> extends never ? (AO["$select"] extends UnorderedAggregationClause<Q> ? AggregateOptsThatErrors<Q, AO> : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO> : {
     	$groupBy: AO["$groupBy"]
     	$select: UnorderedAggregationClause<Q>
 }) : AggregateOptsThatErrors<Q, AO>;
@@ -175,7 +179,7 @@ export type AggregationResultsWithGroups<
             	} ? {
             		startValue: T
             		endValue: T
-            	} : OsdkObjectPropertyType<CompileTimeMetadata<Q>["properties"][P], true> }
+            	} : MaybeNullable_2<G[P], OsdkObjectPropertyType<CompileTimeMetadata<Q>["properties"][P], true>> }
 } & AggregationResultsWithoutGroups<Q, A>)[];
 
 // Warning: (ae-forgotten-export) The symbol "ExtractPropName" needs to be exported by the entry point index.d.ts
@@ -1035,6 +1039,23 @@ export type OsdkObject<N extends string> = {
     	readonly $primaryKey: PropertyValueWireToClient[PrimaryKeyTypes]
 };
 
+// Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+// Warning: (ae-forgotten-export) The symbol "MaybeArray" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "Converted" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "GetCreatePropertyValueFromWire" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "MaybeNullable" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type OsdkObjectCreatePropertyType<
+	T extends ObjectMetadata.Property,
+	STRICTLY_ENFORCE_NULLABLE extends boolean = true
+> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, Converted<GetCreatePropertyValueFromWire<T["type"]>>> | undefined : MaybeNullable<T, MaybeArray<T, Converted<GetCreatePropertyValueFromWire<T["type"]>>>>;
+
 // Warning: (ae-forgotten-export) The symbol "ObjectTypeLinkKeysFrom2" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "OsdkObjectLinksEntry" needs to be exported by the entry point index.d.ts
 //
@@ -1047,10 +1068,7 @@ export type OsdkObjectLinksObject<O extends ObjectTypeDefinition> = ObjectTypeLi
 // Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (ae-forgotten-export) The symbol "MaybeArray" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "Converted" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "GetClientPropertyValueFromWire" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "MaybeNullable" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type OsdkObjectPropertyType<
@@ -1458,6 +1476,7 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 //
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
+// src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
 // src/derivedProperties/DerivedProperty.ts:58:7 - (ae-forgotten-export) The symbol "DerivedPropertyCreator" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)

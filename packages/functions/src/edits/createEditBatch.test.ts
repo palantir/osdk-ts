@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import type { Client, Osdk } from "@osdk/client";
+import type { Attachment, Client, Osdk } from "@osdk/client";
 import type { Employee, Person } from "@osdk/client.test.ontology";
-import { Office, Task } from "@osdk/client.test.ontology";
+import {
+  FooInterface,
+  objectTypeWithAllPropertyTypes,
+  Office,
+  Task,
+} from "@osdk/client.test.ontology";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createEditBatch } from "./createEditBatch.js";
 import type { EditBatch } from "./EditBatch.js";
@@ -25,9 +30,11 @@ import type { Edits } from "./types.js";
 type TestEditScope =
   | Edits.Object<Task>
   | Edits.Object<Office>
+  | Edits.Object<objectTypeWithAllPropertyTypes>
   | Edits.Link<Task, "RP">
   | Edits.Link<Task, "Todos">
-  | Edits.Link<Office, "occupants">;
+  | Edits.Link<Office, "occupants">
+  | Edits.Interface<FooInterface>;
 
 describe(createEditBatch, () => {
   const taskInstance = {
@@ -50,6 +57,12 @@ describe(createEditBatch, () => {
     $primaryKey: 2,
   } as Osdk.Instance<Employee>;
 
+  const fooInterfaceInstance = {
+    $apiName: "FooInterface",
+    $primaryKey: 21,
+    $objectType: "FooObjectType",
+  } as Osdk.Instance<FooInterface>;
+
   let client: Client;
 
   let editBatch: EditBatch<TestEditScope>;
@@ -60,6 +73,11 @@ describe(createEditBatch, () => {
   });
 
   it("collects all edits", () => {
+    editBatch.create(objectTypeWithAllPropertyTypes, {
+      id: 0,
+      attachment: "ri.foo",
+      attachment2: { rid: "ri.bar" } as Attachment,
+    });
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Task, { id: 1, name: "My Other Task Name" });
     editBatch.create(Task, { id: 3 });
@@ -73,6 +91,17 @@ describe(createEditBatch, () => {
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Office, { officeId: "3", capacity: 2 });
     editBatch.update({ $apiName: "Office", $primaryKey: "3" }, { capacity: 4 });
+    editBatch.create(FooInterface, {
+      $objectType: "Task",
+      fooSpt: "created interface",
+    });
+    editBatch.update(fooInterfaceInstance, { fooSpt: "fooSpt" });
+    editBatch.update({
+      $apiName: "FooInterface",
+      $objectType: "FooObjectType",
+      $primaryKey: 22,
+    }, { fooSpt: "fooSpt2" });
+    editBatch.delete(fooInterfaceInstance);
 
     editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
       $apiName: "Person",
@@ -104,6 +133,15 @@ describe(createEditBatch, () => {
     );
 
     expect(editBatch.getEdits()).toEqual([
+      {
+        type: "createObject",
+        obj: objectTypeWithAllPropertyTypes,
+        properties: {
+          id: 0,
+          attachment: "ri.foo",
+          attachment2: { rid: "ri.bar" },
+        },
+      },
       {
         type: "createObject",
         obj: Task,
@@ -150,6 +188,37 @@ describe(createEditBatch, () => {
         type: "updateObject",
         obj: { $apiName: "Office", $primaryKey: "3" },
         properties: { capacity: 4 },
+      },
+      {
+        type: "createObjectForInterface",
+        int: FooInterface,
+        properties: { fooSpt: "created interface", $objectType: "Task" },
+      },
+      {
+        type: "updateObjectForInterface",
+        obj: {
+          $apiName: "FooInterface",
+          $primaryKey: 21,
+          $objectType: "FooObjectType",
+        },
+        properties: { fooSpt: "fooSpt" },
+      },
+      {
+        type: "updateObjectForInterface",
+        obj: {
+          $apiName: "FooInterface",
+          $primaryKey: 22,
+          $objectType: "FooObjectType",
+        },
+        properties: { fooSpt: "fooSpt2" },
+      },
+      {
+        type: "deleteObjectForInterface",
+        obj: {
+          $apiName: "FooInterface",
+          $primaryKey: 21,
+          $objectType: "FooObjectType",
+        },
       },
       {
         type: "addLink",

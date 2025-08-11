@@ -34,6 +34,7 @@ export type {
   ObjectTypeDefinition,
   Osdk,
   OsdkObject,
+  OsdkObjectCreatePropertyType,
   OsdkObjectPropertyType,
   PageResult,
   PropertyDef,

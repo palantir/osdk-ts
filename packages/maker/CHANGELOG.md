@@ -1,5 +1,55 @@
 # @osdk/maker
 
+## 0.12.0-beta.14
+
+### Minor Changes
+
+- d384b4c: Add custom display names and descriptions for action parameters in OAC
+- 02be685: Remove jiti
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.11
+
+## 0.12.0-beta.13
+
+### Minor Changes
+
+- ed41359: Action sections in OAC
+
+## 0.12.0-beta.12
+
+### Minor Changes
+
+- 666787f: fix text allowed values name
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.10
+
+## 0.12.0-beta.11
+
+### Minor Changes
+
+- b0955ef: Action parameter defaults and table forms
+- defc2cf: change parameterLevelValidations to parameterConfiguration
+
+### Patch Changes
+
+- Updated dependencies [9101bad]
+  - @osdk/api@2.4.0-beta.9
+
+## 0.12.0-beta.10
+
+### Minor Changes
+
+- 4dffba1: Support extended string params in actions
+
+### Patch Changes
+
+- Updated dependencies [9f4fe9e]
+  - @osdk/api@2.4.0-beta.8
+
 ## 0.12.0-beta.9
 
 ### Minor Changes

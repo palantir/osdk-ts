@@ -17,14 +17,21 @@
 import type {
   OntologyIrCondition,
   OntologyIrConditionalOverride,
+  OntologyIrFormContent,
+  OntologyIrLogicRuleValue,
   OntologyIrParameterValidationBlockOverride,
+  OntologyIrSectionConditionalOverride,
   ParameterVisibility,
 } from "@osdk/client.unstable";
 
+import { randomUUID } from "node:crypto";
 import type {
   ActionParameterConditionalOverride,
   ActionParameterValidation,
+  ActionType,
   ConditionDefinition,
+  MappingValue,
+  SectionConditionalOverride,
 } from "./types.js";
 
 export function convertActionVisibility(
@@ -117,6 +124,31 @@ export function convertActionParameterConditionalOverride(
   };
 }
 
+export function convertSectionConditionalOverride(
+  override: SectionConditionalOverride,
+  defaultVisibility: "visible" | "hidden",
+): OntologyIrSectionConditionalOverride {
+  return {
+    condition: convertConditionDefinition(override.condition),
+    sectionBlockOverrides: [
+      {
+        type: "visibility",
+        visibility: {
+          visibility: defaultVisibility === "visible"
+            ? {
+              type: "hidden",
+              hidden: {},
+            }
+            : {
+              type: "visible",
+              visible: {},
+            },
+        },
+      },
+    ],
+  };
+}
+
 export function convertConditionDefinition(
   condition: ConditionDefinition,
 ): OntologyIrCondition {
@@ -192,5 +224,64 @@ export function convertConditionDefinition(
       };
     default:
       return condition;
+  }
+}
+
+export function getFormContentOrdering(
+  action: ActionType,
+  parameterOrdering: string[],
+): OntologyIrFormContent[] {
+  if (!action.sections) return [];
+  const parametersToSection = Object.fromEntries(
+    Object.entries(action.sections).flatMap(([sectionId, section]) =>
+      section.parameters.map(param => [param, sectionId])
+    ),
+  );
+  const seenIds = new Set<string>();
+  const formContentOrdering: OntologyIrFormContent[] = [];
+  parameterOrdering.forEach(param => {
+    if (
+      param in parametersToSection
+      && !(seenIds.has(parametersToSection[param]))
+    ) {
+      formContentOrdering.push({
+        type: "sectionId",
+        sectionId: parametersToSection[param],
+      });
+      seenIds.add(parametersToSection[param]);
+    } else if (!(param in parametersToSection)) {
+      formContentOrdering.push({
+        type: "parameterId",
+        parameterId: param,
+      });
+      seenIds.add(param);
+    }
+  });
+  return formContentOrdering;
+}
+
+export function convertMappingValue(
+  value: MappingValue,
+): OntologyIrLogicRuleValue {
+  switch (value.type) {
+    case "uuid":
+      return {
+        type: "uniqueIdentifier",
+        uniqueIdentifier: {
+          linkId: value.linkId ?? randomUUID(),
+        },
+      };
+    case "currentTime":
+      return {
+        type: "currentTime",
+        currentTime: {},
+      };
+    case "currentUser":
+      return {
+        type: "currentUser",
+        currentUser: {},
+      };
+    default:
+      return value;
   }
 }

@@ -68,9 +68,9 @@ describe("convertWireToOsdkObjects", () => {
 
     expect(Object.keys(employee.$as)).toEqual([]);
     expect(Object.keys(employee.$link)).toEqual([
-      "peeps",
       "lead",
       "officeLink",
+      "peeps",
     ]);
   });
 

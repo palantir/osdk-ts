@@ -79,6 +79,7 @@ export type {
   LoadAllOntologiesInternalRequest,
   LoadAllOntologiesInternalResponse,
   ManyToManyLinkDefinitionModification,
+  ManyToManyLinkTypeBranchIndexingConfiguration,
   ManyToManyLinkTypeDatasetDatasourceModification,
   ManyToManyLinkTypeDatasourceCreate,
   ManyToManyLinkTypeDatasourceDelete,

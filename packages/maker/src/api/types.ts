@@ -20,6 +20,8 @@ import type {
   ApiNameValueTypeReference,
   BaseType,
   DataConstraint,
+  DisplayMetadataConfigurationDefaultLayout,
+  DisplayMetadataConfigurationDisplayAndFormat,
   ExampleValue,
   FailureMessage,
   ImportedTypes,
@@ -46,9 +48,15 @@ import type {
   OntologyIrLabelledValue,
   OntologyIrLinkTypeStatus,
   OntologyIrLogicRule,
+  OntologyIrLogicRuleValue_interfaceParameterPropertyValue,
+  OntologyIrLogicRuleValue_objectParameterPropertyValue,
+  OntologyIrLogicRuleValue_parameterId,
+  OntologyIrLogicRuleValue_staticValue,
+  OntologyIrLogicRuleValue_synchronousWebhookOutput,
   OntologyIrMarketplaceInterfaceType,
   OntologyIrObjectType,
   OntologyIrParameterDateRangeValue,
+  OntologyIrParameterPrefill,
   OntologyIrPropertyType,
   OntologyIrValidationRule,
   ParameterId,
@@ -139,9 +147,15 @@ export type ActionTypeUserDefinition = {
   apiName?: string;
   displayName?: string;
   status?: ActionStatus;
-  parameterLevelValidations?: Record<string, ActionParameterValidation>;
+  parameterConfiguration?: Record<string, ActionParameterConfiguration>;
+  nonParameterMappings?: Record<string, MappingValue>;
   actionLevelValidation?: ActionLevelValidationDefinition;
   excludedProperties?: Array<ParameterId>;
+  sections?: Array<ActionSection>;
+  defaultFormat?: DisplayMetadataConfigurationDefaultLayout;
+  enableLayoutSwitch?: boolean;
+  displayAndFormat?: DisplayMetadataConfigurationDisplayAndFormat;
+  parameterOrdering?: Array<string>;
 };
 
 export interface ActionParameter {
@@ -151,14 +165,62 @@ export interface ActionParameter {
   validation: ActionParameterValidation;
   description?: string;
   typeClasses?: Array<TypeClass>;
+  defaultValue?: OntologyIrParameterPrefill;
 }
 
-export interface ActionParameterValidation {
+export type ActionParameterValidation = Omit<
+  ActionParameterConfiguration,
+  "displayName" | "defaultValue"
+>;
+
+export interface ActionParameterConfiguration {
   allowedValues?: ActionParameterAllowedValues;
   required?: ActionParameterRequirementConstraint;
   defaultVisibility?: "editable" | "disabled" | "hidden";
   conditionalOverrides?: Array<ActionParameterConditionalOverride>;
+  defaultValue?: OntologyIrParameterPrefill;
+  displayName?: string;
+  description?: string;
 }
+
+export type ActionSection = {
+  id: string;
+  displayName: string;
+  parameters: Array<string>;
+  defaultVisibility?: "visible" | "hidden";
+  description?: string;
+  columnCount?: 1 | 2;
+  showTitleBar?: boolean;
+  collapsedByDefault?: boolean;
+  style?: "box" | "minimal";
+  conditionalOverrides?: Array<SectionConditionalOverride>;
+};
+
+export type MappingValue =
+  | CustomMapping
+  | UuidMappingValue
+  | CurrentTimeMappingValue
+  | CurrentUserMappingValue;
+
+export type UuidMappingValue = {
+  type: "uuid";
+  linkId?: string;
+};
+
+export type CurrentTimeMappingValue = {
+  type: "currentTime";
+};
+
+export type CurrentUserMappingValue = {
+  type: "currentUser";
+};
+
+export type CustomMapping =
+  | OntologyIrLogicRuleValue_parameterId
+  | OntologyIrLogicRuleValue_staticValue
+  | OntologyIrLogicRuleValue_objectParameterPropertyValue
+  | OntologyIrLogicRuleValue_interfaceParameterPropertyValue
+  | OntologyIrLogicRuleValue_synchronousWebhookOutput;
 
 // TODO(ethana): add more commonly used conditions - parameter matching, organizations, etc.
 export type ConditionDefinition =
@@ -176,6 +238,8 @@ export type ActionParameterConditionalOverride =
   | VisibilityOverride
   | DisabledOverride
   | RequiredOverride;
+
+export type SectionConditionalOverride = VisibilityOverride;
 
 export type VisibilityOverride = {
   type: "visibility";
@@ -236,12 +300,16 @@ export interface ActionTypeInner {
   icon: { locator: BlueprintIcon; color: string };
   parameters: Array<ActionParameter>;
   rules: Array<OntologyIrLogicRule>;
-  sections: Record<SectionId, Array<ParameterId>>;
+  sections: Record<SectionId, ActionSection>;
   status: ActionStatus;
   entities: OntologyIrActionTypeEntities;
+  parameterOrdering: Array<string>;
   formContentOrdering: Array<OntologyIrFormContent>;
   validation: Array<OntologyIrValidationRule>;
   typeClasses: Array<TypeClass>;
+  defaultFormat: DisplayMetadataConfigurationDefaultLayout;
+  enableLayoutSwitch: boolean;
+  displayAndFormat: DisplayMetadataConfigurationDisplayAndFormat;
 }
 
 export type ActionValidationRule = OntologyIrValidationRule;

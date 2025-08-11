@@ -16,9 +16,11 @@
 
 import type {
   CompileTimeMetadata,
+  InterfaceDefinition,
   ObjectMetadata,
   ObjectTypeDefinition,
   Osdk,
+  OsdkObjectCreatePropertyType,
   OsdkObjectPropertyType,
   PropertyKeys,
 } from "@osdk/client";
@@ -27,6 +29,14 @@ export type ObjectLocator<
   S extends ObjectTypeDefinition = ObjectTypeDefinition,
 > = {
   $apiName: Osdk.Instance<S>["$apiName"];
+  $primaryKey: Osdk.Instance<S>["$primaryKey"];
+};
+
+export type InterfaceLocator<
+  S extends InterfaceDefinition = InterfaceDefinition,
+> = {
+  $apiName: Osdk.Instance<S>["$apiName"];
+  $objectType: Osdk.Instance<S>["$objectType"];
   $primaryKey: Osdk.Instance<S>["$primaryKey"];
 };
 
@@ -40,6 +50,11 @@ export namespace Edits {
     S extends ObjectTypeDefinition,
     L extends keyof CompileTimeMetadata<S>["links"],
   > = AddLink<S, L> | RemoveLink<S, L>;
+
+  export type Interface<S extends InterfaceDefinition> =
+    | CreateObjectForInterface<S>
+    | UpdateObjectForInterface<S>
+    | DeleteObjectForInterface<S>;
 }
 
 export interface AddLink<
@@ -77,7 +92,7 @@ export interface CreateObject<S extends ObjectTypeDefinition> {
   obj: S;
   properties: PartialForOptionalProperties<
     {
-      [P in PropertyKeys<S>]: OsdkObjectPropertyType<
+      [P in PropertyKeys<S>]: OsdkObjectCreatePropertyType<
         CompileTimeMetadata<S>["properties"][P]
       >;
     }
@@ -87,6 +102,11 @@ export interface CreateObject<S extends ObjectTypeDefinition> {
 export interface DeleteObject<S extends ObjectTypeDefinition> {
   type: "deleteObject";
   obj: ObjectLocator<S>;
+}
+
+export interface DeleteObjectForInterface<S extends InterfaceDefinition> {
+  type: "deleteObjectForInterface";
+  obj: InterfaceLocator<S>;
 }
 
 export interface UpdateObject<S extends ObjectTypeDefinition> {
@@ -99,7 +119,33 @@ export interface UpdateObject<S extends ObjectTypeDefinition> {
           PropertyKeys<S>,
           CompileTimeMetadata<S>["primaryKeyApiName"]
         >
-      ]: OsdkObjectPropertyType<CompileTimeMetadata<S>["properties"][P]>;
+      ]: OsdkObjectCreatePropertyType<CompileTimeMetadata<S>["properties"][P]>;
+    }
+  >;
+}
+
+export interface CreateObjectForInterface<S extends InterfaceDefinition> {
+  type: "createObjectForInterface";
+  int: S;
+  properties: PartialForOptionalProperties<
+    {
+      [P in PropertyKeys<S>]: OsdkObjectCreatePropertyType<
+        CompileTimeMetadata<S>["properties"][P]
+      >;
+    } & {
+      $objectType: string;
+    }
+  >;
+}
+
+export interface UpdateObjectForInterface<S extends InterfaceDefinition> {
+  type: "updateObjectForInterface";
+  obj: InterfaceLocator<S>;
+  properties: PartialForOptionalProperties<
+    {
+      [P in PropertyKeys<S>]: OsdkObjectPropertyType<
+        CompileTimeMetadata<S>["properties"][P]
+      >;
     }
   >;
 }
@@ -109,4 +155,16 @@ export type AnyEdit =
   | RemoveLink<any, any>
   | CreateObject<any>
   | DeleteObject<any>
-  | UpdateObject<any>;
+  | UpdateObject<any>
+  | CreateObjectForInterface<any>
+  | UpdateObjectForInterface<any>
+  | DeleteObjectForInterface<any>;
+
+// Check if locator is for an interface by comparing $apiName and $objectType.
+// Both object types and interfaces store the object type API name in $objectType,
+// but interfaces store the interface API name in $apiName.
+export function isInterfaceLocator(obj: any): obj is InterfaceLocator<any> {
+  return obj != null && typeof obj === "object"
+    && typeof obj.$objectType === "string" && typeof obj.$apiName === "string"
+    && obj.$apiName !== obj.$objectType;
+}
