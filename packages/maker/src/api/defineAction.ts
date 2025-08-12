@@ -372,6 +372,19 @@ export function defineModifyObjectAction(
     );
   }
   const parameters = createParameters(def, parameterNames, false);
+  parameters.forEach(
+    p => {
+      if (p.defaultValue === undefined) {
+        p.defaultValue = {
+          type: "objectParameterPropertyValue",
+          objectParameterPropertyValue: {
+            parameterId: "objectToModifyParameter",
+            propertyTypeId: p.id,
+          },
+        };
+      }
+    },
+  );
 
   const mappings = Object.fromEntries(
     Object.entries(def.nonParameterMappings ?? {}).map((
