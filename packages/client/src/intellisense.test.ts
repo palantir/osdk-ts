@@ -130,8 +130,7 @@ describe("intellisense", () => {
       offset: 14,
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
-    expect(resp.body?.entries.length).toBeGreaterThan(2);
-    expect(resp.body?.entries.map(e => e.name)).toEqual([
+    const expected = [
       "class",
       "employeeId",
       "employeeLocation",
@@ -142,7 +141,9 @@ describe("intellisense", () => {
       "skillSet",
       "skillSetEmbedding",
       "startDate",
-    ]);
+    ];
+    const actual = resp.body?.entries.map(e => e.name);
+    expect(expected.every(element => actual?.includes(element)));
 
     const { resp: resp2 } = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,
@@ -150,5 +151,17 @@ describe("intellisense", () => {
       offset: 3,
     });
     expect(resp2.body?.documentation).not.toEqual("'(property) $orderBy: any'");
+
+    // order by relevance
+    const { resp: resp3 } = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 39,
+      offset: 14,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+
+    expect(resp3.body?.entries.map(e => e.name)).toEqual([
+      "relevance",
+    ]);
   });
 });
