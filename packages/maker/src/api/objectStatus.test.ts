@@ -81,7 +81,7 @@ describe("Object Status", () => {
 
         const metadata = dumpOntologyFullMetadata();
         expect(
-          metadata.blockData.objectTypes["com.palantir.default-status"]
+          metadata.ontology.objectTypes["com.palantir.default-status"]
             .objectType.status,
         ).toEqual({
           type: "active",
@@ -104,7 +104,7 @@ describe("Object Status", () => {
 
         const metadata = dumpOntologyFullMetadata();
         expect(
-          metadata.blockData.objectTypes["com.palantir.active-status"]
+          metadata.ontology.objectTypes["com.palantir.active-status"]
             .objectType.status,
         ).toEqual({
           type: "active",
@@ -127,7 +127,7 @@ describe("Object Status", () => {
 
         const metadata = dumpOntologyFullMetadata();
         expect(
-          metadata.blockData.objectTypes["com.palantir.experimental-status"]
+          metadata.ontology.objectTypes["com.palantir.experimental-status"]
             .objectType.status,
         ).toEqual({
           type: "experimental",
@@ -154,7 +154,7 @@ describe("Object Status", () => {
 
         const metadata = dumpOntologyFullMetadata();
         expect(
-          metadata.blockData.objectTypes["com.palantir.deprecated-status"]
+          metadata.ontology.objectTypes["com.palantir.deprecated-status"]
             .objectType.status,
         ).toEqual({
           type: "deprecated",
