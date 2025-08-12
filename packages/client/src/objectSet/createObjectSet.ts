@@ -180,7 +180,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = never,
     >(
       args?: AsyncIterArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
-    ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S, {}, T, ORDER_BY_OPTIONS>> {
+    ): AsyncIterableIterator<
+      SingleOsdkResult<Q, L, R, S, {}, T, ORDER_BY_OPTIONS>
+    > {
       let $nextPageToken: string | undefined = undefined;
       do {
         const result: FetchPageResult<
