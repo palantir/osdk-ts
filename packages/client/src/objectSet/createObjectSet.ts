@@ -177,10 +177,10 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherence.Default,
       T extends boolean = false,
-      Z extends ObjectSetArgs.OrderByOptions<L> = {},
+      ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = never,
     >(
-      args?: AsyncIterArgs<Q, L, R, A, S, T, never, Z>,
-    ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S, {}, T, Z>> {
+      args?: AsyncIterArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
+    ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S, {}, T, ORDER_BY_OPTIONS>> {
       let $nextPageToken: string | undefined = undefined;
       do {
         const result: FetchPageResult<
@@ -189,7 +189,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           R,
           S,
           T,
-          Z
+          ORDER_BY_OPTIONS
         > = await fetchPageInternal(
           augmentRequestContext(
             clientCtx,
@@ -203,7 +203,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         $nextPageToken = result.nextPageToken;
 
         for (const obj of result.data) {
-          yield obj as SingleOsdkResult<Q, L, R, S, {}, T, Z>;
+          yield obj as SingleOsdkResult<Q, L, R, S, {}, T, ORDER_BY_OPTIONS>;
         }
       } while ($nextPageToken != null);
     },

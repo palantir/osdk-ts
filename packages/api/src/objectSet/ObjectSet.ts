@@ -43,8 +43,8 @@ import type {
   ExtractAllPropertiesOption,
   ExtractOptions,
   ExtractRidOption,
+  MaybeScore,
   Osdk,
-  WithOrderByRelevance,
 } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
@@ -101,11 +101,11 @@ type SubSelectRDPs<
 export interface MinimalObjectSet<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > extends
   BaseObjectSet<Q>,
   FetchPage<Q, RDPs>,
-  AsyncIter<Q, RDPs, Z>,
+  AsyncIter<Q, RDPs, ORDER_BY_OPTIONS>,
   Where<Q, RDPs>
 {
 }
@@ -134,13 +134,13 @@ interface FetchPage<
 type ValidFetchPageArgs<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
-  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>>,
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>>,
 > = ObjectSetArgs.FetchPage<
   Q,
   PropertyKeys<Q>,
   boolean,
   string & keyof RDPs,
-  Z
+  ORDER_BY_OPTIONS
 >;
 
 type ValidAsyncIterArgs<
@@ -185,27 +185,17 @@ interface FetchPageSignature<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
-    Z extends ObjectSetArgs.OrderByOptions<L> = {},
+    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
   >(
-    args?: FetchPageArgs<Q, L, R, A, S, T, never, Z>,
+    args?: FetchPageArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
   ): Promise<
     PageResult<
-      Z extends "relevance" ?
-          WithOrderByRelevance<Osdk.Instance<
+          MaybeScore<Osdk.Instance<
             Q,
             ExtractOptions<R, S, T>,
             NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
             SubSelectRDPs<RDPs, NonNullable<typeof args>>
-          >
-        >
-      : Osdk.Instance<
-            Q,
-            ExtractOptions<R, S, T>,
-            NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
-            SubSelectRDPs<RDPs, NonNullable<typeof args>>
-          >
-        >
-  >;
+            >, ORDER_BY_OPTIONS>>>;
 }
 
 interface NearestNeighbors<Q extends ObjectOrInterfaceDefinition> {
@@ -253,26 +243,18 @@ interface FetchPageWithErrorsSignature<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
-    Z extends ObjectSetArgs.OrderByOptions<L> = {},
+    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
   >(
-    args?: FetchPageArgs<Q, L, R, A, S, T, never, Z>,
+    args?: FetchPageArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
   ): Promise<
     Result<
       PageResult<
-        Z extends "relevance" ? WithOrderByRelevance<Osdk.Instance<
+        MaybeScore<Osdk.Instance<
           Q,
           ExtractOptions<R, S, T>,
           NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
           SubSelectRDPs<RDPs, NonNullable<typeof args>>
-        >> :
-        Osdk.Instance<
-          Q,
-          ExtractOptions<R, S, T>,
-          NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
-          SubSelectRDPs<RDPs, NonNullable<typeof args>>
-        >
-      >
-    >
+        >, ORDER_BY_OPTIONS>>>
   >;
 }
 
@@ -299,7 +281,7 @@ interface Where<
 interface AsyncIterSignature<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > {
   /**
    * Returns an async iterator to load all objects of this type
@@ -319,9 +301,9 @@ interface AsyncIterSignature<
       SubSelectRDPs<RDPs, X>
     >
   >;
-  //
+
   /**
-   * Returns an async iterator to load all objects of this typ, Ze
+   * Returns an async iterator to load all objects of this type
    * @example
    * for await (const obj of myObjectSet.asyncIter()){
    * // Handle obj
@@ -334,32 +316,24 @@ interface AsyncIterSignature<
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
-    Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
+    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
   >(
-    args?: AsyncIterArgs<Q, L, R, A, S, T, never, Z>,
+    args?: AsyncIterArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
   ): AsyncIterableIterator<
-  Z extends "relevance" ? 
-    WithOrderByRelevance<Osdk.Instance<
+    MaybeScore<Osdk.Instance<
       Q,
       ExtractOptions<R, S, T>,
       NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
       SubSelectRDPs<RDPs, NonNullable<typeof args>>
-    >>:
-    Osdk.Instance<
-      Q,
-      ExtractOptions<R, S, T>,
-      NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
-      SubSelectRDPs<RDPs, NonNullable<typeof args>>
-    >
-  >;
+    >, ORDER_BY_OPTIONS>>;
 }
 
 interface AsyncIter<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > {
-  asyncIter: AsyncIterSignature<Q, RDPs, Z>;
+  asyncIter: AsyncIterSignature<Q, RDPs, ORDER_BY_OPTIONS>;
 }
 
 interface WithProperties<
@@ -568,10 +542,10 @@ interface ObjectSetCleanedTypes<
   Q extends ObjectOrInterfaceDefinition,
   D extends Record<string, SimplePropertyDef>,
   MERGED extends ObjectOrInterfaceDefinition & Q,
-  Z extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 
 > extends
-  MinimalObjectSet<Q, D, Z>,
+  MinimalObjectSet<Q, D, ORDER_BY_OPTIONS>,
   WithProperties<Q, D>,
   Aggregate<MERGED>,
   SetArithmetic<MERGED>,

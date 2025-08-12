@@ -188,19 +188,19 @@ export async function fetchPageInternal<
   A extends Augments,
   S extends NullabilityAdherence,
   T extends boolean,
-  Z extends ObjectSetArgs.OrderByOptions<L>,
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L>,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, A, S, T, never, Z> = {},
+  args: FetchPageArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS> = {},
   useSnapshot: boolean = false,
-): Promise<FetchPageResult<Q, L, R, S, T, Z>> {
+): Promise<FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS>> {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(
       client,
       objectType,
-      args as FetchPageArgs<InterfaceDefinition, L, R, A, S, T, never, Z>,
+      args as FetchPageArgs<InterfaceDefinition, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
       objectSet,
       useSnapshot,
     ) as any; // fixme
@@ -208,12 +208,12 @@ export async function fetchPageInternal<
     return await fetchObjectPage(
       client,
       objectType,
-      args as FetchPageArgs<ObjectTypeDefinition, L, R, A, S, T, never, Z>,
+      args as FetchPageArgs<ObjectTypeDefinition, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
       objectSet,
       useSnapshot,
     ) as any; // fixme
   }
-  throw new Error("Unsupported");
+  throw new Error("TODO: Fix union matching");
 }
 
 /** @internal */
@@ -320,14 +320,14 @@ export async function fetchObjectPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
-  Z extends ObjectSetArgs.OrderByOptions<L>,
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L>,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R, Augments, S, T, never, Z>,
+  args: FetchPageArgs<Q, L, R, Augments, S, T, never, ORDER_BY_OPTIONS>,
   objectSet: ObjectSet,
   useSnapshot: boolean = false,
-): Promise<FetchPageResult<Q, L, R, S, T, Z>> {
+): Promise<FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS>> {
   const r = await OntologiesV2.OntologyObjectSets.load(
     addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,
@@ -353,5 +353,5 @@ export async function fetchObjectPage<
     ),
     nextPageToken: r.nextPageToken,
     totalCount: r.totalCount,
-  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T, Z>>;
+  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS>>;
 }

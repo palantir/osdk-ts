@@ -24,7 +24,6 @@ import type {
   Osdk,
   PageResult,
   PropertyKeys,
-  WithOrderByRelevance,
 } from "../index.js";
 import type { DerivedObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
@@ -476,24 +475,24 @@ describe("ObjectSet", () => {
         await withFamily.fetchOne(1);
       });
 
-      // it("works with .async", () => {
-      //   const asyncIter = withFamily.asyncIter();
-      //   expectTypeOf<typeof asyncIter>().toEqualTypeOf<
-      //     AsyncIterableIterator<
-      //       Osdk.Instance<
-      //         EmployeeApiTest,
-      //         never,
-      //         PropertyKeys<EmployeeApiTest>,
-      //         {
-      //           mom: "integer";
-      //           dad: "string" | undefined;
-      //           sister: "string"[] | undefined;
-      //         }
-      //       >
-      //     >
-      //   >();
-      // });
-      //
+      it("works with .async", () => {
+        const asyncIter = withFamily.asyncIter();
+        expectTypeOf<typeof asyncIter>().toEqualTypeOf<
+          AsyncIterableIterator<
+            Osdk.Instance<
+              EmployeeApiTest,
+              never,
+              PropertyKeys<EmployeeApiTest>,
+              {
+                mom: "integer";
+                dad: "string" | undefined;
+                sister: "string"[] | undefined;
+              }
+            >
+          >
+        >();
+      });
+
       it("Works with no select", async () => {
         const withFamilyResults = await withFamily.fetchPage();
 
@@ -1307,8 +1306,6 @@ describe("ObjectSet", () => {
   });
 
   describe("nearestNeighbors", () => {
-
-
     it("has correct nearest neighbors object set query return type", () => {
       const nearestNeighborsObjectSet = fauxObjectSet.nearestNeighbors(
         "textQuery",
@@ -1361,7 +1358,9 @@ describe("ObjectSet", () => {
         "skillSetEmbedding"
       ).fetchPage({ $orderBy: "relevance"});
 
-      expectTypeOf(nearestNeighborsObjectSet.data[0]).toEqualTypeOf<WithOrderByRelevance<Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>>>();
+      type expectedType = Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}> & { $score: number };
+
+      expectTypeOf(nearestNeighborsObjectSet.data[0]).toEqualTypeOf<expectedType>();
       expectTypeOf(nearestNeighborsObjectSet.data[0]).toHaveProperty("$score")
     });
 
@@ -1373,7 +1372,8 @@ describe("ObjectSet", () => {
         "skillSetEmbedding"
       ).fetchPageWithErrors({ $orderBy: "relevance"});
 
-      expectTypeOf(nearestNeighborsObjectSetWithErrors.value!.data[0]).toEqualTypeOf<WithOrderByRelevance<Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>>>();
+      type expectedType = Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}> & { $score: number };
+      expectTypeOf(nearestNeighborsObjectSetWithErrors.value!.data[0]).toEqualTypeOf<expectedType>();
       expectTypeOf(nearestNeighborsObjectSetWithErrors.value!.data[0]).toHaveProperty("$score")
     });
 
@@ -1386,7 +1386,8 @@ describe("ObjectSet", () => {
           { $orderBy: "relevance"}
         )
 
-        expectTypeOf(asyncIter).toEqualTypeOf<AsyncIterableIterator<WithOrderByRelevance<Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}>>>>();
+        type expectedType = AsyncIterableIterator<Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}> & { $score: number }>;
+        expectTypeOf(asyncIter).toEqualTypeOf<expectedType>();
     });
 
     it("no arbitrary order bys", () => {
