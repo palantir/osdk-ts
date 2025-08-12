@@ -18,7 +18,10 @@ import type {
   DefaultToFalse,
   OsdkObjectLinksObject,
 } from "./definitions/LinkDefinitions.js";
-import type { NullabilityAdherence, ObjectSetArgs } from "./object/FetchPageArgs.js";
+import type {
+  NullabilityAdherence,
+  ObjectSetArgs,
+} from "./object/FetchPageArgs.js";
 import type { UnionIfTrue } from "./object/FetchPageResult.js";
 import type {
   InterfaceDefinition,
@@ -182,7 +185,7 @@ export type Osdk<
 
 export type MaybeScore<
   T extends Osdk.Instance<any>,
-  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<any>
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<any>,
 > = ORDER_BY_OPTIONS extends "relevance" ? T & { $score: number } : T;
 
 export namespace Osdk {

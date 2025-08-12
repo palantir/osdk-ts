@@ -35,16 +35,16 @@ export namespace ObjectSetArgs {
   }
 
   export type OrderByOptions<L extends string> =
-  | {
-    [K in L]?: "asc" | "desc";
-  }
-  | "relevance";
+    | {
+      [K in L]?: "asc" | "desc";
+    }
+    | "relevance";
 
   export interface OrderBy<
     ORDER_BY_OPTIONS extends OrderByOptions<L>,
     L extends string = never,
   > {
-    $orderBy?: ORDER_BY_OPTIONS
+    $orderBy?: ORDER_BY_OPTIONS;
   }
 
   export interface AsyncIter<
@@ -53,7 +53,6 @@ export namespace ObjectSetArgs {
     T extends boolean = false,
     RDP_KEYS extends string = never,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never,
-
   > extends Select<K, RDP_KEYS>, OrderBy<ORDER_BY_OPTIONS, K> {
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;

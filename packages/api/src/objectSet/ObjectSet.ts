@@ -190,12 +190,17 @@ interface FetchPageSignature<
     args?: FetchPageArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
   ): Promise<
     PageResult<
-          MaybeScore<Osdk.Instance<
-            Q,
-            ExtractOptions<R, S, T>,
-            NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
-            SubSelectRDPs<RDPs, NonNullable<typeof args>>
-            >, ORDER_BY_OPTIONS>>>;
+      MaybeScore<
+        Osdk.Instance<
+          Q,
+          ExtractOptions<R, S, T>,
+          NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+          SubSelectRDPs<RDPs, NonNullable<typeof args>>
+        >,
+        ORDER_BY_OPTIONS
+      >
+    >
+  >;
 }
 
 interface NearestNeighbors<Q extends ObjectOrInterfaceDefinition> {
@@ -249,12 +254,17 @@ interface FetchPageWithErrorsSignature<
   ): Promise<
     Result<
       PageResult<
-        MaybeScore<Osdk.Instance<
-          Q,
-          ExtractOptions<R, S, T>,
-          NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
-          SubSelectRDPs<RDPs, NonNullable<typeof args>>
-        >, ORDER_BY_OPTIONS>>>
+        MaybeScore<
+          Osdk.Instance<
+            Q,
+            ExtractOptions<R, S, T>,
+            NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+            SubSelectRDPs<RDPs, NonNullable<typeof args>>
+          >,
+          ORDER_BY_OPTIONS
+        >
+      >
+    >
   >;
 }
 
@@ -320,12 +330,16 @@ interface AsyncIterSignature<
   >(
     args?: AsyncIterArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
   ): AsyncIterableIterator<
-    MaybeScore<Osdk.Instance<
-      Q,
-      ExtractOptions<R, S, T>,
-      NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
-      SubSelectRDPs<RDPs, NonNullable<typeof args>>
-    >, ORDER_BY_OPTIONS>>;
+    MaybeScore<
+      Osdk.Instance<
+        Q,
+        ExtractOptions<R, S, T>,
+        NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+        SubSelectRDPs<RDPs, NonNullable<typeof args>>
+      >,
+      ORDER_BY_OPTIONS
+    >
+  >;
 }
 
 interface AsyncIter<
@@ -543,7 +557,6 @@ interface ObjectSetCleanedTypes<
   D extends Record<string, SimplePropertyDef>,
   MERGED extends ObjectOrInterfaceDefinition & Q,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
-
 > extends
   MinimalObjectSet<Q, D, ORDER_BY_OPTIONS>,
   WithProperties<Q, D>,
