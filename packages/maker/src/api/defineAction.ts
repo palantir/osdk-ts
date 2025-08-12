@@ -581,11 +581,14 @@ export function defineCreateOrModifyObjectAction(
       type: "addOrModifyObjectRuleV2",
       addOrModifyObjectRuleV2: {
         objectToModify: "objectToCreateOrModifyParameter",
-        propertyValues: Object.fromEntries(
-          parameters.map(
-            p => [p.id, { type: "parameterId", parameterId: p.id }],
+        propertyValues: {
+          ...Object.fromEntries(
+            parameters.map(
+              p => [p.id, { type: "parameterId", parameterId: p.id }],
+            ),
           ),
-        ),
+          ...mappings,
+        },
         structFieldValues: {},
       },
     }],
