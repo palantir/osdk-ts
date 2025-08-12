@@ -40,7 +40,6 @@ export {
   visitWidgetMessage,
 } from "./messages/widgetMessages.js";
 export type { WidgetMessage } from "./messages/widgetMessages.js";
-export { META_TAG_HOST_ORIGIN } from "./metaTags.js";
 export type { ParameterValue } from "./parameters.js";
 export type {
   AsyncFailedValue,
