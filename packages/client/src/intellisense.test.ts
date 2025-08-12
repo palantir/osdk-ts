@@ -155,7 +155,7 @@ describe("intellisense", () => {
     // order by relevance
     const { resp: resp3 } = await tsServer.sendCompletionsRequest({
       file: intellisenseFilePath,
-      line: 39,
+      line: 38,
       offset: 14,
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
