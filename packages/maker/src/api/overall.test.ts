@@ -7398,6 +7398,13 @@ describe("Ontology Defining", () => {
                           "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
+                              "prefill": {
+                                "objectParameterPropertyValue": {
+                                  "parameterId": "objectToModifyParameter",
+                                  "propertyTypeId": "bar",
+                                },
+                                "type": "objectParameterPropertyValue",
+                              },
                               "renderHint": {
                                 "textInput": {},
                                 "type": "textInput",
@@ -10442,6 +10449,13 @@ describe("Ontology Defining", () => {
                           "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
+                              "prefill": {
+                                "objectParameterPropertyValue": {
+                                  "parameterId": "objectToModifyParameter",
+                                  "propertyTypeId": "numbers",
+                                },
+                                "type": "objectParameterPropertyValue",
+                              },
                               "renderHint": {
                                 "numericInput": {},
                                 "type": "numericInput",
@@ -10501,6 +10515,13 @@ describe("Ontology Defining", () => {
                           "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
+                              "prefill": {
+                                "objectParameterPropertyValue": {
+                                  "parameterId": "objectToModifyParameter",
+                                  "propertyTypeId": "singleValue",
+                                },
+                                "type": "objectParameterPropertyValue",
+                              },
                               "renderHint": {
                                 "textInput": {},
                                 "type": "textInput",
@@ -10529,6 +10550,13 @@ describe("Ontology Defining", () => {
                           "conditionalOverrides": [],
                           "defaultValidation": {
                             "display": {
+                              "prefill": {
+                                "objectParameterPropertyValue": {
+                                  "parameterId": "objectToModifyParameter",
+                                  "propertyTypeId": "tags",
+                                },
+                                "type": "objectParameterPropertyValue",
+                              },
                               "renderHint": {
                                 "textInput": {},
                                 "type": "textInput",
