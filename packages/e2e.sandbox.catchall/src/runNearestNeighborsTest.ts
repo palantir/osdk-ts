@@ -36,10 +36,8 @@ export async function runNearestNeighborsTest(): Promise<void> {
     10,
     "embedding",
   ).fetchPage();
-  // result.data.forEach(s => console.log(s.orderTitle));
+  result.data.forEach(s => console.log(s.orderTitle));
   validateCount(10, result.data);
-
-
 
   // Fetch page with errors
   const { value: resultWithErrors } = await client(MatthewvsDevOrderEmbedding)
@@ -76,18 +74,20 @@ export async function runNearestNeighborsTest(): Promise<void> {
   const { data: res } = await nestedResult;
   validateCount(2, res);
 
-
   // relevancy ordering tests
-  const { data: resOrdered} = await client(MatthewvsDevOrderEmbedding).nearestNeighbors(
-    "coffee",
-    10,
-    "embedding",
-  ).fetchPage({$orderBy: "relevance"});
+  const { data: resOrdered } = await client(MatthewvsDevOrderEmbedding)
+    .nearestNeighbors(
+      "coffee",
+      10,
+      "embedding",
+    ).fetchPage({ $orderBy: "relevance" });
 
-  var prevValue = 0;
+  let prevValueOrdered = 1.0;
   for (const obj of resOrdered) {
-    const currentvalue = obj.$score;
-    invariant(currentvalue > prevValue);
+    console.log(obj);
+    const currentValue = obj.$score;
+    invariant(currentValue <= prevValueOrdered, "b");
+    prevValueOrdered = currentValue;
   }
 
   const asyncIter = client(MatthewvsDevOrderEmbedding).nearestNeighbors(
@@ -97,29 +97,30 @@ export async function runNearestNeighborsTest(): Promise<void> {
   ).asyncIter();
 
   const asyncRes = [];
-  for await(const obj of asyncIter) {
-    asyncRes.push(obj)
+  for await (const obj of asyncIter) {
+    asyncRes.push(obj);
     // @ts-expect-error
     invariant(obj.$score === undefined);
   }
   validateCount(10, asyncRes);
 
-  const asyncIterOrderedByRelevance = client(MatthewvsDevOrderEmbedding).nearestNeighbors(
-    "coffee",
-    12,
-    "embedding",
-  ).asyncIter({$orderBy: "relevance"});
+  const asyncIterOrderedByRelevance = client(MatthewvsDevOrderEmbedding)
+    .nearestNeighbors(
+      "coffee",
+      12,
+      "embedding",
+    ).asyncIter({ $orderBy: "relevance" });
 
   const asyncResOrdered = [];
-  var prevValue = 0;
-  for await(const obj of asyncIterOrderedByRelevance) {
-    asyncResOrdered.push(obj)
-    const currentvalue = obj.$score;
-    invariant(currentvalue > prevValue);
+  let prevValue = 1.0;
+  for await (const obj of asyncIterOrderedByRelevance) {
+    asyncResOrdered.push(obj);
+    const currentValue = obj.$score;
+    invariant(currentValue <= prevValue, "a");
     invariant(obj.$score !== undefined);
+    prevValue = currentValue;
   }
   validateCount(12, asyncResOrdered);
-
 
   // nearestNeighbor query on a property without an embedding (orderTitle)
   await assertThrowsExpectedError(

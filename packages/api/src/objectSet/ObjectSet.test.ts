@@ -1355,74 +1355,99 @@ describe("ObjectSet", () => {
       const nearestNeighborsObjectSet = await fauxObjectSet.nearestNeighbors(
         "textQuery",
         3,
-        "skillSetEmbedding"
-      ).fetchPage({ $orderBy: "relevance"});
+        "skillSetEmbedding",
+      ).fetchPage({ $orderBy: "relevance" });
 
-      type expectedType = Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}> & { $score: number };
+      type expectedType =
+        & Osdk.Instance<
+          EmployeeApiTest,
+          never,
+          PropertyKeys<EmployeeApiTest>,
+          {}
+        >
+        & { $score: number };
 
-      expectTypeOf(nearestNeighborsObjectSet.data[0]).toEqualTypeOf<expectedType>();
-      expectTypeOf(nearestNeighborsObjectSet.data[0]).toHaveProperty("$score")
+      expectTypeOf(nearestNeighborsObjectSet.data[0]).toEqualTypeOf<
+        expectedType
+      >();
     });
 
     it("appropriately types fetchPageWithErrors ordered by relevance", async () => {
+      const nearestNeighborsObjectSetWithErrors = await fauxObjectSet
+        .nearestNeighbors(
+          "textQuery",
+          3,
+          "skillSetEmbedding",
+        ).fetchPageWithErrors({ $orderBy: "relevance" });
 
-      const nearestNeighborsObjectSetWithErrors = await fauxObjectSet.nearestNeighbors(
-        "textQuery",
-        3,
-        "skillSetEmbedding"
-      ).fetchPageWithErrors({ $orderBy: "relevance"});
-
-      type expectedType = Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}> & { $score: number };
-      expectTypeOf(nearestNeighborsObjectSetWithErrors.value!.data[0]).toEqualTypeOf<expectedType>();
-      expectTypeOf(nearestNeighborsObjectSetWithErrors.value!.data[0]).toHaveProperty("$score")
+      type expectedType =
+        & Osdk.Instance<
+          EmployeeApiTest,
+          never,
+          PropertyKeys<EmployeeApiTest>,
+          {}
+        >
+        & { $score: number };
+      expectTypeOf(nearestNeighborsObjectSetWithErrors.value!.data[0])
+        .toEqualTypeOf<expectedType>();
     });
 
     it("appropriately types asyncIters ordered by relevance", () => {
-        const asyncIter = fauxObjectSet.nearestNeighbors(
-          "textQuery",
-          3,
-          "skillSetEmbedding"
-        ).asyncIter(
-          { $orderBy: "relevance"}
-        )
+      const asyncIter = fauxObjectSet.nearestNeighbors(
+        "textQuery",
+        3,
+        "skillSetEmbedding",
+      ).asyncIter(
+        { $orderBy: "relevance" },
+      );
 
-        type expectedType = AsyncIterableIterator<Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>, {}> & { $score: number }>;
-        expectTypeOf(asyncIter).toEqualTypeOf<expectedType>();
+      type expectedType = AsyncIterableIterator<
+        & Osdk.Instance<
+          EmployeeApiTest,
+          never,
+          PropertyKeys<EmployeeApiTest>,
+          {}
+        >
+        & { $score: number }
+      >;
+      expectTypeOf(asyncIter).toEqualTypeOf<expectedType>();
     });
 
     it("no arbitrary order bys", () => {
-        const knn = fauxObjectSet.nearestNeighbors(
-          "textQuery",
-          3,
-          "skillSetEmbedding"
-        )
+      const knn = fauxObjectSet.nearestNeighbors(
+        "textQuery",
+        3,
+        "skillSetEmbedding",
+      );
 
-        // @ts-expect-error
-        knn.fetchPage({$orderBy: "invalid"})
-        // @ts-expect-error
-        knn.fetchPageWithErrors({$orderBy: "invalid"})
-        // @ts-expect-error
-        knn.asyncIter({ $orderBy: "random"})
-    })
-
+      // @ts-expect-error
+      void knn.fetchPage({ $orderBy: "invalid" });
+      // @ts-expect-error
+      void knn.fetchPageWithErrors({ $orderBy: "invalid" });
+      // @ts-expect-error
+      void knn.asyncIter({ $orderBy: "random" });
+    });
 
     it("does not include score for property order by", async () => {
       const nearestNeighborsObjectSet = await fauxObjectSet.nearestNeighbors(
         "textQuery",
         3,
-        "skillSetEmbedding"
-      ).fetchPage({ $orderBy: { "fullName": "desc"}});
+        "skillSetEmbedding",
+      ).fetchPage({ $orderBy: { "fullName": "desc" } });
 
-      expectTypeOf(nearestNeighborsObjectSet.data[0]).not.toHaveProperty("$score")
+      expectTypeOf(nearestNeighborsObjectSet.data[0]).not.toHaveProperty(
+        "$score",
+      );
 
-      const nearestNeighborsObjectSetWithErrors = await fauxObjectSet.nearestNeighbors(
-        "textQuery",
-        3,
-        "skillSetEmbedding"
-      ).fetchPageWithErrors({ $orderBy: { "fullName": "desc"}});
+      const nearestNeighborsObjectSetWithErrors = await fauxObjectSet
+        .nearestNeighbors(
+          "textQuery",
+          3,
+          "skillSetEmbedding",
+        ).fetchPageWithErrors({ $orderBy: { "fullName": "desc" } });
 
-      expectTypeOf(nearestNeighborsObjectSetWithErrors.value?.data[0]).not.toHaveProperty("$score")
+      expectTypeOf(nearestNeighborsObjectSetWithErrors.value?.data[0]).not
+        .toHaveProperty("$score");
     });
-
   });
 });

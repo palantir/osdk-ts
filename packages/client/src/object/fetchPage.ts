@@ -200,20 +200,37 @@ export async function fetchPageInternal<
     return await fetchInterfacePage(
       client,
       objectType,
-      args as FetchPageArgs<InterfaceDefinition, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
+      args as FetchPageArgs<
+        InterfaceDefinition,
+        L,
+        R,
+        A,
+        S,
+        T,
+        never,
+        ORDER_BY_OPTIONS
+      >,
       objectSet,
       useSnapshot,
     ) as any; // fixme
-  } else if (objectType.type === "object"){
+  } else {
     return await fetchObjectPage(
       client,
       objectType,
-      args as FetchPageArgs<ObjectTypeDefinition, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
+      args as FetchPageArgs<
+        ObjectTypeDefinition,
+        L,
+        R,
+        A,
+        S,
+        T,
+        never,
+        ORDER_BY_OPTIONS
+      >,
       objectSet,
       useSnapshot,
     ) as any; // fixme
   }
-  throw new Error("TODO: Fix union matching");
 }
 
 /** @internal */
@@ -287,7 +304,16 @@ function applyFetchArgs<
     pageSize?: PageSize;
   },
 >(
-  args: FetchPageArgs<any, any, any, any, any, any, any, ObjectSetArgs.OrderByOptions<any>>,
+  args: FetchPageArgs<
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    any,
+    ObjectSetArgs.OrderByOptions<any>
+  >,
   body: X,
 ): X {
   if (args?.$nextPageToken) {

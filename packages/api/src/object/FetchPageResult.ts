@@ -19,7 +19,12 @@ import type {
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
-import type { ExtractOptions, IsNever, MaybeScore, Osdk} from "../OsdkObjectFrom.js";
+import type {
+  ExtractOptions,
+  IsNever,
+  MaybeScore,
+  Osdk,
+} from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { NullabilityAdherence, ObjectSetArgs } from "./FetchPageArgs.js";
 
@@ -55,23 +60,15 @@ export type FetchPageResult<
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
 > = PageResult<
   MaybeScore<
-    Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? never : L>,
+    Osdk.Instance<
+      Q,
+      ExtractOptions<R, S, T>,
+      PropertyKeys<Q> extends L ? never : L
+    >,
     ORDER_BY_OPTIONS
   >
 >;
-// export type FetchPageResult<
-//   Q extends ObjectOrInterfaceDefinition,
-//   L extends PropertyKeys<Q>,
-//   R extends boolean,
-//   S extends NullabilityAdherence,
-//   T extends boolean = false,
-//   Z extends ObjectSetArgs.OrderByOptions<L> = {},
-// > = PageResult<
-//   PropertyKeys<Q> extends L
-//       ? MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>>, Z>
-//       : MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, L>, Z>
-// >;
-//
+
 /**
  * Helper type for converting fetch options into an Osdk object
  */
@@ -83,13 +80,15 @@ export type SingleOsdkResult<
   RDPs extends Record<string, SimplePropertyDef> = {},
   T extends boolean = false,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
-> = MaybeScore<Osdk.Instance<
-      Q,
-      ExtractOptions<R, S, T>,
-      PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
-      { [K in Extract<keyof RDPs, L>]: RDPs[K] }
-    >, ORDER_BY_OPTIONS>;
-
+> = MaybeScore<
+  Osdk.Instance<
+    Q,
+    ExtractOptions<R, S, T>,
+    PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
+    { [K in Extract<keyof RDPs, L>]: RDPs[K] }
+  >,
+  ORDER_BY_OPTIONS
+>;
 
 export type IsAny<T> = unknown extends T
   ? [keyof T] extends [never] ? false : true

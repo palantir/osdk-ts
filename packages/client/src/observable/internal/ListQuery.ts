@@ -88,7 +88,7 @@ export interface BaseListCacheKey<
 export const API_NAME_IDX = 1;
 export const TYPE_IDX = 0;
 export const WHERE_IDX = 2;
-export const ORDER_BY_OPTIONS_IDX = 3;
+export const ORDER_BY_IDX = 3;
 
 export interface ListQueryOptions extends CommonObserveOptions {
   pageSize?: number;
