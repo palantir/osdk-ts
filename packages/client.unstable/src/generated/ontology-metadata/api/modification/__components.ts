@@ -628,6 +628,7 @@ export interface InterfaceTypeModification {
   properties: Array<_api_SharedPropertyTypeRidOrIdInRequest>;
   propertiesV2: Array<InterfaceSharedPropertyTypeModification>;
   propertiesV3: Array<InterfacePropertyTypeModificationWithRidOrIdInRequest>;
+  provenance?: EntityProvenanceModification | null | undefined;
   searchable?: boolean | null | undefined;
   status: _api_InterfaceTypeStatus;
 }

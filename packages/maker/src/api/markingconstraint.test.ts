@@ -46,7 +46,7 @@ describe("Marking Constraints", () => {
     });
 
     const ontology = dumpOntologyFullMetadata();
-    const classificationConstraint = ontology.blockData
+    const classificationConstraint = ontology.ontology
       .objectTypes["com.palantir.document"].datasources[0].dataSecurity
       ?.classificationConstraint!;
     expect(classificationConstraint.markingGroupName).toEqual(
@@ -86,7 +86,7 @@ describe("Marking Constraints", () => {
     });
 
     const ontology = dumpOntologyFullMetadata();
-    const dataSecurity = ontology.blockData.objectTypes["com.palantir.document"]
+    const dataSecurity = ontology.ontology.objectTypes["com.palantir.document"]
       .datasources[0].dataSecurity!;
     expect(dataSecurity.markingConstraint!.markingGroupName).toEqual(
       "mandatoryMarkingGroup",
@@ -117,7 +117,7 @@ describe("Marking Constraints", () => {
 
     const ontology = dumpOntologyFullMetadata();
     const datasource =
-      ontology.blockData.objectTypes["com.palantir.document"].datasources[0];
+      ontology.ontology.objectTypes["com.palantir.document"].datasources[0];
     expect(datasource).not.toHaveProperty("dataSecurity");
   });
 });
