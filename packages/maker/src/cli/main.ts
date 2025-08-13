@@ -109,7 +109,7 @@ export default async function main(
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
   await fs.writeFile(
     commandLineOpts.output,
-    JSON.stringify(ontology.ontology, null, 2),
+    JSON.stringify(ontology, null, 2),
   );
   // No point in generating block if there aren't any value types
   if (ontology.valueTypes.valueTypes.length > 0) {
