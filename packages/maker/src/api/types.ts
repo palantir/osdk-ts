@@ -896,7 +896,6 @@ export type ActionParameterTypePrimitive =
   | "date"
   | "dateList"
   | "objectTypeReference"
-  | "objectReference"
   | "attachment"
   | "attachmentList"
   | "marking"

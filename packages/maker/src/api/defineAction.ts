@@ -698,12 +698,24 @@ function createParameters(
   defaultRequired: boolean,
 ): Array<ActionParameter> {
   const parameterNames = Array.from(parameterSet);
+  // prefix objectReference parameters with the namespace
+  parameterNames.forEach(name => {
+    if (
+      typeof def.parameterConfiguration?.[name]?.type === "object"
+      && def.parameterConfiguration?.[name]?.type.type === "objectReference"
+    ) {
+      def.parameterConfiguration[name].type.objectReference.objectTypeId =
+        sanitize(
+          def.parameterConfiguration[name].type.objectReference.objectTypeId,
+        );
+    }
+  });
   return Array.from(parameterNames).map(
     id => (
       {
         id,
         displayName: def.parameterConfiguration?.[id]?.displayName
-          ?? def.objectType.properties?.[id].displayName
+          ?? def.objectType.properties?.[id]?.displayName
           ?? convertToDisplayName(id),
         type: def.parameterConfiguration?.[id]?.type
           ?? extractActionParameterType(def.objectType.properties?.[id]!),
@@ -871,9 +883,6 @@ function extractAllowedValuesFromActionParameterType(
     case "geotimeSeriesReference":
     case "geotimeSeriesReferenceList":
       return { type: "geotimeSeriesReference" };
-    case "objectReference":
-    case "objectTypeReference":
-      return { type: "objectQuery" };
     case "attachment":
     case "attachmentList":
       return { type: "attachment" };
