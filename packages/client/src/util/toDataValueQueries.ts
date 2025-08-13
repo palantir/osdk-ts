@@ -132,7 +132,8 @@ export async function toDataValueQueries(
         };
       }
     }
-    case "objectSet": {
+    case "objectSet":
+    case "interfaceObjectSet": {
       // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
       if (isWireObjectSet(value)) {
         return value;

@@ -1160,6 +1160,7 @@ export interface PropertyValueWireToClient {
 }
 
 // Warning: (ae-forgotten-export) The symbol "PrimitiveDataType" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "InterfaceObjectSetQueryDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "SetQueryDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "UnionQueryDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "StructQueryDataType" needs to be exported by the entry point index.d.ts
@@ -1168,7 +1169,7 @@ export interface PropertyValueWireToClient {
 // Warning: (ae-forgotten-export) The symbol "MapDataType" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type QueryDataTypeDefinition<T_Target extends ObjectOrInterfaceDefinition = any> = PrimitiveDataType | ObjectQueryDataType<T_Target> | InterfaceQueryDataType<T_Target> | ObjectSetQueryDataType<T_Target> | SetQueryDataType | UnionQueryDataType | StructQueryDataType | TwoDimensionalAggregationDataType | ThreeDimensionalAggregationDataType | MapDataType;
+export type QueryDataTypeDefinition<T_Target extends ObjectOrInterfaceDefinition = any> = PrimitiveDataType | ObjectQueryDataType<T_Target> | InterfaceQueryDataType<T_Target> | ObjectSetQueryDataType<T_Target> | InterfaceObjectSetQueryDataType<T_Target> | SetQueryDataType | UnionQueryDataType | StructQueryDataType | TwoDimensionalAggregationDataType | ThreeDimensionalAggregationDataType | MapDataType;
 
 // @public (undocumented)
 export interface QueryDefinition<T = any> {
@@ -1215,6 +1216,11 @@ export namespace QueryParam {
         		$objectType: CompileTimeMetadata<T> extends {
             			implementedBy: infer U
             		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
+        		$primaryKey: string | number
+        		$apiName?: never
+        	} | {
+        		$apiName: T["apiName"]
+        		$objectType: string
         		$primaryKey: string | number
         	};
     	// (undocumented)

@@ -68,7 +68,7 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
       };
     case "interfaceObjectSet":
       return {
-        type: "objectSet",
+        type: "interfaceObjectSet",
         objectSet: input.interfaceTypeApiName as K,
         nullable: false,
       };

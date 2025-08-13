@@ -369,6 +369,13 @@ export function getQueryParamType(
       }>`;
       break;
 
+    case "interfaceObjectSet":
+      inner = `Query${type}.ObjectSetType<${
+        enhancedOntology.requireInterfaceType(input.objectSet)
+          .getImportedDefinitionIdentifier(true)
+      }>`;
+      break;
+
     case "set":
       inner = `${type === "Param" ? "Readonly" : ""}Set<${
         getQueryParamType(enhancedOntology, input.set, type)

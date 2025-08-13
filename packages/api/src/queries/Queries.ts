@@ -65,6 +65,11 @@ export namespace QueryParam {
         : string)
       : string;
     $primaryKey: string | number;
+    $apiName?: never;
+  } | {
+    $apiName: T["apiName"];
+    $objectType: string;
+    $primaryKey: string | number;
   };
 
   /**

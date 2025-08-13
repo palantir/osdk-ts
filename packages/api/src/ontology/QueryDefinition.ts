@@ -57,6 +57,7 @@ export type QueryDataTypeDefinition<
   | ObjectQueryDataType<T_Target>
   | InterfaceQueryDataType<T_Target>
   | ObjectSetQueryDataType<T_Target>
+  | InterfaceObjectSetQueryDataType<T_Target>
   | SetQueryDataType
   | UnionQueryDataType
   | StructQueryDataType
@@ -102,6 +103,13 @@ export interface InterfaceQueryDataType<
 export interface ObjectSetQueryDataType<
   T_Target extends ObjectOrInterfaceDefinition = never,
 > extends BaseQueryDataTypeDefinition<"objectSet"> {
+  objectSet: string;
+  __OsdkTargetType?: T_Target;
+}
+
+export interface InterfaceObjectSetQueryDataType<
+  T_Target extends ObjectOrInterfaceDefinition = never,
+> extends BaseQueryDataTypeDefinition<"interfaceObjectSet"> {
   objectSet: string;
   __OsdkTargetType?: T_Target;
 }

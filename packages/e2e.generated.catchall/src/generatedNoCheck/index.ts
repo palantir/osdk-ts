@@ -15,7 +15,7 @@ export {
   editOsdkTestObject,
 } from './ontology/actions.js';
 export * as $Actions from './ontology/actions.js';
-export { Athlete, FooInterface, InterfaceNoProps, OsdkTestInterface } from './ontology/interfaces.js';
+export { Athlete, bus_1, FooInterface, InterfaceNoProps, OsdkTestInterface } from './ontology/interfaces.js';
 export * as $Interfaces from './ontology/interfaces.js';
 export {
   BgaoNflPlayer,
@@ -46,7 +46,15 @@ export {
   WeatherStation,
 } from './ontology/objects.js';
 export * as $Objects from './ontology/objects.js';
-export { getNamesOfCustomersFromCountry, getTodoCount, queryTakesAllParameterTypes } from './ontology/queries.js';
+export {
+  getBusFromSet,
+  getBusId,
+  getBusInterface,
+  getBusInterfaceSet,
+  getNamesOfCustomersFromCountry,
+  getTodoCount,
+  queryTakesAllParameterTypes,
+} from './ontology/queries.js';
 export * as $Queries from './ontology/queries.js';
 export { $osdkMetadata } from './OntologyMetadata.js';
 export { $ontologyRid } from './OntologyMetadata.js';
