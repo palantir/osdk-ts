@@ -1,5 +1,11 @@
 # @osdk/widget.api
 
+## 3.1.0-beta.3
+
+### Minor Changes
+
+- c09f545: Drop support for Sandbox v1 in widget client
+
 ## 3.1.0-beta.2
 
 ## 3.0.0-beta.6

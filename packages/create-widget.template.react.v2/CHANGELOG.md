@@ -1,5 +1,11 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.1.0-beta.3
+
+### Minor Changes
+
+- 058df50: Include osdk client creation example in widget template
+
 ## 3.1.0-beta.2
 
 ### Minor Changes
