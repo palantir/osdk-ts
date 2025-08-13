@@ -114,7 +114,7 @@ export function defineCreateInterfaceObjectAction(
           required: (prop.sharedPropertyType.array ?? false)
             ? { listLength: {} }
             : prop.required,
-          allowedValues: extractAllowedValuesFromType(
+          allowedValues: extractAllowedValuesFromPropertyType(
             prop.sharedPropertyType.type,
           ),
         },
@@ -157,14 +157,14 @@ export function defineCreateObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
   validateActionParameters(def);
-  const parameterNames = new Set(
-    Object.keys(def.objectType.properties ?? {}).filter(
+  const propertyParameters = Object.keys(def.objectType.properties ?? {})
+    .filter(
       id =>
         !Object.keys(def.nonParameterMappings ?? {}).includes(id)
         && !def.excludedProperties?.includes(id)
         && !isStruct(def.objectType.properties?.[id].type!),
-    ),
-  );
+    );
+  const parameterNames = new Set(propertyParameters);
   Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
     parameterNames.add(param)
   );
@@ -206,8 +206,8 @@ export function defineCreateObjectAction(
         objectTypeId: def.objectType.apiName,
         propertyValues: {
           ...Object.fromEntries(
-            parameters.map(
-              p => [p.id, { type: "parameterId", parameterId: p.id }],
+            propertyParameters.map(
+              p => [p, { type: "parameterId", parameterId: p }],
             ),
           ),
           ...mappings,
@@ -296,7 +296,7 @@ export function defineModifyInterfaceObjectAction(
           required: (prop.sharedPropertyType.array ?? false)
             ? { listLength: {} }
             : prop.required,
-          allowedValues: extractAllowedValuesFromType(
+          allowedValues: extractAllowedValuesFromPropertyType(
             prop.sharedPropertyType.type,
           ),
         },
@@ -338,15 +338,15 @@ export function defineModifyObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
   validateActionParameters(def);
-  const parameterNames = new Set(
-    Object.keys(def.objectType.properties ?? {}).filter(
+  const propertyParameters = Object.keys(def.objectType.properties ?? {})
+    .filter(
       id =>
         !Object.keys(def.nonParameterMappings ?? {}).includes(id)
         && !def.excludedProperties?.includes(id)
         && !isStruct(def.objectType.properties?.[id].type!)
         && id !== def.objectType.primaryKeyPropertyApiName,
-    ),
-  );
+    );
+  const parameterNames = new Set(propertyParameters);
   Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
     parameterNames.add(param)
   );
@@ -410,8 +410,8 @@ export function defineModifyObjectAction(
         objectToModify: "objectToModifyParameter",
         propertyValues: {
           ...Object.fromEntries(
-            parameters.map(
-              p => [p.id, { type: "parameterId", parameterId: p.id }],
+            propertyParameters.map(
+              p => [p, { type: "parameterId", parameterId: p }],
             ),
           ),
           ...mappings,
@@ -496,14 +496,14 @@ export function defineCreateOrModifyObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
   validateActionParameters(def);
-  const parameterNames = new Set(
-    Object.keys(def.objectType.properties ?? {}).filter(
+  const propertyParameters = Object.keys(def.objectType.properties ?? {})
+    .filter(
       id =>
         !def.excludedProperties?.includes(id)
         && !isStruct(def.objectType.properties?.[id].type!)
         && id !== def.objectType.primaryKeyPropertyApiName,
-    ),
-  );
+    );
+  const parameterNames = new Set(propertyParameters);
   Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
     parameterNames.add(param)
   );
@@ -579,8 +579,8 @@ export function defineCreateOrModifyObjectAction(
         objectToModify: "objectToCreateOrModifyParameter",
         propertyValues: {
           ...Object.fromEntries(
-            parameters.map(
-              p => [p.id, { type: "parameterId", parameterId: p.id }],
+            propertyParameters.map(
+              p => [p, { type: "parameterId", parameterId: p }],
             ),
           ),
           ...mappings,
@@ -711,9 +711,13 @@ function createParameters(
           ? {
             ...def.parameterConfiguration?.[id],
             allowedValues: def.parameterConfiguration?.[id].allowedValues
-              ?? extractAllowedValuesFromType(
-                def.objectType.properties?.[id].type!,
-              ),
+              ?? (def.parameterConfiguration?.[id].type
+                ? extractAllowedValuesFromActionParameterType(
+                  def.parameterConfiguration?.[id].type,
+                )
+                : extractAllowedValuesFromPropertyType(
+                  def.objectType.properties?.[id].type!,
+                )),
             required: def.parameterConfiguration?.[id].required
               ?? defaultRequired,
           }
@@ -727,7 +731,7 @@ function createParameters(
               }
               : def.objectType.properties?.[id].nullability?.noNulls
                 ?? defaultRequired,
-            allowedValues: extractAllowedValuesFromType(
+            allowedValues: extractAllowedValuesFromPropertyType(
               def.objectType.properties?.[id].type!,
             ),
           },
@@ -817,14 +821,70 @@ function referencedParameterIds(
   return parameterIds;
 }
 
-// function extractAllowedValuesFromActionParameterType(
-//   type: ActionParameterType
-// ): ActionParameterAllowedValues {
-//   switch (type.type)
+function extractAllowedValuesFromActionParameterType(
+  type: ActionParameterType,
+): ActionParameterAllowedValues {
+  if (typeof type === "object") {
+    switch (type.type) {
+      case "objectReference":
+      case "objectReferenceList":
+        return { type: "objectQuery" };
+      case "struct":
+      case "structList":
+        throw new Error("Structs are not supported yet");
+      default:
+        throw new Error(
+          `Inferred allowed values for ${type.type} not yet supported. Please explicitly provide allowed values.`,
+        );
+    }
+  }
+  switch (type) {
+    case "boolean":
+    case "booleanList":
+      return { type: "boolean" };
+    case "integer":
+    case "integerList":
+    case "decimal":
+    case "decimalList":
+    case "double":
+    case "doubleList":
+    case "long":
+    case "longList":
+      return { type: "range" };
+    case "timestamp":
+    case "timestampList":
+    case "date":
+    case "dateList":
+      return { type: "datetime" };
+    case "string":
+    case "stringList":
+      return { type: "text" };
+    case "geohash":
+    case "geohashList":
+      return { type: "geohash" };
+    case "geoshape":
+    case "geoshapeList":
+      return { type: "geoshape" };
+    case "mediaReference":
+    case "mediaReferenceList":
+      return { type: "mediaReference" };
+    case "geotimeSeriesReference":
+    case "geotimeSeriesReferenceList":
+      return { type: "geotimeSeriesReference" };
+    case "objectReference":
+    case "objectTypeReference":
+      return { type: "objectQuery" };
+    case "attachment":
+    case "attachmentList":
+      return { type: "attachment" };
+    default:
+      throw new Error(
+        `Inferred allowed values for ${type} not yet supported. Please explicitly provide allowed values.`,
+      );
+  }
+}
 
-// }
-
-function extractAllowedValuesFromType(
+function extractAllowedValuesFromPropertyType(
   type: PropertyTypeType,
 ): ActionParameterAllowedValues {
   switch (type) {
