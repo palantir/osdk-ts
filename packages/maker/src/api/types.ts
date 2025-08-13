@@ -183,6 +183,8 @@ export interface ActionParameterConfiguration {
   defaultValue?: OntologyIrParameterPrefill;
   displayName?: string;
   description?: string;
+  // should only be used on non-property parameters
+  customParameterType?: ActionParameterType;
 }
 
 export type ActionSection = {
@@ -894,7 +896,6 @@ export type ActionParameterTypePrimitive =
   | "date"
   | "dateList"
   | "objectTypeReference"
-  | "objectReference"
   | "attachment"
   | "attachmentList"
   | "marking"
