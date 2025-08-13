@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.12.0-beta.17
+
+### Minor Changes
+
+- f1f587b: Support custom parameters in OAC actions
+- 641bc0c: Fix create-or-modify non parameter mapped property bug
+- 25bae67: OAC modify object actions set parameter defaults to match the selected object
+- 5c76e33: Trim value type before putting it in SPT IR
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.14
+
 ## 0.12.0-beta.16
 
 ### Patch Changes
