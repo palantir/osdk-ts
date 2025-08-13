@@ -1,5 +1,51 @@
 # @osdk/client
 
+## 2.4.0-beta.13
+
+### Minor Changes
+
+- 4bc848b: Add interface link support.
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/generator-converters@2.4.0-beta.13
+  - @osdk/api@2.4.0-beta.13
+  - @osdk/client.unstable@2.4.0-beta.13
+
+## 2.4.0-beta.12
+
+### Minor Changes
+
+- 402eb67: Fix hydrate to support interface object sets.
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.12
+- @osdk/client.unstable@2.4.0-beta.12
+- @osdk/generator-converters@2.4.0-beta.12
+
+## 2.4.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [f277b30]
+  - @osdk/generator-converters@2.4.0-beta.11
+  - @osdk/api@2.4.0-beta.11
+  - @osdk/client.unstable@2.4.0-beta.11
+
+## 2.4.0-beta.10
+
+### Minor Changes
+
+- f022ffe: Add experimental transactions shape
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.10
+- @osdk/client.unstable@2.4.0-beta.10
+- @osdk/generator-converters@2.4.0-beta.10
+
 ## 2.4.0-beta.9
 
 ### Minor Changes

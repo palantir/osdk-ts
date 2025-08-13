@@ -666,7 +666,27 @@ export interface InterfaceMetadata extends ObjectInterfaceBaseMetadata {
     	// (undocumented)
     implementedBy?: ReadonlyArray<string>;
     	// (undocumented)
+    links: Record<string, InterfaceMetadata.Link<any, any>>;
+    	// (undocumented)
     type: "interface";
+}
+
+// @public (undocumented)
+export namespace InterfaceMetadata {
+    	// (undocumented)
+    export interface Link<
+    		Q extends ObjectTypeDefinition | InterfaceDefinition,
+    		M extends boolean
+    	> {
+        		// (undocumented)
+        __OsdkLinkTargetType?: Q;
+        		// (undocumented)
+        multiplicity: M;
+        		// (undocumented)
+        targetType: Q["type"];
+        		// (undocumented)
+        targetTypeApiName: Q["apiName"];
+        	}
 }
 
 // Warning: (ae-forgotten-export) The symbol "BaseQueryDataTypeDefinition" needs to be exported by the entry point index.d.ts
@@ -691,7 +711,7 @@ export type LinkedType<
 > = NonNullable<CompileTimeMetadata<Q>["links"][L]["__OsdkLinkTargetType"]>;
 
 // @public (undocumented)
-export type LinkNames<Q extends ObjectOrInterfaceDefinition> = keyof CompileTimeMetadata<Q>["links"] & string;
+export type LinkNames<Q extends ObjectOrInterfaceDefinition> = Q extends InterfaceDefinition ? keyof CompileTimeMetadata<Q>["links"] : keyof CompileTimeMetadata<Q>["links"] & string;
 
 // @public (undocumented)
 export interface Logger {
@@ -799,6 +819,8 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
     interfaceMap: Record<string, Record<string, string>>;
     	// (undocumented)
     inverseInterfaceMap: Record<string, Record<string, string>>;
+    	// (undocumented)
+    links: Record<string, ObjectMetadata.Link<any, any>>;
     	// (undocumented)
     pluralDisplayName: string;
     	// (undocumented)

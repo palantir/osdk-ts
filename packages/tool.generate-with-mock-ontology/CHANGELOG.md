@@ -1,5 +1,40 @@
 # @osdk/tool.generate-with-mock-ontology
 
+## 0.4.0-beta.13
+
+### Minor Changes
+
+- 4bc848b: Add interface link support.
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/client@2.4.0-beta.13
+  - @osdk/api@2.4.0-beta.13
+
+## 0.4.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [402eb67]
+  - @osdk/client@2.4.0-beta.12
+  - @osdk/api@2.4.0-beta.12
+
+## 0.4.0-beta.11
+
+### Patch Changes
+
+- @osdk/client@2.4.0-beta.11
+- @osdk/api@2.4.0-beta.11
+
+## 0.4.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [f022ffe]
+  - @osdk/client@2.4.0-beta.10
+  - @osdk/api@2.4.0-beta.10
+
 ## 0.4.0-beta.9
 
 ### Patch Changes

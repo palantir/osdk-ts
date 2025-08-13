@@ -20,7 +20,7 @@ import type { DataValueWireToClient } from '@osdk/api';
 import type { Experiment } from '@osdk/api/unstable';
 import type { ExperimentFns } from '@osdk/api/unstable';
 import { InterfaceDefinition } from '@osdk/api';
-import type { InterfaceMetadata } from '@osdk/api';
+import { InterfaceMetadata } from '@osdk/api';
 import type { InterfaceQueryDataType } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import { Logger } from '@osdk/api';
@@ -139,6 +139,8 @@ export const extractDateInLocalTime: (date: Date) => string;
 export const extractDateInUTC: (date: Date) => string;
 
 export { InterfaceDefinition }
+
+export { InterfaceMetadata }
 
 export { isOk }
 

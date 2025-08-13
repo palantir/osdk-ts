@@ -3,6 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type {
   InterfaceDefinition as $InterfaceDefinition,
+  InterfaceMetadata as $InterfaceMetadata,
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
@@ -47,7 +48,7 @@ export interface bus_1 extends $InterfaceDefinition {
     apiName: 'bus_1';
     description: '';
     displayName: 'Bus';
-    implementedBy: ['TestBus', 'KaguinaldoNycBusTrip', 'EdgeXWmataBusNoGeotime', 'WmataBus'];
+    implementedBy: ['EdgeXWmataBusNoGeotime', 'KaguinaldoNycBusTrip', 'TestBus', 'WmataBus'];
     implements: [];
     links: {};
     properties: {

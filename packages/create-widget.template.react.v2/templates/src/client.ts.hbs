@@ -1,0 +1,8 @@
+import { $ontologyRid } from "{{osdkPackage}}";
+import { createClient } from "@osdk/client";
+
+export const client = createClient(
+  window.location.origin,
+  $ontologyRid,
+  () => Promise.resolve("widgets-auth"),
+);

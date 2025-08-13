@@ -30,7 +30,12 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
     displayName: interfaceType.displayName,
     description: interfaceType.description,
     implements: interfaceType.allExtendsInterfaces
-      ?? interfaceType.extendsInterfaces,
+      ? [...interfaceType.allExtendsInterfaces].sort((a, b) =>
+        a.localeCompare(b)
+      )
+      : interfaceType.extendsInterfaces
+      ? [...interfaceType.extendsInterfaces].sort((a, b) => a.localeCompare(b))
+      : undefined,
     properties: Object.fromEntries(
       Object.entries(interfaceType.allProperties ?? interfaceType.properties)
         .map((
@@ -44,9 +49,25 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
               log,
             ),
           ];
-        }).filter(([key, value]) => value != null),
+        }).filter(([_, value]) => value != null),
     ),
-    links: {},
-    implementedBy: interfaceType.implementedByObjectTypes,
+    links: Object.fromEntries(
+      Object.entries(interfaceType.allLinks ?? interfaceType.links ?? {}).map(
+        (
+          [linkApiName, linkType],
+        ) => [linkApiName, {
+          multiplicity: linkType.cardinality === "MANY",
+          targetTypeApiName: linkType.linkedEntityApiName.apiName,
+          targetType: linkType.linkedEntityApiName.type === "objectTypeApiName"
+            ? "object"
+            : "interface",
+        }],
+      ),
+    ),
+    implementedBy: interfaceType.implementedByObjectTypes
+      ? [...interfaceType.implementedByObjectTypes].sort((a, b) =>
+        a.localeCompare(b)
+      )
+      : interfaceType.implementedByObjectTypes,
   };
 }
