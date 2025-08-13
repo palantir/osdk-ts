@@ -156,22 +156,17 @@ export function defineCreateInterfaceObjectAction(
 export function defineCreateObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
-  [
-    ...Object.keys(def.parameterConfiguration ?? {}),
-    ...Object.keys(def.nonParameterMappings ?? {}),
-    ...def.excludedProperties ?? [],
-  ].forEach(id => {
-    invariant(
-      def.objectType.properties?.[id] !== undefined,
-      `Property ${id} does not exist on ${def.objectType.apiName}`,
-    );
-  });
-
-  const parameterNames = Object.keys(def.objectType.properties ?? {}).filter(
-    id =>
-      !Object.keys(def.nonParameterMappings ?? {}).includes(id)
-      && !def.excludedProperties?.includes(id)
-      && !isStruct(def.objectType.properties?.[id].type!),
+  validateActionParameters(def);
+  const parameterNames = new Set(
+    Object.keys(def.objectType.properties ?? {}).filter(
+      id =>
+        !Object.keys(def.nonParameterMappings ?? {}).includes(id)
+        && !def.excludedProperties?.includes(id)
+        && !isStruct(def.objectType.properties?.[id].type!),
+    ),
+  );
+  Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
+    parameterNames.add(param)
   );
   if (def.parameterOrdering) {
     const sortedOrdering = [...def.parameterOrdering].sort();
@@ -342,23 +337,18 @@ export function defineModifyInterfaceObjectAction(
 export function defineModifyObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
-  [
-    ...Object.keys(def.parameterConfiguration ?? {}),
-    ...Object.keys(def.nonParameterMappings ?? {}),
-    ...def.excludedProperties ?? [],
-  ].forEach(id => {
-    invariant(
-      def.objectType.properties?.[id] !== undefined,
-      `Property ${id} does not exist on ${def.objectType.apiName}`,
-    );
-  });
-
-  const parameterNames = Object.keys(def.objectType.properties ?? {}).filter(
-    id =>
-      !Object.keys(def.nonParameterMappings ?? {}).includes(id)
-      && !def.excludedProperties?.includes(id)
-      && !isStruct(def.objectType.properties?.[id].type!)
-      && id !== def.objectType.primaryKeyPropertyApiName,
+  validateActionParameters(def);
+  const parameterNames = new Set(
+    Object.keys(def.objectType.properties ?? {}).filter(
+      id =>
+        !Object.keys(def.nonParameterMappings ?? {}).includes(id)
+        && !def.excludedProperties?.includes(id)
+        && !isStruct(def.objectType.properties?.[id].type!)
+        && id !== def.objectType.primaryKeyPropertyApiName,
+    ),
+  );
+  Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
+    parameterNames.add(param)
   );
   if (def.parameterOrdering) {
     const sortedOrdering = [...def.parameterOrdering].sort();
@@ -505,24 +495,17 @@ export function defineDeleteObjectAction(
 export function defineCreateOrModifyObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
-  Object.keys(def.parameterConfiguration ?? {}).forEach(id => {
-    invariant(
-      def.objectType.properties?.[id] !== undefined,
-      `Property ${id} does not exist on ${def.objectType.apiName}`,
-    );
-  });
-  (def.excludedProperties ?? []).forEach(id => {
-    invariant(
-      def.objectType.properties?.[id] !== undefined,
-      `Property ${id} does not exist on ${def.objectType.apiName}`,
-    );
-  });
-
-  const parameterNames = Object.keys(def.objectType.properties ?? {}).filter(
-    id =>
-      !def.excludedProperties?.includes(id)
-      && !isStruct(def.objectType.properties?.[id].type!)
-      && id !== def.objectType.primaryKeyPropertyApiName,
+  validateActionParameters(def);
+  const parameterNames = new Set(
+    Object.keys(def.objectType.properties ?? {}).filter(
+      id =>
+        !def.excludedProperties?.includes(id)
+        && !isStruct(def.objectType.properties?.[id].type!)
+        && id !== def.objectType.primaryKeyPropertyApiName,
+    ),
+  );
+  Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
+    parameterNames.add(param)
   );
   if (def.parameterOrdering) {
     const sortedOrdering = [...def.parameterOrdering].sort();
@@ -711,9 +694,10 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
 
 function createParameters(
   def: ActionTypeUserDefinition,
-  parameterNames: string[],
+  parameterSet: Set<string>,
   defaultRequired: boolean,
 ): Array<ActionParameter> {
+  const parameterNames = Array.from(parameterSet);
   return Array.from(parameterNames).map(
     id => (
       {
@@ -721,7 +705,8 @@ function createParameters(
         displayName: def.parameterConfiguration?.[id]?.displayName
           ?? def.objectType.properties?.[id].displayName
           ?? convertToDisplayName(id),
-        type: extractActionParameterType(def.objectType.properties?.[id]!),
+        type: def.parameterConfiguration?.[id]?.type
+          ?? extractActionParameterType(def.objectType.properties?.[id]!),
         validation: (def.parameterConfiguration?.[id] !== undefined)
           ? {
             ...def.parameterConfiguration?.[id],
@@ -831,6 +816,13 @@ function referencedParameterIds(
   });
   return parameterIds;
 }
+
+// function extractAllowedValuesFromActionParameterType(
+//   type: ActionParameterType
+// ): ActionParameterAllowedValues {
+//   switch (type.type)
+
+// }
 
 function extractAllowedValuesFromType(
   type: PropertyTypeType,
@@ -1102,4 +1094,26 @@ function validateActionCondition(
         `Unknown condition type on parameter ${currentParameterId}`,
       );
   }
+}
+
+function validateActionParameters(def: ActionTypeUserDefinition): void {
+  // validates that parameters either exist as object properties or have a type defined
+  [
+    ...Object.keys(def.parameterConfiguration ?? {}),
+  ].forEach(id => {
+    invariant(
+      def.objectType.properties?.[id] !== undefined
+        || (def.parameterConfiguration?.[id].type !== undefined),
+      `Parameter ${id} does not exist as a property on ${def.objectType.apiName} and its type is not explicitly defined`,
+    );
+  });
+  [
+    ...Object.keys(def.nonParameterMappings ?? {}),
+    ...def.excludedProperties ?? [],
+  ].forEach(id => {
+    invariant(
+      def.objectType.properties?.[id] !== undefined,
+      `Property ${id} does not exist as a property on ${def.objectType.apiName}`,
+    );
+  });
 }

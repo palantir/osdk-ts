@@ -183,6 +183,8 @@ export interface ActionParameterConfiguration {
   defaultValue?: OntologyIrParameterPrefill;
   displayName?: string;
   description?: string;
+  // should only be used on non-property parameters
+  type?: ActionParameterType;
 }
 
 export type ActionSection = {

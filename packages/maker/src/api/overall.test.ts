@@ -8698,6 +8698,60 @@ describe("Ontology Defining", () => {
       `);
     });
 
+    it("Parameter configuration, property mapping, and excluded property validations work", () => {
+      const sampleObject = defineObject({
+        apiName: "sampleObject",
+        displayName: "Test Object",
+        description: "Sample object description",
+        primaryKeyPropertyApiName: "id",
+        pluralDisplayName: "tests",
+        titlePropertyApiName: "name",
+        properties: {
+          "name": { type: "string" },
+          "id": { type: "string" },
+        },
+      });
+      expect(() => {
+        const createAction = defineCreateObjectAction({
+          objectType: sampleObject,
+          parameterConfiguration: {
+            "name": {
+              displayName: "Name",
+            },
+            "custom_parameter": {
+              displayName: "My Custom Param",
+            },
+          },
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Parameter custom_parameter does not exist as a property on com.palantir.sampleObject and its type is not explicitly defined]`,
+      );
+      expect(() => {
+        const createAction = defineCreateObjectAction({
+          objectType: sampleObject,
+          nonParameterMappings: {
+            "custom_parameter": {
+              type: "staticValue",
+              staticValue: {
+                type: "string",
+                string: "custom_value",
+              },
+            },
+          },
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleObject]`,
+      );
+      expect(() => {
+        const createAction = defineCreateObjectAction({
+          objectType: sampleObject,
+          excludedProperties: ["custom_parameter"],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleObject]`,
+      );
+    });
+
     it("Static default action parameters must match type", () => {
       const exampleObjectType = defineObject({
         titlePropertyApiName: "bar",
