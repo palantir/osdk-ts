@@ -701,12 +701,15 @@ function createParameters(
   // prefix objectReference parameters with the namespace
   parameterNames.forEach(name => {
     if (
-      typeof def.parameterConfiguration?.[name]?.type === "object"
-      && def.parameterConfiguration?.[name]?.type.type === "objectReference"
+      typeof def.parameterConfiguration?.[name]?.customParameterType
+        === "object"
+      && def.parameterConfiguration?.[name]?.customParameterType.type
+        === "objectReference"
     ) {
-      def.parameterConfiguration[name].type.objectReference.objectTypeId =
-        sanitize(
-          def.parameterConfiguration[name].type.objectReference.objectTypeId,
+      def.parameterConfiguration[name].customParameterType.objectReference
+        .objectTypeId = sanitize(
+          def.parameterConfiguration[name].customParameterType.objectReference
+            .objectTypeId,
         );
     }
   });
@@ -717,15 +720,15 @@ function createParameters(
         displayName: def.parameterConfiguration?.[id]?.displayName
           ?? def.objectType.properties?.[id]?.displayName
           ?? convertToDisplayName(id),
-        type: def.parameterConfiguration?.[id]?.type
+        type: def.parameterConfiguration?.[id]?.customParameterType
           ?? extractActionParameterType(def.objectType.properties?.[id]!),
         validation: (def.parameterConfiguration?.[id] !== undefined)
           ? {
             ...def.parameterConfiguration?.[id],
             allowedValues: def.parameterConfiguration?.[id].allowedValues
-              ?? (def.parameterConfiguration?.[id].type
+              ?? (def.parameterConfiguration?.[id].customParameterType
                 ? extractAllowedValuesFromActionParameterType(
-                  def.parameterConfiguration?.[id].type,
+                  def.parameterConfiguration?.[id].customParameterType,
                 )
                 : extractAllowedValuesFromPropertyType(
                   def.objectType.properties?.[id].type!,
@@ -1172,7 +1175,7 @@ function validateActionParameters(def: ActionTypeUserDefinition): void {
   ].forEach(id => {
     invariant(
       def.objectType.properties?.[id] !== undefined
-        || (def.parameterConfiguration?.[id].type !== undefined),
+        || (def.parameterConfiguration?.[id].customParameterType !== undefined),
       `Parameter ${id} does not exist as a property on ${def.objectType.apiName} and its type is not explicitly defined`,
     );
   });

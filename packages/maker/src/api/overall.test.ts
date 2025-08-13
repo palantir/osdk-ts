@@ -8862,7 +8862,7 @@ describe("Ontology Defining", () => {
         parameterOrdering: ["myManager", "id", "managedBy"],
         parameterConfiguration: {
           "myManager": {
-            type: {
+            customParameterType: {
               type: "objectReference",
               objectReference: {
                 objectTypeId: "manager",

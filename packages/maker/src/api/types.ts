@@ -184,7 +184,7 @@ export interface ActionParameterConfiguration {
   displayName?: string;
   description?: string;
   // should only be used on non-property parameters
-  type?: ActionParameterType;
+  customParameterType?: ActionParameterType;
 }
 
 export type ActionSection = {
