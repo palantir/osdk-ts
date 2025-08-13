@@ -35,12 +35,10 @@ export function toPropertyDataValue(
 
   if (typeof value === "object") {
     const result: Record<string, DataValue> = {};
-    for (const key in value as Record<string, unknown>) {
-      if (Object.prototype.hasOwnProperty.call(value, key)) {
-        result[key] = toPropertyDataValue(
-          (value as Record<string, unknown>)[key],
-        );
-      }
+    for (const key in value) {
+      result[key] = toPropertyDataValue(
+        (value as Record<string, unknown>)[key],
+      );
     }
     return result;
   }
