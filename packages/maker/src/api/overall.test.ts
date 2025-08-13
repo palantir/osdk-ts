@@ -8833,6 +8833,10 @@ describe("Ontology Defining", () => {
     });
 
     it("OAC defined object references as parameters are properly defined", () => {
+      // This test defines an action that creates an OAC-defined employee object type and also adds an additional parameter
+      // for an objectReference to a manager object type that is also defined in OAC. The action shows how you can use this
+      // objectReference parameter elsewhere in the action - in this case we are prefilling the managedBy property to be the
+      // id of the selected manager object type.
       const employeeObject = defineObject({
         apiName: "employee",
         displayName: "Employee",
@@ -8865,7 +8869,7 @@ describe("Ontology Defining", () => {
             customParameterType: {
               type: "objectReference",
               objectReference: {
-                objectTypeId: "manager",
+                objectTypeId: managerObject.apiName,
               },
             },
           },
