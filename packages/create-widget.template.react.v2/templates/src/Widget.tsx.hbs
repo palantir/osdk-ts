@@ -14,6 +14,16 @@ import {
 import React, { useCallback, useState } from "react";
 import { useWidgetContext } from "./context.js";
 
+// View the API documentation for your widget set to learn how to use the Ontology SDK.
+// 
+// import { $ontologyRid } from "{{osdkPackage}}";
+// import { createClient } from "@osdk/client";
+// const client = createClient(
+//     window.location.origin,
+//     $ontologyRid,
+//     () => Promise.resolve("widgets-auth"),
+// );
+
 export const Widget: React.FC = () => {
   const { parameters, emitEvent } = useWidgetContext();
   const { headerText, todoItems } = parameters.values;
