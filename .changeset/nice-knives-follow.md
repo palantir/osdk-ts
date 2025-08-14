@@ -1,6 +1,6 @@
 ---
-"@osdk/widget.vite-plugin.unstable": patch
-"@osdk/widget.api.unstable": patch
+"@osdk/widget.vite-plugin": patch
+"@osdk/widget.api": patch
 ---
 
 Discover widget set input specs

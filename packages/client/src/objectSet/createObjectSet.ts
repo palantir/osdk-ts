@@ -35,6 +35,7 @@ import type { MinimalObjectSet } from "@osdk/api/unstable";
 import type {
   DerivedPropertyDefinition,
   ObjectSet as WireObjectSet,
+  PropertyApiName,
 } from "@osdk/foundry.ontologies";
 import { createWithPropertiesObjectSet } from "../derivedProperties/createWithPropertiesObjectSet.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
@@ -149,6 +150,26 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       });
     },
 
+    nearestNeighbors: (query, numNeighbors, property) => {
+      const nearestNeighborsQuery = isTextQuery(query)
+        ? { "type": "text" as const, "value": query }
+        : { "type": "vector" as const, "value": query };
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        {
+          type: "nearestNeighbors",
+          objectSet,
+          propertyIdentifier: {
+            type: "property",
+            apiName: property as PropertyApiName,
+          },
+          numNeighbors,
+          query: nearestNeighborsQuery,
+        },
+      ) as ObjectSet<Q>;
+    },
+
     asyncIter: async function*<
       L extends PropertyKeys<Q>,
       R extends boolean,
@@ -174,6 +195,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           objectType,
           objectSet,
           { ...args, $pageSize: 10000, $nextPageToken },
+          true,
         );
         $nextPageToken = result.nextPageToken;
 
@@ -282,11 +304,17 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return clientCtx.objectSetFactory(
         objectType,
         clientCtx,
-        {
-          type: "searchAround",
-          objectSet,
-          link,
-        },
+        objectType.type === "object"
+          ? {
+            type: "searchAround",
+            objectSet,
+            link,
+          }
+          : {
+            type: "interfaceLinkSearchAround",
+            objectSet,
+            interfaceLink: link,
+          },
       );
     };
   }
@@ -318,4 +346,8 @@ async function createWithPk(
     },
   };
   return withPk;
+}
+
+function isTextQuery(query: string | number[]): query is string {
+  return typeof query === "string";
 }

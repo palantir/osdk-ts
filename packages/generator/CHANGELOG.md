@@ -1,5 +1,302 @@
 # @osdk/generator
 
+## 2.4.0-beta.14
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.14
+- @osdk/generator-converters@2.4.0-beta.14
+
+## 2.4.0-beta.13
+
+### Minor Changes
+
+- 4bc848b: Add interface link support.
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/generator-converters@2.4.0-beta.13
+  - @osdk/api@2.4.0-beta.13
+
+## 2.4.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.12
+- @osdk/generator-converters@2.4.0-beta.12
+
+## 2.4.0-beta.11
+
+### Minor Changes
+
+- f277b30: Ensure stable ordering of arrays in code generation for object types and interface types. Sort `implements`, `implementedBy` and `linkTypes` arrays alphabetically for consistent output.
+
+### Patch Changes
+
+- Updated dependencies [f277b30]
+  - @osdk/generator-converters@2.4.0-beta.11
+  - @osdk/api@2.4.0-beta.11
+
+## 2.4.0-beta.10
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.10
+- @osdk/generator-converters@2.4.0-beta.10
+
+## 2.4.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [9101bad]
+  - @osdk/api@2.4.0-beta.9
+  - @osdk/generator-converters@2.4.0-beta.9
+
+## 2.4.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [9f4fe9e]
+  - @osdk/api@2.4.0-beta.8
+  - @osdk/generator-converters@2.4.0-beta.8
+
+## 2.4.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.7
+- @osdk/generator-converters@2.4.0-beta.7
+
+## 2.4.0-beta.6
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.6
+- @osdk/generator-converters@2.4.0-beta.6
+
+## 2.4.0-beta.5
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.5
+- @osdk/generator-converters@2.4.0-beta.5
+
+## 2.4.0-beta.4
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.4
+- @osdk/generator-converters@2.4.0-beta.4
+
+## 2.4.0-beta.3
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.3
+- @osdk/generator-converters@2.4.0-beta.3
+
+## 2.4.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [29d2ada]
+- Updated dependencies [8c95154]
+- Updated dependencies [c32dcf2]
+  - @osdk/api@2.4.0-beta.2
+  - @osdk/generator-converters@2.4.0-beta.2
+
+## 2.3.0-beta.10
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.10
+- @osdk/generator-converters@2.3.0-beta.10
+
+## 2.3.0-beta.9
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.9
+- @osdk/generator-converters@2.3.0-beta.9
+
+## 2.3.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [12d599f]
+  - @osdk/api@2.3.0-beta.8
+  - @osdk/generator-converters@2.3.0-beta.8
+
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/generator-converters@2.3.0-beta.7
+  - @osdk/api@2.3.0-beta.7
+
+## 2.3.0-beta.6
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.6
+- @osdk/generator-converters@2.3.0-beta.6
+
+## 2.3.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [e8c4aed]
+  - @osdk/api@2.3.0-beta.5
+  - @osdk/generator-converters@2.3.0-beta.5
+
+## 2.3.0-beta.4
+
+### Minor Changes
+
+- fe00f84: Generate deprecation warnings for object properties
+- ef46ed6: Add protection for dropping unsupported enums instead of throwing"
+
+### Patch Changes
+
+- Updated dependencies [43c5547]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [3b5ccaa]
+  - @osdk/api@2.3.0-beta.4
+  - @osdk/generator-converters@2.3.0-beta.4
+
+## 2.3.0-beta.3
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.3
+- @osdk/generator-converters@2.3.0-beta.3
+
+## 2.3.0-beta.2
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.2
+- @osdk/generator-converters@2.3.0-beta.2
+
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- b61e9f5: Make Query Map Types Optional
+- b68adea: Add support for inherited interfaces.
+- 12843cb: Add ability to load all underlying properties of an interface.
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+- 21e33a5: Upgrade consola to 3.4.0
+- 63b2e63: Update Platform SDK Dependencies
+- 7416ce4: Update Platform SDK Dependencies
+- 430dee3: JSdoc for object properties are generated
+- 49a91dc: Add consola as hard dep for generator.
+- 889e84b: Release
+- 67e772e: Fixes action parameter generation to enforce strict fields
+- 791e655: Add support for geoshape and geohash action parameters.
+- 317b555: Release
+- 63b2e63: Supports generating queries for entrySet function types
+- cc380b5: Use the latest Platform APIs
+- 3d0ab11: Add protection for dropping unsupported enums instead of throwing"
+- 805df40: Fix interface action types.
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [b68adea]
+- Updated dependencies [c6bee50]
+- Updated dependencies [7416ce4]
+- Updated dependencies [7170fd1]
+- Updated dependencies [12843cb]
+- Updated dependencies [18ba34f]
+- Updated dependencies [6abf078]
+- Updated dependencies [f82767c]
+- Updated dependencies [56aa502]
+- Updated dependencies [0e874b1]
+- Updated dependencies [abe4897]
+- Updated dependencies [63b2e63]
+- Updated dependencies [cddfbf9]
+- Updated dependencies [7416ce4]
+- Updated dependencies [23ea0e4]
+- Updated dependencies [26c2d95]
+- Updated dependencies [488b51c]
+- Updated dependencies [71462e9]
+- Updated dependencies [fccd9ac]
+- Updated dependencies [5665b18]
+- Updated dependencies [46cede4]
+- Updated dependencies [761e69d]
+- Updated dependencies [889e84b]
+- Updated dependencies [a6e5f89]
+- Updated dependencies [ed69666]
+- Updated dependencies [4183a55]
+- Updated dependencies [70b4464]
+- Updated dependencies [791e655]
+- Updated dependencies [317b555]
+- Updated dependencies [63b2e63]
+- Updated dependencies [a146ce4]
+- Updated dependencies [3d0ab11]
+- Updated dependencies [805df40]
+- Updated dependencies [5467a0f]
+- Updated dependencies [63b2e63]
+  - @osdk/api@2.2.0
+  - @osdk/generator-converters@2.2.0
+
+## 2.2.0-beta.23
+
+### Patch Changes
+
+- Updated dependencies [4183a55]
+  - @osdk/api@2.2.0-beta.23
+  - @osdk/generator-converters@2.2.0-beta.23
+
+## 2.2.0-beta.22
+
+### Minor Changes
+
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+
+### Patch Changes
+
+- Updated dependencies [18ba34f]
+  - @osdk/generator-converters@2.2.0-beta.22
+  - @osdk/api@2.2.0-beta.22
+
+## 2.2.0-beta.21
+
+### Minor Changes
+
+- 317b555: Release
+
+### Patch Changes
+
+- Updated dependencies [317b555]
+  - @osdk/generator-converters@2.2.0-beta.21
+  - @osdk/api@2.2.0-beta.21
+
+## 2.2.0-beta.20
+
+### Minor Changes
+
+- 889e84b: Release
+
+### Patch Changes
+
+- Updated dependencies [889e84b]
+  - @osdk/generator-converters@2.2.0-beta.20
+  - @osdk/api@2.2.0-beta.20
+
+## 2.2.0-beta.19
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.19
+- @osdk/generator-converters@2.2.0-beta.19
+
 ## 2.2.0-beta.18
 
 ### Patch Changes
@@ -179,6 +476,110 @@
 - Updated dependencies [fccd9ac]
   - @osdk/api@2.2.0-beta.2
   - @osdk/generator-converters@2.2.0-beta.2
+
+## 2.1.0
+
+### Minor Changes
+
+- d794c19: Adding support for struct action params.
+- 0dc40b0: Switch to OSDK.Instance
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- f0b519d: Upgrade to vitest 3 and vite 6
+- 1812118: Add geotime support for OSDK.
+- bc1761c: Update platform API dependencies.
+- bb8b219: Use new external packages instead of the internal ones.
+- 44e62f6: Updating fetch for auth and other packages.
+- 03f95eb: Add support for interface params in actions.
+- 91cfa3a: Fixing url parsing for client.
+- 9d35a1f: Remove unused imports
+- c691c8b: Package now has experimental support for commonjs
+- 749cf69: Remove experimental non null for now.
+- 027db73: Fixes generation for interfaces with no properties
+- c9da74c: Improves code quality by fixing linting errors
+- abfe4b3: Add support for reading struct properties.
+- ecd4aee: Fixing use of logging from client for unknown property types.
+- a5a0ea4: Namespaced object sets in actions no longer generate wrong
+- ee6224b: Explicitly type aggregation types in queries.
+- 696c59c: Exposes $osdkMetadata from the root of generated packages for clients that want access to $osdkMetadata.extraUserAgent
+- 9018dc2: Updating platform api dependencies.
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+- 518972b: Queries that have structs now represent the struct shape instead of Record&lt;string, any>
+- bf0e3b4: Ignore unknown property types.
+- 09eaf24: Update to latest platform sdks
+- 71dfb4c: Now export all api shapes from client, so use that dependency instead.
+- d665147: Update platform sdk deps
+
+### Patch Changes
+
+- Updated dependencies [966d408]
+- Updated dependencies [cddc196]
+- Updated dependencies [d794c19]
+- Updated dependencies [05febf4]
+- Updated dependencies [55c05f2]
+- Updated dependencies [0dc40b0]
+- Updated dependencies [25fd9f0]
+- Updated dependencies [11a05cc]
+- Updated dependencies [7865cb6]
+- Updated dependencies [9c4efe6]
+- Updated dependencies [0a7c747]
+- Updated dependencies [f0b519d]
+- Updated dependencies [3ea2e79]
+- Updated dependencies [1812118]
+- Updated dependencies [bc1761c]
+- Updated dependencies [656f975]
+- Updated dependencies [f1145ff]
+- Updated dependencies [f446d0c]
+- Updated dependencies [c80ca45]
+- Updated dependencies [bb8b219]
+- Updated dependencies [44e62f6]
+- Updated dependencies [03f95eb]
+- Updated dependencies [91cfa3a]
+- Updated dependencies [1a89f23]
+- Updated dependencies [9d35a1f]
+- Updated dependencies [c691c8b]
+- Updated dependencies [749cf69]
+- Updated dependencies [f03e39f]
+- Updated dependencies [11088aa]
+- Updated dependencies [72c1905]
+- Updated dependencies [9298f75]
+- Updated dependencies [f34b3d4]
+- Updated dependencies [acbfab9]
+- Updated dependencies [c9da74c]
+- Updated dependencies [62c1d63]
+- Updated dependencies [3c9ac22]
+- Updated dependencies [1591f04]
+- Updated dependencies [03e1941]
+- Updated dependencies [abfe4b3]
+- Updated dependencies [b79becf]
+- Updated dependencies [27866a8]
+- Updated dependencies [e5fe7c0]
+- Updated dependencies [1b2e8c9]
+- Updated dependencies [81b2fb2]
+- Updated dependencies [9f3807c]
+- Updated dependencies [ecd4aee]
+- Updated dependencies [0c56d21]
+- Updated dependencies [e548b9b]
+- Updated dependencies [ee6224b]
+- Updated dependencies [1dc0228]
+- Updated dependencies [6c60414]
+- Updated dependencies [5fe2c8d]
+- Updated dependencies [7d777eb]
+- Updated dependencies [d3b3f35]
+- Updated dependencies [c682504]
+- Updated dependencies [785f663]
+- Updated dependencies [9018dc2]
+- Updated dependencies [6b6c8a1]
+- Updated dependencies [c537e2d]
+- Updated dependencies [73fa373]
+- Updated dependencies [bf0e3b4]
+- Updated dependencies [8e6a5f4]
+- Updated dependencies [09eaf24]
+- Updated dependencies [2d5e648]
+- Updated dependencies [31e7d70]
+- Updated dependencies [d665147]
+- Updated dependencies [f19da8e]
+  - @osdk/generator-converters@2.1.0
+  - @osdk/api@2.1.0
 
 ## 2.1.0-beta.31
 

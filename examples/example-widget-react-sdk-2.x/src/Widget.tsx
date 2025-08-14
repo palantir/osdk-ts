@@ -13,6 +13,8 @@ import {
 } from "@radix-ui/themes";
 import React, { useCallback, useState } from "react";
 import { useWidgetContext } from "./context.js";
+// import { client } from "./client.js";
+// View the API documentation for your widget set to learn how to use the Ontology SDK.
 
 export const Widget: React.FC = () => {
   const { parameters, emitEvent } = useWidgetContext();
@@ -120,7 +122,7 @@ export const Widget: React.FC = () => {
           <Box>
             <Flex direction="column" gap="2">
               <Text>
-                Try and of the following methods from your Ontology SDK
+                Try any of the following methods from your Ontology SDK
               </Text>
               <Flex direction="column" gap="1">
                 <Heading size="4">Objects ({objectApiNames.length})</Heading>

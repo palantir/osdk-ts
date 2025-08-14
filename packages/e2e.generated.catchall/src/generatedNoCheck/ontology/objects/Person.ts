@@ -62,6 +62,7 @@ export interface Person extends $ObjectTypeDefinition {
       name: 'person';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
@@ -81,6 +82,7 @@ export interface Person extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'email';
     type: 'object';
+    visibility: undefined;
   };
 }
 

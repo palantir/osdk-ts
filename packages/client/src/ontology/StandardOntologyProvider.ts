@@ -22,6 +22,7 @@ import type {
 } from "@osdk/api";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAsyncClientCache } from "../object/Cache.js";
+import { deepFreeze } from "../util/deepFreeze.js";
 import { loadActionMetadata } from "./loadActionMetadata.js";
 import { loadFullObjectMetadata } from "./loadFullObjectMetadata.js";
 import { loadInterfaceMetadata } from "./loadInterfaceMetadata.js";
@@ -43,7 +44,7 @@ export const createStandardOntologyProviderFactory: (
       client: MinimalClient,
       key: string,
     ): Promise<FetchedObjectTypeDefinition> {
-      let objectDef = await loadFullObjectMetadata(client, key);
+      const objectDef = await loadFullObjectMetadata(client, key);
 
       // ensure we have all of the interfaces loaded
       const interfaceDefs = Object.fromEntries<
@@ -59,22 +60,21 @@ export const createStandardOntologyProviderFactory: (
         [InterfaceDefinitions]: interfaceDefs,
       };
 
-      return fullObjectDef;
+      return deepFreeze(fullObjectDef);
     }
 
     async function loadInterface(
       client: MinimalClient,
       key: string,
     ) {
-      return loadInterfaceMetadata(client, key);
+      return deepFreeze(await loadInterfaceMetadata(client, key));
     }
 
     async function loadQuery(
       client: MinimalClient,
       key: string,
     ) {
-      const r = await loadQueryMetadata(client, key);
-      return r;
+      return loadQueryMetadata(client, key);
     }
 
     async function loadAction(
@@ -105,11 +105,30 @@ export const createStandardOntologyProviderFactory: (
       };
     }
 
+    function makeQueryGetter(
+      client: MinimalClient,
+      fn: (
+        client: MinimalClient,
+        key: string,
+        skipCache?: boolean,
+      ) => Promise<QueryMetadata>,
+    ) {
+      const queryCache = createAsyncClientCache<string, QueryMetadata>(
+        (client, key) => {
+          return fn(client, key);
+        },
+      );
+      return async (apiName: string, version?: string) => {
+        const key = version ? `${apiName}:${version}` : apiName;
+        return await queryCache.get(client, key);
+      };
+    }
+
     const ret = {
       getObjectDefinition: makeGetter(loadObject),
       getInterfaceDefinition: makeGetter(loadInterface),
-      getQueryDefinition: makeGetter(loadQuery),
       getActionDefinition: makeGetter(loadAction),
+      getQueryDefinition: makeQueryGetter(client, loadQuery),
     };
     return ret;
   };

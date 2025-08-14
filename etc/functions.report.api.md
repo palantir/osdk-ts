@@ -4,17 +4,188 @@
 
 ```ts
 
+import { Attachment } from '@osdk/client';
+import type { Client } from '@osdk/client';
+import type { CompileTimeMetadata } from '@osdk/client';
+import type { InterfaceDefinition } from '@osdk/client';
+import type { ObjectMetadata } from '@osdk/client';
+import type { ObjectTypeDefinition } from '@osdk/client';
+import type { Osdk } from '@osdk/client';
+import type { OsdkObjectCreatePropertyType } from '@osdk/client';
+import type { OsdkObjectPropertyType } from '@osdk/client';
+import type { PropertyKeys } from '@osdk/client';
+import { Range as Range_2 } from '@osdk/client';
+import { ThreeDimensionalAggregation } from '@osdk/client';
+import { TwoDimensionalAggregation } from '@osdk/client';
+
+export { Attachment }
+
+// Warning: (ae-forgotten-export) The symbol "AnyEdit" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export type Double<T extends number = number> = T & { __doubleBrand?: void };
+export function createEditBatch<T extends AnyEdit = never>(_client: Client): EditBatch<T>;
 
 // @public (undocumented)
-export type Float<T extends number = number> = T & { __floatBrand?: void };
+export type DateISOString<T extends string = string> = T & {
+    	__dateBrand?: void
+};
 
 // @public (undocumented)
-export type Integer<T extends number = number> = T & { __integerBrand?: void };
+export type Double<T extends number = number> = T & {
+    	__doubleBrand?: void
+};
 
 // @public (undocumented)
-export type Long<T extends string = string> = T & { __longBrand?: void };
+export interface EditBatch<X extends AnyEdit = never> {
+    	// Warning: (ae-forgotten-export) The symbol "CreatableObjectOrInterfaceTypes" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "CreatableObjectOrInterfaceTypeProperties" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    create: <OI extends CreatableObjectOrInterfaceTypes<X>>(objectOrInterfaceType: OI, properties: CreatableObjectOrInterfaceTypeProperties<X, OI>) => void;
+    	// Warning: (ae-forgotten-export) The symbol "DeletableObjectOrInterfaceLocators" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    delete: <OL extends DeletableObjectOrInterfaceLocators<X>>(obj: OL) => void;
+    	// (undocumented)
+    getEdits: () => X[];
+    	// Warning: (ae-forgotten-export) The symbol "AddLinkSources" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "AddLinkApiNames" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "AddLinkTargets" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    link: <
+    		SOL extends AddLinkSources<X>,
+    		A extends AddLinkApiNames<X, SOL>
+    	>(source: SOL, apiName: A, target: AddLinkTargets<X, SOL, A>) => void;
+    	// Warning: (ae-forgotten-export) The symbol "RemoveLinkSources" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "RemoveLinkApiNames" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "RemoveLinkTargets" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    unlink: <
+    		SOL extends RemoveLinkSources<X>,
+    		A extends RemoveLinkApiNames<X, SOL>
+    	>(source: SOL, apiName: A, target: RemoveLinkTargets<X, SOL, A>) => void;
+    	// Warning: (ae-forgotten-export) The symbol "UpdatableObjectOrInterfaceLocators" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "UpdatableObjectOrInterfaceLocatorProperties" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    update: <OL extends UpdatableObjectOrInterfaceLocators<X>>(obj: OL, properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>) => void;
+}
+
+// @public (undocumented)
+export namespace Edits {
+    	// Warning: (ae-forgotten-export) The symbol "CreateObjectForInterface" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "UpdateObjectForInterface" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "DeleteObjectForInterface" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type Interface<S extends InterfaceDefinition> = CreateObjectForInterface<S> | UpdateObjectForInterface<S> | DeleteObjectForInterface<S>;
+    	// Warning: (ae-forgotten-export) The symbol "AddLink" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "RemoveLink" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type Link<
+    		S extends ObjectTypeDefinition,
+    		L extends keyof CompileTimeMetadata<S>["links"]
+    	> = AddLink<S, L> | RemoveLink<S, L>;
+    	// Warning: (ae-forgotten-export) The symbol "CreateObject" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "DeleteObject" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "UpdateObject" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type Object<S extends ObjectTypeDefinition> = CreateObject<S> | DeleteObject<S> | UpdateObject<S>;
+}
+
+// @public (undocumented)
+export interface EmailNotification {
+    	// (undocumented)
+    body: string;
+    	// (undocumented)
+    links: NotificationLink[];
+    	// (undocumented)
+    subject: string;
+}
+
+// @public (undocumented)
+export type Float<T extends number = number> = T & {
+    	__floatBrand?: void
+};
+
+// @public (undocumented)
+export type Integer<T extends number = number> = T & {
+    	__integerBrand?: void
+};
+
+// @public (undocumented)
+export type Long<T extends string = string> = T & {
+    	__longBrand?: void
+};
+
+// @public (undocumented)
+interface Notification_2 {
+    	// (undocumented)
+    emailNotification: EmailNotification;
+    	// (undocumented)
+    platformNotification: PlatformNotification;
+}
+export { Notification_2 as Notification }
+
+// @public (undocumented)
+export interface NotificationLink {
+    	// (undocumented)
+    label: string;
+    	// (undocumented)
+    linkTarget: NotificationLinkTarget;
+}
+
+// @public (undocumented)
+export type NotificationLinkTarget = RidLinkTarget | ObjectLinkTarget | UrlLinkTarget;
+
+// @public (undocumented)
+export interface ObjectLinkTarget<T extends ObjectTypeDefinition | InterfaceDefinition = ObjectTypeDefinition | InterfaceDefinition> {
+    	// (undocumented)
+    object: Osdk.Instance<T>;
+    	// (undocumented)
+    type: "object";
+}
+
+// @public (undocumented)
+export interface PlatformNotification {
+    	// (undocumented)
+    content: string;
+    	// (undocumented)
+    heading: string;
+    	// (undocumented)
+    links: NotificationLink[];
+}
+
+export { Range_2 as Range }
+
+// @public (undocumented)
+export interface RidLinkTarget {
+    	// (undocumented)
+    rid: string;
+    	// (undocumented)
+    type: "rid";
+}
+
+export { ThreeDimensionalAggregation }
+
+// @public (undocumented)
+export type TimestampISOString<T extends string = string> = T & {
+    	__timestampBrand?: void
+};
+
+export { TwoDimensionalAggregation }
+
+// @public (undocumented)
+export interface UrlLinkTarget {
+    	// (undocumented)
+    type: "url";
+    	// (undocumented)
+    url: string;
+}
 
 // (No @packageDocumentation comment for this package)
 

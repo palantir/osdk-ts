@@ -15,32 +15,52 @@
  */
 
 import type { ObjectMetadata } from "@osdk/api";
+import type { PropertyV2 } from "@osdk/foundry.ontologies";
 
 export function propertyJsdoc(
   property: ObjectMetadata.Property,
+  rawPropertyMetadata: PropertyV2 | undefined,
   { isInherited, apiName }: { isInherited?: boolean; apiName: string },
 ): string {
-  let ret = `/**\n`;
+  const ret = [];
   const renderDisplayName = property.displayName
     && property.displayName !== apiName;
-  if (isInherited || renderDisplayName || property.description) {
+  const status = rawPropertyMetadata?.status;
+  if (isInherited || renderDisplayName || property.description || status) {
+    if (status) {
+      let deprecationStatus = "";
+      if (status.type === "deprecated") {
+        deprecationStatus += ` *   @deprecated\n`;
+        deprecationStatus += ` *   - ${status.message}\n`;
+        if (status.deadline) {
+          deprecationStatus += ` *   - deadline: ${status.deadline}\n`;
+        }
+        if (status.replacedBy) {
+          deprecationStatus += ` *   - replaced by: ${status.replacedBy}\n`;
+        }
+        ret.push(deprecationStatus);
+      } else if (status.type === "experimental") {
+        ret.push(` * @${status.type}\n`);
+      }
+      ret.push(` *   property status: ${status.type}\n`);
+    }
     if (isInherited) {
-      ret += ` * (inherited from parent)\n`;
+      ret.push(` * (inherited from parent)\n`);
     }
 
     if (renderDisplayName) {
-      ret += ` *   display name: '${property.displayName}'${
-        property.description ? "," : ""
-      }\n`;
+      ret.push(
+        ` *   display name: '${property.displayName}'${
+          property.description ? "," : ""
+        }\n`,
+      );
     }
 
     if (property.description) {
-      ret += ` *   description: ${property.description}\n`;
+      ret.push(` *   description: ${property.description}\n`);
     }
   } else {
-    ret += ` * (no ontology metadata)\n`;
+    ret.push(` * (no ontology metadata)\n`);
   }
-
-  ret += ` */\n`;
-  return ret;
+  return `/**\n` + ret.join("*\n") + ` */\n`;
 }

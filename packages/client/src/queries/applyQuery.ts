@@ -19,7 +19,6 @@ import type {
   AllowedBucketTypes,
   CompileTimeMetadata,
   ObjectOrInterfaceDefinition,
-  ObjectSpecifier,
   ObjectTypeDefinition,
   OsdkBase,
   PrimaryKeyType,
@@ -49,7 +48,10 @@ export async function applyQuery<
 ): Promise<
   QueryReturnType<CompileTimeMetadata<QD>["output"]>
 > {
-  const qd = await client.ontologyProvider.getQueryDefinition(query.apiName);
+  const qd = await client.ontologyProvider.getQueryDefinition(
+    query.apiName,
+    query.isFixedVersion ? query.version : undefined,
+  );
 
   const response = await OntologiesV2.Queries.execute(
     addUserAgentAndRequestContextHeaders(
@@ -67,6 +69,7 @@ export async function applyQuery<
         )
         : {},
     },
+    { version: qd.version },
   );
   const objectOutputDefs = await getRequiredDefinitions(qd.output, client);
   const remappedResponse = await remapQueryResponse(
@@ -291,10 +294,14 @@ async function getRequiredDefinitions(
     }
 
     case "map": {
-      for (const value of [dataType.keyType, dataType.valueType]) {
-        for (
-          const [type, objectDef] of await getRequiredDefinitions(value, client)
-        ) {
+      const types = [dataType.keyType, dataType.valueType];
+
+      const allDefs = await Promise.all(
+        types.map(value => getRequiredDefinitions(value, client)),
+      );
+
+      for (const defs of allDefs) {
+        for (const [type, objectDef] of defs) {
           result.set(type, objectDef);
         }
       }
@@ -302,10 +309,14 @@ async function getRequiredDefinitions(
     }
 
     case "struct": {
-      for (const value of Object.values(dataType.struct)) {
-        for (
-          const [type, objectDef] of await getRequiredDefinitions(value, client)
-        ) {
+      const structValues = Object.values(dataType.struct);
+
+      const allDefs = await Promise.all(
+        structValues.map(value => getRequiredDefinitions(value, client)),
+      );
+
+      for (const defs of allDefs) {
+        for (const [type, objectDef] of defs) {
           result.set(type, objectDef);
         }
       }
@@ -383,7 +394,7 @@ export function createQueryObjectResponse<
 >(
   primaryKey: PrimaryKeyType<Q>,
   objectDef: Q,
-): OsdkBase<Q> & { $objectSpecifier: ObjectSpecifier<Q> } {
+): OsdkBase<Q> {
   return {
     $apiName: objectDef.apiName,
     $title: undefined,

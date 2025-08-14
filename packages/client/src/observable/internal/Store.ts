@@ -17,6 +17,7 @@
 import type {
   ActionDefinition,
   ActionEditResponse,
+  ActionValidationResponse,
   InterfaceDefinition,
   Logger,
   ObjectTypeDefinition,
@@ -57,6 +58,7 @@ import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { Query } from "./Query.js";
 import { RefCounts } from "./RefCounts.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
+import { tombstone } from "./tombstone.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 /*
@@ -93,6 +95,11 @@ export interface BatchContext {
   read: <K extends CacheKey<string, any, any>>(
     k: K,
   ) => Entry<K> | undefined;
+
+  delete: <K extends CacheKey<string, any, any>>(
+    k: K,
+    status: Entry<K>["status"],
+  ) => Entry<K>;
 }
 
 interface UpdateOptions {
@@ -238,10 +245,23 @@ export class Store {
 
   applyAction: <Q extends ActionDefinition<any>>(
     action: Q,
-    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
+    args:
+      | Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
+      | Array<Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]>,
     opts?: Store.ApplyActionOptions,
   ) => Promise<ActionEditResponse> = async (action, args, opts) => {
     return await new ActionApplication(this).applyAction(action, args, opts);
+  };
+
+  validateAction: <Q extends ActionDefinition<any>>(
+    action: Q,
+    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
+  ) => Promise<ActionValidationResponse> = async (action, args) => {
+    const result = await this.client(action).applyAction(args as any, {
+      $validateOnly: true,
+      $returnEdits: false,
+    });
+    return result as ActionValidationResponse;
   };
 
   removeLayer(layerId: OptimisticId): void {
@@ -537,6 +557,9 @@ export class Store {
         }
 
         return newValue;
+      },
+      delete: (cacheKey, status) => {
+        return batchContext.write(cacheKey, tombstone, status);
       },
       read: (cacheKey) => {
         return optimisticId

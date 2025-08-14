@@ -4,7 +4,8 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
 {
   "externalInterfaces": Map {},
   "externalObjects": Map {},
-  "filteredFullMetadata": {
+  "fixedVersionQueryTypes": [],
+  "requestedMetadata": {
     "actionTypes": {
       "actionTakesMedia": {
         "apiName": "actionTakesMedia",
@@ -129,7 +130,19 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
     "interfaceTypes": {
       "FooInterface": {
         "allExtendsInterfaces": [],
-        "allLinks": {},
+        "allLinks": {
+          "toBar": {
+            "apiName": "toBar",
+            "cardinality": "MANY",
+            "displayName": "bars",
+            "linkedEntityApiName": {
+              "apiName": "BarInterface",
+              "type": "interfaceTypeApiName",
+            },
+            "required": true,
+            "rid": "ri.interface.link.main.2",
+          },
+        },
         "allProperties": {
           "fooSpt": {
             "apiName": "fooSpt",
@@ -150,7 +163,19 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
           "Employee",
           "Person",
         ],
-        "links": {},
+        "links": {
+          "toBar": {
+            "apiName": "toBar",
+            "cardinality": "MANY",
+            "displayName": "bars",
+            "linkedEntityApiName": {
+              "apiName": "BarInterface",
+              "type": "interfaceTypeApiName",
+            },
+            "required": true,
+            "rid": "ri.interface.link.main.2",
+          },
+        },
         "properties": {
           "fooSpt": {
             "apiName": "fooSpt",
@@ -244,6 +269,30 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
  This is some more text.",
               "rid": "rid",
             },
+            "skillSet": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "The skills of the employee",
+              "rid": "rid",
+            },
+            "skillSetEmbedding": {
+              "dataType": {
+                "dimension": 1536,
+                "embeddingModel": {
+                  "type": "lms",
+                  "value": "OPENAI_TEXT_EMBEDDING_ADA_002",
+                },
+                "supportsSearchWith": [
+                  {
+                    "value": "COSINE_SIMILARITY",
+                  },
+                ],
+                "type": "vector",
+              },
+              "description": "Vectorized skill set",
+              "rid": "rid",
+            },
             "startDate": {
               "dataType": {
                 "type": "date",
@@ -334,7 +383,8 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
 {
   "externalInterfaces": Map {},
   "externalObjects": Map {},
-  "filteredFullMetadata": {
+  "fixedVersionQueryTypes": [],
+  "requestedMetadata": {
     "actionTypes": {
       "promoteEmployee": {
         "apiName": "promoteEmployee",
@@ -468,6 +518,30 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
  This is some more text.",
               "rid": "rid",
             },
+            "skillSet": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "The skills of the employee",
+              "rid": "rid",
+            },
+            "skillSetEmbedding": {
+              "dataType": {
+                "dimension": 1536,
+                "embeddingModel": {
+                  "type": "lms",
+                  "value": "OPENAI_TEXT_EMBEDDING_ADA_002",
+                },
+                "supportsSearchWith": [
+                  {
+                    "value": "COSINE_SIMILARITY",
+                  },
+                ],
+                "type": "vector",
+              },
+              "description": "Vectorized skill set",
+              "rid": "rid",
+            },
             "startDate": {
               "dataType": {
                 "type": "date",
@@ -558,7 +632,8 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
 {
   "externalInterfaces": Map {},
   "externalObjects": Map {},
-  "filteredFullMetadata": {
+  "fixedVersionQueryTypes": [],
+  "requestedMetadata": {
     "actionTypes": {
       "promoteEmployee": {
         "apiName": "promoteEmployee",
@@ -599,7 +674,19 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
     "interfaceTypes": {
       "FooInterface": {
         "allExtendsInterfaces": [],
-        "allLinks": {},
+        "allLinks": {
+          "toBar": {
+            "apiName": "toBar",
+            "cardinality": "MANY",
+            "displayName": "bars",
+            "linkedEntityApiName": {
+              "apiName": "BarInterface",
+              "type": "interfaceTypeApiName",
+            },
+            "required": true,
+            "rid": "ri.interface.link.main.2",
+          },
+        },
         "allProperties": {
           "fooSpt": {
             "apiName": "fooSpt",
@@ -620,7 +707,19 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
           "Employee",
           "Person",
         ],
-        "links": {},
+        "links": {
+          "toBar": {
+            "apiName": "toBar",
+            "cardinality": "MANY",
+            "displayName": "bars",
+            "linkedEntityApiName": {
+              "apiName": "BarInterface",
+              "type": "interfaceTypeApiName",
+            },
+            "required": true,
+            "rid": "ri.interface.link.main.2",
+          },
+        },
         "properties": {
           "fooSpt": {
             "apiName": "fooSpt",
@@ -712,6 +811,30 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
               },
               "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
  This is some more text.",
+              "rid": "rid",
+            },
+            "skillSet": {
+              "dataType": {
+                "type": "string",
+              },
+              "description": "The skills of the employee",
+              "rid": "rid",
+            },
+            "skillSetEmbedding": {
+              "dataType": {
+                "dimension": 1536,
+                "embeddingModel": {
+                  "type": "lms",
+                  "value": "OPENAI_TEXT_EMBEDDING_ADA_002",
+                },
+                "supportsSearchWith": [
+                  {
+                    "value": "COSINE_SIMILARITY",
+                  },
+                ],
+                "type": "vector",
+              },
+              "description": "Vectorized skill set",
               "rid": "rid",
             },
             "startDate": {

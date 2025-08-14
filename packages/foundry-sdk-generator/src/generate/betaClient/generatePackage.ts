@@ -41,6 +41,7 @@ export async function generatePackage(
     outputDir: string;
     beta: boolean;
     ontologyJsonOnly: boolean;
+    packageRid: string | undefined;
   },
 ): Promise<void> {
   const { consola } = await import("consola");
@@ -50,7 +51,7 @@ export async function generatePackage(
     await mkdir(options.outputDir, { recursive: true });
     await writeFile(
       path.join(options.outputDir, "ontology.json"),
-      JSON.stringify(ontologyInfo.filteredFullMetadata, null, 2),
+      JSON.stringify(ontologyInfo.requestedMetadata, null, 2),
       "utf-8",
     );
     return;
@@ -78,13 +79,16 @@ export async function generatePackage(
   };
 
   await generateClientSdkVersionTwoPointZero(
-    ontologyInfo.filteredFullMetadata,
+    ontologyInfo.requestedMetadata,
     `typescript-sdk/${options.packageVersion} ${USER_AGENT}`,
     hostFs,
     packagePath,
     "module",
     ontologyInfo.externalObjects,
     ontologyInfo.externalInterfaces,
+    new Map(),
+    false,
+    ontologyInfo.fixedVersionQueryTypes,
   );
 
   // actually write file plus save contents
@@ -95,6 +99,7 @@ export async function generatePackage(
     dependencies: [],
     peerDependencies: resolvedPeerDependencies,
     beta: options.beta,
+    packageRid: options.packageRid,
   });
 
   const compilerOutput: Record<

@@ -915,6 +915,45 @@ describe("ObjectSet", () => {
       `,
       );
     });
+    it("correctly deserializes count", async () => {
+      const objectWithRdp = await client(Employee).withProperties({
+        "derivedPropertyName": (base) =>
+          base.pivotTo("lead").aggregate("$count"),
+      }).fetchOne(stubData.employee1.employeeId);
+
+      expectTypeOf(objectWithRdp.derivedPropertyName).toEqualTypeOf<number>();
+      expect(objectWithRdp.derivedPropertyName).toEqual(1);
+    });
+  });
+
+  describe("nearestNeighbors", () => {
+    it("works as a subsequent object set operation", async () => {
+      const employeeObjectSet = client(Employee).where({
+        employeeId: { $in: [50030, 50031] },
+      });
+      const nearestNeighborsObjectSet = await employeeObjectSet
+        .nearestNeighbors(
+          "textQuery",
+          3,
+          "skillSetEmbedding",
+        ).fetchPage();
+
+      expect(nearestNeighborsObjectSet.data.length).toEqual(2);
+    });
+
+    it("works as a preceding object set operation", async () => {
+      const nearestNeighborsObjectSet = client(Employee).nearestNeighbors(
+        "textQuery",
+        7,
+        "skillSetEmbedding",
+      );
+
+      const filteredObjectSet = await nearestNeighborsObjectSet.where({
+        employeeId: { $in: [50030, 50031] },
+      }).fetchPage();
+
+      expect(filteredObjectSet.data.length).toEqual(2);
+    });
   });
 
   // Can't run these tests because we can't load by primary key!
@@ -1014,6 +1053,8 @@ describe("ObjectSet", () => {
             | "startDate"
             | "employeeLocation"
             | "employeeSensor"
+            | "skillSet"
+            | "skillSetEmbedding"
           >();
 
         expectTypeOf<
@@ -1038,6 +1079,8 @@ describe("ObjectSet", () => {
             | "employeeStatus"
             | "employeeSensor"
             | "employeeLocation"
+            | "skillSet"
+            | "skillSetEmbedding"
           >();
 
         // We don't have a proper definition that has

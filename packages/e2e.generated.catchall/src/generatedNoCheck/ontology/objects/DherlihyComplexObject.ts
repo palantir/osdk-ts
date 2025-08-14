@@ -66,6 +66,7 @@ export interface DherlihyComplexObject extends $ObjectTypeDefinition {
       name: 'dherlihy';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -90,6 +91,7 @@ export interface DherlihyComplexObject extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'id';
     type: 'object';
+    visibility: undefined;
   };
 }
 

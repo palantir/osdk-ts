@@ -1,5 +1,15 @@
 # @osdk/shared.net.fetch
 
+## 1.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- ad93d55: Include deep inspect information about unknown errors
+- Updated dependencies [322c5bc]
+- Updated dependencies [ad93d55]
+  - @osdk/shared.net.errors@2.2.0
+
 ## 1.2.0-beta.2
 
 ### Minor Changes
@@ -10,6 +20,21 @@
 
 - Updated dependencies [ad93d55]
   - @osdk/shared.net.errors@2.2.0-beta.2
+
+## 1.1.0
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- c691c8b: Package now has experimental support for commonjs
+- 1132993: Adds better error messages for 429 errors
+
+### Patch Changes
+
+- Updated dependencies [25fd9f0]
+- Updated dependencies [c691c8b]
+- Updated dependencies [963addb]
+  - @osdk/shared.net.errors@2.1.0
 
 ## 1.1.0-beta.3
 

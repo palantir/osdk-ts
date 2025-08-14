@@ -31,6 +31,15 @@ import {
 import * as child_process from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+import * as semver from "semver";
+
+const rootPackageJson = JSON.parse(
+  await fs.readFile(
+    path.join(path.dirname(fileURLToPath(import.meta.url)), "package.json"),
+    "utf8",
+  ),
+);
 
 const LATEST_TYPESCRIPT_DEP = "~5.5.4";
 
@@ -76,7 +85,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/client",
       "@osdk/api",
-      "@osdk/functions.unstable",
+      "@osdk/functions",
     ],
     {
       ...LIBRARY_RULES,
@@ -113,6 +122,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/foundry-config-json",
       "@osdk/generator-converters",
+      "@osdk/generator-converters.ontologyir",
       "@osdk/generator-utils",
       "@osdk/generator",
       "@osdk/maker",
@@ -121,8 +131,11 @@ const archetypeRules = archetypes(
       "@osdk/shared.net.errors",
       "@osdk/shared.net.fetch",
       "@osdk/shared.net",
-      "@osdk/widget.api.unstable",
-      "@osdk/widget.client.unstable",
+      "@osdk/typescript-sdk-docs",
+      "@osdk/widget.api",
+      "@osdk/widget.client",
+      "@osdk/vite-plugin-oac",
+      "@osdk/faux",
     ],
     {
       ...LIBRARY_RULES,
@@ -247,7 +260,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "vitePlugin",
     [
-      "@osdk/widget.vite-plugin.unstable",
+      "@osdk/widget.vite-plugin",
     ],
     {
       ...LIBRARY_RULES,
@@ -259,7 +272,7 @@ const archetypeRules = archetypes(
   .addArchetype(
     "reactLibrary",
     [
-      "@osdk/widget.client-react.unstable",
+      "@osdk/widget.client-react",
       "@osdk/react",
     ],
     {
@@ -323,7 +336,7 @@ const disallowWorkspaceCaret = createRuleFactory({
           if (
             dep === "@osdk/shared.client2"
             // Since this package is only being used internally, it's fine to keep this relaxed to ^ so it can use newer client versions without bumping everything
-            || (packageJson.name === "@osdk/functions.unstable"
+            || (packageJson.name === "@osdk/functions"
               && dep === "@osdk/client")
           ) continue;
           const message = `'workspace:^' not allowed (${d}['${dep}']).`;
@@ -539,6 +552,53 @@ const allLocalDepsMustNotBePrivate = createRuleFactory({
   validateOptions: () => {}, // no options right now
 });
 
+const setWorkspaceDepRangeForPrereleases = createRuleFactory({
+  name: "setWorkspaceDepRangeForPrereleases",
+  check: async (context) => {
+    const packageJson = context.getPackageJson();
+    const packageJsonPath = context.getPackageJsonPath();
+
+    if (packageJson.name !== "@osdk/client") return;
+
+    if (!packageJson.version) {
+      context.addError({
+        message: "package.json is missing a version field",
+        file: packageJsonPath,
+      });
+      return;
+    }
+    const packageJsonVersion = String(packageJson.version) ?? "";
+
+    const isPrerelease = !!semver.prerelease(packageJsonVersion);
+
+    const depField = "dependencies";
+    const depName = "@osdk/api";
+
+    if (depName in packageJson.dependencies) {
+      const current = packageJson.dependencies[depName];
+      const expected = isPrerelease ? "workspace:*" : "workspace:~";
+      if (current !== expected) {
+        context.addError({
+          message: `@osdk/client is ${
+            isPrerelease ? "a prerelease" : "stable"
+          }, so its dependency on @osdk/api should be '${expected}', found '${current}'`,
+          longMessage:
+            `Set dependencies['${depName}'] to '${expected}' in @osdk/client (currently version ${packageJson.version})`,
+          file: packageJsonPath,
+          fixer: () => {
+            let updated = context.getPackageJson();
+            if (updated[depField]?.[depName] === current) {
+              updated[depField][depName] = expected;
+              context.host.writeJson(packageJsonPath, updated);
+            }
+          },
+        });
+      }
+    }
+  },
+  validateOptions: () => {},
+});
+
 const cache = new Map();
 
 /**
@@ -706,6 +766,8 @@ function standardPackageRules(shared, options) {
     disallowWorkspaceCaret({ ...shared }),
 
     ...minimalPackageRules(shared, options),
+
+    setWorkspaceDepRangeForPrereleases({ ...shared }),
 
     ...ifTrue(options.framework === "vite", [
       packageScript({
@@ -1033,8 +1095,10 @@ function checkApiRules(shared) {
       options: {
         devDependencies: {
           "@osdk/monorepo.api-extractor": "workspace:~",
-          "@microsoft/api-documenter": "^7.26.5",
-          "@microsoft/api-extractor": "^7.49.1",
+          "@microsoft/api-documenter":
+            rootPackageJson.devDependencies["@microsoft/api-documenter"],
+          "@microsoft/api-extractor":
+            rootPackageJson.devDependencies["@microsoft/api-extractor"],
         },
       },
     }),

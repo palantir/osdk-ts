@@ -15,39 +15,143 @@
  */
 
 import type {
-  AddLinkEdits,
+  CompileTimeMetadata,
+  InterfaceDefinition,
+  ObjectTypeDefinition,
+} from "@osdk/client";
+import type {
+  AddLink,
   AnyEdit,
-  CreateObjectEdits,
-  DeleteObjectEdits,
-  RemoveLinkEdits,
-  UpdateObjectEdits,
+  CreateObject,
+  CreateObjectForInterface,
+  DeleteObject,
+  DeleteObjectForInterface,
+  InterfaceLocator,
+  ObjectLocator,
+  RemoveLink,
+  UpdateObject,
+  UpdateObjectForInterface,
 } from "./types.js";
 
-export interface EditBatch<X extends AnyEdit = never> {
-  link: <L extends AddLinkEdits<X>>(
-    source: L["source"],
-    apiName: L["apiName"],
-    target: L["target"],
+// Helper type for literal "apiName" values without resorting to expensive type inference.
+interface ObjectTypeDefinitionForLocator<OL extends ObjectLocator<any>>
+  extends ObjectTypeDefinition
+{
+  apiName: OL["$apiName"];
+}
+
+interface InterfaceDefinitionForLocator<IL extends ObjectLocator<any>>
+  extends InterfaceDefinition
+{
+  apiName: IL["$apiName"];
+}
+
+// AddLink helper types
+export type AddLinkSources<X extends AnyEdit> = X extends
+  AddLink<infer OTD, any> ? ObjectLocator<OTD> : never;
+
+export type AddLinkApiNames<X extends AnyEdit, SOL extends ObjectLocator<any>> =
+  X extends AddLink<ObjectTypeDefinitionForLocator<SOL>, infer A> ? A : never;
+
+export type AddLinkTargets<
+  X extends AnyEdit,
+  SOL extends ObjectLocator<any>,
+  A extends string,
+> = X extends AddLink<ObjectTypeDefinitionForLocator<SOL>, A>
+  ? (X extends AddLink<infer OTD, A>
+    ? (CompileTimeMetadata<OTD>["links"][A]["multiplicity"] extends true
+      ? Array<X["target"]> | X["target"]
+      : X["target"])
+    : never)
+  : never;
+
+// RemoveLink helper types
+export type RemoveLinkSources<X extends AnyEdit> = X extends
+  RemoveLink<infer OTD, any> ? ObjectLocator<OTD> : never;
+
+export type RemoveLinkApiNames<
+  X extends AnyEdit,
+  SOL extends ObjectLocator<any>,
+> = X extends RemoveLink<ObjectTypeDefinitionForLocator<SOL>, infer L> ? L
+  : never;
+
+export type RemoveLinkTargets<
+  X extends AnyEdit,
+  SOL extends ObjectLocator<any>,
+  A extends string,
+> = X extends RemoveLink<ObjectTypeDefinitionForLocator<SOL>, A>
+  ? (X extends RemoveLink<infer OTD, A>
+    ? (CompileTimeMetadata<OTD>["links"][A]["multiplicity"] extends true
+      ? Array<X["target"]> | X["target"]
+      : X["target"])
+    : never)
+  : never;
+
+// CreateObject helper types
+export type CreatableObjectOrInterfaceTypes<X extends AnyEdit> = X extends
+  CreateObject<infer OTD> ? OTD
+  : X extends CreateObjectForInterface<infer ID> ? ID
+  : never;
+
+export type CreatableObjectOrInterfaceTypeProperties<
+  X extends AnyEdit,
+  OI extends ObjectTypeDefinition | InterfaceDefinition,
+> = X extends CreateObject<infer OTD> ? OTD extends OI ? X["properties"] : never
+  : X extends CreateObjectForInterface<infer ID>
+    ? ID extends OI ? X["properties"] : never
+  : never;
+
+// DeleteObject helper types
+export type DeletableObjectOrInterfaceLocators<X extends AnyEdit> = X extends
+  DeleteObject<infer OTD> ? ObjectLocator<OTD>
+  : X extends DeleteObjectForInterface<infer ID> ? InterfaceLocator<ID>
+  : never;
+
+// UpdateObject and UpdateInterface helper types
+export type UpdatableObjectOrInterfaceLocators<X extends AnyEdit> = X extends
+  UpdateObject<infer OTD> ? ObjectLocator<OTD>
+  : X extends UpdateObjectForInterface<infer ID> ? InterfaceLocator<ID>
+  : never;
+
+export type UpdatableObjectOrInterfaceLocatorProperties<
+  X extends AnyEdit,
+  OL extends ObjectLocator<any>,
+> = X extends UpdateObject<ObjectTypeDefinitionForLocator<OL>> ? X["properties"]
+  : X extends UpdateObjectForInterface<InterfaceDefinitionForLocator<OL>>
+    ? X["properties"]
+  : never;
+
+export interface EditBatch<
+  X extends AnyEdit = never,
+> {
+  link: <
+    SOL extends AddLinkSources<X>,
+    A extends AddLinkApiNames<X, SOL>,
+  >(
+    source: SOL,
+    apiName: A,
+    target: AddLinkTargets<X, SOL, A>,
   ) => void;
 
-  unlink: <L extends RemoveLinkEdits<X>>(
-    source: L["source"],
-    apiName: L["apiName"],
-    target: L["target"],
+  unlink: <
+    SOL extends RemoveLinkSources<X>,
+    A extends RemoveLinkApiNames<X, SOL>,
+  >(
+    source: SOL,
+    apiName: A,
+    target: RemoveLinkTargets<X, SOL, A>,
   ) => void;
 
-  create: <O extends CreateObjectEdits<X>>(
-    obj: O["obj"],
-    properties: O["properties"],
+  create: <OI extends CreatableObjectOrInterfaceTypes<X>>(
+    objectOrInterfaceType: OI,
+    properties: CreatableObjectOrInterfaceTypeProperties<X, OI>,
   ) => void;
 
-  delete: <O extends DeleteObjectEdits<X>>(
-    obj: O["obj"],
-  ) => void;
+  delete: <OL extends DeletableObjectOrInterfaceLocators<X>>(obj: OL) => void;
 
-  update: <O extends UpdateObjectEdits<X>>(
-    obj: O["obj"],
-    properties: O["properties"],
+  update: <OL extends UpdatableObjectOrInterfaceLocators<X>>(
+    obj: OL,
+    properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>,
   ) => void;
 
   getEdits: () => X[];

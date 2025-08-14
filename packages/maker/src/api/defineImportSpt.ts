@@ -15,8 +15,12 @@
  */
 
 import invariant from "tiny-invariant";
-import { ontologyDefinition } from "./defineOntology.js";
-import type { PropertyTypeType, SharedPropertyType } from "./types.js";
+import { importOntologyEntity } from "./importOntologyEntity.js";
+import {
+  OntologyEntityTypeEnum,
+  type PropertyTypeType,
+  type SharedPropertyType,
+} from "./types.js";
 
 /**
  * Defines a foreign shared property type you want to take as an input to your product. The typeHint field is used for OSDK generation
@@ -26,14 +30,14 @@ export function importSharedPropertyType(
     apiName: string;
     packageName?: string;
     typeHint: PropertyTypeType;
+    array?: boolean;
   },
 ): SharedPropertyType {
-  const { apiName, packageName, typeHint } = opts;
+  const { apiName, packageName, typeHint, array } = opts;
+  const fullApiName = packageName === undefined
+    ? apiName
+    : `${packageName}.${apiName}`;
   if (packageName !== undefined) {
-    ontologyDefinition.importedTypes.sharedPropertyTypes.push({
-      apiName,
-      packageName,
-    });
     invariant(
       !packageName.endsWith("."),
       "Package name format invalid ends with period",
@@ -43,12 +47,14 @@ export function importSharedPropertyType(
       packageName.match("[A-Z]") == null,
       "Package name includes upper case characters",
     );
-
-    return {
-      apiName: packageName + "." + apiName,
-      type: typeHint,
-      nonNameSpacedApiName: apiName,
-    };
   }
-  return { apiName: apiName, type: typeHint, nonNameSpacedApiName: apiName };
+  const spt: SharedPropertyType = {
+    apiName: fullApiName,
+    type: typeHint,
+    nonNameSpacedApiName: apiName,
+    array: array ?? false,
+    __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
+  };
+  importOntologyEntity(spt);
+  return spt;
 }

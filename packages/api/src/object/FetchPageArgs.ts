@@ -65,9 +65,10 @@ export namespace ObjectSetArgs {
 
 export interface SelectArg<
   Q extends ObjectOrInterfaceDefinition,
-  L extends PropertyKeys<Q> = PropertyKeys<Q>,
+  L extends string = PropertyKeys<Q>,
   R extends boolean = false,
   S extends NullabilityAdherence = NullabilityAdherence.Default,
+  RDP_KEYS extends string = never,
 > {
   $select?: readonly L[];
   $includeRid?: R;
@@ -75,7 +76,7 @@ export interface SelectArg<
 
 export interface OrderByArg<
   Q extends ObjectOrInterfaceDefinition,
-  L extends PropertyKeys<Q> = PropertyKeys<Q>,
+  L extends string = PropertyKeys<Q>,
 > extends ObjectSetArgs.OrderBy<L> {
 }
 
@@ -88,7 +89,7 @@ export type SelectArgToKeys<
 
 export interface FetchPageArgs<
   Q extends ObjectOrInterfaceDefinition,
-  K extends PropertyKeys<Q> = PropertyKeys<Q>,
+  K extends string = PropertyKeys<Q>,
   R extends boolean = false,
   A extends Augments = never,
   S extends NullabilityAdherence = NullabilityAdherence.Default,
@@ -101,13 +102,16 @@ export interface FetchPageArgs<
 
 export interface AsyncIterArgs<
   Q extends ObjectOrInterfaceDefinition,
-  K extends PropertyKeys<Q> = PropertyKeys<Q>,
+  K extends string = PropertyKeys<Q>,
   R extends boolean = false,
   A extends Augments = never,
   S extends NullabilityAdherence = NullabilityAdherence.Default,
   T extends boolean = false,
   RDP_KEYS extends string = never,
-> extends SelectArg<Q, K, R, S>, OrderByArg<Q, PropertyKeys<Q>> {
+> extends
+  SelectArg<Q, K, R, S, RDP_KEYS>,
+  OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS>
+{
   $__UNSTABLE_useOldInterfaceApis?: boolean;
   $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
 }

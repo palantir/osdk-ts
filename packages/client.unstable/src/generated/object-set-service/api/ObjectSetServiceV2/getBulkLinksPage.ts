@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,15 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetBulkLinksPageRequest } from "../GetBulkLinksPageRequest.js";
-import type { GetBulkLinksPageResponse } from "../GetBulkLinksPageResponse.js";
+import type {
+  GetBulkLinksPageRequest as _api_GetBulkLinksPageRequest,
+  GetBulkLinksPageResponse as _api_GetBulkLinksPageResponse,
+} from "../__components.js";
 
 /**
- * Returns a page of all `FoundryLink`s for a given relation based on a list of object identifiers.
+ * Returns a page of all `FoundryLink`s for a given relation based on a list of object identifiers. Response will
+ * contain entries for every requested object regardless of links found.
+ *
  * The API supports fetching links for maximum 5_000 ObjectIdentifiers in a single request.
  * Results are always limited to the maximum of 100_000 links, without applying any particular order. Specifically,
  * this means that if total links count is above 100_000 then the whole result set should be considered partial,
@@ -31,7 +35,7 @@ import type { GetBulkLinksPageResponse } from "../GetBulkLinksPageResponse.js";
  */
 export async function getBulkLinksPage(
   ctx: ConjureContext,
-  request: GetBulkLinksPageRequest,
-): Promise<GetBulkLinksPageResponse> {
+  request: _api_GetBulkLinksPageRequest,
+): Promise<_api_GetBulkLinksPageResponse> {
   return conjureFetch(ctx, `/bulk-links`, "PUT", request);
 }

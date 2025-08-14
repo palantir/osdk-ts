@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { FauxFoundry } from "@osdk/faux";
 import type { SetupServerApi } from "msw/node";
 import { setupServer } from "msw/node";
-import type { FauxFoundry } from "./FauxFoundry/FauxFoundry.js";
 
 interface ClientFactory<C, A extends any[]> {
   (

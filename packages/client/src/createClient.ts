@@ -100,7 +100,8 @@ class QueryInvoker<Q extends QueryDefinition<any>>
 
 /** @internal */
 export function createClientInternal(
-  objectSetFactory: ObjectSetFactory<any, any>, // first so i can bind
+  objectSetFactory: ObjectSetFactory<any, any>,
+  transactionRid: string | undefined,
   baseUrl: string,
   ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
@@ -125,11 +126,22 @@ export function createClientInternal(
     { ontologyRid },
     baseUrl,
     tokenProvider,
-    { ...options, logger: options?.logger ?? new MinimalLogger() },
+    {
+      ...options,
+      logger: options?.logger ?? new MinimalLogger(),
+      transactionRid: transactionRid,
+    },
     fetchFn,
     objectSetFactory,
   );
 
+  return createClientFromContext(clientCtx);
+}
+
+/**
+ * @internal
+ */
+export function createClientFromContext(clientCtx: MinimalClient) {
   function clientFn<
     T extends
       | ObjectOrInterfaceDefinition
@@ -146,7 +158,7 @@ export function createClientInternal(
     : never
   {
     if (o.type === "object" || o.type === "interface") {
-      return objectSetFactory(o, clientCtx) as any;
+      return clientCtx.objectSetFactory(o, clientCtx) as any;
     } else if (o.type === "action") {
       return new ActionInvoker(
         clientCtx,
@@ -284,7 +296,18 @@ export const createClient: (
 ) => Client = createClientInternal.bind(
   undefined,
   createObjectSet,
+  undefined,
 );
+
+export const createClientWithTransaction: (
+  transactionRid: string,
+  ...args: Parameters<typeof createClient>
+) => Client = (transactionRid, ...args) =>
+  createClientInternal(
+    createObjectSet,
+    transactionRid,
+    ...args,
+  ) as Client;
 
 function createWithRid(
   rids: string[],

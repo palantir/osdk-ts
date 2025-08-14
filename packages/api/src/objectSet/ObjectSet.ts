@@ -18,7 +18,7 @@ import type { AggregateOpts } from "../aggregate/AggregateOpts.js";
 import type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "../aggregate/AggregateOptsThatErrors.js";
 import type { AggregationsResults } from "../aggregate/AggregationsResults.js";
 import type { WhereClause } from "../aggregate/WhereClause.js";
-import type { DerivedProperty } from "../derivedProperties/DerivedProperty.js";
+import type { DerivedPropertyCreator } from "../derivedProperties/DerivedProperty.js";
 import type {
   AsyncIterArgs,
   Augments,
@@ -67,7 +67,7 @@ type ExtractRdp<
 type MaybeSimplifyPropertyKeys<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q>,
-> = PropertyKeys<Q> extends L ? PropertyKeys<Q> : L;
+> = PropertyKeys<Q> extends L ? PropertyKeys<Q> : L & PropertyKeys<Q>;
 
 type SubSelectKeysHelper<
   Q extends ObjectOrInterfaceDefinition,
@@ -132,19 +132,12 @@ interface FetchPage<
 type ValidFetchPageArgs<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
-> =
-  | ObjectSetArgs.FetchPage<
-    Q,
-    PropertyKeys<Q>,
-    false,
-    string & keyof RDPs
-  >
-  | ObjectSetArgs.FetchPage<
-    Q,
-    never,
-    true,
-    string & keyof RDPs
-  >;
+> = ObjectSetArgs.FetchPage<
+  Q,
+  PropertyKeys<Q>,
+  boolean,
+  string & keyof RDPs
+>;
 
 type ValidAsyncIterArgs<
   Q extends ObjectOrInterfaceDefinition,
@@ -182,33 +175,8 @@ interface FetchPageSignature<
 
    * @returns a page of objects
    */
-  <const X extends ValidFetchPageArgs<Q, RDPs> = never>(
-    args?: X,
-  ): Promise<
-    PageResult<
-      Osdk.Instance<
-        Q,
-        ExtractOptions2<X>,
-        SubSelectKeys<Q, X>,
-        SubSelectRDPs<RDPs, X>
-      >
-    >
-  >;
-
-  /**
-   * Gets a page of objects of this type, with a result wrapper
-   * @param args - Args to specify next page token and page size, if applicable
-   * @example
-   *  const myObjs = await objectSet.fetchPage({
-      $pageSize: 10,
-      $nextPageToken: "nextPage"
-    });
-     const myObjsResult = myObjs.data;
-
-   * @returns a page of objects
-   */
   <
-    L extends PropertyKeys<Q>,
+    L extends PropertyKeys<Q> | (string & keyof RDPs),
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
@@ -220,10 +188,32 @@ interface FetchPageSignature<
       Osdk.Instance<
         Q,
         ExtractOptions<R, S, T>,
-        MaybeSimplifyPropertyKeys<Q, L>
+        NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+        SubSelectRDPs<RDPs, NonNullable<typeof args>>
       >
     >
   >;
+}
+
+interface NearestNeighbors<Q extends ObjectOrInterfaceDefinition> {
+  /**
+   * Finds the nearest neighbors for a given text or vector within the object set.
+   *
+   * @param query - Queries support either a vector matching the embedding model defined on the property, or text that is
+        automatically embedded.
+   * @param numNeighbors - The number of objects to return. If the number of documents in the objectType is less than the provided
+            value, all objects will be returned. This value is limited to 1 &le; numNeighbors &ge; 500.
+   * @param property - The property key with a defined embedding model to search over.
+   *
+   * @returns An object set containing the `numNeighbors` nearest neighbors. To return the objects ordered by relevance and each
+   * objects associated score, specify "relevance" in the orderBy.
+ */
+
+  readonly nearestNeighbors: (
+    query: string | number[],
+    numNeighbors: number,
+    property: PropertyKeys.Filtered<Q, "vector">,
+  ) => this;
 }
 
 interface FetchPageWithErrorsSignature<
@@ -244,37 +234,8 @@ interface FetchPageWithErrorsSignature<
     }
    * @returns a page of objects, wrapped in a result wrapper
    */
-  <X extends ValidFetchPageArgs<Q, RDPs> = never>(
-    args?: X,
-  ): Promise<
-    Result<
-      PageResult<
-        Osdk.Instance<
-          Q,
-          ExtractOptions2<X>,
-          SubSelectKeys<Q, X>,
-          SubSelectRDPs<RDPs, X>
-        >
-      >
-    >
-  >;
-
-  /**
-   * Gets a page of objects of this type, with a result wrapper
-   * @param args - Args to specify next page token and page size, if applicable
-   * @example
-   *  const myObjs = await objectSet.fetchPage({
-      $pageSize: 10,
-      $nextPageToken: "nextPage"
-    });
-
-     if(isOk(myObjs)){
-     const myObjsResult = myObjs.value.data;
-    }
-   * @returns a page of objects, wrapped in a result wrapper
-   */
   <
-    L extends PropertyKeys<Q>,
+    L extends PropertyKeys<Q> | (string & keyof RDPs),
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
@@ -287,7 +248,8 @@ interface FetchPageWithErrorsSignature<
         Osdk.Instance<
           Q,
           ExtractOptions<R, S, T>,
-          MaybeSimplifyPropertyKeys<Q, L>
+          NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+          SubSelectRDPs<RDPs, NonNullable<typeof args>>
         >
       >
     >
@@ -346,7 +308,7 @@ interface AsyncIterSignature<
    * @returns an async iterator to load all objects
    */
   <
-    L extends PropertyKeys<Q>,
+    L extends PropertyKeys<Q> | (string & keyof RDPs),
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
@@ -357,7 +319,8 @@ interface AsyncIterSignature<
     Osdk.Instance<
       Q,
       ExtractOptions<R, S, T>,
-      MaybeSimplifyPropertyKeys<Q, L>
+      NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+      SubSelectRDPs<RDPs, NonNullable<typeof args>>
     >
   >;
 }
@@ -376,7 +339,7 @@ interface WithProperties<
   readonly withProperties: <
     NEW extends Record<string, SimplePropertyDef>,
   >(
-    clause: { [K in keyof NEW]: DerivedProperty.Creator<Q, NEW[K]> },
+    clause: { [K in keyof NEW]: DerivedPropertyCreator<Q, NEW[K]> },
   ) => ObjectSet<
     Q,
     {
@@ -501,25 +464,7 @@ interface FetchOneSignature<
    * Fetches one object with the specified primary key, without a result wrapper
    */
   <
-    X extends ObjectSetArgs.Select<PropertyKeys<Q>, string & keyof RDPs> =
-      never,
-  >(
-    primaryKey: PrimaryKeyType<Q>,
-    options?: X,
-  ): Promise<
-    Osdk.Instance<
-      Q,
-      ExtractOptions2<X>,
-      SubSelectKeys<Q, X>,
-      SubSelectRDPs<RDPs, X>
-    >
-  >;
-
-  /**
-   * Fetches one object with the specified primary key, without a result wrapper
-   */
-  <
-    const L extends PropertyKeys<Q>,
+    const L extends PropertyKeys<Q> | (string & keyof RDPs),
     const R extends boolean,
     const S extends false | "throw" = NullabilityAdherence.Default,
   >(
@@ -529,7 +474,8 @@ interface FetchOneSignature<
     Osdk.Instance<
       Q,
       ExtractOptions<R, S>,
-      MaybeSimplifyPropertyKeys<Q, L>
+      NoInfer<SubSelectKeys<Q, { $select: Array<L> }>>,
+      SubSelectRDPs<RDPs, { $select: Array<L> }>
     >
   >;
 }
@@ -541,25 +487,8 @@ interface FetchOneWithErrorsSignature<
   /**
    * Fetches one object with the specified primary key, with a result wrapper
    */
-  <X extends ObjectSetArgs.Select<PropertyKeys<Q>, string & keyof RDPs>>(
-    primaryKey: PrimaryKeyType<Q>,
-    options?: X,
-  ): Promise<
-    Result<
-      Osdk.Instance<
-        Q,
-        ExtractOptions2<X>,
-        SubSelectKeys<Q, X>,
-        SubSelectRDPs<RDPs, X>
-      >
-    >
-  >;
-
-  /**
-   * Fetches one object with the specified primary key, with a result wrapper
-   */
   <
-    const L extends PropertyKeys<Q>,
+    const L extends PropertyKeys<Q> | (string & keyof RDPs),
     const R extends boolean,
     const S extends false | "throw" = NullabilityAdherence.Default,
   >(
@@ -570,7 +499,8 @@ interface FetchOneWithErrorsSignature<
       Osdk.Instance<
         Q,
         ExtractOptions<R, S>,
-        MaybeSimplifyPropertyKeys<Q, L>
+        NoInfer<SubSelectKeys<Q, { $select: Array<L> }>>,
+        SubSelectRDPs<RDPs, { $select: Array<L> }>
       >
     >
   >;
@@ -615,6 +545,7 @@ interface ObjectSetCleanedTypes<
   SetArithmetic<MERGED>,
   PivotTo<Q>,
   FetchOne<Q, D>,
-  Subscribe<MERGED>
+  Subscribe<MERGED>,
+  NearestNeighbors<Q>
 {
 }

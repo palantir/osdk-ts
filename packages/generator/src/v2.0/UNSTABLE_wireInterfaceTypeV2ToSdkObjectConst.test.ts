@@ -126,6 +126,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     expect(formattedCode).toMatchInlineSnapshot(`
       "import type {
         InterfaceDefinition as $InterfaceDefinition,
+        InterfaceMetadata as $InterfaceMetadata,
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
         PropertyValueWireToClient as $PropType,
@@ -168,6 +169,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           linksType: OsdkObjectLinks$Bar;
           strictProps: Bar.StrictProps;
           apiName: "Bar";
+          description: undefined;
           displayName: "Bar";
           implementedBy: [];
           implements: [];
@@ -221,6 +223,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     expect(formattedCode).toMatchInlineSnapshot(`
       "import type {
         InterfaceDefinition as $InterfaceDefinition,
+        InterfaceMetadata as $InterfaceMetadata,
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
         PropertyValueWireToClient as $PropType,
@@ -234,6 +237,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         export interface Props {
           /**
            *   display name: 'foo property dn',
+           *
            *   description: foo property desc
            */
           readonly foo: $PropType["integer"] | undefined;
@@ -272,6 +276,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           properties: {
             /**
              *   display name: 'foo property dn',
+             *
              *   description: foo property desc
              */
             foo: $PropertyDef<"integer", "nullable", "single">;
@@ -318,6 +323,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     expect(formattedCode).toMatchInlineSnapshot(`
       "import type {
         InterfaceDefinition as $InterfaceDefinition,
+        InterfaceMetadata as $InterfaceMetadata,
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
         PropertyValueWireToClient as $PropType,
@@ -331,11 +337,13 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         export interface Props {
           /**
            *   display name: 'bar property dn',
+           *
            *   description: bar property desc
            */
           readonly bar: $PropType["integer"] | undefined;
           /**
            *   display name: 'foo property dn',
+           *
            *   description: foo property desc
            */
           readonly foo: $PropType["integer"] | undefined;
@@ -374,11 +382,13 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           properties: {
             /**
              *   display name: 'bar property dn',
+             *
              *   description: bar property desc
              */
             bar: $PropertyDef<"integer", "nullable", "single">;
             /**
              *   display name: 'foo property dn',
+             *
              *   description: foo property desc
              */
             foo: $PropertyDef<"integer", "nullable", "single">;
@@ -425,6 +435,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     expect(formattedCode).toMatchInlineSnapshot(`
       "import type {
         InterfaceDefinition as $InterfaceDefinition,
+        InterfaceMetadata as $InterfaceMetadata,
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
         PropertyValueWireToClient as $PropType,
@@ -438,6 +449,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         export interface Props {
           /**
            *   display name: 'foo property dn',
+           *
            *   description: foo property desc
            */
           readonly foo: $PropType["integer"] | undefined;
@@ -476,6 +488,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           properties: {
             /**
              *   display name: 'foo property dn',
+             *
              *   description: foo property desc
              */
             foo: $PropertyDef<"integer", "nullable", "single">;
@@ -492,5 +505,44 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
       };
       "
     `);
+  });
+
+  it("sorts the implements array for stable output", async () => {
+    // Test with multiple parent interfaces in non-alphabetical order
+    const ontology = enhanceOntology({
+      sanitized: simpleOntology("ontology", [
+        simpleInterface("Child", [simpleSpt("child")], [
+          "ParentZ",
+          "ParentA",
+          "ParentC",
+        ]),
+        simpleInterface("ParentZ", [simpleSpt("z")], []),
+        simpleInterface("ParentA", [simpleSpt("a")], []),
+        simpleInterface("ParentC", [simpleSpt("c")], []),
+      ]),
+      importExt: "",
+    });
+
+    const formattedCode = await format(
+      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
+        ontology.interfaceTypes.Child as EnhancedInterfaceType,
+        ontology,
+        true,
+        true,
+      ),
+      {
+        parser: "typescript",
+      },
+    );
+
+    // Extract the implements array from the generated code
+    const implementsMatch = formattedCode.match(/implements:\s*\[([^\]]+)\]/s);
+    expect(implementsMatch).not.toBeNull();
+
+    if (implementsMatch) {
+      const implementsStr = implementsMatch[1];
+      // Check that the array is sorted alphabetically
+      expect(implementsStr).toContain("\"ParentA\", \"ParentC\", \"ParentZ\"");
+    }
   });
 });

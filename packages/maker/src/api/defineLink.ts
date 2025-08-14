@@ -14,36 +14,103 @@
  * limitations under the License.
  */
 
+import type { LinkTypeMetadata } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
-import { ontologyDefinition } from "./defineOntology.js";
-import type { LinkTypeDefinition, SharedPropertyType } from "./types.js";
+import {
+  convertToDisplayName,
+  convertToPluralDisplayName,
+} from "./defineObject.js";
+import { updateOntology } from "./defineOntology.js";
+import type {
+  LinkType,
+  LinkTypeDefinition,
+  LinkTypeMetadataUserDefinition,
+  ManyToManyObjectLinkReference,
+  ManyToManyObjectLinkReferenceUserDefinition,
+  OneToManyObjectLinkReference,
+  OneToManyObjectLinkReferenceUserDefinition,
+} from "./types.js";
+import { OntologyEntityTypeEnum } from "./types.js";
 
-const defaultTypeClasses: SharedPropertyType["typeClasses"] = [{
-  kind: "render_hint",
-  name: "SELECTABLE",
-}, { kind: "render_hint", name: "SORTABLE" }];
+const typeIdPattern = /([a-z][a-z0-9\\-]*)/;
 
 export function defineLink(
   linkDefinition: LinkTypeDefinition,
-): LinkTypeDefinition {
+): LinkType {
   if ("one" in linkDefinition) {
-    const foreignKey = linkDefinition.toMany.object.properties?.find(prop =>
-      prop.apiName === linkDefinition.manyForeignKeyProperty
-    );
+    const foreignKey = linkDefinition.toMany.object.properties
+      ?.[linkDefinition.manyForeignKeyProperty];
     invariant(
       foreignKey !== undefined,
-      `Foreign key ${linkDefinition.manyForeignKeyProperty} on link ${linkDefinition.id} does not exist on object ${linkDefinition.toMany.object.apiName}}`,
+      `Foreign key ${linkDefinition.manyForeignKeyProperty} on link ${linkDefinition.apiName} does not exist on object ${linkDefinition.toMany.object.apiName}}`,
     );
 
-    const typesMatch =
-      foreignKey.type === linkDefinition.one.object.properties?.find(prop =>
-        prop.apiName === linkDefinition.one.object.primaryKeyPropertyApiName
-      )?.type;
+    invariant(
+      typeIdPattern.test(linkDefinition.apiName),
+      `Top level link api names are expected to match the regex pattern ([a-z][a-z0-9\\-]*) ${linkDefinition.apiName} does not match`,
+    );
+
+    const typesMatch = foreignKey.type
+      === linkDefinition.one.object.properties
+        ?.[linkDefinition.one.object.primaryKeyPropertyApiName].type;
     invariant(
       typesMatch,
-      `Link ${linkDefinition.id} has type mismatch between the one side's primary key and the foreign key on the many side`,
+      `Link ${linkDefinition.apiName} has type mismatch between the one side's primary key and the foreign key on the many side`,
     );
   }
-  ontologyDefinition.linkTypes[linkDefinition.id] = linkDefinition;
-  return linkDefinition;
+  const fullLinkDefinition = "one" in linkDefinition
+    ? {
+      ...linkDefinition,
+      one: convertUserOneToManyLinkDefinition(linkDefinition.one),
+      toMany: convertUserOneToManyLinkDefinition(linkDefinition.toMany),
+    }
+    : {
+      ...linkDefinition,
+      many: convertUserManyToManyLinkDefinition(linkDefinition.many),
+      toMany: convertUserManyToManyLinkDefinition(linkDefinition.toMany),
+    };
+  const linkType: LinkType = {
+    cardinality: "one" in linkDefinition
+      ? linkDefinition.cardinality
+      : undefined,
+    ...fullLinkDefinition,
+    __type: OntologyEntityTypeEnum.LINK_TYPE,
+  };
+  updateOntology(linkType);
+  return linkType;
+}
+
+function convertUserOneToManyLinkDefinition(
+  oneToMany: OneToManyObjectLinkReferenceUserDefinition,
+): OneToManyObjectLinkReference {
+  return {
+    ...oneToMany,
+    metadata: convertLinkTypeMetadata(oneToMany.metadata),
+  };
+}
+
+function convertUserManyToManyLinkDefinition(
+  manyToMany: ManyToManyObjectLinkReferenceUserDefinition,
+): ManyToManyObjectLinkReference {
+  return {
+    ...manyToMany,
+    metadata: convertLinkTypeMetadata(manyToMany.metadata),
+  };
+}
+
+function convertLinkTypeMetadata(
+  metadata: LinkTypeMetadataUserDefinition,
+): LinkTypeMetadata {
+  return {
+    apiName: metadata.apiName,
+    displayMetadata: {
+      displayName: metadata.displayName
+        ?? convertToDisplayName(metadata.apiName),
+      pluralDisplayName: metadata.pluralDisplayName
+        ?? convertToPluralDisplayName(metadata.apiName),
+      visibility: metadata.visibility ?? "NORMAL",
+      groupDisplayName: metadata.groupDisplayName ?? "",
+    },
+    typeClasses: [],
+  };
 }

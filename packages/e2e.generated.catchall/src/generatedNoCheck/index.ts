@@ -9,12 +9,21 @@ export {
   createStructPersonOpiTeam,
   createTestGeoAction,
   createTodo,
+  createUnstructuredImageExample,
   deleteFooInterface,
   deleteOsdkTestObject,
   editOsdkTestObject,
 } from './ontology/actions.js';
 export * as $Actions from './ontology/actions.js';
-export { Athlete, FooInterface, InterfaceNoProps, OsdkTestInterface } from './ontology/interfaces.js';
+export {
+  Athlete,
+  CollateralConcernCandidate,
+  CollateralConcernList,
+  EsongInterfaceA,
+  FooInterface,
+  InterfaceNoProps,
+  OsdkTestInterface,
+} from './ontology/interfaces.js';
 export * as $Interfaces from './ontology/interfaces.js';
 export {
   BgaoNflPlayer,
@@ -23,8 +32,11 @@ export {
   Country_1,
   DherlihyComplexObject,
   Employee,
+  EsongIssues,
+  EsongPds,
   FintrafficAis,
   GtfsTripTrackObject,
+  MatthewvsDevOrderEmbedding,
   McAirportStruct,
   MnayanOsdkMediaObject,
   MtaBus,
@@ -39,6 +51,7 @@ export {
   StructPersonOpisTeam,
   TestGeoAction,
   Todo,
+  UnstructuredImageExample,
   Venture,
   WeatherStation,
 } from './ontology/objects.js';

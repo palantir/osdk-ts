@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-export type { DirectedLinkTypeRid } from "./generated/object-set-service/api/DirectedLinkTypeRid.js";
-export type { FoundryObjectReference } from "./generated/object-set-service/api/FoundryObjectReference.js";
-export type { GetBulkLinksPageRequest } from "./generated/object-set-service/api/GetBulkLinksPageRequest.js";
-export type { ObjectIdentifier } from "./generated/object-set-service/api/ObjectIdentifier.js";
-export type { ObjectSet } from "./generated/object-set-service/api/ObjectSet.js";
-export type { ObjectSetFilter } from "./generated/object-set-service/api/ObjectSetFilter.js";
+export type {
+  DirectedLinkTypeRid,
+  FoundryObjectReference,
+  GetBulkLinksPageRequest,
+  ObjectIdentifier,
+  ObjectSet,
+  ObjectSetFilter,
+} from "./generated/object-set-service/api/__components.js";
 
 export { createTemporaryObjectSet } from "./generated/object-set-service/api/ObjectSetService.js";
 export { getBulkLinksPage } from "./generated/object-set-service/api/ObjectSetServiceV2/getBulkLinksPage.js";
@@ -46,13 +48,10 @@ export type {
   OntologyIrBaseParameterType_timestampList,
   ParameterRenderHint,
   ParameterRequiredConfiguration,
+  ParameterVisibility,
 } from "./generated/ontology-metadata/api/types/__components.js";
 
-export type {
-  OntologyIrActionTypeBlockDataV2,
-  OntologyIrLinkTypeBlockDataV2,
-  OntologyIrObjectTypeBlockDataV2,
-} from "./generated/ontology-metadata/api/blockdata/__components.ts";
+export type * from "./generated/ontology-metadata/api/blockdata/__components.ts";
 
 export type { SharedPropertyTypeGothamMapping } from "./generated/ontology-metadata/api/typemapping/__components.ts";
 
@@ -68,19 +67,8 @@ export type { ValueTypeStatus } from "./generated/type-registry/api/ValueTypeSta
 export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVersion.js";
 
 export type {
-  ApiNameValueTypeReference,
-  ImportedSharedPropertyTypes,
-  ImportedTypes,
   OntologyIr,
-  OntologyIrInterfaceType,
-  OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrOntologyBlockDataV2,
-  OntologyIrPackagedValueType,
-  OntologyIrPackagedValueTypeMetadata,
-  OntologyIrSharedPropertyType,
-  OntologyIrSharedPropertyTypeBlockDataV2,
-  OntologyIrStructFieldType,
-  OntologyIrType,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
 } from "./blockDataIr.js";

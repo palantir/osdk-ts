@@ -3,6 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type {
   InterfaceDefinition as $InterfaceDefinition,
+  InterfaceMetadata as $InterfaceMetadata,
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
@@ -42,6 +43,8 @@ export interface InterfaceNoProps extends $InterfaceDefinition {
     apiName: 'InterfaceNoProps';
     description: 'Its a Foo.';
     displayName: 'FInterfaceNoProps';
+    implementedBy: undefined;
+    implements: undefined;
     links: {};
     properties: {};
     rid: 'ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b';

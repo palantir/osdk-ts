@@ -3,6 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type {
   InterfaceDefinition as $InterfaceDefinition,
+  InterfaceMetadata as $InterfaceMetadata,
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
@@ -45,7 +46,9 @@ export interface SomeInterface extends $InterfaceDefinition {
     linksType: OsdkObjectLinks$SomeInterface;
     strictProps: SomeInterface.StrictProps;
     apiName: 'com.example.local.SomeInterface';
+    description: undefined;
     displayName: 'Sum Interface';
+    implementedBy: undefined;
     implements: ['com.example.dep.SomeInterface'];
     links: {};
     properties: {

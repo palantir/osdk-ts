@@ -669,7 +669,11 @@ export interface PropertyTypeGothamMapping {
   >;
   uri: GothamPropertyTypeUri;
 }
-export type RevDbIntegrationState = "ENABLED" | "PAUSED" | "DISABLED";
+export type RevDbIntegrationState =
+  | "ENABLED"
+  | "PAUSED"
+  | "DISABLED"
+  | "DISABLED_ALLOW_WRITES";
 export interface SharedPropertyTypeGothamMapping {
   structApiNameToComponentUriMapping: Record<
     _api_ObjectTypeFieldApiName,

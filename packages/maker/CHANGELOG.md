@@ -1,5 +1,436 @@
 # @osdk/maker
 
+## 0.12.0-beta.17
+
+### Minor Changes
+
+- f1f587b: Support custom parameters in OAC actions
+- 641bc0c: Fix create-or-modify non parameter mapped property bug
+- 25bae67: OAC modify object actions set parameter defaults to match the selected object
+- 5c76e33: Trim value type before putting it in SPT IR
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.14
+
+## 0.12.0-beta.16
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/api@2.4.0-beta.13
+
+## 0.12.0-beta.15
+
+### Minor Changes
+
+- a1736f3: Actions can have properties that are not mapped to parameters
+- c621638: Create or Modify actions in OAC
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.12
+
+## 0.12.0-beta.14
+
+### Minor Changes
+
+- d384b4c: Add custom display names and descriptions for action parameters in OAC
+- 02be685: Remove jiti
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.11
+
+## 0.12.0-beta.13
+
+### Minor Changes
+
+- ed41359: Action sections in OAC
+
+## 0.12.0-beta.12
+
+### Minor Changes
+
+- 666787f: fix text allowed values name
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.10
+
+## 0.12.0-beta.11
+
+### Minor Changes
+
+- b0955ef: Action parameter defaults and table forms
+- defc2cf: change parameterLevelValidations to parameterConfiguration
+
+### Patch Changes
+
+- Updated dependencies [9101bad]
+  - @osdk/api@2.4.0-beta.9
+
+## 0.12.0-beta.10
+
+### Minor Changes
+
+- 4dffba1: Support extended string params in actions
+
+### Patch Changes
+
+- Updated dependencies [9f4fe9e]
+  - @osdk/api@2.4.0-beta.8
+
+## 0.12.0-beta.9
+
+### Minor Changes
+
+- ac0029e: Improve CRUD actions customization
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.7
+
+## 0.12.0-beta.8
+
+### Minor Changes
+
+- 764e5f1: Add marking constraints
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.6
+
+## 0.12.0-beta.7
+
+### Minor Changes
+
+- 75fbd09: Type classes and list validation for object actions
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.5
+
+## 0.12.0-beta.6
+
+### Minor Changes
+
+- 3dcd9b1: Modify object actions cannot modify pk
+
+## 0.12.0-beta.5
+
+### Minor Changes
+
+- a01b8d4: Revert import block data changes
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.4
+
+## 0.12.0-beta.4
+
+### Minor Changes
+
+- e647175: Skip struct props for object create + modify actions
+
+## 0.12.0-beta.3
+
+### Minor Changes
+
+- 988bf66: Use block data type for imports
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.3
+
+## 0.12.0-beta.2
+
+### Minor Changes
+
+- 8bb08eb: Turn on module cache
+- 5994895: Interface struct properties are skipped in crud actions
+
+### Patch Changes
+
+- Updated dependencies [29d2ada]
+- Updated dependencies [8c95154]
+- Updated dependencies [c32dcf2]
+  - @osdk/api@2.4.0-beta.2
+
+## 0.11.0-beta.14
+
+### Minor Changes
+
+- 79cb6eb: Fix imported interface properties in IR
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.10
+
+## 0.11.0-beta.13
+
+### Minor Changes
+
+- 402aa94: Use namespaced api names for interface properties
+
+## 0.11.0-beta.12
+
+### Minor Changes
+
+- 1847bcb: Support arrays in OT props
+- 3ae0cfd: Remove import/dep from codegen
+- 7d232fb: Added searchable field to interface definitions
+- 60b0029: Check extended interfaces when validating object property mapping
+- 0abeec3: Make codegen prettier
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.9
+
+## 0.11.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [12d599f]
+  - @osdk/api@2.3.0-beta.8
+
+## 0.11.0-beta.10
+
+### Minor Changes
+
+- 99b90af: Fix dependency injection to use OAC version and not maker version
+
+## 0.11.0-beta.9
+
+### Minor Changes
+
+- 508ecd6: Improve defineLink syntax
+
+## 0.11.0-beta.8
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/api@2.3.0-beta.7
+
+## 0.11.0-beta.7
+
+### Minor Changes
+
+- 77674dd: Remove alias
+- c305ea8: link id sanitation
+- ab2ef22: Fix dependency injection
+- 1608ba5: Make modify action params optional
+- dc7d201: Fix geopoint bug
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.6
+
+## 0.11.0-beta.6
+
+### Minor Changes
+
+- e34ee12: Add output dir CLI flag
+- 37cdc7e: Propagate interface extension to static objects
+- 982d3ce: Start tracking and injecting OAC dependencies
+
+### Patch Changes
+
+- Updated dependencies [e8c4aed]
+  - @osdk/api@2.3.0-beta.5
+
+## 0.11.0-beta.5
+
+### Minor Changes
+
+- 4d13e4d: Restricted view datasources in OAC
+- b8d0526: OAC edit only properties for dataset backed objects
+- 0d5feaa: Docs for maker
+- e20c5d6: Validate edit only properties are not primary keys
+- 27cdb1d: Adding concrete object value type support
+- c177bf0: Update property default typeClasses to match SPT default typeClasses
+
+### Patch Changes
+
+- Updated dependencies [43c5547]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [3b5ccaa]
+  - @osdk/api@2.3.0-beta.4
+
+## 0.11.0-beta.4
+
+### Minor Changes
+
+- 474f4ca: Group permissions for OAC actions
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.3
+
+## 0.11.0-beta.3
+
+### Minor Changes
+
+- 3c840d9: Support array type SPTs in legacy OAC importing workflow
+
+## 0.11.0-beta.2
+
+### Minor Changes
+
+- fea541b: Support old importing workflow
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.2
+
+## 0.10.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 6eeb423: Simple create and modify actions for interfaces
+- 4a02a1f: Make string more configurable
+- 38ad25b: Make properties nullable
+- 489ea17: Wire through nullability to SPT
+- 1a09a8e: Enforce that struct, mediaReference, and GTSR type SPTs cannot have render hints
+- 12843cb: Add ability to load all underlying properties of an interface.
+- a08bdfb: Support stream datasources in OAC
+- 0a41cec: Support optional interface properties
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+- 21e33a5: Upgrade consola to 3.4.0
+- 63b2e63: Update Platform SDK Dependencies
+- 75f6b51: Propagate required/optional fields from interfaces to actions
+- 7416ce4: Update Platform SDK Dependencies
+- 10da391: Links as Code
+- c0aa106: Add visibility field to shared property type in maker
+- 7bb2971: OAC support for actions on objects
+- f1b1188: OAC Imports v0
+- cff551a: Update OAC codegen
+- 5745d3e: Make Object PKs singular
+- ca5d920: Fix marking/list validation
+- e287c5b: Support marking types in SPTs in Interfaces in Actions
+- 5e8e839: Bump OMS API to include links in ontology IR
+- 24c4b12: Add geotime and mediaset datasources to OAC
+- 889e84b: Release
+- 395ae07: Actions as code
+- 94663ab: Change the status definitions for objects and add validation for timestamps.
+- 791e655: Add support for geoshape and geohash action parameters.
+- f12caa4: Fix marking list for modify action
+- 317b555: Release
+- c7f7a99: Export defineOntology method
+- 8f67e1e: OAC Struct Property Field Mapping Support
+- cc380b5: Use the latest Platform APIs
+- 340ba44: Fix test
+- Updated dependencies [322c5bc]
+- Updated dependencies [c6bee50]
+- Updated dependencies [7416ce4]
+- Updated dependencies [7170fd1]
+- Updated dependencies [12843cb]
+- Updated dependencies [18ba34f]
+- Updated dependencies [6abf078]
+- Updated dependencies [f82767c]
+- Updated dependencies [56aa502]
+- Updated dependencies [0e874b1]
+- Updated dependencies [abe4897]
+- Updated dependencies [63b2e63]
+- Updated dependencies [cddfbf9]
+- Updated dependencies [7416ce4]
+- Updated dependencies [23ea0e4]
+- Updated dependencies [26c2d95]
+- Updated dependencies [488b51c]
+- Updated dependencies [71462e9]
+- Updated dependencies [fccd9ac]
+- Updated dependencies [5665b18]
+- Updated dependencies [46cede4]
+- Updated dependencies [761e69d]
+- Updated dependencies [889e84b]
+- Updated dependencies [a6e5f89]
+- Updated dependencies [ed69666]
+- Updated dependencies [4183a55]
+- Updated dependencies [70b4464]
+- Updated dependencies [791e655]
+- Updated dependencies [317b555]
+- Updated dependencies [63b2e63]
+- Updated dependencies [a146ce4]
+- Updated dependencies [3d0ab11]
+- Updated dependencies [805df40]
+- Updated dependencies [5467a0f]
+- Updated dependencies [63b2e63]
+  - @osdk/api@2.2.0
+
+## 0.10.0-beta.25
+
+### Minor Changes
+
+- 1a09a8e: Enforce that struct, mediaReference, and GTSR type SPTs cannot have render hints
+- 8f67e1e: OAC Struct Property Field Mapping Support
+
+## 0.10.0-beta.24
+
+### Patch Changes
+
+- Updated dependencies [4183a55]
+  - @osdk/api@2.2.0-beta.23
+
+## 0.10.0-beta.23
+
+### Minor Changes
+
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+- f1b1188: OAC Imports v0
+
+### Patch Changes
+
+- Updated dependencies [18ba34f]
+  - @osdk/api@2.2.0-beta.22
+
+## 0.10.0-beta.22
+
+### Minor Changes
+
+- 75f6b51: Propagate required/optional fields from interfaces to actions
+
+## 0.10.0-beta.21
+
+### Minor Changes
+
+- 94663ab: Change the status definitions for objects and add validation for timestamps.
+- f12caa4: Fix marking list for modify action
+- 317b555: Release
+
+### Patch Changes
+
+- Updated dependencies [317b555]
+  - @osdk/api@2.2.0-beta.21
+
+## 0.10.0-beta.20
+
+### Minor Changes
+
+- 7bb2971: OAC support for actions on objects
+- ca5d920: Fix marking/list validation
+- 889e84b: Release
+
+### Patch Changes
+
+- Updated dependencies [889e84b]
+  - @osdk/api@2.2.0-beta.20
+
+## 0.10.0-beta.19
+
+### Minor Changes
+
+- e287c5b: Support marking types in SPTs in Interfaces in Actions
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.19
+
 ## 0.10.0-beta.18
 
 ### Minor Changes
@@ -177,6 +608,96 @@
 
 - Updated dependencies [fccd9ac]
   - @osdk/api@2.2.0-beta.2
+
+## 0.9.0
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- f0b519d: Upgrade to vitest 3 and vite 6
+- 1812118: Add geotime support for OSDK.
+- bc1761c: Update platform API dependencies.
+- bb8b219: Use new external packages instead of the internal ones.
+- 44e62f6: Updating fetch for auth and other packages.
+- 91cfa3a: Fixing url parsing for client.
+- c9e855d: Allowing interfaces to extend other interfaces for ontology as code.
+- 94463b6: Support objects as code
+- 9d35a1f: Remove unused imports
+- 8d8bebb: Fix nullability
+- 7a95618: Generate new OMS APIs
+- c9da74c: Improves code quality by fixing linting errors
+- abfe4b3: Add support for reading struct properties.
+- caf1abc: Support generating linked products for marketplace
+- cd8d657: Support importing foreign SPTs
+- b8a1a58: Add nullability to markings because of course they need to be nullable. This sucks in the data model, I should talk to the ontology team about this.
+- b0544d4: Add additional marking configuration
+- 9018dc2: Updating platform api dependencies.
+- f569124: Add media reference to maker
+- 0a4f131: Fix value types so they actually serialize correctly.
+- 8e5e49a: Add optional link constraints
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+- 2b35ed4: Structs in maker package
+- 09eaf24: Update to latest platform sdks
+- 06e66dc: Making interface type status configurable
+- d665147: Update platform sdk deps
+
+### Patch Changes
+
+- Updated dependencies [966d408]
+- Updated dependencies [cddc196]
+- Updated dependencies [d794c19]
+- Updated dependencies [05febf4]
+- Updated dependencies [55c05f2]
+- Updated dependencies [0dc40b0]
+- Updated dependencies [25fd9f0]
+- Updated dependencies [11a05cc]
+- Updated dependencies [7865cb6]
+- Updated dependencies [9c4efe6]
+- Updated dependencies [3ea2e79]
+- Updated dependencies [1812118]
+- Updated dependencies [bc1761c]
+- Updated dependencies [656f975]
+- Updated dependencies [f1145ff]
+- Updated dependencies [f446d0c]
+- Updated dependencies [c80ca45]
+- Updated dependencies [bb8b219]
+- Updated dependencies [03f95eb]
+- Updated dependencies [1a89f23]
+- Updated dependencies [9d35a1f]
+- Updated dependencies [c691c8b]
+- Updated dependencies [749cf69]
+- Updated dependencies [f03e39f]
+- Updated dependencies [11088aa]
+- Updated dependencies [72c1905]
+- Updated dependencies [9298f75]
+- Updated dependencies [f34b3d4]
+- Updated dependencies [acbfab9]
+- Updated dependencies [62c1d63]
+- Updated dependencies [3c9ac22]
+- Updated dependencies [1591f04]
+- Updated dependencies [03e1941]
+- Updated dependencies [abfe4b3]
+- Updated dependencies [b79becf]
+- Updated dependencies [27866a8]
+- Updated dependencies [e5fe7c0]
+- Updated dependencies [1b2e8c9]
+- Updated dependencies [9f3807c]
+- Updated dependencies [0c56d21]
+- Updated dependencies [e548b9b]
+- Updated dependencies [ee6224b]
+- Updated dependencies [1dc0228]
+- Updated dependencies [6c60414]
+- Updated dependencies [5fe2c8d]
+- Updated dependencies [d3b3f35]
+- Updated dependencies [785f663]
+- Updated dependencies [6b6c8a1]
+- Updated dependencies [c537e2d]
+- Updated dependencies [73fa373]
+- Updated dependencies [8e6a5f4]
+- Updated dependencies [2d5e648]
+- Updated dependencies [31e7d70]
+- Updated dependencies [f19da8e]
+  - @osdk/api@2.1.0
 
 ## 0.9.0-beta.31
 

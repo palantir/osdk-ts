@@ -20,17 +20,21 @@ import type {
 } from "./definitions/LinkDefinitions.js";
 import type { NullabilityAdherence } from "./object/FetchPageArgs.js";
 import type { UnionIfTrue } from "./object/FetchPageResult.js";
-import type { InterfaceDefinition } from "./ontology/InterfaceDefinition.js";
+import type {
+  InterfaceDefinition,
+  InterfaceMetadata,
+} from "./ontology/InterfaceDefinition.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "./ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
+  ObjectMetadata,
   ObjectTypeDefinition,
 } from "./ontology/ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "./ontology/SimplePropertyDef.js";
-import type { OsdkBaseWithObjectSpecifier } from "./OsdkBase.js";
+import type { OsdkBase } from "./OsdkBase.js";
 
 type DropDollarOptions<T extends string> = Exclude<
   T,
@@ -183,7 +187,7 @@ export namespace Osdk {
     P extends PropertyKeys<Q> = PropertyKeys<Q>,
     R extends Record<string, SimplePropertyDef> = {},
   > =
-    & OsdkBaseWithObjectSpecifier<Q>
+    & OsdkBase<Q>
     & Pick<
       CompileTimeMetadata<Q>["props"],
       // If there aren't any additional properties, then we want GetPropsKeys to default to PropertyKeys<Q>
@@ -213,6 +217,15 @@ export namespace Osdk {
             >["props"][K];
           },
       ) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>;
+
+      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends
+        ObjectTypeDefinition ? {
+          ObjectMetadata: Q;
+        }
+        : {
+          ObjectMetadata: ObjectMetadata;
+          InterfaceMetadata: InterfaceMetadata;
+        };
     }
     // We are hiding the $rid field if it wasn't requested as we want to discourage its use
     & (IsNever<OPTIONS> extends true ? {}

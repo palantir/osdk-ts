@@ -18,11 +18,16 @@ import type { OsdkMetadata } from "../OsdkMetadata.js";
 import type {
   ObjectInterfaceBaseMetadata,
   ObjectInterfaceCompileDefinition,
+  ObjectTypeDefinition,
 } from "./ObjectTypeDefinition.js";
 
 export interface InterfaceMetadata extends ObjectInterfaceBaseMetadata {
   type: "interface";
   implementedBy?: ReadonlyArray<string>;
+  links: Record<
+    string,
+    InterfaceMetadata.Link<any, any>
+  >;
 }
 
 export interface InterfaceDefinition {
@@ -32,4 +37,16 @@ export interface InterfaceDefinition {
   __DefinitionMetadata?:
     & InterfaceMetadata
     & ObjectInterfaceCompileDefinition;
+}
+
+export namespace InterfaceMetadata {
+  export interface Link<
+    Q extends ObjectTypeDefinition | InterfaceDefinition,
+    M extends boolean,
+  > {
+    __OsdkLinkTargetType?: Q;
+    targetTypeApiName: Q["apiName"];
+    multiplicity: M;
+    targetType: Q["type"];
+  }
 }

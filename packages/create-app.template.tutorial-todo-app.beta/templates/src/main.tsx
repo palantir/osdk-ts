@@ -1,26 +1,17 @@
+import { OsdkProvider } from "@osdk/react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import AuthCallback from "./AuthCallback";
-import AuthenticatedRoute from "./AuthenticatedRoute";
 import Home from "./Home";
-import Login from "./Login";
 import "./index.css";
+import { StrictMode } from "react";
+import client from "./client";
 
 const router = createBrowserRouter(
   [
     {
       path: "/",
-      element: <AuthenticatedRoute />,
-      children: [
-        {
-          path: "/",
-          element: <Home />,
-        },
-      ],
-    },
-    {
-      path: "/login",
-      element: <Login />,
+      element: <Home />,
     },
     {
       // This is the route defined in your application's redirect URL
@@ -32,5 +23,9 @@ const router = createBrowserRouter(
 );
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <RouterProvider router={router} />,
+  <StrictMode>
+    <OsdkProvider client={client}>
+      <RouterProvider router={router} />
+    </OsdkProvider>
+  </StrictMode>,
 );

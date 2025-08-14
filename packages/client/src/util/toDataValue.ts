@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { NULL_VALUE } from "@osdk/api";
+import type { ActionMetadata } from "@osdk/api";
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -21,11 +23,11 @@ import {
   isAttachmentFile,
   isAttachmentUpload,
 } from "../object/AttachmentUpload.js";
-import { isMediaReference } from "../object/mediaUpload.js";
+import { isMediaReference, isMediaUpload } from "../object/mediaUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isInterfaceActionParam } from "./interfaceUtils.js";
+import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
-import { isOsdkBaseObject } from "./isOsdkObject.js";
 import { isPoint } from "./isPoint.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
@@ -38,10 +40,17 @@ import { isWireObjectSet } from "./WireObjectSet.js";
 export async function toDataValue(
   value: unknown,
   client: MinimalClient,
+  actionMetadata: ActionMetadata,
 ): Promise<DataValue> {
   if (value == null) {
     // typeof null is 'object' so do this first
+    // Sending null over the wire clears the data, whereas undefined is dropped at request time.
+    // Null values are not allowed with OSDK types, but leaving here as an override.
     return value;
+  }
+
+  if (value === NULL_VALUE) {
+    return null;
   }
 
   // arrays and sets are both sent over the wire as arrays
@@ -54,13 +63,14 @@ export async function toDataValue(
     ) {
       const converted = [];
       for (const value of values) {
-        converted.push(await toDataValue(value, client));
+        converted.push(await toDataValue(value, client, actionMetadata));
       }
       return converted;
     }
     const promiseArray = Array.from(
       value,
-      async (innerValue) => await toDataValue(innerValue, client),
+      async (innerValue) =>
+        await toDataValue(innerValue, client, actionMetadata),
     );
     return Promise.all(promiseArray);
   }
@@ -74,7 +84,7 @@ export async function toDataValue(
         filename: value.name,
       },
     );
-    return await toDataValue(attachment.rid, client);
+    return await toDataValue(attachment.rid, client, actionMetadata);
   }
 
   if (isAttachmentFile(value)) {
@@ -85,20 +95,41 @@ export async function toDataValue(
         filename: value.name as string,
       },
     );
-    return await toDataValue(attachment.rid, client);
+    return await toDataValue(attachment.rid, client, actionMetadata);
+  }
+
+  // new media item upload interface, very similar to how attachments work above
+
+  if (isMediaUpload(value)) {
+    const mediaRef = await OntologiesV2.MediaReferenceProperties
+      .uploadMedia(
+        client,
+        await client.ontologyRid,
+        actionMetadata.apiName,
+        value.data,
+        {
+          mediaItemPath: value.path,
+          preview: true,
+        },
+      );
+    return await toDataValue(mediaRef, client, actionMetadata);
   }
 
   // objects just send the JSON'd primaryKey
   if (isOntologyObjectV2(value)) {
-    return await toDataValue(value.__primaryKey, client);
+    return await toDataValue(value.__primaryKey, client, actionMetadata);
   }
 
-  if (isOsdkBaseObject(value)) {
-    return await toDataValue(value.$primaryKey, client);
+  if (isObjectSpecifiersObject(value)) {
+    return await toDataValue(value.$primaryKey, client, actionMetadata);
   }
 
   if (isPoint(value)) {
-    return await toDataValue(value.coordinates.join(), client);
+    return await toDataValue(
+      `${value.coordinates[1]},${value.coordinates[0]}`,
+      client,
+      actionMetadata,
+    );
   }
 
   // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
@@ -129,7 +160,7 @@ export async function toDataValue(
     return Object.entries(value).reduce(
       async (promisedAcc, [key, structValue]) => {
         const acc = await promisedAcc;
-        acc[key] = await toDataValue(structValue, client);
+        acc[key] = await toDataValue(structValue, client, actionMetadata);
         return acc;
       },
       Promise.resolve({} as { [key: string]: DataValue }),

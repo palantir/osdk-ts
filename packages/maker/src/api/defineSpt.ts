@@ -15,48 +15,67 @@
  */
 
 import type {
-  ApiNameValueTypeReference,
   SharedPropertyTypeGothamMapping,
+  ValueTypeApiNameReference,
   Visibility,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
-import { namespace, ontologyDefinition } from "./defineOntology.js";
-import type {
-  Nullability,
-  PropertyTypeType,
-  SharedPropertyType,
+import {
+  namespace,
+  ontologyDefinition,
+  updateOntology,
+} from "./defineOntology.js";
+import {
+  defaultTypeClasses,
+  getPropertyTypeName,
+  hasRenderHints,
+  shouldNotHaveRenderHints,
+} from "./propertyConversionUtils.js";
+import {
+  OntologyEntityTypeEnum,
+  type PropertyTypeType,
+  type SharedPropertyType,
 } from "./types.js";
 
-const defaultTypeClasses: SharedPropertyType["typeClasses"] = [{
-  kind: "render_hint",
-  name: "SELECTABLE",
-}, { kind: "render_hint", name: "SORTABLE" }];
+export interface SharedPropertyTypeDefinition {
+  apiName: string;
+  type: PropertyTypeType;
+  array?: boolean;
+  description?: string;
+  displayName?: string;
+  valueType?: ValueTypeApiNameReference;
+  visibility?: Visibility;
+  typeClasses?: SharedPropertyType["typeClasses"];
+  gothamMapping?: SharedPropertyTypeGothamMapping;
+}
 
 export function defineSharedPropertyType(
-  opts: {
-    apiName: string;
-    type: PropertyTypeType;
-    array?: boolean;
-    description?: string;
-    displayName?: string;
-    valueType?: ApiNameValueTypeReference;
-    visibility?: Visibility;
-    typeClasses?: SharedPropertyType["typeClasses"];
-    gothamMapping?: SharedPropertyTypeGothamMapping;
-    nullability?: Nullability;
-  },
+  sptDef: SharedPropertyTypeDefinition,
 ): SharedPropertyType {
-  const apiName = namespace + opts.apiName;
+  const apiName = namespace + sptDef.apiName;
   invariant(
-    ontologyDefinition.sharedPropertyTypes[apiName] === undefined,
+    ontologyDefinition[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE][apiName]
+      === undefined,
     `Shared property type ${apiName} already exists`,
   );
 
-  return ontologyDefinition.sharedPropertyTypes[apiName] = {
-    ...opts,
+  invariant(
+    !shouldNotHaveRenderHints(sptDef.type)
+      || !hasRenderHints(sptDef.typeClasses),
+    `Shared property type ${apiName} of type '${
+      getPropertyTypeName(sptDef.type)
+    }' should not have render hints`,
+  );
+
+  const fullSpt: SharedPropertyType = {
+    ...sptDef,
     apiName,
-    nonNameSpacedApiName: opts.apiName,
-    displayName: opts.displayName ?? opts.apiName, // This way the non-namespaced api name is the display name (maybe not ideal)
-    typeClasses: opts.typeClasses ?? defaultTypeClasses,
+    nonNameSpacedApiName: sptDef.apiName,
+    displayName: sptDef.displayName ?? sptDef.apiName, // This way the non-namespaced api name is the display name (maybe not ideal)
+    typeClasses: sptDef.typeClasses
+      ?? (shouldNotHaveRenderHints(sptDef.type) ? [] : defaultTypeClasses),
+    __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
   };
+  updateOntology(fullSpt);
+  return fullSpt;
 }

@@ -1,5 +1,466 @@
 # @osdk/client
 
+## 2.4.0-beta.14
+
+### Patch Changes
+
+- Updated dependencies [5c76e33]
+  - @osdk/client.unstable@2.4.0-beta.14
+  - @osdk/api@2.4.0-beta.14
+  - @osdk/generator-converters@2.4.0-beta.14
+
+## 2.4.0-beta.13
+
+### Minor Changes
+
+- 4bc848b: Add interface link support.
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/generator-converters@2.4.0-beta.13
+  - @osdk/api@2.4.0-beta.13
+  - @osdk/client.unstable@2.4.0-beta.13
+
+## 2.4.0-beta.12
+
+### Minor Changes
+
+- 402eb67: Fix hydrate to support interface object sets.
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.12
+- @osdk/client.unstable@2.4.0-beta.12
+- @osdk/generator-converters@2.4.0-beta.12
+
+## 2.4.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [f277b30]
+  - @osdk/generator-converters@2.4.0-beta.11
+  - @osdk/api@2.4.0-beta.11
+  - @osdk/client.unstable@2.4.0-beta.11
+
+## 2.4.0-beta.10
+
+### Minor Changes
+
+- f022ffe: Add experimental transactions shape
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.10
+- @osdk/client.unstable@2.4.0-beta.10
+- @osdk/generator-converters@2.4.0-beta.10
+
+## 2.4.0-beta.9
+
+### Minor Changes
+
+- 9101bad: Adds "includeNullValues" option for exact match filters
+
+### Patch Changes
+
+- Updated dependencies [9101bad]
+  - @osdk/api@2.4.0-beta.9
+  - @osdk/generator-converters@2.4.0-beta.9
+  - @osdk/client.unstable@2.4.0-beta.9
+
+## 2.4.0-beta.8
+
+### Minor Changes
+
+- 9f4fe9e: Add new types mapping for internal creation workflow.
+
+### Patch Changes
+
+- Updated dependencies [9f4fe9e]
+  - @osdk/api@2.4.0-beta.8
+  - @osdk/generator-converters@2.4.0-beta.8
+  - @osdk/client.unstable@2.4.0-beta.8
+
+## 2.4.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.7
+- @osdk/client.unstable@2.4.0-beta.7
+- @osdk/generator-converters@2.4.0-beta.7
+
+## 2.4.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [764e5f1]
+  - @osdk/client.unstable@2.4.0-beta.6
+  - @osdk/api@2.4.0-beta.6
+  - @osdk/generator-converters@2.4.0-beta.6
+
+## 2.4.0-beta.5
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.5
+- @osdk/client.unstable@2.4.0-beta.5
+- @osdk/generator-converters@2.4.0-beta.5
+
+## 2.4.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [a01b8d4]
+  - @osdk/client.unstable@2.4.0-beta.4
+  - @osdk/api@2.4.0-beta.4
+  - @osdk/generator-converters@2.4.0-beta.4
+
+## 2.4.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [988bf66]
+  - @osdk/client.unstable@2.4.0-beta.3
+  - @osdk/api@2.4.0-beta.3
+  - @osdk/generator-converters@2.4.0-beta.3
+
+## 2.4.0-beta.2
+
+### Minor Changes
+
+- 8c95154: Add nearestNeighbor support
+- c32dcf2: Add a metadata field to all loaded objects
+- 37c7c0b: Add validateAction support to useOsdkAction hook
+
+  The `useOsdkAction` hook in `@osdk/react` now provides a `validateAction` function that allows you to check if an action is valid without executing it. This is useful for providing real-time validation feedback to users before they commit to performing an action.
+
+  ### New features:
+
+  - **validateAction**: A new async function that validates action parameters without executing the action
+  - **isValidating**: A boolean state that indicates when validation is in progress
+  - **validationResult**: Contains the validation response from the server, including whether the action is valid and any validation errors
+
+  ### Example usage:
+
+  ```tsx
+  const { applyAction, validateAction, isValidating, validationResult } =
+    useOsdkAction(myAction);
+
+  // Validate without executing
+  await validateAction({ param1: "value" });
+
+  // Check validation result
+  if (validationResult?.result === "VALID") {
+    console.log("Action is valid!");
+  } else {
+    console.log("Validation failed:", validationResult);
+  }
+  ```
+
+  ### Implementation details:
+
+  - Multiple validation calls can be made - new calls automatically cancel previous pending validations
+  - Validation and action execution are mutually exclusive - you cannot validate while an action is being applied and vice versa
+  - The underlying `ObservableClient` in `@osdk/client` has been extended with a `validateAction` method to support this functionality
+
+### Patch Changes
+
+- Updated dependencies [29d2ada]
+- Updated dependencies [8c95154]
+- Updated dependencies [c32dcf2]
+  - @osdk/api@2.4.0-beta.2
+  - @osdk/generator-converters@2.4.0-beta.2
+  - @osdk/client.unstable@2.4.0-beta.2
+
+## 2.3.0-beta.10
+
+### Minor Changes
+
+- 991dbd4: Async function metadata
+- 266b756: Add consistency for async iter calls.
+- 8d69555: Add hydrateObjectSetFromObjectRids util.
+
+### Patch Changes
+
+- Updated dependencies [0cc9cad]
+  - @osdk/client.unstable@2.3.0-beta.10
+  - @osdk/api@2.3.0-beta.10
+  - @osdk/generator-converters@2.3.0-beta.10
+
+## 2.3.0-beta.9
+
+### Minor Changes
+
+- 5a15cfd: Added fixed dependency to API for beta package.
+
+### Patch Changes
+
+- Updated dependencies [7d232fb]
+  - @osdk/client.unstable@2.3.0-beta.9
+  - @osdk/api@2.3.0-beta.9
+  - @osdk/generator-converters@2.3.0-beta.9
+
+## 2.3.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [12d599f]
+  - @osdk/api@2.3.0-beta.8
+  - @osdk/generator-converters@2.3.0-beta.8
+  - @osdk/client.unstable@2.3.0-beta.8
+
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- 2a23cca: ObservableClient now adds to the fetch-user-agent
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/generator-converters@2.3.0-beta.7
+  - @osdk/client.unstable@2.3.0-beta.7
+  - @osdk/api@2.3.0-beta.7
+
+## 2.3.0-beta.6
+
+### Minor Changes
+
+- 9839eab: Bumps conjure-lite
+- cd911a6: Properly handles lat,long strings in action arguments
+- 2c800e5: Fix bug where we sent over longitude/latitude for geohash properties, when the backend actually expects latitude/longitude.
+- cd911a6: ObservableClient can now do optimistic writes for deletes
+
+### Patch Changes
+
+- Updated dependencies [9839eab]
+  - @osdk/client.unstable@2.3.0-beta.6
+  - @osdk/api@2.3.0-beta.6
+  - @osdk/generator-converters@2.3.0-beta.6
+
+## 2.3.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [d6bccdf]
+- Updated dependencies [e8c4aed]
+  - @osdk/client.unstable@2.3.0-beta.5
+  - @osdk/api@2.3.0-beta.5
+  - @osdk/generator-converters@2.3.0-beta.5
+
+## 2.3.0-beta.4
+
+### Minor Changes
+
+- 43c5547: Add 'getMediaReference' method to Media
+- 3736624: Ensure count operations return numbers
+- 3b5ccaa: Fix orderBy argument on object load methods
+
+### Patch Changes
+
+- Updated dependencies [43c5547]
+- Updated dependencies [cc2ce5f]
+- Updated dependencies [a6c01ff]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [3408ea9]
+- Updated dependencies [3b5ccaa]
+  - @osdk/api@2.3.0-beta.4
+  - @osdk/client.unstable@2.3.0-beta.4
+  - @osdk/generator-converters@2.3.0-beta.4
+
+## 2.3.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [474f4ca]
+  - @osdk/client.unstable@2.3.0-beta.3
+  - @osdk/api@2.3.0-beta.3
+  - @osdk/generator-converters@2.3.0-beta.3
+
+## 2.3.0-beta.2
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.2
+- @osdk/client.unstable@2.3.0-beta.2
+- @osdk/generator-converters@2.3.0-beta.2
+
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- b61e9f5: Make Query Map Types Optional
+- 7416ce4: Adds deleted objects and links returned from applyAction
+- 1ba3871: Support $clone for interface objects
+- 12843cb: Add ability to load all underlying properties of an interface.
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+- cdd3154: Revert allowing explicitly passing undefined values to reset on actions
+- 56aa502: Improves exposed APIs
+- abe4897: Removes support for boolean primary keys
+- 63b2e63: Update Platform SDK Dependencies
+- cddfbf9: Adds default value option to group by
+- 5a12181: Quick fix for geohash params.
+- 2ce3659: Update underlying pagination size for async iter.
+- 7416ce4: Update Platform SDK Dependencies
+- 26c2d95: Add experimental function to load page of objects by rid.
+- 430dee3: JSdoc for object properties are generated
+- 397f906: Ensure count operations return numbers
+- 488b51c: Add support for using aggregations and GeoJSON types from runtime derived properties
+- fccd9ac: "Allow selecting derived properties"
+- 5665b18: Remove selection RDPs from the API
+- 761e69d: Added type safety to createMediaReference
+- 889e84b: Release
+- 62e5965: Removed unneeded lint statements.
+- ed69666: Update conjure-lite to 0.7.1
+- c92fe73: Add OsdkConfig utils to client/unstable
+- 2517750: observeList should work for interfaces and have the fully loaded content
+- 4183a55: Refactor OsdkBase to avoid breaks with type not being discoverable
+- 1e16dcb: Exposes MinimalLogger and BrowserLogger via @osdk/client/internal
+- 70b4464: Fix types for RDPs
+- 2f6206c: Improvements to @osdk/react
+- 81c0d8c: Client will now provide a default logger to console.error if none is provided
+- 81c0d8c: ObservableClient now queues up object loads for bulk processing
+- 791e655: Add support for geoshape and geohash action parameters.
+- 317b555: Release
+- 879b6c3: Include a more descriptive error message for multiple filters on a single property filter clause
+- 63b2e63: Supports generating queries for entrySet function types
+- 2517750: Provides efficient OrderByCanonicalizer
+- 1e16dcb: Default logging is error level only
+- f4370e3: Fixes error when using intersection, subtraction, or union object sets
+- ea4e4b1: Fix attachments to be upload sequentially rather than in parallel.
+- a146ce4: Cleanup RDP API
+- cc380b5: Use the latest Platform APIs
+- e873024: Fixes issues requiring msw and p-defer
+- 88591f7: Small fixes for ObjectSpecifier
+- 751e5b3: Use client as peer dep in functions package.
+- 805df40: Fix interface action types.
+- fe0cc43: Experimental react changes
+- 2517750: Initial internal architecture document for ObservableClient
+- 5467a0f: Fix orderBy argument on object load methods
+- 2517750: subscribe in ObservableClient now uses Observer
+- 63b2e63: Adds ObjectSpecifiers to generated OSDK objects
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [b68adea]
+- Updated dependencies [c6bee50]
+- Updated dependencies [7416ce4]
+- Updated dependencies [6eeb423]
+- Updated dependencies [7170fd1]
+- Updated dependencies [12843cb]
+- Updated dependencies [ad93d55]
+- Updated dependencies [a08bdfb]
+- Updated dependencies [18ba34f]
+- Updated dependencies [6abf078]
+- Updated dependencies [f82767c]
+- Updated dependencies [56aa502]
+- Updated dependencies [0e874b1]
+- Updated dependencies [abe4897]
+- Updated dependencies [63b2e63]
+- Updated dependencies [cddfbf9]
+- Updated dependencies [7416ce4]
+- Updated dependencies [23ea0e4]
+- Updated dependencies [26c2d95]
+- Updated dependencies [10da391]
+- Updated dependencies [488b51c]
+- Updated dependencies [71462e9]
+- Updated dependencies [6ac8f0b]
+- Updated dependencies [fccd9ac]
+- Updated dependencies [5e8e839]
+- Updated dependencies [5665b18]
+- Updated dependencies [46cede4]
+- Updated dependencies [761e69d]
+- Updated dependencies [889e84b]
+- Updated dependencies [a6e5f89]
+- Updated dependencies [ed69666]
+- Updated dependencies [4183a55]
+- Updated dependencies [70b4464]
+- Updated dependencies [395ae07]
+- Updated dependencies [37f8e60]
+- Updated dependencies [791e655]
+- Updated dependencies [317b555]
+- Updated dependencies [63b2e63]
+- Updated dependencies [a146ce4]
+- Updated dependencies [3d0ab11]
+- Updated dependencies [805df40]
+- Updated dependencies [5467a0f]
+- Updated dependencies [63b2e63]
+  - @osdk/api@2.2.0
+  - @osdk/client.unstable@2.2.0
+  - @osdk/generator-converters@2.2.0
+  - @osdk/shared.client.impl@1.2.0
+  - @osdk/shared.net.errors@2.2.0
+  - @osdk/shared.net.fetch@1.2.0
+
+## 2.2.0-beta.23
+
+### Minor Changes
+
+- 4183a55: Refactor OsdkBase to avoid breaks with type not being discoverable
+
+### Patch Changes
+
+- Updated dependencies [4183a55]
+  - @osdk/api@2.2.0-beta.23
+  - @osdk/generator-converters@2.2.0-beta.23
+  - @osdk/client.unstable@2.2.0-beta.23
+
+## 2.2.0-beta.22
+
+### Minor Changes
+
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+
+### Patch Changes
+
+- Updated dependencies [18ba34f]
+  - @osdk/generator-converters@2.2.0-beta.22
+  - @osdk/api@2.2.0-beta.22
+  - @osdk/client.unstable@2.2.0-beta.22
+
+## 2.2.0-beta.21
+
+### Minor Changes
+
+- 317b555: Release
+
+### Patch Changes
+
+- Updated dependencies [317b555]
+  - @osdk/generator-converters@2.2.0-beta.21
+  - @osdk/client.unstable@2.2.0-beta.21
+  - @osdk/api@2.2.0-beta.21
+
+## 2.2.0-beta.20
+
+### Minor Changes
+
+- 889e84b: Release
+
+### Patch Changes
+
+- Updated dependencies [889e84b]
+  - @osdk/generator-converters@2.2.0-beta.20
+  - @osdk/client.unstable@2.2.0-beta.20
+  - @osdk/api@2.2.0-beta.20
+
+## 2.2.0-beta.19
+
+### Minor Changes
+
+- 1f6842f: Send a null value for parameters explicitly set to undefined rather than dropping the field
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.19
+- @osdk/client.unstable@2.2.0-beta.19
+- @osdk/generator-converters@2.2.0-beta.19
+
 ## 2.2.0-beta.18
 
 ### Minor Changes
@@ -256,6 +717,183 @@
   - @osdk/api@2.2.0-beta.2
   - @osdk/generator-converters@2.2.0-beta.2
   - @osdk/client.unstable@2.2.0-beta.2
+
+## 2.1.0
+
+### Minor Changes
+
+- 966d408: Rename type for base action parameter types.
+- b773513: Fix onOutOfDate handler from being fired twice
+- cddc196: Try-catches handlers called during subscription
+- d794c19: Adding support for struct action params.
+- 05febf4: Adds Reference Update support in subscribe
+- 55c05f2: Remove runtime derived properties from external types.
+- a06ec35: Fixes the lastFetchedValue on a Geotime Series property from reference updates
+- 0dc40b0: Switch to OSDK.Instance
+- 3703d81: Changed shared context to a version less error prone
+- 6f50516: Fix bug where object return types in a query were not properly mapped when wrapped in a struct.
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 11a05cc: Updated subscribe api to make requesting properties optional
+- 7865cb6: Add support for search on struct properties.
+- e6fbd94: Export Attachment from client
+- 9c4efe6: Support uploading media parameters through actions
+- 0a7c747: Add support for timeseries sensors.
+- 3ea2e79: Creates new export for internal helper functions
+- 1812118: Add geotime support for OSDK.
+- d927a1d: Throws error in createClient when passed an invalid ontology RID
+- bc1761c: Update platform API dependencies.
+- 656f975: Fixes attachment upload inputs sending incorrect in browser contexts
+- f1145ff: Adds support for runtime derived properties
+- 1c59d93: Allows interfaces to be used with subscribe
+- f446d0c: Exposes $clone from OSDK Object instances
+- c80ca45: Add ability to create interfaces through actions now.
+- bb8b219: Use new external packages instead of the internal ones.
+- 44e62f6: Updating fetch for auth and other packages.
+- 03f95eb: Add support for interface params in actions.
+- 91cfa3a: Fixing url parsing for client.
+- 94463b6: Support objects as code
+- 14624f7: Supports custom formatters in browser
+- 1a89f23: Removing support for augmenting interfaces when fetching them.
+- 9d35a1f: Remove unused imports
+- c691c8b: Package now has experimental support for commonjs
+- 749cf69: Remove experimental non null for now.
+- f03e39f: Add a namespace type for listeners.
+- d464009: improves interface api name mapping with api namespaces
+- 11088aa: Fix where clause types so we don't accept more than one key in the clauses.
+- 720218d: OSDK Client no longer uses javascript proxies for its objects. This results in a 13% increase in construction time but at 1kb per object reduction in memory
+- 9298f75: Using new interface APIs for backend.
+- eb27b54: Fix URL for experimental method
+- 7a95618: Generate new OMS APIs
+- f34b3d4: Add ability to fetch by rid, experimentally.
+- d88fdb9: Adds methods to extract date strings from Dates and ISO-8601 strings
+- 8eb2378: Fixes where clauses when objects have an api namespace
+- acbfab9: Fixes where clauses for interfaces with no properties.
+- c9da74c: Improves code quality by fixing linting errors
+- 27f0f77: Interface instances are immutable just like object instances
+- 015279b: Fix use of new interfaces api with preview flag.
+- 62c1d63: Add support for reading media reference property in OSDK.
+- 3c9ac22: Cleaning up where clause types.
+- 91cfa3a: Fixing URL parsing for custom entry points.
+- e86e91d: Internal property of Client is removed from output
+- abfe4b3: Add support for reading struct properties.
+- 27866a8: Removing interface argument for selecting object types. This is not supported in the new apis, and is not being used internally anywhere with the old apis.
+- 0cd1603: Fixes AttachmentUpload for browser contexts
+- a7a4aef: Removes dependency on crypto
+- e5fe7c0: Adds experimental method to convert an object set into RID
+- 1b2e8c9: Adds subscribe feature directly to client
+- 9f3807c: Allows $in to take a readonly array
+- d12c92b: Fixes process.env.NODE_ENV handling
+- 0c56d21: Exposing fuzzy searching.
+- e548b9b: Updates subscribe to return object updates
+- 6671a39: Upgrade execa where used
+- 5e78575: Fix queries that have response types with nested values, like arrays.
+- ee6224b: Explicitly type aggregation types in queries.
+- 1dc0228: Change experimental code style to prevent future breaks
+- fa02ebf: Adds SLS dependency for object-set-watcher API
+- 9af346e: Fixing proxy handlers.
+- d3b3f35: Add's onSuccessfulSubscribe handler to subscribe functionality
+- c682504: Locks dependency version of 3 internal libraries
+- 9018dc2: Updating platform api dependencies.
+- a6c320d: Internal optimization to reduce memory usage for unused interface objects
+- 8026baf: Update interface support for .subscribe
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+- c537e2d: Remove unused imports.
+- 3fc2ee6: Include more descriptive JS docs for public utils
+- 0d8ac3b: Remove attachment from exports.
+- 73fa373: Exports helper method to construct object sets from RIDs from internal utils
+- 8e6a5f4: Avoid type-fest's IsAny as it doesn't always work
+- 09eaf24: Update to latest platform sdks
+- 71dfb4c: Now export all api shapes from client, so use that dependency instead.
+- 2d5e648: Remove subscribe from experimental gate.
+- c4f88a8: Removes circular dependency that may upset legacy tools like react-native
+- d665147: Update platform sdk deps
+- f19da8e: Remove where clause from aggregate options. This option was never actually doing anything before as it was not passed to the backend for processing, so we are removing it to prevent future confusion.
+
+### Patch Changes
+
+- Updated dependencies [966d408]
+- Updated dependencies [cddc196]
+- Updated dependencies [d794c19]
+- Updated dependencies [05febf4]
+- Updated dependencies [55c05f2]
+- Updated dependencies [0dc40b0]
+- Updated dependencies [3703d81]
+- Updated dependencies [25fd9f0]
+- Updated dependencies [1b60b3d]
+- Updated dependencies [11a05cc]
+- Updated dependencies [7865cb6]
+- Updated dependencies [9c4efe6]
+- Updated dependencies [0a7c747]
+- Updated dependencies [f0b519d]
+- Updated dependencies [3ea2e79]
+- Updated dependencies [1812118]
+- Updated dependencies [bc1761c]
+- Updated dependencies [656f975]
+- Updated dependencies [f1145ff]
+- Updated dependencies [f446d0c]
+- Updated dependencies [c80ca45]
+- Updated dependencies [bb8b219]
+- Updated dependencies [44e62f6]
+- Updated dependencies [03f95eb]
+- Updated dependencies [91cfa3a]
+- Updated dependencies [94463b6]
+- Updated dependencies [1a89f23]
+- Updated dependencies [9d35a1f]
+- Updated dependencies [c691c8b]
+- Updated dependencies [749cf69]
+- Updated dependencies [f03e39f]
+- Updated dependencies [11088aa]
+- Updated dependencies [72c1905]
+- Updated dependencies [9298f75]
+- Updated dependencies [7a95618]
+- Updated dependencies [f34b3d4]
+- Updated dependencies [acbfab9]
+- Updated dependencies [c9da74c]
+- Updated dependencies [62c1d63]
+- Updated dependencies [3c9ac22]
+- Updated dependencies [1591f04]
+- Updated dependencies [03e1941]
+- Updated dependencies [963addb]
+- Updated dependencies [abfe4b3]
+- Updated dependencies [b79becf]
+- Updated dependencies [27866a8]
+- Updated dependencies [caf1abc]
+- Updated dependencies [e5fe7c0]
+- Updated dependencies [1b2e8c9]
+- Updated dependencies [81b2fb2]
+- Updated dependencies [9f3807c]
+- Updated dependencies [ecd4aee]
+- Updated dependencies [0c56d21]
+- Updated dependencies [e548b9b]
+- Updated dependencies [83e7ea3]
+- Updated dependencies [ee6224b]
+- Updated dependencies [1dc0228]
+- Updated dependencies [6c60414]
+- Updated dependencies [5fe2c8d]
+- Updated dependencies [7d777eb]
+- Updated dependencies [1132993]
+- Updated dependencies [d3b3f35]
+- Updated dependencies [c682504]
+- Updated dependencies [785f663]
+- Updated dependencies [9018dc2]
+- Updated dependencies [6b6c8a1]
+- Updated dependencies [c537e2d]
+- Updated dependencies [73fa373]
+- Updated dependencies [bf0e3b4]
+- Updated dependencies [8e6a5f4]
+- Updated dependencies [2b35ed4]
+- Updated dependencies [09eaf24]
+- Updated dependencies [2d5e648]
+- Updated dependencies [06e66dc]
+- Updated dependencies [31e7d70]
+- Updated dependencies [d665147]
+- Updated dependencies [f19da8e]
+  - @osdk/generator-converters@2.1.0
+  - @osdk/api@2.1.0
+  - @osdk/shared.client.impl@1.1.0
+  - @osdk/client.unstable@2.1.0
+  - @osdk/shared.net.errors@2.1.0
+  - @osdk/shared.net.fetch@1.1.0
 
 ## 2.1.0-beta.31
 

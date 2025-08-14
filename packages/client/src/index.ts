@@ -26,6 +26,7 @@ export type {
   Attachment,
   CompileTimeMetadata,
   InterfaceDefinition,
+  InterfaceMetadata,
   Logger,
   ObjectMetadata,
   ObjectSet,
@@ -33,6 +34,7 @@ export type {
   ObjectTypeDefinition,
   Osdk,
   OsdkObject,
+  OsdkObjectCreatePropertyType,
   OsdkObjectPropertyType,
   PageResult,
   PropertyDef,
@@ -49,7 +51,7 @@ export type {
   VersionBound,
   WhereClause,
 } from "@osdk/api";
-export { isOk } from "@osdk/api";
+export { isOk, NULL_VALUE } from "@osdk/api";
 export { PalantirApiError } from "@osdk/shared.net.errors";
 
 export { ActionValidationError } from "./actions/ActionValidationError.js";
@@ -59,9 +61,6 @@ export { createPlatformClient } from "./createPlatformClient.js";
 export type { PlatformClient } from "./createPlatformClient.js";
 export { createAttachmentUpload } from "./object/AttachmentUpload.js";
 export type { ResultOrError } from "./ResultOrError.js";
-export {
-  createObjectSpecifierFromPrimaryKey,
-} from "./util/objectSpecifierUtils.js";
 
 export {
   extractDate,

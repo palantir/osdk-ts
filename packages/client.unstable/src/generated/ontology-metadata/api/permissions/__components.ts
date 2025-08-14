@@ -17,6 +17,7 @@
 import type { WorkflowRid as _workflow_api_WorkflowRid } from "../../workflow/api/__components.js";
 import type {
   ActionTypeRid as _api_ActionTypeRid,
+  CompassProjectRid as _api_CompassProjectRid,
   DatasourceRid as _api_DatasourceRid,
   GroupId as _api_GroupId,
   InterfaceTypeRid as _api_InterfaceTypeRid,
@@ -27,11 +28,37 @@ import type {
   OntologyRid as _api_OntologyRid,
   PackagedEntityRid as _api_PackagedEntityRid,
   PrincipalId as _api_PrincipalId,
+  ProjectEntityRid as _api_ProjectEntityRid,
+  PropertySecurityGroupRid as _api_PropertySecurityGroupRid,
   RoleId as _api_RoleId,
   SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
   TypeGroupRid as _api_TypeGroupRid,
   UserId as _api_UserId,
 } from "../__components.js";
+export interface ActionTypePermissionModel_preRoles {
+  type: "preRoles";
+  preRoles: PreRolesPermissionModel;
+}
+
+export interface ActionTypePermissionModel_roles {
+  type: "roles";
+  roles: RolesPermissionModel;
+}
+
+export interface ActionTypePermissionModel_package {
+  type: "package";
+  package: PackagePermissionModel;
+}
+
+export interface ActionTypePermissionModel_publicProject {
+  type: "publicProject";
+  publicProject: PublicProjectPermissionModel;
+}
+export type ActionTypePermissionModel =
+  | ActionTypePermissionModel_preRoles
+  | ActionTypePermissionModel_roles
+  | ActionTypePermissionModel_package
+  | ActionTypePermissionModel_publicProject;
 
 /**
  * Request to update the roles on an ontology entity.
@@ -53,11 +80,9 @@ export interface BulkUpdateEntityRolesResponse {
 export interface DatasourceDerived {
 }
 /**
- * The operations the user has on a datasource.
+ * The entity is fully visible to the org, but modifications are gated by datasource access.
  */
-export interface DatasourcePermissions {
-  canDelete: boolean;
-  canEdit: boolean;
+export interface EditRestrictedByDatasourcesPermissionModel {
 }
 export interface EntityAndGrantPatches {
   entity: PermissionsOntologyEntity;
@@ -86,11 +111,13 @@ export interface EveryPrincipal {
  */
 export interface GetActionTypePermissionsResponse {
   canEdit: boolean;
+  canOverrideNotificationRedaction: boolean;
   canUpdateRoles: boolean;
   canUseNotifications: boolean;
   canView: boolean;
   hasRolesApplied: boolean;
   packageRid?: _api_OntologyPackageRid | null | undefined;
+  permissionModel: ActionTypePermissionModel;
 }
 /**
  * Single user and action type pair to check permissions for
@@ -298,6 +325,7 @@ export interface GetInterfaceTypePermissionsResponse {
   canEdit: boolean;
   canUpdateRoles: boolean;
   packageRid?: _api_OntologyPackageRid | null | undefined;
+  permissionModel: InterfaceTypePermissionModel;
 }
 /**
  * The operations the user has on the provided LinkType.
@@ -308,9 +336,13 @@ export interface GetLinkTypePermissionsResponse {
   canEdit: boolean;
   canUpdateRoles: boolean;
   canView: boolean;
-  datasourcePermissions: Record<_api_DatasourceRid, DatasourcePermissions>;
+  datasourcePermissions: Record<
+    _api_DatasourceRid,
+    ManyToManyLinkTypeDatasourcePermissions
+  >;
   isEditRestrictedByDatasources: boolean;
   packageRid?: _api_OntologyPackageRid | null | undefined;
+  permissionModel: LinkTypePermissionModel;
 }
 /**
  * The operations the user has on the provided ObjectType.
@@ -321,9 +353,17 @@ export interface GetObjectTypePermissionsResponse {
   canEdit: boolean;
   canUpdateRoles: boolean;
   canView: boolean;
-  datasourcePermissions: Record<_api_DatasourceRid, DatasourcePermissions>;
+  datasourcePermissions: Record<
+    _api_DatasourceRid,
+    ObjectTypeDatasourcePermissions
+  >;
   isEditRestrictedByDatasources: boolean;
   packageRid?: _api_OntologyPackageRid | null | undefined;
+  permissionModel: ObjectTypePermissionModel;
+  propertySecurityGroupPermissions: Record<
+    _api_PropertySecurityGroupRid,
+    PropertySecurityGroupPermissions
+  >;
 }
 /**
  * The operations the user has on the provided ontology.
@@ -357,6 +397,7 @@ export interface GetSharedPropertyTypePermissionsResponse {
   canUpdateRoles: boolean;
   importedInto: Array<_api_OntologyRid>;
   packageRid?: _api_OntologyPackageRid | null | undefined;
+  permissionModel: SharedPropertyTypePermissionModel;
 }
 /**
  * The set of principals suggested to have the editor or owner role on the entity.
@@ -379,6 +420,7 @@ export interface GetTypeGroupPermissionsResponse {
   canDelete: boolean;
   canEdit: boolean;
   canUpdateRoles: boolean;
+  permissionModel: TypeGroupPermissionModel;
 }
 /**
  * The operations the user has on the provided Workflow.
@@ -395,9 +437,120 @@ export interface GetWorkflowPermissionsResponse {
 export interface GroupPrincipal {
   group: _api_GroupId;
 }
+export interface InterfaceTypePermissionModel_roles {
+  type: "roles";
+  roles: RolesPermissionModel;
+}
+
+export interface InterfaceTypePermissionModel_package {
+  type: "package";
+  package: PackagePermissionModel;
+}
+
+export interface InterfaceTypePermissionModel_publicProject {
+  type: "publicProject";
+  publicProject: PublicProjectPermissionModel;
+}
+export type InterfaceTypePermissionModel =
+  | InterfaceTypePermissionModel_roles
+  | InterfaceTypePermissionModel_package
+  | InterfaceTypePermissionModel_publicProject;
+
+export interface LinkTypePermissionModel_viewRestricted {
+  type: "viewRestricted";
+  viewRestricted: ViewRestrictedByDatasourcesPermissionModel;
+}
+
+export interface LinkTypePermissionModel_editRestricted {
+  type: "editRestricted";
+  editRestricted: EditRestrictedByDatasourcesPermissionModel;
+}
+
+export interface LinkTypePermissionModel_roles {
+  type: "roles";
+  roles: RolesPermissionModel;
+}
+
+export interface LinkTypePermissionModel_package {
+  type: "package";
+  package: PackagePermissionModel;
+}
+
+export interface LinkTypePermissionModel_publicProject {
+  type: "publicProject";
+  publicProject: PublicProjectPermissionModel;
+}
+export type LinkTypePermissionModel =
+  | LinkTypePermissionModel_viewRestricted
+  | LinkTypePermissionModel_editRestricted
+  | LinkTypePermissionModel_roles
+  | LinkTypePermissionModel_package
+  | LinkTypePermissionModel_publicProject;
+
+/**
+ * The operations the user has on a datasource.
+ */
+export interface ManyToManyLinkTypeDatasourcePermissions {
+  canDelete: boolean;
+  canEdit: boolean;
+}
+export interface MigrateEntitiesToProjectsRequest {
+  entitiesToMove: Record<_api_CompassProjectRid, Array<_api_ProjectEntityRid>>;
+}
+/**
+ * Response to MoveEntitiesToProjectsRequest. Intentionally left empty for future extensibility.
+ */
+export interface MigrateEntitiesToProjectsResponse {
+}
+/**
+ * The operations the user has on a datasource.
+ */
+export interface ObjectTypeDatasourcePermissions {
+  canCreatePropertySecurityGroups: boolean;
+  canDelete: boolean;
+  canEdit: boolean;
+}
+export interface ObjectTypePermissionModel_viewRestricted {
+  type: "viewRestricted";
+  viewRestricted: ViewRestrictedByDatasourcesPermissionModel;
+}
+
+export interface ObjectTypePermissionModel_editRestricted {
+  type: "editRestricted";
+  editRestricted: EditRestrictedByDatasourcesPermissionModel;
+}
+
+export interface ObjectTypePermissionModel_roles {
+  type: "roles";
+  roles: RolesPermissionModel;
+}
+
+export interface ObjectTypePermissionModel_package {
+  type: "package";
+  package: PackagePermissionModel;
+}
+
+export interface ObjectTypePermissionModel_publicProject {
+  type: "publicProject";
+  publicProject: PublicProjectPermissionModel;
+}
+export type ObjectTypePermissionModel =
+  | ObjectTypePermissionModel_viewRestricted
+  | ObjectTypePermissionModel_editRestricted
+  | ObjectTypePermissionModel_roles
+  | ObjectTypePermissionModel_package
+  | ObjectTypePermissionModel_publicProject;
+
 export interface OntologyParent {
 }
 export interface PackageParent {
+  packageRid: _api_OntologyPackageRid;
+}
+/**
+ * The entity is fully visible to the org and modifiable by users with roles on the specified package, as well as
+ * ontology owners.
+ */
+export interface PackagePermissionModel {
   packageRid: _api_OntologyPackageRid;
 }
 /**
@@ -472,6 +625,12 @@ export type PermissionsOntologyEntity =
   | PermissionsOntologyEntity_interfaceType
   | PermissionsOntologyEntity_typeGroup;
 
+/**
+ * The entity is is fully visible to the org and modifiable by everyone who is in the editors group, as well
+ * ass ontology owners.
+ */
+export interface PreRolesPermissionModel {
+}
 export interface Principal_everyone {
   type: "everyone";
   everyone: EveryPrincipal;
@@ -491,6 +650,19 @@ export interface Principal_user {
  */
 export type Principal = Principal_everyone | Principal_group | Principal_user;
 
+/**
+ * The operations the user has on a property security group.
+ */
+export interface PropertySecurityGroupPermissions {
+  canDelete: boolean;
+  canEdit: boolean;
+}
+/**
+ * The visibility and modifiability of the entity is entirely controlled by the Compass project it belongs to.
+ * OMS does not keep track of which project an entity is in.
+ */
+export interface PublicProjectPermissionModel {
+}
 /**
  * The role to add/remove and to which principal
  */
@@ -515,6 +687,44 @@ export interface RolesEnabled {
  */
 export interface RolesEnforced {
 }
+/**
+ * The entity is fully visible to the org and modifiable by users with the specified roles, as well as ontology
+ * owners.
+ */
+export interface RolesPermissionModel {
+}
+export interface SharedPropertyTypePermissionModel_roles {
+  type: "roles";
+  roles: RolesPermissionModel;
+}
+
+export interface SharedPropertyTypePermissionModel_package {
+  type: "package";
+  package: PackagePermissionModel;
+}
+
+export interface SharedPropertyTypePermissionModel_publicProject {
+  type: "publicProject";
+  publicProject: PublicProjectPermissionModel;
+}
+export type SharedPropertyTypePermissionModel =
+  | SharedPropertyTypePermissionModel_roles
+  | SharedPropertyTypePermissionModel_package
+  | SharedPropertyTypePermissionModel_publicProject;
+
+export interface TypeGroupPermissionModel_roles {
+  type: "roles";
+  roles: RolesPermissionModel;
+}
+
+export interface TypeGroupPermissionModel_publicProject {
+  type: "publicProject";
+  publicProject: PublicProjectPermissionModel;
+}
+export type TypeGroupPermissionModel =
+  | TypeGroupPermissionModel_roles
+  | TypeGroupPermissionModel_publicProject;
+
 /**
  * Adds or removes the requested entities to/from a package. Removing means moving the resources to the default
  * ontology project in the same ontology as the given package.
@@ -561,4 +771,9 @@ export interface UpdatePackageRolesResponse {
  */
 export interface UserPrincipal {
   user: _api_UserId;
+}
+/**
+ * All access to the entity is denied unless the user has access to at least one datasource
+ */
+export interface ViewRestrictedByDatasourcesPermissionModel {
 }

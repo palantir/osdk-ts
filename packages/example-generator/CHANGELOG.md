@@ -1,5 +1,238 @@
 # @osdk/example-generator
 
+## 0.12.0-beta.14
+
+### Patch Changes
+
+- @osdk/create-widget@3.1.0-beta.3
+- @osdk/create-app@2.4.0-beta.14
+
+## 0.12.0-beta.13
+
+### Patch Changes
+
+- @osdk/create-app@2.4.0-beta.13
+- @osdk/create-widget@3.1.0-beta.2
+
+## 0.12.0-beta.12
+
+### Patch Changes
+
+- @osdk/create-app@2.4.0-beta.12
+- @osdk/create-widget@3.1.0-beta.2
+
+## 0.12.0-beta.11
+
+### Patch Changes
+
+- @osdk/create-app@2.4.0-beta.11
+- @osdk/create-widget@3.1.0-beta.2
+
+## 0.12.0-beta.10
+
+### Patch Changes
+
+- @osdk/create-widget@3.1.0-beta.2
+- @osdk/create-app@2.4.0-beta.10
+
+## 0.12.0-beta.9
+
+### Patch Changes
+
+- @osdk/create-app@2.4.0-beta.9
+- @osdk/create-widget@3.1.0-beta.1
+
+## 0.12.0-beta.8
+
+### Patch Changes
+
+- @osdk/create-app@2.4.0-beta.8
+- @osdk/create-widget@3.1.0-beta.1
+
+## 0.12.0-beta.7
+
+### Patch Changes
+
+- @osdk/create-app@2.4.0-beta.7
+- @osdk/create-widget@3.1.0-beta.1
+
+## 0.12.0-beta.6
+
+### Patch Changes
+
+- @osdk/create-app@2.4.0-beta.6
+- @osdk/create-widget@3.1.0-beta.1
+
+## 0.12.0-beta.5
+
+### Patch Changes
+
+- @osdk/create-app@2.4.0-beta.5
+- @osdk/create-widget@3.1.0-beta.1
+
+## 0.12.0-beta.4
+
+### Patch Changes
+
+- @osdk/create-app@2.4.0-beta.4
+- @osdk/create-widget@3.1.0-beta.1
+
+## 0.12.0-beta.3
+
+### Patch Changes
+
+- @osdk/create-app@2.4.0-beta.3
+- @osdk/create-widget@3.1.0-beta.1
+
+## 0.12.0-beta.2
+
+### Patch Changes
+
+- @osdk/create-app@2.4.0-beta.2
+- @osdk/create-widget@3.1.0-beta.1
+
+## 0.11.0-beta.10
+
+### Patch Changes
+
+- @osdk/create-app@2.3.0-beta.10
+- @osdk/create-widget@3.0.0-beta.6
+
+## 0.11.0-beta.9
+
+### Patch Changes
+
+- @osdk/create-app@2.3.0-beta.9
+- @osdk/create-widget@3.0.0-beta.6
+
+## 0.11.0-beta.8
+
+### Patch Changes
+
+- @osdk/create-widget@3.0.0-beta.6
+- @osdk/create-app@2.3.0-beta.8
+
+## 0.11.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/create-widget@3.0.0-beta.5
+  - @osdk/create-app@2.3.0-beta.7
+
+## 0.11.0-beta.6
+
+### Minor Changes
+
+- 7901ae0: Remove unstable suffix from widget packages
+
+### Patch Changes
+
+- @osdk/create-widget@3.0.0-beta.4
+- @osdk/create-app@2.3.0-beta.6
+
+## 0.11.0-beta.5
+
+### Patch Changes
+
+- @osdk/create-app@2.3.0-beta.5
+- @osdk/create-widget@3.0.0-beta.3
+
+## 0.11.0-beta.4
+
+### Patch Changes
+
+- @osdk/create-app@2.3.0-beta.4
+- @osdk/create-widget@2.2.0-beta.2
+
+## 0.11.0-beta.3
+
+### Patch Changes
+
+- @osdk/create-app@2.3.0-beta.3
+- @osdk/create-widget@2.2.0-beta.1
+
+## 0.11.0-beta.2
+
+### Patch Changes
+
+- @osdk/create-app@2.3.0-beta.2
+- @osdk/create-widget@2.2.0-beta.1
+
+## 0.10.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 1444362: Read environment variables from index.html meta tags
+- 21e33a5: Upgrade consola to 3.4.0
+- d4c962c: Fix typos for widgets libraries
+- 889e84b: Release
+- 317b555: Release
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [1444362]
+- Updated dependencies [e75819c]
+- Updated dependencies [21e33a5]
+- Updated dependencies [fa02507]
+- Updated dependencies [770ec64]
+- Updated dependencies [1d0e72a]
+- Updated dependencies [889e84b]
+- Updated dependencies [317b555]
+- Updated dependencies [ffc1e6e]
+  - @osdk/create-app@2.2.0
+  - @osdk/create-widget@2.1.0
+
+## 0.10.0-beta.23
+
+### Patch Changes
+
+- @osdk/create-app@2.2.0-beta.23
+- @osdk/create-widget@2.1.0-beta.11
+
+## 0.10.0-beta.22
+
+### Patch Changes
+
+- @osdk/create-app@2.2.0-beta.22
+- @osdk/create-widget@2.1.0-beta.10
+
+## 0.10.0-beta.21
+
+### Minor Changes
+
+- 317b555: Release
+
+### Patch Changes
+
+- Updated dependencies [317b555]
+  - @osdk/create-widget@2.1.0-beta.10
+  - @osdk/create-app@2.2.0-beta.21
+
+## 0.10.0-beta.20
+
+### Minor Changes
+
+- d4c962c: Fix typos for widgets libraries
+- 889e84b: Release
+
+### Patch Changes
+
+- Updated dependencies [889e84b]
+  - @osdk/create-app@2.2.0-beta.20
+  - @osdk/create-widget@2.1.0-beta.9
+
+## 0.10.0-beta.19
+
+### Patch Changes
+
+- @osdk/create-app@2.2.0-beta.19
+- @osdk/create-widget@2.1.0-beta.8
+
 ## 0.10.0-beta.18
 
 ### Patch Changes
@@ -133,6 +366,45 @@
 
 - @osdk/create-app@2.2.0-beta.2
 - @osdk/create-widget@2.1.0-beta.1
+
+## 0.9.0
+
+### Minor Changes
+
+- 62a3d1f: Use fixed versions for create-app client and oauth deps
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 1dca4cb: Use @osdk/foundry-config-json in @osdk/widget.vite-plugin.unstable for shared config and auto versioning
+- 35efba7: Upgraded to eslint 9
+- ff1ece7: Update create-widget template README and autoVersion strategy
+- 314ae66: Move from "views" naming to "widgets"
+- 83e7ea3: Move from a single-widget to widget set model for custom widget libraries
+- 81e99c0: Couple templates with SDK version, allow specifying --sdkVersion
+- d430386: Rename unstable create-widget --widgetSetRid arg to --widgetSet
+- 4849ae2: internal create-app code is codegen'd
+- 0e1a2e3: Add the scopes option to OSDK CLI and update all example generators to include the scopes if provided, else, hide the scopes to avoid confusion
+
+### Patch Changes
+
+- Updated dependencies [62a3d1f]
+- Updated dependencies [be9a9ff]
+- Updated dependencies [25fd9f0]
+- Updated dependencies [776ae5d]
+- Updated dependencies [ef09e2d]
+- Updated dependencies [ff1ece7]
+- Updated dependencies [f7008f7]
+- Updated dependencies [51b270d]
+- Updated dependencies [292f5a5]
+- Updated dependencies [314ae66]
+- Updated dependencies [255a8f1]
+- Updated dependencies [14bb6d2]
+- Updated dependencies [3d2ba6f]
+- Updated dependencies [83e7ea3]
+- Updated dependencies [81e99c0]
+- Updated dependencies [d430386]
+- Updated dependencies [4849ae2]
+- Updated dependencies [0e1a2e3]
+  - @osdk/create-app@2.1.0
+  - @osdk/create-widget@2.0.0
 
 ## 0.9.0-beta.31
 

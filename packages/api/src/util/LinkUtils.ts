@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 
-export type LinkNames<Q extends ObjectOrInterfaceDefinition> =
-  & keyof CompileTimeMetadata<Q>["links"]
-  & string;
+export type LinkNames<Q extends ObjectOrInterfaceDefinition> = Q extends
+  InterfaceDefinition ? keyof CompileTimeMetadata<Q>["links"]
+  :
+    & keyof CompileTimeMetadata<Q>["links"]
+    & string;
 
 export type LinkedType<
   Q extends ObjectOrInterfaceDefinition,

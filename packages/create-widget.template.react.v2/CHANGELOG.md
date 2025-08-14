@@ -1,5 +1,65 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.1.0-beta.3
+
+### Minor Changes
+
+- 058df50: Include osdk client creation example in widget template
+
+## 3.1.0-beta.2
+
+### Minor Changes
+
+- ca35776: Add reminder to publish new widget set on main.config.ts change
+- 4dd8c36: Update create-widget templates to use 3.x.x widget libraries
+
+## 3.0.0-beta.6
+
+### Minor Changes
+
+- b8936de: Use root id rather than body for widgets react-dom
+- ed598cb: Use latest rather than beta tags for widget template README commands referencing @osdk/cli
+
+## 3.0.0-beta.5
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+## 3.0.0-beta.4
+
+### Minor Changes
+
+- 7901ae0: Remove unstable suffix from widget packages
+- ba2171a: Fix create-widget templates workspace dependency version
+
+## 3.0.0-beta.3
+
+## 2.2.0-beta.2
+
+## 2.1.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- d4c962c: Fix typos for widgets libraries
+- fa02507: Use options overload when initializing client in create-app templates and standardize formatting
+- 317b555: Release
+
+## 2.1.0-beta.11
+
+## 2.1.0-beta.10
+
+### Minor Changes
+
+- 317b555: Release
+
+## 2.1.0-beta.9
+
+### Minor Changes
+
+- d4c962c: Fix typos for widgets libraries
+
 ## 2.1.0-beta.8
 
 ## 2.1.0-beta.7
@@ -17,6 +77,23 @@
 ## 2.1.0-beta.3
 
 ## 2.1.0-beta.2
+
+## 2.0.0
+
+### Minor Changes
+
+- f0b519d: Upgrade to vitest 3 and vite 6
+- 776ae5d: Initial create widget CLI
+- ff1ece7: Update create-widget template README and autoVersion strategy
+- c5f9fe0: Rename widget template component name consistent
+- 2bd3ba3: Fix a typo in the generated widget description
+- adf3b12: Rename @osdk/widget.manifest-vite-plugin to @osdk/widget.vite-plugin.unstable
+- 121475a: Release versions 1.1.0 of Custom Widget client libraries
+- 83e7ea3: Move from a single-widget to widget set model for custom widget libraries
+- 7507ed7: Upgrade to Vite v6
+- d430386: Rename unstable create-widget --widgetSetRid arg to --widgetSet
+- 23754dd: Correct widget template package dependency versions
+- da8585b: Updated implementation for the custom widget Vite plugin
 
 ## 2.0.0-beta.16
 

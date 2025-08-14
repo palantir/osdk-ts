@@ -1,5 +1,85 @@
 # @osdk/create-app
 
+## 2.4.0-beta.14
+
+## 2.4.0-beta.13
+
+## 2.4.0-beta.12
+
+## 2.4.0-beta.11
+
+## 2.4.0-beta.10
+
+## 2.4.0-beta.9
+
+## 2.4.0-beta.8
+
+## 2.4.0-beta.7
+
+## 2.4.0-beta.6
+
+## 2.4.0-beta.5
+
+## 2.4.0-beta.4
+
+## 2.4.0-beta.3
+
+## 2.4.0-beta.2
+
+## 2.3.0-beta.10
+
+## 2.3.0-beta.9
+
+## 2.3.0-beta.8
+
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+## 2.3.0-beta.6
+
+## 2.3.0-beta.5
+
+## 2.3.0-beta.4
+
+## 2.3.0-beta.3
+
+## 2.3.0-beta.2
+
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 1444362: Read environment variables from index.html meta tags
+- e75819c: Add comments to env files in templates
+- 21e33a5: Upgrade consola to 3.4.0
+- fa02507: Use options overload when initializing client in create-app templates and standardize formatting
+- 770ec64: Drop Next.js templates
+- 1d0e72a: Ensure tutorials are not shown by cli
+- 889e84b: Release
+- 317b555: Release
+
+## 2.2.0-beta.23
+
+## 2.2.0-beta.22
+
+## 2.2.0-beta.21
+
+### Minor Changes
+
+- 317b555: Release
+
+## 2.2.0-beta.20
+
+### Minor Changes
+
+- 889e84b: Release
+
+## 2.2.0-beta.19
+
 ## 2.2.0-beta.18
 
 ## 2.2.0-beta.17
@@ -51,6 +131,22 @@
 ## 2.2.0-beta.3
 
 ## 2.2.0-beta.2
+
+## 2.1.0
+
+### Minor Changes
+
+- 62a3d1f: Use fixed versions for create-app client and oauth deps
+- be9a9ff: Update dependencies for next apps and lock in typescript version
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- ef09e2d: Add Expo template to create-app
+- f7008f7: Support TypeScript 2.0 syntax for Todo App tutorials
+- 51b270d: Support 2.0 syntax in Next and Vue templates
+- 292f5a5: Fix template imports
+- 3d2ba6f: Revert api:x-read/write back to api:read/write-x
+- 81e99c0: Couple templates with SDK version, allow specifying --sdkVersion
+- 4849ae2: internal create-app code is codegen'd
+- 0e1a2e3: Add the scopes option to OSDK CLI and update all example generators to include the scopes if provided, else, hide the scopes to avoid confusion
 
 ## 2.1.0-beta.31
 

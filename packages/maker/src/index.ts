@@ -16,10 +16,15 @@
 
 export { default as default } from "./cli/main.js";
 
+export { addDependency } from "./api/addDependency.js";
 export {
   defineAction,
-  defineCreateAction,
-  defineModifyAction,
+  defineCreateInterfaceObjectAction,
+  defineCreateObjectAction,
+  defineCreateOrModifyObjectAction,
+  defineDeleteObjectAction,
+  defineModifyInterfaceObjectAction,
+  defineModifyObjectAction,
 } from "./api/defineAction.js";
 export { importSharedPropertyType } from "./api/defineImportSpt.js";
 export { defineInterface } from "./api/defineInterface.js";
@@ -29,3 +34,26 @@ export { defineObject } from "./api/defineObject.js";
 export { defineOntology } from "./api/defineOntology.js";
 export { defineSharedPropertyType } from "./api/defineSpt.js";
 export { defineValueType } from "./api/defineValueType.js";
+export { importOntologyEntity } from "./api/importOntologyEntity.js";
+export type {
+  ActionParameterAllowedValues,
+  ActionParameterConditionalOverride,
+  ActionParameterConfiguration,
+  ActionParameterValidation,
+  ActionSection,
+  ActionType,
+  ConditionDefinition,
+  CurrentTimeMappingValue,
+  CurrentUserMappingValue,
+  CustomMapping,
+  InterfaceType,
+  LinkType,
+  MappingValue,
+  ObjectType,
+  SectionConditionalOverride,
+  SharedPropertyType,
+  UuidMappingValue,
+  ValueTypeDefinitionVersion,
+} from "./api/types.js";
+export { OntologyEntityTypeEnum } from "./api/types.js";
+export { wrapWithProxy } from "./api/wrapWithProxy.js";

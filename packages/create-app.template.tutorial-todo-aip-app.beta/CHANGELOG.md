@@ -1,5 +1,91 @@
 # @osdk/create-app.template.tutorial-todo-aip-app.beta
 
+## 2.4.0-beta.14
+
+## 2.4.0-beta.13
+
+## 2.4.0-beta.12
+
+## 2.4.0-beta.11
+
+## 2.4.0-beta.10
+
+## 2.4.0-beta.9
+
+## 2.4.0-beta.8
+
+## 2.4.0-beta.7
+
+## 2.4.0-beta.6
+
+## 2.4.0-beta.5
+
+## 2.4.0-beta.4
+
+## 2.4.0-beta.3
+
+## 2.4.0-beta.2
+
+## 2.3.0-beta.10
+
+## 2.3.0-beta.9
+
+## 2.3.0-beta.8
+
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+## 2.3.0-beta.6
+
+## 2.3.0-beta.5
+
+## 2.3.0-beta.4
+
+## 2.3.0-beta.3
+
+## 2.3.0-beta.2
+
+### Minor Changes
+
+- 595a81c: Remove dangling comma in root render function
+
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 1444362: Read environment variables from index.html meta tags
+- fa02507: Use options overload when initializing client in create-app templates and standardize formatting
+- 49422cd: add commented lines to show users where to get the client from
+- 889e84b: Release
+- 317b555: Release
+- 2e8e351: Update template to use new OsdkProvider
+
+## 2.2.0-beta.23
+
+### Minor Changes
+
+- 2e8e351: Update template to use new OsdkProvider
+
+## 2.2.0-beta.22
+
+## 2.2.0-beta.21
+
+### Minor Changes
+
+- 317b555: Release
+
+## 2.2.0-beta.20
+
+### Minor Changes
+
+- 889e84b: Release
+
+## 2.2.0-beta.19
+
 ## 2.2.0-beta.18
 
 ## 2.2.0-beta.17
@@ -41,6 +127,19 @@
 ## 2.2.0-beta.3
 
 ## 2.2.0-beta.2
+
+## 2.1.0
+
+### Minor Changes
+
+- 62a3d1f: Use fixed versions for create-app client and oauth deps
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- f0b519d: Upgrade to vitest 3 and vite 6
+- 35efba7: Upgraded to eslint 9
+- f7008f7: Support TypeScript 2.0 syntax for Todo App tutorials
+- 027c4d5: update todo sample to allow build on a lesson level
+- 6671a39: Upgrade execa where used
+- 0e1a2e3: Add the scopes option to OSDK CLI and update all example generators to include the scopes if provided, else, hide the scopes to avoid confusion
 
 ## 2.1.0-beta.31
 

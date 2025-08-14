@@ -1,5 +1,265 @@
 # @osdk/cli.cmd.typescript
 
+## 0.28.0-beta.15
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.14
+- @osdk/cli.common@0.28.0-beta.15
+
+## 0.28.0-beta.14
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/generator@2.4.0-beta.13
+  - @osdk/cli.common@0.28.0-beta.14
+
+## 0.28.0-beta.13
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.12
+- @osdk/cli.common@0.28.0-beta.13
+
+## 0.28.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [f277b30]
+  - @osdk/generator@2.4.0-beta.11
+  - @osdk/cli.common@0.28.0-beta.12
+
+## 0.28.0-beta.11
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.10
+- @osdk/cli.common@0.28.0-beta.11
+
+## 0.28.0-beta.10
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.9
+- @osdk/cli.common@0.28.0-beta.10
+
+## 0.28.0-beta.9
+
+### Patch Changes
+
+- @osdk/cli.common@0.28.0-beta.9
+
+## 0.28.0-beta.8
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.8
+- @osdk/cli.common@0.28.0-beta.8
+
+## 0.28.0-beta.7
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.7
+- @osdk/cli.common@0.28.0-beta.7
+
+## 0.28.0-beta.6
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.6
+- @osdk/cli.common@0.28.0-beta.6
+
+## 0.28.0-beta.5
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.5
+- @osdk/cli.common@0.28.0-beta.5
+
+## 0.28.0-beta.4
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.4
+- @osdk/cli.common@0.28.0-beta.4
+
+## 0.28.0-beta.3
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.3
+- @osdk/cli.common@0.28.0-beta.3
+
+## 0.28.0-beta.2
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.2
+- @osdk/cli.common@0.28.0-beta.2
+
+## 0.27.0-beta.10
+
+### Patch Changes
+
+- @osdk/generator@2.3.0-beta.10
+- @osdk/cli.common@0.27.0-beta.10
+
+## 0.27.0-beta.9
+
+### Patch Changes
+
+- @osdk/generator@2.3.0-beta.9
+- @osdk/cli.common@0.27.0-beta.9
+
+## 0.27.0-beta.8
+
+### Patch Changes
+
+- @osdk/generator@2.3.0-beta.8
+- @osdk/cli.common@0.27.0-beta.8
+
+## 0.27.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/cli.common@0.27.0-beta.7
+  - @osdk/generator@2.3.0-beta.7
+
+## 0.27.0-beta.6
+
+### Patch Changes
+
+- @osdk/generator@2.3.0-beta.6
+- @osdk/cli.common@0.27.0-beta.6
+
+## 0.27.0-beta.5
+
+### Patch Changes
+
+- @osdk/generator@2.3.0-beta.5
+- @osdk/cli.common@0.27.0-beta.5
+
+## 0.27.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [fe00f84]
+- Updated dependencies [ef46ed6]
+  - @osdk/generator@2.3.0-beta.4
+  - @osdk/cli.common@0.27.0-beta.4
+
+## 0.27.0-beta.3
+
+### Patch Changes
+
+- @osdk/generator@2.3.0-beta.3
+- @osdk/cli.common@0.27.0-beta.3
+
+## 0.27.0-beta.2
+
+### Patch Changes
+
+- @osdk/generator@2.3.0-beta.2
+- @osdk/cli.common@0.27.0-beta.2
+
+## 0.26.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- b68adea: Add support for inherited interfaces.
+- 12843cb: Add ability to load all underlying properties of an interface.
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+- 21e33a5: Upgrade consola to 3.4.0
+- 63b2e63: Update Platform SDK Dependencies
+- 7416ce4: Update Platform SDK Dependencies
+- 889e84b: Release
+- 791e655: Add support for geoshape and geohash action parameters.
+- 317b555: Release
+- cc380b5: Use the latest Platform APIs
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [b61e9f5]
+- Updated dependencies [b68adea]
+- Updated dependencies [12843cb]
+- Updated dependencies [18ba34f]
+- Updated dependencies [21e33a5]
+- Updated dependencies [63b2e63]
+- Updated dependencies [7416ce4]
+- Updated dependencies [430dee3]
+- Updated dependencies [49a91dc]
+- Updated dependencies [889e84b]
+- Updated dependencies [67e772e]
+- Updated dependencies [0e0935e]
+- Updated dependencies [791e655]
+- Updated dependencies [317b555]
+- Updated dependencies [63b2e63]
+- Updated dependencies [cc380b5]
+- Updated dependencies [3d0ab11]
+- Updated dependencies [805df40]
+  - @osdk/cli.common@0.26.0
+  - @osdk/generator@2.2.0
+  - @osdk/shared.client.impl@1.2.0
+
+## 0.26.0-beta.23
+
+### Patch Changes
+
+- Updated dependencies [0e0935e]
+  - @osdk/cli.common@0.26.0-beta.23
+  - @osdk/generator@2.2.0-beta.23
+
+## 0.26.0-beta.22
+
+### Minor Changes
+
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+
+### Patch Changes
+
+- Updated dependencies [18ba34f]
+  - @osdk/generator@2.2.0-beta.22
+  - @osdk/cli.common@0.26.0-beta.22
+
+## 0.26.0-beta.21
+
+### Minor Changes
+
+- 317b555: Release
+
+### Patch Changes
+
+- Updated dependencies [317b555]
+  - @osdk/cli.common@0.26.0-beta.21
+  - @osdk/generator@2.2.0-beta.21
+
+## 0.26.0-beta.20
+
+### Minor Changes
+
+- 889e84b: Release
+
+### Patch Changes
+
+- Updated dependencies [889e84b]
+  - @osdk/cli.common@0.26.0-beta.20
+  - @osdk/generator@2.2.0-beta.20
+
+## 0.26.0-beta.19
+
+### Patch Changes
+
+- @osdk/generator@2.2.0-beta.19
+- @osdk/cli.common@0.26.0-beta.19
+
 ## 0.26.0-beta.18
 
 ### Patch Changes
@@ -157,6 +417,62 @@
 
 - @osdk/generator@2.2.0-beta.2
 - @osdk/cli.common@0.26.0-beta.2
+
+## 0.25.0
+
+### Minor Changes
+
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 1b60b3d: Packages use more specific versions instead of indirection through shared.net
+- 1812118: Add geotime support for OSDK.
+- bc1761c: Update platform API dependencies.
+- bb8b219: Use new external packages instead of the internal ones.
+- 91cfa3a: Fixing url parsing for client.
+- abfe4b3: Add support for reading struct properties.
+- 9018dc2: Updating platform api dependencies.
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+- 09eaf24: Update to latest platform sdks
+- d665147: Update platform sdk deps
+
+### Patch Changes
+
+- Updated dependencies [d794c19]
+- Updated dependencies [0dc40b0]
+- Updated dependencies [3703d81]
+- Updated dependencies [25fd9f0]
+- Updated dependencies [1b60b3d]
+- Updated dependencies [f0b519d]
+- Updated dependencies [1812118]
+- Updated dependencies [1dca4cb]
+- Updated dependencies [bc1761c]
+- Updated dependencies [cf9dcbe]
+- Updated dependencies [e968bc0]
+- Updated dependencies [bb8b219]
+- Updated dependencies [44e62f6]
+- Updated dependencies [03f95eb]
+- Updated dependencies [91cfa3a]
+- Updated dependencies [9d35a1f]
+- Updated dependencies [c691c8b]
+- Updated dependencies [749cf69]
+- Updated dependencies [027db73]
+- Updated dependencies [c9da74c]
+- Updated dependencies [963addb]
+- Updated dependencies [abfe4b3]
+- Updated dependencies [3d2ba6f]
+- Updated dependencies [ecd4aee]
+- Updated dependencies [a5a0ea4]
+- Updated dependencies [ee6224b]
+- Updated dependencies [696c59c]
+- Updated dependencies [9018dc2]
+- Updated dependencies [6b6c8a1]
+- Updated dependencies [518972b]
+- Updated dependencies [bf0e3b4]
+- Updated dependencies [09eaf24]
+- Updated dependencies [71dfb4c]
+- Updated dependencies [d665147]
+  - @osdk/generator@2.1.0
+  - @osdk/shared.client.impl@1.1.0
+  - @osdk/cli.common@0.25.0
 
 ## 0.25.0-beta.31
 

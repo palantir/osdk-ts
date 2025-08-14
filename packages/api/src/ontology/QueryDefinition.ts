@@ -35,6 +35,8 @@ export interface QueryCompileTimeMetadata<T> {
 export interface QueryDefinition<T = any> {
   type: "query";
   apiName: string;
+  version?: string;
+  isFixedVersion?: boolean;
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
     & QueryCompileTimeMetadata<T>

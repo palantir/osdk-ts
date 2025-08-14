@@ -1,6 +1,6 @@
 {
   "name": "@osdk/e2e.sandbox.catchall",
-  "version": "0.0.0",
+  "version": "0.2.0-beta.1",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -41,7 +41,7 @@
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/e2e.generated.catchall": "workspace:~",
-    "@osdk/foundry": "2.18.0",
+    "@osdk/foundry": "2.25.0",
     "chalk": "^5.4.1",
     "pino": "^9.1.0",
     "pino-pretty": "^11.2.1",

@@ -829,6 +829,8 @@ export type DefaultTimezone =
   | DefaultTimezone_localTimezone
   | DefaultTimezone_setTimezone;
 
+export interface DelegateToValueTypeRenderHint {
+}
 /**
  * DoubleListType specifies that this parameter must be a list of Doubles.
  */
@@ -850,13 +852,17 @@ export interface DoubleType {
  */
 export type DoubleValue = number | "NaN" | "Infinity" | "-Infinity";
 export interface Dropdown {
+  shouldRemoveListQueryAfterSelection?: boolean | null | undefined;
 }
 export interface FilePicker {
 }
+export type GeoFormat = "DEG" | "MGRS";
+
 /**
  * GeohashListType specifies that this parameter must be a list of Geohashes.
  */
 export interface GeohashListType {
+  defaultFormat?: GeoFormat | null | undefined;
 }
 /**
  * A parameter value type that consists of a list of Geohashes. Only WGS-84 coordinates are supported.
@@ -868,6 +874,7 @@ export interface GeohashListValue {
  * GeohashType specifies that this parameter must be a Geohash.
  */
 export interface GeohashType {
+  defaultFormat?: GeoFormat | null | undefined;
 }
 /**
  * A parameter value type that is a Geohash. Only WGS-84 coordinates are supported.
@@ -966,6 +973,29 @@ export interface InterfaceReferenceType {
 export interface InterfaceReferenceTypeModification {
   interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
 }
+export type IntermediaryLinkTypeSide = "A_SIDE" | "B_SIDE";
+export interface LinkTypeSide_oneToManyLinkTypeSide {
+  type: "oneToManyLinkTypeSide";
+  oneToManyLinkTypeSide: OneToManyLinkTypeSide;
+}
+
+export interface LinkTypeSide_manyToManyLinkTypeSide {
+  type: "manyToManyLinkTypeSide";
+  manyToManyLinkTypeSide: ManyToManyLinkTypeSide;
+}
+
+export interface LinkTypeSide_intermediaryLinkTypeSide {
+  type: "intermediaryLinkTypeSide";
+  intermediaryLinkTypeSide: IntermediaryLinkTypeSide;
+}
+/**
+ * Specifies a side of a link type to indicate a direction for the traversal of object sets.
+ */
+export type LinkTypeSide =
+  | LinkTypeSide_oneToManyLinkTypeSide
+  | LinkTypeSide_manyToManyLinkTypeSide
+  | LinkTypeSide_intermediaryLinkTypeSide;
+
 /**
  * Optionally specifies the min and max parameter list lengths permitted for a parameter. This type is only
  * usable with list type parameters.
@@ -1001,6 +1031,8 @@ export interface LongType {
 export type LongValue = number;
 export interface MandatoryMarkingPicker {
 }
+export type ManyToManyLinkTypeSide = "A_SIDE" | "B_SIDE";
+
 /**
  * MarkingListType specifies that this parameter must be a list of Markings.
  */
@@ -1119,6 +1151,7 @@ export interface ObjectTypeReferenceType {
 export interface ObjectTypeValue {
   objectTypeId: _api_ObjectTypeId;
 }
+export type OneToManyLinkTypeSide = "ONE_SIDE" | "MANY_SIDE";
 export interface OntologyIrBaseParameterType_boolean {
   type: "boolean";
   boolean: BooleanType;
@@ -1703,6 +1736,14 @@ export interface ParameterRenderHint_mandatoryMarkingPicker {
   type: "mandatoryMarkingPicker";
   mandatoryMarkingPicker: MandatoryMarkingPicker;
 }
+
+export interface ParameterRenderHint_valueTypeRenderHint {
+  type: "valueTypeRenderHint";
+  valueTypeRenderHint: DelegateToValueTypeRenderHint;
+}
+/**
+ * When the parameter is tied to a value type, we will enforce the type of render hint on the front end
+ */
 export type ParameterRenderHint =
   | ParameterRenderHint_dropdown
   | ParameterRenderHint_userDropdown
@@ -1715,7 +1756,8 @@ export type ParameterRenderHint =
   | ParameterRenderHint_filePicker
   | ParameterRenderHint_resourcePicker
   | ParameterRenderHint_cbacMarkingPicker
-  | ParameterRenderHint_mandatoryMarkingPicker;
+  | ParameterRenderHint_mandatoryMarkingPicker
+  | ParameterRenderHint_valueTypeRenderHint;
 
 export interface ParameterRequired {
 }

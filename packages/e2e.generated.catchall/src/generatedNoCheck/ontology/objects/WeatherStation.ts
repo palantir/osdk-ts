@@ -22,6 +22,7 @@ export namespace WeatherStation {
   export interface Props {
     /**
      *   display name: 'Geohash',
+     *
      *   description: geopoint
      */
     readonly geohash: $PropType['geopoint'] | undefined;
@@ -63,6 +64,7 @@ export interface WeatherStation extends $ObjectTypeDefinition {
       name: 'weather';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -72,6 +74,7 @@ export interface WeatherStation extends $ObjectTypeDefinition {
     properties: {
       /**
        *   display name: 'Geohash',
+       *
        *   description: geopoint
        */
       geohash: $PropertyDef<'geopoint', 'nullable', 'single'>;
@@ -84,6 +87,7 @@ export interface WeatherStation extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'stationId';
     type: 'object';
+    visibility: undefined;
   };
 }
 

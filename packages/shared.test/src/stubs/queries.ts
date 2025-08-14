@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
+import type { FauxOntology } from "@osdk/faux";
 import type {
   ExecuteQueryRequest,
   ExecuteQueryResponse,
 } from "@osdk/foundry.ontologies";
-import type { FauxOntology } from "../FauxFoundry/FauxOntology.js";
-import { createLazyQueryImpl } from "../handlers/util/createLazyQueryImpl.js";
+import { createLazyQueryImpl } from "../createLazyQueryImpl.js";
 import { employee1, employee2 } from "./objects.js";
 import {
   addOneQueryType,
+  addOneQueryTypeOlderVersion,
   queryTypeAcceptsObjects,
   queryTypeAcceptsObjectSets,
   queryTypeAcceptsThreeDimensionalAggregation,
@@ -44,6 +45,12 @@ export const addOneQueryRequest: ExecuteQueryRequest = {
   },
 };
 
+export const addOneQueryWithOlderVersionRequest: ExecuteQueryRequest = {
+  parameters: {
+    n: 6,
+  },
+};
+
 export const addOneQueryRequestWithNoResponse: ExecuteQueryRequest = {
   parameters: {
     n: 3,
@@ -52,6 +59,10 @@ export const addOneQueryRequestWithNoResponse: ExecuteQueryRequest = {
 
 export const addOneQueryResponse: ExecuteQueryResponse = {
   value: 3,
+};
+
+export const addOneQueryWithOlderVersionResponse: ExecuteQueryResponse = {
+  value: 7,
 };
 
 export const queryTypeReturnsStructRequest: ExecuteQueryRequest = {
@@ -274,64 +285,99 @@ export const emptyBody: string = JSON.stringify({
 
 const queryRequestHandlers: {
   [queryApiName: string]: {
-    [queryBody: string]: ExecuteQueryResponse;
+    [queryVersion: string]: {
+      [queryBody: string]: ExecuteQueryResponse;
+    };
   };
 } = {
   [addOneQueryType.apiName]: {
-    [JSON.stringify(addOneQueryRequest)]: addOneQueryResponse,
-    [JSON.stringify(addOneQueryRequestWithNoResponse)]: { value: undefined },
+    [addOneQueryType.version]: {
+      [JSON.stringify(addOneQueryRequest)]: addOneQueryResponse,
+      [JSON.stringify(addOneQueryRequestWithNoResponse)]: { value: undefined },
+    },
+    [addOneQueryTypeOlderVersion.version]: {
+      [JSON.stringify(addOneQueryWithOlderVersionRequest)]:
+        addOneQueryWithOlderVersionResponse,
+    },
   },
   [queryTypeReturnsStruct.apiName]: {
-    [JSON.stringify(queryTypeReturnsStructRequest)]:
-      queryTypeReturnsStructResponse,
+    [queryTypeReturnsStruct.version]: {
+      [JSON.stringify(queryTypeReturnsStructRequest)]:
+        queryTypeReturnsStructResponse,
+    },
   },
   [queryTypeReturnsComplexStruct.apiName]: {
-    [JSON.stringify(queryTypeReturnsComplexStructRequest)]:
-      queryTypeReturnsComplexStructResponse,
+    [queryTypeReturnsComplexStruct.version]: {
+      [JSON.stringify(queryTypeReturnsComplexStructRequest)]:
+        queryTypeReturnsComplexStructResponse,
+    },
   },
   [queryTypeReturnsTimestamp.apiName]: {
-    [emptyBody]: queryTypeReturnsTimestampResponse,
+    [queryTypeReturnsTimestamp.version]: {
+      [emptyBody]: queryTypeReturnsTimestampResponse,
+    },
   },
   [queryTypeReturnsDate.apiName]: {
-    [emptyBody]: queryTypeReturnsDateResponse,
+    [queryTypeReturnsDate.version]: {
+      [emptyBody]: queryTypeReturnsDateResponse,
+    },
   },
   [queryTypeReturnsObject.apiName]: {
-    [emptyBody]: queryTypeReturnsObjectResponse,
+    [queryTypeReturnsObject.version]: {
+      [emptyBody]: queryTypeReturnsObjectResponse,
+    },
   },
   [queryTypeTwoDimensionalAggregation.apiName]: {
-    [emptyBody]: queryTypeTwoDimensionalAggregationResponse,
+    [queryTypeTwoDimensionalAggregation.version]: {
+      [emptyBody]: queryTypeTwoDimensionalAggregationResponse,
+    },
   },
   [queryTypeThreeDimensionalAggregation.apiName]: {
-    [emptyBody]: queryTypeThreeDimensionalAggregationResponse,
+    [queryTypeThreeDimensionalAggregation.version]: {
+      [emptyBody]: queryTypeThreeDimensionalAggregationResponse,
+    },
   },
   [queryTypeAcceptsObjects.apiName]: {
-    [JSON.stringify(queryTypeAcceptsObjectRequest)]:
-      queryTypeAcceptsObjectResponse,
+    [queryTypeAcceptsObjects.version]: {
+      [JSON.stringify(queryTypeAcceptsObjectRequest)]:
+        queryTypeAcceptsObjectResponse,
+    },
   },
   [queryTypeAcceptsObjectSets.apiName]: {
-    [JSON.stringify(queryTypeAcceptsObjectSetRequest)]:
-      queryTypeAcceptsObjectSetResponse,
+    [queryTypeAcceptsObjectSets.version]: {
+      [JSON.stringify(queryTypeAcceptsObjectSetRequest)]:
+        queryTypeAcceptsObjectSetResponse,
+    },
   },
   [queryTypeAcceptsTwoDimensionalAggregation.apiName]: {
-    [JSON.stringify(queryTypeAcceptsTwoDimensionalAggregationRequest)]:
-      queryTypeAcceptsTwoDimensionalAggregationResponse,
+    [queryTypeAcceptsTwoDimensionalAggregation.version]: {
+      [JSON.stringify(queryTypeAcceptsTwoDimensionalAggregationRequest)]:
+        queryTypeAcceptsTwoDimensionalAggregationResponse,
+    },
   },
   [queryTypeAcceptsThreeDimensionalAggregation.apiName]: {
-    [JSON.stringify(queryTypeAcceptsThreeDimensionalAggregationRequest)]:
-      queryTypeAcceptsThreeDimensionalAggregationResponse,
+    [queryTypeAcceptsThreeDimensionalAggregation.version]: {
+      [JSON.stringify(queryTypeAcceptsThreeDimensionalAggregationRequest)]:
+        queryTypeAcceptsThreeDimensionalAggregationResponse,
+    },
   },
   [queryTypeReturnsArray.apiName]: {
-    [JSON.stringify(queryTypeReturnsArrayRequest)]:
-      queryTypeReturnsArrayResponse,
+    [queryTypeReturnsArray.version]: {
+      [JSON.stringify(queryTypeReturnsArrayRequest)]:
+        queryTypeReturnsArrayResponse,
+    },
   },
   [queryTypeReturnsMap.apiName]: {
-    [JSON.stringify(queryTypeReturnsMapRequest)]: queryTypeReturnsMapResponse,
+    [queryTypeReturnsMap.version]: {
+      [JSON.stringify(queryTypeReturnsMapRequest)]: queryTypeReturnsMapResponse,
+    },
   },
 };
 
 export function registerLazyQueries(fauxOntology: FauxOntology): void {
   const queryTypes = [
     addOneQueryType,
+    addOneQueryTypeOlderVersion,
     queryTypeReturnsStruct,
     queryTypeReturnsDate,
     queryTypeReturnsObject,
@@ -348,7 +394,8 @@ export function registerLazyQueries(fauxOntology: FauxOntology): void {
   ];
 
   for (const queryType of Object.values(queryTypes)) {
-    const lazyHandlerMap = queryRequestHandlers[queryType.apiName];
+    const lazyHandlerMap =
+      queryRequestHandlers[queryType.apiName][queryType.version];
     if (!lazyHandlerMap) {
       throw new Error(
         `Query type ${queryType.apiName} is not registered in queryRequestHandlers`,

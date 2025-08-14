@@ -24,6 +24,7 @@ export interface getTask extends QueryDefinition<getTask.Signature>, VersionBoun
     rid: 'ri.a.b.c';
     type: 'query';
     version: '0';
+    isFixedVersion: false;
     parameters: {
       /**
        * (no ontology metadata)
@@ -53,5 +54,6 @@ export const getTask: getTask = {
   apiName: 'getTask',
   type: 'query',
   version: '0',
+  isFixedVersion: false,
   osdkMetadata: $osdkMetadata,
 };

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetLinksRequest } from "../GetLinksRequest.js";
-import type { GetLinksResponse } from "../GetLinksResponse.js";
+import type {
+  GetLinksRequest as _api_GetLinksRequest,
+  GetLinksResponse as _api_GetLinksResponse,
+} from "../__components.js";
 
 /**
  * Returns a page of all `FoundryLink`s for a given relation based on a list of object identifiers.
@@ -31,7 +33,7 @@ import type { GetLinksResponse } from "../GetLinksResponse.js";
  */
 export async function getLinks(
   ctx: ConjureContext,
-  request: GetLinksRequest,
-): Promise<GetLinksResponse> {
+  request: _api_GetLinksRequest,
+): Promise<_api_GetLinksResponse> {
   return conjureFetch(ctx, `/links`, "PUT", request);
 }

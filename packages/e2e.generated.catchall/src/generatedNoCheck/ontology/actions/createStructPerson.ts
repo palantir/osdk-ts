@@ -12,11 +12,13 @@ export namespace createStructPerson {
   // Represents the definition of the parameters for the action
   export type ParamsDefinition = {
     address: {
+      description: undefined;
       multiplicity: false;
       nullable: true;
       type: ActionMetadata.DataType.Struct<{ city: 'string'; state: 'string' }>;
     };
     name: {
+      description: undefined;
       multiplicity: false;
       nullable: false;
       type: 'string';
@@ -27,7 +29,7 @@ export namespace createStructPerson {
    * Create a struct
    */
   export interface Params {
-    readonly address?: ActionParam.StructType<{ city: 'string'; state: 'string' }>;
+    readonly address?: ActionParam.StructType<{ city: 'string'; state: 'string' }> | ActionParam.NullValueType;
 
     readonly name: ActionParam.PrimitiveType<'string'>;
   }

@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
+import type { ObjectMetadata } from "@osdk/api";
+import { describe, expect, expectTypeOf, it } from "vitest";
+import type {
+  supportedIconTypes,
+  supportedObjectTypeVisibility,
+  supportedReleaseStatus,
+} from "./wireObjectTypeFullMetadataToSdkObjectMetadata.js";
 import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "./wireObjectTypeFullMetadataToSdkObjectMetadata.js";
 
 describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
@@ -54,5 +60,185 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
 
     // was unspecified, so should be nullable
     expect(result.properties["defaulted"].nullable).toBe(true);
+  });
+
+  it("Is up to date with the enums from API", () => {
+    type excludedStatuses = "";
+    expectTypeOf<
+      Exclude<
+        typeof supportedReleaseStatus[number],
+        excludedStatuses
+      >
+    >()
+      .toEqualTypeOf<
+        NonNullable<ObjectMetadata["status"]>
+      >();
+
+    type excludedVisibility = "";
+    expectTypeOf<
+      Exclude<typeof supportedObjectTypeVisibility[number], excludedVisibility>
+    >().toEqualTypeOf<
+      NonNullable<ObjectMetadata["visibility"]>
+    >();
+
+    type excludedIconTypes = "";
+    expectTypeOf<
+      Exclude<typeof supportedIconTypes[number], excludedIconTypes>
+    >()
+      .toEqualTypeOf<
+        NonNullable<NonNullable<ObjectMetadata["icon"]>["type"]>
+      >();
+  });
+
+  it("does not throw when enums don't match", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: [],
+      implementsInterfaces2: {},
+      linkTypes: [],
+      objectType: {
+        apiName: "apiName",
+        description: "description",
+        displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: {
+          type: "INVALID_NOT_IN_API",
+          name: "blueprint",
+          color: "blue",
+        } as any,
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+          otherKey: {
+            nullable: false,
+            dataType: { type: "string" },
+            rid: "rid",
+          },
+          defaulted: { dataType: { type: "string" }, rid: "rid" },
+        },
+        rid: "rid",
+        status: "INVALID_NOT_IN_API" as any,
+        visibility: "INVALID_NOT_IN_API" as any,
+        titleProperty: "otherKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    expect(result.status).toBeUndefined();
+    expect(result.visibility).toBeUndefined();
+    expect(result.icon).toBeUndefined();
+  });
+
+  it("sorts the implements array for stable output", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: ["InterfaceZ", "InterfaceA", "InterfaceC"],
+      implementsInterfaces2: {
+        "InterfaceZ": { properties: {} },
+        "InterfaceA": { properties: {} },
+        "InterfaceC": { properties: {} },
+      },
+      linkTypes: [],
+      objectType: {
+        apiName: "apiName",
+        description: "description",
+        displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+        },
+        rid: "rid",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    // Check that the array is sorted alphabetically
+    expect(result.implements).toEqual([
+      "InterfaceA",
+      "InterfaceC",
+      "InterfaceZ",
+    ]);
+  });
+
+  it("sorts the linkTypes array for stable output", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: [],
+      implementsInterfaces2: {},
+      linkTypes: [
+        {
+          apiName: "linkZ",
+          cardinality: "ONE",
+          objectTypeApiName: "TargetZ",
+          displayName: "LinkZ",
+          status: "ACTIVE",
+          linkTypeRid: "ridZ",
+        },
+        {
+          apiName: "linkA",
+          cardinality: "MANY",
+          objectTypeApiName: "TargetA",
+          displayName: "LinkA",
+          status: "ACTIVE",
+          linkTypeRid: "ridA",
+        },
+        {
+          apiName: "linkC",
+          cardinality: "ONE",
+          objectTypeApiName: "TargetC",
+          displayName: "LinkC",
+          status: "ACTIVE",
+          linkTypeRid: "ridC",
+        },
+      ],
+      objectType: {
+        apiName: "apiName",
+        description: "description",
+        displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+        },
+        rid: "rid",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    // Get the link keys in the order they appear in the result
+    const linkKeys = Object.keys(result.links);
+
+    // Check that the links are sorted alphabetically by apiName
+    expect(linkKeys).toEqual(["linkA", "linkC", "linkZ"]);
+  });
+
+  it("preserves empty arrays", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: [],
+      implementsInterfaces2: {},
+      linkTypes: [],
+      objectType: {
+        apiName: "apiName",
+        description: "description",
+        displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+        },
+        rid: "rid",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    // Check that empty array is preserved
+    expect(result.implements).toEqual([]);
   });
 });

@@ -20,10 +20,7 @@ import * as path from "node:path";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { defineInterface } from "../api/defineInterface.js";
-import { defineObject } from "../api/defineObject.js";
 import { defineOntology } from "../api/defineOntology.js";
-import { defineSharedPropertyType } from "../api/defineSpt.js";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
 
@@ -36,6 +33,8 @@ export default async function main(
     apiNamespace: string;
     snapshotDir: string;
     valueTypesOutput: string;
+    outputDir?: string;
+    dependencies?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -68,10 +67,21 @@ export default async function main(
         default: "snapshots",
         coerce: path.resolve,
       },
+      outputDir: {
+        alias: "d",
+        describe: "Directory for generated ontology entities",
+        type: "string",
+        coerce: path.resolve,
+      },
       valueTypesOutput: {
         describe: "Value Type Output File",
         type: "string",
         default: "value-types.json",
+        coerce: path.resolve,
+      },
+      dependencies: {
+        describe: "File to write dependencies to",
+        type: "string",
         coerce: path.resolve,
       },
     })
@@ -88,9 +98,12 @@ export default async function main(
     );
   }
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
+
   const ontology = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
+    commandLineOpts.outputDir,
+    commandLineOpts.dependencies,
   );
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
@@ -107,37 +120,17 @@ export default async function main(
   }
 }
 
-async function loadOntologyViaTsNode(input: string) {
-  Object.assign(globalThis, {
-    defineInterface,
-    defineObject,
-    defineSharedPropertyType,
-  });
-
-  const tsNode = await import("ts-node");
-  const tsNodeService = tsNode.register({
-    transpileOnly: true,
-    compilerOptions: {
-      module: "commonjs",
-      target: "esnext",
-    },
-    esm: true,
-  });
-
-  tsNodeService.enabled(true);
-
-  const q = await import(input);
-  return q;
-}
-
-async function loadOntology(input: string, apiNamespace: string) {
-  // Object.assign(globalThis, {
-  //   defineInterface,
-  //   defineLink,
-  //   defineObject,
-  //   defineSharedPropertyType,
-  // });
-
-  const q = await defineOntology(apiNamespace, async () => await import(input));
+async function loadOntology(
+  input: string,
+  apiNamespace: string,
+  outputDir: string | undefined,
+  dependencyFile: string | undefined,
+) {
+  const q = await defineOntology(
+    apiNamespace,
+    async () => await import(input),
+    outputDir,
+    dependencyFile,
+  );
   return q;
 }

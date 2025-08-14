@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,18 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { LoadPatchableEntitiesRequest } from "../LoadPatchableEntitiesRequest.js";
-import type { LoadPatchableEntitiesResponse } from "../LoadPatchableEntitiesResponse.js";
+import type {
+  LoadPatchableEntitiesRequest as _api_internal_LoadPatchableEntitiesRequest,
+  LoadPatchableEntitiesResponse as _api_internal_LoadPatchableEntitiesResponse,
+} from "../__components.js";
 
 /**
  * Executes a "full" load of objects and many-to-many links for patching workflows.
  *
  * Entities will be loaded in "full", with both visible and invisible to the onBehalfOf user properties, as well
  * as all necessary metadata properties necessary for patching workflows in Funnel. Thus, care must be taken
- * to never show this entity to the user, as it is loaded without any permission checks. Only the 'actions'
- * service user is allowed to use this API.
+ * to never show this entity to the user, as it is loaded without any permission checks. Only allow listed
+ * service users such as 'actions' and 'peering' are allowed to use this API.
  *
  * The API can result in the following errors:
  * - NonHighburyEntitiesNotPatchable
@@ -37,7 +39,7 @@ import type { LoadPatchableEntitiesResponse } from "../LoadPatchableEntitiesResp
 export async function loadPatchableEntities(
   ctx: ConjureContext,
   onBehalfOf: string,
-  request: LoadPatchableEntitiesRequest,
-): Promise<LoadPatchableEntitiesResponse> {
+  request: _api_internal_LoadPatchableEntitiesRequest,
+): Promise<_api_internal_LoadPatchableEntitiesResponse> {
   return conjureFetch(ctx, `/internal/loadPatchableEntities`, "POST", request);
 }

@@ -142,6 +142,20 @@ describe("FetchMetadata", () => {
             "nullable": true,
             "type": "string",
           },
+          "skillSet": {
+            "description": "The skills of the employee",
+            "displayName": undefined,
+            "multiplicity": false,
+            "nullable": true,
+            "type": "string",
+          },
+          "skillSetEmbedding": {
+            "description": "Vectorized skill set",
+            "displayName": undefined,
+            "multiplicity": false,
+            "nullable": true,
+            "type": "vector",
+          },
           "startDate": {
             "description": "The date the employee was hired (most recently, if they were re-hired)",
             "displayName": undefined,
@@ -178,7 +192,13 @@ describe("FetchMetadata", () => {
           "Person",
         ],
         "implements": [],
-        "links": {},
+        "links": {
+          "toBar": {
+            "multiplicity": true,
+            "targetType": "interface",
+            "targetTypeApiName": "BarInterface",
+          },
+        },
         "properties": {
           "fooSpt": {
             "description": "A foo",

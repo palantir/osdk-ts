@@ -1,5 +1,267 @@
 # @osdk/generator-converters
 
+## 2.4.0-beta.14
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.14
+
+## 2.4.0-beta.13
+
+### Minor Changes
+
+- 4bc848b: Add interface link support.
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/api@2.4.0-beta.13
+
+## 2.4.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.12
+
+## 2.4.0-beta.11
+
+### Minor Changes
+
+- f277b30: Ensure stable ordering of arrays in code generation for object types and interface types. Sort `implements`, `implementedBy` and `linkTypes` arrays alphabetically for consistent output.
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.11
+
+## 2.4.0-beta.10
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.10
+
+## 2.4.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [9101bad]
+  - @osdk/api@2.4.0-beta.9
+
+## 2.4.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [9f4fe9e]
+  - @osdk/api@2.4.0-beta.8
+
+## 2.4.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.7
+
+## 2.4.0-beta.6
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.6
+
+## 2.4.0-beta.5
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.5
+
+## 2.4.0-beta.4
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.4
+
+## 2.4.0-beta.3
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.3
+
+## 2.4.0-beta.2
+
+### Minor Changes
+
+- 8c95154: Add nearestNeighbor support
+
+### Patch Changes
+
+- Updated dependencies [29d2ada]
+- Updated dependencies [8c95154]
+- Updated dependencies [c32dcf2]
+  - @osdk/api@2.4.0-beta.2
+
+## 2.3.0-beta.10
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.10
+
+## 2.3.0-beta.9
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.9
+
+## 2.3.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [12d599f]
+  - @osdk/api@2.3.0-beta.8
+
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+### Patch Changes
+
+- Updated dependencies [f8db93d]
+  - @osdk/api@2.3.0-beta.7
+
+## 2.3.0-beta.6
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.6
+
+## 2.3.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [e8c4aed]
+  - @osdk/api@2.3.0-beta.5
+
+## 2.3.0-beta.4
+
+### Minor Changes
+
+- ef46ed6: Add protection for dropping unsupported enums instead of throwing"
+
+### Patch Changes
+
+- Updated dependencies [43c5547]
+- Updated dependencies [ef46ed6]
+- Updated dependencies [3b5ccaa]
+  - @osdk/api@2.3.0-beta.4
+
+## 2.3.0-beta.3
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.3
+
+## 2.3.0-beta.2
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.2
+
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- b68adea: Add support for inherited interfaces.
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+- abe4897: Removes support for boolean primary keys
+- 63b2e63: Update Platform SDK Dependencies
+- 7416ce4: Update Platform SDK Dependencies
+- 889e84b: Release
+- 791e655: Add support for geoshape and geohash action parameters.
+- 317b555: Release
+- 63b2e63: Supports generating queries for entrySet function types
+- 3d0ab11: Add protection for dropping unsupported enums instead of throwing"
+- Updated dependencies [322c5bc]
+- Updated dependencies [c6bee50]
+- Updated dependencies [7416ce4]
+- Updated dependencies [7170fd1]
+- Updated dependencies [12843cb]
+- Updated dependencies [18ba34f]
+- Updated dependencies [6abf078]
+- Updated dependencies [f82767c]
+- Updated dependencies [56aa502]
+- Updated dependencies [0e874b1]
+- Updated dependencies [abe4897]
+- Updated dependencies [63b2e63]
+- Updated dependencies [cddfbf9]
+- Updated dependencies [7416ce4]
+- Updated dependencies [23ea0e4]
+- Updated dependencies [26c2d95]
+- Updated dependencies [488b51c]
+- Updated dependencies [71462e9]
+- Updated dependencies [fccd9ac]
+- Updated dependencies [5665b18]
+- Updated dependencies [46cede4]
+- Updated dependencies [761e69d]
+- Updated dependencies [889e84b]
+- Updated dependencies [a6e5f89]
+- Updated dependencies [ed69666]
+- Updated dependencies [4183a55]
+- Updated dependencies [70b4464]
+- Updated dependencies [791e655]
+- Updated dependencies [317b555]
+- Updated dependencies [63b2e63]
+- Updated dependencies [a146ce4]
+- Updated dependencies [3d0ab11]
+- Updated dependencies [805df40]
+- Updated dependencies [5467a0f]
+- Updated dependencies [63b2e63]
+  - @osdk/api@2.2.0
+
+## 2.2.0-beta.23
+
+### Patch Changes
+
+- Updated dependencies [4183a55]
+  - @osdk/api@2.2.0-beta.23
+
+## 2.2.0-beta.22
+
+### Minor Changes
+
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+
+### Patch Changes
+
+- Updated dependencies [18ba34f]
+  - @osdk/api@2.2.0-beta.22
+
+## 2.2.0-beta.21
+
+### Minor Changes
+
+- 317b555: Release
+
+### Patch Changes
+
+- Updated dependencies [317b555]
+  - @osdk/api@2.2.0-beta.21
+
+## 2.2.0-beta.20
+
+### Minor Changes
+
+- 889e84b: Release
+
+### Patch Changes
+
+- Updated dependencies [889e84b]
+  - @osdk/api@2.2.0-beta.20
+
+## 2.2.0-beta.19
+
+### Patch Changes
+
+- @osdk/api@2.2.0-beta.19
+
 ## 2.2.0-beta.18
 
 ### Patch Changes
@@ -145,6 +407,98 @@
 
 - Updated dependencies [fccd9ac]
   - @osdk/api@2.2.0-beta.2
+
+## 2.1.0
+
+### Minor Changes
+
+- 966d408: Rename type for base action parameter types.
+- d794c19: Adding support for struct action params.
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 9c4efe6: Support uploading media parameters through actions
+- 0a7c747: Add support for timeseries sensors.
+- f0b519d: Upgrade to vitest 3 and vite 6
+- 1812118: Add geotime support for OSDK.
+- bc1761c: Update platform API dependencies.
+- c80ca45: Add ability to create interfaces through actions now.
+- bb8b219: Use new external packages instead of the internal ones.
+- 44e62f6: Updating fetch for auth and other packages.
+- 03f95eb: Add support for interface params in actions.
+- 91cfa3a: Fixing url parsing for client.
+- 9d35a1f: Remove unused imports
+- c691c8b: Package now has experimental support for commonjs
+- c9da74c: Improves code quality by fixing linting errors
+- 62c1d63: Add support for reading media reference property in OSDK.
+- 1591f04: Rename base property types.
+- abfe4b3: Add support for reading struct properties.
+- 81b2fb2: Remove duplicate types in case statement.
+- ecd4aee: Fixing use of logging from client for unknown property types.
+- ee6224b: Explicitly type aggregation types in queries.
+- 7d777eb: Improves error message for unsupported query types
+- c682504: Locks dependency version of 3 internal libraries
+- 9018dc2: Updating platform api dependencies.
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+- bf0e3b4: Ignore unknown property types.
+- 09eaf24: Update to latest platform sdks
+- d665147: Update platform sdk deps
+
+### Patch Changes
+
+- Updated dependencies [966d408]
+- Updated dependencies [cddc196]
+- Updated dependencies [d794c19]
+- Updated dependencies [05febf4]
+- Updated dependencies [55c05f2]
+- Updated dependencies [0dc40b0]
+- Updated dependencies [25fd9f0]
+- Updated dependencies [11a05cc]
+- Updated dependencies [7865cb6]
+- Updated dependencies [9c4efe6]
+- Updated dependencies [3ea2e79]
+- Updated dependencies [1812118]
+- Updated dependencies [bc1761c]
+- Updated dependencies [656f975]
+- Updated dependencies [f1145ff]
+- Updated dependencies [f446d0c]
+- Updated dependencies [c80ca45]
+- Updated dependencies [bb8b219]
+- Updated dependencies [03f95eb]
+- Updated dependencies [1a89f23]
+- Updated dependencies [9d35a1f]
+- Updated dependencies [c691c8b]
+- Updated dependencies [749cf69]
+- Updated dependencies [f03e39f]
+- Updated dependencies [11088aa]
+- Updated dependencies [72c1905]
+- Updated dependencies [9298f75]
+- Updated dependencies [f34b3d4]
+- Updated dependencies [acbfab9]
+- Updated dependencies [62c1d63]
+- Updated dependencies [3c9ac22]
+- Updated dependencies [1591f04]
+- Updated dependencies [03e1941]
+- Updated dependencies [abfe4b3]
+- Updated dependencies [b79becf]
+- Updated dependencies [27866a8]
+- Updated dependencies [e5fe7c0]
+- Updated dependencies [1b2e8c9]
+- Updated dependencies [9f3807c]
+- Updated dependencies [0c56d21]
+- Updated dependencies [e548b9b]
+- Updated dependencies [ee6224b]
+- Updated dependencies [1dc0228]
+- Updated dependencies [6c60414]
+- Updated dependencies [5fe2c8d]
+- Updated dependencies [d3b3f35]
+- Updated dependencies [785f663]
+- Updated dependencies [6b6c8a1]
+- Updated dependencies [c537e2d]
+- Updated dependencies [73fa373]
+- Updated dependencies [8e6a5f4]
+- Updated dependencies [2d5e648]
+- Updated dependencies [31e7d70]
+- Updated dependencies [f19da8e]
+  - @osdk/api@2.1.0
 
 ## 2.1.0-beta.31
 

@@ -25,6 +25,7 @@ export namespace Todo {
   export interface Props {
     /**
      *   display name: 'Body',
+     *
      *   description: The text of the todo
      */
     readonly body: $PropType['string'] | undefined;
@@ -78,6 +79,7 @@ export interface Todo extends $ObjectTypeDefinition {
       name: 'todo';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {
@@ -89,6 +91,7 @@ export interface Todo extends $ObjectTypeDefinition {
     properties: {
       /**
        *   display name: 'Body',
+       *
        *   description: The text of the todo
        */
       body: $PropertyDef<'string', 'nullable', 'single'>;
@@ -113,6 +116,7 @@ export interface Todo extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'body';
     type: 'object';
+    visibility: undefined;
   };
 }
 

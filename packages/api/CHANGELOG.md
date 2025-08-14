@@ -1,5 +1,151 @@
 # @osdk/api
 
+## 2.4.0-beta.14
+
+## 2.4.0-beta.13
+
+### Minor Changes
+
+- 4bc848b: Add interface link support.
+
+## 2.4.0-beta.12
+
+## 2.4.0-beta.11
+
+## 2.4.0-beta.10
+
+## 2.4.0-beta.9
+
+### Minor Changes
+
+- 9101bad: Adds "includeNullValues" option for exact match filters
+
+## 2.4.0-beta.8
+
+### Minor Changes
+
+- 9f4fe9e: Add new types mapping for internal creation workflow.
+
+## 2.4.0-beta.7
+
+## 2.4.0-beta.6
+
+## 2.4.0-beta.5
+
+## 2.4.0-beta.4
+
+## 2.4.0-beta.3
+
+## 2.4.0-beta.2
+
+### Minor Changes
+
+- 29d2ada: Fix type in docs and tests
+- 8c95154: Add nearestNeighbor support
+- c32dcf2: Add a metadata field to all loaded objects
+
+## 2.3.0-beta.10
+
+## 2.3.0-beta.9
+
+## 2.3.0-beta.8
+
+### Minor Changes
+
+- 12d599f: Export ObjectIdentifiers to ensure Osdk.Instance can be used with typeof
+
+## 2.3.0-beta.7
+
+### Minor Changes
+
+- f8db93d: improve media upload (beta)
+
+## 2.3.0-beta.6
+
+## 2.3.0-beta.5
+
+### Minor Changes
+
+- e8c4aed: Fixes breaks introduced between 2.1 and 2.2
+
+## 2.3.0-beta.4
+
+### Minor Changes
+
+- 43c5547: Add 'getMediaReference' method to Media
+- ef46ed6: Add protection for dropping unsupported enums instead of throwing"
+- 3b5ccaa: Fix orderBy argument on object load methods
+
+## 2.3.0-beta.3
+
+## 2.3.0-beta.2
+
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- c6bee50: Removes ObjectSpecifier from OsdkBase
+- 7416ce4: Adds deleted objects and links returned from applyAction
+- 7170fd1: Fix generics for fetchPageByRid
+- 12843cb: Add ability to load all underlying properties of an interface.
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+- 6abf078: Fixes aggregation types for datetime to include collectList and collectSet
+- f82767c: Allow using aggregation operations for boolean property types
+- 56aa502: Improves exposed APIs
+- 0e874b1: Exporting more entities from functions package.
+- abe4897: Removes support for boolean primary keys
+- 63b2e63: Update Platform SDK Dependencies
+- cddfbf9: Adds default value option to group by
+- 7416ce4: Update Platform SDK Dependencies
+- 23ea0e4: Fix type break.
+- 26c2d95: Add experimental function to load page of objects by rid.
+- 488b51c: Add support for using aggregations and GeoJSON types from runtime derived properties
+- 71462e9: Updates aggregation types to support operations on additional property types
+- fccd9ac: "Allow selecting derived properties"
+- 5665b18: Remove selection RDPs from the API
+- 46cede4: Fix include all properties flag.
+- 761e69d: Added type safety to createMediaReference
+- 889e84b: Release
+- a6e5f89: Changes count, exactDistinct, and approximateDistinct to be non-nullable
+- ed69666: Update conjure-lite to 0.7.1
+- 4183a55: Refactor OsdkBase to avoid breaks with type not being discoverable
+- 70b4464: Fix types for RDPs
+- 791e655: Add support for geoshape and geohash action parameters.
+- 317b555: Release
+- 63b2e63: Supports generating queries for entrySet function types
+- a146ce4: Cleanup RDP API
+- 3d0ab11: Add protection for dropping unsupported enums instead of throwing"
+- 805df40: Fix interface action types.
+- 5467a0f: Fix orderBy argument on object load methods
+- 63b2e63: Adds ObjectSpecifiers to generated OSDK objects
+
+## 2.2.0-beta.23
+
+### Minor Changes
+
+- 4183a55: Refactor OsdkBase to avoid breaks with type not being discoverable
+
+## 2.2.0-beta.22
+
+### Minor Changes
+
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+
+## 2.2.0-beta.21
+
+### Minor Changes
+
+- 317b555: Release
+
+## 2.2.0-beta.20
+
+### Minor Changes
+
+- 889e84b: Release
+
+## 2.2.0-beta.19
+
 ## 2.2.0-beta.18
 
 ### Minor Changes
@@ -98,6 +244,65 @@
 ### Minor Changes
 
 - fccd9ac: "Allow selecting derived properties"
+
+## 2.1.0
+
+### Minor Changes
+
+- 966d408: Rename type for base action parameter types.
+- cddc196: Try-catches handlers called during subscription
+- d794c19: Adding support for struct action params.
+- 05febf4: Adds Reference Update support in subscribe
+- 55c05f2: Remove runtime derived properties from external types.
+- 0dc40b0: Switch to OSDK.Instance
+- 25fd9f0: Updating package.json to have better entry points to support react native bundlers.
+- 11a05cc: Updated subscribe api to make requesting properties optional
+- 7865cb6: Add support for search on struct properties.
+- 9c4efe6: Support uploading media parameters through actions
+- 3ea2e79: Creates new export for internal helper functions
+- 1812118: Add geotime support for OSDK.
+- bc1761c: Update platform API dependencies.
+- 656f975: Fixes attachment upload inputs sending incorrect in browser contexts
+- f1145ff: Adds support for runtime derived properties
+- f446d0c: Exposes $clone from OSDK Object instances
+- c80ca45: Add ability to create interfaces through actions now.
+- bb8b219: Use new external packages instead of the internal ones.
+- 03f95eb: Add support for interface params in actions.
+- 1a89f23: Removing support for augmenting interfaces when fetching them.
+- 9d35a1f: Remove unused imports
+- c691c8b: Package now has experimental support for commonjs
+- 749cf69: Remove experimental non null for now.
+- f03e39f: Add a namespace type for listeners.
+- 11088aa: Fix where clause types so we don't accept more than one key in the clauses.
+- 72c1905: Fixes a bug where any/never could be interpreted wrong when used in types for determining fetch results
+- 9298f75: Using new interface APIs for backend.
+- f34b3d4: Add ability to fetch by rid, experimentally.
+- acbfab9: Fixes where clauses for interfaces with no properties.
+- 62c1d63: Add support for reading media reference property in OSDK.
+- 3c9ac22: Cleaning up where clause types.
+- 1591f04: Rename base property types.
+- 03e1941: Add support for null filter on geo properties.
+- abfe4b3: Add support for reading struct properties.
+- b79becf: Modify return type for fetch single on links.
+- 27866a8: Removing interface argument for selecting object types. This is not supported in the new apis, and is not being used internally anywhere with the old apis.
+- e5fe7c0: Adds experimental method to convert an object set into RID
+- 1b2e8c9: Adds subscribe feature directly to client
+- 9f3807c: Allows $in to take a readonly array
+- 0c56d21: Exposing fuzzy searching.
+- e548b9b: Updates subscribe to return object updates
+- ee6224b: Explicitly type aggregation types in queries.
+- 1dc0228: Change experimental code style to prevent future breaks
+- 6c60414: Ensure that inferred return type of ObjectSet.fetchPage where only the ObjectTypeDefinition is inferred, does not default to $notStrict
+- 5fe2c8d: Remove ability to filter on entire struct.
+- d3b3f35: Add's onSuccessfulSubscribe handler to subscribe functionality
+- 785f663: Rename namespace so not exported from api package.
+- 6b6c8a1: Updates gateway endpoints and changes fetchContents for attachments to return a response
+- c537e2d: Remove unused imports.
+- 73fa373: Exports helper method to construct object sets from RIDs from internal utils
+- 8e6a5f4: Avoid type-fest's IsAny as it doesn't always work
+- 2d5e648: Remove subscribe from experimental gate.
+- 31e7d70: Fixes extra generic
+- f19da8e: Remove where clause from aggregate options. This option was never actually doing anything before as it was not passed to the backend for processing, so we are removing it to prevent future confusion.
 
 ## 2.1.0-beta.31
 
