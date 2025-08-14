@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectSpecifier, OsdkBase } from "@osdk/api";
+import type { ObjectSet, ObjectSpecifier, Osdk, OsdkBase } from "@osdk/api";
 import {
   $Queries,
   acceptsThreeDimensionalAggregationFunction,
   acceptsTwoDimensionalAggregationFunction,
   addOne,
   Employee,
+  FooInterface,
   incrementPersonAge,
   incrementPersonAgeComplex,
   queryAcceptsInterface,
+  queryAcceptsInterfaceObjectSet,
   queryAcceptsObject,
   queryAcceptsObjectSets,
   queryTypeReturnsMap,
@@ -127,6 +129,29 @@ describe("queries", () => {
       });
     });
     it("Works when passing in interfaces", async () => {
+      const clientBoundQueryFunction =
+        client(queryAcceptsInterface).executeFunction;
+      type InferredParamType = Parameters<
+        typeof clientBoundQueryFunction
+      >[0];
+
+      expectTypeOf<
+        {
+          interfaceObject: {
+            $objectType: "Employee" | "Person";
+            $primaryKey: string | number;
+          };
+        }
+      >()
+        .toMatchTypeOf<InferredParamType>();
+
+      expectTypeOf<
+        {
+          interfaceObject: Osdk.Instance<FooInterface>;
+        }
+      >()
+        .toMatchTypeOf<InferredParamType>();
+
       const result = await client(queryAcceptsInterface).executeFunction({
         interfaceObject: { $objectType: "Employee", $primaryKey: 50030 },
       });
@@ -138,6 +163,16 @@ describe("queries", () => {
         $objectSpecifier: "Employee:50031",
         $title: undefined,
       });
+    });
+
+    it("Works when passing in interface object sets", async () => {
+      const os = client(FooInterface);
+      const result = await client(queryAcceptsInterfaceObjectSet)
+        .executeFunction({
+          interfaceObjectSet: os,
+        });
+
+      expect(result).toEqual(50030);
     });
   });
 
@@ -384,8 +419,10 @@ describe("queries", () => {
       "incrementPersonAge",
       "incrementPersonAgeComplex",
       "queryAcceptsInterface",
+      "queryAcceptsInterfaceObjectSet",
       "queryAcceptsObject",
       "queryAcceptsObjectSets",
+      "queryOutputsInterface",
       "queryTypeReturnsArray",
       "queryTypeReturnsMap",
       "returnsDate",

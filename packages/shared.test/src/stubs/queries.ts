@@ -24,11 +24,13 @@ import { employee1, employee2 } from "./objects.js";
 import {
   addOneQueryType,
   addOneQueryTypeOlderVersion,
+  queryTypeAcceptsInterfaceObjectSet,
   queryTypeAcceptsInterfaces,
   queryTypeAcceptsObjects,
   queryTypeAcceptsObjectSets,
   queryTypeAcceptsThreeDimensionalAggregation,
   queryTypeAcceptsTwoDimensionalAggregation,
+  queryTypeOutputsInterfaceObjectSet,
   queryTypeReturnsArray,
   queryTypeReturnsComplexStruct,
   queryTypeReturnsDate,
@@ -139,6 +141,36 @@ export const queryTypeAcceptsInterfaceResponse: ExecuteQueryResponse = {
     "primaryKeyValue": employee2.__primaryKey,
   },
 };
+
+export const queryTypeAcceptsInterfaceObjectSetRequest: ExecuteQueryRequest = {
+  parameters: {
+    interfaceObjectSet: {
+      type: "interfaceBase",
+      interfaceType: "FooInterface",
+    },
+  },
+};
+
+export const queryTypeAcceptsInterfaceObjectSetResponse: ExecuteQueryResponse =
+  {
+    value: employee1.__primaryKey,
+  };
+
+export const queryTypeOutputsInterfaceObjectSetRequest: ExecuteQueryRequest = {
+  parameters: {
+    idToLook: employee1.__primaryKey,
+  },
+};
+
+export const queryTypeOutputsInterfaceObjectSetResponse: ExecuteQueryResponse =
+  {
+    value: {
+      interfaceObjectSet: {
+        type: "interfaceBase",
+        interfaceType: "FooInterface",
+      },
+    },
+  };
 
 export const queryTypeAcceptsObjectSetRequest: ExecuteQueryRequest = {
   parameters: {
@@ -395,6 +427,18 @@ const queryRequestHandlers: {
       [JSON.stringify(queryTypeReturnsMapRequest)]: queryTypeReturnsMapResponse,
     },
   },
+  [queryTypeAcceptsInterfaceObjectSet.apiName]: {
+    [queryTypeAcceptsInterfaceObjectSet.version]: {
+      [JSON.stringify(queryTypeAcceptsInterfaceObjectSetRequest)]:
+        queryTypeAcceptsInterfaceObjectSetResponse,
+    },
+  },
+  [queryTypeOutputsInterfaceObjectSet.apiName]: {
+    [queryTypeOutputsInterfaceObjectSet.version]: {
+      [JSON.stringify(queryTypeOutputsInterfaceObjectSetRequest)]:
+        queryTypeOutputsInterfaceObjectSetResponse,
+    },
+  },
 };
 
 export function registerLazyQueries(fauxOntology: FauxOntology): void {
@@ -415,6 +459,8 @@ export function registerLazyQueries(fauxOntology: FauxOntology): void {
     queryTypeReturnsComplexStruct,
     queryTypeReturnsMap,
     queryTypeAcceptsInterfaces,
+    queryTypeAcceptsInterfaceObjectSet,
+    queryTypeOutputsInterfaceObjectSet,
   ];
 
   for (const queryType of Object.values(queryTypes)) {
