@@ -37,8 +37,8 @@ async function discoverOntologySdkInputSpecs(
 ): Promise<Array<OntologySdkInputSpec>> {
   const sdks = new Set<string>();
   const onVisit = (_packageJsonPath: string, packageJson: PackageJson) => {
-    if (packageJson.osdk != null && packageJson.osdk.rid != null) {
-      sdks.add(toKey(packageJson.osdk.rid, packageJson.version));
+    if (packageJson.osdk != null && packageJson.osdk.packageRid != null) {
+      sdks.add(toKey(packageJson.osdk.packageRid, packageJson.version));
     }
   };
   await visitNpmPackages(packageJsonPath, onVisit);

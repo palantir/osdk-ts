@@ -64,6 +64,9 @@
     "templates",
     "*.d.ts"
   ],
+  "osdk": {
+    "packageRid": "ri.some..package.client"
+  },
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/cjs/index.d.cts",

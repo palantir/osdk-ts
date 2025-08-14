@@ -18,7 +18,7 @@ export interface PackageJson {
   name: string;
   version: string;
   osdk?: {
-    rid?: string;
+    packageRid?: string;
   };
   dependencies?: {
     [key: string]: string;

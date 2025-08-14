@@ -66,8 +66,5 @@
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/cjs/index.d.cts",
-  "osdk": {
-    "rid": "ri.some..package.clientunstable"
-  },
   "type": "module"
 }
