@@ -43,19 +43,21 @@ export type {
   ActionSection,
   ActionType,
   ConditionDefinition,
-  CREATE_OR_MODIFY_OBJECT_ID,
   CurrentTimeMappingValue,
   CurrentUserMappingValue,
   CustomMapping,
   InterfaceType,
   LinkType,
   MappingValue,
-  MODIFY_OBJECT_ID,
   ObjectType,
   SectionConditionalOverride,
   SharedPropertyType,
   UuidMappingValue,
   ValueTypeDefinitionVersion,
 } from "./api/types.js";
-export { OntologyEntityTypeEnum } from "./api/types.js";
+export {
+  CREATE_OR_MODIFY_OBJECT_ID,
+  MODIFY_OBJECT_ID,
+  OntologyEntityTypeEnum,
+} from "./api/types.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";

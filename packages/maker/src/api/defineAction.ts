@@ -670,7 +670,7 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
     },
     __type: OntologyEntityTypeEnum.ACTION_TYPE,
   } as ActionType;
-  validateActionValidation(fullAction);
+  validateActionConfiguration(fullAction);
   updateOntology(fullAction);
   return fullAction;
 }
@@ -680,7 +680,6 @@ function createParameters(
   parameterSet: Set<string>,
   defaultRequired: boolean,
 ): Array<ActionParameter> {
-  // const parameterNames = Array.from(parameterSet);
   const targetParam: Array<ActionParameter> = [];
   // prefix objectReference parameters with the namespace
   parameterSet.forEach(name => {
@@ -699,22 +698,27 @@ function createParameters(
     if (name === MODIFY_OBJECT_ID) {
       targetParam.push({
         id: MODIFY_OBJECT_ID,
-        displayName: "Modify object",
+        displayName: def.parameterConfiguration?.[name]?.displayName
+          ?? "Modify object",
         type: {
           type: "objectReference",
           objectReference: { objectTypeId: def.objectType.apiName },
         },
         validation: {
+          ...def.parameterConfiguration?.[name],
           allowedValues: { type: "objectQuery" },
-          required: true,
+          required: def.parameterConfiguration?.[name]?.required ?? true,
         },
+        defaultValue: def.parameterConfiguration?.[name]?.defaultValue,
+        description: def.parameterConfiguration?.[name]?.description,
       });
       parameterSet.delete(MODIFY_OBJECT_ID);
     }
     if (name === CREATE_OR_MODIFY_OBJECT_ID) {
       targetParam.push({
         id: CREATE_OR_MODIFY_OBJECT_ID,
-        displayName: "Create or modify object",
+        displayName: def.parameterConfiguration?.[name]?.displayName
+          ?? "Create or modify object",
         type: {
           type: "objectReference",
           objectReference: {
@@ -732,9 +736,12 @@ function createParameters(
           },
         },
         validation: {
+          ...def.parameterConfiguration?.[name],
           allowedValues: { type: "objectQuery" },
-          required: true,
+          required: def.parameterConfiguration?.[name]?.required ?? true,
         },
+        defaultValue: def.parameterConfiguration?.[name]?.defaultValue,
+        description: def.parameterConfiguration?.[name]?.description,
       });
       parameterSet.delete(CREATE_OR_MODIFY_OBJECT_ID);
     }
@@ -1106,7 +1113,7 @@ function convertValidationRule(
   };
 }
 
-function validateActionValidation(action: ActionType): void {
+function validateActionConfiguration(action: ActionType): void {
   const seenParameterIds = new Set<ParameterId>();
   const parameterMap: Record<string, ActionParameter> =
     action.parameters?.reduce((acc, param) => {
@@ -1247,7 +1254,8 @@ function validateActionParameters(def: ActionTypeUserDefinition): void {
   ].forEach(id => {
     invariant(
       def.objectType.properties?.[id] !== undefined
-        || (def.parameterConfiguration?.[id].customParameterType !== undefined),
+        || (def.parameterConfiguration?.[id].customParameterType !== undefined)
+        || id === MODIFY_OBJECT_ID || id === CREATE_OR_MODIFY_OBJECT_ID,
       `Parameter ${id} does not exist as a property on ${def.objectType.apiName} and its type is not explicitly defined`,
     );
   });
