@@ -6519,6 +6519,7 @@ describe("Ontology Defining", () => {
               name: "actionLevelGroup",
             },
           },
+          parameterOrdering: ["bar", "fizz", "primary"],
           parameterConfiguration: {
             "fizz": {
               required: false,
@@ -6573,6 +6574,7 @@ describe("Ontology Defining", () => {
               name: "actionLevelGroup",
             },
           },
+          parameterOrdering: ["bar", "fizz"],
           parameterConfiguration: {
             "fizz": {
               required: false,
@@ -6627,6 +6629,7 @@ describe("Ontology Defining", () => {
               name: "actionLevelGroup",
             },
           },
+          parameterOrdering: ["bar", "fizz"],
           parameterConfiguration: {
             "fizz": {
               required: false,
