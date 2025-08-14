@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@osdk/client.unstable": "workspace:~",
-    "@osdk/foundry.ontologies": "2.25.0",
+    "@osdk/foundry.ontologies": "2.27.0",
     "tiny-invariant": "^1.3.3"
   },
   "devDependencies": {
