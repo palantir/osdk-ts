@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-import type { WidgetManifestConfig, WidgetSetManifest } from "@osdk/widget.api";
+import type {
+  WidgetManifestConfig,
+  WidgetSetInputSpec,
+  WidgetSetManifest,
+} from "@osdk/widget.api";
 import type { WidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
 
 export function buildWidgetSetManifest(
   widgetSetRid: string,
   widgetSetVersion: string,
   widgetBuilds: WidgetBuildOutputs[],
+  widgetSetInputSpec: WidgetSetInputSpec,
 ): WidgetSetManifest {
   return {
     manifestVersion: "1.0.0",
@@ -32,6 +37,7 @@ export function buildWidgetSetManifest(
           .map(buildWidgetManifest)
           .map((widgetManifest) => [widgetManifest.id, widgetManifest]),
       ),
+      inputSpec: widgetSetInputSpec,
     },
   };
 }
