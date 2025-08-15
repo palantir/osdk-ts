@@ -20,20 +20,11 @@ import type {
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
+  PageResult,
   PropertyKeys,
 } from "@osdk/api";
-import deepEqual from "fast-deep-equal";
 import groupBy from "object.groupby";
-import type { Connectable, Observable, Subscription } from "rxjs";
-import {
-  auditTime,
-  combineLatest,
-  connectable,
-  map,
-  of,
-  ReplaySubject,
-  switchMap,
-} from "rxjs";
+import { type Observable, type Subscription } from "rxjs";
 import invariant from "tiny-invariant";
 import { additionalContext, type Client } from "../../Client.js";
 import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
@@ -45,38 +36,22 @@ import type {
   ObjectHolder,
 } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ListPayload } from "../ListPayload.js";
-import type { CommonObserveOptions, Status } from "../ObservableClient.js";
-import {
-  type CacheKey,
-  DEBUG_ONLY__cacheKeysToString as DEBUG_ONLY__cacheKeysToString,
-} from "./CacheKey.js";
+import type {
+  CommonObserveOptions,
+  Status,
+} from "../ObservableClient/common.js";
+import { BaseCollectionQuery } from "./BaseCollectionQuery.js";
+import { type CacheKey } from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "./Changes.js";
 import type { Entry } from "./Layer.js";
+import type { ListCacheKey, ListStorageData } from "./ListCacheKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "./objectMatchesWhereClause.js";
-import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";
+import type { ObjectCacheKey } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
-import { Query } from "./Query.js";
+import type { Query } from "./Query.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
-
-interface ListStorageData {
-  data: ObjectCacheKey[];
-}
-
-export interface ListCacheKey extends
-  CacheKey<
-    "list",
-    ListStorageData,
-    ListQuery,
-    [
-      type: "object" | "interface",
-      apiName: string,
-      whereClause: Canonical<SimpleWhereClause>,
-      orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
-    ]
-  > //
-{}
 
 export interface BaseListCacheKey<
   T_Type extends string,
@@ -100,134 +75,7 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   sortaMatches: Set<(ObjectHolder | InterfaceHolder)>;
 }>;
 
-abstract class BaseListQuery<
-  // THIS IS THE WRONG EXTENDS
-  KEY extends ListCacheKey,
-  PAYLOAD,
-  O extends CommonObserveOptions,
-> extends Query<KEY, PAYLOAD, O> {
-  //
-  // Per list type implementations
-  //
-
-  protected abstract _sortCacheKeys(
-    objectCacheKeys: ObjectCacheKey[],
-    batch: BatchContext,
-  ): ObjectCacheKey[];
-
-  //
-  // Shared Implementations
-  //
-
-  /**
-   * Only intended to be "protected" and used by subclasses but exposed for
-   * testing.
-   *
-   * @param objectCacheKeys
-   * @param append
-   * @param status
-   * @param batch
-   * @returns
-   */
-  _updateList(
-    objectCacheKeys: Array<ObjectCacheKey>,
-    append: boolean,
-    status: Status,
-    batch: BatchContext,
-  ): Entry<ListCacheKey> {
-    if (process.env.NODE_ENV !== "production") {
-      const logger = process.env.NODE_ENV !== "production"
-        ? this.logger?.child({ methodName: "updateList" })
-        : this.logger;
-
-      logger?.debug(
-        `{status: ${status}}`,
-        JSON.stringify(objectCacheKeys, null, 2),
-      );
-    }
-
-    objectCacheKeys = this.#retainReleaseAppend(batch, append, objectCacheKeys);
-    objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
-    objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
-
-    return this.writeToStore({ data: objectCacheKeys }, status, batch);
-  }
-
-  writeToStore(
-    data: ListStorageData,
-    status: Status,
-    batch: BatchContext,
-  ): Entry<KEY> {
-    const entry = batch.read(this.cacheKey);
-
-    if (entry && deepEqual(data, entry.value)) {
-      if (process.env.NODE_ENV !== "production") {
-        this.logger?.child({ methodName: "writeToStore" }).debug(
-          `Object was deep equal, just setting status`,
-        );
-      }
-      return batch.write(this.cacheKey, entry.value, status);
-    }
-
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "writeToStore" }).debug(
-        `{status: ${status}},`,
-        DEBUG_ONLY__cacheKeysToString(data.data),
-      );
-    }
-
-    const ret = batch.write(this.cacheKey, data, status);
-    batch.changes.registerList(this.cacheKey);
-    return ret;
-  }
-
-  #retainReleaseAppend(
-    batch: BatchContext,
-    append: boolean,
-    objectCacheKeys: ObjectCacheKey[],
-  ): ObjectCacheKey[] {
-    const existingList = batch.read(this.cacheKey);
-
-    // whether its append or update we need to retain all the new objects
-    if (!batch.optimisticWrite) {
-      if (!append) {
-        // we need to release all the old objects
-        // N.B. the store keeps the cache keys around for a bit so we don't
-        // need to worry about them being GC'd before we re-retain them
-        for (const objectCacheKey of existingList?.value?.data ?? []) {
-          this.store.release(objectCacheKey);
-        }
-      }
-
-      for (const objectCacheKey of objectCacheKeys) {
-        this.store.retain(objectCacheKey);
-      }
-    }
-
-    if (append) {
-      objectCacheKeys = [
-        ...existingList?.value?.data ?? [],
-        ...objectCacheKeys,
-      ];
-    }
-    return objectCacheKeys;
-  }
-
-  _dispose(): void {
-    // eslint-disable-next-line no-console
-    console.log("DISPOSE LIST QUERY");
-    this.store.batch({}, (batch) => {
-      const entry = batch.read(this.cacheKey);
-      if (entry) {
-        for (const objectCacheKey of entry.value?.data ?? []) {
-          this.store.release(objectCacheKey);
-        }
-      }
-    });
-  }
-}
-
-export class ListQuery extends BaseListQuery<
+export class ListQuery extends BaseCollectionQuery<
   ListCacheKey,
   ListPayload,
   ListQueryOptions
@@ -238,11 +86,7 @@ export class ListQuery extends BaseListQuery<
   #apiName: string;
   #whereClause: Canonical<SimpleWhereClause>;
 
-  // this represents the minimum number of results we need to load if we revalidate
-  #minNumResults = 0;
-
-  #nextPageToken?: string;
-  #pendingPageFetch?: Promise<unknown>;
+  // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
   #sortFns: Array<
@@ -251,6 +95,38 @@ export class ListQuery extends BaseListQuery<
       b: ObjectHolder | InterfaceHolder | undefined,
     ) => number
   >;
+
+  /**
+   * Implementation of _maybeSortCollection from BaseCollectionQuery
+   * Sorts the collection based on the orderBy clause
+   */
+  protected _maybeSortCollection(
+    objectCacheKeys: ObjectCacheKey[],
+    batch: BatchContext,
+  ): ObjectCacheKey[] {
+    if (Object.keys(this.#orderBy).length > 0) {
+      objectCacheKeys = objectCacheKeys.sort((a, b) => {
+        for (const sortFn of this.#sortFns) {
+          const ret = sortFn(
+            batch.read(a)?.value?.$as(this.#apiName),
+            batch.read(b)?.value?.$as(this.#apiName),
+          );
+          if (ret !== 0) {
+            return ret;
+          }
+        }
+        return 0;
+      });
+    }
+    return objectCacheKeys;
+  }
+
+  /**
+   * Register changes to the cache specific to ListQuery
+   */
+  protected registerCacheChanges(batch: BatchContext): void {
+    batch.changes.registerList(this.cacheKey);
+  }
 
   constructor(
     store: Store,
@@ -288,160 +164,69 @@ export class ListQuery extends BaseListQuery<
     } as ObjectTypeDefinition)
       .where(this.#whereClause);
     this.#sortFns = createOrderBySortFns(this.#orderBy);
+    // Initialize the minResultsToLoad inherited from BaseCollectionQuery
+    this.minResultsToLoad = 0;
   }
 
   get canonicalWhere(): Canonical<SimpleWhereClause> {
     return this.#whereClause;
   }
 
-  protected _createConnectable(
-    subject: Observable<SubjectPayload<ListCacheKey>>,
-  ): Connectable<ListPayload> {
-    return connectable<ListPayload>(
-      subject.pipe(
-        switchMap(listEntry => {
-          return combineLatest({
-            resolvedList: listEntry?.value?.data == null
-                || listEntry.value.data.length === 0
-              ? of([])
-              : combineLatest(
-                listEntry.value.data.map(cacheKey =>
-                  this.store.getSubject(cacheKey).pipe(
-                    map(objectEntry => objectEntry?.value!),
-                  )
-                ),
-              ),
-            isOptimistic: of(listEntry.isOptimistic),
-            fetchMore: of(this.fetchMore),
-            hasMore: of(this.#nextPageToken != null),
-            status: of(listEntry.status),
-            lastUpdated: of(listEntry.lastUpdated),
-          });
-        }),
-        // like throttle but returns the tail
-        auditTime(0),
-      ),
-      {
-        resetOnDisconnect: false,
-        connector: () => new ReplaySubject(1),
-      },
-    );
-  }
-
-  protected _preFetch(): void {
-    this.#nextPageToken = undefined;
-  }
-
-  protected async _fetchAndStore(): Promise<void> {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "_fetchAndStore" }).debug(
-        "fetching pages",
-      );
-    }
-    while (true) {
-      const entry = await this.#fetchPageAndUpdate(
-        this.#objectSet,
-        "loading",
-        this.abortController?.signal,
-      );
-      if (!entry) {
-        // we were aborted
-        return;
-      }
-
-      invariant(entry.value?.data);
-      const count = entry.value.data.length;
-
-      if (count > this.#minNumResults || this.#nextPageToken == null) {
-        break;
-      }
-    }
-    this.store.batch({}, (batch) => {
-      this.setStatus("loaded", batch);
-    });
-
-    return Promise.resolve();
-  }
-
-  fetchMore = (): Promise<unknown> => {
-    if (this.#pendingPageFetch) {
-      return this.#pendingPageFetch;
-    }
-
-    if (this.pendingFetch) {
-      this.#pendingPageFetch = new Promise(async (res) => {
-        await this.pendingFetch;
-        res(this.fetchMore());
-      });
-      return this.#pendingPageFetch;
-    }
-
-    if (this.#nextPageToken == null) {
-      return Promise.resolve();
-    }
-
-    this.store.batch({}, (batch) => {
-      this.setStatus("loading", batch);
-    });
-
-    this.pendingFetch = this.#fetchPageAndUpdate(
-      this.#objectSet,
-      "loaded",
-      this.abortController?.signal,
-    ).finally(() => {
-      this.#pendingPageFetch = undefined;
-    });
-    return this.pendingFetch;
-  };
-
-  async #fetchPageAndUpdate(
-    objectSet: ObjectSet,
-    status: Status,
+  /**
+   * Implements fetchPageData from BaseCollectionQuery template method
+   * Fetches a page of data
+   */
+  protected async fetchPageData(
     signal: AbortSignal | undefined,
-  ): Promise<Entry<ListCacheKey> | undefined> {
-    const append = this.#nextPageToken != null;
+  ): Promise<PageResult<Osdk.Instance<any>>> {
+    // Fetch the data with pagination
+    const resp = await this.#objectSet.fetchPage({
+      $nextPageToken: this.nextPageToken,
+      $pageSize: this.options.pageSize,
+      // For now this keeps the shared test code from falling apart
+      // but shouldn't be needed ideally
+      ...(Object.keys(this.#orderBy).length > 0
+        ? { $orderBy: this.#orderBy }
+        : {}),
+    });
 
-    try {
-      let { data, nextPageToken } = await objectSet.fetchPage({
-        $nextPageToken: this.#nextPageToken,
-        $pageSize: this.options.pageSize,
-        // For now this keeps the shared test code from falling apart
-        // but shouldn't be needed ideally
-        ...(Object.keys(this.#orderBy).length > 0
-          ? { $orderBy: this.#orderBy }
-          : {}),
-      });
-
-      if (signal?.aborted) {
-        return;
-      }
-
-      this.#nextPageToken = nextPageToken;
-
-      // Our caching really expects to have the full objects in the list
-      // so we need to fetch them all here
-      if (this.#type === "interface") {
-        data = await reloadDataAsFullObjects(this.store.client, data);
-      }
-
-      const { retVal } = this.store.batch({}, (batch) => {
-        return this._updateList(
-          storeOsdkInstances(this.store, data, batch),
-          append,
-          nextPageToken ? status : "loaded",
-          batch,
-        );
-      });
-
-      return retVal;
-    } catch (e) {
-      this.logger?.error("error", e);
-      this.store.getSubject(this.cacheKey).error(e);
-
-      // rethrowing would result in many unhandled promise rejections
-      // which i don't think we want
-      // throw e;
+    if (signal?.aborted) {
+      throw new Error("Aborted");
     }
+
+    this.nextPageToken = resp.nextPageToken;
+    let fetchedData = resp.data;
+
+    // Our caching really expects to have the full objects in the list
+    // so we need to fetch them all here
+    if (this.#type === "interface") {
+      fetchedData = await reloadDataAsFullObjects(
+        this.store.client,
+        fetchedData,
+      );
+    }
+
+    return {
+      ...resp,
+      // might be replaced by interface
+      data: fetchedData,
+    };
+  }
+
+  /**
+   * Handle fetch errors by setting appropriate error state and notifying subscribers
+   */
+  protected handleFetchError(
+    error: unknown,
+    _status: Status,
+    batch: BatchContext,
+  ): Entry<ListCacheKey> {
+    this.logger?.error("error", error);
+    this.store.getSubject(this.cacheKey).error(error);
+
+    // We don't call super.handleFetchError because ListQuery has special error handling
+    // but we still use writeToStore to create a properly structured Entry
+    return this.writeToStore({ data: [] }, "error", batch);
   }
 
   /**
@@ -491,6 +276,9 @@ export class ListQuery extends BaseListQuery<
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
         DEBUG_ONLY__changesToString(changes),
+      );
+      this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
+        `Already in changes? ${changes.modified.has(this.cacheKey)}`,
       );
     }
 
@@ -583,9 +371,9 @@ export class ListQuery extends BaseListQuery<
 
         this._updateList(
           newList,
-          /* append */ false,
           status,
           batch,
+          /* append */ false,
         );
       });
 
@@ -683,25 +471,17 @@ export class ListQuery extends BaseListQuery<
     };
   }
 
-  _sortCacheKeys(
-    objectCacheKeys: ObjectCacheKey[],
-    batch: BatchContext,
-  ): ObjectCacheKey[] {
-    if (Object.keys(this.#orderBy).length > 0) {
-      objectCacheKeys = objectCacheKeys.sort((a, b) => {
-        for (const sortFn of this.#sortFns) {
-          const ret = sortFn(
-            batch.read(a)?.value?.$as(this.#apiName),
-            batch.read(b)?.value?.$as(this.#apiName),
-          );
-          if (ret !== 0) {
-            return ret;
-          }
+  _dispose(): void {
+    // eslint-disable-next-line no-console
+    console.log("DISPOSE LIST QUERY");
+    this.store.batch({}, (batch) => {
+      const entry = batch.read(this.cacheKey);
+      if (entry) {
+        for (const objectCacheKey of entry.value?.data ?? []) {
+          this.store.release(objectCacheKey);
         }
-        return 0;
-      });
-    }
-    return objectCacheKeys;
+      }
+    });
   }
 
   registerStreamUpdates(sub: Subscription): void {
@@ -785,7 +565,7 @@ export class ListQuery extends BaseListQuery<
           : objOrIface) as unknown as ObjectHolder;
 
       this.store.batch({}, (batch) => {
-        storeOsdkInstances(this.store, [object as Osdk.Instance<any>], batch);
+        this.storeObjects([object as Osdk.Instance<any>], batch);
       });
     } else if (state === "REMOVED") {
       this.#onOswRemoved(objOrIface, logger);
@@ -853,22 +633,6 @@ export class ListQuery extends BaseListQuery<
       });
     });
   }
-}
-
-function removeDuplicates(
-  objectCacheKeys: ObjectCacheKey[],
-  batch: BatchContext,
-) {
-  const visited = new Set<ObjectCacheKey>();
-  objectCacheKeys = objectCacheKeys.filter((key) => {
-    batch.read(key);
-    if (visited.has(key)) {
-      return false;
-    }
-    visited.add(key);
-    return true;
-  });
-  return objectCacheKeys;
 }
 
 function createOrderBySortFns(
