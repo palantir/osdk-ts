@@ -16,8 +16,8 @@
 
 import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
 import path from "path";
-import type { Rollup } from "vite";
-import { standardizeFileExtension } from "../common/standardizeFileExtension.js";
+import type { Rollup, ViteDevServer } from "vite";
+import { extractWidgetConfig } from "../common/extractWidgetConfig.js";
 import type { BuildOutputs } from "./extractBuildOutputs.js";
 import { extractBuildOutputs } from "./extractBuildOutputs.js";
 import { isConfigFile } from "./isConfigFile.js";
@@ -26,12 +26,12 @@ export interface WidgetBuildOutputs extends BuildOutputs {
   widgetConfig: WidgetConfig<ParameterConfig>;
 }
 
-export function getWidgetBuildOutputs(
+export async function getWidgetBuildOutputs(
   bundle: Rollup.OutputBundle,
   input: string,
   buildDir: string,
-  configFiles: Record<string, WidgetConfig<ParameterConfig>>,
-): WidgetBuildOutputs {
+  server: ViteDevServer,
+): Promise<WidgetBuildOutputs> {
   const inputHtmlFilePath = path.resolve(
     buildDir,
     path.relative(process.cwd(), input),
@@ -49,14 +49,14 @@ export function getWidgetBuildOutputs(
   if (entrypointChunk == null) {
     throw new Error(`Entrypoint chunk not found for input file: ${input}`);
   }
-  const widgetConfig = getChunkConfigFile(entrypointChunk, configFiles);
+  const configModuleId = getChunkConfigModuleId(entrypointChunk);
+  const widgetConfig = await extractWidgetConfig(configModuleId, server);
   return { ...buildOutputs, widgetConfig };
 }
 
-function getChunkConfigFile(
+function getChunkConfigModuleId(
   chunk: Rollup.OutputChunk,
-  configFiles: Record<string, WidgetConfig<ParameterConfig>>,
-): WidgetConfig<ParameterConfig> {
+): string {
   const configModuleIds = chunk.moduleIds.filter(isConfigFile);
   if (configModuleIds.length === 0) {
     throw new Error(
@@ -69,13 +69,5 @@ function getChunkConfigFile(
     );
   }
 
-  const standardizedSource = standardizeFileExtension(configModuleIds[0]);
-  const configFile = configFiles[standardizedSource];
-  if (configFile == null) {
-    throw new Error(
-      `No config file found for entrypoint ${chunk.facadeModuleId}`,
-    );
-  }
-
-  return configFile;
+  return configModuleIds[0];
 }

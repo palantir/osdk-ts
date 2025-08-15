@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { type ParameterConfig, type WidgetConfig } from "@osdk/widget.api";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import color from "picocolors";
@@ -22,12 +21,13 @@ import sirv from "sirv";
 import type { Plugin, ViteDevServer } from "vite";
 import {
   CONFIG_FILE_SUFFIX,
+  DEV_PLUGIN_ID,
   ENTRYPOINTS_PATH,
   FINISH_PATH,
+  MODULE_EVALUATION_MODE,
   SETUP_PATH,
   VITE_INJECTIONS_PATH,
 } from "../common/constants.js";
-import { extractWidgetConfig } from "../common/extractWidgetConfig.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
 import { standardizeFileExtension } from "../common/standardizeFileExtension.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
@@ -48,12 +48,19 @@ export function FoundryWidgetDevPlugin(): Plugin {
   const codeEntrypoints: Record<string, string> = {};
   // Store the map of fully resolved config file paths to entrypoint file paths
   const configFileToEntrypoint: Record<string, string> = {};
-  // Store the configuration per module ID, e.g. /repo/src/widget-one.config.ts -> { ... }
-  const configFiles: Record<string, WidgetConfig<ParameterConfig>> = {};
 
   return {
-    name: "@osdk:widget-dev-plugin",
+    name: DEV_PLUGIN_ID,
     enforce: "pre",
+    // Only apply this plugin during development, skip during tests and build-mode module evaluation
+    apply(config, { command }) {
+      if (
+        config.mode === MODULE_EVALUATION_MODE || process.env.VITEST != null
+      ) {
+        return false;
+      }
+      return command === "serve";
+    },
 
     /**
      * Capture the entrypoints from the Vite config so that we can manually load them on our
@@ -66,12 +73,8 @@ export function FoundryWidgetDevPlugin(): Plugin {
     /**
      * Check for the required token environment variable in dev mode.
      */
-    config(resolvedConfig, { command }) {
-      // Only check for the token environment variable when running in dev mode.
-      // When command is "serve" and not in test mode (VITEST).
-      if (command === "serve" && process.env.VITEST == null) {
-        getFoundryToken(resolvedConfig.mode);
-      }
+    config(resolvedConfig) {
+      getFoundryToken(resolvedConfig.mode);
     },
 
     /**
@@ -138,7 +141,7 @@ export function FoundryWidgetDevPlugin(): Plugin {
         async (_, res) => {
           // Wait for the setup page to trigger the parsing of the config files
           const numEntrypoints = htmlEntrypoints.length;
-          const numConfigFiles = Object.keys(configFiles).length;
+          const numConfigFiles = Object.keys(configFileToEntrypoint).length;
           if (numConfigFiles < numEntrypoints) {
             res.setHeader("Content-Type", "application/json");
             res.end(JSON.stringify({ status: "pending" }));
@@ -150,7 +153,6 @@ export function FoundryWidgetDevPlugin(): Plugin {
             server,
             codeEntrypoints,
             configFileToEntrypoint,
-            configFiles,
             getBaseHref(server),
           );
           await publishDevModeSettings(
@@ -212,20 +214,6 @@ export function FoundryWidgetDevPlugin(): Plugin {
           getFullSourcePath(source, standardizedImporter),
         );
         configFileToEntrypoint[fullSourcePath] = standardizedImporter;
-      }
-    },
-
-    /**
-     * During dev mode we need to parse the AST of the config files to extract the widget config
-     * object manually, as Vite doesn't compile files during dev mode.
-     */
-    transform(code, id) {
-      const standardizedSource = standardizeFileExtension(id);
-      if (configFileToEntrypoint[standardizedSource] != null) {
-        const configObject = extractWidgetConfig(id, this.parse(code));
-        if (configObject != null) {
-          configFiles[standardizedSource] = configObject;
-        }
       }
     },
   };

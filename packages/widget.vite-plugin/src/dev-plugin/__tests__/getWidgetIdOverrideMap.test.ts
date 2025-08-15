@@ -20,16 +20,19 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import * as extractInjectedScriptsModule from "../extractInjectedScripts.js";
 import { getWidgetIdOverrideMap } from "../getWidgetIdOverrideMap.js";
 
-const MOCK_SERVER = {} as ViteDevServer;
+const MOCK_WIDGET_CONFIG = { id: "widgetId" } as WidgetConfig<ParameterConfig>;
+const MOCK_SERVER = {
+  ssrLoadModule: vi.fn().mockResolvedValue({ default: MOCK_WIDGET_CONFIG }),
+} as unknown as ViteDevServer;
 const MOCK_CODE_ENTRYPOINTS = { "entry.ts": `/entry.js` };
 const MOCK_CONFIG_FILE_TO_ENTRYPOINT = { "widget.config.ts": "entry.ts" };
-const MOCK_CONFIG_FILES = {
-  "widget.config.ts": { id: "widgetId" } as WidgetConfig<ParameterConfig>,
-};
 
 describe("getWidgetIdOverrideMap", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    vi.mocked(MOCK_SERVER.ssrLoadModule).mockResolvedValue({
+      default: MOCK_WIDGET_CONFIG,
+    });
   });
 
   test("localhost dev server URLs", async () => {
@@ -45,7 +48,6 @@ describe("getWidgetIdOverrideMap", () => {
       MOCK_SERVER,
       MOCK_CODE_ENTRYPOINTS,
       MOCK_CONFIG_FILE_TO_ENTRYPOINT,
-      MOCK_CONFIG_FILES,
       baseHref,
     );
 
@@ -72,7 +74,6 @@ describe("getWidgetIdOverrideMap", () => {
       MOCK_SERVER,
       MOCK_CODE_ENTRYPOINTS,
       MOCK_CONFIG_FILE_TO_ENTRYPOINT,
-      MOCK_CONFIG_FILES,
       baseHref,
     );
 
