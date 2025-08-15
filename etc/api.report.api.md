@@ -857,6 +857,8 @@ export namespace ObjectMetadata {
         readonly?: boolean;
         		// (undocumented)
         type: WirePropertyTypes;
+        		// (undocumented)
+        valueType?: string;
         	}
 }
 
