@@ -218,6 +218,7 @@ export class GeneratePackageCommand
           linkTypesApiNamesToLoad: transformArrayArg(args.linkTypes),
         },
         packageInfo,
+        args.branch,
       );
 
     if (wireOntologyDefinition.isErr()) {

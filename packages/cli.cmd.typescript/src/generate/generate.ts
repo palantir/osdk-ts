@@ -123,6 +123,10 @@ export const generateCommand: CommandModule<
             },
             default: "",
           },
+          branch: {
+            type: "string",
+            description: "The branch rid of the ontology to generate from",
+          },
         } as const,
       ).group(
         ["ontologyPath", "outDir", "version"],

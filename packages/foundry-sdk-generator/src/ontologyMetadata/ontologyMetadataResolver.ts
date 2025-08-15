@@ -364,6 +364,7 @@ export class OntologyMetadataResolver {
         },
         {
           preview: true,
+          branch: branch,
         },
       );
 

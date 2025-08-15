@@ -112,7 +112,7 @@ export function createAttachmentUpload(data: Blob, name: string): AttachmentUplo
 // @public (undocumented)
 export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
     	logger?: Logger
-} | undefined, fetchFn?: typeof fetch | undefined) => Client;
+} | undefined, fetchFn?: typeof fetch | undefined, branch?: string | undefined) => Client;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
