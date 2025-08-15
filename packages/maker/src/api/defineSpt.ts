@@ -16,7 +16,6 @@
 
 import type {
   SharedPropertyTypeGothamMapping,
-  ValueTypeApiNameReference,
   Visibility,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
@@ -31,11 +30,12 @@ import {
   hasRenderHints,
   shouldNotHaveRenderHints,
 } from "./propertyConversionUtils.js";
-import {
-  OntologyEntityTypeEnum,
-  type PropertyTypeType,
-  type SharedPropertyType,
+import type {
+  PropertyTypeType,
+  SharedPropertyType,
+  ValueTypeDefinitionVersion,
 } from "./types.js";
+import { OntologyEntityTypeEnum } from "./types.js";
 
 export interface SharedPropertyTypeDefinition {
   apiName: string;
@@ -43,7 +43,7 @@ export interface SharedPropertyTypeDefinition {
   array?: boolean;
   description?: string;
   displayName?: string;
-  valueType?: ValueTypeApiNameReference;
+  valueType?: ValueTypeDefinitionVersion;
   visibility?: Visibility;
   typeClasses?: SharedPropertyType["typeClasses"];
   gothamMapping?: SharedPropertyTypeGothamMapping;
@@ -71,7 +71,7 @@ export function defineSharedPropertyType(
     ...sptDef,
     apiName,
     nonNameSpacedApiName: sptDef.apiName,
-    displayName: sptDef.displayName ?? sptDef.apiName, // This way the non-namespaced api name is the display name (maybe not ideal)
+    displayName: sptDef.displayName ?? sptDef.apiName,
     typeClasses: sptDef.typeClasses
       ?? (shouldNotHaveRenderHints(sptDef.type) ? [] : defaultTypeClasses),
     __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,

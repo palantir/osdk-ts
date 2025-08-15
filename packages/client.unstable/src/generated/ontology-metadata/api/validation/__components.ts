@@ -654,6 +654,11 @@ export interface BranchIndexingConfigCanOnlyBeSetForManyToManyLinkTypes {
 }
 export interface EasedPipelineBuilderError {
 }
+/**
+ * Edits-only object types must have property security groups.
+ */
+export interface EditsOnlyObjectTypeMustHavePropertySecurityGroups {
+}
 export interface ErrorData {
   errorMessage: string;
   errorName: string;
@@ -1304,6 +1309,12 @@ export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMater
   type: "objectTypePropertySecurityGroupsNotSupportedWithMaterializations";
   objectTypePropertySecurityGroupsNotSupportedWithMaterializations:
     ObjectTypePropertySecurityGroupsNotSupportedWithMaterializations;
+}
+
+export interface ErrorType_editsOnlyObjectTypeMustHavePropertySecurityGroups {
+  type: "editsOnlyObjectTypeMustHavePropertySecurityGroups";
+  editsOnlyObjectTypeMustHavePropertySecurityGroups:
+    EditsOnlyObjectTypeMustHavePropertySecurityGroups;
 }
 
 export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedOnBranches {
@@ -2427,6 +2438,12 @@ export interface ErrorType_objectTypeTitlePropertyTypeIsDerivedProperty {
   type: "objectTypeTitlePropertyTypeIsDerivedProperty";
   objectTypeTitlePropertyTypeIsDerivedProperty:
     ObjectTypeTitlePropertyTypeIsDerivedProperty;
+}
+
+export interface ErrorType_objectTypePropertyIdClashesWithMainBranch {
+  type: "objectTypePropertyIdClashesWithMainBranch";
+  objectTypePropertyIdClashesWithMainBranch:
+    ObjectTypePropertyIdClashesWithMainBranch;
 }
 
 export interface ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds {
@@ -3565,6 +3582,7 @@ export type ErrorType =
   | ErrorType_objectTypeInvalidNumberOfPropertyReferencesInPropertySecurityGroup
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMaterializations
+  | ErrorType_editsOnlyObjectTypeMustHavePropertySecurityGroups
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedOnBranches
   | ErrorType_objectTypePropertyIncompatibleBackingColumnType
   | ErrorType_objectTypePropertyIncompatibleDecimalColumnType
@@ -3756,6 +3774,7 @@ export type ErrorType =
   | ErrorType_objectTypeReferencedTypeGroupsDoNotExist
   | ErrorType_objectTypeForbiddenTitleProperty
   | ErrorType_objectTypeTitlePropertyTypeIsDerivedProperty
+  | ErrorType_objectTypePropertyIdClashesWithMainBranch
   | ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds
   | ErrorType_ruleSetCountExceeded
   | ErrorType_ruleSetNameTooLong
@@ -5395,6 +5414,12 @@ export interface ObjectTypePropertiesReferenceSameColumnName {
  * There is a change to the Type of a PropertyType (such as changing from an Integer to a String) that does not have a required schema migration associated with it.
  */
 export interface ObjectTypePropertyDataTypeChangeMissingSchemaMigration {
+}
+/**
+ * The object type in the parent branch has a property type with the same ID but a different RID.
+ * Possible solutions are to change the ID of one of the property types or delete one of them.
+ */
+export interface ObjectTypePropertyIdClashesWithMainBranch {
 }
 /**
  * An object type implements multiple interfaces and explicitly provides some property mappings for some interfaces but not for others. It is required to explicitly provide property mappings for all interfaces or for none.

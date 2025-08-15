@@ -22,7 +22,6 @@ import type {
   OntologyIrActionValidation,
   OntologyIrAllowedParameterValues,
   OntologyIrBaseParameterType,
-  OntologyIrImportedTypes,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrLinkDefinition,
   OntologyIrLinkTypeBlockDataV2,
@@ -40,6 +39,7 @@ import type {
   OntologyIrSharedPropertyTypeBlockDataV2,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
+  OntologyIrValueTypeReferenceWithMetadata,
   ParameterId,
   ParameterRenderHint,
   ParameterRequiredConfiguration,
@@ -60,7 +60,6 @@ import {
 import {
   convertNullabilityToDataConstraint,
   convertType,
-  convertValueType,
   convertValueTypeDataConstraints,
   defaultTypeClasses,
   getPropertyTypeName,
@@ -79,6 +78,7 @@ import type {
   OntologyDefinition,
   OntologyEntityType,
   SharedPropertyType,
+  ValueTypeDefinitionVersion,
 } from "./types.js";
 import { OntologyEntityTypeEnum } from "./types.js";
 
@@ -96,11 +96,6 @@ export let dependencies: Record<string, string>;
 
 /** @internal */
 export let namespace: string;
-
-type OntologyAndValueTypeIrs = {
-  ontology: OntologyIr;
-  valueType: OntologyIrValueTypeBlockData;
-};
 
 export function updateOntology<
   T extends OntologyEntityType,
@@ -127,7 +122,7 @@ export async function defineOntology(
   body: () => void | Promise<void>,
   outputDir: string | undefined,
   dependencyFile?: string,
-): Promise<OntologyAndValueTypeIrs> {
+): Promise<OntologyIr> {
   namespace = ns;
   dependencies = {};
   ontologyDefinition = {
@@ -163,10 +158,7 @@ export async function defineOntology(
   if (dependencyFile) {
     writeDependencyFile(dependencyFile);
   }
-  return {
-    ontology: convertToWireOntologyIr(ontologyDefinition),
-    valueType: convertOntologyToValueTypeIr(ontologyDefinition),
-  };
+  return convertToWireOntologyIr(ontologyDefinition, importedTypes);
 }
 
 export function writeStaticObjects(outputDir: string): void {
@@ -249,14 +241,15 @@ export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFi
 }
 
 function convertOntologyToValueTypeIr(
-  ontology: OntologyDefinition,
+  valueTypes: Record<string, ValueTypeDefinitionVersion[]>,
 ): OntologyIrValueTypeBlockData {
   return {
-    valueTypes: Object.values(ontology[OntologyEntityTypeEnum.VALUE_TYPE]).map<
+    valueTypes: Object.values(valueTypes).map<
       OntologyIrValueTypeBlockDataEntry
     >(definitions => ({
       metadata: {
         apiName: definitions[0].apiName,
+        packageNamespace: definitions[0].packageNamespace,
         displayMetadata: definitions[0].displayMetadata,
         status: definitions[0].status,
       },
@@ -272,117 +265,17 @@ function convertOntologyToValueTypeIr(
 
 function convertToWireOntologyIr(
   ontology: OntologyDefinition,
+  imports: OntologyDefinition,
 ): OntologyIr {
   return {
-    blockData: convertToWireBlockData(ontology),
-    importedTypes: convertToWireImportedTypes(importedTypes),
-  };
-}
-
-function convertToWireImportedTypes(
-  importedTypes: OntologyDefinition,
-): OntologyIrImportedTypes {
-  const asBlockData = convertToWireBlockData(importedTypes); // this just makes things easier to work with
-  return {
-    sharedPropertyTypes: Object.values(asBlockData.sharedPropertyTypes).map(
-      spt => ({
-        apiName: spt.sharedPropertyType.apiName,
-        displayName: spt.sharedPropertyType.displayMetadata.displayName,
-        description: spt.sharedPropertyType.displayMetadata.description,
-        type: spt.sharedPropertyType.type,
-        valueType: spt.sharedPropertyType.valueType === undefined
-          ? undefined
-          : {
-            apiName: spt.sharedPropertyType.valueType!.apiName,
-            version: spt.sharedPropertyType.valueType!.version,
-          },
-      }),
+    ontology: convertToWireBlockData(ontology),
+    importedOntology: convertToWireBlockData(imports),
+    valueTypes: convertOntologyToValueTypeIr(
+      ontology[OntologyEntityTypeEnum.VALUE_TYPE],
     ),
-    objectTypes: Object.values(
-      asBlockData.objectTypes,
-    ).map(ot => ({
-      apiName: ot.objectType.apiName,
-      displayName: ot.objectType.displayMetadata.displayName,
-      description: ot.objectType.displayMetadata.description,
-      propertyTypes: Object.values(ot.objectType.propertyTypes).map(p => ({
-        apiName: p.apiName,
-        displayName: p.displayMetadata.displayName,
-        description: p.displayMetadata.description,
-        type: p.type,
-        sharedPropertyType: p.sharedPropertyTypeApiName,
-      })),
-    })),
-    interfaceTypes: Object.values(asBlockData.interfaceTypes).map(i => ({
-      apiName: i.interfaceType.apiName,
-      displayName: i.interfaceType.displayMetadata.displayName,
-      description: i.interfaceType.displayMetadata.description,
-      properties: Object.values(i.interfaceType.propertiesV2).map(p => ({
-        apiName: p.sharedPropertyType.apiName,
-        displayName: p.sharedPropertyType.displayMetadata.displayName,
-        description: p.sharedPropertyType.displayMetadata.description,
-        type: p.sharedPropertyType.type,
-      })),
-      links: i.interfaceType.links.map(l => ({
-        apiName: l.metadata.apiName,
-        displayName: l.metadata.displayName,
-        description: l.metadata.description,
-        cardinality: l.cardinality,
-        required: l.required,
-      })),
-    })),
-    actionTypes: Object.values(asBlockData.actionTypes).map(a => ({
-      apiName: a.actionType.metadata.apiName,
-      displayName: a.actionType.metadata.displayMetadata.displayName,
-      description: a.actionType.metadata.displayMetadata.description,
-      parameters: Object.values(a.actionType.metadata.parameters).map(p => ({
-        id: p.id,
-        displayName: p.displayMetadata.displayName,
-        description: p.displayMetadata.description,
-        type: p.type,
-      })),
-    })),
-    linkTypes: Object.values(asBlockData.linkTypes).map(l => {
-      if (l.linkType.definition.type === "oneToMany") {
-        return {
-          id: l.linkType.id,
-          definition: {
-            type: "oneToMany",
-            "oneToMany": {
-              objectTypeApiNameOneSide:
-                l.linkType.definition.oneToMany.objectTypeRidOneSide,
-              objectTypeApiNameManySide:
-                l.linkType.definition.oneToMany.objectTypeRidManySide,
-              manyToOneLinkDisplayName:
-                l.linkType.definition.oneToMany.manyToOneLinkMetadata
-                  .displayMetadata.displayName,
-              oneToManyLinkDisplayName:
-                l.linkType.definition.oneToMany.oneToManyLinkMetadata
-                  .displayMetadata.displayName,
-              cardinality: l.linkType.definition.oneToMany.cardinalityHint,
-            },
-          },
-        };
-      } else {
-        return {
-          id: l.linkType.id,
-          definition: {
-            type: "manyToMany",
-            "manyToMany": {
-              objectTypeApiNameA:
-                l.linkType.definition.manyToMany.objectTypeRidA,
-              objectTypeApiNameB:
-                l.linkType.definition.manyToMany.objectTypeRidB,
-              objectTypeAToBLinkDisplayName:
-                l.linkType.definition.manyToMany.objectTypeAToBLinkMetadata
-                  .displayMetadata.displayName,
-              objectTypeBToALinkDisplayName:
-                l.linkType.definition.manyToMany.objectTypeBToALinkMetadata
-                  .displayMetadata.displayName,
-            },
-          },
-        };
-      }
-    }),
+    importedValueTypes: convertOntologyToValueTypeIr(
+      imports[OntologyEntityTypeEnum.VALUE_TYPE],
+    ),
   };
 }
 
@@ -731,8 +624,8 @@ function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
       ? convertValueTypeDataConstraints(property.valueType.constraints)
       : convertNullabilityToDataConstraint(property),
     sharedPropertyTypeRid: property.sharedPropertyType?.apiName,
-    valueType: property.valueType
-      ? convertValueType(property.valueType)
+    valueType: property.valueType !== undefined
+      ? convertValueTypeVersionToReference(property.valueType)
       : undefined,
   };
   return output;
@@ -883,11 +776,13 @@ function convertInterface(
 }
 
 export function dumpOntologyFullMetadata(): OntologyIr {
-  return convertToWireOntologyIr(ontologyDefinition);
+  return convertToWireOntologyIr(ontologyDefinition, importedTypes);
 }
 
 export function dumpValueTypeWireType(): OntologyIrValueTypeBlockData {
-  return convertOntologyToValueTypeIr(ontologyDefinition);
+  return convertOntologyToValueTypeIr(
+    ontologyDefinition[OntologyEntityTypeEnum.VALUE_TYPE],
+  );
 }
 
 function convertSpt(
@@ -928,10 +823,9 @@ function convertSpt(
     gothamMapping: gothamMapping,
     indexedForSearch: true,
     typeClasses: typeClasses ?? [],
-    valueType: valueType === undefined ? undefined : {
-      apiName: valueType.apiName,
-      version: valueType.version,
-    },
+    valueType: valueType !== undefined
+      ? convertValueTypeVersionToReference(valueType)
+      : undefined,
   };
 }
 
@@ -1399,4 +1293,14 @@ function convertCardinality(
     return "ONE_TO_MANY";
   }
   return "ONE_TO_ONE";
+}
+function convertValueTypeVersionToReference(
+  valueType: ValueTypeDefinitionVersion,
+): OntologyIrValueTypeReferenceWithMetadata {
+  return {
+    apiName: valueType.apiName,
+    packageNamespace: valueType.packageNamespace,
+    version: valueType.version,
+    displayMetadata: valueType.displayMetadata,
+  };
 }

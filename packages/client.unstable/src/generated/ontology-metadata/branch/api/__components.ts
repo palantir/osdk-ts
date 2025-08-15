@@ -29,6 +29,7 @@ import type {
   InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest,
   InterfacePropertyTypeRidOrIdInRequest
     as _api_InterfacePropertyTypeRidOrIdInRequest,
+  InterfacePropertyTypeType as _api_InterfacePropertyTypeType,
   InterfaceTypeRid as _api_InterfaceTypeRid,
   InterfaceTypeRidOrIdInRequest as _api_InterfaceTypeRidOrIdInRequest,
   LinkedEntityTypeRidOrIdInRequest as _api_LinkedEntityTypeRidOrIdInRequest,
@@ -1157,7 +1158,7 @@ export type InvalidPropertyImplementationError =
  * Expected local property implementing interface property to have the same type, but it did not.
  */
 export interface InvalidPropertyTypeError {
-  interfacePropertyType: _api_Type;
+  interfacePropertyType: _api_InterfacePropertyTypeType;
   interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
   objectPropertyType: _api_Type;
   objectRid: _api_ObjectTypeRid;
