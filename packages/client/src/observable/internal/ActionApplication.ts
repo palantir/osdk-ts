@@ -19,7 +19,6 @@ import type {
   ActionEditResponse,
   ActionReturnTypeForOptions,
 } from "@osdk/api";
-import delay from "delay";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { type Changes } from "./Changes.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
@@ -80,6 +79,7 @@ export class ActionApplication {
         if (process.env.NODE_ENV !== "production") {
           if (ACTION_DELAY > 0) {
             logger?.debug("action done, pausing", actionResults);
+            const delay = (await import("delay")).default;
             await delay(ACTION_DELAY);
             logger?.debug("action done, pausing done");
           }
