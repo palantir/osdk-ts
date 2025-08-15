@@ -56,8 +56,8 @@ export type {
   ValueTypeDefinitionVersion,
 } from "./api/types.js";
 export {
-  CREATE_OR_MODIFY_OBJECT_ID,
-  MODIFY_OBJECT_ID,
+  CREATE_OR_MODIFY_OBJECT_PARAMETER,
+  MODIFY_OBJECT_PARAMETER,
   OntologyEntityTypeEnum,
 } from "./api/types.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";

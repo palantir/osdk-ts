@@ -42,9 +42,9 @@ import { defineSharedPropertyType } from "./defineSpt.js";
 import { defineValueType } from "./defineValueType.js";
 import { importOntologyEntity } from "./importOntologyEntity.js";
 import {
-  CREATE_OR_MODIFY_OBJECT_ID,
+  CREATE_OR_MODIFY_OBJECT_PARAMETER,
   type InterfaceType,
-  MODIFY_OBJECT_ID,
+  MODIFY_OBJECT_PARAMETER,
   OntologyEntityTypeEnum,
   type SharedPropertyType,
 } from "./types.js";
@@ -8852,7 +8852,7 @@ describe("Ontology Defining", () => {
       defineModifyObjectAction({
         objectType: employeeObject,
         parameterConfiguration: {
-          [MODIFY_OBJECT_ID]: {
+          [MODIFY_OBJECT_PARAMETER]: {
             displayName: "Chose a manager to modify",
             description: "Description",
             conditionalOverrides: [{
@@ -8868,7 +8868,7 @@ describe("Ontology Defining", () => {
       defineCreateOrModifyObjectAction({
         objectType: employeeObject,
         parameterConfiguration: {
-          [CREATE_OR_MODIFY_OBJECT_ID]: {
+          [CREATE_OR_MODIFY_OBJECT_PARAMETER]: {
             displayName: "Chose a manager to modify or create a new one",
             description: "Description",
             conditionalOverrides: [{

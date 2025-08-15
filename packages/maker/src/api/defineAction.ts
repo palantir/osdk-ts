@@ -44,9 +44,9 @@ import {
   type ActionTypeUserDefinition,
   type ActionValidationRule,
   type ConditionDefinition,
-  CREATE_OR_MODIFY_OBJECT_ID,
+  CREATE_OR_MODIFY_OBJECT_PARAMETER,
   type InterfaceType,
-  MODIFY_OBJECT_ID,
+  MODIFY_OBJECT_PARAMETER,
   type ObjectPropertyType,
   type ObjectPropertyTypeUserDefinition,
   type ObjectTypeDefinition,
@@ -356,10 +356,13 @@ export function defineModifyObjectAction(
   Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
     parameterNames.add(param)
   );
-  parameterNames.add(MODIFY_OBJECT_ID);
+  parameterNames.add(MODIFY_OBJECT_PARAMETER);
   if (def.parameterOrdering) {
-    if (!def.parameterOrdering.includes(MODIFY_OBJECT_ID)) {
-      def.parameterOrdering = [MODIFY_OBJECT_ID, ...def.parameterOrdering];
+    if (!def.parameterOrdering.includes(MODIFY_OBJECT_PARAMETER)) {
+      def.parameterOrdering = [
+        MODIFY_OBJECT_PARAMETER,
+        ...def.parameterOrdering,
+      ];
     }
     const sortedOrdering = [...def.parameterOrdering].sort();
     const sortedParameterNames = [...parameterNames].sort();
@@ -374,11 +377,11 @@ export function defineModifyObjectAction(
   const parameters = createParameters(def, parameterNames, false);
   parameters.forEach(
     p => {
-      if (p.id !== MODIFY_OBJECT_ID && p.defaultValue === undefined) {
+      if (p.id !== MODIFY_OBJECT_PARAMETER && p.defaultValue === undefined) {
         p.defaultValue = {
           type: "objectParameterPropertyValue",
           objectParameterPropertyValue: {
-            parameterId: MODIFY_OBJECT_ID,
+            parameterId: MODIFY_OBJECT_PARAMETER,
             propertyTypeId: p.id,
           },
         };
@@ -403,7 +406,7 @@ export function defineModifyObjectAction(
     rules: [{
       type: "modifyObjectRule",
       modifyObjectRule: {
-        objectToModify: MODIFY_OBJECT_ID,
+        objectToModify: MODIFY_OBJECT_PARAMETER,
         propertyValues: {
           ...Object.fromEntries(
             propertyParameters.map(
@@ -422,7 +425,11 @@ export function defineModifyObjectAction(
       typeGroups: [],
     },
     parameterOrdering: def.parameterOrdering
-      ?? createDefaultParameterOrdering(def, parameters, MODIFY_OBJECT_ID),
+      ?? createDefaultParameterOrdering(
+        def,
+        parameters,
+        MODIFY_OBJECT_PARAMETER,
+      ),
     ...(def.actionLevelValidation
       ? {
         validation: [
@@ -504,11 +511,11 @@ export function defineCreateOrModifyObjectAction(
   Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
     parameterNames.add(param)
   );
-  parameterNames.add(CREATE_OR_MODIFY_OBJECT_ID);
+  parameterNames.add(CREATE_OR_MODIFY_OBJECT_PARAMETER);
   if (def.parameterOrdering) {
-    if (!def.parameterOrdering.includes(CREATE_OR_MODIFY_OBJECT_ID)) {
+    if (!def.parameterOrdering.includes(CREATE_OR_MODIFY_OBJECT_PARAMETER)) {
       def.parameterOrdering = [
-        CREATE_OR_MODIFY_OBJECT_ID,
+        CREATE_OR_MODIFY_OBJECT_PARAMETER,
         ...def.parameterOrdering,
       ];
     }
@@ -525,11 +532,14 @@ export function defineCreateOrModifyObjectAction(
   const parameters = createParameters(def, parameterNames, false);
   parameters.forEach(
     p => {
-      if (p.id !== CREATE_OR_MODIFY_OBJECT_ID && p.defaultValue === undefined) {
+      if (
+        p.id !== CREATE_OR_MODIFY_OBJECT_PARAMETER
+        && p.defaultValue === undefined
+      ) {
         p.defaultValue = {
           type: "objectParameterPropertyValue",
           objectParameterPropertyValue: {
-            parameterId: CREATE_OR_MODIFY_OBJECT_ID,
+            parameterId: CREATE_OR_MODIFY_OBJECT_PARAMETER,
             propertyTypeId: p.id,
           },
         };
@@ -554,7 +564,7 @@ export function defineCreateOrModifyObjectAction(
     rules: [{
       type: "addOrModifyObjectRuleV2",
       addOrModifyObjectRuleV2: {
-        objectToModify: CREATE_OR_MODIFY_OBJECT_ID,
+        objectToModify: CREATE_OR_MODIFY_OBJECT_PARAMETER,
         propertyValues: {
           ...Object.fromEntries(
             propertyParameters.map(
@@ -576,7 +586,7 @@ export function defineCreateOrModifyObjectAction(
       ?? createDefaultParameterOrdering(
         def,
         parameters,
-        CREATE_OR_MODIFY_OBJECT_ID,
+        CREATE_OR_MODIFY_OBJECT_PARAMETER,
       ),
     ...(def.actionLevelValidation
       ? {
@@ -695,9 +705,9 @@ function createParameters(
             .objectTypeId,
         );
     }
-    if (name === MODIFY_OBJECT_ID) {
+    if (name === MODIFY_OBJECT_PARAMETER) {
       targetParam.push({
-        id: MODIFY_OBJECT_ID,
+        id: MODIFY_OBJECT_PARAMETER,
         displayName: def.parameterConfiguration?.[name]?.displayName
           ?? "Modify object",
         type: {
@@ -712,11 +722,11 @@ function createParameters(
         defaultValue: def.parameterConfiguration?.[name]?.defaultValue,
         description: def.parameterConfiguration?.[name]?.description,
       });
-      parameterSet.delete(MODIFY_OBJECT_ID);
+      parameterSet.delete(MODIFY_OBJECT_PARAMETER);
     }
-    if (name === CREATE_OR_MODIFY_OBJECT_ID) {
+    if (name === CREATE_OR_MODIFY_OBJECT_PARAMETER) {
       targetParam.push({
-        id: CREATE_OR_MODIFY_OBJECT_ID,
+        id: CREATE_OR_MODIFY_OBJECT_PARAMETER,
         displayName: def.parameterConfiguration?.[name]?.displayName
           ?? "Create or modify object",
         type: {
@@ -743,7 +753,7 @@ function createParameters(
         defaultValue: def.parameterConfiguration?.[name]?.defaultValue,
         description: def.parameterConfiguration?.[name]?.description,
       });
-      parameterSet.delete(CREATE_OR_MODIFY_OBJECT_ID);
+      parameterSet.delete(CREATE_OR_MODIFY_OBJECT_PARAMETER);
     }
   });
   return [
@@ -1255,7 +1265,8 @@ function validateActionParameters(def: ActionTypeUserDefinition): void {
     invariant(
       def.objectType.properties?.[id] !== undefined
         || (def.parameterConfiguration?.[id].customParameterType !== undefined)
-        || id === MODIFY_OBJECT_ID || id === CREATE_OR_MODIFY_OBJECT_ID,
+        || id === MODIFY_OBJECT_PARAMETER
+        || id === CREATE_OR_MODIFY_OBJECT_PARAMETER,
       `Parameter ${id} does not exist as a property on ${def.objectType.apiName} and its type is not explicitly defined`,
     );
   });
