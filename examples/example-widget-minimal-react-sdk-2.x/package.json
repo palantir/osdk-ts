@@ -43,8 +43,5 @@
     "vite": "^6.3.5",
     "vitest": "^3.0.5"
   },
-  "osdk": {
-    "packageRid": "ri.some..package.root"
-  },
   "type": "module"
 }

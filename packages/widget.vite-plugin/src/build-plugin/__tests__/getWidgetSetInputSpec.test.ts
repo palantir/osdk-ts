@@ -39,7 +39,7 @@ test("getWidgetSetInputSpec successfully discovers OSDK packages", async () => {
       "package4": "0.4.0",
     },
     osdk: {
-      rid: "ridPackage2",
+      packageRid: "ridPackage2",
     },
   };
   const packageJson3: PackageJson = {
@@ -49,21 +49,21 @@ test("getWidgetSetInputSpec successfully discovers OSDK packages", async () => {
       "package4": "0.4.1",
     },
     osdk: {
-      rid: "ridPackage3",
+      packageRid: "ridPackage3",
     },
   };
   const packageJson4: PackageJson = {
-    name: "package3",
+    name: "package4",
     version: "0.4.0",
     osdk: {
-      rid: "ridPackage4",
+      packageRid: "ridPackage4",
     },
   };
   const packageJson4_1: PackageJson = {
     name: "package4",
     version: "0.4.1",
     osdk: {
-      rid: "ridPackage4",
+      packageRid: "ridPackage4",
     },
   };
 
