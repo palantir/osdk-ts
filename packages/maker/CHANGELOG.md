@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.12.0-beta.18
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.15
+
 ## 0.12.0-beta.17
 
 ### Minor Changes

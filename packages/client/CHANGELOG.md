@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.4.0-beta.15
+
+### Minor Changes
+
+- d2d36e1: Fix module resolution for node when importing unstable code
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.15
+- @osdk/client.unstable@2.4.0-beta.15
+- @osdk/generator-converters@2.4.0-beta.15
+
 ## 2.4.0-beta.14
 
 ### Patch Changes

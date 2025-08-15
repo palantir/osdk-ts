@@ -1,5 +1,7 @@
 # @osdk/generator-utils
 
+## 2.4.0-beta.15
+
 ## 2.4.0-beta.14
 
 ## 2.4.0-beta.13
