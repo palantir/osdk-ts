@@ -397,6 +397,65 @@ export const queryTypeAcceptsObjects: QueryTypeV2 = {
   version: "0.11.0",
 };
 
+export const queryTypeAcceptsInterfaces: QueryTypeV2 = {
+  apiName: "queryAcceptsInterface",
+  description: "description of the query that takes interface types",
+  displayName: "QueryAcceptsObject",
+  parameters: {
+    interfaceObject: {
+      dataType: {
+        type: "interfaceObject",
+        interfaceTypeApiName: "FooInterface",
+      },
+    },
+  },
+  output: {
+    type: "interfaceObject",
+    interfaceTypeApiName: "FooInterface",
+  },
+  rid:
+    "ri.function-registry.main.function.9b35870a-63c7-4d48-8f06-9617c0805968",
+  version: "0.11.0",
+};
+
+export const queryTypeAcceptsInterfaceObjectSet: QueryTypeV2 = {
+  apiName: "queryAcceptsInterfaceObjectSet",
+  displayName: "description of the query that takes interface type object sets",
+  parameters: {
+    interfaceObjectSet: {
+      dataType: {
+        type: "interfaceObjectSet",
+        interfaceTypeApiName: "FooInterface",
+      },
+    },
+  },
+  output: {
+    type: "string",
+  },
+  rid:
+    "ri.function-registry.main.function.4db06290-aab9-43fd-a22d-608b7ecc1849",
+  version: "0.14.0",
+};
+
+export const queryTypeOutputsInterfaceObjectSet: QueryTypeV2 = {
+  apiName: "queryOutputsInterface",
+  displayName: "description of the query that outputs interface type",
+  parameters: {
+    idToLook: {
+      dataType: {
+        type: "string",
+      },
+    },
+  },
+  output: {
+    type: "interfaceObjectSet",
+    interfaceTypeApiName: "FooInterface",
+  },
+  rid:
+    "ri.function-registry.main.function.4db06290-7bb9-43fd-a22d-60sdf7ecc1849",
+  version: "0.14.0",
+};
+
 export const queryTypeAcceptsObjectSets: QueryTypeV2 = {
   apiName: "queryAcceptsObjectSets",
   description: "description of the query that takes objectSet types",

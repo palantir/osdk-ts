@@ -15,6 +15,7 @@
  */
 
 import type { OsdkMetadata } from "../OsdkMetadata.js";
+import type { ObjectOrInterfaceDefinition } from "./ObjectOrInterface.js";
 import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
 
 export interface QueryMetadata {
@@ -50,11 +51,13 @@ export type QueryParameterDefinition<
 } & QueryDataTypeDefinition<T_Target>;
 
 export type QueryDataTypeDefinition<
-  T_Target extends ObjectTypeDefinition = any,
+  T_Target extends ObjectOrInterfaceDefinition = any,
 > =
   | PrimitiveDataType
   | ObjectQueryDataType<T_Target>
+  | InterfaceQueryDataType<T_Target>
   | ObjectSetQueryDataType<T_Target>
+  | InterfaceObjectSetQueryDataType<T_Target>
   | SetQueryDataType
   | UnionQueryDataType
   | StructQueryDataType
@@ -84,15 +87,29 @@ export type PrimitiveDataType<
 > = BaseQueryDataTypeDefinition<Q>;
 
 export interface ObjectQueryDataType<
-  T_Target extends ObjectTypeDefinition = never,
+  T_Target extends ObjectOrInterfaceDefinition = never,
 > extends BaseQueryDataTypeDefinition<"object"> {
   object: string;
   __OsdkTargetType?: T_Target;
 }
 
+export interface InterfaceQueryDataType<
+  T_Target extends ObjectOrInterfaceDefinition = never,
+> extends BaseQueryDataTypeDefinition<"interface"> {
+  interface: string;
+  __OsdkTargetType?: T_Target;
+}
+
 export interface ObjectSetQueryDataType<
-  T_Target extends ObjectTypeDefinition = never,
+  T_Target extends ObjectOrInterfaceDefinition = never,
 > extends BaseQueryDataTypeDefinition<"objectSet"> {
+  objectSet: string;
+  __OsdkTargetType?: T_Target;
+}
+
+export interface InterfaceObjectSetQueryDataType<
+  T_Target extends ObjectOrInterfaceDefinition = never,
+> extends BaseQueryDataTypeDefinition<"interfaceObjectSet"> {
   objectSet: string;
   __OsdkTargetType?: T_Target;
 }

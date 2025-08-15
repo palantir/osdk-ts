@@ -24,10 +24,13 @@ import { employee1, employee2 } from "./objects.js";
 import {
   addOneQueryType,
   addOneQueryTypeOlderVersion,
+  queryTypeAcceptsInterfaceObjectSet,
+  queryTypeAcceptsInterfaces,
   queryTypeAcceptsObjects,
   queryTypeAcceptsObjectSets,
   queryTypeAcceptsThreeDimensionalAggregation,
   queryTypeAcceptsTwoDimensionalAggregation,
+  queryTypeOutputsInterfaceObjectSet,
   queryTypeReturnsArray,
   queryTypeReturnsComplexStruct,
   queryTypeReturnsDate,
@@ -122,6 +125,52 @@ export const queryTypeAcceptsObjectRequest: ExecuteQueryRequest = {
 export const queryTypeAcceptsObjectResponse: ExecuteQueryResponse = {
   value: employee2.__primaryKey,
 };
+
+export const queryTypeAcceptsInterfaceRequest: ExecuteQueryRequest = {
+  parameters: {
+    interfaceObject: {
+      objectTypeApiName: "Employee",
+      "primaryKeyValue": employee1.__primaryKey,
+    },
+  },
+};
+
+export const queryTypeAcceptsInterfaceResponse: ExecuteQueryResponse = {
+  value: {
+    objectTypeApiName: "Employee",
+    "primaryKeyValue": employee2.__primaryKey,
+  },
+};
+
+export const queryTypeAcceptsInterfaceObjectSetRequest: ExecuteQueryRequest = {
+  parameters: {
+    interfaceObjectSet: {
+      type: "interfaceBase",
+      interfaceType: "FooInterface",
+    },
+  },
+};
+
+export const queryTypeAcceptsInterfaceObjectSetResponse: ExecuteQueryResponse =
+  {
+    value: employee1.__primaryKey,
+  };
+
+export const queryTypeOutputsInterfaceObjectSetRequest: ExecuteQueryRequest = {
+  parameters: {
+    idToLook: employee1.__primaryKey,
+  },
+};
+
+export const queryTypeOutputsInterfaceObjectSetResponse: ExecuteQueryResponse =
+  {
+    value: {
+      interfaceObjectSet: {
+        type: "interfaceBase",
+        interfaceType: "FooInterface",
+      },
+    },
+  };
 
 export const queryTypeAcceptsObjectSetRequest: ExecuteQueryRequest = {
   parameters: {
@@ -343,6 +392,12 @@ const queryRequestHandlers: {
         queryTypeAcceptsObjectResponse,
     },
   },
+  [queryTypeAcceptsInterfaces.apiName]: {
+    [queryTypeAcceptsInterfaces.version]: {
+      [JSON.stringify(queryTypeAcceptsInterfaceRequest)]:
+        queryTypeAcceptsInterfaceResponse,
+    },
+  },
   [queryTypeAcceptsObjectSets.apiName]: {
     [queryTypeAcceptsObjectSets.version]: {
       [JSON.stringify(queryTypeAcceptsObjectSetRequest)]:
@@ -372,6 +427,18 @@ const queryRequestHandlers: {
       [JSON.stringify(queryTypeReturnsMapRequest)]: queryTypeReturnsMapResponse,
     },
   },
+  [queryTypeAcceptsInterfaceObjectSet.apiName]: {
+    [queryTypeAcceptsInterfaceObjectSet.version]: {
+      [JSON.stringify(queryTypeAcceptsInterfaceObjectSetRequest)]:
+        queryTypeAcceptsInterfaceObjectSetResponse,
+    },
+  },
+  [queryTypeOutputsInterfaceObjectSet.apiName]: {
+    [queryTypeOutputsInterfaceObjectSet.version]: {
+      [JSON.stringify(queryTypeOutputsInterfaceObjectSetRequest)]:
+        queryTypeOutputsInterfaceObjectSetResponse,
+    },
+  },
 };
 
 export function registerLazyQueries(fauxOntology: FauxOntology): void {
@@ -391,6 +458,9 @@ export function registerLazyQueries(fauxOntology: FauxOntology): void {
     queryTypeReturnsArray,
     queryTypeReturnsComplexStruct,
     queryTypeReturnsMap,
+    queryTypeAcceptsInterfaces,
+    queryTypeAcceptsInterfaceObjectSet,
+    queryTypeOutputsInterfaceObjectSet,
   ];
 
   for (const queryType of Object.values(queryTypes)) {

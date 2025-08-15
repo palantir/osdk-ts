@@ -19,7 +19,9 @@ import type {
   DataValueWireToClient,
 } from "../mapping/DataValueMapping.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
-import type { ObjectTypeDefinition } from "../ontology/ObjectTypeDefinition.js";
+import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
+import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
+import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type {
   AggregationKeyTypes,
   AggregationRangeKeyTypes,
@@ -49,14 +51,33 @@ export namespace QueryParam {
   /**
    * Helper type to convert action definition parameter object types to typescript types
    */
-  export type ObjectType<T extends ObjectTypeDefinition> =
+  export type ObjectType<T extends ObjectOrInterfaceDefinition> =
     | ObjectIdentifiers<T>
     | OsdkObjectPrimaryKeyType<T>;
 
   /**
+   * Helper type to convert action definition parameter interface types to typescript types
+   */
+  export type InterfaceType<T extends InterfaceDefinition> = {
+    $objectType: CompileTimeMetadata<T> extends { implementedBy: infer U }
+      ? (U extends ReadonlyArray<never> ? string
+        : U extends ReadonlyArray<string> ? U[number]
+        : string)
+      : string;
+    $primaryKey: string | number;
+    $apiName?: never;
+  } | {
+    $apiName: T["apiName"];
+    $objectType: string;
+    $primaryKey: string | number;
+  };
+
+  /**
    * Helper type to convert action definition parameter object sets to typescript types
    */
-  export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
+  export type ObjectSetType<T extends ObjectOrInterfaceDefinition> = ObjectSet<
+    T
+  >;
 
   export type RangeKey<T extends AggregationRangeKeyTypes> = AggKeyClientToWire<
     "range",
@@ -95,12 +116,16 @@ export namespace QueryResult {
   /**
    * Helper type to convert action definition parameter object types to typescript types
    */
-  export type ObjectType<T extends ObjectTypeDefinition> = OsdkBase<T>;
+  export type ObjectType<T extends ObjectOrInterfaceDefinition> = OsdkBase<T>;
+
+  export type InterfaceType<T extends ObjectOrInterfaceDefinition> = OsdkBase<
+    T
+  >;
 
   /**
    * Helper type to convert action definition parameter object sets to typescript types
    */
-  export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<
+  export type ObjectSetType<T extends ObjectOrInterfaceDefinition> = ObjectSet<
     T
   >;
 

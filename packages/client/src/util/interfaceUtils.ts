@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionParam } from "@osdk/api";
+import type { ActionParam, PrimaryKeyTypes, QueryParam } from "@osdk/api";
 
 /** @internal */
 export function isInterfaceActionParam(
@@ -22,4 +22,24 @@ export function isInterfaceActionParam(
 ): o is ActionParam.InterfaceType<any> {
   return o != null && typeof o === "object"
     && "$objectType" in o && "$primaryKey" in o;
+}
+
+/** @internal */
+export function isInterfaceQueryParam(
+  o: any,
+): o is QueryParam.InterfaceType<any> {
+  return o != null && typeof o === "object"
+    && "$objectType" in o && "$primaryKey" in o;
+}
+
+/** @internal */
+export function isInterfaceSpecifier(
+  o: any,
+): o is {
+  $apiName: string;
+  $objectType: string;
+  $primaryKey: PrimaryKeyTypes;
+} {
+  return o != null && typeof o === "object"
+    && "$objectType" in o && "$primaryKey" in o && o.$objectType !== o.$apiName;
 }
