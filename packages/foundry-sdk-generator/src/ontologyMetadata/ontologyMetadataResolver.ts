@@ -173,6 +173,7 @@ export class OntologyMetadataResolver {
       linkTypesApiNamesToLoad?: string[];
     },
     extPackageInfo: PackageInfo = new Map(),
+    branch: string | undefined = undefined,
   ): Promise<
     Result<OntologyInfo, string[]>
   > {
@@ -200,6 +201,7 @@ export class OntologyMetadataResolver {
       const ontologyFullMetadata = await OntologiesV2.getFullMetadata(
         this.getClientContext(),
         ontology.rid as OntologyIdentifier,
+        { branch: branch },
       );
 
       if ((ontologyFullMetadata as any).errorName != null) {

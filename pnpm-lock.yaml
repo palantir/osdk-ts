@@ -3123,6 +3123,9 @@ importers:
       '@osdk/client':
         specifier: workspace:*
         version: link:../client
+      '@osdk/foundry.core':
+        specifier: 2.24.0
+        version: 2.24.0
       '@osdk/foundry.ontologies':
         specifier: 2.25.0
         version: 2.25.0
