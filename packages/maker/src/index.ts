@@ -55,5 +55,9 @@ export type {
   UuidMappingValue,
   ValueTypeDefinitionVersion,
 } from "./api/types.js";
-export { OntologyEntityTypeEnum } from "./api/types.js";
+export {
+  CREATE_OR_MODIFY_OBJECT_PARAMETER,
+  MODIFY_OBJECT_PARAMETER,
+  OntologyEntityTypeEnum,
+} from "./api/types.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
