@@ -31,12 +31,23 @@ import type {
 } from "../edits/EditBatch.js";
 import type { AnyEdit } from "../edits/types.js";
 
-export interface WriteableClient<X extends AnyEdit = never>
-  extends Client, WriteMethods<X>
-{
+/** @internal */
+export const writeableClientContext: unique symbol = Symbol(
+  "writeableClientContext",
+);
+
+export interface WriteableClientContext {
+  ontologyRid: string | Promise<string>;
+  transactionRid: string;
 }
 
-export interface WriteMethods<X extends AnyEdit = never> {
+export interface WriteableClient<X extends AnyEdit>
+  extends Client, WriteMethods<X>
+{
+  [writeableClientContext]: WriteableClientContext;
+}
+
+export interface WriteMethods<X extends AnyEdit> {
   link: <
     SOL extends AddLinkSources<X>,
     A extends AddLinkApiNames<X, SOL>,
