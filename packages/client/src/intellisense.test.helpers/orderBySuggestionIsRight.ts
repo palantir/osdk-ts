@@ -32,3 +32,8 @@ void client(Employee).fetchPage({
   // @ts-expect-error
   $orderBy,
 });
+
+void client(Employee).fetchPage({
+  // @ts-expect-error
+  $orderBy: "",
+});

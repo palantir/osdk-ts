@@ -74,6 +74,54 @@ export async function runNearestNeighborsTest(): Promise<void> {
   const { data: res } = await nestedResult;
   validateCount(2, res);
 
+  // relevancy ordering tests
+  const { data: resOrdered } = await client(MatthewvsDevOrderEmbedding)
+    .nearestNeighbors(
+      "coffee",
+      10,
+      "embedding",
+    ).fetchPage({ $orderBy: "relevance" });
+
+  let prevValueOrdered = 1.0;
+  for (const obj of resOrdered) {
+    console.log(obj);
+    const currentValue = obj.$score;
+    invariant(currentValue <= prevValueOrdered, "b");
+    prevValueOrdered = currentValue;
+  }
+
+  const asyncIter = client(MatthewvsDevOrderEmbedding).nearestNeighbors(
+    "coffee",
+    10,
+    "embedding",
+  ).asyncIter();
+
+  const asyncRes = [];
+  for await (const obj of asyncIter) {
+    asyncRes.push(obj);
+    // @ts-expect-error
+    invariant(obj.$score === undefined);
+  }
+  validateCount(10, asyncRes);
+
+  const asyncIterOrderedByRelevance = client(MatthewvsDevOrderEmbedding)
+    .nearestNeighbors(
+      "coffee",
+      12,
+      "embedding",
+    ).asyncIter({ $orderBy: "relevance" });
+
+  const asyncResOrdered = [];
+  let prevValue = 1.0;
+  for await (const obj of asyncIterOrderedByRelevance) {
+    asyncResOrdered.push(obj);
+    const currentValue = obj.$score;
+    invariant(currentValue <= prevValue, "a");
+    invariant(obj.$score !== undefined);
+    prevValue = currentValue;
+  }
+  validateCount(12, asyncResOrdered);
+
   // nearestNeighbor query on a property without an embedding (orderTitle)
   await assertThrowsExpectedError(
     "PropertyTypeDoesNotSupportNearestNeighbors",
