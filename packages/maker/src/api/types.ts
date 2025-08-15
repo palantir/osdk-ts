@@ -83,6 +83,7 @@ export interface Ontology extends
     | "interfaceTypes"
     | "objectTypes"
     | "actionTypes"
+    | "valueTypes"
   >
 {
   interfaceTypes: Record<string, InterfaceType>;

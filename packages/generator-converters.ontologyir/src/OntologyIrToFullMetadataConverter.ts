@@ -67,6 +67,7 @@ export class OntologyIrToFullMetadataConverter {
         displayName: "ontology",
         description: "",
       },
+      valueTypes: {},
     };
   }
 

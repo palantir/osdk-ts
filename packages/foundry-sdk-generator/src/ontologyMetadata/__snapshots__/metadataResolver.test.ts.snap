@@ -375,6 +375,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
     },
     "queryTypes": {},
     "sharedPropertyTypes": {},
+    "valueTypes": {},
   },
 }
 `;
@@ -624,6 +625,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
     },
     "queryTypes": {},
     "sharedPropertyTypes": {},
+    "valueTypes": {},
   },
 }
 `;
@@ -863,6 +865,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
     },
     "queryTypes": {},
     "sharedPropertyTypes": {},
+    "valueTypes": {},
   },
 }
 `;

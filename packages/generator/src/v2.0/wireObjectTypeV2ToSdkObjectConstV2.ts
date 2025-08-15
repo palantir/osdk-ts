@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeFullMetadata } from "@osdk/foundry.ontologies";
+import type { ObjectMetadata } from "@osdk/api";
+import type {
+  ObjectTypeFullMetadata,
+  OntologyValueType,
+  ValueTypeApiName,
+  ValueTypeConstraint,
+} from "@osdk/foundry.ontologies";
 import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
 import consola from "consola";
 import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
@@ -99,8 +105,8 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
       ${createLinks(ontology, object, "Links")}
 
-      ${createProps(object, "Props", false)}
-      ${createProps(object, "StrictProps", true)}
+      ${createProps(object, "Props", false, ontology.raw.valueTypes)}
+      ${createProps(object, "StrictProps", true, ontology.raw.valueTypes)}
 
       ${createObjectSet(object, identifiers)}
       
@@ -213,6 +219,7 @@ export function createProps(
   type: EnhancedInterfaceType | EnhancedObjectType,
   identifier: string,
   strict: boolean,
+  valueTypeMetadata: Record<ValueTypeApiName, OntologyValueType>,
 ): string {
   if (identifier === "StrictProps") {
     return `export type StrictProps = Props`;
@@ -233,7 +240,10 @@ ${
           }readonly "${maybeStripNamespace(type, apiName)}"`,
           (typeof propertyDefinition.type === "object"
             ? remapStructType(propertyDefinition.type)
-            : `$PropType[${JSON.stringify(propertyDefinition.type)}]`)
+            : getPropTypeOrValueTypeEnum(
+              propertyDefinition,
+              valueTypeMetadata,
+            ))
           + `${propertyDefinition.multiplicity ? "[]" : ""}${
             propertyDefinition.nullable
               || (!strict
@@ -389,4 +399,76 @@ function remapStructType(structType: Record<string, any>): string {
   );
   output += "}";
   return output;
+}
+
+function getPropTypeOrValueTypeEnum(
+  propertyDefinition: ObjectMetadata.Property,
+  valueTypeMetadata: Record<ValueTypeApiName, OntologyValueType>,
+): string {
+  const defaultPropString = `$PropType[${
+    JSON.stringify(propertyDefinition.type)
+  }]`;
+  if (
+    !(propertyDefinition.type === "string"
+      || propertyDefinition.type === "boolean")
+    || !propertyDefinition.valueType
+    || valueTypeMetadata[propertyDefinition.valueType] == null
+  ) {
+    return defaultPropString;
+  }
+  const valueType = valueTypeMetadata[propertyDefinition.valueType];
+  if (valueType.constraints.length !== 1) {
+    throw new Error(
+      `Expected exactly one constraint for value type ${propertyDefinition.valueType} but got ${valueType.constraints.length}`,
+    );
+  }
+
+  let shouldWrapWithParentheses = false;
+  let constraint = valueType.constraints[0];
+  if (constraint.type === "array" && constraint.valueConstraint) {
+    constraint = constraint.valueConstraint;
+    shouldWrapWithParentheses = true;
+  }
+
+  const maybeEnumString = maybeGetEnumString(
+    propertyDefinition,
+    valueType,
+    constraint,
+  );
+
+  return maybeEnumString
+    ? (
+      shouldWrapWithParentheses ? `(${maybeEnumString})` : maybeEnumString
+    )
+    : defaultPropString;
+}
+
+function maybeGetEnumString(
+  propertyDefinition: ObjectMetadata.Property,
+  valueType: OntologyValueType,
+  constraint: ValueTypeConstraint,
+) {
+  if (constraint.type !== "enum" || constraint.options.length === 0) {
+    return undefined;
+  }
+  if (propertyDefinition.type === "string") {
+    return constraint.options.map(x => `"${x}"`).join(
+      " | ",
+    );
+  }
+  if (propertyDefinition.type === "boolean") {
+    return constraint.options.map(value => {
+      if (value === "TRUE") {
+        return true;
+      } else if (value === "FALSE") {
+        return false;
+      } else if (value === "NULL") {
+        // Always infer nullability from the property definition
+        return undefined;
+      }
+    }).filter(value => value != null).join(
+      " | ",
+    );
+  }
+  return undefined;
 }

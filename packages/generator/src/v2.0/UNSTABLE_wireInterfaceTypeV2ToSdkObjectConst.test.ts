@@ -90,6 +90,7 @@ function simpleOntology<I extends InterfaceType>(
     },
     queryTypes: {},
     sharedPropertyTypes,
+    valueTypes: {},
   } as const satisfies WireOntologyDefinition;
 }
 

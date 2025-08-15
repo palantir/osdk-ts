@@ -130,6 +130,7 @@ export class OntologyMetadataResolver {
       queryTypes: filteredQueryTypes,
       interfaceTypes: filteredInterfaceTypes,
       sharedPropertyTypes: {},
+      valueTypes: {},
     };
   }
 
