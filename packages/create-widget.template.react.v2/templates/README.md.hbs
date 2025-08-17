@@ -4,26 +4,29 @@ This project was generated with [`@osdk/create-widget`](https://www.npmjs.com/pa
 
 ## Developing
 
-Run the following command or equivalent with your preferred package manager to start a local development server and follow the instructions printed to set up developer mode in Foundry:
+> **Note:** Before starting development, you need to deploy an initial version of your widget set. See the [Deploying](#deploying) section below to create your first deployment.
+
+Run the following commands (or equivalent with your preferred package manager) to start a local development server and follow the instructions printed to set up developer mode in Foundry:
 
 ```sh
+export FOUNDRY_TOKEN=...
 npm run dev
 ```
-
 
 ## Deploying
 
 A `foundry.config.json` file is included in the root of this project containing the deployment configuration to Foundry.
 
-Run the following command or equivalent with your preferred package manager to create a production build of your widgets:
+Run the following commands (or equivalent with your preferred package manager) to create a production build of your widgets:
 
 ```sh
+export FOUNDRY_TOKEN=...
 npm run build
 ```
 
 A `.palantir/widgets.config.json` manifest file containing metadata about your widgets is created during the build.
 
-Run the following command or equivalent with your preferred package manager to deploy the production build of your widgets:
+Run the following command (or equivalent with your preferred package manager) to deploy the production build of your widgets:
 
 ```sh
 npx @osdk/cli@latest widgetset deploy
