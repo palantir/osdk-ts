@@ -1,5 +1,11 @@
 # @osdk/widget.api
 
+## 3.1.0-beta.4
+
+### Minor Changes
+
+- 3744571: Discover widget set input specs
+
 ## 3.1.0-beta.3
 
 ### Minor Changes
