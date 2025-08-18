@@ -156,7 +156,7 @@ export class GeneratePackageCommand
       })
       .positional("branch", {
         type: "string",
-        demandOption: true,
+        demandOption: false,
         description:
           `The branch rid of the ontology to generate from. Example Usage: --branch ri.branch..branch.0000000-0000-0000-0000-0000000000`,
         default: undefined,
