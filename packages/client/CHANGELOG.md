@@ -1,5 +1,14 @@
 # @osdk/client
 
+## 2.3.3
+
+### Patch Changes
+
+- 6b963aa: Fix module resolution for node when importing unstable code
+  - @osdk/api@2.3.3
+  - @osdk/client.unstable@2.3.3
+  - @osdk/generator-converters@2.3.3
+
 ## 2.3.2
 
 ### Patch Changes
