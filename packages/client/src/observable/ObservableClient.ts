@@ -81,7 +81,9 @@ export interface ObserveLinkOptions<
   // streamUpdates?: boolean;
 }
 
-export interface ObserveObjectCallbackArgs<T extends ObjectTypeDefinition> {
+// TODO: Rename this from `ObserveObjectArgs` => `ObserveObjectCallbackArgs`. Not doing it now to reduce churn
+// in repo.
+export interface ObserveObjectArgs<T extends ObjectTypeDefinition> {
   object: Osdk.Instance<T> | undefined;
   isOptimistic: boolean;
   status: Status;
@@ -118,7 +120,7 @@ export interface ObservableClient extends ObserveLinks {
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveOptions,
-    subFn: Observer<ObserveObjectCallbackArgs<T>>,
+    subFn: Observer<ObserveObjectArgs<T>>,
   ): Unsubscribable;
 
   observeList<T extends ObjectTypeDefinition | InterfaceDefinition>(

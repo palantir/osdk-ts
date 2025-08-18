@@ -21,16 +21,16 @@ export type { ActionSignatureFromDef } from "../actions/applyAction.js";
 export { createObservableClient } from "../observable/ObservableClient.js";
 export type {
   ObservableClient,
-  ObserveObjectCallbackArgs as ObserveObjectArgs,
+  ObserveObjectArgs,
   ObserveObjectsCallbackArgs as ObserveObjectsArgs,
   Unsubscribable,
 } from "../observable/ObservableClient.js";
 export type { Observer } from "../observable/ObservableClient/common.js";
 export type { ObserveLinks } from "../observable/ObservableClient/ObserveLink.js";
-export type { OsdkConfig } from "../public-utils/osdkConfig.js";
 export {
   getMetaTagContent,
   getOsdkConfig,
 } from "../public-utils/osdkConfig.js";
+export type { OsdkConfig } from "../public-utils/osdkConfig.js";
 
 export { createClientWithTransaction } from "../createClient.js";
