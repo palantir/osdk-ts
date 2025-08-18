@@ -28,11 +28,11 @@ import type { ObserveLinkOptions } from "../../ObservableClient.js";
 // Direct link queries without needing to fetch the source object first
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
-import { BaseCollectionQuery } from "../BaseCollectionQuery.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
 import type { Entry } from "../Layer.js";
+import { BaseListQuery } from "../ListQuery.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
@@ -48,7 +48,7 @@ import type { SpecificLinkCacheKey } from "./SpecificLinkCacheKey.js";
 /**
  * Query implementation for retrieving linked objects from a specific object
  */
-export class SpecificLinkQuery extends BaseCollectionQuery<
+export class SpecificLinkQuery extends BaseListQuery<
   SpecificLinkCacheKey,
   SpecificLinkPayload,
   ObserveLinkOptions<ObjectTypeDefinition>
