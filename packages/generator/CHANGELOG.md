@@ -1,5 +1,57 @@
 # @osdk/generator
 
+## 2.4.0-beta.15
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.15
+- @osdk/generator-converters@2.4.0-beta.15
+
+## 2.4.0-beta.14
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.14
+- @osdk/generator-converters@2.4.0-beta.14
+
+## 2.4.0-beta.13
+
+### Minor Changes
+
+- 4bc848b: Add interface link support.
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/generator-converters@2.4.0-beta.13
+  - @osdk/api@2.4.0-beta.13
+
+## 2.4.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.12
+- @osdk/generator-converters@2.4.0-beta.12
+
+## 2.4.0-beta.11
+
+### Minor Changes
+
+- f277b30: Ensure stable ordering of arrays in code generation for object types and interface types. Sort `implements`, `implementedBy` and `linkTypes` arrays alphabetically for consistent output.
+
+### Patch Changes
+
+- Updated dependencies [f277b30]
+  - @osdk/generator-converters@2.4.0-beta.11
+  - @osdk/api@2.4.0-beta.11
+
+## 2.4.0-beta.10
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.10
+- @osdk/generator-converters@2.4.0-beta.10
+
 ## 2.4.0-beta.9
 
 ### Patch Changes

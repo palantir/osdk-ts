@@ -1,5 +1,53 @@
 # @osdk/shared.test
 
+## 0.2.0-beta.15
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.15
+- @osdk/generator-converters@2.4.0-beta.15
+
+## 0.2.0-beta.14
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.14
+- @osdk/generator-converters@2.4.0-beta.14
+
+## 0.2.0-beta.13
+
+### Minor Changes
+
+- 4bc848b: Add interface link support.
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/generator-converters@2.4.0-beta.13
+  - @osdk/api@2.4.0-beta.13
+
+## 0.2.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.12
+- @osdk/generator-converters@2.4.0-beta.12
+
+## 0.2.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [f277b30]
+  - @osdk/generator-converters@2.4.0-beta.11
+  - @osdk/api@2.4.0-beta.11
+
+## 0.2.0-beta.10
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.10
+- @osdk/generator-converters@2.4.0-beta.10
+
 ## 0.2.0-beta.9
 
 ### Patch Changes

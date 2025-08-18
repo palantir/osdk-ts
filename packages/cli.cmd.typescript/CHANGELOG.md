@@ -1,5 +1,49 @@
 # @osdk/cli.cmd.typescript
 
+## 0.28.0-beta.16
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.15
+- @osdk/cli.common@0.28.0-beta.16
+
+## 0.28.0-beta.15
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.14
+- @osdk/cli.common@0.28.0-beta.15
+
+## 0.28.0-beta.14
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/generator@2.4.0-beta.13
+  - @osdk/cli.common@0.28.0-beta.14
+
+## 0.28.0-beta.13
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.12
+- @osdk/cli.common@0.28.0-beta.13
+
+## 0.28.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [f277b30]
+  - @osdk/generator@2.4.0-beta.11
+  - @osdk/cli.common@0.28.0-beta.12
+
+## 0.28.0-beta.11
+
+### Patch Changes
+
+- @osdk/generator@2.4.0-beta.10
+- @osdk/cli.common@0.28.0-beta.11
+
 ## 0.28.0-beta.10
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.1.0-beta.3
+
+## 3.1.0-beta.2
+
+### Minor Changes
+
+- ca35776: Add reminder to publish new widget set on main.config.ts change
+- 4dd8c36: Update create-widget templates to use 3.x.x widget libraries
+
 ## 3.0.0-beta.6
 
 ### Minor Changes

@@ -29,6 +29,7 @@ import {
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
 import { buildWidgetSetManifest } from "./buildWidgetSetManifest.js";
 import { getWidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
+import { getWidgetSetInputSpec } from "./getWidgetSetInputSpec.js";
 
 export function FoundryWidgetBuildPlugin(): Plugin {
   // The root HTML entrypoints of the build process
@@ -84,10 +85,14 @@ export function FoundryWidgetBuildPlugin(): Plugin {
             )
           ),
         );
+        const widgetSetInputSpec = await getWidgetSetInputSpec(
+          path.resolve(process.cwd(), "package.json"),
+        );
         const widgetSetManifest = buildWidgetSetManifest(
           foundryConfig.foundryConfig.widgetSet.rid,
           widgetSetVersion,
           widgetBuilds,
+          widgetSetInputSpec,
         );
 
         // Write the manifest to the dist directory

@@ -1,5 +1,69 @@
 # @osdk/maker
 
+## 0.12.0-beta.18
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.15
+
+## 0.12.0-beta.17
+
+### Minor Changes
+
+- f1f587b: Support custom parameters in OAC actions
+- 641bc0c: Fix create-or-modify non parameter mapped property bug
+- 25bae67: OAC modify object actions set parameter defaults to match the selected object
+- 5c76e33: Trim value type before putting it in SPT IR
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.14
+
+## 0.12.0-beta.16
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/api@2.4.0-beta.13
+
+## 0.12.0-beta.15
+
+### Minor Changes
+
+- a1736f3: Actions can have properties that are not mapped to parameters
+- c621638: Create or Modify actions in OAC
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.12
+
+## 0.12.0-beta.14
+
+### Minor Changes
+
+- d384b4c: Add custom display names and descriptions for action parameters in OAC
+- 02be685: Remove jiti
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.11
+
+## 0.12.0-beta.13
+
+### Minor Changes
+
+- ed41359: Action sections in OAC
+
+## 0.12.0-beta.12
+
+### Minor Changes
+
+- 666787f: fix text allowed values name
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.10
+
 ## 0.12.0-beta.11
 
 ### Minor Changes

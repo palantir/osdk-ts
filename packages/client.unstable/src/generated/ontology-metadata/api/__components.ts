@@ -6829,6 +6829,7 @@ export interface OntologyIrActionValidation {
     ParameterId,
     OntologyIrConditionalValidationBlock
   >;
+  sectionValidations: Record<SectionId, OntologyIrSectionDisplayBlock>;
 }
 /**
  * ActionWebhooks contains the definition for webhooks that are executed as part of running an Action.

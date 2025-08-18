@@ -67,7 +67,6 @@ export type { ValueTypeStatus } from "./generated/type-registry/api/ValueTypeSta
 export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVersion.js";
 
 export type {
-  ApiNameValueTypeReference,
   OntologyIr,
   OntologyIrOntologyBlockDataV2,
   OntologyIrValueTypeBlockData,

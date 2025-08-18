@@ -1,6 +1,6 @@
 {
   "name": "@osdk/functions",
-  "version": "1.2.0-beta.3",
+  "version": "1.2.0-beta.9",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -26,6 +26,15 @@
       },
       "require": "./build/cjs/public/internal.cjs",
       "default": "./build/browser/public/internal.js"
+    },
+    "./unstable-do-not-use": {
+      "browser": "./build/browser/public/unstable-do-not-use.js",
+      "import": {
+        "types": "./build/types/public/unstable-do-not-use.d.ts",
+        "default": "./build/esm/public/unstable-do-not-use.js"
+      },
+      "require": "./build/cjs/public/unstable-do-not-use.cjs",
+      "default": "./build/browser/public/unstable-do-not-use.js"
     },
     "./*": {
       "browser": "./build/browser/public/*.js",

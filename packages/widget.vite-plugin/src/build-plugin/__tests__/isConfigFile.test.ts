@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,14 @@
  * limitations under the License.
  */
 
-export const META_TAG_HOST_ORIGIN = "x-palantir-widgets-host-origin";
+import { expect, test } from "vitest";
+import { isConfigFile } from "../isConfigFile.js";
+
+test("isConfigFile identifies config files", () => {
+  expect(isConfigFile("./widget.config.ts")).toBe(true);
+  expect(isConfigFile("./widget.config.js")).toBe(true);
+  expect(isConfigFile("/my-assets/widget.config")).toBe(true);
+
+  expect(isConfigFile("/assets/config")).toBe(false);
+  expect(isConfigFile("")).toBe(false);
+});

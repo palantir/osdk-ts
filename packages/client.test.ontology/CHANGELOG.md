@@ -1,5 +1,42 @@
 # @osdk/client.test.ontology
 
+## 2.4.0-beta.15
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.15
+
+## 2.4.0-beta.14
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.14
+
+## 2.4.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/api@2.4.0-beta.13
+
+## 2.4.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.12
+
+## 2.4.0-beta.11
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.11
+
+## 2.4.0-beta.10
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.10
+
 ## 2.4.0-beta.9
 
 ### Patch Changes

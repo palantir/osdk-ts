@@ -31,3 +31,5 @@ export {
   getMetaTagContent,
   getOsdkConfig,
 } from "../public-utils/osdkConfig.js";
+
+export { createClientWithTransaction } from "../createClient.js";

@@ -39,10 +39,6 @@ export type ObjectInterfaceBaseMetadata = {
   displayName: string;
   description: string | undefined;
   properties: Record<any, ObjectMetadata.Property>;
-  links: Record<
-    string,
-    ObjectMetadata.Link<any, any>
-  >;
   rid: string;
   /**
    * Represents the "super interfaces" of this object.
@@ -68,6 +64,10 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
   type: "object";
   primaryKeyApiName: keyof this["properties"];
   titleProperty: keyof this["properties"];
+  links: Record<
+    string,
+    ObjectMetadata.Link<any, any>
+  >;
   primaryKeyType: PrimaryKeyTypes;
   icon: Icon | undefined;
   visibility: ObjectTypeVisibility | undefined;
