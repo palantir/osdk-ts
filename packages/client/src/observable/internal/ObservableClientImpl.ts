@@ -28,7 +28,7 @@ import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type {
   ObservableClient,
   ObserveListOptions,
-  ObserveObjectCallbackArgs,
+  ObserveObjectArgs,
   ObserveObjectOptions,
   ObserveObjectsCallbackArgs,
   Unsubscribable,
@@ -65,7 +65,7 @@ export class ObservableClientImpl implements ObservableClient {
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveObjectOptions<T>,
-    subFn: Observer<ObserveObjectCallbackArgs<T>>,
+    subFn: Observer<ObserveObjectArgs<T>>,
   ) => Unsubscribable;
 
   public observeList: <T extends ObjectTypeDefinition | InterfaceDefinition>(
