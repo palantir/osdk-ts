@@ -103,7 +103,7 @@ export interface WidgetManifestConfigV1 {
 
 export interface WidgetSetInputSpecV1 {
   /**
-   * The input specification for the widget set that was automatically discovered from the project.
+   * The input specification for the widget set that was automatically discovered from the project's dependencies.
    * @optional
    */
   discovered?: WidgetSetDiscoveredInputSpecV1;
