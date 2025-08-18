@@ -88,8 +88,8 @@ test("getWidgetBuildOutputs throws error when entrypoint chunk not found", async
     moduleIds: [],
   });
 
-  await expect(async () =>
-    await getWidgetBuildOutputs(
+  await expect(() =>
+    getWidgetBuildOutputs(
       { "chunk.js": nonEntryChunk },
       MOCK_INPUT,
       MOCK_BUILD_DIR,
