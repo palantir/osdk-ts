@@ -90,7 +90,8 @@ export interface ObserveObjectArgs<T extends ObjectTypeDefinition> {
   lastUpdated: number;
 }
 
-export interface ObserveObjectsCallbackArgs<
+// TODO: Rename this from `ObserveObjectsArgs` => `ObserveObjectsCallbackArgs`. Not doing it now to reduce churn
+export interface ObserveObjectsArgs<
   T extends ObjectTypeDefinition | InterfaceDefinition,
 > {
   resolvedList: Array<Osdk.Instance<T>>;
@@ -125,7 +126,7 @@ export interface ObservableClient extends ObserveLinks {
 
   observeList<T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
-    subFn: Observer<ObserveObjectsCallbackArgs<T>>,
+    subFn: Observer<ObserveObjectsArgs<T>>,
   ): Unsubscribable;
 
   applyAction: <Q extends ActionDefinition<any>>(

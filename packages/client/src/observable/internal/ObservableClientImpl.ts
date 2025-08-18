@@ -30,7 +30,7 @@ import type {
   ObserveListOptions,
   ObserveObjectArgs,
   ObserveObjectOptions,
-  ObserveObjectsCallbackArgs,
+  ObserveObjectsArgs,
   Unsubscribable,
 } from "../ObservableClient.js";
 import type { Observer } from "../ObservableClient/common.js";
@@ -70,7 +70,7 @@ export class ObservableClientImpl implements ObservableClient {
 
   public observeList: <T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
-    subFn: Observer<ObserveObjectsCallbackArgs<T>>,
+    subFn: Observer<ObserveObjectsArgs<T>>,
   ) => Unsubscribable;
 
   public observeLinks: <

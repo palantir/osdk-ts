@@ -294,6 +294,19 @@ export abstract class BaseListQuery<
     return objectCacheKeys;
   }
 
+  _dispose(): void {
+    // eslint-disable-next-line no-console
+    console.log("DISPOSE LIST QUERY");
+    this.store.batch({}, (batch) => {
+      const entry = batch.read(this.cacheKey);
+      if (entry) {
+        for (const objectCacheKey of entry.value?.data ?? []) {
+          this.store.release(objectCacheKey);
+        }
+      }
+    });
+  }
+
   /**
    * Creates a payload from collection parameters
    * Default implementation that covers common fields for all collection types
@@ -958,19 +971,6 @@ export class ListQuery extends BaseListQuery<
         sortaMatches: new Set(),
       },
     };
-  }
-
-  _dispose(): void {
-    // eslint-disable-next-line no-console
-    console.log("DISPOSE LIST QUERY");
-    this.store.batch({}, (batch) => {
-      const entry = batch.read(this.cacheKey);
-      if (entry) {
-        for (const objectCacheKey of entry.value?.data ?? []) {
-          this.store.release(objectCacheKey);
-        }
-      }
-    });
   }
 
   registerStreamUpdates(sub: Subscription): void {
