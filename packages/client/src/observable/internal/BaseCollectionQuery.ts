@@ -29,6 +29,10 @@ import type { Entry } from "./Layer.js";
 import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";
 import { Query } from "./Query.js";
 import { removeDuplicates } from "./removeDuplicates.js";
+import {
+  NoOpSortingStrategy,
+  type SortingStrategy,
+} from "./sorting/SortingStrategy.js";
 import type { BatchContext, SubjectPayload } from "./Store.js";
 
 // Common interface for collection storage
@@ -123,6 +127,12 @@ export abstract class BaseCollectionQuery<
    * @protected
    */
   protected pendingPageFetch?: Promise<unknown>;
+
+  /**
+   * The sorting strategy to use for this collection
+   * @protected
+   */
+  protected sortingStrategy: SortingStrategy = new NoOpSortingStrategy();
   /**
    * Common implementation for writing to store for collection-based queries
    * @param data The collection data to write to the store
@@ -457,15 +467,17 @@ export abstract class BaseCollectionQuery<
   }
 
   /**
-   * Maybe sort the collection items if the implementing class has sorting logic
-   * @param objectCacheKeys - The cache keys to potentially sort
+   * Sort the collection items using the configured sorting strategy
+   * @param objectCacheKeys - The cache keys to sort
    * @param batch - The batch context
-   * @returns Sorted (or unchanged) array of cache keys
+   * @returns Sorted array of cache keys
    */
-  protected abstract _maybeSortCollection(
+  protected sortCollection(
     objectCacheKeys: ObjectCacheKey[],
     batch: BatchContext,
-  ): ObjectCacheKey[];
+  ): ObjectCacheKey[] {
+    return this.sortingStrategy.sortCacheKeys(objectCacheKeys, batch);
+  }
 
   /**
    * Unified method for updating collection data in the store
@@ -518,8 +530,8 @@ export abstract class BaseCollectionQuery<
       objectCacheKeys,
     );
 
-    // Step 3: Sort if the subclass implements sorting
-    objectCacheKeys = this._maybeSortCollection(objectCacheKeys, batch);
+    // Step 3: Sort using the configured sorting strategy
+    objectCacheKeys = this.sortCollection(objectCacheKeys, batch);
 
     // Step 4: Remove duplicates
     objectCacheKeys = removeDuplicates(objectCacheKeys, batch);

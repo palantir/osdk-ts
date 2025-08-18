@@ -51,6 +51,7 @@ import type { ObjectCacheKey } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import type { Query } from "./Query.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
+import { OrderBySortingStrategy } from "./sorting/SortingStrategy.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
 export interface BaseListCacheKey<
@@ -89,37 +90,6 @@ export class ListQuery extends BaseCollectionQuery<
   // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
-  #sortFns: Array<
-    (
-      a: ObjectHolder | InterfaceHolder | undefined,
-      b: ObjectHolder | InterfaceHolder | undefined,
-    ) => number
-  >;
-
-  /**
-   * Implementation of _maybeSortCollection from BaseCollectionQuery
-   * Sorts the collection based on the orderBy clause
-   */
-  protected _maybeSortCollection(
-    objectCacheKeys: ObjectCacheKey[],
-    batch: BatchContext,
-  ): ObjectCacheKey[] {
-    if (Object.keys(this.#orderBy).length > 0) {
-      objectCacheKeys = objectCacheKeys.sort((a, b) => {
-        for (const sortFn of this.#sortFns) {
-          const ret = sortFn(
-            batch.read(a)?.value?.$as(this.#apiName),
-            batch.read(b)?.value?.$as(this.#apiName),
-          );
-          if (ret !== 0) {
-            return ret;
-          }
-        }
-        return 0;
-      });
-    }
-    return objectCacheKeys;
-  }
 
   /**
    * Register changes to the cache specific to ListQuery
@@ -163,7 +133,11 @@ export class ListQuery extends BaseCollectionQuery<
       apiName: this.#apiName,
     } as ObjectTypeDefinition)
       .where(this.#whereClause);
-    this.#sortFns = createOrderBySortFns(this.#orderBy);
+    // Initialize the sorting strategy
+    this.sortingStrategy = new OrderBySortingStrategy(
+      this.#apiName,
+      this.#orderBy,
+    );
     // Initialize the minResultsToLoad inherited from BaseCollectionQuery
     this.minResultsToLoad = 0;
   }
@@ -633,32 +607,6 @@ export class ListQuery extends BaseCollectionQuery<
       });
     });
   }
-}
-
-function createOrderBySortFns(
-  orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
-) {
-  return Object.entries(orderBy).map(([key, order]) => {
-    return (
-      a: ObjectHolder | InterfaceHolder | undefined,
-      b: ObjectHolder | InterfaceHolder | undefined,
-    ): number => {
-      const aValue = a?.[key];
-      const bValue = b?.[key];
-
-      if (aValue == null && bValue == null) {
-        return 0;
-      }
-      if (aValue == null) {
-        return 1;
-      }
-      if (bValue == null) {
-        return -1;
-      }
-      const m = order === "asc" ? -1 : 1;
-      return aValue < bValue ? m : aValue > bValue ? -m : 0;
-    };
-  });
 }
 
 // Hopefully this can go away when we can just request the full object properties on first load
