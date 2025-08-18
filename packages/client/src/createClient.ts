@@ -33,6 +33,7 @@ import type {
   ExperimentFns,
   MinimalObjectSet,
 } from "@osdk/api/unstable";
+import {} from "@osdk/foundry.admin";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
@@ -105,9 +106,8 @@ export function createClientInternal(
   baseUrl: string,
   ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
-  options: { logger?: Logger } | undefined = undefined,
+  options: { logger?: Logger; branch?: string } | undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
-  branch: string | undefined = undefined,
 ): Client {
   if (typeof ontologyRid === "string") {
     if (!ontologyRid.startsWith("ri.")) {
@@ -131,7 +131,7 @@ export function createClientInternal(
       ...options,
       logger: options?.logger ?? new MinimalLogger(),
       transactionRid: transactionRid,
-      branch,
+      branch: options?.branch,
     },
     fetchFn,
     objectSetFactory,
@@ -293,9 +293,9 @@ export const createClient: (
   tokenProvider: () => Promise<string>,
   options?: {
     logger?: Logger;
+    branch?: string;
   } | undefined,
   fetchFn?: typeof fetch | undefined,
-  branch?: string | undefined,
 ) => Client = createClientInternal.bind(
   undefined,
   createObjectSet,
