@@ -16,6 +16,7 @@
 
 import { NonIdealState, Spinner, SpinnerSize } from "@blueprintjs/core";
 import React, { useEffect } from "react";
+import { EntrypointIframe } from "./entrypointIframe.js";
 
 type PageState =
   | {
@@ -52,14 +53,16 @@ export const App: React.FC = () => {
           if (result.status === "pending") {
             return;
           }
+          if (result.status === "error") {
+            throw new Error(result.error);
+          }
 
-          // On success or failure, we clear the poll and end the loading state
+          // On success, we clear the poll and end the loading state
           window.clearInterval(poll);
-          setPageState(
-            result.status === "success"
-              ? { state: "success", isRedirecting: result.redirectUrl != null }
-              : { state: "failed", error: result.error },
-          );
+          setPageState({
+            state: "success",
+            isRedirecting: result.redirectUrl != null,
+          });
 
           // When running in Code Workspaces the parent app will handle the redirect
           if (result.status === "success" && result.redirectUrl != null) {
@@ -70,6 +73,8 @@ export const App: React.FC = () => {
         })
         .catch((error: unknown) => {
           window.clearInterval(poll);
+          // eslint-disable-next-line no-console
+          console.error("Failed to finish dev mode setup:", error);
           setPageState({
             state: "failed",
             error: error instanceof Error ? error.message : undefined,
@@ -110,7 +115,7 @@ export const App: React.FC = () => {
       )}
       {/* To load the entrypoint info, we have to actually load it in the browser to get vite to follow the module graph. Since we know these files will fail, we just load them in iframes set to display: none to trigger the load hook in vite */}
       {entrypointPaths.map((entrypointPath) => (
-        <iframe key={entrypointPath} src={entrypointPath} />
+        <EntrypointIframe src={entrypointPath} key={entrypointPath} />
       ))}
     </div>
   );
