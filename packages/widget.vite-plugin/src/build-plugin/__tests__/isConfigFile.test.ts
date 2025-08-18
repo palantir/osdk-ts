@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import { CONFIG_FILE_SUFFIX } from "../common/constants.js";
+import { expect, test } from "vitest";
+import { isConfigFile } from "../isConfigFile.js";
 
-export function isConfigFile(filePath: string): boolean {
-  const trimmedFilePath = filePath.replace(/\.[^/.]+$/, "");
-  return filePath.endsWith(CONFIG_FILE_SUFFIX)
-    || trimmedFilePath.endsWith(CONFIG_FILE_SUFFIX);
-}
+test("isConfigFile identifies config files", () => {
+  expect(isConfigFile("./widget.config.ts")).toBe(true);
+  expect(isConfigFile("./widget.config.js")).toBe(true);
+  expect(isConfigFile("/my-assets/widget.config")).toBe(true);
+
+  expect(isConfigFile("/assets/config")).toBe(false);
+  expect(isConfigFile("")).toBe(false);
+});
