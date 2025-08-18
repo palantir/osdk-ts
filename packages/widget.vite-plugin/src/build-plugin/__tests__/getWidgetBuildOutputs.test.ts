@@ -116,8 +116,8 @@ test("getWidgetBuildOutputs throws error when no config file found", async () =>
     moduleIds: [],
   });
 
-  await expect(async () =>
-    await getWidgetBuildOutputs(
+  await expect(() =>
+    getWidgetBuildOutputs(
       { "chunk.js": entryChunk },
       MOCK_INPUT,
       MOCK_BUILD_DIR,
@@ -146,8 +146,8 @@ test("getWidgetBuildOutputs throws error when multiple config files found", asyn
     moduleIds: ["/src/widget.config.js", "/src/widget.config.ts"],
   });
 
-  await expect(async () =>
-    await getWidgetBuildOutputs(
+  await expect(() =>
+    getWidgetBuildOutputs(
       { "chunk.js": entryChunk },
       MOCK_INPUT,
       MOCK_BUILD_DIR,
@@ -181,8 +181,8 @@ test("getWidgetBuildOutputs throws error when extractWidgetConfig fails", async 
     new Error("Config extraction failed"),
   );
 
-  await expect(async () =>
-    await getWidgetBuildOutputs(
+  await expect(() =>
+    getWidgetBuildOutputs(
       { "chunk.js": entryChunk },
       MOCK_INPUT,
       MOCK_BUILD_DIR,
