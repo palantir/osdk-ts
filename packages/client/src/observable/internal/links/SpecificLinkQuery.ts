@@ -30,10 +30,12 @@ import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import { BaseCollectionQuery } from "../BaseCollectionQuery.js";
 import type { CacheKey } from "../CacheKey.js";
+import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
 import type { Entry } from "../Layer.js";
-import type { ObjectCacheKey } from "../ObjectQuery.js";
 import type { OptimisticId } from "../OptimisticId.js";
+import type { SimpleWhereClause } from "../SimpleWhereClause.js";
+import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { BatchContext, Store, SubjectPayload } from "../Store.js";
 import { tombstone } from "../tombstone.js";
 import type { SpecificLinkCacheKey } from "./SpecificLinkCacheKey.js";
@@ -54,18 +56,8 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
   #sourceApiName: string;
   #sourcePk: PrimaryKeyType<ObjectTypeDefinition>;
   #linkName: string;
-
-  /**
-   * Implementation of _maybeSortCollection from BaseCollectionQuery
-   * Links don't have custom sorting logic
-   */
-  protected _maybeSortCollection(
-    objectCacheKeys: ObjectCacheKey[],
-    _batch: BatchContext, // Parameter unused but required by interface
-  ): ObjectCacheKey[] {
-    // No custom sorting for links
-    return objectCacheKeys;
-  }
+  #whereClause: Canonical<SimpleWhereClause>;
+  #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
 
   /**
    * Register changes to the cache specific to SpecificLinkQuery
@@ -95,7 +87,20 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
         )
         : undefined,
     );
-    [this.#sourceApiName, this.#sourcePk, this.#linkName] = cacheKey.otherKeys;
+
+    // Extract the necessary parameters from the cache key
+    [
+      this.#sourceApiName,
+      this.#sourcePk,
+      this.#linkName,
+      this.#whereClause,
+      this.#orderBy,
+    ] = cacheKey.otherKeys;
+
+    this.sortingStrategy = new OrderBySortingStrategy(
+      this.#linkName,
+      this.#orderBy,
+    );
   }
 
   // _fetchAndStore is now implemented in BaseCollectionQuery
@@ -134,10 +139,23 @@ export class SpecificLinkQuery extends BaseCollectionQuery<
     }
 
     // Fetch the linked objects with pagination
-    const response = await linkQuery.fetchPage({
+    // Add orderBy to the query parameters if specified
+    const queryParams: any = {
       $pageSize: this.options.pageSize || 100,
       $nextPageToken: this.nextPageToken,
-    });
+    };
+
+    // Include orderBy if it has entries
+    if (this.#orderBy && Object.keys(this.#orderBy).length > 0) {
+      queryParams.$orderBy = this.#orderBy;
+    }
+
+    // Include whereClause if it has entries
+    if (this.#whereClause && Object.keys(this.#whereClause).length > 0) {
+      queryParams.$where = this.#whereClause;
+    }
+
+    const response = await linkQuery.fetchPage(queryParams);
 
     // Store the next page token for pagination
     this.nextPageToken = response.nextPageToken;

@@ -69,52 +69,54 @@ export class CacheKeys {
     this.#registerCacheKeyFactory<ListCacheKey>(
       "list",
       (type, apiName, where, orderBy) => {
+        const cacheKeyArgs: CacheKeyArgs<ListCacheKey> = [
+          "list",
+          type,
+          apiName,
+          whereCanonicalizer.canonicalize(where),
+          orderByCanonicalizer.canonicalize(orderBy),
+        ];
+
         if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
           // eslint-disable-next-line no-console
           console.debug(
             `CacheKeys.get([list, ${apiName}, ${JSON.stringify(where)}, ${
               JSON.stringify(orderBy)
             }]) -- already exists? `,
-            this.#cacheKeys.peekArray([
-              "list",
-              apiName,
-              whereCanonicalizer.canonicalize(where),
-              orderByCanonicalizer.canonicalize(orderBy),
-            ]) != null,
+            this.#cacheKeys.peekArray(cacheKeyArgs) != null,
           );
         }
+
         return this.#cacheKeys.lookupArray<
           CacheKeyArgs<ListCacheKey>
-        >([
-          "list",
-          type,
-          apiName,
-          whereCanonicalizer.canonicalize(where),
-          orderByCanonicalizer.canonicalize(orderBy),
-        ]) as ListCacheKey;
+        >(cacheKeyArgs) as ListCacheKey;
       },
     );
     this.#registerCacheKeyFactory<SpecificLinkCacheKey>(
       "specificLink",
-      (sourceObjectType, sourcePk, linkName) => {
-        if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
-          // eslint-disable-next-line no-console
-          console.debug(
-            `CacheKeys.get([specificLink, ${sourceObjectType}, ${sourcePk}, ${linkName}]) -- already exists? `,
-            this.#cacheKeys.peekArray([
-              "specificLink",
-              sourceObjectType,
-              sourcePk,
-              linkName,
-            ]) != null,
-          );
-        }
-        return this.#cacheKeys.lookupArray([
+      (sourceObjectType, sourcePk, linkName, where, orderBy) => {
+        const cacheKeyArgs: CacheKeyArgs<SpecificLinkCacheKey> = [
           "specificLink",
           sourceObjectType,
           sourcePk,
           linkName,
-        ]) as SpecificLinkCacheKey;
+          whereCanonicalizer.canonicalize(where),
+          orderByCanonicalizer.canonicalize(orderBy),
+        ];
+
+        if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
+          // eslint-disable-next-line no-console
+          console.debug(
+            `CacheKeys.get([specificLink, ${sourceObjectType}, ${sourcePk}, ${linkName}, ${
+              JSON.stringify(where)
+            }, ${JSON.stringify(orderBy)}]) -- already exists? `,
+            this.#cacheKeys.peekArray(cacheKeyArgs) != null,
+          );
+        }
+
+        return this.#cacheKeys.lookupArray(
+          cacheKeyArgs,
+        ) as SpecificLinkCacheKey;
       },
     );
   }
