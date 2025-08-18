@@ -111,7 +111,7 @@ export interface WidgetSetInputSpecV1 {
 
 export interface WidgetSetDiscoveredInputSpecV1 {
   /**
-   * The discovered Ontology SDK packages in the project
+   * The discovered Ontology SDK packages in the project's dependencies.
    */
   sdks: Array<OntologySdkInputSpecV1>;
 }
