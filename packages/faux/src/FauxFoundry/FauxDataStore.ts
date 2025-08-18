@@ -382,7 +382,7 @@ export class FauxDataStore {
               srcLocator: objectLocator(x),
               srcSide: linkDef,
               dstLocator: objectLocator({
-                __apiName: dstSide.objectTypeApiName,
+                __apiName: linkDef.objectTypeApiName,
                 __primaryKey: oldFkValue,
               }),
               dstSide,
@@ -719,11 +719,23 @@ export class FauxDataStore {
     const destLinkName = linkSide.apiName;
     if (linkSide.cardinality === "ONE") {
       const links = this.#singleLinks.get(locator);
-      invariant(links.get(destLinkName) === expectedPriorValue);
+      invariant(
+        links.get(destLinkName) === expectedPriorValue,
+        `Failed to remove link: expected ${
+          JSON.stringify(expectedPriorValue)
+        } but found ${
+          JSON.stringify(links.get(destLinkName))
+        } for link ${destLinkName} on ${JSON.stringify(locator)}`,
+      );
       links.delete(destLinkName);
     } else {
       const links = this.#manyLinks.get(locator);
-      invariant(links.get(destLinkName)?.has(expectedPriorValue));
+      invariant(
+        links.get(destLinkName)?.has(expectedPriorValue),
+        `Failed to remove link: expected collection to contain ${
+          JSON.stringify(expectedPriorValue)
+        } for link ${destLinkName} on ${JSON.stringify(locator)}`,
+      );
       links.remove(destLinkName, expectedPriorValue);
     }
   }
