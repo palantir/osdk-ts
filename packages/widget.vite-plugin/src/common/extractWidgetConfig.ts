@@ -31,11 +31,8 @@ export async function extractWidgetConfig(
 
     return config as WidgetConfig<ParameterConfig>;
   } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(`Failed to load widget config from ${moduleId}`, {
-        cause: error,
-      });
-    }
-    throw error;
+    throw new Error(`Failed to load widget config from ${moduleId}`, {
+      cause: error,
+    });
   }
 }
