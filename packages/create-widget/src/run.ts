@@ -147,6 +147,7 @@ export async function run({
       + `  \`cd ${cdRelative}\`\n`
       + `  \`export FOUNDRY_TOKEN=<token>\`\n`
       + `  \`npm install\`\n`
+      + `  \`npx @osdk/cli@latest widgetset deploy\`\n`
       + `  \`npm run dev\``,
     style: {
       padding: 2,
