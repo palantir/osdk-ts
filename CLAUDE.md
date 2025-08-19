@@ -1,32 +1,31 @@
 ## TypeScript Best Practices
 
-- NEVER solve a problem in typescript by using `any` without first asking the user. If you think you need to use `any` then you probably don't understand the problem and need to ask for help
-- These projects are almost exclusively esm and typescript. Don't assume that you are always looking for a `.js` file. It might be a `.ts` or `.tsx` file
-- To check if a certain package compiles in this monorepo, perform: `cd packages/the-package && pnpm turbo typecheck`
+- NEVER use `any` without asking the user first. If you think you need `any`, you probably don't understand the problem
+- Projects are ESM/TypeScript - look for `.ts`/`.tsx` files, not `.js`
+- To check compilation: `cd packages/the-package && pnpm turbo typecheck`
 
 ## React Best Practices
 
-- Always put new react components in their own file
-- Always create separate React components instead of inline functions
-- When using @osdk/react, tools like useOsdkObject, useOsdkObjects, useLinks (and maybe others) will all return a `loading` state. However just because we are in a loading state, it does not mean we do not have data. We might be reloading invalidated data and therefore should incorporate the loading state as a comprehensive part of a view and not as a shortcut to end a function.
-- ALWAYS keep components rendering even during loading or error states. Don't use early returns like `if (isLoading) return <LoadingMessage />`. Instead, show loading/error indicators while still rendering any existing data. This prevents UI flashing when data is being refreshed and provides a better user experience.
-- When using react hooks, YOU CANNOT CONDITIONALLY CALL THEM. EVER!
-- The way you call an action with the @osdk/react library is to call `useOsdkAction()` passing the action definition to it. For example: `const { applyAction } = useOsdkAction(modifyEmployee)` and then `applyAction({ employee, primary_office_id })`. For direct client usage without the hook, use `$(modifyEmployee).applyAction({ employee, primary_office_id })`.
-- When working with @osdk/react be sure to read @packages/react/docs/getting_started.md 
+- Always put new components in their own file and create separate components instead of inline functions
+- NEVER conditionally call React hooks
+- ALWAYS keep components rendering during loading/error states. Don't use early returns like `if (isLoading) return <LoadingMessage />`. Show loading/error indicators while rendering existing data to prevent UI flashing
+- @osdk/react hooks may have data while loading (reloading invalidated data). Incorporate loading state comprehensively, not as shortcuts
+- Call actions: `const { applyAction } = useOsdkAction(modifyEmployee)` then `applyAction({ employee, primary_office_id })`
+- Direct client: `$(modifyEmployee).applyAction({ employee, primary_office_id })`
+- Read @packages/react/docs/getting_started.md when working with @osdk/react
 
 ## Project Management
 
 - This project uses pnpm. DO NOT use npm
-- YOU ARE NOT ALLOWED TO USE `npm`. This project uses `pnpm`!
 
 ## Security Best Practices
 
-- NEVER disable gpg signing unless I explicitly ask you to
+- NEVER disable gpg signing unless explicitly requested
 
 ## Repository Best Practices
 
-- This is a mono repo. You can't run tests from the root. You must run them from the package they live in.
+- Monorepo: run tests from individual packages, not root
 
 ## Code Maintenance Best Practices
 
-- Please do not fix diagnostic warnings in old code
+- Do not fix diagnostic warnings in old code

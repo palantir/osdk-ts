@@ -27,6 +27,12 @@ import type { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 type CacheKeyArgs<K extends CacheKey> = [K["type"], ...K["otherKeys"]];
 
+/**
+ * Cache key management with canonicalization.
+ * - Formats: {type}:{pk} | {type}:list:{where} | {source}:{pk}:{link}:{where}
+ * - Uses Trie structure for efficient storage and lookup
+ * - Ensures consistent keys through canonicalization
+ */
 export class CacheKeys {
   #cacheKeys = new Trie<KnownCacheKey>(false, (keys) => {
     const ret = {

@@ -19,7 +19,12 @@ import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectH
 import type { Status } from "../ObservableClient/common.js";
 import { type ObjectCacheKey } from "./ObjectQuery.js";
 
-// Common interface for collection storage
+/**
+ * Abstract base for ListQuery and SpecificLinkQuery.
+ * - Stores object references, not duplicates
+ * - Implements shared pagination and reference counting
+ * - Template method pattern for collection operations
+ */
 export interface CollectionStorageData {
   data: ObjectCacheKey[];
 }
