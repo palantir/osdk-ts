@@ -16,29 +16,32 @@
 
 import type { LoadedFoundryConfig } from "@osdk/foundry-config-json";
 import { autoVersion, loadFoundryConfig } from "@osdk/foundry-config-json";
-import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
+import type { WidgetSetManifest } from "@osdk/widget.api";
 import { MANIFEST_FILE_LOCATION } from "@osdk/widget.api";
 import fs from "fs";
 import path from "path";
-import type { Plugin, ResolvedConfig } from "vite";
-import { extractWidgetConfig } from "../common/extractWidgetConfig.js";
+import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
+import { createServer } from "vite";
+import {
+  BUILD_PLUGIN_ID,
+  MODULE_EVALUATION_MODE,
+} from "../common/constants.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
-import { standardizeFileExtension } from "../common/standardizeFileExtension.js";
 import { buildWidgetSetManifest } from "./buildWidgetSetManifest.js";
 import { getWidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
 import { getWidgetSetInputSpec } from "./getWidgetSetInputSpec.js";
-import { isConfigFile } from "./isConfigFile.js";
 
 export function FoundryWidgetBuildPlugin(): Plugin {
   // The root HTML entrypoints of the build process
   let htmlEntrypoints: string[];
-  // Store the configuration per module ID, e.g. /repo/src/widget-one.config.ts -> { ... }
-  const configFiles: Record<string, WidgetConfig<ParameterConfig>> = {};
+  // Store the resolved Vite config for use in later build steps
   let config: ResolvedConfig;
 
   return {
-    name: "@osdk:widget-build-plugin",
+    name: BUILD_PLUGIN_ID,
     enforce: "pre",
+    // Only apply this plugin during build
+    apply: "build",
 
     /**
      * Capture the entrypoints from the Vite config for use in later build steps.
@@ -55,22 +58,6 @@ export function FoundryWidgetBuildPlugin(): Plugin {
     },
 
     /**
-     * Attempt to parse any module that looks like a widget configuration file, storing the result
-     * to be matched to entrypoints later.
-     */
-    moduleParsed(moduleInfo) {
-      if (!isConfigFile(moduleInfo.id)) {
-        return;
-      }
-
-      const widgetConfig = extractWidgetConfig(moduleInfo.id, moduleInfo.ast);
-      if (widgetConfig != null) {
-        const standardizedSource = standardizeFileExtension(moduleInfo.id);
-        configFiles[standardizedSource] = widgetConfig;
-      }
-    },
-
-    /**
      * Once the build is complete, generate the widget set manifest based on the entrypoints and
      * configuration files that were found.
      *
@@ -82,33 +69,54 @@ export function FoundryWidgetBuildPlugin(): Plugin {
         throw new Error("foundry.config.json file not found.");
       }
 
-      // Build widget set manifest
-      const widgetSetVersion = await computeWidgetSetVersion(foundryConfig);
-      const widgetBuilds = htmlEntrypoints.map((input) =>
-        getWidgetBuildOutputs(bundle, input, config.build.outDir, configFiles)
-      );
-      const widgetSetInputSpec = await getWidgetSetInputSpec(
-        path.resolve(process.cwd(), "package.json"),
-      );
-      const widgetSetManifest = buildWidgetSetManifest(
-        foundryConfig.foundryConfig.widgetSet.rid,
-        widgetSetVersion,
-        widgetBuilds,
-        widgetSetInputSpec,
-      );
+      // Create a Vite server to evaluate widget config modules
+      const server = await createModuleEvaluationServer(config);
 
-      // Write the manifest to the dist directory
-      const manifestPath = path.join(
-        config.build.outDir,
-        MANIFEST_FILE_LOCATION,
-      );
-      fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
-      fs.writeFileSync(
-        manifestPath,
-        JSON.stringify(widgetSetManifest, null, 2),
-      );
+      try {
+        // Build widget set manifest
+        const widgetSetVersion = await computeWidgetSetVersion(foundryConfig);
+        const widgetBuilds = await Promise.all(
+          htmlEntrypoints.map((input) =>
+            getWidgetBuildOutputs(
+              bundle,
+              input,
+              config.build.outDir,
+              server,
+            )
+          ),
+        );
+        const widgetSetInputSpec = await getWidgetSetInputSpec(
+          path.resolve(process.cwd(), "package.json"),
+        );
+        const widgetSetManifest = buildWidgetSetManifest(
+          foundryConfig.foundryConfig.widgetSet.rid,
+          widgetSetVersion,
+          widgetBuilds,
+          widgetSetInputSpec,
+        );
+
+        // Write the manifest to the dist directory
+        writeManifest(widgetSetManifest, config.build.outDir);
+      } finally {
+        await server.close();
+      }
     },
   };
+}
+
+/**
+ * Create a Vite server for widget config module evaluation during the build process.
+ * Must prevent loading the dev plugin to avoid triggering dev mode build steps.
+ */
+async function createModuleEvaluationServer(
+  config: ResolvedConfig,
+): Promise<ViteDevServer> {
+  return await createServer({
+    // Reference the existing config file in order to respect any custom config
+    configFile: config.configFile,
+    // Custom mode to prevent dev plugin execution
+    mode: MODULE_EVALUATION_MODE,
+  });
 }
 
 async function computeWidgetSetVersion(
@@ -117,5 +125,17 @@ async function computeWidgetSetVersion(
   return autoVersion(
     foundryConfig.foundryConfig.widgetSet.autoVersion
       ?? { "type": "package-json" },
+  );
+}
+
+function writeManifest(
+  widgetSetManifest: WidgetSetManifest,
+  outDir: string,
+): void {
+  const manifestPath = path.join(outDir, MANIFEST_FILE_LOCATION);
+  fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
+  fs.writeFileSync(
+    manifestPath,
+    JSON.stringify(widgetSetManifest, null, 2),
   );
 }
