@@ -138,6 +138,12 @@ function createInitEntry(cacheKey: KnownCacheKey): Entry<any> {
     - Data is one per layer per cache key
 */
 
+/**
+ * Central data store with layered cache architecture.
+ * - Truth layer: server state | Optimistic layers: pending changes
+ * - Reference counting prevents memory leaks
+ * - Batch operations ensure consistency
+ */
 export class Store {
   whereCanonicalizer: WhereClauseCanonicalizer = new WhereClauseCanonicalizer();
   orderByCanonicalizer: OrderByCanonicalizer = new OrderByCanonicalizer();

@@ -46,7 +46,11 @@ import type { SpecificLinkCacheKey } from "./SpecificLinkCacheKey.js";
 // export interface SpecificLinkEntry extends Entry<SpecificLinkCacheKey> {}
 
 /**
- * Query implementation for retrieving linked objects from a specific object
+ * Query implementation for retrieving linked objects from a specific object.
+ * - Stores links as ObjectCacheKey[] references
+ * - Creates indirect dependencies on linked objects
+ * - Supports filtering and sorting of linked collections
+ * - Handles proper invalidation of related objects
  */
 export class SpecificLinkQuery extends BaseListQuery<
   SpecificLinkCacheKey,

@@ -39,6 +39,11 @@ import type { Canonical } from "./Canonical.js";
 import type { Store } from "./Store.js";
 
 /**
+ * Implementation of the public ObservableClient interface.
+ * - Delegates all operations to the Store for consistency
+ * - Serves as the entry point for reactive data management
+ * - Ensures proper method binding and API exposure
+ *
  * @internal
  */
 export class ObservableClientImpl implements ObservableClient {

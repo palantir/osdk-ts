@@ -604,6 +604,13 @@ export abstract class BaseListQuery<
   }
 }
 
+/**
+ * Implements filtered and sorted object collection queries.
+ * - Handles where clause filtering and orderBy sorting
+ * - Manages pagination through fetchMore
+ * - Auto-updates when matching objects change
+ * - Uses canonicalized cache keys for consistency
+ */
 export class ListQuery extends BaseListQuery<
   ListCacheKey,
   ListPayload,

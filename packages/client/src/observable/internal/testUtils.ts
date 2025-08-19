@@ -98,6 +98,13 @@ function mockLog(...args: any[]) {
 //   (msg: string, ...args: any[]): void;
 // }
 
+/**
+ * Testing utilities for ObservableClient implementation.
+ * - Mock creation helpers for client, observers, and callbacks
+ * - Expectation utilities for validating payloads
+ * - Tools for managing test lifecycle and cleanup
+ * - Creates a colorized logger for test environments
+ */
 export function createTestLogger(
   bindings: Record<string, any>,
   options?: { level?: string; msgPrefix?: string },
@@ -164,6 +171,9 @@ export function createTestLogger(
   };
 }
 
+/**
+ * Creates mocked client helpers with deferred promise control
+ */
 export function createClientMockHelper(): MockClientHelper {
   const client = vitest.fn<typeof client>() as unknown as Mock<Client> & Client;
 
@@ -322,6 +332,9 @@ export function createClientMockHelper(): MockClientHelper {
   };
 }
 
+/**
+ * Manages test subscriptions with automatic cleanup
+ */
 export function createDefer() {
   let subscriptions: Unsubscribable[];
 
@@ -383,6 +396,9 @@ export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
   subFn.next.mockClear();
 }
 
+/**
+ * Validates object payload emissions in tests
+ */
 export function expectSingleObjectCallAndClear<T extends ObjectTypeDefinition>(
   subFn: MockedObject<Observer<ObjectPayload | undefined>>,
   object: Osdk.Instance<T> | undefined,

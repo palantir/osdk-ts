@@ -116,7 +116,32 @@ export interface ObserveLinkCallbackArgs<
   status: Status;
 }
 
+/**
+ * Public interface for reactive data management with automatic updates.
+ *
+ * The ObservableClient provides a reactive data layer with:
+ * - Real-time object and collection observation
+ * - Automatic cache updates when data changes
+ * - Optimistic updates for immediate UI feedback
+ * - Pagination support for large collections
+ * - Link traversal for relationship navigation
+ */
 export interface ObservableClient extends ObserveLinks {
+  /**
+   * Observe a single object with automatic updates when it changes.
+   *
+   * @param apiName - The object type definition or name
+   * @param pk - The object's primary key
+   * @param options - Observation options including deduplication interval
+   * @param subFn - Observer that receives object state updates
+   * @returns Subscription that can be unsubscribed to stop updates
+   *
+   * The observer will receive:
+   * - Initial loading state if data not cached
+   * - Loaded state with the object data
+   * - Updates when the object changes
+   * - Error state if fetch fails
+   */
   observeObject<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
@@ -124,11 +149,38 @@ export interface ObservableClient extends ObserveLinks {
     subFn: Observer<ObserveObjectArgs<T>>,
   ): Unsubscribable;
 
+  /**
+   * Observe a filtered and sorted collection of objects.
+   *
+   * @param options - Filter, sort, and pagination options
+   * @param subFn - Observer that receives collection state updates
+   * @returns Subscription that can be unsubscribed to stop updates
+   *
+   * Supports:
+   * - Filtering with where clauses
+   * - Sorting with orderBy
+   * - Pagination via fetchMore() in the payload
+   * - Automatic updates when any matching object changes
+   */
   observeList<T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
     subFn: Observer<ObserveObjectsArgs<T>>,
   ): Unsubscribable;
 
+  /**
+   * Execute an action with optional optimistic updates.
+   *
+   * @param action - Action definition to execute
+   * @param args - Arguments for the action
+   * @param opts - Options including optimistic updates
+   * @returns Promise that resolves when the action completes
+   *
+   * When providing optimistic updates:
+   * - Changes appear immediately in the UI
+   * - Server request still happens in background
+   * - On success, server data replaces optimistic data
+   * - On failure, optimistic changes automatically roll back
+   */
   applyAction: <Q extends ActionDefinition<any>>(
     action: Q,
     args:
@@ -137,6 +189,18 @@ export interface ObservableClient extends ObserveLinks {
     opts?: ObservableClient.ApplyActionOptions,
   ) => Promise<unknown>;
 
+  /**
+   * Validate action parameters without executing the action.
+   *
+   * @param action - Action definition to validate
+   * @param args - Arguments to validate
+   * @returns Promise with validation result
+   *
+   * Use this to:
+   * - Pre-validate forms before submission
+   * - Display warnings or errors in the UI
+   * - Enable/disable action buttons based on validity
+   */
   validateAction: <Q extends ActionDefinition<any>>(
     action: Q,
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
