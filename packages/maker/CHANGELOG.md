@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.12.0-beta.20
+
+### Minor Changes
+
+- 45ed433: Target objects are configurable and default parameter ordering is better in OAC actions
+
 ## 0.12.0-beta.19
 
 ### Patch Changes
