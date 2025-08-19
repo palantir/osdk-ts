@@ -5,6 +5,7 @@ This directory contains internal implementation details not meant for direct imp
 ## Store Architecture
 
 Central data management system:
+
 - Maintains layered cache (truth + optimistic layers)
 - Reference counting for memory management
 - Batch operations for consistency
@@ -13,6 +14,7 @@ Central data management system:
 ## Layer System
 
 Stack-based data management:
+
 - **Truth Layer**: Server state base layer
 - **Optimistic Layers**: Temporary layers for pending changes
 - Consistent query API across all layers
@@ -30,6 +32,7 @@ Stack-based data management:
 ## Cache Keys
 
 Strongly-typed identifiers:
+
 - Objects: `{objectType}:{primaryKey}`
 - Lists: `{objectType}:list:{whereClause}:{orderByClause}`
 - Links: `{sourceType}:{sourcePk}:{linkName}:{whereClause}:{orderByClause}`
