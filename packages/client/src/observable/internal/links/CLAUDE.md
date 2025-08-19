@@ -7,9 +7,10 @@ Specialized implementation for observing object relationships (links) in the Obs
 • **SpecificLinkCacheKey.ts**: Link cache keys with structure `{sourceType}:{sourcePk}:{linkName}:{whereClause}:{orderByClause}`
 
 • **SpecificLinkQuery.ts**: Extends `BaseCollectionQuery` for link-specific behaviors:
-  - Fetches linked objects via pivot queries
-  - Manages pagination for linked collections
-  - Supports optimistic updates for relationships
+
+- Fetches linked objects via pivot queries
+- Manages pagination for linked collections
+- Supports optimistic updates for relationships
 
 ## Link Storage & Resolution
 

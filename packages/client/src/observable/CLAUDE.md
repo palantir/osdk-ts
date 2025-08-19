@@ -21,6 +21,7 @@ we want it to stay in that form.
 ## Core Concepts
 
 ### ObservableClient Methods
+
 - `observeObject()` - Subscribe to single object changes
 - `observeList()` - Subscribe to filtered/sorted object collections with pagination
 - `observeLinks()` - Subscribe to object relationships
@@ -28,16 +29,19 @@ we want it to stay in that form.
 - `validateAction()` - Validate actions without execution
 
 ### Cache System
+
 - **Multi-layer**: Truth layer (server data) with optimistic layers stacked on top
 - **Canonicalization**: Query parameters are normalized for efficient caching
 - **Reference Counting**: Automatic cleanup of unused cache entries
 
 ### Optimistic Updates
+
 - Immediately update UI while action is processed server-side
 - Use object cloning with `$clone()` to create immutable optimistic objects
 - On success, server data replaces optimistic update; on failure, automatically rolled back
 
 ## Best Practices
+
 - Reuse query parameters when possible to leverage cache
 - Understand that data is shared across components with the same query
 - When invalidating object types, only queries and links related to that specific object type will be invalidated
