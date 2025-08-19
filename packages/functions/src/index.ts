@@ -15,11 +15,13 @@
  */
 
 export type {
+  ClassificationMarking,
   DateISOString,
   Double,
   Float,
   Integer,
   Long,
+  MandatoryMarking,
   TimestampISOString,
 } from "./PrimitiveTypes.js";
 
