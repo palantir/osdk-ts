@@ -42,7 +42,7 @@ describe("extractWidgetConfig", () => {
     });
 
     await expect(extractWidgetConfig("/path/to/config.ts", MOCK_SERVER))
-      .rejects.toThrow("No default export found");
+      .rejects.toThrow("Failed to load widget config from /path/to/config.ts");
   });
 
   test("throws for invalid module path", async () => {
