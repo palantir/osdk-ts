@@ -321,6 +321,7 @@ export async function fetchObjectPage<
   objectSet: ObjectSet,
   useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
+  void client.ontologyProvider.getObjectDefinition(objectType.apiName);
   const r = await OntologiesV2.OntologyObjectSets.load(
     addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,
