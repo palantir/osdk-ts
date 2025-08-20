@@ -16,12 +16,17 @@
 
 import type { PropertyTypeType } from "@osdk/maker";
 
-// minimal info needed to generate objectType input shape
+// basically a user friendly OntologyIrImportedActionType wrapper
 export type importObjectDefinition = {
   apiName: string;
-  properties: Record<string, PropertyTypeType>;
+  properties: Record<string, importPropertyTypeDefinition>;
   displayName?: string;
-  pluralDisplayName?: string;
-  titlePropertyApiName?: string;
-  primaryKeyPropertyApiName?: string;
+  description?: string;
+};
+
+export type importPropertyTypeDefinition = {
+  type: PropertyTypeType;
+  displayName?: string;
+  description?: string;
+  sharedPropertyType?: string;
 };

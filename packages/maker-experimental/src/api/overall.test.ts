@@ -33,8 +33,8 @@ describe("Experimental Test Suite", () => {
       const importedObject = defineImportObject({
         apiName: "myImport",
         properties: {
-          id: "string",
-          name: "string",
+          id: { type: "string" },
+          name: { type: "string" },
         },
       });
       const foo = defineObject({

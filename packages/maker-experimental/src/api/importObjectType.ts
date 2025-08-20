@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
+import type {
+  OntologyIrImportedObjectType,
+  OntologyIrImportedPropertyType,
+} from "@osdk/client.unstable";
 import {
   convertToDisplayName,
   convertToPluralDisplayName,
+  convertType,
   importOntologyEntity,
   type ObjectPropertyType,
   type ObjectType,
@@ -24,15 +29,20 @@ import {
 } from "@osdk/maker";
 import type { importObjectDefinition } from "./types.js";
 
+/*
+ * Takes in the minimal object definition to create an input shape.
+ * First converts it to fake block data to call importOntologyEntity,
+ * then converts it to an OntologyIrImportedObjectType that is safe to use elsewhere.
+ */
 export function defineImportObject(
   objectDef: importObjectDefinition,
-): ObjectType {
+): OntologyIrImportedObjectType {
   const properties: Array<ObjectPropertyType> = Object.entries(
     objectDef.properties ?? {},
   ).map(([apiName, type]) => ({
     apiName: apiName,
     displayName: convertToDisplayName(apiName),
-    type: type,
+    type: type.type,
   }));
   const finalObject: ObjectType = {
     ...objectDef,
@@ -42,13 +52,24 @@ export function defineImportObject(
     // the rest don't matter for now
     displayName: objectDef.displayName
       ?? convertToDisplayName(objectDef.apiName),
-    pluralDisplayName: objectDef.pluralDisplayName
-      ?? convertToPluralDisplayName(objectDef.apiName),
-    primaryKeyPropertyApiName: objectDef.primaryKeyPropertyApiName
-      ?? properties[0]?.apiName,
-    titlePropertyApiName: objectDef.titlePropertyApiName
-      ?? properties[0]?.apiName,
+    pluralDisplayName: convertToPluralDisplayName(objectDef.apiName),
+    primaryKeyPropertyApiName: properties[0]?.apiName,
+    titlePropertyApiName: properties[0]?.apiName,
   };
   importOntologyEntity(finalObject);
-  return finalObject;
+
+  const importPropertyTypes: Array<OntologyIrImportedPropertyType> = Object
+    .entries(objectDef.properties).map(([apiName, importedPt]) => ({
+      ...importedPt,
+      apiName: apiName,
+      displayName: importedPt.displayName ?? convertToDisplayName(apiName),
+      type: convertType(importedPt.type),
+    }));
+  const ontologyImportObject: OntologyIrImportedObjectType = {
+    ...objectDef,
+    displayName: objectDef.displayName
+      ?? convertToDisplayName(objectDef.apiName),
+    propertyTypes: importPropertyTypes,
+  };
+  return ontologyImportObject;
 }
