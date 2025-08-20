@@ -1527,7 +1527,8 @@
             "displayName": "Is Enum",
             "dataType": {
               "type": "boolean"
-            }
+            },
+            "valueTypeApiName": "booleanValueType"
           },
           "timeSeriesProperty": {
             "displayName": "Time Series Property",
@@ -2781,6 +2782,20 @@
       "constraints": [{
         "type": "enum",
         "options": ["brown", "found.com"]
+      }]
+    },
+    "booleanValueType": {
+      "apiName": "booleanValueType",
+      "description": "A value type for boolean values",
+      "displayName": "Boolean Value Type",
+      "rid": "ri.a.b.c.d",
+      "version": "1.0.0",
+      "fieldType": {
+        "type": "boolean"
+      },
+      "constraints": [{
+        "type": "enum",
+        "options": [true, null]
       }]
     }
   }

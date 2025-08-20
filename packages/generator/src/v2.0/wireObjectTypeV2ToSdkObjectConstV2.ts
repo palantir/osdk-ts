@@ -432,7 +432,6 @@ function getPropTypeOrValueTypeEnum(
 
   const maybeEnumString = maybeGetEnumString(
     propertyDefinition,
-    valueType,
     constraint,
   );
 
@@ -445,7 +444,6 @@ function getPropTypeOrValueTypeEnum(
 
 function maybeGetEnumString(
   propertyDefinition: ObjectMetadata.Property,
-  valueType: OntologyValueType,
   constraint: ValueTypeConstraint,
 ) {
   if (constraint.type !== "enum" || constraint.options.length === 0) {
@@ -458,13 +456,15 @@ function maybeGetEnumString(
   }
   if (propertyDefinition.type === "boolean") {
     return constraint.options.map(value => {
-      if (value === "TRUE") {
+      if (value === true) {
         return true;
-      } else if (value === "FALSE") {
+      } else if (value === false) {
         return false;
-      } else if (value === "NULL") {
+      } else if (value == null) {
         // Always infer nullability from the property definition
         return undefined;
+      } else {
+        consola.warn(`Unexpected boolean value in enum: ${value}. Ignoring.`);
       }
     }).filter(value => value != null).join(
       " | ",
