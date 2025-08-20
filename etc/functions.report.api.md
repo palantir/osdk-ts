@@ -134,8 +134,13 @@ export type Long<T extends string = string> = T & {
 };
 
 // @public (undocumented)
+<<<<<<< HEAD
 export type MandatoryMarking<T extends string = string> = T & {
     	__markingBrand?: "mandatory"
+=======
+export type MandatoryMarking = string & {
+    	__mandatoryMarkingBrand?: "void"
+>>>>>>> c4910c3bb (add markings types)
 };
 
 // @public (undocumented)
