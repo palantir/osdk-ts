@@ -1304,6 +1304,6 @@ function validateParameterOrdering(
   invariant(
     extraneousParameters.length === 0
       && missingParameters.length === 0,
-    `Action parameter ordering for ${actionApiName} does not match expected parameters. Extraneous parameter in ordering: {${extraneousParameters}}, Missing parameters in ordering: {${missingParameters}}`,
+    `Action parameter ordering for ${actionApiName} does not match expected parameters. Extraneous parameters in ordering: {${extraneousParameters}}, Missing parameters in ordering: {${missingParameters}}`,
   );
 }

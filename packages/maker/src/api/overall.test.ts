@@ -12618,7 +12618,7 @@ describe("Ontology Defining", () => {
           excludedProperties: ["id"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action parameter ordering for create-object-sample-object does not match expected parameters. Extraneous parameter in ordering: {id}, Missing parameters in ordering: {name}]`,
+        `[Error: Invariant failed: Action parameter ordering for create-object-sample-object does not match expected parameters. Extraneous parameters in ordering: {id}, Missing parameters in ordering: {name}]`,
       );
       expect(() => {
         const createBadAction = defineModifyObjectAction({
@@ -12627,7 +12627,7 @@ describe("Ontology Defining", () => {
           parameterOrdering: ["foo", "id"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action parameter ordering for modify-object-sample-object does not match expected parameters. Extraneous parameter in ordering: {id}, Missing parameters in ordering: {name}]`,
+        `[Error: Invariant failed: Action parameter ordering for modify-object-sample-object does not match expected parameters. Extraneous parameters in ordering: {id}, Missing parameters in ordering: {name}]`,
       );
       expect(() => {
         const createBadAction = defineCreateOrModifyObjectAction({
@@ -12636,7 +12636,7 @@ describe("Ontology Defining", () => {
           parameterOrdering: ["foo", "id"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action parameter ordering for create-or-modify-sample-object does not match expected parameters. Extraneous parameter in ordering: {id}, Missing parameters in ordering: {name}]`,
+        `[Error: Invariant failed: Action parameter ordering for create-or-modify-sample-object does not match expected parameters. Extraneous parameters in ordering: {id}, Missing parameters in ordering: {name}]`,
       );
       expect(() => {
         const createBadAction = defineCreateObjectAction({
@@ -12650,7 +12650,7 @@ describe("Ontology Defining", () => {
           parameterOrdering: ["foo", "id"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action parameter ordering for create-object-sample-object does not match expected parameters. Extraneous parameter in ordering: {foo}, Missing parameters in ordering: {name}]`,
+        `[Error: Invariant failed: Action parameter ordering for create-object-sample-object does not match expected parameters. Extraneous parameters in ordering: {foo}, Missing parameters in ordering: {name}]`,
       );
       expect(() => {
         const createBadAction = defineModifyObjectAction({
@@ -12664,7 +12664,7 @@ describe("Ontology Defining", () => {
           parameterOrdering: ["foo", "id"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action parameter ordering for modify-object-sample-object does not match expected parameters. Extraneous parameter in ordering: {foo,id}, Missing parameters in ordering: {name}]`,
+        `[Error: Invariant failed: Action parameter ordering for modify-object-sample-object does not match expected parameters. Extraneous parameters in ordering: {foo,id}, Missing parameters in ordering: {name}]`,
       );
       expect(() => {
         const createBadAction = defineCreateOrModifyObjectAction({
@@ -12678,7 +12678,7 @@ describe("Ontology Defining", () => {
           parameterOrdering: ["foo", "id"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action parameter ordering for create-or-modify-sample-object does not match expected parameters. Extraneous parameter in ordering: {foo,id}, Missing parameters in ordering: {name}]`,
+        `[Error: Invariant failed: Action parameter ordering for create-or-modify-sample-object does not match expected parameters. Extraneous parameters in ordering: {foo,id}, Missing parameters in ordering: {name}]`,
       );
       const createAction = defineCreateObjectAction({
         objectType: sampleObject,
