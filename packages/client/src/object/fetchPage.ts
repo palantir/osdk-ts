@@ -321,7 +321,12 @@ export async function fetchObjectPage<
   objectSet: ObjectSet,
   useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
+  // For simple object fetches, since we know the object type up front
+  // we can parallelize network requests for loading metadata and loading the actual objects
+  // In our object factory we await and block on loading the metadata, which if this call finishes, should already be cached on the client
+
   void client.ontologyProvider.getObjectDefinition(objectType.apiName);
+
   const r = await OntologiesV2.OntologyObjectSets.load(
     addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,
