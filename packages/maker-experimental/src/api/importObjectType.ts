@@ -14,6 +14,41 @@
  * limitations under the License.
  */
 
-export function importObjectType(): void {
-  return;
+import {
+  convertToDisplayName,
+  convertToPluralDisplayName,
+  importOntologyEntity,
+  type ObjectPropertyType,
+  type ObjectType,
+  OntologyEntityTypeEnum,
+} from "@osdk/maker";
+import type { importObjectDefinition } from "./types.js";
+
+export function defineImportObject(
+  objectDef: importObjectDefinition,
+): ObjectType {
+  const properties: Array<ObjectPropertyType> = Object.entries(
+    objectDef.properties ?? {},
+  ).map(([apiName, type]) => ({
+    apiName: apiName,
+    displayName: convertToDisplayName(apiName),
+    type: type,
+  }));
+  const finalObject: ObjectType = {
+    ...objectDef,
+    properties: properties,
+    __type: OntologyEntityTypeEnum.OBJECT_TYPE,
+
+    // the rest don't matter for now
+    displayName: objectDef.displayName
+      ?? convertToDisplayName(objectDef.apiName),
+    pluralDisplayName: objectDef.pluralDisplayName
+      ?? convertToPluralDisplayName(objectDef.apiName),
+    primaryKeyPropertyApiName: objectDef.primaryKeyPropertyApiName
+      ?? properties[0]?.apiName,
+    titlePropertyApiName: objectDef.titlePropertyApiName
+      ?? properties[0]?.apiName,
+  };
+  importOntologyEntity(finalObject);
+  return finalObject;
 }

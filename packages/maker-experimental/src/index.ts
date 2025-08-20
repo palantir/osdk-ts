@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export {};
+export { defineImportObject } from "./api/importObjectType.js";

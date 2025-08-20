@@ -14,4 +14,14 @@
  * limitations under the License.
  */
 
-export type importObject = {};
+import type { PropertyTypeType } from "@osdk/maker";
+
+// minimal info needed to generate objectType input shape
+export type importObjectDefinition = {
+  apiName: string;
+  properties: Record<string, PropertyTypeType>;
+  displayName?: string;
+  pluralDisplayName?: string;
+  titlePropertyApiName?: string;
+  primaryKeyPropertyApiName?: string;
+};
