@@ -121,9 +121,15 @@ export type EventParameterIdList<
 export type EventParameterValueMap<
   C extends WidgetConfig<C["parameters"]>,
   K extends EventId<C>,
-> = {
-  [P in EventParameterIdList<C, K>[number]]: ParameterValueMap<C>[P];
-};
+> = NotEmptyObject<
+  {
+    [P in EventParameterIdList<C, K>[number]]: ParameterValueMap<C>[P];
+  }
+>;
+
+type NotEmptyObject<T extends Record<string, any>> = T extends
+  Record<string, never> ? Record<string, never>
+  : T;
 
 export function defineConfig<const C extends WidgetConfig<any>>(c: C): C {
   return c as any;
