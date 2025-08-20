@@ -8167,79 +8167,6 @@ describe("Ontology Defining", () => {
                         },
                       },
                       "parameterValidations": {
-                        "buzz": {
-                          "conditionalOverrides": [],
-                          "defaultValidation": {
-                            "display": {
-                              "prefill": {
-                                "objectParameterPropertyValue": {
-                                  "parameterId": "objectToCreateOrModifyParameter",
-                                  "propertyTypeId": "buzz",
-                                },
-                                "type": "objectParameterPropertyValue",
-                              },
-                              "renderHint": {
-                                "dateTimePicker": {},
-                                "type": "dateTimePicker",
-                              },
-                              "visibility": {
-                                "editable": {},
-                                "type": "editable",
-                              },
-                            },
-                            "validation": {
-                              "allowedValues": {
-                                "datetime": {
-                                  "datetime": {
-                                    "maximum": undefined,
-                                    "minimum": undefined,
-                                  },
-                                  "type": "datetime",
-                                },
-                                "type": "datetime",
-                              },
-                              "required": {
-                                "notRequired": {},
-                                "type": "notRequired",
-                              },
-                            },
-                          },
-                        },
-                        "fizz": {
-                          "conditionalOverrides": [],
-                          "defaultValidation": {
-                            "display": {
-                              "prefill": {
-                                "objectParameterPropertyValue": {
-                                  "parameterId": "objectToCreateOrModifyParameter",
-                                  "propertyTypeId": "fizz",
-                                },
-                                "type": "objectParameterPropertyValue",
-                              },
-                              "renderHint": {
-                                "textInput": {},
-                                "type": "textInput",
-                              },
-                              "visibility": {
-                                "editable": {},
-                                "type": "editable",
-                              },
-                            },
-                            "validation": {
-                              "allowedValues": {
-                                "text": {
-                                  "text": {},
-                                  "type": "text",
-                                },
-                                "type": "text",
-                              },
-                              "required": {
-                                "notRequired": {},
-                                "type": "notRequired",
-                              },
-                            },
-                          },
-                        },
                         "objectToCreateOrModifyParameter": {
                           "conditionalOverrides": [],
                           "defaultValidation": {
@@ -8311,34 +8238,8 @@ describe("Ontology Defining", () => {
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "objectToCreateOrModifyParameter",
-                      "fizz",
-                      "buzz",
                     ],
                     "parameters": {
-                      "buzz": {
-                        "displayMetadata": {
-                          "description": "",
-                          "displayName": "Buzz",
-                          "typeClasses": [],
-                        },
-                        "id": "buzz",
-                        "type": {
-                          "timestamp": {},
-                          "type": "timestamp",
-                        },
-                      },
-                      "fizz": {
-                        "displayMetadata": {
-                          "description": "",
-                          "displayName": "Fizz",
-                          "typeClasses": [],
-                        },
-                        "id": "fizz",
-                        "type": {
-                          "string": {},
-                          "type": "string",
-                        },
-                      },
                       "objectToCreateOrModifyParameter": {
                         "displayMetadata": {
                           "description": "",
@@ -12713,11 +12614,71 @@ describe("Ontology Defining", () => {
       expect(() => {
         const createBadAction = defineCreateObjectAction({
           objectType: sampleObject,
-          parameterOrdering: ["foo", "name", "id"],
+          parameterOrdering: ["foo", "id"],
           excludedProperties: ["id"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Action parameter ordering for com.palantir.sampleObject does not match non-excluded properties]`,
+        `[Error: Invariant failed: Action parameter ordering for create-object-sample-object does not match expected parameters. Extraneous parameter in ordering: {id}, Missing parameters in ordering: {name}]`,
+      );
+      expect(() => {
+        const createBadAction = defineModifyObjectAction({
+          objectType: sampleObject,
+          // primary keys should not be in modify action orderings
+          parameterOrdering: ["foo", "id"],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Action parameter ordering for modify-object-sample-object does not match expected parameters. Extraneous parameter in ordering: {id}, Missing parameters in ordering: {name}]`,
+      );
+      expect(() => {
+        const createBadAction = defineCreateOrModifyObjectAction({
+          objectType: sampleObject,
+          // primary keys should not be in create-or-modify action orderings
+          parameterOrdering: ["foo", "id"],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Action parameter ordering for create-or-modify-sample-object does not match expected parameters. Extraneous parameter in ordering: {id}, Missing parameters in ordering: {name}]`,
+      );
+      expect(() => {
+        const createBadAction = defineCreateObjectAction({
+          objectType: sampleObject,
+          nonParameterMappings: {
+            "foo": {
+              type: "currentUser",
+            },
+          },
+          // non-parameter mapped properties should not be in action orderings
+          parameterOrdering: ["foo", "id"],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Action parameter ordering for create-object-sample-object does not match expected parameters. Extraneous parameter in ordering: {foo}, Missing parameters in ordering: {name}]`,
+      );
+      expect(() => {
+        const createBadAction = defineModifyObjectAction({
+          objectType: sampleObject,
+          nonParameterMappings: {
+            "foo": {
+              type: "currentUser",
+            },
+          },
+          // non-parameter mapped properties should not be in action orderings
+          parameterOrdering: ["foo", "id"],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Action parameter ordering for modify-object-sample-object does not match expected parameters. Extraneous parameter in ordering: {foo,id}, Missing parameters in ordering: {name}]`,
+      );
+      expect(() => {
+        const createBadAction = defineCreateOrModifyObjectAction({
+          objectType: sampleObject,
+          nonParameterMappings: {
+            "foo": {
+              type: "currentUser",
+            },
+          },
+          // non-parameter mapped properties should not be in action orderings
+          parameterOrdering: ["foo", "id"],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Action parameter ordering for create-or-modify-sample-object does not match expected parameters. Extraneous parameter in ordering: {foo,id}, Missing parameters in ordering: {name}]`,
       );
       const createAction = defineCreateObjectAction({
         objectType: sampleObject,
