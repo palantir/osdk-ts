@@ -36,6 +36,7 @@ export {
   defineObject,
 } from "./api/defineObject.js";
 export {
+  addNamespaceIfNone,
   defineOntology,
   dumpOntologyFullMetadata,
 } from "./api/defineOntology.js";

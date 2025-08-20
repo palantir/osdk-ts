@@ -546,7 +546,7 @@ describe("Experimental Test Suite", () => {
             "linkTypes": [],
             "objectTypes": [
               {
-                "apiName": "myImport",
+                "apiName": "com.palantir.myImport",
                 "description": undefined,
                 "displayName": "MyImport",
                 "propertyTypes": [
