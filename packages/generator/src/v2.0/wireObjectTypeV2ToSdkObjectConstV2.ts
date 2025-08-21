@@ -411,15 +411,15 @@ function getPropTypeOrValueTypeEnum(
   if (
     !(propertyDefinition.type === "string"
       || propertyDefinition.type === "boolean")
-    || !propertyDefinition.valueType
-    || valueTypeMetadata[propertyDefinition.valueType] == null
+    || !propertyDefinition.valueTypeApiName
+    || valueTypeMetadata[propertyDefinition.valueTypeApiName] == null
   ) {
     return defaultPropString;
   }
-  const valueType = valueTypeMetadata[propertyDefinition.valueType];
+  const valueType = valueTypeMetadata[propertyDefinition.valueTypeApiName];
   if (valueType.constraints.length !== 1) {
     throw new Error(
-      `Expected exactly one constraint for value type ${propertyDefinition.valueType} but got ${valueType.constraints.length}`,
+      `Expected exactly one constraint for value type ${propertyDefinition.valueTypeApiName} but got ${valueType.constraints.length}`,
     );
   }
 

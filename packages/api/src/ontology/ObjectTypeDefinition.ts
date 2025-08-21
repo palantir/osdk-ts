@@ -97,7 +97,7 @@ export namespace ObjectMetadata {
     type: WirePropertyTypes;
     multiplicity?: boolean;
     nullable?: boolean;
-    valueType?: string;
+    valueTypeApiName?: string;
   }
 
   export interface Link<
