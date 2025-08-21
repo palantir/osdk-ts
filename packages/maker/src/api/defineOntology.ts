@@ -1178,7 +1178,10 @@ function extractAllowedValues(
           type: "oneOf",
           oneOf: {
             labelledValues: parameter.validation.allowedValues.oneOf,
-            otherValueAllowed: { allowed: false },
+            otherValueAllowed: {
+              allowed: parameter.validation.allowedValues.otherValueAllowed
+                ?? false,
+            },
           },
         },
       };

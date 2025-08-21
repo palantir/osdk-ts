@@ -282,6 +282,7 @@ export type ActionParameterAllowedValues =
   | {
     type: "oneOf";
     oneOf: Array<OntologyIrLabelledValue>;
+    otherValueAllowed?: boolean;
   }
   | {
     type: "range";
