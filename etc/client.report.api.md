@@ -37,6 +37,7 @@ import { OsdkObjectCreatePropertyType } from '@osdk/api';
 import { OsdkObjectPropertyType } from '@osdk/api';
 import { PageResult } from '@osdk/api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
+import type { PrimaryKeyType } from '@osdk/api';
 import { PropertyDef } from '@osdk/api';
 import { PropertyKeys } from '@osdk/api';
 import { PropertyValueWireToClient } from '@osdk/api';
@@ -113,6 +114,9 @@ export function createAttachmentUpload(data: Blob, name: string): AttachmentUplo
 export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
     	logger?: Logger
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
+
+// @public
+export function createObjectSpecifierFromPrimaryKey<Q extends ObjectTypeDefinition>(objectDef: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q>;
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
