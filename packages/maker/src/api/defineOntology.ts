@@ -1009,8 +1009,23 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
             type: "blueprint",
             blueprint: action.icon ?? { locator: "edit", color: "#000000" },
           },
-          successMessage: [],
+          successMessage: action.submissionMetadata?.successMessage
+            ? [{
+              type: "message",
+              message: action.submissionMetadata.successMessage,
+            }]
+            : [],
           typeClasses: action.typeClasses ?? [],
+          ...(action.submissionMetadata?.submitButtonDisplayMetadata
+            && {
+              submitButtonDisplayMetadata:
+                action.submissionMetadata.submitButtonDisplayMetadata,
+            }),
+          ...(action.submissionMetadata?.undoButtonConfiguration
+            && {
+              undoButtonConfiguration:
+                action.submissionMetadata.undoButtonConfiguration,
+            }),
         },
         parameterOrdering: parameterOrdering,
         formContentOrdering: getFormContentOrdering(action, parameterOrdering),
