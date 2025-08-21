@@ -858,7 +858,7 @@ export namespace ObjectMetadata {
         		// (undocumented)
         type: WirePropertyTypes;
         		// (undocumented)
-        valueType?: string;
+        valueTypeApiName?: string;
         	}
 }
 
