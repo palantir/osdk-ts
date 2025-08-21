@@ -1113,7 +1113,7 @@ versions:
             import { client } from "./client";
 
             const num{{objectType}} = await client({{objectType}})
-                .where({{{property}}: { $isNull : false }})
+                .where({{property}}: { $isNull : false }})
                 .aggregate({
                     $select: { $count: "unordered" },
                     $groupBy: { name: "exact" },
@@ -1983,7 +1983,7 @@ versions:
                         // We could not keep track of all changes. Please reload the objects in your set.
                     },
                 },
-                { properties: [ {{#propertyNames}}"{{.}}", {{/propertyNames}}\b\b] }
+                { properties: [ {{#propertyNames}}"{{.}}", {{/propertyNames}}] }
             );
 
             subscription.unsubscribe();
