@@ -143,7 +143,7 @@ describe("intellisense", () => {
       "startDate",
     ];
     const actual = resp.body?.entries.map(e => e.name);
-    expect(expected.every(element => actual?.includes(element)));
+    expect(expected.every(element => actual?.includes(element))).toBe(true);
 
     const { resp: resp2 } = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,
