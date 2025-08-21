@@ -6564,6 +6564,14 @@ describe("Ontology Defining", () => {
           excludedProperties: ["buzz"],
           defaultFormat: "TABLE",
           enableLayoutSwitch: true,
+          submissionMetadata: {
+            successMessage: "Custom success message",
+            undoButtonConfiguration: true,
+            submitButtonDisplayMetadata: {
+              intent: "DANGER",
+              text: "Custom button",
+            },
+          },
         },
       );
 
@@ -6619,6 +6627,14 @@ describe("Ontology Defining", () => {
           excludedProperties: ["buzz"],
           defaultFormat: "TABLE",
           enableLayoutSwitch: true,
+          submissionMetadata: {
+            successMessage: "Custom success message",
+            undoButtonConfiguration: true,
+            submitButtonDisplayMetadata: {
+              intent: "DANGER",
+              text: "Custom button",
+            },
+          },
         },
       );
 
@@ -6674,6 +6690,14 @@ describe("Ontology Defining", () => {
           excludedProperties: ["buzz"],
           defaultFormat: "TABLE",
           enableLayoutSwitch: true,
+          submissionMetadata: {
+            successMessage: "Custom success message",
+            undoButtonConfiguration: true,
+            submitButtonDisplayMetadata: {
+              intent: "DANGER",
+              text: "Custom button",
+            },
+          },
           primaryKeyOption: "userInput",
         },
       );
@@ -6940,8 +6964,18 @@ describe("Ontology Defining", () => {
                         },
                         "type": "blueprint",
                       },
-                      "successMessage": [],
+                      "submitButtonDisplayMetadata": {
+                        "intent": "DANGER",
+                        "text": "Custom button",
+                      },
+                      "successMessage": [
+                        {
+                          "message": "Custom success message",
+                          "type": "message",
+                        },
+                      ],
                       "typeClasses": [],
+                      "undoButtonConfiguration": true,
                     },
                     "entities": {
                       "affectedInterfaceTypes": [],
@@ -7264,8 +7298,18 @@ describe("Ontology Defining", () => {
                         },
                         "type": "blueprint",
                       },
-                      "successMessage": [],
+                      "submitButtonDisplayMetadata": {
+                        "intent": "DANGER",
+                        "text": "Custom button",
+                      },
+                      "successMessage": [
+                        {
+                          "message": "Custom success message",
+                          "type": "message",
+                        },
+                      ],
                       "typeClasses": [],
+                      "undoButtonConfiguration": true,
                     },
                     "entities": {
                       "affectedInterfaceTypes": [],
@@ -7594,8 +7638,18 @@ describe("Ontology Defining", () => {
                         },
                         "type": "blueprint",
                       },
-                      "successMessage": [],
+                      "submitButtonDisplayMetadata": {
+                        "intent": "DANGER",
+                        "text": "Custom button",
+                      },
+                      "successMessage": [
+                        {
+                          "message": "Custom success message",
+                          "type": "message",
+                        },
+                      ],
                       "typeClasses": [],
+                      "undoButtonConfiguration": true,
                     },
                     "entities": {
                       "affectedInterfaceTypes": [],

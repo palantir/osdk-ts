@@ -236,6 +236,8 @@ export function defineCreateObjectAction(
           def.sections.map(section => [section.id, section]),
         ),
       }),
+    ...(def.submissionMetadata
+      && { submissionMetadata: def.submissionMetadata }),
   });
 }
 
@@ -441,6 +443,8 @@ export function defineModifyObjectAction(
           def.sections.map(section => [section.id, section]),
         ),
       }),
+    ...(def.submissionMetadata
+      && { submissionMetadata: def.submissionMetadata }),
   });
 }
 
@@ -597,6 +601,8 @@ export function defineCreateOrModifyObjectAction(
           def.sections.map(section => [section.id, section]),
         ),
       }),
+    ...(def.submissionMetadata
+      && { submissionMetadata: def.submissionMetadata }),
   });
 }
 
