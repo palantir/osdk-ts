@@ -20,15 +20,16 @@ import {
   getBusId,
   getBusInterface,
   getBusInterfaceSet,
+  getNamesOfCustomersFromCountry,
 } from "@osdk/e2e.generated.catchall";
-import { dsClient } from "./client.js";
+import { client, dsClient } from "./client.js";
 
 export async function runQueriesTest(): Promise<void> {
-  // const result = await client(getNamesOfCustomersFromCountry).executeFunction({
-  //   country: "Denmark",
-  // });
+  const result = await client(getNamesOfCustomersFromCountry).executeFunction({
+    country: "Denmark",
+  });
 
-  // console.log(result);
+  console.log(result);
 
   const busesOs = dsClient(bus_1);
 

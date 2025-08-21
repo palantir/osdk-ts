@@ -15,8 +15,9 @@
  */
 
 import type {
-  ObjectOrInterfaceDefinition,
+  InterfaceDefinition,
   ObjectSpecifier,
+  ObjectTypeDefinition,
   PrimaryKeyType,
 } from "@osdk/api";
 
@@ -29,7 +30,7 @@ import type {
  * @returns An Object Specifier
  */
 export function createObjectSpecifierFromPrimaryKey<
-  Q extends ObjectOrInterfaceDefinition,
+  Q extends ObjectTypeDefinition,
 >(objectDef: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q> {
   return `${objectDef.apiName}:${primaryKey}` as ObjectSpecifier<Q>;
 }
@@ -43,7 +44,7 @@ export function createObjectSpecifierFromPrimaryKey<
  * @returns An Object Specifier
  */
 export function createObjectSpecifierFromInterfaceSpecifier<
-  Q extends ObjectOrInterfaceDefinition,
+  Q extends InterfaceDefinition,
 >(
   interfaceDef: Q,
   interfaceSpecifier: {

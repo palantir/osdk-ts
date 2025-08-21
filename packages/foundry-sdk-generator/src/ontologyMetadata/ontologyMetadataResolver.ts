@@ -772,7 +772,7 @@ export class OntologyMetadataResolver {
         }
         return Result.err([
           `Unable to load action ${actionApiName} because it takes an unloaded interface type as a parameter: ${actionTypeParameter.interfaceTypeApiName} `
-          + `make sure to specify it as an argument with --ontologyInterfaces ${actionTypeParameter.interfaceTypeApiName}`,
+          + `make sure to specify it as an argument with --interfaceTypes ${actionTypeParameter.interfaceTypeApiName}`,
         ]);
       case "string":
       case "boolean":
