@@ -63,6 +63,7 @@ export type {
   PropertyTypeType,
   SectionConditionalOverride,
   SharedPropertyType,
+  SubmissionMetadata,
   UuidMappingValue,
   ValueTypeDefinitionVersion,
 } from "./api/types.js";
