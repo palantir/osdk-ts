@@ -19,7 +19,6 @@ import type {
   OntologyIrImportedPropertyType,
 } from "@osdk/client.unstable";
 import {
-  addNamespaceIfNone,
   convertToDisplayName,
   convertToPluralDisplayName,
   convertType,
@@ -28,7 +27,6 @@ import {
   type ObjectType,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
-import invariant from "tiny-invariant";
 import type { importObjectDefinition } from "./types.js";
 
 /*
@@ -39,10 +37,6 @@ import type { importObjectDefinition } from "./types.js";
 export function defineImportObject(
   objectDef: importObjectDefinition,
 ): OntologyIrImportedObjectType {
-  invariant(
-    !objectDef.apiName.includes("."),
-    `Remove namespace or periods from imported object type ${objectDef.apiName}`,
-  );
   const properties: Array<ObjectPropertyType> = Object.entries(
     objectDef.properties ?? {},
   ).map(([apiName, type]) => ({
@@ -51,7 +45,7 @@ export function defineImportObject(
     type: type.type,
   }));
   const finalObject: ObjectType = {
-    apiName: addNamespaceIfNone(objectDef.apiName),
+    apiName: objectDef.apiName,
     properties: properties,
     __type: OntologyEntityTypeEnum.OBJECT_TYPE,
 
@@ -73,7 +67,6 @@ export function defineImportObject(
     }));
   const ontologyImportObject: OntologyIrImportedObjectType = {
     ...objectDef,
-    apiName: addNamespaceIfNone(objectDef.apiName),
     displayName: objectDef.displayName
       ?? convertToDisplayName(objectDef.apiName),
     propertyTypes: importPropertyTypes,

@@ -683,20 +683,7 @@ function createParameters(
   defaultRequired: boolean,
 ): Array<ActionParameter> {
   const targetParam: Array<ActionParameter> = [];
-  // prefix objectReference parameters with the namespace
   parameterSet.forEach(name => {
-    if (
-      typeof def.parameterConfiguration?.[name]?.customParameterType
-        === "object"
-      && def.parameterConfiguration?.[name]?.customParameterType.type
-        === "objectReference"
-    ) {
-      def.parameterConfiguration[name].customParameterType.objectReference
-        .objectTypeId = sanitize(
-          def.parameterConfiguration[name].customParameterType.objectReference
-            .objectTypeId,
-        );
-    }
     if (name === MODIFY_OBJECT_PARAMETER) {
       targetParam.push({
         id: MODIFY_OBJECT_PARAMETER,

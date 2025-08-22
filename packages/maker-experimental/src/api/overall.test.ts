@@ -322,7 +322,7 @@ describe("Experimental Test Suite", () => {
                         "id": "ref",
                         "type": {
                           "objectReference": {
-                            "objectTypeId": "com.palantir.myImport",
+                            "objectTypeId": "myImport",
                           },
                           "type": "objectReference",
                         },
@@ -546,7 +546,7 @@ describe("Experimental Test Suite", () => {
             "linkTypes": [],
             "objectTypes": [
               {
-                "apiName": "com.palantir.myImport",
+                "apiName": "myImport",
                 "description": undefined,
                 "displayName": "MyImport",
                 "propertyTypes": [
