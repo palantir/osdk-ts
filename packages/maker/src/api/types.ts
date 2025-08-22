@@ -254,7 +254,9 @@ export type UnionCondition = {
 export type ActionParameterConditionalOverride =
   | VisibilityOverride
   | DisabledOverride
-  | RequiredOverride;
+  | RequiredOverride
+  | DefaultValueOverride
+  | ConstraintOverride;
 
 export type SectionConditionalOverride = VisibilityOverride;
 
@@ -271,6 +273,18 @@ export type DisabledOverride = {
 export type RequiredOverride = {
   type: "required";
   condition: ConditionDefinition;
+};
+
+export type DefaultValueOverride = {
+  type: "defaultValue";
+  condition: ConditionDefinition;
+  defaultValue: OntologyIrParameterPrefill;
+};
+
+export type ConstraintOverride = {
+  type: "constraint";
+  condition: ConditionDefinition;
+  constraint: ActionParameterAllowedValues;
 };
 
 export type ActionParameterRequirementConstraint =
