@@ -126,11 +126,11 @@ describe("intellisense", () => {
   it("orderBySuggestionIsRight", { timeout: 40_000 }, async () => {
     const { resp } = await tsServer.sendCompletionsRequest({
       file: intellisenseFilePath,
-      line: 28,
-      offset: 14,
+      line: 29,
+      offset: 15,
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });
-    const expected = [
+    expect(resp.body?.entries.map(e => e.name)).toEqual([
       "class",
       "employeeId",
       "employeeLocation",
@@ -141,13 +141,11 @@ describe("intellisense", () => {
       "skillSet",
       "skillSetEmbedding",
       "startDate",
-    ];
-    const actual = resp.body?.entries.map(e => e.name);
-    expect(expected.every(element => actual?.includes(element))).toBe(true);
+    ]);
 
     const { resp: resp2 } = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,
-      line: 32,
+      line: 33,
       offset: 3,
     });
     expect(resp2.body?.documentation).not.toEqual("'(property) $orderBy: any'");
@@ -155,7 +153,7 @@ describe("intellisense", () => {
     // order by relevance
     const { resp: resp3 } = await tsServer.sendCompletionsRequest({
       file: intellisenseFilePath,
-      line: 38,
+      line: 39,
       offset: 14,
       triggerKind: ts.CompletionTriggerKind.Invoked,
     });

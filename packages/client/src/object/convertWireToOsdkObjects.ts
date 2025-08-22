@@ -357,10 +357,8 @@ function fixObjectPropertiesInPlace(
       delete obj.__rid;
     }
 
-    if (obj.__score) {
-      if (includeScore) {
-        obj.$score = obj.__score;
-      }
+    if (includeScore) {
+      obj.$score = obj.__score;
       delete obj.__score;
     }
 
