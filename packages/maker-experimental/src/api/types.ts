@@ -17,14 +17,14 @@
 import type { PropertyTypeType } from "@osdk/maker";
 
 // basically a user friendly OntologyIrImportedActionType wrapper
-export type importObjectDefinition = {
+export type ImportObjectDefinition = {
   apiName: string;
-  properties: Record<string, importPropertyTypeDefinition>;
+  properties: Record<string, ImportPropertyTypeDefinition>;
   displayName?: string;
   description?: string;
 };
 
-export type importPropertyTypeDefinition = {
+export type ImportPropertyTypeDefinition = {
   type: PropertyTypeType;
   displayName?: string;
   description?: string;

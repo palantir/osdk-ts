@@ -27,7 +27,7 @@ import {
   type ObjectType,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
-import type { importObjectDefinition } from "./types.js";
+import type { ImportObjectDefinition } from "./types.js";
 
 /*
  * Takes in the minimal object definition to create an input shape.
@@ -35,7 +35,7 @@ import type { importObjectDefinition } from "./types.js";
  * then converts it to an OntologyIrImportedObjectType that is safe to use elsewhere.
  */
 export function defineImportObject(
-  objectDef: importObjectDefinition,
+  objectDef: ImportObjectDefinition,
 ): OntologyIrImportedObjectType {
   const properties: Array<ObjectPropertyType> = Object.entries(
     objectDef.properties ?? {},

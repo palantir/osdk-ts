@@ -16,6 +16,6 @@
 
 export { defineImportObject } from "./api/importObjectType.js";
 export type {
-  importObjectDefinition,
-  importPropertyTypeDefinition,
+  ImportObjectDefinition,
+  ImportPropertyTypeDefinition,
 } from "./api/types.js";
