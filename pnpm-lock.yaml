@@ -3825,8 +3825,8 @@ importers:
         specifier: ^0.5.0
         version: 0.5.0
       '@osdk/docs-spec-sdk':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.4.0
+        version: 0.4.0
       outdent:
         specifier: ^0.8.0
         version: 0.8.0
@@ -5969,8 +5969,8 @@ packages:
   '@osdk/docs-spec-core@0.5.0':
     resolution: {integrity: sha512-sHkNoGV5MdcZWfjIslZWWqmJlgSJfWJbnM4vC1RcGyyzKDpZXRMJ4AjSpKr9VqtuTlNHGmD2Y3bQUO/wpSQBbw==}
 
-  '@osdk/docs-spec-sdk@0.1.0':
-    resolution: {integrity: sha512-xGW/bBjlQvyg4YdRaEC+GdaKoh6qoWmyp7uLEfH2h4XCWDKpDGaQD5dLgkGjNqao1jk2mTZb6YrTjkz0CB+9JA==}
+  '@osdk/docs-spec-sdk@0.4.0':
+    resolution: {integrity: sha512-g3RHLHG6mnjWMT5BP7FOcOxDoTZy76NN5IRiB9ye/FVTW74axBWZUvGGwLBBn6mWE1nxpibpJ4AOhtHvdqCL/Q==}
 
   '@osdk/foundry.admin@2.27.0':
     resolution: {integrity: sha512-Tjsp9MfokgWuQvSoW+/0rp/8yisv6+crSXxTS2omvmR5um5pd0zs5sAqOC84QyD02BnaFkLYb9HIURVxsD6kkA==}
@@ -16700,7 +16700,7 @@ snapshots:
 
   '@osdk/docs-spec-core@0.5.0': {}
 
-  '@osdk/docs-spec-sdk@0.1.0':
+  '@osdk/docs-spec-sdk@0.4.0':
     dependencies:
       '@osdk/docs-spec-core': 0.5.0
 

@@ -2066,3 +2066,41 @@ versions:
                 const data = await response.blob();
                 ...
             }
+  "2.4.0":
+    snippets:
+        derivedPropertyNumericExpression:
+          - template: |-
+              import { {{objectType}} } from "{{{packageName}}}";
+              // Edit this import if your client location differs
+              import { client } from "./client";
+
+              const {{objectType}}WithExpression = await client({{objectType}})
+                  .withProperties({
+                    "newPropertyName": (baseObjectSet) =>
+                        {{^isUnary}
+                        baseObjectSet.pivotTo("{{linkName}}")
+                            .selectProperty("{{property}}").{{operation}}(
+                                baseObjectSet.pivotTo("{{linkName}}").aggregate("$count"))
+                        {{/isUnary}}
+                        {{#isUnary}}
+                        baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}").{{operation}}()
+                        {{/isUnary}}
+                  });
+        derivedPropertyDatetimeExpression:
+          - template: |-
+              import { {{objectType}} } from "{{{packageName}}}";
+              // Edit this import if your client location differs
+              import { client } from "./client";
+
+              const {{objectType}}WithExpression = await client({{objectType}})
+                  .withProperties({
+                    "newPropertyName": (baseObjectSet) =>
+                      baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}").{{operation}}(
+                        {{#isExtractPart}}"DAY"{{/isExtractPart}}
+                        {{^isExtractPart}} 
+                        baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}")
+                        {{/isExtractPart}}
+                      )
+                  });
+            
+
