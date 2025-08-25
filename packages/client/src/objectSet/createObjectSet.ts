@@ -70,7 +70,8 @@ export function getWireObjectSet(
   return objectSetDefinitions.get(objectSet)!;
 }
 
-const objectSetDefinitions = new WeakMap<
+/** @internal exported for internal use only */
+export const objectSetDefinitions = new WeakMap<
   any,
   WireObjectSet
 >();
