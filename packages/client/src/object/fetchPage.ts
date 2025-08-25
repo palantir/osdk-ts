@@ -161,7 +161,7 @@ async function fetchInterfacePage<
       excludeRid: !args?.$includeRid,
       snapshot: useSnapshot,
     }),
-    { preview: true },
+    { preview: true, branch: client.branch },
   );
   return Promise.resolve({
     data: await client.objectFactory2(
@@ -331,6 +331,7 @@ export async function fetchObjectPage<
       excludeRid: !args?.$includeRid,
       snapshot: useSnapshot,
     }),
+    { branch: client.branch },
   );
 
   return Promise.resolve({

@@ -42,6 +42,7 @@ export function createMinimalClient(
   options: OntologyCachingOptions & {
     logger?: Logger;
     transactionRid?: string;
+    branch?: string;
   } = {},
   fetchFn: (
     input: Request | URL | string,
@@ -83,6 +84,7 @@ export function createMinimalClient(
     transactionRid: options.transactionRid,
     clientCacheKey: {} as ClientCacheKey,
     requestContext: {},
+    branch: options.branch,
   } satisfies Omit<
     MinimalClient,
     "ontologyProvider"
