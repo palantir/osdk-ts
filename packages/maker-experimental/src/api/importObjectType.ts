@@ -95,7 +95,7 @@ export function defineImportObject(
     ),
     implementsInterfaces2: [],
     allImplementsInterfaces: {},
-    primaryKeys: [],
+    primaryKeys: [properties.at(0)!.apiName],
     titlePropertyTypeRid: properties.at(0)!.apiName,
     status: { type: "active", active: {} },
   };
