@@ -24,7 +24,6 @@ import type {
   DisplayMetadataConfigurationDisplayAndFormat,
   ExampleValue,
   FailureMessage,
-  ImportedTypes,
   InterfaceTypeApiName,
   InterfaceTypeStatus,
   LinkTypeDisplayMetadata,
@@ -65,7 +64,6 @@ import type {
   StructFieldType,
   ValidationRuleDisplayMetadata,
   ValueTypeApiName,
-  ValueTypeApiNameReference,
   ValueTypeDataConstraint,
   ValueTypeDisplayMetadata,
   ValueTypeStatus,
@@ -92,7 +90,6 @@ export interface Ontology extends
   valueTypes: Record<string, ValueTypeDefinitionVersion[]>;
   linkTypes: Record<string, LinkType>;
   actionTypes: Record<string, ActionType>;
-  importedTypes: ImportedTypes;
 }
 
 export interface OntologyEntityBase {
@@ -514,7 +511,7 @@ export interface PropertyType {
   array?: boolean;
   description?: string;
   displayName?: string;
-  valueType?: ValueTypeApiNameReference;
+  valueType?: ValueTypeDefinitionVersion;
   visibility?: Visibility;
   typeClasses?: TypeClass[];
   nullability?: Nullability;
@@ -874,6 +871,7 @@ export type ValueTypeType =
 
 export type ValueTypeDefinitionVersion = OntologyEntityBase & {
   apiName: ValueTypeApiName;
+  packageNamespace: string;
   displayMetadata: ValueTypeDisplayMetadata;
   status: ValueTypeStatus;
   version: ValueTypeVersion;
