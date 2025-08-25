@@ -38,6 +38,19 @@ describe(FauxDataStore, () => {
         ),
       ) as unknown as Record<typeof pks[number], BaseServerObject>;
 
+    const projectPks = ["p1", "p2"] as const;
+    const projects = Object
+      .fromEntries(
+        projectPks.map((id) =>
+          [id, {
+            __apiName: "Project",
+            __primaryKey: id,
+            id,
+            name: `Project ${id}`,
+          }] as const
+        ),
+      ) as unknown as Record<typeof projectPks[number], BaseServerObject>;
+
     beforeEach(() => {
       attachmentsStore = new FauxAttachmentStore();
       fauxOntology = new FauxOntology({
@@ -46,7 +59,11 @@ describe(FauxDataStore, () => {
         displayName: "foo",
         rid: "ri.foo",
       });
-      fauxDataStore = new FauxDataStore(fauxOntology, attachmentsStore, true);
+      fauxDataStore = new FauxDataStore(
+        fauxOntology,
+        attachmentsStore,
+        /*strict*/ true,
+      );
 
       const Employee = {
         implementsInterfaces: [],
@@ -66,6 +83,20 @@ describe(FauxDataStore, () => {
           displayName: "Lead",
           linkTypeRid: "rid.link-type.327",
           foreignKeyPropertyApiName: "leadId",
+        }, {
+          apiName: "ownedProjects",
+          status: "EXPERIMENTAL",
+          objectTypeApiName: "Project",
+          cardinality: "MANY",
+          displayName: "Owned Projects",
+          linkTypeRid: "rid.link-type.328",
+        }, {
+          apiName: "contributedProjects",
+          status: "EXPERIMENTAL",
+          objectTypeApiName: "Project",
+          cardinality: "MANY",
+          displayName: "Contributed Projects",
+          linkTypeRid: "rid.link-type.329",
         }],
         objectType: {
           apiName: "Employee",
@@ -99,12 +130,92 @@ describe(FauxDataStore, () => {
         sharedPropertyTypeMapping: {},
       } as const;
 
+      const Project = {
+        implementsInterfaces: [],
+        implementsInterfaces2: {},
+        linkTypes: [{
+          apiName: "owner",
+          status: "EXPERIMENTAL",
+          objectTypeApiName: "Employee",
+          cardinality: "ONE",
+          displayName: "Owner",
+          linkTypeRid: "rid.link-type.328",
+          foreignKeyPropertyApiName: "ownerId",
+        }, {
+          apiName: "contributors",
+          status: "EXPERIMENTAL",
+          objectTypeApiName: "Employee",
+          cardinality: "MANY",
+          displayName: "Contributors",
+          linkTypeRid: "rid.link-type.329",
+        }],
+        objectType: {
+          apiName: "Project",
+          description: "Project",
+          displayName: "Project",
+          rid: "ri.Project",
+          icon: {
+            color: "#0000FF",
+            name: "project",
+            type: "blueprint",
+          },
+          pluralDisplayName: "Projects",
+          primaryKey: "id",
+          properties: {
+            id: {
+              dataType: { type: "string" },
+              rid: "ri.proj.id",
+              displayName: "id",
+              description: "id",
+            },
+            name: {
+              dataType: { type: "string" },
+              rid: "ri.proj.name",
+              displayName: "name",
+              description: "name",
+            },
+            ownerId: {
+              dataType: { type: "string" },
+              rid: "ri.proj.ownerId",
+              displayName: "ownerId",
+              description: "ownerId",
+            },
+          },
+          status: "ACTIVE",
+          titleProperty: "name",
+        },
+        sharedPropertyTypeMapping: {},
+      } as const;
+
       fauxOntology.registerObjectType(Employee);
+      fauxOntology.registerObjectType(Project);
     });
 
     const getLeadsAndPeeps = (id: string) => ({
       lead: fauxDataStore.getLinksOrThrow("Employee", id, "lead")[0],
       peeps: fauxDataStore.getLinksOrThrow("Employee", id, "peeps"),
+    });
+
+    const getProjectLinks = (projectId: string) => ({
+      owner: fauxDataStore.getLinksOrThrow("Project", projectId, "owner")[0],
+      contributors: fauxDataStore.getLinksOrThrow(
+        "Project",
+        projectId,
+        "contributors",
+      ),
+    });
+
+    const getEmployeeProjectLinks = (employeeId: string) => ({
+      ownedProjects: fauxDataStore.getLinksOrThrow(
+        "Employee",
+        employeeId,
+        "ownedProjects",
+      ),
+      contributedProjects: fauxDataStore.getLinksOrThrow(
+        "Employee",
+        employeeId,
+        "contributedProjects",
+      ),
     });
 
     it("should work in the happy paths", () => {
@@ -222,6 +333,176 @@ describe(FauxDataStore, () => {
       expect(getLeadsAndPeeps("d")).toMatchObject({
         lead: undefined,
         peeps: [c], // d no longer leads b
+      });
+    });
+
+    it("should work with links between different object types", () => {
+      const { a, b, c, d } = employees;
+      const { p1, p2 } = projects;
+
+      // Register objects
+      fauxDataStore.registerObject(a);
+      fauxDataStore.registerObject(b);
+      fauxDataStore.registerObject(c);
+      fauxDataStore.registerObject(d);
+      fauxDataStore.registerObject(p1);
+      fauxDataStore.registerObject(p2);
+
+      // 1. Assign employee as project owner (ONE cardinality)
+      fauxDataStore.registerLink(p1, "owner", a, "ownedProjects");
+
+      expect(getProjectLinks("p1")).toMatchObject({
+        owner: a,
+        contributors: [],
+      });
+      expect(getEmployeeProjectLinks("a")).toMatchObject({
+        ownedProjects: [p1],
+        contributedProjects: [],
+      });
+      expect(fauxDataStore.getObject(p1.__apiName, p1.__primaryKey))
+        .toMatchObject({
+          ownerId: "a",
+        });
+
+      // 2. Change project ownership
+      fauxDataStore.registerLink(p1, "owner", b, "ownedProjects");
+
+      expect(getProjectLinks("p1")).toMatchObject({
+        owner: b,
+        contributors: [],
+      });
+      expect(getEmployeeProjectLinks("a")).toMatchObject({
+        ownedProjects: [], // a no longer owns p1
+        contributedProjects: [],
+      });
+      expect(getEmployeeProjectLinks("b")).toMatchObject({
+        ownedProjects: [p1],
+        contributedProjects: [],
+      });
+      expect(fauxDataStore.getObject(p1.__apiName, p1.__primaryKey))
+        .toMatchObject({
+          ownerId: "b",
+        });
+
+      // 3. Add project contributors (MANY cardinality)
+      fauxDataStore.registerLink(p1, "contributors", c, "contributedProjects");
+      fauxDataStore.registerLink(p1, "contributors", d, "contributedProjects");
+
+      expect(getProjectLinks("p1")).toMatchObject({
+        owner: b,
+        contributors: [c, d],
+      });
+      expect(getEmployeeProjectLinks("c")).toMatchObject({
+        ownedProjects: [],
+        contributedProjects: [p1],
+      });
+      expect(getEmployeeProjectLinks("d")).toMatchObject({
+        ownedProjects: [],
+        contributedProjects: [p1],
+      });
+
+      // 4. Remove a contributor
+      fauxDataStore.unregisterLink(
+        p1,
+        "contributors",
+        c,
+        "contributedProjects",
+      );
+
+      expect(getProjectLinks("p1")).toMatchObject({
+        owner: b,
+        contributors: [d], // c is removed
+      });
+      expect(getEmployeeProjectLinks("c")).toMatchObject({
+        ownedProjects: [],
+        contributedProjects: [], // no longer contributing to p1
+      });
+      expect(getEmployeeProjectLinks("d")).toMatchObject({
+        ownedProjects: [],
+        contributedProjects: [p1], // still contributing to p1
+      });
+
+      // 5. Test with multiple projects
+      fauxDataStore.registerLink(p2, "contributors", b, "contributedProjects");
+
+      expect(getProjectLinks("p2")).toMatchObject({
+        owner: undefined,
+        contributors: [b],
+      });
+      expect(getEmployeeProjectLinks("b")).toMatchObject({
+        ownedProjects: [p1], // owns p1
+        contributedProjects: [p2], // contributes to p2
+      });
+
+      // 6. Remove owner using the opposite direction for unregistering
+      fauxDataStore.unregisterLink(b, "ownedProjects", p1, "owner");
+
+      expect(getProjectLinks("p1")).toMatchObject({
+        owner: undefined,
+        contributors: [d],
+      });
+      expect(getEmployeeProjectLinks("b")).toMatchObject({
+        ownedProjects: [], // no longer owns p1
+        contributedProjects: [p2],
+      });
+      expect(fauxDataStore.getObject(p1.__apiName, p1.__primaryKey))
+        .toMatchObject({
+          "ownerId": undefined,
+        });
+
+      // 7. Test setting foreign key directly on project object
+      const updatedP1 = {
+        ...p1,
+        ownerId: "c",
+      };
+      fauxDataStore.replaceObjectOrThrow(updatedP1);
+
+      // Verify links are automatically updated
+      expect(getProjectLinks("p1")).toMatchObject({
+        owner: c,
+        contributors: [d],
+      });
+      expect(getEmployeeProjectLinks("c")).toMatchObject({
+        ownedProjects: [p1],
+        contributedProjects: [],
+      });
+      expect(fauxDataStore.getObject(p1.__apiName, p1.__primaryKey))
+        .toMatchObject({
+          "ownerId": "c",
+        });
+
+      // 8. Test removing foreign key by setting it to undefined
+      const unlinkedP1 = {
+        ...p1,
+        ownerId: undefined,
+      };
+      fauxDataStore.replaceObjectOrThrow(unlinkedP1);
+
+      // Verify links are properly removed
+      expect(getProjectLinks("p1")).toMatchObject({
+        owner: undefined,
+        contributors: [d],
+      });
+      expect(getEmployeeProjectLinks("c")).toMatchObject({
+        ownedProjects: [],
+        contributedProjects: [],
+      });
+
+      // 9. Test setting multiple links through foreign keys
+      // Add both d and c as owners by setting one at a time
+      const p2WithOwner = {
+        ...p2,
+        ownerId: "d",
+      };
+      fauxDataStore.replaceObjectOrThrow(p2WithOwner);
+
+      expect(getProjectLinks("p2")).toMatchObject({
+        owner: d,
+        contributors: [b],
+      });
+      expect(getEmployeeProjectLinks("d")).toMatchObject({
+        ownedProjects: [p2],
+        contributedProjects: [p1],
       });
     });
   });
