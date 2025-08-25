@@ -31,20 +31,35 @@ import type {
   UpdatableObjectOrInterfaceLocators,
 } from "../edits/EditBatch.js";
 import type { AnyEdit } from "../edits/types.js";
-import type { WriteableClient, WriteMethods } from "./WriteableClient.js";
+import { EditRequestManager } from "./EditRequestManager.js";
+import { toPropertyDataValue } from "./toPropertyDataValue.js";
+import type {
+  WriteableClient,
+  WriteableClientContext,
+  WriteMethods,
+} from "./WriteableClient.js";
+import { writeableClientContext } from "./WriteableClient.js";
 
 export function createWriteableClient<
   X extends AnyEdit = never,
 >(
   ...args: Parameters<typeof createClientWithTransaction>
 ): WriteableClient<X> {
+  const transactionRid = args[0];
+  const ontologyRid = args[2];
+
   const client = createClientWithTransaction(...args);
+
+  const editRequestManager = new EditRequestManager(
+    client as WriteableClient<any>, // This cast is safe because we create the writeable client properties below.
+  );
+
   // We use define properties because the client has non-enumerable properties that we want to preserve.
   const writeableClient = Object.defineProperties<Client>(
     client,
     {
       link: {
-        value: async function<
+        value: function<
           SOL extends AddLinkSources<X>,
           A extends AddLinkApiNames<X, SOL>,
         >(
@@ -52,12 +67,33 @@ export function createWriteableClient<
           apiName: A,
           target: AddLinkTargets<X, SOL, A>,
         ): Promise<void> {
-          await Promise.resolve();
-          return;
+          if (!Array.isArray(target)) {
+            return editRequestManager.postEdit({
+              type: "addLink",
+              objectType: source.$apiName,
+              primaryKey: source.$primaryKey,
+              linkType: apiName,
+              linkedObjectPrimaryKey: target.$primaryKey,
+            });
+          }
+          const promises: Promise<void>[] = [];
+
+          for (const elem of target) {
+            promises.push(
+              editRequestManager.postEdit({
+                type: "addLink",
+                objectType: source.$apiName,
+                primaryKey: source.$primaryKey,
+                linkType: apiName,
+                linkedObjectPrimaryKey: elem.$primaryKey,
+              }),
+            );
+          }
+          return Promise.all(promises).then(() => undefined);
         },
       },
       unlink: {
-        value: async function<
+        value: function<
           SOL extends RemoveLinkSources<X>,
           A extends RemoveLinkApiNames<X, SOL>,
         >(
@@ -65,8 +101,26 @@ export function createWriteableClient<
           apiName: A,
           target: RemoveLinkTargets<X, SOL, A>,
         ): Promise<void> {
-          await Promise.resolve();
-          return;
+          if (!Array.isArray(target)) {
+            return editRequestManager.postEdit({
+              type: "removeLink",
+              objectType: source.$apiName,
+              primaryKey: source.$primaryKey,
+              linkType: apiName,
+              linkedObjectPrimaryKey: target.$primaryKey,
+            });
+          }
+          const promises: Promise<void>[] = [];
+          for (const elem of target) {
+            promises.push(editRequestManager.postEdit({
+              type: "removeLink",
+              objectType: source.$apiName,
+              primaryKey: source.$primaryKey,
+              linkType: apiName,
+              linkedObjectPrimaryKey: elem.$primaryKey,
+            }));
+          }
+          return Promise.all(promises).then(() => undefined);
         },
       },
       create: {
@@ -74,31 +128,60 @@ export function createWriteableClient<
           obj: OTD,
           properties: CreatableObjectOrInterfaceTypeProperties<X, OTD>,
         ): Promise<void> {
-          await Promise.resolve();
-          return;
+          const propertyMap: { [propertyName: string]: unknown } = {};
+          for (const [key, value] of Object.entries(properties)) {
+            propertyMap[key] = toPropertyDataValue(value);
+          }
+          return editRequestManager.postEdit({
+            type: "addObject",
+            objectType: obj.$apiName,
+            primaryKey: obj.$primaryKey,
+            properties: propertyMap,
+          });
         },
       },
       update: {
-        value: async function<
+        value: function<
           SOL extends UpdatableObjectOrInterfaceLocators<X>,
           OTD extends UpdatableObjectOrInterfaceLocatorProperties<X, SOL>,
         >(
           locator: SOL,
           properties: OTD,
         ): Promise<void> {
-          await Promise.resolve();
-          return;
+          const propertyMap: { [propertyName: string]: unknown } = {};
+          for (const [key, value] of Object.entries(properties)) {
+            propertyMap[key] = toPropertyDataValue(value);
+          }
+          return editRequestManager.postEdit({
+            type: "modifyObject",
+            objectType: locator.$apiName,
+            primaryKey: locator.$primaryKey,
+            properties: propertyMap,
+          });
         },
       },
       delete: {
-        value: async function<OL extends DeletableObjectOrInterfaceLocators<X>>(
+        value: function<OL extends DeletableObjectOrInterfaceLocators<X>>(
           obj: OL,
         ): Promise<void> {
-          await Promise.resolve();
-          return;
+          return editRequestManager.postEdit({
+            type: "deleteObject",
+            objectType: obj.$apiName,
+            primaryKey: obj.$primaryKey,
+          });
         },
       },
-    } satisfies Record<keyof WriteMethods, PropertyDescriptor>,
+      [writeableClientContext]: {
+        value: {
+          ontologyRid,
+          transactionRid,
+        } satisfies WriteableClientContext,
+      },
+    } satisfies Record<
+      keyof WriteMethods<any> | typeof writeableClientContext,
+      PropertyDescriptor
+    >,
   ) as WriteableClient<X>;
+
   return writeableClient;
 }
