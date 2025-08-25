@@ -448,6 +448,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
             "apiName": "officeLink",
             "cardinality": "ONE",
             "displayName": "Office",
+            "foreignKeyPropertyApiName": "office",
             "linkTypeRid": "rid.link-type.324",
             "objectTypeApiName": "Office",
             "status": "EXPERIMENTAL",

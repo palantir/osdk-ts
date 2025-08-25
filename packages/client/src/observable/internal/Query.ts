@@ -23,15 +23,18 @@ import type {
   Subscription,
 } from "rxjs";
 import { additionalContext } from "../../Client.js";
-import type { CommonObserveOptions, Status } from "../ObservableClient.js";
-import type { CacheKey } from "./CacheKey.js";
+import type {
+  CommonObserveOptions,
+  Status,
+} from "../ObservableClient/common.js";
 import type { Changes } from "./Changes.js";
+import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Entry } from "./Layer.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
 export abstract class Query<
-  KEY extends CacheKey,
+  KEY extends KnownCacheKey,
   PAYLOAD,
   O extends CommonObserveOptions,
 > implements Subscribable<PAYLOAD> {
@@ -151,7 +154,7 @@ export abstract class Query<
     }
     this.pendingFetch = this._fetchAndStore()
       .finally(() => {
-        logger?.debug("finally _fetchAndStore()");
+        logger?.debug("promise's finally for _fetchAndStore()");
         this.pendingFetch = undefined;
       });
 
@@ -175,11 +178,25 @@ export abstract class Query<
     batch: BatchContext,
   ): void {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "setStatus" }).debug(status);
+      this.logger?.child({ methodName: "setStatus" }).debug(
+        `Attempting to set status to '${status}'`,
+      );
     }
     const existing = batch.read(this.cacheKey);
-    if (existing?.status === status) return;
+    if (existing?.status === status) {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "setStatus" }).debug(
+          `Status is already set to '${status}'; aborting`,
+        );
+      }
+      return;
+    }
 
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "setStatus" }).debug(
+        `Writing status '${status}' to cache`,
+      );
+    }
     batch.write(this.cacheKey, existing?.value, status);
   }
 

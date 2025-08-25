@@ -17,8 +17,10 @@
 import type {
   ActionDefinition,
   ActionValidationResponse,
+  CompileTimeMetadata,
   InterfaceDefinition,
   ObjectTypeDefinition,
+  Osdk,
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
@@ -29,13 +31,19 @@ import type {
   ObserveObjectArgs,
   ObserveObjectOptions,
   ObserveObjectsArgs,
-  Observer,
   Unsubscribable,
 } from "../ObservableClient.js";
+import type { Observer } from "../ObservableClient/common.js";
+import type { ObserveLink } from "../ObservableClient/ObserveLink.js";
 import type { Canonical } from "./Canonical.js";
 import type { Store } from "./Store.js";
 
 /**
+ * Implementation of the public ObservableClient interface.
+ * - Delegates all operations to the Store for consistency
+ * - Serves as the entry point for reactive data management
+ * - Ensures proper method binding and API exposure
+ *
  * @internal
  */
 export class ObservableClientImpl implements ObservableClient {
@@ -50,6 +58,9 @@ export class ObservableClientImpl implements ObservableClient {
     this.observeList = store.observeList.bind(store) as typeof this.observeList;
     this.applyAction = store.applyAction.bind(store);
     this.validateAction = store.validateAction.bind(store);
+    this.observeLinks = store.observeLinks.bind(
+      store,
+    ) as typeof this.observeLinks;
     this.canonicalizeWhereClause = store.canonicalizeWhereClause.bind(
       store,
     ) as typeof this.canonicalizeWhereClause;
@@ -65,6 +76,20 @@ export class ObservableClientImpl implements ObservableClient {
   public observeList: <T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
     subFn: Observer<ObserveObjectsArgs<T>>,
+  ) => Unsubscribable;
+
+  public observeLinks: <
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+    L extends keyof CompileTimeMetadata<T>["links"] & string,
+  >(
+    objects: Osdk.Instance<T> | Array<Osdk.Instance<T>>,
+    linkName: L,
+    options: ObserveLink.Options<
+      CompileTimeMetadata<T>["links"][L]["targetType"]
+    >,
+    subFn: Observer<
+      ObserveLink.CallbackArgs<CompileTimeMetadata<T>["links"][L]["targetType"]>
+    >,
   ) => Unsubscribable;
 
   public applyAction: <Q extends ActionDefinition<any>>(
