@@ -280,7 +280,15 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       react: true,
     },
-  );
+  )
+  .addArchetype("claudeHooks", ["claude-hooks"], {
+    skipAttw: true,
+    private: true,
+    repositoryUrl: "https://github.com/palantir/osdk-ts.git",
+    checkApi: false,
+    output: { esm: undefined, cjs: undefined, browser: undefined },
+    skipTypes: true,
+  });
 
 /**
  * We don't want to allow `workspace:^` in our dependencies because our current release branch
@@ -477,7 +485,6 @@ const ourExportsConvention = createRuleFactory({
         ...(options.browser
           ? { "browser": `./build/browser/public/${fileName}.js` }
           : {}),
-
         "import": {
           types: `./build/types/public/${fileName}.d.ts`,
           default: `./build/esm/public/${fileName}.js`,
@@ -854,20 +861,26 @@ function standardPackageRules(shared, options) {
         },
       },
     }),
-    ourExportsConvention({
-      ...shared,
-      options: {
-        cjs: !!options.output.cjs,
-        browser: !!options.output.browser,
-      },
-    }),
+    ...(options.output.cjs || options.output.esm || options.output.browser
+      ? [ourExportsConvention({
+        ...shared,
+        options: {
+          cjs: !!options.output.cjs,
+          browser: !!options.output.browser,
+        },
+      })]
+      : []),
     packageEntry({
       ...shared,
       options: {
         entries: {
-          publishConfig: {
-            "access": "public",
-          },
+          ...(!options.private
+            ? {
+              publishConfig: {
+                "access": "public",
+              },
+            }
+            : {}),
           files: !options.private
             ? [
               ...(options.extraPublishFiles ?? []),

@@ -18,6 +18,7 @@ inbetween
 isModifierable
 jsons
 Multimap
+nothrow
 objs
 onwarn
 pypi
