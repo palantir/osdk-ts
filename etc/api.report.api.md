@@ -689,6 +689,16 @@ export namespace InterfaceMetadata {
         	}
 }
 
+// Warning: (ae-forgotten-export) The symbol "BaseQueryDataTypeDefinition" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export interface InterfaceQueryDataType<T_Target extends ObjectOrInterfaceDefinition = never> extends BaseQueryDataTypeDefinition<"interface"> {
+    	// (undocumented)
+    __OsdkTargetType?: T_Target;
+    	// (undocumented)
+    interface: string;
+}
+
 // Warning: (ae-forgotten-export) The symbol "OkResult" needs to be exported by the entry point index.d.ts
 //
 // @public
@@ -863,10 +873,8 @@ export namespace ObjectMetadata {
 // @public (undocumented)
 export type ObjectOrInterfaceDefinition = ObjectTypeDefinition | InterfaceDefinition;
 
-// Warning: (ae-forgotten-export) The symbol "BaseQueryDataTypeDefinition" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
-export interface ObjectQueryDataType<T_Target extends ObjectTypeDefinition = never> extends BaseQueryDataTypeDefinition<"object"> {
+export interface ObjectQueryDataType<T_Target extends ObjectOrInterfaceDefinition = never> extends BaseQueryDataTypeDefinition<"object"> {
     	// (undocumented)
     __OsdkTargetType?: T_Target;
     	// (undocumented)
@@ -927,7 +935,7 @@ export namespace ObjectSetArgs {
 }
 
 // @public (undocumented)
-export interface ObjectSetQueryDataType<T_Target extends ObjectTypeDefinition = never> extends BaseQueryDataTypeDefinition<"objectSet"> {
+export interface ObjectSetQueryDataType<T_Target extends ObjectOrInterfaceDefinition = never> extends BaseQueryDataTypeDefinition<"objectSet"> {
     	// (undocumented)
     __OsdkTargetType?: T_Target;
     	// (undocumented)
@@ -1174,6 +1182,7 @@ export interface PropertyValueWireToClient {
 }
 
 // Warning: (ae-forgotten-export) The symbol "PrimitiveDataType" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "InterfaceObjectSetQueryDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "SetQueryDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "UnionQueryDataType" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "StructQueryDataType" needs to be exported by the entry point index.d.ts
@@ -1182,7 +1191,7 @@ export interface PropertyValueWireToClient {
 // Warning: (ae-forgotten-export) The symbol "MapDataType" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type QueryDataTypeDefinition<T_Target extends ObjectTypeDefinition = any> = PrimitiveDataType | ObjectQueryDataType<T_Target> | ObjectSetQueryDataType<T_Target> | SetQueryDataType | UnionQueryDataType | StructQueryDataType | TwoDimensionalAggregationDataType | ThreeDimensionalAggregationDataType | MapDataType;
+export type QueryDataTypeDefinition<T_Target extends ObjectOrInterfaceDefinition = any> = PrimitiveDataType | ObjectQueryDataType<T_Target> | InterfaceQueryDataType<T_Target> | ObjectSetQueryDataType<T_Target> | InterfaceObjectSetQueryDataType<T_Target> | SetQueryDataType | UnionQueryDataType | StructQueryDataType | TwoDimensionalAggregationDataType | ThreeDimensionalAggregationDataType | MapDataType;
 
 // @public (undocumented)
 export interface QueryDefinition<T = any> {
@@ -1225,9 +1234,21 @@ export interface QueryMetadata {
 // @public
 export namespace QueryParam {
     	// (undocumented)
-    export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
+    export type InterfaceType<T extends InterfaceDefinition> = {
+        		$objectType: CompileTimeMetadata<T> extends {
+            			implementedBy: infer U
+            		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
+        		$primaryKey: string | number
+        		$apiName?: never
+        	} | {
+        		$apiName: T["apiName"]
+        		$objectType: string
+        		$primaryKey: string | number
+        	};
     	// (undocumented)
-    export type ObjectType<T extends ObjectTypeDefinition> = ObjectIdentifiers<T> | OsdkObjectPrimaryKeyType<T>;
+    export type ObjectSetType<T extends ObjectOrInterfaceDefinition> = ObjectSet<T>;
+    	// (undocumented)
+    export type ObjectType<T extends ObjectOrInterfaceDefinition> = ObjectIdentifiers<T> | OsdkObjectPrimaryKeyType<T>;
     	// (undocumented)
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
     	// Warning: (ae-forgotten-export) The symbol "AggregationRangeKeyTypes" needs to be exported by the entry point index.d.ts
@@ -1260,9 +1281,11 @@ export type QueryParameterDefinition<T_Target extends ObjectTypeDefinition = any
 // @public
 export namespace QueryResult {
     	// (undocumented)
-    export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
+    export type InterfaceType<T extends ObjectOrInterfaceDefinition> = OsdkBase<T>;
     	// (undocumented)
-    export type ObjectType<T extends ObjectTypeDefinition> = OsdkBase<T>;
+    export type ObjectSetType<T extends ObjectOrInterfaceDefinition> = ObjectSet<T>;
+    	// (undocumented)
+    export type ObjectType<T extends ObjectOrInterfaceDefinition> = OsdkBase<T>;
     	// (undocumented)
     export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueWireToClient[T];
     	// Warning: (ae-forgotten-export) The symbol "AggKeyWireToClient" needs to be exported by the entry point index.d.ts

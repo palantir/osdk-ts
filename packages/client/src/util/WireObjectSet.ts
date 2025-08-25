@@ -25,6 +25,7 @@ const WIRE_OBJECT_SET_TYPES = new Set([
   "static",
   "subtract",
   "union",
+  "interfaceBase",
 ]);
 
 /** @internal */

@@ -26,6 +26,7 @@ import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOnto
 import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import type { MinimalFs } from "../MinimalFs.js";
+import { getInterfaceTypeApiNamesFromQuery } from "../shared/getInterfaceTypeApiNamesFromQuery.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
 import { getObjectTypeApiNamesFromQuery } from "../shared/getObjectTypeApiNamesFromQuery.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
@@ -99,11 +100,16 @@ async function generateV2QueryFile(
 ) {
   const relFilePath = path.join(relOutDir, `${query.shortApiName}.ts`);
   const objectTypes = getObjectTypeApiNamesFromQuery(query);
-  const objectTypeObjects = new Set(
-    objectTypes.map(o => ontology.requireObjectType(o)),
+  const interfaceTypes = getInterfaceTypeApiNamesFromQuery(query);
+  const interfaceAndObjectTypes = new Set(
+    [
+      ...objectTypes.map(o => ontology.requireObjectType(o)),
+      ...interfaceTypes.map(o => ontology.requireInterfaceType(o)),
+    ],
   );
+
   const importObjects = getObjectImports(
-    objectTypeObjects,
+    interfaceAndObjectTypes,
     "",
     relFilePath,
     true,
@@ -349,10 +355,23 @@ export function getQueryParamType(
           .getImportedDefinitionIdentifier(true)
       }>`;
       break;
+    case "interface":
+      inner = `Query${type}.InterfaceType<${
+        enhancedOntology.requireInterfaceType(input.interface)
+          .getImportedDefinitionIdentifier(true)
+      }>`;
+      break;
 
     case "objectSet":
       inner = `Query${type}.ObjectSetType<${
         enhancedOntology.requireObjectType(input.objectSet)
+          .getImportedDefinitionIdentifier(true)
+      }>`;
+      break;
+
+    case "interfaceObjectSet":
+      inner = `Query${type}.ObjectSetType<${
+        enhancedOntology.requireInterfaceType(input.objectSet)
           .getImportedDefinitionIdentifier(true)
       }>`;
       break;

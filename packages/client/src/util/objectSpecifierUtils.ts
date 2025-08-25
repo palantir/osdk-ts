@@ -15,6 +15,7 @@
  */
 
 import type {
+  InterfaceDefinition,
   ObjectSpecifier,
   ObjectTypeDefinition,
   PrimaryKeyType,
@@ -32,6 +33,28 @@ export function createObjectSpecifierFromPrimaryKey<
   Q extends ObjectTypeDefinition,
 >(objectDef: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q> {
   return `${objectDef.apiName}:${primaryKey}` as ObjectSpecifier<Q>;
+}
+
+/**
+ * Creates an Object Specifier. An ObjectSpecifier is a string that uniquely identifies an object in the system,
+ * even when loading an interface object where primary key uniqueness is not guaranteed.
+ *
+ * @param objectDef - An Object Type Definition
+ * @param primaryKey - The value you want to use as the primary key
+ * @returns An Object Specifier
+ */
+export function createObjectSpecifierFromInterfaceSpecifier<
+  Q extends InterfaceDefinition,
+>(
+  interfaceDef: Q,
+  interfaceSpecifier: {
+    objectTypeApiName: string;
+    primaryKeyValue: PrimaryKeyType<Q>;
+  },
+): ObjectSpecifier<Q> {
+  return `${interfaceSpecifier.objectTypeApiName}:${interfaceSpecifier.primaryKeyValue}` as ObjectSpecifier<
+    Q
+  >;
 }
 
 /**
