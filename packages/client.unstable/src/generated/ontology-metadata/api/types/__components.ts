@@ -1963,6 +1963,11 @@ export interface StructFieldBaseParameterType_geohash {
   geohash: GeohashType;
 }
 
+export interface StructFieldBaseParameterType_geoshape {
+  type: "geoshape";
+  geoshape: GeoshapeType;
+}
+
 export interface StructFieldBaseParameterType_timestamp {
   type: "timestamp";
   timestamp: TimestampType;
@@ -1984,6 +1989,7 @@ export type StructFieldBaseParameterType =
   | StructFieldBaseParameterType_double
   | StructFieldBaseParameterType_string
   | StructFieldBaseParameterType_geohash
+  | StructFieldBaseParameterType_geoshape
   | StructFieldBaseParameterType_timestamp
   | StructFieldBaseParameterType_date;
 
@@ -2022,6 +2028,11 @@ export interface StructFieldDataValue_geohash {
   geohash: GeohashValue;
 }
 
+export interface StructFieldDataValue_geoshape {
+  type: "geoshape";
+  geoshape: GeoshapeValue;
+}
+
 export interface StructFieldDataValue_timestamp {
   type: "timestamp";
   timestamp: TimestampValue;
@@ -2044,6 +2055,7 @@ export type StructFieldDataValue =
   | StructFieldDataValue_string
   | StructFieldDataValue_date
   | StructFieldDataValue_geohash
+  | StructFieldDataValue_geoshape
   | StructFieldDataValue_timestamp
   | StructFieldDataValue_null;
 

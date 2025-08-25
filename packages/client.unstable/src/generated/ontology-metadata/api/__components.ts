@@ -611,6 +611,60 @@ export interface ActionType {
  * API names must be unique - requests that attempt to re-use an existing API name will be rejected.
  */
 export type ActionTypeApiName = string;
+export interface ActionTypeBranchFunctionsWithExternalCallsMode_allowFunctionsWithExternalCallsOnBranches {
+  type: "allowFunctionsWithExternalCallsOnBranches";
+  allowFunctionsWithExternalCallsOnBranches:
+    AllowFunctionsWithExternalCallsOnBranches;
+}
+
+export interface ActionTypeBranchFunctionsWithExternalCallsMode_disableFunctionsWithExternalCallsOnBranches {
+  type: "disableFunctionsWithExternalCallsOnBranches";
+  disableFunctionsWithExternalCallsOnBranches:
+    DisableFunctionsWithExternalCallsOnBranches;
+}
+export type ActionTypeBranchFunctionsWithExternalCallsMode =
+  | ActionTypeBranchFunctionsWithExternalCallsMode_allowFunctionsWithExternalCallsOnBranches
+  | ActionTypeBranchFunctionsWithExternalCallsMode_disableFunctionsWithExternalCallsOnBranches;
+
+export interface ActionTypeBranchNotificationsMode_allowNotificationsOnBranches {
+  type: "allowNotificationsOnBranches";
+  allowNotificationsOnBranches: AllowNotificationsOnBranches;
+}
+
+export interface ActionTypeBranchNotificationsMode_disableNotificationsOnBranches {
+  type: "disableNotificationsOnBranches";
+  disableNotificationsOnBranches: DisableNotificationsOnBranches;
+}
+export type ActionTypeBranchNotificationsMode =
+  | ActionTypeBranchNotificationsMode_allowNotificationsOnBranches
+  | ActionTypeBranchNotificationsMode_disableNotificationsOnBranches;
+
+export interface ActionTypeBranchSettings {
+  functionsWithExternalCallsMode:
+    ActionTypeBranchFunctionsWithExternalCallsMode;
+  notificationsMode: ActionTypeBranchNotificationsMode;
+  webhooksMode: ActionTypeBranchWebhooksMode;
+}
+export interface ActionTypeBranchSettingsModification {
+  functionsWithExternalCallsMode?:
+    | ActionTypeBranchFunctionsWithExternalCallsMode
+    | null
+    | undefined;
+  notificationsMode?: ActionTypeBranchNotificationsMode | null | undefined;
+  webhooksMode?: ActionTypeBranchWebhooksMode | null | undefined;
+}
+export interface ActionTypeBranchWebhooksMode_allowWebhooksOnBranches {
+  type: "allowWebhooksOnBranches";
+  allowWebhooksOnBranches: AllowWebhooksOnBranches;
+}
+
+export interface ActionTypeBranchWebhooksMode_disableWebhooksOnBranches {
+  type: "disableWebhooksOnBranches";
+  disableWebhooksOnBranches: DisableWebhooksOnBranches;
+}
+export type ActionTypeBranchWebhooksMode =
+  | ActionTypeBranchWebhooksMode_allowWebhooksOnBranches
+  | ActionTypeBranchWebhooksMode_disableWebhooksOnBranches;
 
 /**
  * A ActionTypeCreate is used to create ActionTypes.
@@ -619,6 +673,7 @@ export interface ActionTypeCreate {
   actionApplyClientSettings?: ActionApplyClientPreferences | null | undefined;
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
+  branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
   formContentOrdering: Array<FormContent>;
   logic: ActionLogicModification;
@@ -892,6 +947,7 @@ export interface ActionTypeMetadata {
   actionApplyClientSettings?: ActionApplyClientPreferences | null | undefined;
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
+  branchSettings: ActionTypeBranchSettings;
   displayMetadata: ActionTypeDisplayMetadata;
   entities?: ActionTypeEntities | null | undefined;
   formContentOrdering: Array<FormContent>;
@@ -916,6 +972,7 @@ export interface ActionTypeMetadataModification {
   actionApplyClientSettings?: ActionApplyClientPreferences | null | undefined;
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
+  branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
   entities?: ActionTypeEntities | null | undefined;
   formContentOrdering: Array<FormContent>;
@@ -1094,6 +1151,7 @@ export interface ActionTypeUpdate {
   actionApplyClientSettings?: ActionApplyClientPreferences | null | undefined;
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
+  branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
   formContentOrdering?: Array<FormContent> | null | undefined;
   logic: ActionLogicModification;
@@ -1815,13 +1873,19 @@ export interface AllowedStructFieldValues_geohash {
   type: "geohash";
   geohash: ParameterGeohashOrEmpty;
 }
+
+export interface AllowedStructFieldValues_geoshape {
+  type: "geoshape";
+  geoshape: ParameterGeoshapeOrEmpty;
+}
 export type AllowedStructFieldValues =
   | AllowedStructFieldValues_oneOf
   | AllowedStructFieldValues_range
   | AllowedStructFieldValues_text
   | AllowedStructFieldValues_datetime
   | AllowedStructFieldValues_boolean
-  | AllowedStructFieldValues_geohash;
+  | AllowedStructFieldValues_geohash
+  | AllowedStructFieldValues_geoshape;
 
 export interface AllowedStructFieldValuesModification_oneOf {
   type: "oneOf";
@@ -1852,13 +1916,19 @@ export interface AllowedStructFieldValuesModification_geohash {
   type: "geohash";
   geohash: ParameterGeohashOrEmpty;
 }
+
+export interface AllowedStructFieldValuesModification_geoshape {
+  type: "geoshape";
+  geoshape: ParameterGeoshapeOrEmpty;
+}
 export type AllowedStructFieldValuesModification =
   | AllowedStructFieldValuesModification_oneOf
   | AllowedStructFieldValuesModification_range
   | AllowedStructFieldValuesModification_text
   | AllowedStructFieldValuesModification_datetime
   | AllowedStructFieldValuesModification_boolean
-  | AllowedStructFieldValuesModification_geohash;
+  | AllowedStructFieldValuesModification_geohash
+  | AllowedStructFieldValuesModification_geoshape;
 
 export interface AllowedStructFieldValuesOverride {
   allowedValues: AllowedStructFieldValues;
@@ -1874,6 +1944,26 @@ export interface AllowedValuesOverrideModification {
 }
 export interface AllowedValuesOverrideRequest {
   allowedValues: AllowedParameterValuesRequest;
+}
+export interface AllowFunctionsWithExternalCallsOnBranches {
+}
+export interface AllowNotificationsOnBranches {
+  branchRecipients: AllowNotificationsOnBranchesBranchRecipients;
+}
+export interface AllowNotificationsOnBranchesBranchRecipients_branchRecipientsBranchOwner {
+  type: "branchRecipientsBranchOwner";
+  branchRecipientsBranchOwner: BranchRecipientsBranchOwner;
+}
+
+export interface AllowNotificationsOnBranchesBranchRecipients_branchRecipientsSameAsMain {
+  type: "branchRecipientsSameAsMain";
+  branchRecipientsSameAsMain: BranchRecipientsSameAsMain;
+}
+export type AllowNotificationsOnBranchesBranchRecipients =
+  | AllowNotificationsOnBranchesBranchRecipients_branchRecipientsBranchOwner
+  | AllowNotificationsOnBranchesBranchRecipients_branchRecipientsSameAsMain;
+
+export interface AllowWebhooksOnBranches {
 }
 export interface Analyzer_notAnalyzed {
   type: "notAnalyzed";
@@ -2086,6 +2176,13 @@ export interface BatchedFunctionRuleModification {
   functionDetails: FunctionRuleModification;
   objectSetRidInputName: FunctionInputName;
 }
+export interface BatchGetEnrichedActionTypeMetadataRequest {
+  actionTypes: Array<ActionTypeRid>;
+  ontologyBranchRid?: OntologyBranchRid | null | undefined;
+}
+export interface BatchGetEnrichedActionTypeMetadataResponse {
+  enrichedMetadata: Record<ActionTypeRid, EnrichedActionTypeMetadata>;
+}
 export interface BidirectionalRelation {
   cardinality: RelationCardinality;
   definition: JoinDefinition;
@@ -2185,6 +2282,10 @@ export type BranchId = string;
 export interface BranchMergedEvent {
   ontologyBranch: OntologyBranch;
   ontologyRid: OntologyRid;
+}
+export interface BranchRecipientsBranchOwner {
+}
+export interface BranchRecipientsSameAsMain {
 }
 export type BuilderPipelineRid = string;
 export interface BulkExecutionModeConfig {
@@ -3098,7 +3199,12 @@ export type DerivedPropertiesSourceRid = string;
  * A rid specifying a direct write datasource, such as an edge pipeline.
  */
 export type DirectSourceRid = string;
-
+export interface DisableFunctionsWithExternalCallsOnBranches {
+}
+export interface DisableNotificationsOnBranches {
+}
+export interface DisableWebhooksOnBranches {
+}
 /**
  * Default layout that should be shown when interacting with action inline widget
  */
@@ -3223,6 +3329,7 @@ export interface DynamicObjectSetInputUnioned {
 export interface EditActionTypeRequest {
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
+  branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
   logic: ActionLogic;
   notifications: Array<ActionNotification>;
@@ -3337,6 +3444,13 @@ export interface Empty {
  * This status indicates that the ObjectType is endorsed as a part of "core" ontology by ontology-level owners and provides even better guarantees than the Active status.
  */
 export interface EndorsedObjectTypeStatus {
+}
+export interface EnrichedActionTypeEntities {
+  linkTypes: Record<LinkTypeId, LinkTypeRid>;
+  objectTypes: Record<ObjectTypeId, ObjectTypeRid>;
+}
+export interface EnrichedActionTypeMetadata {
+  actionTypeEntities: EnrichedActionTypeEntities;
 }
 /**
  * The rid for a Multipass Enrollment.
@@ -3946,6 +4060,21 @@ export interface IntegerTypeRangeConstraint {
 export interface InterfaceArrayPropertyType {
   subtype: InterfacePropertyTypeType;
 }
+export interface InterfaceDefinedPropertyType {
+  apiName: InterfacePropertyTypeApiName;
+  constraints: InterfaceDefinedPropertyTypeConstraints;
+  displayMetadata: InterfacePropertyTypeDisplayMetadata;
+  rid: InterfacePropertyTypeRid;
+  type: InterfacePropertyTypeType;
+}
+export interface InterfaceDefinedPropertyTypeConstraints {
+  dataConstraints?: DataConstraints | null | undefined;
+  indexedForSearch: boolean;
+  primaryKeyConstraint: PrimaryKeyConstraint;
+  requireImplementation: boolean;
+  typeClasses: Array<TypeClass>;
+  valueType?: ValueTypeReference | null | undefined;
+}
 export interface InterfaceLinkType {
   cardinality: InterfaceLinkTypeCardinality;
   linkedEntityTypeId: LinkedEntityTypeId;
@@ -4058,8 +4187,14 @@ export interface InterfacePropertyType_sharedPropertyBasedPropertyType {
   type: "sharedPropertyBasedPropertyType";
   sharedPropertyBasedPropertyType: SharedPropertyBasedPropertyType;
 }
+
+export interface InterfacePropertyType_interfaceDefinedPropertyType {
+  type: "interfaceDefinedPropertyType";
+  interfaceDefinedPropertyType: InterfaceDefinedPropertyType;
+}
 export type InterfacePropertyType =
-  InterfacePropertyType_sharedPropertyBasedPropertyType;
+  | InterfacePropertyType_sharedPropertyBasedPropertyType
+  | InterfacePropertyType_interfaceDefinedPropertyType;
 
 export type InterfacePropertyTypeApiName = string;
 export interface InterfacePropertyTypeDisplayMetadata {
@@ -4732,6 +4867,7 @@ export interface LinkTypeRidsNotFoundError {
  */
 export interface LinkTypesAlreadyExistError {
   linkTypeIds: Array<LinkTypeId>;
+  linkTypeIdsToOntologyBranchRids: Record<LinkTypeId, OntologyBranchRid>;
 }
 /**
  * The LinkTypes were not found.
@@ -6262,6 +6398,7 @@ export interface ObjectTypeDirectDatasource {
   directSourceRid: DirectSourceRid;
   propertyMapping: Record<PropertyTypeRid, PropertyTypeMappingInfo>;
   propertySecurityGroups: PropertySecurityGroups;
+  retentionConfig?: RetentionConfig | null | undefined;
 }
 /**
  * This includes metadata which can be used by front-ends when displaying the ObjectType.
@@ -6517,6 +6654,7 @@ export interface ObjectTypeRidsNotFoundError {
  */
 export interface ObjectTypesAlreadyExistError {
   objectTypeIds: Array<ObjectTypeId>;
+  objectTypeIdsToOntologyBranchRids: Record<ObjectTypeId, OntologyBranchRid>;
 }
 /**
  * The ObjectTypes were not found.
@@ -6985,23 +7123,6 @@ export interface OntologyIrActionsObjectSet {
   >;
   objectSet: OntologyIrDynamicObjectSet;
 }
-export interface OntologyIrActionType {
-  actionTypeLogic: OntologyIrActionTypeLogic;
-  metadata: OntologyIrActionTypeMetadata;
-}
-/**
- * DisplayMetadata shape used in responses
- */
-export interface OntologyIrActionTypeDisplayMetadata {
-  configuration: ActionTypeDisplayMetadataConfiguration;
-  description: string;
-  displayName: string;
-  icon?: Icon | null | undefined;
-  submitButtonDisplayMetadata?: ButtonDisplayMetadata | null | undefined;
-  successMessage: Array<OntologyIrActionTypeRichTextComponent>;
-  typeClasses: Array<TypeClass>;
-  undoButtonConfiguration?: boolean | null | undefined;
-}
 export interface OntologyIrActionTypeEntities {
   affectedInterfaceTypes: Array<InterfaceTypeApiName>;
   affectedLinkTypes: Array<LinkTypeId>;
@@ -7014,20 +7135,6 @@ export interface OntologyIrActionTypeLevelValidation {
 export interface OntologyIrActionTypeLogic {
   logic: OntologyIrActionLogic;
   validation: OntologyIrActionValidation;
-}
-/**
- * An ActionType defines the schema of the edits that can be made to Phonograph.
- */
-export interface OntologyIrActionTypeMetadata {
-  apiName: ActionTypeApiName;
-  displayMetadata: OntologyIrActionTypeDisplayMetadata;
-  entities?: OntologyIrActionTypeEntities | null | undefined;
-  formContentOrdering: Array<OntologyIrFormContent>;
-  parameterOrdering: Array<ParameterId>;
-  parameters: Record<ParameterId, OntologyIrParameter>;
-  sections: Record<SectionId, OntologyIrSection>;
-  stagingMediaSetRid?: MediaSetRid | null | undefined;
-  status: OntologyIrActionTypeStatus;
 }
 export interface OntologyIrActionTypeRichTextComponent_message {
   type: "message";
@@ -7330,13 +7437,19 @@ export interface OntologyIrAllowedStructFieldValues_geohash {
   type: "geohash";
   geohash: ParameterGeohashOrEmpty;
 }
+
+export interface OntologyIrAllowedStructFieldValues_geoshape {
+  type: "geoshape";
+  geoshape: ParameterGeoshapeOrEmpty;
+}
 export type OntologyIrAllowedStructFieldValues =
   | OntologyIrAllowedStructFieldValues_oneOf
   | OntologyIrAllowedStructFieldValues_range
   | OntologyIrAllowedStructFieldValues_text
   | OntologyIrAllowedStructFieldValues_datetime
   | OntologyIrAllowedStructFieldValues_boolean
-  | OntologyIrAllowedStructFieldValues_geohash;
+  | OntologyIrAllowedStructFieldValues_geohash
+  | OntologyIrAllowedStructFieldValues_geoshape;
 
 export interface OntologyIrAllowedStructFieldValuesOverride {
   allowedValues: OntologyIrAllowedStructFieldValues;
@@ -8562,6 +8675,7 @@ export interface OntologyIrObjectTypeDirectDatasource {
   directSourceRid: DirectSourceRid;
   propertyMapping: Record<ObjectTypeFieldApiName, PropertyTypeMappingInfo>;
   propertySecurityGroups: OntologyIrPropertySecurityGroups;
+  retentionConfig?: RetentionConfig | null | undefined;
 }
 /**
  * Object type datasource which is not backed by any dataset or restricted view. This type of a "datasource"
@@ -11418,6 +11532,10 @@ export interface PrePostFix {
   postfix?: PropertyTypeReferenceOrStringConstant | null | undefined;
   prefix?: PropertyTypeReferenceOrStringConstant | null | undefined;
 }
+export type PrimaryKeyConstraint =
+  | "MUST_BE_PK"
+  | "CANNOT_BE_PK"
+  | "NO_RESTRICTION";
 export interface PrimaryKeyPropertySecurityGroupType {
 }
 export interface PrimitiveOrStructLogicRuleModification_logicRuleValueModification {
@@ -11905,6 +12023,7 @@ export interface PropertyWithoutRid {
 export interface PutActionTypeRequest {
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
+  branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
   logic: ActionLogic;
   notifications: Array<ActionNotification>;
@@ -12105,6 +12224,7 @@ export interface ResolvedInterfacePropertyType {
 export interface ResolvedInterfacePropertyTypeConstraints {
   dataConstraints?: DataConstraints | null | undefined;
   indexedForSearch: boolean;
+  primaryKeyConstraint: PrimaryKeyConstraint;
   requireImplementation: boolean;
   typeClasses: Array<TypeClass>;
   valueType?: ValueTypeReference | null | undefined;
@@ -12122,6 +12242,10 @@ export type RestrictedViewRid = string;
  * log.
  */
 export type RestrictedViewTransactionRid = string;
+export interface RetentionConfig {
+  targetSize: any;
+  triggerSize: any;
+}
 export interface RetentionPolicy_time {
   type: "time";
   time: TimeBasedRetentionPolicy;

@@ -15,16 +15,19 @@
  */
 
 import type {
-  OntologyIrImportedObjectType,
-  OntologyIrImportedPropertyType,
+  OntologyIrObjectType,
+  OntologyIrPropertyType,
 } from "@osdk/client.unstable";
+import type {
+  ObjectPropertyType,
+  ObjectType,
+  PropertyTypeType,
+} from "@osdk/maker";
 import {
   convertToDisplayName,
   convertToPluralDisplayName,
   convertType,
   importOntologyEntity,
-  type ObjectPropertyType,
-  type ObjectType,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
 import type { ImportObjectDefinition } from "./types.js";
@@ -36,7 +39,7 @@ import type { ImportObjectDefinition } from "./types.js";
  */
 export function defineImportObject(
   objectDef: ImportObjectDefinition,
-): OntologyIrImportedObjectType {
+): OntologyIrObjectType {
   const properties: Array<ObjectPropertyType> = Object.entries(
     objectDef.properties ?? {},
   ).map(([apiName, type]) => ({
@@ -58,18 +61,48 @@ export function defineImportObject(
   };
   importOntologyEntity(finalObject);
 
-  const importPropertyTypes: Array<OntologyIrImportedPropertyType> = Object
+  const importPropertyTypes: Array<OntologyIrPropertyType> = Object
     .entries(objectDef.properties).map(([apiName, importedPt]) => ({
       ...importedPt,
       apiName: apiName,
-      displayName: importedPt.displayName ?? convertToDisplayName(apiName),
+      displayMetadata: {
+        displayName: importedPt.displayName ?? convertToDisplayName(apiName),
+        visibility: "NORMAL",
+      },
+      indexedForSearch: true,
+      status: { type: "active", active: {} },
+      typeClasses: shouldNotHaveRenderHints(importedPt.type) ? [] : [{
+        kind: "render_hint",
+        name: "SELECTABLE",
+      }, { kind: "render_hint", name: "SORTABLE" }],
       type: convertType(importedPt.type),
     }));
-  const ontologyImportObject: OntologyIrImportedObjectType = {
+  const objectDisplayName = objectDef.displayName
+    ?? convertToDisplayName(objectDef.apiName);
+  const ontologyImportObject: OntologyIrObjectType = {
     ...objectDef,
-    displayName: objectDef.displayName
-      ?? convertToDisplayName(objectDef.apiName),
-    propertyTypes: importPropertyTypes,
+    displayMetadata: {
+      displayName: objectDisplayName,
+      pluralDisplayName: objectDisplayName + "s",
+      visibility: "NORMAL",
+      icon: {
+        type: "blueprint",
+        blueprint: { locator: "cube", color: "#2D72D2" },
+      },
+    },
+    propertyTypes: Object.fromEntries(
+      importPropertyTypes.map((pt) => [pt.apiName, pt]),
+    ),
+    implementsInterfaces2: [],
+    allImplementsInterfaces: {},
+    primaryKeys: [],
+    titlePropertyTypeRid: properties.at(0)!.apiName,
+    status: { type: "active", active: {} },
   };
   return ontologyImportObject;
+}
+function shouldNotHaveRenderHints(type: PropertyTypeType): boolean {
+  return ["struct", "mediaReference", "geotimeSeries"].includes(
+    typeof type === "object" ? type.type : type,
+  );
 }

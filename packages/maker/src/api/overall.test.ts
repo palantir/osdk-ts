@@ -8955,7 +8955,22 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.create-or-modify-employee": {
                 "actionType": {
@@ -9563,12 +9578,8 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -9629,7 +9640,22 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.create-object-employee": {
                 "actionType": {
@@ -10104,12 +10130,8 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);

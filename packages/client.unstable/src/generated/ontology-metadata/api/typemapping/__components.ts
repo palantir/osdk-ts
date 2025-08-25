@@ -566,7 +566,10 @@ export interface ObjectTypeGothamMappingModification {
   gothamMappingEnabled?: boolean | null | undefined;
   parentType?: GothamOntologyParentType | null | undefined;
   parentTypeUri?: GothamObjectTypeUri | null | undefined;
-  propertyMapping: Record<_api_PropertyTypeRid, PropertyTypeGothamMapping>;
+  propertyMapping: Record<
+    _api_PropertyTypeRid,
+    PropertyTypeGothamMappingModification
+  >;
   revDbIntegrationState?: RevDbIntegrationState | null | undefined;
   uri?: GothamObjectTypeUri | null | undefined;
 }
@@ -663,6 +666,14 @@ export interface OntologyIrObjectTypeGothamMapping {
   uri: GothamObjectTypeUri;
 }
 export interface PropertyTypeGothamMapping {
+  isSharedPropertyType?: boolean | null | undefined;
+  structApiNameToComponentUriMapping: Record<
+    _api_ObjectTypeFieldApiName,
+    GothamPropertyComponentUri
+  >;
+  uri: GothamPropertyTypeUri;
+}
+export interface PropertyTypeGothamMappingModification {
   structApiNameToComponentUriMapping: Record<
     _api_ObjectTypeFieldApiName,
     GothamPropertyComponentUri
