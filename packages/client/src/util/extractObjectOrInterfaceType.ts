@@ -19,22 +19,10 @@ import type { ObjectSet } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
-export async function extractObjectOrInterfaceType(
-  clientCtx: MinimalClient,
-  objectSet: ObjectSet,
-): Promise<
-  ObjectOrInterfaceDefinition | undefined
-> {
-  return (await extractObjectOrInterfaceTypeInternal(
-    clientCtx,
-    objectSet,
-  ));
-}
-
 /* @internal
-* Returns the resultant interface type of the object set, undefined if it's an object type
+* Returns the resultant interface or object type of the object set
 */
-async function extractObjectOrInterfaceTypeInternal(
+export async function extractObjectOrInterfaceType(
   clientCtx: MinimalClient,
   objectSet: ObjectSet,
 ): Promise<
@@ -42,7 +30,7 @@ async function extractObjectOrInterfaceTypeInternal(
 > {
   switch (objectSet.type) {
     case "searchAround": {
-      const def = await extractObjectOrInterfaceTypeInternal(
+      const def = await extractObjectOrInterfaceType(
         clientCtx,
         objectSet.objectSet,
       );
@@ -70,7 +58,7 @@ async function extractObjectOrInterfaceTypeInternal(
         };
     }
     case "withProperties": {
-      return extractObjectOrInterfaceTypeInternal(
+      return extractObjectOrInterfaceType(
         clientCtx,
         objectSet.objectSet,
       );
@@ -85,7 +73,7 @@ async function extractObjectOrInterfaceTypeInternal(
     case "asBaseObjectTypes":
     case "asType":
     case "nearestNeighbors":
-      return extractObjectOrInterfaceTypeInternal(
+      return extractObjectOrInterfaceType(
         clientCtx,
         objectSet.objectSet,
       );
@@ -95,7 +83,7 @@ async function extractObjectOrInterfaceTypeInternal(
       const objectSets = objectSet.objectSets;
       const objectSetTypes = await Promise.all(
         objectSets.map((os) =>
-          extractObjectOrInterfaceTypeInternal(
+          extractObjectOrInterfaceType(
             clientCtx,
             os,
           )
@@ -103,18 +91,22 @@ async function extractObjectOrInterfaceTypeInternal(
       );
 
       const filteredObjectTypes = objectSetTypes.filter(Boolean);
+      const firstObjectType = filteredObjectTypes[0];
       invariant(
-        filteredObjectTypes.length === 1,
+        filteredObjectTypes.every(val => {
+          return val?.apiName === firstObjectType?.apiName
+            && val?.type === firstObjectType?.type;
+        }),
         "Can only have one object type when doing intersects, subtract, union",
       );
+
       return filteredObjectTypes[0];
     case "static":
     case "reference":
       // Static and reference object sets are always intersected with a base object set, so we can just return undefined.
       return undefined;
-    // We don't have to worry about new object sets being added and doing a runtime break and breaking people since the OSDK is always constructing these.
     case "interfaceLinkSearchAround":
-      const def = await extractObjectOrInterfaceTypeInternal(
+      const def = await extractObjectOrInterfaceType(
         clientCtx,
         objectSet.objectSet,
       );
@@ -143,11 +135,12 @@ async function extractObjectOrInterfaceTypeInternal(
             objOrInterfaceDef.links[objectSet.interfaceLink].targetTypeApiName,
           type: objOrInterfaceDef.links[objectSet.interfaceLink].targetType,
         };
+    // We don't have to worry about new object sets being added and doing a runtime break and breaking people since the OSDK is always constructing these.
     default:
       const _: never = objectSet;
       invariant(
         false,
-        `Unsupported object set type for Runtime Derived Properties`,
+        `Unsupported object set type for deriving object or interface type,`,
       );
   }
 }
