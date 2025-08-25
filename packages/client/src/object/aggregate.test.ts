@@ -548,7 +548,7 @@ describe("aggregate", () => {
       });
 
       expectTypeOf(result[0].$group.text).toEqualTypeOf<
-        string | null | undefined
+        string | null
       >();
     });
 
@@ -608,7 +608,7 @@ describe("aggregate", () => {
       });
 
       expectTypeOf(result[0].$group.text).toEqualTypeOf<
-        string | null | undefined
+        string | null
       >();
     });
   });

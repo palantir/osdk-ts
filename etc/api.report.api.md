@@ -179,7 +179,7 @@ export type AggregationResultsWithGroups<
             	} ? {
             		startValue: T
             		endValue: T
-            	} : MaybeNullable_2<G[P], OsdkObjectPropertyType<CompileTimeMetadata<Q>["properties"][P], true>> }
+            	} : MaybeNullable_2<G[P], OsdkObjectPropertyTypeNotUndefined<CompileTimeMetadata<Q>["properties"][P]>> }
 } & AggregationResultsWithoutGroups<Q, A>)[];
 
 // Warning: (ae-forgotten-export) The symbol "ExtractPropName" needs to be exported by the entry point index.d.ts
@@ -1476,9 +1476,14 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 
 // Warnings were encountered during analysis:
 //
+// src/Definitions.ts:45:62 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// src/Definitions.ts:45:62 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+// src/Definitions.ts:45:62 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+// src/Definitions.ts:45:62 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
+// src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "OsdkObjectPropertyTypeNotUndefined" needs to be exported by the entry point index.d.ts
 // src/derivedProperties/DerivedProperty.ts:58:7 - (ae-forgotten-export) The symbol "DerivedPropertyCreator" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
