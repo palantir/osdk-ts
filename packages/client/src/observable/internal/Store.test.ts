@@ -1034,6 +1034,9 @@ describe(Store, () => {
     it("properly fires error handler for a list", async () => {
       const sub = mockListSubCallback();
 
+      // ignores unhandled rejection, like one we will get from fire-and-forget metadata call
+      process.on("unhandledRejection", () => {});
+
       store.observeList({
         type: { apiName: "notReal", type: "object" },
         orderBy: {},
