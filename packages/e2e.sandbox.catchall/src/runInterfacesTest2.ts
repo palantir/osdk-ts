@@ -17,7 +17,7 @@
 import type { Osdk } from "@osdk/api";
 import {
   Athlete,
-  CollateralConcernList,
+  CollateralConcernCandidate,
   EsongInterfaceA,
   NbaPlayer,
 } from "@osdk/e2e.generated.catchall";
@@ -79,12 +79,14 @@ export async function runInterfacesTest2(): Promise<void> {
   });
 
   // interface to interface
-  const concernList = await dsClient(CollateralConcernList).pivotTo(
-    "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity",
+  const concernCandidates2 = await dsClient(CollateralConcernCandidate)
+    .fetchPage();
+  const concernList2 = await dsClient(CollateralConcernCandidate).pivotTo(
+    "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList",
   ).fetchPage();
 
-  // this will be empty because no implementations
-  console.log("linked entities", concernList.data);
+  console.log("concern candidates", concernCandidates2.data);
+  console.log("linked list entities", concernList2.data);
 
   // interface to object
   const pds = await dsClient(EsongInterfaceA).pivotTo("esongPds").fetchPage();
