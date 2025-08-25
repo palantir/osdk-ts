@@ -23,7 +23,7 @@ export namespace SotSensor {
     /**
      *   display name: 'Is Enum'
      */
-    readonly isEnum: $PropType['boolean'] | undefined;
+    readonly isEnum: true | undefined;
     /**
      *   display name: 'Sensor Name'
      */

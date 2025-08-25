@@ -35,7 +35,7 @@ export namespace OsdkTestObject {
     /**
      *   display name: 'String Property'
      */
-    readonly stringProperty: $PropType['string'] | undefined;
+    readonly stringProperty: 'brown' | 'found.com' | undefined;
   }
   export type StrictProps = Props;
 

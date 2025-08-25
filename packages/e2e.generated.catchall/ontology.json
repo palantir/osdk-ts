@@ -854,7 +854,8 @@
             "displayName": "String Property",
             "dataType": {
               "type": "string"
-            }
+            },
+            "valueTypeApiName": "colorValueType"
           }
         },
         "rid": "ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb",
@@ -1526,7 +1527,8 @@
             "displayName": "Is Enum",
             "dataType": {
               "type": "boolean"
-            }
+            },
+            "valueTypeApiName": "booleanValueType"
           },
           "timeSeriesProperty": {
             "displayName": "Time Series Property",
@@ -2870,6 +2872,37 @@
       },
       "displayName": "Description",
       "description": "Description of Description"
+    }
+  },
+
+  "valueTypes": {
+    "colorValueType": {
+      "apiName": "colorValueType",
+      "description": "A value type for specific colors",
+      "displayName": "Color Value Type",
+      "rid": "ri.a.b.c.d",
+      "version": "1.0.0",
+      "fieldType": {
+        "type": "string"
+      },
+      "constraints": [{
+        "type": "enum",
+        "options": ["brown", "found.com"]
+      }]
+    },
+    "booleanValueType": {
+      "apiName": "booleanValueType",
+      "description": "A value type for boolean values",
+      "displayName": "Boolean Value Type",
+      "rid": "ri.a.b.c.d",
+      "version": "1.0.0",
+      "fieldType": {
+        "type": "boolean"
+      },
+      "constraints": [{
+        "type": "enum",
+        "options": [true, null]
+      }]
     }
   }
 }
