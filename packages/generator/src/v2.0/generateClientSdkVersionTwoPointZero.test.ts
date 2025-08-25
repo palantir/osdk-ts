@@ -583,7 +583,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | ActionParam.NullValueType;
           }
 
           // Represents a fqn of the action
@@ -659,7 +659,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo>;
+            readonly object?: ActionParam.ObjectType<Todo> | ActionParam.NullValueType;
           }
 
           // Represents a fqn of the action
@@ -718,6 +718,7 @@ describe("generator", () => {
 
         import type {
           InterfaceDefinition as $InterfaceDefinition,
+          InterfaceMetadata as $InterfaceMetadata,
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
@@ -1231,7 +1232,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | ActionParam.NullValueType;
           }
 
           // Represents a fqn of the action
@@ -1307,7 +1308,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo>;
+            readonly object?: ActionParam.ObjectType<Todo> | ActionParam.NullValueType;
           }
 
           // Represents a fqn of the action
@@ -1366,6 +1367,7 @@ describe("generator", () => {
 
         import type {
           InterfaceDefinition as $InterfaceDefinition,
+          InterfaceMetadata as $InterfaceMetadata,
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
@@ -2592,6 +2594,7 @@ describe("generator", () => {
 
         import type {
           InterfaceDefinition as $InterfaceDefinition,
+          InterfaceMetadata as $InterfaceMetadata,
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,

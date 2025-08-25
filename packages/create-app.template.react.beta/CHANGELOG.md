@@ -1,5 +1,41 @@
 # @osdk/create-app.template.react
 
+## 2.4.0-beta.17
+
+## 2.4.0-beta.16
+
+## 2.4.0-beta.15
+
+## 2.4.0-beta.14
+
+## 2.4.0-beta.13
+
+## 2.4.0-beta.12
+
+## 2.4.0-beta.11
+
+## 2.4.0-beta.10
+
+## 2.4.0-beta.9
+
+## 2.4.0-beta.8
+
+## 2.4.0-beta.7
+
+## 2.4.0-beta.6
+
+## 2.4.0-beta.5
+
+## 2.4.0-beta.4
+
+## 2.4.0-beta.3
+
+## 2.4.0-beta.2
+
+## 2.3.0-beta.10
+
+## 2.3.0-beta.9
+
 ## 2.3.0-beta.8
 
 ## 2.3.0-beta.7
@@ -21,6 +57,19 @@
 ### Minor Changes
 
 - 595a81c: Remove dangling comma in root render function
+
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 1444362: Read environment variables from index.html meta tags
+- d4c962c: Fix typos for widgets libraries
+- fa02507: Use options overload when initializing client in create-app templates and standardize formatting
+- 43283db: Use client.ts
+- 889e84b: Release
+- b2e8fc5: Set @osdk/create version to non-beta
+- 317b555: Release
 
 ## 2.2.0-beta.23
 

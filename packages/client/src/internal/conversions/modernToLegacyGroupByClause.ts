@@ -49,6 +49,9 @@ export function modernToLegacyGroupByClause(
           field,
           maxGroupCount: type.$exact?.$limit ?? undefined,
           defaultValue: type.$exact.$defaultValue ?? undefined,
+          includeNullValues: type.$exact.$includeNullValue === true
+            ? true
+            : undefined,
         },
       ];
     } else if ("$fixedWidth" in type) {

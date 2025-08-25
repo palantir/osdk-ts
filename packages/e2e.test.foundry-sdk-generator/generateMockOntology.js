@@ -77,11 +77,13 @@ async function setup() {
     ],
     interfaceTypes: [
       "FooInterface",
+      "BarInterface",
     ],
     linkTypes: ["employee.peeps", "employee.lead", "employee.officeLink"],
     palantirOnlyTest: true,
     _: [],
     $0: "",
+    packageRid: "ri.third-party-applications.main.sdk-package.123",
   };
 
   await generatePackageCommand.handler({

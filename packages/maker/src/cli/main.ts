@@ -17,7 +17,6 @@
 import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { consola } from "consola";
 import { execa } from "execa";
-import { createJiti } from "jiti";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
@@ -153,16 +152,7 @@ async function loadOntology(
 ) {
   const q = await defineOntology(
     apiNamespace,
-    async () => {
-      const jiti = createJiti(import.meta.filename, {
-        moduleCache: false,
-        debug: false,
-        importMeta: import.meta,
-      });
-      const module = await jiti.import(input);
-
-      // await import(input);
-    },
+    async () => await import(input),
     outputDir,
     dependencyFile,
   );

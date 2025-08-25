@@ -48,6 +48,7 @@ export type {
   OntologyIrBaseParameterType_timestampList,
   ParameterRenderHint,
   ParameterRequiredConfiguration,
+  ParameterVisibility,
 } from "./generated/ontology-metadata/api/types/__components.js";
 
 export type * from "./generated/ontology-metadata/api/blockdata/__components.ts";
@@ -66,7 +67,6 @@ export type { ValueTypeStatus } from "./generated/type-registry/api/ValueTypeSta
 export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVersion.js";
 
 export type {
-  ApiNameValueTypeReference,
   OntologyIr,
   OntologyIrOntologyBlockDataV2,
   OntologyIrValueTypeBlockData,

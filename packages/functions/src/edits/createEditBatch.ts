@@ -19,17 +19,18 @@ import type {
   AddLinkApiNames,
   AddLinkSources,
   AddLinkTargets,
-  CreatableObjectTypeProperties,
-  CreatableObjectTypes,
-  DeletableObjectLocators,
+  CreatableObjectOrInterfaceTypeProperties,
+  CreatableObjectOrInterfaceTypes,
+  DeletableObjectOrInterfaceLocators,
   EditBatch,
   RemoveLinkApiNames,
   RemoveLinkSources,
   RemoveLinkTargets,
-  UpdatableObjectLocatorProperties,
-  UpdatableObjectLocators,
+  UpdatableObjectOrInterfaceLocatorProperties,
+  UpdatableObjectOrInterfaceLocators,
 } from "./EditBatch.js";
 import type { AnyEdit } from "./types.js";
+import { isInterfaceLocator } from "./types.js";
 
 class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
   private edits: X[] = [];
@@ -42,12 +43,24 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     apiName: A,
     target: AddLinkTargets<X, SOL, A>,
   ): void {
-    this.edits.push({
-      type: "addLink",
-      source,
-      apiName,
-      target,
-    } as unknown as X);
+    if (!Array.isArray(target)) {
+      this.edits.push({
+        type: "addLink",
+        source,
+        apiName,
+        target,
+      } as unknown as X);
+      return;
+    }
+
+    for (const elem of target) {
+      this.edits.push({
+        type: "addLink",
+        source,
+        apiName,
+        target: elem,
+      } as unknown as X);
+    }
   }
 
   public unlink<
@@ -58,36 +71,78 @@ class InMemoryEditBatch<X extends AnyEdit = never> implements EditBatch<X> {
     apiName: A,
     target: RemoveLinkTargets<X, SOL, A>,
   ): void {
-    this.edits.push({
-      type: "removeLink",
-      source,
-      apiName,
-      target,
-    } as unknown as X);
+    if (!Array.isArray(target)) {
+      this.edits.push({
+        type: "removeLink",
+        source,
+        apiName,
+        target,
+      } as unknown as X);
+      return;
+    }
+
+    for (const elem of target) {
+      this.edits.push({
+        type: "removeLink",
+        source,
+        apiName,
+        target: elem,
+      } as unknown as X);
+    }
   }
 
-  public create<OTD extends CreatableObjectTypes<X>>(
-    obj: OTD,
-    properties: CreatableObjectTypeProperties<X, OTD>,
+  public create<OI extends CreatableObjectOrInterfaceTypes<X>>(
+    objectOrInterfaceType: OI,
+    properties: CreatableObjectOrInterfaceTypeProperties<X, OI>,
   ): void {
+    if (objectOrInterfaceType.type === "interface") {
+      this.edits.push({
+        type: "createObjectForInterface",
+        int: objectOrInterfaceType,
+        properties,
+      } as unknown as X);
+      return;
+    }
+
     this.edits.push({
       type: "createObject",
-      obj,
+      obj: objectOrInterfaceType,
       properties,
     } as unknown as X);
   }
 
-  public delete<OL extends DeletableObjectLocators<X>>(obj: OL): void {
+  public delete<OL extends DeletableObjectOrInterfaceLocators<X>>(
+    obj: OL,
+  ): void {
+    if (isInterfaceLocator(obj)) {
+      this.edits.push({
+        type: "deleteObjectForInterface",
+        obj,
+      } as unknown as X);
+
+      return;
+    }
+
     this.edits.push({
       type: "deleteObject",
       obj,
     } as unknown as X);
   }
 
-  public update<OL extends UpdatableObjectLocators<X>>(
+  public update<OL extends UpdatableObjectOrInterfaceLocators<X>>(
     obj: OL,
-    properties: UpdatableObjectLocatorProperties<X, OL>,
+    properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>,
   ): void {
+    if (isInterfaceLocator(obj)) {
+      this.edits.push({
+        type: "updateObjectForInterface",
+        obj,
+        properties,
+      } as unknown as X);
+
+      return;
+    }
+
     this.edits.push({
       type: "updateObject",
       obj,

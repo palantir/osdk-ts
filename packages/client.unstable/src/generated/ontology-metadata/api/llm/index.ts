@@ -17,7 +17,7 @@
 export type {
   ActionTypeDescriptionGeneratorPluginRequest,
   ActionTypeDescriptionGeneratorPluginResponse,
-  LanguageModel,
+  LanguageModelApiName,
   LlmConfig,
   OntologyLmsRequest,
   OntologyLmsResponse,

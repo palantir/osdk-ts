@@ -1,5 +1,17 @@
 # @osdk/create-widget
 
+## 3.1.0-beta.5
+
+## 3.1.0-beta.4
+
+### Minor Changes
+
+- 544bfda: Update widget bootstrapping instructions
+
+## 3.1.0-beta.3
+
+## 3.1.0-beta.2
+
 ## 3.0.0-beta.6
 
 ## 3.0.0-beta.5
@@ -13,6 +25,15 @@
 ## 3.0.0-beta.3
 
 ## 2.2.0-beta.2
+
+## 2.1.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 21e33a5: Upgrade consola to 3.4.0
+- 317b555: Release
+- ffc1e6e: Add --repository option to create-widget
 
 ## 2.1.0-beta.11
 

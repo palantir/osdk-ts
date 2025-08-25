@@ -20,7 +20,6 @@ import {
   type WidgetConfig,
   type WidgetMessage,
 } from "@osdk/widget.api";
-import { META_TAG_HOST_ORIGIN } from "@osdk/widget.api";
 import invariant from "tiny-invariant";
 import { FoundryHostEventTarget } from "./host.js";
 
@@ -33,9 +32,15 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
   /**
    * Emits an event with the given ID and payload
    */
-  emitEvent: <M extends WidgetMessage.EmitEvent<C>>(
-    eventId: M["payload"]["eventId"],
-    payload: Omit<M["payload"], "eventId">,
+  emitEvent: <
+    M extends WidgetMessage.EmitEvent<C>,
+    ID extends M["payload"]["eventId"],
+  >(
+    eventId: ID,
+    payload: Omit<
+      ExtractEmitEventPayload<M, ID>,
+      "eventId"
+    >,
   ) => void;
 
   /**
@@ -60,17 +65,13 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
   hostEventTarget: FoundryHostEventTarget<C>;
 }
 
-export function createFoundryWidgetClient<
-  C extends WidgetConfig<C["parameters"]>,
->(): FoundryWidgetClient<C> {
-  if ("__PALANTIR_WIDGET_API__" in window) {
-    return _createFoundryWidgetClient<C>(
-      window.__PALANTIR_WIDGET_API__ as PalantirWidgetApi<C>,
-    );
-  }
-  // todo: drop support for sandbox v1
-  return _createFoundryWidgetClientLegacy<C>();
-}
+type ExtractEmitEventPayload<
+  M extends WidgetMessage.EmitEvent<any>,
+  ID extends M["payload"]["eventId"],
+> = Extract<
+  M["payload"],
+  { eventId: ID }
+>;
 
 interface PalantirWidgetApiEvents<C extends WidgetConfig<C["parameters"]>> {
   message: CustomEvent<HostMessage<C>>;
@@ -90,11 +91,14 @@ interface PalantirWidgetApi<C extends WidgetConfig<C["parameters"]>> {
   ): void;
 }
 
-function _createFoundryWidgetClient<
+export function createFoundryWidgetClient<
   C extends WidgetConfig<C["parameters"]>,
->(
-  widgetApi: PalantirWidgetApi<C>,
-): FoundryWidgetClient<C> {
+>(): FoundryWidgetClient<C> {
+  invariant(
+    "__PALANTIR_WIDGET_API__" in window,
+    "[FoundryWidgetClient] Missing __PALANTIR_WIDGET_API__ in window",
+  );
+  const widgetApi = window.__PALANTIR_WIDGET_API__ as PalantirWidgetApi<C>;
   const hostEventTarget = new FoundryHostEventTarget<C>();
 
   const listenForHostMessages = (event: CustomEvent<HostMessage<C>>) => {
@@ -136,76 +140,6 @@ function _createFoundryWidgetClient<
     },
     unsubscribe: () => {
       widgetApi.removeEventListener("message", listenForHostMessages);
-    },
-  };
-}
-
-// todo: drop support for sandbox v1
-function _createFoundryWidgetClientLegacy<
-  C extends WidgetConfig<C["parameters"]>,
->(): FoundryWidgetClient<C> {
-  invariant(window.parent, "[FoundryWidgetClient] Must be run in an iframe");
-  const parentWindow = window.parent;
-  const metaTag = document.querySelector(
-    `meta[name="${META_TAG_HOST_ORIGIN}"]`,
-  );
-  invariant(
-    metaTag,
-    "[FoundryWidgetClient] Missing host origin meta tag "
-      + META_TAG_HOST_ORIGIN,
-  );
-  const hostOrigin = metaTag.getAttribute("content");
-  invariant(
-    hostOrigin,
-    "[FoundryWidgetClient] Missing host origin meta tag content",
-  );
-  const hostEventTarget = new FoundryHostEventTarget<C>();
-
-  const listenForHostMessages = (event: MessageEvent<HostMessage<C>>) => {
-    visitHostMessage(event.data, {
-      "host.update-parameters": (payload) => {
-        hostEventTarget.dispatchEventMessage("host.update-parameters", payload);
-      },
-      _unknown: () => {
-        // Do nothing
-      },
-    });
-  };
-  const sendMessageToHost = <M extends WidgetMessage<C>>(message: M) => {
-    parentWindow.postMessage(message, hostOrigin);
-  };
-
-  return {
-    hostEventTarget,
-    ready: () => {
-      sendMessageToHost({
-        type: "widget.ready",
-        payload: {
-          apiVersion: HostMessage.Version,
-        },
-      });
-    },
-    emitEvent: (eventId, payload) => {
-      sendMessageToHost({
-        type: "widget.emit-event",
-        payload: {
-          eventId,
-          ...payload,
-        },
-      });
-    },
-    sendMessage: sendMessageToHost,
-    subscribe: () => {
-      window.addEventListener("message", (event) => {
-        if (event.origin !== hostOrigin) {
-          // Reject messages that aren't coming from the configured host
-          return;
-        }
-        listenForHostMessages(event);
-      });
-    },
-    unsubscribe: () => {
-      window.removeEventListener("message", listenForHostMessages);
     },
   };
 }

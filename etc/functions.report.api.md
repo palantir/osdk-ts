@@ -7,9 +7,11 @@
 import { Attachment } from '@osdk/client';
 import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/client';
+import type { InterfaceDefinition } from '@osdk/client';
 import type { ObjectMetadata } from '@osdk/client';
 import type { ObjectTypeDefinition } from '@osdk/client';
 import type { Osdk } from '@osdk/client';
+import type { OsdkObjectCreatePropertyType } from '@osdk/client';
 import type { OsdkObjectPropertyType } from '@osdk/client';
 import type { PropertyKeys } from '@osdk/client';
 import { Range as Range_2 } from '@osdk/client';
@@ -35,15 +37,15 @@ export type Double<T extends number = number> = T & {
 
 // @public (undocumented)
 export interface EditBatch<X extends AnyEdit = never> {
-    	// Warning: (ae-forgotten-export) The symbol "CreatableObjectTypes" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "CreatableObjectTypeProperties" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "CreatableObjectOrInterfaceTypes" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "CreatableObjectOrInterfaceTypeProperties" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    create: <OTD extends CreatableObjectTypes<X>>(obj: OTD, properties: CreatableObjectTypeProperties<X, OTD>) => void;
-    	// Warning: (ae-forgotten-export) The symbol "DeletableObjectLocators" needs to be exported by the entry point index.d.ts
+    create: <OI extends CreatableObjectOrInterfaceTypes<X>>(objectOrInterfaceType: OI, properties: CreatableObjectOrInterfaceTypeProperties<X, OI>) => void;
+    	// Warning: (ae-forgotten-export) The symbol "DeletableObjectOrInterfaceLocators" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    delete: <OL extends DeletableObjectLocators<X>>(obj: OL) => void;
+    delete: <OL extends DeletableObjectOrInterfaceLocators<X>>(obj: OL) => void;
     	// (undocumented)
     getEdits: () => X[];
     	// Warning: (ae-forgotten-export) The symbol "AddLinkSources" needs to be exported by the entry point index.d.ts
@@ -64,15 +66,21 @@ export interface EditBatch<X extends AnyEdit = never> {
     		SOL extends RemoveLinkSources<X>,
     		A extends RemoveLinkApiNames<X, SOL>
     	>(source: SOL, apiName: A, target: RemoveLinkTargets<X, SOL, A>) => void;
-    	// Warning: (ae-forgotten-export) The symbol "UpdatableObjectLocators" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "UpdatableObjectLocatorProperties" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "UpdatableObjectOrInterfaceLocators" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "UpdatableObjectOrInterfaceLocatorProperties" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    update: <OL extends UpdatableObjectLocators<X>>(obj: OL, properties: UpdatableObjectLocatorProperties<X, OL>) => void;
+    update: <OL extends UpdatableObjectOrInterfaceLocators<X>>(obj: OL, properties: UpdatableObjectOrInterfaceLocatorProperties<X, OL>) => void;
 }
 
 // @public (undocumented)
 export namespace Edits {
+    	// Warning: (ae-forgotten-export) The symbol "CreateObjectForInterface" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "UpdateObjectForInterface" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "DeleteObjectForInterface" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
+    export type Interface<S extends InterfaceDefinition> = CreateObjectForInterface<S> | UpdateObjectForInterface<S> | DeleteObjectForInterface<S>;
     	// Warning: (ae-forgotten-export) The symbol "AddLink" needs to be exported by the entry point index.d.ts
     // Warning: (ae-forgotten-export) The symbol "RemoveLink" needs to be exported by the entry point index.d.ts
     //
@@ -90,6 +98,16 @@ export namespace Edits {
 }
 
 // @public (undocumented)
+export interface EmailNotification {
+    	// (undocumented)
+    body: string;
+    	// (undocumented)
+    links: NotificationLink[];
+    	// (undocumented)
+    subject: string;
+}
+
+// @public (undocumented)
 export type Float<T extends number = number> = T & {
     	__floatBrand?: void
 };
@@ -104,7 +122,53 @@ export type Long<T extends string = string> = T & {
     	__longBrand?: void
 };
 
+// @public (undocumented)
+interface Notification_2 {
+    	// (undocumented)
+    emailNotification: EmailNotification;
+    	// (undocumented)
+    platformNotification: PlatformNotification;
+}
+export { Notification_2 as Notification }
+
+// @public (undocumented)
+export interface NotificationLink {
+    	// (undocumented)
+    label: string;
+    	// (undocumented)
+    linkTarget: NotificationLinkTarget;
+}
+
+// @public (undocumented)
+export type NotificationLinkTarget = RidLinkTarget | ObjectLinkTarget | UrlLinkTarget;
+
+// @public (undocumented)
+export interface ObjectLinkTarget<T extends ObjectTypeDefinition | InterfaceDefinition = ObjectTypeDefinition | InterfaceDefinition> {
+    	// (undocumented)
+    object: Osdk.Instance<T>;
+    	// (undocumented)
+    type: "object";
+}
+
+// @public (undocumented)
+export interface PlatformNotification {
+    	// (undocumented)
+    content: string;
+    	// (undocumented)
+    heading: string;
+    	// (undocumented)
+    links: NotificationLink[];
+}
+
 export { Range_2 as Range }
+
+// @public (undocumented)
+export interface RidLinkTarget {
+    	// (undocumented)
+    rid: string;
+    	// (undocumented)
+    type: "rid";
+}
 
 export { ThreeDimensionalAggregation }
 
@@ -114,6 +178,14 @@ export type TimestampISOString<T extends string = string> = T & {
 };
 
 export { TwoDimensionalAggregation }
+
+// @public (undocumented)
+export interface UrlLinkTarget {
+    	// (undocumented)
+    type: "url";
+    	// (undocumented)
+    url: string;
+}
 
 // (No @packageDocumentation comment for this package)
 

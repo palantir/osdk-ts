@@ -17,6 +17,7 @@
 import type {
   ActionDefinition,
   ActionEditResponse,
+  ActionValidationResponse,
   InterfaceDefinition,
   Logger,
   ObjectTypeDefinition,
@@ -250,6 +251,17 @@ export class Store {
     opts?: Store.ApplyActionOptions,
   ) => Promise<ActionEditResponse> = async (action, args, opts) => {
     return await new ActionApplication(this).applyAction(action, args, opts);
+  };
+
+  validateAction: <Q extends ActionDefinition<any>>(
+    action: Q,
+    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
+  ) => Promise<ActionValidationResponse> = async (action, args) => {
+    const result = await this.client(action).applyAction(args as any, {
+      $validateOnly: true,
+      $returnEdits: false,
+    });
+    return result as ActionValidationResponse;
   };
 
   removeLayer(layerId: OptimisticId): void {

@@ -21,6 +21,9 @@ import type {
   FunctionRid as _api_FunctionRid,
   InterfaceType as _api_InterfaceType,
   InterfaceTypeRid as _api_InterfaceTypeRid,
+  LinkType as _api_LinkType,
+  LinkTypeId as _api_LinkTypeId,
+  LinkTypeRid as _api_LinkTypeRid,
   ObjectType as _api_ObjectType,
   ObjectTypeRid as _api_ObjectTypeRid,
   OntologyBranchRid as _api_OntologyBranchRid,
@@ -418,6 +421,272 @@ export type InterfaceTypeStatusFilter =
   | "ACTIVE"
   | "DEPRECATED"
   | "EXAMPLE";
+
+/**
+ * Filter by LinkType cardinality hint
+ */
+export type LinkTypeCardinalityHintFilter =
+  | "ONE_TO_MANY"
+  | "ONE_TO_ONE"
+  | "MANY_TO_MANY";
+export interface LinkTypeClause_and {
+  type: "and";
+  and: Array<LinkTypeClause>;
+}
+
+export interface LinkTypeClause_or {
+  type: "or";
+  or: Array<LinkTypeClause>;
+}
+
+export interface LinkTypeClause_linkTypeRid {
+  type: "linkTypeRid";
+  linkTypeRid: _api_LinkTypeRid;
+}
+
+export interface LinkTypeClause_linkTypeId {
+  type: "linkTypeId";
+  linkTypeId: _api_LinkTypeId;
+}
+
+export interface LinkTypeClause_description {
+  type: "description";
+  description: FullTextStringPredicate;
+}
+
+export interface LinkTypeClause_definitionType {
+  type: "definitionType";
+  definitionType: LinkTypeDefinitionTypeFilter;
+}
+
+export interface LinkTypeClause_cardinalityHint {
+  type: "cardinalityHint";
+  cardinalityHint: LinkTypeCardinalityHintFilter;
+}
+
+export interface LinkTypeClause_linkTypeSidesTypeClass {
+  type: "linkTypeSidesTypeClass";
+  linkTypeSidesTypeClass: TypeClassPredicate;
+}
+
+export interface LinkTypeClause_foreignKeyPropertyTypeRid {
+  type: "foreignKeyPropertyTypeRid";
+  foreignKeyPropertyTypeRid: _api_PropertyTypeRid;
+}
+
+export interface LinkTypeClause_primaryKeyPropertyTypeRid {
+  type: "primaryKeyPropertyTypeRid";
+  primaryKeyPropertyTypeRid: _api_PropertyTypeRid;
+}
+
+export interface LinkTypeClause_intermediaryLinkTypeRid {
+  type: "intermediaryLinkTypeRid";
+  intermediaryLinkTypeRid: _api_LinkTypeRid;
+}
+
+export interface LinkTypeClause_objectTypeRid {
+  type: "objectTypeRid";
+  objectTypeRid: _api_ObjectTypeRid;
+}
+
+export interface LinkTypeClause_linkTypeSideADisplayName {
+  type: "linkTypeSideADisplayName";
+  linkTypeSideADisplayName: FullTextStringPredicate;
+}
+
+export interface LinkTypeClause_linkTypeSideBDisplayName {
+  type: "linkTypeSideBDisplayName";
+  linkTypeSideBDisplayName: FullTextStringPredicate;
+}
+
+export interface LinkTypeClause_linkTypeSideAApiName {
+  type: "linkTypeSideAApiName";
+  linkTypeSideAApiName: FullTextStringPredicate;
+}
+
+export interface LinkTypeClause_linkTypeSideBApiName {
+  type: "linkTypeSideBApiName";
+  linkTypeSideBApiName: FullTextStringPredicate;
+}
+
+export interface LinkTypeClause_linkTypeSideAVisibility {
+  type: "linkTypeSideAVisibility";
+  linkTypeSideAVisibility: LinkTypeVisibilityFilter;
+}
+
+export interface LinkTypeClause_linkTypeSideBVisibility {
+  type: "linkTypeSideBVisibility";
+  linkTypeSideBVisibility: LinkTypeVisibilityFilter;
+}
+
+export interface LinkTypeClause_entityProvenanceSource {
+  type: "entityProvenanceSource";
+  entityProvenanceSource: LinkTypeEntityProvenanceFilter;
+}
+
+export interface LinkTypeClause_status {
+  type: "status";
+  status: LinkTypeStatusFilter;
+}
+
+export interface LinkTypeClause_permissionModel {
+  type: "permissionModel";
+  permissionModel: LinkTypePermissionModelFilter;
+}
+
+export interface LinkTypeClause_hasEditsEnabled {
+  type: "hasEditsEnabled";
+  hasEditsEnabled: boolean;
+}
+
+export interface LinkTypeClause_targetStorageBackend {
+  type: "targetStorageBackend";
+  targetStorageBackend: LinkTypeTargetStorageBackendFilter;
+}
+/**
+ * Data structure to represent search query for LinkTypes. Supports filters for various LinkType features.
+ */
+export type LinkTypeClause =
+  | LinkTypeClause_and
+  | LinkTypeClause_or
+  | LinkTypeClause_linkTypeRid
+  | LinkTypeClause_linkTypeId
+  | LinkTypeClause_description
+  | LinkTypeClause_definitionType
+  | LinkTypeClause_cardinalityHint
+  | LinkTypeClause_linkTypeSidesTypeClass
+  | LinkTypeClause_foreignKeyPropertyTypeRid
+  | LinkTypeClause_primaryKeyPropertyTypeRid
+  | LinkTypeClause_intermediaryLinkTypeRid
+  | LinkTypeClause_objectTypeRid
+  | LinkTypeClause_linkTypeSideADisplayName
+  | LinkTypeClause_linkTypeSideBDisplayName
+  | LinkTypeClause_linkTypeSideAApiName
+  | LinkTypeClause_linkTypeSideBApiName
+  | LinkTypeClause_linkTypeSideAVisibility
+  | LinkTypeClause_linkTypeSideBVisibility
+  | LinkTypeClause_entityProvenanceSource
+  | LinkTypeClause_status
+  | LinkTypeClause_permissionModel
+  | LinkTypeClause_hasEditsEnabled
+  | LinkTypeClause_targetStorageBackend;
+
+/**
+ * Filter by LinkType definition type
+ */
+export type LinkTypeDefinitionTypeFilter =
+  | "ONE_TO_MANY"
+  | "MANY_TO_MANY"
+  | "INTERMEDIARY";
+
+/**
+ * Filter by LinkType entity provenance
+ */
+export type LinkTypeEntityProvenanceFilter =
+  | "BUILDER"
+  | "MARKETPLACE"
+  | "EDITS_HISTORY"
+  | "OTHER";
+export interface LinkTypeFuzziness_off {
+  type: "off";
+  off: FuzzinessOff;
+}
+
+export interface LinkTypeFuzziness_auto {
+  type: "auto";
+  auto: FuzzinessAuto;
+}
+/**
+ * Fuzziness setting for `contains` FullTextStringPredicates.
+ */
+export type LinkTypeFuzziness = LinkTypeFuzziness_off | LinkTypeFuzziness_auto;
+
+/**
+ * Filter by action type permission model
+ */
+export type LinkTypePermissionModelFilter =
+  | "DATASOURCE_DERIVED_PERMISSIONS"
+  | "ONTOLOGY_ROLES"
+  | "COMPASS_PROJECT";
+
+/**
+ * Wrapper around single LinkType contained in LinkTypeSearchResponse.
+ */
+export interface LinkTypeSearchHit {
+  linkType: _api_LinkType;
+  ontologyRid: _api_OntologyRid;
+  ontologyVersion: _api_OntologyVersion;
+}
+/**
+ * A paging token used to retrieve further pages of an LinkType search by including it in the
+ * LinkTypeSearchRequest. Clients should not make any assumptions about the content of the token and it
+ * should not be parsed/modified.
+ */
+export type LinkTypeSearchPageToken = string;
+
+/**
+ * Request to search for LinkTypes based on the given clause.
+ * LinkTypes are searched across all Ontologies the user has access to.
+ */
+export interface LinkTypeSearchRequest {
+  clause: LinkTypeClause;
+  excludedLinkTypeRids: Array<_api_LinkTypeRid>;
+  fuzziness?: LinkTypeFuzziness | null | undefined;
+  ontologyBranchRid?: _api_OntologyBranchRid | null | undefined;
+  ontologyRids: Array<_api_OntologyRid>;
+  pageSizeLimit: number;
+  pageToken?: LinkTypeSearchPageToken | null | undefined;
+  sort?: LinkTypeSort | null | undefined;
+}
+/**
+ * Page response to LinkTypeSearchRequest containing LinkTypes matching the search query.
+ */
+export interface LinkTypeSearchResponse {
+  linkTypes: Array<LinkTypeSearchHit>;
+  nextPageToken?: LinkTypeSearchPageToken | null | undefined;
+  totalResults: number;
+}
+/**
+ * Sort order for LinkTypes.
+ */
+export interface LinkTypeSort {
+  order: LinkTypeSortOrder;
+  sortBy: LinkTypeSortBy;
+}
+/**
+ * Specifies value to be used to sort LinkTypes.
+ */
+export type LinkTypeSortBy =
+  | "LINK_TYPE_SIDE_A_DISPLAY_NAME"
+  | "LINK_TYPE_SIDE_B_DISPLAY_NAME"
+  | "LINK_TYPE_SIDE_A_API_NAME"
+  | "LINK_TYPE_SIDE_B_API_NAME";
+
+/**
+ * Specifies sort order for LinkTypes
+ */
+export type LinkTypeSortOrder = "ASCENDING" | "DESCENDING";
+
+/**
+ * Filter by LinkTypeStatus
+ */
+export type LinkTypeStatusFilter =
+  | "EXPERIMENTAL"
+  | "ACTIVE"
+  | "DEPRECATED"
+  | "EXAMPLE";
+
+/**
+ * Filter by LinkType target storage backend
+ */
+export type LinkTypeTargetStorageBackendFilter =
+  | "OBJECT_STORAGE_V1"
+  | "OBJECT_STORAGE_V2";
+
+/**
+ * Filter by LinkType sides visibility
+ */
+export type LinkTypeVisibilityFilter = "NORMAL" | "PROMINENT" | "HIDDEN";
 
 /**
  * Filter by LogicRuleTypes

@@ -107,6 +107,18 @@ export function getObjectsFromSet(
       });
     }
 
+    case "interfaceLinkSearchAround": {
+      const base = getObjectsFromSet(ds, objectSet.objectSet, methodInput);
+      return base.flatMap(o => {
+        const ret = ds.getLinksOrThrow(
+          o.__apiName,
+          o.__primaryKey,
+          objectSet.interfaceLink,
+        );
+        return ret;
+      });
+    }
+
     case "static": {
       return objectSet.objects.map(x => ds.getObjectByRid(x)).filter(x =>
         x != null
@@ -172,10 +184,11 @@ export function getObjectsFromSet(
         });
       });
 
+    // This does not mimic KNN, it just returns `numNeighbors` objects
     case "nearestNeighbors":
-      throw new Error(
-        `Unhandled objectSet type ${JSON.stringify(objectSet)} in shared.test`,
-      );
+      const { numNeighbors } = objectSet;
+      const set = getObjectsFromSet(ds, objectSet.objectSet, methodInput);
+      return set.slice(0, numNeighbors);
 
     case "reference":
       throw new Error(

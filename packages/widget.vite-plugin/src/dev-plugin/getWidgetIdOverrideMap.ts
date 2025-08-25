@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-import { type ParameterConfig, type WidgetConfig } from "@osdk/widget.api";
 import type { ViteDevServer } from "vite";
 import { VITE_INJECTIONS_PATH } from "../common/constants.js";
+import { extractWidgetConfig } from "../common/extractWidgetConfig.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
 
 export async function getWidgetIdOverrideMap(
   server: ViteDevServer,
   codeEntrypoints: Record<string, string>,
   configFileToEntrypoint: Record<string, string>,
-  configFiles: Record<string, WidgetConfig<ParameterConfig>>,
   baseHref: string,
 ): Promise<Record<string, string[]>> {
-  const widgetIdToEntrypoint = Object.entries(configFiles).reduce<
-    Record<string, string>
-  >(
-    (acc, [configFile, config]) => {
-      const widgetId = config.id;
-      const entrypointFile = configFileToEntrypoint[configFile];
-      const entrypointRelativePath = codeEntrypoints[entrypointFile];
-      acc[widgetId] = entrypointRelativePath;
-      return acc;
-    },
-    {},
+  const widgetIdToEntrypoint: Record<string, string> = Object.fromEntries(
+    await Promise.all(
+      Object.keys(configFileToEntrypoint).map(async (configFile) => {
+        const widgetConfig = await extractWidgetConfig(
+          configFile,
+          server,
+        );
+        const entrypointFile = configFileToEntrypoint[configFile];
+        const entrypointRelativePath = codeEntrypoints[entrypointFile];
+        return [widgetConfig.id, entrypointRelativePath];
+      }),
+    ),
   );
 
   const injectedScripts = await extractInjectedScripts(server);

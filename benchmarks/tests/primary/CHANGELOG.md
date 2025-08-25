@@ -1,5 +1,128 @@
 # @osdk/benchmarks.primary
 
+## 0.1.0-beta.61
+
+### Patch Changes
+
+- Updated dependencies [06fd45a]
+  - @osdk/client@2.4.0-beta.17
+
+## 0.1.0-beta.60
+
+### Patch Changes
+
+- Updated dependencies [c763807]
+  - @osdk/client@2.4.0-beta.16
+
+## 0.1.0-beta.59
+
+### Patch Changes
+
+- Updated dependencies [d2d36e1]
+  - @osdk/client@2.4.0-beta.15
+
+## 0.1.0-beta.58
+
+### Patch Changes
+
+- @osdk/client@2.4.0-beta.14
+
+## 0.1.0-beta.57
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/client@2.4.0-beta.13
+
+## 0.1.0-beta.56
+
+### Patch Changes
+
+- Updated dependencies [402eb67]
+  - @osdk/client@2.4.0-beta.12
+
+## 0.1.0-beta.55
+
+### Patch Changes
+
+- @osdk/client@2.4.0-beta.11
+
+## 0.1.0-beta.54
+
+### Patch Changes
+
+- Updated dependencies [f022ffe]
+  - @osdk/client@2.4.0-beta.10
+
+## 0.1.0-beta.53
+
+### Patch Changes
+
+- Updated dependencies [9101bad]
+  - @osdk/client@2.4.0-beta.9
+
+## 0.1.0-beta.52
+
+### Patch Changes
+
+- Updated dependencies [9f4fe9e]
+  - @osdk/client@2.4.0-beta.8
+
+## 0.1.0-beta.51
+
+### Patch Changes
+
+- @osdk/client@2.4.0-beta.7
+
+## 0.1.0-beta.50
+
+### Patch Changes
+
+- @osdk/client@2.4.0-beta.6
+
+## 0.1.0-beta.49
+
+### Patch Changes
+
+- @osdk/client@2.4.0-beta.5
+
+## 0.1.0-beta.48
+
+### Patch Changes
+
+- @osdk/client@2.4.0-beta.4
+
+## 0.1.0-beta.47
+
+### Patch Changes
+
+- @osdk/client@2.4.0-beta.3
+
+## 0.1.0-beta.46
+
+### Patch Changes
+
+- Updated dependencies [8c95154]
+- Updated dependencies [c32dcf2]
+- Updated dependencies [37c7c0b]
+  - @osdk/client@2.4.0-beta.2
+
+## 0.1.0-beta.45
+
+### Patch Changes
+
+- Updated dependencies [991dbd4]
+- Updated dependencies [266b756]
+- Updated dependencies [8d69555]
+  - @osdk/client@2.3.0-beta.10
+
+## 0.1.0-beta.44
+
+### Patch Changes
+
+- Updated dependencies [5a15cfd]
+  - @osdk/client@2.3.0-beta.9
+
 ## 0.1.0-beta.43
 
 ### Patch Changes

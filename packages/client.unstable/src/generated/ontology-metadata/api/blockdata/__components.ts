@@ -24,16 +24,21 @@ import type {
   FunctionVersion as _api_FunctionVersion,
   GeotimeSeriesIntegrationRid as _api_GeotimeSeriesIntegrationRid,
   GroupId as _api_GroupId,
+  Icon as _api_Icon,
   InterfaceLinkTypeApiName as _api_InterfaceLinkTypeApiName,
   InterfaceLinkTypeCardinality as _api_InterfaceLinkTypeCardinality,
   InterfaceLinkTypeRid as _api_InterfaceLinkTypeRid,
-  InterfaceType as _api_InterfaceType,
+  InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName,
+  InterfacePropertyTypeRid as _api_InterfacePropertyTypeRid,
+  InterfaceSharedPropertyType as _api_InterfaceSharedPropertyType,
   InterfaceTypeApiName as _api_InterfaceTypeApiName,
   InterfaceTypeRid as _api_InterfaceTypeRid,
+  LinkedEntityTypeId as _api_LinkedEntityTypeId,
   LinkType as _api_LinkType,
   LinkTypeId as _api_LinkTypeId,
   LinkTypeRid as _api_LinkTypeRid,
   ManyToManyLinkTypeDatasource as _api_ManyToManyLinkTypeDatasource,
+  MarkingId as _api_MarkingId,
   ModuleRid as _api_ModuleRid,
   ObjectType as _api_ObjectType,
   ObjectTypeApiName as _api_ObjectTypeApiName,
@@ -43,7 +48,9 @@ import type {
   ObjectTypeRid as _api_ObjectTypeRid,
   OneToManyLinkCardinalityHint as _api_OneToManyLinkCardinalityHint,
   OntologyIrActionType as _api_OntologyIrActionType,
-  OntologyIrInterfaceType as _api_OntologyIrInterfaceType,
+  OntologyIrInterfaceSharedPropertyType
+    as _api_OntologyIrInterfaceSharedPropertyType,
+  OntologyIrLinkedEntityTypeId as _api_OntologyIrLinkedEntityTypeId,
   OntologyIrLinkType as _api_OntologyIrLinkType,
   OntologyIrManyToManyLinkTypeDatasource
     as _api_OntologyIrManyToManyLinkTypeDatasource,
@@ -240,7 +247,7 @@ export interface ImportedTypes {
 }
 export type InstallLocationBlockShapeId = BlockShapeId;
 export interface InterfaceTypeBlockDataV2 {
-  interfaceType: _api_InterfaceType;
+  interfaceType: MarketplaceInterfaceType;
 }
 /**
  * Will only match if there is a single datasource that matches the output type (e.g. a dataset datasource
@@ -269,6 +276,7 @@ export interface KnownMarketplaceIdentifiers {
   interfaceTypes: Record<_api_InterfaceTypeRid, BlockInternalId>;
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeRid, BlockInternalId>;
+  markings: Record<BlockInternalId, Array<_api_MarkingId>>;
   objectTypeIds: Record<_api_ObjectTypeId, BlockInternalId>;
   objectTypes: Record<_api_ObjectTypeRid, BlockInternalId>;
   propertyTypeIds: Record<
@@ -303,6 +311,85 @@ export interface LinkTypeRestrictionStatus {
   ontologyPackageRid?: _api_OntologyPackageRid | null | undefined;
   restrictedByDatasources: boolean;
 }
+export interface MarketplaceActiveInterfaceTypeStatus {
+}
+export interface MarketplaceDeprecatedInterfaceTypeStatus {
+  deadline: string;
+  message: string;
+  replacedBy?: _api_InterfaceTypeRid | null | undefined;
+}
+export interface MarketplaceExampleInterfaceTypeStatus {
+}
+export interface MarketplaceExperimentalInterfaceTypeStatus {
+}
+export interface MarketplaceInterfaceLinkType {
+  cardinality: MarketplaceInterfaceLinkTypeCardinality;
+  linkedEntityTypeId: _api_LinkedEntityTypeId;
+  metadata: MarketplaceInterfaceLinkTypeMetadata;
+  required: boolean;
+  rid: _api_InterfaceLinkTypeRid;
+}
+export type MarketplaceInterfaceLinkTypeCardinality = "SINGLE" | "MANY";
+export interface MarketplaceInterfaceLinkTypeMetadata {
+  apiName: _api_InterfaceLinkTypeApiName;
+  description: string;
+  displayName: string;
+}
+export interface MarketplaceInterfacePropertyType_sharedPropertyBasedPropertyType {
+  type: "sharedPropertyBasedPropertyType";
+  sharedPropertyBasedPropertyType: MarketplaceSharedPropertyBasedPropertyType;
+}
+export type MarketplaceInterfacePropertyType =
+  MarketplaceInterfacePropertyType_sharedPropertyBasedPropertyType;
+
+export interface MarketplaceInterfaceType {
+  apiName: _api_InterfaceTypeApiName;
+  displayMetadata: MarketplaceInterfaceTypeDisplayMetadata;
+  extendsInterfaces: Array<_api_InterfaceTypeRid>;
+  links: Array<MarketplaceInterfaceLinkType>;
+  properties: Array<_api_SharedPropertyType>;
+  propertiesV2: Record<
+    _api_SharedPropertyTypeRid,
+    _api_InterfaceSharedPropertyType
+  >;
+  propertiesV3: Record<
+    _api_InterfacePropertyTypeRid,
+    MarketplaceInterfacePropertyType
+  >;
+  rid: _api_InterfaceTypeRid;
+  searchable?: boolean | null | undefined;
+  status: MarketplaceInterfaceTypeStatus;
+}
+export interface MarketplaceInterfaceTypeDisplayMetadata {
+  description?: string | null | undefined;
+  displayName: string;
+  icon?: _api_Icon | null | undefined;
+}
+export interface MarketplaceInterfaceTypeStatus_experimental {
+  type: "experimental";
+  experimental: MarketplaceExperimentalInterfaceTypeStatus;
+}
+
+export interface MarketplaceInterfaceTypeStatus_active {
+  type: "active";
+  active: MarketplaceActiveInterfaceTypeStatus;
+}
+
+export interface MarketplaceInterfaceTypeStatus_deprecated {
+  type: "deprecated";
+  deprecated: MarketplaceDeprecatedInterfaceTypeStatus;
+}
+
+export interface MarketplaceInterfaceTypeStatus_example {
+  type: "example";
+  example: MarketplaceExampleInterfaceTypeStatus;
+}
+export type MarketplaceInterfaceTypeStatus =
+  | MarketplaceInterfaceTypeStatus_experimental
+  | MarketplaceInterfaceTypeStatus_active
+  | MarketplaceInterfaceTypeStatus_deprecated
+  | MarketplaceInterfaceTypeStatus_example;
+
 /**
  * Local overridden alias of OMS public API representation of ObjectTypeEntityMetadata. In OMS API we model
  * editsResolutionStrategies field as non-optional, but Marketplace ontology block data uploaded to
@@ -335,6 +422,15 @@ export interface MarketplaceObjectTypeEntityMetadata {
   redacted?: boolean | null | undefined;
   targetStorageBackend: _api_entitymetadata_StorageBackend;
 }
+export interface MarketplaceSharedPropertyBasedPropertyType {
+  requireImplementation: boolean;
+  sharedPropertyType: _api_SharedPropertyType;
+}
+/**
+ * Instead of a real marking, OAC objects use a "markingGroupName" to represent a marking set which is 1:1 to with a marking input
+ */
+export type MarkingGroupName = string;
+
 /**
  * Ontology as code uses this as a stable ID for MediaSetView inputs
  */
@@ -432,7 +528,7 @@ export interface OntologyIrImportedTypes {
   sharedPropertyTypes: Array<OntologyIrImportedSharedPropertyType>;
 }
 export interface OntologyIrInterfaceTypeBlockDataV2 {
-  interfaceType: _api_OntologyIrInterfaceType;
+  interfaceType: OntologyIrMarketplaceInterfaceType;
 }
 export interface OntologyIrKnownMarketplaceIdentifiers {
   actionParameterIds: Record<
@@ -454,6 +550,7 @@ export interface OntologyIrKnownMarketplaceIdentifiers {
   interfaceTypes: Record<_api_InterfaceTypeApiName, BlockInternalId>;
   linkTypeIds: Record<_api_LinkTypeId, BlockInternalId>;
   linkTypes: Record<_api_LinkTypeId, BlockInternalId>;
+  markings: Record<BlockInternalId, Array<_api_MarkingId>>;
   objectTypeIds: Record<_api_ObjectTypeApiName, BlockInternalId>;
   objectTypes: Record<_api_ObjectTypeApiName, BlockInternalId>;
   propertyTypeIds: Record<
@@ -480,6 +577,67 @@ export interface OntologyIrLinkTypeBlockDataV2 {
     | undefined;
   linkType: _api_OntologyIrLinkType;
 }
+export interface OntologyIrMarketplaceDeprecatedInterfaceTypeStatus {
+  deadline: string;
+  message: string;
+  replacedBy?: _api_InterfaceTypeApiName | null | undefined;
+}
+export interface OntologyIrMarketplaceInterfaceLinkType {
+  cardinality: MarketplaceInterfaceLinkTypeCardinality;
+  linkedEntityTypeId: _api_OntologyIrLinkedEntityTypeId;
+  metadata: MarketplaceInterfaceLinkTypeMetadata;
+  required: boolean;
+}
+export interface OntologyIrMarketplaceInterfacePropertyType_sharedPropertyBasedPropertyType {
+  type: "sharedPropertyBasedPropertyType";
+  sharedPropertyBasedPropertyType:
+    OntologyIrMarketplaceSharedPropertyBasedPropertyType;
+}
+export type OntologyIrMarketplaceInterfacePropertyType =
+  OntologyIrMarketplaceInterfacePropertyType_sharedPropertyBasedPropertyType;
+
+export interface OntologyIrMarketplaceInterfaceType {
+  apiName: _api_InterfaceTypeApiName;
+  displayMetadata: MarketplaceInterfaceTypeDisplayMetadata;
+  extendsInterfaces: Array<_api_InterfaceTypeApiName>;
+  links: Array<OntologyIrMarketplaceInterfaceLinkType>;
+  properties: Array<_api_OntologyIrSharedPropertyType>;
+  propertiesV2: Record<
+    _api_ObjectTypeFieldApiName,
+    _api_OntologyIrInterfaceSharedPropertyType
+  >;
+  propertiesV3: Record<
+    _api_InterfacePropertyTypeApiName,
+    OntologyIrMarketplaceInterfacePropertyType
+  >;
+  searchable?: boolean | null | undefined;
+  status: OntologyIrMarketplaceInterfaceTypeStatus;
+}
+export interface OntologyIrMarketplaceInterfaceTypeStatus_experimental {
+  type: "experimental";
+  experimental: MarketplaceExperimentalInterfaceTypeStatus;
+}
+
+export interface OntologyIrMarketplaceInterfaceTypeStatus_active {
+  type: "active";
+  active: MarketplaceActiveInterfaceTypeStatus;
+}
+
+export interface OntologyIrMarketplaceInterfaceTypeStatus_deprecated {
+  type: "deprecated";
+  deprecated: OntologyIrMarketplaceDeprecatedInterfaceTypeStatus;
+}
+
+export interface OntologyIrMarketplaceInterfaceTypeStatus_example {
+  type: "example";
+  example: MarketplaceExampleInterfaceTypeStatus;
+}
+export type OntologyIrMarketplaceInterfaceTypeStatus =
+  | OntologyIrMarketplaceInterfaceTypeStatus_experimental
+  | OntologyIrMarketplaceInterfaceTypeStatus_active
+  | OntologyIrMarketplaceInterfaceTypeStatus_deprecated
+  | OntologyIrMarketplaceInterfaceTypeStatus_example;
+
 /**
  * Local overridden alias of OMS public API representation of ObjectTypeEntityMetadata. In OMS API we model
  * editsResolutionStrategies field as non-optional, but Marketplace ontology block data uploaded to
@@ -488,6 +646,10 @@ export interface OntologyIrLinkTypeBlockDataV2 {
  */
 export interface OntologyIrMarketplaceObjectTypeEntityMetadata {
   arePatchesEnabled: boolean;
+}
+export interface OntologyIrMarketplaceSharedPropertyBasedPropertyType {
+  requireImplementation: boolean;
+  sharedPropertyType: _api_OntologyIrSharedPropertyType;
 }
 /**
  * Property reference containing the api name of the object
@@ -559,6 +721,11 @@ export interface OntologyIrSharedPropertyTypeBlockDataV2 {
 export type OutputMode = "RESTRICTED_VIEW" | "DATASET";
 export interface PatchesConfiguration {
   lowLatencyUpdatesEnabled: boolean;
+}
+export interface PostOntologyBlockDataRequest {
+  ontologyBlockDataV2: OntologyBlockDataV2;
+}
+export interface PostOntologyBlockDataResponse {
 }
 export interface PropertyPredicate_and {
   type: "and";

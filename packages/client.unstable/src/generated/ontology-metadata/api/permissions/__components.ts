@@ -29,6 +29,7 @@ import type {
   PackagedEntityRid as _api_PackagedEntityRid,
   PrincipalId as _api_PrincipalId,
   ProjectEntityRid as _api_ProjectEntityRid,
+  PropertySecurityGroupRid as _api_PropertySecurityGroupRid,
   RoleId as _api_RoleId,
   SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
   TypeGroupRid as _api_TypeGroupRid,
@@ -77,13 +78,6 @@ export interface BulkUpdateEntityRolesResponse {
  * The roles permission model is used by none of the entities in the enrollment.
  */
 export interface DatasourceDerived {
-}
-/**
- * The operations the user has on a datasource.
- */
-export interface DatasourcePermissions {
-  canDelete: boolean;
-  canEdit: boolean;
 }
 /**
  * The entity is fully visible to the org, but modifications are gated by datasource access.
@@ -342,7 +336,10 @@ export interface GetLinkTypePermissionsResponse {
   canEdit: boolean;
   canUpdateRoles: boolean;
   canView: boolean;
-  datasourcePermissions: Record<_api_DatasourceRid, DatasourcePermissions>;
+  datasourcePermissions: Record<
+    _api_DatasourceRid,
+    ManyToManyLinkTypeDatasourcePermissions
+  >;
   isEditRestrictedByDatasources: boolean;
   packageRid?: _api_OntologyPackageRid | null | undefined;
   permissionModel: LinkTypePermissionModel;
@@ -356,10 +353,17 @@ export interface GetObjectTypePermissionsResponse {
   canEdit: boolean;
   canUpdateRoles: boolean;
   canView: boolean;
-  datasourcePermissions: Record<_api_DatasourceRid, DatasourcePermissions>;
+  datasourcePermissions: Record<
+    _api_DatasourceRid,
+    ObjectTypeDatasourcePermissions
+  >;
   isEditRestrictedByDatasources: boolean;
   packageRid?: _api_OntologyPackageRid | null | undefined;
   permissionModel: ObjectTypePermissionModel;
+  propertySecurityGroupPermissions: Record<
+    _api_PropertySecurityGroupRid,
+    PropertySecurityGroupPermissions
+  >;
 }
 /**
  * The operations the user has on the provided ontology.
@@ -483,6 +487,13 @@ export type LinkTypePermissionModel =
   | LinkTypePermissionModel_package
   | LinkTypePermissionModel_publicProject;
 
+/**
+ * The operations the user has on a datasource.
+ */
+export interface ManyToManyLinkTypeDatasourcePermissions {
+  canDelete: boolean;
+  canEdit: boolean;
+}
 export interface MigrateEntitiesToProjectsRequest {
   entitiesToMove: Record<_api_CompassProjectRid, Array<_api_ProjectEntityRid>>;
 }
@@ -490,6 +501,14 @@ export interface MigrateEntitiesToProjectsRequest {
  * Response to MoveEntitiesToProjectsRequest. Intentionally left empty for future extensibility.
  */
 export interface MigrateEntitiesToProjectsResponse {
+}
+/**
+ * The operations the user has on a datasource.
+ */
+export interface ObjectTypeDatasourcePermissions {
+  canCreatePropertySecurityGroups: boolean;
+  canDelete: boolean;
+  canEdit: boolean;
 }
 export interface ObjectTypePermissionModel_viewRestricted {
   type: "viewRestricted";
@@ -631,6 +650,13 @@ export interface Principal_user {
  */
 export type Principal = Principal_everyone | Principal_group | Principal_user;
 
+/**
+ * The operations the user has on a property security group.
+ */
+export interface PropertySecurityGroupPermissions {
+  canDelete: boolean;
+  canEdit: boolean;
+}
 /**
  * The visibility and modifiability of the entity is entirely controlled by the Compass project it belongs to.
  * OMS does not keep track of which project an entity is in.

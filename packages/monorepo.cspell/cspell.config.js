@@ -54,6 +54,7 @@ const cspell = {
     ".git/**",
     ".gitignore",
     "**/.turbo/**/*",
+    ".*ignore",
 
     // Ignore these files for now
     "_gitignore",
@@ -146,10 +147,13 @@ const cspell = {
         "Clooney",
         "Itask",
         "Mobi",
+
+        // Authless client
+        "Authless",
+        "authless",
       ],
       ignoreWords: [
         // it's an NPM package
-        "escodegen",
         "blueprintjs",
         "picocolors",
         // used in a RID template literal string
@@ -205,6 +209,7 @@ const cspell = {
         "underlyings",
         "Dherlihy",
         "Mnayan",
+        "Matthewvs",
       ],
     },
   ],

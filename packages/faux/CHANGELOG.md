@@ -1,5 +1,146 @@
 # @osdk/shared.test
 
+## 0.2.0-beta.17
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.17
+- @osdk/generator-converters@2.4.0-beta.17
+
+## 0.2.0-beta.16
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.16
+- @osdk/generator-converters@2.4.0-beta.16
+
+## 0.2.0-beta.15
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.15
+- @osdk/generator-converters@2.4.0-beta.15
+
+## 0.2.0-beta.14
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.14
+- @osdk/generator-converters@2.4.0-beta.14
+
+## 0.2.0-beta.13
+
+### Minor Changes
+
+- 4bc848b: Add interface link support.
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/generator-converters@2.4.0-beta.13
+  - @osdk/api@2.4.0-beta.13
+
+## 0.2.0-beta.12
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.12
+- @osdk/generator-converters@2.4.0-beta.12
+
+## 0.2.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [f277b30]
+  - @osdk/generator-converters@2.4.0-beta.11
+  - @osdk/api@2.4.0-beta.11
+
+## 0.2.0-beta.10
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.10
+- @osdk/generator-converters@2.4.0-beta.10
+
+## 0.2.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [9101bad]
+  - @osdk/api@2.4.0-beta.9
+  - @osdk/generator-converters@2.4.0-beta.9
+
+## 0.2.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [9f4fe9e]
+  - @osdk/api@2.4.0-beta.8
+  - @osdk/generator-converters@2.4.0-beta.8
+
+## 0.2.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.7
+- @osdk/generator-converters@2.4.0-beta.7
+
+## 0.2.0-beta.6
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.6
+- @osdk/generator-converters@2.4.0-beta.6
+
+## 0.2.0-beta.5
+
+### Minor Changes
+
+- 1c1c2c4: Properly handles one to many links
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.5
+- @osdk/generator-converters@2.4.0-beta.5
+
+## 0.2.0-beta.4
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.4
+- @osdk/generator-converters@2.4.0-beta.4
+
+## 0.2.0-beta.3
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.3
+- @osdk/generator-converters@2.4.0-beta.3
+
+## 0.2.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [29d2ada]
+- Updated dependencies [8c95154]
+- Updated dependencies [c32dcf2]
+  - @osdk/api@2.4.0-beta.2
+  - @osdk/generator-converters@2.4.0-beta.2
+
+## 0.1.0-beta.6
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.10
+- @osdk/generator-converters@2.3.0-beta.10
+
+## 0.1.0-beta.5
+
+### Patch Changes
+
+- @osdk/api@2.3.0-beta.9
+- @osdk/generator-converters@2.3.0-beta.9
+
 ## 0.1.0-beta.4
 
 ### Patch Changes

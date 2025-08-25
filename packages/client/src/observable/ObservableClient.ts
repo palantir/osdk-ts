@@ -16,6 +16,7 @@
 
 import type {
   ActionDefinition,
+  ActionValidationResponse,
   InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
@@ -115,6 +116,11 @@ export interface ObservableClient {
       | Array<Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]>,
     opts?: ObservableClient.ApplyActionOptions,
   ) => Promise<unknown>;
+
+  validateAction: <Q extends ActionDefinition<any>>(
+    action: Q,
+    args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
+  ) => Promise<ActionValidationResponse>;
 
   canonicalizeWhereClause: <
     T extends ObjectTypeDefinition | InterfaceDefinition,

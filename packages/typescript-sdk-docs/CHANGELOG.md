@@ -1,5 +1,23 @@
 # @osdk/typescript-sdk-docs
 
+## 0.3.0-beta.4
+
+### Minor Changes
+
+- 5659984: Fix formatting of subscribeToObjectSetInstructions template and fix aggregationTemplate syntax error
+
+## 0.3.0-beta.3
+
+### Minor Changes
+
+- d8cdf4d: fix aggregation doc example
+
+## 0.3.0-beta.2
+
+### Minor Changes
+
+- 29d2ada: Fix type in docs and tests
+
 ## 0.2.0-beta.3
 
 ### Minor Changes
@@ -12,6 +30,14 @@
 
 - 57e414b: Array subtype doc examples
 - 5183311: Update documentation for subscriptions
+
+## 0.1.0
+
+### Patch Changes
+
+- 023d76a: Fix TS OSDK types
+- dc418de: Add doc snippets for contains + searchAround
+- 37cba2a: Create @osdk/typescript-sdk-docs
 
 ## 0.1.0-beta.1
 

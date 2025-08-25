@@ -1,5 +1,22 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.1.0-beta.5
+
+## 3.1.0-beta.4
+
+### Minor Changes
+
+- cea4b6e: Mention FOUNDRY_TOKEN/first release in widget READMEs
+
+## 3.1.0-beta.3
+
+## 3.1.0-beta.2
+
+### Minor Changes
+
+- ca35776: Add reminder to publish new widget set on main.config.ts change
+- 4dd8c36: Update create-widget templates to use 3.x.x widget libraries
+
 ## 3.0.0-beta.6
 
 ### Minor Changes
@@ -23,6 +40,13 @@
 ## 3.0.0-beta.3
 
 ## 2.2.0-beta.2
+
+## 2.1.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 317b555: Release
 
 ## 2.1.0-beta.11
 

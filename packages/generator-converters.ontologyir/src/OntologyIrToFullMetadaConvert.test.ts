@@ -736,6 +736,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     },
                     "parameterValidations": {
                       "primaryKey_": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -763,6 +764,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "name": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -790,6 +792,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "price": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -817,6 +820,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "proposedLocation": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -844,6 +848,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
+                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -988,6 +993,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     },
                     "parameterValidations": {
                       "objectToModifyParameter": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -1015,6 +1021,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "primaryKey_": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -1042,6 +1049,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "name": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -1069,6 +1077,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "price": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -1096,6 +1105,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "proposedLocation": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -1123,6 +1133,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
+                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -1263,6 +1274,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     },
                     "parameterValidations": {
                       "objectToDeleteParameter": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -1290,6 +1302,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
+                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -1397,6 +1410,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     },
                     "parameterValidations": {
                       "primaryKey_": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -1424,6 +1438,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "name": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -1451,6 +1466,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "location": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -1478,6 +1494,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "rating": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -1505,6 +1522,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
+                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -1649,6 +1667,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     },
                     "parameterValidations": {
                       "objectToModifyParameter": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -1676,6 +1695,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "primaryKey_": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -1703,6 +1723,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "name": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -1730,6 +1751,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "location": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -1757,6 +1779,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "rating": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -1784,6 +1807,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
+                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -1924,6 +1948,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     },
                     "parameterValidations": {
                       "objectToDeleteParameter": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -1951,6 +1976,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
+                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -2058,6 +2084,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     },
                     "parameterValidations": {
                       "primaryKey_": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -2085,6 +2112,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "distributionProposal": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -2112,6 +2140,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "restaurant": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -2139,6 +2168,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "timeMinutes": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -2166,6 +2196,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
+                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -2310,6 +2341,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     },
                     "parameterValidations": {
                       "objectToModifyParameter": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -2337,6 +2369,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "primaryKey_": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -2364,6 +2397,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "distributionProposal": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -2391,6 +2425,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "restaurant": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -2418,6 +2453,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                       "timeMinutes": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -2445,6 +2481,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
+                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -2585,6 +2622,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     },
                     "parameterValidations": {
                       "objectToDeleteParameter": {
+                        "conditionalOverrides": [],
                         "defaultValidation": {
                           "display": {
                             "renderHint": {
@@ -2612,6 +2650,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
+                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -3160,6 +3199,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "apiName": "restaurant",
                 "cardinality": "ONE",
                 "displayName": "Restaurant",
+                "foreignKeyPropertyApiName": "restaurant",
                 "linkTypeRid": "ri.Dc3Restaurant.Dc3RestaurantToDistributionRoute.Dc3DistributionRouteAnalysis",
                 "objectTypeApiName": "Dc3Restaurant",
                 "status": "ACTIVE",
@@ -3168,6 +3208,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                 "apiName": "distributionCenterProposal",
                 "cardinality": "ONE",
                 "displayName": "Distribution Center Proposal",
+                "foreignKeyPropertyApiName": "distributionProposal",
                 "linkTypeRid": "ri.Dc3DistributionCenterProposal.Dc3DistributionCenterProposalToDistributionRoute.Dc3DistributionRouteAnalysis",
                 "objectTypeApiName": "Dc3DistributionCenterProposal",
                 "status": "ACTIVE",

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { FunctionDiscoverer } from "@foundry/functions-typescript-osdk-discovery";
 import type {
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionTypeStatus,
-  OntologyIrInterfaceLinkType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrLinkTypeBlockDataV2,
   OntologyIrLinkTypeStatus,
+  OntologyIrMarketplaceInterfaceLinkType,
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeStatus,
   OntologyIrOntologyBlockDataV2,
@@ -28,13 +29,17 @@ import type {
   OntologyIrType,
 } from "@osdk/client.unstable";
 import type * as Ontologies from "@osdk/foundry.ontologies";
-import * as ts from "typescript";
-import * as path from "path";
+
+
+import type {
+  IDataType} from "@palantir/function-registry-api/functions-api-types/dataType.js";
+
+
 import { hash } from "node:crypto";
+import * as path from "path";
+import invariant from "tiny-invariant";
+import * as ts from "typescript";
 import type { ApiName } from "./ApiName.js";
-import { FunctionDiscoverer } from "@foundry/functions-typescript-osdk-discovery";
-import { IDataType, IDataType_FunctionCustomType } from "@palantir/function-registry-api/functions-api-types/dataType.js";
-import { QueryTypeV2, VersionedQueryTypeApiName } from "@osdk/foundry.ontologies";
 // import { IDiscoveredFunction } from "@foundry/functions-typescript-discovery-common";
 
 /**
@@ -111,43 +116,64 @@ export class OntologyIrToFullMetadataConverter {
   static getOsdkQueryTypes(
     functionsDir: string,
   ): Record<Ontologies.VersionedQueryTypeApiName, Ontologies.QueryTypeV2> {
-    const srcDir = "/Volumes/git/osdk-ts/packages/generator-converters.ontologyir/src";
+    const srcDir =
+      "/Volumes/git/osdk-ts/packages/generator-converters.ontologyir/src";
     const tsConfigFilePath = path.join(srcDir, "tsconfig.json");
     const program = this.createProgram(tsConfigFilePath, srcDir);
     const entryPointPath = path.join(srcDir, "index.ts");
     const fullFilePath = path.join(srcDir, functionsDir);
-    
+
     // Initialize FunctionDiscoverer with the program
     const fd = new FunctionDiscoverer(program, entryPointPath, fullFilePath);
-    
+
     // Discover functions using the provided filePath as the functionsDirectoryPath
     const functions = fd.discover();
 
-    let queries: Ontologies.QueryTypeV2[] = [];
-    functions.discoveredFunctions.forEach((func) => {    
+    const queries: Ontologies.QueryTypeV2[] = [];
+    functions.discoveredFunctions.forEach((func) => {
       const queryType: Ontologies.QueryTypeV2 = {
-        apiName: func.locator.type === "typescriptOsdk" ? func.locator.typescriptOsdk.functionName : "placeholder",
+        apiName: func.locator.type === "typescriptOsdk"
+          ? func.locator.typescriptOsdk.functionName
+          : "placeholder",
         rid: "placeholder.rid",
         version: "0.0.0",
-        parameters: func.inputs.reduce((acc, input) => {
+        parameters: func.inputs.reduce<Record<ApiName, Ontologies.QueryParameterV2>>((acc, input) => {
           acc[input.name] = {
             dataType: this.convertDataType(input.dataType, func.customTypes),
           };
           return acc;
-        }, {} as Record<ApiName, Ontologies.QueryParameterV2>),
-        output: this.convertDataType(func.output.single.dataType, func.customTypes),
-      };  
+        }, {}),
+        output: this.convertDataType(
+          func.output.single.dataType,
+          func.customTypes,
+        ),
+      };
       queries.push(queryType);
     });
-    return queries.reduce((acc, query) => {
-      acc[query.apiName as string] = query;
-      return acc;
-    }, {} as Record<Ontologies.VersionedQueryTypeApiName, Ontologies.QueryTypeV2>);
+    return queries.reduce<Record<
+        Ontologies.VersionedQueryTypeApiName,
+        Ontologies.QueryTypeV2
+      >>(
+      (acc, query) => {
+        acc[query.apiName as string] = query;
+        return acc;
+      },
+      {},
+    );
   }
 
-  static convertDataType(dataType: IDataType, customTypes: any, required?: boolean): Ontologies.QueryDataType {
+  static convertDataType(
+    dataType: IDataType,
+    customTypes: any,
+    required?: boolean,
+  ): Ontologies.QueryDataType {
     if (required === false && dataType.type !== "optionalType") {
-      return { type: "union", unionTypes: [this.convertDataType(dataType, customTypes), { type: "null" }] };
+      return {
+        type: "union",
+        unionTypes: [this.convertDataType(dataType, customTypes), {
+          type: "null",
+        }],
+      };
     }
     switch (dataType.type) {
       case "string":
@@ -168,45 +194,89 @@ export class OntologyIrToFullMetadataConverter {
         return { type: "timestamp" };
       case "attachment":
         return { type: "attachment" };
-      case "optionalType": 
-        return { type: "union", unionTypes: [this.convertDataType(dataType.optionalType.wrappedType, customTypes), { type: "null" }] }
+      case "optionalType":
+        return {
+          type: "union",
+          unionTypes: [
+            this.convertDataType(
+              dataType.optionalType.wrappedType,
+              customTypes,
+            ),
+            { type: "null" },
+          ],
+        };
       case "set":
-        return { type: "set", subType: this.convertDataType(dataType.set.elementsType, customTypes) };
+        return {
+          type: "set",
+          subType: this.convertDataType(dataType.set.elementsType, customTypes),
+        };
       case "objectSet":
-        return { type: "objectSet", objectApiName: dataType.objectSet.objectTypeId };
+        return {
+          type: "objectSet",
+          objectApiName: dataType.objectSet.objectTypeId,
+        };
       case "list":
-        return { type: "array", subType: this.convertDataType(dataType.list.elementsType, customTypes) };
+        return {
+          type: "array",
+          subType: this.convertDataType(
+            dataType.list.elementsType,
+            customTypes,
+          ),
+        };
       case "functionCustomType":
-        return this.convertFunctionCustomType(dataType.functionCustomType, customTypes);
+        return this.convertFunctionCustomType(
+          dataType.functionCustomType,
+          customTypes,
+        );
       case "object":
-        return { type: "object", objectApiName: dataType.object.objectTypeId, objectTypeApiName: dataType.object.objectTypeId };
+        return {
+          type: "object",
+          objectApiName: dataType.object.objectTypeId,
+          objectTypeApiName: dataType.object.objectTypeId,
+        };
       default:
         throw new Error(`Unsupported data type: ${dataType.type}`);
     }
   }
 
-  static convertFunctionCustomType(functionId: string, customTypes: any): Ontologies.QueryDataType {
-    const fieldMetadata = customTypes[functionId].fieldMetadata
-    const fields = customTypes[functionId].fields
+  static convertFunctionCustomType(
+    functionId: string,
+    customTypes: any,
+  ): Ontologies.QueryDataType {
+    const fieldMetadata = customTypes[functionId].fieldMetadata;
+    const fields = customTypes[functionId].fields;
     const structFields = Object.keys(fields).map(key => {
       return {
         name: key,
-        fieldType: this.convertDataType(fields[key], customTypes, fieldMetadata[key].required ?? true),
-      }
-    })
+        fieldType: this.convertDataType(
+          fields[key],
+          customTypes,
+          fieldMetadata[key].required ?? true,
+        ),
+      };
+    });
     return {
       type: "struct",
-      fields: structFields
-    }
+      fields: structFields,
+    };
   }
-  
 
-  static createProgram(tsConfigFilePath: string, projectDir: string): ts.Program {
+  static createProgram(
+    tsConfigFilePath: string,
+    projectDir: string,
+  ): ts.Program {
     const { config } = ts.readConfigFile(tsConfigFilePath, ts.sys.readFile);
-    const { options, fileNames, errors } = ts.parseJsonConfigFileContent(config, ts.sys, projectDir);
-    return ts.createProgram({ options, rootNames: fileNames, configFileParsingDiagnostics: errors });
+    const { options, fileNames, errors } = ts.parseJsonConfigFileContent(
+      config,
+      ts.sys,
+      projectDir,
+    );
+    return ts.createProgram({
+      options,
+      rootNames: fileNames,
+      configFileParsingDiagnostics: errors,
+    });
   }
-
 
   /**
    * Convert IR object types to OSDK format
@@ -371,19 +441,33 @@ export class OntologyIrToFullMetadataConverter {
         }
         case "oneToMany": {
           const linkDef = linkType.definition.oneToMany;
-          const manySide: Ontologies.LinkTypeSideV2 = {
-            apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
-            displayName:
-              linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
-            objectTypeApiName: linkDef.objectTypeRidOneSide,
-            cardinality: "ONE",
+
+          invariant(
+            linkDef.oneSidePrimaryKeyToManySidePropertyMapping.length === 1,
+          );
+
+          const common = {
             linkTypeRid:
               `ri.${linkDef.objectTypeRidOneSide}.${linkType.id}.${linkDef.objectTypeRidManySide}`,
             status: linkStatus,
           };
 
+          const manySide: Ontologies.LinkTypeSideV2 = {
+            ...common,
+            apiName: linkDef.oneToManyLinkMetadata.apiName ?? "",
+            displayName:
+              linkDef.oneToManyLinkMetadata.displayMetadata.displayName,
+            objectTypeApiName: linkDef.objectTypeRidOneSide,
+            cardinality: "ONE",
+            // This should only exist on the one side and it should be the property on this object
+            // that points to the PK on the other object
+            foreignKeyPropertyApiName:
+              linkDef.oneSidePrimaryKeyToManySidePropertyMapping[0].to
+                .apiName,
+          };
+
           const oneSide: Ontologies.LinkTypeSideV2 = {
-            ...manySide,
+            ...common,
             cardinality: "MANY",
             apiName: linkDef.manyToOneLinkMetadata.apiName ?? "",
             displayName:
@@ -788,7 +872,7 @@ export class OntologyIrToFullMetadataConverter {
    * Convert interface link types from IR
    */
   static getOsdkInterfaceLinkTypes(
-    ilts: OntologyIrInterfaceLinkType[],
+    ilts: OntologyIrMarketplaceInterfaceLinkType[],
   ): Record<ApiName, Ontologies.InterfaceLinkType> {
     const result: Record<ApiName, Ontologies.InterfaceLinkType> = {};
 

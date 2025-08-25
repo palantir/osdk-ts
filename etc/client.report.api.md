@@ -20,10 +20,11 @@ import type { DataValueWireToClient } from '@osdk/api';
 import type { Experiment } from '@osdk/api/unstable';
 import type { ExperimentFns } from '@osdk/api/unstable';
 import { InterfaceDefinition } from '@osdk/api';
-import type { InterfaceMetadata } from '@osdk/api';
+import { InterfaceMetadata } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import { Logger } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
+import { NULL_VALUE } from '@osdk/api';
 import { ObjectMetadata } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/api';
@@ -32,9 +33,11 @@ import { ObjectSpecifier } from '@osdk/api';
 import { ObjectTypeDefinition } from '@osdk/api';
 import { Osdk } from '@osdk/api';
 import { OsdkObject } from '@osdk/api';
+import { OsdkObjectCreatePropertyType } from '@osdk/api';
 import { OsdkObjectPropertyType } from '@osdk/api';
 import { PageResult } from '@osdk/api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
+import type { PrimaryKeyType } from '@osdk/api';
 import { PropertyDef } from '@osdk/api';
 import { PropertyKeys } from '@osdk/api';
 import { PropertyValueWireToClient } from '@osdk/api';
@@ -112,6 +115,9 @@ export const createClient: (baseUrl: string, ontologyRid: string | Promise<strin
     	logger?: Logger
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
 
+// @public
+export function createObjectSpecifierFromPrimaryKey<Q extends ObjectTypeDefinition>(objectDef: Q, primaryKey: PrimaryKeyType<Q>): ObjectSpecifier<Q>;
+
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
@@ -137,9 +143,13 @@ export const extractDateInUTC: (date: Date) => string;
 
 export { InterfaceDefinition }
 
+export { InterfaceMetadata }
+
 export { isOk }
 
 export { Logger }
+
+export { NULL_VALUE }
 
 export { ObjectMetadata }
 
@@ -152,6 +162,8 @@ export { ObjectTypeDefinition }
 export { Osdk }
 
 export { OsdkObject }
+
+export { OsdkObjectCreatePropertyType }
 
 export { OsdkObjectPropertyType }
 

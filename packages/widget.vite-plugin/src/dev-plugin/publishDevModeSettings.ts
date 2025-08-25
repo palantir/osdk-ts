@@ -16,6 +16,7 @@
 
 import { loadFoundryConfig } from "@osdk/foundry-config-json";
 import type { ServerResponse } from "node:http";
+import { inspect } from "node:util";
 import type { ViteDevServer } from "vite";
 import {
   getCodeWorkspacesFoundryUrl,
@@ -86,14 +87,13 @@ export async function publishDevModeSettings(
         : `${foundryUrl}/workspace/custom-widgets/preview/${widgetSetRid}`,
     }));
   } catch (error: unknown) {
-    // Note, this can't be server.config.logger.error as that method throws and prevents a response being sent
-    server.config.logger.warn(
-      `Failed to start dev mode: ${(error as Error).message}`,
+    server.config.logger.error(
+      `Failed to start dev mode: ${(error as Error)}\n\n${inspect(error)}`,
     );
     res.setHeader("Content-Type", "application/json");
     res.statusCode = 500;
     res.end(
-      JSON.stringify({ status: "failed", error: (error as Error).message }),
+      JSON.stringify({ status: "error", error: inspect(error) }),
     );
   }
 }

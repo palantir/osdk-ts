@@ -41,6 +41,12 @@ export interface WidgetSetManifestContentV1 {
    * The key can be arbitrary, and is usually the name of your entrypoint, e.g. "main"
    */
   widgets: Record<string, WidgetManifestConfigV1>;
+
+  /**
+   * The input specification for Foundry data required by the widget set.
+   * @optional
+   */
+  inputSpec?: WidgetSetInputSpecV1;
 }
 
 export interface WidgetManifestConfigV1 {
@@ -93,6 +99,28 @@ export interface WidgetManifestConfigV1 {
    * The map of events to their definition. Any parameter IDs referenced must be defined in the `parameters` field
    */
   events: Record<string, EventDefinition<ParameterConfig>>;
+}
+
+export interface WidgetSetInputSpecV1 {
+  /**
+   * The input specification for the widget set that was automatically discovered from the project's dependencies.
+   * @optional
+   */
+  discovered?: WidgetSetDiscoveredInputSpecV1;
+}
+
+export interface WidgetSetDiscoveredInputSpecV1 {
+  /**
+   * The discovered Ontology SDK packages in the project's dependencies.
+   */
+  sdks: Array<OntologySdkInputSpecV1>;
+}
+
+export interface OntologySdkInputSpecV1 {
+  /** The Ontology SDK package rid */
+  rid: string;
+  /** The Ontology SDK package version */
+  version: string;
 }
 
 export const MANIFEST_FILE_LOCATION = ".palantir/widgets.config.json";

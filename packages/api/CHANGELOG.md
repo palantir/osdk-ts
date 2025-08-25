@@ -1,5 +1,59 @@
 # @osdk/api
 
+## 2.4.0-beta.17
+
+## 2.4.0-beta.16
+
+## 2.4.0-beta.15
+
+## 2.4.0-beta.14
+
+## 2.4.0-beta.13
+
+### Minor Changes
+
+- 4bc848b: Add interface link support.
+
+## 2.4.0-beta.12
+
+## 2.4.0-beta.11
+
+## 2.4.0-beta.10
+
+## 2.4.0-beta.9
+
+### Minor Changes
+
+- 9101bad: Adds "includeNullValues" option for exact match filters
+
+## 2.4.0-beta.8
+
+### Minor Changes
+
+- 9f4fe9e: Add new types mapping for internal creation workflow.
+
+## 2.4.0-beta.7
+
+## 2.4.0-beta.6
+
+## 2.4.0-beta.5
+
+## 2.4.0-beta.4
+
+## 2.4.0-beta.3
+
+## 2.4.0-beta.2
+
+### Minor Changes
+
+- 29d2ada: Fix type in docs and tests
+- 8c95154: Add nearestNeighbor support
+- c32dcf2: Add a metadata field to all loaded objects
+
+## 2.3.0-beta.10
+
+## 2.3.0-beta.9
+
 ## 2.3.0-beta.8
 
 ### Minor Changes
@@ -31,6 +85,46 @@
 ## 2.3.0-beta.3
 
 ## 2.3.0-beta.2
+
+## 2.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- c6bee50: Removes ObjectSpecifier from OsdkBase
+- 7416ce4: Adds deleted objects and links returned from applyAction
+- 7170fd1: Fix generics for fetchPageByRid
+- 12843cb: Add ability to load all underlying properties of an interface.
+- 18ba34f: Adds the ability to generate and execute functions at pinned versions
+- 6abf078: Fixes aggregation types for datetime to include collectList and collectSet
+- f82767c: Allow using aggregation operations for boolean property types
+- 56aa502: Improves exposed APIs
+- 0e874b1: Exporting more entities from functions package.
+- abe4897: Removes support for boolean primary keys
+- 63b2e63: Update Platform SDK Dependencies
+- cddfbf9: Adds default value option to group by
+- 7416ce4: Update Platform SDK Dependencies
+- 23ea0e4: Fix type break.
+- 26c2d95: Add experimental function to load page of objects by rid.
+- 488b51c: Add support for using aggregations and GeoJSON types from runtime derived properties
+- 71462e9: Updates aggregation types to support operations on additional property types
+- fccd9ac: "Allow selecting derived properties"
+- 5665b18: Remove selection RDPs from the API
+- 46cede4: Fix include all properties flag.
+- 761e69d: Added type safety to createMediaReference
+- 889e84b: Release
+- a6e5f89: Changes count, exactDistinct, and approximateDistinct to be non-nullable
+- ed69666: Update conjure-lite to 0.7.1
+- 4183a55: Refactor OsdkBase to avoid breaks with type not being discoverable
+- 70b4464: Fix types for RDPs
+- 791e655: Add support for geoshape and geohash action parameters.
+- 317b555: Release
+- 63b2e63: Supports generating queries for entrySet function types
+- a146ce4: Cleanup RDP API
+- 3d0ab11: Add protection for dropping unsupported enums instead of throwing"
+- 805df40: Fix interface action types.
+- 5467a0f: Fix orderBy argument on object load methods
+- 63b2e63: Adds ObjectSpecifiers to generated OSDK objects
 
 ## 2.2.0-beta.23
 

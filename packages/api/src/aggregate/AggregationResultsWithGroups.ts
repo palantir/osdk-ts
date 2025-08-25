@@ -36,8 +36,19 @@ export type AggregationResultsWithGroups<
     $group: {
       [P in keyof G & PropertyKeys<Q>]: G[P] extends
         { $ranges: GroupByRange<infer T>[] } ? { startValue: T; endValue: T }
-        : OsdkObjectPropertyType<CompileTimeMetadata<Q>["properties"][P], true>;
+        : MaybeNullable<
+          G[P],
+          OsdkObjectPropertyType<
+            CompileTimeMetadata<Q>["properties"][P],
+            true
+          >
+        >;
     };
   }
   & AggregationResultsWithoutGroups<Q, A>
 )[];
+
+type MaybeNullable<GROUP, VALUE> = GROUP extends {
+  $exact: { $includeNullValue: true };
+} ? VALUE | null
+  : VALUE;

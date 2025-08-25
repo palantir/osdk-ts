@@ -18,6 +18,7 @@ export { bulkLoadOntologyEntities } from "./OntologyMetadataService/bulkLoadOnto
 export { bulkLoadOntologyEntitiesByDatasources } from "./OntologyMetadataService/bulkLoadOntologyEntitiesByDatasources.js";
 export { getActionTypesForInterfaceType } from "./OntologyMetadataService/getActionTypesForInterfaceType.js";
 export { getActionTypesForObjectType } from "./OntologyMetadataService/getActionTypesForObjectType.js";
+export { getEntityDelegateDataset } from "./OntologyMetadataService/getEntityDelegateDataset.js";
 export { getFeatureConfigurations } from "./OntologyMetadataService/getFeatureConfigurations.js";
 export { getLinkMetadataForObjectTypes } from "./OntologyMetadataService/getLinkMetadataForObjectTypes.js";
 export { getLinkTypesForObjectTypes } from "./OntologyMetadataService/getLinkTypesForObjectTypes.js";

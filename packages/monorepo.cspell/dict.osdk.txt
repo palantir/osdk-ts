@@ -1,9 +1,11 @@
 dpaquin
+ethana
 forwardslash
 haptics
 mediaset
 mwalther
 Nativewind
+ontologyir
 osdk
 palantirfoundry
 paperplane

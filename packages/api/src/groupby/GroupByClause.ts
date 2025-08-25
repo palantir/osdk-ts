@@ -32,7 +32,24 @@ type BaseGroupByValue =
   | ExactGroupByWithOptions;
 
 type ExactGroupByWithOptions = {
-  $exact: { $limit?: number; $defaultValue?: string };
+  $exact:
+    & {
+      $limit?: number;
+    }
+    & (
+      | {
+        $defaultValue?: undefined;
+        $includeNullValue?: false;
+      }
+      | {
+        $defaultValue: string;
+        $includeNullValue?: false;
+      }
+      | {
+        $defaultValue?: never;
+        $includeNullValue: true;
+      }
+    );
 };
 
 export type GroupByRange<T> = [T, T];
