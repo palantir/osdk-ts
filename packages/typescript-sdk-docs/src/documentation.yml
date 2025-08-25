@@ -2064,14 +2064,14 @@ versions:
               const {{objectType}}WithExpression = await client({{objectType}})
                   .withProperties({
                     "newPropertyName": (baseObjectSet) =>
-                        {{#isExtractPart}}
-                        baseObjectSet.pivotTo("{{linkName}}")
-                            .selectProperty("{{property}}").{{operation}}("DAY")
-                        {{/isExtractPart}}
                         {{^isExtractPart}} 
                         baseObjectSet.pivotTo("{{linkName}}")
                             .selectProperty("{{property}}")
                             .{{operation}}(baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}"))
+                        {{/isExtractPart}}
+                        {{#isExtractPart}}
+                        baseObjectSet.pivotTo("{{linkName}}")
+                            .selectProperty("{{property}}").{{operation}}("DAY")
                         {{/isExtractPart}}
                   });
             
