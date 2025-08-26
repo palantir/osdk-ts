@@ -1,5 +1,5 @@
 ---
-"@osdk/cli.common": minor
+"@osdk/cli.common": patch
 ---
       
 Simulated release

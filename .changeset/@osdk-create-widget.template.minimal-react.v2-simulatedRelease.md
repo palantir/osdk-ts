@@ -1,5 +1,5 @@
 ---
-"@osdk/create-widget.template.minimal-react.v2": minor
+"@osdk/create-widget.template.minimal-react.v2": patch
 ---
       
 Simulated release

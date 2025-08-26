@@ -1,5 +1,5 @@
 ---
-"@osdk/maker": patch
+"@osdk/maker-experimental": patch
 ---
       
 Simulated release

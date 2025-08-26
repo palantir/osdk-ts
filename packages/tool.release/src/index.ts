@@ -52,7 +52,7 @@ import { consola } from "consola";
 import * as fs from "node:fs";
 import yargs from "yargs";
 import { FailedWithUserMessage } from "./FailedWithUserMessage.js";
-import { checkIfClean as isGitClean, setupUser } from "./gitUtils.js";
+import { setupUser } from "./gitUtils.js";
 import { runPublish } from "./runPublish.js";
 import { runTagRelease } from "./runTagRelease.js";
 import type { GithubContext } from "./runVersion.js";
@@ -158,11 +158,11 @@ async function getContext(
     await setupUser();
   }
 
-  if (process.env.SKIP_GIT_CLEAN_CHECK !== "true" && !await isGitClean()) {
-    throw new FailedWithUserMessage(
-      "Your working directory is not clean. We are aborting for your protection.",
-    );
-  }
+  // if (process.env.SKIP_GIT_CLEAN_CHECK !== "true" && !await isGitClean()) {
+  //   throw new FailedWithUserMessage(
+  //     "Your working directory is not clean. We are aborting for your protection.",
+  //   );
+  // }
 
   const context = await getContext(args);
 

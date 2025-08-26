@@ -1,5 +1,5 @@
 ---
-"@osdk/client.test.ontology": minor
+"@osdk/client.test.ontology": patch
 ---
       
 Simulated release

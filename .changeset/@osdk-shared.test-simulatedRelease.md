@@ -1,5 +1,5 @@
 ---
-"@osdk/shared.test": minor
+"@osdk/shared.test": patch
 ---
       
 Simulated release
