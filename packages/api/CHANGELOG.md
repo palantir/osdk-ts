@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.4.0-beta.18
+
+### Patch Changes
+
+- 722c89a: Fix assignability for creating struct fields.
+- 44bbbe0: Add interface query support.
+
 ## 2.4.0-beta.17
 
 ## 2.4.0-beta.16
