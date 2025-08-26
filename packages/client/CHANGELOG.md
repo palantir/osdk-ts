@@ -1,5 +1,75 @@
 # @osdk/client
 
+## 2.4.0-beta.17
+
+### Minor Changes
+
+- 06fd45a: Export createObjectSpecifierFromPrimaryKey
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.17
+- @osdk/client.unstable@2.4.0-beta.17
+- @osdk/generator-converters@2.4.0-beta.17
+
+## 2.4.0-beta.16
+
+### Minor Changes
+
+- c763807: Fix hydrate method for object rids to work with interfaces.
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.16
+- @osdk/client.unstable@2.4.0-beta.16
+- @osdk/generator-converters@2.4.0-beta.16
+
+## 2.4.0-beta.15
+
+### Minor Changes
+
+- d2d36e1: Fix module resolution for node when importing unstable code
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.15
+- @osdk/client.unstable@2.4.0-beta.15
+- @osdk/generator-converters@2.4.0-beta.15
+
+## 2.4.0-beta.14
+
+### Patch Changes
+
+- Updated dependencies [5c76e33]
+  - @osdk/client.unstable@2.4.0-beta.14
+  - @osdk/api@2.4.0-beta.14
+  - @osdk/generator-converters@2.4.0-beta.14
+
+## 2.4.0-beta.13
+
+### Minor Changes
+
+- 4bc848b: Add interface link support.
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/generator-converters@2.4.0-beta.13
+  - @osdk/api@2.4.0-beta.13
+  - @osdk/client.unstable@2.4.0-beta.13
+
+## 2.4.0-beta.12
+
+### Minor Changes
+
+- 402eb67: Fix hydrate to support interface object sets.
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.12
+- @osdk/client.unstable@2.4.0-beta.12
+- @osdk/generator-converters@2.4.0-beta.12
+
 ## 2.4.0-beta.11
 
 ### Patch Changes

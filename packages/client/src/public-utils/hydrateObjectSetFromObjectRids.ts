@@ -32,10 +32,12 @@ export function hydrateObjectSetFromObjectRids<
   return createObjectSet(definition, client[additionalContext], {
     type: "intersect",
     objectSets: [
-      {
-        type: "base",
-        objectType: definition.apiName,
-      },
+      definition.type === "interface"
+        ? { type: "interfaceBase", interfaceType: definition.apiName }
+        : {
+          type: "base",
+          objectType: definition.apiName,
+        },
       {
         type: "static",
         objects: asMutableArray(rids),

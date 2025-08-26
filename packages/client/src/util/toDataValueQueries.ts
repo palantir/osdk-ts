@@ -23,6 +23,10 @@ import {
   isAttachmentUpload,
 } from "../object/AttachmentUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
+import {
+  isInterfaceQueryParam,
+  isInterfaceSpecifier,
+} from "./interfaceUtils.js";
 import { isObjectSpecifiersObject } from "./isObjectSpecifiersObject.js";
 import { extractPrimaryKeyFromObjectSpecifier } from "./objectSpecifierUtils.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
@@ -120,7 +124,16 @@ export async function toDataValueQueries(
       }
       break;
     }
-    case "objectSet": {
+    case "interface": {
+      if (isInterfaceSpecifier(value) || isInterfaceQueryParam(value)) {
+        return {
+          objectTypeApiName: value.$objectType,
+          primaryKeyValue: value.$primaryKey,
+        };
+      }
+    }
+    case "objectSet":
+    case "interfaceObjectSet": {
       // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
       if (isWireObjectSet(value)) {
         return value;

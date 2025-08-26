@@ -15,16 +15,23 @@
  */
 
 import type { Osdk } from "@osdk/api";
-import { Athlete, NbaPlayer } from "@osdk/e2e.generated.catchall";
+import {
+  Athlete,
+  CollateralConcernCandidate,
+  EsongInterfaceA,
+  NbaPlayer,
+} from "@osdk/e2e.generated.catchall";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { dsClient } from "./client.js";
 
 export async function runInterfacesTest2(): Promise<void> {
+  console.log("here");
   const athletes = await dsClient(Athlete).where({
     name22: { $eq: "Michael Jordan" },
   }).fetchPage({ $includeAllBaseObjectProperties: true });
+  console.log("here2");
 
   invariant(athletes.data.length > 0);
 
@@ -70,6 +77,24 @@ export async function runInterfacesTest2(): Promise<void> {
     // @ts-expect-error
     $includeAllBaseObjectProperties: true,
   });
+
+  // interface to interface
+  const concernCandidates2 = await dsClient(CollateralConcernCandidate)
+    .fetchPage();
+  const concernList2 = await dsClient(CollateralConcernCandidate).pivotTo(
+    "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList",
+  ).fetchPage();
+
+  console.log("concern candidates", concernCandidates2.data);
+  console.log("linked list entities", concernList2.data);
+
+  // interface to object
+  const pds = await dsClient(EsongInterfaceA).pivotTo("esongPds").fetchPage();
+
+  console.log("linkedPds ticket: ", pds.data);
+
+  const interfaceA = await dsClient(EsongInterfaceA).fetchPage();
+  console.log("interfaceA instances: ", interfaceA);
 }
 
 void runInterfacesTest2();

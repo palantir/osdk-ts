@@ -1,5 +1,17 @@
 # @osdk/create-app.template.tutorial-todo-app
 
+## 2.4.0-beta.17
+
+## 2.4.0-beta.16
+
+## 2.4.0-beta.15
+
+## 2.4.0-beta.14
+
+## 2.4.0-beta.13
+
+## 2.4.0-beta.12
+
 ## 2.4.0-beta.11
 
 ## 2.4.0-beta.10

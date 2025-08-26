@@ -1,5 +1,62 @@
 # @osdk/foundry-sdk-generator
 
+## 2.4.0-beta.17
+
+### Patch Changes
+
+- Updated dependencies [06fd45a]
+  - @osdk/client@2.4.0-beta.17
+  - @osdk/api@2.4.0-beta.17
+  - @osdk/generator@2.4.0-beta.17
+
+## 2.4.0-beta.16
+
+### Patch Changes
+
+- Updated dependencies [c763807]
+  - @osdk/client@2.4.0-beta.16
+  - @osdk/api@2.4.0-beta.16
+  - @osdk/generator@2.4.0-beta.16
+
+## 2.4.0-beta.15
+
+### Patch Changes
+
+- Updated dependencies [d2d36e1]
+  - @osdk/client@2.4.0-beta.15
+  - @osdk/api@2.4.0-beta.15
+  - @osdk/generator@2.4.0-beta.15
+
+## 2.4.0-beta.14
+
+### Patch Changes
+
+- @osdk/client@2.4.0-beta.14
+- @osdk/api@2.4.0-beta.14
+- @osdk/generator@2.4.0-beta.14
+
+## 2.4.0-beta.13
+
+### Minor Changes
+
+- 4bc848b: Add interface link support.
+
+### Patch Changes
+
+- Updated dependencies [4bc848b]
+  - @osdk/generator@2.4.0-beta.13
+  - @osdk/client@2.4.0-beta.13
+  - @osdk/api@2.4.0-beta.13
+
+## 2.4.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [402eb67]
+  - @osdk/client@2.4.0-beta.12
+  - @osdk/api@2.4.0-beta.12
+  - @osdk/generator@2.4.0-beta.12
+
 ## 2.4.0-beta.11
 
 ### Patch Changes

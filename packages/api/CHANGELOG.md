@@ -1,5 +1,21 @@
 # @osdk/api
 
+## 2.4.0-beta.17
+
+## 2.4.0-beta.16
+
+## 2.4.0-beta.15
+
+## 2.4.0-beta.14
+
+## 2.4.0-beta.13
+
+### Minor Changes
+
+- 4bc848b: Add interface link support.
+
+## 2.4.0-beta.12
+
 ## 2.4.0-beta.11
 
 ## 2.4.0-beta.10

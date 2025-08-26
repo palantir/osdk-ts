@@ -40,6 +40,7 @@ import type {
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
+import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
 import { extractRdpDefinition } from "../util/extractRdpDefinition.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 
@@ -149,26 +150,30 @@ async function fetchInterfacePage<
     );
     return result as any;
   }
+  const resolvedInterfaceObjectSet = resolveInterfaceObjectSet(
+    objectSet,
+    interfaceType.apiName,
+    args,
+  );
   const result = await OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
     addUserAgentAndRequestContextHeaders(client, interfaceType),
     await client.ontologyRid,
     applyFetchArgs<LoadObjectSetV2MultipleObjectTypesRequest>(args, {
-      objectSet: resolveInterfaceObjectSet(
-        objectSet,
-        interfaceType.apiName,
-        args,
-      ),
+      objectSet: resolvedInterfaceObjectSet,
       select: ((args?.$select as string[] | undefined) ?? []),
       excludeRid: !args?.$includeRid,
       snapshot: useSnapshot,
     }),
     { preview: true },
   );
+
   return Promise.resolve({
     data: await client.objectFactory2(
       client,
       result.data,
-      interfaceType.apiName,
+      (await extractObjectOrInterfaceType(client, resolvedInterfaceObjectSet))
+        ?.apiName
+        ?? interfaceType.apiName,
       {},
       !args.$includeRid,
       args.$select,
@@ -354,6 +359,12 @@ export async function fetchObjectPage<
   objectSet: ObjectSet,
   useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS>> {
+  // For simple object fetches, since we know the object type up front
+  // we can parallelize network requests for loading metadata and loading the actual objects
+  // In our object factory we await and block on loading the metadata, which if this call finishes, should already be cached on the client
+
+  void client.ontologyProvider.getObjectDefinition(objectType.apiName);
+
   const r = await OntologiesV2.OntologyObjectSets.load(
     addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,

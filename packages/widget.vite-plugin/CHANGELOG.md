@@ -1,5 +1,36 @@
 # @osdk/widget.vite-plugin
 
+## 3.1.0-beta.5
+
+### Minor Changes
+
+- 3e9cc76: Improve error visibility during widgets vite dev mode
+- 232a11a: Replace AST parsing with Vite module evaluation for widget config extraction
+
+### Patch Changes
+
+- Updated dependencies [f173ee1]
+  - @osdk/widget.api@3.1.0-beta.5
+
+## 3.1.0-beta.4
+
+### Minor Changes
+
+- 3744571: Discover widget set input specs
+- 21c4954: fix isConfigFile to identify non-suffixed imports
+
+### Patch Changes
+
+- Updated dependencies [3744571]
+  - @osdk/widget.api@3.1.0-beta.4
+
+## 3.1.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [c09f545]
+  - @osdk/widget.api@3.1.0-beta.3
+
 ## 3.1.0-beta.2
 
 ### Patch Changes

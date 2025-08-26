@@ -21,7 +21,6 @@ import type {
   ObjectTypeDefinition,
   Osdk,
   OsdkObjectCreatePropertyType,
-  OsdkObjectPropertyType,
   PropertyKeys,
 } from "@osdk/client";
 
@@ -141,9 +140,9 @@ export interface CreateObjectForInterface<S extends InterfaceDefinition> {
 export interface UpdateObjectForInterface<S extends InterfaceDefinition> {
   type: "updateObjectForInterface";
   obj: InterfaceLocator<S>;
-  properties: PartialForOptionalProperties<
+  properties: Partial<
     {
-      [P in PropertyKeys<S>]: OsdkObjectPropertyType<
+      [P in PropertyKeys<S>]: OsdkObjectCreatePropertyType<
         CompileTimeMetadata<S>["properties"][P]
       >;
     }

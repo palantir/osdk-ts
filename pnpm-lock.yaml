@@ -3401,6 +3401,34 @@ importers:
         specifier: ^3.0.5
         version: 3.0.7(@types/node@20.17.47)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3)(lightningcss@1.29.1)(msw@2.7.3(@types/node@20.17.47)(typescript@5.5.4))(terser@5.39.2)(yaml@2.8.0)
 
+  packages/maker-experimental:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:~
+        version: link:../api
+      tiny-invariant:
+        specifier: ^1.3.3
+        version: 1.3.3
+    devDependencies:
+      '@osdk/client.unstable':
+        specifier: workspace:~
+        version: link:../client.unstable
+      '@osdk/maker':
+        specifier: workspace:~
+        version: link:../maker
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+      vitest:
+        specifier: ^3.0.5
+        version: 3.0.7(@types/node@24.0.3)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3)(lightningcss@1.29.1)(msw@2.7.3(@types/node@24.0.3)(typescript@5.5.4))(terser@5.39.2)(yaml@2.8.0)
+
   packages/monorepo.api-extractor: {}
 
   packages/monorepo.cspell:
@@ -3825,8 +3853,8 @@ importers:
         specifier: ^0.5.0
         version: 0.5.0
       '@osdk/docs-spec-sdk':
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.5.0
+        version: 0.5.0
       outdent:
         specifier: ^0.8.0
         version: 0.8.0
@@ -4004,9 +4032,6 @@ importers:
       '@osdk/widget.api':
         specifier: workspace:~
         version: link:../widget.api
-      escodegen:
-        specifier: ^2.1.0
-        version: 2.1.0
       fs-extra:
         specifier: ^11.3.0
         version: 11.3.0
@@ -4032,12 +4057,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@types/escodegen':
-        specifier: ~0.0.10
-        version: 0.0.10
-      '@types/estree':
-        specifier: ^1.0.6
-        version: 1.0.7
       '@types/fs-extra':
         specifier: ^11.0.4
         version: 11.0.4
@@ -4056,6 +4075,9 @@ importers:
       react-dom:
         specifier: ^18
         version: 18.3.1(react@18.3.1)
+      resolve-package-path:
+        specifier: ^4.0.3
+        version: 4.0.3
       ts-expect:
         specifier: ^1.3.0
         version: 1.3.0
@@ -5969,8 +5991,8 @@ packages:
   '@osdk/docs-spec-core@0.5.0':
     resolution: {integrity: sha512-sHkNoGV5MdcZWfjIslZWWqmJlgSJfWJbnM4vC1RcGyyzKDpZXRMJ4AjSpKr9VqtuTlNHGmD2Y3bQUO/wpSQBbw==}
 
-  '@osdk/docs-spec-sdk@0.1.0':
-    resolution: {integrity: sha512-xGW/bBjlQvyg4YdRaEC+GdaKoh6qoWmyp7uLEfH2h4XCWDKpDGaQD5dLgkGjNqao1jk2mTZb6YrTjkz0CB+9JA==}
+  '@osdk/docs-spec-sdk@0.5.0':
+    resolution: {integrity: sha512-gH2EvXJ8oc/wRCxucnPauhWaCRjbq5fvmmdRuxfoS30oEyoh6WCKAcoDn49hlpS5JMjv1D4ug37CSG6SXWsrFw==}
 
   '@osdk/foundry.admin@2.25.0':
     resolution: {integrity: sha512-QPqn1phXLPpQE8UoP6ooo8bCfmQHfblOFRjuHqxUkTymGK86SvN15FGK2LlO91mY3YqgW/LIqkNarVIylc40XQ==}
@@ -7486,9 +7508,6 @@ packages:
 
   '@types/core-js@2.5.8':
     resolution: {integrity: sha512-VgnAj6tIAhJhZdJ8/IpxdatM8G4OD3VWGlp6xIxUGENZlpbob9Ty4VVdC1FIEp0aK6DBscDDjyzy5FB60TuNqg==}
-
-  '@types/escodegen@0.0.10':
-    resolution: {integrity: sha512-IVvcNLEFbiL17qiGRGzyfx/u9K6lA5w6wcQSIgv2h4JG3ZAFIY1Be9ITTSPuARIxRpzW54s8OvcF6PdonBbDzg==}
 
   '@types/eslint-plugin-jsx-a11y@6.9.0':
     resolution: {integrity: sha512-5nw0sPyYGCsFibwjOXftxends8Nrh/JLgDtBWj6aJVcN14kHwy1yIy0o1MGLKfCcR27pvUFGgYG+hX2HSX16uA==}
@@ -16694,7 +16713,7 @@ snapshots:
 
   '@osdk/docs-spec-core@0.5.0': {}
 
-  '@osdk/docs-spec-sdk@0.1.0':
+  '@osdk/docs-spec-sdk@0.5.0':
     dependencies:
       '@osdk/docs-spec-core': 0.5.0
 
@@ -18495,8 +18514,6 @@ snapshots:
   '@types/cookie@0.6.0': {}
 
   '@types/core-js@2.5.8': {}
-
-  '@types/escodegen@0.0.10': {}
 
   '@types/eslint-plugin-jsx-a11y@6.9.0':
     dependencies:

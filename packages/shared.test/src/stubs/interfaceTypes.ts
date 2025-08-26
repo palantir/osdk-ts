@@ -25,10 +25,34 @@ export const BarInterface: InterfaceType = {
   extendsInterfaces: [],
   properties: {},
   allProperties: {},
-  links: {},
+  links: {
+    "toFoo": {
+      rid: "ri.interface.link.main.1",
+      apiName: "toFoo",
+      linkedEntityApiName: {
+        type: "interfaceTypeApiName",
+        apiName: "FooInterface",
+      },
+      displayName: "foos",
+      cardinality: "MANY",
+      required: true,
+    },
+  },
   implementedByObjectTypes: [],
   allExtendsInterfaces: [],
-  allLinks: {},
+  allLinks: {
+    "toFoo": {
+      rid: "ri.interface.link.main.1",
+      apiName: "toFoo",
+      linkedEntityApiName: {
+        type: "interfaceTypeApiName",
+        apiName: "FooInterface",
+      },
+      displayName: "foos",
+      cardinality: "MANY",
+      required: true,
+    },
+  },
 };
 
 export const FooInterface: InterfaceType = {
@@ -43,7 +67,19 @@ export const FooInterface: InterfaceType = {
       required: true,
     },
   },
-  links: {},
+  links: {
+    "toBar": {
+      rid: "ri.interface.link.main.2",
+      apiName: "toBar",
+      linkedEntityApiName: {
+        type: "interfaceTypeApiName",
+        apiName: "BarInterface",
+      },
+      displayName: "bars",
+      cardinality: "MANY",
+      required: true,
+    },
+  },
   implementedByObjectTypes: ["Employee", "Person"],
   allProperties: {
     fooSpt: {
@@ -52,5 +88,17 @@ export const FooInterface: InterfaceType = {
     },
   },
   allExtendsInterfaces: [],
-  allLinks: {},
+  allLinks: {
+    "toBar": {
+      rid: "ri.interface.link.main.2",
+      apiName: "toBar",
+      linkedEntityApiName: {
+        type: "interfaceTypeApiName",
+        apiName: "BarInterface",
+      },
+      displayName: "bars",
+      cardinality: "MANY",
+      required: true,
+    },
+  },
 };

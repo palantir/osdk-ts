@@ -1113,7 +1113,7 @@ versions:
             import { client } from "./client";
 
             const num{{objectType}} = await client({{objectType}})
-                .where({{{property}}: { $isNull : false }})
+                .where({{property}}: { $isNull : false }})
                 .aggregate({
                     $select: { $count: "unordered" },
                     $groupBy: { name: "exact" },
@@ -1780,7 +1780,7 @@ versions:
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            
+
             const maxObjectsInList = 75; // Adjust this value as needed between 1 and 100
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
@@ -1949,75 +1949,44 @@ versions:
                 return obj.{{property}}.getLatestValue();
             }
       subscribeToObjectSetInstructions:
-        - template: "import { {{objectOrInterfaceApiName}} } from \"{{{packageName}}}\";
-
+        - template: |-
+            import { {{objectOrInterfaceApiName}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
-
-            import { client } from \"./client\";
-
+            import { client } from "./client";
 
             // A map of primary keys to objects loaded through the SDK
-
             const objects: { [key: string]: {{objectOrInterfaceApiName}}.OsdkInstance } = ...
 
-
             const subscription = client({{objectOrInterfaceApiName}}).subscribe(
-            \        {
+                {
+                    onChange(update) {
+                        if (update.state === "ADDED_OR_UPDATED") {
+                            // An object has received an update or an object was added to the object set
+                            const currentObject = objects[update.object.$primaryKey];
+                            if (currentObject !== undefined) {
+                                currentObject["<propertyName>"] = update.object["<propertyName>"] ?? currentObject["<propertyName>"];
+                            }
+                        }
+                        else if (update.state === "REMOVED") {
+                            // The object was removed from the object set, which could mean it was deleted or no longer meets the filter criteria
+                            delete objects[update.object.$primaryKey];
+                        }
+                    },
+                    onSuccessfulSubscription() {
+                        // The subscription was successful and you can expect to receive updates
+                    },
+                    onError(err) {
+                        // There was an error with the subscription and you will not receive any more updates
+                        console.error(err);
+                    },
+                    onOutOfDate() {
+                        // We could not keep track of all changes. Please reload the objects in your set.
+                    },
+                },
+                { properties: [ {{#propertyNames}}"{{.}}", {{/propertyNames}}] }
+            );
 
-            \            onChange(update) {
-
-            \                if (update.state === \"ADDED_OR_UPDATED\") {
-
-            \                    // An object has received an update or an object was added to the object set
-
-            \                    const currentObject = objects[update.object.$primaryKey];
-
-            \                    if (currentObject !== undefined) {
-
-            \                        currentObject[\"<propertyName>\"] = update.object[\"<propertyName>\"] ?? currentObject[\"<propertyName>\"];
-
-            \                    }
-
-            \                }
-
-            \                else if (update.state === \"REMOVED\") {
-
-            \                    // The object was removed from the object set, which could mean it was deleted or no longer meets the filter criteria
-
-            \                    delete objects[update.object.$primaryKey];
-
-            \                }
-
-            \            },
-
-            \            onSuccessfulSubscription() {
-
-            \                // The subscription was successful and you can expect to receive updates
-
-            \            },
-
-            \            onError(err) {
-
-            \                // There was an error with the subscription and you will not receive any more updates
-
-            \                console.error(err);
-
-            \            },
-
-            \            onOutOfDate() {
-
-            \                // We could not keep track of all changes. Please reload the objects in your set.
-
-            \            },
-
-            \        },
-
-            \        { properties: [ {{#propertyNames}}\"{{.}}\", {{/propertyNames}}\b\b]}
-
-            \    );
-
-
-            subscription.unsubscribe();"
+            subscription.unsubscribe();
       uploadMedia:
         - template: |-
             import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
@@ -2066,3 +2035,44 @@ versions:
                 const data = await response.blob();
                 ...
             }
+  "2.4.0":
+    snippets:
+        derivedPropertyNumericExpression:
+          - template: |-
+              import { {{objectType}} } from "{{{packageName}}}";
+              // Edit this import if your client location differs
+              import { client } from "./client";
+
+              const {{objectType}}WithExpression = await client({{objectType}})
+                  .withProperties({
+                    "newPropertyName": (baseObjectSet) =>
+                        {{^isUnary}}
+                        baseObjectSet.pivotTo("{{linkName}}")
+                            .selectProperty("{{property}}").{{operation}}(
+                                baseObjectSet.pivotTo("{{linkName}}").aggregate("$count"))
+                        {{/isUnary}}
+                        {{#isUnary}}
+                        baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}").{{operation}}()
+                        {{/isUnary}}
+                  });
+        derivedPropertyDatetimeExpression:
+          - template: |-
+              import { {{objectType}} } from "{{{packageName}}}";
+              // Edit this import if your client location differs
+              import { client } from "./client";
+
+              const {{objectType}}WithExpression = await client({{objectType}})
+                  .withProperties({
+                    "newPropertyName": (baseObjectSet) =>
+                        {{^isExtractPart}} 
+                        baseObjectSet.pivotTo("{{linkName}}")
+                            .selectProperty("{{property}}")
+                            .{{operation}}(baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}"))
+                        {{/isExtractPart}}
+                        {{#isExtractPart}}
+                        baseObjectSet.pivotTo("{{linkName}}")
+                            .selectProperty("{{property}}").{{operation}}("DAY")
+                        {{/isExtractPart}}
+                  });
+            
+

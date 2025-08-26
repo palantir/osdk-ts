@@ -51,7 +51,19 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
           ];
         }).filter(([_, value]) => value != null),
     ),
-    links: {},
+    links: Object.fromEntries(
+      Object.entries(interfaceType.allLinks ?? interfaceType.links ?? {}).map(
+        (
+          [linkApiName, linkType],
+        ) => [linkApiName, {
+          multiplicity: linkType.cardinality === "MANY",
+          targetTypeApiName: linkType.linkedEntityApiName.apiName,
+          targetType: linkType.linkedEntityApiName.type === "objectTypeApiName"
+            ? "object"
+            : "interface",
+        }],
+      ),
+    ),
     implementedBy: interfaceType.implementedByObjectTypes
       ? [...interfaceType.implementedByObjectTypes].sort((a, b) =>
         a.localeCompare(b)

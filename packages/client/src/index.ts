@@ -26,6 +26,7 @@ export type {
   Attachment,
   CompileTimeMetadata,
   InterfaceDefinition,
+  InterfaceMetadata,
   Logger,
   ObjectMetadata,
   ObjectSet,
@@ -66,3 +67,5 @@ export {
   extractDateInLocalTime,
   extractDateInUTC,
 } from "./util/datetimeConverters.js";
+
+export { createObjectSpecifierFromPrimaryKey } from "./util/objectSpecifierUtils.js";
