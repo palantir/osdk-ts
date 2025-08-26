@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Task } from "@osdk/client.test.ontology";
+import { BarInterface } from "@osdk/client.test.ontology";
 import * as SharedClientContext from "@osdk/shared.client.impl";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -71,12 +71,12 @@ describe(createClient, () => {
     }
 
     it("works for objects", async () => {
-      await client(Task).fetchPage();
+      await client(BarInterface).fetchPage();
       expect(fetchFunction).toHaveBeenCalledTimes(1);
 
       const parts = getUserAgentPartsFromMockedFetch();
       expect(parts).toEqual([
-        ...Task.osdkMetadata!
+        ...BarInterface.osdkMetadata!
           .extraUserAgent
           .split(" "),
         USER_AGENT,
