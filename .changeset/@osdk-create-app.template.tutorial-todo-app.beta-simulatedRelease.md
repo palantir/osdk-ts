@@ -1,5 +1,5 @@
 ---
-"@osdk/create-app.template.tutorial-todo-app.beta": minor
+"@osdk/create-app.template.tutorial-todo-app.beta": patch
 ---
       
 Simulated release
