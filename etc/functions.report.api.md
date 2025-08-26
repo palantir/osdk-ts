@@ -159,11 +159,14 @@ export interface PlatformNotification {
     links: NotificationLink[];
 }
 
-// Warning: (ae-forgotten-export) The symbol "UserId" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "GroupId" needs to be exported by the entry point index.d.ts
-//
 // @public (undocumented)
-export type Principal = UserId | GroupId;
+export type Principal = {
+    	type: "user"
+    	id: string
+} | {
+    	type: "group"
+    	id: string
+};
 
 export { Range_2 as Range }
 

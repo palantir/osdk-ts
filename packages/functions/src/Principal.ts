@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-export type Principal = UserId | GroupId;
-
-type UserId = {
+export type Principal = {
   type: "user";
   id: string;
-};
-
-type GroupId = {
+} | {
   type: "group";
   id: string;
 };
