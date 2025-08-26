@@ -1,5 +1,15 @@
 # @osdk/tool.generate-with-mock-ontology
 
+## 0.4.0-beta.18
+
+### Patch Changes
+
+- Updated dependencies [11d2f23]
+- Updated dependencies [722c89a]
+- Updated dependencies [44bbbe0]
+  - @osdk/client@2.4.0-beta.18
+  - @osdk/api@2.4.0-beta.18
+
 ## 0.4.0-beta.17
 
 ### Patch Changes

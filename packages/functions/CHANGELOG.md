@@ -1,5 +1,14 @@
 # @osdk/functions
 
+## 1.2.0-beta.12
+
+### Patch Changes
+
+- 36485e4: Fix typing for interface updates
+- Updated dependencies [11d2f23]
+- Updated dependencies [44bbbe0]
+  - @osdk/client@2.4.0-beta.18
+
 ## 1.2.0-beta.11
 
 ### Patch Changes
