@@ -62,8 +62,7 @@ jobs:
       - name: Check for changesets
         run: |
           git fetch origin main:main
-          git checkout ${GITHUB_HEAD_REF}
-          pnpm exec changeset status --since=main
+          pnpm exec changeset status --since=origin/main
 
 
   build:
