@@ -235,7 +235,7 @@ export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFi
 
       for (const entityModuleName of entityModuleNames) {
         topLevelExportStatements.push(
-          `export { ${entityModuleName} } from "./codegen/${typeDirName}/${entityModuleName}.js";`,
+          `export { ${entityModuleName} } from "./codegen/${typeDirName}/${entityModuleName}.ts";`,
         );
       }
     },
@@ -1402,7 +1402,7 @@ function dependencyInjectionString(): string {
     : namespace;
 
   return `import { addDependency } from "@osdk/maker";
-
+// @ts-ignore
 addDependency("${namespaceNoDot}", new URL(import.meta.url).pathname);
 `;
 }
