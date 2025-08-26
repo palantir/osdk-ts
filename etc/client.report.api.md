@@ -25,7 +25,6 @@ import type { InterfaceQueryDataType } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import { Logger } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
-import { NULL_VALUE } from '@osdk/api';
 import { ObjectMetadata } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/api';
@@ -149,8 +148,6 @@ export { InterfaceMetadata }
 export { isOk }
 
 export { Logger }
-
-export { NULL_VALUE }
 
 export { ObjectMetadata }
 
