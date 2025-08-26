@@ -375,7 +375,6 @@ export async function fetchObjectPage<
       await extractRdpDefinition(client, objectSet),
       args.$select,
       false,
-      args.$orderBy === "relevance",
     ),
     nextPageToken: r.nextPageToken,
     totalCount: r.totalCount,

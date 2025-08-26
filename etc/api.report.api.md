@@ -893,7 +893,7 @@ export namespace ObjectSetArgs {
     		K extends PropertyKeys<Q> = never,
     		T extends boolean = false,
     		RDP_KEYS extends string = never,
-    		ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {}
+    		ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never
     	> extends AsyncIter<Q, K, T, RDP_KEYS, ORDER_BY_OPTIONS> {
         		// (undocumented)
         $nextPageToken?: string;

@@ -59,11 +59,10 @@ export async function convertWireToOsdkObjects(
   derivedPropertyTypesByName: DerivedPropertyRuntimeMetadata,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
-  includeScore = false,
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
   // remove the __ prefixed properties and convert them to $ prefixed.
   // updates in place
-  fixObjectPropertiesInPlace(objects, forceRemoveRid, includeScore);
+  fixObjectPropertiesInPlace(objects, forceRemoveRid);
 
   const ifaceDef = interfaceApiName
     ? await client.ontologyProvider.getInterfaceDefinition(interfaceApiName)
@@ -345,7 +344,6 @@ function invariantInterfacesAsViews(
 function fixObjectPropertiesInPlace(
   objs: OntologyObjectV2[],
   forceRemoveRid: boolean,
-  includeScore: boolean = false,
 ): asserts objs is SimpleOsdkProperties[] {
   for (const obj of objs) {
     if (forceRemoveRid) {
@@ -357,7 +355,7 @@ function fixObjectPropertiesInPlace(
       delete obj.__rid;
     }
 
-    if (includeScore) {
+    if (obj.__score) {
       obj.$score = obj.__score;
       delete obj.__score;
     }
