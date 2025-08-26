@@ -1,5 +1,11 @@
 # @osdk/functions
 
+## 1.1.5
+
+### Patch Changes
+
+- ec9ef1d: Fix typing for interface updates
+
 ## 1.1.4
 
 ### Patch Changes
