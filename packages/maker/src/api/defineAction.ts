@@ -764,7 +764,8 @@ function createParameters(
                     def.objectType.properties?.[id].type!,
                   )),
               required: def.parameterConfiguration?.[id].required
-                ?? defaultRequired,
+                ?? (def.objectType.properties?.[id]?.nullability?.noNulls
+                  ?? defaultRequired),
             }
             : {
               required: (def.objectType.properties?.[id].array ?? false)
