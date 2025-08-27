@@ -17,7 +17,7 @@
 import type { ObjectTypeFullMetadata } from "@osdk/foundry.ontologies";
 import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
 import consola from "consola";
-import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
+import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
 import { ForeignType } from "../GenerateContext/ForeignType.js";
@@ -220,6 +220,8 @@ export function createProps(
   const definition = type.getCleanedUpDefinition(true);
   const propertyMetadata = type instanceof EnhancedObjectType
     ? type.raw.objectType.properties
+    : type instanceof EnhancedInterfaceType
+    ? type.raw.properties
     : undefined;
   return `export interface ${identifier} {
 ${
@@ -264,6 +266,8 @@ export function createDefinition(
   const definition = object.getCleanedUpDefinition(true);
   const propertyMetadata = object instanceof EnhancedObjectType
     ? object.raw.objectType.properties
+    : object instanceof EnhancedInterfaceType
+    ? object.raw.properties
     : undefined;
   return `
     export interface ${identifier} extends ${
