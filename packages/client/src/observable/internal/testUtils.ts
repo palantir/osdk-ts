@@ -93,10 +93,6 @@ function mockLog(...args: any[]) {
     ...args,
   );
 }
-// interface Logger.LogFn {
-//   (obj: unknown, msg?: string, ...args: any[]): void;
-//   (msg: string, ...args: any[]): void;
-// }
 
 /**
  * Testing utilities for ObservableClient implementation.
@@ -357,7 +353,7 @@ export function createDefer() {
 
 export function expectSingleLinkCallAndClear<T extends ObjectTypeDefinition>(
   subFn: MockedObject<Observer<SpecificLinkPayload | undefined>>,
-  resolvedList: ObjectHolder[] | Osdk.Instance<T>[],
+  resolvedList: ObjectHolder[] | Osdk.Instance<T>[] | undefined,
   payloadOptions: Omit<Partial<SpecificLinkPayload>, "resolvedList"> = {},
 ): SpecificLinkPayload | undefined {
   if (vitest.isFakeTimers()) {
