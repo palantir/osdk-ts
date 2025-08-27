@@ -30,6 +30,7 @@ import { createMinimalClient } from "../createMinimalClient.js";
 import {
   fetchPage,
   objectSetToSearchJsonV2,
+  remapPropertyNames,
   resolveInterfaceObjectSet,
 } from "../object/fetchPage.js";
 import {
@@ -357,6 +358,96 @@ describe(fetchPage, () => {
           nextPageToken: string | undefined;
           totalCount: string;
         }>();
+    });
+  });
+
+  describe("remapPropertyNames", () => {
+    it("returns original names when no qualified names are present", async () => {
+      const client = createMinimalClient(
+        metadata,
+        "https://foo",
+        async () => "",
+      );
+
+      const result = await remapPropertyNames(
+        client,
+        "SimpleObject", // No qualified name
+        ["firstName", "lastName"],
+      );
+
+      expect(result).toEqual(["firstName", "lastName"]);
+    });
+
+    it("remaps simple names to fully qualified names", async () => {
+      const client = createMinimalClient(
+        metadata,
+        "https://foo",
+        async () => "",
+      );
+
+      client.ontologyProvider.getObjectDefinition = async (
+        apiName: string,
+      ) => ({
+        apiName: "com.example.namespace.MyObject",
+        rid: "ri.object.1",
+        properties: {
+          "com.example.namespace.firstName": { type: "string" },
+          "com.example.namespace.lastName": { type: "string" },
+          "com.example.namespace.age": { type: "integer" },
+        },
+        links: {},
+        inverseLinks: {},
+        implementsInterfaces: [],
+        implementsInterfaces2: {},
+        sharedPropertyTypeMapping: {},
+      } as any);
+
+      const result = await remapPropertyNames(
+        client,
+        "com.example.namespace.MyObject",
+        ["firstName", "lastName", "age"],
+      );
+
+      expect(result).toEqual([
+        "com.example.namespace.firstName",
+        "com.example.namespace.lastName",
+        "com.example.namespace.age",
+      ]);
+    });
+
+    it("preserves already fully qualified names", async () => {
+      const client = createMinimalClient(
+        metadata,
+        "https://foo",
+        async () => "",
+      );
+
+      client.ontologyProvider.getObjectDefinition = async (
+        apiName: string,
+      ) => ({
+        apiName: "com.example.namespace.MyObject",
+        rid: "ri.object.1",
+        properties: {
+          "com.example.namespace.firstName": { type: "string" },
+          "com.example.namespace.lastName": { type: "string" },
+        },
+        links: {},
+        inverseLinks: {},
+        implementsInterfaces: [],
+        implementsInterfaces2: {},
+        sharedPropertyTypeMapping: {},
+      } as any);
+
+      const result = await remapPropertyNames(
+        client,
+        "com.example.namespace.MyObject",
+        ["com.example.namespace.firstName", "lastName"],
+      );
+
+      expect(result).toEqual([
+        "com.example.namespace.firstName", // Already qualified, kept as-is
+        "com.example.namespace.lastName", // Remapped
+      ]);
     });
   });
 });
