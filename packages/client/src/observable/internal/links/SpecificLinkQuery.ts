@@ -225,24 +225,21 @@ export class SpecificLinkQuery extends BaseListQuery<
     // 1. When the source object type matches the apiName (direct invalidation)
     // 2. When the target object type might be the invalidated type (affected by target changes)
 
-    const sourceObjectType = this.cacheKey.otherKeys[0];
-
     // For case 1 - direct source object type match
-    if (sourceObjectType === objectType) {
+    if (this.#sourceApiName === objectType) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     } else {
       // For case 2 - check if the link's target type matches the invalidated type
       // We need to use the ontology provider to get the link metadata
       // Since this is async, we'll collect all the metadata check promises
-      const linkName = this.cacheKey.otherKeys[2];
       return (async () => {
         // Get the source object metadata to determine link target type
         const sourceMetadata = await this.store.client[additionalContext]
           .ontologyProvider
-          .getObjectDefinition(sourceObjectType);
+          .getObjectDefinition(this.#sourceApiName);
 
-        const linkDef = sourceMetadata.links?.[linkName];
+        const linkDef = sourceMetadata.links?.[this.#linkName];
         if (!linkDef || linkDef.targetType !== objectType) return;
 
         const promise = this.revalidate(true);

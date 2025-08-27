@@ -41,7 +41,6 @@ export namespace ObserveLink {
     orderBy?: OrderBy<Q>;
     invalidationMode?: InvalidationMode;
     expectedLength?: number;
-    // streamUpdates?: boolean;
   }
 
   export interface CallbackArgs<
