@@ -221,7 +221,8 @@ async function calcObjectSet(
       throw new Error(`Unsupported ObjectSet type ${os.type}`);
 
     case "nearestNeighbors":
-      // I don't know what this is.
+      return calcObjectSet(os.objectSet, ctx);
+
     default:
       throw new Error(
         `Unhandled ObjectSet type ${(os as any).type}`,

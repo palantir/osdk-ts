@@ -293,13 +293,22 @@ describe(getObjectTypesThatInvalidate, () => {
     expect([...invalidationSet]).not.toContain("Employee");
   });
 
+  it("handles nearest neighbor", async () => {
+    const osdkObjectSet = client(Employee)
+      .nearestNeighbors("hi", 3, "skillSetEmbedding")
+      .pivotTo("officeLink");
+
+    const { resultType, invalidationSet } = await helper(osdkObjectSet);
+    expect(resultType).toEqual("Office");
+    expect([...invalidationSet]).toContain("Employee");
+  });
+
   // Test for Unhandled Types
   it("verifies errors for unhandled types", async () => {
     // Create mock objects for unsupported types
     const unsupportedTypes = [
       { type: "reference", objectType: "Employee", id: "123" },
       { type: "static", objects: [] },
-      { type: "nearestNeighbors" },
       {
         type: "asType",
         objectSet: { type: "base", objectType: "Employee" },
