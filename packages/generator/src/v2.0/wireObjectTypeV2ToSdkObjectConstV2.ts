@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeFullMetadata } from "@osdk/foundry.ontologies";
+import type {
+  ObjectTypeFullMetadata,
+  PropertyApiName,
+  SharedPropertyTypeApiName,
+} from "@osdk/foundry.ontologies";
 import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
 import consola from "consola";
 import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
@@ -25,6 +29,8 @@ import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
 import { propertyJsdoc } from "../shared/propertyJsdoc.js";
 import { stringify } from "../util/stringify.js";
+
+type PropertyApiNameUnion = PropertyApiName | SharedPropertyTypeApiName;
 
 /** @internal */
 export function wireObjectTypeV2ToSdkObjectConstV2(
@@ -227,9 +233,12 @@ export function createProps(
 ${
     stringify(definition.properties, {
       "*": (propertyDefinition, _, apiName) => {
+        const metadata = propertyMetadata
+          ? (propertyMetadata as Record<PropertyApiNameUnion, any>)[apiName]
+          : undefined;
         return [
           `${
-            propertyJsdoc(propertyDefinition, propertyMetadata?.[apiName], {
+            propertyJsdoc(propertyDefinition, metadata, {
               apiName,
             })
           }readonly "${maybeStripNamespace(type, apiName)}"`,
@@ -317,9 +326,15 @@ export function createDefinition(
           "*": (propertyDefinition, _, apiName) =>
             [
               `${
-                propertyJsdoc(propertyDefinition, propertyMetadata?.[apiName], {
-                  apiName,
-                })
+                propertyJsdoc(
+                  propertyDefinition,
+                  (propertyMetadata as Record<PropertyApiNameUnion, any>)[
+                    apiName
+                  ],
+                  {
+                    apiName,
+                  },
+                )
               }"${maybeStripNamespace(object, apiName)}"`,
               `$PropertyDef<${JSON.stringify(propertyDefinition.type)}, "${
                 propertyDefinition.nullable ? "nullable" : "non-nullable"
