@@ -15,16 +15,14 @@
  */
 
 import type {
-  OntologyIrImportedObjectType,
-  OntologyIrImportedPropertyType,
-} from "@osdk/client.unstable";
+  ObjectPropertyType,
+  ObjectType,
+  PropertyTypeType,
+} from "@osdk/maker";
 import {
   convertToDisplayName,
   convertToPluralDisplayName,
-  convertType,
   importOntologyEntity,
-  type ObjectPropertyType,
-  type ObjectType,
   OntologyEntityTypeEnum,
 } from "@osdk/maker";
 import type { ImportObjectDefinition } from "./types.js";
@@ -36,7 +34,7 @@ import type { ImportObjectDefinition } from "./types.js";
  */
 export function defineImportObject(
   objectDef: ImportObjectDefinition,
-): OntologyIrImportedObjectType {
+): ObjectType {
   const properties: Array<ObjectPropertyType> = Object.entries(
     objectDef.properties ?? {},
   ).map(([apiName, type]) => ({
@@ -57,19 +55,10 @@ export function defineImportObject(
     titlePropertyApiName: properties[0]?.apiName,
   };
   importOntologyEntity(finalObject);
-
-  const importPropertyTypes: Array<OntologyIrImportedPropertyType> = Object
-    .entries(objectDef.properties).map(([apiName, importedPt]) => ({
-      ...importedPt,
-      apiName: apiName,
-      displayName: importedPt.displayName ?? convertToDisplayName(apiName),
-      type: convertType(importedPt.type),
-    }));
-  const ontologyImportObject: OntologyIrImportedObjectType = {
-    ...objectDef,
-    displayName: objectDef.displayName
-      ?? convertToDisplayName(objectDef.apiName),
-    propertyTypes: importPropertyTypes,
-  };
-  return ontologyImportObject;
+  return finalObject;
+}
+function shouldNotHaveRenderHints(type: PropertyTypeType): boolean {
+  return ["struct", "mediaReference", "geotimeSeries"].includes(
+    typeof type === "object" ? type.type : type,
+  );
 }

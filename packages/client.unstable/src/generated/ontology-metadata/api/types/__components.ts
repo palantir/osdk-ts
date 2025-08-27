@@ -189,6 +189,11 @@ export interface BaseParameterType_interfaceReferenceList {
   interfaceReferenceList: InterfaceReferenceListType;
 }
 
+export interface BaseParameterType_interfaceObjectSetRid {
+  type: "interfaceObjectSetRid";
+  interfaceObjectSetRid: InterfaceObjectSetRidType;
+}
+
 export interface BaseParameterType_objectTypeReference {
   type: "objectTypeReference";
   objectTypeReference: ObjectTypeReferenceType;
@@ -273,6 +278,7 @@ export type BaseParameterType =
   | BaseParameterType_objectSetRid
   | BaseParameterType_interfaceReference
   | BaseParameterType_interfaceReferenceList
+  | BaseParameterType_interfaceObjectSetRid
   | BaseParameterType_objectTypeReference
   | BaseParameterType_attachment
   | BaseParameterType_attachmentList
@@ -415,6 +421,11 @@ export interface BaseParameterTypeModification_interfaceReferenceList {
   interfaceReferenceList: InterfaceReferenceListTypeModification;
 }
 
+export interface BaseParameterTypeModification_interfaceObjectSetRid {
+  type: "interfaceObjectSetRid";
+  interfaceObjectSetRid: InterfaceObjectSetRidTypeModification;
+}
+
 export interface BaseParameterTypeModification_objectTypeReference {
   type: "objectTypeReference";
   objectTypeReference: ObjectTypeReferenceType;
@@ -499,6 +510,7 @@ export type BaseParameterTypeModification =
   | BaseParameterTypeModification_objectSetRid
   | BaseParameterTypeModification_interfaceReference
   | BaseParameterTypeModification_interfaceReferenceList
+  | BaseParameterTypeModification_interfaceObjectSetRid
   | BaseParameterTypeModification_objectTypeReference
   | BaseParameterTypeModification_attachment
   | BaseParameterTypeModification_attachmentList
@@ -961,6 +973,17 @@ export type IntegerValue = number;
  * Visual intent color to apply to element.
  */
 export type Intent = "PRIMARY" | "SUCCESS" | "WARNING" | "DANGER";
+
+/**
+ * InterfaceObjectSetRidType specifies that this parameter must be an ObjectSetRid of an object set consisting of
+ * object types which all implement the specified interface type.
+ */
+export interface InterfaceObjectSetRidType {
+  interfaceTypeRid: _api_InterfaceTypeRid;
+}
+export interface InterfaceObjectSetRidTypeModification {
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+}
 export interface InterfaceReferenceListType {
   interfaceTypeRid: _api_InterfaceTypeRid;
 }
@@ -1282,6 +1305,11 @@ export interface OntologyIrBaseParameterType_interfaceReferenceList {
   interfaceReferenceList: OntologyIrInterfaceReferenceListType;
 }
 
+export interface OntologyIrBaseParameterType_interfaceObjectSetRid {
+  type: "interfaceObjectSetRid";
+  interfaceObjectSetRid: OntologyIrInterfaceObjectSetRidType;
+}
+
 export interface OntologyIrBaseParameterType_objectTypeReference {
   type: "objectTypeReference";
   objectTypeReference: ObjectTypeReferenceType;
@@ -1366,6 +1394,7 @@ export type OntologyIrBaseParameterType =
   | OntologyIrBaseParameterType_objectSetRid
   | OntologyIrBaseParameterType_interfaceReference
   | OntologyIrBaseParameterType_interfaceReferenceList
+  | OntologyIrBaseParameterType_interfaceObjectSetRid
   | OntologyIrBaseParameterType_objectTypeReference
   | OntologyIrBaseParameterType_attachment
   | OntologyIrBaseParameterType_attachmentList
@@ -1589,6 +1618,13 @@ export type OntologyIrDataValue =
   | OntologyIrDataValue_struct
   | OntologyIrDataValue_structList;
 
+/**
+ * InterfaceObjectSetRidType specifies that this parameter must be an ObjectSetRid of an object set consisting of
+ * object types which all implement the specified interface type.
+ */
+export interface OntologyIrInterfaceObjectSetRidType {
+  interfaceTypeRid: _api_InterfaceTypeApiName;
+}
 export interface OntologyIrInterfaceReferenceListType {
   interfaceTypeRid: _api_InterfaceTypeApiName;
 }
@@ -1927,6 +1963,11 @@ export interface StructFieldBaseParameterType_geohash {
   geohash: GeohashType;
 }
 
+export interface StructFieldBaseParameterType_geoshape {
+  type: "geoshape";
+  geoshape: GeoshapeType;
+}
+
 export interface StructFieldBaseParameterType_timestamp {
   type: "timestamp";
   timestamp: TimestampType;
@@ -1948,6 +1989,7 @@ export type StructFieldBaseParameterType =
   | StructFieldBaseParameterType_double
   | StructFieldBaseParameterType_string
   | StructFieldBaseParameterType_geohash
+  | StructFieldBaseParameterType_geoshape
   | StructFieldBaseParameterType_timestamp
   | StructFieldBaseParameterType_date;
 
@@ -1986,6 +2028,11 @@ export interface StructFieldDataValue_geohash {
   geohash: GeohashValue;
 }
 
+export interface StructFieldDataValue_geoshape {
+  type: "geoshape";
+  geoshape: GeoshapeValue;
+}
+
 export interface StructFieldDataValue_timestamp {
   type: "timestamp";
   timestamp: TimestampValue;
@@ -2008,6 +2055,7 @@ export type StructFieldDataValue =
   | StructFieldDataValue_string
   | StructFieldDataValue_date
   | StructFieldDataValue_geohash
+  | StructFieldDataValue_geoshape
   | StructFieldDataValue_timestamp
   | StructFieldDataValue_null;
 

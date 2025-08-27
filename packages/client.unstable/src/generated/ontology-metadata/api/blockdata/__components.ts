@@ -15,18 +15,30 @@
  */
 
 import type {
-  ActionType as _api_ActionType,
+  ActionApplyClientPreferences as _api_ActionApplyClientPreferences,
+  ActionLogConfiguration as _api_ActionLogConfiguration,
+  ActionNotificationSettings as _api_ActionNotificationSettings,
+  ActionSubmissionConfiguration as _api_ActionSubmissionConfiguration,
   ActionTypeApiName as _api_ActionTypeApiName,
+  ActionTypeBranchSettings as _api_ActionTypeBranchSettings,
+  ActionTypeDisplayMetadataConfiguration
+    as _api_ActionTypeDisplayMetadataConfiguration,
+  ActionTypeEntities as _api_ActionTypeEntities,
+  ActionTypeLogic as _api_ActionTypeLogic,
+  ActionTypeRichTextComponent as _api_ActionTypeRichTextComponent,
   ActionTypeRid as _api_ActionTypeRid,
+  ActionTypeStatus as _api_ActionTypeStatus,
+  ActionTypeVersion as _api_ActionTypeVersion,
+  ButtonDisplayMetadata as _api_ButtonDisplayMetadata,
   ColumnName as _api_ColumnName,
   DatasourceRid as _api_DatasourceRid,
+  FormContent as _api_FormContent,
   FunctionRid as _api_FunctionRid,
   FunctionVersion as _api_FunctionVersion,
   GeotimeSeriesIntegrationRid as _api_GeotimeSeriesIntegrationRid,
   GroupId as _api_GroupId,
   Icon as _api_Icon,
   InterfaceLinkTypeApiName as _api_InterfaceLinkTypeApiName,
-  InterfaceLinkTypeCardinality as _api_InterfaceLinkTypeCardinality,
   InterfaceLinkTypeRid as _api_InterfaceLinkTypeRid,
   InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName,
   InterfacePropertyTypeRid as _api_InterfacePropertyTypeRid,
@@ -39,6 +51,7 @@ import type {
   LinkTypeRid as _api_LinkTypeRid,
   ManyToManyLinkTypeDatasource as _api_ManyToManyLinkTypeDatasource,
   MarkingId as _api_MarkingId,
+  MediaSetRid as _api_MediaSetRid,
   ModuleRid as _api_ModuleRid,
   ObjectType as _api_ObjectType,
   ObjectTypeApiName as _api_ObjectTypeApiName,
@@ -46,8 +59,12 @@ import type {
   ObjectTypeFieldApiName as _api_ObjectTypeFieldApiName,
   ObjectTypeId as _api_ObjectTypeId,
   ObjectTypeRid as _api_ObjectTypeRid,
-  OneToManyLinkCardinalityHint as _api_OneToManyLinkCardinalityHint,
-  OntologyIrActionType as _api_OntologyIrActionType,
+  OntologyIrActionTypeEntities as _api_OntologyIrActionTypeEntities,
+  OntologyIrActionTypeLogic as _api_OntologyIrActionTypeLogic,
+  OntologyIrActionTypeRichTextComponent
+    as _api_OntologyIrActionTypeRichTextComponent,
+  OntologyIrActionTypeStatus as _api_OntologyIrActionTypeStatus,
+  OntologyIrFormContent as _api_OntologyIrFormContent,
   OntologyIrInterfaceSharedPropertyType
     as _api_OntologyIrInterfaceSharedPropertyType,
   OntologyIrLinkedEntityTypeId as _api_OntologyIrLinkedEntityTypeId,
@@ -56,9 +73,11 @@ import type {
     as _api_OntologyIrManyToManyLinkTypeDatasource,
   OntologyIrObjectType as _api_OntologyIrObjectType,
   OntologyIrObjectTypeDatasource as _api_OntologyIrObjectTypeDatasource,
+  OntologyIrParameter as _api_OntologyIrParameter,
+  OntologyIrSection as _api_OntologyIrSection,
   OntologyIrSharedPropertyType as _api_OntologyIrSharedPropertyType,
-  OntologyIrType as _api_OntologyIrType,
   OntologyPackageRid as _api_OntologyPackageRid,
+  Parameter as _api_Parameter,
   ParameterId as _api_ParameterId,
   ParameterRid as _api_ParameterRid,
   PropertyId as _api_PropertyId,
@@ -66,10 +85,12 @@ import type {
   PropertyTypeRid as _api_PropertyTypeRid,
   RuleSetRid as _api_RuleSetRid,
   SchemaVersion as _api_SchemaVersion,
+  Section as _api_Section,
+  SectionId as _api_SectionId,
   SharedPropertyType as _api_SharedPropertyType,
   SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
   TimeSeriesSyncRid as _api_TimeSeriesSyncRid,
-  Type as _api_Type,
+  TypeClass as _api_TypeClass,
   ValueTypeRid as _api_ValueTypeRid,
   ValueTypeVersionId as _api_ValueTypeVersionId,
   WebhookRid as _api_WebhookRid,
@@ -87,7 +108,10 @@ import type {
   PatchApplicationStrategy as _api_entitymetadata_PatchApplicationStrategy,
   StorageBackend as _api_entitymetadata_StorageBackend,
 } from "../entitymetadata/__components.js";
-import type { EntityProvenance as _api_entitymetadata_provenance_EntityProvenance } from "../entitymetadata/provenance/__components.js";
+import type {
+  ActionTypeProvenance as _api_entitymetadata_provenance_ActionTypeProvenance,
+  EntityProvenance as _api_entitymetadata_provenance_EntityProvenance,
+} from "../entitymetadata/provenance/__components.js";
 import type { RuleSet as _api_formatting_RuleSet } from "../formatting/__components.js";
 import type {
   OntologyIrSchemaTransition
@@ -95,13 +119,9 @@ import type {
   SchemaTransition as _api_schemamigrations_SchemaTransition,
 } from "../schemamigrations/__components.js";
 import type { ObjectTypeGothamMapping as _api_typemapping_ObjectTypeGothamMapping } from "../typemapping/__components.js";
-import type {
-  BaseParameterType as _api_types_BaseParameterType,
-  OntologyIrBaseParameterType as _api_types_OntologyIrBaseParameterType,
-} from "../types/__components.js";
 export type ActionParameterShapeId = string;
 export interface ActionTypeBlockDataV2 {
-  actionType: _api_ActionType;
+  actionType: MarketplaceActionType;
   parameterIds: Record<ActionParameterShapeId, _api_ParameterId>;
 }
 export interface ActionTypePermissionInformation {
@@ -163,88 +183,6 @@ export type DatasourcePredicate =
  * Ontology as code uses this as a stable ID for GeotimeSeriesIntegration inputs
  */
 export type GeotimeSeriesIntegrationName = string;
-export interface ImportedActionType {
-  apiName: _api_ActionTypeApiName;
-  description?: string | null | undefined;
-  displayName: string;
-  parameters: Array<ImportedParameter>;
-}
-export interface ImportedInterfaceLinkType {
-  apiName: _api_InterfaceLinkTypeApiName;
-  cardinality: _api_InterfaceLinkTypeCardinality;
-  description?: string | null | undefined;
-  displayName: string;
-  required: boolean;
-}
-export interface ImportedInterfaceType {
-  apiName: _api_InterfaceTypeApiName;
-  description?: string | null | undefined;
-  displayName: string;
-  links: Array<ImportedInterfaceLinkType>;
-  properties: Array<ImportedSharedPropertyType>;
-}
-export interface ImportedLinkDefinition_manyToMany {
-  type: "manyToMany";
-  manyToMany: ImportedManyToManyLinkDefinition;
-}
-
-export interface ImportedLinkDefinition_oneToMany {
-  type: "oneToMany";
-  oneToMany: ImportedOneToManyLinkDefinition;
-}
-export type ImportedLinkDefinition =
-  | ImportedLinkDefinition_manyToMany
-  | ImportedLinkDefinition_oneToMany;
-
-export interface ImportedLinkType {
-  definition: ImportedLinkDefinition;
-  id: _api_LinkTypeId;
-}
-export interface ImportedManyToManyLinkDefinition {
-  objectTypeApiNameA: _api_ObjectTypeApiName;
-  objectTypeApiNameB: _api_ObjectTypeApiName;
-  objectTypeAToBLinkDisplayName: string;
-  objectTypeBToALinkDisplayName: string;
-}
-export interface ImportedObjectType {
-  apiName: _api_ObjectTypeApiName;
-  description?: string | null | undefined;
-  displayName: string;
-  propertyTypes: Array<ImportedPropertyType>;
-}
-export interface ImportedOneToManyLinkDefinition {
-  cardinality?: _api_OneToManyLinkCardinalityHint | null | undefined;
-  manyToOneLinkDisplayName: string;
-  objectTypeApiNameManySide: _api_ObjectTypeApiName;
-  objectTypeApiNameOneSide: _api_ObjectTypeApiName;
-  oneToManyLinkDisplayName: string;
-}
-export interface ImportedParameter {
-  description?: string | null | undefined;
-  displayName: string;
-  id: _api_ParameterId;
-  type: _api_types_BaseParameterType;
-}
-export interface ImportedPropertyType {
-  apiName: _api_ObjectTypeFieldApiName;
-  description?: string | null | undefined;
-  displayName: string;
-  sharedPropertyType?: _api_ObjectTypeFieldApiName | null | undefined;
-  type: _api_Type;
-}
-export interface ImportedSharedPropertyType {
-  apiName: _api_ObjectTypeFieldApiName;
-  description?: string | null | undefined;
-  displayName: string;
-  type: _api_Type;
-}
-export interface ImportedTypes {
-  actionTypes: Array<ImportedActionType>;
-  interfaceTypes: Array<ImportedInterfaceType>;
-  linkTypes: Array<ImportedLinkType>;
-  objectTypes: Array<ImportedObjectType>;
-  sharedPropertyTypes: Array<ImportedSharedPropertyType>;
-}
 export type InstallLocationBlockShapeId = BlockShapeId;
 export interface InterfaceTypeBlockDataV2 {
   interfaceType: MarketplaceInterfaceType;
@@ -310,6 +248,57 @@ export interface LinkTypeRestrictionStatus {
   editRestrictedByDatasources: boolean;
   ontologyPackageRid?: _api_OntologyPackageRid | null | undefined;
   restrictedByDatasources: boolean;
+}
+export interface MarketplaceActionType {
+  actionTypeLogic: _api_ActionTypeLogic;
+  metadata: MarketplaceActionTypeMetadata;
+}
+export interface MarketplaceActionTypeDisplayMetadata {
+  configuration?:
+    | _api_ActionTypeDisplayMetadataConfiguration
+    | null
+    | undefined;
+  description: string;
+  displayName: string;
+  icon?: _api_Icon | null | undefined;
+  submitButtonDisplayMetadata?: _api_ButtonDisplayMetadata | null | undefined;
+  successMessage: Array<_api_ActionTypeRichTextComponent>;
+  typeClasses: Array<_api_TypeClass>;
+  undoButtonConfiguration?: boolean | null | undefined;
+}
+/**
+ * Local overridden alias of OMS public API representation of ActionTypeMetadata. In OMS API we model
+ * action notificationSettings and ActionTypeDisplayMetadataConfiguration field as non-optional, but Marketplace
+ * ontology block data uploaded to artifacts faces similar constraints as our internal StorageActionTypeMetadata
+ * and we need to provide runtime conversion with default value.
+ */
+export interface MarketplaceActionTypeMetadata {
+  actionApplyClientSettings?:
+    | _api_ActionApplyClientPreferences
+    | null
+    | undefined;
+  actionLogConfiguration?: _api_ActionLogConfiguration | null | undefined;
+  apiName: _api_ActionTypeApiName;
+  branchSettings?: _api_ActionTypeBranchSettings | null | undefined;
+  displayMetadata: MarketplaceActionTypeDisplayMetadata;
+  entities?: _api_ActionTypeEntities | null | undefined;
+  formContentOrdering: Array<_api_FormContent>;
+  notificationSettings?: _api_ActionNotificationSettings | null | undefined;
+  parameterOrdering: Array<_api_ParameterId>;
+  parameters: Record<_api_ParameterId, _api_Parameter>;
+  provenance?:
+    | _api_entitymetadata_provenance_ActionTypeProvenance
+    | null
+    | undefined;
+  rid: _api_ActionTypeRid;
+  sections: Record<_api_SectionId, _api_Section>;
+  stagingMediaSetRid?: _api_MediaSetRid | null | undefined;
+  status: _api_ActionTypeStatus;
+  submissionConfiguration?:
+    | _api_ActionSubmissionConfiguration
+    | null
+    | undefined;
+  version: _api_ActionTypeVersion;
 }
 export interface MarketplaceActiveInterfaceTypeStatus {
 }
@@ -475,57 +464,12 @@ export interface OntologyBlockDataV2 {
   >;
 }
 export interface OntologyIrActionTypeBlockDataV2 {
-  actionType: _api_OntologyIrActionType;
+  actionType: OntologyIrMarketplaceActionType;
 }
 export interface OntologyIrBlockPermissionInformation {
   actionTypes: Record<_api_ActionTypeApiName, ActionTypePermissionInformation>;
   linkTypes: Record<_api_LinkTypeId, LinkTypePermissionInformation>;
   objectTypes: Record<_api_ObjectTypeApiName, ObjectTypePermissionInformation>;
-}
-export interface OntologyIrImportedActionType {
-  apiName: _api_ActionTypeApiName;
-  description?: string | null | undefined;
-  displayName: string;
-  parameters: Array<OntologyIrImportedParameter>;
-}
-export interface OntologyIrImportedInterfaceType {
-  apiName: _api_InterfaceTypeApiName;
-  description?: string | null | undefined;
-  displayName: string;
-  links: Array<ImportedInterfaceLinkType>;
-  properties: Array<OntologyIrImportedSharedPropertyType>;
-}
-export interface OntologyIrImportedObjectType {
-  apiName: _api_ObjectTypeApiName;
-  description?: string | null | undefined;
-  displayName: string;
-  propertyTypes: Array<OntologyIrImportedPropertyType>;
-}
-export interface OntologyIrImportedParameter {
-  description?: string | null | undefined;
-  displayName: string;
-  id: _api_ParameterId;
-  type: _api_types_OntologyIrBaseParameterType;
-}
-export interface OntologyIrImportedPropertyType {
-  apiName: _api_ObjectTypeFieldApiName;
-  description?: string | null | undefined;
-  displayName: string;
-  sharedPropertyType?: _api_ObjectTypeFieldApiName | null | undefined;
-  type: _api_OntologyIrType;
-}
-export interface OntologyIrImportedSharedPropertyType {
-  apiName: _api_ObjectTypeFieldApiName;
-  description?: string | null | undefined;
-  displayName: string;
-  type: _api_OntologyIrType;
-}
-export interface OntologyIrImportedTypes {
-  actionTypes: Array<OntologyIrImportedActionType>;
-  interfaceTypes: Array<OntologyIrImportedInterfaceType>;
-  linkTypes: Array<ImportedLinkType>;
-  objectTypes: Array<OntologyIrImportedObjectType>;
-  sharedPropertyTypes: Array<OntologyIrImportedSharedPropertyType>;
 }
 export interface OntologyIrInterfaceTypeBlockDataV2 {
   interfaceType: OntologyIrMarketplaceInterfaceType;
@@ -576,6 +520,41 @@ export interface OntologyIrLinkTypeBlockDataV2 {
     | null
     | undefined;
   linkType: _api_OntologyIrLinkType;
+}
+export interface OntologyIrMarketplaceActionType {
+  actionTypeLogic: _api_OntologyIrActionTypeLogic;
+  metadata: OntologyIrMarketplaceActionTypeMetadata;
+}
+export interface OntologyIrMarketplaceActionTypeDisplayMetadata {
+  configuration?:
+    | _api_ActionTypeDisplayMetadataConfiguration
+    | null
+    | undefined;
+  description: string;
+  displayName: string;
+  icon?: _api_Icon | null | undefined;
+  submitButtonDisplayMetadata?: _api_ButtonDisplayMetadata | null | undefined;
+  successMessage: Array<_api_OntologyIrActionTypeRichTextComponent>;
+  typeClasses: Array<_api_TypeClass>;
+  undoButtonConfiguration?: boolean | null | undefined;
+}
+/**
+ * Local overridden alias of OMS public API representation of ActionTypeMetadata. In OMS API we model
+ * action notificationSettings and ActionTypeDisplayMetadataConfiguration field as non-optional, but Marketplace
+ * ontology block data uploaded to artifacts faces similar constraints as our internal StorageActionTypeMetadata
+ * and we need to provide runtime conversion with default value.
+ */
+export interface OntologyIrMarketplaceActionTypeMetadata {
+  apiName: _api_ActionTypeApiName;
+  branchSettings?: _api_ActionTypeBranchSettings | null | undefined;
+  displayMetadata: OntologyIrMarketplaceActionTypeDisplayMetadata;
+  entities?: _api_OntologyIrActionTypeEntities | null | undefined;
+  formContentOrdering: Array<_api_OntologyIrFormContent>;
+  parameterOrdering: Array<_api_ParameterId>;
+  parameters: Record<_api_ParameterId, _api_OntologyIrParameter>;
+  sections: Record<_api_SectionId, _api_OntologyIrSection>;
+  stagingMediaSetRid?: _api_MediaSetRid | null | undefined;
+  status: _api_OntologyIrActionTypeStatus;
 }
 export interface OntologyIrMarketplaceDeprecatedInterfaceTypeStatus {
   deadline: string;
@@ -717,6 +696,12 @@ export interface OntologyIrSchemaTransitionsWithSchemaVersion {
 }
 export interface OntologyIrSharedPropertyTypeBlockDataV2 {
   sharedPropertyType: _api_OntologyIrSharedPropertyType;
+}
+export interface OntologyIrValueTypeReferenceWithMetadata {
+  apiName: string;
+  displayMetadata: any;
+  packageNamespace: string;
+  version: string;
 }
 export type OutputMode = "RESTRICTED_VIEW" | "DATASET";
 export interface PatchesConfiguration {

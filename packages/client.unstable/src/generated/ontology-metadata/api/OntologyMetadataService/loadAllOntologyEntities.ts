@@ -29,7 +29,6 @@ import type {
  * In the presence of multiple ontologies, this endpoint will implicitly choose which ontology the user
  * expects to load given the organization membership of the user. If the user is not a member of any organization,
  * the default Ontology will be chosen.
- *
  * The includeObjectTypesWithoutSearchableDatasources flag is respected if present in the request,
  * else we set it to a default (false) unless the user-agent is blocklisted.
  * The flag is set to true for blocklisted user agents. Currently the blocklist

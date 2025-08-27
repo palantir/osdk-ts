@@ -96,6 +96,7 @@ export type {
   OntologyIrGothamPropertyIntrinsicMappingV3,
   OntologyIrObjectTypeGothamMapping,
   PropertyTypeGothamMapping,
+  PropertyTypeGothamMappingModification,
   RevDbIntegrationState,
   SharedPropertyTypeGothamMapping,
   SharedPropertyTypeGothamMappingModification,
