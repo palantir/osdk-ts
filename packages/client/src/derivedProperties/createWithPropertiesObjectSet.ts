@@ -25,10 +25,7 @@ import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegac
 import { derivedPropertyDefinitionFactory } from "./derivedPropertyDefinitionFactory.js";
 
 type WithConstSelect<Q extends ObjectOrInterfaceDefinition> =
-  & DerivedProperty.SelectPropertyBuilder<Q, false>
-  & {
-    constant: DerivedProperty.Builder<Q, true>["constant"];
-  };
+  DerivedProperty.SelectPropertyBuilder<Q, false>;
 
 /** @internal */
 export function createWithPropertiesObjectSet<
@@ -135,23 +132,6 @@ export function createWithPropertiesObjectSet<
         derivedPropertyDefinitionFactory(wrappedObjectSet, definitionMap);
       definitionMap.set(selectorResult, wrappedObjectSet);
       return selectorResult as any;
-    },
-    constant: {
-      double: (value) => {
-        invariant(false, "Not supported");
-      },
-      integer: (value) => {
-        invariant(false, "Not supported");
-      },
-      long: (value) => {
-        invariant(false, "Not supported");
-      },
-      datetime: (value) => {
-        invariant(false, "Not supported");
-      },
-      timestamp: (value) => {
-        invariant(false, "Not supported");
-      },
     },
   };
 }

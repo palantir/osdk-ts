@@ -119,8 +119,6 @@ export namespace ActionParam {
         		$primaryKey: string | number
         	};
     	// (undocumented)
-    export type NullValueType = typeof NULL_VALUE;
-    	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
     	// Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
     //
@@ -333,7 +331,7 @@ export interface DataValueClientToWire {
     	// (undocumented)
     marking: string;
     	// (undocumented)
-    mediaReference: MediaReference | MediaUpload;
+    mediaReference: MediaReference;
     	// (undocumented)
     null: null;
     	// (undocumented)
@@ -440,13 +438,12 @@ export namespace DerivedProperty {
     		CONSTRAINED extends boolean
     	> extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {}
     	// Warning: (ae-forgotten-export) The symbol "Selectable" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "Constant" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export interface Builder<
     		Q extends ObjectOrInterfaceDefinition,
     		CONSTRAINED extends boolean
-    	> extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q>, Constant<Q> {}
+    	> extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q> {}
     	// (undocumented)
     export type Clause<Q extends ObjectOrInterfaceDefinition> = {
         		[key: string]: Creator<Q, SimplePropertyDef>
@@ -796,19 +793,6 @@ export interface MediaReference {
             		}
         	};
 }
-
-// @public
-export interface MediaUpload {
-    	// (undocumented)
-    readonly data: Blob;
-    	// (undocumented)
-    readonly path: string;
-}
-
-// @public (undocumented)
-export const NULL_VALUE: symbol & {
-    	__type: "NULL_VALUE"
-};
 
 // @public (undocumented)
 export type NullabilityAdherence = false | "throw" | "drop";
