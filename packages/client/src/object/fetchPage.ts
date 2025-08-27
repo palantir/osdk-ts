@@ -380,7 +380,7 @@ export async function remapPropertyNames(
           .find(([id]) => id === propertyId)?.[1]
         : undefined;
 
-      return fullyQualifiedName;
+      return fullyQualifiedName ?? name;
     });
   } catch (error) {
     return propertyNames;
