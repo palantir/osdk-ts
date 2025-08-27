@@ -83,3 +83,13 @@ export interface ObserveOptions {
 export type OrderBy<Q extends ObjectTypeDefinition | InterfaceDefinition> = {
   [K in PropertyKeys<Q>]?: "asc" | "desc" | undefined;
 };
+
+/**
+ * Defines how data should be handled during invalidation.
+ *
+ * Values:
+ * - "in-place": Update data without resetting the collection
+ * - "wait": Wait for the server response before updating
+ * - "reset": Clear existing data and refetch entirely
+ */
+export type InvalidationMode = "in-place" | "wait" | "reset";

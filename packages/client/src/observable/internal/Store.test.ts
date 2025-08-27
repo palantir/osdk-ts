@@ -365,7 +365,7 @@ describe(Store, () => {
 
       // The link should be invalidated (loading state)
       await waitForCall(occupantsLinkSubFn, 1);
-      console.log(occupantsLinkSubFn.next.mock.calls[0]);
+
       expectSingleLinkCallAndClear(occupantsLinkSubFn, [emp1], {
         status: "loading",
       });
@@ -730,13 +730,6 @@ describe(Store, () => {
     });
 
     describe(".invalidateList", () => {
-      // beforeEach(() => {
-      //   vi.useFakeTimers({});
-      // });
-      // afterEach(() => {
-      //   vi.useRealTimers();
-      // });
-
       it("triggers an update", async () => {
         const emp = employeesAsServerReturns[0];
         const staleEmp = emp.$clone({ fullName: "stale" });
@@ -1054,7 +1047,6 @@ describe(Store, () => {
             }, ifaceSub),
           );
 
-          // vitest.runOnlyPendingTimers();
           await waitForCall(listSub1);
           await waitForCall(ifaceSub);
 
@@ -1069,8 +1061,6 @@ describe(Store, () => {
             [],
             { status: "loading" },
           );
-
-          console.log("QQQ");
 
           await waitForCall(listSub1);
           expectSingleListCallAndClear(
@@ -1140,14 +1130,12 @@ describe(Store, () => {
               mode: "offline",
             }, listSub1),
           );
-          // expectSingleListCallAndClear(listSub1, [], { status: "init" });
 
           updateList(
             cache,
             { type: Employee, where: {}, orderBy: {} },
             employeesAsServerReturns,
           );
-          // vitest.runOnlyPendingTimers();
 
           await waitForCall(listSub1);
           expectSingleListCallAndClear(listSub1, employeesAsServerReturns);
@@ -1156,7 +1144,6 @@ describe(Store, () => {
           updateList(cache, { type: Employee, where: {}, orderBy: {} }, [
             employeesAsServerReturns[0],
           ]);
-          // vitest.runOnlyPendingTimers();
 
           await waitForCall(listSub1);
           expectSingleListCallAndClear(listSub1, [employeesAsServerReturns[0]]);
@@ -1171,7 +1158,6 @@ describe(Store, () => {
               mode: "offline",
             }, listSub1),
           );
-          // expectSingleListCallAndClear(listSub1, [], { status: "init" });
 
           updateList(
             cache,

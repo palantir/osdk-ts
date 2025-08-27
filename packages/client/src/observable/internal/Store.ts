@@ -55,13 +55,10 @@ import {
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import { Entry, Layer } from "./Layer.js";
 import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
-import {
-  isSpecificLinkCacheKey,
-  SpecificLinkQuery,
-} from "./links/SpecificLinkQuery.js";
+import { SpecificLinkQuery } from "./links/SpecificLinkQuery.js";
 import type { ListCacheKey } from "./ListCacheKey.js";
 import type { ListQueryOptions } from "./ListQuery.js";
-import { isListCacheKey, ListQuery } from "./ListQuery.js";
+import { ListQuery } from "./ListQuery.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 import { type OptimisticId } from "./OptimisticId.js";
@@ -779,48 +776,7 @@ export class Store {
       const query = this.peekQuery(cacheKey);
       if (!query) continue;
 
-      if (cacheKey.type === "object" && cacheKey.otherKeys[0] === apiName) {
-        promises.push(query.revalidate(true));
-        changes?.modified.add(cacheKey);
-      } else if (
-        isListCacheKey(cacheKey) && cacheKey.otherKeys[1] === apiName
-      ) {
-        // Only invalidate lists for the matching apiName
-        // ListCacheKey.otherKeys = [type, apiName, whereClause, orderByClause]
-
-        promises.push(query.revalidate(true));
-        changes?.modified.add(cacheKey);
-      } else if (isSpecificLinkCacheKey(cacheKey)) {
-        // We need to invalidate links in two cases:
-        // 1. When the source object type matches the apiName (direct invalidation)
-        // 2. When the target object type might be the invalidated type (affected by target changes)
-
-        const sourceObjectType = cacheKey.otherKeys[0];
-
-        // For case 1 - direct source object type match
-        if (sourceObjectType === apiName) {
-          promises.push(query.revalidate(true));
-          changes?.modified.add(cacheKey);
-        } else {
-          // For case 2 - check if the link's target type matches the invalidated type
-          // We need to use the ontology provider to get the link metadata
-          // Since this is async, we'll collect all the metadata check promises
-          const linkName = cacheKey.otherKeys[2];
-          promises.push((async () => {
-            // Get the source object metadata to determine link target type
-            const sourceMetadata = await this.client[additionalContext]
-              .ontologyProvider
-              .getObjectDefinition(sourceObjectType);
-
-            const linkDef = sourceMetadata.links?.[linkName];
-            if (!linkDef || linkDef.targetType !== apiName) return;
-
-            const promise = query.revalidate(true);
-            changes?.modified.add(cacheKey);
-            return promise;
-          })());
-        }
-      }
+      promises.push(query.invalidateObjectType(apiName, changes));
     }
 
     // we use allSettled here because we don't care if it succeeds or fails, just that they all complete.

@@ -24,6 +24,7 @@ import type {
 import type { Unsubscribable } from "../Unsubscribable.js";
 import type {
   CommonObserveOptions,
+  InvalidationMode,
   ObserveOptions,
   Observer,
   OrderBy,
@@ -38,7 +39,7 @@ export namespace ObserveLink {
     where?: WhereClause<Q>;
     pageSize?: number;
     orderBy?: OrderBy<Q>;
-    invalidationMode?: "in-place" | "wait" | "reset";
+    invalidationMode?: InvalidationMode;
     expectedLength?: number;
     // streamUpdates?: boolean;
   }
@@ -49,7 +50,7 @@ export namespace ObserveLink {
     resolvedList: Osdk.Instance<T>[];
     isOptimistic: boolean;
     lastUpdated: number;
-    fetchMore: () => Promise<unknown>;
+    fetchMore: () => Promise<void>;
     hasMore: boolean;
     status: Status;
   }

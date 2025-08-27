@@ -34,6 +34,7 @@ import { ObservableClientImpl } from "./internal/ObservableClientImpl.js";
 import { Store } from "./internal/Store.js";
 import type {
   CommonObserveOptions,
+  InvalidationMode,
   ObserveOptions,
   Observer,
   Status,
@@ -64,7 +65,7 @@ export interface ObserveListOptions<
   where?: WhereClause<Q>;
   pageSize?: number;
   orderBy?: OrderBy<Q>;
-  invalidationMode?: "in-place" | "wait" | "reset";
+  invalidationMode?: InvalidationMode;
   expectedLength?: number;
   streamUpdates?: boolean;
 }
@@ -76,9 +77,8 @@ export interface ObserveLinkOptions<
   where?: WhereClause<Q>;
   pageSize?: number;
   orderBy?: OrderBy<Q>;
-  invalidationMode?: "in-place" | "wait" | "reset";
+  invalidationMode?: InvalidationMode;
   expectedLength?: number;
-  // streamUpdates?: boolean;
 }
 
 // TODO: Rename this from `ObserveObjectArgs` => `ObserveObjectCallbackArgs`. Not doing it now to reduce churn
@@ -97,7 +97,7 @@ export interface ObserveObjectsArgs<
   resolvedList: Array<Osdk.Instance<T>>;
   isOptimistic: boolean;
   lastUpdated: number;
-  fetchMore: () => Promise<unknown>;
+  fetchMore: () => Promise<void>;
   hasMore: boolean;
   status: Status;
 }
@@ -111,7 +111,7 @@ export interface ObserveLinkCallbackArgs<
   resolvedList: Osdk.Instance<T>[];
   isOptimistic: boolean;
   lastUpdated: number;
-  fetchMore: () => Promise<unknown>;
+  fetchMore: () => Promise<void>;
   hasMore: boolean;
   status: Status;
 }

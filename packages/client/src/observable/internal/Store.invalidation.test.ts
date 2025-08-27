@@ -365,12 +365,6 @@ describe("Store Invalidation Type Isolation", () => {
       // Employee -> Office link (with Employee source) should be invalidated
       // because its source is an Employee object
       expect(officeLinkSubFn.next).toHaveBeenCalled();
-
-      // Note: Even though we're now filtering by source type, other mechanisms in
-      // the system may still update links targeting the invalidated type (Employee).
-      // Our fix ensures that the direct object type filtering in invalidateObjectType
-      // works correctly, but it doesn't attempt to control all the possible ways
-      // that links and objects might be updated throughout the system.
     });
   });
 

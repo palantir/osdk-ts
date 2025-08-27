@@ -128,7 +128,7 @@ export abstract class BaseListQuery<
    * Promise tracking an in-progress page fetch
    * @protected
    */
-  protected pendingPageFetch?: Promise<unknown>;
+  protected pendingPageFetch?: Promise<void>;
 
   //
   // Shared Implementations
@@ -357,7 +357,7 @@ export abstract class BaseListQuery<
    * Common fetchMore implementation for pagination
    * Handles pending request management and loading states
    */
-  fetchMore = (): Promise<unknown> => {
+  fetchMore = (): Promise<void> => {
     if (this.pendingPageFetch) {
       return this.pendingPageFetch;
     }
@@ -371,7 +371,7 @@ export abstract class BaseListQuery<
     }
 
     if (this.nextPageToken == null) {
-      return Promise.resolve();
+      return Promise.resolve(undefined);
     }
 
     this.store.batch({}, (batch) => {
@@ -381,7 +381,7 @@ export abstract class BaseListQuery<
     this.pendingFetch = this.fetchPageAndUpdate(
       "loaded",
       this.abortController?.signal,
-    ).finally(() => {
+    ).then(() => void 0).finally(() => {
       this.pendingPageFetch = undefined;
     });
     return this.pendingFetch;
@@ -717,7 +717,6 @@ export class ListQuery extends BaseListQuery<
 
     return {
       ...resp,
-      // might be replaced by interface
       data: fetchedData,
     };
   }
@@ -765,6 +764,17 @@ export class ListQuery extends BaseListQuery<
     if (this.#apiName in objectMetadata.interfaceMap) {
       await this.revalidate(/* force */ true);
       return;
+    }
+  };
+
+  invalidateObjectType = async (
+    objectType: string,
+    changes: Changes | undefined,
+  ): Promise<void> => {
+    if (this.cacheKey.otherKeys[1] === objectType) {
+      // Only invalidate lists for the matching apiName
+      changes?.modified.add(this.cacheKey);
+      return this.revalidate(true);
     }
   };
 

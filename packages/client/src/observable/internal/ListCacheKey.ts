@@ -33,6 +33,6 @@ export interface ListCacheKey extends
       whereClause: Canonical<SimpleWhereClause>,
       orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
     ]
-  > //
+  >
 {
 }

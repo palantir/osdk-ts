@@ -47,7 +47,7 @@ export interface BaseCollectionPayload {
   /**
    * Function to fetch more items when available
    */
-  fetchMore: () => Promise<unknown>;
+  fetchMore: () => Promise<void>;
 
   /**
    * Whether there are more items available to fetch
@@ -65,11 +65,6 @@ export interface BaseCollectionPayload {
   lastUpdated: number;
 }
 
-/**
- * Collection-specific sorting behavior is handled by subclasses
- */
-
-// Empty base class as a starting point
 /**
  * Common parameters available for constructing a collection payload
  */

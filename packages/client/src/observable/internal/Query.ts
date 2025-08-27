@@ -39,7 +39,7 @@ export abstract class Query<
   O extends CommonObserveOptions,
 > implements Subscribable<PAYLOAD> {
   lastFetchStarted?: number;
-  pendingFetch?: Promise<unknown>;
+  pendingFetch?: Promise<void>;
   retainCount: number = 0;
   options: O;
   cacheKey: KEY;
@@ -164,7 +164,7 @@ export abstract class Query<
 
   protected _preFetch(): void {}
 
-  protected abstract _fetchAndStore(): Promise<unknown>;
+  protected abstract _fetchAndStore(): Promise<void>;
 
   /**
    * Sets the status of the query in the store (but does not store that in `changes`).
@@ -237,4 +237,9 @@ export abstract class Query<
     changes: Changes,
     optimisticId: OptimisticId | undefined,
   ) => Promise<void> | undefined;
+
+  abstract invalidateObjectType(
+    objectType: string,
+    changes: Changes | undefined,
+  ): Promise<void>;
 }

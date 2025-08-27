@@ -27,6 +27,7 @@ import type {
 } from "../ObservableClient/common.js";
 import { getBulkObjectLoader } from "./BulkObjectLoader.js";
 import type { CacheKey } from "./CacheKey.js";
+import type { Changes } from "./Changes.js";
 import type { Entry } from "./Layer.js";
 import { Query } from "./Query.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
@@ -197,6 +198,17 @@ export class ObjectQuery extends Query<
 
     return ret;
   }
+
+  invalidateObjectType = (
+    objectType: string,
+    changes: Changes | undefined,
+  ): Promise<void> => {
+    if (this.#apiName === objectType) {
+      changes?.modified.add(this.cacheKey);
+      return this.revalidate(true);
+    }
+    return Promise.resolve();
+  };
 }
 
 /**
