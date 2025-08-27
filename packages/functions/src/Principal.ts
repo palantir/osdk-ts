@@ -15,6 +15,9 @@
  */
 
 export type Principal = {
-  type: "user" | "group";
+  type: "user";
+  id: string;
+} | {
+  type: "group";
   id: string;
 };

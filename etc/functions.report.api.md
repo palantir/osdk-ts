@@ -161,8 +161,11 @@ export interface PlatformNotification {
 
 // @public (undocumented)
 export type Principal = {
-    	type: "user" | "group"
-    	id: string
+    type: "user"
+    id: string
+} | {
+    type: "group"
+    id: string
 };
 
 export { Range_2 as Range }
