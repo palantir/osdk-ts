@@ -68,7 +68,7 @@ export namespace DerivedProperty {
   export interface Builder<
     Q extends ObjectOrInterfaceDefinition,
     CONSTRAINED extends boolean,
-  > extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q>, Constant<Q> {
+  > extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q> {
   }
 
   export interface AggregateBuilder<

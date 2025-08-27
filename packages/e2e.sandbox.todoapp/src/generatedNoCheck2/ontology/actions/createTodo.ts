@@ -37,7 +37,7 @@ export namespace createTodo {
   export interface Params {
     readonly is_complete: ActionParam.PrimitiveType<'boolean'>;
 
-    readonly location?: ActionParam.PrimitiveType<'string'> | ActionParam.NullValueType;
+    readonly location?: ActionParam.PrimitiveType<'string'>;
 
     readonly Todo: ActionParam.PrimitiveType<'string'>;
   }

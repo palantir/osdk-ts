@@ -22,7 +22,6 @@ export type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from "./actions/Actions.js";
-export { NULL_VALUE } from "./actions/NullValue.js";
 export type { ValidAggregationKeys } from "./aggregate/AggregatableKeys.js";
 export type { AggregateOpts } from "./aggregate/AggregateOpts.js";
 export type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "./aggregate/AggregateOptsThatErrors.js";
@@ -69,7 +68,6 @@ export type {
   Augments,
   FetchPageArgs,
   NullabilityAdherence,
-  ObjectSetArgs,
   SelectArg,
   SelectArgToKeys,
 } from "./object/FetchPageArgs.js";
@@ -77,12 +75,7 @@ export type {
   FetchPageResult,
   SingleOsdkResult,
 } from "./object/FetchPageResult.js";
-export type {
-  Media,
-  MediaMetadata,
-  MediaReference,
-  MediaUpload,
-} from "./object/Media.js";
+export type { Media, MediaMetadata, MediaReference } from "./object/Media.js";
 export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
