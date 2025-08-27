@@ -54,24 +54,22 @@ describe(getObjectTypesThatInvalidate, () => {
     };
   });
 
-  /**
-   * Test helper to reduce repeated steps
-   */
   async function helper<T extends ObjectOrInterfaceDefinition>(
     osdkObjectSet: ObjectSet<T>,
   ) {
     const wireObjectSet = objectSetDefinitions.get(osdkObjectSet);
     invariant(wireObjectSet);
 
-    const r = await getObjectTypesThatInvalidate(
-      client[additionalContext],
-      wireObjectSet,
-    );
+    const { resultType, invalidationSet, counts } =
+      await getObjectTypesThatInvalidate(
+        client[additionalContext],
+        wireObjectSet,
+      );
 
     return {
-      resultType: r.resultType.apiName,
-      invalidationSet: r.invalidationSet,
-      counts: r.counts,
+      resultType: resultType.apiName,
+      invalidationSet,
+      counts,
     };
   }
 
@@ -295,16 +293,33 @@ describe(getObjectTypesThatInvalidate, () => {
     expect([...invalidationSet]).not.toContain("Employee");
   });
 
-  // Test for Unhandled Types (to document current behavior)
-  it.skip("documents behavior for unhandled types", async () => {
-    // These would need actual implementations or mocks
-    // Currently these throw errors, but tests should document expected behavior
+  // Test for Unhandled Types
+  it("verifies errors for unhandled types", async () => {
+    // Create mock objects for unsupported types
+    const unsupportedTypes = [
+      { type: "reference", objectType: "Employee", id: "123" },
+      { type: "static", objects: [] },
+      { type: "nearestNeighbors" },
+      {
+        type: "asType",
+        objectSet: { type: "base", objectType: "Employee" },
+        targetType: "Office",
+      },
+      {
+        type: "asBaseObjectTypes",
+        objectSet: { type: "base", objectType: "Employee" },
+      },
+    ];
 
-    // Test for 'reference' type
-    // Test for 'static' type
-    // Test for 'nearestNeighbors' type
-    // Test for 'asType' type
-    // Test for 'asBaseObjectTypes' type
+    // Test each type throws an appropriate error
+    for (const wireObjectSet of unsupportedTypes) {
+      await expect(
+        getObjectTypesThatInvalidate(
+          client[additionalContext],
+          wireObjectSet as any,
+        ),
+      ).rejects.toThrow(/Unsupported|Unhandled ObjectSet type/);
+    }
   });
 
   it("supports RDP unary operations", async () => {

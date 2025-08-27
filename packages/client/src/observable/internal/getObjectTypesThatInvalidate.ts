@@ -177,7 +177,7 @@ async function calcObjectSet(
 
       if (returnTypes.length === 0) {
         throw new Error(
-          `Could not find any context types for intersecting object sets`,
+          `Could not find any context types for set operation`,
         );
       }
 
@@ -187,11 +187,9 @@ async function calcObjectSet(
 
       if (!allMatch) {
         throw new Error(
-          `Incompatible context types found for intersecting object sets`,
+          `Incompatible context types found for set operation`,
         );
       }
-
-      //
 
       return returnTypes[0].r;
 
