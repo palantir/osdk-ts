@@ -111,23 +111,23 @@ export namespace ActionMetadata {
 
 // @public
 export namespace ActionParam {
-    	export type InterfaceType<T extends InterfaceDefinition> = {
+    	// (undocumented)
+    export type InterfaceType<T extends InterfaceDefinition> = {
         		$objectType: CompileTimeMetadata<T> extends {
             			implementedBy: infer U
             		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
         		$primaryKey: string | number
         	};
-    	// Warning: (ae-forgotten-export) The symbol "NULL_VALUE" needs to be exported by the entry point index.d.ts
-    export type NullValueType = Wrapper<typeof NULL_VALUE>;
-    	export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
+    	// (undocumented)
+    export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
     	// Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
     export type ObjectType<T extends ObjectTypeDefinition> = ObjectIdentifiers<T> | OsdkObjectPrimaryKeyType<T>;
-    	export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
+    	// (undocumented)
+    export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
     	// (undocumented)
     export type StructType<T extends Record<string, keyof DataValueClientToWire>> = { [K in keyof T] : DataValueClientToWire[T[K]] };
-    	// (undocumented)
-    export type Wrapper<T> = T;
-    	{};
 }
 
 // @public (undocumented)
