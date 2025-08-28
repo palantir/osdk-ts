@@ -159,6 +159,15 @@ export interface PlatformNotification {
     links: NotificationLink[];
 }
 
+// @public (undocumented)
+export type Principal = {
+    type: "user"
+    id: string
+} | {
+    type: "group"
+    id: string
+};
+
 export { Range_2 as Range }
 
 // @public (undocumented)
