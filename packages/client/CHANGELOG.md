@@ -1,5 +1,15 @@
 # @osdk/client
 
+## 2.4.0-rc.19
+
+### Patch Changes
+
+- 8dd6229: Remove features not supported for RC
+- Updated dependencies [8dd6229]
+  - @osdk/api@2.4.0-rc.19
+  - @osdk/generator-converters@2.4.0-rc.19
+  - @osdk/client.unstable@2.4.0-rc.19
+
 ## 2.4.0-beta.18
 
 ### Patch Changes
