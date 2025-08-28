@@ -36,7 +36,7 @@
   "dependencies": {
     "@arethetypeswrong/cli": "^0.17.3",
     "@osdk/cli.common": "workspace:~",
-    "@osdk/foundry.ontologies": "2.25.0",
+    "@osdk/foundry.ontologies": "2.26.0",
     "@osdk/generator": "workspace:~",
     "@osdk/shared.client.impl": "workspace:~",
     "consola": "^3.4.2",

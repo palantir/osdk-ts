@@ -145,6 +145,7 @@ export async function applyAction<
           returnEdits: options?.$returnEdits ? "ALL" : "NONE",
         },
       },
+      { branch: client.branch },
     );
 
     const edits = response.edits;
@@ -174,6 +175,7 @@ export async function applyAction<
             : "NONE",
         },
       },
+      { branch: client.branch },
     );
 
     if ((options as ApplyActionOptions)?.$validateOnly) {
