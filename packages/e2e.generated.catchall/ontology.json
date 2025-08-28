@@ -2369,9 +2369,115 @@
       },
       "rid": "ri.function-registry.main.function.c3e58d52-8430-44ee-9f0b-3785d9a9bdda",
       "version": "0.1.1"
+    },
+    "getBusId": {
+      "apiName": "getBusId",
+      "displayName": "inputInterface",
+      "parameters": {
+        "bus": {
+          "dataType": {
+            "type": "interfaceObject",
+            "interfaceTypeApiName": "bus_1"
+          }
+        }
+      },
+      "output": {
+        "type": "string"
+      },
+      "rid": "ri.function-registry.main.function.615ebd6c-7494-48ea-8197-0b35a91f2a94",
+      "version": "0.13.0"
+    },
+    "getBusFromSet": {
+      "apiName": "getBusFromSet",
+      "displayName": "inputInterfaceObjectSet",
+      "parameters": {
+        "busesObjectSet": {
+          "dataType": {
+            "type": "interfaceObjectSet",
+            "interfaceTypeApiName": "bus_1"
+          }
+        }
+      },
+      "output": {
+        "type": "string"
+      },
+      "rid": "ri.function-registry.main.function.4db06290-7bb9-43fd-a22d-608b7ecc1849",
+      "version": "0.14.0"
+    },
+    "getBusInterface": {
+      "apiName": "getBusInterface",
+      "displayName": "outputInterface",
+      "parameters": {
+        "vehicleIdToFind": {
+          "dataType": {
+            "type": "string"
+          }
+        }
+      },
+      "output": {
+        "type": "interfaceObject",
+        "interfaceTypeApiName": "bus_1"
+      },
+      "rid": "ri.function-registry.main.function.876cbb9b-8545-4cd1-9513-1340c9363058",
+      "version": "0.14.0"
+    },
+    "getBusInterfaceSet": {
+      "apiName": "getBusInterfaceSet",
+      "displayName": "outputInterfaceObjectSet",
+      "parameters": {
+        "vehicleIdToFind": {
+          "dataType": {
+            "type": "string"
+          }
+        }
+      },
+      "output": {
+        "type": "interfaceObjectSet",
+        "interfaceTypeApiName": "bus_1"
+      },
+      "rid": "ri.function-registry.main.function.93aa9d56-fcb5-4c48-a40f-7d631d6b5800",
+      "version": "0.14.0"
     }
   },
   "interfaceTypes": {
+    "bus_1": {
+      "rid": "ri.ontology.main.interface.13ac66ef-d94e-4020-ac20-3285557149dd",
+      "apiName": "bus_1",
+      "displayName": "Bus",
+      "description": "",
+      "properties": {
+        "vehicleId_1": {
+          "rid": "ri.ontology.main.shared-property.43a9b4ad-6e09-454c-8daf-b2951689157f",
+          "apiName": "vehicleId_1",
+          "displayName": "Vehicle Id",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "allProperties": {
+        "vehicleId_1": {
+          "rid": "ri.ontology.main.shared-property.43a9b4ad-6e09-454c-8daf-b2951689157f",
+          "apiName": "vehicleId_1",
+          "displayName": "Vehicle Id",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": [
+        "TestBus",
+        "KaguinaldoNycBusTrip",
+        "EdgeXWmataBusNoGeotime",
+        "WmataBus"
+      ],
+      "links": {},
+      "allLinks": {}
+    },
     "FooInterface": {
       "apiName": "FooInterface",
       "displayName": "Foo interface",

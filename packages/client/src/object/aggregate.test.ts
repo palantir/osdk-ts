@@ -548,8 +548,26 @@ describe("aggregate", () => {
       });
 
       expectTypeOf(result[0].$group.text).toEqualTypeOf<
-        string | null | undefined
+        string | null
       >();
+    });
+
+    it("correctly does not null bucket type when $includeNullValue is not included", async () => {
+      const result = await client(Todo).aggregate({
+        $select: { "id:avg": "unordered" },
+        $groupBy: { text: { $exact: { $limit: 10 } } },
+      });
+
+      expectTypeOf(result[0].$group.text).toEqualTypeOf<string>();
+    });
+
+    it("correctly does not null bucket type when $defaultValue is specified", async () => {
+      const result = await client(Todo).aggregate({
+        $select: { "id:avg": "unordered" },
+        $groupBy: { text: { $exact: { $defaultValue: "null" } } },
+      });
+
+      expectTypeOf(result[0].$group.text).toEqualTypeOf<string>();
     });
 
     it("disallows null values with ordering", () => {
@@ -608,7 +626,7 @@ describe("aggregate", () => {
       });
 
       expectTypeOf(result[0].$group.text).toEqualTypeOf<
-        string | null | undefined
+        string | null
       >();
     });
   });

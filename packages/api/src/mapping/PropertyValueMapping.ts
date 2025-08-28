@@ -122,5 +122,5 @@ export type GetCreatePropertyValueFromWire<
     | Record<string, keyof PropertyValueWireToCreate>,
 > = T extends keyof PropertyValueWireToCreate ? PropertyValueWireToCreate[T]
   : T extends Record<string, keyof PropertyValueWireToCreate>
-    ? { [K in keyof T]: PropertyValueWireToCreate[T[K]] }
+    ? { [K in keyof T]: PropertyValueWireToCreate[T[K]] | undefined }
   : never;

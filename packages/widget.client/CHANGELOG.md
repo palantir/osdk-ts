@@ -1,5 +1,23 @@
 # @osdk/widget.client
 
+## 3.1.0-beta.5
+
+### Minor Changes
+
+- f173ee1: Improve widget client emitEvent types to more correctly extract event parameters
+
+### Patch Changes
+
+- Updated dependencies [f173ee1]
+  - @osdk/widget.api@3.1.0-beta.5
+
+## 3.1.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [3744571]
+  - @osdk/widget.api@3.1.0-beta.4
+
 ## 3.1.0-beta.3
 
 ### Minor Changes

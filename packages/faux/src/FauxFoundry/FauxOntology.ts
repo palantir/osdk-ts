@@ -429,7 +429,7 @@ export class FauxOntology {
     }
     const version = semver.rsort(
       Object.keys(this.#ontology.queryTypes).filter(
-        queryTypeApiName => queryTypeApiName.startsWith(apiName),
+        queryTypeApiName => queryTypeApiName.split(":")[0] === apiName,
       ).map(x => extractVersion(x)),
     )[0];
     return `${apiName}:${version}`;

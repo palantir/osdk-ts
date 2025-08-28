@@ -1,5 +1,37 @@
 # @osdk/maker
 
+## 0.12.0-beta.21
+
+### Minor Changes
+
+- 3ff44da: Existing OTs as action parameters in OAC
+- 367cc04: Add default value and constraint overrides to OAC action parameters
+- 283905f: Better error message for invalid parameter ordering on actions
+- e62a890: Custom submission options for OAC actions
+- 94beece: Enable "other" option for oneOf constraints on OAC actions
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.17
+
+## 0.12.0-beta.20
+
+### Minor Changes
+
+- 45ed433: Target objects are configurable and default parameter ordering is better in OAC actions
+
+## 0.12.0-beta.19
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.16
+
+## 0.12.0-beta.18
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.15
+
 ## 0.12.0-beta.17
 
 ### Minor Changes

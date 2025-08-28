@@ -12,7 +12,6 @@ import type { ObjectMetadata } from '@osdk/client';
 import type { ObjectTypeDefinition } from '@osdk/client';
 import type { Osdk } from '@osdk/client';
 import type { OsdkObjectCreatePropertyType } from '@osdk/client';
-import type { OsdkObjectPropertyType } from '@osdk/client';
 import type { PropertyKeys } from '@osdk/client';
 import { Range as Range_2 } from '@osdk/client';
 import { ThreeDimensionalAggregation } from '@osdk/client';
@@ -159,6 +158,15 @@ export interface PlatformNotification {
     	// (undocumented)
     links: NotificationLink[];
 }
+
+// @public (undocumented)
+export type Principal = {
+    type: "user"
+    id: string
+} | {
+    type: "group"
+    id: string
+};
 
 export { Range_2 as Range }
 

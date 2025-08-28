@@ -308,10 +308,10 @@ describe("Load Ontologies Metadata", () => {
     }
 
     expect(ontologyDefinitions.error).toMatchInlineSnapshot(`
-        [
-          "Unable to load action deleteFooInterface because it takes an unloaded interface type as a parameter: FooInterface make sure to specify it as an argument with --ontologyInterfaces FooInterface",
-        ]
-      `);
+      [
+        "Unable to load action deleteFooInterface because it takes an unloaded interface type as a parameter: FooInterface make sure to specify it as an argument with --interfaceTypes FooInterface",
+      ]
+    `);
   });
 
   describe("Load ontology metadata with query types with versions", () => {

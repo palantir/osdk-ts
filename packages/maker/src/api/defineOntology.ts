@@ -69,6 +69,7 @@ import {
 } from "./propertyConversionUtils.js";
 import type {
   ActionParameter,
+  ActionParameterAllowedValues,
   ActionParameterRequirementConstraint,
   ActionType,
   InterfaceType,
@@ -234,7 +235,7 @@ export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFi
 
       for (const entityModuleName of entityModuleNames) {
         topLevelExportStatements.push(
-          `export { ${entityModuleName} } from "./codegen/${typeDirName}/${entityModuleName}.js";`,
+          `export { ${entityModuleName} } from "./codegen/${typeDirName}/${entityModuleName}.ts";`,
         );
       }
     },
@@ -1009,8 +1010,23 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
             type: "blueprint",
             blueprint: action.icon ?? { locator: "edit", color: "#000000" },
           },
-          successMessage: [],
+          successMessage: action.submissionMetadata?.successMessage
+            ? [{
+              type: "message",
+              message: action.submissionMetadata.successMessage,
+            }]
+            : [],
           typeClasses: action.typeClasses ?? [],
+          ...(action.submissionMetadata?.submitButtonDisplayMetadata
+            && {
+              submitButtonDisplayMetadata:
+                action.submissionMetadata.submitButtonDisplayMetadata,
+            }),
+          ...(action.submissionMetadata?.undoButtonConfiguration
+            && {
+              undoButtonConfiguration:
+                action.submissionMetadata.undoButtonConfiguration,
+            }),
         },
         parameterOrdering: parameterOrdering,
         formContentOrdering: getFormContentOrdering(action, parameterOrdering),
@@ -1056,7 +1072,9 @@ function convertActionValidation(
                   && { prefill: p.defaultValue },
               },
               validation: {
-                allowedValues: extractAllowedValues(p),
+                allowedValues: extractAllowedValues(
+                  p.validation.allowedValues!,
+                ),
                 required: convertParameterRequirementConstraint(
                   p.validation.required!,
                 ),
@@ -1152,23 +1170,26 @@ function convertActionSections(
   );
 }
 
-function extractAllowedValues(
-  parameter: ActionParameter,
+export function extractAllowedValues(
+  allowedValues: ActionParameterAllowedValues,
 ): OntologyIrAllowedParameterValues {
-  switch (parameter.validation.allowedValues!.type) {
+  switch (allowedValues.type) {
     case "oneOf":
       return {
         type: "oneOf",
         oneOf: {
           type: "oneOf",
           oneOf: {
-            labelledValues: parameter.validation.allowedValues.oneOf,
-            otherValueAllowed: { allowed: false },
+            labelledValues: allowedValues.oneOf,
+            otherValueAllowed: {
+              allowed: allowedValues.otherValueAllowed
+                ?? false,
+            },
           },
         },
       };
     case "range":
-      const { min, max } = parameter.validation.allowedValues;
+      const { min, max } = allowedValues;
       return {
         type: "range",
         range: {
@@ -1184,8 +1205,7 @@ function extractAllowedValues(
         },
       };
     case "text":
-      const { minLength, maxLength, regex } =
-        parameter.validation.allowedValues;
+      const { minLength, maxLength, regex } = allowedValues;
       return {
         type: "text",
         text: {
@@ -1204,7 +1224,7 @@ function extractAllowedValues(
         },
       };
     case "datetime":
-      const { minimum, maximum } = parameter.validation.allowedValues;
+      const { minimum, maximum } = allowedValues;
       return {
         type: "datetime",
         datetime: {
@@ -1221,8 +1241,7 @@ function extractAllowedValues(
         objectTypeReference: {
           type: "objectTypeReference",
           objectTypeReference: {
-            interfaceTypeRids:
-              parameter.validation.allowedValues.interfaceTypes,
+            interfaceTypeRids: allowedValues.interfaceTypes,
           },
         },
       };
@@ -1241,7 +1260,7 @@ function extractAllowedValues(
       };
     default:
       const k: Partial<OntologyIrAllowedParameterValues["type"]> =
-        parameter.validation.allowedValues!.type;
+        allowedValues!.type;
       return {
         type: k,
         [k]: {
@@ -1383,7 +1402,7 @@ function dependencyInjectionString(): string {
     : namespace;
 
   return `import { addDependency } from "@osdk/maker";
-
+// @ts-ignore
 addDependency("${namespaceNoDot}", new URL(import.meta.url).pathname);
 `;
 }

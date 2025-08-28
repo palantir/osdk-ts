@@ -1,5 +1,13 @@
 # @osdk/create-widget
 
+## 3.1.0-beta.5
+
+## 3.1.0-beta.4
+
+### Minor Changes
+
+- 544bfda: Update widget bootstrapping instructions
+
 ## 3.1.0-beta.3
 
 ## 3.1.0-beta.2

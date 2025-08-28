@@ -67,3 +67,5 @@ export {
   extractDateInLocalTime,
   extractDateInUTC,
 } from "./util/datetimeConverters.js";
+
+export { createObjectSpecifierFromPrimaryKey } from "./util/objectSpecifierUtils.js";

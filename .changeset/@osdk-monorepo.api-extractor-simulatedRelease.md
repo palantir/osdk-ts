@@ -1,5 +1,5 @@
 ---
-"@osdk/monorepo.api-extractor": minor
+"@osdk/monorepo.api-extractor": patch
 ---
       
 Simulated release

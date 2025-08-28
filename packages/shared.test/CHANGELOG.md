@@ -1,5 +1,26 @@
 # @osdk/shared.test
 
+## 2.4.0-beta.17
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.17
+- @osdk/generator-converters@2.4.0-beta.17
+
+## 2.4.0-beta.16
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.16
+- @osdk/generator-converters@2.4.0-beta.16
+
+## 2.4.0-beta.15
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.15
+- @osdk/generator-converters@2.4.0-beta.15
+
 ## 2.4.0-beta.14
 
 ### Patch Changes

@@ -1,5 +1,41 @@
 # @osdk/client
 
+## 2.4.0-beta.17
+
+### Minor Changes
+
+- 06fd45a: Export createObjectSpecifierFromPrimaryKey
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.17
+- @osdk/client.unstable@2.4.0-beta.17
+- @osdk/generator-converters@2.4.0-beta.17
+
+## 2.4.0-beta.16
+
+### Minor Changes
+
+- c763807: Fix hydrate method for object rids to work with interfaces.
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.16
+- @osdk/client.unstable@2.4.0-beta.16
+- @osdk/generator-converters@2.4.0-beta.16
+
+## 2.4.0-beta.15
+
+### Minor Changes
+
+- d2d36e1: Fix module resolution for node when importing unstable code
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.15
+- @osdk/client.unstable@2.4.0-beta.15
+- @osdk/generator-converters@2.4.0-beta.15
+
 ## 2.4.0-beta.14
 
 ### Patch Changes

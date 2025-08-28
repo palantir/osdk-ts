@@ -1,5 +1,13 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.1.0-beta.5
+
+## 3.1.0-beta.4
+
+### Minor Changes
+
+- cea4b6e: Mention FOUNDRY_TOKEN/first release in widget READMEs
+
 ## 3.1.0-beta.3
 
 ### Minor Changes
