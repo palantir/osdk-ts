@@ -44,3 +44,5 @@ export type {
   RidLinkTarget,
   UrlLinkTarget,
 } from "./Notification.js";
+
+export type { Principal } from "./Principal.ts";
