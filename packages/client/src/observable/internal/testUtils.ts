@@ -657,7 +657,7 @@ export function updateList<
     );
   }
 
-  const query = store.listObservers.getQuery({
+  const query = store.lists.getQuery({
     ...opts,
     type,
     where: where ?? {},
@@ -684,8 +684,10 @@ export function updateObject<T extends ObjectOrInterfaceDefinition>(
   value: Osdk.Instance<T>,
   { optimisticId }: { optimisticId?: OptimisticId } = {},
 ): Osdk.Instance<T> {
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
-  const query = store.getObjectQuery(value.$apiName, value.$primaryKey);
+  const query = store.objects.getQuery({
+    apiName: value.$apiName,
+    pk: value.$primaryKey,
+  });
 
   store.batch({ optimisticId }, (batch) => {
     return query.writeToStore(

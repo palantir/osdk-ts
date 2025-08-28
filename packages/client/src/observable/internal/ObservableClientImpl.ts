@@ -70,7 +70,7 @@ export class ObservableClientImpl implements ObservableClient {
     options: Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
     subFn: Observer<ObserveObjectArgs<T>>,
   ) => Unsubscribable = (apiName, pk, options, subFn) => {
-    return this.__experimentalStore.objectObservers.observe(
+    return this.__experimentalStore.objects.observe(
       {
         ...options,
         apiName,
@@ -85,7 +85,7 @@ export class ObservableClientImpl implements ObservableClient {
     options: ObserveListOptions<T>,
     subFn: Observer<ObserveObjectsArgs<T>>,
   ) => Unsubscribable = (options, subFn) => {
-    return this.__experimentalStore.listObservers.observe(
+    return this.__experimentalStore.lists.observe(
       options,
       // cast to cross typed to untyped barrier
       subFn as unknown as Observer<ListPayload>,
@@ -109,7 +109,7 @@ export class ObservableClientImpl implements ObservableClient {
     const parentSub = new Subscription();
 
     for (const obj of objectsArray) {
-      const querySubscription = this.__experimentalStore.linkObservers
+      const querySubscription = this.__experimentalStore.links
         .observe(
           {
             ...options,

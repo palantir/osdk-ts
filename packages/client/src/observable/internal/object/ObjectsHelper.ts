@@ -18,11 +18,11 @@ import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import type { ObjectPayload } from "../../ObjectPayload.js";
 import type { ObserveObjectOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
-import { AbstractObservers } from "../AbstractObservers.js";
+import { AbstractHelper } from "../AbstractHelper.js";
 import { type ObjectCacheKey, ObjectQuery } from "../ObjectQuery.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 
-export class ObjectObservers extends AbstractObservers<
+export class ObjectsHelper extends AbstractHelper<
   ObjectQuery,
   ObserveObjectOptions<any>
 > {

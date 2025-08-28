@@ -18,7 +18,7 @@ import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import type { ListPayload } from "../../ListPayload.js";
 import type { ObserveListOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
-import { AbstractObservers } from "../AbstractObservers.js";
+import { AbstractHelper } from "../AbstractHelper.js";
 import type { ListCacheKey } from "../ListCacheKey.js";
 import { ListQuery } from "../ListQuery.js";
 import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
@@ -26,7 +26,7 @@ import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
 
-export class ListObservers extends AbstractObservers<
+export class ListsHelper extends AbstractHelper<
   ListQuery,
   ObserveListOptions<ObjectTypeDefinition | InterfaceDefinition>
 > {

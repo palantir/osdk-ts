@@ -18,30 +18,17 @@ import type {
   ActionDefinition,
   ActionEditResponse,
   ActionValidationResponse,
-  CompileTimeMetadata,
   InterfaceDefinition,
   Logger,
   ObjectTypeDefinition,
-  Osdk,
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
-import { BehaviorSubject, Subscription } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
-import type { SpecificLinkPayload } from "../LinkPayload.js";
-import type { ListPayload } from "../ListPayload.js";
-import type { ObjectPayload } from "../ObjectPayload.js";
-import type {
-  ObserveListOptions,
-  ObserveObjectOptions,
-  OrderBy,
-  Unsubscribable,
-} from "../ObservableClient.js";
-import type { Observer } from "../ObservableClient/common.js";
-import type { ObserveLink } from "../ObservableClient/ObserveLink.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./ActionApplication.js";
 import { CacheKeys } from "./CacheKeys.js";
@@ -53,18 +40,15 @@ import {
 } from "./Changes.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import { Entry, Layer } from "./Layer.js";
-import { LinkObservers } from "./links/LinkObservers.js";
-import { ListObservers } from "./list/ListObservers.js";
-import type { ListCacheKey } from "./ListCacheKey.js";
-import { ObjectObservers } from "./object/ObjectObservers.js";
-import type { ObjectQuery } from "./ObjectQuery.js";
+import { LinksHelper } from "./links/LinksHelper.js";
+import { ListsHelper } from "./list/ListsHelper.js";
+import { ObjectsHelper } from "./object/ObjectsHelper.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { Query } from "./Query.js";
 import { RefCounts } from "./RefCounts.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 import { tombstone } from "./tombstone.js";
-import { UnsubscribableWrapper } from "./UnsubscribableWrapper.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 /*
@@ -172,9 +156,9 @@ export class Store {
   #finalizationRegistry: FinalizationRegistry<() => void>;
 
   // these are hopefully temporary
-  listObservers: ListObservers;
-  objectObservers: ObjectObservers;
-  linkObservers: LinkObservers;
+  lists: ListsHelper;
+  objects: ObjectsHelper;
+  links: LinksHelper;
 
   constructor(client: Client) {
     this.client = client;
@@ -182,13 +166,13 @@ export class Store {
       msgPrefix: "Store",
     });
 
-    this.listObservers = new ListObservers(
+    this.lists = new ListsHelper(
       this,
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
     );
-    this.objectObservers = new ObjectObservers(this);
-    this.linkObservers = new LinkObservers(
+    this.objects = new ObjectsHelper(this);
+    this.links = new LinksHelper(
       this,
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
@@ -382,59 +366,6 @@ export class Store {
     return this.whereCanonicalizer.canonicalize(where);
   }
 
-  /** @deprecated */
-  public observeObject<T extends ObjectTypeDefinition | InterfaceDefinition>(
-    apiName: T["apiName"] | T,
-    pk: PrimaryKeyType<T>,
-    options: Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
-    subFn: Observer<ObjectPayload>,
-  ): Unsubscribable {
-    return this.objectObservers.observe({ ...options, apiName, pk }, subFn);
-  }
-
-  /** @deprecated */
-  public observeList<T extends ObjectTypeDefinition | InterfaceDefinition>(
-    options: ObserveListOptions<T>,
-    subFn: Observer<ListPayload>,
-  ): Unsubscribable {
-    return this.listObservers.observe(options, subFn);
-  }
-
-  /** @deprecated */
-  public observeLinks<
-    T extends ObjectTypeDefinition,
-    L extends keyof CompileTimeMetadata<T>["links"] & string,
-  >(
-    objects: Osdk.Instance<T> | Array<Osdk.Instance<T>>,
-    linkName: L,
-    options: Omit<
-      ObserveLink.Options<T, L>,
-      "srcType" | "pk" | "linkName"
-    >,
-    subFn: Observer<SpecificLinkPayload>,
-  ): Unsubscribable {
-    // Convert to array if single object provided
-    const objectsArray = Array.isArray(objects) ? objects : [objects];
-
-    const parentSub = new Subscription();
-
-    for (const obj of objectsArray) {
-      const querySubscription = this.linkObservers.observe<T, L>({
-        ...options,
-        srcType: {
-          type: "object",
-          apiName: obj.$apiName,
-        },
-        linkName,
-        pk: obj.$primaryKey,
-      }, subFn);
-
-      parentSub.add(querySubscription);
-    }
-
-    return new UnsubscribableWrapper(parentSub);
-  }
-
   peekQuery<K extends KnownCacheKey>(
     cacheKey: K,
   ): K["__cacheKey"]["query"] | undefined {
@@ -451,17 +382,6 @@ export class Store {
       this.#queries.set(cacheKey, query);
     }
     return query;
-  }
-
-  /** @deprecated */
-  public getObjectQuery<T extends ObjectTypeDefinition>(
-    apiName: T["apiName"] | T,
-    pk: PrimaryKeyType<T>,
-  ): ObjectQuery {
-    return this.objectObservers.getQuery({
-      apiName,
-      pk,
-    });
   }
 
   public getValue<K extends KnownCacheKey>(
@@ -565,7 +485,7 @@ export class Store {
       apiName = apiName.apiName;
     }
 
-    return this.objectObservers.getQuery({
+    return this.objects.getQuery({
       apiName,
       pk,
     }).revalidate(/* force */ true);
@@ -661,26 +581,4 @@ export class Store {
   release(cacheKey: KnownCacheKey): void {
     this.#refCounts.release(cacheKey);
   }
-}
-
-export async function invalidateList<T extends ObjectTypeDefinition>(
-  store: Store,
-  args: {
-    type: Pick<T, "apiName" | "type">;
-    where?: WhereClause<T> | SimpleWhereClause;
-    orderBy?: OrderBy<T>;
-  },
-): Promise<void> {
-  const where = store.whereCanonicalizer.canonicalize(args.where ?? {});
-  const orderBy = store.orderByCanonicalizer.canonicalize(args.orderBy ?? {});
-
-  const cacheKey = store.getCacheKey<ListCacheKey>(
-    "list",
-    args.type.type,
-    args.type.apiName,
-    where,
-    orderBy as Canonical<OrderBy<T>>,
-  );
-
-  await store.peekQuery(cacheKey)?.revalidate(true);
 }

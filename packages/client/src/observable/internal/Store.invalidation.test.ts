@@ -283,7 +283,7 @@ describe("Store Invalidation Type Isolation", () => {
 
       // Set up list observations
       const empListSubFn = mockListSubCallback();
-      defer(cache.observeList({
+      defer(cache.lists.observe({
         type: Employee,
         where: {},
         orderBy: {},
@@ -291,7 +291,7 @@ describe("Store Invalidation Type Isolation", () => {
       }, empListSubFn));
 
       const officeListSubFn = mockListSubCallback();
-      defer(cache.observeList({
+      defer(cache.lists.observe({
         type: Office,
         where: {},
         orderBy: {},
@@ -400,7 +400,7 @@ describe("Store Invalidation Type Isolation", () => {
 
       // Set up list observations
       const empListSubFn = mockListSubCallback();
-      defer(cache.observeList({
+      defer(cache.lists.observe({
         type: Employee,
         where: {},
         orderBy: {},
@@ -408,7 +408,7 @@ describe("Store Invalidation Type Isolation", () => {
       }, empListSubFn));
 
       const officeListSubFn = mockListSubCallback();
-      defer(cache.observeList({
+      defer(cache.lists.observe({
         type: Office,
         where: {},
         orderBy: {},
@@ -416,7 +416,7 @@ describe("Store Invalidation Type Isolation", () => {
       }, officeListSubFn));
 
       const todoListSubFn = mockListSubCallback();
-      defer(cache.observeList({
+      defer(cache.lists.observe({
         type: Todo,
         where: {},
         orderBy: {},

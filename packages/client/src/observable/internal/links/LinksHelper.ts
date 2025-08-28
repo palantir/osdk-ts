@@ -19,7 +19,7 @@ import type { SpecificLinkPayload } from "../../LinkPayload.js";
 
 import type { Observer } from "../../ObservableClient/common.js";
 import type { ObserveLink } from "../../ObservableClient/ObserveLink.js";
-import { AbstractObservers } from "../AbstractObservers.js";
+import { AbstractHelper } from "../AbstractHelper.js";
 import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Store } from "../Store.js";
@@ -27,7 +27,7 @@ import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
 import type { SpecificLinkCacheKey } from "./SpecificLinkCacheKey.js";
 import { SpecificLinkQuery } from "./SpecificLinkQuery.js";
 
-export interface LinkObservers {
+export interface LinksHelper {
   observe<
     T extends ObjectTypeDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
@@ -42,7 +42,7 @@ export interface LinkObservers {
   >(options: ObserveLink.Options<T, L>): SpecificLinkQuery;
 }
 
-export class LinkObservers extends AbstractObservers<
+export class LinksHelper extends AbstractHelper<
   SpecificLinkQuery,
   ObserveLink.Options<ObjectTypeDefinition, string>
 > {

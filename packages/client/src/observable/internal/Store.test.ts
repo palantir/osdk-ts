@@ -57,7 +57,7 @@ import type {
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import { createOptimisticId } from "./OptimisticId.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
-import { invalidateList, Store } from "./Store.js";
+import { Store } from "./Store.js";
 import {
   applyCustomMatchers,
   createClientMockHelper,
@@ -74,6 +74,7 @@ import {
   updateObject,
   waitForCall,
 } from "./testUtils.js";
+import { invalidateList } from "./testUtils/invalidateList.js";
 import { expectStandardObserveLink } from "./testUtils/observeLink/expectStandardObserveLink.js";
 import { expectStandardObserveObject } from "./testUtils/observeObject/expectStandardObserveObject.js";
 
@@ -478,12 +479,11 @@ describe(Store, () => {
 
         const subFn = mockSingleSubCallback();
         defer(
-          cache.observeObject(
-            Employee,
-            emp.$primaryKey,
-            { mode: "offline" },
-            subFn,
-          ),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: emp.$primaryKey,
+            mode: "offline",
+          }, subFn),
         );
 
         expectSingleObjectCallAndClear(subFn, emp, "loaded");
@@ -517,19 +517,18 @@ describe(Store, () => {
 
         const empSubFn = mockSingleSubCallback();
         defer(
-          cache.observeObject(
-            Employee,
-            emp.$primaryKey,
-            { mode: "offline" },
-            empSubFn,
-          ),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: emp.$primaryKey,
+            mode: "offline",
+          }, empSubFn),
         );
 
         expectSingleObjectCallAndClear(empSubFn, emp, "loaded");
 
         const listSubFn = mockListSubCallback();
         defer(
-          cache.observeList({
+          cache.lists.observe({
             type: Employee,
             mode: "offline",
           }, listSubFn),
@@ -604,12 +603,11 @@ describe(Store, () => {
 
         const subFn = mockSingleSubCallback();
         defer(
-          cache.observeObject(
-            Employee,
-            emp.$primaryKey,
-            { mode: "offline" },
-            subFn,
-          ),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: emp.$primaryKey,
+            mode: "offline",
+          }, subFn),
         );
         expectSingleObjectCallAndClear(subFn, emp, "loaded");
 
@@ -646,18 +644,17 @@ describe(Store, () => {
 
           const subFn = mockSingleSubCallback();
           defer(
-            cache.observeObject(
-              Employee,
-              emp.$primaryKey,
-              { mode: "offline" },
-              subFn,
-            ),
+            cache.objects.observe({
+              apiName: Employee,
+              pk: emp.$primaryKey,
+              mode: "offline",
+            }, subFn),
           );
           expectSingleObjectCallAndClear(subFn, emp);
 
           const subListFn = mockListSubCallback();
           defer(
-            cache.observeList({
+            cache.lists.observe({
               type: Employee,
               mode: "offline",
             }, subListFn),
@@ -706,12 +703,11 @@ describe(Store, () => {
 
         const subFn = mockSingleSubCallback();
         defer(
-          cache.observeObject(
-            Employee,
-            emp.$primaryKey,
-            { mode: "offline" },
-            subFn,
-          ),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: emp.$primaryKey,
+            mode: "offline",
+          }, subFn),
         );
 
         expectSingleObjectCallAndClear(subFn, staleEmp, "loaded");
@@ -739,18 +735,17 @@ describe(Store, () => {
 
         const subFn = mockSingleSubCallback();
         defer(
-          cache.observeObject(
-            Employee,
-            emp.$primaryKey,
-            { mode: "offline" },
-            subFn,
-          ),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: emp.$primaryKey,
+            mode: "offline",
+          }, subFn),
         );
         expectSingleObjectCallAndClear(subFn, staleEmp);
 
         const subListFn = mockListSubCallback();
         defer(
-          cache.observeList({
+          cache.lists.observe({
             type: Employee,
             mode: "offline",
           }, subListFn),
@@ -807,18 +802,17 @@ describe(Store, () => {
 
         const subFn = mockSingleSubCallback();
         defer(
-          cache.observeObject(
-            Employee,
-            emp.$primaryKey,
-            { mode: "offline" },
-            subFn,
-          ),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: emp.$primaryKey,
+            mode: "offline",
+          }, subFn),
         );
         expectSingleObjectCallAndClear(subFn, staleEmp);
 
         const subListFn = mockListSubCallback();
         defer(
-          cache.observeList({
+          cache.lists.observe({
             type: Employee,
             where: {},
             orderBy: {},
@@ -896,7 +890,11 @@ describe(Store, () => {
 
       it("fetches and updates twice", async () => {
         defer(
-          cache.observeObject(Employee, JOHN_DOE_ID, { mode: "force" }, subFn1),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: JOHN_DOE_ID,
+            mode: "force",
+          }, subFn1),
         );
 
         expect(subFn1.next).toHaveBeenCalledExactlyOnceWith(
@@ -922,7 +920,11 @@ describe(Store, () => {
         subFn1.next.mockClear();
 
         defer(
-          cache.observeObject(Employee, JOHN_DOE_ID, { mode: "force" }, subFn2),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: JOHN_DOE_ID,
+            mode: "force",
+          }, subFn2),
         );
         expectSingleObjectCallAndClear(subFn1, likeEmployee50030, "loading");
 
@@ -955,12 +957,11 @@ describe(Store, () => {
         subFn.error.mockClear();
 
         sub = defer(
-          cache.observeObject(
-            Employee,
-            JOHN_DOE_ID,
-            { mode: "offline" },
-            subFn,
-          ),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: JOHN_DOE_ID,
+            mode: "offline",
+          }, subFn),
         );
 
         expectSingleObjectCallAndClear(subFn, undefined!, "init");
@@ -1013,7 +1014,7 @@ describe(Store, () => {
       });
     });
 
-    describe(".observeList", () => {
+    describe(".lists.observe", () => {
       const listSub1 = mockListSubCallback();
       const ifaceSub = mockListSubCallback();
 
@@ -1030,7 +1031,7 @@ describe(Store, () => {
       describe("mode=force", () => {
         it("initial load", async () => {
           defer(
-            cache.observeList({
+            cache.lists.observe({
               type: Employee,
 
               orderBy: {},
@@ -1039,7 +1040,7 @@ describe(Store, () => {
           );
 
           defer(
-            cache.observeList({
+            cache.lists.observe({
               type: FooInterface,
 
               orderBy: {},
@@ -1098,7 +1099,7 @@ describe(Store, () => {
           );
 
           defer(
-            cache.observeList({
+            cache.lists.observe({
               type: Employee,
               mode: "force",
             }, listSub1),
@@ -1123,7 +1124,7 @@ describe(Store, () => {
       describe("mode = offline", () => {
         it("updates with list updates", async () => {
           defer(
-            cache.observeList({
+            cache.lists.observe({
               type: Employee,
               where: {},
               orderBy: {},
@@ -1151,7 +1152,7 @@ describe(Store, () => {
 
         it("updates with different list updates", async () => {
           defer(
-            cache.observeList({
+            cache.lists.observe({
               type: Employee,
               where: {},
               orderBy: {},
@@ -1192,7 +1193,7 @@ describe(Store, () => {
 
       it("works in the solo case", async () => {
         const listSub = mockListSubCallback();
-        defer(cache.observeList(
+        defer(cache.lists.observe(
           {
             type: Employee,
             where: {},
@@ -1268,7 +1269,7 @@ describe(Store, () => {
       // ignores unhandled rejection, like one we will get from fire-and-forget metadata call
       process.on("unhandledRejection", () => {});
 
-      store.observeList({
+      store.lists.observe({
         type: { apiName: "notReal", type: "object" },
         orderBy: {},
       }, sub);
@@ -1298,8 +1299,14 @@ describe(Store, () => {
         const a = mockSingleSubCallback();
         const b = mockSingleSubCallback();
 
-        defer(store.observeObject(Employee, 0, {}, a));
-        defer(store.observeObject(Employee, 1, {}, b));
+        defer(store.objects.observe({
+          apiName: Employee,
+          pk: 0,
+        }, a));
+        defer(store.objects.observe({
+          apiName: Employee,
+          pk: 1,
+        }, b));
 
         await a.expectLoadingAndLoaded({
           loading: objectPayloadContaining({
@@ -1340,7 +1347,10 @@ describe(Store, () => {
 
         const todoSubFn = mockSingleSubCallback();
 
-        defer(store.observeObject(Todo, 0, {}, todoSubFn));
+        defer(store.objects.observe({
+          apiName: Todo,
+          pk: 0,
+        }, todoSubFn));
 
         await todoSubFn.expectLoadingAndLoaded({
           loading: objectPayloadContaining({
@@ -1387,7 +1397,10 @@ describe(Store, () => {
 
         const todoSubFn = mockSingleSubCallback();
         defer(
-          store.observeObject(Todo, 0, {}, todoSubFn),
+          store.objects.observe({
+            apiName: Todo,
+            pk: 0,
+          }, todoSubFn),
         );
 
         await todoSubFn.expectLoadingAndLoaded({
@@ -1483,7 +1496,7 @@ describe(Store, () => {
         subListUnordered = mockListSubCallback();
         subListOrdered = mockListSubCallback();
         defer(
-          store.observeList({
+          store.lists.observe({
             ...noWhereNoOrderBy,
             mode: "offline",
           }, subListUnordered),
@@ -1492,7 +1505,7 @@ describe(Store, () => {
         expectSingleListCallAndClear(subListUnordered, [], { status: "init" });
 
         defer(
-          store.observeList({
+          store.lists.observe({
             ...noWhereOrderByText,
             mode: "offline",
           }, subListOrdered),

@@ -23,7 +23,7 @@ import type { Query } from "./Query.js";
 import { QuerySubscription } from "./QuerySubscription.js";
 import type { Store } from "./Store.js";
 
-export abstract class AbstractObservers<
+export abstract class AbstractHelper<
   TQuery extends Query<KnownCacheKey, any, CommonObserveOptions>,
   TObserveOptions extends CommonObserveOptions,
 > {
