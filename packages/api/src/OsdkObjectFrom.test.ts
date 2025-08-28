@@ -17,7 +17,13 @@
 import { describe, expectTypeOf, it } from "vitest";
 import type { NullabilityAdherence } from "./object/FetchPageArgs.js";
 import { createMockObjectSet } from "./objectSet/ObjectSet.test.js";
-import type { ExtractOptions, Osdk } from "./OsdkObjectFrom.js";
+import type { PropertyKeys } from "./ontology/ObjectOrInterface.js";
+import type {
+  ConvertProps,
+  ExtractOptions,
+  MapPropNamesToInterface,
+  Osdk,
+} from "./OsdkObjectFrom.js";
 
 describe("ExtractOptions", () => {
   describe("NullabilityAdherence Generic", () => {
@@ -135,6 +141,108 @@ describe("ExtractOptions", () => {
     };
   };
 
+  type quickerAndDirtier = {
+    apiName: "Bar";
+    type: "object";
+    __DefinitionMetadata: {
+      props: {
+        name: string;
+        foo: number | undefined;
+        birthday: string;
+      };
+      strictProps: {
+        name: string;
+        foo: number;
+        birthday: string;
+      };
+      apiName: "Foo";
+      displayName: "";
+      interfaceMap: {
+        "com.my.obscure.namespace.FooBarInterface": {
+          "com.my.obscure.namespace.fooInterface": "foo";
+          "com.my.obscure.namespace.id": "name";
+          "com.my.even.more.obscure.namespace.originDate": "birthday";
+        };
+      };
+      inverseInterfaceMap: {
+        "com.my.obscure.namespace.FooBarInterface": {
+          "foo": "com.my.obscure.namespace.fooInterface";
+          "name": "com.my.obscure.namespace.id";
+          "birthday": "com.my.even.more.obscure.namespace.originDate";
+        };
+      };
+      links: {};
+      pluralDisplayName: "";
+      primaryKeyApiName: "";
+      primaryKeyType: "string";
+      properties: {
+        name: {
+          type: "string";
+          description: "";
+        };
+        foo: {
+          type: "integer";
+          description: "";
+        };
+        birthday: {
+          type: "string";
+          description: "";
+        };
+      };
+      rid: "";
+      status: "ACTIVE";
+      titleProperty: "name";
+      type: "object";
+      icon: undefined;
+      visibility: undefined;
+      description: "";
+    };
+  };
+
+  type quickerAndDirtierInterface = {
+    apiName: "com.my.obscure.namespace.FooBarInterface";
+    type: "interface";
+    __DefinitionMetadata: {
+      props: {
+        id: string;
+        "com.my.even.more.obscure.namespace.originDate": string | undefined;
+        fooInterface: number;
+      };
+      strictProps: {
+        id: string;
+        "com.my.even.more.obscure.namespace.originDate": string;
+        fooInterface: number;
+      };
+      apiName: "com.my.obscure.namespace.FooBarInterface";
+      displayName: "";
+      implements: [];
+      implementedBy: ["Bar"];
+      links: {};
+      pluralDisplayName: "";
+      primaryKeyApiName: "";
+      properties: {
+        id: {
+          type: "string";
+          description: "";
+        };
+        "com.my.even.more.obscure.namespace.originDate": {
+          type: "string";
+          description: "";
+        };
+        fooInterface: {
+          type: "integer";
+          description: "";
+        };
+      };
+      rid: "";
+      status: "ACTIVE";
+      titleProperty: "name";
+      type: "interface";
+      icon: undefined;
+      visibility: undefined;
+      description: "";
+    };
+  };
   describe("Osdk.Instance", () => {
     it("defaults to second argument never if omitted", () => {
       type toCheck = Osdk.Instance<quickAndDirty>;
@@ -359,6 +467,48 @@ describe("ExtractOptions", () => {
       expectTypeOf<typeof page["data"]>().branded
         .toEqualTypeOf<
           Osdk.Instance<quickAndDirty>[]
+        >();
+    });
+  });
+
+  describe("Interface casting works as intended", () => {
+    it("mapping as works", async () => {
+      expectTypeOf<
+        MapPropNamesToInterface<
+          quickerAndDirtier,
+          quickerAndDirtierInterface,
+          PropertyKeys<quickerAndDirtier>
+        >
+      >().toEqualTypeOf<PropertyKeys<quickerAndDirtierInterface>>;
+
+      expectTypeOf<
+        ConvertProps<
+          quickerAndDirtier,
+          quickerAndDirtierInterface,
+          PropertyKeys<quickerAndDirtier>,
+          never
+        >
+      >().toEqualTypeOf<PropertyKeys<quickerAndDirtierInterface>>;
+
+      expectTypeOf<
+        Osdk.Instance<
+          quickerAndDirtierInterface,
+          never,
+          PropertyKeys<quickerAndDirtierInterface>,
+          {}
+        >
+      >()
+        .toExtend<
+          Osdk.Instance<
+            quickerAndDirtierInterface,
+            never,
+            ConvertProps<
+              quickerAndDirtier,
+              quickerAndDirtierInterface,
+              PropertyKeys<quickerAndDirtier>,
+              never
+            >
+          >
         >();
     });
   });
