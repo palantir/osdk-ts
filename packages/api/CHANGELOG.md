@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.4.0-rc.19
+
+### Patch Changes
+
+- 8dd6229: Remove features not supported for RC
+
 ## 2.4.0-beta.18
 
 ### Patch Changes
