@@ -83,10 +83,11 @@ export async function expectStandardObserveLink<
 }> {
   const linkSubFn = mockLinkSubCallback();
   defer(
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     store.observeLinks(
       srcObject,
       srcLinkName,
-      { type: targetType },
+      {},
       linkSubFn,
     ),
   );

@@ -224,6 +224,7 @@ export function storeOsdkInstances(
   // update the cache for any object that has changed
   // and save the mapped values to return
   return values.map(v => {
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     return store.getObjectQuery(
       v.$apiName,
       v.$primaryKey as string | number,

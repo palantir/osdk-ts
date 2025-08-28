@@ -119,6 +119,7 @@ export abstract class Query<
       return;
     }
 
+    // FIXME: This gets set to the first value used
     if (
       (this.options.dedupeInterval ?? 0) > 0 && (
         this.lastFetchStarted != null

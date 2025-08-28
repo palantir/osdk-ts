@@ -52,7 +52,7 @@ export interface Observer<T> {
  * @property dedupeInterval - Time in milliseconds to deduplicate identical emissions
  *   Used to prevent rapid UI updates when multiple changes occur
  */
-export interface CommonObserveOptions {
+export interface CommonObserveOptions extends ObserveOptions {
   dedupeInterval?: number;
 }
 

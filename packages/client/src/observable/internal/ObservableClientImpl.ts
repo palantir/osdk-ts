@@ -24,7 +24,11 @@ import type {
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
+import { Subscription } from "rxjs";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
+import type { SpecificLinkPayload } from "../LinkPayload.js";
+import type { ListPayload } from "../ListPayload.js";
+import type { ObjectPayload } from "../ObjectPayload.js";
 import type {
   ObservableClient,
   ObserveListOptions,
@@ -37,6 +41,7 @@ import type { Observer } from "../ObservableClient/common.js";
 import type { ObserveLink } from "../ObservableClient/ObserveLink.js";
 import type { Canonical } from "./Canonical.js";
 import type { Store } from "./Store.js";
+import { UnsubscribableWrapper } from "./UnsubscribableWrapper.js";
 
 /**
  * Implementation of the public ObservableClient interface.
@@ -52,15 +57,8 @@ export class ObservableClientImpl implements ObservableClient {
   constructor(store: Store) {
     this.__experimentalStore = store;
 
-    this.observeObject = store.observeObject.bind(
-      store,
-    ) as typeof this.observeObject;
-    this.observeList = store.observeList.bind(store) as typeof this.observeList;
     this.applyAction = store.applyAction.bind(store);
     this.validateAction = store.validateAction.bind(store);
-    this.observeLinks = store.observeLinks.bind(
-      store,
-    ) as typeof this.observeLinks;
     this.canonicalizeWhereClause = store.canonicalizeWhereClause.bind(
       store,
     ) as typeof this.canonicalizeWhereClause;
@@ -69,14 +67,30 @@ export class ObservableClientImpl implements ObservableClient {
   public observeObject: <T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
-    options: ObserveObjectOptions<T>,
+    options: Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
     subFn: Observer<ObserveObjectArgs<T>>,
-  ) => Unsubscribable;
+  ) => Unsubscribable = (apiName, pk, options, subFn) => {
+    return this.__experimentalStore.objectObservers.observe(
+      {
+        ...options,
+        apiName,
+        pk,
+      },
+      // cast to cross typed to untyped barrier
+      subFn as unknown as Observer<ObjectPayload>,
+    );
+  };
 
   public observeList: <T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
     subFn: Observer<ObserveObjectsArgs<T>>,
-  ) => Unsubscribable;
+  ) => Unsubscribable = (options, subFn) => {
+    return this.__experimentalStore.listObservers.observe(
+      options,
+      // cast to cross typed to untyped barrier
+      subFn as unknown as Observer<ListPayload>,
+    );
+  };
 
   public observeLinks: <
     T extends ObjectTypeDefinition | InterfaceDefinition,
@@ -84,13 +98,37 @@ export class ObservableClientImpl implements ObservableClient {
   >(
     objects: Osdk.Instance<T> | Array<Osdk.Instance<T>>,
     linkName: L,
-    options: ObserveLink.Options<
-      CompileTimeMetadata<T>["links"][L]["targetType"]
-    >,
+    options: ObserveLink.Options<T, L>,
     subFn: Observer<
       ObserveLink.CallbackArgs<CompileTimeMetadata<T>["links"][L]["targetType"]>
     >,
-  ) => Unsubscribable;
+  ) => Unsubscribable = (objects, linkName, options, subFn) => {
+    // Convert to array if single object provided
+    const objectsArray = Array.isArray(objects) ? objects : [objects];
+
+    const parentSub = new Subscription();
+
+    for (const obj of objectsArray) {
+      const querySubscription = this.__experimentalStore.linkObservers
+        .observe(
+          {
+            ...options,
+            srcType: {
+              type: "object",
+              apiName: obj.$apiName,
+            },
+            linkName,
+            pk: obj.$primaryKey,
+          },
+          // cast to cross typed to untyped barrier
+          subFn as unknown as Observer<SpecificLinkPayload>,
+        );
+
+      parentSub.add(querySubscription);
+    }
+
+    return new UnsubscribableWrapper(parentSub);
+  };
 
   public applyAction: <Q extends ActionDefinition<any>>(
     action: Q,

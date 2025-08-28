@@ -56,6 +56,7 @@ export async function expectStandardObserveObject<
 }> {
   const subFn = mockSingleSubCallback();
   defer(
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     cache.observeObject(type.apiName, primaryKey, {}, subFn),
   );
 

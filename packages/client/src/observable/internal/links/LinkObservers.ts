@@ -1,0 +1,93 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { CompileTimeMetadata, ObjectTypeDefinition } from "@osdk/api";
+import type { SpecificLinkPayload } from "../../LinkPayload.js";
+
+import type { Observer } from "../../ObservableClient/common.js";
+import type { ObserveLink } from "../../ObservableClient/ObserveLink.js";
+import { AbstractObservers } from "../AbstractObservers.js";
+import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
+import type { QuerySubscription } from "../QuerySubscription.js";
+import type { Store } from "../Store.js";
+import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
+import type { SpecificLinkCacheKey } from "./SpecificLinkCacheKey.js";
+import { SpecificLinkQuery } from "./SpecificLinkQuery.js";
+
+export interface LinkObservers {
+  observe<
+    T extends ObjectTypeDefinition,
+    L extends keyof CompileTimeMetadata<T>["links"] & string,
+  >(
+    options: ObserveLink.Options<T, L>,
+    subFn: Observer<SpecificLinkPayload>,
+  ): QuerySubscription<SpecificLinkQuery>;
+
+  getQuery<
+    T extends ObjectTypeDefinition,
+    L extends keyof CompileTimeMetadata<T>["links"] & string,
+  >(options: ObserveLink.Options<T, L>): SpecificLinkQuery;
+}
+
+export class LinkObservers extends AbstractObservers<
+  SpecificLinkQuery,
+  ObserveLink.Options<ObjectTypeDefinition, string>
+> {
+  whereCanonicalizer: WhereClauseCanonicalizer;
+  orderByCanonicalizer: OrderByCanonicalizer;
+
+  constructor(
+    store: Store,
+    whereCanonicalizer: WhereClauseCanonicalizer,
+    orderByCanonicalizer: OrderByCanonicalizer,
+  ) {
+    super(store);
+
+    this.whereCanonicalizer = whereCanonicalizer;
+    this.orderByCanonicalizer = orderByCanonicalizer;
+  }
+
+  getQuery<
+    T extends ObjectTypeDefinition,
+    L extends keyof CompileTimeMetadata<T>["links"] & string,
+  >(options: ObserveLink.Options<T, L>): SpecificLinkQuery {
+    const { apiName } = options.srcType;
+
+    const canonWhere = this.whereCanonicalizer.canonicalize(
+      options.where ?? {},
+    );
+    const canonOrderBy = this.orderByCanonicalizer.canonicalize(
+      options.orderBy ?? {},
+    );
+    const linkCacheKey = this.store.getCacheKey<SpecificLinkCacheKey>(
+      "specificLink",
+      apiName,
+      options.pk,
+      options.linkName,
+      canonWhere,
+      canonOrderBy,
+    );
+
+    return this.store.getQuery(linkCacheKey, () => {
+      return new SpecificLinkQuery(
+        this.store,
+        this.store.getSubject(linkCacheKey),
+        linkCacheKey,
+        options,
+      );
+    });
+  }
+}

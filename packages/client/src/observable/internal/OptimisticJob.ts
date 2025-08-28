@@ -53,6 +53,7 @@ export class OptimisticJob {
         const { batchResult } = store.batch({ optimisticId }, (batch) => {
           for (const obj of addedObjects) {
             if (obj.status === "fulfilled") {
+              // eslint-disable-next-line @typescript-eslint/no-deprecated
               store.getObjectQuery(obj.value.$objectType, obj.value.$primaryKey)
                 .writeToStore(obj.value, "loading", batch);
             } else {
@@ -62,11 +63,13 @@ export class OptimisticJob {
           }
 
           for (const obj of updatedObjects) {
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             store.getObjectQuery(obj.$objectType, obj.$primaryKey)
               .writeToStore(obj, "loading", batch);
           }
 
           for (const obj of deletedObjects) {
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             store.getObjectQuery(obj.$objectType, obj.$primaryKey)
               .deleteFromStore("loading", batch);
           }

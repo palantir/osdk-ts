@@ -114,10 +114,7 @@ export function useLinks<
             objectsArray,
             linkName,
             {
-              type: {
-                apiName: objectsArray?.[0]?.$objectType,
-                type: "object" as const,
-              },
+              linkName,
               where: options.where,
               pageSize: options.pageSize,
               orderBy: options.orderBy,
