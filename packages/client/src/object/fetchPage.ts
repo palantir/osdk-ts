@@ -35,7 +35,6 @@ import type {
   SearchOrderByV2,
 } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
-import { metadataCacheClient } from "../__unstable/ConjureSupport.js";
 import { extractNamespace } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
@@ -136,13 +135,12 @@ async function fetchInterfacePage<
       args,
       baseRequestBody,
       client,
-      interfaceType.apiName,
+      interfaceType,
     );
 
     if (requestBody.selectedSharedPropertyTypes.length > 0) {
-      const remapped = await remapPropertyNames(
-        client,
-        interfaceType.apiName,
+      const remapped = remapPropertyNames(
+        interfaceType,
         requestBody.selectedSharedPropertyTypes,
       );
       requestBody.selectedSharedPropertyTypes = Array.from(remapped);
@@ -180,7 +178,7 @@ async function fetchInterfacePage<
       snapshot: useSnapshot,
     },
     client,
-    interfaceType.apiName,
+    interfaceType,
   );
 
   const result = await OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
@@ -325,19 +323,18 @@ async function buildAndRemapRequestBody<
   args: FetchPageArgs<Q, L, R, A, S, T>,
   baseBody: RequestBody,
   client: MinimalClient,
-  objectApiName: string | undefined,
+  objectType: Q,
 ): Promise<RequestBody> {
   const requestBody = await applyFetchArgs(
     args,
     baseBody,
     client,
-    objectApiName,
+    objectType,
   );
 
   if (requestBody.select != null && requestBody.select.length > 0) {
-    const remapped = await remapPropertyNames(
-      client,
-      objectApiName,
+    const remapped = remapPropertyNames(
+      objectType,
       requestBody.select,
     );
     return { ...requestBody, select: remapped };
@@ -347,44 +344,25 @@ async function buildAndRemapRequestBody<
 }
 
 /** @internal */
-export async function remapPropertyNames(
-  client: MinimalClient,
-  objectApiName: string | undefined,
+export function remapPropertyNames(
+  objectOrInterface: ObjectOrInterfaceDefinition | undefined,
   propertyNames: readonly string[],
-): Promise<readonly string[]> {
-  if (objectApiName == null) {
+): readonly string[] {
+  if (objectOrInterface == null) {
     return propertyNames;
   }
 
-  try {
-    // If the objectApiName already looks fully qualified, return as-is
-    if (extractNamespace(objectApiName)[0] != null) {
-      return propertyNames;
-    }
-
-    const metadataClient = await metadataCacheClient(client);
-    const objectMetadata = await metadataClient.forObjectByApiName(
-      objectApiName,
-    );
-    const propertyMapping = await objectMetadata.getPropertyMapping();
-
+  if (objectOrInterface.type === "interface") {
+    const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);
     return propertyNames.map(name => {
-      // If the property already looks fully qualified, return as-is
-      if (extractNamespace(name)[0] != null) {
-        return name;
-      }
-
-      const propertyId = propertyMapping.propertyApiNameToIdMapping[name];
-      const fullyQualifiedName = propertyId
-        ? Object.entries(propertyMapping.propertyIdToApiNameMapping)
-          .find(([id]) => id === propertyId)?.[1]
-        : undefined;
-
-      return fullyQualifiedName ?? name;
+      const [fieldApiNamespace, fieldShortName] = extractNamespace(name);
+      return (fieldApiNamespace == null && objApiNamespace != null)
+        ? `${objApiNamespace}.${fieldShortName}`
+        : name;
     });
-  } catch (error) {
-    return propertyNames;
   }
+
+  return propertyNames;
 }
 
 async function applyFetchArgs<
@@ -402,8 +380,8 @@ async function applyFetchArgs<
 >(
   args: FetchPageArgs<Q, L, R, A, S, T>,
   body: X,
-  client: MinimalClient,
-  objectApiName: string | undefined,
+  _client: MinimalClient,
+  objectType: Q,
 ): Promise<X> {
   if (args?.$nextPageToken) {
     body.pageToken = args.$nextPageToken;
@@ -416,9 +394,8 @@ async function applyFetchArgs<
   if (args?.$orderBy != null) {
     const orderByEntries = Object.entries(args.$orderBy);
     const fieldNames = orderByEntries.map(([field]) => field);
-    const remappedFields = await remapPropertyNames(
-      client,
-      objectApiName,
+    const remappedFields = remapPropertyNames(
+      objectType,
       fieldNames,
     );
 
@@ -462,7 +439,7 @@ export async function fetchObjectPage<
       snapshot: useSnapshot,
     },
     client,
-    objectType.apiName,
+    objectType,
   );
 
   const r = await OntologiesV2.OntologyObjectSets.load(

@@ -362,49 +362,37 @@ describe(fetchPage, () => {
   });
 
   describe("remapPropertyNames", () => {
-    it("returns original names when no qualified names are present", async () => {
-      const client = createMinimalClient(
-        metadata,
-        "https://foo",
-        async () => "",
-      );
+    it("returns original names for objects", () => {
+      const objectType = {
+        type: "object" as const,
+        apiName: "SimpleObject",
+      };
 
-      const result = await remapPropertyNames(
-        client,
-        "SimpleObject", // No qualified name
+      const result = remapPropertyNames(
+        objectType,
         ["firstName", "lastName"],
       );
 
       expect(result).toEqual(["firstName", "lastName"]);
     });
 
-    it("remaps simple names to fully qualified names", async () => {
-      const client = createMinimalClient(
-        metadata,
-        "https://foo",
-        async () => "",
+    it("returns original names when objectOrInterface is undefined", () => {
+      const result = remapPropertyNames(
+        undefined,
+        ["firstName", "lastName"],
       );
 
-      client.ontologyProvider.getObjectDefinition = async (
-        apiName: string,
-      ) => ({
-        apiName: "com.example.namespace.MyObject",
-        rid: "ri.object.1",
-        properties: {
-          "com.example.namespace.firstName": { type: "string" },
-          "com.example.namespace.lastName": { type: "string" },
-          "com.example.namespace.age": { type: "integer" },
-        },
-        links: {},
-        inverseLinks: {},
-        implementsInterfaces: [],
-        implementsInterfaces2: {},
-        sharedPropertyTypeMapping: {},
-      } as any);
+      expect(result).toEqual(["firstName", "lastName"]);
+    });
 
-      const result = await remapPropertyNames(
-        client,
-        "com.example.namespace.MyObject",
+    it("remaps simple names to fully qualified names for interfaces", () => {
+      const interfaceType = {
+        type: "interface" as const,
+        apiName: "com.example.namespace.MyInterface",
+      };
+
+      const result = remapPropertyNames(
+        interfaceType,
         ["firstName", "lastName", "age"],
       );
 
@@ -415,39 +403,35 @@ describe(fetchPage, () => {
       ]);
     });
 
-    it("preserves already fully qualified names", async () => {
-      const client = createMinimalClient(
-        metadata,
-        "https://foo",
-        async () => "",
-      );
+    it("preserves already fully qualified names for interfaces", () => {
+      const interfaceType = {
+        type: "interface" as const,
+        apiName: "com.example.namespace.MyInterface",
+      };
 
-      client.ontologyProvider.getObjectDefinition = async (
-        apiName: string,
-      ) => ({
-        apiName: "com.example.namespace.MyObject",
-        rid: "ri.object.1",
-        properties: {
-          "com.example.namespace.firstName": { type: "string" },
-          "com.example.namespace.lastName": { type: "string" },
-        },
-        links: {},
-        inverseLinks: {},
-        implementsInterfaces: [],
-        implementsInterfaces2: {},
-        sharedPropertyTypeMapping: {},
-      } as any);
-
-      const result = await remapPropertyNames(
-        client,
-        "com.example.namespace.MyObject",
+      const result = remapPropertyNames(
+        interfaceType,
         ["com.example.namespace.firstName", "lastName"],
       );
 
       expect(result).toEqual([
-        "com.example.namespace.firstName", // Already qualified, kept as-is
-        "com.example.namespace.lastName", // Remapped
+        "com.example.namespace.firstName",
+        "com.example.namespace.lastName",
       ]);
+    });
+
+    it("returns original names for interfaces without namespace", () => {
+      const interfaceType = {
+        type: "interface" as const,
+        apiName: "MyInterface",
+      };
+
+      const result = remapPropertyNames(
+        interfaceType,
+        ["firstName", "lastName"],
+      );
+
+      expect(result).toEqual(["firstName", "lastName"]);
     });
   });
 });
