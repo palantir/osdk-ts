@@ -1,5 +1,15 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.5.0-beta.2
+
+### Minor Changes
+
+- 7cdab1d: Update platform sdk dependencies
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.0-beta.2
+
 ## 2.4.0-beta.17
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @osdk/maker-experimental
 
+## 0.3.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [76905f5]
+  - @osdk/api@2.5.0-beta.2
+
 ## 0.2.0-beta.0
 
 ### Minor Changes

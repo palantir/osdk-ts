@@ -1,5 +1,22 @@
 # @osdk/client
 
+## 2.5.0-beta.2
+
+### Minor Changes
+
+- b05075d: Add fix for interface links.
+- 7cdab1d: Update platform sdk dependencies
+- 76905f5: Remove undefined type from aggregation $group value
+- 48d52b7: Parallelize network request for getting object metadata when doing simple object fetches.
+
+### Patch Changes
+
+- Updated dependencies [7cdab1d]
+- Updated dependencies [76905f5]
+  - @osdk/generator-converters@2.5.0-beta.2
+  - @osdk/api@2.5.0-beta.2
+  - @osdk/client.unstable@2.5.0-beta.2
+
 ## 2.4.0-beta.17
 
 ### Minor Changes
