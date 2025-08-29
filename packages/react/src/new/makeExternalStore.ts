@@ -20,8 +20,8 @@ import type {
 } from "@osdk/client/unstable-do-not-use";
 
 export type Snapshot<X> =
-  | X
-  | (Partial<X> & { error: Error })
+  | X & { error?: Error }
+  | (Partial<X> & { error?: Error })
   | undefined;
 
 export function makeExternalStore<X>(
@@ -40,7 +40,7 @@ export function makeExternalStore<X>(
   function subscribe(notifyUpdate: () => void) {
     const obs = createObservation({
       next: (payload) => {
-        lastResult = payload;
+        lastResult = payload as Snapshot<X>;
         notifyUpdate();
       },
       error: (error: unknown) => {

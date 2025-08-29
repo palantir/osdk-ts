@@ -32,7 +32,7 @@ import type {
   Status,
 } from "./common.js";
 
-export namespace ObserveLink {
+export namespace ObserveLinks {
   export interface Options<
     Q extends ObjectTypeDefinition | InterfaceDefinition,
     L extends keyof CompileTimeMetadata<Q>["links"] & string,
@@ -66,9 +66,11 @@ export interface ObserveLinks {
   >(
     objects: Osdk.Instance<T> | ReadonlyArray<Osdk.Instance<T>>,
     linkName: L,
-    options: Omit<ObserveLink.Options<T, L>, "srcType" | "pk">,
+    options: Omit<ObserveLinks.Options<T, L>, "srcType" | "pk">,
     subFn: Observer<
-      ObserveLink.CallbackArgs<CompileTimeMetadata<T>["links"][L]["targetType"]>
+      ObserveLinks.CallbackArgs<
+        CompileTimeMetadata<T>["links"][L]["targetType"]
+      >
     >,
   ): Unsubscribable;
 }
