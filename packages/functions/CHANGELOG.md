@@ -1,5 +1,11 @@
 # @osdk/functions
 
+## 1.1.6
+
+### Patch Changes
+
+- 4ed3c03: Add Principal Type
+
 ## 1.1.5
 
 ### Patch Changes
