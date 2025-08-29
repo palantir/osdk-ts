@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M12 2A10 10 0 1 1 2 12" stroke="currentColor" strokeWidth="3" strokeLinecap="round">
+    <animateTransform
+      attributeName="transform"
+      attributeType="XML"
+      type="rotate"
+      from="0 12 12"
+      to="360 12 12"
+      dur="1s"
+      repeatCount="indefinite"
+    />
+  </path>
+</svg> 
