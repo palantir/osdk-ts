@@ -135,7 +135,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
     try {
       // Check if action is being applied
       if (isPending) {
-        throw new Error("Cannot validate while action is pending");
+        return undefined;
       }
 
       // Abort any existing validation
