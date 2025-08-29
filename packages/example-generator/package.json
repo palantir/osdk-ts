@@ -41,7 +41,7 @@
     "find-up": "^7.0.0",
     "globby": "^14.0.1",
     "jest-diff": "^29.7.0",
-    "tmp": "^0.2.3",
+    "tmp": "^0.2.4",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
