@@ -30,6 +30,7 @@ import { createMinimalClient } from "../createMinimalClient.js";
 import {
   fetchPage,
   objectSetToSearchJsonV2,
+  remapPropertyNames,
   resolveInterfaceObjectSet,
 } from "../object/fetchPage.js";
 import {
@@ -357,6 +358,80 @@ describe(fetchPage, () => {
           nextPageToken: string | undefined;
           totalCount: string;
         }>();
+    });
+  });
+
+  describe("remapPropertyNames", () => {
+    it("returns original names for objects", () => {
+      const objectType = {
+        type: "object" as const,
+        apiName: "SimpleObject",
+      };
+
+      const result = remapPropertyNames(
+        objectType,
+        ["firstName", "lastName"],
+      );
+
+      expect(result).toEqual(["firstName", "lastName"]);
+    });
+
+    it("returns original names when objectOrInterface is undefined", () => {
+      const result = remapPropertyNames(
+        undefined,
+        ["firstName", "lastName"],
+      );
+
+      expect(result).toEqual(["firstName", "lastName"]);
+    });
+
+    it("remaps simple names to fully qualified names for interfaces", () => {
+      const interfaceType = {
+        type: "interface" as const,
+        apiName: "com.example.namespace.MyInterface",
+      };
+
+      const result = remapPropertyNames(
+        interfaceType,
+        ["firstName", "lastName", "age"],
+      );
+
+      expect(result).toEqual([
+        "com.example.namespace.firstName",
+        "com.example.namespace.lastName",
+        "com.example.namespace.age",
+      ]);
+    });
+
+    it("preserves already fully qualified names for interfaces", () => {
+      const interfaceType = {
+        type: "interface" as const,
+        apiName: "com.example.namespace.MyInterface",
+      };
+
+      const result = remapPropertyNames(
+        interfaceType,
+        ["com.example.namespace.firstName", "lastName"],
+      );
+
+      expect(result).toEqual([
+        "com.example.namespace.firstName",
+        "com.example.namespace.lastName",
+      ]);
+    });
+
+    it("returns original names for interfaces without namespace", () => {
+      const interfaceType = {
+        type: "interface" as const,
+        apiName: "MyInterface",
+      };
+
+      const result = remapPropertyNames(
+        interfaceType,
+        ["firstName", "lastName"],
+      );
+
+      expect(result).toEqual(["firstName", "lastName"]);
     });
   });
 });
