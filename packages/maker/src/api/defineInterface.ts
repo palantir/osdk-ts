@@ -18,6 +18,7 @@ import invariant from "tiny-invariant";
 import {
   namespace,
   ontologyDefinition,
+  sanitize,
   updateOntology,
   withoutNamespace,
 } from "./defineOntology.js";
@@ -70,23 +71,39 @@ export function defineInterface(
     Object.entries(interfaceDef.properties ?? {}).map<
       [string, { required: boolean; sharedPropertyType: SharedPropertyType }]
     >(
-      ([propApiName, type]) => {
+      ([unNamespacedPropApiName, type]) => {
         if (typeof type === "object" && "propertyDefinition" in type) {
-          return [namespace + propApiName, {
+          // If the property is an imported SPT, use the SPT's apiName
+          const apiName = sanitize(
+            namespace,
+            typeof type.propertyDefinition === "object"
+              && "apiName" in type.propertyDefinition
+              ? type.propertyDefinition.apiName
+              : unNamespacedPropApiName,
+          );
+
+          return [apiName, {
             required: type.required,
             sharedPropertyType: unifyBasePropertyDefinition(
               namespace,
-              propApiName,
+              unNamespacedPropApiName,
               type.propertyDefinition,
             ),
           }];
         }
 
-        return [namespace + propApiName, {
+        // If the property is an imported SPT, use the SPT's apiName
+        const apiName = sanitize(
+          namespace,
+          typeof type === "object" && "apiName" in type
+            ? type.apiName
+            : unNamespacedPropApiName,
+        );
+        return [apiName, {
           required: true,
           sharedPropertyType: unifyBasePropertyDefinition(
             namespace,
-            propApiName,
+            unNamespacedPropApiName,
             type,
           ),
         }];
