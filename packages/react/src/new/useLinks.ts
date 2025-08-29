@@ -16,13 +16,13 @@
 
 import type { LinkedType, LinkNames } from "@osdk/api";
 import type {
-  CompileTimeMetadata,
   InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
   WhereClause,
 } from "@osdk/client";
+import type { ObserveLinks } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
@@ -108,7 +108,7 @@ export function useLinks<
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
-      return makeExternalStore(
+      return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
         (observer) =>
           observableClient.observeLinks(
             objectsArray,
@@ -140,19 +140,13 @@ export function useLinks<
     ],
   );
 
-  const payload = React.useSyncExternalStore(subscribe, getSnapShot) as {
-    resolvedLinks?: Osdk.Instance<
-      CompileTimeMetadata<T>["links"][L]["targetType"]
-    >[];
-    status?: string;
-    isOptimistic?: boolean;
-    error?: Error;
-    fetchMore?: () => Promise<unknown>;
-    hasMore?: boolean;
-  } | undefined;
+  const payload = React.useSyncExternalStore(
+    subscribe,
+    getSnapShot,
+  );
 
   return {
-    links: payload?.resolvedLinks,
+    links: payload?.resolvedList,
     isLoading: payload?.status === "loading",
     isOptimistic: payload?.isOptimistic ?? false,
     error: payload?.error,
