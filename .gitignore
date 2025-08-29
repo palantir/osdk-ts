@@ -41,7 +41,3 @@ tsup.config.bundled_*.mjs
 vitest.config.mts.timestamp-*
 
 vitest.workspace.ts
-
-.idea/
-packages/client/src/observable/internal/list/
-packages/client/src/observable/internal/object/
