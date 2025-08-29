@@ -55,6 +55,7 @@ export class FauxOntology {
       ontology,
       queryTypes: {},
       sharedPropertyTypes: {},
+      valueTypes: {},
     };
   }
 
@@ -95,6 +96,7 @@ export class FauxOntology {
         request.interfaceTypes,
       ),
       sharedPropertyTypes: {},
+      valueTypes: {},
     };
   }
 
