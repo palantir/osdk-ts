@@ -472,7 +472,7 @@ describe("ExtractOptions", () => {
   });
 
   describe("Interface casting works as intended", () => {
-    it("mapping as works", async () => {
+    it("mapping as with fqn property names works", async () => {
       expectTypeOf<
         MapPropNamesToInterface<
           quickerAndDirtier,
