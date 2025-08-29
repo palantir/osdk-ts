@@ -56,7 +56,10 @@ export async function expectStandardObserveObject<
 }> {
   const subFn = mockSingleSubCallback();
   defer(
-    cache.observeObject(type.apiName, primaryKey, {}, subFn),
+    cache.objects.observe({
+      apiName: type,
+      pk: primaryKey,
+    }, subFn),
   );
 
   expectSingleObjectCallAndClear(

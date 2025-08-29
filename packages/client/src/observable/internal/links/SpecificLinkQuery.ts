@@ -24,10 +24,9 @@ import type {
 import deepEqual from "fast-deep-equal";
 import { type Subject } from "rxjs";
 import { additionalContext } from "../../../Client.js";
-import type { ObserveLinkOptions } from "../../ObservableClient.js";
-// Direct link queries without needing to fetch the source object first
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
+import type { ObserveLink } from "../../ObservableClient/ObserveLink.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
@@ -50,7 +49,7 @@ import type { SpecificLinkCacheKey } from "./SpecificLinkCacheKey.js";
 export class SpecificLinkQuery extends BaseListQuery<
   SpecificLinkCacheKey,
   SpecificLinkPayload,
-  ObserveLinkOptions<ObjectTypeDefinition>
+  ObserveLink.Options<ObjectTypeDefinition, string>
 > {
   #sourceApiName: string;
   #sourcePk: PrimaryKeyType<ObjectTypeDefinition>;
@@ -69,7 +68,10 @@ export class SpecificLinkQuery extends BaseListQuery<
     store: Store,
     subject: Subject<SubjectPayload<SpecificLinkCacheKey>>,
     cacheKey: SpecificLinkCacheKey,
-    opts: ObserveLinkOptions<ObjectTypeDefinition>,
+    opts: ObserveLink.Options<
+      ObjectTypeDefinition,
+      string
+    >,
   ) {
     super(
       store,

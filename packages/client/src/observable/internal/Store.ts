@@ -18,31 +18,17 @@ import type {
   ActionDefinition,
   ActionEditResponse,
   ActionValidationResponse,
-  CompileTimeMetadata,
   InterfaceDefinition,
   Logger,
   ObjectTypeDefinition,
-  Osdk,
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
-import type { Observer } from "rxjs";
 import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
-import type { SpecificLinkPayload } from "../LinkPayload.js";
-import type { ListPayload } from "../ListPayload.js";
-import type { ObjectPayload } from "../ObjectPayload.js";
-import type {
-  ObserveLinkOptions,
-  ObserveListOptions,
-  ObserveObjectOptions,
-  OrderBy,
-  Unsubscribable,
-} from "../ObservableClient.js";
-import type { ObserveLink } from "../ObservableClient/ObserveLink.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./ActionApplication.js";
 import { CacheKeys } from "./CacheKeys.js";
@@ -54,13 +40,9 @@ import {
 } from "./Changes.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import { Entry, Layer } from "./Layer.js";
-import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
-import { SpecificLinkQuery } from "./links/SpecificLinkQuery.js";
-import type { ListCacheKey } from "./ListCacheKey.js";
-import type { ListQueryOptions } from "./ListQuery.js";
-import { ListQuery } from "./ListQuery.js";
-import type { ObjectCacheKey } from "./ObjectQuery.js";
-import { ObjectQuery } from "./ObjectQuery.js";
+import { LinksHelper } from "./links/LinksHelper.js";
+import { ListsHelper } from "./list/ListsHelper.js";
+import { ObjectsHelper } from "./object/ObjectsHelper.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { Query } from "./Query.js";
@@ -173,11 +155,29 @@ export class Store {
   // continues to be true
   #finalizationRegistry: FinalizationRegistry<() => void>;
 
+  // these are hopefully temporary
+  lists: ListsHelper;
+  objects: ObjectsHelper;
+  links: LinksHelper;
+
   constructor(client: Client) {
     this.client = client;
     this.logger = client[additionalContext].logger?.child({}, {
       msgPrefix: "Store",
     });
+
+    this.lists = new ListsHelper(
+      this,
+      this.whereCanonicalizer,
+      this.orderByCanonicalizer,
+    );
+    this.objects = new ObjectsHelper(this);
+    this.links = new LinksHelper(
+      this,
+      this.whereCanonicalizer,
+      this.orderByCanonicalizer,
+    );
+
     this.#topLayer = this.#truthLayer;
     this.#cacheKeys = new CacheKeys(
       this.whereCanonicalizer,
@@ -366,134 +366,13 @@ export class Store {
     return this.whereCanonicalizer.canonicalize(where);
   }
 
-  public observeObject<T extends ObjectTypeDefinition | InterfaceDefinition>(
-    apiName: T["apiName"] | T,
-    pk: PrimaryKeyType<T>,
-    options: ObserveObjectOptions<T>,
-    subFn: Observer<ObjectPayload>,
-  ): Unsubscribable {
-    if (typeof apiName !== "string") {
-      apiName = apiName.apiName;
-    }
-
-    const query = this.getObjectQuery(apiName, pk);
-    this.retain(query.cacheKey);
-
-    if (options.mode !== "offline") {
-      query.revalidate(options.mode === "force")
-        .catch(e => {
-          subFn.error(e);
-          // we don't want observeObject() to return a promise,
-          // so we settle for logging an error here instead of
-          // dropping it on the floor.
-          if (this.logger) {
-            this.logger.error("Unhandled error in observeObject", e);
-          } else {
-            throw e;
-          }
-        });
-    }
-    const sub = query.subscribe(subFn);
-
-    return {
-      unsubscribe: () => {
-        sub.unsubscribe();
-        this.release(query.cacheKey);
-      },
-    };
-  }
-
-  public observeList<T extends ObjectTypeDefinition | InterfaceDefinition>(
-    options: ObserveListOptions<T>,
-    subFn: Observer<ListPayload>,
-  ): Unsubscribable {
-    // the ListQuery represents the shared state of the list
-    const query = this.getListQuery(
-      options.type,
-      options.where ?? {},
-      options.orderBy ?? {},
-      options,
-    );
-    this.retain(query.cacheKey);
-
-    if (options.mode !== "offline") {
-      query.revalidate(options.mode === "force").catch((x: unknown) => {
-        subFn.error(x);
-      });
-    }
-    const sub = query.subscribe(subFn);
-
-    if (options.streamUpdates) {
-      query.registerStreamUpdates(sub);
-    }
-
-    return {
-      unsubscribe: () => {
-        sub.unsubscribe();
-        this.release(query.cacheKey);
-      },
-    };
-  }
-
-  public observeLinks<
-    T extends ObjectTypeDefinition | InterfaceDefinition,
-    L extends keyof CompileTimeMetadata<T>["links"] & string,
-  >(
-    objects: Osdk.Instance<T> | Array<Osdk.Instance<T>>,
-    linkName: L,
-    options: ObserveLink.Options<
-      CompileTimeMetadata<T>["links"][L]["targetType"]
-    >,
-    subFn: Observer<SpecificLinkPayload>,
-  ): Unsubscribable {
-    const store = this;
-
-    // Convert to array if single object provided
-    const objectsArray = Array.isArray(objects) ? objects : [objects];
-
-    if (objectsArray.length === 0) {
-      // No objects to observe links for, return empty subscription
-      return { unsubscribe: () => {} };
-    }
-
-    const subsAndQueries = objectsArray.map(obj => {
-      const query = store.getSpecificLinkQuery(
-        { type: "object", apiName: obj.$apiName },
-        objectsArray[0].$primaryKey,
-        linkName,
-        options.where ?? {},
-        options.orderBy ?? {},
-        options,
-      );
-
-      store.retain(query.cacheKey);
-
-      if (options.mode !== "offline") {
-        query.revalidate(options.mode === "force").catch((x: unknown) => {
-          subFn.error(x);
-        });
-      }
-
-      return [query.subscribe(subFn), query] as const;
-    });
-
-    return {
-      unsubscribe: () => {
-        subsAndQueries.forEach(([sub, query]) => {
-          sub.unsubscribe();
-          store.release(query.cacheKey);
-        });
-      },
-    };
-  }
-
   peekQuery<K extends KnownCacheKey>(
     cacheKey: K,
   ): K["__cacheKey"]["query"] | undefined {
     return this.#queries.get(cacheKey) as K["__cacheKey"]["query"] | undefined;
   }
 
-  #getQuery<K extends KnownCacheKey>(
+  getQuery<K extends KnownCacheKey>(
     cacheKey: K,
     createQuery: () => K["__cacheKey"]["query"],
   ): K["__cacheKey"]["query"] {
@@ -503,96 +382,6 @@ export class Store {
       this.#queries.set(cacheKey, query);
     }
     return query;
-  }
-
-  public getSpecificLinkQuery<
-    T extends ObjectTypeDefinition | InterfaceDefinition,
-  >(
-    srcDef: Pick<T, "type" | "apiName">,
-    pk: PrimaryKeyType<T>,
-    linkName: keyof CompileTimeMetadata<T>["links"] & string,
-    where: WhereClause<T>,
-    orderBy: Record<string, "asc" | "desc" | undefined>,
-    opts: ObserveLinkOptions<T>,
-  ): SpecificLinkQuery {
-    const { apiName, type } = srcDef;
-
-    const canonWhere = this.whereCanonicalizer.canonicalize(where);
-    const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy);
-    const linkCacheKey = this.getCacheKey<SpecificLinkCacheKey>(
-      "specificLink",
-      apiName,
-      pk,
-      linkName,
-      canonWhere,
-      canonOrderBy,
-    );
-
-    return this.#getQuery(linkCacheKey, () => {
-      return new SpecificLinkQuery(
-        this,
-        this.getSubject(linkCacheKey),
-        linkCacheKey,
-        opts as ObserveLinkOptions<ObjectTypeDefinition>,
-      );
-    });
-  }
-
-  public getListQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
-    def: Pick<T, "type" | "apiName">,
-    where: WhereClause<T>,
-    orderBy: Record<string, "asc" | "desc" | undefined>,
-    opts: ListQueryOptions,
-  ): ListQuery {
-    const { apiName, type } = def;
-
-    const canonWhere = this.whereCanonicalizer.canonicalize(where);
-    const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy);
-    const listCacheKey = this.getCacheKey<ListCacheKey>(
-      "list",
-      type,
-      apiName,
-      canonWhere,
-      canonOrderBy,
-    );
-
-    return this.#getQuery(listCacheKey, () => {
-      return new ListQuery(
-        this,
-        this.getSubject(listCacheKey),
-        type,
-        apiName,
-        canonWhere,
-        canonOrderBy,
-        listCacheKey,
-        opts,
-      );
-    });
-  }
-
-  public getObjectQuery<T extends ObjectTypeDefinition>(
-    apiName: T["apiName"] | T,
-    pk: PrimaryKeyType<T>,
-  ): ObjectQuery {
-    if (typeof apiName !== "string") {
-      apiName = apiName.apiName;
-    }
-
-    const objectCacheKey = this.getCacheKey<ObjectCacheKey>(
-      "object",
-      apiName,
-      pk,
-    );
-
-    return this.#getQuery(objectCacheKey, () =>
-      new ObjectQuery(
-        this,
-        this.getSubject(objectCacheKey),
-        apiName,
-        pk,
-        objectCacheKey,
-        { dedupeInterval: 0 },
-      ));
   }
 
   public getValue<K extends KnownCacheKey>(
@@ -696,8 +485,10 @@ export class Store {
       apiName = apiName.apiName;
     }
 
-    return this.getObjectQuery(apiName, pk)
-      .revalidate(/* force */ true);
+    return this.objects.getQuery({
+      apiName,
+      pk,
+    }).revalidate(/* force */ true);
   }
 
   async maybeRevalidateQueries(
@@ -790,26 +581,4 @@ export class Store {
   release(cacheKey: KnownCacheKey): void {
     this.#refCounts.release(cacheKey);
   }
-}
-
-export async function invalidateList<T extends ObjectTypeDefinition>(
-  store: Store,
-  args: {
-    type: Pick<T, "apiName" | "type">;
-    where?: WhereClause<T> | SimpleWhereClause;
-    orderBy?: OrderBy<T>;
-  },
-): Promise<void> {
-  const where = store.whereCanonicalizer.canonicalize(args.where ?? {});
-  const orderBy = store.orderByCanonicalizer.canonicalize(args.orderBy ?? {});
-
-  const cacheKey = store.getCacheKey<ListCacheKey>(
-    "list",
-    args.type.type,
-    args.type.apiName,
-    where,
-    orderBy as Canonical<OrderBy<T>>,
-  );
-
-  await store.peekQuery(cacheKey)?.revalidate(true);
 }

@@ -19,6 +19,7 @@ import type {
   InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
+  PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
 import type { Unsubscribable } from "../Unsubscribable.js";
@@ -34,11 +35,14 @@ import type {
 export namespace ObserveLink {
   export interface Options<
     Q extends ObjectTypeDefinition | InterfaceDefinition,
+    L extends keyof CompileTimeMetadata<Q>["links"] & string,
   > extends CommonObserveOptions, ObserveOptions {
-    type: Pick<Q, "apiName" | "type">;
-    where?: WhereClause<Q>;
+    srcType: Pick<Q, "type" | "apiName">;
+    pk: PrimaryKeyType<Q>;
+    linkName: L;
+    where?: WhereClause<CompileTimeMetadata<Q>["links"][L]["targetType"]>;
     pageSize?: number;
-    orderBy?: OrderBy<Q>;
+    orderBy?: OrderBy<CompileTimeMetadata<Q>["links"][L]["targetType"]>;
     invalidationMode?: InvalidationMode;
     expectedLength?: number;
   }
@@ -62,9 +66,7 @@ export interface ObserveLinks {
   >(
     objects: Osdk.Instance<T> | ReadonlyArray<Osdk.Instance<T>>,
     linkName: L,
-    options: ObserveLink.Options<
-      CompileTimeMetadata<T>["links"][L]["targetType"]
-    >,
+    options: Omit<ObserveLink.Options<T, L>, "srcType" | "pk">,
     subFn: Observer<
       ObserveLink.CallbackArgs<CompileTimeMetadata<T>["links"][L]["targetType"]>
     >,

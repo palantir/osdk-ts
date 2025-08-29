@@ -83,12 +83,11 @@ export async function expectStandardObserveLink<
 }> {
   const linkSubFn = mockLinkSubCallback();
   defer(
-    store.observeLinks(
-      srcObject,
-      srcLinkName,
-      { type: targetType },
-      linkSubFn,
-    ),
+    store.links.observe({
+      linkName: srcLinkName,
+      srcType: { type: "object", apiName: srcObject.$apiName },
+      pk: srcObject.$primaryKey,
+    }, linkSubFn),
   );
 
   await waitForCall(linkSubFn);

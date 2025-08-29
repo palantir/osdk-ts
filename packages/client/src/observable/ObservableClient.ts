@@ -51,6 +51,8 @@ export namespace ObservableClient {
 export interface ObserveObjectOptions<
   T extends ObjectTypeDefinition | InterfaceDefinition,
 > extends ObserveOptions {
+  apiName: T["apiName"] | T;
+  pk: PrimaryKeyType<T>;
   select?: PropertyKeys<T>[];
 }
 
@@ -68,17 +70,6 @@ export interface ObserveListOptions<
   invalidationMode?: InvalidationMode;
   expectedLength?: number;
   streamUpdates?: boolean;
-}
-
-export interface ObserveLinkOptions<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
-> extends CommonObserveOptions, ObserveOptions {
-  type: Pick<Q, "apiName" | "type">;
-  where?: WhereClause<Q>;
-  pageSize?: number;
-  orderBy?: OrderBy<Q>;
-  invalidationMode?: InvalidationMode;
-  expectedLength?: number;
 }
 
 // TODO: Rename this from `ObserveObjectArgs` => `ObserveObjectCallbackArgs`. Not doing it now to reduce churn

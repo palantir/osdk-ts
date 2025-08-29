@@ -657,12 +657,12 @@ export function updateList<
     );
   }
 
-  const query = store.getListQuery(
+  const query = store.lists.getQuery({
+    ...opts,
     type,
-    where ?? {},
-    orderBy ?? {},
-    opts,
-  );
+    where: where ?? {},
+    orderBy: orderBy ?? {},
+  });
 
   store.batch({ optimisticId }, (batch) => {
     const objectCacheKeys = storeOsdkInstances(store, objects, batch);
@@ -684,7 +684,10 @@ export function updateObject<T extends ObjectOrInterfaceDefinition>(
   value: Osdk.Instance<T>,
   { optimisticId }: { optimisticId?: OptimisticId } = {},
 ): Osdk.Instance<T> {
-  const query = store.getObjectQuery(value.$apiName, value.$primaryKey);
+  const query = store.objects.getQuery({
+    apiName: value.$apiName,
+    pk: value.$primaryKey,
+  });
 
   store.batch({ optimisticId }, (batch) => {
     return query.writeToStore(
