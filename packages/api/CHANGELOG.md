@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.5.0-beta.2
+
+### Minor Changes
+
+- 76905f5: Remove undefined type from aggregation $group value
+
 ## 2.4.0-beta.17
 
 ## 2.4.0-beta.16
