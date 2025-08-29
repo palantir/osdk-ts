@@ -1,5 +1,5 @@
 ---
-"@osdk/react": minor
+"@osdk/react": patch
 ---
 
 Make useOsdkAction validate less restrictive
