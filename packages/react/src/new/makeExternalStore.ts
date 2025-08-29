@@ -31,7 +31,7 @@ export function makeExternalStore<X>(
   subscribe: (notifyUpdate: () => void) => () => void;
   getSnapShot: () => Snapshot<X>;
 } {
-  let lastResult: Snapshot<X> | undefined;
+  let lastResult: Snapshot<X>;
 
   function getSnapShot(): Snapshot<X> {
     return lastResult;
