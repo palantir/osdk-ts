@@ -20,12 +20,13 @@ import type { PublicOauthClientOptions } from "./createPublicOauthClient.js";
 interface ProcessedPublicOauthClientOptions extends
   Omit<
     Required<PublicOauthClientOptions>,
-    "loginPage" | "refreshTokenMarker" | "scopes"
+    "loginPage" | "refreshTokenMarker" | "scopes" | "goFn"
   >
 {
   loginPage?: string;
   refreshTokenMarker?: string;
   joinedScopes: string;
+  goFn?: (url: string | URL) => void;
 }
 
 export function processOptionsAndAssignDefaults(
@@ -37,6 +38,7 @@ export function processOptionsAndAssignDefaults(
   scopes?: string[],
   fetchFn?: typeof globalThis.fetch,
   ctxPath?: string,
+  goFn?: (url: string | URL) => void,
 ): ProcessedPublicOauthClientOptions {
   let options: PublicOauthClientOptions = {};
 
@@ -54,6 +56,7 @@ export function processOptionsAndAssignDefaults(
       scopes,
       fetchFn,
       ctxPath,
+      goFn,
     };
   }
 
@@ -78,5 +81,6 @@ export function processOptionsAndAssignDefaults(
     fetchFn: options.fetchFn ?? globalThis.fetch,
     ctxPath: options.ctxPath ?? "multipass",
     refreshTokenMarker: options.refreshTokenMarker,
+    goFn: options.goFn,
   };
 }
