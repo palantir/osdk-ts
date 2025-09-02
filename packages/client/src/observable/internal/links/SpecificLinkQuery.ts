@@ -26,7 +26,7 @@ import { type Subject } from "rxjs";
 import { additionalContext } from "../../../Client.js";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
-import type { ObserveLink } from "../../ObservableClient/ObserveLink.js";
+import type { ObserveLinks } from "../../ObservableClient/ObserveLink.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
@@ -49,7 +49,7 @@ import type { SpecificLinkCacheKey } from "./SpecificLinkCacheKey.js";
 export class SpecificLinkQuery extends BaseListQuery<
   SpecificLinkCacheKey,
   SpecificLinkPayload,
-  ObserveLink.Options<ObjectTypeDefinition, string>
+  ObserveLinks.Options<ObjectTypeDefinition, string>
 > {
   #sourceApiName: string;
   #sourcePk: PrimaryKeyType<ObjectTypeDefinition>;
@@ -68,7 +68,7 @@ export class SpecificLinkQuery extends BaseListQuery<
     store: Store,
     subject: Subject<SubjectPayload<SpecificLinkCacheKey>>,
     cacheKey: SpecificLinkCacheKey,
-    opts: ObserveLink.Options<
+    opts: ObserveLinks.Options<
       ObjectTypeDefinition,
       string
     >,

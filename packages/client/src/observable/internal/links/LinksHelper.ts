@@ -18,7 +18,7 @@ import type { CompileTimeMetadata, ObjectTypeDefinition } from "@osdk/api";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 
 import type { Observer } from "../../ObservableClient/common.js";
-import type { ObserveLink } from "../../ObservableClient/ObserveLink.js";
+import type { ObserveLinks } from "../../ObservableClient/ObserveLink.js";
 import { AbstractHelper } from "../AbstractHelper.js";
 import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
@@ -32,19 +32,19 @@ export interface LinksHelper {
     T extends ObjectTypeDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
   >(
-    options: ObserveLink.Options<T, L>,
+    options: ObserveLinks.Options<T, L>,
     subFn: Observer<SpecificLinkPayload>,
   ): QuerySubscription<SpecificLinkQuery>;
 
   getQuery<
     T extends ObjectTypeDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
-  >(options: ObserveLink.Options<T, L>): SpecificLinkQuery;
+  >(options: ObserveLinks.Options<T, L>): SpecificLinkQuery;
 }
 
 export class LinksHelper extends AbstractHelper<
   SpecificLinkQuery,
-  ObserveLink.Options<ObjectTypeDefinition, string>
+  ObserveLinks.Options<ObjectTypeDefinition, string>
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
@@ -63,7 +63,7 @@ export class LinksHelper extends AbstractHelper<
   getQuery<
     T extends ObjectTypeDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,
-  >(options: ObserveLink.Options<T, L>): SpecificLinkQuery {
+  >(options: ObserveLinks.Options<T, L>): SpecificLinkQuery {
     const { apiName } = options.srcType;
 
     const canonWhere = this.whereCanonicalizer.canonicalize(

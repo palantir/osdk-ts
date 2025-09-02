@@ -38,7 +38,7 @@ import type {
   Unsubscribable,
 } from "../ObservableClient.js";
 import type { Observer } from "../ObservableClient/common.js";
-import type { ObserveLink } from "../ObservableClient/ObserveLink.js";
+import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
 import type { Canonical } from "./Canonical.js";
 import type { Store } from "./Store.js";
 import { UnsubscribableWrapper } from "./UnsubscribableWrapper.js";
@@ -98,9 +98,11 @@ export class ObservableClientImpl implements ObservableClient {
   >(
     objects: Osdk.Instance<T> | Array<Osdk.Instance<T>>,
     linkName: L,
-    options: ObserveLink.Options<T, L>,
+    options: ObserveLinks.Options<T, L>,
     subFn: Observer<
-      ObserveLink.CallbackArgs<CompileTimeMetadata<T>["links"][L]["targetType"]>
+      ObserveLinks.CallbackArgs<
+        CompileTimeMetadata<T>["links"][L]["targetType"]
+      >
     >,
   ) => Unsubscribable = (objects, linkName, options, subFn) => {
     // Convert to array if single object provided
