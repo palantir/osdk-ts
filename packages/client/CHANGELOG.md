@@ -1,5 +1,31 @@
 # @osdk/client
 
+## 2.5.0-beta.2
+
+### Minor Changes
+
+- b05075d: Add fix for interface links.
+- 7160276: Add order by relevance support to nearest neighbors
+- 7cdab1d: Update platform sdk dependencies
+- b9e9a88: Refactor Observable Client with enhanced observer architecture
+
+  - Restructure observable implementation with dedicated observer classes (LinkObservers, ListObservers, ObjectObservers)
+  - Improve type safety for link observation operations with enhanced generic constraints
+  - Add QuerySubscription and UnsubscribableWrapper for better encapsulation
+  - Maintain API compatibility while improving internal architecture
+
+- 76905f5: Remove undefined type from aggregation $group value
+- 48d52b7: Parallelize network request for getting object metadata when doing simple object fetches.
+
+### Patch Changes
+
+- Updated dependencies [7160276]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [76905f5]
+  - @osdk/api@2.5.0-beta.2
+  - @osdk/generator-converters@2.5.0-beta.2
+  - @osdk/client.unstable@2.5.0-beta.2
+
 ## 2.4.0-beta.17
 
 ### Minor Changes
