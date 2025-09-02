@@ -46,6 +46,7 @@ import { ObjectsHelper } from "./object/ObjectsHelper.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { Query } from "./Query.js";
+import { RdpCanonicalizer } from "./RdpCanonicalizer.js";
 import { RefCounts } from "./RefCounts.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 import { tombstone } from "./tombstone.js";
@@ -126,6 +127,7 @@ function createInitEntry(cacheKey: KnownCacheKey): Entry<any> {
 export class Store {
   whereCanonicalizer: WhereClauseCanonicalizer = new WhereClauseCanonicalizer();
   orderByCanonicalizer: OrderByCanonicalizer = new OrderByCanonicalizer();
+  rdpCanonicalizer: RdpCanonicalizer = new RdpCanonicalizer();
   #truthLayer: Layer = new Layer(undefined, undefined);
   #topLayer: Layer;
   client: Client;
@@ -170,6 +172,7 @@ export class Store {
       this,
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
+      this.rdpCanonicalizer,
     );
     this.objects = new ObjectsHelper(this);
     this.links = new LinksHelper(
@@ -182,6 +185,7 @@ export class Store {
     this.#cacheKeys = new CacheKeys(
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
+      this.rdpCanonicalizer,
       (k) => {
         if (DEBUG_REFCOUNTS) {
           const cacheKeyType = k.type;
@@ -457,7 +461,7 @@ export class Store {
     };
 
     const retVal = batchFn(batchContext);
-    this.maybeRevalidateQueries(changes, optimisticId).catch(e => {
+    this.maybeRevalidateQueries(changes, optimisticId).catch((e: unknown) => {
       // we don't want batch() to return a promise,
       // so we settle for logging an error here instead of
       // dropping it on the floor.

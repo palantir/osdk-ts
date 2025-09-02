@@ -28,6 +28,7 @@ import groupBy from "object.groupby";
 import type { Connectable, Observable, Subscription } from "rxjs";
 import invariant from "tiny-invariant";
 import { additionalContext, type Client } from "../../Client.js";
+import type { DerivedPropertyRuntimeMetadata } from "../../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import {
   ObjectDefRef,
@@ -51,6 +52,7 @@ import { type Changes, DEBUG_ONLY__changesToString } from "./Changes.js";
 import { createCollectionConnectable } from "./createCollectionConnectable.js";
 import { isObjectInstance } from "./isObjectInstance.js";
 import type { Entry } from "./Layer.js";
+import type { ListCacheKey, ListStorageData } from "./ListCacheKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "./objectMatchesWhereClause.js";
 import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
@@ -64,21 +66,6 @@ import {
 } from "./sorting/SortingStrategy.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
-export interface ListStorageData extends CollectionStorageData {}
-
-export interface ListCacheKey extends
-  CacheKey<
-    "list",
-    ListStorageData,
-    ListQuery,
-    [
-      type: "object" | "interface",
-      apiName: string,
-      whereClause: Canonical<SimpleWhereClause>,
-      orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
-    ]
-  > //
-{}
 
 export interface BaseListCacheKey<
   T_Type extends string,
@@ -91,6 +78,7 @@ export const API_NAME_IDX = 1;
 export const TYPE_IDX = 0;
 export const WHERE_IDX = 2;
 export const ORDER_BY_IDX = 3;
+export const RDP_IDX = 4;
 
 export interface ListQueryOptions extends CommonObserveOptions {
   pageSize?: number;
@@ -625,6 +613,7 @@ export class ListQuery extends BaseListQuery<
   // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
+  #rdpMetadata: DerivedPropertyRuntimeMetadata;
 
   /**
    * Register changes to the cache specific to ListQuery
@@ -638,8 +627,8 @@ export class ListQuery extends BaseListQuery<
     subject: Observable<SubjectPayload<ListCacheKey>>,
     apiType: "object" | "interface",
     apiName: string,
-    whereClause: Canonical<SimpleWhereClause>,
-    orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
+    objectSet: ObjectSet<ObjectTypeDefinition>,
+    rdpMetadata: DerivedPropertyRuntimeMetadata,
     cacheKey: ListCacheKey,
     opts: ListQueryOptions,
   ) {
@@ -661,13 +650,13 @@ export class ListQuery extends BaseListQuery<
 
     this.#type = apiType;
     this.#apiName = apiName;
-    this.#whereClause = whereClause;
-    this.#orderBy = orderBy;
-    this.#objectSet = store.client({
-      type: this.#type,
-      apiName: this.#apiName,
-    } as ObjectTypeDefinition)
-      .where(this.#whereClause);
+    this.#whereClause = cacheKey.otherKeys[2];
+    this.#orderBy = cacheKey.otherKeys[3];
+
+    // Use the provided ObjectSet and RDP metadata
+    this.#objectSet = objectSet;
+    this.#rdpMetadata = rdpMetadata;
+
     // Initialize the sorting strategy
     this.sortingStrategy = new OrderBySortingStrategy(
       this.#apiName,
@@ -771,8 +760,20 @@ export class ListQuery extends BaseListQuery<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (this.cacheKey.otherKeys[1] === objectType) {
+    // Check if the main object type matches
+    if (this.#apiName === objectType) {
       // Only invalidate lists for the matching apiName
+      changes?.modified.add(this.cacheKey);
+      return this.revalidate(true);
+    }
+
+    // Check if RDPs depend on this object type
+    // Since we don't have traversal metadata yet, we need to conservatively invalidate
+    // whenever there are RDPs and any object type changes
+    if (this.#rdpMetadata && Object.keys(this.#rdpMetadata).length > 0) {
+      // Without proper traversal metadata, we must assume any object type change
+      // could affect RDPs (since they can traverse to other object types)
+      // This is conservative but safe - we invalidate more than necessary
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }

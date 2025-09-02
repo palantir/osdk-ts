@@ -16,7 +16,6 @@
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { OrderBy } from "../../ObservableClient.js";
-import type { Canonical } from "../Canonical.js";
 import type { ListCacheKey } from "../ListCacheKey.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { Store } from "../Store.js";
@@ -29,15 +28,14 @@ export async function invalidateList<T extends ObjectTypeDefinition>(
     orderBy?: OrderBy<T>;
   },
 ): Promise<void> {
-  const where = store.whereCanonicalizer.canonicalize(args.where ?? {});
-  const orderBy = store.orderByCanonicalizer.canonicalize(args.orderBy ?? {});
-
+  // Pass raw values to getCacheKey - they will be canonicalized in the factory
   const cacheKey = store.getCacheKey<ListCacheKey>(
-    "list",
-    args.type.type,
-    args.type.apiName,
-    where,
-    orderBy as Canonical<OrderBy<T>>,
+    "list" as any,
+    args.type.type as any,
+    args.type.apiName as any,
+    args.where ?? {} as any,
+    args.orderBy ?? {} as any,
+    undefined as any, // No RDP clause for tests
   );
 
   await store.peekQuery(cacheKey)?.revalidate(true);
