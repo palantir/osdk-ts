@@ -86,10 +86,7 @@ import { OntologyEntityTypeEnum } from "./types.js";
 // Added
 import { TYPESCRIPT_OSDK_SNIPPETS } from "@osdk/typescript-sdk-docs";
 import Mustache from "mustache";
-import {
-  interfaceSnippets,
-  objectSnippets,
-} from "./snippetTypes.js";
+import { interfaceSnippets, objectSnippets } from "./snippetTypes.js";
 // import { curlYml, javaYml, pythonYml, unityYml } from "@foundry/documentation-snippets" // this package does not exist
 
 // type -> apiName -> entity
@@ -1454,50 +1451,27 @@ function createCodeSnippets(
   if (packageName === undefined) {
     packageName = "";
   }
-  for (
-    const objectType of Object.values(
-      ontology[OntologyEntityTypeEnum.OBJECT_TYPE],
-    )
-  ) {
-    const snippet = generateObjectSnippet(objectType, packageName);
-    fs.writeFileSync(
-      path.join(outputDir, objectType.apiName),
-      JSON.stringify(snippet),
-    );
-  }
-  for (
-    const spt of Object.values(
-      ontology[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
-    )
-  ) {
-    generateSPTSnippet(spt);
-  }
-  for (
-    const interfaceType of Object.values(
-      ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
-    )
-  ) {
-    const snippet = generateInterfaceSnippet(interfaceType, packageName);
-    fs.writeFileSync(
-      path.join(outputDir, interfaceType.apiName),
-      JSON.stringify(snippet),
-    );
-  }
-  for (
-    const linkType of Object.values(ontology[OntologyEntityTypeEnum.LINK_TYPE])
-  ) {
-    generateLinkSnippet(linkType);
-  }
-  for (
-    const actionType of Object.values(
-      ontology[OntologyEntityTypeEnum.ACTION_TYPE],
-    )
-  ) {
-    const snippet = generateActionSnippet(actionType, packageName);
-    fs.writeFileSync(
-      path.join(outputDir, actionType.apiName),
-      JSON.stringify(snippet),
-    );
+  for (const type of Object.values(OntologyEntityTypeEnum)) {
+    for (const object of Object.values(ontology[type])) {
+      let snippet = {};
+      switch (type) {
+        case OntologyEntityTypeEnum.OBJECT_TYPE:
+          snippet = generateObjectSnippet(object, packageName);
+          break;
+        case OntologyEntityTypeEnum.ACTION_TYPE:
+          snippet = generateActionSnippet(object, packageName);
+          break;
+        case OntologyEntityTypeEnum.INTERFACE_TYPE:
+          snippet = generateInterfaceSnippet(object, packageName);
+          break;
+        default:
+          continue;
+      }
+      fs.writeFileSync(
+        path.join(outputDir, object.apiName),
+        JSON.stringify(snippet),
+      );
+    }
   }
 }
 
@@ -1513,7 +1487,6 @@ function generateInterfaceSnippet(
   };
 
   const allSnippets = getSnippets(interfaceSnippets, interfaceContext);
-  // console.log(allSnippets);
   return allSnippets;
 }
 
