@@ -35,6 +35,9 @@ export default async function main(
     valueTypesOutput: string;
     outputDir?: string;
     dependencies?: string;
+    codeSnippetFiles?: boolean;
+    codeSnippetPackageName?: string;
+    snippetFileOutputDir?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -84,6 +87,23 @@ export default async function main(
         type: "string",
         coerce: path.resolve,
       },
+      codeSnippetFiles: {
+        alias: "c",
+        describe: "Enable code snippet files creation",
+        type: "boolean",
+      },
+      codeSnippetPackageName: {
+        alias: "p",
+        describe:
+          "The package name that will be displayed in the code snippets",
+        type: "string",
+      },
+      snippetFileOutputDir: { // what should the default be?
+        alias: "f",
+        describe: "Directory for generated code snippet files",
+        type: "string",
+        coerce: path.resolve,
+      },
     })
     .parseAsync();
   let apiNamespace = "";
@@ -104,6 +124,9 @@ export default async function main(
     apiNamespace,
     commandLineOpts.outputDir,
     commandLineOpts.dependencies,
+    commandLineOpts.codeSnippetFiles,
+    commandLineOpts.codeSnippetPackageName,
+    commandLineOpts.snippetFileOutputDir,
   );
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
@@ -125,12 +148,18 @@ async function loadOntology(
   apiNamespace: string,
   outputDir: string | undefined,
   dependencyFile: string | undefined,
+  codeSnippetFiles: boolean | undefined,
+  snippetPackageName: string | undefined,
+  snippetFileOutputDir: string | undefined,
 ) {
   const q = await defineOntology(
     apiNamespace,
     async () => await import(input),
     outputDir,
     dependencyFile,
+    codeSnippetFiles,
+    snippetPackageName,
+    snippetFileOutputDir,
   );
   return q;
 }

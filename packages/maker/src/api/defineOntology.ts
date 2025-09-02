@@ -83,6 +83,15 @@ import type {
 } from "./types.js";
 import { OntologyEntityTypeEnum } from "./types.js";
 
+// Added
+import { TYPESCRIPT_OSDK_SNIPPETS } from "@osdk/typescript-sdk-docs";
+import Mustache from "mustache";
+import {
+  interfaceSnippets,
+  objectSnippets,
+} from "./snippetTypes.js";
+// import { curlYml, javaYml, pythonYml, unityYml } from "@foundry/documentation-snippets" // this package does not exist
+
 // type -> apiName -> entity
 /** @internal */
 export let ontologyDefinition: OntologyDefinition;
@@ -128,6 +137,9 @@ export async function defineOntology(
   body: () => void | Promise<void>,
   outputDir: string | undefined,
   dependencyFile?: string,
+  codeSnippetFiles?: boolean,
+  snippetPackageName?: string,
+  snippetFileOutputDir?: string,
 ): Promise<OntologyAndValueTypeIrs> {
   namespace = ns;
   dependencies = {};
@@ -164,6 +176,14 @@ export async function defineOntology(
   if (dependencyFile) {
     writeDependencyFile(dependencyFile);
   }
+  if (codeSnippetFiles) {
+    createCodeSnippets(
+      ontologyDefinition,
+      snippetPackageName,
+      snippetFileOutputDir,
+    );
+  }
+
   return {
     ontology: convertToWireOntologyIr(ontologyDefinition),
     valueType: convertOntologyToValueTypeIr(ontologyDefinition),
@@ -1418,4 +1438,130 @@ function convertCardinality(
     return "ONE_TO_MANY";
   }
   return "ONE_TO_ONE";
+}
+
+function createCodeSnippets(
+  ontology: OntologyDefinition,
+  packageName: string | undefined,
+  outputDir: string | undefined,
+) {
+  if (outputDir === undefined) {
+    outputDir = "./code-snippets";
+  }
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+  if (packageName === undefined) {
+    packageName = "";
+  }
+  for (
+    const objectType of Object.values(
+      ontology[OntologyEntityTypeEnum.OBJECT_TYPE],
+    )
+  ) {
+    const snippet = generateObjectSnippet(objectType, packageName);
+    fs.writeFileSync(
+      path.join(outputDir, objectType.apiName),
+      JSON.stringify(snippet),
+    );
+  }
+  for (
+    const spt of Object.values(
+      ontology[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
+    )
+  ) {
+    generateSPTSnippet(spt);
+  }
+  for (
+    const interfaceType of Object.values(
+      ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
+    )
+  ) {
+    const snippet = generateInterfaceSnippet(interfaceType, packageName);
+    fs.writeFileSync(
+      path.join(outputDir, interfaceType.apiName),
+      JSON.stringify(snippet),
+    );
+  }
+  for (
+    const linkType of Object.values(ontology[OntologyEntityTypeEnum.LINK_TYPE])
+  ) {
+    generateLinkSnippet(linkType);
+  }
+  for (
+    const actionType of Object.values(
+      ontology[OntologyEntityTypeEnum.ACTION_TYPE],
+    )
+  ) {
+    const snippet = generateActionSnippet(actionType, packageName);
+    fs.writeFileSync(
+      path.join(outputDir, actionType.apiName),
+      JSON.stringify(snippet),
+    );
+  }
+}
+
+function generateInterfaceSnippet(
+  interfaceType: InterfaceType,
+  packageName: string,
+) {
+  const interfaceContext = {
+    "interfaceApiName": interfaceType.apiName,
+    "packageName": packageName,
+    "objectOrInterfaceApiName": interfaceType.apiName,
+    "propertyNames": Object.keys(interfaceType.propertiesV2),
+  };
+
+  const allSnippets = getSnippets(interfaceSnippets, interfaceContext);
+  // console.log(allSnippets);
+  return allSnippets;
+}
+
+function generateObjectSnippet(objectType: ObjectType, packageName: string) {
+  const objectContext = {
+    "objectType": objectType.apiName,
+    "packageName": packageName,
+    "objectOrInterfaceApiName": objectType.apiName,
+  };
+  const allSnippets = getSnippets(objectSnippets, objectContext);
+  return allSnippets;
+}
+
+function generateSPTSnippet(spt: SharedPropertyType) {
+}
+
+function generateLinkSnippet(link: LinkType) {
+}
+
+function generateActionSnippet(actionType: ActionType, packageName: string) {
+  const actionContext = {
+    "actionApiName": actionType.apiName,
+    "packageName": packageName,
+  };
+  const allSnippets = getSnippets(objectSnippets, actionContext);
+  return allSnippets;
+}
+
+function getSnippets(snippetType: any, context: {}) {
+  const allSnippets = {};
+  for (
+    const templateName of Object.keys(snippetType).filter(key =>
+      isNaN(Number(key))
+    )
+  ) {
+    const diffVersions = TYPESCRIPT_OSDK_SNIPPETS.versions;
+    let latestTemplate = "";
+    for (const vers of Object.keys(diffVersions)) {
+      const currSnippets = diffVersions[vers].snippets;
+      for (const snippet of Object.keys(currSnippets)) {
+        if (snippet === templateName) {
+          latestTemplate = currSnippets[snippet][0].template;
+          break;
+        }
+      }
+    }
+    const renderedTemplate = Mustache.render(latestTemplate, context);
+    (allSnippets as any)[templateName] = renderedTemplate;
+  }
+  return allSnippets;
 }

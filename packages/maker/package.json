@@ -53,6 +53,7 @@
     "@osdk/foundry.ontologies": "2.25.0",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/typescript-sdk-docs": "^0.2.0",
     "@types/node": "^20.0.0",
     "@types/yargs": "^17.0.32",
     "typescript": "~5.5.4",
