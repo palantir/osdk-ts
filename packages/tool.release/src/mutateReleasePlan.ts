@@ -50,6 +50,12 @@ export function mutateReleasePlan(
           chalk.red(`${release.name}: ${release.type}`)
         }\n`;
       }
+
+      if (release.type === "major") {
+        throw new FailedWithUserMessage(
+          `Major changes are not allowed without explicit human intervention.`,
+        );
+      }
     }
   }
 

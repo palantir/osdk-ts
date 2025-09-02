@@ -1,5 +1,5 @@
 ---
-"@osdk/client": minor
+"@osdk/client": patch
 ---
 
 Refactor Observable Client with enhanced observer architecture
