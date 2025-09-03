@@ -1,5 +1,15 @@
 # @osdk/widget.vite-plugin
 
+## 3.2.0-beta.2
+
+### Minor Changes
+
+- 2b73c3c: Fix @osdk/widget.vite-plugin dependency on resolve-package-path in devDependencies rather than dependencies
+
+### Patch Changes
+
+- @osdk/widget.api@3.2.0-beta.2
+
 ## 3.1.0-beta.5
 
 ### Minor Changes
