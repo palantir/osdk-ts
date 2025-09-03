@@ -45,7 +45,7 @@ describe("extractWidgetConfig", () => {
 
   test("throws for invalid widget configuration", async () => {
     const INVALID_CONFIG = {
-      id: "Invalid-Id", // Invalid ID format
+      id: "Invalid-Id",
       name: "Test Widget",
       type: "workshop",
       parameters: {},
