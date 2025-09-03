@@ -226,10 +226,15 @@ export namespace Osdk {
           },
       ) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>;
 
-      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: {
-        ObjectMetadata: ObjectMetadata;
-        InterfaceMetadata: InterfaceMetadata;
-      };
+      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends
+        ObjectTypeDefinition ? {
+          ObjectMetadata: Q["__DefinitionMetadata"];
+          InterfaceMetadata: InterfaceMetadata;
+        }
+        : {
+          ObjectMetadata: ObjectMetadata;
+          InterfaceMetadata: InterfaceMetadata;
+        };
     }
     // We are hiding the $rid field if it wasn't requested as we want to discourage its use
     & (IsNever<OPTIONS> extends true ? {}
