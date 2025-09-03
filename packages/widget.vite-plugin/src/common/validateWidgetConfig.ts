@@ -36,7 +36,9 @@ export function validateWidgetConfig(
 
 function validateWidgetId(id: string): void {
   if (id.length > ID_MAX_LENGTH) {
-    throw new Error(`Widget id length can be at most ${ID_MAX_LENGTH}`);
+    throw new Error(
+      `Widget id length can be at most ${ID_MAX_LENGTH} characters`,
+    );
   }
   if (!ID_PATTERN.test(id)) {
     throw new Error(
@@ -47,27 +49,31 @@ function validateWidgetId(id: string): void {
 
 function validateWidgetName(name: string): void {
   if (name.length > NAME_MAX_LENGTH) {
-    throw new Error(`Widget name length can be at most ${NAME_MAX_LENGTH}`);
+    throw new Error(
+      `Widget name length can be at most ${NAME_MAX_LENGTH} characters`,
+    );
   }
 }
 
 function validateWidgetDescription(description?: string): void {
   if (description != null && description.length > DESCRIPTION_MAX_LENGTH) {
     throw new Error(
-      `Widget description length can be at most ${DESCRIPTION_MAX_LENGTH}`,
+      `Widget description length can be at most ${DESCRIPTION_MAX_LENGTH} characters`,
     );
   }
 }
 
 function validateWidgetParameters(parameters: ParameterConfig): void {
   for (const parameterId of Object.keys(parameters)) {
-    if (!ID_PATTERN.test(parameterId)) {
+    if (parameterId.length > ID_MAX_LENGTH) {
       throw new Error(
-        `Parameter id "${parameterId}" must be in camelCase format`,
+        `Parameter id length can be at most ${ID_MAX_LENGTH} characters`,
       );
     }
-    if (parameterId.length > ID_MAX_LENGTH) {
-      throw new Error(`Parameter id length can be at most ${ID_MAX_LENGTH}`);
+    if (!ID_PATTERN.test(parameterId)) {
+      throw new Error(
+        `Parameter id "${parameterId}" does not match allowed pattern (must be camelCase)`,
+      );
     }
   }
 }
