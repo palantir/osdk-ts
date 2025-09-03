@@ -20,29 +20,7 @@ import { validateWidgetConfig } from "../validateWidgetConfig.js";
 
 describe("validateWidgetConfig", () => {
   test("accepts valid widget configuration", () => {
-    const validConfig: WidgetConfig<ParameterConfig> = {
-      id: "testWidget",
-      name: "Test Widget",
-      description: "A test widget",
-      type: "workshop",
-      parameters: {
-        paramOne: {
-          displayName: "Parameter One",
-          type: "string",
-        },
-        paramTwo: {
-          displayName: "Parameter Two",
-          type: "string",
-        },
-      },
-      events: {
-        updateParameters: {
-          displayName: "Update Parameters",
-          parameterUpdateIds: ["paramOne", "paramTwo"],
-        },
-      },
-    };
-
+    const validConfig = getValidConfig();
     expect(() => validateWidgetConfig(validConfig)).not.toThrow();
   });
 
