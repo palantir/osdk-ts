@@ -1,5 +1,11 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.2.0-beta.2
+
+### Minor Changes
+
+- 6e87cd9: Disable initial Radix theme
+
 ## 3.1.0-beta.5
 
 ## 3.1.0-beta.4
