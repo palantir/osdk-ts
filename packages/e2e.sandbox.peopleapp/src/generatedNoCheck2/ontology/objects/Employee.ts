@@ -330,7 +330,9 @@ export interface Employee extends $ObjectTypeDefinition {
       name: 'person';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
+    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {
       lead: $ObjectMetadata.Link<Employee, false>;

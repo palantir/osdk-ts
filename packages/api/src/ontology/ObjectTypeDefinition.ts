@@ -87,6 +87,20 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
       /* InterfaceType property api name */ string
     >
   >;
+  interfaceLinkMap: Record<
+    /* InterfaceType api name */ string,
+    Record<
+      /* InterfaceType link api name */ string,
+      /* ObjectType link api name */ string[]
+    >
+  >;
+  inverseInterfaceLinkMap: Record<
+    /* InterfaceType api name */ string,
+    Record<
+      /* ObjectType link api name */ string,
+      /* InterfaceType link api name */ string[]
+    >
+  >;
 }
 
 export namespace ObjectMetadata {

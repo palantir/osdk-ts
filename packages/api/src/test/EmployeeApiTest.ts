@@ -103,6 +103,16 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
         fullName: "fooSpt";
       };
     };
+    interfaceLinkMap: {
+      FooInterface: {
+        toBar: ["officeLink"];
+      };
+    };
+    inverseInterfaceLinkMap: {
+      FooInterface: {
+        officeLink: ["toBar"];
+      };
+    };
     links: {
       lead: $ObjectMetadata.Link<EmployeeApiTest, false>;
       peeps: $ObjectMetadata.Link<EmployeeApiTest, true>;

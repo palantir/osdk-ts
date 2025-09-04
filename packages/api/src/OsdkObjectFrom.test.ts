@@ -119,6 +119,8 @@ describe("ExtractOptions", () => {
       displayName: "";
       interfaceMap: {};
       inverseInterfaceMap: {};
+      interfaceLinkMap: {};
+      inverseInterfaceLinkMap: {};
       links: {};
       pluralDisplayName: "";
       primaryKeyApiName: "";

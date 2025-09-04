@@ -241,4 +241,82 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
     // Check that empty array is preserved
     expect(result.implements).toEqual([]);
   });
+
+  it("correctly maps interface links to object links and vice versa", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: ["InterfaceA", "InterfaceB"],
+      implementsInterfaces2: {
+        "InterfaceA": {
+          properties: { "propA": "objectPropA" },
+          links: { "interfaceLinkA": ["objectLinkX", "objectLinkY"] },
+        },
+        "InterfaceB": {
+          properties: { "propB": "objectPropB" },
+          links: {
+            "interfaceLinkB1": ["objectLinkZ"],
+            "interfaceLinkB2": ["objectLinkZ"],
+          },
+        },
+      },
+      linkTypes: [
+        {
+          apiName: "objectLinkX",
+          cardinality: "ONE",
+          objectTypeApiName: "TargetX",
+          displayName: "LinkX",
+          status: "ACTIVE",
+          linkTypeRid: "ridX",
+        },
+        {
+          apiName: "objectLinkY",
+          cardinality: "ONE",
+          objectTypeApiName: "TargetY",
+          displayName: "LinkY",
+          status: "ACTIVE",
+          linkTypeRid: "ridY",
+        },
+        {
+          apiName: "objectLinkZ",
+          cardinality: "ONE",
+          objectTypeApiName: "TargetZ",
+          displayName: "LinkZ",
+          status: "ACTIVE",
+          linkTypeRid: "ridZ",
+        },
+      ],
+      objectType: {
+        apiName: "TestObject",
+        description: "Test Object",
+        displayName: "Test Object",
+        pluralDisplayName: "Test Objects",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+        },
+        rid: "rid",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    // Test interfaceLinkMap structure
+    expect(result.interfaceLinkMap).toEqual({
+      "InterfaceA": { "interfaceLinkA": ["objectLinkX", "objectLinkY"] },
+      "InterfaceB": {
+        "interfaceLinkB1": ["objectLinkZ"],
+        "interfaceLinkB2": ["objectLinkZ"],
+      },
+    });
+
+    // Test inverseInterfaceLinkMap structure
+    expect(result.inverseInterfaceLinkMap).toEqual({
+      "InterfaceA": {
+        "objectLinkX": ["interfaceLinkA"],
+        "objectLinkY": ["interfaceLinkA"],
+      },
+      "InterfaceB": { "objectLinkZ": ["interfaceLinkB1", "interfaceLinkB2"] },
+    });
+  });
 });
