@@ -1039,7 +1039,7 @@ export namespace Osdk {
     	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
         		readonly $link: Q extends {
             			linksType?: any
-            		} ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never
+            		} ? Q["linksType"] : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q> : never
         		readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
         		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>
         		readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends ObjectTypeDefinition ? {
@@ -1088,7 +1088,7 @@ export type OsdkObjectCreatePropertyType<
 // Warning: (ae-forgotten-export) The symbol "OsdkObjectLinksEntry" needs to be exported by the entry point index.d.ts
 //
 // @public
-export type OsdkObjectLinksObject<O extends ObjectTypeDefinition> = ObjectTypeLinkKeysFrom2<O> extends never ? never : { readonly [L in ObjectTypeLinkKeysFrom2<O>] : OsdkObjectLinksEntry<O, L> };
+export type OsdkObjectLinksObject<O extends ObjectOrInterfaceDefinition> = ObjectTypeLinkKeysFrom2<O> extends never ? never : { readonly [L in ObjectTypeLinkKeysFrom2<O>] : OsdkObjectLinksEntry<O, L> };
 
 // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
 // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"

@@ -127,7 +127,7 @@ describe("extractRdpDefinition", () => {
 
   it("throes with intersect, subtract, or union having different child object types", async () => {
     const intersectionObjectSet: ObjectSet = {
-      type: "intersect",
+      type: "union",
       objectSets: [
         {
           type: "interfaceLinkSearchAround",

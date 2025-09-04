@@ -205,7 +205,7 @@ export namespace Osdk {
       : { [A in keyof R]: SimplePropertyDef.ToRuntimeProperty<R[A]> })
     & {
       readonly $link: Q extends { linksType?: any } ? Q["linksType"]
-        : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q>
+        : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q>
         : never;
 
       readonly $as: <NEW_Q extends ValidToFrom<Q>>(
