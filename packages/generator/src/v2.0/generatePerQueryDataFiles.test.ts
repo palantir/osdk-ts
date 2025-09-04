@@ -321,6 +321,7 @@ describe("generatePerQueryDataFiles", () => {
               },
             },
             sharedPropertyTypes: {},
+            valueTypes: {},
           },
           importExt: ".js",
           externalObjects: new Map(),

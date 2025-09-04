@@ -187,8 +187,8 @@ ${
       ${createPropertyKeys(interfaceDef)}
 
 
-      ${createProps(interfaceDef, "Props", false)}
-      ${createProps(interfaceDef, "StrictProps", true)}
+      ${createProps(interfaceDef, "Props", false, ontology.raw.valueTypes)}
+      ${createProps(interfaceDef, "StrictProps", true, ontology.raw.valueTypes)}
 
 
       ${createObjectSet(interfaceDef, ids)}

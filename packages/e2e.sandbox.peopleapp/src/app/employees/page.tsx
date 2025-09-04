@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Section } from "../../components/Section.js";
-import { Employee } from "../../generatedNoCheck2/index.js";
+import type { Employee } from "../../generatedNoCheck2/index.js";
 import { EmployeeDetails } from "./EmployeeDetails.js";
 import { EmployeesList } from "./EmployeesList.js";
 

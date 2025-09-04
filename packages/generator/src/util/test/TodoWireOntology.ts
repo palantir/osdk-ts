@@ -89,6 +89,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
               type: "integer",
             },
             rid: "rid",
+            valueTypeApiName: "numericValueType",
           },
           body: {
             dataType: {
@@ -102,6 +103,16 @@ export const TodoWireOntology: WireOntologyDefinition = {
             dataType: {
               type: "boolean",
             },
+            rid: "rid",
+          },
+          array: {
+            dataType: {
+              type: "array",
+              subType: {
+                type: "string",
+              },
+            },
+            valueTypeApiName: "arrayValueType",
             rid: "rid",
           },
         },
@@ -142,6 +153,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
               type: "string",
             },
             rid: "rid",
+            valueTypeApiName: "emailValueType",
           },
         },
 
@@ -241,6 +253,40 @@ export const TodoWireOntology: WireOntologyDefinition = {
         type: "string",
       },
       rid: "idk2",
+    },
+  },
+  valueTypes: {
+    emailValueType: {
+      apiName: "emailValueType",
+      description: "A value type for email addresses",
+      displayName: "Email Value Type",
+      rid: "ridForEmailValueType",
+      version: "1.0.0",
+      fieldType: {
+        type: "string",
+      },
+      constraints: [{
+        type: "enum",
+        options: ["osdk@palantir.com", "foundry@palantir.com"],
+      }],
+    },
+    arrayValueType: {
+      apiName: "arrayValueType",
+      description: "A value type for arrays of strings",
+      displayName: "Array Value Type",
+      rid: "ridForArrayValueType",
+      version: "1.0.0",
+      fieldType: {
+        type: "array",
+        subType: {
+          type: "string",
+        },
+      },
+      constraints: [{
+        type: "array",
+        valueConstraint: { type: "enum", options: ["a", "b", "c"] },
+        uniqueValues: false,
+      }],
     },
   },
 } as const satisfies WireOntologyDefinition;
