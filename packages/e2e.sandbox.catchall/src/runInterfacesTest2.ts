@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
+import type { Osdk } from "@osdk/api";
 import {
+  Athlete,
   CollateralConcernCandidate,
   EsongInterfaceA,
+  NbaPlayer,
 } from "@osdk/e2e.generated.catchall";
+import invariant from "tiny-invariant";
+import type { TypeOf } from "ts-expect";
+import { expectType } from "ts-expect";
 import { dsClient } from "./client.js";
 
 export async function runInterfacesTest2(): Promise<void> {
