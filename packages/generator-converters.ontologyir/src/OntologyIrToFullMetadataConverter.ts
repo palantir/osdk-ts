@@ -61,6 +61,7 @@ export class OntologyIrToFullMetadataConverter {
       objectTypes,
       queryTypes: {},
       actionTypes,
+      valueTypes: {},
       ontology: {
         apiName: "ontology",
         rid: `ri.00000`,
@@ -176,6 +177,7 @@ export class OntologyIrToFullMetadataConverter {
 
         implementsInterfaces2[interfaceApiName] = {
           properties: propertyMappings,
+          links: {},
         };
       }
 

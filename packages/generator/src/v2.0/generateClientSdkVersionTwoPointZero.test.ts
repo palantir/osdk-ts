@@ -386,6 +386,7 @@ const referencingOntology = {
           properties: {
             "com.example.dep.spt": "body",
           },
+          links: {},
         },
       },
       linkTypes: [],

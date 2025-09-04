@@ -72,6 +72,7 @@ export class FauxOntology {
   ): OntologiesV2.OntologyFullMetadata {
     return {
       ontology: this.#ontology.ontology,
+      valueTypes: {},
       objectTypes: Object.fromEntries(
         Object.entries(this.#ontology.objectTypes).filter(([objectType]) =>
           request.objectTypes.includes(objectType)
