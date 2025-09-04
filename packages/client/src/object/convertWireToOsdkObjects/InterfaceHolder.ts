@@ -23,7 +23,6 @@ export interface InterfaceHolder<
   _Q extends Osdk.Instance<any> = never,
 > extends BaseHolder {
   [InterfaceDefRef]: InterfaceMetadata;
-  readonly type: "interfaceHolder";
 
   readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
     readonly ObjectMetadata: ObjectMetadata;

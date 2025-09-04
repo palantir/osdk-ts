@@ -34,5 +34,4 @@ export interface ObjectHolder<_Q extends Osdk.Instance<any> = never>
   readonly [ClientRef]: MinimalClient;
 
   readonly "$link": ReturnType<typeof get$link>;
-  readonly type: "objectHolder";
 }
