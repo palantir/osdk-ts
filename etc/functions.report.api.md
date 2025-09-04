@@ -114,7 +114,7 @@ export type Float<T extends number = number> = T & {
 };
 
 // @public (undocumented)
-export type GroupId<T extends GroupId_2 = GroupId_2> = T & {
+export type GroupId = GroupId_2 & {
     	__groupIdBrand?: void
 };
 
@@ -203,7 +203,7 @@ export interface UrlLinkTarget {
 }
 
 // @public (undocumented)
-export type UserId<T extends UserId_2 = UserId_2> = T & {
+export type UserId = UserId_2 & {
     	__userIdBrand?: void
 };
 
