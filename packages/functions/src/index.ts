@@ -45,4 +45,4 @@ export type {
   UrlLinkTarget,
 } from "./Notification.js";
 
-export type { Principal } from "./Principal.ts";
+export type { GroupId, Principal, UserId } from "./UserGroup.js";

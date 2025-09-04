@@ -66,6 +66,9 @@ importers:
       '@monorepolint/rules':
         specifier: 0.6.0-alpha.4
         version: 0.6.0-alpha.4
+      '@osdk/foundry.core':
+        specifier: 2.28.0
+        version: 2.28.0
       '@osdk/monorepo.cspell':
         specifier: workspace:~
         version: link:packages/monorepo.cspell
@@ -6009,6 +6012,9 @@ packages:
   '@osdk/foundry.core@2.25.0':
     resolution: {integrity: sha512-E6TZY9Y2yZ7LT0i2nlUDT5MNqJ6JMvdsJUTk65rAXeSXKkG3FOHyiLg1Z/9Ryn05xVfMSpuN+ebHz/NE0aWLuQ==}
 
+  '@osdk/foundry.core@2.28.0':
+    resolution: {integrity: sha512-ETCcpHZoROhamo7WlQBIs6q9vM/I3TYyuy1NQSZRaLbIFmCXff05Cl/KDjOL48jy5G0btevI+gAhacvGvvm8Mw==}
+
   '@osdk/foundry.core@2.5.0':
     resolution: {integrity: sha512-LV+m6/3Y+Q0lN16PAwQvoWtutY0xXdntuwOQjMR2ZqdLRlZOK2KSvfwNZnX4q8EKuvF1mJC8iaTtWh3lChpU1Q==}
 
@@ -6035,6 +6041,9 @@ packages:
 
   '@osdk/foundry.geo@2.25.0':
     resolution: {integrity: sha512-OBGlwmCyJF0xv95NUN5qayrsYTWe931vZzOyDNGAp8FbT+7tdNbAx9RT8kPi9NCecvRDk/wqgpDZgnraf0goPA==}
+
+  '@osdk/foundry.geo@2.28.0':
+    resolution: {integrity: sha512-yC5nkSgktnj8JPtW5ROuRYqe6s3gfg3ihN4vCm+aPAa85LjfBg/woY/ZkET4Tgy27+HOkGr7SwB77jzTzl4rzQ==}
 
   '@osdk/foundry.geo@2.5.0':
     resolution: {integrity: sha512-kL615eqHvn1MkP0le2r6vx/ub+lit5bKdmoWNRELMqi9s2BlLuoKAQW5H9YDQPqhHuJDjrBJAWiviOin9mUKqw==}
@@ -16757,6 +16766,13 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
+  '@osdk/foundry.core@2.28.0':
+    dependencies:
+      '@osdk/foundry.geo': 2.28.0
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.platformapi': 1.4.0
+
   '@osdk/foundry.core@2.5.0':
     dependencies:
       '@osdk/foundry.geo': 2.5.0
@@ -16818,6 +16834,12 @@ snapshots:
       '@osdk/shared.net.platformapi': 1.3.0
 
   '@osdk/foundry.geo@2.25.0':
+    dependencies:
+      '@osdk/shared.client': 1.0.1
+      '@osdk/shared.client2': 1.0.0
+      '@osdk/shared.net.platformapi': 1.4.0
+
+  '@osdk/foundry.geo@2.28.0':
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0

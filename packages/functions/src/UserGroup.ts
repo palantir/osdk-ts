@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 
+import type {
+  GroupId as PlatformGroupId,
+  UserId as PlatformUserId,
+} from "@osdk/foundry.core";
+
+export type GroupId = PlatformGroupId & {
+  __groupIdBrand?: void;
+};
+
+export type UserId = PlatformUserId & {
+  __userIdBrand?: void;
+};
+
 export type Principal = {
   type: "user";
   id: string;
