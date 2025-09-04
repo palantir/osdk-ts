@@ -83,7 +83,9 @@ export interface FintrafficAis extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
+    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: 'Fintraffic AIS';

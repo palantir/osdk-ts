@@ -69,7 +69,9 @@ export interface Todo extends $ObjectTypeDefinition {
       color: 'blue';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
+    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: 'Todo';

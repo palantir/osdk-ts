@@ -71,7 +71,9 @@ export interface MatthewvsDevOrderEmbedding extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
+    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: '[matthewvs-dev] Order Embeddings';

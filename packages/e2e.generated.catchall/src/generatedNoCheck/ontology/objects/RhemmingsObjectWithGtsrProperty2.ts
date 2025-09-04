@@ -76,7 +76,9 @@ export interface RhemmingsObjectWithGtsrProperty2 extends $ObjectTypeDefinition 
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
+    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: '(rhemmings) Object with GTSR property 2';

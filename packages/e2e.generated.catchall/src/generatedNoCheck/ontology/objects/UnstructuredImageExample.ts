@@ -67,7 +67,9 @@ export interface UnstructuredImageExample extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
+    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: 'Unstructured Image Examples';

@@ -70,7 +70,9 @@ export interface StateTerritory extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
+    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {
       country1: $ObjectMetadata.Link<Country_1, false>;

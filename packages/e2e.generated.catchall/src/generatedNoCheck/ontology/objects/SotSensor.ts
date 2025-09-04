@@ -75,7 +75,9 @@ export interface SotSensor extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
+    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: 'SOT-Sensors';
