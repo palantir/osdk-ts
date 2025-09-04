@@ -110,6 +110,44 @@ export function resolveInterfaceObjectSet(
     : objectSet;
 }
 
+/** @internal */
+export async function fetchStaticRidPage(
+  client: MinimalClient,
+  rids: readonly string[],
+  args: FetchPageArgs<any, any, any, any, any, any>,
+  useSnapshot: boolean = false,
+): Promise<FetchPageResult<any, any, any, any, any>> {
+  const result = await OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+    addUserAgentAndRequestContextHeaders(client, { osdkMetadata: undefined }),
+    await client.ontologyRid,
+    applyFetchArgs<LoadObjectSetV2MultipleObjectTypesRequest>(args, {
+      objectSet: {
+        type: "static",
+        objects: rids as string[],
+      },
+      select: ((args?.$select as string[] | undefined) ?? []),
+      excludeRid: !args?.$includeRid,
+      snapshot: useSnapshot,
+    }),
+    { preview: true },
+  );
+
+  return Promise.resolve({
+    data: await client.objectFactory2(
+      client,
+      result.data,
+      undefined,
+      {},
+      !args.$includeRid,
+      args.$select,
+      false,
+      result.interfaceToObjectTypeMappings,
+    ),
+    nextPageToken: result.nextPageToken,
+    totalCount: result.totalCount,
+  }) as unknown as Promise<FetchPageResult<Q, L, R, S, T>>;
+}
+
 async function fetchInterfacePage<
   Q extends InterfaceDefinition,
   L extends PropertyKeys<Q>,
