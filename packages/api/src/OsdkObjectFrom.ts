@@ -228,7 +228,7 @@ export namespace Osdk {
 
       readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends
         ObjectTypeDefinition ? {
-          ObjectMetadata: Q;
+          ObjectMetadata: ObjectMetadata;
         }
         : {
           ObjectMetadata: ObjectMetadata;
