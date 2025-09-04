@@ -19,11 +19,11 @@ import type {
   UserId as PlatformUserId,
 } from "@osdk/foundry.core";
 
-export type GroupId<T extends PlatformGroupId = PlatformGroupId> = T & {
+export type GroupId = PlatformGroupId & {
   __groupIdBrand?: void;
 };
 
-export type UserId<T extends PlatformUserId = PlatformUserId> = T & {
+export type UserId = PlatformUserId & {
   __userIdBrand?: void;
 };
 
