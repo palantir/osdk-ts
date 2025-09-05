@@ -1097,6 +1097,8 @@ versions:
       loadLinkedObjectsReference:
         - template: |-
             import { {{linkedObjectType}} } from "{{{packageName}}}";
+            // Edit this import if your client location differs
+            import { client } from "./client";
 
             function getLinked{{linkedObjectType}}(source: Osdk.Instance<{{sourceObjectType}}>) {
                 {{#isLinkManySided}}
@@ -1105,6 +1107,11 @@ versions:
                 {{^isLinkManySided}}
                 return source.$link.{{linkApiName}}.fetchOneWithErrors();
                 {{/isLinkManySided}}
+            }
+
+            // You can also get a linked object by doing an object set searcharound
+            function getLinkedWithPivot{{linkedObjectType}}(){
+                return client({{sourceObjectType}}).pivotTo({{linkApiName}}).fetchPage();
             }
       aggregationTemplate:
         - template: |-
