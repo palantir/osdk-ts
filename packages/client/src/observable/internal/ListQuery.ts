@@ -50,6 +50,7 @@ import { type CacheKey, DEBUG_ONLY__cacheKeysToString } from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "./Changes.js";
 import { createCollectionConnectable } from "./createCollectionConnectable.js";
+import { extractRdpObjectTypes } from "./extractRdpObjectTypes.js";
 import { isObjectInstance } from "./isObjectInstance.js";
 import type { Entry } from "./Layer.js";
 import type { ListCacheKey, ListStorageData } from "./ListCacheKey.js";
@@ -65,7 +66,6 @@ import {
   OrderBySortingStrategy,
 } from "./sorting/SortingStrategy.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
-
 
 export interface BaseListCacheKey<
   T_Type extends string,
@@ -767,15 +767,16 @@ export class ListQuery extends BaseListQuery<
       return this.revalidate(true);
     }
 
-    // Check if RDPs depend on this object type
-    // Since we don't have traversal metadata yet, we need to conservatively invalidate
-    // whenever there are RDPs and any object type changes
+    // Check if RDPs depend on this object type - Level 2 cache invalidation
     if (this.#rdpMetadata && Object.keys(this.#rdpMetadata).length > 0) {
-      // Without proper traversal metadata, we must assume any object type change
-      // could affect RDPs (since they can traverse to other object types)
-      // This is conservative but safe - we invalidate more than necessary
-      changes?.modified.add(this.cacheKey);
-      return this.revalidate(true);
+      // Extract all object types that RDPs could traverse to
+      const rdpObjectTypes = extractRdpObjectTypes(this.#rdpMetadata);
+
+      // Only invalidate if this object type is one that our RDPs might traverse to
+      if (rdpObjectTypes.has(objectType)) {
+        changes?.modified.add(this.cacheKey);
+        return this.revalidate(true);
+      }
     }
   };
 
