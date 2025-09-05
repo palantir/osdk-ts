@@ -864,6 +864,8 @@ export namespace ObjectMetadata {
         		// (undocumented)
         __OsdkLinkTargetType?: Q;
         		// (undocumented)
+        foreignKeyProperty?: string;
+        		// (undocumented)
         multiplicity: M;
         		// (undocumented)
         targetType: Q["apiName"];
