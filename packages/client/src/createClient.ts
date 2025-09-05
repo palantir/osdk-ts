@@ -31,7 +31,6 @@ import type {
 import type {
   Experiment,
   ExperimentFns,
-  FetchPageByRidPayload,
   MinimalObjectSet,
 } from "@osdk/api/unstable";
 import {
@@ -267,10 +266,10 @@ export function createClientFromContext(clientCtx: MinimalClient) {
               return await fetchStaticRidPage(
                 clientCtx,
                 rids,
-                options,
+                options ?? {},
               );
             },
-          } satisfies FetchPageByRidPayload as any;
+          } as any;
       }
 
       throw new Error("not implemented");
