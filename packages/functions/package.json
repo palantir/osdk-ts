@@ -62,8 +62,8 @@
   },
   "peerDependencies": {
     "@osdk/client": "workspace:^",
-    "@osdk/foundry.ontologies": "^2.26.0",
-    "@osdk/foundry.core": "2.28.0"
+    "@osdk/foundry.core": "2.28.0",
+    "@osdk/foundry.ontologies": "^2.26.0"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.5",
