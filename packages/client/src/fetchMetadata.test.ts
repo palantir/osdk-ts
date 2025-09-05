@@ -90,10 +90,12 @@ describe("FetchMetadata", () => {
         },
         "links": {
           "lead": {
+            "foreignKeyProperty": "leadId",
             "multiplicity": false,
             "targetType": "Employee",
           },
           "officeLink": {
+            "foreignKeyProperty": "office",
             "multiplicity": false,
             "targetType": "Office",
           },
