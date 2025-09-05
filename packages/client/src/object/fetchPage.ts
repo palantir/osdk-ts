@@ -110,6 +110,71 @@ export function resolveInterfaceObjectSet(
     : objectSet;
 }
 
+/** @internal */
+export async function fetchStaticRidPage<
+  R extends boolean,
+  S extends NullabilityAdherence,
+  T extends boolean,
+>(
+  client: MinimalClient,
+  rids: readonly string[],
+  args: FetchPageArgs<
+    ObjectOrInterfaceDefinition,
+    PropertyKeys<ObjectOrInterfaceDefinition>,
+    R,
+    any,
+    S,
+    T
+  >,
+  useSnapshot: boolean = false,
+): Promise<
+  FetchPageResult<
+    ObjectOrInterfaceDefinition,
+    PropertyKeys<ObjectOrInterfaceDefinition>,
+    R,
+    S,
+    T
+  >
+> {
+  const result = await OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+    addUserAgentAndRequestContextHeaders(client, { osdkMetadata: undefined }),
+    await client.ontologyRid,
+    applyFetchArgs<LoadObjectSetV2MultipleObjectTypesRequest>(args, {
+      objectSet: {
+        type: "static",
+        objects: rids as string[],
+      },
+      select: ((args?.$select as string[] | undefined) ?? []),
+      excludeRid: !args?.$includeRid,
+      snapshot: useSnapshot,
+    }),
+    { preview: true },
+  );
+
+  return Promise.resolve({
+    data: await client.objectFactory2(
+      client,
+      result.data,
+      undefined,
+      {},
+      !args.$includeRid,
+      args.$select,
+      false,
+      result.interfaceToObjectTypeMappings,
+    ),
+    nextPageToken: result.nextPageToken,
+    totalCount: result.totalCount,
+  }) as unknown as Promise<
+    FetchPageResult<
+      ObjectOrInterfaceDefinition,
+      PropertyKeys<ObjectOrInterfaceDefinition>,
+      R,
+      S,
+      T
+    >
+  >;
+}
+
 async function fetchInterfacePage<
   Q extends InterfaceDefinition,
   L extends PropertyKeys<Q>,
