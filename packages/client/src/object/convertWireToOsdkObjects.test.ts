@@ -836,6 +836,16 @@ describe("convertWireToOsdkObjects", () => {
                   "fullName": "fooSpt",
                 },
               },
+              "interfaceLinkMap": {
+                "FooInterface": {
+                  "toBar": ["officeLink"]
+                }
+              },
+              "inverseInterfaceLinkMap": {
+                "FooInterface": {
+                  "officeLink": ["toBar"]
+                }
+              },
               "links": {
                 "lead": {
                   "multiplicity": false,

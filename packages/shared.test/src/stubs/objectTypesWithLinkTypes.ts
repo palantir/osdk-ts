@@ -43,7 +43,9 @@ export const employeeObjectWithLinkTypes: ObjectTypeFullMetadata = {
       properties: {
         fooSpt: "fullName",
       },
-      links: {},
+      links: {
+        toBar: ["officeLink"],
+      },
     },
   },
   sharedPropertyTypeMapping: {

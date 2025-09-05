@@ -173,6 +173,8 @@ describe("ExtractOptions", () => {
           "birthday": "com.my.even.more.obscure.namespace.originDate";
         };
       };
+      interfaceLinkMap: {};
+      inverseInterfaceLinkMap: {};
       links: {};
       pluralDisplayName: "";
       primaryKeyApiName: "";

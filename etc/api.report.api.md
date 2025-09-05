@@ -827,7 +827,11 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
     // (undocumented)
     icon: Icon | undefined;
     	// (undocumented)
+    interfaceLinkMap: Record<string, Record<string, string[]>>;
+    	// (undocumented)
     interfaceMap: Record<string, Record<string, string>>;
+    	// (undocumented)
+    inverseInterfaceLinkMap: Record<string, Record<string, string[]>>;
     	// (undocumented)
     inverseInterfaceMap: Record<string, Record<string, string>>;
     	// (undocumented)
