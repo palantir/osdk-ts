@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeFullMetadata } from "@osdk/foundry.ontologies";
+import type { ObjectMetadata } from "@osdk/api";
+import type {
+  ObjectTypeFullMetadata,
+  OntologyValueType,
+  ValueTypeApiName,
+  ValueTypeConstraint,
+} from "@osdk/foundry.ontologies";
 import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
 import consola from "consola";
 import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
@@ -24,7 +30,6 @@ import { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
 import { propertyJsdoc } from "../shared/propertyJsdoc.js";
-import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
 
 /** @internal */
@@ -49,12 +54,10 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     ),
   );
 
-  const definition = deleteUndefineds(
-    wireObjectTypeFullMetadataToSdkObjectMetadata(
-      object.raw,
-      true,
-      consola,
-    ),
+  const definition = wireObjectTypeFullMetadataToSdkObjectMetadata(
+    object.raw,
+    true,
+    consola,
   );
 
   const objectDefIdentifier = object.getDefinitionIdentifier(true);
@@ -102,8 +105,8 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
       ${createLinks(ontology, object, "Links")}
 
-      ${createProps(object, "Props", false)}
-      ${createProps(object, "StrictProps", true)}
+      ${createProps(object, "Props", false, ontology.raw.valueTypes)}
+      ${createProps(object, "StrictProps", true, ontology.raw.valueTypes)}
 
       ${createObjectSet(object, identifiers)}
       
@@ -216,22 +219,31 @@ export function createProps(
   type: EnhancedInterfaceType | EnhancedObjectType,
   identifier: string,
   strict: boolean,
+  valueTypeMetadata: Record<ValueTypeApiName, OntologyValueType>,
 ): string {
   if (identifier === "StrictProps") {
     return `export type StrictProps = Props`;
   }
   const definition = type.getCleanedUpDefinition(true);
+  const propertyMetadata = type instanceof EnhancedObjectType
+    ? type.raw.objectType.properties
+    : undefined;
   return `export interface ${identifier} {
 ${
     stringify(definition.properties, {
       "*": (propertyDefinition, _, apiName) => {
         return [
-          `${propertyJsdoc(propertyDefinition, { apiName })}readonly "${
-            maybeStripNamespace(type, apiName)
-          }"`,
+          `${
+            propertyJsdoc(propertyDefinition, propertyMetadata?.[apiName], {
+              apiName,
+            })
+          }readonly "${maybeStripNamespace(type, apiName)}"`,
           (typeof propertyDefinition.type === "object"
             ? remapStructType(propertyDefinition.type)
-            : `$PropType[${JSON.stringify(propertyDefinition.type)}]`)
+            : getPropTypeOrValueTypeEnum(
+              propertyDefinition,
+              valueTypeMetadata,
+            ))
           + `${propertyDefinition.multiplicity ? "[]" : ""}${
             propertyDefinition.nullable
               || (!strict
@@ -260,6 +272,9 @@ export function createDefinition(
   }: Identifiers,
 ) {
   const definition = object.getCleanedUpDefinition(true);
+  const propertyMetadata = object instanceof EnhancedObjectType
+    ? object.raw.objectType.properties
+    : undefined;
   return `
     export interface ${identifier} extends ${
     object instanceof EnhancedObjectType
@@ -279,13 +294,27 @@ export function createDefinition(
       links: (_value) =>
         `{
         ${
-          stringify(definition.links, {
-            "*": (definition) =>
-              `$ObjectMetadata.Link<${
-                ontology.requireObjectType(definition.targetType)
-                  .getImportedDefinitionIdentifier(true)
-              }, ${definition.multiplicity}>`,
-          })
+          definition.type === "interface"
+            ? stringify(definition.links, {
+              "*": (linkDefinition) =>
+                `$InterfaceMetadata.Link<${
+                  linkDefinition.targetType === "interface"
+                    ? ontology.requireInterfaceType(
+                      linkDefinition.targetTypeApiName,
+                    )
+                      .getImportedDefinitionIdentifier(true)
+                    : ontology.requireObjectType(
+                      linkDefinition.targetTypeApiName,
+                    ).getImportedDefinitionIdentifier(true)
+                }, ${linkDefinition.multiplicity}>`,
+            })
+            : stringify(definition.links, {
+              "*": (linkDefinition) =>
+                `$ObjectMetadata.Link<${
+                  ontology.requireObjectType(linkDefinition.targetType)
+                    .getImportedDefinitionIdentifier(true)
+                }, ${linkDefinition.multiplicity}>`,
+            })
         }
       }`,
       properties: (_value) => (`{
@@ -293,9 +322,11 @@ export function createDefinition(
         stringify(definition.properties, {
           "*": (propertyDefinition, _, apiName) =>
             [
-              `${propertyJsdoc(propertyDefinition, { apiName })}"${
-                maybeStripNamespace(object, apiName)
-              }"`,
+              `${
+                propertyJsdoc(propertyDefinition, propertyMetadata?.[apiName], {
+                  apiName,
+                })
+              }"${maybeStripNamespace(object, apiName)}"`,
               `$PropertyDef<${JSON.stringify(propertyDefinition.type)}, "${
                 propertyDefinition.nullable ? "nullable" : "non-nullable"
               }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,
@@ -368,4 +399,76 @@ function remapStructType(structType: Record<string, any>): string {
   );
   output += "}";
   return output;
+}
+
+function getPropTypeOrValueTypeEnum(
+  propertyDefinition: ObjectMetadata.Property,
+  valueTypeMetadata: Record<ValueTypeApiName, OntologyValueType>,
+): string {
+  const defaultPropString = `$PropType[${
+    JSON.stringify(propertyDefinition.type)
+  }]`;
+  if (
+    !(propertyDefinition.type === "string"
+      || propertyDefinition.type === "boolean")
+    || !propertyDefinition.valueTypeApiName
+    || valueTypeMetadata[propertyDefinition.valueTypeApiName] == null
+  ) {
+    return defaultPropString;
+  }
+  const valueType = valueTypeMetadata[propertyDefinition.valueTypeApiName];
+  if (valueType.constraints.length !== 1) {
+    throw new Error(
+      `Expected exactly one constraint for value type ${propertyDefinition.valueTypeApiName} but got ${valueType.constraints.length}`,
+    );
+  }
+
+  let shouldWrapWithParentheses = false;
+  let constraint = valueType.constraints[0];
+  if (constraint.type === "array" && constraint.valueConstraint) {
+    constraint = constraint.valueConstraint;
+    shouldWrapWithParentheses = true;
+  }
+
+  const maybeEnumString = maybeGetEnumString(
+    propertyDefinition,
+    constraint,
+  );
+
+  return maybeEnumString
+    ? (
+      shouldWrapWithParentheses ? `(${maybeEnumString})` : maybeEnumString
+    )
+    : defaultPropString;
+}
+
+function maybeGetEnumString(
+  propertyDefinition: ObjectMetadata.Property,
+  constraint: ValueTypeConstraint,
+) {
+  if (constraint.type !== "enum" || constraint.options.length === 0) {
+    return undefined;
+  }
+  if (propertyDefinition.type === "string") {
+    return constraint.options.map(x => `"${x}"`).join(
+      " | ",
+    );
+  }
+  if (propertyDefinition.type === "boolean") {
+    return constraint.options.map(value => {
+      if (value === true) {
+        return true;
+      } else if (value === false) {
+        return false;
+      } else if (value == null) {
+        // Always infer nullability from the property definition
+        return undefined;
+      } else {
+        consola.warn(`Unexpected boolean value in enum: ${value}. Ignoring.`);
+      }
+    }).filter(value => value != null).join(
+      " | ",
+    );
+  }
+  return undefined;
 }

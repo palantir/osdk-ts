@@ -3,6 +3,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type {
   InterfaceDefinition as $InterfaceDefinition,
+  InterfaceMetadata as $InterfaceMetadata,
   ObjectSet as $ObjectSet,
   Osdk as $Osdk,
   PropertyValueWireToClient as $PropType,
@@ -16,16 +17,19 @@ export namespace Athlete {
   export interface Props {
     /**
      *   display name: 'Athlete ID',
+     *
      *   description: Athlete ID
      */
     readonly athleteId: $PropType['string'] | undefined;
     /**
      *   display name: 'Jersey Number',
+     *
      *   description: Jersey Number
      */
     readonly jerseyNumber: $PropType['integer'] | undefined;
     /**
      *   display name: 'Name',
+     *
      *   description: Name
      */
     readonly name22: $PropType['string'] | undefined;
@@ -58,20 +62,25 @@ export interface Athlete extends $InterfaceDefinition {
     apiName: 'Athlete';
     description: 'Its an athlete.';
     displayName: 'Athlete interface';
+    implementedBy: undefined;
+    implements: undefined;
     links: {};
     properties: {
       /**
        *   display name: 'Athlete ID',
+       *
        *   description: Athlete ID
        */
       athleteId: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        *   display name: 'Jersey Number',
+       *
        *   description: Jersey Number
        */
       jerseyNumber: $PropertyDef<'integer', 'nullable', 'single'>;
       /**
        *   display name: 'Name',
+       *
        *   description: Name
        */
       name22: $PropertyDef<'string', 'nullable', 'single'>;

@@ -71,13 +71,15 @@ import type {
   GeotimeSeriesIntegrationRid as _api_GeotimeSeriesIntegrationRid,
   GeotimeSeriesReferencePropertyType as _api_GeotimeSeriesReferencePropertyType,
   GroupId as _api_GroupId,
+  Icon as _api_Icon,
   InlineActionDisplayOptions as _api_InlineActionDisplayOptions,
   IntegerPropertyType as _api_IntegerPropertyType,
   InterfaceLinkTypeCardinality as _api_InterfaceLinkTypeCardinality,
   InterfaceLinkTypeMetadata as _api_InterfaceLinkTypeMetadata,
   InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest,
+  InterfacePropertyTypeRidOrIdInRequest
+    as _api_InterfacePropertyTypeRidOrIdInRequest,
   InterfaceTypeApiName as _api_InterfaceTypeApiName,
-  InterfaceTypeDisplayMetadata as _api_InterfaceTypeDisplayMetadata,
   InterfaceTypeIdInRequest as _api_InterfaceTypeIdInRequest,
   InterfaceTypeRid as _api_InterfaceTypeRid,
   InterfaceTypeRidOrIdInRequest as _api_InterfaceTypeRidOrIdInRequest,
@@ -87,11 +89,13 @@ import type {
   LinkTypeMetadata as _api_LinkTypeMetadata,
   LinkTypePeeringMetadataV1 as _api_LinkTypePeeringMetadataV1,
   LinkTypeRid as _api_LinkTypeRid,
+  LinkTypeRidOrId as _api_LinkTypeRidOrId,
   LinkTypeStatus as _api_LinkTypeStatus,
   LongPropertyType as _api_LongPropertyType,
   MarkingId as _api_MarkingId,
   MarkingPropertyType as _api_MarkingPropertyType,
   MediaReferencePropertyType as _api_MediaReferencePropertyType,
+  MediaSetRid as _api_MediaSetRid,
   MediaSetViewLocator as _api_MediaSetViewLocator,
   MediaSourceRid as _api_MediaSourceRid,
   ObjectTypeApiName as _api_ObjectTypeApiName,
@@ -133,6 +137,7 @@ import type {
   StringPropertyType as _api_StringPropertyType,
   StructFieldAlias as _api_StructFieldAlias,
   StructFieldDisplayMetadata as _api_StructFieldDisplayMetadata,
+  StructFieldRid as _api_StructFieldRid,
   TableRid as _api_TableRid,
   TimeSeriesSyncRid as _api_TimeSeriesSyncRid,
   TimestampPropertyType as _api_TimestampPropertyType,
@@ -199,6 +204,7 @@ import type {
   SharedPropertyTypeGothamMappingModification
     as _api_typemapping_SharedPropertyTypeGothamMappingModification,
 } from "../typemapping/__components.js";
+import type { LinkTypeSide as _api_types_LinkTypeSide } from "../types/__components.js";
 import type { OntologyValidationError as _api_validation_OntologyValidationError } from "../validation/__components.js";
 
 /**
@@ -267,6 +273,7 @@ export interface ActionTypeModification {
   sectionsToCreate: Record<_api_SectionRid, PutSectionRequestWithId>;
   sectionsToDelete: Array<_api_SectionRid>;
   sectionsToUpdate: Record<_api_SectionRid, _api_EditSectionRequest>;
+  stagingMediaSetRid?: _api_MediaSetRid | null | undefined;
   status?: _api_ActionTypeStatus | null | undefined;
   submissionConfiguration?:
     | _api_ActionSubmissionConfiguration
@@ -298,6 +305,10 @@ export interface ArrayPropertyTypeModification {
   subtype: TypeForModification;
 }
 export interface BranchEntityIndexingConfigurationModification {
+  parentBranchManyToManyLinkTypes: Record<
+    _api_LinkTypeRid,
+    ManyToManyLinkTypeBranchIndexingConfiguration
+  >;
   parentBranchObjectTypes: Record<
     _api_ObjectTypeRid,
     ObjectTypeBranchIndexingConfiguration
@@ -534,6 +545,10 @@ export interface GetModifiedEntitiesResponse {
   diff: OntologyDiff;
   newOntologyVesion: _api_OntologyVersion;
 }
+export interface ImplementingLinkTypeModification {
+  linkTypeRidOrId: _api_LinkTypeRidOrId;
+  linkTypeSide?: _api_types_LinkTypeSide | null | undefined;
+}
 /**
  * A request to import SharedPropertyTypes into another ontology
  */
@@ -554,6 +569,10 @@ export interface InterfaceLinkTypeImplementationModification {
   interfaceLinkTypeRidOrIdInRequest: _api_InterfaceLinkTypeRidOrIdInRequest;
   linkTypeIds: Array<_api_LinkTypeId>;
 }
+export interface InterfaceLinkTypeImplementationModificationV2 {
+  interfaceLinkTypeRidOrIdInRequest: _api_InterfaceLinkTypeRidOrIdInRequest;
+  linkTypes: Array<ImplementingLinkTypeModification>;
+}
 export interface InterfaceLinkTypeModification {
   cardinality: _api_InterfaceLinkTypeCardinality;
   id: _api_InterfaceLinkTypeRidOrIdInRequest;
@@ -565,17 +584,51 @@ export interface InterfacePropertyImplementationModification {
   propertyTypeId: _api_PropertyTypeId;
   sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
 }
+export interface InterfacePropertyImplementationModificationV2 {
+  interfacePropertyTypeRidOrIdInRequest:
+    _api_InterfacePropertyTypeRidOrIdInRequest;
+  propertyImplementation: InterfacePropertyTypeImplementationModification;
+}
+export interface InterfacePropertyTypeImplementationModification_propertyTypeId {
+  type: "propertyTypeId";
+  propertyTypeId: _api_PropertyTypeId;
+}
+export type InterfacePropertyTypeImplementationModification =
+  InterfacePropertyTypeImplementationModification_propertyTypeId;
+
+export interface InterfacePropertyTypeModification_sharedPropertyBasedPropertyType {
+  type: "sharedPropertyBasedPropertyType";
+  sharedPropertyBasedPropertyType: SharedPropertyBasedPropertyTypeModification;
+}
+export type InterfacePropertyTypeModification =
+  InterfacePropertyTypeModification_sharedPropertyBasedPropertyType;
+
+export interface InterfacePropertyTypeModificationWithRidOrIdInRequest {
+  interfacePropertyTypeModification: InterfacePropertyTypeModification;
+  interfacePropertyTypeRidOrIdInRequest:
+    _api_InterfacePropertyTypeRidOrIdInRequest;
+}
 export interface InterfaceSharedPropertyTypeModification {
   required: boolean;
   sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
 }
+/**
+ * This includes metadata which can be used by front-ends when displaying an interface.
+ */
+export interface InterfaceTypeDisplayMetadataModification {
+  description?: string | null | undefined;
+  displayName: string;
+  icon?: _api_Icon | null | undefined;
+}
 export interface InterfaceTypeModification {
   apiName: _api_InterfaceTypeApiName;
-  displayMetadata: _api_InterfaceTypeDisplayMetadata;
+  displayMetadata: InterfaceTypeDisplayMetadataModification;
   extendsInterfaces: Array<_api_InterfaceTypeRidOrIdInRequest>;
   links: Array<InterfaceLinkTypeModification>;
   properties: Array<_api_SharedPropertyTypeRidOrIdInRequest>;
   propertiesV2: Array<InterfaceSharedPropertyTypeModification>;
+  propertiesV3: Array<InterfacePropertyTypeModificationWithRidOrIdInRequest>;
+  searchable?: boolean | null | undefined;
   status: _api_InterfaceTypeStatus;
 }
 /**
@@ -627,6 +680,7 @@ export interface LinkTypeEntityMetadataModifyRequest {
 }
 export interface LinkTypeModification {
   definition: LinkDefinitionModification;
+  description?: string | null | undefined;
   linkTypeId: _api_LinkTypeId;
   status?: _api_LinkTypeStatus | null | undefined;
 }
@@ -689,6 +743,9 @@ export interface ManyToManyLinkDefinitionModification {
   objectTypeIdA: _api_ObjectTypeId;
   objectTypeIdB: _api_ObjectTypeId;
   peeringMetadata?: LinkTypePeeringMetadataModification | null | undefined;
+}
+export interface ManyToManyLinkTypeBranchIndexingConfiguration {
+  copyEditsMode: CopyEditsMode;
 }
 export interface ManyToManyLinkTypeDatasetDatasourceModification {
   datasetRid: _api_DatasetRid;
@@ -882,6 +939,11 @@ export interface ObjectTypeDatasourceModificationDefinition_streamV2 {
   streamV2: ObjectTypeStreamDatasourceV2Modification;
 }
 
+export interface ObjectTypeDatasourceModificationDefinition_streamV3 {
+  type: "streamV3";
+  streamV3: ObjectTypeStreamDatasourceV3Modification;
+}
+
 export interface ObjectTypeDatasourceModificationDefinition_restrictedStream {
   type: "restrictedStream";
   restrictedStream: ObjectTypeRestrictedStreamDatasourceModification;
@@ -953,6 +1015,7 @@ export type ObjectTypeDatasourceModificationDefinition =
   | ObjectTypeDatasourceModificationDefinition_dataset
   | ObjectTypeDatasourceModificationDefinition_stream
   | ObjectTypeDatasourceModificationDefinition_streamV2
+  | ObjectTypeDatasourceModificationDefinition_streamV3
   | ObjectTypeDatasourceModificationDefinition_restrictedStream
   | ObjectTypeDatasourceModificationDefinition_restrictedView
   | ObjectTypeDatasourceModificationDefinition_timeSeries
@@ -1049,7 +1112,9 @@ export interface ObjectTypeIndexingSettingsModification {
 export interface ObjectTypeInterfaceImplementationModification {
   interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
   links: Array<InterfaceLinkTypeImplementationModification>;
+  linksV2: Array<InterfaceLinkTypeImplementationModificationV2>;
   properties: Array<InterfacePropertyImplementationModification>;
+  propertiesV2: Array<InterfacePropertyImplementationModificationV2>;
 }
 /**
  * Object type datasource that is backed by media.
@@ -1143,6 +1208,15 @@ export interface ObjectTypeStreamDatasourceModification {
 }
 export interface ObjectTypeStreamDatasourceV2Modification {
   propertyMapping: Record<_api_PropertyTypeId, _api_ColumnName>;
+  propertySecurityGroups?:
+    | _api_PropertySecurityGroupsModification
+    | null
+    | undefined;
+  retentionPolicy?: _api_RetentionPolicy | null | undefined;
+  streamLocator: _api_StreamLocator;
+}
+export interface ObjectTypeStreamDatasourceV3Modification {
+  propertyMapping: Record<_api_PropertyTypeId, _api_PropertyTypeMappingInfo>;
   propertySecurityGroups?:
     | _api_PropertySecurityGroupsModification
     | null
@@ -1397,6 +1471,7 @@ export interface OntologyModificationRequest {
     _api_SharedPropertyTypeRid,
     SharedPropertyTypeModification
   >;
+  shouldDeploy?: boolean | null | undefined;
   typeGroupsToCreate: Record<_api_TypeGroupIdInRequest, TypeGroupModification>;
   typeGroupsToCreateInProject: Record<
     _api_TypeGroupIdInRequest,
@@ -1590,6 +1665,10 @@ export interface ReadOnlyV1V2Modification {
 export interface SensorTraitModification {
   readingPropertyTypeId: _api_PropertyTypeId;
 }
+export interface SharedPropertyBasedPropertyTypeModification {
+  requireImplementation: boolean;
+  sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
+}
 export interface SharedPropertyTypeModification {
   aliases?:
     | Array<_api_entitymetadata_SharedPropertyTypeAlias>
@@ -1636,6 +1715,7 @@ export interface StructFieldTypeModification {
   apiName: _api_ObjectTypeFieldApiName;
   displayMetadata: _api_StructFieldDisplayMetadata;
   fieldType: TypeForModification;
+  rid?: _api_StructFieldRid | null | undefined;
   typeClasses: Array<_api_TypeClass>;
 }
 export interface StructPropertyTypeModification {

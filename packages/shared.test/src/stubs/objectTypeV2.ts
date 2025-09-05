@@ -16,7 +16,7 @@
 
 import type { ObjectTypeV2 } from "@osdk/foundry.ontologies";
 
-export const employeeObjectType = {
+export const employeeObjectType: ObjectTypeV2 = {
   apiName: "Employee",
   displayName: "Employee",
   pluralDisplayName: "Employees",
@@ -82,6 +82,26 @@ export const employeeObjectType = {
       description: "Geotime series reference of the location of the employee",
       dataType: {
         type: "geotimeSeriesReference",
+      },
+      rid: "rid",
+    },
+    skillSet: {
+      description: "The skills of the employee",
+      dataType: {
+        type: "string",
+      },
+      rid: "rid",
+    },
+    skillSetEmbedding: {
+      description: "Vectorized skill set",
+      dataType: {
+        type: "vector",
+        dimension: 1536,
+        supportsSearchWith: [{ "value": "COSINE_SIMILARITY" }],
+        embeddingModel: {
+          type: "lms",
+          value: "OPENAI_TEXT_EMBEDDING_ADA_002",
+        },
       },
       rid: "rid",
     },
@@ -609,30 +629,35 @@ export const BGaoNflPlayerObjectType: ObjectTypeV2 = {
             dataType: {
               type: "string",
             },
+            rid: "ri.a.b.c.d",
           },
           {
             apiName: "addressLine2",
             dataType: {
               type: "string",
             },
+            rid: "ri.a.b.c.d",
           },
           {
             apiName: "city",
             dataType: {
               type: "string",
             },
+            rid: "ri.a.b.c.d",
           },
           {
             apiName: "state",
             dataType: {
               type: "string",
             },
+            rid: "ri.a.b.c.d",
           },
           {
             apiName: "zipCode",
             dataType: {
               type: "integer",
             },
+            rid: "ri.a.b.c.d",
           },
         ],
       },

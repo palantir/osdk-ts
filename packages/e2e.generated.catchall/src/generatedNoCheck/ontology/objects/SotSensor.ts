@@ -23,7 +23,7 @@ export namespace SotSensor {
     /**
      *   display name: 'Is Enum'
      */
-    readonly isEnum: $PropType['boolean'] | undefined;
+    readonly isEnum: true | undefined;
     /**
      *   display name: 'Sensor Name'
      */
@@ -74,6 +74,7 @@ export interface SotSensor extends $ObjectTypeDefinition {
       name: 'sotsensor';
       color: 'color';
     };
+    implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
     links: {};
@@ -106,6 +107,7 @@ export interface SotSensor extends $ObjectTypeDefinition {
     status: 'ACTIVE';
     titleProperty: 'seriesId';
     type: 'object';
+    visibility: undefined;
   };
 }
 

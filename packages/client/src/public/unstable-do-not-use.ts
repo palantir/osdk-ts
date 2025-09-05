@@ -23,11 +23,14 @@ export type {
   ObservableClient,
   ObserveObjectArgs,
   ObserveObjectsArgs,
-  Observer,
   Unsubscribable,
 } from "../observable/ObservableClient.js";
-export type { OsdkConfig } from "../public-utils/osdkConfig.js";
+export type { Observer } from "../observable/ObservableClient/common.js";
+export type { ObserveLinks } from "../observable/ObservableClient/ObserveLink.js";
 export {
   getMetaTagContent,
   getOsdkConfig,
 } from "../public-utils/osdkConfig.js";
+export type { OsdkConfig } from "../public-utils/osdkConfig.js";
+
+export { createClientWithTransaction } from "../createClient.js";

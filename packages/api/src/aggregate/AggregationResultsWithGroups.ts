@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OsdkObjectPropertyType } from "../Definitions.js";
+import type { OsdkObjectPropertyTypeNotUndefined } from "../Definitions.js";
 import type { GroupByClause, GroupByRange } from "../groupby/GroupByClause.js";
 import type {
   ObjectOrInterfaceDefinition,
@@ -36,8 +36,18 @@ export type AggregationResultsWithGroups<
     $group: {
       [P in keyof G & PropertyKeys<Q>]: G[P] extends
         { $ranges: GroupByRange<infer T>[] } ? { startValue: T; endValue: T }
-        : OsdkObjectPropertyType<CompileTimeMetadata<Q>["properties"][P], true>;
+        : MaybeNullable<
+          G[P],
+          OsdkObjectPropertyTypeNotUndefined<
+            CompileTimeMetadata<Q>["properties"][P]
+          >
+        >;
     };
   }
   & AggregationResultsWithoutGroups<Q, A>
 )[];
+
+type MaybeNullable<GROUP, VALUE> = GROUP extends {
+  $exact: { $includeNullValue: true };
+} ? VALUE | null
+  : VALUE;

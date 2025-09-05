@@ -25,6 +25,7 @@ import type {
   OntologyObjectV2,
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
+import type { DerivedPropertyRuntimeMetadata } from "../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   type FetchedObjectTypeDefinition,
@@ -55,10 +56,7 @@ export async function convertWireToOsdkObjects(
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
   forceRemoveRid: boolean = false,
-  derivedPropertyTypesByName: Record<
-    string,
-    ObjectMetadata.Property
-  >,
+  derivedPropertyTypesByName: DerivedPropertyRuntimeMetadata,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
@@ -129,10 +127,7 @@ export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: string,
-  derivedPropertyTypeByName: Record<
-    string,
-    ObjectMetadata.Property
-  >,
+  derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -145,10 +140,7 @@ export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: undefined,
-  derivedPropertyTypeByName: Record<
-    string,
-    ObjectMetadata.Property
-  >,
+  derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -161,10 +153,7 @@ export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
-  derivedPropertyTypeByName: Record<
-    string,
-    ObjectMetadata.Property
-  >,
+  derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
   forceRemoveRid?: boolean,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull?: NullabilityAdherence,
@@ -180,10 +169,7 @@ export async function convertWireToOsdkObjects2(
   client: MinimalClient,
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
-  derivedPropertyTypeByName: Record<
-    string,
-    ObjectMetadata.Property
-  >,
+  derivedPropertyTypeByName: DerivedPropertyRuntimeMetadata,
   forceRemoveRid: boolean = false,
   selectedProps?: ReadonlyArray<string>,
   strictNonNull: NullabilityAdherence = false,
@@ -194,6 +180,8 @@ export async function convertWireToOsdkObjects2(
 ): Promise<Array<ObjectHolder | InterfaceHolder>> {
   fixObjectPropertiesInPlace(objects, forceRemoveRid);
 
+  const isInterfaceScoped =
+    Object.keys(interfaceToObjectTypeMappings).length > 0;
   const ret = [];
   for (const rawObj of objects) {
     const objectDef = await client.ontologyProvider.getObjectDefinition(
@@ -201,8 +189,11 @@ export async function convertWireToOsdkObjects2(
     );
     invariant(objectDef, `Missing definition for '${rawObj.$apiName}'`);
 
-    const interfaceToObjMapping = interfaceApiName
-      ? interfaceToObjectTypeMappings[interfaceApiName as InterfaceTypeApiName][
+    const interfaceToObjMapping = (interfaceApiName
+        && isInterfaceScoped)
+      ? interfaceToObjectTypeMappings[
+        interfaceApiName as InterfaceTypeApiName
+      ][
         rawObj.$apiName
       ]
       : undefined;
@@ -248,7 +239,9 @@ export async function convertWireToOsdkObjects2(
       rawObj,
       derivedPropertyTypeByName,
     );
-    if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
+    if (
+      interfaceApiName && isInterfaceScoped
+    ) osdkObject = osdkObject.$as(interfaceApiName);
 
     ret.push(osdkObject);
   }
@@ -367,6 +360,11 @@ function fixObjectPropertiesInPlace(
     if (obj.__rid) {
       obj.$rid = obj.__rid;
       delete obj.__rid;
+    }
+
+    if (obj.__score) {
+      obj.$score = obj.__score;
+      delete obj.__score;
     }
 
     // Backend returns as __apiName but we want to stick to $ structure

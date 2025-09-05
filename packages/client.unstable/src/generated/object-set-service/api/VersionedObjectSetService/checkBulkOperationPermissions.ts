@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,20 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { CheckBulkOperationPermissionsRequest } from "../CheckBulkOperationPermissionsRequest.js";
-import type { CheckBulkOperationPermissionsResponse } from "../CheckBulkOperationPermissionsResponse.js";
+import type {
+  CheckBulkOperationPermissionsRequest
+    as _api_CheckBulkOperationPermissionsRequest,
+  CheckBulkOperationPermissionsResponse
+    as _api_CheckBulkOperationPermissionsResponse,
+} from "../__components.js";
 
 /**
  * Returns whether the user has permission to perform the operation on the requested versioned object sets.
  */
 export async function checkBulkOperationPermissions(
   ctx: ConjureContext,
-  request: CheckBulkOperationPermissionsRequest,
-): Promise<CheckBulkOperationPermissionsResponse> {
+  request: _api_CheckBulkOperationPermissionsRequest,
+): Promise<_api_CheckBulkOperationPermissionsResponse> {
   return conjureFetch(
     ctx,
     `/bulk/versionedObjectSets/permissionCheck`,

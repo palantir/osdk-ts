@@ -18,6 +18,7 @@ import type { WorkflowRid as _workflow_api_WorkflowRid } from "../workflow/api/_
 import type {
   DataSetName as _api_blockdata_DataSetName,
   GeotimeSeriesIntegrationName as _api_blockdata_GeotimeSeriesIntegrationName,
+  MarkingGroupName as _api_blockdata_MarkingGroupName,
   MediaSetViewName as _api_blockdata_MediaSetViewName,
   OntologyIrPropertyToColumnMapping
     as _api_blockdata_OntologyIrPropertyToColumnMapping,
@@ -57,6 +58,7 @@ import type {
   ConditionValueId as _api_types_ConditionValueId,
   DataValue as _api_types_DataValue,
   Intent as _api_types_Intent,
+  LinkTypeSide as _api_types_LinkTypeSide,
   NowValue as _api_types_NowValue,
   OntologyIrBaseParameterType as _api_types_OntologyIrBaseParameterType,
   OntologyIrDataValue as _api_types_OntologyIrDataValue,
@@ -190,6 +192,11 @@ export interface ActionLogValue_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValue;
 }
 
+export interface ActionLogValue_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueV2;
+}
+
 export interface ActionLogValue_editedObjects {
   type: "editedObjects";
   editedObjects: ObjectTypeId;
@@ -273,6 +280,7 @@ export type ActionLogValue =
   | ActionLogValue_parameterValue
   | ActionLogValue_objectParameterPropertyValue
   | ActionLogValue_interfaceParameterPropertyValue
+  | ActionLogValue_interfaceParameterPropertyValueV2
   | ActionLogValue_editedObjects
   | ActionLogValue_allEditedObjects
   | ActionLogValue_actionTypeRid
@@ -303,6 +311,12 @@ export interface ActionLogValueModification_objectParameterPropertyValue {
 export interface ActionLogValueModification_interfaceParameterPropertyValue {
   type: "interfaceParameterPropertyValue";
   interfaceParameterPropertyValue: InterfaceParameterPropertyValueModification;
+}
+
+export interface ActionLogValueModification_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2:
+    InterfaceParameterPropertyValueModificationV2;
 }
 
 export interface ActionLogValueModification_editedObjects {
@@ -388,6 +402,7 @@ export type ActionLogValueModification =
   | ActionLogValueModification_parameterValue
   | ActionLogValueModification_objectParameterPropertyValue
   | ActionLogValueModification_interfaceParameterPropertyValue
+  | ActionLogValueModification_interfaceParameterPropertyValueV2
   | ActionLogValueModification_editedObjects
   | ActionLogValueModification_allEditedObjects
   | ActionLogValueModification_actionTypeRid
@@ -840,6 +855,7 @@ export interface ActionTypeLoadResponseV2 {
   actionType: ActionType;
   ontologyRid: OntologyRid;
   ontologyVersion: OntologyVersion;
+  resolvedBranch: ResolvedBranch;
 }
 /**
  * Request to batch load ActionTypes at specified version. No more than 100 should be requested.
@@ -858,6 +874,13 @@ export interface ActionTypeLogic {
   notifications: Array<ActionNotification>;
   revert?: ActionRevert | null | undefined;
   validation: ActionValidation;
+  webhooks?: ActionWebhooks | null | undefined;
+}
+export interface ActionTypeLogicRequest {
+  logic: ActionLogic;
+  notifications: Array<ActionNotification>;
+  revert?: ActionRevert | null | undefined;
+  validation: ActionValidationRequest;
   webhooks?: ActionWebhooks | null | undefined;
 }
 /**
@@ -879,6 +902,7 @@ export interface ActionTypeMetadata {
     | undefined;
   rid: ActionTypeRid;
   sections: Record<SectionId, Section>;
+  stagingMediaSetRid?: MediaSetRid | null | undefined;
   status: ActionTypeStatus;
   submissionConfiguration?: ActionSubmissionConfiguration | null | undefined;
   version: ActionTypeVersion;
@@ -902,6 +926,7 @@ export interface ActionTypeMetadataModification {
     | undefined;
   rid: ActionTypeRid;
   sections: Record<SectionId, Section>;
+  stagingMediaSetRid?: MediaSetRid | null | undefined;
   status: ActionTypeStatus;
   submissionConfiguration?: ActionSubmissionConfiguration | null | undefined;
   version: ActionTypeVersion;
@@ -910,7 +935,7 @@ export interface ActionTypeMetadataModification {
  * Action type shape for requests. Ensures backend compatibility with the usePlugin LLM endpoint.
  */
 export interface ActionTypeModificationRequest {
-  actionTypeLogic: ActionTypeLogic;
+  actionTypeLogic: ActionTypeLogicRequest;
   metadata: ActionTypeMetadataModification;
 }
 /**
@@ -1110,6 +1135,11 @@ export interface ActionValidation {
   parameterValidations: Record<ParameterId, ConditionalValidationBlock>;
   sectionValidations: Record<SectionId, SectionDisplayBlock>;
 }
+export interface ActionValidationRequest {
+  actionTypeLevelValidation: ActionTypeLevelValidation;
+  parameterValidations: Record<ParameterId, ConditionalValidationBlockRequest>;
+  sectionValidations: Record<SectionId, SectionDisplayBlock>;
+}
 /**
  * ActionWebhooks contains the definition for webhooks that are executed as part of running an Action.
  */
@@ -1171,6 +1201,10 @@ export interface AddInterfaceLinkRuleModification {
   targetObject: ParameterId;
 }
 export interface AddInterfaceRule {
+  interfacePropertyValues: Record<
+    InterfacePropertyTypeRid,
+    InterfacePropertyLogicRuleValue
+  >;
   interfaceTypeRid: InterfaceTypeRid;
   objectType: ParameterId;
   sharedPropertyValues: Record<SharedPropertyTypeRid, LogicRuleValue>;
@@ -1180,6 +1214,9 @@ export interface AddInterfaceRule {
   >;
 }
 export interface AddInterfaceRuleModification {
+  interfacePropertyTypeLogicRuleValueModifications: Array<
+    InterfacePropertyTypeLogicRuleValueModification
+  >;
   interfaceTypeRidOrIdInRequest: InterfaceTypeRidOrIdInRequest;
   objectType: ParameterId;
   sharedPropertyTypeLogicRuleValueModifications: Array<
@@ -1405,6 +1442,11 @@ export interface AllowedParameterValues_struct {
   type: "struct";
   struct: ParameterStructOrEmpty;
 }
+
+export interface AllowedParameterValues_valueType {
+  type: "valueType";
+  valueType: ParameterValueTypeWithVersionIdOrEmpty;
+}
 export type AllowedParameterValues =
   | AllowedParameterValues_oneOf
   | AllowedParameterValues_range
@@ -1429,7 +1471,8 @@ export type AllowedParameterValues =
   | AllowedParameterValues_geoshape
   | AllowedParameterValues_geotimeSeriesReference
   | AllowedParameterValues_redacted
-  | AllowedParameterValues_struct;
+  | AllowedParameterValues_struct
+  | AllowedParameterValues_valueType;
 
 export interface AllowedParameterValuesModification_oneOf {
   type: "oneOf";
@@ -1550,6 +1593,11 @@ export interface AllowedParameterValuesModification_struct {
   type: "struct";
   struct: ParameterStructOrEmpty;
 }
+
+export interface AllowedParameterValuesModification_valueType {
+  type: "valueType";
+  valueType: ParameterValueTypeOrEmpty;
+}
 export type AllowedParameterValuesModification =
   | AllowedParameterValuesModification_oneOf
   | AllowedParameterValuesModification_range
@@ -1574,7 +1622,163 @@ export type AllowedParameterValuesModification =
   | AllowedParameterValuesModification_geoshape
   | AllowedParameterValuesModification_geotimeSeriesReference
   | AllowedParameterValuesModification_redacted
-  | AllowedParameterValuesModification_struct;
+  | AllowedParameterValuesModification_struct
+  | AllowedParameterValuesModification_valueType;
+
+export interface AllowedParameterValuesRequest_oneOf {
+  type: "oneOf";
+  oneOf: ParameterValueOneOfOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_range {
+  type: "range";
+  range: ParameterRangeOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_objectQuery {
+  type: "objectQuery";
+  objectQuery: ParameterObjectQueryOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_interfaceObjectQuery {
+  type: "interfaceObjectQuery";
+  interfaceObjectQuery: ParameterInterfaceObjectQueryOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_objectPropertyValue {
+  type: "objectPropertyValue";
+  objectPropertyValue: ParameterObjectPropertyValueOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_interfacePropertyValue {
+  type: "interfacePropertyValue";
+  interfacePropertyValue: ParameterInterfacePropertyValueOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_objectList {
+  type: "objectList";
+  objectList: ParameterObjectListOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_user {
+  type: "user";
+  user: ParameterMultipassUserOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_multipassGroup {
+  type: "multipassGroup";
+  multipassGroup: ParameterMultipassGroupOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_text {
+  type: "text";
+  text: ParameterFreeTextOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_datetime {
+  type: "datetime";
+  datetime: ParameterDateTimeRangeOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_boolean {
+  type: "boolean";
+  boolean: ParameterBooleanOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_objectSetRid {
+  type: "objectSetRid";
+  objectSetRid: ParameterObjectSetRidOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_attachment {
+  type: "attachment";
+  attachment: ParameterAttachmentOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_cbacMarking {
+  type: "cbacMarking";
+  cbacMarking: ParameterCbacMarkingOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_mandatoryMarking {
+  type: "mandatoryMarking";
+  mandatoryMarking: ParameterMandatoryMarkingOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_mediaReference {
+  type: "mediaReference";
+  mediaReference: ParameterMediaReferenceOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_objectTypeReference {
+  type: "objectTypeReference";
+  objectTypeReference: ParameterObjectTypeReferenceOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_timeSeriesReference {
+  type: "timeSeriesReference";
+  timeSeriesReference: ParameterTimeSeriesReferenceOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_geohash {
+  type: "geohash";
+  geohash: ParameterGeohashOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_geoshape {
+  type: "geoshape";
+  geoshape: ParameterGeoshapeOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_geotimeSeriesReference {
+  type: "geotimeSeriesReference";
+  geotimeSeriesReference: ParameterGeotimeSeriesReferenceOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_redacted {
+  type: "redacted";
+  redacted: Redacted;
+}
+
+export interface AllowedParameterValuesRequest_struct {
+  type: "struct";
+  struct: ParameterStructOrEmpty;
+}
+
+export interface AllowedParameterValuesRequest_valueType {
+  type: "valueType";
+  valueType: ParameterValueTypeOrEmpty;
+}
+/**
+ * This type is used to decouple AllowParameterValues from the request type, should only be used within
+ * ActionTypeModificationRequest, PutParameterRequest, and EditParameterRequest object.
+ */
+export type AllowedParameterValuesRequest =
+  | AllowedParameterValuesRequest_oneOf
+  | AllowedParameterValuesRequest_range
+  | AllowedParameterValuesRequest_objectQuery
+  | AllowedParameterValuesRequest_interfaceObjectQuery
+  | AllowedParameterValuesRequest_objectPropertyValue
+  | AllowedParameterValuesRequest_interfacePropertyValue
+  | AllowedParameterValuesRequest_objectList
+  | AllowedParameterValuesRequest_user
+  | AllowedParameterValuesRequest_multipassGroup
+  | AllowedParameterValuesRequest_text
+  | AllowedParameterValuesRequest_datetime
+  | AllowedParameterValuesRequest_boolean
+  | AllowedParameterValuesRequest_objectSetRid
+  | AllowedParameterValuesRequest_attachment
+  | AllowedParameterValuesRequest_cbacMarking
+  | AllowedParameterValuesRequest_mandatoryMarking
+  | AllowedParameterValuesRequest_mediaReference
+  | AllowedParameterValuesRequest_objectTypeReference
+  | AllowedParameterValuesRequest_timeSeriesReference
+  | AllowedParameterValuesRequest_geohash
+  | AllowedParameterValuesRequest_geoshape
+  | AllowedParameterValuesRequest_geotimeSeriesReference
+  | AllowedParameterValuesRequest_redacted
+  | AllowedParameterValuesRequest_struct
+  | AllowedParameterValuesRequest_valueType;
 
 export interface AllowedStructFieldValues_oneOf {
   type: "oneOf";
@@ -1662,6 +1866,9 @@ export interface AllowedValuesOverride {
 export interface AllowedValuesOverrideModification {
   allowedValues: AllowedParameterValuesModification;
 }
+export interface AllowedValuesOverrideRequest {
+  allowedValues: AllowedParameterValuesRequest;
+}
 export interface Analyzer_notAnalyzed {
   type: "notAnalyzed";
   notAnalyzed: NotAnalyzedAnalyzer;
@@ -1721,6 +1928,13 @@ export interface ArrayTypeDataConstraints {
 export type ArrayTypeDataValue = Array<PropertyTypeDataValue>;
 export type ArrayTypeElementsUniqueConstraint = boolean;
 export type ArrayTypeSizeConstraint = RangeSizeConstraint;
+
+/**
+ * Convert Artifact GIDs into human-readable format. Displays the artifact icon and
+ * title as opposed to its GID.
+ */
+export interface ArtifactGidFormatter {
+}
 export interface AsynchronousPostWritebackWebhook_staticDirectInput {
   type: "staticDirectInput";
   staticDirectInput: StaticWebhookWithDirectInput;
@@ -2120,6 +2334,10 @@ export interface ConditionalOverrideModification {
   condition: ConditionModification;
   parameterBlockOverrides: Array<ParameterValidationBlockOverrideModification>;
 }
+export interface ConditionalOverrideRequest {
+  condition: Condition;
+  parameterBlockOverrides: Array<ParameterValidationBlockOverrideRequest>;
+}
 export interface ConditionalValidationBlock {
   conditionalOverrides: Array<ConditionalOverride>;
   defaultValidation: ParameterValidationBlock;
@@ -2134,6 +2352,14 @@ export interface ConditionalValidationBlockModification {
   structFieldValidations: Record<
     _api_types_StructParameterFieldApiName,
     StructFieldConditionalValidationBlockModification
+  >;
+}
+export interface ConditionalValidationBlockRequest {
+  conditionalOverrides: Array<ConditionalOverrideRequest>;
+  defaultValidation: ParameterValidationBlockRequest;
+  structFieldValidations: Record<
+    _api_types_StructParameterFieldApiName,
+    StructFieldConditionalValidationBlock
   >;
 }
 /**
@@ -2215,6 +2441,11 @@ export interface ConditionValue_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValue;
 }
 
+export interface ConditionValue_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueV2;
+}
+
 export interface ConditionValue_userProperty {
   type: "userProperty";
   userProperty: UserProperty;
@@ -2229,6 +2460,7 @@ export type ConditionValue =
   | ConditionValue_staticValue
   | ConditionValue_objectParameterPropertyValue
   | ConditionValue_interfaceParameterPropertyValue
+  | ConditionValue_interfaceParameterPropertyValueV2
   | ConditionValue_userProperty
   | ConditionValue_parameterLength;
 
@@ -2252,6 +2484,12 @@ export interface ConditionValueModification_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValueModification;
 }
 
+export interface ConditionValueModification_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2:
+    InterfaceParameterPropertyValueModificationV2;
+}
+
 export interface ConditionValueModification_userProperty {
   type: "userProperty";
   userProperty: UserProperty;
@@ -2266,6 +2504,7 @@ export type ConditionValueModification =
   | ConditionValueModification_staticValue
   | ConditionValueModification_objectParameterPropertyValue
   | ConditionValueModification_interfaceParameterPropertyValue
+  | ConditionValueModification_interfaceParameterPropertyValueV2
   | ConditionValueModification_userProperty
   | ConditionValueModification_parameterLength;
 
@@ -2476,6 +2715,7 @@ export type DatasourceType =
   | "TIME_SERIES"
   | "STREAM"
   | "STREAM_V2"
+  | "STREAM_V3"
   | "DATASET_V2"
   | "RESTRICTED_VIEW_V2"
   | "RESTRICTED_STREAM"
@@ -2912,7 +3152,7 @@ export interface EditParameterRequest {
   displayMetadata: ParameterDisplayMetadata;
   id: ParameterId;
   type: _api_types_BaseParameterType;
-  validation: ConditionalValidationBlock;
+  validation: ConditionalValidationBlockRequest;
 }
 /**
  * Request to edit an existing parameter
@@ -2985,7 +3225,12 @@ export interface EmbeddingModel_text {
   type: "text";
   text: TextEmbeddingModel;
 }
-export type EmbeddingModel = EmbeddingModel_text;
+
+export interface EmbeddingModel_multimodal {
+  type: "multimodal";
+  multimodal: MultimodalEmbeddingModel;
+}
+export type EmbeddingModel = EmbeddingModel_text | EmbeddingModel_multimodal;
 
 export interface Empty {
 }
@@ -3354,6 +3599,7 @@ export interface GetActionTypesForInterfaceTypeRequest {
   ontologyVersion?: OntologyVersion | null | undefined;
   pageSize?: number | null | undefined;
   pageToken?: GetActionTypesForInterfaceTypePageToken | null | undefined;
+  versionReference?: VersionReference | null | undefined;
 }
 /**
  * Response to GetActionTypesForInterfaceTypeRequest.
@@ -3376,6 +3622,7 @@ export interface GetActionTypesForObjectTypeRequest {
   ontologyVersion?: OntologyVersion | null | undefined;
   pageSize?: number | null | undefined;
   pageToken?: GetActionTypesForObjectTypePageToken | null | undefined;
+  versionReference?: VersionReference | null | undefined;
 }
 /**
  * Response to GetActionTypesForObjectTypeRequest.
@@ -3383,6 +3630,13 @@ export interface GetActionTypesForObjectTypeRequest {
 export interface GetActionTypesForObjectTypeResponse {
   actionTypes: Array<ActionType>;
   nextPageToken?: GetActionTypesForObjectTypePageToken | null | undefined;
+  resolvedBranch: ResolvedBranch;
+}
+export interface GetEntityDelegateDatasetRequest {
+  ontologyEntityRid: ObjectOrLinkTypeRid;
+}
+export interface GetEntityDelegateDatasetResponse {
+  delegateDataset: OntologySparkDelegateDataset;
 }
 /**
  * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
@@ -3411,6 +3665,10 @@ export interface GetLinkMetadataForObjectTypesResponse {
  * Request to batch get LinkType(s) for ObjectType(s).
  */
 export interface GetLinkTypesForObjectTypesRequest {
+  includeLinkTypesForDerivedPropertyLinkDefinitions?:
+    | boolean
+    | null
+    | undefined;
   includeObjectTypesWithoutSearchableDatasources?: boolean | null | undefined;
   loadRedacted?: boolean | null | undefined;
   objectTypeBranches: Record<
@@ -3432,6 +3690,7 @@ export interface GetLinkTypesForObjectTypesResponse {
 export interface GetObjectTypesForInterfaceTypesRequest {
   interfaceTypeRids: Array<InterfaceTypeRid>;
   ontologyVersion?: OntologyVersion | null | undefined;
+  versionReference?: VersionReference | null | undefined;
 }
 /**
  * Response to GetObjectTypesForInterfaceTypesRequest.
@@ -3448,6 +3707,7 @@ export interface GetObjectTypesForInterfaceTypesResponse {
 export interface GetObjectTypesForSharedPropertyTypesRequest {
   ontologyVersion?: OntologyVersion | null | undefined;
   sharedPropertyTypeRids: Array<SharedPropertyTypeRid>;
+  versionReference?: VersionReference | null | undefined;
 }
 /**
  * Response to GetObjectTypesForSharedPropertyTypesRequest.
@@ -3539,6 +3799,12 @@ export interface IconReference {
   locator: string;
   source: string;
 }
+export interface ImageModality {
+}
+export interface ImplementingLinkType {
+  linkTypeRid: LinkTypeRid;
+  startingFromLinkTypeSide: _api_types_LinkTypeSide;
+}
 export interface ImportedOntologyEntitiesForProjectSpanOntologies {
   sourceOntologyEntities: Array<string>;
   targetOntologyEntities: Array<string>;
@@ -3625,6 +3891,32 @@ export type InterfaceLinkTypeRidOrIdInRequest =
   | InterfaceLinkTypeRidOrIdInRequest_rid
   | InterfaceLinkTypeRidOrIdInRequest_idInRequest;
 
+/**
+ * Reference to a struct field of a struct property.
+ */
+export interface InterfaceObjectParameterStructFieldValue {
+  interfacePropertyTypeRid: InterfacePropertyTypeRid;
+  parameterId: ParameterId;
+  structFieldRid: StructFieldRid;
+}
+export interface InterfaceObjectParameterStructFieldValueModification {
+  interfacePropertyTypeRidOrIdInRequest: InterfacePropertyTypeRidOrIdInRequest;
+  parameterId: ParameterId;
+  structFieldApiNameOrRid: StructFieldApiNameOrRid;
+}
+/**
+ * Reference to a struct field of a struct list property.
+ */
+export interface InterfaceObjectParameterStructListFieldValue {
+  interfacePropertyTypeRid: InterfacePropertyTypeRid;
+  parameterId: ParameterId;
+  structFieldRid: StructFieldRid;
+}
+export interface InterfaceObjectParameterStructListFieldValueModification {
+  interfacePropertyTypeRidOrIdInRequest: InterfacePropertyTypeRidOrIdInRequest;
+  parameterId: ParameterId;
+  structFieldApiNameOrRid: StructFieldApiNameOrRid;
+}
 export interface InterfaceParameterPropertyValue {
   parameterId: ParameterId;
   sharedPropertyTypeRid: SharedPropertyTypeRid;
@@ -3633,9 +3925,81 @@ export interface InterfaceParameterPropertyValueModification {
   parameterId: ParameterId;
   sharedPropertyTypeRidOrIdInRequest: SharedPropertyTypeRidOrIdInRequest;
 }
+/**
+ * Used to reference interface properties. Note, these are curently unsupported on the actions backend.
+ */
+export interface InterfaceParameterPropertyValueModificationV2 {
+  interfacePropertyTypeRidOrIdInRequest: InterfacePropertyTypeRidOrIdInRequest;
+  parameterId: ParameterId;
+}
+export interface InterfaceParameterPropertyValueV2 {
+  interfacePropertyTypeRid: InterfacePropertyTypeRid;
+  parameterId: ParameterId;
+}
 export interface InterfacePropertyImplementation {
   propertyTypeRid: PropertyTypeRid;
 }
+export interface InterfacePropertyLogicRuleValue_logicRuleValue {
+  type: "logicRuleValue";
+  logicRuleValue: LogicRuleValue;
+}
+
+export interface InterfacePropertyLogicRuleValue_structLogicRuleValue {
+  type: "structLogicRuleValue";
+  structLogicRuleValue: Record<StructFieldRid, StructFieldLogicRuleValue>;
+}
+export type InterfacePropertyLogicRuleValue =
+  | InterfacePropertyLogicRuleValue_logicRuleValue
+  | InterfacePropertyLogicRuleValue_structLogicRuleValue;
+
+export interface InterfacePropertyType_sharedPropertyBasedPropertyType {
+  type: "sharedPropertyBasedPropertyType";
+  sharedPropertyBasedPropertyType: SharedPropertyBasedPropertyType;
+}
+export type InterfacePropertyType =
+  InterfacePropertyType_sharedPropertyBasedPropertyType;
+
+export type InterfacePropertyTypeApiName = string;
+export interface InterfacePropertyTypeDisplayMetadata {
+  description?: string | null | undefined;
+  displayName: string;
+  visibility: Visibility;
+}
+/**
+ * Reference to a InterfacePropertyType. Used when referencing an InterfacePropertyType in the same request it is
+ * created in.
+ */
+export type InterfacePropertyTypeIdInRequest = string;
+export interface InterfacePropertyTypeImplementation_propertyTypeRid {
+  type: "propertyTypeRid";
+  propertyTypeRid: PropertyTypeRid;
+}
+export type InterfacePropertyTypeImplementation =
+  InterfacePropertyTypeImplementation_propertyTypeRid;
+
+export interface InterfacePropertyTypeLogicRuleValueModification {
+  interfacePropertyLogicRuleModification:
+    PrimitiveOrStructLogicRuleModification;
+  interfacePropertyTypeRidOrIdInRequest: InterfacePropertyTypeRidOrIdInRequest;
+}
+/**
+ * A rid identifying an InterfacePropertyType. This rid is generated randomly and is safe for logging purposes.
+ * The InterfacePropertyTypeRid for an InterfacePropertyType is immutable.
+ */
+export type InterfacePropertyTypeRid = string;
+export interface InterfacePropertyTypeRidOrIdInRequest_rid {
+  type: "rid";
+  rid: InterfacePropertyTypeRid;
+}
+
+export interface InterfacePropertyTypeRidOrIdInRequest_idInRequest {
+  type: "idInRequest";
+  idInRequest: InterfacePropertyTypeIdInRequest;
+}
+export type InterfacePropertyTypeRidOrIdInRequest =
+  | InterfacePropertyTypeRidOrIdInRequest_rid
+  | InterfacePropertyTypeRidOrIdInRequest_idInRequest;
+
 export interface InterfaceSharedPropertyType {
   required: boolean;
   sharedPropertyType: SharedPropertyType;
@@ -3652,13 +4016,19 @@ export interface InterfaceType {
   allLinks: Array<InterfaceLinkType>;
   allProperties: Array<SharedPropertyType>;
   allPropertiesV2: Record<SharedPropertyTypeRid, InterfaceSharedPropertyType>;
+  allPropertiesV3: Record<
+    InterfacePropertyTypeRid,
+    ResolvedInterfacePropertyType
+  >;
   apiName: InterfaceTypeApiName;
   displayMetadata: InterfaceTypeDisplayMetadata;
   extendsInterfaces: Array<InterfaceTypeRid>;
   links: Array<InterfaceLinkType>;
   properties: Array<SharedPropertyType>;
   propertiesV2: Record<SharedPropertyTypeRid, InterfaceSharedPropertyType>;
+  propertiesV3: Record<InterfacePropertyTypeRid, InterfacePropertyType>;
   rid: InterfaceTypeRid;
+  searchable?: boolean | null | undefined;
   status: InterfaceTypeStatus;
 }
 /**
@@ -3686,7 +4056,7 @@ export interface InterfaceTypeDeletedEvent {
 export interface InterfaceTypeDisplayMetadata {
   description?: string | null | undefined;
   displayName: string;
-  icon?: Icon | null | undefined;
+  icon: Icon;
 }
 export interface InterfaceTypeError_interfaceTypesNotFound {
   type: "interfaceTypesNotFound";
@@ -3713,6 +4083,7 @@ export interface InterfaceTypeLoadResponse {
   interfaceType: InterfaceType;
   ontologyRid: OntologyRid;
   ontologyVersion: OntologyVersion;
+  resolvedBranch: ResolvedBranch;
 }
 /**
  * An immutable rid identifying the interface. This rid is generated randomly and is safe for logging purposes.
@@ -3808,6 +4179,11 @@ export type JoinDefinition =
   | JoinDefinition_singleKey
   | JoinDefinition_joinTable;
 
+export interface KnownFormatter_artifactGidFormatter {
+  type: "artifactGidFormatter";
+  artifactGidFormatter: ArtifactGidFormatter;
+}
+
 export interface KnownFormatter_userId {
   type: "userId";
   userId: FormatterUserId;
@@ -3821,6 +4197,7 @@ export interface KnownFormatter_ridFormatter {
  * Contains a known format that informs the Front-End consumer to use a specific formatter.
  */
 export type KnownFormatter =
+  | KnownFormatter_artifactGidFormatter
   | KnownFormatter_userId
   | KnownFormatter_ridFormatter;
 
@@ -3835,6 +4212,7 @@ export interface LabelledValue {
 export type LanguageAnalyzer =
   | "FRENCH"
   | "JAPANESE"
+  | "KOREAN"
   | "ARABIC"
   | "COMBINED_ARABIC_ENGLISH";
 
@@ -3909,6 +4287,7 @@ export type LinkMetadata = LinkMetadata_linkType | LinkMetadata_softLink;
  */
 export interface LinkType {
   definition: LinkDefinition;
+  description?: string | null | undefined;
   id: LinkTypeId;
   redacted?: boolean | null | undefined;
   rid: LinkTypeRid;
@@ -4033,6 +4412,7 @@ export interface LinkTypeLoadResponse {
   linkType: LinkType;
   ontologyRid: OntologyRid;
   ontologyVersion: OntologyVersion;
+  resolvedBranch: ResolvedBranch;
 }
 export interface LinkTypeMetadata {
   apiName?: ObjectTypeFieldApiName | null | undefined;
@@ -4071,6 +4451,16 @@ export type LinkTypePeeringRid = string;
  * the LinkTypeRid will be different.
  */
 export type LinkTypeRid = string;
+export interface LinkTypeRidOrId_rid {
+  type: "rid";
+  rid: LinkTypeRid;
+}
+
+export interface LinkTypeRidOrId_id {
+  type: "id";
+  id: LinkTypeId;
+}
+export type LinkTypeRidOrId = LinkTypeRidOrId_rid | LinkTypeRidOrId_id;
 
 /**
  * The LinkTypesRids were not found in the current ontology.
@@ -4243,6 +4633,7 @@ export type LoadAllObjectTypesPageToken = string;
  * Request to load all visible Ontologies.
  */
 export interface LoadAllOntologiesRequest {
+  includeEmptyDefaultOntology?: boolean | null | undefined;
 }
 /**
  * Response to LoadAllOntologiesRequest. This includes information
@@ -4478,6 +4869,11 @@ export interface LogicRuleValue_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValue;
 }
 
+export interface LogicRuleValue_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueV2;
+}
+
 export interface LogicRuleValue_currentUser {
   type: "currentUser";
   currentUser: CurrentUser;
@@ -4506,6 +4902,7 @@ export type LogicRuleValue =
   | LogicRuleValue_staticValue
   | LogicRuleValue_objectParameterPropertyValue
   | LogicRuleValue_interfaceParameterPropertyValue
+  | LogicRuleValue_interfaceParameterPropertyValueV2
   | LogicRuleValue_currentUser
   | LogicRuleValue_currentTime
   | LogicRuleValue_uniqueIdentifier
@@ -4529,6 +4926,12 @@ export interface LogicRuleValueModification_objectParameterPropertyValue {
 export interface LogicRuleValueModification_interfaceParameterPropertyValue {
   type: "interfaceParameterPropertyValue";
   interfaceParameterPropertyValue: InterfaceParameterPropertyValueModification;
+}
+
+export interface LogicRuleValueModification_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2:
+    InterfaceParameterPropertyValueModificationV2;
 }
 
 export interface LogicRuleValueModification_currentUser {
@@ -4559,6 +4962,7 @@ export type LogicRuleValueModification =
   | LogicRuleValueModification_staticValue
   | LogicRuleValueModification_objectParameterPropertyValue
   | LogicRuleValueModification_interfaceParameterPropertyValue
+  | LogicRuleValueModification_interfaceParameterPropertyValueV2
   | LogicRuleValueModification_currentUser
   | LogicRuleValueModification_currentTime
   | LogicRuleValueModification_uniqueIdentifier
@@ -4585,9 +4989,10 @@ export interface LongTypeRangeConstraint {
   min?: LongTypeDataValue | null | undefined;
 }
 /**
- * All mandatory marking properties linked to this datasource must only contain values within this set. It must have at least one marking specified. Note that Organization MarkingIds are not allowed in this set.
+ * Contains a set of markings that represent the mandatory security of this datasource.
  */
 export interface MandatoryMarkingConstraint {
+  allowEmptyMarkings?: boolean | null | undefined;
   markingIds: Array<MarkingId>;
 }
 export interface ManyToManyJoinDefinition {
@@ -4757,13 +5162,40 @@ export type MediaSourceRid =
   | MediaSourceRid_mediaSetRid
   | MediaSourceRid_datasetRid;
 
+export type MioEmbeddingModel = "GOOGLE_SIGLIP_2";
 export interface MissingAffectedObjectTypesForFunctionRule {
   functionRid: FunctionRid;
   functionVersion: SemanticFunctionVersion;
   missingAffectedObjectTypes: Array<ObjectTypeRid>;
 }
+export interface MissingParameterValueType {
+}
+export interface Modality_text {
+  type: "text";
+  text: TextModality;
+}
+
+export interface Modality_image {
+  type: "image";
+  image: ImageModality;
+}
+/**
+ * Represents the type of input data that can be embedded.
+ */
+export type Modality = Modality_text | Modality_image;
+
+export interface ModelWithSource_mio {
+  type: "mio";
+  mio: MioEmbeddingModel;
+}
+export type ModelWithSource = ModelWithSource_mio;
+
 export interface ModifyInterfaceRule {
   interfaceObjectToModify: ParameterId;
+  interfacePropertyValues: Record<
+    InterfacePropertyTypeRid,
+    InterfacePropertyLogicRuleValue
+  >;
   sharedPropertyValues: Record<SharedPropertyTypeRid, LogicRuleValue>;
   structFieldValues: Record<
     SharedPropertyTypeRid,
@@ -4772,6 +5204,9 @@ export interface ModifyInterfaceRule {
 }
 export interface ModifyInterfaceRuleModification {
   interfaceObjectToModify: ParameterId;
+  interfacePropertyTypeLogicRuleValueModifications: Array<
+    InterfacePropertyTypeLogicRuleValueModification
+  >;
   sharedPropertyTypeLogicRuleValueModifications: Array<
     SharedPropertyTypeLogicRuleValueModification
   >;
@@ -4803,6 +5238,14 @@ export interface ModifyObjectRuleModification {
  * ResourceIdentifier for a Workshop Module.
  */
 export type ModuleRid = string;
+
+/**
+ * Represents an embedding model that can support different input types
+ */
+export interface MultimodalEmbeddingModel {
+  modelWithSource: ModelWithSource;
+  supportedModalities: Array<Modality>;
+}
 export interface MultipassUserFilter_groupFilter {
   type: "groupFilter";
   groupFilter: MultipassUserInGroupFilter;
@@ -5231,6 +5674,10 @@ export interface ObjectDisplayMetadata {
 }
 export interface ObjectMonitoringFrontendConsumer {
 }
+/**
+ * A rid that is either an ObjectType rid or LinkType rid.
+ */
+export type ObjectOrLinkTypeRid = string;
 export interface ObjectParameterPropertyValue {
   parameterId: ParameterId;
   propertyTypeId: PropertyTypeId;
@@ -5431,6 +5878,11 @@ export interface ObjectTypeDatasourceDefinition_streamV2 {
   streamV2: ObjectTypeStreamDatasourceV2;
 }
 
+export interface ObjectTypeDatasourceDefinition_streamV3 {
+  type: "streamV3";
+  streamV3: ObjectTypeStreamDatasourceV3;
+}
+
 export interface ObjectTypeDatasourceDefinition_restrictedView {
   type: "restrictedView";
   restrictedView: ObjectTypeRestrictedViewDatasource;
@@ -5502,6 +5954,7 @@ export type ObjectTypeDatasourceDefinition =
   | ObjectTypeDatasourceDefinition_dataset
   | ObjectTypeDatasourceDefinition_stream
   | ObjectTypeDatasourceDefinition_streamV2
+  | ObjectTypeDatasourceDefinition_streamV3
   | ObjectTypeDatasourceDefinition_restrictedView
   | ObjectTypeDatasourceDefinition_timeSeries
   | ObjectTypeDatasourceDefinition_datasetV2
@@ -5675,7 +6128,12 @@ export interface ObjectTypeInterfaceImplementation {
   interfaceTypeApiName: InterfaceTypeApiName;
   interfaceTypeRid: InterfaceTypeRid;
   links: Record<InterfaceLinkTypeRid, Array<LinkTypeId>>;
+  linksV2: Record<InterfaceLinkTypeRid, Array<ImplementingLinkType>>;
   properties: Record<SharedPropertyTypeRid, InterfacePropertyImplementation>;
+  propertiesV2: Record<
+    InterfacePropertyTypeRid,
+    InterfacePropertyTypeImplementation
+  >;
 }
 /**
  * Request to load an ObjectType.
@@ -5696,6 +6154,7 @@ export interface ObjectTypeLoadResponse {
   objectType: ObjectType;
   ontologyRid: OntologyRid;
   ontologyVersion: OntologyVersion;
+  resolvedBranch: ResolvedBranch;
 }
 /**
  * Object type datasource that is backed by media, uniquely identified by its rid.
@@ -5861,6 +6320,17 @@ export interface ObjectTypeStreamDatasourceV2 {
   streamLocator: StreamLocator;
 }
 /**
+ * Object type datasource that is backed by a stream in foundry, uniquely identified by its locator.
+ * Supports property security groups and struct property mappings, and should be used instead of
+ * ObjectTypeRestrictedStreamDatasourceV2, as that will be deprecated in the near future.
+ */
+export interface ObjectTypeStreamDatasourceV3 {
+  propertyMapping: Record<PropertyTypeRid, PropertyTypeMappingInfo>;
+  propertySecurityGroups?: PropertySecurityGroups | null | undefined;
+  retentionPolicy: RetentionPolicy;
+  streamLocator: StreamLocator;
+}
+/**
  * Object type datasource that is backed by a table in foundry, uniquely identified by its locator.
  * Supports edit only property types through PropertyTypeMappingInfo.
  */
@@ -5998,6 +6468,7 @@ export interface OntologyBulkLoadEntitiesRequest {
   actionTypes: Array<ActionTypeLoadRequestV2>;
   datasourceTypes: Array<DatasourceType>;
   entityMetadata?: EntityMetadataLoadRequest | null | undefined;
+  fallBackToOwningBranch?: boolean | null | undefined;
   includeEntityMetadata?: boolean | null | undefined;
   includeObjectTypeCount?: boolean | null | undefined;
   includeObjectTypesWithoutSearchableDatasources?: boolean | null | undefined;
@@ -6084,6 +6555,12 @@ export interface OntologyIrActionLogValue_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: OntologyIrInterfaceParameterPropertyValue;
 }
 
+export interface OntologyIrActionLogValue_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2:
+    OntologyIrInterfaceParameterPropertyValueV2;
+}
+
 export interface OntologyIrActionLogValue_editedObjects {
   type: "editedObjects";
   editedObjects: ObjectTypeApiName;
@@ -6167,6 +6644,7 @@ export type OntologyIrActionLogValue =
   | OntologyIrActionLogValue_parameterValue
   | OntologyIrActionLogValue_objectParameterPropertyValue
   | OntologyIrActionLogValue_interfaceParameterPropertyValue
+  | OntologyIrActionLogValue_interfaceParameterPropertyValueV2
   | OntologyIrActionLogValue_editedObjects
   | OntologyIrActionLogValue_allEditedObjects
   | OntologyIrActionLogValue_actionTypeRid
@@ -6285,6 +6763,7 @@ export interface OntologyIrActionTypeMetadata {
   parameterOrdering: Array<ParameterId>;
   parameters: Record<ParameterId, OntologyIrParameter>;
   sections: Record<SectionId, OntologyIrSection>;
+  stagingMediaSetRid?: MediaSetRid | null | undefined;
   status: OntologyIrActionTypeStatus;
 }
 export interface OntologyIrActionTypeRichTextComponent_message {
@@ -6350,6 +6829,7 @@ export interface OntologyIrActionValidation {
     ParameterId,
     OntologyIrConditionalValidationBlock
   >;
+  sectionValidations: Record<SectionId, OntologyIrSectionDisplayBlock>;
 }
 /**
  * ActionWebhooks contains the definition for webhooks that are executed as part of running an Action.
@@ -6523,6 +7003,11 @@ export interface OntologyIrAllowedParameterValues_redacted {
   type: "redacted";
   redacted: Redacted;
 }
+
+export interface OntologyIrAllowedParameterValues_valueType {
+  type: "valueType";
+  valueType: ParameterValueTypeWithVersionIdOrEmpty;
+}
 export type OntologyIrAllowedParameterValues =
   | OntologyIrAllowedParameterValues_oneOf
   | OntologyIrAllowedParameterValues_range
@@ -6546,7 +7031,8 @@ export type OntologyIrAllowedParameterValues =
   | OntologyIrAllowedParameterValues_geohash
   | OntologyIrAllowedParameterValues_geoshape
   | OntologyIrAllowedParameterValues_geotimeSeriesReference
-  | OntologyIrAllowedParameterValues_redacted;
+  | OntologyIrAllowedParameterValues_redacted
+  | OntologyIrAllowedParameterValues_valueType;
 
 export interface OntologyIrAllowedStructFieldValues_oneOf {
   type: "oneOf";
@@ -6693,6 +7179,13 @@ export interface OntologyIrCipherTextPropertyType {
   defaultCipherChannelRid?: string | null | undefined;
   plainTextType: OntologyIrType;
 }
+/**
+ * Contains a set of markings that represents the max classification of this datasource.
+ */
+export interface OntologyIrClassificationConstraint {
+  allowEmptyMarkings?: boolean | null | undefined;
+  markingGroupName: _api_blockdata_MarkingGroupName;
+}
 export interface OntologyIrComparisonCondition {
   displayMetadata?: ConditionDisplayMetadata | null | undefined;
   left: OntologyIrConditionValue;
@@ -6753,6 +7246,7 @@ export interface OntologyIrConditionalOverride {
   parameterBlockOverrides: Array<OntologyIrParameterValidationBlockOverride>;
 }
 export interface OntologyIrConditionalValidationBlock {
+  conditionalOverrides: Array<OntologyIrConditionalOverride>;
   defaultValidation: OntologyIrParameterValidationBlock;
 }
 export interface OntologyIrConditionValue_parameterId {
@@ -6792,6 +7286,17 @@ export type OntologyIrConditionValue =
   | OntologyIrConditionValue_userProperty
   | OntologyIrConditionValue_parameterLength;
 
+/**
+ * Contains information about the different security controls applied on data in this datasource. Note that
+ * currently this is only allowed on Restricted View-like datasources.
+ */
+export interface OntologyIrDataSecurity {
+  classificationConstraint?:
+    | OntologyIrClassificationConstraint
+    | null
+    | undefined;
+  markingConstraint?: OntologyIrMandatoryMarkingConstraint | null | undefined;
+}
 export interface OntologyIrDateRangeValue_fixed {
   type: "fixed";
   fixed: OntologyIrConditionValue;
@@ -6844,15 +7349,6 @@ export interface OntologyIrDeprecatedActionTypeStatus {
   deadline: string;
   message: string;
   replacedBy?: ActionTypeApiName | null | undefined;
-}
-/**
- * This status indicates that the interface is reaching the end of its life and will be removed as per the
- * deadline specified.
- */
-export interface OntologyIrDeprecatedInterfaceTypeStatus {
-  deadline: string;
-  message: string;
-  replacedBy?: InterfaceTypeApiName | null | undefined;
 }
 /**
  * This status indicates that the LinkType is reaching the end of its life and will be removed as per the deadline specified.
@@ -7004,76 +7500,66 @@ export interface OntologyIrFunctionRule {
   functionRid: FunctionRid;
   functionVersion: SemanticFunctionVersion;
 }
+export interface OntologyIrImplementingLinkType {
+  linkTypeRid: LinkTypeId;
+  startingFromLinkTypeSide: _api_types_LinkTypeSide;
+}
 export interface OntologyIrInlineActionType {
   displayOptions: InlineActionDisplayOptions;
   parameterId?: ParameterId | null | undefined;
   rid: ActionTypeApiName;
 }
-export interface OntologyIrInterfaceLinkType {
-  cardinality: InterfaceLinkTypeCardinality;
-  linkedEntityTypeId: OntologyIrLinkedEntityTypeId;
-  metadata: InterfaceLinkTypeMetadata;
-  required: boolean;
+/**
+ * Reference to a struct field of a struct property.
+ */
+export interface OntologyIrInterfaceObjectParameterStructFieldValue {
+  interfacePropertyTypeRid: InterfacePropertyTypeApiName;
+  parameterId: ParameterId;
+  structFieldRid: StructFieldRid;
+}
+/**
+ * Reference to a struct field of a struct list property.
+ */
+export interface OntologyIrInterfaceObjectParameterStructListFieldValue {
+  interfacePropertyTypeRid: InterfacePropertyTypeApiName;
+  parameterId: ParameterId;
+  structFieldRid: StructFieldRid;
 }
 export interface OntologyIrInterfaceParameterPropertyValue {
   parameterId: ParameterId;
   sharedPropertyTypeRid: ObjectTypeFieldApiName;
 }
+export interface OntologyIrInterfaceParameterPropertyValueV2 {
+  interfacePropertyTypeRid: InterfacePropertyTypeApiName;
+  parameterId: ParameterId;
+}
 export interface OntologyIrInterfacePropertyImplementation {
   propertyTypeRid: ObjectTypeFieldApiName;
 }
+export interface OntologyIrInterfacePropertyLogicRuleValue_logicRuleValue {
+  type: "logicRuleValue";
+  logicRuleValue: OntologyIrLogicRuleValue;
+}
+
+export interface OntologyIrInterfacePropertyLogicRuleValue_structLogicRuleValue {
+  type: "structLogicRuleValue";
+  structLogicRuleValue: Record<StructFieldRid, StructFieldLogicRuleValue>;
+}
+export type OntologyIrInterfacePropertyLogicRuleValue =
+  | OntologyIrInterfacePropertyLogicRuleValue_logicRuleValue
+  | OntologyIrInterfacePropertyLogicRuleValue_structLogicRuleValue;
+
+export interface OntologyIrInterfacePropertyTypeImplementation_propertyTypeRid {
+  type: "propertyTypeRid";
+  propertyTypeRid: ObjectTypeFieldApiName;
+}
+export type OntologyIrInterfacePropertyTypeImplementation =
+  OntologyIrInterfacePropertyTypeImplementation_propertyTypeRid;
+
 export interface OntologyIrInterfaceSharedPropertyType {
   required: boolean;
   sharedPropertyType: OntologyIrSharedPropertyType;
 }
-/**
- * Represents a collection of properties that object types can implement. If an object type implements an
- * interface, it is guaranteed to have the conform to the interface shape.
- */
-export interface OntologyIrInterfaceType {
-  allExtendsInterfaces: Array<InterfaceTypeApiName>;
-  allLinks: Array<OntologyIrInterfaceLinkType>;
-  allProperties: Array<OntologyIrSharedPropertyType>;
-  allPropertiesV2: Record<
-    ObjectTypeFieldApiName,
-    OntologyIrInterfaceSharedPropertyType
-  >;
-  apiName: InterfaceTypeApiName;
-  displayMetadata: InterfaceTypeDisplayMetadata;
-  extendsInterfaces: Array<InterfaceTypeApiName>;
-  links: Array<OntologyIrInterfaceLinkType>;
-  properties: Array<OntologyIrSharedPropertyType>;
-  propertiesV2: Record<
-    ObjectTypeFieldApiName,
-    OntologyIrInterfaceSharedPropertyType
-  >;
-  status: OntologyIrInterfaceTypeStatus;
-}
-export interface OntologyIrInterfaceTypeStatus_experimental {
-  type: "experimental";
-  experimental: ExperimentalInterfaceTypeStatus;
-}
-
-export interface OntologyIrInterfaceTypeStatus_active {
-  type: "active";
-  active: ActiveInterfaceTypeStatus;
-}
-
-export interface OntologyIrInterfaceTypeStatus_deprecated {
-  type: "deprecated";
-  deprecated: OntologyIrDeprecatedInterfaceTypeStatus;
-}
-
-export interface OntologyIrInterfaceTypeStatus_example {
-  type: "example";
-  example: ExampleInterfaceTypeStatus;
-}
-export type OntologyIrInterfaceTypeStatus =
-  | OntologyIrInterfaceTypeStatus_experimental
-  | OntologyIrInterfaceTypeStatus_active
-  | OntologyIrInterfaceTypeStatus_deprecated
-  | OntologyIrInterfaceTypeStatus_example;
-
 /**
  * Represents a link between two ObjectTypes with an intermediary ObjectType acting as a bridge.
  * This LinkType can be used to jump from ObjectType A to B without specifying two separate search-arounds.
@@ -7130,6 +7616,7 @@ export type OntologyIrLinkedEntityTypeId =
  */
 export interface OntologyIrLinkType {
   definition: OntologyIrLinkDefinition;
+  description?: string | null | undefined;
   id: LinkTypeId;
   redacted?: boolean | null | undefined;
   status: OntologyIrLinkTypeStatus;
@@ -7191,13 +7678,25 @@ export interface OntologyIrLogicRule_modifyInterfaceRule {
   type: "modifyInterfaceRule";
   modifyInterfaceRule: OntologyIrModifyInterfaceRule;
 }
+
+export interface OntologyIrLogicRule_addLinkRule {
+  type: "addLinkRule";
+  addLinkRule: AddLinkRule;
+}
+
+export interface OntologyIrLogicRule_deleteLinkRule {
+  type: "deleteLinkRule";
+  deleteLinkRule: DeleteLinkRule;
+}
 export type OntologyIrLogicRule =
   | OntologyIrLogicRule_addObjectRule
   | OntologyIrLogicRule_addOrModifyObjectRuleV2
   | OntologyIrLogicRule_modifyObjectRule
   | OntologyIrLogicRule_deleteObjectRule
   | OntologyIrLogicRule_addInterfaceRule
-  | OntologyIrLogicRule_modifyInterfaceRule;
+  | OntologyIrLogicRule_modifyInterfaceRule
+  | OntologyIrLogicRule_addLinkRule
+  | OntologyIrLogicRule_deleteLinkRule;
 
 export interface OntologyIrLogicRuleValue_parameterId {
   type: "parameterId";
@@ -7252,6 +7751,13 @@ export type OntologyIrLogicRuleValue =
   | OntologyIrLogicRuleValue_uniqueIdentifier
   | OntologyIrLogicRuleValue_synchronousWebhookOutput;
 
+/**
+ * Contains a set of markings that represent the mandatory security of this datasource.
+ */
+export interface OntologyIrMandatoryMarkingConstraint {
+  allowEmptyMarkings?: boolean | null | undefined;
+  markingGroupName: _api_blockdata_MarkingGroupName;
+}
 export interface OntologyIrManyToManyLinkDefinition {
   objectTypeAPrimaryKeyPropertyMapping: Array<
     _api_blockdata_OntologyIrPropertyToPropertyMapping
@@ -7665,6 +8171,7 @@ export interface OntologyIrObjectTypeDatasetDatasourceV3 {
   propertySecurityGroups?: OntologyIrPropertySecurityGroups | null | undefined;
 }
 export interface OntologyIrObjectTypeDatasource {
+  dataSecurity?: OntologyIrDataSecurity | null | undefined;
   datasource: OntologyIrObjectTypeDatasourceDefinition;
   editsConfiguration?: EditsConfiguration | null | undefined;
   redacted?: boolean | null | undefined;
@@ -7673,6 +8180,11 @@ export interface OntologyIrObjectTypeDatasource {
 export interface OntologyIrObjectTypeDatasourceDefinition_streamV2 {
   type: "streamV2";
   streamV2: OntologyIrObjectTypeStreamDatasourceV2;
+}
+
+export interface OntologyIrObjectTypeDatasourceDefinition_streamV3 {
+  type: "streamV3";
+  streamV3: OntologyIrObjectTypeStreamDatasourceV3;
 }
 
 export interface OntologyIrObjectTypeDatasourceDefinition_timeSeries {
@@ -7734,6 +8246,7 @@ export interface OntologyIrObjectTypeDatasourceDefinition_derived {
  */
 export type OntologyIrObjectTypeDatasourceDefinition =
   | OntologyIrObjectTypeDatasourceDefinition_streamV2
+  | OntologyIrObjectTypeDatasourceDefinition_streamV3
   | OntologyIrObjectTypeDatasourceDefinition_timeSeries
   | OntologyIrObjectTypeDatasourceDefinition_datasetV2
   | OntologyIrObjectTypeDatasourceDefinition_datasetV3
@@ -7794,9 +8307,17 @@ export interface OntologyIrObjectTypeGeotimeSeriesDatasource {
  */
 export interface OntologyIrObjectTypeInterfaceImplementation {
   interfaceTypeApiName: InterfaceTypeApiName;
+  linksV2: Record<
+    InterfaceLinkTypeApiName,
+    Array<OntologyIrImplementingLinkType>
+  >;
   properties: Record<
     ObjectTypeFieldApiName,
     OntologyIrInterfacePropertyImplementation
+  >;
+  propertiesV2: Record<
+    InterfacePropertyTypeApiName,
+    OntologyIrInterfacePropertyTypeImplementation
   >;
 }
 /**
@@ -7893,6 +8414,17 @@ export interface OntologyIrObjectTypeStreamDatasource {
  */
 export interface OntologyIrObjectTypeStreamDatasourceV2 {
   propertyMapping: Record<ObjectTypeFieldApiName, ColumnName>;
+  propertySecurityGroups?: OntologyIrPropertySecurityGroups | null | undefined;
+  retentionPolicy: RetentionPolicy;
+  streamLocator: _api_blockdata_StreamName;
+}
+/**
+ * Object type datasource that is backed by a stream in foundry, uniquely identified by its locator.
+ * Supports property security groups and struct property mappings, and should be used instead of
+ * ObjectTypeRestrictedStreamDatasourceV2, as that will be deprecated in the near future.
+ */
+export interface OntologyIrObjectTypeStreamDatasourceV3 {
+  propertyMapping: Record<ObjectTypeFieldApiName, PropertyTypeMappingInfo>;
   propertySecurityGroups?: OntologyIrPropertySecurityGroups | null | undefined;
   retentionPolicy: RetentionPolicy;
   streamLocator: _api_blockdata_StreamName;
@@ -8206,6 +8738,7 @@ export type OntologyIrParameterValidationBlockOverride =
  * evaluate correctness of submitted parameters.
  */
 export interface OntologyIrParameterValidationDisplayMetadata {
+  prefill?: OntologyIrParameterPrefill | null | undefined;
   renderHint: _api_types_ParameterRenderHint;
   visibility: _api_types_ParameterVisibility;
 }
@@ -8243,6 +8776,7 @@ export interface OntologyIrPropertySecurityGroup {
   properties: Array<ObjectTypeFieldApiName>;
   rid: PropertySecurityGroupRid;
   security: OntologyIrSecurityGroupSecurityDefinition;
+  type?: PropertySecurityGroupType | null | undefined;
 }
 /**
  * Groupings of properties into different security "buckets." Every property of the entity type must belong
@@ -8465,7 +8999,7 @@ export type OntologyIrSecurityGroupGranularCondition =
  * every "row" (object or relation).
  */
 export interface OntologyIrSecurityGroupGranularPolicy {
-  additionalMandatory: SecurityGroupMandatoryPolicy;
+  additionalMandatory: OntologyIrSecurityGroupMandatoryPolicy;
   granularPolicyCondition: OntologyIrSecurityGroupGranularCondition;
 }
 /**
@@ -8473,6 +9007,16 @@ export interface OntologyIrSecurityGroupGranularPolicy {
  */
 export interface OntologyIrSecurityGroupGranularSecurityDefinition {
   viewPolicy: OntologyIrSecurityGroupGranularPolicy;
+}
+/**
+ * Ontology-managed mandatory security applied to the properties in the security group.
+ */
+export interface OntologyIrSecurityGroupMandatoryOnlySecurityDefinition {
+  policy: OntologyIrSecurityGroupMandatoryPolicy;
+}
+export interface OntologyIrSecurityGroupMandatoryPolicy {
+  assumedMarkings: Array<MarkingId>;
+  markings: Array<MarkingId>;
 }
 /**
  * Condition that specifies that user's markings must be evaluated against the marking(s) contained on each
@@ -8495,7 +9039,7 @@ export interface OntologyIrSecurityGroupOrCondition {
 }
 export interface OntologyIrSecurityGroupSecurityDefinition_mandatoryOnly {
   type: "mandatoryOnly";
-  mandatoryOnly: SecurityGroupMandatoryOnlySecurityDefinition;
+  mandatoryOnly: OntologyIrSecurityGroupMandatoryOnlySecurityDefinition;
 }
 
 export interface OntologyIrSecurityGroupSecurityDefinition_granular {
@@ -8622,12 +9166,26 @@ export interface OntologyIrStructFieldPrefill_objectParameterStructListFieldValu
   objectParameterStructListFieldValue:
     OntologyIrObjectParameterStructListFieldValue;
 }
+
+export interface OntologyIrStructFieldPrefill_interfaceObjectParameterStructFieldValue {
+  type: "interfaceObjectParameterStructFieldValue";
+  interfaceObjectParameterStructFieldValue:
+    OntologyIrInterfaceObjectParameterStructFieldValue;
+}
+
+export interface OntologyIrStructFieldPrefill_interfaceObjectParameterStructListFieldValue {
+  type: "interfaceObjectParameterStructListFieldValue";
+  interfaceObjectParameterStructListFieldValue:
+    OntologyIrInterfaceObjectParameterStructListFieldValue;
+}
 /**
  * StructFieldPrefill specifies what should initially suggested to users for a struct parameter's field.
  */
 export type OntologyIrStructFieldPrefill =
   | OntologyIrStructFieldPrefill_objectParameterStructFieldValue
-  | OntologyIrStructFieldPrefill_objectParameterStructListFieldValue;
+  | OntologyIrStructFieldPrefill_objectParameterStructListFieldValue
+  | OntologyIrStructFieldPrefill_interfaceObjectParameterStructFieldValue
+  | OntologyIrStructFieldPrefill_interfaceObjectParameterStructListFieldValue;
 
 export interface OntologyIrStructFieldPrefillOverride {
   prefill: OntologyIrStructFieldPrefill;
@@ -9277,6 +9835,15 @@ export interface OntologyRidsForEntitiesRequest {
 }
 export interface OntologyRidsForEntitiesResponse {
   ontologyRids: Record<string, OntologyRid>;
+}
+/**
+ * Delegate dataset for an ontology entity, including dataset, branch, type, and ontology version.
+ */
+export interface OntologySparkDelegateDataset {
+  branchId: BranchId;
+  datasetRid: DatasetRid;
+  ontologyDatasetType: OntologyDatasetType;
+  ontologyVersion: OntologyVersion;
 }
 /**
  * ResourceIdentifier for the ontology spark input manager.
@@ -9938,6 +10505,11 @@ export interface ParameterPrefill_interfaceParameterPropertyValue {
   interfaceParameterPropertyValue: InterfaceParameterPropertyValue;
 }
 
+export interface ParameterPrefill_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2: InterfaceParameterPropertyValueV2;
+}
+
 export interface ParameterPrefill_objectQueryPrefill {
   type: "objectQueryPrefill";
   objectQueryPrefill: ObjectQueryPrefill;
@@ -9965,6 +10537,7 @@ export type ParameterPrefill =
   | ParameterPrefill_staticObject
   | ParameterPrefill_objectParameterPropertyValue
   | ParameterPrefill_interfaceParameterPropertyValue
+  | ParameterPrefill_interfaceParameterPropertyValueV2
   | ParameterPrefill_objectQueryPrefill
   | ParameterPrefill_objectQueryPropertyValue
   | ParameterPrefill_objectSetRidPrefill
@@ -9988,6 +10561,12 @@ export interface ParameterPrefillModification_objectParameterPropertyValue {
 export interface ParameterPrefillModification_interfaceParameterPropertyValue {
   type: "interfaceParameterPropertyValue";
   interfaceParameterPropertyValue: InterfaceParameterPropertyValueModification;
+}
+
+export interface ParameterPrefillModification_interfaceParameterPropertyValueV2 {
+  type: "interfaceParameterPropertyValueV2";
+  interfaceParameterPropertyValueV2:
+    InterfaceParameterPropertyValueModificationV2;
 }
 
 export interface ParameterPrefillModification_objectQueryPrefill {
@@ -10017,6 +10596,7 @@ export type ParameterPrefillModification =
   | ParameterPrefillModification_staticObject
   | ParameterPrefillModification_objectParameterPropertyValue
   | ParameterPrefillModification_interfaceParameterPropertyValue
+  | ParameterPrefillModification_interfaceParameterPropertyValueV2
   | ParameterPrefillModification_objectQueryPrefill
   | ParameterPrefillModification_objectQueryPropertyValue
   | ParameterPrefillModification_objectSetRidPrefill
@@ -10183,6 +10763,35 @@ export type ParameterValidationBlockOverrideModification =
   | ParameterValidationBlockOverrideModification_allowedValues
   | ParameterValidationBlockOverrideModification_prefill;
 
+export interface ParameterValidationBlockOverrideRequest_parameterRequired {
+  type: "parameterRequired";
+  parameterRequired: ParameterRequiredOverride;
+}
+
+export interface ParameterValidationBlockOverrideRequest_visibility {
+  type: "visibility";
+  visibility: VisibilityOverride;
+}
+
+export interface ParameterValidationBlockOverrideRequest_allowedValues {
+  type: "allowedValues";
+  allowedValues: AllowedValuesOverrideRequest;
+}
+
+export interface ParameterValidationBlockOverrideRequest_prefill {
+  type: "prefill";
+  prefill: ParameterPrefillOverride;
+}
+export type ParameterValidationBlockOverrideRequest =
+  | ParameterValidationBlockOverrideRequest_parameterRequired
+  | ParameterValidationBlockOverrideRequest_visibility
+  | ParameterValidationBlockOverrideRequest_allowedValues
+  | ParameterValidationBlockOverrideRequest_prefill;
+
+export interface ParameterValidationBlockRequest {
+  display: ParameterValidationDisplayMetadata;
+  validation: ParameterValidationRequest;
+}
 /**
  * These values provide details about how parameter fields should be displayed in the form. They are not used to
  * evaluate correctness of submitted parameters.
@@ -10216,6 +10825,10 @@ export interface ParameterValidationReferencesLaterParametersError {
   actionTypeIdentifier: ActionTypeIdentifier;
   idsToIdsReferencedTooEarly: Record<ParameterId, Array<ParameterId>>;
 }
+export interface ParameterValidationRequest {
+  allowedValues: AllowedParameterValuesRequest;
+  required: _api_types_ParameterRequiredConfiguration;
+}
 export interface ParameterValueOneOf {
   labelledValues: Array<LabelledValue>;
   otherValueAllowed: OtherValueAllowed;
@@ -10232,6 +10845,50 @@ export interface ParameterValueOneOfOrEmpty_oneOf {
 export type ParameterValueOneOfOrEmpty =
   | ParameterValueOneOfOrEmpty_empty
   | ParameterValueOneOfOrEmpty_oneOf;
+
+export interface ParameterValueType {
+  valueType: ValueType;
+}
+export interface ParameterValueTypeOrEmpty_valueType {
+  type: "valueType";
+  valueType: ParameterValueType;
+}
+
+export interface ParameterValueTypeOrEmpty_missingParameterValueType {
+  type: "missingParameterValueType";
+  missingParameterValueType: MissingParameterValueType;
+}
+/**
+ * When a value type is deleted, and it is present on an action type's parameter, the parameter's allowed values
+ * will become MissingParameterValueType. When users try to run an action with MissingParameterValueType, Actions
+ * will return an invalid validation response. However, if the parameter is not required, a null value will pass
+ * validations.
+ */
+export type ParameterValueTypeOrEmpty =
+  | ParameterValueTypeOrEmpty_valueType
+  | ParameterValueTypeOrEmpty_missingParameterValueType;
+
+export interface ParameterValueTypeWithVersionId {
+  valueType: ValueTypeWithVersionId;
+}
+export interface ParameterValueTypeWithVersionIdOrEmpty_valueType {
+  type: "valueType";
+  valueType: ParameterValueTypeWithVersionId;
+}
+
+export interface ParameterValueTypeWithVersionIdOrEmpty_missingParameterValueType {
+  type: "missingParameterValueType";
+  missingParameterValueType: MissingParameterValueType;
+}
+/**
+ * When a value type is deleted, and it is present on an action type's parameter, the parameter's allowed values
+ * will become MissingParameterValueType. When users try to run an action with MissingParameterValueType, Actions
+ * will return an invalid validation response. However, if the parameter is not required, a null value will pass
+ * validations.
+ */
+export type ParameterValueTypeWithVersionIdOrEmpty =
+  | ParameterValueTypeWithVersionIdOrEmpty_valueType
+  | ParameterValueTypeWithVersionIdOrEmpty_missingParameterValueType;
 
 export interface PartialObjectType {
   authorizationRidColumnLocator?: ColumnLocator | null | undefined;
@@ -10297,10 +10954,64 @@ export interface PrePostFix {
   postfix?: PropertyTypeReferenceOrStringConstant | null | undefined;
   prefix?: PropertyTypeReferenceOrStringConstant | null | undefined;
 }
+export interface PrimaryKeyPropertySecurityGroupType {
+}
+export interface PrimitiveOrStructLogicRuleModification_logicRuleValueModification {
+  type: "logicRuleValueModification";
+  logicRuleValueModification: LogicRuleValueModification;
+}
+
+export interface PrimitiveOrStructLogicRuleModification_structLogicRuleValueModification {
+  type: "structLogicRuleValueModification";
+  structLogicRuleValueModification: Array<
+    StructFieldLogicRuleValueMappingModification
+  >;
+}
+export type PrimitiveOrStructLogicRuleModification =
+  | PrimitiveOrStructLogicRuleModification_logicRuleValueModification
+  | PrimitiveOrStructLogicRuleModification_structLogicRuleValueModification;
+
 /**
  * The id of a Multipass Principal(Everyone/User/Group)
  */
 export type PrincipalId = string;
+export interface ProjectEntityRid_objectTypeRid {
+  type: "objectTypeRid";
+  objectTypeRid: ObjectTypeRid;
+}
+
+export interface ProjectEntityRid_linkTypeRid {
+  type: "linkTypeRid";
+  linkTypeRid: LinkTypeRid;
+}
+
+export interface ProjectEntityRid_actionTypeRid {
+  type: "actionTypeRid";
+  actionTypeRid: ActionTypeRid;
+}
+
+export interface ProjectEntityRid_sharedPropertyTypeRid {
+  type: "sharedPropertyTypeRid";
+  sharedPropertyTypeRid: SharedPropertyTypeRid;
+}
+
+export interface ProjectEntityRid_interfaceTypeRid {
+  type: "interfaceTypeRid";
+  interfaceTypeRid: InterfaceTypeRid;
+}
+
+export interface ProjectEntityRid_typeGroupRid {
+  type: "typeGroupRid";
+  typeGroupRid: TypeGroupRid;
+}
+export type ProjectEntityRid =
+  | ProjectEntityRid_objectTypeRid
+  | ProjectEntityRid_linkTypeRid
+  | ProjectEntityRid_actionTypeRid
+  | ProjectEntityRid_sharedPropertyTypeRid
+  | ProjectEntityRid_interfaceTypeRid
+  | ProjectEntityRid_typeGroupRid;
+
 export interface PropertiesReferenceDuplicateColumnNameWrapper {
   columnName: string;
   datasourceAuthorizationRid: Array<string>;
@@ -10321,7 +11032,9 @@ export interface Property {
  * The id for a Property.
  */
 export type PropertyId = string;
-
+export interface PropertyPropertySecurityGroupType {
+  name: PropertySecurityGroupName;
+}
 /**
  * Render hints provide additional information about the shape of the data to improve the default way the object is presented
  */
@@ -10347,6 +11060,7 @@ export interface PropertySecurityGroup {
   properties: Array<PropertyTypeRid>;
   rid: PropertySecurityGroupRid;
   security: SecurityGroupSecurityDefinition;
+  type?: PropertySecurityGroupType | null | undefined;
 }
 /**
  * Modification of PropertySecurityGroup. A globally unique identifier will be generated for each unique
@@ -10361,7 +11075,13 @@ export interface PropertySecurityGroup {
 export interface PropertySecurityGroupModification {
   properties: Array<PropertyTypeId>;
   security: SecurityGroupSecurityDefinitionModification;
+  type?: PropertySecurityGroupType | null | undefined;
 }
+/**
+ * A user-defined name that labels a PropertySecurityGroup.
+ */
+export type PropertySecurityGroupName = string;
+
 /**
  * A randomly generated rid that identifies a unique PropertySecurityGroup.
  */
@@ -10377,6 +11097,19 @@ export interface PropertySecurityGroups {
 export interface PropertySecurityGroupsModification {
   groups: Array<PropertySecurityGroupModification>;
 }
+export interface PropertySecurityGroupType_primaryKey {
+  type: "primaryKey";
+  primaryKey: PrimaryKeyPropertySecurityGroupType;
+}
+
+export interface PropertySecurityGroupType_property {
+  type: "property";
+  property: PropertyPropertySecurityGroupType;
+}
+export type PropertySecurityGroupType =
+  | PropertySecurityGroupType_primaryKey
+  | PropertySecurityGroupType_property;
+
 /**
  * A PropertyType is a typed attribute of an ObjectType.
  */
@@ -10726,7 +11459,7 @@ export interface PutActionTypeRequest {
 export interface PutParameterRequest {
   displayMetadata: ParameterDisplayMetadata;
   type: _api_types_BaseParameterType;
-  validation: ConditionalValidationBlock;
+  validation: ConditionalValidationBlockRequest;
 }
 /**
  * A PutParameterRequestModification is used to create or modify Parameters.
@@ -10880,6 +11613,41 @@ export type RenderingSettings =
   | RenderingSettings_allNotificationRenderingMustSucceed
   | RenderingSettings_anyNotificationRenderingCanFail;
 
+export interface ResolvedBranch_default {
+  type: "default";
+  default: ResolvedDefaultBranch;
+}
+
+export interface ResolvedBranch_nonDefault {
+  type: "nonDefault";
+  nonDefault: ResolvedNonDefaultBranch;
+}
+export type ResolvedBranch = ResolvedBranch_default | ResolvedBranch_nonDefault;
+
+export interface ResolvedDefaultBranch {
+  rid: OntologyBranchRid;
+}
+/**
+ * All information about the shape of the interface property. For now this all comes from shared properties, but
+ * in the future it can also come from property constraints defined on the interface.
+ */
+export interface ResolvedInterfacePropertyType {
+  apiName: InterfacePropertyTypeApiName;
+  constraints: ResolvedInterfacePropertyTypeConstraints;
+  displayMetadata: InterfacePropertyTypeDisplayMetadata;
+  rid: InterfacePropertyTypeRid;
+  type: Type;
+}
+export interface ResolvedInterfacePropertyTypeConstraints {
+  dataConstraints?: DataConstraints | null | undefined;
+  indexedForSearch: boolean;
+  requireImplementation: boolean;
+  typeClasses: Array<TypeClass>;
+  valueType?: ValueTypeReference | null | undefined;
+}
+export interface ResolvedNonDefaultBranch {
+  rid: OntologyBranchRid;
+}
 /**
  * An rid identifying a Foundry restricted view. This rid is a randomly generated identifier and is safe to log.
  */
@@ -11541,6 +12309,10 @@ export type SeriesValueMetadata =
 export interface SharedPropertiesSummary {
   visibleEntities: number;
 }
+export interface SharedPropertyBasedPropertyType {
+  requireImplementation: boolean;
+  sharedPropertyType: SharedPropertyType;
+}
 /**
  * A property type that can be shared across object types.
  */
@@ -11617,6 +12389,7 @@ export interface SharedPropertyTypeLoadRequest {
 export interface SharedPropertyTypeLoadResponse {
   ontologyRid: OntologyRid;
   ontologyVersion: OntologyVersion;
+  resolvedBranch: ResolvedBranch;
   sharedPropertyType: SharedPropertyType;
 }
 /**
@@ -11627,7 +12400,7 @@ export interface SharedPropertyTypeLogicRuleValueModification {
   sharedPropertyTypeRidOrIdInRequest: SharedPropertyTypeRidOrIdInRequest;
 }
 /**
- * An rid identifying the SharedPropertyType. This rid is generated randomly and is safe for logging purposes.
+ * A rid identifying the SharedPropertyType. This rid is generated randomly and is safe for logging purposes.
  * The SharedPropertyTypeRid for a SharedPropertyType is immutable.
  */
 export type SharedPropertyTypeRid = string;
@@ -11844,6 +12617,7 @@ export interface StringPropertyType {
   isLongText: boolean;
   supportsEfficientLeadingWildcard?: boolean | null | undefined;
   supportsExactMatching: boolean;
+  supportsFullTextRegex?: boolean | null | undefined;
 }
 export interface StringTypeDataConstraints_regex {
   type: "regex";
@@ -11977,12 +12751,26 @@ export interface StructFieldPrefill_objectParameterStructListFieldValue {
   type: "objectParameterStructListFieldValue";
   objectParameterStructListFieldValue: ObjectParameterStructListFieldValue;
 }
+
+export interface StructFieldPrefill_interfaceObjectParameterStructFieldValue {
+  type: "interfaceObjectParameterStructFieldValue";
+  interfaceObjectParameterStructFieldValue:
+    InterfaceObjectParameterStructFieldValue;
+}
+
+export interface StructFieldPrefill_interfaceObjectParameterStructListFieldValue {
+  type: "interfaceObjectParameterStructListFieldValue";
+  interfaceObjectParameterStructListFieldValue:
+    InterfaceObjectParameterStructListFieldValue;
+}
 /**
  * StructFieldPrefill specifies what should initially suggested to users for a struct parameter's field.
  */
 export type StructFieldPrefill =
   | StructFieldPrefill_objectParameterStructFieldValue
-  | StructFieldPrefill_objectParameterStructListFieldValue;
+  | StructFieldPrefill_objectParameterStructListFieldValue
+  | StructFieldPrefill_interfaceObjectParameterStructFieldValue
+  | StructFieldPrefill_interfaceObjectParameterStructListFieldValue;
 
 export interface StructFieldPrefillModification_objectParameterStructFieldValue {
   type: "objectParameterStructFieldValue";
@@ -11994,12 +12782,26 @@ export interface StructFieldPrefillModification_objectParameterStructListFieldVa
   objectParameterStructListFieldValue:
     ObjectParameterStructListFieldValueModification;
 }
+
+export interface StructFieldPrefillModification_interfaceObjectParameterStructFieldValue {
+  type: "interfaceObjectParameterStructFieldValue";
+  interfaceObjectParameterStructFieldValue:
+    InterfaceObjectParameterStructFieldValueModification;
+}
+
+export interface StructFieldPrefillModification_interfaceObjectParameterStructListFieldValue {
+  type: "interfaceObjectParameterStructListFieldValue";
+  interfaceObjectParameterStructListFieldValue:
+    InterfaceObjectParameterStructListFieldValueModification;
+}
 /**
  * StructFieldPrefillModification specifies what should initially suggested to users for a struct parameter's field.
  */
 export type StructFieldPrefillModification =
   | StructFieldPrefillModification_objectParameterStructFieldValue
-  | StructFieldPrefillModification_objectParameterStructListFieldValue;
+  | StructFieldPrefillModification_objectParameterStructListFieldValue
+  | StructFieldPrefillModification_interfaceObjectParameterStructFieldValue
+  | StructFieldPrefillModification_interfaceObjectParameterStructListFieldValue;
 
 export interface StructFieldPrefillOverride {
   prefill: StructFieldPrefill;
@@ -12140,6 +12942,11 @@ export interface StructPropertyFieldType_geohash {
   geohash: GeohashPropertyType;
 }
 
+export interface StructPropertyFieldType_geoshape {
+  type: "geoshape";
+  geoshape: GeoshapePropertyType;
+}
+
 export interface StructPropertyFieldType_integer {
   type: "integer";
   integer: IntegerPropertyType;
@@ -12160,13 +12967,16 @@ export interface StructPropertyFieldType_timestamp {
   timestamp: TimestampPropertyType;
 }
 /**
- * Wrapper type for the various supported struct property field types.
+ * Wrapper type for the various struct property field types supported in schema migrations. The ontology API
+ * reuses Type, which is a superset of the types here, even though certain base types are unsupported. See
+ * StructPropertyType.fieldType documentation for more information.
  */
 export type StructPropertyFieldType =
   | StructPropertyFieldType_boolean
   | StructPropertyFieldType_date
   | StructPropertyFieldType_double
   | StructPropertyFieldType_geohash
+  | StructPropertyFieldType_geoshape
   | StructPropertyFieldType_integer
   | StructPropertyFieldType_long
   | StructPropertyFieldType_string
@@ -12314,6 +13124,8 @@ export type TextEmbeddingModel =
   | TextEmbeddingModel_lms
   | TextEmbeddingModel_foundryLiveDeployment;
 
+export interface TextModality {
+}
 /**
  * A retention policy where the datasource will contain at least data from the specified time window.
  */
@@ -12659,6 +13471,7 @@ export interface TypeGroupLoadResponse {
   numberOfObjectTypes?: number | null | undefined;
   ontologyRid: OntologyRid;
   ontologyVersion: OntologyVersion;
+  resolvedBranch: ResolvedBranch;
   typeGroup: TypeGroup;
 }
 /**
@@ -12914,6 +13727,16 @@ export interface ValueReferenceSource_propertyTypeRid {
 }
 export type ValueReferenceSource = ValueReferenceSource_propertyTypeRid;
 
+/**
+ * When a user adds a value type to a parameter, the versionId will be empty, and the backend
+ * will default to the latest version. When the user then updates the action type again, the
+ * backend expects that the frontend will provide the current version of the value type that's in
+ * use by the parameter.
+ */
+export interface ValueType {
+  valueTypeRid: ValueTypeRid;
+  valueTypeVersionId?: ValueTypeVersionId | null | undefined;
+}
 export interface ValueTypeApiNameReference {
   apiName: string;
   version: string;
@@ -12941,6 +13764,13 @@ export interface ValueTypeReference {
 export type ValueTypeRid = string;
 export type ValueTypeVersionId = string;
 
+/**
+ * Used in response with versionId of a value type always included.
+ */
+export interface ValueTypeWithVersionId {
+  valueTypeRid: ValueTypeRid;
+  valueTypeVersionId: ValueTypeVersionId;
+}
 /**
  * Represents a fixed size vector of floats. These can be used for vector similarity searches.
  */

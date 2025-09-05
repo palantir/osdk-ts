@@ -122,4 +122,44 @@ describe("intellisense", () => {
       `"description: Geotime series reference of the location of the employee"`,
     );
   });
+
+  it("orderBySuggestionIsRight", { timeout: 40_000 }, async () => {
+    const { resp } = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 29,
+      offset: 15,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+    expect(resp.body?.entries.map(e => e.name)).toEqual([
+      "class",
+      "employeeId",
+      "employeeLocation",
+      "employeeSensor",
+      "employeeStatus",
+      "fullName",
+      "office",
+      "skillSet",
+      "skillSetEmbedding",
+      "startDate",
+    ]);
+
+    const { resp: resp2 } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 33,
+      offset: 3,
+    });
+    expect(resp2.body?.documentation).not.toEqual("'(property) $orderBy: any'");
+
+    // order by relevance
+    const { resp: resp3 } = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 39,
+      offset: 14,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+
+    expect(resp3.body?.entries.map(e => e.name)).toEqual([
+      "relevance",
+    ]);
+  });
 });

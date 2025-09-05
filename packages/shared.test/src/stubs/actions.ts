@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import type { FauxOntology } from "@osdk/faux";
 import type {
   ApplyActionRequestV2,
   SyncApplyActionResponseV2,
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
-import type { FauxOntology } from "../FauxFoundry/FauxOntology.js";
-import { createLazyDoNothingActionImpl } from "../handlers/util/createLazyDoNothingActionImpl.js";
+import { createLazyDoNothingActionImpl } from "../createLazyDoNothingActionImpl.js";
 import { moveOfficeImpl } from "./actions/moveOffice.js";
 import {
   ActionCreatesInterface,
@@ -131,7 +131,7 @@ export const actionRequestWithStruct: ApplyActionRequestV2 = {
 export const actionRequestWithGeoshape: ApplyActionRequestV2 = {
   options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
   parameters: {
-    geohashParam: "-79.4382042508868,40.917859676842255",
+    geohashParam: "40.917859676842255,-79.4382042508868",
     geoshapeParam: {
       coordinates: [
         [

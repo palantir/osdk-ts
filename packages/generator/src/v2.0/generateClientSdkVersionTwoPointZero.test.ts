@@ -338,6 +338,7 @@ const referencedOntology = {
       rid: "idk",
     },
   },
+  valueTypes: {},
 } satisfies WireOntologyDefinition;
 
 const referencingOntology = {
@@ -469,6 +470,7 @@ const referencingOntology = {
     },
   },
   sharedPropertyTypes: {},
+  valueTypes: {},
 } satisfies WireOntologyDefinition;
 
 const fooBarTodoWireOntology = changeNames(
@@ -583,7 +585,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | ActionParam.NullValueType;
           }
 
           // Represents a fqn of the action
@@ -659,7 +661,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo>;
+            readonly object?: ActionParam.ObjectType<Todo> | ActionParam.NullValueType;
           }
 
           // Represents a fqn of the action
@@ -718,6 +720,7 @@ describe("generator", () => {
 
         import type {
           InterfaceDefinition as $InterfaceDefinition,
+          InterfaceMetadata as $InterfaceMetadata,
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
@@ -731,6 +734,7 @@ describe("generator", () => {
           export interface Props {
             /**
              *   display name: 'Sum Property',
+             *
              *   description: Some property
              */
             readonly SomeProperty: $PropType['string'] | undefined;
@@ -769,6 +773,7 @@ describe("generator", () => {
             properties: {
               /**
                *   display name: 'Sum Property',
+               *
                *   description: Some property
                */
               SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
@@ -815,7 +820,7 @@ describe("generator", () => {
             /**
              * (no ontology metadata)
              */
-            readonly email: $PropType['string'];
+            readonly email: 'osdk@palantir.com' | 'foundry@palantir.com';
           }
           export type StrictProps = Props;
 
@@ -869,6 +874,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'email';
             type: 'object';
+            visibility: undefined;
           };
         }
 
@@ -896,7 +902,7 @@ describe("generator", () => {
         } from '@osdk/client';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete';
+          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
@@ -904,7 +910,12 @@ describe("generator", () => {
 
           export interface Props {
             /**
+             * (no ontology metadata)
+             */
+            readonly array: ('a' | 'b' | 'c')[] | undefined;
+            /**
              *   display name: 'Body',
+             *
              *   description: The text of the todo
              */
             readonly body: $PropType['string'] | undefined;
@@ -969,7 +980,12 @@ describe("generator", () => {
             primaryKeyType: 'integer';
             properties: {
               /**
+               * (no ontology metadata)
+               */
+              array: $PropertyDef<'string', 'nullable', 'array'>;
+              /**
                *   display name: 'Body',
+               *
                *   description: The text of the todo
                */
               body: $PropertyDef<'string', 'nullable', 'single'>;
@@ -986,6 +1002,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'body';
             type: 'object';
+            visibility: undefined;
           };
         }
 
@@ -1225,7 +1242,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | ActionParam.NullValueType;
           }
 
           // Represents a fqn of the action
@@ -1301,7 +1318,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo>;
+            readonly object?: ActionParam.ObjectType<Todo> | ActionParam.NullValueType;
           }
 
           // Represents a fqn of the action
@@ -1360,6 +1377,7 @@ describe("generator", () => {
 
         import type {
           InterfaceDefinition as $InterfaceDefinition,
+          InterfaceMetadata as $InterfaceMetadata,
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
@@ -1373,6 +1391,7 @@ describe("generator", () => {
           export interface Props {
             /**
              *   display name: 'Sum Property',
+             *
              *   description: Some property
              */
             readonly SomeProperty: $PropType['string'] | undefined;
@@ -1411,6 +1430,7 @@ describe("generator", () => {
             properties: {
               /**
                *   display name: 'Sum Property',
+               *
                *   description: Some property
                */
               SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
@@ -1457,7 +1477,7 @@ describe("generator", () => {
             /**
              * (no ontology metadata)
              */
-            readonly email: $PropType['string'];
+            readonly email: 'osdk@palantir.com' | 'foundry@palantir.com';
           }
           export type StrictProps = Props;
 
@@ -1511,6 +1531,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'email';
             type: 'object';
+            visibility: undefined;
           };
         }
 
@@ -1538,7 +1559,7 @@ describe("generator", () => {
         } from '@osdk/api';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete';
+          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
@@ -1546,7 +1567,12 @@ describe("generator", () => {
 
           export interface Props {
             /**
+             * (no ontology metadata)
+             */
+            readonly array: ('a' | 'b' | 'c')[] | undefined;
+            /**
              *   display name: 'Body',
+             *
              *   description: The text of the todo
              */
             readonly body: $PropType['string'] | undefined;
@@ -1611,7 +1637,12 @@ describe("generator", () => {
             primaryKeyType: 'integer';
             properties: {
               /**
+               * (no ontology metadata)
+               */
+              array: $PropertyDef<'string', 'nullable', 'array'>;
+              /**
                *   display name: 'Body',
+               *
                *   description: The text of the todo
                */
               body: $PropertyDef<'string', 'nullable', 'single'>;
@@ -1628,6 +1659,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'body';
             type: 'object';
+            visibility: undefined;
           };
         }
 
@@ -1769,6 +1801,7 @@ describe("generator", () => {
         objectTypes: {},
         queryTypes: {},
         sharedPropertyTypes: {},
+        valueTypes: {},
       },
       "",
       helper.minimalFiles,
@@ -2000,6 +2033,7 @@ describe("generator", () => {
               linksType: UsesForeignSpt.Links;
               strictProps: UsesForeignSpt.StrictProps;
               apiName: 'UsesForeignSpt';
+              description: undefined;
               displayName: 'Uses Foreign Spt';
               icon: {
                 type: 'blueprint';
@@ -2027,6 +2061,7 @@ describe("generator", () => {
               status: 'ACTIVE';
               titleProperty: 'id';
               type: 'object';
+              visibility: undefined;
             };
           }
 
@@ -2073,11 +2108,13 @@ describe("generator", () => {
             // Represents the definition of the parameters for the action
             export type ParamsDefinition = {
               body: {
+                description: undefined;
                 multiplicity: false;
                 nullable: false;
                 type: 'string';
               };
               task: {
+                description: undefined;
                 multiplicity: false;
                 nullable: false;
                 type: ActionMetadata.DataType.Object<$Imported$com$example$dep$Task>;
@@ -2157,6 +2194,7 @@ describe("generator", () => {
             },
           },
           sharedPropertyTypes: {},
+          valueTypes: {},
         },
         "typescript-sdk/0.0.0 osdk-cli/0.0.0",
         helper.minimalFiles,
@@ -2278,6 +2316,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'email';
             type: 'object';
+            visibility: undefined;
           };
         }
 
@@ -2305,7 +2344,7 @@ describe("generator", () => {
         } from '@osdk/client';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete';
+          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
@@ -2313,7 +2352,12 @@ describe("generator", () => {
 
           export interface Props {
             /**
+             * (no ontology metadata)
+             */
+            readonly array: $PropType['string'][] | undefined;
+            /**
              *   display name: 'Body',
+             *
              *   description: The text of the todo
              */
             readonly body: $PropType['string'] | undefined;
@@ -2378,7 +2422,12 @@ describe("generator", () => {
             primaryKeyType: 'integer';
             properties: {
               /**
+               * (no ontology metadata)
+               */
+              array: $PropertyDef<'string', 'nullable', 'array'>;
+              /**
                *   display name: 'Body',
+               *
                *   description: The text of the todo
                */
               body: $PropertyDef<'string', 'nullable', 'single'>;
@@ -2395,6 +2444,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'body';
             type: 'object';
+            visibility: undefined;
           };
         }
 
@@ -2572,6 +2622,7 @@ describe("generator", () => {
 
         import type {
           InterfaceDefinition as $InterfaceDefinition,
+          InterfaceMetadata as $InterfaceMetadata,
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
           PropertyValueWireToClient as $PropType,
@@ -2618,6 +2669,7 @@ describe("generator", () => {
             linksType: OsdkObjectLinks$SomeInterface;
             strictProps: SomeInterface.StrictProps;
             apiName: 'com.example.dep.SomeInterface';
+            description: undefined;
             displayName: 'Sum Interface';
             implementedBy: [];
             implements: [];
@@ -2702,6 +2754,7 @@ describe("generator", () => {
             linksType: Task.Links;
             strictProps: Task.StrictProps;
             apiName: 'com.example.dep.Task';
+            description: undefined;
             displayName: 'Task';
             icon: {
               type: 'blueprint';
@@ -2729,6 +2782,7 @@ describe("generator", () => {
             status: 'ACTIVE';
             titleProperty: 'taskId';
             type: 'object';
+            visibility: undefined;
           };
         }
 

@@ -15,11 +15,19 @@
  */
 
 import type { PropertyValueWireToClient } from "./mapping/PropertyValueMapping.js";
+import type { ObjectOrInterfaceDefinition } from "./ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
   ObjectTypeDefinition,
 } from "./ontology/ObjectTypeDefinition.js";
+import type { PrimaryKeyTypes } from "./ontology/PrimaryKeyTypes.js";
 
 export type OsdkObjectPrimaryKeyType<
-  Q extends ObjectTypeDefinition,
-> = PropertyValueWireToClient[CompileTimeMetadata<Q>["primaryKeyType"]];
+  Q extends ObjectOrInterfaceDefinition,
+> =
+  & (Q extends ObjectTypeDefinition
+    ? PropertyValueWireToClient[CompileTimeMetadata<Q>["primaryKeyType"]]
+    : unknown)
+  // if the type is `unknown` then the next line will
+  // restrict it down to all valid primary key types
+  & PropertyValueWireToClient[PrimaryKeyTypes];

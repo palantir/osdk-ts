@@ -1,5 +1,5 @@
 ---
-"@osdk/e2e.sandbox.todowidget": minor
+"@osdk/e2e.sandbox.todowidget": patch
 ---
       
 Simulated release

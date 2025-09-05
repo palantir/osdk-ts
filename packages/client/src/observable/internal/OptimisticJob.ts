@@ -38,6 +38,8 @@ export class OptimisticJob {
       Promise<ObjectHolder>
     > = [];
 
+    const deletedObjects: Array<ObjectHolder> = [];
+
     // TODO, this code needs to be refactored. its weird right now
     // but the contract for `runOptimisticJob` is good.
 
@@ -51,8 +53,10 @@ export class OptimisticJob {
         const { batchResult } = store.batch({ optimisticId }, (batch) => {
           for (const obj of addedObjects) {
             if (obj.status === "fulfilled") {
-              store.getObjectQuery(obj.value.$objectType, obj.value.$primaryKey)
-                .writeToStore(obj.value, "loading", batch);
+              store.objects.getQuery({
+                apiName: obj.value.$objectType,
+                pk: obj.value.$primaryKey,
+              }).writeToStore(obj.value, "loading", batch);
             } else {
               // TODO FIXME
               throw obj;
@@ -60,8 +64,17 @@ export class OptimisticJob {
           }
 
           for (const obj of updatedObjects) {
-            store.getObjectQuery(obj.$objectType, obj.$primaryKey)
-              .writeToStore(obj, "loading", batch);
+            store.objects.getQuery({
+              apiName: obj.$objectType,
+              pk: obj.$primaryKey,
+            }).writeToStore(obj, "loading", batch);
+          }
+
+          for (const obj of deletedObjects) {
+            store.objects.getQuery({
+              apiName: obj.$objectType,
+              pk: obj.$primaryKey,
+            }).deleteFromStore("loading", batch);
           }
         });
 
@@ -90,6 +103,10 @@ export class OptimisticJob {
         });
 
         addedObjectPromises.push(create);
+        return this;
+      },
+      deleteObject(value) {
+        deletedObjects.push(value as unknown as ObjectHolder<typeof value>);
         return this;
       },
     };

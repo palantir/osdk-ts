@@ -18,15 +18,22 @@ import type {
   DefaultToFalse,
   OsdkObjectLinksObject,
 } from "./definitions/LinkDefinitions.js";
-import type { NullabilityAdherence } from "./object/FetchPageArgs.js";
+import type {
+  NullabilityAdherence,
+  ObjectSetArgs,
+} from "./object/FetchPageArgs.js";
 import type { UnionIfTrue } from "./object/FetchPageResult.js";
-import type { InterfaceDefinition } from "./ontology/InterfaceDefinition.js";
+import type {
+  InterfaceDefinition,
+  InterfaceMetadata,
+} from "./ontology/InterfaceDefinition.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "./ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
+  ObjectMetadata,
   ObjectTypeDefinition,
 } from "./ontology/ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "./ontology/SimplePropertyDef.js";
@@ -176,6 +183,11 @@ export type Osdk<
       ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>
     >;
 
+export type MaybeScore<
+  T extends Osdk.Instance<any>,
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<any>,
+> = ORDER_BY_OPTIONS extends "relevance" ? T & { $score: number } : T;
+
 export namespace Osdk {
   export type Instance<
     Q extends ObjectOrInterfaceDefinition,
@@ -213,6 +225,15 @@ export namespace Osdk {
             >["props"][K];
           },
       ) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>;
+
+      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends
+        ObjectTypeDefinition ? {
+          ObjectMetadata: Q;
+        }
+        : {
+          ObjectMetadata: ObjectMetadata;
+          InterfaceMetadata: InterfaceMetadata;
+        };
     }
     // We are hiding the $rid field if it wasn't requested as we want to discourage its use
     & (IsNever<OPTIONS> extends true ? {}

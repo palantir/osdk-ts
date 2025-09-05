@@ -1,7 +1,9 @@
 dpaquin
+ethana
 forwardslash
 haptics
 mediaset
+mwalther
 Nativewind
 osdk
 palantirfoundry

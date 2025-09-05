@@ -22,6 +22,7 @@ export type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
 } from "./actions/Actions.js";
+export { NULL_VALUE } from "./actions/NullValue.js";
 export type { ValidAggregationKeys } from "./aggregate/AggregatableKeys.js";
 export type { AggregateOpts } from "./aggregate/AggregateOpts.js";
 export type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "./aggregate/AggregateOptsThatErrors.js";
@@ -37,7 +38,10 @@ export type {
   PossibleWhereClauseFilters,
   WhereClause,
 } from "./aggregate/WhereClause.js";
-export type { OsdkObjectPropertyType } from "./Definitions.js";
+export type {
+  OsdkObjectCreatePropertyType,
+  OsdkObjectPropertyType,
+} from "./Definitions.js";
 export type {
   OsdkObjectLinksObject,
   SingleLinkAccessor,
@@ -65,6 +69,7 @@ export type {
   Augments,
   FetchPageArgs,
   NullabilityAdherence,
+  ObjectSetArgs,
   SelectArg,
   SelectArgToKeys,
 } from "./object/FetchPageArgs.js";
@@ -72,7 +77,12 @@ export type {
   FetchPageResult,
   SingleOsdkResult,
 } from "./object/FetchPageResult.js";
-export type { Media, MediaMetadata, MediaReference } from "./object/Media.js";
+export type {
+  Media,
+  MediaMetadata,
+  MediaReference,
+  MediaUpload,
+} from "./object/Media.js";
 export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
@@ -101,6 +111,7 @@ export type {
 export type { OntologyMetadata } from "./ontology/OntologyMetadata.js";
 export type { PrimaryKeyTypes } from "./ontology/PrimaryKeyTypes.js";
 export type {
+  InterfaceQueryDataType,
   ObjectQueryDataType,
   ObjectSetQueryDataType,
   QueryDataTypeDefinition,
@@ -114,9 +125,13 @@ export type {
   BaseWirePropertyTypes,
   WirePropertyTypes,
 } from "./ontology/WirePropertyTypes.js";
-export type { OsdkBase, PrimaryKeyType } from "./OsdkBase.js";
+export type {
+  ObjectIdentifiers,
+  OsdkBase,
+  PrimaryKeyType,
+} from "./OsdkBase.js";
 export type { OsdkObject } from "./OsdkObject.js";
-export type { ConvertProps, Osdk } from "./OsdkObjectFrom.js";
+export type { ConvertProps, MaybeScore, Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";
 export type {
   Range,

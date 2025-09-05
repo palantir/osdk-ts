@@ -21,18 +21,32 @@ export namespace Todo {
 
   export interface Props {
     /**
+     * @experimental
+     *
+     *   property status: experimental
+     *
      *   display name: 'Id'
      */
     readonly id: $PropType['string'];
     /**
+     * @experimental
+     *
+     *   property status: experimental
+     *
      *   display name: 'Is Complete'
      */
     readonly isComplete: $PropType['boolean'] | undefined;
     /**
-     * (no ontology metadata)
+     * @experimental
+     *
+     *   property status: experimental
      */
     readonly location: $PropType['geopoint'] | undefined;
     /**
+     * @experimental
+     *
+     *   property status: experimental
+     *
      *   display name: 'Title'
      */
     readonly title: $PropType['string'] | undefined;
@@ -79,18 +93,32 @@ export interface Todo extends $ObjectTypeDefinition {
     primaryKeyType: 'string';
     properties: {
       /**
+       * @experimental
+       *
+       *   property status: experimental
+       *
        *   display name: 'Id'
        */
       id: $PropertyDef<'string', 'non-nullable', 'single'>;
       /**
+       * @experimental
+       *
+       *   property status: experimental
+       *
        *   display name: 'Is Complete'
        */
       isComplete: $PropertyDef<'boolean', 'nullable', 'single'>;
       /**
-       * (no ontology metadata)
+       * @experimental
+       *
+       *   property status: experimental
        */
       location: $PropertyDef<'geopoint', 'nullable', 'single'>;
       /**
+       * @experimental
+       *
+       *   property status: experimental
+       *
        *   display name: 'Title'
        */
       title: $PropertyDef<'string', 'nullable', 'single'>;

@@ -45,6 +45,7 @@ export interface PropertyValueWireToClient {
   stringTimeseries: TimeSeriesProperty<string>;
   sensorTimeseries: TimeSeriesProperty<string | number>;
   geotimeSeriesReference: GeotimeSeriesProperty<GeoJSON.Point>;
+  vector: number[];
 }
 
 export type GetClientPropertyValueFromWire<
@@ -80,6 +81,7 @@ export interface PropertyValueClientToWire {
   stringTimeseries: TimeSeriesProperty<string>;
   sensorTimeseries: TimeSeriesProperty<string | number>;
   geotimeSeriesReference: GeotimeSeriesProperty<GeoJSON.Point>;
+  vector: number[];
 }
 export type GetWirePropertyValueFromClient<
   T extends
@@ -88,4 +90,37 @@ export type GetWirePropertyValueFromClient<
 > = T extends keyof PropertyValueClientToWire ? PropertyValueClientToWire[T]
   : T extends Record<string, keyof PropertyValueClientToWire>
     ? { [K in keyof T]: PropertyValueClientToWire[T[K]] }
+  : never;
+
+export interface PropertyValueWireToCreate {
+  attachment: Attachment | string;
+  boolean: boolean;
+  byte: number;
+  datetime: string;
+  decimal: string;
+  double: number;
+  float: number;
+  geopoint: GeoJSON.Point;
+  geoshape: GeoJSON.GeoJSON;
+  integer: number;
+  long: string;
+  marking: string;
+  mediaReference: Media;
+  short: number;
+  string: string;
+  timestamp: string;
+  numericTimeseries: TimeSeriesProperty<number>;
+  stringTimeseries: TimeSeriesProperty<string>;
+  sensorTimeseries: TimeSeriesProperty<string | number>;
+  geotimeSeriesReference: GeotimeSeriesProperty<GeoJSON.Point>;
+  vector: number[];
+}
+
+export type GetCreatePropertyValueFromWire<
+  T extends
+    | keyof PropertyValueWireToCreate
+    | Record<string, keyof PropertyValueWireToCreate>,
+> = T extends keyof PropertyValueWireToCreate ? PropertyValueWireToCreate[T]
+  : T extends Record<string, keyof PropertyValueWireToCreate>
+    ? { [K in keyof T]: PropertyValueWireToCreate[T[K]] | undefined }
   : never;

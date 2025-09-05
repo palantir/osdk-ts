@@ -18,6 +18,7 @@ import type {
   CompileTimeMetadata,
   DataValueClientToWire,
   DataValueWireToClient,
+  InterfaceQueryDataType,
   ObjectQueryDataType,
   ObjectSetQueryDataType,
   QueryDataTypeDefinition,
@@ -69,6 +70,8 @@ type MaybeArrayType<T extends QueryDataTypeDefinition> =
 
 type QueryBaseType<T extends QueryDataTypeDefinition> = T extends
   ObjectQueryDataType<infer TTargetType> ? QueryParam.ObjectType<TTargetType>
+  : T extends InterfaceQueryDataType<infer TTargetType>
+    ? QueryParam.ObjectType<TTargetType>
   : T extends ObjectSetQueryDataType<infer TTargetType>
     ? QueryParam.ObjectSetType<TTargetType>
   : T["type"] extends keyof DataValueClientToWire

@@ -65,15 +65,15 @@ export function getObjectTypesFromQueryDataType(
     case "twoDimensionalAggregation":
     case "entrySet":
     case "unsupported":
+    case "interfaceObject":
+    case "interfaceObjectSet":
       /* complete no-op */
       return;
 
     default:
       const _: never = dataType;
       throw new Error(
-        `Cannot find object types from unsupported QueryDataType ${
-          (dataType as any).type
-        }`,
+        `Unknown query data type ${(dataType as any).type}`,
       );
   }
 }

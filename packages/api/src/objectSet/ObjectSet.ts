@@ -43,6 +43,7 @@ import type {
   ExtractAllPropertiesOption,
   ExtractOptions,
   ExtractRidOption,
+  MaybeScore,
   Osdk,
 } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
@@ -67,7 +68,7 @@ type ExtractRdp<
 type MaybeSimplifyPropertyKeys<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q>,
-> = PropertyKeys<Q> extends L ? PropertyKeys<Q> : L;
+> = PropertyKeys<Q> extends L ? PropertyKeys<Q> : L & PropertyKeys<Q>;
 
 type SubSelectKeysHelper<
   Q extends ObjectOrInterfaceDefinition,
@@ -86,24 +87,25 @@ type NOOP<T> = T extends (...args: any[]) => any ? T
   : { [K in keyof T]: T[K] };
 
 type SubSelectRDPsHelper<
-  X extends ValidFetchPageArgs<any, any> | ValidAsyncIterArgs<any, any>,
+  X extends ValidFetchPageArgs<any, any, any> | ValidAsyncIterArgs<any, any>,
   DEFAULT extends string,
 > = [X] extends [never] ? DEFAULT
   : (X["$select"] & string[])[number] & DEFAULT;
 
 type SubSelectRDPs<
   RDPs extends Record<string, SimplePropertyDef>,
-  X extends ValidFetchPageArgs<any, RDPs> | ValidAsyncIterArgs<any, RDPs>,
+  X extends ValidFetchPageArgs<any, RDPs, any> | ValidAsyncIterArgs<any, RDPs>,
 > = [RDPs] extends [never] ? never
   : NOOP<{ [K in SubSelectRDPsHelper<X, string & keyof RDPs>]: RDPs[K] }>;
 
 export interface MinimalObjectSet<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > extends
   BaseObjectSet<Q>,
   FetchPage<Q, RDPs>,
-  AsyncIter<Q, RDPs>,
+  AsyncIter<Q, RDPs, ORDER_BY_OPTIONS>,
   Where<Q, RDPs>
 {
 }
@@ -132,19 +134,14 @@ interface FetchPage<
 type ValidFetchPageArgs<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
-> =
-  | ObjectSetArgs.FetchPage<
-    Q,
-    PropertyKeys<Q>,
-    false,
-    string & keyof RDPs
-  >
-  | ObjectSetArgs.FetchPage<
-    Q,
-    never,
-    true,
-    string & keyof RDPs
-  >;
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>>,
+> = ObjectSetArgs.FetchPage<
+  Q,
+  PropertyKeys<Q>,
+  boolean,
+  string & keyof RDPs,
+  ORDER_BY_OPTIONS
+>;
 
 type ValidAsyncIterArgs<
   Q extends ObjectOrInterfaceDefinition,
@@ -182,48 +179,49 @@ interface FetchPageSignature<
 
    * @returns a page of objects
    */
-  <const X extends ValidFetchPageArgs<Q, RDPs> = never>(
-    args?: X,
-  ): Promise<
-    PageResult<
-      Osdk.Instance<
-        Q,
-        ExtractOptions2<X>,
-        SubSelectKeys<Q, X>,
-        SubSelectRDPs<RDPs, X>
-      >
-    >
-  >;
-
-  /**
-   * Gets a page of objects of this type, with a result wrapper
-   * @param args - Args to specify next page token and page size, if applicable
-   * @example
-   *  const myObjs = await objectSet.fetchPage({
-      $pageSize: 10,
-      $nextPageToken: "nextPage"
-    });
-     const myObjsResult = myObjs.data;
-
-   * @returns a page of objects
-   */
   <
-    L extends PropertyKeys<Q>,
+    L extends PropertyKeys<Q> | (string & keyof RDPs),
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
+    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
   >(
-    args?: FetchPageArgs<Q, L, R, A, S, T>,
+    args?: FetchPageArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
   ): Promise<
     PageResult<
-      Osdk.Instance<
-        Q,
-        ExtractOptions<R, S, T>,
-        MaybeSimplifyPropertyKeys<Q, L>
+      MaybeScore<
+        Osdk.Instance<
+          Q,
+          ExtractOptions<R, S, T>,
+          NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+          SubSelectRDPs<RDPs, NonNullable<typeof args>>
+        >,
+        ORDER_BY_OPTIONS
       >
     >
   >;
+}
+
+interface NearestNeighbors<Q extends ObjectOrInterfaceDefinition> {
+  /**
+   * Finds the nearest neighbors for a given text or vector within the object set.
+   *
+   * @param query - Queries support either a vector matching the embedding model defined on the property, or text that is
+        automatically embedded.
+   * @param numNeighbors - The number of objects to return. If the number of documents in the objectType is less than the provided
+            value, all objects will be returned. This value is limited to 1 &le; numNeighbors &ge; 500.
+   * @param property - The property key with a defined embedding model to search over.
+   *
+   * @returns An object set containing the `numNeighbors` nearest neighbors. To return the objects ordered by relevance and each
+   * objects associated score, specify "relevance" in the orderBy.
+ */
+
+  readonly nearestNeighbors: (
+    query: string | number[],
+    numNeighbors: number,
+    property: PropertyKeys.Filtered<Q, "vector">,
+  ) => this;
 }
 
 interface FetchPageWithErrorsSignature<
@@ -244,50 +242,26 @@ interface FetchPageWithErrorsSignature<
     }
    * @returns a page of objects, wrapped in a result wrapper
    */
-  <X extends ValidFetchPageArgs<Q, RDPs> = never>(
-    args?: X,
-  ): Promise<
-    Result<
-      PageResult<
-        Osdk.Instance<
-          Q,
-          ExtractOptions2<X>,
-          SubSelectKeys<Q, X>,
-          SubSelectRDPs<RDPs, X>
-        >
-      >
-    >
-  >;
-
-  /**
-   * Gets a page of objects of this type, with a result wrapper
-   * @param args - Args to specify next page token and page size, if applicable
-   * @example
-   *  const myObjs = await objectSet.fetchPage({
-      $pageSize: 10,
-      $nextPageToken: "nextPage"
-    });
-
-     if(isOk(myObjs)){
-     const myObjsResult = myObjs.value.data;
-    }
-   * @returns a page of objects, wrapped in a result wrapper
-   */
   <
-    L extends PropertyKeys<Q>,
+    L extends PropertyKeys<Q> | (string & keyof RDPs),
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
+    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
   >(
-    args?: FetchPageArgs<Q, L, R, A, S, T>,
+    args?: FetchPageArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
   ): Promise<
     Result<
       PageResult<
-        Osdk.Instance<
-          Q,
-          ExtractOptions<R, S, T>,
-          MaybeSimplifyPropertyKeys<Q, L>
+        MaybeScore<
+          Osdk.Instance<
+            Q,
+            ExtractOptions<R, S, T>,
+            NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+            SubSelectRDPs<RDPs, NonNullable<typeof args>>
+          >,
+          ORDER_BY_OPTIONS
         >
       >
     >
@@ -317,6 +291,7 @@ interface Where<
 interface AsyncIterSignature<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > {
   /**
    * Returns an async iterator to load all objects of this type
@@ -346,18 +321,23 @@ interface AsyncIterSignature<
    * @returns an async iterator to load all objects
    */
   <
-    L extends PropertyKeys<Q>,
+    L extends PropertyKeys<Q> | (string & keyof RDPs),
     R extends boolean,
     const A extends Augments,
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
+    ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
   >(
-    args?: AsyncIterArgs<Q, L, R, A, S, T>,
+    args?: AsyncIterArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
   ): AsyncIterableIterator<
-    Osdk.Instance<
-      Q,
-      ExtractOptions<R, S, T>,
-      MaybeSimplifyPropertyKeys<Q, L>
+    MaybeScore<
+      Osdk.Instance<
+        Q,
+        ExtractOptions<R, S, T>,
+        NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
+        SubSelectRDPs<RDPs, NonNullable<typeof args>>
+      >,
+      ORDER_BY_OPTIONS
     >
   >;
 }
@@ -365,8 +345,9 @@ interface AsyncIterSignature<
 interface AsyncIter<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > {
-  asyncIter: AsyncIterSignature<Q, RDPs>;
+  asyncIter: AsyncIterSignature<Q, RDPs, ORDER_BY_OPTIONS>;
 }
 
 interface WithProperties<
@@ -501,25 +482,7 @@ interface FetchOneSignature<
    * Fetches one object with the specified primary key, without a result wrapper
    */
   <
-    X extends ObjectSetArgs.Select<PropertyKeys<Q>, string & keyof RDPs> =
-      never,
-  >(
-    primaryKey: PrimaryKeyType<Q>,
-    options?: X,
-  ): Promise<
-    Osdk.Instance<
-      Q,
-      ExtractOptions2<X>,
-      SubSelectKeys<Q, X>,
-      SubSelectRDPs<RDPs, X>
-    >
-  >;
-
-  /**
-   * Fetches one object with the specified primary key, without a result wrapper
-   */
-  <
-    const L extends PropertyKeys<Q>,
+    const L extends PropertyKeys<Q> | (string & keyof RDPs),
     const R extends boolean,
     const S extends false | "throw" = NullabilityAdherence.Default,
   >(
@@ -529,7 +492,8 @@ interface FetchOneSignature<
     Osdk.Instance<
       Q,
       ExtractOptions<R, S>,
-      MaybeSimplifyPropertyKeys<Q, L>
+      NoInfer<SubSelectKeys<Q, { $select: Array<L> }>>,
+      SubSelectRDPs<RDPs, { $select: Array<L> }>
     >
   >;
 }
@@ -541,25 +505,8 @@ interface FetchOneWithErrorsSignature<
   /**
    * Fetches one object with the specified primary key, with a result wrapper
    */
-  <X extends ObjectSetArgs.Select<PropertyKeys<Q>, string & keyof RDPs>>(
-    primaryKey: PrimaryKeyType<Q>,
-    options?: X,
-  ): Promise<
-    Result<
-      Osdk.Instance<
-        Q,
-        ExtractOptions2<X>,
-        SubSelectKeys<Q, X>,
-        SubSelectRDPs<RDPs, X>
-      >
-    >
-  >;
-
-  /**
-   * Fetches one object with the specified primary key, with a result wrapper
-   */
   <
-    const L extends PropertyKeys<Q>,
+    const L extends PropertyKeys<Q> | (string & keyof RDPs),
     const R extends boolean,
     const S extends false | "throw" = NullabilityAdherence.Default,
   >(
@@ -570,7 +517,8 @@ interface FetchOneWithErrorsSignature<
       Osdk.Instance<
         Q,
         ExtractOptions<R, S>,
-        MaybeSimplifyPropertyKeys<Q, L>
+        NoInfer<SubSelectKeys<Q, { $select: Array<L> }>>,
+        SubSelectRDPs<RDPs, { $select: Array<L> }>
       >
     >
   >;
@@ -608,13 +556,15 @@ interface ObjectSetCleanedTypes<
   Q extends ObjectOrInterfaceDefinition,
   D extends Record<string, SimplePropertyDef>,
   MERGED extends ObjectOrInterfaceDefinition & Q,
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > extends
-  MinimalObjectSet<Q, D>,
+  MinimalObjectSet<Q, D, ORDER_BY_OPTIONS>,
   WithProperties<Q, D>,
   Aggregate<MERGED>,
   SetArithmetic<MERGED>,
   PivotTo<Q>,
   FetchOne<Q, D>,
-  Subscribe<MERGED>
+  Subscribe<MERGED>,
+  NearestNeighbors<Q>
 {
 }

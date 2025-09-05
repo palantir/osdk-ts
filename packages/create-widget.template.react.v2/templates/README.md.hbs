@@ -1,32 +1,35 @@
 # {{project}}
 
-This project was generated with [`@osdk/create-widget`](https://www.npmjs.com/package/@osdk/create-widget) and demonstrates developing custom widgets to be embedded within Foundry UIs such as Workshop. It uses the Ontology SDK package `{{osdkPackage}}` with React on top of Vite. Check out the [Vite](https://vitejs.dev/guide/) docs for further configuration. The Vite plugin [`@osdk/widget.vite-plugin.unstable`](https://www.npmjs.com/package/@osdk/widget.vite-plugin.unstable) automatically generates a `widgets.config.json` manifest file containing metadata about widgets inside this project during the build command.
+This project was generated with [`@osdk/create-widget`](https://www.npmjs.com/package/@osdk/create-widget) and demonstrates developing custom widgets to be embedded within Foundry UIs such as Workshop. It uses the Ontology SDK package `{{osdkPackage}}` with React on top of Vite. Check out the [Vite](https://vitejs.dev/guide/) docs for further configuration. The Vite plugin [`@osdk/widget.vite-plugin`](https://www.npmjs.com/package/@osdk/widget.vite-plugin) automatically generates a `widgets.config.json` manifest file containing metadata about widgets inside this project during the build command.
 
 ## Developing
 
-Run the following command or equivalent with your preferred package manager to start a local development server and follow the instructions printed to set up developer mode in Foundry:
+> **Note:** Before starting development, you need to deploy an initial version of your widget set. See the [Deploying](#deploying) section below to create your first deployment.
+
+Run the following commands (or equivalent with your preferred package manager) to start a local development server and follow the instructions printed to set up developer mode in Foundry:
 
 ```sh
+export FOUNDRY_TOKEN=<token>
 npm run dev
 ```
-
 
 ## Deploying
 
 A `foundry.config.json` file is included in the root of this project containing the deployment configuration to Foundry.
 
-Run the following command or equivalent with your preferred package manager to create a production build of your widgets:
+Run the following commands (or equivalent with your preferred package manager) to create a production build of your widgets:
 
 ```sh
+export FOUNDRY_TOKEN=<token>
 npm run build
 ```
 
 A `.palantir/widgets.config.json` manifest file containing metadata about your widgets is created during the build.
 
-Run the following command or equivalent with your preferred package manager to deploy the production build of your widgets:
+Run the following command (or equivalent with your preferred package manager) to deploy the production build of your widgets:
 
 ```sh
-npx @osdk/cli@beta unstable widgetset deploy
+npx @osdk/cli@latest widgetset deploy
 ```
 
 By default the `package-json` strategy is used for determining the version for your widgets from the `version` field in this project's `package.json` file. Remember to update this field and rerun the build command to update the manifest file when deploying a new version.

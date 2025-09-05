@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,17 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { GetBulkObjectSetRequest } from "../GetBulkObjectSetRequest.js";
-import type { GetBulkObjectSetResponse } from "../GetBulkObjectSetResponse.js";
+import type {
+  GetBulkObjectSetRequest as _api_GetBulkObjectSetRequest,
+  GetBulkObjectSetResponse as _api_GetBulkObjectSetResponse,
+} from "../__components.js";
 
 /**
  * Deprecated, do not use. Use ObjectSetService instead.
  */
 export async function getBulkObjectSet(
   ctx: ConjureContext,
-  request: GetBulkObjectSetRequest,
-): Promise<GetBulkObjectSetResponse> {
+  request: _api_GetBulkObjectSetRequest,
+): Promise<_api_GetBulkObjectSetResponse> {
   return conjureFetch(ctx, `/bulk/objectSets`, "POST", request);
 }

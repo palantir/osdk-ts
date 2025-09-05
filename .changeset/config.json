@@ -12,6 +12,7 @@
       "@osdk/create-app",
       "@osdk/foundry-sdk-generator",
       "@osdk/generator-converters",
+      "@osdk/generator-converters.ontologyir",
       "@osdk/generator-utils",
       "@osdk/generator",
       "@osdk/e2e.generated.catchall",
@@ -19,10 +20,10 @@
     ],
     ["@osdk/cli", "@osdk/cli.*"],
     [
-      "@osdk/widget.api.unstable",
-      "@osdk/widget.client.unstable",
-      "@osdk/widget.client-react.unstable",
-      "@osdk/widget.vite-plugin.unstable",
+      "@osdk/widget.api",
+      "@osdk/widget.client",
+      "@osdk/widget.client-react",
+      "@osdk/widget.vite-plugin",
       "@osdk/create-widget",
       "@osdk/create-widget.template.*"
     ]

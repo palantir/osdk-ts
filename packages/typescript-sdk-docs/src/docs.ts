@@ -49,6 +49,7 @@ export const TYPESCRIPT_OSDK_SNIPPETS: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> =
       linkedPropertiesV2: handleLinkedPropertiesV2,
       linkedPrimaryKeyPropertyV1: handleLinkedPrimaryKeyPropertyV1,
       linkedPrimaryKeyPropertyV2: handleLinkedPrimaryKeyPropertyV2,
+      arrayElementValue: handleArrayElementValue,
     },
   };
 
@@ -123,6 +124,23 @@ function handlePropertyValueIncrementedV2({
   rawPropertyValueIncremented?: PropertySampleValueTypeIR;
 }) {
   return renderPropertyValue(rawPropertyValueIncremented, SdkMajorVersion.V2);
+}
+
+function handleArrayElementValue(
+  { rawPropertyValue }: { rawPropertyValue?: PropertySampleValueTypeIR },
+) {
+  return renderArrayElementPropertyValue(rawPropertyValue, SdkMajorVersion.V2);
+}
+
+function renderArrayElementPropertyValue(
+  propertyValue: PropertySampleValueTypeIR | undefined,
+  majorVersion: SdkMajorVersion,
+): string {
+  if (propertyValue == null) {
+    throw new Error("Cannot render a null property value");
+  }
+
+  return renderType(propertyValue, majorVersion, "arraySubType");
 }
 
 function handlePropertiesV1(
@@ -308,7 +326,7 @@ function renderType(
     | FunctionSampleValueTypeIR
     | PropertySampleValueTypeIR,
   majorVersion: SdkMajorVersion,
-  context: "property" | "functionInput" | "actionParameter",
+  context: "property" | "functionInput" | "actionParameter" | "arraySubType",
 ): string {
   if (type == null) {
     throw new Error("Cannot render a null type value");
@@ -318,7 +336,8 @@ function renderType(
     case "array":
     case "set":
     case "list":
-      return `[${renderType(type.subtype, majorVersion, context)}]`;
+      const arraySubType = renderType(type.subtype, majorVersion, context);
+      return context === "arraySubType" ? arraySubType : `[${arraySubType}]`;
     case "boolean":
       return type.value ? "true" : "false";
     case "byte":

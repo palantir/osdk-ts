@@ -25,6 +25,7 @@ import type {
   PageResult,
   PropertyKeys,
 } from "../index.js";
+import type { DerivedObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 
 export function createMockObjectSet<
@@ -57,6 +58,7 @@ export function createMockObjectSet<
       return fauxObjectSet;
     }),
     fetchPage: vi.fn(() => Promise.resolve(fauxResults)),
+    fetchPageWithErrors: vi.fn(() => Promise.resolve({ value: fauxResults })),
     fetchOne: vi.fn(() => fauxObject),
     asyncIter: vi.fn(() => {
       return {};
@@ -65,6 +67,9 @@ export function createMockObjectSet<
       return {};
     }),
     pivotTo: vi.fn(() => {
+      return fauxObjectSet;
+    }),
+    nearestNeighbors: vi.fn(() => {
       return fauxObjectSet;
     }),
   } as any as $ObjectSet<Q>;
@@ -168,6 +173,8 @@ describe("ObjectSet", () => {
             "performanceScore",
             "mediaReference",
             "lastUpdated",
+            "skillSet",
+            "skillSetEmbedding",
           ],
         });
 
@@ -196,6 +203,8 @@ describe("ObjectSet", () => {
             "performanceScore",
             "mediaReference",
             "lastUpdated",
+            "skillSet",
+            "skillSetEmbedding",
           ],
         });
     });
@@ -338,7 +347,7 @@ describe("ObjectSet", () => {
       });
 
       it(
-        "collectToSet, collectToList, selectProperty, and numeric aggregations are nullable",
+        "collectSet, collectList, selectProperty, and numeric aggregations are nullable",
         async () => {
           const withAggregations = fauxObjectSet.withProperties({
             "collectSet": (base) =>
@@ -551,6 +560,8 @@ describe("ObjectSet", () => {
             "hourlyRate",
             "dateOfJoining",
             "lastUpdated",
+            "skillSet",
+            "skillSetEmbedding",
           ],
         });
 
@@ -619,7 +630,7 @@ describe("ObjectSet", () => {
       type ObjectSetType = $ObjectSet<
         EmployeeApiTest,
         {
-          mom: "integer" | undefined;
+          mom: "integer";
         }
       >;
 
@@ -719,6 +730,25 @@ describe("ObjectSet", () => {
       expectTypeOf(result.countNumberNoUndefined).toEqualTypeOf<number>();
       expectTypeOf(result.sumNumber).toEqualTypeOf<number | undefined>();
       expectTypeOf(result.avgNumber).toEqualTypeOf<number | undefined>();
+    });
+
+    it("Merged object type is equivalent to original", () => {
+      const a = {} as EmployeeApiTest;
+      let b = {} as DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+        EmployeeApiTest,
+        {}
+      >;
+
+      b = a; // should be assignable. testing explicitly due to break in 2.2 release.
+
+      expectTypeOf<
+        EmployeeApiTest
+      >().branded.toEqualTypeOf<
+        DerivedObjectOrInterfaceDefinition.WithDerivedProperties<
+          EmployeeApiTest,
+          {}
+        >
+      >();
     });
   });
   describe("aggregate", () => {
@@ -1272,6 +1302,152 @@ describe("ObjectSet", () => {
       });
 
       // it("allows correctly typed property keys off the base OT", () => {});
+    });
+  });
+
+  describe("nearestNeighbors", () => {
+    it("has correct nearest neighbors object set query return type", () => {
+      const nearestNeighborsObjectSet = fauxObjectSet.nearestNeighbors(
+        "textQuery",
+        3,
+        "skillSetEmbedding",
+      );
+      expectTypeOf(nearestNeighborsObjectSet).toEqualTypeOf<
+        $ObjectSet<EmployeeApiTest>
+      >();
+    });
+
+    it("allows text queries", async () => {
+      const nearestNeighborsObjectSet = fauxObjectSet.nearestNeighbors(
+        "textQuery",
+        3,
+        "skillSetEmbedding",
+      );
+      const { data: employees } = await nearestNeighborsObjectSet.fetchPage();
+      expectTypeOf(employees).toEqualTypeOf<
+        Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>>[]
+      >();
+    });
+
+    it("allows vector queries", async () => {
+      const vectorQuery = Array.from({ length: 1536 }, () => 0.3);
+      const nearestNeighborsObjectSet = fauxObjectSet.nearestNeighbors(
+        vectorQuery,
+        3,
+        "skillSetEmbedding",
+      );
+      const { data: employees } = await nearestNeighborsObjectSet.fetchPage();
+      expectTypeOf(employees).toEqualTypeOf<
+        Osdk.Instance<EmployeeApiTest, never, PropertyKeys<EmployeeApiTest>>[]
+      >();
+    });
+
+    it("only supports queries on vector properties", () => {
+      fauxObjectSet.nearestNeighbors(
+        "textQuery",
+        3,
+        // @ts-expect-error
+        "skillSet",
+      );
+    });
+
+    it("appropriately types fetchPage ordered by relevance", async () => {
+      const nearestNeighborsObjectSet = await fauxObjectSet.nearestNeighbors(
+        "textQuery",
+        3,
+        "skillSetEmbedding",
+      ).fetchPage({ $orderBy: "relevance" });
+
+      type expectedType =
+        & Osdk.Instance<
+          EmployeeApiTest,
+          never,
+          PropertyKeys<EmployeeApiTest>,
+          {}
+        >
+        & { $score: number };
+
+      expectTypeOf(nearestNeighborsObjectSet.data[0]).toEqualTypeOf<
+        expectedType
+      >();
+    });
+
+    it("appropriately types fetchPageWithErrors ordered by relevance", async () => {
+      const nearestNeighborsObjectSetWithErrors = await fauxObjectSet
+        .nearestNeighbors(
+          "textQuery",
+          3,
+          "skillSetEmbedding",
+        ).fetchPageWithErrors({ $orderBy: "relevance" });
+
+      type expectedType =
+        & Osdk.Instance<
+          EmployeeApiTest,
+          never,
+          PropertyKeys<EmployeeApiTest>,
+          {}
+        >
+        & { $score: number };
+      expectTypeOf(nearestNeighborsObjectSetWithErrors.value!.data[0])
+        .toEqualTypeOf<expectedType>();
+    });
+
+    it("appropriately types asyncIters ordered by relevance", () => {
+      const asyncIter = fauxObjectSet.nearestNeighbors(
+        "textQuery",
+        3,
+        "skillSetEmbedding",
+      ).asyncIter(
+        { $orderBy: "relevance" },
+      );
+
+      type expectedType = AsyncIterableIterator<
+        & Osdk.Instance<
+          EmployeeApiTest,
+          never,
+          PropertyKeys<EmployeeApiTest>,
+          {}
+        >
+        & { $score: number }
+      >;
+      expectTypeOf(asyncIter).toEqualTypeOf<expectedType>();
+    });
+
+    it("no arbitrary order bys", () => {
+      const knn = fauxObjectSet.nearestNeighbors(
+        "textQuery",
+        3,
+        "skillSetEmbedding",
+      );
+
+      // @ts-expect-error
+      void knn.fetchPage({ $orderBy: "invalid" });
+      // @ts-expect-error
+      void knn.fetchPageWithErrors({ $orderBy: "invalid" });
+      // @ts-expect-error
+      void knn.asyncIter({ $orderBy: "random" });
+    });
+
+    it("does not include score for property order by", async () => {
+      const nearestNeighborsObjectSet = await fauxObjectSet.nearestNeighbors(
+        "textQuery",
+        3,
+        "skillSetEmbedding",
+      ).fetchPage({ $orderBy: { "fullName": "desc" } });
+
+      expectTypeOf(nearestNeighborsObjectSet.data[0]).not.toHaveProperty(
+        "$score",
+      );
+
+      const nearestNeighborsObjectSetWithErrors = await fauxObjectSet
+        .nearestNeighbors(
+          "textQuery",
+          3,
+          "skillSetEmbedding",
+        ).fetchPageWithErrors({ $orderBy: { "fullName": "desc" } });
+
+      expectTypeOf(nearestNeighborsObjectSetWithErrors.value?.data[0]).not
+        .toHaveProperty("$score");
     });
   });
 });

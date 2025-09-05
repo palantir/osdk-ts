@@ -23,6 +23,7 @@ import type {
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
+  ObjectSetArgs,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
@@ -35,6 +36,7 @@ import type { MinimalObjectSet } from "@osdk/api/unstable";
 import type {
   DerivedPropertyDefinition,
   ObjectSet as WireObjectSet,
+  PropertyApiName,
 } from "@osdk/foundry.ontologies";
 import { createWithPropertiesObjectSet } from "../derivedProperties/createWithPropertiesObjectSet.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
@@ -69,7 +71,8 @@ export function getWireObjectSet(
   return objectSetDefinitions.get(objectSet)!;
 }
 
-const objectSetDefinitions = new WeakMap<
+/** @internal exported for internal use only */
+export const objectSetDefinitions = new WeakMap<
   any,
   WireObjectSet
 >();
@@ -149,15 +152,38 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       });
     },
 
+    nearestNeighbors: (query, numNeighbors, property) => {
+      const nearestNeighborsQuery = isTextQuery(query)
+        ? { "type": "text" as const, "value": query }
+        : { "type": "vector" as const, "value": query };
+      return clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        {
+          type: "nearestNeighbors",
+          objectSet,
+          propertyIdentifier: {
+            type: "property",
+            apiName: property as PropertyApiName,
+          },
+          numNeighbors,
+          query: nearestNeighborsQuery,
+        },
+      ) as ObjectSet<Q>;
+    },
+
     asyncIter: async function*<
       L extends PropertyKeys<Q>,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherence.Default,
       T extends boolean = false,
+      ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = never,
     >(
-      args?: AsyncIterArgs<Q, L, R, A, S, T>,
-    ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S, {}, T>> {
+      args?: AsyncIterArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
+    ): AsyncIterableIterator<
+      SingleOsdkResult<Q, L, R, S, {}, T, ORDER_BY_OPTIONS>
+    > {
       let $nextPageToken: string | undefined = undefined;
       do {
         const result: FetchPageResult<
@@ -165,7 +191,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           L,
           R,
           S,
-          T
+          T,
+          ORDER_BY_OPTIONS
         > = await fetchPageInternal(
           augmentRequestContext(
             clientCtx,
@@ -174,11 +201,12 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           objectType,
           objectSet,
           { ...args, $pageSize: 10000, $nextPageToken },
+          true,
         );
         $nextPageToken = result.nextPageToken;
 
         for (const obj of result.data) {
-          yield obj as SingleOsdkResult<Q, L, R, S, {}, T>;
+          yield obj as SingleOsdkResult<Q, L, R, S, {}, T, ORDER_BY_OPTIONS>;
         }
       } while ($nextPageToken != null);
     },
@@ -282,11 +310,17 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return clientCtx.objectSetFactory(
         objectType,
         clientCtx,
-        {
-          type: "searchAround",
-          objectSet,
-          link,
-        },
+        objectType.type === "object"
+          ? {
+            type: "searchAround",
+            objectSet,
+            link,
+          }
+          : {
+            type: "interfaceLinkSearchAround",
+            objectSet,
+            interfaceLink: link,
+          },
       );
     };
   }
@@ -318,4 +352,8 @@ async function createWithPk(
     },
   };
   return withPk;
+}
+
+function isTextQuery(query: string | number[]): query is string {
+  return typeof query === "string";
 }

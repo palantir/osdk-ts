@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export * as OntologyBlockDataDummyService from "./OntologyBlockDataDummyService.js";
+
 export type {
   ActionParameterShapeId,
   ActionTypeBlockDataV2,
@@ -46,7 +48,20 @@ export type {
   LinkTypeBlockDataV2,
   LinkTypePermissionInformation,
   LinkTypeRestrictionStatus,
+  MarketplaceActiveInterfaceTypeStatus,
+  MarketplaceDeprecatedInterfaceTypeStatus,
+  MarketplaceExampleInterfaceTypeStatus,
+  MarketplaceExperimentalInterfaceTypeStatus,
+  MarketplaceInterfaceLinkType,
+  MarketplaceInterfaceLinkTypeCardinality,
+  MarketplaceInterfaceLinkTypeMetadata,
+  MarketplaceInterfacePropertyType,
+  MarketplaceInterfaceType,
+  MarketplaceInterfaceTypeDisplayMetadata,
+  MarketplaceInterfaceTypeStatus,
   MarketplaceObjectTypeEntityMetadata,
+  MarketplaceSharedPropertyBasedPropertyType,
+  MarkingGroupName,
   MediaSetViewName,
   ObjectsWritebackDataset,
   ObjectTypeBlockDataV2,
@@ -65,7 +80,13 @@ export type {
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrKnownMarketplaceIdentifiers,
   OntologyIrLinkTypeBlockDataV2,
+  OntologyIrMarketplaceDeprecatedInterfaceTypeStatus,
+  OntologyIrMarketplaceInterfaceLinkType,
+  OntologyIrMarketplaceInterfacePropertyType,
+  OntologyIrMarketplaceInterfaceType,
+  OntologyIrMarketplaceInterfaceTypeStatus,
   OntologyIrMarketplaceObjectTypeEntityMetadata,
+  OntologyIrMarketplaceSharedPropertyBasedPropertyType,
   OntologyIrObjectPropertyReference,
   OntologyIrObjectsWritebackDataset,
   OntologyIrObjectTypeBlockDataV2,
@@ -77,6 +98,8 @@ export type {
   OntologyIrSharedPropertyTypeBlockDataV2,
   OutputMode,
   PatchesConfiguration,
+  PostOntologyBlockDataRequest,
+  PostOntologyBlockDataResponse,
   PropertyPredicate,
   PropertyRid,
   RestrictedViewName,

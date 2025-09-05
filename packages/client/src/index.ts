@@ -26,6 +26,7 @@ export type {
   Attachment,
   CompileTimeMetadata,
   InterfaceDefinition,
+  InterfaceMetadata,
   Logger,
   ObjectMetadata,
   ObjectSet,
@@ -33,6 +34,7 @@ export type {
   ObjectTypeDefinition,
   Osdk,
   OsdkObject,
+  OsdkObjectCreatePropertyType,
   OsdkObjectPropertyType,
   PageResult,
   PropertyDef,
@@ -49,7 +51,7 @@ export type {
   VersionBound,
   WhereClause,
 } from "@osdk/api";
-export { isOk } from "@osdk/api";
+export { isOk, NULL_VALUE } from "@osdk/api";
 export { PalantirApiError } from "@osdk/shared.net.errors";
 
 export { ActionValidationError } from "./actions/ActionValidationError.js";
@@ -65,3 +67,5 @@ export {
   extractDateInLocalTime,
   extractDateInUTC,
 } from "./util/datetimeConverters.js";
+
+export { createObjectSpecifierFromPrimaryKey } from "./util/objectSpecifierUtils.js";

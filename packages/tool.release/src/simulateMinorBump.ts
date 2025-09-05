@@ -66,16 +66,16 @@ export function simulateMinorBump(): void {
       // Add a changeset file that indicates a minor bump happened, write back
       const changesetFileName = `${
         packageJson.name.replace("/", "-")
-      }-simulatedRelease.md`;
+      }-simulatedRelease`;
       const changesetFile = path.join(
         changesetsDir,
-        changesetFileName,
+        changesetFileName + ".md",
       );
 
       preJson.changesets.push(changesetFileName);
 
       const changeset = `---
-"${packageJson.name}": minor
+"${packageJson.name}": patch
 ---
       
 Simulated release

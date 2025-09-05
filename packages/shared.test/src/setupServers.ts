@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { type FauxFoundry, msw } from "@osdk/faux";
+import { delay } from "msw";
 import type { SetupServerApi } from "msw/node";
 import { setupServer } from "msw/node";
-import type { FauxFoundry } from "./FauxFoundry/FauxFoundry.js";
 
 interface ClientFactory<C, A extends any[]> {
   (
@@ -44,7 +45,12 @@ export function startNodeApiServer<
   clientFactory?: CF,
   ...clientArgs: CF extends ClientFactory<any, infer A> ? A : never[]
 ): TestSetup<CF extends ClientFactory<infer C, any> ? C : never> {
-  const apiServer = setupServer(...fauxFoundry.handlers);
+  const apiServer = setupServer(
+    msw.http.all("*", async () => {
+      await delay(0);
+    }),
+    ...fauxFoundry.handlers,
+  );
 
   const logger_ = fauxFoundry.logger?.child({}, { msgPrefix: "msw" });
   function logger(methodName: string, requestId: string) {
@@ -79,6 +85,7 @@ export function startNodeApiServer<
   });
   const auth = () => Promise.resolve("myAccessToken");
   apiServer.listen();
+
   return {
     apiServer,
     auth,

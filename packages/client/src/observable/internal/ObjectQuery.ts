@@ -21,12 +21,17 @@ import { BehaviorSubject, connectable, map } from "rxjs";
 import { additionalContext } from "../../Client.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
-import type { CommonObserveOptions, Status } from "../ObservableClient.js";
+import type {
+  CommonObserveOptions,
+  Status,
+} from "../ObservableClient/common.js";
 import { getBulkObjectLoader } from "./BulkObjectLoader.js";
 import type { CacheKey } from "./CacheKey.js";
+import type { Changes } from "./Changes.js";
 import type { Entry } from "./Layer.js";
 import { Query } from "./Query.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
+import { tombstone } from "./tombstone.js";
 
 export interface ObjectEntry extends Entry<ObjectCacheKey> {}
 
@@ -102,10 +107,14 @@ export class ObjectQuery extends Query<
 
   async _fetchAndStore(): Promise<void> {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "_fetchAndStore" }).info(
+      this.logger?.child({ methodName: "_fetchAndStore" }).debug(
         "calling _fetchAndStore",
       );
     }
+
+    // TODO: In the future, implement tracking of network requests to ensure
+    // we're not making unnecessary network calls. This would need dedicated
+    // tests separate from subscription notification tests.
 
     const obj = await getBulkObjectLoader(this.store.client)
       .fetch(this.#apiName, this.#pk);
@@ -123,9 +132,20 @@ export class ObjectQuery extends Query<
     const entry = batch.read(this.cacheKey);
 
     if (entry && deepEqual(data, entry.value)) {
+      // Check if both data AND status are the same
+      if (entry.status === status) {
+        if (process.env.NODE_ENV !== "production") {
+          this.logger?.child({ methodName: "writeToStore" }).debug(
+            `Object was deep equal and status unchanged (${status}), skipping update`,
+          );
+        }
+        // Return the existing entry without writing to avoid unnecessary notifications
+        return entry;
+      }
+
       if (process.env.NODE_ENV !== "production") {
         this.logger?.child({ methodName: "writeToStore" }).debug(
-          `Object was deep equal, just setting status`,
+          `Object was deep equal, just setting status (old status: ${entry.status}, new status: ${status})`,
         );
       }
       // must do a "full write" here so that the lastUpdated is updated but we
@@ -144,6 +164,51 @@ export class ObjectQuery extends Query<
 
     return ret;
   }
+
+  deleteFromStore(
+    status: Status,
+    batch: BatchContext,
+  ): Entry<ObjectCacheKey> | undefined {
+    const entry = batch.read(this.cacheKey);
+
+    if (entry && deepEqual(tombstone, entry.value)) {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "deleteFromStore" }).debug(
+          `Object was deep equal, just setting status`,
+        );
+      }
+      // must do a "full write" here so that the lastUpdated is updated but we
+      // don't want to retrigger anyone's memoization on the value!
+      return batch.write(this.cacheKey, entry.value, status);
+    }
+
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "deleteFromStore" }).debug(
+        JSON.stringify({ status }),
+      );
+    }
+
+    // if there is no entry then there is nothing to do
+    if (!entry || !entry.value) {
+      return;
+    }
+
+    const ret = batch.delete(this.cacheKey, status);
+    batch.changes.deleteObject(this.cacheKey);
+
+    return ret;
+  }
+
+  invalidateObjectType = (
+    objectType: string,
+    changes: Changes | undefined,
+  ): Promise<void> => {
+    if (this.#apiName === objectType) {
+      changes?.modified.add(this.cacheKey);
+      return this.revalidate(true);
+    }
+    return Promise.resolve();
+  };
 }
 
 /**
@@ -159,10 +224,10 @@ export function storeOsdkInstances(
   // update the cache for any object that has changed
   // and save the mapped values to return
   return values.map(v => {
-    return store.getObjectQuery(
-      v.$apiName,
-      v.$primaryKey as string | number,
-    )
+    return store.objects.getQuery({
+      apiName: v.$apiName,
+      pk: v.$primaryKey as string | number,
+    })
       .writeToStore(
         v as ObjectHolder,
         "loaded",

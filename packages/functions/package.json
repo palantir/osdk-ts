@@ -1,6 +1,6 @@
 {
   "name": "@osdk/functions",
-  "version": "1.1.0-beta.1",
+  "version": "1.3.0-beta.2",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -27,6 +27,15 @@
       "require": "./build/cjs/public/internal.cjs",
       "default": "./build/browser/public/internal.js"
     },
+    "./unstable-do-not-use": {
+      "browser": "./build/browser/public/unstable-do-not-use.js",
+      "import": {
+        "types": "./build/types/public/unstable-do-not-use.d.ts",
+        "default": "./build/esm/public/unstable-do-not-use.js"
+      },
+      "require": "./build/cjs/public/unstable-do-not-use.cjs",
+      "default": "./build/browser/public/unstable-do-not-use.js"
+    },
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {
@@ -52,7 +61,8 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "peerDependencies": {
-    "@osdk/client": "workspace:^"
+    "@osdk/client": "workspace:^",
+    "@osdk/foundry.ontologies": "^2.26.0"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.5",
@@ -60,6 +70,8 @@
     "@osdk/client.test.ontology": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/shared.test": "workspace:~",
+    "p-defer": "^4.0.1",
     "ts-expect": "^1.3.0",
     "typescript": "~5.5.4"
   },

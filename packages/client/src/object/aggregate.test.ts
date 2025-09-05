@@ -536,6 +536,101 @@ describe("aggregate", () => {
     );
   });
 
+  describe("$exact", () => {
+    it("correctly nulls bucket type when $includeNullValue is true", async () => {
+      const result = await client(Todo).aggregate({
+        $select: {
+          "id:avg": "unordered",
+        },
+        $groupBy: {
+          text: { $exact: { $includeNullValue: true } },
+        },
+      });
+
+      expectTypeOf(result[0].$group.text).toEqualTypeOf<
+        string | null
+      >();
+    });
+
+    it("correctly does not null bucket type when $includeNullValue is not included", async () => {
+      const result = await client(Todo).aggregate({
+        $select: { "id:avg": "unordered" },
+        $groupBy: { text: { $exact: { $limit: 10 } } },
+      });
+
+      expectTypeOf(result[0].$group.text).toEqualTypeOf<string>();
+    });
+
+    it("correctly does not null bucket type when $defaultValue is specified", async () => {
+      const result = await client(Todo).aggregate({
+        $select: { "id:avg": "unordered" },
+        $groupBy: { text: { $exact: { $defaultValue: "null" } } },
+      });
+
+      expectTypeOf(result[0].$group.text).toEqualTypeOf<string>();
+    });
+
+    it("disallows null values with ordering", () => {
+      void client(Todo).aggregate({
+        $select: {
+          // @ts-expect-error
+          "id:avg": "asc",
+        },
+        $groupBy: {
+          text: { $exact: { $includeNullValue: true } },
+        },
+      });
+    });
+
+    it("disallows null values with default value", async () => {
+      void client(Todo).aggregate({
+        $select: {
+          "text:exactDistinct": "unordered",
+          "id:max": "unordered",
+          "$count": "unordered",
+        },
+        $groupBy: {
+          text: {
+            // Should work since $includeNullValue is false. Making this possible makes intellisense better and
+            // lets the user understand the difference between the two.
+            $exact: { $defaultValue: "default", $includeNullValue: false },
+          },
+        },
+      });
+
+      void client(Todo).aggregate({
+        $select: {
+          "text:exactDistinct": "unordered",
+          "id:max": "unordered",
+          "$count": "unordered",
+        },
+        $groupBy: {
+          text: {
+            // @ts-expect-error
+            $exact: { $defaultValue: "default", $includeNullValue: true },
+          },
+        },
+      });
+    });
+
+    it("allows null or default values with limit", async () => {
+      const result = await client(Todo).aggregate({
+        $select: {
+          "text:exactDistinct": "unordered",
+          "id:max": "unordered",
+          "$count": "unordered",
+        },
+        $groupBy: {
+          text: { $exact: { $limit: 10, $includeNullValue: true } },
+        },
+      });
+
+      expectTypeOf(result[0].$group.text).toEqualTypeOf<
+        string | null
+      >();
+    });
+  });
+
   it("works with where: todo", async () => {
     const f: AggregateOpts<
       Employee

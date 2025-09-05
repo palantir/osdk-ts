@@ -2,12 +2,16 @@ arethetypeswrong
 attw
 consola
 dprint
+Emittery
 execa
 immer
 jiti
 luxon
 manypkg
+maplibre
+maxzoom
 mdast
+minzoom
 mnemonist
 Momentjs
 monorepolint

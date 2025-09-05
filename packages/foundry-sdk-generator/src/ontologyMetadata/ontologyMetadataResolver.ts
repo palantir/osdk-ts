@@ -130,6 +130,7 @@ export class OntologyMetadataResolver {
       queryTypes: filteredQueryTypes,
       interfaceTypes: filteredInterfaceTypes,
       sharedPropertyTypes: {},
+      valueTypes: {},
     };
   }
 
@@ -508,6 +509,7 @@ export class OntologyMetadataResolver {
       const result = this.validateQueryParametersAndOutput(
         query,
         expectedEntities.objectTypes,
+        expectedEntities.interfaceTypes,
       );
       if (result.isErr()) {
         for (const errorString of result.error) {
@@ -558,6 +560,7 @@ export class OntologyMetadataResolver {
   private validateQueryParametersAndOutput(
     query: QueryTypeV2,
     loadedObjectApiNames: Set<string>,
+    loadedInterfaceApiNames: Set<string>,
   ): Result<{}, string[]> {
     const parameterValidation: Array<Result<{}, string[]>> = Object.entries(
       query.parameters,
@@ -568,6 +571,7 @@ export class OntologyMetadataResolver {
           paramName,
           paramData.dataType,
           loadedObjectApiNames,
+          loadedInterfaceApiNames,
         ),
     );
 
@@ -577,6 +581,7 @@ export class OntologyMetadataResolver {
         "output",
         query.output,
         loadedObjectApiNames,
+        loadedInterfaceApiNames,
       ),
     );
 
@@ -610,6 +615,7 @@ export class OntologyMetadataResolver {
     propertyName: string,
     baseType: QueryDataType,
     loadedObjectApiNames: Set<string>,
+    loadedInterfaceApiNames: Set<string>,
   ): Result<{}, string[]> {
     switch (baseType.type) {
       case "array":
@@ -619,6 +625,7 @@ export class OntologyMetadataResolver {
           propertyName,
           baseType.subType,
           loadedObjectApiNames,
+          loadedInterfaceApiNames,
         );
       case "objectSet":
       case "object":
@@ -631,6 +638,17 @@ export class OntologyMetadataResolver {
           + `Make sure to specify it as an argument with --ontologyObjects ${baseType
             .objectTypeApiName!}.}`,
         ]);
+      case "interfaceObject":
+      case "interfaceObjectSet":
+        if (loadedInterfaceApiNames.has(baseType.interfaceTypeApiName!)) {
+          return Result.ok({});
+        }
+        return Result.err([
+          `Unable to load query ${queryApiName} because it takes an unloaded interface type as a parameter: ${baseType
+            .interfaceTypeApiName!} in parameter ${propertyName}. `
+          + `Make sure to specify it as an argument with --ontologyInterfaces ${baseType
+            .interfaceTypeApiName!}.}`,
+        ]);
       case "struct":
         const results = baseType.fields?.map(field => {
           return this.visitSupportedQueryTypes(
@@ -638,6 +656,7 @@ export class OntologyMetadataResolver {
             propertyName,
             field.fieldType,
             loadedObjectApiNames,
+            loadedInterfaceApiNames,
           );
         });
 
@@ -666,12 +685,14 @@ export class OntologyMetadataResolver {
             propertyName,
             baseType.keyType,
             loadedObjectApiNames,
+            loadedInterfaceApiNames,
           ),
           this.visitSupportedQueryTypes(
             queryApiName,
             propertyName,
             baseType.valueType,
             loadedObjectApiNames,
+            loadedInterfaceApiNames,
           ),
         ]);
       case "string":
@@ -743,13 +764,16 @@ export class OntologyMetadataResolver {
         ]);
       case "interfaceObject":
         if (
-          loadedInterfaceApiNames.has(actionTypeParameter.interfaceTypeApiName)
+          actionTypeParameter.interfaceTypeApiName != null
+          && loadedInterfaceApiNames.has(
+            actionTypeParameter.interfaceTypeApiName,
+          )
         ) {
           return Result.ok({});
         }
         return Result.err([
           `Unable to load action ${actionApiName} because it takes an unloaded interface type as a parameter: ${actionTypeParameter.interfaceTypeApiName} `
-          + `make sure to specify it as an argument with --ontologyInterfaces ${actionTypeParameter.interfaceTypeApiName}`,
+          + `make sure to specify it as an argument with --interfaceTypes ${actionTypeParameter.interfaceTypeApiName}`,
         ]);
       case "string":
       case "boolean":

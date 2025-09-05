@@ -33,6 +33,8 @@ export default async function main(
     apiNamespace: string;
     snapshotDir: string;
     valueTypesOutput: string;
+    outputDir?: string;
+    dependencies?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -65,10 +67,21 @@ export default async function main(
         default: "snapshots",
         coerce: path.resolve,
       },
+      outputDir: {
+        alias: "d",
+        describe: "Directory for generated ontology entities",
+        type: "string",
+        coerce: path.resolve,
+      },
       valueTypesOutput: {
         describe: "Value Type Output File",
         type: "string",
         default: "value-types.json",
+        coerce: path.resolve,
+      },
+      dependencies: {
+        describe: "File to write dependencies to",
+        type: "string",
         coerce: path.resolve,
       },
     })
@@ -85,10 +98,12 @@ export default async function main(
     );
   }
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
+
   const ontology = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
-    path.dirname(path.dirname(commandLineOpts.input)), // "src" in "src/ontology/ontology.mjs"
+    commandLineOpts.outputDir,
+    commandLineOpts.dependencies,
   );
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
@@ -108,12 +123,14 @@ export default async function main(
 async function loadOntology(
   input: string,
   apiNamespace: string,
-  outputDir: string,
+  outputDir: string | undefined,
+  dependencyFile: string | undefined,
 ) {
   const q = await defineOntology(
     apiNamespace,
     async () => await import(input),
     outputDir,
+    dependencyFile,
   );
   return q;
 }

@@ -68,12 +68,16 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
       objectTypeWithLink.objectType
         .properties[objectTypeWithLink.objectType.primaryKey],
     ),
-    links: Object.fromEntries(objectTypeWithLink.linkTypes.map(linkType => {
-      return [linkType.apiName, {
-        multiplicity: linkType.cardinality === "MANY",
-        targetType: linkType.objectTypeApiName,
-      }];
-    })),
+    links: Object.fromEntries(
+      [...objectTypeWithLink.linkTypes].sort((a, b) =>
+        a.apiName.localeCompare(b.apiName)
+      ).map(linkType => {
+        return [linkType.apiName, {
+          multiplicity: linkType.cardinality === "MANY",
+          targetType: linkType.objectTypeApiName,
+        }];
+      }),
+    ),
     properties: Object.fromEntries(
       Object.entries(objectTypeWithLink.objectType.properties).map((
         [key, value],
@@ -84,9 +88,13 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
           !(v2 && objectTypeWithLink.objectType.primaryKey === key),
           log,
         ),
-      ]).filter(([key, value]) => value != null),
+      ]).filter(([_, value]) => value != null),
     ),
-    implements: objectTypeWithLink.implementsInterfaces as string[],
+    implements: objectTypeWithLink.implementsInterfaces
+      ? [...objectTypeWithLink.implementsInterfaces].sort((a, b) =>
+        a.localeCompare(b)
+      )
+      : objectTypeWithLink.implementsInterfaces,
     interfaceMap,
     inverseInterfaceMap: Object.fromEntries(
       Object.entries(interfaceMap).map((
@@ -99,9 +107,15 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
     titleProperty: objectTypeWithLink.objectType.titleProperty,
     displayName: objectTypeWithLink.objectType.displayName,
     pluralDisplayName: objectTypeWithLink.objectType.pluralDisplayName,
-    status: objectTypeWithLink.objectType.status,
+    status: ensureStringEnumSupportedOrUndefined(
+      objectTypeWithLink.objectType.status,
+      supportedReleaseStatus,
+    ),
     rid: objectTypeWithLink.objectType.rid,
-    visibility: objectTypeWithLink.objectType.visibility,
+    visibility: ensureStringEnumSupportedOrUndefined(
+      objectTypeWithLink.objectType.visibility,
+      supportedObjectTypeVisibility,
+    ),
   };
 }
 
@@ -114,4 +128,24 @@ function invertProps(
       : Record<string, string>;
 }
 
-const supportedIconTypes = ["blueprint"];
+export const supportedIconTypes = ["blueprint"] as const;
+
+export const supportedReleaseStatus = [
+  "ACTIVE",
+  "EXPERIMENTAL",
+  "DEPRECATED",
+  "ENDORSED",
+] as const;
+
+export const supportedObjectTypeVisibility = [
+  "NORMAL",
+  "PROMINENT",
+  "HIDDEN",
+] as const;
+
+export function ensureStringEnumSupportedOrUndefined<T extends string>(
+  value: T | undefined,
+  supportedValues: readonly string[],
+): T | undefined {
+  return value && supportedValues.includes(value) ? value : undefined;
+}

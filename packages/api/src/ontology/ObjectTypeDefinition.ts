@@ -37,12 +37,8 @@ export type ObjectInterfaceBaseMetadata = {
   type: "object" | "interface";
   apiName: string;
   displayName: string;
-  description?: string;
+  description: string | undefined;
   properties: Record<any, ObjectMetadata.Property>;
-  links: Record<
-    string,
-    ObjectMetadata.Link<any, any>
-  >;
   rid: string;
   /**
    * Represents the "super interfaces" of this object.
@@ -68,11 +64,15 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
   type: "object";
   primaryKeyApiName: keyof this["properties"];
   titleProperty: keyof this["properties"];
+  links: Record<
+    string,
+    ObjectMetadata.Link<any, any>
+  >;
   primaryKeyType: PrimaryKeyTypes;
-  icon?: Icon;
-  visibility?: ObjectTypeVisibility;
+  icon: Icon | undefined;
+  visibility: ObjectTypeVisibility | undefined;
   pluralDisplayName: string;
-  status: ReleaseStatus;
+  status: ReleaseStatus | undefined;
   interfaceMap: Record<
     /* InterfaceType api name */ string,
     Record<
@@ -97,6 +97,7 @@ export namespace ObjectMetadata {
     type: WirePropertyTypes;
     multiplicity?: boolean;
     nullable?: boolean;
+    valueTypeApiName?: string;
   }
 
   export interface Link<

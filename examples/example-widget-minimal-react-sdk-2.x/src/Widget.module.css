@@ -1,4 +1,5 @@
 .container {
+    margin: 8px;
     padding: 15px;
     display: flex;
     flex-direction: column;

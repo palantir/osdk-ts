@@ -18,6 +18,7 @@ import type {
   AllowedBucketKeyTypes,
   AllowedBucketTypes,
   CompileTimeMetadata,
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   OsdkBase,
@@ -34,7 +35,10 @@ import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { hydrateAttachmentFromRidInternal } from "../public-utils/hydrateAttachmentFromRid.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
-import { createObjectSpecifierFromPrimaryKey } from "../util/objectSpecifierUtils.js";
+import {
+  createObjectSpecifierFromInterfaceSpecifier,
+  createObjectSpecifierFromPrimaryKey,
+} from "../util/objectSpecifierUtils.js";
 import { toDataValueQueries } from "../util/toDataValueQueries.js";
 import type { QueryParameterType, QueryReturnType } from "./types.js";
 
@@ -172,6 +176,22 @@ async function remapQueryResponse<
       >;
     }
 
+    case "interface": {
+      const def = definitions.get(responseDataType.interface);
+      if (!def || def.type !== "interface") {
+        throw new Error(
+          `Missing definition for ${responseDataType.interface}`,
+        );
+      }
+
+      return createQueryInterfaceResponse(
+        responseValue,
+        def,
+      ) as QueryReturnType<
+        typeof responseDataType
+      >;
+    }
+
     case "objectSet": {
       const def = definitions.get(responseDataType.objectSet);
       if (!def) {
@@ -289,15 +309,27 @@ async function getRequiredDefinitions(
       break;
     }
 
+    case "interface": {
+      const interfaceDef = await client.ontologyProvider.getInterfaceDefinition(
+        dataType.interface,
+      );
+      result.set(dataType.interface, interfaceDef);
+      break;
+    }
+
     case "set": {
       return getRequiredDefinitions(dataType.set, client);
     }
 
     case "map": {
-      for (const value of [dataType.keyType, dataType.valueType]) {
-        for (
-          const [type, objectDef] of await getRequiredDefinitions(value, client)
-        ) {
+      const types = [dataType.keyType, dataType.valueType];
+
+      const allDefs = await Promise.all(
+        types.map(value => getRequiredDefinitions(value, client)),
+      );
+
+      for (const defs of allDefs) {
+        for (const [type, objectDef] of defs) {
           result.set(type, objectDef);
         }
       }
@@ -305,10 +337,14 @@ async function getRequiredDefinitions(
     }
 
     case "struct": {
-      for (const value of Object.values(dataType.struct)) {
-        for (
-          const [type, objectDef] of await getRequiredDefinitions(value, client)
-        ) {
+      const structValues = Object.values(dataType.struct);
+
+      const allDefs = await Promise.all(
+        structValues.map(value => getRequiredDefinitions(value, client)),
+      );
+
+      for (const defs of allDefs) {
+        for (const [type, objectDef] of defs) {
           result.set(type, objectDef);
         }
       }
@@ -395,6 +431,27 @@ export function createQueryObjectResponse<
     $objectSpecifier: createObjectSpecifierFromPrimaryKey(
       objectDef,
       primaryKey,
+    ),
+  };
+}
+
+export function createQueryInterfaceResponse<
+  Q extends InterfaceDefinition,
+>(
+  interfaceSpecifier: {
+    objectTypeApiName: string;
+    primaryKeyValue: PrimaryKeyType<Q>;
+  },
+  interfaceDef: Q,
+): OsdkBase<Q> {
+  return {
+    $apiName: interfaceDef.apiName,
+    $title: undefined,
+    $objectType: interfaceSpecifier.objectTypeApiName,
+    $primaryKey: interfaceSpecifier.primaryKeyValue,
+    $objectSpecifier: createObjectSpecifierFromInterfaceSpecifier(
+      interfaceDef,
+      interfaceSpecifier,
     ),
   };
 }

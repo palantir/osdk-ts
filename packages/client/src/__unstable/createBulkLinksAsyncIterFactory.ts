@@ -114,7 +114,10 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
         makeConjureContext(ctx, "object-set-service/api"),
       ),
       getResults,
-      applyPageToken,
+      (prevReq, prevResult) =>
+        applyPageToken({ ...prevReq, pageToken: prevResult.pageToken }, {
+          pageToken: prevResult.pageToken,
+        }),
       req,
     );
 

@@ -60,7 +60,18 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
         objectSet: input.objectTypeApiName as K,
         nullable: false,
       };
-
+    case "interfaceObject":
+      return {
+        type: "interface",
+        interface: input.interfaceTypeApiName as K,
+        nullable: false,
+      };
+    case "interfaceObjectSet":
+      return {
+        type: "interfaceObjectSet",
+        objectSet: input.interfaceTypeApiName as K,
+        nullable: false,
+      };
     case "array":
       return {
         ...wireQueryDataTypeToQueryDataTypeDefinition(input.subType),

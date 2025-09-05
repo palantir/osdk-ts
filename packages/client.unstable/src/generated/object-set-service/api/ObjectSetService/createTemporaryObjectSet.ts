@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,21 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { CreateTemporaryObjectSetRequest } from "../CreateTemporaryObjectSetRequest.js";
-import type { CreateTemporaryObjectSetResponse } from "../CreateTemporaryObjectSetResponse.js";
+import type {
+  CreateTemporaryObjectSetRequest as _api_CreateTemporaryObjectSetRequest,
+  CreateTemporaryObjectSetResponse as _api_CreateTemporaryObjectSetResponse,
+} from "../__components.js";
 
 /**
  * Creates a temporary object set that will live for at least as long as the provided TTL, and will get deleted
  * at some point after that.
  *
- * Temporary object sets can only be accessed by users who have created them; a gatekeeper resource is registered
- * for every temporary object set. NOTE: The same gatekeeper resource may be reused for the same userId across
- * different createTemporaryObjectSet requests.
+ * Temporary object sets created by unscoped user tokens can only be accessed by the user that created them; a
+ * gatekeeper resource is registered for every such temporary object set. NOTE: The same gatekeeper resource may
+ * be reused for the same userId across different createTemporaryObjectSet requests.
+ *
+ * If the temporary object set is created from a build that uses a 'security-rid' output then the temp object
+ * set will be secured using the relevant OutputSecurityRid for the build.
  *
  * Whenever an object set (temporary, or otherwise) referencing a temporary object set gets saved or used in
  * versioned object sets, the reference gets replaced with a full definition of the previously saved temporary
@@ -35,7 +40,7 @@ import type { CreateTemporaryObjectSetResponse } from "../CreateTemporaryObjectS
  */
 export async function createTemporaryObjectSet(
   ctx: ConjureContext,
-  request: CreateTemporaryObjectSetRequest,
-): Promise<CreateTemporaryObjectSetResponse> {
+  request: _api_CreateTemporaryObjectSetRequest,
+): Promise<_api_CreateTemporaryObjectSetResponse> {
   return conjureFetch(ctx, `/objectSets/temporary`, "POST", request);
 }

@@ -1,5 +1,5 @@
 ---
-"@osdk/create-app.template.tutorial-todo-aip-app": minor
+"@osdk/create-app.template.tutorial-todo-aip-app": patch
 ---
       
 Simulated release

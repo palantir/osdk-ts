@@ -15,54 +15,70 @@
  */
 
 import type {
+  ActionTypePermissionInformation,
   ActionTypeStatus,
-  DataConstraints,
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrActionValidation,
   OntologyIrAllowedParameterValues,
   OntologyIrBaseParameterType,
   OntologyIrImportedTypes,
-  OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrLinkDefinition,
   OntologyIrLinkTypeBlockDataV2,
   OntologyIrManyToManyLinkTypeDatasource,
+  OntologyIrMarketplaceInterfaceType,
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
+  OntologyIrOneToManyLinkDefinition,
   OntologyIrOntologyBlockDataV2,
   OntologyIrParameter,
   OntologyIrPropertyType,
   OntologyIrSection,
   OntologyIrSharedPropertyType,
   OntologyIrSharedPropertyTypeBlockDataV2,
-  OntologyIrStructFieldType,
-  OntologyIrType,
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
   ParameterId,
   ParameterRenderHint,
   ParameterRequiredConfiguration,
+  PropertyTypeMappingInfo,
   RetentionPolicy,
   SectionId,
 } from "@osdk/client.unstable";
 import * as fs from "fs";
 import * as path from "path";
 import invariant from "tiny-invariant";
-import { isExotic } from "./defineObject.js";
+import { convertToDisplayName, isExotic } from "./defineObject.js";
+import {
+  convertActionParameterConditionalOverride,
+  convertActionVisibility,
+  convertSectionConditionalOverride,
+  getFormContentOrdering,
+} from "./ontologyUtils.js";
+import {
+  convertNullabilityToDataConstraint,
+  convertType,
+  convertValueType,
+  convertValueTypeDataConstraints,
+  defaultTypeClasses,
+  getPropertyTypeName,
+  hasRenderHints,
+  shouldNotHaveRenderHints,
+} from "./propertyConversionUtils.js";
 import type {
   ActionParameter,
+  ActionParameterAllowedValues,
   ActionParameterRequirementConstraint,
   ActionType,
   InterfaceType,
   LinkType,
-  Nullability,
   ObjectPropertyType,
   ObjectType,
+  OneToManyLinkTypeDefinition,
   OntologyDefinition,
   OntologyEntityType,
-  PropertyTypeType,
   SharedPropertyType,
 } from "./types.js";
 import { OntologyEntityTypeEnum } from "./types.js";
@@ -74,6 +90,10 @@ export let ontologyDefinition: OntologyDefinition;
 // type -> apiName -> entity
 /** @internal */
 export let importedTypes: OntologyDefinition;
+
+// namespace -> version
+/** @internal */
+export let dependencies: Record<string, string>;
 
 /** @internal */
 export let namespace: string;
@@ -106,9 +126,11 @@ export function updateOntology<
 export async function defineOntology(
   ns: string,
   body: () => void | Promise<void>,
-  outputDir: string,
+  outputDir: string | undefined,
+  dependencyFile?: string,
 ): Promise<OntologyAndValueTypeIrs> {
   namespace = ns;
+  dependencies = {};
   ontologyDefinition = {
     OBJECT_TYPE: {},
     ACTION_TYPE: {},
@@ -136,7 +158,12 @@ export async function defineOntology(
     throw e;
   }
 
-  writeStaticObjects(outputDir);
+  if (outputDir) {
+    writeStaticObjects(outputDir);
+  }
+  if (dependencyFile) {
+    writeDependencyFile(dependencyFile);
+  }
   return {
     ontology: convertToWireOntologyIr(ontologyDefinition),
     valueType: convertOntologyToValueTypeIr(ontologyDefinition),
@@ -208,14 +235,15 @@ export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFi
 
       for (const entityModuleName of entityModuleNames) {
         topLevelExportStatements.push(
-          `export { ${entityModuleName} } from "./codegen/${typeDirName}/${entityModuleName}.js";`,
+          `export { ${entityModuleName} } from "./codegen/${typeDirName}/${entityModuleName}.ts";`,
         );
       }
     },
   );
 
   if (topLevelExportStatements.length > 0) {
-    const mainIndexContent = topLevelExportStatements.join("\n") + "\n";
+    const mainIndexContent = dependencyInjectionString()
+      + topLevelExportStatements.join("\n") + "\n";
     const mainIndexFilePath = path.join(outputDir, "index.ts");
     fs.writeFileSync(mainIndexFilePath, mainIndexContent, { flag: "w" });
   }
@@ -263,6 +291,12 @@ function convertToWireImportedTypes(
         displayName: spt.sharedPropertyType.displayMetadata.displayName,
         description: spt.sharedPropertyType.displayMetadata.description,
         type: spt.sharedPropertyType.type,
+        valueType: spt.sharedPropertyType.valueType === undefined
+          ? undefined
+          : {
+            apiName: spt.sharedPropertyType.valueType!.apiName,
+            version: spt.sharedPropertyType.valueType!.version,
+          },
       }),
     ),
     objectTypes: Object.values(
@@ -283,13 +317,13 @@ function convertToWireImportedTypes(
       apiName: i.interfaceType.apiName,
       displayName: i.interfaceType.displayMetadata.displayName,
       description: i.interfaceType.displayMetadata.description,
-      properties: Object.values(i.interfaceType.allPropertiesV2).map(p => ({
+      properties: Object.values(i.interfaceType.propertiesV2).map(p => ({
         apiName: p.sharedPropertyType.apiName,
         displayName: p.sharedPropertyType.displayMetadata.displayName,
         description: p.sharedPropertyType.displayMetadata.description,
         type: p.sharedPropertyType.type,
       })),
-      links: i.interfaceType.allLinks.map(l => ({
+      links: i.interfaceType.links.map(l => ({
         apiName: l.metadata.apiName,
         displayName: l.metadata.displayName,
         description: l.metadata.description,
@@ -399,7 +433,21 @@ function convertToWireBlockData(
       }),
     ),
     blockPermissionInformation: {
-      actionTypes: {},
+      actionTypes: Object.fromEntries(
+        Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE])
+          .filter(([apiName, action]) => action.validation)
+          .map<
+            [string, ActionTypePermissionInformation]
+          >(([apiName, action]) => {
+            return [apiName, {
+              restrictionStatus: {
+                hasRolesApplied: true,
+                ontologyPackageRid: null,
+                publicProject: false,
+              },
+            }];
+          }),
+      ),
       linkTypes: {},
       objectTypes: {},
     },
@@ -413,12 +461,32 @@ function convertObject(
     (objectType.properties ?? [])
       .flatMap(prop => extractPropertyDatasource(prop, objectType.apiName));
 
+  const classificationGroupMarkingNames = extractMarkingGroups(
+    objectType.properties ?? [],
+    "CBAC",
+  );
+
+  const mandatoryMarkingNames = extractMarkingGroups(
+    objectType.properties ?? [],
+    "MANDATORY",
+  );
+
+  const classificationInputGroup = classificationGroupMarkingNames.length > 0
+    ? classificationGroupMarkingNames.reduce((l, r) => l + "/" + r)
+    : undefined;
+
+  const mandatoryInputGroup = mandatoryMarkingNames.length > 0
+    ? mandatoryMarkingNames.reduce((l, r) => l + "/" + r)
+    : undefined;
+
   const objectDatasource = buildDatasource(
     objectType.apiName,
     convertDatasourceDefinition(
       objectType,
       objectType.properties ?? [],
     ),
+    classificationInputGroup,
+    mandatoryInputGroup,
   );
 
   const implementations = objectType.implementsInterfaces ?? [];
@@ -448,9 +516,11 @@ function convertObject(
       redacted: false,
       implementsInterfaces2: implementations.map(impl => ({
         interfaceTypeApiName: impl.implements.apiName,
+        linksV2: {},
+        propertiesV2: {},
         properties: Object.fromEntries(
           impl.propertyMapping.map(
-            mapping => [mapping.interfaceProperty, {
+            mapping => [addNamespaceIfNone(mapping.interfaceProperty), {
               propertyTypeRid: mapping.mapsTo,
             }],
           ),
@@ -499,7 +569,26 @@ function extractPropertyDatasource(
 function buildDatasource(
   apiName: string,
   definition: OntologyIrObjectTypeDatasourceDefinition,
+  classificationMarkingGroupName?: string,
+  mandatoryMarkingGroupName?: string,
 ): OntologyIrObjectTypeDatasource {
+  const needsSecurity = classificationMarkingGroupName !== undefined
+    || mandatoryMarkingGroupName !== undefined;
+
+  const securityConfig = needsSecurity
+    ? {
+      classificationConstraint: classificationMarkingGroupName
+        ? {
+          markingGroupName: classificationMarkingGroupName,
+        }
+        : undefined,
+      markingConstraint: mandatoryMarkingGroupName
+        ? {
+          markingGroupName: mandatoryMarkingGroupName,
+        }
+        : undefined,
+    }
+    : undefined;
   return ({
     rid: "ri.ontology.main.datasource.".concat(apiName),
     datasource: definition,
@@ -507,6 +596,7 @@ function buildDatasource(
       onlyAllowPrivilegedEdits: false,
     },
     redacted: false,
+    ...((securityConfig !== undefined) && { dataSecurity: securityConfig }),
   });
 }
 
@@ -534,46 +624,87 @@ function convertDatasourceDefinition(
           propertySecurityGroups: undefined,
         },
       };
+    case "restrictedView":
+      return {
+        type: "restrictedViewV2",
+        restrictedViewV2: {
+          restrictedViewRid: objectType.apiName,
+          propertyMapping: buildPropertyMapping(properties),
+        },
+      };
     case "dataset":
     default:
-      const datasetPropertyMapping = Object.fromEntries(
-        properties.map((prop) => {
-          prop.type;
-          if (typeof prop.type === "object" && prop.type?.type === "struct") {
-            const structMapping = {
-              type: "struct",
-              struct: {
-                column: prop.apiName,
-                mapping: Object.fromEntries(
-                  Object.entries(prop.type.structDefinition).map((
-                    [fieldName, _fieldType],
-                  ) => [
-                    fieldName,
-                    { apiName: fieldName, mappings: {} },
-                  ]),
-                ),
-              },
-            };
-            return [prop.apiName, structMapping];
-          } else {
-            return [
-              prop.apiName,
-              { type: "column", column: prop.apiName },
-            ];
-          }
-        }),
-      );
       return {
         type: "datasetV2",
         datasetV2: {
           datasetRid: objectType.apiName,
-          propertyMapping: datasetPropertyMapping,
+          propertyMapping: buildPropertyMapping(properties),
         },
       };
   }
 }
 
+/**
+ * Extracts marking group names of a specific type from object properties
+ */
+function extractMarkingGroups(
+  properties: ObjectPropertyType[],
+  markingType: "CBAC" | "MANDATORY",
+): string[] {
+  return properties
+    .map(prop => {
+      if (
+        typeof prop.type === "object"
+        && prop.type.type === "marking"
+        && prop.type.markingType === markingType
+      ) {
+        return prop.type.markingInputGroupName;
+      }
+      return undefined;
+    })
+    .filter((val): val is string => val !== undefined);
+}
+
+function buildPropertyMapping(
+  properties: ObjectPropertyType[],
+): Record<string, PropertyTypeMappingInfo> {
+  return Object.fromEntries(
+    properties.map((prop) => {
+      // editOnly
+      if (prop.editOnly) {
+        return [prop.apiName, { type: "editOnly", editOnly: {} }];
+      }
+      // structs
+      if (typeof prop.type === "object" && prop.type?.type === "struct") {
+        const structMapping = {
+          type: "struct",
+          struct: {
+            column: prop.apiName,
+            mapping: Object.fromEntries(
+              Object.keys(prop.type.structDefinition).map((fieldName) => [
+                fieldName,
+                { apiName: fieldName, mappings: {} },
+              ]),
+            ),
+          },
+        };
+        return [prop.apiName, structMapping];
+      }
+      // default: column mapping
+      return [prop.apiName, { type: "column", column: prop.apiName }];
+    }),
+  );
+}
+
 function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
+  const apiName = namespace + property.apiName;
+  invariant(
+    !shouldNotHaveRenderHints(property.type)
+      || !hasRenderHints(property.typeClasses),
+    `Property type ${apiName} of type '${
+      getPropertyTypeName(property.type)
+    }' should not have render hints`,
+  );
   const output: OntologyIrPropertyType = {
     apiName: property.apiName,
     sharedPropertyTypeApiName: property.sharedPropertyType?.apiName,
@@ -585,13 +716,25 @@ function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
     indexedForSearch: property.indexedForSearch ?? true,
     ruleSetBinding: undefined,
     baseFormatter: property.baseFormatter,
-    type: convertType(property.type),
-    typeClasses: property.typeClasses ?? [],
+    type: property.array
+      ? {
+        type: "array" as const,
+        array: {
+          subtype: convertType(property.type),
+        },
+      }
+      : convertType(property.type),
+    typeClasses: property.typeClasses
+      ?? (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
     status: convertObjectStatus(property.status),
     inlineAction: undefined,
-    dataConstraints: convertNullabilityToDataConstraint(property),
+    dataConstraints: property.valueType
+      ? convertValueTypeDataConstraints(property.valueType.constraints)
+      : convertNullabilityToDataConstraint(property),
     sharedPropertyTypeRid: property.sharedPropertyType?.apiName,
-    valueType: undefined,
+    valueType: property.valueType
+      ? convertValueType(property.valueType)
+      : undefined,
   };
   return output;
 }
@@ -606,7 +749,7 @@ function convertLink(
     definition = {
       type: "oneToMany",
       oneToMany: {
-        cardinalityHint: "ONE_TO_ONE",
+        cardinalityHint: convertCardinality(linkType.cardinality),
         manyToOneLinkMetadata: linkType.toMany.metadata,
         objectTypeRidManySide: linkType.toMany.object.apiName,
         objectTypeRidOneSide: linkType.one.object.apiName,
@@ -674,7 +817,7 @@ function convertLink(
               apiName: linkType.toMany.object.primaryKeyPropertyApiName,
               object: linkType.toMany.object.apiName,
             },
-            column: linkType.many.object.primaryKeyPropertyApiName,
+            column: linkType.toMany.object.primaryKeyPropertyApiName,
           }],
         },
       },
@@ -688,7 +831,7 @@ function convertLink(
   return {
     linkType: {
       definition: definition,
-      id: linkType.apiName,
+      id: cleanAndValidateLinkTypeId(linkType.apiName),
       status: linkType.status ?? { type: "active", active: {} },
       redacted: linkType.redacted ?? false,
     },
@@ -699,9 +842,27 @@ function convertLink(
   };
 }
 
+function cleanAndValidateLinkTypeId(apiName: string): string {
+  // Insert a dash before any uppercase letter that follows a lowercase letter or digit
+  const step1 = apiName.replace(/([a-z0-9])([A-Z])/g, "$1-$2");
+  // Insert a dash after a sequence of uppercase letters when followed by a lowercase letter
+  // then convert the whole string to lowercase
+  // e.g., apiName, APIname, and apiNAME will all be converted to api-name
+  const linkTypeId = step1.replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
+    .toLowerCase();
+
+  const VALIDATION_PATTERN = /^([a-z][a-z0-9\-]*)$/;
+  if (!VALIDATION_PATTERN.test(linkTypeId)) {
+    throw new Error(
+      `LinkType id '${linkTypeId}' must be lower case with dashes.`,
+    );
+  }
+  return linkTypeId;
+}
+
 function convertInterface(
   interfaceType: InterfaceType,
-): OntologyIrInterfaceType {
+): OntologyIrMarketplaceInterfaceType {
   const { __type, ...other } = interfaceType;
   return {
     ...other,
@@ -714,11 +875,10 @@ function convertInterface(
           sharedPropertyType: convertSpt(spt.sharedPropertyType),
         }]),
     ),
+    extendsInterfaces: interfaceType.extendsInterfaces.map(i => i.apiName),
     // these are omitted from our internal types but we need to re-add them for the final json
-    allExtendsInterfaces: [],
-    allLinks: [],
-    allProperties: [],
-    allPropertiesV2: {},
+    // TODO(mwalther): Support propertiesV3
+    propertiesV3: {},
     properties: [],
   };
 }
@@ -769,109 +929,11 @@ function convertSpt(
     gothamMapping: gothamMapping,
     indexedForSearch: true,
     typeClasses: typeClasses ?? [],
-    valueType: valueType,
+    valueType: valueType === undefined ? undefined : {
+      apiName: valueType.apiName,
+      version: valueType.version,
+    },
   };
-}
-
-function convertType(
-  type: PropertyTypeType,
-): OntologyIrType {
-  switch (true) {
-    case (typeof type === "object" && "markingType" in type):
-      return {
-        "type": "marking",
-        marking: { markingType: type.markingType },
-      };
-
-    case (typeof type === "object" && "structDefinition" in type):
-      const structFields: Array<OntologyIrStructFieldType> = new Array();
-      for (const key in type.structDefinition) {
-        const fieldTypeDefinition = type.structDefinition[key];
-        let field: OntologyIrStructFieldType;
-        if (typeof fieldTypeDefinition === "string") {
-          field = {
-            apiName: key,
-            displayMetadata: { displayName: key, description: undefined },
-            typeClasses: [],
-            aliases: [],
-            fieldType: convertType(fieldTypeDefinition),
-          };
-        } else {
-          // If it is a full form type definition then process it as such
-          if ("fieldType" in fieldTypeDefinition) {
-            field = {
-              ...fieldTypeDefinition,
-              apiName: key,
-              fieldType: convertType(fieldTypeDefinition.fieldType),
-              typeClasses: fieldTypeDefinition.typeClasses ?? [],
-              aliases: fieldTypeDefinition.aliases ?? [],
-            };
-          } else {
-            field = {
-              apiName: key,
-              displayMetadata: { displayName: key, description: undefined },
-              typeClasses: [],
-              aliases: [],
-              fieldType: convertType(fieldTypeDefinition),
-            };
-          }
-        }
-
-        structFields.push(field);
-      }
-
-      return {
-        type: "struct",
-        struct: { structFields },
-      };
-
-    case (typeof type === "object" && "isLongText" in type):
-      return {
-        "type": "string",
-        "string": {
-          analyzerOverride: undefined,
-          enableAsciiFolding: undefined,
-          isLongText: type.isLongText,
-          supportsEfficientLeadingWildcard:
-            type.supportsEfficientLeadingWildcard,
-          supportsExactMatching: type.supportsExactMatching,
-        },
-      };
-
-    case (type === "geopoint"):
-      return { type: "geohash", geohash: {} };
-
-    case (type === "decimal"):
-      return { type, [type]: { precision: undefined, scale: undefined } };
-
-    case (type === "string"):
-      return {
-        type,
-        [type]: {
-          analyzerOverride: undefined,
-          enableAsciiFolding: undefined,
-          isLongText: false,
-          supportsEfficientLeadingWildcard: false,
-          supportsExactMatching: true,
-        },
-      };
-
-    case (type === "mediaReference"):
-      return {
-        type: type,
-        mediaReference: {},
-      };
-
-    case (type === "geotimeSeries"):
-      return {
-        type: "geotimeSeriesReference",
-        geotimeSeriesReference: {},
-      };
-
-    default:
-      // use helper function to distribute `type` properly
-      return distributeTypeHelper(type);
-  }
 }
 
 function convertObjectStatus(status: any): any {
@@ -916,6 +978,8 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
     convertActionParameters(action);
   const actionSections: Record<SectionId, OntologyIrSection> =
     convertActionSections(action);
+  const parameterOrdering = action.parameterOrdering
+    ?? (action.parameters ?? []).map(p => p.id);
   return {
     actionType: {
       actionTypeLogic: {
@@ -928,8 +992,8 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
         apiName: action.apiName,
         displayMetadata: {
           configuration: {
-            defaultLayout: "FORM",
-            displayAndFormat: {
+            defaultLayout: action.defaultFormat ?? "FORM",
+            displayAndFormat: action.displayAndFormat ?? {
               table: {
                 columnWidthByParameterRid: {},
                 enableFileImport: true,
@@ -938,7 +1002,7 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
                 rowHeightInLines: 1,
               },
             },
-            enableLayoutUserSwitch: false,
+            enableLayoutUserSwitch: action.enableLayoutSwitch ?? false,
           },
           description: action.description ?? "",
           displayName: action.displayName,
@@ -946,11 +1010,26 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
             type: "blueprint",
             blueprint: action.icon ?? { locator: "edit", color: "#000000" },
           },
-          successMessage: [],
+          successMessage: action.submissionMetadata?.successMessage
+            ? [{
+              type: "message",
+              message: action.submissionMetadata.successMessage,
+            }]
+            : [],
           typeClasses: action.typeClasses ?? [],
+          ...(action.submissionMetadata?.submitButtonDisplayMetadata
+            && {
+              submitButtonDisplayMetadata:
+                action.submissionMetadata.submitButtonDisplayMetadata,
+            }),
+          ...(action.submissionMetadata?.undoButtonConfiguration
+            && {
+              undoButtonConfiguration:
+                action.submissionMetadata.undoButtonConfiguration,
+            }),
         },
-        formContentOrdering: action.formContentOrdering ?? [],
-        parameterOrdering: (action.parameters ?? []).map(p => p.id),
+        parameterOrdering: parameterOrdering,
+        formContentOrdering: getFormContentOrdering(action, parameterOrdering),
         parameters: actionParameters,
         sections: actionSections,
         status: typeof action.status === "string"
@@ -959,6 +1038,7 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
             [action.status]: {},
           } as unknown as ActionTypeStatus
           : action.status,
+        entities: action.entities,
       },
     },
   };
@@ -985,19 +1065,63 @@ function convertActionValidation(
             defaultValidation: {
               display: {
                 renderHint: renderHintFromBaseType(p),
-                visibility: { type: "editable", editable: {} },
+                visibility: convertActionVisibility(
+                  p.validation.defaultVisibility,
+                ),
+                ...p.defaultValue
+                  && { prefill: p.defaultValue },
               },
               validation: {
-                allowedValues: extractAllowedValues(p),
+                allowedValues: extractAllowedValues(
+                  p.validation.allowedValues!,
+                ),
                 required: convertParameterRequirementConstraint(
-                  p.validation.required,
+                  p.validation.required!,
                 ),
               },
             },
+            conditionalOverrides: p.validation.conditionalOverrides?.map(
+              (override) =>
+                convertActionParameterConditionalOverride(
+                  override,
+                  p.validation,
+                ),
+            ) ?? [],
           },
         ];
       }),
     ),
+    sectionValidations: {
+      ...Object.fromEntries(
+        Object.entries(action.sections ?? {}).map((
+          [sectionId, section],
+        ) => [
+          section.id,
+          {
+            defaultDisplayMetadata: section.defaultVisibility === "hidden"
+              ? {
+                visibility: {
+                  type: "hidden",
+                  hidden: {},
+                },
+              }
+              : {
+                visibility: {
+                  type: "visible",
+                  visible: {},
+                },
+              },
+            conditionalOverrides: section.conditionalOverrides?.map(
+              (override) =>
+                convertSectionConditionalOverride(
+                  override,
+                  section.defaultVisibility ?? "visible",
+                ),
+            ) ?? [],
+          },
+        ]),
+      ),
+    },
   };
 }
 
@@ -1022,38 +1146,50 @@ function convertActionSections(
 ): Record<SectionId, OntologyIrSection> {
   return Object.fromEntries(
     Object.entries(action.sections ?? {}).map((
-      [sectionId, parameterIds],
+      [sectionId, section],
     ) => [sectionId, {
       id: sectionId,
-      content: parameterIds.map(p => ({ type: "parameterId", parameterId: p })),
+      content: section.parameters.map(p => ({
+        type: "parameterId",
+        parameterId: p,
+      })),
       displayMetadata: {
-        collapsedByDefault: false,
-        columnCount: 1,
-        description: "",
-        displayName: sectionId,
-        showTitleBar: true,
+        collapsedByDefault: section.collapsedByDefault ?? false,
+        columnCount: section.columnCount ?? 1,
+        description: section.description ?? "",
+        displayName: section.displayName ?? convertToDisplayName(sectionId),
+        showTitleBar: section.showTitleBar ?? true,
+        ...section.style
+          && {
+            style: section.style === "box"
+              ? { type: "box", box: {} }
+              : { type: "minimal", minimal: {} },
+          },
       },
     }]),
   );
 }
 
-function extractAllowedValues(
-  parameter: ActionParameter,
+export function extractAllowedValues(
+  allowedValues: ActionParameterAllowedValues,
 ): OntologyIrAllowedParameterValues {
-  switch (parameter.validation.allowedValues.type) {
+  switch (allowedValues.type) {
     case "oneOf":
       return {
         type: "oneOf",
         oneOf: {
           type: "oneOf",
           oneOf: {
-            labelledValues: parameter.validation.allowedValues.oneOf,
-            otherValueAllowed: { allowed: false },
+            labelledValues: allowedValues.oneOf,
+            otherValueAllowed: {
+              allowed: allowedValues.otherValueAllowed
+                ?? false,
+            },
           },
         },
       };
     case "range":
-      const { min, max } = parameter.validation.allowedValues;
+      const { min, max } = allowedValues;
       return {
         type: "range",
         range: {
@@ -1069,8 +1205,7 @@ function extractAllowedValues(
         },
       };
     case "text":
-      const { minLength, maxLength, regex } =
-        parameter.validation.allowedValues;
+      const { minLength, maxLength, regex } = allowedValues;
       return {
         type: "text",
         text: {
@@ -1078,10 +1213,10 @@ function extractAllowedValues(
           text: {
             ...(minLength === undefined
               ? {}
-              : { minimumLength: minLength }),
+              : { minLength: minLength }),
             ...(maxLength === undefined
               ? {}
-              : { maximumLength: maxLength }),
+              : { maxLength: maxLength }),
             ...(regex === undefined
               ? {}
               : { regex: { regex: regex, failureMessage: "Invalid input" } }),
@@ -1089,7 +1224,7 @@ function extractAllowedValues(
         },
       };
     case "datetime":
-      const { minimum, maximum } = parameter.validation.allowedValues;
+      const { minimum, maximum } = allowedValues;
       return {
         type: "datetime",
         datetime: {
@@ -1106,8 +1241,7 @@ function extractAllowedValues(
         objectTypeReference: {
           type: "objectTypeReference",
           objectTypeReference: {
-            interfaceTypeRids:
-              parameter.validation.allowedValues.interfaceTypes,
+            interfaceTypeRids: allowedValues.interfaceTypes,
           },
         },
       };
@@ -1126,7 +1260,7 @@ function extractAllowedValues(
       };
     default:
       const k: Partial<OntologyIrAllowedParameterValues["type"]> =
-        parameter.validation.allowedValues.type;
+        allowedValues!.type;
       return {
         type: k,
         [k]: {
@@ -1176,9 +1310,9 @@ function renderHintFromBaseType(
       return { type: "filePicker", filePicker: {} };
     case "marking":
     case "markingList":
-      if (parameter.validation.allowedValues.type === "mandatoryMarking") {
+      if (parameter.validation.allowedValues?.type === "mandatoryMarking") {
         return { type: "mandatoryMarkingPicker", mandatoryMarkingPicker: {} };
-      } else if (parameter.validation.allowedValues.type === "cbacMarking") {
+      } else if (parameter.validation.allowedValues?.type === "cbacMarking") {
         return { type: "cbacMarkingPicker", cbacMarkingPicker: {} };
       } else {
         throw new Error(
@@ -1219,46 +1353,6 @@ function convertParameterRequirementConstraint(
   };
 }
 
-function convertNullabilityToDataConstraint(
-  prop: { type: PropertyTypeType; nullability?: Nullability },
-): DataConstraints | undefined {
-  if (typeof prop.type === "object" && prop.type.type === "marking") {
-    if (prop.nullability === undefined) {
-      return {
-        propertyTypeConstraints: [],
-        nullability: undefined,
-        nullabilityV2: { noEmptyCollections: true, noNulls: true },
-      };
-    }
-    invariant(
-      prop.nullability?.noNulls,
-      "Marking property type has noNulls set to false, marking properties must not be nullable",
-    );
-    return {
-      propertyTypeConstraints: [],
-      nullability: undefined,
-      nullabilityV2: prop.nullability,
-    };
-  }
-  return prop.nullability === undefined ? undefined : {
-    propertyTypeConstraints: [],
-    nullability: undefined,
-    nullabilityV2: prop.nullability,
-  };
-}
-
-/**
- * Helper function to avoid duplication. Makes the types match properly with the correct
- * behavior without needing to switch on type.
- * @param type
- * @returns
- */
-function distributeTypeHelper<T extends string>(
-  type: T,
-): T extends any ? { type: T } & { [K in T]: {} } : never {
-  return { type, [type]: {} } as any; // any cast to match conditional return type
-}
-
 export function sanitize(namespace: string, s: string): string {
   return s.includes(".") ? s : namespace + s;
 }
@@ -1296,4 +1390,32 @@ function getEntityTypeName(type: string): string {
     [OntologyEntityTypeEnum.ACTION_TYPE]: "ActionType",
     [OntologyEntityTypeEnum.VALUE_TYPE]: "ValueTypeDefinitionVersion",
   }[type]!;
+}
+
+function writeDependencyFile(dependencyFile: string): void {
+  fs.writeFileSync(dependencyFile, JSON.stringify(dependencies, null, 2));
+}
+
+function dependencyInjectionString(): string {
+  const namespaceNoDot: string = namespace.endsWith(".")
+    ? namespace.slice(0, -1)
+    : namespace;
+
+  return `import { addDependency } from "@osdk/maker";
+// @ts-ignore
+addDependency("${namespaceNoDot}", new URL(import.meta.url).pathname);
+`;
+}
+
+export function addNamespaceIfNone(apiName: string): string {
+  return apiName.includes(".") ? apiName : namespace + apiName;
+}
+
+function convertCardinality(
+  cardinality: OneToManyLinkTypeDefinition["cardinality"],
+): OntologyIrOneToManyLinkDefinition["cardinalityHint"] {
+  if (cardinality === "OneToMany" || cardinality === undefined) {
+    return "ONE_TO_MANY";
+  }
+  return "ONE_TO_ONE";
 }

@@ -79,7 +79,7 @@ export abstract class BaseLogger implements Logger {
       ...this.bindings,
       ...bindings,
     }, {
-      level: (options ?? this.options)?.level,
+      level: options?.level ?? this.options?.level,
       msgPrefix: [this.options?.msgPrefix, options?.msgPrefix].filter(x => x)
         .join(" "),
     });

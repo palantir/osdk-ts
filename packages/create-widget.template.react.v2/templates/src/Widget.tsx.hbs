@@ -13,6 +13,8 @@ import {
 } from "@radix-ui/themes";
 import React, { useCallback, useState } from "react";
 import { useWidgetContext } from "./context.js";
+// import { client } from "./client.js";
+// View the API documentation for your widget set to learn how to use the Ontology SDK.
 
 export const Widget: React.FC = () => {
   const { parameters, emitEvent } = useWidgetContext();
