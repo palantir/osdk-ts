@@ -1,5 +1,40 @@
 # @osdk/foundry-sdk-generator
 
+## 2.4.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 4bc848b: Add interface link support.
+- af0ea3c: Add package rid as optional generator argument.
+- 44bbbe0: Add interface query support.
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [11d2f23]
+- Updated dependencies [4bc848b]
+- Updated dependencies [402eb67]
+- Updated dependencies [9f4fe9e]
+- Updated dependencies [29d2ada]
+- Updated dependencies [8dd6229]
+- Updated dependencies [8c95154]
+- Updated dependencies [f022ffe]
+- Updated dependencies [c32dcf2]
+- Updated dependencies [25c839d]
+- Updated dependencies [722c89a]
+- Updated dependencies [9101bad]
+- Updated dependencies [06fd45a]
+- Updated dependencies [44bbbe0]
+- Updated dependencies [f277b30]
+- Updated dependencies [d2d36e1]
+- Updated dependencies [c763807]
+- Updated dependencies [37c7c0b]
+  - @osdk/api@2.4.0
+  - @osdk/client@2.4.0
+  - @osdk/generator@2.4.0
+  - @osdk/shared.client.impl@1.4.0
+
 ## 2.4.0-rc.19
 
 ### Patch Changes

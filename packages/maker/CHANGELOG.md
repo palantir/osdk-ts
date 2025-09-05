@@ -1,5 +1,49 @@
 # @osdk/maker
 
+## 0.12.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- e647175: Skip struct props for object create + modify actions
+- ac0029e: Improve CRUD actions customization
+- 3dcd9b1: Modify object actions cannot modify pk
+- 4dffba1: Support extended string params in actions
+- 75fbd09: Type classes and list validation for object actions
+- f1f587b: Support custom parameters in OAC actions
+- 3ff44da: Existing OTs as action parameters in OAC
+- b0955ef: Action parameter defaults and table forms
+- 8bb08eb: Turn on module cache
+- 367cc04: Add default value and constraint overrides to OAC action parameters
+- 666787f: fix text allowed values name
+- 45ed433: Target objects are configurable and default parameter ordering is better in OAC actions
+- ed41359: Action sections in OAC
+- a1736f3: Actions can have properties that are not mapped to parameters
+- a01b8d4: Revert import block data changes
+- 641bc0c: Fix create-or-modify non parameter mapped property bug
+- c621638: Create or Modify actions in OAC
+- 283905f: Better error message for invalid parameter ordering on actions
+- e62a890: Custom submission options for OAC actions
+- 25bae67: OAC modify object actions set parameter defaults to match the selected object
+- defc2cf: change parameterLevelValidations to parameterConfiguration
+- 94beece: Enable "other" option for oneOf constraints on OAC actions
+- 5994895: Interface struct properties are skipped in crud actions
+- d384b4c: Add custom display names and descriptions for action parameters in OAC
+- 02be685: Remove jiti
+- 764e5f1: Add marking constraints
+- 5c76e33: Trim value type before putting it in SPT IR
+- Updated dependencies [322c5bc]
+- Updated dependencies [4bc848b]
+- Updated dependencies [9f4fe9e]
+- Updated dependencies [29d2ada]
+- Updated dependencies [8dd6229]
+- Updated dependencies [8c95154]
+- Updated dependencies [c32dcf2]
+- Updated dependencies [722c89a]
+- Updated dependencies [9101bad]
+- Updated dependencies [44bbbe0]
+  - @osdk/api@2.4.0
+
 ## 0.12.0-rc.23
 
 ### Patch Changes

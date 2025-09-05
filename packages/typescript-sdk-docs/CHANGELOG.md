@@ -1,5 +1,14 @@
 # @osdk/typescript-sdk-docs
 
+## 0.3.0
+
+### Patch Changes
+
+- 776ae8a: Simulated release
+- d8cdf4d: fix aggregation doc example
+- 29d2ada: Fix type in docs and tests
+- 5659984: Fix formatting of subscribeToObjectSetInstructions template and fix aggregationTemplate syntax error
+
 ## 0.3.0-beta.4
 
 ### Minor Changes

@@ -1,5 +1,23 @@
 # @osdk/widget.vite-plugin
 
+## 3.1.0
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- 3e9cc76: Improve error visibility during widgets vite dev mode
+- 7a69da6: Fix @osdk/widget.vite-plugin dependency on resolve-package-path in devDependencies rather than dependencies
+- 232a11a: Replace AST parsing with Vite module evaluation for widget config extraction
+- 3744571: Discover widget set input specs
+- 21c4954: fix isConfigFile to identify non-suffixed imports
+- Updated dependencies [322c5bc]
+- Updated dependencies [7901ae0]
+- Updated dependencies [c09f545]
+- Updated dependencies [3744571]
+- Updated dependencies [f173ee1]
+  - @osdk/foundry-config-json@1.3.0
+  - @osdk/widget.api@3.1.0
+
 ## 3.1.0-beta.5
 
 ### Minor Changes

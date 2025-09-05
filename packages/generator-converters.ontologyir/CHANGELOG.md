@@ -1,5 +1,17 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.4.0
+
+### Patch Changes
+
+- 150da1a: Simulated release
+- 1c1c2c4: Properly handles one to many links
+- Updated dependencies [322c5bc]
+- Updated dependencies [a01b8d4]
+- Updated dependencies [764e5f1]
+- Updated dependencies [5c76e33]
+  - @osdk/client.unstable@2.4.0
+
 ## 2.4.0-rc.19
 
 ### Patch Changes

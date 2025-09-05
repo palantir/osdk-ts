@@ -1,5 +1,83 @@
 # @osdk/client
 
+## 2.4.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 11d2f23: Add fix for interface links.
+- 4bc848b: Add interface link support.
+- 402eb67: Fix hydrate to support interface object sets.
+- 9f4fe9e: Add new types mapping for internal creation workflow.
+- 8dd6229: Remove features not supported for RC
+- 8c95154: Add nearestNeighbor support
+- f022ffe: Add experimental transactions shape
+- c32dcf2: Add a metadata field to all loaded objects
+- 25c839d: Parallelize network request for getting object metadata when doing simple object fetches.
+- 9101bad: Adds "includeNullValues" option for exact match filters
+- 06fd45a: Export createObjectSpecifierFromPrimaryKey
+- 44bbbe0: Add interface query support.
+- d2d36e1: Fix module resolution for node when importing unstable code
+- c763807: Fix hydrate method for object rids to work with interfaces.
+- 37c7c0b: Add validateAction support to useOsdkAction hook
+
+  The `useOsdkAction` hook in `@osdk/react` now provides a `validateAction` function that allows you to check if an action is valid without executing it. This is useful for providing real-time validation feedback to users before they commit to performing an action.
+
+  ### New features:
+
+  - **validateAction**: A new async function that validates action parameters without executing the action
+  - **isValidating**: A boolean state that indicates when validation is in progress
+  - **validationResult**: Contains the validation response from the server, including whether the action is valid and any validation errors
+
+  ### Example usage:
+
+  ```tsx
+  const { applyAction, validateAction, isValidating, validationResult } =
+    useOsdkAction(myAction);
+
+  // Validate without executing
+  await validateAction({ param1: "value" });
+
+  // Check validation result
+  if (validationResult?.result === "VALID") {
+    console.log("Action is valid!");
+  } else {
+    console.log("Validation failed:", validationResult);
+  }
+  ```
+
+  ### Implementation details:
+
+  - Multiple validation calls can be made - new calls automatically cancel previous pending validations
+  - Validation and action execution are mutually exclusive - you cannot validate while an action is being applied and vice versa
+  - The underlying `ObservableClient` in `@osdk/client` has been extended with a `validateAction` method to support this functionality
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [4bc848b]
+- Updated dependencies [9f4fe9e]
+- Updated dependencies [29d2ada]
+- Updated dependencies [8dd6229]
+- Updated dependencies [a01b8d4]
+- Updated dependencies [8c95154]
+- Updated dependencies [c32dcf2]
+- Updated dependencies [722c89a]
+- Updated dependencies [9101bad]
+- Updated dependencies [44bbbe0]
+- Updated dependencies [f277b30]
+- Updated dependencies [764e5f1]
+- Updated dependencies [5c76e33]
+  - @osdk/api@2.4.0
+  - @osdk/client.unstable@2.4.0
+  - @osdk/generator-converters@2.4.0
+  - @osdk/shared.client.impl@1.4.0
+  - @osdk/shared.net.errors@2.4.0
+  - @osdk/shared.net.fetch@1.4.0
+
 ## 2.4.0-rc.19
 
 ### Patch Changes

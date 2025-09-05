@@ -1,5 +1,11 @@
 # @osdk/cli.common
 
+## 0.28.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+
 ## 0.28.0-rc.20
 
 ## 0.28.0-beta.19

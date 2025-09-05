@@ -1,5 +1,12 @@
 # @osdk/oauth
 
+## 1.4.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 8c8ecf0: Added Public Apps Support
+
 ## 1.4.0-beta.2
 
 ### Minor Changes
