@@ -21,6 +21,11 @@ import type { UserId as UserId_2 } from '@osdk/foundry.core';
 
 export { Attachment }
 
+// @public (undocumented)
+export type ClassificationMarking = string & {
+    	__classificationMarkingBrand?: "void"
+};
+
 // Warning: (ae-forgotten-export) The symbol "AnyEdit" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -126,6 +131,11 @@ export type Integer<T extends number = number> = T & {
 // @public (undocumented)
 export type Long<T extends string = string> = T & {
     	__longBrand?: void
+};
+
+// @public (undocumented)
+export type MandatoryMarking = string & {
+    	__mandatoryMarkingBrand?: "void"
 };
 
 // @public (undocumented)
