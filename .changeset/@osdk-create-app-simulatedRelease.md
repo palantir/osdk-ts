@@ -1,6 +1,5 @@
 ---
-"@osdk/create-app": minor
+"@osdk/create-app": patch
 ---
-      
+
 Simulated release
-      

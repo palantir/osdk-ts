@@ -1,6 +1,5 @@
 ---
-"@osdk/vite-plugin-oac": minor
+"@osdk/vite-plugin-oac": patch
 ---
-      
+
 Simulated release
-      

@@ -1,6 +1,5 @@
 ---
-"@osdk/create-app.template.expo.v2": minor
+"@osdk/create-app.template.expo.v2": patch
 ---
-      
+
 Simulated release
-      

@@ -1,6 +1,5 @@
 ---
-"@osdk/generator-converters.ontologyir": minor
+"@osdk/generator-converters.ontologyir": patch
 ---
-      
+
 Simulated release
-      

@@ -1,6 +1,5 @@
 ---
-"@osdk/shared.net.errors": minor
+"@osdk/shared.net.errors": patch
 ---
-      
+
 Simulated release
-      

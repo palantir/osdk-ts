@@ -1,6 +1,5 @@
 ---
-"@osdk/create-app.template-packager": minor
+"@osdk/create-app.template-packager": patch
 ---
-      
+
 Simulated release
-      
