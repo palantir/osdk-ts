@@ -83,6 +83,8 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
         return [linkType.apiName, {
           multiplicity: linkType.cardinality === "MANY",
           targetType: linkType.objectTypeApiName,
+          ...(linkType.foreignKeyPropertyApiName
+            && { foreignKeyProperty: linkType.foreignKeyPropertyApiName }),
         }];
       }),
     ),

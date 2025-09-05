@@ -319,4 +319,58 @@ describe(wireObjectTypeFullMetadataToSdkObjectMetadata, () => {
       "InterfaceB": { "objectLinkZ": ["interfaceLinkB1", "interfaceLinkB2"] },
     });
   });
+
+  it("includes foreignKeyProperty when present in linkTypes", () => {
+    const result = wireObjectTypeFullMetadataToSdkObjectMetadata({
+      implementsInterfaces: [],
+      implementsInterfaces2: {},
+      linkTypes: [
+        {
+          apiName: "linkWithForeignKey",
+          cardinality: "ONE",
+          objectTypeApiName: "TargetA",
+          displayName: "Link with Foreign Key",
+          status: "ACTIVE",
+          linkTypeRid: "ridA",
+          foreignKeyPropertyApiName: "targetId",
+        },
+        {
+          apiName: "linkWithoutForeignKey",
+          cardinality: "MANY",
+          objectTypeApiName: "TargetB",
+          displayName: "Link without Foreign Key",
+          status: "ACTIVE",
+          linkTypeRid: "ridB",
+        },
+      ],
+      objectType: {
+        apiName: "apiName",
+        description: "description",
+        displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
+        primaryKey: "primaryKey",
+        properties: {
+          primaryKey: { dataType: { type: "string" }, "rid": "rid" },
+        },
+        rid: "rid",
+        status: "ACTIVE",
+        titleProperty: "primaryKey",
+      },
+      sharedPropertyTypeMapping: {},
+    }, true);
+
+    // Link with foreignKeyProperty should include it
+    expect(result.links.linkWithForeignKey).toEqual({
+      multiplicity: false,
+      targetType: "TargetA",
+      foreignKeyProperty: "targetId",
+    });
+
+    // Link without foreignKeyProperty should not include it
+    expect(result.links.linkWithoutForeignKey).toEqual({
+      multiplicity: true,
+      targetType: "TargetB",
+    });
+  });
 });

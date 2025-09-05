@@ -121,6 +121,8 @@ export namespace ObjectMetadata {
     __OsdkLinkTargetType?: Q;
     targetType: Q["apiName"];
     multiplicity: M;
+    /* Present if the foreign key of this link is a property on this object type */ foreignKeyProperty?:
+      string;
   }
 }
 
