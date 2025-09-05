@@ -1,5 +1,11 @@
 # @osdk/create-app.template.react
 
+## 2.4.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+
 ## 2.4.0-rc.19
 
 ## 2.4.0-beta.18

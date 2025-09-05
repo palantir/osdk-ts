@@ -1,5 +1,20 @@
 # @osdk/cli.cmd.typescript
 
+## 0.28.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [4bc848b]
+- Updated dependencies [44bbbe0]
+- Updated dependencies [f277b30]
+  - @osdk/cli.common@0.28.0
+  - @osdk/generator@2.4.0
+  - @osdk/shared.client.impl@1.4.0
+
 ## 0.28.0-rc.20
 
 ### Patch Changes

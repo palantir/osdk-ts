@@ -1,5 +1,11 @@
 # @osdk/foundry-config-json
 
+## 1.3.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+
 ## 1.1.0
 
 ### Patch Changes

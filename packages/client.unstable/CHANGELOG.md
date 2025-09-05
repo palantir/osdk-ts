@@ -1,5 +1,14 @@
 # @osdk/client.unstable
 
+## 2.4.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- a01b8d4: Revert import block data changes
+- 764e5f1: Add marking constraints
+- 5c76e33: Trim value type before putting it in SPT IR
+
 ## 2.4.0-rc.19
 
 ## 2.4.0-beta.18

@@ -1,5 +1,28 @@
 # @osdk/shared.test
 
+## 2.4.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 4bc848b: Add interface link support.
+- 1c1c2c4: Properly handles one to many links
+- 44bbbe0: Add interface query support.
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [4bc848b]
+- Updated dependencies [9f4fe9e]
+- Updated dependencies [29d2ada]
+- Updated dependencies [8dd6229]
+- Updated dependencies [8c95154]
+- Updated dependencies [c32dcf2]
+- Updated dependencies [722c89a]
+- Updated dependencies [9101bad]
+- Updated dependencies [44bbbe0]
+- Updated dependencies [f277b30]
+  - @osdk/api@2.4.0
+  - @osdk/generator-converters@2.4.0
+
 ## 2.4.0-rc.19
 
 ### Patch Changes

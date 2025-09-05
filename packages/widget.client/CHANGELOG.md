@@ -1,5 +1,18 @@
 # @osdk/widget.client
 
+## 3.1.0
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- c09f545: Drop support for Sandbox v1 in widget client
+- f173ee1: Improve widget client emitEvent types to more correctly extract event parameters
+- Updated dependencies [7901ae0]
+- Updated dependencies [c09f545]
+- Updated dependencies [3744571]
+- Updated dependencies [f173ee1]
+  - @osdk/widget.api@3.1.0
+
 ## 3.1.0-beta.5
 
 ### Minor Changes
