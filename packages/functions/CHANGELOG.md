@@ -1,5 +1,19 @@
 # @osdk/functions
 
+## 1.3.0-beta.3
+
+### Minor Changes
+
+- 4b1b399: Update dependencies with @osdk/foundry.core
+- 0a0e560: Reexport user and group id types with branding
+- 3ae01bb: Add UserFacingError to functions package
+
+### Patch Changes
+
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+  - @osdk/client@2.5.0-beta.3
+
 ## 1.3.0-beta.2
 
 ### Minor Changes

@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.5.0-beta.3
+
+### Minor Changes
+
+- 7bdac45: Update Platform SDK dependency
+- 20962bc: Add a new experimental fetchPageByRidNoType method
+- e48be06: Fix casting types with fully qualified property names.
+
 ## 2.5.0-beta.2
 
 ### Minor Changes

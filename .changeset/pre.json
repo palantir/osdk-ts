@@ -160,6 +160,8 @@
     "@osdk-widget.client-simulatedRelease",
     "@osdk-widget.vite-plugin-simulatedRelease",
     "angry-cloths-clap",
+    "cyan-rockets-melt",
+    "dark-yaks-hope",
     "dry-spoons-burn",
     "every-spoons-flash",
     "fix-link-association",
@@ -167,14 +169,20 @@
     "four-seals-create",
     "green-towns-travel",
     "late-houses-joke",
+    "nasty-bats-smell",
     "observe-links",
     "observer-refactor",
     "polite-bobcats-dream",
     "proud-aliens-pull",
+    "purple-buses-melt",
+    "rich-coins-help",
+    "ripe-lands-enter",
     "salty-words-dream",
+    "shy-waves-create",
     "stupid-streets-warn",
     "tired-frogs-jump",
     "warm-ends-drive",
-    "wise-cows-tie"
+    "wise-cows-tie",
+    "yellow-moments-open"
   ]
 }

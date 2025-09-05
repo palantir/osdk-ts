@@ -1,5 +1,20 @@
 # @osdk/shared.test
 
+## 2.5.0-beta.3
+
+### Minor Changes
+
+- 7bdac45: Update Platform SDK dependency
+
+### Patch Changes
+
+- Updated dependencies [7bdac45]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [e48be06]
+  - @osdk/generator-converters@2.5.0-beta.3
+  - @osdk/api@2.5.0-beta.3
+
 ## 2.5.0-beta.2
 
 ### Minor Changes
