@@ -82,7 +82,9 @@ export interface Office extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: [];
+    interfaceLinkMap: {};
     interfaceMap: {};
+    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {
       occupants: $ObjectMetadata.Link<Employee, true>;

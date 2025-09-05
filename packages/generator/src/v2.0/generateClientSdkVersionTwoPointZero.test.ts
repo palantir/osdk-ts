@@ -386,6 +386,7 @@ const referencingOntology = {
           properties: {
             "com.example.dep.spt": "body",
           },
+          links: {},
         },
       },
       linkTypes: [],
@@ -856,7 +857,9 @@ describe("generator", () => {
               color: 'blue';
             };
             implements: [];
+            interfaceLinkMap: {};
             interfaceMap: {};
+            inverseInterfaceLinkMap: {};
             inverseInterfaceMap: {};
             links: {
               Todos: $ObjectMetadata.Link<Todo, true>;
@@ -962,10 +965,16 @@ describe("generator", () => {
               color: 'blue';
             };
             implements: ['SomeInterface'];
+            interfaceLinkMap: {
+              SomeInterface: {};
+            };
             interfaceMap: {
               SomeInterface: {
                 SomeProperty: 'body';
               };
+            };
+            inverseInterfaceLinkMap: {
+              SomeInterface: {};
             };
             inverseInterfaceMap: {
               SomeInterface: {
@@ -1513,7 +1522,9 @@ describe("generator", () => {
               color: 'blue';
             };
             implements: [];
+            interfaceLinkMap: {};
             interfaceMap: {};
+            inverseInterfaceLinkMap: {};
             inverseInterfaceMap: {};
             links: {
               Todos: $ObjectMetadata.Link<Todo, true>;
@@ -1619,10 +1630,16 @@ describe("generator", () => {
               color: 'blue';
             };
             implements: ['foo.bar.SomeInterface'];
+            interfaceLinkMap: {
+              'foo.bar.SomeInterface': {};
+            };
             interfaceMap: {
               'foo.bar.SomeInterface': {
                 SomeProperty: 'body';
               };
+            };
+            inverseInterfaceLinkMap: {
+              'foo.bar.SomeInterface': {};
             };
             inverseInterfaceMap: {
               'foo.bar.SomeInterface': {
@@ -2041,7 +2058,9 @@ describe("generator", () => {
                 name: 'document';
               };
               implements: [];
+              interfaceLinkMap: {};
               interfaceMap: {};
+              inverseInterfaceLinkMap: {};
               inverseInterfaceMap: {};
               links: {};
               pluralDisplayName: 'Uses Foreign Spts';
@@ -2298,7 +2317,9 @@ describe("generator", () => {
               color: 'blue';
             };
             implements: [];
+            interfaceLinkMap: {};
             interfaceMap: {};
+            inverseInterfaceLinkMap: {};
             inverseInterfaceMap: {};
             links: {
               Todos: $ObjectMetadata.Link<Todo, true>;
@@ -2404,10 +2425,16 @@ describe("generator", () => {
               color: 'blue';
             };
             implements: ['SomeInterface'];
+            interfaceLinkMap: {
+              SomeInterface: {};
+            };
             interfaceMap: {
               SomeInterface: {
                 SomeProperty: 'body';
               };
+            };
+            inverseInterfaceLinkMap: {
+              SomeInterface: {};
             };
             inverseInterfaceMap: {
               SomeInterface: {
@@ -2762,7 +2789,9 @@ describe("generator", () => {
               name: 'document';
             };
             implements: [];
+            interfaceLinkMap: {};
             interfaceMap: {};
+            inverseInterfaceLinkMap: {};
             inverseInterfaceMap: {};
             links: {};
             pluralDisplayName: 'Tasks';

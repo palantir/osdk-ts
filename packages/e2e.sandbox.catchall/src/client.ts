@@ -41,6 +41,14 @@ export const dsClient: Client = createClient(
   loggingFetch,
 );
 
+export const dsMtClient: Client = createClient(
+  process.env.SECONDARY_FOUNDRY_STACK,
+  "ri.ontology.main.ontology.7ab4d20d-b742-4f58-b795-55695e862bc7",
+  async () => process.env.SECONDARY_FOUNDRY_USER_TOKEN!,
+  { logger },
+  loggingFetch,
+);
+
 /**
  * Generally consumers wont need this and will use their createClient() but
  * I want to use this to be sure everything works.

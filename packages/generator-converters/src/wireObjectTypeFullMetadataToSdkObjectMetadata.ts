@@ -59,6 +59,14 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
     )
     : {};
 
+  const interfaceLinkMap = objectTypeWithLink.implementsInterfaces2
+    ? Object.fromEntries(
+      Object.entries(objectTypeWithLink.implementsInterfaces2).map(
+        ([interfaceApiName, impl]) => [interfaceApiName, impl.links ?? {}],
+      ),
+    )
+    : {};
+
   return {
     type: "object",
     apiName: objectTypeWithLink.objectType.apiName,
@@ -101,6 +109,25 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
         [interfaceApiName, props],
       ) => [interfaceApiName, invertProps(props)]),
     ),
+    interfaceLinkMap,
+    inverseInterfaceLinkMap: Object.fromEntries(
+      Object.entries(interfaceLinkMap).map(([interfaceApiName, links]) => {
+        const invertedLinks: Record<string, string[]> = {};
+        for (
+          const [interfaceLinkName, objectLinkNames] of Object.entries(
+            links ?? {},
+          )
+        ) {
+          for (const objectLinkName of objectLinkNames) {
+            if (!invertedLinks[objectLinkName]) {
+              invertedLinks[objectLinkName] = [];
+            }
+            invertedLinks[objectLinkName].push(interfaceLinkName);
+          }
+        }
+        return [interfaceApiName, invertedLinks];
+      }),
+    ),
     icon: supportedIconTypes.includes(objectTypeWithLink.objectType.icon.type)
       ? objectTypeWithLink.objectType.icon
       : undefined,
@@ -116,7 +143,7 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
       objectTypeWithLink.objectType.visibility,
       supportedObjectTypeVisibility,
     ),
-  };
+  } as ObjectMetadata;
 }
 
 function invertProps(

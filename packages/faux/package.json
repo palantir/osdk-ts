@@ -43,9 +43,9 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/foundry.core": "2.27.0",
-    "@osdk/foundry.geo": "2.27.0",
-    "@osdk/foundry.ontologies": "2.27.0",
+    "@osdk/foundry.core": "2.26.0",
+    "@osdk/foundry.geo": "2.26.0",
+    "@osdk/foundry.ontologies": "2.29.0",
     "@osdk/generator-converters": "workspace:~",
     "@osdk/internal.foundry.ontologies": "2.27.0",
     "date-fns": "^4.1.0",
