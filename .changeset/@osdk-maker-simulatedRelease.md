@@ -1,6 +1,5 @@
 ---
-"@osdk/maker": minor
+"@osdk/maker": patch
 ---
-      
+
 Simulated release
-      

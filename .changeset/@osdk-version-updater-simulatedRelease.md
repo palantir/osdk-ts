@@ -1,6 +1,5 @@
 ---
-"@osdk/version-updater": minor
+"@osdk/version-updater": patch
 ---
-      
+
 Simulated release
-      

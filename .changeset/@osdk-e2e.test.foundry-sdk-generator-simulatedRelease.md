@@ -1,6 +1,5 @@
 ---
-"@osdk/e2e.test.foundry-sdk-generator": minor
+"@osdk/e2e.test.foundry-sdk-generator": patch
 ---
-      
+
 Simulated release
-      

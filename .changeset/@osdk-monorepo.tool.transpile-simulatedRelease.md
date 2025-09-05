@@ -1,6 +1,5 @@
 ---
-"@osdk/monorepo.tool.transpile": minor
+"@osdk/monorepo.tool.transpile": patch
 ---
-      
+
 Simulated release
-      
