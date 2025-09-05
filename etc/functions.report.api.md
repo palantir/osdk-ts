@@ -203,6 +203,11 @@ export interface UrlLinkTarget {
 }
 
 // @public (undocumented)
+export class UserFacingError extends Error {
+    	constructor(message: string);
+}
+
+// @public (undocumented)
 export type UserId = UserId_2 & {
     	__userIdBrand?: void
 };
