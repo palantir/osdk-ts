@@ -1,5 +1,18 @@
 # @osdk/cli.cmd.typescript
 
+## 0.29.0-beta.3
+
+### Minor Changes
+
+- 7bdac45: Update Platform SDK dependency
+
+### Patch Changes
+
+- Updated dependencies [7bdac45]
+- Updated dependencies [7bdac45]
+  - @osdk/generator@2.5.0-beta.3
+  - @osdk/cli.common@0.29.0-beta.3
+
 ## 0.29.0-beta.2
 
 ### Minor Changes

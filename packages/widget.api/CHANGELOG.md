@@ -1,5 +1,7 @@
 # @osdk/widget.api
 
+## 3.2.0-beta.3
+
 ## 3.2.0-beta.2
 
 ## 3.1.0-beta.5
