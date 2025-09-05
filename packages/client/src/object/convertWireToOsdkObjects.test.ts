@@ -72,6 +72,11 @@ describe("convertWireToOsdkObjects", () => {
       "officeLink",
       "peeps",
     ]);
+
+    const asFoo = employee.$as(FooInterface);
+    expect(Object.keys(asFoo.$link)).toEqual([
+      "toBar",
+    ]);
   });
 
   it("stringifies properties on objects and interfaces correctly", async () => {
