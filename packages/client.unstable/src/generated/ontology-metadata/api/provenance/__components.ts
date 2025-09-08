@@ -94,7 +94,7 @@ export interface GetDependenciesForTaggedDependentRequestV2 {
  */
 export interface GetDependenciesForTaggedDependentResponse {
   nextPageToken?: GetDependenciesPagingToken | null | undefined;
-  ontologyEntityPageItems: Array<ProvenanceOntologyEntityRid>;
+  ontologyEntityPageItems: Array<ProvenanceOntologyEntityRidOrReference>;
   version?: Version | null | undefined;
 }
 export interface GetDependenciesForTaggedDependentResponseV2_success {
@@ -115,7 +115,7 @@ export type GetDependenciesForTaggedDependentResponseV2 =
  */
 export interface GetDependenciesForTaggedDependentResponseV2Success {
   nextPageToken?: GetDependenciesV2PagingToken | null | undefined;
-  ontologyEntityPageItems: Array<ProvenanceOntologyEntityRid>;
+  ontologyEntityPageItems: Array<ProvenanceOntologyEntityRidOrReference>;
   totalEntitiesCount: number;
   version?: Version | null | undefined;
 }
@@ -174,7 +174,7 @@ export interface GetTaggedDependentsForOntologyEntityIdentifierResponse {
  * Request to get the tagged dependents on the given OntologyEntity.
  */
 export interface GetTaggedDependentsForOntologyEntityRequest {
-  ontologyEntity: ProvenanceOntologyEntityRid;
+  ontologyEntity: ProvenanceOntologyEntityRidOrReference;
   pageToken?: GetTaggedDependentsPagingToken | null | undefined;
   tag: Tag;
 }
@@ -376,63 +376,63 @@ export type ProvenanceOntologyEntityIdentifier =
   | ProvenanceOntologyEntityIdentifier_notepad
   | ProvenanceOntologyEntityIdentifier_quiverDashboard;
 
-export interface ProvenanceOntologyEntityRid_propertyType {
+export interface ProvenanceOntologyEntityRidOrReference_propertyType {
   type: "propertyType";
   propertyType: PropertyTypeRidWithObjectTypeRid;
 }
 
-export interface ProvenanceOntologyEntityRid_objectType {
+export interface ProvenanceOntologyEntityRidOrReference_objectType {
   type: "objectType";
   objectType: _api_ObjectTypeRid;
 }
 
-export interface ProvenanceOntologyEntityRid_linkType {
+export interface ProvenanceOntologyEntityRidOrReference_linkType {
   type: "linkType";
   linkType: _api_LinkTypeRid;
 }
 
-export interface ProvenanceOntologyEntityRid_actionType {
+export interface ProvenanceOntologyEntityRidOrReference_actionType {
   type: "actionType";
   actionType: _api_ActionTypeRid;
 }
 
-export interface ProvenanceOntologyEntityRid_versionedValueType {
+export interface ProvenanceOntologyEntityRidOrReference_versionedValueType {
   type: "versionedValueType";
   versionedValueType: _api_ValueTypeReference;
 }
 
-export interface ProvenanceOntologyEntityRid_versionedFunction {
+export interface ProvenanceOntologyEntityRidOrReference_versionedFunction {
   type: "versionedFunction";
   versionedFunction: _api_FunctionReference;
 }
 
-export interface ProvenanceOntologyEntityRid_workshop {
+export interface ProvenanceOntologyEntityRidOrReference_workshop {
   type: "workshop";
   workshop: _api_WorkshopReference;
 }
 
-export interface ProvenanceOntologyEntityRid_notepad {
+export interface ProvenanceOntologyEntityRidOrReference_notepad {
   type: "notepad";
   notepad: _api_NotepadReference;
 }
 
-export interface ProvenanceOntologyEntityRid_quiverDashboard {
+export interface ProvenanceOntologyEntityRidOrReference_quiverDashboard {
   type: "quiverDashboard";
   quiverDashboard: _api_QuiverDashboardReference;
 }
 /**
  * The resource identifier of an Ontology entity.
  */
-export type ProvenanceOntologyEntityRid =
-  | ProvenanceOntologyEntityRid_propertyType
-  | ProvenanceOntologyEntityRid_objectType
-  | ProvenanceOntologyEntityRid_linkType
-  | ProvenanceOntologyEntityRid_actionType
-  | ProvenanceOntologyEntityRid_versionedValueType
-  | ProvenanceOntologyEntityRid_versionedFunction
-  | ProvenanceOntologyEntityRid_workshop
-  | ProvenanceOntologyEntityRid_notepad
-  | ProvenanceOntologyEntityRid_quiverDashboard;
+export type ProvenanceOntologyEntityRidOrReference =
+  | ProvenanceOntologyEntityRidOrReference_propertyType
+  | ProvenanceOntologyEntityRidOrReference_objectType
+  | ProvenanceOntologyEntityRidOrReference_linkType
+  | ProvenanceOntologyEntityRidOrReference_actionType
+  | ProvenanceOntologyEntityRidOrReference_versionedValueType
+  | ProvenanceOntologyEntityRidOrReference_versionedFunction
+  | ProvenanceOntologyEntityRidOrReference_workshop
+  | ProvenanceOntologyEntityRidOrReference_notepad
+  | ProvenanceOntologyEntityRidOrReference_quiverDashboard;
 
 /**
  * Type of Ontology entity which can be a Dependency of a Dependent.
@@ -488,7 +488,7 @@ export interface TagDependentResponse {
  */
 export interface TaggedDependencyAndDependent {
   dependent: Dependent;
-  ontologyEntity: ProvenanceOntologyEntityRid;
+  ontologyEntity: ProvenanceOntologyEntityRidOrReference;
   tag: Tag;
 }
 /**

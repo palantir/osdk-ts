@@ -54,5 +54,6 @@ export type OntologyIrValueTypeBlockDataEntry = {
 };
 
 export type OntologyIrValueTypeBlockData = {
-  valueTypes: OntologyIrValueTypeBlockDataEntry[];
+  blockData: OntologyIrValueTypeBlockDataEntry[];
+  importedTypes: OntologyIrValueTypeBlockDataEntry[];
 };
