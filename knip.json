@@ -1,0 +1,58 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignoreWorkspaces": [
+    "examples/*",
+    "packages/create-app.*",
+    "packages/create-widget.*",
+    "packages/e2e.*",
+    "examples-extra/*"
+  ],
+  "vite": true,
+  "workspaces": {
+    "packages/cli": {
+      // we need it listed for bundling to work properly
+      "ignoreDependencies": ["ajv"]
+    },
+    "packages/create-app": {
+      "ignoreDependencies": ["@osdk/create-app.template.*"]
+    },
+    "packages/create-widget": {
+      "ignoreDependencies": ["@osdk/create-widget.template.*"]
+    },
+    "packages/widget.vite-plugin": {
+      "entry": [
+        "src/client/main.tsx"
+      ]
+    },
+    "packages/client.unstable": {
+      "entry": [
+        "src/generated/*/index.ts"
+      ]
+    },
+    "packages/client": {
+      "entry": [
+        "src/intellisense.test.helpers/*.ts",
+        "*.d.ts"
+      ]
+    }
+  },
+  "ignore": [
+    "**/*.test.{ts,tsx}",
+    "**/*.spec.{ts,tsx}",
+    "**/test/**",
+    "**/tests/**",
+    "**/__tests__/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/lib/**"
+  ],
+  "ignoreDependencies": [
+    "@types/node",
+    "tiny-invariant",
+    "@microsoft/api-extractor",
+    "@microsoft/api-documenter",
+    "@arethetypeswrong/cli",
+    "tslib",
+    "@osdk/monorepo.api-extractor"
+  ]
+}

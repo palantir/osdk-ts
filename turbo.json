@@ -47,6 +47,18 @@
       "inputs": ["**/*.{ts,tsx,cts,mts,md,json,js,mjs,cjs}"]
     },
 
+    "check:knip": {
+      "outputLogs": "new-only", 
+      "dependsOn": ["typecheck"],
+      "inputs": [
+        "src/**/*.{ts,tsx}",
+        "package.json",
+        "knip.json",
+        "knip.config.js",
+        "tsconfig.json"
+      ]
+    },
+
     /* Psuedo task to depend on the script contents */
     "//#babel-config": {
       "inputs": ["babel.config.mjs"]
@@ -311,7 +323,8 @@
         "test",
         "check-attw",
         "check-api",
-        "check-spelling"
+        "check-spelling",
+        "check:knip"
       ]
     }
   },

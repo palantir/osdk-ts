@@ -60,7 +60,6 @@
     "@types/tmp": "^0.2.6",
     "@types/yargs": "^17.0.29",
     "dedent": "1.5.3",
-    "redent": "^4.0.0",
     "tmp": "^0.2.5",
     "typescript": "~5.5.4"
   },

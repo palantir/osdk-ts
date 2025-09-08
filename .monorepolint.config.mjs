@@ -101,6 +101,7 @@ const archetypeRules = archetypes(
     {
       ...LIBRARY_RULES,
       minimalChangesOnly: true,
+      skipKnip: true,
       private: true,
     },
   )
@@ -114,6 +115,7 @@ const archetypeRules = archetypes(
     {
       ...LIBRARY_RULES,
       minimalChangesOnly: true,
+      skipKnip: true,
       private: true,
     },
   )
@@ -740,6 +742,7 @@ function minimalPackageRules(shared, options) {
  * @property { boolean } [skipTypes]
  * @property { string[] } [extraFiles]
  * @property { boolean } [skipAttw]
+ * @property { boolean } [skipKnip]
  * @property { boolean } [fixedDepsOnly]
  * @property { boolean } [checkApi]
  * @property { boolean } [minimalChangesOnly]

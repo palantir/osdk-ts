@@ -39,21 +39,18 @@
   },
   "dependencies": {
     "consola": "3.4.2",
-    "find-up": "7.0.0",
     "handlebars": "4.7.8",
     "yargs": "17.7.2"
   },
   "devDependencies": {
     "@osdk/create-widget.template.minimal-react.v2": "workspace:*",
     "@osdk/create-widget.template.react.v2": "workspace:*",
-    "@osdk/generator-utils": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/node": "^18.0.0",
     "@types/tmp": "^0.2.6",
     "@types/yargs": "^17.0.29",
     "dedent": "1.5.3",
-    "redent": "^4.0.0",
     "tmp": "^0.2.5",
     "typescript": "~5.5.4"
   },
