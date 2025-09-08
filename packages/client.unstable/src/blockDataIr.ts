@@ -31,8 +31,10 @@ export type InterfaceLinkTypeApiName = string;
 export type { OntologyIrOntologyBlockDataV2 } from "./generated/ontology-metadata/api/blockdata/index.js";
 
 export interface OntologyIr {
-  blockData: OntologyIrOntologyBlockDataV2;
-  importedTypes: OntologyIrOntologyBlockDataV2;
+  ontology: OntologyIrOntologyBlockDataV2;
+  importedOntology: OntologyIrOntologyBlockDataV2;
+  valueTypes: OntologyIrValueTypeBlockData;
+  importedValueTypes: OntologyIrValueTypeBlockData;
 }
 
 export type OntologyIrPackagedValueType = {
@@ -44,6 +46,7 @@ export type OntologyIrPackagedValueType = {
 
 export type OntologyIrPackagedValueTypeMetadata = {
   apiName: ValueTypeApiName;
+  packageNamespace: string;
   displayMetadata: ValueTypeDisplayMetadata;
   status: ValueTypeStatus;
 };
@@ -54,6 +57,5 @@ export type OntologyIrValueTypeBlockDataEntry = {
 };
 
 export type OntologyIrValueTypeBlockData = {
-  blockData: OntologyIrValueTypeBlockDataEntry[];
-  importedTypes: OntologyIrValueTypeBlockDataEntry[];
+  valueTypes: OntologyIrValueTypeBlockDataEntry[];
 };

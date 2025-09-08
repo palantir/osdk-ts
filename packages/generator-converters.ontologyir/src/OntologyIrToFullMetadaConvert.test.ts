@@ -712,6 +712,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -969,6 +970,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -1250,6 +1252,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -1386,6 +1389,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -1643,6 +1647,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -1924,6 +1929,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -2060,6 +2066,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -2317,6 +2324,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -2598,6 +2606,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {

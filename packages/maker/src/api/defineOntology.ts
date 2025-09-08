@@ -79,6 +79,7 @@ import type {
   OntologyDefinition,
   OntologyEntityType,
   SharedPropertyType,
+  ValueTypeDefinitionVersion,
 } from "./types.js";
 import { OntologyEntityTypeEnum } from "./types.js";
 
@@ -96,11 +97,6 @@ export let dependencies: Record<string, string>;
 
 /** @internal */
 export let namespace: string;
-
-type OntologyAndValueTypeIrs = {
-  ontology: OntologyIr;
-  valueType: OntologyIrValueTypeBlockData;
-};
 
 export function updateOntology<
   T extends OntologyEntityType,
@@ -127,7 +123,7 @@ export async function defineOntology(
   body: () => void | Promise<void>,
   outputDir: string | undefined,
   dependencyFile?: string,
-): Promise<OntologyAndValueTypeIrs> {
+): Promise<OntologyIr> {
   namespace = ns;
   dependencies = {};
   ontologyDefinition = {
@@ -163,10 +159,7 @@ export async function defineOntology(
   if (dependencyFile) {
     writeDependencyFile(dependencyFile);
   }
-  return {
-    ontology: convertToWireOntologyIr(ontologyDefinition),
-    valueType: convertOntologyToValueTypeIr(ontologyDefinition),
-  };
+  return convertToWireOntologyIr(ontologyDefinition);
 }
 
 export function writeStaticObjects(outputDir: string): void {
@@ -252,30 +245,45 @@ function convertOntologyToValueTypeIr(
   ontology: OntologyDefinition,
 ): OntologyIrValueTypeBlockData {
   return {
-    valueTypes: Object.values(ontology[OntologyEntityTypeEnum.VALUE_TYPE]).map<
-      OntologyIrValueTypeBlockDataEntry
-    >(definitions => ({
-      metadata: {
-        apiName: definitions[0].apiName,
-        displayMetadata: definitions[0].displayMetadata,
-        status: definitions[0].status,
-      },
-      versions: definitions.map(definition => ({
-        version: definition.version,
-        baseType: definition.baseType,
-        constraints: definition.constraints,
-        exampleValues: definition.exampleValues,
-      })),
-    })),
+    valueTypes: convertValueTypesToIr(
+      ontology[OntologyEntityTypeEnum.VALUE_TYPE],
+    ),
   };
+}
+
+function convertValueTypesToIr(
+  valueTypes: Record<string, ValueTypeDefinitionVersion[]>,
+) {
+  return Object.values(valueTypes).map<
+    OntologyIrValueTypeBlockDataEntry
+  >(definitions => ({
+    metadata: {
+      apiName: definitions[0].apiName,
+      packageNamespace: definitions[0].packageNamespace,
+      displayMetadata: definitions[0].displayMetadata,
+      status: definitions[0].status,
+    },
+    // TODO(dpaquin): instead of deduping here, we should refactor the value type types from arrays to maps
+    versions: Array.from(
+      new Map(definitions.map(definition => [definition.version, definition]))
+        .values(),
+    ).map(definition => ({
+      version: definition.version,
+      baseType: definition.baseType,
+      constraints: definition.constraints,
+      exampleValues: definition.exampleValues,
+    })),
+  }));
 }
 
 function convertToWireOntologyIr(
   ontology: OntologyDefinition,
 ): OntologyIr {
   return {
-    blockData: convertToWireBlockData(ontology),
-    importedTypes: convertToWireBlockData(importedTypes),
+    ontology: convertToWireBlockData(ontology),
+    importedOntology: convertToWireBlockData(importedTypes),
+    valueTypes: convertOntologyToValueTypeIr(ontology),
+    importedValueTypes: convertOntologyToValueTypeIr(importedTypes),
   };
 }
 

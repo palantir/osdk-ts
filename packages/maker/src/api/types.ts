@@ -848,6 +848,7 @@ export type ValueTypeType =
 
 export type ValueTypeDefinitionVersion = OntologyEntityBase & {
   apiName: ValueTypeApiName;
+  packageNamespace: string;
   displayMetadata: ValueTypeDisplayMetadata;
   status: ValueTypeStatus;
   version: ValueTypeVersion;

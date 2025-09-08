@@ -112,7 +112,10 @@ export default async function main(
     JSON.stringify(ontology.ontology, null, 2),
   );
   // No point in generating block if there aren't any value types
-  if (ontology.valueType.valueTypes.length > 0) {
+  if (
+    ontology.valueType.blockData.length > 0
+    || ontology.valueType.importedTypes.length > 0
+  ) {
     await fs.writeFile(
       commandLineOpts.valueTypesOutput,
       JSON.stringify(ontology.valueType, null, 2),
