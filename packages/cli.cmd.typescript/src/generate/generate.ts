@@ -123,6 +123,11 @@ export const generateCommand: CommandModule<
             },
             default: "",
           },
+          skipPackageJsonUpdate: {
+            type: "boolean",
+            description: "Skip updating package.json with OSDK dependencies",
+            default: false,
+          },
         } as const,
       ).group(
         ["ontologyPath", "outDir", "version"],

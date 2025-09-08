@@ -30,4 +30,5 @@ export interface TypescriptGenerateArgs {
   internal: boolean;
   externalObjects: Map<string, string>;
   externalInterfaces: Map<string, string>;
+  skipPackageJsonUpdate?: boolean;
 }
