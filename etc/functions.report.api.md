@@ -21,7 +21,7 @@ import { TwoDimensionalAggregation } from '@osdk/client';
 export { Attachment }
 
 // @public (undocumented)
-export type ClassificationMarking = string & {
+export type ClassificationMarking<T extends string = string> = T & {
     	__classificationMarkingBrand?: "void"
 };
 
@@ -128,7 +128,7 @@ export type Long<T extends string = string> = T & {
 };
 
 // @public (undocumented)
-export type MandatoryMarking = string & {
+export type MandatoryMarking<T extends string = string> = T & {
     	__mandatoryMarkingBrand?: "void"
 };
 

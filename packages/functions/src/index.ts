@@ -15,13 +15,11 @@
  */
 
 export type {
-  ClassificationMarking,
   DateISOString,
   Double,
   Float,
   Integer,
   Long,
-  MandatoryMarking,
   TimestampISOString,
 } from "./PrimitiveTypes.js";
 
@@ -46,3 +44,5 @@ export type {
   RidLinkTarget,
   UrlLinkTarget,
 } from "./Notification.js";
+
+export type { ClassificationMarking, MandatoryMarking } from "./Markings.js";
