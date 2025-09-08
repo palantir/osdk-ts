@@ -544,7 +544,7 @@ export class FauxDataStore {
 
   registerTimeSeriesData(
     objectType: OntologiesV2.ObjectTypeApiName,
-    primaryKey: string,
+    primaryKey: string | number,
     property: OntologiesV2.PropertyApiName,
     data: OntologiesV2.TimeSeriesPoint[],
   ): void {
@@ -563,7 +563,7 @@ export class FauxDataStore {
 
   getTimeSeriesData(
     objectType: OntologiesV2.ObjectTypeApiName,
-    primaryKey: string,
+    primaryKey: string | number,
     property: OntologiesV2.PropertyApiName,
     filter?: OntologiesV2.StreamTimeSeriesPointsRequest,
   ): OntologiesV2.TimeSeriesPoint[] {
