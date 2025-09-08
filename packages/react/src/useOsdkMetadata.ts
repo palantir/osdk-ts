@@ -29,26 +29,65 @@ type MetadataFor<T extends ObjectOrInterfaceDefinition> = T extends
   : T extends ObjectTypeDefinition ? ObjectMetadata
   : never;
 
-export function useOsdkMetadata<T extends ObjectOrInterfaceDefinition>(
-  type: T,
-): {
+export interface UseOsdkMetadataResult<T extends ObjectOrInterfaceDefinition> {
   loading: boolean;
   metadata?: MetadataFor<T>;
-} {
+  error?: string;
+}
+
+export function useOsdkMetadata<T extends ObjectOrInterfaceDefinition>(
+  type: T,
+): UseOsdkMetadataResult<T> {
   const client = useOsdkClient();
+  const [loading, setLoading] = React.useState(true);
   const [metadata, setMetadata] = React.useState<
     MetadataFor<T> | undefined
   >(undefined);
+  const [error, setError] = React.useState<string | undefined>();
+  const abortControllerRef = React.useRef<AbortController | null>(null);
 
-  if (!metadata) {
-    client.fetchMetadata(type).then((fetchedMetadata) => {
-      setMetadata(fetchedMetadata as MetadataFor<T>);
-    }).catch((error: unknown) => {
-      // eslint-disable-next-line no-console
-      console.error("Failed to fetch metadata", error);
-    });
-    return { loading: true };
+  const typeApiName = type.apiName;
+  const cachedMetadata = React.useRef<MetadataFor<T> | undefined>();
+  const lastTypeApiName = React.useRef<string>();
+
+  if (lastTypeApiName.current !== typeApiName) {
+    lastTypeApiName.current = typeApiName;
+    cachedMetadata.current = undefined;
+
+    // Abort any existing fetch
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+
+    setLoading(true);
+    setError(undefined);
+
+    client.fetchMetadata(type)
+      .then((fetchedMetadata) => {
+        // Check if aborted
+        if (abortController.signal.aborted) {
+          return;
+        }
+        const result = fetchedMetadata as MetadataFor<T>;
+        cachedMetadata.current = result;
+        setMetadata(result);
+        setLoading(false);
+      })
+      .catch((error: unknown) => {
+        // Check if it was aborted
+        if (abortController.signal.aborted) {
+          return;
+        }
+        const errorMessage = error instanceof Error
+          ? error.message
+          : String(error);
+        setError(errorMessage);
+        setLoading(false);
+      });
   }
 
-  return { loading: false, metadata };
+  return { loading, metadata, error };
 }
