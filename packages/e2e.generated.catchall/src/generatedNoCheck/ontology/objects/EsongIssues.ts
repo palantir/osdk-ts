@@ -131,6 +131,11 @@ export interface EsongIssues extends $ObjectTypeDefinition {
       name: 'cube';
     };
     implements: ['EsongInterfaceA', 'EsongInterfaceC', 'EsongInterfaceWithIlts'];
+    interfaceLinkMap: {
+      EsongInterfaceC: {};
+      EsongInterfaceWithIlts: {};
+      EsongInterfaceA: {};
+    };
     interfaceMap: {
       EsongInterfaceC: {
         esongId: 'label';
@@ -141,6 +146,11 @@ export interface EsongIssues extends $ObjectTypeDefinition {
       EsongInterfaceA: {
         esongSptA: 'label';
       };
+    };
+    inverseInterfaceLinkMap: {
+      EsongInterfaceC: {};
+      EsongInterfaceWithIlts: {};
+      EsongInterfaceA: {};
     };
     inverseInterfaceMap: {
       EsongInterfaceC: {

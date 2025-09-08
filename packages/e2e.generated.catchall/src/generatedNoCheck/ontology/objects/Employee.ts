@@ -120,11 +120,17 @@ export interface Employee extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: ['FooInterface'];
+    interfaceLinkMap: {
+      FooInterface: {};
+    };
     interfaceMap: {
       FooInterface: {
         name: 'firstName';
         description: 'email';
       };
+    };
+    inverseInterfaceLinkMap: {
+      FooInterface: {};
     };
     inverseInterfaceMap: {
       FooInterface: {

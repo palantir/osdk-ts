@@ -213,7 +213,7 @@ async function checkExamples(
     );
     if (!compareResult.same) {
       consola.error(
-        `Found ${compareResult.differences} differences in ${exampleId} please generate examples again.`,
+        `Found ${compareResult.differences} differences in ${exampleId} please generate examples again with "cd packages/example-generator && pnpm generate"`,
       );
       consola.error(compareResult.diffSet?.filter(d => d.state !== "equal"));
 

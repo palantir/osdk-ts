@@ -67,7 +67,9 @@ export interface DherlihyComplexObject extends $ObjectTypeDefinition {
       color: 'color';
     };
     implements: undefined;
+    interfaceLinkMap: {};
     interfaceMap: {};
+    inverseInterfaceLinkMap: {};
     inverseInterfaceMap: {};
     links: {};
     pluralDisplayName: 'Dherlihy Complex Objects';

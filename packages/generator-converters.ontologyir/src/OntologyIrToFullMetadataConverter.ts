@@ -174,8 +174,28 @@ export class OntologyIrToFullMetadataConverter {
           sharedPropertyTypeMappings[sharedPropKey] = propertyApiName;
         }
 
+        const interfaceLinkMappings: Record<ApiName, ApiName[]> = {};
+
+        for (
+          const [interfaceLinkApiName, objectLinks] of Object.entries(
+            ii.linksV2,
+          )
+        ) {
+          const linkApiNames = objectLinks
+            .map((objectLink) => {
+              const matchingLink = linkMappings[objectApiName]?.find(
+                (link) => link.linkTypeRid === objectLink.linkTypeRid,
+              );
+              return matchingLink?.apiName;
+            })
+            .filter((linkName): linkName is string => linkName !== undefined);
+
+          interfaceLinkMappings[interfaceLinkApiName] = linkApiNames;
+        }
+
         implementsInterfaces2[interfaceApiName] = {
           properties: propertyMappings,
+          links: interfaceLinkMappings,
         };
       }
 
