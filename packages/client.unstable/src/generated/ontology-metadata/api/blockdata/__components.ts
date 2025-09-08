@@ -51,6 +51,7 @@ import type {
   LinkTypeRid as _api_LinkTypeRid,
   ManyToManyLinkTypeDatasource as _api_ManyToManyLinkTypeDatasource,
   MarkingId as _api_MarkingId,
+  MediaSetRid as _api_MediaSetRid,
   ModuleRid as _api_ModuleRid,
   ObjectType as _api_ObjectType,
   ObjectTypeApiName as _api_ObjectTypeApiName,

@@ -2466,6 +2466,24 @@ export interface ErrorType_objectTypeTitlePropertyTypeIsDerivedProperty {
     ObjectTypeTitlePropertyTypeIsDerivedProperty;
 }
 
+export interface ErrorType_objectTypePropertyIdClashesWithMainBranch {
+  type: "objectTypePropertyIdClashesWithMainBranch";
+  objectTypePropertyIdClashesWithMainBranch:
+    ObjectTypePropertyIdClashesWithMainBranch;
+}
+
+export interface ErrorType_objectTypePropertyCannotBeDeletedWhenReferencedInActionNotification {
+  type: "objectTypePropertyCannotBeDeletedWhenReferencedInActionNotification";
+  objectTypePropertyCannotBeDeletedWhenReferencedInActionNotification:
+    ObjectTypePropertyCannotBeDeletedWhenReferencedInActionNotification;
+}
+
+export interface ErrorType_objectTypeDatasourceWithInvalidRetentionTargetSize {
+  type: "objectTypeDatasourceWithInvalidRetentionTargetSize";
+  objectTypeDatasourceWithInvalidRetentionTargetSize:
+    ObjectTypeDatasourceWithInvalidRetentionTargetSize;
+}
+
 export interface ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds {
   type: "ruleSetBindingReferencingMissingPropertyTypeIds";
   ruleSetBindingReferencingMissingPropertyTypeIds:
@@ -3821,6 +3839,9 @@ export type ErrorType =
   | ErrorType_objectTypeReferencedTypeGroupsDoNotExist
   | ErrorType_objectTypeForbiddenTitleProperty
   | ErrorType_objectTypeTitlePropertyTypeIsDerivedProperty
+  | ErrorType_objectTypePropertyIdClashesWithMainBranch
+  | ErrorType_objectTypePropertyCannotBeDeletedWhenReferencedInActionNotification
+  | ErrorType_objectTypeDatasourceWithInvalidRetentionTargetSize
   | ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds
   | ErrorType_ruleSetCountExceeded
   | ErrorType_ruleSetNameTooLong

@@ -745,6 +745,7 @@ export type {
   OntologyIrConditionalValidationBlock,
   OntologyIrConditionValue,
   OntologyIrDataSecurity,
+  OntologyIrDateBetweenOperation,
   OntologyIrDateRangeValue,
   OntologyIrDatetimeTimezone,
   OntologyIrDatetimeTimezoneDefinition,

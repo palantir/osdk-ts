@@ -7679,6 +7679,11 @@ export interface OntologyIrDataSecurity {
     | undefined;
   markingConstraint?: OntologyIrMandatoryMarkingConstraint | null | undefined;
 }
+export interface OntologyIrDateBetweenOperation {
+  leftDate: OntologyIrParameterTransformPrefillValue;
+  rightDate: OntologyIrParameterTransformPrefillValue;
+  unit: DateUnit;
+}
 export interface OntologyIrDateRangeValue_fixed {
   type: "fixed";
   fixed: OntologyIrConditionValue;
@@ -12222,16 +12227,6 @@ export interface ResolvedInterfacePropertyTypeConstraints {
   dataConstraints?: DataConstraints | null | undefined;
   indexedForSearch: boolean;
   primaryKeyConstraint: PrimaryKeyConstraint;
-  requireImplementation: boolean;
-  typeClasses: Array<TypeClass>;
-  valueType?: ValueTypeReference | null | undefined;
-}
-export interface ResolvedNonDefaultBranch {
-  rid: OntologyBranchRid;
-}
-export interface ResolvedInterfacePropertyTypeConstraints {
-  dataConstraints?: DataConstraints | null | undefined;
-  indexedForSearch: boolean;
   requireImplementation: boolean;
   typeClasses: Array<TypeClass>;
   valueType?: ValueTypeReference | null | undefined;
