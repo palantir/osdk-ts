@@ -173,18 +173,18 @@ export function defineCreateObjectAction(
   Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
     parameterNames.add(param)
   );
+  const actionApiName = def.apiName
+    ?? `create-object-${
+      kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
+    }`;
   if (def.parameterOrdering) {
-    const sortedOrdering = [...def.parameterOrdering].sort();
-    const sortedParameterNames = [...parameterNames].sort();
-    invariant(
-      sortedOrdering.length === sortedParameterNames.length
-        && sortedOrdering.every((name, index) =>
-          name === sortedParameterNames[index]
-        ),
-      `Action parameter ordering for ${def.objectType.apiName} does not match non-excluded properties`,
+    validateParameterOrdering(
+      def.parameterOrdering,
+      parameterNames,
+      actionApiName,
     );
   }
-  const parameters = createParameters(def, parameterNames, true);
+  const parameters = createParameters(def, parameterNames);
   const mappings = Object.fromEntries(
     Object.entries(def.nonParameterMappings ?? {}).map((
       [id, value],
@@ -192,10 +192,7 @@ export function defineCreateObjectAction(
   );
 
   return defineAction({
-    apiName: def.apiName
-      ?? `create-object-${
-        kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
-      }`,
+    apiName: actionApiName,
     displayName: def.displayName ?? `Create ${def.objectType.displayName}`,
     parameters: parameters,
     status: def.status ?? "active",
@@ -239,6 +236,8 @@ export function defineCreateObjectAction(
           def.sections.map(section => [section.id, section]),
         ),
       }),
+    ...(def.submissionMetadata
+      && { submissionMetadata: def.submissionMetadata }),
   });
 }
 
@@ -357,6 +356,10 @@ export function defineModifyObjectAction(
     parameterNames.add(param)
   );
   parameterNames.add(MODIFY_OBJECT_PARAMETER);
+  const actionApiName = def.apiName
+    ?? `modify-object-${
+      kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
+    }`;
   if (def.parameterOrdering) {
     if (!def.parameterOrdering.includes(MODIFY_OBJECT_PARAMETER)) {
       def.parameterOrdering = [
@@ -364,17 +367,13 @@ export function defineModifyObjectAction(
         ...def.parameterOrdering,
       ];
     }
-    const sortedOrdering = [...def.parameterOrdering].sort();
-    const sortedParameterNames = [...parameterNames].sort();
-    invariant(
-      sortedOrdering.length === sortedParameterNames.length
-        && sortedOrdering.every((name, index) =>
-          name === sortedParameterNames[index]
-        ),
-      `Action parameter ordering for ${def.objectType.apiName} does not match non-excluded properties`,
+    validateParameterOrdering(
+      def.parameterOrdering,
+      parameterNames,
+      actionApiName,
     );
   }
-  const parameters = createParameters(def, parameterNames, false);
+  const parameters = createParameters(def, parameterNames);
   parameters.forEach(
     p => {
       if (p.id !== MODIFY_OBJECT_PARAMETER && p.defaultValue === undefined) {
@@ -396,10 +395,7 @@ export function defineModifyObjectAction(
   );
 
   return defineAction({
-    apiName: def.apiName
-      ?? `modify-object-${
-        kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
-      }`,
+    apiName: actionApiName,
     displayName: def.displayName ?? `Modify ${def.objectType.displayName}`,
     parameters: parameters,
     status: def.status ?? "active",
@@ -447,6 +443,8 @@ export function defineModifyObjectAction(
           def.sections.map(section => [section.id, section]),
         ),
       }),
+    ...(def.submissionMetadata
+      && { submissionMetadata: def.submissionMetadata }),
   });
 }
 
@@ -503,7 +501,8 @@ export function defineCreateOrModifyObjectAction(
   const propertyParameters = Object.keys(def.objectType.properties ?? {})
     .filter(
       id =>
-        !def.excludedProperties?.includes(id)
+        !Object.keys(def.nonParameterMappings ?? {}).includes(id)
+        && !def.excludedProperties?.includes(id)
         && !isStruct(def.objectType.properties?.[id].type!)
         && id !== def.objectType.primaryKeyPropertyApiName,
     );
@@ -512,6 +511,10 @@ export function defineCreateOrModifyObjectAction(
     parameterNames.add(param)
   );
   parameterNames.add(CREATE_OR_MODIFY_OBJECT_PARAMETER);
+  const actionApiName = def.apiName
+    ?? `create-or-modify-${
+      kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
+    }`;
   if (def.parameterOrdering) {
     if (!def.parameterOrdering.includes(CREATE_OR_MODIFY_OBJECT_PARAMETER)) {
       def.parameterOrdering = [
@@ -519,17 +522,13 @@ export function defineCreateOrModifyObjectAction(
         ...def.parameterOrdering,
       ];
     }
-    const sortedOrdering = [...def.parameterOrdering].sort();
-    const sortedParameterNames = [...parameterNames].sort();
-    invariant(
-      sortedOrdering.length === sortedParameterNames.length
-        && sortedOrdering.every((name, index) =>
-          name === sortedParameterNames[index]
-        ),
-      `Action parameter ordering for ${def.objectType.apiName} does not match non-excluded properties`,
+    validateParameterOrdering(
+      def.parameterOrdering,
+      parameterNames,
+      actionApiName,
     );
   }
-  const parameters = createParameters(def, parameterNames, false);
+  const parameters = createParameters(def, parameterNames);
   parameters.forEach(
     p => {
       if (
@@ -553,10 +552,7 @@ export function defineCreateOrModifyObjectAction(
   );
 
   return defineAction({
-    apiName: def.apiName
-      ?? `create-or-modify-${
-        kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
-      }`,
+    apiName: actionApiName,
     displayName: def.displayName
       ?? `Create or Modify ${def.objectType.displayName}`,
     parameters: parameters,
@@ -605,6 +601,8 @@ export function defineCreateOrModifyObjectAction(
           def.sections.map(section => [section.id, section]),
         ),
       }),
+    ...(def.submissionMetadata
+      && { submissionMetadata: def.submissionMetadata }),
   });
 }
 
@@ -688,23 +686,9 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
 function createParameters(
   def: ActionTypeUserDefinition,
   parameterSet: Set<string>,
-  defaultRequired: boolean,
 ): Array<ActionParameter> {
   const targetParam: Array<ActionParameter> = [];
-  // prefix objectReference parameters with the namespace
   parameterSet.forEach(name => {
-    if (
-      typeof def.parameterConfiguration?.[name]?.customParameterType
-        === "object"
-      && def.parameterConfiguration?.[name]?.customParameterType.type
-        === "objectReference"
-    ) {
-      def.parameterConfiguration[name].customParameterType.objectReference
-        .objectTypeId = sanitize(
-          def.parameterConfiguration[name].customParameterType.objectReference
-            .objectTypeId,
-        );
-    }
     if (name === MODIFY_OBJECT_PARAMETER) {
       targetParam.push({
         id: MODIFY_OBJECT_PARAMETER,
@@ -779,7 +763,8 @@ function createParameters(
                     def.objectType.properties?.[id].type!,
                   )),
               required: def.parameterConfiguration?.[id].required
-                ?? defaultRequired,
+                ?? (def.objectType.properties?.[id]?.nullability?.noNulls
+                  ?? false),
             }
             : {
               required: (def.objectType.properties?.[id].array ?? false)
@@ -790,7 +775,7 @@ function createParameters(
                     : {},
                 }
                 : def.objectType.properties?.[id].nullability?.noNulls
-                  ?? defaultRequired,
+                  ?? false,
               allowedValues: extractAllowedValuesFromPropertyType(
                 def.objectType.properties?.[id].type!,
               ),
@@ -1295,4 +1280,23 @@ function createDefaultParameterOrdering(
       !def.parameterConfiguration?.[id] && parameters.some(p => p.id === id)
     ),
   ];
+}
+
+function validateParameterOrdering(
+  parameterOrdering: string[],
+  parameterSet: Set<string>,
+  actionApiName: string,
+): void {
+  const orderingSet = new Set(parameterOrdering);
+  const missingParameters = [...parameterSet].filter(
+    param => !orderingSet.has(param),
+  );
+  const extraneousParameters = parameterOrdering.filter(param =>
+    !parameterSet.has(param)
+  );
+  invariant(
+    extraneousParameters.length === 0
+      && missingParameters.length === 0,
+    `Action parameter ordering for ${actionApiName} does not match expected parameters. Extraneous parameters in ordering: {${extraneousParameters}}, Missing parameters in ordering: {${missingParameters}}`,
+  );
 }

@@ -33,6 +33,7 @@ export type {
 export { createEditBatch } from "./edits/createEditBatch.js";
 export type { EditBatch } from "./edits/EditBatch.js";
 export type { Edits } from "./edits/types.js";
+export { UserFacingError } from "./errors/UserFacingError.js";
 
 export type {
   EmailNotification,
@@ -46,3 +47,4 @@ export type {
 } from "./Notification.js";
 
 export type { ClassificationMarking, MandatoryMarking } from "./Markings.js";
+export type { GroupId, Principal, UserId } from "./UserGroup.js";

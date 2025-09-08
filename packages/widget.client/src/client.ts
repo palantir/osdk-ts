@@ -32,9 +32,15 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
   /**
    * Emits an event with the given ID and payload
    */
-  emitEvent: <M extends WidgetMessage.EmitEvent<C>>(
-    eventId: M["payload"]["eventId"],
-    payload: Omit<M["payload"], "eventId">,
+  emitEvent: <
+    M extends WidgetMessage.EmitEvent<C>,
+    ID extends M["payload"]["eventId"],
+  >(
+    eventId: ID,
+    payload: Omit<
+      ExtractEmitEventPayload<M, ID>,
+      "eventId"
+    >,
   ) => void;
 
   /**
@@ -58,6 +64,14 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
    */
   hostEventTarget: FoundryHostEventTarget<C>;
 }
+
+type ExtractEmitEventPayload<
+  M extends WidgetMessage.EmitEvent<any>,
+  ID extends M["payload"]["eventId"],
+> = Extract<
+  M["payload"],
+  { eventId: ID }
+>;
 
 interface PalantirWidgetApiEvents<C extends WidgetConfig<C["parameters"]>> {
   message: CustomEvent<HostMessage<C>>;

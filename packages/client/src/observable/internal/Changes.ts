@@ -18,16 +18,19 @@ import { MultiMap } from "mnemonist";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { CacheKey } from "./CacheKey.js";
 import { DEBUG_ONLY__cacheKeyToString } from "./CacheKey.js";
-import type { ListCacheKey } from "./ListQuery.js";
+import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
+import type { ListCacheKey } from "./ListCacheKey.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 
 export class Changes {
   modifiedObjects: MultiMap<string, ObjectHolder> = new MultiMap();
   addedObjects: MultiMap<string, ObjectHolder> = new MultiMap();
 
-  added: Set<ListCacheKey | ObjectCacheKey> = new Set();
-  modified: Set<ListCacheKey | ObjectCacheKey> = new Set();
-  deleted: Set<ListCacheKey | ObjectCacheKey> = new Set();
+  added: Set<ListCacheKey | ObjectCacheKey | SpecificLinkCacheKey> = new Set();
+  modified: Set<ListCacheKey | ObjectCacheKey | SpecificLinkCacheKey> =
+    new Set();
+  deleted: Set<ListCacheKey | ObjectCacheKey | SpecificLinkCacheKey> =
+    new Set();
 
   registerObject = (
     cacheKey: ObjectCacheKey,
@@ -44,6 +47,14 @@ export class Changes {
 
   registerList = (key: ListCacheKey): void => {
     this.modified.add(key);
+  };
+
+  registerLink = (cacheKey: SpecificLinkCacheKey): void => {
+    this.modified.add(cacheKey);
+  };
+
+  deleteLink = (cacheKey: SpecificLinkCacheKey): void => {
+    this.deleted.add(cacheKey);
   };
 
   isEmpty(): boolean {

@@ -25,6 +25,7 @@ import type {
 } from "@osdk/client.unstable";
 
 import { randomUUID } from "node:crypto";
+import { extractAllowedValues } from "./defineOntology.js";
 import type {
   ActionParameterConditionalOverride,
   ActionParameterValidation,
@@ -112,6 +113,22 @@ export function convertActionParameterConditionalOverride(
               type: "editable",
               editable: {},
             },
+        },
+      };
+      break;
+    case "defaultValue":
+      parameterBlockOverride = {
+        type: "prefill",
+        prefill: {
+          prefill: override.defaultValue,
+        },
+      };
+      break;
+    case "constraint":
+      parameterBlockOverride = {
+        type: "allowedValues",
+        allowedValues: {
+          allowedValues: extractAllowedValues(override.constraint),
         },
       };
       break;

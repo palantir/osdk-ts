@@ -1,5 +1,37 @@
 # @osdk/widget.vite-plugin
 
+## 3.2.0-beta.3
+
+### Minor Changes
+
+- 71fc408: Validate camelCase for widget/parameter IDs
+
+### Patch Changes
+
+- @osdk/widget.api@3.2.0-beta.3
+
+## 3.2.0-beta.2
+
+### Minor Changes
+
+- 2b73c3c: Fix @osdk/widget.vite-plugin dependency on resolve-package-path in devDependencies rather than dependencies
+
+### Patch Changes
+
+- @osdk/widget.api@3.2.0-beta.2
+
+## 3.1.0-beta.5
+
+### Minor Changes
+
+- 3e9cc76: Improve error visibility during widgets vite dev mode
+- 232a11a: Replace AST parsing with Vite module evaluation for widget config extraction
+
+### Patch Changes
+
+- Updated dependencies [f173ee1]
+  - @osdk/widget.api@3.1.0-beta.5
+
 ## 3.1.0-beta.4
 
 ### Minor Changes

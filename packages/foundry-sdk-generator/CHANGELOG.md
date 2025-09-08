@@ -1,5 +1,49 @@
 # @osdk/foundry-sdk-generator
 
+## 2.5.0-beta.3
+
+### Minor Changes
+
+- 7bdac45: Update Platform SDK dependency
+- 7bdac45: Support value type enum generation for strings and booleans
+
+### Patch Changes
+
+- Updated dependencies [7bdac45]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [e48be06]
+  - @osdk/generator@2.5.0-beta.3
+  - @osdk/client@2.5.0-beta.3
+  - @osdk/api@2.5.0-beta.3
+
+## 2.5.0-beta.2
+
+### Minor Changes
+
+- 7cdab1d: Update platform sdk dependencies
+
+### Patch Changes
+
+- Updated dependencies [b05075d]
+- Updated dependencies [7160276]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [b9e9a88]
+- Updated dependencies [76905f5]
+- Updated dependencies [48d52b7]
+  - @osdk/client@2.5.0-beta.2
+  - @osdk/api@2.5.0-beta.2
+  - @osdk/generator@2.5.0-beta.2
+
+## 2.4.0-beta.17
+
+### Patch Changes
+
+- Updated dependencies [06fd45a]
+  - @osdk/client@2.4.0-beta.17
+  - @osdk/api@2.4.0-beta.17
+  - @osdk/generator@2.4.0-beta.17
+
 ## 2.4.0-beta.16
 
 ### Patch Changes

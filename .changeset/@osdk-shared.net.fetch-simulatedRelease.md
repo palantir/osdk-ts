@@ -1,5 +1,5 @@
 ---
-"@osdk/shared.net.fetch": minor
+"@osdk/shared.net.fetch": patch
 ---
       
 Simulated release

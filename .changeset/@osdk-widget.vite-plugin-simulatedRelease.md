@@ -1,5 +1,5 @@
 ---
-"@osdk/widget.vite-plugin": minor
+"@osdk/widget.vite-plugin": patch
 ---
       
 Simulated release

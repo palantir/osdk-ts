@@ -18,7 +18,10 @@ import type {
   DefaultToFalse,
   OsdkObjectLinksObject,
 } from "./definitions/LinkDefinitions.js";
-import type { NullabilityAdherence } from "./object/FetchPageArgs.js";
+import type {
+  NullabilityAdherence,
+  ObjectSetArgs,
+} from "./object/FetchPageArgs.js";
 import type { UnionIfTrue } from "./object/FetchPageResult.js";
 import type {
   InterfaceDefinition,
@@ -87,6 +90,16 @@ export type MapPropNamesToObjectType<
     TO
   >[JustProps<FROM, P> & keyof PropMapToObject<FROM, TO>];
 
+type NamespaceOf<S extends string> = S extends `${infer Before}.${infer After}`
+  ? After extends `${string}.${string}` ? `${Before}.${NamespaceOf<After>}`
+  : Before
+  : never;
+
+type MaybeStripNamespaces<S extends string, TO extends InterfaceDefinition> =
+  S extends `${NamespaceOf<S>}.${infer Rest}`
+    ? NamespaceOf<S> extends NamespaceOf<ApiNameAsString<TO>> ? Rest : S
+    : S;
+
 export type PropMapToInterface<
   FROM extends ObjectTypeDefinition,
   TO extends InterfaceDefinition,
@@ -98,10 +111,13 @@ export type MapPropNamesToInterface<
   FROM extends ObjectTypeDefinition,
   TO extends InterfaceDefinition,
   P extends ValidOsdkPropParams<FROM>,
-> = PropMapToInterface<
-  FROM,
+> = MaybeStripNamespaces<
+  PropMapToInterface<
+    FROM,
+    TO
+  >[JustProps<FROM, P> & keyof PropMapToInterface<FROM, TO>],
   TO
->[JustProps<FROM, P> & keyof PropMapToInterface<FROM, TO>];
+>;
 /**
  * Older version of this helper that allows for `$rid` and co in
  * the properties field.
@@ -179,6 +195,11 @@ export type Osdk<
       ("$rid" extends OPTIONS ? "$rid" : never),
       ExtractPropsKeysFromOldPropsStyle<Q, OPTIONS>
     >;
+
+export type MaybeScore<
+  T extends Osdk.Instance<any>,
+  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<any>,
+> = ORDER_BY_OPTIONS extends "relevance" ? T & { $score: number } : T;
 
 export namespace Osdk {
   export type Instance<

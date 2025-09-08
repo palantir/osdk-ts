@@ -60,7 +60,18 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
         objectSet: input.objectTypeApiName as K,
         nullable: false,
       };
-
+    case "interfaceObject":
+      return {
+        type: "interface",
+        interface: input.interfaceTypeApiName as K,
+        nullable: false,
+      };
+    case "interfaceObjectSet":
+      return {
+        type: "interfaceObjectSet",
+        objectSet: input.interfaceTypeApiName as K,
+        nullable: false,
+      };
     case "array":
       return {
         ...wireQueryDataTypeToQueryDataTypeDefinition(input.subType),
@@ -149,8 +160,6 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
 
     case "null":
     case "unsupported":
-    case "interfaceObject":
-    case "interfaceObjectSet":
       throw new Error(
         `Unable to process query because the server indicated an unsupported QueryDataType.type: ${input.type}. Please check that your query is using supported types.`,
       );

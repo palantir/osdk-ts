@@ -30,11 +30,20 @@ export { importSharedPropertyType } from "./api/defineImportSpt.js";
 export { defineInterface } from "./api/defineInterface.js";
 export { defineInterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
 export { defineLink } from "./api/defineLink.js";
-export { defineObject } from "./api/defineObject.js";
-export { defineOntology } from "./api/defineOntology.js";
+export {
+  convertToDisplayName,
+  convertToPluralDisplayName,
+  defineObject,
+} from "./api/defineObject.js";
+export {
+  addNamespaceIfNone,
+  defineOntology,
+  dumpOntologyFullMetadata,
+} from "./api/defineOntology.js";
 export { defineSharedPropertyType } from "./api/defineSpt.js";
 export { defineValueType } from "./api/defineValueType.js";
 export { importOntologyEntity } from "./api/importOntologyEntity.js";
+export { convertType } from "./api/propertyConversionUtils.js";
 export type {
   ActionParameterAllowedValues,
   ActionParameterConditionalOverride,
@@ -49,9 +58,12 @@ export type {
   InterfaceType,
   LinkType,
   MappingValue,
+  ObjectPropertyType,
   ObjectType,
+  PropertyTypeType,
   SectionConditionalOverride,
   SharedPropertyType,
+  SubmissionMetadata,
   UuidMappingValue,
   ValueTypeDefinitionVersion,
 } from "./api/types.js";
