@@ -841,7 +841,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -1127,7 +1126,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -1297,7 +1295,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -1518,7 +1515,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -1804,7 +1800,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -1974,7 +1969,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -2195,7 +2189,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -2481,7 +2474,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -2651,7 +2643,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {

@@ -72,7 +72,7 @@ describe("Experimental Test Suite", () => {
           },
         },
       });
-      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+      expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
         {
           "actionTypes": {
             "com.palantir.create-object-foo": {
@@ -539,55 +539,163 @@ describe("Experimental Test Suite", () => {
           "sharedPropertyTypes": {},
         }
       `);
-      expect(dumpOntologyFullMetadata().importedTypes).toMatchInlineSnapshot(`
-          {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [
-              {
-                "apiName": "myImport",
-                "description": undefined,
-                "displayName": "MyImport",
-                "propertyTypes": [
-                  {
-                    "apiName": "id",
-                    "description": undefined,
-                    "displayName": "Id",
-                    "sharedPropertyType": undefined,
-                    "type": {
-                      "string": {
-                        "analyzerOverride": undefined,
-                        "enableAsciiFolding": undefined,
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
+      expect(dumpOntologyFullMetadata().importedOntology).toMatchInlineSnapshot(
+        `
+        {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {
+            "myImport": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "datasetV2": {
+                      "datasetRid": "myImport",
+                      "propertyMapping": {
+                        "id": {
+                          "column": "id",
+                          "type": "column",
+                        },
+                        "name": {
+                          "column": "name",
+                          "type": "column",
+                        },
                       },
-                      "type": "string",
                     },
+                    "type": "datasetV2",
                   },
-                  {
-                    "apiName": "name",
-                    "description": undefined,
-                    "displayName": "Name",
-                    "sharedPropertyType": undefined,
-                    "type": {
-                      "string": {
-                        "analyzerOverride": undefined,
-                        "enableAsciiFolding": undefined,
-                        "isLongText": false,
-                        "supportsEfficientLeadingWildcard": false,
-                        "supportsExactMatching": true,
-                      },
-                      "type": "string",
-                    },
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
                   },
-                ],
+                  "redacted": false,
+                  "rid": "ri.ontology.main.datasource.myImport",
+                },
+              ],
+              "entityMetadata": {
+                "arePatchesEnabled": false,
               },
-            ],
-            "sharedPropertyTypes": [],
-          }
-        `);
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "myImport",
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "MyImport",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "MyImports",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "id",
+                ],
+                "propertyTypes": {
+                  "id": {
+                    "apiName": "id",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Id",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                  "name": {
+                    "apiName": "name",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Name",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                },
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+                "titlePropertyTypeRid": "id",
+              },
+            },
+          },
+          "sharedPropertyTypes": {},
+        }
+      `,
+      );
     });
   });
 });
