@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/foundry.ontologies": "2.25.0",
+    "@osdk/foundry.ontologies": "2.28.0",
     "@osdk/generator-converters": "workspace:~",
     "consola": "^3.4.2",
     "fast-deep-equal": "^3.1.3",
