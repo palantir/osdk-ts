@@ -43,7 +43,7 @@ export function useOsdkMetadata<T extends ObjectOrInterfaceDefinition>(
   const [metadata, setMetadata] = React.useState<
     MetadataFor<T> | undefined
   >(undefined);
-  const [error, setError] = React.useState<string | undefined>();
+  const [error, setError] = React.useState<UseOsdkMetadataResult<T>["error"]>();
   const abortControllerRef = React.useRef<AbortController | null>(null);
 
   const typeApiName = type.apiName;
