@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@osdk/foundry-sdk-generator": "workspace:~",
-    "execa": "^9.5.1"
+    "execa": "^9.6.0"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
