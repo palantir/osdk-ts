@@ -664,6 +664,10 @@ describe("ObjectSet", () => {
           base.pivotTo("lead").aggregate("mediaReference:avg"),
         "mediaReferenceExactDistinct": (base) =>
           base.pivotTo("lead").aggregate("mediaReference:exactDistinct"),
+        "mediaReferenceCollectList": (base) =>
+          base.pivotTo("lead").aggregate("mediaReference:collectList"),
+        "mediaReferenceCollectSet": (base) =>
+          base.pivotTo("lead").aggregate("mediaReference:collectSet"),
         "geotimeSeriesReference": (base) =>
           // @ts-expect-error
           base.pivotTo("lead").aggregate("geotimeSeriesReference:sum"),

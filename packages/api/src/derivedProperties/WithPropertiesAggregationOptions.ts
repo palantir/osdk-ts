@@ -41,4 +41,5 @@ export type ValidCollectPropertyKeysForSpecialTypes =
   | "attachment"
   | "geopoint"
   | "geoshape"
-  | "boolean";
+  | "boolean"
+  | "mediaReference";
