@@ -15,7 +15,7 @@
  */
 
 import { defineConfig } from "@osdk/widget.api";
-import { describe, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { FoundryWidgetClient } from "./client.js";
 
 describe("FoundryWidgetClient", () => {
@@ -127,5 +127,30 @@ describe("FoundryWidgetClient", () => {
   it("should not allow emit event type with an unknown event id", () => {
     // @ts-expect-error
     emitEvent("someOtherEventId", {});
+  });
+
+  it("should throw error for invalid widget id pattern", () => {
+    expect(() => {
+      defineConfig({
+        id: "Widget-Id",
+        name: "Widget Name",
+        type: "workshop",
+        parameters: {},
+        events: {},
+      });
+    }).toThrow("Widget id does not match allowed pattern");
+  });
+
+  it("should throw error for widget id that is too long", () => {
+    const longId = "a".repeat(101);
+    expect(() => {
+      defineConfig({
+        id: longId,
+        name: "Widget Name",
+        type: "workshop",
+        parameters: {},
+        events: {},
+      });
+    }).toThrow("Widget id length can be at most 100");
   });
 });
