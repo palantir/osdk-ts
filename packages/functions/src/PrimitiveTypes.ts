@@ -25,8 +25,3 @@ export type DateISOString<T extends string = string> = T & {
 export type TimestampISOString<T extends string = string> = T & {
   __timestampBrand?: void;
 };
-
-export type MandatoryMarking = string & { __mandatoryMarkingBrand?: "void" };
-export type ClassificationMarking = string & {
-  __classificationMarkingBrand?: "void";
-};
