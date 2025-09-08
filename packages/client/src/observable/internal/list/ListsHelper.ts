@@ -15,7 +15,6 @@
  */
 
 import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
-import type { DerivedPropertyRuntimeMetadata } from "../../../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { ObserveListOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
@@ -91,15 +90,13 @@ export class ListsHelper extends AbstractHelper<
       objectSet = objectSet.withProperties(withProperties as any);
     }
 
-    const rdpMetadata: DerivedPropertyRuntimeMetadata = {};
-
     // Canonicalize where and orderBy for the cache key
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
     const canonRdp = withProperties
       ? this.rdpCanonicalizer.canonicalize(withProperties)
       : undefined;
-    
+
     const listCacheKey = this.store.getCacheKey<ListCacheKey>(
       "list",
       type,
@@ -116,7 +113,6 @@ export class ListsHelper extends AbstractHelper<
         type,
         apiName,
         objectSet,
-        rdpMetadata,
         listCacheKey,
         options,
       );

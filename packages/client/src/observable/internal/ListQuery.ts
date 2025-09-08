@@ -28,7 +28,6 @@ import groupBy from "object.groupby";
 import type { Connectable, Observable, Subscription } from "rxjs";
 import invariant from "tiny-invariant";
 import { additionalContext, type Client } from "../../Client.js";
-import type { DerivedPropertyRuntimeMetadata } from "../../derivedProperties/derivedPropertyRuntimeMetadata.js";
 import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import {
   ObjectDefRef,
@@ -37,6 +36,7 @@ import {
 import type {
   ObjectHolder,
 } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import { getWireObjectSet } from "../../objectSet/createObjectSet.js";
 import type { ListPayload } from "../ListPayload.js";
 import type {
   CommonObserveOptions,
@@ -50,7 +50,7 @@ import { type CacheKey, DEBUG_ONLY__cacheKeysToString } from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "./Changes.js";
 import { createCollectionConnectable } from "./createCollectionConnectable.js";
-import { extractRdpObjectTypes } from "./extractRdpObjectTypes.js";
+import { getObjectTypesThatInvalidate } from "./getObjectTypesThatInvalidate.js";
 import { isObjectInstance } from "./isObjectInstance.js";
 import type { Entry } from "./Layer.js";
 import type { ListCacheKey, ListStorageData } from "./ListCacheKey.js";
@@ -613,7 +613,6 @@ export class ListQuery extends BaseListQuery<
   // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
-  #rdpMetadata: DerivedPropertyRuntimeMetadata;
 
   /**
    * Register changes to the cache specific to ListQuery
@@ -628,7 +627,6 @@ export class ListQuery extends BaseListQuery<
     apiType: "object" | "interface",
     apiName: string,
     objectSet: ObjectSet<ObjectTypeDefinition>,
-    rdpMetadata: DerivedPropertyRuntimeMetadata,
     cacheKey: ListCacheKey,
     opts: ListQueryOptions,
   ) {
@@ -653,9 +651,8 @@ export class ListQuery extends BaseListQuery<
     this.#whereClause = cacheKey.otherKeys[2];
     this.#orderBy = cacheKey.otherKeys[3];
 
-    // Use the provided ObjectSet and RDP metadata
+    // Use the provided ObjectSet
     this.#objectSet = objectSet;
-    this.#rdpMetadata = rdpMetadata;
 
     // Initialize the sorting strategy
     this.sortingStrategy = new OrderBySortingStrategy(
@@ -764,18 +761,30 @@ export class ListQuery extends BaseListQuery<
     if (this.#apiName === objectType) {
       // Only invalidate lists for the matching apiName
       changes?.modified.add(this.cacheKey);
-      return this.revalidate(true);
+      await this.revalidate(true);
+      return;
     }
 
     // Check if RDPs depend on this object type - Level 2 cache invalidation
-    if (this.#rdpMetadata && Object.keys(this.#rdpMetadata).length > 0) {
-      // Extract all object types that RDPs could traverse to
-      const rdpObjectTypes = extractRdpObjectTypes(this.#rdpMetadata);
+    if (this.cacheKey.otherKeys[RDP_IDX]) {
+      try {
+        const wireObjectSet = getWireObjectSet(this.#objectSet);
+        const result = await getObjectTypesThatInvalidate(
+          this.store.client[additionalContext],
+          wireObjectSet,
+        );
 
-      // Only invalidate if this object type is one that our RDPs might traverse to
-      if (rdpObjectTypes.has(objectType)) {
-        changes?.modified.add(this.cacheKey);
-        return this.revalidate(true);
+        // Only invalidate if this object type is one that our RDPs might traverse to
+        if (result.invalidationSet.has(objectType)) {
+          changes?.modified.add(this.cacheKey);
+          await this.revalidate(true);
+          return;
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV !== "production") {
+          this.logger?.error("Failed to check RDP invalidation:", error);
+        }
+        // On error, be conservative and don't invalidate
       }
     }
   };
