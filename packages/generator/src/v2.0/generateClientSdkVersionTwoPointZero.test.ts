@@ -338,6 +338,7 @@ const referencedOntology = {
       rid: "idk",
     },
   },
+  valueTypes: {},
 } satisfies WireOntologyDefinition;
 
 const referencingOntology = {
@@ -469,6 +470,7 @@ const referencingOntology = {
     },
   },
   sharedPropertyTypes: {},
+  valueTypes: {},
 } satisfies WireOntologyDefinition;
 
 const fooBarTodoWireOntology = changeNames(
@@ -818,7 +820,7 @@ describe("generator", () => {
             /**
              * (no ontology metadata)
              */
-            readonly email: $PropType['string'];
+            readonly email: 'osdk@palantir.com' | 'foundry@palantir.com';
           }
           export type StrictProps = Props;
 
@@ -900,13 +902,17 @@ describe("generator", () => {
         } from '@osdk/client';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete';
+          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
           }
 
           export interface Props {
+            /**
+             * (no ontology metadata)
+             */
+            readonly array: ('a' | 'b' | 'c')[] | undefined;
             /**
              *   display name: 'Body',
              *
@@ -973,6 +979,10 @@ describe("generator", () => {
             primaryKeyApiName: 'id';
             primaryKeyType: 'integer';
             properties: {
+              /**
+               * (no ontology metadata)
+               */
+              array: $PropertyDef<'string', 'nullable', 'array'>;
               /**
                *   display name: 'Body',
                *
@@ -1467,7 +1477,7 @@ describe("generator", () => {
             /**
              * (no ontology metadata)
              */
-            readonly email: $PropType['string'];
+            readonly email: 'osdk@palantir.com' | 'foundry@palantir.com';
           }
           export type StrictProps = Props;
 
@@ -1549,13 +1559,17 @@ describe("generator", () => {
         } from '@osdk/api';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete';
+          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
           }
 
           export interface Props {
+            /**
+             * (no ontology metadata)
+             */
+            readonly array: ('a' | 'b' | 'c')[] | undefined;
             /**
              *   display name: 'Body',
              *
@@ -1622,6 +1636,10 @@ describe("generator", () => {
             primaryKeyApiName: 'id';
             primaryKeyType: 'integer';
             properties: {
+              /**
+               * (no ontology metadata)
+               */
+              array: $PropertyDef<'string', 'nullable', 'array'>;
               /**
                *   display name: 'Body',
                *
@@ -1783,6 +1801,7 @@ describe("generator", () => {
         objectTypes: {},
         queryTypes: {},
         sharedPropertyTypes: {},
+        valueTypes: {},
       },
       "",
       helper.minimalFiles,
@@ -2175,6 +2194,7 @@ describe("generator", () => {
             },
           },
           sharedPropertyTypes: {},
+          valueTypes: {},
         },
         "typescript-sdk/0.0.0 osdk-cli/0.0.0",
         helper.minimalFiles,
@@ -2324,13 +2344,17 @@ describe("generator", () => {
         } from '@osdk/client';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete';
+          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
           }
 
           export interface Props {
+            /**
+             * (no ontology metadata)
+             */
+            readonly array: $PropType['string'][] | undefined;
             /**
              *   display name: 'Body',
              *
@@ -2397,6 +2421,10 @@ describe("generator", () => {
             primaryKeyApiName: 'id';
             primaryKeyType: 'integer';
             properties: {
+              /**
+               * (no ontology metadata)
+               */
+              array: $PropertyDef<'string', 'nullable', 'array'>;
               /**
                *   display name: 'Body',
                *

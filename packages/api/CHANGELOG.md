@@ -1,5 +1,20 @@
 # @osdk/api
 
+## 2.5.0-beta.3
+
+### Minor Changes
+
+- 7bdac45: Update Platform SDK dependency
+- 20962bc: Add a new experimental fetchPageByRidNoType method
+- e48be06: Fix casting types with fully qualified property names.
+
+## 2.5.0-beta.2
+
+### Minor Changes
+
+- 7160276: Add order by relevance support to nearest neighbors
+- 76905f5: Remove undefined type from aggregation $group value
+
 ## 2.4.0-beta.17
 
 ## 2.4.0-beta.16

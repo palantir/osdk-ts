@@ -1,5 +1,36 @@
 # @osdk/shared.test
 
+## 0.3.0-beta.3
+
+### Minor Changes
+
+- 7bdac45: Update Platform SDK dependency
+
+### Patch Changes
+
+- Updated dependencies [7bdac45]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [e48be06]
+  - @osdk/generator-converters@2.5.0-beta.3
+  - @osdk/api@2.5.0-beta.3
+
+## 0.3.0-beta.2
+
+### Minor Changes
+
+- 9c9110c: Fixes strict link association between different object types and improves error messages.
+- 7cdab1d: Update platform sdk dependencies
+- f194536: Fixes strict link association.
+
+### Patch Changes
+
+- Updated dependencies [7160276]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [76905f5]
+  - @osdk/api@2.5.0-beta.2
+  - @osdk/generator-converters@2.5.0-beta.2
+
 ## 0.2.0-beta.17
 
 ### Patch Changes

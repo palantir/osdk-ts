@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+/* spell-checker: disable */
+import type { ObjectMetadata } from "@osdk/api";
 import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
@@ -39,6 +40,24 @@ export async function runFetchByRidTest(): Promise<void> {
   ]);
 
   console.log(result2);
+
+  const result3 = await dsClient(
+    __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+  ).fetchPageByRidNoType([
+    "ri.phonograph2-objects.main.object.v4.74f4b7b2-ff4a-48ca-b739-3a9d79e89e6c.AAKFH5I_YE_4YODY68MOAJV53GKVG5OIAKEA_5CGI0WY",
+    "ri.phonograph2-objects.main.object.v4.318e4b5e-3212-444a-88b8-6e998de958e0.AQ-NL9G8QFAQ2-CRNPODBQZPE2ND-AGU67DFFAMML_NO",
+  ], { $includeRid: true });
+
+  const result3Object = result3.data[0];
+  const result3Interface = result3Object.$as({
+    type: "interface",
+    apiName: (result3Object.$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata
+      .ObjectMetadata as ObjectMetadata).implements?.[0]!,
+  });
+
+  console.log(result3);
+  console.log("Interface:", result3Interface);
+  console.log("Object:", result3Object);
 }
 
 void runFetchByRidTest();
