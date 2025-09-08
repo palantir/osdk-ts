@@ -58,13 +58,13 @@ import type {
   OntologyIrParameterPrefill,
   OntologyIrPropertyType,
   OntologyIrValidationRule,
+  OntologyIrValueTypeReferenceWithMetadata,
   ParameterId,
   SectionId,
   SharedPropertyTypeGothamMapping,
   StructFieldType,
   ValidationRuleDisplayMetadata,
   ValueTypeApiName,
-  ValueTypeApiNameReference,
   ValueTypeDataConstraint,
   ValueTypeDisplayMetadata,
   ValueTypeStatus,
@@ -488,7 +488,7 @@ export interface PropertyType {
   array?: boolean;
   description?: string;
   displayName?: string;
-  valueType?: ValueTypeApiNameReference;
+  valueType?: OntologyIrValueTypeReferenceWithMetadata;
   visibility?: Visibility;
   typeClasses?: TypeClass[];
   nullability?: Nullability;

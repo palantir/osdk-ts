@@ -425,8 +425,6 @@ function convertObject(
             }],
           ),
         ),
-        propertiesV2: {},
-        linksV2: {},
       })),
       allImplementsInterfaces: {},
     },
@@ -783,14 +781,9 @@ function convertInterface(
     },
     extendsInterfaces: interfaceType.extendsInterfaces.map(i => i.apiName),
     // these are omitted from our internal types but we need to re-add them for the final json
-    allExtendsInterfaces: [],
-    allLinks: [],
-    allProperties: [],
-    allPropertiesV2: {},
+    properties: [],
     // TODO(mwalther): Support propertiesV3
     propertiesV3: {},
-    allPropertiesV3: {},
-    properties: [],
   };
 }
 
@@ -843,6 +836,8 @@ function convertSpt(
     valueType: valueType === undefined ? undefined : {
       apiName: valueType.apiName,
       version: valueType.version,
+      packageNamespace: valueType.packageNamespace,
+      displayMetadata: valueType.displayMetadata,
     },
   };
 }
@@ -987,7 +982,7 @@ function convertActionValidation(
                   p.validation.allowedValues!,
                 ),
                 required: convertParameterRequirementConstraint(
-                  p.validation.required,
+                  p.validation.required!,
                 ),
               },
             },
@@ -1084,7 +1079,7 @@ function convertActionSections(
 export function extractAllowedValues(
   allowedValues: ActionParameterAllowedValues,
 ): OntologyIrAllowedParameterValues {
-  switch (parameter.validation.allowedValues.type) {
+  switch (allowedValues.type) {
     case "oneOf":
       return {
         type: "oneOf",
@@ -1171,7 +1166,7 @@ export function extractAllowedValues(
       };
     default:
       const k: Partial<OntologyIrAllowedParameterValues["type"]> =
-        parameter.validation.allowedValues.type;
+        allowedValues.type;
       return {
         type: k,
         [k]: {
@@ -1221,9 +1216,9 @@ function renderHintFromBaseType(
       return { type: "filePicker", filePicker: {} };
     case "marking":
     case "markingList":
-      if (parameter.validation.allowedValues.type === "mandatoryMarking") {
+      if (parameter.validation.allowedValues?.type === "mandatoryMarking") {
         return { type: "mandatoryMarkingPicker", mandatoryMarkingPicker: {} };
-      } else if (parameter.validation.allowedValues.type === "cbacMarking") {
+      } else if (parameter.validation.allowedValues?.type === "cbacMarking") {
         return { type: "cbacMarkingPicker", cbacMarkingPicker: {} };
       } else {
         throw new Error(

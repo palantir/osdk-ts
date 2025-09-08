@@ -15,8 +15,8 @@
  */
 
 import type {
+  OntologyIrValueTypeReferenceWithMetadata,
   SharedPropertyTypeGothamMapping,
-  ValueTypeApiNameReference,
   Visibility,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
@@ -43,7 +43,7 @@ export interface SharedPropertyTypeDefinition {
   array?: boolean;
   description?: string;
   displayName?: string;
-  valueType?: ValueTypeApiNameReference;
+  valueType?: OntologyIrValueTypeReferenceWithMetadata;
   visibility?: Visibility;
   typeClasses?: SharedPropertyType["typeClasses"];
   gothamMapping?: SharedPropertyTypeGothamMapping;
