@@ -341,7 +341,7 @@ const referencedOntology = {
   valueTypes: {},
 } satisfies WireOntologyDefinition;
 
-const referencingOntology = {
+const referencingOntology: WireOntologyDefinition = {
   ontology: TodoWireOntology.ontology,
   "actionTypes": {
     "setTaskBody": {
@@ -383,6 +383,7 @@ const referencingOntology = {
       implementsInterfaces: ["com.example.dep.SomeInterface"],
       implementsInterfaces2: {
         "com.example.dep.SomeInterface": {
+          links: {},
           properties: {
             "com.example.dep.spt": "body",
           },

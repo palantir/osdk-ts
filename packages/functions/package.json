@@ -61,8 +61,8 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/foundry.core": "^2.28.0",
-    "@osdk/foundry.ontologies": "^2.26.0"
+    "@osdk/foundry.core": "^2.30.0",
+    "@osdk/foundry.ontologies": "^2.30.0"
   },
   "peerDependencies": {
     "@osdk/client": "workspace:^"

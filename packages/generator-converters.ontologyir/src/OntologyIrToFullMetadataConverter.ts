@@ -176,6 +176,7 @@ export class OntologyIrToFullMetadataConverter {
 
         implementsInterfaces2[interfaceApiName] = {
           properties: propertyMappings,
+          links: {},
         };
       }
 
