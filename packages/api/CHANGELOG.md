@@ -1,5 +1,20 @@
 # @osdk/api
 
+## 2.4.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 4bc848b: Add interface link support.
+- 9f4fe9e: Add new types mapping for internal creation workflow.
+- 29d2ada: Fix type in docs and tests
+- 8dd6229: Remove features not supported for RC
+- 8c95154: Add nearestNeighbor support
+- c32dcf2: Add a metadata field to all loaded objects
+- 722c89a: Fix assignability for creating struct fields.
+- 9101bad: Adds "includeNullValues" option for exact match filters
+- 44bbbe0: Add interface query support.
+
 ## 2.4.0-rc.19
 
 ### Patch Changes

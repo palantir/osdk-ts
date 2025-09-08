@@ -1,5 +1,61 @@
 # @osdk/vite-plugin-oac
 
+## 0.2.0
+
+### Patch Changes
+
+- 150da1a: Simulated release
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [150da1a]
+- Updated dependencies [150da1a]
+- Updated dependencies [322c5bc]
+- Updated dependencies [e647175]
+- Updated dependencies [ac0029e]
+- Updated dependencies [4bc848b]
+- Updated dependencies [3dcd9b1]
+- Updated dependencies [4dffba1]
+- Updated dependencies [9f4fe9e]
+- Updated dependencies [1c1c2c4]
+- Updated dependencies [75fbd09]
+- Updated dependencies [f1f587b]
+- Updated dependencies [3ff44da]
+- Updated dependencies [b0955ef]
+- Updated dependencies [8bb08eb]
+- Updated dependencies [367cc04]
+- Updated dependencies [29d2ada]
+- Updated dependencies [666787f]
+- Updated dependencies [8dd6229]
+- Updated dependencies [45ed433]
+- Updated dependencies [ed41359]
+- Updated dependencies [a1736f3]
+- Updated dependencies [dbd13b6]
+- Updated dependencies [a01b8d4]
+- Updated dependencies [641bc0c]
+- Updated dependencies [c621638]
+- Updated dependencies [283905f]
+- Updated dependencies [8c95154]
+- Updated dependencies [e62a890]
+- Updated dependencies [c32dcf2]
+- Updated dependencies [722c89a]
+- Updated dependencies [25bae67]
+- Updated dependencies [defc2cf]
+- Updated dependencies [94beece]
+- Updated dependencies [9101bad]
+- Updated dependencies [5994895]
+- Updated dependencies [d384b4c]
+- Updated dependencies [44bbbe0]
+- Updated dependencies [02be685]
+- Updated dependencies [764e5f1]
+- Updated dependencies [5c76e33]
+  - @osdk/api@2.4.0
+  - @osdk/cli@0.28.0
+  - @osdk/client.unstable@2.4.0
+  - @osdk/faux@0.2.0
+  - @osdk/generator-converters.ontologyir@2.4.0
+  - @osdk/maker@0.12.0
+
 ## 0.2.0-rc.20
 
 ### Patch Changes
