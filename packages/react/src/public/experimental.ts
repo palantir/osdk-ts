@@ -22,4 +22,3 @@ export type { UseOsdkListResult } from "../new/useOsdkObjects.js";
 export { useOsdkObjects } from "../new/useOsdkObjects.js";
 export { useOsdkClient } from "../useOsdkClient.js";
 export { useOsdkMetadata } from "../useOsdkMetadata.js";
-export type { UseOsdkMetadataResult } from "../useOsdkMetadata.js";
