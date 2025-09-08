@@ -60,10 +60,12 @@
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "peerDependencies": {
-    "@osdk/client": "workspace:^",
-    "@osdk/foundry.core": "2.28.0",
+  "dependencies": {
+    "@osdk/foundry.core": "^2.28.0",
     "@osdk/foundry.ontologies": "^2.26.0"
+  },
+  "peerDependencies": {
+    "@osdk/client": "workspace:^"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.26.5",
