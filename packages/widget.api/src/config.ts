@@ -37,6 +37,18 @@ export interface EventDefinition<P extends ParameterConfig> {
 
 export type ParameterConfig = Record<string, ParameterDefinition>;
 
+const ID_MAX_LENGTH = 100;
+const ID_PATTERN = /^([a-z][a-z0-9]*)([A-Z][a-z0-9]*)*$/;
+
+function validateWidgetId(id: string): void {
+  if (id.length > ID_MAX_LENGTH) {
+    throw new Error(`Widget id length can be at most ${ID_MAX_LENGTH}`);
+  }
+  if (!ID_PATTERN.test(id)) {
+    throw new Error("Widget id does not match allowed pattern");
+  }
+}
+
 export interface WidgetConfig<P extends ParameterConfig> {
   id: string;
   name: string;
@@ -132,5 +144,6 @@ type NotEmptyObject<T extends Record<string, any>> = T extends
   : T;
 
 export function defineConfig<const C extends WidgetConfig<any>>(c: C): C {
+  validateWidgetId(c.id);
   return c as any;
 }
