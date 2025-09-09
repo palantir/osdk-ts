@@ -237,8 +237,9 @@ export interface AsyncIterArgs<
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
-	RDP_KEYS extends string = never
-> extends SelectArg<Q, K, R, S, RDP_KEYS>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS> {
+	RDP_KEYS extends string = never,
+	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never
+> extends SelectArg<Q, K, R, S, RDP_KEYS>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
@@ -542,8 +543,9 @@ export interface FetchPageArgs<
 	A extends Augments = never,
 	S extends NullabilityAdherence = NullabilityAdherence.Default,
 	T extends boolean = false,
-	RDP_KEYS extends string = never
-> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS> {
+	RDP_KEYS extends string = never,
+	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {}
+> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS> {
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -558,8 +560,9 @@ export type FetchPageResult<
 	L extends PropertyKeys<Q>,
 	R extends boolean,
 	S extends NullabilityAdherence,
-	T extends boolean = false
-> = PageResult<PropertyKeys<Q> extends L ? Osdk.Instance<Q, ExtractOptions<R, S, T>> : Osdk.Instance<Q, ExtractOptions<R, S, T>, L>>;
+	T extends boolean = false,
+	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
+> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? never : L>, ORDER_BY_OPTIONS>>;
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
@@ -748,6 +751,14 @@ export namespace Logger {
 }
 
 // @public (undocumented)
+export type MaybeScore<
+	T extends Osdk.Instance<any>,
+	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<any>
+> = ORDER_BY_OPTIONS extends "relevance" ? T & {
+    	$score: number
+} : T;
+
+// @public (undocumented)
 export interface Media {
     	fetchContents(): Promise<Response>;
     	fetchMetadata(): Promise<MediaMetadata_2>;
@@ -867,6 +878,8 @@ export namespace ObjectMetadata {
         readonly?: boolean;
         		// (undocumented)
         type: WirePropertyTypes;
+        		// (undocumented)
+        valueTypeApiName?: string;
         	}
 }
 
@@ -898,8 +911,9 @@ export namespace ObjectSetArgs {
     		Q extends ObjectOrInterfaceDefinition,
     		K extends PropertyKeys<Q> = never,
     		T extends boolean = false,
-    		RDP_KEYS extends string = never
-    	> extends Select<K, RDP_KEYS>, OrderBy<K> {
+    		RDP_KEYS extends string = never,
+    		ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never
+    	> extends Select<K, RDP_KEYS>, OrderBy<ORDER_BY_OPTIONS, K> {
         		// (undocumented)
         $__UNSTABLE_useOldInterfaceApis?: boolean;
         		// (undocumented)
@@ -910,18 +924,24 @@ export namespace ObjectSetArgs {
     		Q extends ObjectOrInterfaceDefinition,
     		K extends PropertyKeys<Q> = never,
     		T extends boolean = false,
-    		RDP_KEYS extends string = never
-    	> extends AsyncIter<Q, K, T, RDP_KEYS> {
+    		RDP_KEYS extends string = never,
+    		ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never
+    	> extends AsyncIter<Q, K, T, RDP_KEYS, ORDER_BY_OPTIONS> {
         		// (undocumented)
         $nextPageToken?: string;
         		// (undocumented)
         $pageSize?: number;
         	}
     	// (undocumented)
-    export interface OrderBy<L extends string = never> {
+    export interface OrderBy<
+    		ORDER_BY_OPTIONS extends OrderByOptions<L>,
+    		L extends string = never
+    	> {
         		// (undocumented)
-        $orderBy?: { [K in L]? : "asc" | "desc" };
+        $orderBy?: ORDER_BY_OPTIONS;
         	}
+    	// (undocumented)
+    export type OrderByOptions<L extends string> = { [K in L]? : "asc" | "desc" } | "relevance";
     	// (undocumented)
     export interface Select<
     		OBJECT_KEYS extends string = never,
@@ -1357,8 +1377,9 @@ export type SingleOsdkResult<
 	R extends boolean,
 	S extends NullabilityAdherence,
 	RDPs extends Record<string, SimplePropertyDef> = {},
-	T extends boolean = false
-> = Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>;
+	T extends boolean = false,
+	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
+> = MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>, ORDER_BY_OPTIONS>;
 
 // Warning: (ae-forgotten-export) The symbol "AllowedBucketKeyTypes_2" needs to be exported by the entry point index.d.ts
 //

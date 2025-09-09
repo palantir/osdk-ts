@@ -20,20 +20,12 @@ import type {
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
+  PageResult,
   PropertyKeys,
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import groupBy from "object.groupby";
 import type { Connectable, Observable, Subscription } from "rxjs";
-import {
-  auditTime,
-  combineLatest,
-  connectable,
-  map,
-  of,
-  ReplaySubject,
-  switchMap,
-} from "rxjs";
 import invariant from "tiny-invariant";
 import { additionalContext, type Client } from "../../Client.js";
 import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
@@ -45,24 +37,34 @@ import type {
   ObjectHolder,
 } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ListPayload } from "../ListPayload.js";
-import type { CommonObserveOptions, Status } from "../ObservableClient.js";
-import {
-  type CacheKey,
-  DEBUG_ONLY__cacheKeysToString as DEBUG_ONLY__cacheKeysToString,
-} from "./CacheKey.js";
+import type {
+  CommonObserveOptions,
+  Status,
+} from "../ObservableClient/common.js";
+import type {
+  CollectionConnectableParams,
+  CollectionStorageData,
+} from "./BaseCollectionQuery.js";
+import { type CacheKey, DEBUG_ONLY__cacheKeysToString } from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "./Changes.js";
+import { createCollectionConnectable } from "./createCollectionConnectable.js";
+import { isObjectInstance } from "./isObjectInstance.js";
 import type { Entry } from "./Layer.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "./objectMatchesWhereClause.js";
 import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import { Query } from "./Query.js";
+import { removeDuplicates } from "./removeDuplicates.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
+import type { SortingStrategy } from "./sorting/SortingStrategy.js";
+import {
+  NoOpSortingStrategy,
+  OrderBySortingStrategy,
+} from "./sorting/SortingStrategy.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
-interface ListStorageData {
-  data: ObjectCacheKey[];
-}
+export interface ListStorageData extends CollectionStorageData {}
 
 export interface ListCacheKey extends
   CacheKey<
@@ -100,50 +102,78 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   sortaMatches: Set<(ObjectHolder | InterfaceHolder)>;
 }>;
 
-abstract class BaseListQuery<
-  // THIS IS THE WRONG EXTENDS
-  KEY extends ListCacheKey,
+/**
+ * Base class for collection-based queries (lists and links)
+ * Provides common functionality for working with collections of objects
+ */
+export abstract class BaseListQuery<
+  KEY extends CacheKey<any, CollectionStorageData, any, any>,
   PAYLOAD,
   O extends CommonObserveOptions,
 > extends Query<KEY, PAYLOAD, O> {
-  //
-  // Per list type implementations
-  //
+  /**
+   * The sorting strategy to use for this collection
+   * @protected
+   */
+  protected sortingStrategy: SortingStrategy = new NoOpSortingStrategy();
 
-  protected abstract _sortCacheKeys(
-    objectCacheKeys: ObjectCacheKey[],
-    batch: BatchContext,
-  ): ObjectCacheKey[];
+  // Collection-specific behavior is implemented by subclasses
+  /**
+   * Token for the next page of results
+   * @protected
+   */
+  protected nextPageToken?: string;
+
+  /**
+   * Promise tracking an in-progress page fetch
+   * @protected
+   */
+  protected pendingPageFetch?: Promise<void>;
 
   //
   // Shared Implementations
   //
 
   /**
-   * Only intended to be "protected" and used by subclasses but exposed for
-   * testing.
+   * Standard method to update a list of objects
+   * Handles common list update patterns for both ListQuery and SpecificLinkQuery
    *
-   * @param objectCacheKeys
-   * @param append
-   * @param status
-   * @param batch
-   * @returns
+   * @param items Objects or cache keys to add to the list
+   * @param status Status to set for the list
+   * @param batch Batch context to use
+   * @param append Whether to append to the existing list or replace it
+   * @returns The updated entry
    */
-  _updateList(
-    objectCacheKeys: Array<ObjectCacheKey>,
-    append: boolean,
+  public _updateList<T extends ObjectCacheKey | Osdk.Instance<any>>(
+    items: T[],
     status: Status,
     batch: BatchContext,
-  ): Entry<ListCacheKey> {
+    append: boolean = false,
+  ): Entry<KEY> {
     if (process.env.NODE_ENV !== "production") {
       const logger = process.env.NODE_ENV !== "production"
         ? this.logger?.child({ methodName: "updateList" })
         : this.logger;
 
       logger?.debug(
-        `{status: ${status}}`,
-        JSON.stringify(objectCacheKeys, null, 2),
+        `{status: ${status}, append: ${append}}`,
+        JSON.stringify(items, null, 2),
       );
+    }
+
+    let objectCacheKeys: ObjectCacheKey[];
+
+    if (items.length === 0) {
+      objectCacheKeys = [];
+    } else if (isObjectInstance(items[0])) {
+      // Items are object instances, need to store them first
+      objectCacheKeys = this.storeObjects(
+        items as Array<Osdk.Instance<any>>,
+        batch,
+      );
+    } else {
+      // Items are already cache keys
+      objectCacheKeys = items as ObjectCacheKey[];
     }
 
     objectCacheKeys = this.#retainReleaseAppend(batch, append, objectCacheKeys);
@@ -153,19 +183,37 @@ abstract class BaseListQuery<
     return this.writeToStore({ data: objectCacheKeys }, status, batch);
   }
 
+  /**
+   * Common implementation for writing to store for collection-based queries
+   * @param data The collection data to write to the store
+   * @param status The status to set
+   * @param batch The batch context
+   */
   writeToStore(
-    data: ListStorageData,
+    data: CollectionStorageData,
     status: Status,
     batch: BatchContext,
   ): Entry<KEY> {
     const entry = batch.read(this.cacheKey);
 
     if (entry && deepEqual(data, entry.value)) {
+      // Check if both data AND status are the same
+      if (entry.status === status) {
+        if (process.env.NODE_ENV !== "production") {
+          this.logger?.child({ methodName: "writeToStore" }).debug(
+            `Collection data was deep equal and status unchanged (${status}), skipping update`,
+          );
+        }
+        // Return the existing entry without writing to avoid unnecessary notifications
+        return entry;
+      }
+
       if (process.env.NODE_ENV !== "production") {
         this.logger?.child({ methodName: "writeToStore" }).debug(
-          `Object was deep equal, just setting status`,
+          `Collection data was deep equal, just updating status from ${entry.status} to ${status}`,
         );
       }
+      // Keep the same value but update status and lastUpdated
       return batch.write(this.cacheKey, entry.value, status);
     }
 
@@ -177,10 +225,43 @@ abstract class BaseListQuery<
     }
 
     const ret = batch.write(this.cacheKey, data, status);
-    batch.changes.registerList(this.cacheKey);
+    this.registerCacheChanges(batch);
     return ret;
   }
 
+  /**
+   * Register changes to the cache based on the specific collection type
+   * Implemented by subclasses to handle specific change registration
+   */
+  protected abstract registerCacheChanges(batch: BatchContext): void;
+
+  /**
+   * Common method to store objects in the cache and return their cache keys
+   * Used by collection queries when storing object references
+   *
+   * @param objects Array of objects to store
+   * @param batch The batch context to use
+   * @returns Array of cache keys for the stored objects
+   */
+  protected storeObjects(
+    objects: Array<Osdk.Instance<any>>,
+    batch: BatchContext,
+  ): Array<ObjectCacheKey> {
+    // Store the individual objects in their respective cache entries
+    return objects.length > 0
+      ? storeOsdkInstances(this.store, objects, batch)
+      : [];
+  }
+
+  /**
+   * Common method for managing object reference counting and appending results
+   * Used by collection queries when updating object references
+   *
+   * @param batch The batch context to use
+   * @param append Whether to append to existing objects or replace them
+   * @param objectCacheKeys Array of object cache keys to process
+   * @returns The final array of object cache keys after retain/release/append
+   */
   #retainReleaseAppend(
     batch: BatchContext,
     append: boolean,
@@ -225,8 +306,311 @@ abstract class BaseListQuery<
       }
     });
   }
+
+  /**
+   * Creates a payload from collection parameters
+   * Default implementation that covers common fields for all collection types
+   * Subclasses may override to add type-specific fields if needed
+   *
+   * @param params Common collection parameters
+   * @returns A typed payload for the specific collection type
+   */
+  protected createPayload(
+    params: CollectionConnectableParams,
+  ): PAYLOAD {
+    return {
+      resolvedList: params.resolvedData,
+      isOptimistic: params.isOptimistic,
+      fetchMore: this.fetchMore,
+      hasMore: this.nextPageToken != null,
+      status: params.status,
+      lastUpdated: params.lastUpdated,
+    } as unknown as PAYLOAD; // Type assertion needed since we don't know exact subtype
+  }
+
+  /**
+   * Creates a connectable observable for this collection
+   * Common implementation shared by all collection types
+   *
+   * @param subject The subject to connect to
+   * @returns A connectable observable of the collection's payload type
+   */
+  protected _createConnectable(
+    subject: Observable<SubjectPayload<KEY>>,
+  ): Connectable<PAYLOAD> {
+    return createCollectionConnectable<KEY, PAYLOAD>(
+      subject,
+      this.store,
+      (params) => this.createPayload(params),
+    );
+  }
+
+  /**
+   * @override Reset pagination state before a fetch
+   */
+  protected _preFetch(): void {
+    this.nextPageToken = undefined;
+    super._preFetch();
+  }
+
+  /**
+   * Common fetchMore implementation for pagination
+   * Handles pending request management and loading states
+   */
+  fetchMore = (): Promise<void> => {
+    if (this.pendingPageFetch) {
+      return this.pendingPageFetch;
+    }
+
+    if (this.pendingFetch) {
+      this.pendingPageFetch = new Promise(async (res) => {
+        await this.pendingFetch;
+        res(this.fetchMore());
+      });
+      return this.pendingPageFetch;
+    }
+
+    if (this.nextPageToken == null) {
+      return Promise.resolve(undefined);
+    }
+
+    this.store.batch({}, (batch) => {
+      this.setStatus("loading", batch);
+    });
+
+    this.pendingFetch = this.fetchPageAndUpdate(
+      "loaded",
+      this.abortController?.signal,
+    ).then(() => void 0).finally(() => {
+      this.pendingPageFetch = undefined;
+    });
+    return this.pendingFetch;
+  };
+
+  /**
+   * Minimum number of results to load initially
+   * May be overridden by subclasses for specific collection types
+   * @protected
+   */
+  protected minResultsToLoad: number = 0;
+
+  /**
+   * Common _fetchAndStore implementation for pagination
+   * Uses fetchPageAndUpdate to load the initial set of data
+   * Will load multiple pages if necessary to reach minResultsToLoad
+   */
+  protected async _fetchAndStore(): Promise<void> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "_fetchAndStore" }).debug(
+        "fetching pages",
+      );
+    }
+
+    // Keep fetching pages until we have the minimum number of results or no more pages
+    while (true) {
+      const entry = await this.fetchPageAndUpdate(
+        "loading",
+        this.abortController?.signal,
+      );
+
+      if (!entry) {
+        // we were aborted
+        return;
+      }
+
+      // Check if we have enough results or no more pages
+      const count = entry.value?.data.length || 0;
+      if (count >= this.minResultsToLoad || this.nextPageToken == null) {
+        break;
+      }
+    }
+
+    this.store.batch({}, (batch) => {
+      this.setStatus("loaded", batch);
+    });
+
+    return Promise.resolve();
+  }
+
+  /**
+   * Template method for fetching a page of data and updating the store
+   * Provides common error handling and abort signal checking
+   *
+   * @param status The status to set for the entry
+   * @param signal Optional AbortSignal for cancellation
+   * @returns A promise that resolves to the updated entry or undefined if aborted
+   */
+  protected async fetchPageAndUpdate(
+    status: Status,
+    signal: AbortSignal | undefined,
+  ): Promise<Entry<KEY> | undefined> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "fetchPageAndUpdate" }).debug(
+        `Fetching data with status: ${status}`,
+      );
+    }
+
+    // Early abort check
+    if (signal?.aborted) {
+      return undefined;
+    }
+
+    try {
+      // Call the subclass-specific implementation to fetch data
+      const result = await this.fetchPageData(signal);
+
+      // Check for abort again after fetch
+      if (signal?.aborted) {
+        return undefined;
+      }
+
+      // Store the fetched data using batch operations
+      const { retVal } = this.store.batch({}, (batch) => {
+        const append = this.nextPageToken != null;
+        const finalStatus = result.nextPageToken ? status : "loaded";
+
+        return this._updateList(
+          this.storeObjects(result.data, batch),
+          finalStatus,
+          batch,
+          append,
+        );
+      });
+
+      return retVal;
+    } catch (error: unknown) {
+      // Log any errors that occur
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "fetchPageAndUpdate" }).error(
+          "Error fetching data",
+          error,
+        );
+      }
+
+      // For unexpected errors, write error status if not aborted
+      if (!signal?.aborted) {
+        const { retVal } = this.store.batch({}, (batch) => {
+          return this.handleFetchError(error, status, batch);
+        });
+        return retVal;
+      }
+
+      // If aborted, just return undefined
+      return undefined;
+    }
+  }
+
+  /**
+   * Abstract method that subclasses implement for their specific data fetching logic
+   *
+   * @param signal Optional AbortSignal for cancellation
+   * @returns A promise that resolves to the fetched data
+   */
+  protected abstract fetchPageData(
+    signal: AbortSignal | undefined,
+  ): Promise<PageResult<Osdk.Instance<any>>>;
+
+  /**
+   * Handle fetch errors by setting appropriate error state
+   * Default implementation that subclasses can override
+   *
+   * @param error The error that occurred
+   * @param status The intended status if successful
+   * @param batch The batch context to use
+   * @returns The updated entry with error status
+   */
+  protected handleFetchError(
+    _error: unknown,
+    _status: Status,
+    batch: BatchContext,
+  ): Entry<KEY> {
+    // Default implementation writes an empty list with error status
+    // Most subclasses should be able to use this
+    return this.writeToStore({ data: [] }, "error", batch);
+  }
+
+  /**
+   * Sort the collection items using the configured sorting strategy
+   * @param objectCacheKeys - The cache keys to sort
+   * @param batch - The batch context
+   * @returns Sorted array of cache keys
+   */
+  protected _sortCacheKeys(
+    objectCacheKeys: ObjectCacheKey[],
+    batch: BatchContext,
+  ): ObjectCacheKey[] {
+    return this.sortingStrategy.sortCacheKeys(objectCacheKeys, batch);
+  }
+
+  /**
+   * Unified method for updating collection data in the store
+   * Handles storing, sorting, deduplication, and reference counting
+   *
+   * @param items - Either object cache keys or object instances to update
+   * @param options - Configuration options for the update
+   * @param batch - The batch context to use
+   * @returns The updated entry
+   */
+  protected updateCollection<T extends ObjectCacheKey | Osdk.Instance<any>>(
+    items: T[],
+    options: {
+      append?: boolean;
+      status: Status;
+    },
+    batch: BatchContext,
+  ): Entry<KEY> {
+    if (process.env.NODE_ENV !== "production") {
+      const logger = process.env.NODE_ENV !== "production"
+        ? this.logger?.child({ methodName: "updateCollection" })
+        : this.logger;
+
+      logger?.debug(
+        `{status: ${options.status}, append: ${options.append}}`,
+        JSON.stringify(items, null, 2),
+      );
+    }
+
+    // Step 1: Convert items to object cache keys if needed
+    let objectCacheKeys: ObjectCacheKey[];
+
+    if (items.length === 0) {
+      objectCacheKeys = [];
+    } else if (isObjectInstance(items[0])) {
+      // Items are object instances, need to store them first
+      objectCacheKeys = this.storeObjects(
+        items as Array<Osdk.Instance<any>>,
+        batch,
+      );
+    } else {
+      // Items are already cache keys
+      objectCacheKeys = items as ObjectCacheKey[];
+    }
+
+    // Step 2: Handle retain/release/append logic
+    objectCacheKeys = this.#retainReleaseAppend(
+      batch,
+      options.append ?? false,
+      objectCacheKeys,
+    );
+
+    // Step 3: Sort using the configured sorting strategy
+    objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
+
+    // Step 4: Remove duplicates
+    objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
+
+    // Step 5: Write to store
+    return this.writeToStore({ data: objectCacheKeys }, options.status, batch);
+  }
 }
 
+/**
+ * Implements filtered and sorted object collection queries.
+ * - Handles where clause filtering and orderBy sorting
+ * - Manages pagination through fetchMore
+ * - Auto-updates when matching objects change
+ * - Uses canonicalized cache keys for consistency
+ */
 export class ListQuery extends BaseListQuery<
   ListCacheKey,
   ListPayload,
@@ -238,19 +622,16 @@ export class ListQuery extends BaseListQuery<
   #apiName: string;
   #whereClause: Canonical<SimpleWhereClause>;
 
-  // this represents the minimum number of results we need to load if we revalidate
-  #minNumResults = 0;
-
-  #nextPageToken?: string;
-  #pendingPageFetch?: Promise<unknown>;
+  // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
-  #sortFns: Array<
-    (
-      a: ObjectHolder | InterfaceHolder | undefined,
-      b: ObjectHolder | InterfaceHolder | undefined,
-    ) => number
-  >;
+
+  /**
+   * Register changes to the cache specific to ListQuery
+   */
+  protected registerCacheChanges(batch: BatchContext): void {
+    batch.changes.registerList(this.cacheKey);
+  }
 
   constructor(
     store: Store,
@@ -287,161 +668,73 @@ export class ListQuery extends BaseListQuery<
       apiName: this.#apiName,
     } as ObjectTypeDefinition)
       .where(this.#whereClause);
-    this.#sortFns = createOrderBySortFns(this.#orderBy);
+    // Initialize the sorting strategy
+    this.sortingStrategy = new OrderBySortingStrategy(
+      this.#apiName,
+      this.#orderBy,
+    );
+    // Initialize the minResultsToLoad inherited from BaseCollectionQuery
+    this.minResultsToLoad = 0;
   }
 
   get canonicalWhere(): Canonical<SimpleWhereClause> {
     return this.#whereClause;
   }
 
-  protected _createConnectable(
-    subject: Observable<SubjectPayload<ListCacheKey>>,
-  ): Connectable<ListPayload> {
-    return connectable<ListPayload>(
-      subject.pipe(
-        switchMap(listEntry => {
-          return combineLatest({
-            resolvedList: listEntry?.value?.data == null
-                || listEntry.value.data.length === 0
-              ? of([])
-              : combineLatest(
-                listEntry.value.data.map(cacheKey =>
-                  this.store.getSubject(cacheKey).pipe(
-                    map(objectEntry => objectEntry?.value!),
-                  )
-                ),
-              ),
-            isOptimistic: of(listEntry.isOptimistic),
-            fetchMore: of(this.fetchMore),
-            hasMore: of(this.#nextPageToken != null),
-            status: of(listEntry.status),
-            lastUpdated: of(listEntry.lastUpdated),
-          });
-        }),
-        // like throttle but returns the tail
-        auditTime(0),
-      ),
-      {
-        resetOnDisconnect: false,
-        connector: () => new ReplaySubject(1),
-      },
-    );
-  }
-
-  protected _preFetch(): void {
-    this.#nextPageToken = undefined;
-  }
-
-  protected async _fetchAndStore(): Promise<void> {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "_fetchAndStore" }).debug(
-        "fetching pages",
-      );
-    }
-    while (true) {
-      const entry = await this.#fetchPageAndUpdate(
-        this.#objectSet,
-        "loading",
-        this.abortController?.signal,
-      );
-      if (!entry) {
-        // we were aborted
-        return;
-      }
-
-      invariant(entry.value?.data);
-      const count = entry.value.data.length;
-
-      if (count > this.#minNumResults || this.#nextPageToken == null) {
-        break;
-      }
-    }
-    this.store.batch({}, (batch) => {
-      this.setStatus("loaded", batch);
-    });
-
-    return Promise.resolve();
-  }
-
-  fetchMore = (): Promise<unknown> => {
-    if (this.#pendingPageFetch) {
-      return this.#pendingPageFetch;
-    }
-
-    if (this.pendingFetch) {
-      this.#pendingPageFetch = new Promise(async (res) => {
-        await this.pendingFetch;
-        res(this.fetchMore());
-      });
-      return this.#pendingPageFetch;
-    }
-
-    if (this.#nextPageToken == null) {
-      return Promise.resolve();
-    }
-
-    this.store.batch({}, (batch) => {
-      this.setStatus("loading", batch);
-    });
-
-    this.pendingFetch = this.#fetchPageAndUpdate(
-      this.#objectSet,
-      "loaded",
-      this.abortController?.signal,
-    ).finally(() => {
-      this.#pendingPageFetch = undefined;
-    });
-    return this.pendingFetch;
-  };
-
-  async #fetchPageAndUpdate(
-    objectSet: ObjectSet,
-    status: Status,
+  /**
+   * Implements fetchPageData from BaseCollectionQuery template method
+   * Fetches a page of data
+   */
+  protected async fetchPageData(
     signal: AbortSignal | undefined,
-  ): Promise<Entry<ListCacheKey> | undefined> {
-    const append = this.#nextPageToken != null;
+  ): Promise<PageResult<Osdk.Instance<any>>> {
+    // Fetch the data with pagination
+    const resp = await this.#objectSet.fetchPage({
+      $nextPageToken: this.nextPageToken,
+      $pageSize: this.options.pageSize,
+      // For now this keeps the shared test code from falling apart
+      // but shouldn't be needed ideally
+      ...(Object.keys(this.#orderBy).length > 0
+        ? { $orderBy: this.#orderBy }
+        : {}),
+    });
 
-    try {
-      let { data, nextPageToken } = await objectSet.fetchPage({
-        $nextPageToken: this.#nextPageToken,
-        $pageSize: this.options.pageSize,
-        // For now this keeps the shared test code from falling apart
-        // but shouldn't be needed ideally
-        ...(Object.keys(this.#orderBy).length > 0
-          ? { $orderBy: this.#orderBy }
-          : {}),
-      });
-
-      if (signal?.aborted) {
-        return;
-      }
-
-      this.#nextPageToken = nextPageToken;
-
-      // Our caching really expects to have the full objects in the list
-      // so we need to fetch them all here
-      if (this.#type === "interface") {
-        data = await reloadDataAsFullObjects(this.store.client, data);
-      }
-
-      const { retVal } = this.store.batch({}, (batch) => {
-        return this._updateList(
-          storeOsdkInstances(this.store, data, batch),
-          append,
-          nextPageToken ? status : "loaded",
-          batch,
-        );
-      });
-
-      return retVal;
-    } catch (e) {
-      this.logger?.error("error", e);
-      this.store.getSubject(this.cacheKey).error(e);
-
-      // rethrowing would result in many unhandled promise rejections
-      // which i don't think we want
-      // throw e;
+    if (signal?.aborted) {
+      throw new Error("Aborted");
     }
+
+    this.nextPageToken = resp.nextPageToken;
+    let fetchedData = resp.data;
+
+    // Our caching really expects to have the full objects in the list
+    // so we need to fetch them all here
+    if (this.#type === "interface") {
+      fetchedData = await reloadDataAsFullObjects(
+        this.store.client,
+        fetchedData,
+      );
+    }
+
+    return {
+      ...resp,
+      data: fetchedData,
+    };
+  }
+
+  /**
+   * Handle fetch errors by setting appropriate error state and notifying subscribers
+   */
+  protected handleFetchError(
+    error: unknown,
+    _status: Status,
+    batch: BatchContext,
+  ): Entry<ListCacheKey> {
+    this.logger?.error("error", error);
+    this.store.getSubject(this.cacheKey).error(error);
+
+    // We don't call super.handleFetchError because ListQuery has special error handling
+    // but we still use writeToStore to create a properly structured Entry
+    return this.writeToStore({ data: [] }, "error", batch);
   }
 
   /**
@@ -474,6 +767,17 @@ export class ListQuery extends BaseListQuery<
     }
   };
 
+  invalidateObjectType = async (
+    objectType: string,
+    changes: Changes | undefined,
+  ): Promise<void> => {
+    if (this.cacheKey.otherKeys[1] === objectType) {
+      // Only invalidate lists for the matching apiName
+      changes?.modified.add(this.cacheKey);
+      return this.revalidate(true);
+    }
+  };
+
   /**
    * Note: This method is not async because I want it to return right after it
    *       finishes the synchronous updates. The promise that is returned
@@ -491,6 +795,9 @@ export class ListQuery extends BaseListQuery<
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
         DEBUG_ONLY__changesToString(changes),
+      );
+      this.logger?.child({ methodName: "maybeUpdateAndRevalidate" }).debug(
+        `Already in changes? ${changes.modified.has(this.cacheKey)}`,
       );
     }
 
@@ -583,9 +890,9 @@ export class ListQuery extends BaseListQuery<
 
         this._updateList(
           newList,
-          /* append */ false,
           status,
           batch,
+          /* append */ false,
         );
       });
 
@@ -683,27 +990,6 @@ export class ListQuery extends BaseListQuery<
     };
   }
 
-  _sortCacheKeys(
-    objectCacheKeys: ObjectCacheKey[],
-    batch: BatchContext,
-  ): ObjectCacheKey[] {
-    if (Object.keys(this.#orderBy).length > 0) {
-      objectCacheKeys = objectCacheKeys.sort((a, b) => {
-        for (const sortFn of this.#sortFns) {
-          const ret = sortFn(
-            batch.read(a)?.value?.$as(this.#apiName),
-            batch.read(b)?.value?.$as(this.#apiName),
-          );
-          if (ret !== 0) {
-            return ret;
-          }
-        }
-        return 0;
-      });
-    }
-    return objectCacheKeys;
-  }
-
   registerStreamUpdates(sub: Subscription): void {
     const logger = process.env.NODE_ENV !== "production"
       ? this.logger?.child({ methodName: "registerStreamUpdates" })
@@ -785,7 +1071,7 @@ export class ListQuery extends BaseListQuery<
           : objOrIface) as unknown as ObjectHolder;
 
       this.store.batch({}, (batch) => {
-        storeOsdkInstances(this.store, [object as Osdk.Instance<any>], batch);
+        this.storeObjects([object as Osdk.Instance<any>], batch);
       });
     } else if (state === "REMOVED") {
       this.#onOswRemoved(objOrIface, logger);
@@ -853,48 +1139,6 @@ export class ListQuery extends BaseListQuery<
       });
     });
   }
-}
-
-function removeDuplicates(
-  objectCacheKeys: ObjectCacheKey[],
-  batch: BatchContext,
-) {
-  const visited = new Set<ObjectCacheKey>();
-  objectCacheKeys = objectCacheKeys.filter((key) => {
-    batch.read(key);
-    if (visited.has(key)) {
-      return false;
-    }
-    visited.add(key);
-    return true;
-  });
-  return objectCacheKeys;
-}
-
-function createOrderBySortFns(
-  orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
-) {
-  return Object.entries(orderBy).map(([key, order]) => {
-    return (
-      a: ObjectHolder | InterfaceHolder | undefined,
-      b: ObjectHolder | InterfaceHolder | undefined,
-    ): number => {
-      const aValue = a?.[key];
-      const bValue = b?.[key];
-
-      if (aValue == null && bValue == null) {
-        return 0;
-      }
-      if (aValue == null) {
-        return 1;
-      }
-      if (bValue == null) {
-        return -1;
-      }
-      const m = order === "asc" ? -1 : 1;
-      return aValue < bValue ? m : aValue > bValue ? -m : 0;
-    };
-  });
 }
 
 // Hopefully this can go away when we can just request the full object properties on first load

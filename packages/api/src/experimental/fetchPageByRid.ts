@@ -38,10 +38,24 @@ type fetchPageByRidFn = <
   options?: FetchPageArgs<Q, L, R, any, S, T>,
 ) => Promise<FetchPageResult<Q, L, R, S, T>>;
 
+export type FetchPageByRidPayload = {
+  fetchPageByRid: fetchPageByRidFn;
+  fetchPageByRidNoType: fetchPageByRidNoTypeFn;
+};
+
+type fetchPageByRidNoTypeFn = <
+  const R extends boolean,
+  const S extends NullabilityAdherence,
+  const T extends boolean,
+>(
+  rids: readonly string[],
+  options?: FetchPageArgs<ObjectOrInterfaceDefinition, any, R, any, S, T>,
+) => Promise<FetchPageResult<ObjectOrInterfaceDefinition, any, R, S, T>>;
+
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid: Experiment<
   "2.2.0",
   "__EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid",
-  { fetchPageByRid: fetchPageByRidFn }
+  FetchPageByRidPayload
 > = {
   name: "__EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid",
   type: "experiment",

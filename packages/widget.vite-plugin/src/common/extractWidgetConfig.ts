@@ -16,6 +16,7 @@
 
 import type { ParameterConfig, WidgetConfig } from "@osdk/widget.api";
 import type { ViteDevServer } from "vite";
+import { validateWidgetConfig } from "./validateWidgetConfig.js";
 
 export async function extractWidgetConfig(
   moduleId: string,
@@ -29,6 +30,7 @@ export async function extractWidgetConfig(
       throw new Error(`No default export found in ${moduleId}`);
     }
 
+    validateWidgetConfig(config);
     return config as WidgetConfig<ParameterConfig>;
   } catch (error) {
     throw new Error(`Failed to load widget config from ${moduleId}`, {

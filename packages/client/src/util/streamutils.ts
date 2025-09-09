@@ -27,7 +27,7 @@ export async function* parseStreamedResponse(
   let prevChunks: Uint8Array[] = [];
   let openBracesCount = 0;
 
-  for await (let chunk of asyncIterable) {
+  for await (const chunk of asyncIterable) {
     // on the first chunk, skip the expected START_TOKEN if we see it
     let i = 0;
     if (!parsedStart) {

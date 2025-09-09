@@ -7,6 +7,7 @@
 import { Attachment } from '@osdk/client';
 import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/client';
+import type { GroupId as GroupId_2 } from '@osdk/foundry.core';
 import type { InterfaceDefinition } from '@osdk/client';
 import type { ObjectMetadata } from '@osdk/client';
 import type { ObjectTypeDefinition } from '@osdk/client';
@@ -16,6 +17,7 @@ import type { PropertyKeys } from '@osdk/client';
 import { Range as Range_2 } from '@osdk/client';
 import { ThreeDimensionalAggregation } from '@osdk/client';
 import { TwoDimensionalAggregation } from '@osdk/client';
+import type { UserId as UserId_2 } from '@osdk/foundry.core';
 
 export { Attachment }
 
@@ -112,6 +114,11 @@ export type Float<T extends number = number> = T & {
 };
 
 // @public (undocumented)
+export type GroupId = GroupId_2 & {
+    	__groupIdBrand?: void
+};
+
+// @public (undocumented)
 export type Integer<T extends number = number> = T & {
     	__integerBrand?: void
 };
@@ -159,6 +166,15 @@ export interface PlatformNotification {
     links: NotificationLink[];
 }
 
+// @public (undocumented)
+export type Principal = {
+    	type: "user"
+    	id: string
+} | {
+    	type: "group"
+    	id: string
+};
+
 export { Range_2 as Range }
 
 // @public (undocumented)
@@ -185,6 +201,16 @@ export interface UrlLinkTarget {
     	// (undocumented)
     url: string;
 }
+
+// @public (undocumented)
+export class UserFacingError extends Error {
+    	constructor(message: string);
+}
+
+// @public (undocumented)
+export type UserId = UserId_2 & {
+    	__userIdBrand?: void
+};
 
 // (No @packageDocumentation comment for this package)
 

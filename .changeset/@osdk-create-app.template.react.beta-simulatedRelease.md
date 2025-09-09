@@ -1,5 +1,5 @@
 ---
-"@osdk/create-app.template.react.beta": minor
+"@osdk/create-app.template.react.beta": patch
 ---
       
 Simulated release

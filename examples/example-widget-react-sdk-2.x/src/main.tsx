@@ -10,7 +10,7 @@ import { Widget } from "./Widget.js";
 const root = document.getElementById("root")!;
 
 createRoot(root).render(
-  <Theme>
+  <Theme hasBackground={false}>
     <FoundryWidget config={MainConfig}>
       <Widget />
     </FoundryWidget>

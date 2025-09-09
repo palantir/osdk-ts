@@ -50,7 +50,7 @@ export function getYargsBase(args: string[]): Argv<CliCommonArgs> {
         }
         consola.debug(err.stack);
       } else {
-        if (err && err instanceof YargsCheckError === false) {
+        if (err && !(err instanceof YargsCheckError)) {
           throw err;
         } else {
           argv.showHelp();

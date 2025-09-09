@@ -25,10 +25,16 @@ import type { Client } from "../Client.js";
 declare const client: Client;
 
 void client(Employee).fetchPage({
-  $orderBy: {},
+  // @ts-expect-error
+  $orderBy: { "": "" },
 });
 
 void client(Employee).fetchPage({
   // @ts-expect-error
   $orderBy,
+});
+
+void client(Employee).fetchPage({
+  // @ts-expect-error
+  $orderBy: "",
 });

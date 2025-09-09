@@ -1,5 +1,5 @@
 ---
-"@osdk/foundry-config-json": minor
+"@osdk/foundry-config-json": patch
 ---
       
 Simulated release

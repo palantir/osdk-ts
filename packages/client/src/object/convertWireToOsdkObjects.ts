@@ -362,6 +362,11 @@ function fixObjectPropertiesInPlace(
       delete obj.__rid;
     }
 
+    if (obj.__score) {
+      obj.$score = obj.__score;
+      delete obj.__score;
+    }
+
     // Backend returns as __apiName but we want to stick to $ structure
     obj.$apiName ??= obj.__apiName;
 
