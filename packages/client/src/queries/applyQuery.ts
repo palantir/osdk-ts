@@ -69,7 +69,7 @@ export async function applyQuery<
         )
         : {},
     },
-    { version: qd.version },
+    { version: query.isFixedVersion ? query.version : undefined },
   );
   const objectOutputDefs = await getRequiredDefinitions(qd.output, client);
   const remappedResponse = await remapQueryResponse(
