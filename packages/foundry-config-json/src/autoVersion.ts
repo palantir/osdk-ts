@@ -15,11 +15,10 @@
  */
 
 import { findUp } from "find-up";
-import { exec } from "node:child_process";
 import { promises as fsPromises } from "node:fs";
-import { promisify } from "node:util";
 import { valid } from "semver";
 import type { AutoVersionConfig } from "./config.js";
+import { execAsync } from "./execAsync.js";
 
 export class AutoVersionError extends Error {
   constructor(
@@ -88,7 +87,6 @@ async function packageJsonAutoVersion(): Promise<string> {
 async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
   let gitVersion;
   try {
-    const execAsync = promisify(exec);
     const { stdout } = await execAsync(
       `git describe --tags --first-parent --dirty${
         matchPrefix != null ? ` --match="${matchPrefix}*"` : ""

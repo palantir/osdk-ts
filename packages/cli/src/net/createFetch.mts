@@ -141,6 +141,7 @@ function createRequestLoggingFetch(
   ) {
     const requestLog = typeof input === "string" || input instanceof URL
       ? `${init?.method ?? "GET"}: ${input.toString().trim()}`
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-conversion
       : `${input.method ?? "GET"}: ${input.url.toString().trim()}`;
 
     consola.trace(requestLog);
