@@ -1,5 +1,13 @@
 # @osdk/shared.test
 
+## 0.1.4
+
+### Patch Changes
+
+- 2a94a20: Fix applyQuery for marketplace installations
+  - @osdk/api@2.3.4
+  - @osdk/generator-converters@2.3.4
+
 ## 0.1.3
 
 ### Patch Changes
