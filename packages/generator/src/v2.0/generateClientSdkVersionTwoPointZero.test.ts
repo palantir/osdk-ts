@@ -338,6 +338,7 @@ const referencedOntology = {
       rid: "idk",
     },
   },
+  valueTypes: {},
 } satisfies WireOntologyDefinition;
 
 const referencingOntology = {
@@ -469,6 +470,7 @@ const referencingOntology = {
     },
   },
   sharedPropertyTypes: {},
+  valueTypes: {},
 } satisfies WireOntologyDefinition;
 
 const fooBarTodoWireOntology = changeNames(
@@ -1783,6 +1785,7 @@ describe("generator", () => {
         objectTypes: {},
         queryTypes: {},
         sharedPropertyTypes: {},
+        valueTypes: {},
       },
       "",
       helper.minimalFiles,
@@ -2175,6 +2178,7 @@ describe("generator", () => {
             },
           },
           sharedPropertyTypes: {},
+          valueTypes: {},
         },
         "typescript-sdk/0.0.0 osdk-cli/0.0.0",
         helper.minimalFiles,
