@@ -1,5 +1,16 @@
 # @osdk/foundry-sdk-generator
 
+## 2.4.1
+
+### Patch Changes
+
+- 9cceb0f: Update Platform SDK dependencies
+- Updated dependencies [9cceb0f]
+- Updated dependencies [ebf35cf]
+  - @osdk/generator@2.4.1
+  - @osdk/client@2.4.1
+  - @osdk/api@2.4.1
+
 ## 2.4.0
 
 ### Patch Changes

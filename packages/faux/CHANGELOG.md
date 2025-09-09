@@ -1,5 +1,15 @@
 # @osdk/shared.test
 
+## 0.2.1
+
+### Patch Changes
+
+- 9cceb0f: Update Platform SDK dependencies
+- ebf35cf: Fix applyQuery for marketplace installations
+- Updated dependencies [9cceb0f]
+  - @osdk/generator-converters@2.4.1
+  - @osdk/api@2.4.1
+
 ## 0.2.0
 
 ### Patch Changes
