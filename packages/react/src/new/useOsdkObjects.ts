@@ -97,8 +97,6 @@ export interface UseOsdkListResult<
   fetchMore: (() => Promise<unknown>) | undefined;
   data: Osdk.Instance<T>[] | undefined;
   isLoading: boolean;
-
-  // FIXME populate error!
   error: Error | undefined;
 
   /**
@@ -157,12 +155,17 @@ export function useOsdkObjects<
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
-  // TODO: we need to expose the error in the result
+
+  let error: Error | undefined;
+  if (listPayload && "error" in listPayload && listPayload.error) {
+    error = listPayload.error;
+  } else if (listPayload?.status === "error") {
+    error = new Error("Failed to load objects");
+  }
+
   return {
     fetchMore: listPayload?.fetchMore,
-    error: listPayload && "error" in listPayload
-      ? listPayload?.error
-      : undefined,
+    error,
     data: listPayload?.resolvedList as Osdk.Instance<Q>[],
     isLoading: listPayload?.status === "loading",
     isOptimistic: listPayload?.isOptimistic ?? false,
