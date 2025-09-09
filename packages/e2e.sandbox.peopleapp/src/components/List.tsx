@@ -1,6 +1,7 @@
-import { ObjectTypeDefinition, Osdk } from "@osdk/client";
-import { UseOsdkListResult } from "@osdk/react/experimental";
-import React, { ReactNode } from "react";
+import type { ObjectTypeDefinition, Osdk } from "@osdk/client";
+import type { UseOsdkListResult } from "@osdk/react/experimental";
+import type { ReactNode } from "react";
+import React from "react";
 import { ErrorMessage } from "./ErrorMessage.js";
 import { H2 } from "./headers.js";
 import { InlineSpinner } from "./InlineSpinner.js";

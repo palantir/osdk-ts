@@ -79,6 +79,7 @@ describe("Load Ontologies Metadata", () => {
           },
           "queryTypes": {},
           "sharedPropertyTypes": {},
+          "valueTypes": {},
         },
       }
     `);

@@ -865,6 +865,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "string",
+                  "valueTypeApiName": undefined,
                 },
                 "employeeId": {
                   "description": undefined,
@@ -872,6 +873,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": false,
                   "type": "integer",
+                  "valueTypeApiName": undefined,
                 },
                 "employeeLocation": {
                   "description": "Geotime series reference of the location of the employee",
@@ -879,6 +881,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "geotimeSeriesReference",
+                  "valueTypeApiName": undefined,
                 },
                 "employeeSensor": {
                   "description": "TimeSeries sensor of the status of the employee",
@@ -886,6 +889,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "sensorTimeseries",
+                  "valueTypeApiName": undefined,
                 },
                 "employeeStatus": {
                   "description": "TimeSeries of the status of the employee",
@@ -893,6 +897,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "stringTimeseries",
+                  "valueTypeApiName": undefined,
                 },
                 "fullName": {
                   "description": undefined,
@@ -900,6 +905,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "string",
+                  "valueTypeApiName": undefined,
                 },
                 "office": {
                   "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
@@ -908,6 +914,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "string",
+                  "valueTypeApiName": undefined,
                 },
                 "skillSet": {
                   "description": "The skills of the employee",
@@ -915,6 +922,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "string",
+                  "valueTypeApiName": undefined,
                 },
                 "skillSetEmbedding": {
                   "description": "Vectorized skill set",
@@ -922,6 +930,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "vector",
+                  "valueTypeApiName": undefined,
                 },
                 "startDate": {
                   "description": "The date the employee was hired (most recently, if they were re-hired)",
@@ -929,6 +938,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "datetime",
+                  "valueTypeApiName": undefined,
                 },
               },
               "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
@@ -961,6 +971,7 @@ describe("convertWireToOsdkObjects", () => {
                         "multiplicity": false,
                         "nullable": true,
                         "type": "string",
+                        "valueTypeApiName": undefined,
                       },
                     },
                     "rid": "ri.interface.main.interface.1",
@@ -1047,6 +1058,7 @@ describe("convertWireToOsdkObjects", () => {
                   "multiplicity": false,
                   "nullable": true,
                   "type": "string",
+                  "valueTypeApiName": undefined,
                 },
               },
               "rid": "ri.interface.main.interface.1",

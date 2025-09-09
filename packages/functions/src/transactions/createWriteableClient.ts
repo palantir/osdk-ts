@@ -134,7 +134,7 @@ export function createWriteableClient<
           }
           return editRequestManager.postEdit({
             type: "addObject",
-            objectType: obj.$apiName,
+            objectType: obj.apiName,
             primaryKey: obj.$primaryKey,
             properties: propertyMap,
           });

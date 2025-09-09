@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-export type Principal = {
-  type: "user";
-  id: string;
-} | {
-  type: "group";
-  id: string;
-};
+export class UserFacingError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
+}

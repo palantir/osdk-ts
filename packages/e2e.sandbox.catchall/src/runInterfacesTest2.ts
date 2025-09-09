@@ -29,7 +29,7 @@ import { dsClient } from "./client.js";
 export async function runInterfacesTest2(): Promise<void> {
   console.log("here");
   const athletes = await dsClient(Athlete).where({
-    name22: { $eq: "Michael Jordan" },
+    athleteId: { $eq: "E0DD36D0-D6B9-487B-B643-4CED57A26890" },
   }).fetchPage({ $includeAllBaseObjectProperties: true });
   console.log("here2");
 
@@ -49,7 +49,7 @@ export async function runInterfacesTest2(): Promise<void> {
   >(true);
 
   const athletesSelected = await dsClient(Athlete).where({
-    name22: { $eq: "Michael Jordan" },
+    athleteId: { $eq: "E0DD36D0-D6B9-487B-B643-4CED57A26890" },
   }).fetchPage({
     $select: ["athleteId", "jerseyNumber", "name22"],
     $includeAllBaseObjectProperties: true,
@@ -71,7 +71,7 @@ export async function runInterfacesTest2(): Promise<void> {
 
   // You cannot specify both $select and $includeAllBaseObjectProperties
   const athletesNotAllSelected = await dsClient(Athlete).where({
-    name22: { $eq: "Michael Jordan" },
+    athleteId: { $eq: "E0DD36D0-D6B9-487B-B643-4CED57A26890" },
   }).fetchPage({
     $select: ["athleteId", "name22"],
     // @ts-expect-error
