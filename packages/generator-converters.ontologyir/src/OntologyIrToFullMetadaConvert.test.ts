@@ -3362,6 +3362,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
         },
         "queryTypes": {},
         "sharedPropertyTypes": {},
+        "valueTypes": {},
       }
     `);
   });

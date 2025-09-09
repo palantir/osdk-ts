@@ -243,4 +243,5 @@ export const TodoWireOntology: WireOntologyDefinition = {
       rid: "idk2",
     },
   },
+  valueTypes: {},
 } as const satisfies WireOntologyDefinition;
