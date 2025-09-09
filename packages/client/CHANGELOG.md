@@ -1,5 +1,14 @@
 # @osdk/client
 
+## 2.3.4
+
+### Patch Changes
+
+- 2a94a20: Fix applyQuery for marketplace installations
+  - @osdk/api@2.3.4
+  - @osdk/client.unstable@2.3.4
+  - @osdk/generator-converters@2.3.4
+
 ## 2.3.3
 
 ### Patch Changes

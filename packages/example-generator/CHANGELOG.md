@@ -1,5 +1,12 @@
 # @osdk/example-generator
 
+## 0.11.4
+
+### Patch Changes
+
+- @osdk/create-app@2.3.4
+- @osdk/create-widget@3.0.0
+
 ## 0.11.3
 
 ### Patch Changes

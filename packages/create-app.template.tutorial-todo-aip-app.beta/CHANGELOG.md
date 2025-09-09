@@ -1,5 +1,7 @@
 # @osdk/create-app.template.tutorial-todo-aip-app.beta
 
+## 2.3.4
+
 ## 2.3.3
 
 ## 2.3.2
