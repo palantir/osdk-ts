@@ -650,8 +650,6 @@ export class ListQuery extends BaseListQuery<
     this.#apiName = apiName;
     this.#whereClause = cacheKey.otherKeys[2];
     this.#orderBy = cacheKey.otherKeys[3];
-
-    // Use the provided ObjectSet
     this.#objectSet = objectSet;
 
     // Initialize the sorting strategy
@@ -765,7 +763,6 @@ export class ListQuery extends BaseListQuery<
       return;
     }
 
-    // Check if RDPs depend on this object type - Level 2 cache invalidation
     if (this.cacheKey.otherKeys[RDP_IDX]) {
       try {
         const wireObjectSet = getWireObjectSet(this.#objectSet);

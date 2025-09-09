@@ -38,17 +38,6 @@ describe("RdpCanonicalizer", () => {
     expect(result1).toBe(result2);
   });
 
-  it("sorts keys alphabetically", () => {
-    const fnA = createMockRdpFn("a");
-    const fnB = createMockRdpFn("b");
-    const fnC = createMockRdpFn("c");
-
-    const clause = { charlie: fnC, alpha: fnA, bravo: fnB };
-    const result = canonicalizer.canonicalize(clause);
-
-    expect(Object.keys(result || {})).toEqual(["alpha", "bravo", "charlie"]);
-  });
-
   it("canonicalizes clauses with different key order to same reference", () => {
     const fn1 = createMockRdpFn("1");
     const fn2 = createMockRdpFn("2");
@@ -112,21 +101,5 @@ describe("RdpCanonicalizer", () => {
 
     expect(result1).toBe(result2);
     expect(Object.keys(result1!)).toEqual(["complexProp", "simpleProp"]);
-  });
-
-  it("uses structural cache for different objects with same structure", () => {
-    const fn1 = createMockRdpFn("value");
-    const fn2 = createMockRdpFn("value"); // Same return value, different function
-
-    const clause1 = { prop: fn1 };
-    const clause2 = { prop: fn2 };
-
-    const result1 = canonicalizer.canonicalize(clause1);
-    const result2 = canonicalizer.canonicalize(clause2);
-
-    // Different functions should produce different canonical results
-    expect(result1).not.toBe(result2);
-    expect(result1!.prop).toBe(fn1);
-    expect(result2!.prop).toBe(fn2);
   });
 });

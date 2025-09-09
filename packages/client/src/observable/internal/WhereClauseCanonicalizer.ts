@@ -66,6 +66,7 @@ export class WhereClauseCanonicalizer extends CachingCanonicalizer<
 
   /**
    * Override canonicalize to handle the generic type parameter properly
+   * TODO: type this better than as any
    */
   public canonicalize<T extends ObjectOrInterfaceDefinition>(
     where: WhereClause<T> | SimpleWhereClause,

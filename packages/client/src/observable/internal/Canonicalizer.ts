@@ -36,18 +36,19 @@ export abstract class CachingCanonicalizer<TInput extends object, TCanonical>
   implements Canonicalizer<TInput, TCanonical>
 {
   /**
-   * Fast cache for input object identity. Well-behaved React applications
-   * will often pass the same object reference multiple times (via useMemo,
-   * state, or props), so this provides a fast path.
+   * Cache for input object identity.
    */
-  protected inputCache = new WeakMap<TInput, Canonical<TCanonical>>();
+  protected inputCache: WeakMap<TInput, Canonical<TCanonical>> = new WeakMap<
+    TInput,
+    Canonical<TCanonical>
+  >();
 
   /**
    * Look up or create a canonical form for the given input.
    * This method handles the structural deduplication logic.
    *
    * @param input The input to canonicalize
-   * @returns The canonical form (may be newly created or existing)
+   * @returns The canonical form
    */
   protected abstract lookupOrCreate(input: TInput): Canonical<TCanonical>;
 
@@ -57,16 +58,11 @@ export abstract class CachingCanonicalizer<TInput extends object, TCanonical>
     if (!input) {
       return undefined;
     }
-
-    // Fast path: check input cache first
     if (this.inputCache.has(input)) {
       return this.inputCache.get(input)!;
     }
 
-    // Delegate to subclass for structural lookup/creation
     const canonical = this.lookupOrCreate(input);
-
-    // Cache the result for this input object
     this.inputCache.set(input, canonical);
 
     return canonical;

@@ -18,7 +18,6 @@ import type { Canonical } from "./Canonical.js";
 import { CachingCanonicalizer } from "./Canonicalizer.js";
 import { WeakRefTrie } from "./WeakRefTrie.js";
 
-// RDPs are Record<string, SimplePropertyDef> as seen in SubSelectRDPs type
 export type Rdp<T = any> = Record<string, T>;
 
 export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {

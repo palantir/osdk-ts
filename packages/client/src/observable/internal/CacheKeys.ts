@@ -18,14 +18,12 @@ import { Trie } from "@wry/trie";
 import invariant from "tiny-invariant";
 import { DEBUG_CACHE_KEYS } from "../DebugFlags.js";
 import type { CacheKey } from "./CacheKey.js";
-import type { Canonical } from "./Canonical.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
 import type { ListCacheKey } from "./ListCacheKey.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import type { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { RdpCanonicalizer } from "./RdpCanonicalizer.js";
-import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 import type { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 type CacheKeyArgs<K extends CacheKey> = [K["type"], ...K["otherKeys"]];
@@ -83,10 +81,8 @@ export class CacheKeys {
           "list",
           type,
           apiName,
-          whereCanonicalizer.canonicalize(where)
-            ?? ({} as Canonical<SimpleWhereClause>),
-          orderByCanonicalizer.canonicalize(orderBy)
-            ?? ({} as Canonical<Record<string, "asc" | "desc" | undefined>>),
+          whereCanonicalizer.canonicalize(where),
+          orderByCanonicalizer.canonicalize(orderBy),
           rdpCanonicalizer.canonicalize(rdp),
         ];
 
@@ -113,10 +109,8 @@ export class CacheKeys {
           sourceObjectType,
           sourcePk,
           linkName,
-          whereCanonicalizer.canonicalize(where)
-            ?? ({} as Canonical<SimpleWhereClause>),
-          orderByCanonicalizer.canonicalize(orderBy)
-            ?? ({} as Canonical<Record<string, "asc" | "desc" | undefined>>),
+          whereCanonicalizer.canonicalize(where),
+          orderByCanonicalizer.canonicalize(orderBy),
         ];
 
         if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {

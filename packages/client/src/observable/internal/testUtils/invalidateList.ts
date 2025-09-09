@@ -28,14 +28,18 @@ export async function invalidateList<T extends ObjectTypeDefinition>(
     orderBy?: OrderBy<T>;
   },
 ): Promise<void> {
-  // Pass raw values to getCacheKey - they will be canonicalized in the factory
+  const canonWhere = store.whereCanonicalizer.canonicalize(args.where ?? {});
+  const canonOrderBy = store.orderByCanonicalizer.canonicalize(
+    args.orderBy ?? {},
+  );
+
   const cacheKey = store.getCacheKey<ListCacheKey>(
-    "list" as any,
-    args.type.type as any,
-    args.type.apiName as any,
-    args.where ?? {} as any,
-    args.orderBy ?? {} as any,
-    undefined as any, // No RDP clause for tests
+    "list",
+    args.type.type,
+    args.type.apiName,
+    canonWhere,
+    canonOrderBy,
+    undefined,
   );
 
   await store.peekQuery(cacheKey)?.revalidate(true);

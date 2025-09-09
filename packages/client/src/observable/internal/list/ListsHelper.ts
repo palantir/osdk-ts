@@ -65,8 +65,6 @@ export class ListsHelper extends AbstractHelper<
   ): ListQuery {
     const { type: { apiName, type }, where, orderBy, withProperties } = options;
 
-    // Build the base ObjectSet
-    // Handle both ObjectTypeDefinition and InterfaceDefinition
     let objectSet: any;
     if (type === "object") {
       objectSet = this.store.client({
@@ -80,17 +78,14 @@ export class ListsHelper extends AbstractHelper<
       } as InterfaceDefinition);
     }
 
-    // Apply where clause if provided
     if (where) {
       objectSet = objectSet.where(where as any);
     }
 
-    // Apply withProperties if provided
     if (withProperties) {
       objectSet = objectSet.withProperties(withProperties as any);
     }
 
-    // Canonicalize where and orderBy for the cache key
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
     const canonRdp = withProperties
