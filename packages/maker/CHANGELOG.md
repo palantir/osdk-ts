@@ -1,5 +1,12 @@
 # @osdk/maker
 
+## 0.12.1
+
+### Patch Changes
+
+- 9cceb0f: Update Platform SDK dependencies
+  - @osdk/api@2.4.1
+
 ## 0.12.0
 
 ### Patch Changes

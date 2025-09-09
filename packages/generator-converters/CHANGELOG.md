@@ -1,5 +1,12 @@
 # @osdk/generator-converters
 
+## 2.4.1
+
+### Patch Changes
+
+- 9cceb0f: Update Platform SDK dependencies
+  - @osdk/api@2.4.1
+
 ## 2.4.0
 
 ### Patch Changes

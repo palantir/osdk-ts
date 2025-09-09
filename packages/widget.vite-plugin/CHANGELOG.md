@@ -1,5 +1,12 @@
 # @osdk/widget.vite-plugin
 
+## 3.1.1
+
+### Patch Changes
+
+- 0cd0e00: Validate camelCase for widget/parameter IDs
+  - @osdk/widget.api@3.1.1
+
 ## 3.1.0
 
 ### Patch Changes

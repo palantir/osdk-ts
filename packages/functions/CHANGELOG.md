@@ -1,5 +1,14 @@
 # @osdk/functions
 
+## 1.2.1
+
+### Patch Changes
+
+- 9cceb0f: Update Platform SDK dependencies
+- Updated dependencies [9cceb0f]
+- Updated dependencies [ebf35cf]
+  - @osdk/client@2.4.1
+
 ## 1.2.0
 
 ### Patch Changes
