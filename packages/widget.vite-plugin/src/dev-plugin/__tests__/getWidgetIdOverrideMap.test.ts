@@ -20,7 +20,13 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import * as extractInjectedScriptsModule from "../extractInjectedScripts.js";
 import { getWidgetIdOverrideMap } from "../getWidgetIdOverrideMap.js";
 
-const MOCK_WIDGET_CONFIG = { id: "widgetId" } as WidgetConfig<ParameterConfig>;
+const MOCK_WIDGET_CONFIG = {
+  id: "widgetId",
+  name: "Widget Name",
+  type: "workshop",
+  parameters: {},
+  events: {},
+} as WidgetConfig<ParameterConfig>;
 const MOCK_SERVER = {
   ssrLoadModule: vi.fn().mockResolvedValue({ default: MOCK_WIDGET_CONFIG }),
 } as unknown as ViteDevServer;
