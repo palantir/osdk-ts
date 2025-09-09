@@ -19,22 +19,13 @@ import { Trie } from "@wry/trie";
 import deepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
 import type { Canonical } from "./Canonical.js";
+import { CachingCanonicalizer } from "./Canonicalizer.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 
-export class WhereClauseCanonicalizer {
-  /**
-   * This is a shortcut cache for any WhereClause's that we have
-   * seen and already canonicalized. The theory behind this
-   * is that well behaving React applications will either `useMemo`
-   * their where clause, or store it in state or pass it through as
-   * props such that we are likely to get the same WhereClause
-   * object multiple times and we can skip unnecessary work.
-   */
-  #cache = new WeakMap<
-    WhereClause<any> | SimpleWhereClause,
-    Canonical<SimpleWhereClause>
-  >();
-
+export class WhereClauseCanonicalizer extends CachingCanonicalizer<
+  WhereClause<any> | SimpleWhereClause,
+  SimpleWhereClause
+> {
   /**
    * This is a trie that stores the sorted collapsed keys of a where clause to
    * the cache key for canonicalized options. In theory this keeps the number of
@@ -50,14 +41,9 @@ export class WhereClauseCanonicalizer {
     options: WeakRef<Canonical<SimpleWhereClause>>[];
   }> = new Map();
 
-  public canonicalize<T extends ObjectOrInterfaceDefinition>(
-    where: WhereClause<T> | SimpleWhereClause,
+  protected lookupOrCreate(
+    where: WhereClause<any> | SimpleWhereClause,
   ): Canonical<SimpleWhereClause> {
-    // fastest shortcut
-    if (this.#cache.has(where)) {
-      return this.#cache.get(where)!;
-    }
-
     const keysSet = new Set<string>();
     const calculatedCanon = this.#toCanon(where, keysSet);
     const cacheKey = this.#trie.lookupArray(Array.from(keysSet).sort());
@@ -75,8 +61,17 @@ export class WhereClauseCanonicalizer {
       lookupEntry.options.push(new WeakRef(canon));
     }
 
-    this.#cache.set(where, canon);
     return canon;
+  }
+
+  /**
+   * Override canonicalize to handle the generic type parameter properly
+   * TODO: type this better than as any
+   */
+  public canonicalize<T extends ObjectOrInterfaceDefinition>(
+    where: WhereClause<T> | SimpleWhereClause,
+  ): Canonical<SimpleWhereClause> {
+    return super.canonicalize(where as any)!;
   }
 
   #toCanon = <T extends ObjectOrInterfaceDefinition>(
