@@ -1,5 +1,16 @@
 # @osdk/generator-converters
 
+## 2.5.0-beta.4
+
+### Minor Changes
+
+- a00d2ed: Update Platform SDK dependencies
+- a96d89e: Update Platform SDK dependencies
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.4
+
 ## 2.5.0-beta.3
 
 ### Minor Changes

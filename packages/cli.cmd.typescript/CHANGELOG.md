@@ -1,5 +1,20 @@
 # @osdk/cli.cmd.typescript
 
+## 0.29.0-beta.4
+
+### Minor Changes
+
+- a00d2ed: Update Platform SDK dependencies
+- 34129f4: Add a flag to skip updating the package json
+- a96d89e: Update Platform SDK dependencies
+
+### Patch Changes
+
+- Updated dependencies [a00d2ed]
+- Updated dependencies [a96d89e]
+  - @osdk/generator@2.5.0-beta.4
+  - @osdk/cli.common@0.29.0-beta.4
+
 ## 0.29.0-beta.3
 
 ### Minor Changes
