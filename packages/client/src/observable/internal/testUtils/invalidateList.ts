@@ -39,7 +39,7 @@ export async function invalidateList<T extends ObjectTypeDefinition>(
     args.type.apiName,
     canonWhere,
     canonOrderBy,
-    undefined,
+    undefined, /* rdp */
   );
 
   await store.peekQuery(cacheKey)?.revalidate(true);

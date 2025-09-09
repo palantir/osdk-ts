@@ -63,27 +63,22 @@ export class ListsHelper extends AbstractHelper<
   getQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
   ): ListQuery {
-    const { type: { apiName, type }, where, orderBy, withProperties } = options;
+    const { type: typeDefinition, where, orderBy, withProperties } = options;
+    const { apiName, type } = typeDefinition;
 
     let objectSet: any;
     if (type === "object") {
-      objectSet = this.store.client({
-        type,
-        apiName,
-      } as ObjectTypeDefinition);
+      objectSet = this.store.client(typeDefinition as ObjectTypeDefinition);
     } else {
-      objectSet = this.store.client({
-        type,
-        apiName,
-      } as InterfaceDefinition);
+      objectSet = this.store.client(typeDefinition as InterfaceDefinition);
     }
 
     if (where) {
-      objectSet = objectSet.where(where as any);
+      objectSet = objectSet.where(where);
     }
 
     if (withProperties) {
-      objectSet = objectSet.withProperties(withProperties as any);
+      objectSet = objectSet.withProperties(withProperties);
     }
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
