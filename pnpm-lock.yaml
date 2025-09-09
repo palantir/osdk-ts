@@ -452,7 +452,7 @@ importers:
         version: 29.7.0(@types/node@18.19.124)(ts-node@10.9.2(@swc/core@1.7.39)(@types/node@18.19.124)(typescript@5.5.4))
       jest-expo:
         specifier: ~52.0.2
-        version: 52.0.2(@babel/core@7.27.1)(canvas@2.11.2)(expo@52.0.11(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@expo/metro-runtime@4.0.0(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1)))(graphql@16.8.1)(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(jest@29.7.0(@types/node@18.19.124)(ts-node@10.9.2(@swc/core@1.7.39)(@types/node@18.19.124)(typescript@5.5.4)))(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)(webpack@5.96.1(@swc/core@1.7.39))
+        version: 52.0.2(@babel/core@7.27.1)(canvas@2.11.2)(expo@52.0.11(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@expo/metro-runtime@4.0.0(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1)))(graphql@16.8.1)(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(jest@29.7.0(@types/node@18.19.124)(ts-node@10.9.2(@swc/core@1.7.39)(@types/node@18.19.124)(typescript@5.5.4)))(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)(webpack@5.96.1(@swc/core@1.7.39)(esbuild@0.25.3))
       react-test-renderer:
         specifier: 19.1.0
         version: 19.1.0(react@18.3.1)
@@ -467,7 +467,7 @@ importers:
         version: 6.3.5(@types/node@18.19.124)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.44.0)(yaml@2.8.0)
       vitest:
         specifier: ^3.0.5
-        version: 3.0.7(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.29.1)(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(yaml@2.8.0)
+        version: 3.0.7(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3)(lightningcss@1.29.1)(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(yaml@2.8.0)
 
   examples/example-react-sdk-1.x:
     dependencies:
@@ -625,7 +625,7 @@ importers:
         version: 6.3.5(@types/node@18.19.124)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.44.0)(yaml@2.8.0)
       vitest:
         specifier: ^3.0.5
-        version: 3.0.7(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.29.1)(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(yaml@2.8.0)
+        version: 3.0.7(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3)(lightningcss@1.29.1)(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(yaml@2.8.0)
 
   examples/example-tutorial-todo-aip-app-sdk-1.x:
     dependencies:
@@ -985,7 +985,7 @@ importers:
         version: 6.3.5(@types/node@18.19.124)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.44.0)(yaml@2.8.0)
       vitest:
         specifier: ^3.0.5
-        version: 3.0.7(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.29.1)(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(yaml@2.8.0)
+        version: 3.0.7(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3)(lightningcss@1.29.1)(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(yaml@2.8.0)
       vue-tsc:
         specifier: ^2.1.6
         version: 2.1.6(typescript@5.5.4)
@@ -1276,8 +1276,8 @@ importers:
         specifier: workspace:~
         version: link:../cli.common
       '@osdk/foundry.ontologies':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
       '@osdk/generator':
         specifier: workspace:~
         version: link:../generator
@@ -1359,11 +1359,11 @@ importers:
         specifier: workspace:*
         version: link:../client.unstable
       '@osdk/foundry.core':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
       '@osdk/foundry.ontologies':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
       '@osdk/generator-converters':
         specifier: workspace:*
         version: link:../generator-converters
@@ -1823,7 +1823,7 @@ importers:
         version: 29.7.0(@types/node@18.19.124)(ts-node@10.9.2(@swc/core@1.7.39)(@types/node@18.19.124)(typescript@5.5.4))
       jest-expo:
         specifier: ~52.0.2
-        version: 52.0.2(@babel/core@7.27.1)(canvas@2.11.2)(expo@52.0.11(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@expo/metro-runtime@4.0.0(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1)))(graphql@16.8.1)(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(jest@29.7.0(@types/node@18.19.124)(ts-node@10.9.2(@swc/core@1.7.39)(@types/node@18.19.124)(typescript@5.5.4)))(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)(webpack@5.96.1(@swc/core@1.7.39))
+        version: 52.0.2(@babel/core@7.27.1)(canvas@2.11.2)(expo@52.0.11(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@expo/metro-runtime@4.0.0(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1)))(graphql@16.8.1)(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(jest@29.7.0(@types/node@18.19.124)(ts-node@10.9.2(@swc/core@1.7.39)(@types/node@18.19.124)(typescript@5.5.4)))(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)(webpack@5.96.1(@swc/core@1.7.39)(esbuild@0.25.3))
       react-test-renderer:
         specifier: 19.1.0
         version: 19.1.0(react@18.3.1)
@@ -1838,7 +1838,7 @@ importers:
         version: 6.3.5(@types/node@18.19.124)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.44.0)(yaml@2.8.0)
       vitest:
         specifier: ^3.0.5
-        version: 3.0.7(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.29.1)(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(yaml@2.8.0)
+        version: 3.0.7(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3)(lightningcss@1.29.1)(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(yaml@2.8.0)
 
   packages/create-app.template.react:
     dependencies:
@@ -1999,7 +1999,7 @@ importers:
         version: 6.3.5(@types/node@18.19.124)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.44.0)(yaml@2.8.0)
       vitest:
         specifier: ^3.0.5
-        version: 3.0.7(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.29.1)(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(yaml@2.8.0)
+        version: 3.0.7(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3)(lightningcss@1.29.1)(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(yaml@2.8.0)
 
   packages/create-app.template.tutorial-todo-aip-app:
     dependencies:
@@ -2704,8 +2704,11 @@ importers:
         specifier: workspace:~
         version: link:../e2e.generated.catchall
       '@osdk/foundry':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
+      '@osdk/functions':
+        specifier: workspace:~
+        version: link:../functions
       chalk:
         specifier: ^5.4.1
         version: 5.4.1
@@ -3123,20 +3126,20 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/foundry.core':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
       '@osdk/foundry.geo':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
       '@osdk/foundry.ontologies':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
       '@osdk/generator-converters':
         specifier: workspace:~
         version: link:../generator-converters
       '@osdk/internal.foundry.ontologies':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -3224,11 +3227,11 @@ importers:
         specifier: workspace:*
         version: link:../client
       '@osdk/foundry.ontologies':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
       '@osdk/foundry.thirdpartyapplications':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
       '@osdk/generator':
         specifier: workspace:*
         version: link:../generator
@@ -3297,11 +3300,11 @@ importers:
         specifier: workspace:^
         version: link:../client
       '@osdk/foundry.core':
-        specifier: ^2.28.0
-        version: 2.28.0
+        specifier: ^2.30.0
+        version: 2.30.0
       '@osdk/foundry.ontologies':
-        specifier: ^2.26.0
-        version: 2.27.0
+        specifier: ^2.30.0
+        version: 2.30.0
     devDependencies:
       '@microsoft/api-documenter':
         specifier: ^7.26.5
@@ -3337,8 +3340,8 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/foundry.ontologies':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
       '@osdk/generator-converters':
         specifier: workspace:~
         version: link:../generator-converters
@@ -3378,7 +3381,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: ^3.0.5
-        version: 3.0.7(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.29.1)(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(yaml@2.8.0)
+        version: 3.0.7(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3)(lightningcss@1.29.1)(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(yaml@2.8.0)
 
   packages/generator-converters:
     dependencies:
@@ -3386,8 +3389,8 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/foundry.ontologies':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
@@ -3411,8 +3414,8 @@ importers:
         specifier: workspace:~
         version: link:../client.unstable
       '@osdk/foundry.ontologies':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
       tiny-invariant:
         specifier: ^1.3.3
         version: 1.3.3
@@ -3492,8 +3495,8 @@ importers:
         specifier: workspace:~
         version: link:../client.unstable
       '@osdk/foundry.ontologies':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -3749,20 +3752,20 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/foundry.core':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
       '@osdk/foundry.geo':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
       '@osdk/foundry.ontologies':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
       '@osdk/generator-converters':
         specifier: workspace:~
         version: link:../generator-converters
       '@osdk/internal.foundry.ontologies':
-        specifier: 2.28.0
-        version: 2.28.0
+        specifier: 2.30.0
+        version: 2.30.0
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -3957,7 +3960,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: ^3.0.5
-        version: 3.0.7(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.29.1)(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(yaml@2.8.0)
+        version: 3.0.7(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3)(lightningcss@1.29.1)(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(yaml@2.8.0)
 
   packages/typescript-sdk-docs:
     dependencies:
@@ -4020,8 +4023,8 @@ importers:
         specifier: workspace:*
         version: link:../faux
       '@osdk/foundry.ontologies':
-        specifier: ^2.23.0
-        version: 2.27.0
+        specifier: ^2.30.0
+        version: 2.30.0
       '@osdk/generator-converters.ontologyir':
         specifier: workspace:*
         version: link:../generator-converters.ontologyir
@@ -5635,7 +5638,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {node: '>=0.10.0'}
+    engines: {'0': node >=0.10.0}
 
   '@expo/cli@0.21.8':
     resolution: {integrity: sha512-gU+NlL/XS9r7LEfLhjDDKuv3jEtOh+rVnk/k7Lp8WrUwaMCoEGfmQpSqLXetFCCC4UFXSaj1cdMGoy2UBw4rew==}
@@ -6137,104 +6140,95 @@ packages:
   '@osdk/docs-spec-sdk@0.5.0':
     resolution: {integrity: sha512-gH2EvXJ8oc/wRCxucnPauhWaCRjbq5fvmmdRuxfoS30oEyoh6WCKAcoDn49hlpS5JMjv1D4ug37CSG6SXWsrFw==}
 
-  '@osdk/foundry.admin@2.28.0':
-    resolution: {integrity: sha512-AJKILgdx6jGD3/l2SxUsoH2L711LdbGR1/UD1U/IVwVFQL6L39YWRGU66fPmspUk8XK2qzlHt84i2eRwzXDtnA==}
+  '@osdk/foundry.admin@2.30.0':
+    resolution: {integrity: sha512-DWF3MsYtQ87PGoVR+bGZYs595brVDRQPTnC8UD2XoTOpejKvwGNijPAcqZMZcFwxJdtvykSvy4E2mH5R0YSvCA==}
 
-  '@osdk/foundry.aipagents@2.28.0':
-    resolution: {integrity: sha512-FzWalGiSkA98eRIEKOTae9GcFo9uCw//3mcqKpitws2niOWfaPX3obitMcnnxKFkSlFSKs1zCer+gbNomMh3AA==}
+  '@osdk/foundry.aipagents@2.30.0':
+    resolution: {integrity: sha512-A4vd/VCgptH2wyJk9+Tva5eIHJiDeauj8SdyQ2sWcgER6ydlVoZ7Vbtd1FP7MO2dvCqOkW8L9EFZJeChvZ3sZw==}
 
-  '@osdk/foundry.audit@2.28.0':
-    resolution: {integrity: sha512-VFkxRzdc/WIpP0NyageLN2i1I4blVT2r/smBghDsVG/W7nlwZqSHiMEJ4pRwfSdTAZvnCg0IIf3cQfrm0AUnzw==}
+  '@osdk/foundry.audit@2.30.0':
+    resolution: {integrity: sha512-lSheOXA4zTnEZrR/EXUbT7DvR+Hri7PS+MSV1ND5nYOtv6gDfZscSAlTfLjWRNoCXhk9riAa/hfgrtWFFvqXZg==}
 
-  '@osdk/foundry.connectivity@2.28.0':
-    resolution: {integrity: sha512-GjyW6dMPjUvWvvpHR1zfAJAkbS3Imy7otvmFnKisI8iRR3lyDGF4ToMz6M+08tBmN2yljlCuCLA0YjcUhq17Uw==}
+  '@osdk/foundry.connectivity@2.30.0':
+    resolution: {integrity: sha512-oj9dZkT/N3siaQiOBzzRsWO4WdfJy5FmcrHa/4EoZB2+WqpuJbS22hGxCqKfnHbUrA+px3DUqhEmE/d/BbD4FQ==}
 
-  '@osdk/foundry.core@2.27.0':
-    resolution: {integrity: sha512-1H7pYnZzfMzV/a+n+NoV/jpJ0fLGk2us6qd/m7c3ng7Zum1yigpVAcdIuutcbEvIXzjjBVVyA7C4gyR/c1mHtw==}
-
-  '@osdk/foundry.core@2.28.0':
-    resolution: {integrity: sha512-ETCcpHZoROhamo7WlQBIs6q9vM/I3TYyuy1NQSZRaLbIFmCXff05Cl/KDjOL48jy5G0btevI+gAhacvGvvm8Mw==}
+  '@osdk/foundry.core@2.30.0':
+    resolution: {integrity: sha512-Q3NuV1LK/PoM13/4oAeZVcg19s8TYU3klLWXvE/u++qcMr4cNcGbX3B8lsZgzdxhMbadlbBPkQucAcf3UsZQ0Q==}
 
   '@osdk/foundry.core@2.5.0':
     resolution: {integrity: sha512-LV+m6/3Y+Q0lN16PAwQvoWtutY0xXdntuwOQjMR2ZqdLRlZOK2KSvfwNZnX4q8EKuvF1mJC8iaTtWh3lChpU1Q==}
 
-  '@osdk/foundry.datahealth@2.28.0':
-    resolution: {integrity: sha512-JQMjs/4Gy6vufEgmO6BGRR35GIg/IIsv7QaFI+48OmJ3K6IaHQJUQ6eJtuCPvod3K8L5peVo+54YsGBM+yuKmw==}
+  '@osdk/foundry.datahealth@2.30.0':
+    resolution: {integrity: sha512-RX7TKhNnxq9TwXPsYonoIbPnaFw+ohOqjlFCqVn2ynjVLuZYJ96d9lBdlYe3QL2fOWkkbiAIkf0mUtkj/2HidA==}
 
-  '@osdk/foundry.datasets@2.28.0':
-    resolution: {integrity: sha512-/hciMsM04RgK8Ei8KuWeSO4ZKgsgjwg/kK5hc4/CA3ZArN065OCmTVkKFYzRBeiE3brDV3YFM/Cbtya+7QYm0Q==}
+  '@osdk/foundry.datasets@2.30.0':
+    resolution: {integrity: sha512-IXJY+XoWAcWUa47lu4ur/vBn12d5e9GZ38Hx97JTFNuM3YCqyJN5LRBrZNt1EMBBTI1EX8R8DL9EkKv+qBsQiw==}
 
   '@osdk/foundry.datasets@2.5.0':
     resolution: {integrity: sha512-W82xleLQgQFUTVnAQS54n26xUFEALayotl1f3LGeRLN6r+2G1dNp+UgRU7/IHc/xzOqgulEOGwwr6ENFcsNP2A==}
 
-  '@osdk/foundry.filesystem@2.28.0':
-    resolution: {integrity: sha512-nEEWxEy0t3eCZ75IYjAB7DCDgfjgIuFoYR/Rb5V090lOZ4Q9MaF7ba7iwN1goMeVwPbq1dHqomE3FX1Cy9hgjg==}
+  '@osdk/foundry.filesystem@2.30.0':
+    resolution: {integrity: sha512-UvyoaXRSA6fjUlviLORd4mx9D9UbF4RGaosx8AHpdc4oLXDSjLGIcRUdcJgpLeGO4Yx78U7EtzVeuniMbUY2dQ==}
 
   '@osdk/foundry.filesystem@2.5.0':
     resolution: {integrity: sha512-SJKZSfBc7CroyoIVW3D2SpVyaCCnhv8onzIwHcJWOnufFgSbQ3kqyWoqNiStGlymmnoSbniK3rfUFFYeUbxhDQ==}
 
-  '@osdk/foundry.functions@2.28.0':
-    resolution: {integrity: sha512-ZwMw9WLhv0Uo7YpnLWEthC3ocwNTGjQ7ijYNUS6uXrHMbqGLszNhYjeMcUIxfi3/hIOliR2FcisWU/APznLcYA==}
+  '@osdk/foundry.functions@2.30.0':
+    resolution: {integrity: sha512-3WMjF2CZIqWAiSItlnv+N7hydF2xsb7MsG0snPd6ZQUVKE++vmikInqssyAfUhc/xUqZOZ7ViBwphMqPg9ETXA==}
 
-  '@osdk/foundry.geo@2.27.0':
-    resolution: {integrity: sha512-ZG+eSZFY6pEsDSFL19GhUG2PJVRtAivzAaQoC3jOkn8Oet2dDLAh7JTeE7VgHzEUNqkQsUhOjdb2zIU6Usp+pw==}
-
-  '@osdk/foundry.geo@2.28.0':
-    resolution: {integrity: sha512-yC5nkSgktnj8JPtW5ROuRYqe6s3gfg3ihN4vCm+aPAa85LjfBg/woY/ZkET4Tgy27+HOkGr7SwB77jzTzl4rzQ==}
+  '@osdk/foundry.geo@2.30.0':
+    resolution: {integrity: sha512-VsYE9vtDwUVxfHlQLKxfDq6YrknPoPt6Gf3Ui0ojY7STqT/FTJlyH8aG+D3zosUVKeTZNXZ3ybc51GhB8kuYSQ==}
 
   '@osdk/foundry.geo@2.5.0':
     resolution: {integrity: sha512-kL615eqHvn1MkP0le2r6vx/ub+lit5bKdmoWNRELMqi9s2BlLuoKAQW5H9YDQPqhHuJDjrBJAWiviOin9mUKqw==}
 
-  '@osdk/foundry.geojson@2.28.0':
-    resolution: {integrity: sha512-/4khdr1IGxMqkkSeXS7zcUBZfsJxGTBzaelk9+pDLfoT9vWbPtSEKUA8Q87+z7eEZcc/Tjf0xCBfHhI0qX//Xw==}
+  '@osdk/foundry.geojson@2.30.0':
+    resolution: {integrity: sha512-JzoYPr+KWG1brrEwCM4tTFRxnS1+q32o1oGpRVFG605N91RIF/aufWIwMYHd20NJ3uxA35rl+SDrHLA1BaiR8g==}
 
-  '@osdk/foundry.mediasets@2.28.0':
-    resolution: {integrity: sha512-OBDCibw1fGU/pg/cvd8Kwd5Av/FsAvTPHKaa52upgf9rP12lslq4+4QNWfdQxqvdgJZUyovBsxImW6AhPYwhQQ==}
+  '@osdk/foundry.mediasets@2.30.0':
+    resolution: {integrity: sha512-C1lOUQX8MkDHVFPzIll0urlZMJSGOgtlqzAA9tgMUfXsrD530RHBsFHa/oiHuYsx5iTCwO80opms9Pf7Vkd1Hg==}
 
-  '@osdk/foundry.models@2.28.0':
-    resolution: {integrity: sha512-BiyEdzCOzLS5zYvmT5kl1dVJFXBp/D7eZwevJH64xnyLEMZH6zwxpuY1xDH+lSbrczLf6Dg2FYuIjp23C8+NnA==}
+  '@osdk/foundry.models@2.30.0':
+    resolution: {integrity: sha512-aFcyflb7hryOcKz7gwyByvhzZBTHKqIMKfidkkc1JvuvO6p8c2vroXmj8hzTsz91EgX1Re462Bt1iEaOQ1RqQg==}
 
-  '@osdk/foundry.ontologies@2.27.0':
-    resolution: {integrity: sha512-7PzGMMOu0/1lIITWeSU/DO7iKKiszDwfsFhzLu2gWfZ8jRSFqtpLD71Wr1Ik/jnPHEmob2lFB/MeNVSSuCKoxw==}
+  '@osdk/foundry.ontologies@2.30.0':
+    resolution: {integrity: sha512-hmUhGJ846r8FDqkDZbt9P4tSzTcYzTatwrCVr4wN43WNRMIARvPLGnKCs9lk/nL1DOoUG6AM1v2RfvfLryQngA==}
 
-  '@osdk/foundry.ontologies@2.28.0':
-    resolution: {integrity: sha512-PoV+QUNP94sXi2wwi3N57DD2tnlzsGP9vKrmSqgbnJaGVPo7EMMBzVzI6jPJMzJk61b00U4lwZB6qL3S5If7SA==}
+  '@osdk/foundry.operations@2.30.0':
+    resolution: {integrity: sha512-aRpNK/vG15GPfpiKjgLtgGWmV21YIJ9IrOpN1KMyysPzU8auGRbdzTAcI0S8FKgwkrRYFcczpsY9lwvG1oIsDg==}
 
-  '@osdk/foundry.operations@2.28.0':
-    resolution: {integrity: sha512-CNvl1d5yqNRiXeu6RNrSHIKygVtnM8FnYSkvuRZkdpiti/8tsM3Dck2uChw0SIyeeirmJEKNULZtEg1K54/Gmg==}
+  '@osdk/foundry.orchestration@2.30.0':
+    resolution: {integrity: sha512-vvQP46Umm1Yq9uQAoC/zRRhVHlpaaSYUfkAWFq34U1Cby2ds49ItTFLvJGM6WtNFqr/QxTs/RdyEb/9Bc7Hs/A==}
 
-  '@osdk/foundry.orchestration@2.28.0':
-    resolution: {integrity: sha512-MOYF0K4nHs2seKWdDNeOmbaRJpbBFAprhiOVtfbxlZVsR0AsSurwbiL2PeDLKBh0sIJlOQg0BAPM+tkRISc1Yw==}
+  '@osdk/foundry.publicapis@2.30.0':
+    resolution: {integrity: sha512-4Q1xi05d5Mxc53XT2zcljaN4QnoT+LfkVJDaOBKKW37UnqWoKzmvOdkYWtdGxj2aNeWBQ3oQYoEEQRV9ZaNTcg==}
 
-  '@osdk/foundry.publicapis@2.28.0':
-    resolution: {integrity: sha512-WhnB1l9+uGEdJyFI1nayFDQIMk6SQCGLfDE2mm1uasgMbXBDnFWvG24MGBVkkNPF+yiYRLVyIdXy5HEU4EVbTA==}
+  '@osdk/foundry.sqlqueries@2.30.0':
+    resolution: {integrity: sha512-oI6eWwyq6+wzQIsdfktgKqiQA29b2aOuPPAlBmnsOy9LAdsgEWtE2JpePEFXM71wFNxRytCum+UE6IJNyV+ZmQ==}
 
-  '@osdk/foundry.sqlqueries@2.28.0':
-    resolution: {integrity: sha512-ONpC7rB5UvuNir7YjsM+RCSU6EjqfYgYMcKELrNgClIF8FQRD0ueMAyzr/PWBAALFB9P2yzhWcsNXbNEZauAwA==}
+  '@osdk/foundry.streams@2.30.0':
+    resolution: {integrity: sha512-i1rIpWkA0/oWoOx+asNbcLkbmNI5pKopCrmhZBu/WDSCsQattYVIYaHh2++WGWi5BYFhSvswly7tRqjGZ7f2SA==}
 
-  '@osdk/foundry.streams@2.28.0':
-    resolution: {integrity: sha512-U9AbXii9yJtrOSWmIt8Cli8HNiE9YScUZ3tBCk/6liIFVeDN2C7x6c01nHtlsGifEqsM9Y76q9AGpypjmq9bJA==}
+  '@osdk/foundry.thirdpartyapplications@2.30.0':
+    resolution: {integrity: sha512-Ohld3ce5rHDFsVUftr//631wuJYLFJjYMBKhze6ZRzXxYB63r6RLLwcbatvBWf5zFQ0/5pIPxp6UJiYNmhu43w==}
 
-  '@osdk/foundry.thirdpartyapplications@2.28.0':
-    resolution: {integrity: sha512-20bz6r3mpOibnZ4ZyPu4zrHQGVfC920ujmsMYvDwM8+MRykMN9YdG0FN9Su1ooZVjSFMa36wnDhdHVuP9DFf9Q==}
+  '@osdk/foundry.widgets@2.30.0':
+    resolution: {integrity: sha512-UF6i6mZ/CbZFhFgN9vrHZSDKiJnODm4/MizIVmyD+TPkY2DubGKTlUruQBxnUhGwDKXYX6vsip29U6vBJUGVYA==}
 
-  '@osdk/foundry.widgets@2.28.0':
-    resolution: {integrity: sha512-s2/0OBjT7aqSy3hRxmIsDakPLNRPpqPo7k/izdLwNMWaoQb0sLRSEmd2gbS3BgtjMg3g+prIrapjzNDwYop26w==}
-
-  '@osdk/foundry@2.28.0':
-    resolution: {integrity: sha512-/tzwYEw1REN35wd7WW3xENs14gKaEogNDph8DdoL7oKiZKDTGARG6YwrrpAmeJ33Cs6K2i32QLSfHftvG6GfVg==}
+  '@osdk/foundry@2.30.0':
+    resolution: {integrity: sha512-pPl+LehYtiqE36xJ1oX8fe09YCoZAUFywTe2RRgt2WzdfvHPLZqfzeau+HDAmntDKziPguTbzTZ94GPFe3Preg==}
 
   '@osdk/gateway@2.4.1':
     resolution: {integrity: sha512-RHwTFQ2dGKbu25YwjukRKQj9CzoO3xdueSEetIkfCuuHvOLOlIUAJsjj+j7UV96MzsbefAcsQyJC+PqENdU57w==}
 
-  '@osdk/internal.foundry.core@2.28.0':
-    resolution: {integrity: sha512-pMPFEXDpm2Cw2m5oUg7xpBKg2xw29IPldwZ8CG9ZFVpoIH5R+5kwhU8eOdyXdzJTgC9XKM1Z+61bHCc2letPig==}
+  '@osdk/internal.foundry.core@2.30.0':
+    resolution: {integrity: sha512-iaxc5Xmf8lrLMuolILsDtY6oBvi8f7xGa2CrpjKeQpqWqf/LVmZiHAdnc+rfpaM+/hVNAcJ9cGmKJ4ixxBne3A==}
 
-  '@osdk/internal.foundry.geo@2.28.0':
-    resolution: {integrity: sha512-23mfV+25FCqYJHFkVvzb6AlOjQnXddksQxUuuDKDNWViudHhcRpFjcKweEYoImXGn7EWy/DHZL3roslKEokcVw==}
+  '@osdk/internal.foundry.geo@2.30.0':
+    resolution: {integrity: sha512-Tpv0WrQZpVLS/CI94Ck278F0GbbNCulER02nP02yEBUF+D+4T2x47+AQFwP27Jeiaeq9UBrcDcVnZdcPXcghoA==}
 
-  '@osdk/internal.foundry.ontologies@2.28.0':
-    resolution: {integrity: sha512-f/Dkep9Xn82N51yoSkRxzqQvc6TMgDo4COB3dbHfelmqUlwleUeNmqxkLZzk1OgY7G6J1CUFD6BjENIIrEorfw==}
+  '@osdk/internal.foundry.ontologies@2.30.0':
+    resolution: {integrity: sha512-Qu545HfBNAWqCzTTwN5r6dwWcvdfXQju9ePywHT05KPkenXAgrk1CQWF+H5oQT8S+WGiAZZBhWPZKKXzjKPjcw==}
 
   '@osdk/legacy-client@2.5.1':
     resolution: {integrity: sha512-vo5mMnnAIoBhQORSlKfbVH7G9UNMxJYiRCUxwdrKMkBaJKT5ClJbLTiv9anpqTFkBaw82vMxd7MA80nt3X8hXg==}
@@ -17053,49 +17047,42 @@ snapshots:
     dependencies:
       '@osdk/docs-spec-core': 0.5.0
 
-  '@osdk/foundry.admin@2.28.0':
+  '@osdk/foundry.admin@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.28.0
+      '@osdk/foundry.core': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.aipagents@2.28.0':
+  '@osdk/foundry.aipagents@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.28.0
-      '@osdk/foundry.functions': 2.28.0
-      '@osdk/foundry.ontologies': 2.28.0
+      '@osdk/foundry.core': 2.30.0
+      '@osdk/foundry.functions': 2.30.0
+      '@osdk/foundry.ontologies': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.audit@2.28.0':
+  '@osdk/foundry.audit@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.28.0
+      '@osdk/foundry.core': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.connectivity@2.28.0':
+  '@osdk/foundry.connectivity@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.28.0
-      '@osdk/foundry.datasets': 2.28.0
-      '@osdk/foundry.filesystem': 2.28.0
-      '@osdk/foundry.orchestration': 2.28.0
+      '@osdk/foundry.core': 2.30.0
+      '@osdk/foundry.datasets': 2.30.0
+      '@osdk/foundry.filesystem': 2.30.0
+      '@osdk/foundry.orchestration': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.core@2.27.0':
+  '@osdk/foundry.core@2.30.0':
     dependencies:
-      '@osdk/foundry.geo': 2.27.0
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.4.0
-
-  '@osdk/foundry.core@2.28.0':
-    dependencies:
-      '@osdk/foundry.geo': 2.28.0
+      '@osdk/foundry.geo': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
@@ -17107,20 +17094,20 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.1.0
 
-  '@osdk/foundry.datahealth@2.28.0':
+  '@osdk/foundry.datahealth@2.30.0':
     dependencies:
-      '@osdk/foundry.connectivity': 2.28.0
-      '@osdk/foundry.core': 2.28.0
-      '@osdk/foundry.datasets': 2.28.0
-      '@osdk/foundry.orchestration': 2.28.0
+      '@osdk/foundry.connectivity': 2.30.0
+      '@osdk/foundry.core': 2.30.0
+      '@osdk/foundry.datasets': 2.30.0
+      '@osdk/foundry.orchestration': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.datasets@2.28.0':
+  '@osdk/foundry.datasets@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.28.0
-      '@osdk/foundry.filesystem': 2.28.0
+      '@osdk/foundry.core': 2.30.0
+      '@osdk/foundry.filesystem': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
@@ -17133,9 +17120,9 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.1.0
 
-  '@osdk/foundry.filesystem@2.28.0':
+  '@osdk/foundry.filesystem@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.28.0
+      '@osdk/foundry.core': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
@@ -17147,20 +17134,14 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.1.0
 
-  '@osdk/foundry.functions@2.28.0':
+  '@osdk/foundry.functions@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.28.0
+      '@osdk/foundry.core': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.geo@2.27.0':
-    dependencies:
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.4.0
-
-  '@osdk/foundry.geo@2.28.0':
+  '@osdk/foundry.geo@2.30.0':
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
@@ -17172,120 +17153,112 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.1.0
 
-  '@osdk/foundry.geojson@2.28.0':
+  '@osdk/foundry.geojson@2.30.0':
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.mediasets@2.28.0':
+  '@osdk/foundry.mediasets@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.28.0
+      '@osdk/foundry.core': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.models@2.28.0':
+  '@osdk/foundry.models@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.28.0
-      '@osdk/foundry.filesystem': 2.28.0
+      '@osdk/foundry.core': 2.30.0
+      '@osdk/foundry.filesystem': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.ontologies@2.27.0':
+  '@osdk/foundry.ontologies@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.27.0
-      '@osdk/foundry.geo': 2.27.0
+      '@osdk/foundry.core': 2.30.0
+      '@osdk/foundry.geo': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.ontologies@2.28.0':
+  '@osdk/foundry.operations@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.28.0
-      '@osdk/foundry.geo': 2.28.0
+      '@osdk/foundry.ontologies': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.operations@2.28.0':
+  '@osdk/foundry.orchestration@2.30.0':
     dependencies:
-      '@osdk/foundry.ontologies': 2.28.0
+      '@osdk/foundry.core': 2.30.0
+      '@osdk/foundry.datasets': 2.30.0
+      '@osdk/foundry.filesystem': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.orchestration@2.28.0':
+  '@osdk/foundry.publicapis@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.28.0
-      '@osdk/foundry.datasets': 2.28.0
-      '@osdk/foundry.filesystem': 2.28.0
+      '@osdk/foundry.core': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.publicapis@2.28.0':
+  '@osdk/foundry.sqlqueries@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.28.0
+      '@osdk/foundry.core': 2.30.0
+      '@osdk/foundry.datasets': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.sqlqueries@2.28.0':
+  '@osdk/foundry.streams@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.28.0
-      '@osdk/foundry.datasets': 2.28.0
+      '@osdk/foundry.core': 2.30.0
+      '@osdk/foundry.datasets': 2.30.0
+      '@osdk/foundry.filesystem': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.streams@2.28.0':
+  '@osdk/foundry.thirdpartyapplications@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.28.0
-      '@osdk/foundry.datasets': 2.28.0
-      '@osdk/foundry.filesystem': 2.28.0
+      '@osdk/foundry.core': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.thirdpartyapplications@2.28.0':
+  '@osdk/foundry.widgets@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.28.0
+      '@osdk/foundry.core': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.widgets@2.28.0':
+  '@osdk/foundry@2.30.0':
     dependencies:
-      '@osdk/foundry.core': 2.28.0
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.4.0
-
-  '@osdk/foundry@2.28.0':
-    dependencies:
-      '@osdk/foundry.admin': 2.28.0
-      '@osdk/foundry.aipagents': 2.28.0
-      '@osdk/foundry.audit': 2.28.0
-      '@osdk/foundry.connectivity': 2.28.0
-      '@osdk/foundry.core': 2.28.0
-      '@osdk/foundry.datahealth': 2.28.0
-      '@osdk/foundry.datasets': 2.28.0
-      '@osdk/foundry.filesystem': 2.28.0
-      '@osdk/foundry.functions': 2.28.0
-      '@osdk/foundry.geo': 2.28.0
-      '@osdk/foundry.geojson': 2.28.0
-      '@osdk/foundry.mediasets': 2.28.0
-      '@osdk/foundry.models': 2.28.0
-      '@osdk/foundry.ontologies': 2.28.0
-      '@osdk/foundry.operations': 2.28.0
-      '@osdk/foundry.orchestration': 2.28.0
-      '@osdk/foundry.publicapis': 2.28.0
-      '@osdk/foundry.sqlqueries': 2.28.0
-      '@osdk/foundry.streams': 2.28.0
-      '@osdk/foundry.thirdpartyapplications': 2.28.0
-      '@osdk/foundry.widgets': 2.28.0
+      '@osdk/foundry.admin': 2.30.0
+      '@osdk/foundry.aipagents': 2.30.0
+      '@osdk/foundry.audit': 2.30.0
+      '@osdk/foundry.connectivity': 2.30.0
+      '@osdk/foundry.core': 2.30.0
+      '@osdk/foundry.datahealth': 2.30.0
+      '@osdk/foundry.datasets': 2.30.0
+      '@osdk/foundry.filesystem': 2.30.0
+      '@osdk/foundry.functions': 2.30.0
+      '@osdk/foundry.geo': 2.30.0
+      '@osdk/foundry.geojson': 2.30.0
+      '@osdk/foundry.mediasets': 2.30.0
+      '@osdk/foundry.models': 2.30.0
+      '@osdk/foundry.ontologies': 2.30.0
+      '@osdk/foundry.operations': 2.30.0
+      '@osdk/foundry.orchestration': 2.30.0
+      '@osdk/foundry.publicapis': 2.30.0
+      '@osdk/foundry.sqlqueries': 2.30.0
+      '@osdk/foundry.streams': 2.30.0
+      '@osdk/foundry.thirdpartyapplications': 2.30.0
+      '@osdk/foundry.widgets': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
@@ -17295,23 +17268,23 @@ snapshots:
       fetch-retry: 6.0.0
       tiny-invariant: 1.3.3
 
-  '@osdk/internal.foundry.core@2.28.0':
+  '@osdk/internal.foundry.core@2.30.0':
     dependencies:
-      '@osdk/internal.foundry.geo': 2.28.0
+      '@osdk/internal.foundry.geo': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/internal.foundry.geo@2.28.0':
+  '@osdk/internal.foundry.geo@2.30.0':
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/internal.foundry.ontologies@2.28.0':
+  '@osdk/internal.foundry.ontologies@2.30.0':
     dependencies:
-      '@osdk/internal.foundry.core': 2.28.0
-      '@osdk/internal.foundry.geo': 2.28.0
+      '@osdk/internal.foundry.core': 2.30.0
+      '@osdk/internal.foundry.geo': 2.30.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
@@ -22769,7 +22742,7 @@ snapshots:
       jest-mock: 29.7.0
       jest-util: 29.7.0
 
-  jest-expo@52.0.2(@babel/core@7.27.1)(canvas@2.11.2)(expo@52.0.11(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@expo/metro-runtime@4.0.0(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1)))(graphql@16.8.1)(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(jest@29.7.0(@types/node@18.19.124)(ts-node@10.9.2(@swc/core@1.7.39)(@types/node@18.19.124)(typescript@5.5.4)))(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)(webpack@5.96.1(@swc/core@1.7.39)):
+  jest-expo@52.0.2(@babel/core@7.27.1)(canvas@2.11.2)(expo@52.0.11(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@expo/metro-runtime@4.0.0(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1)))(graphql@16.8.1)(react-native-webview@13.12.2(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1))(jest@29.7.0(@types/node@18.19.124)(ts-node@10.9.2(@swc/core@1.7.39)(@types/node@18.19.124)(typescript@5.5.4)))(react-dom@18.3.1(react@18.3.1))(react-native@0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1))(react@18.3.1)(webpack@5.96.1(@swc/core@1.7.39)(esbuild@0.25.3)):
     dependencies:
       '@expo/config': 10.0.11
       '@expo/json-file': 9.0.2
@@ -22786,7 +22759,7 @@ snapshots:
       json5: 2.2.3
       lodash: 4.17.21
       react-native: 0.76.3(@babel/core@7.27.1)(@babel/preset-env@7.26.0(@babel/core@7.27.1))(@types/react@18.3.12)(react@18.3.1)
-      react-server-dom-webpack: 19.0.0-rc-6230622a1a-20240610(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(webpack@5.96.1(@swc/core@1.7.39))
+      react-server-dom-webpack: 19.0.0-rc-6230622a1a-20240610(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(webpack@5.96.1(@swc/core@1.7.39)(esbuild@0.25.3))
       react-test-renderer: 18.3.1(react@18.3.1)
       server-only: 0.0.1
       stacktrace-js: 2.0.2
@@ -24918,13 +24891,13 @@ snapshots:
       '@remix-run/router': 1.16.1
       react: 19.1.1
 
-  react-server-dom-webpack@19.0.0-rc-6230622a1a-20240610(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(webpack@5.96.1(@swc/core@1.7.39)):
+  react-server-dom-webpack@19.0.0-rc-6230622a1a-20240610(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(webpack@5.96.1(@swc/core@1.7.39)(esbuild@0.25.3)):
     dependencies:
       acorn-loose: 8.4.0
       neo-async: 2.6.2
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      webpack: 5.96.1(@swc/core@1.7.39)
+      webpack: 5.96.1(@swc/core@1.7.39)(esbuild@0.25.3)
 
   react-shallow-renderer@16.15.0(react@18.3.1):
     dependencies:
@@ -25953,16 +25926,17 @@ snapshots:
       ansi-escapes: 4.3.2
       supports-hyperlinks: 2.3.0
 
-  terser-webpack-plugin@5.3.14(@swc/core@1.7.39)(webpack@5.96.1(@swc/core@1.7.39)):
+  terser-webpack-plugin@5.3.14(@swc/core@1.7.39)(esbuild@0.25.3)(webpack@5.96.1(@swc/core@1.7.39)(esbuild@0.25.3)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.30
       jest-worker: 27.5.1
       schema-utils: 4.3.2
       serialize-javascript: 6.0.2
       terser: 5.44.0
-      webpack: 5.96.1(@swc/core@1.7.39)
+      webpack: 5.96.1(@swc/core@1.7.39)(esbuild@0.25.3)
     optionalDependencies:
       '@swc/core': 1.7.39
+      esbuild: 0.25.3
 
   terser@5.44.0:
     dependencies:
@@ -26688,7 +26662,7 @@ snapshots:
       terser: 5.44.0
       yaml: 2.8.0
 
-  vitest@3.0.7(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.29.1)(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(yaml@2.8.0):
+  vitest@3.0.7(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.4.2)(jsdom@20.0.3)(lightningcss@1.29.1)(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(yaml@2.8.0):
     dependencies:
       '@vitest/expect': 3.0.7
       '@vitest/mocker': 3.0.7(msw@2.7.3(@types/node@18.19.124)(typescript@5.5.4))(vite@6.3.5(@types/node@18.19.124)(jiti@2.4.2)(lightningcss@1.29.1)(terser@5.44.0)(yaml@2.8.0))
@@ -26883,7 +26857,7 @@ snapshots:
 
   webpack-sources@3.3.3: {}
 
-  webpack@5.96.1(@swc/core@1.7.39):
+  webpack@5.96.1(@swc/core@1.7.39)(esbuild@0.25.3):
     dependencies:
       '@types/eslint-scope': 3.7.7
       '@types/estree': 1.0.8
@@ -26905,7 +26879,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 3.3.0
       tapable: 2.2.3
-      terser-webpack-plugin: 5.3.14(@swc/core@1.7.39)(webpack@5.96.1(@swc/core@1.7.39))
+      terser-webpack-plugin: 5.3.14(@swc/core@1.7.39)(esbuild@0.25.3)(webpack@5.96.1(@swc/core@1.7.39)(esbuild@0.25.3))
       watchpack: 2.4.4
       webpack-sources: 3.3.3
     transitivePeerDependencies:

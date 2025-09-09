@@ -134,6 +134,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
           properties: {
             "SomeProperty": "body",
           },
+          links: {},
         },
       },
       sharedPropertyTypeMapping: {},

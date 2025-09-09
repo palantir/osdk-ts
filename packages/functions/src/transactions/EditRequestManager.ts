@@ -83,6 +83,7 @@ export class EditRequestManager {
       await this.client[writeableClientContext].ontologyRid,
       this.client[writeableClientContext].transactionRid,
       { edits: copiedEdits },
+      { preview: true },
     );
   }
 }
