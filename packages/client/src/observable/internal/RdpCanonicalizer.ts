@@ -14,100 +14,37 @@
  * limitations under the License.
  */
 
-import deepEqual from "fast-deep-equal";
 import type { Canonical } from "./Canonical.js";
+import { CachingCanonicalizer } from "./Canonicalizer.js";
+import { WeakRefTrie } from "./WeakRefTrie.js";
 
 // RDPs are Record<string, SimplePropertyDef> as seen in SubSelectRDPs type
 export type Rdp<T = any> = Record<string, T>;
 
-export class RdpCanonicalizer {
-  /**
-   * This is a shortcut cache for any RDP that we have
-   * seen and already canonicalized. The theory behind this
-   * is that well behaving React applications will either `useMemo`
-   * their RDP, or store it in state or pass it through as
-   * props such that we are likely to get the same RDP
-   * object multiple times and we can skip unnecessary work.
-   */
-  #cache = new WeakMap<
-    Rdp,
-    Canonical<Rdp>
-  >();
-
-  /**
-   * This is a map that stores keys of an RDP to
-   * the cache key for canonicalized options.
-   */
-  #keyCache = new Map<string, object>();
-
-  /**
-   * This is a cache from the cacheKey to the potential
-   * canonicalized options.
-   */
-  #existingOptions: Map<object, {
-    options: WeakRef<Canonical<Rdp>>[];
-  }> = new Map();
-
-  public canonicalize(
-    rdp: Rdp | undefined,
-  ): Canonical<Rdp> | undefined {
-    if (!rdp) {
-      return undefined;
-    }
-    // fastest shortcut
-    if (this.#cache.has(rdp)) {
-      return this.#cache.get(rdp)!;
-    }
-
-    const calculatedCanon = this.#toCanon(rdp);
-    const cacheKeyStr = JSON.stringify(calculatedCanon);
-    let cacheKey = this.#keyCache.get(cacheKeyStr);
-    if (!cacheKey) {
-      cacheKey = {};
-      this.#keyCache.set(cacheKeyStr, cacheKey);
-    }
-    const lookupEntry = this.#existingOptions.get(cacheKey)
-      ?? { options: [] as WeakRef<Canonical<Rdp>>[] };
-    this.#existingOptions.set(cacheKey, lookupEntry);
-
-    const canon =
-      this.#getCachedOrNewCanonicalizedOpts(lookupEntry, calculatedCanon);
-    this.#cache.set(rdp, canon);
-    return canon;
-  }
-
-  #getCachedOrNewCanonicalizedOpts(
-    lookupEntry: { options: WeakRef<Canonical<Rdp>>[] },
-    canon: object,
-  ): Canonical<Rdp> {
-    const derefed: Canonical<Rdp>[] = [];
-    for (let i = 0; i < lookupEntry.options.length; i++) {
-      const option = lookupEntry.options[i].deref();
-      if (option == null) {
-        // later on we'll repack. we _could_ do it here but will need to
-        // double check to make sure the references are updated.
-        continue;
+export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
+  private structuralCache = new WeakRefTrie<Canonical<Rdp>>(
+    (array: any[]) => {
+      // Reconstruct RDP from flattened key-value pairs
+      const pairs: Array<[string, any]> = [];
+      for (let i = 0; i < array.length; i += 2) {
+        if (i + 1 < array.length) {
+          pairs.push([array[i], array[i + 1]]);
+        }
       }
-      derefed.push(option);
-      if (deepEqual(canon, option)) {
-        return option;
-      }
-    }
+      const data = Object.fromEntries(pairs);
+      return (process.env.NODE_ENV !== "production"
+        ? Object.freeze(data)
+        : data) as Canonical<Rdp>;
+    },
+  );
 
-    const ret = Object.freeze(canon) as Canonical<Rdp>;
-    lookupEntry.options = [...derefed.map(d => new WeakRef(d)), new WeakRef(ret)];
-    return ret;
-  }
-
-  #toCanon(
-    rdp: Rdp,
-  ): any {
-    // Sort keys for consistent canonicalization
-    const sorted: Record<string, any> = {};
-    const keys = Object.keys(rdp).sort();
-    for (const key of keys) {
-      sorted[key] = rdp[key];
-    }
-    return sorted;
+  protected lookupOrCreate(rdp: Rdp): Canonical<Rdp> {
+    // Extract sorted keys and their function references as trie path
+    // This ensures that RDPs with same structure but different key order
+    // map to the same canonical form
+    const sortedEntries = Object.entries(rdp).sort(([a], [b]) =>
+      a.localeCompare(b)
+    );
+    return this.structuralCache.lookupArray(sortedEntries.flat());
   }
 }

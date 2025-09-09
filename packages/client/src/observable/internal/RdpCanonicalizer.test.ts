@@ -24,111 +24,109 @@ describe("RdpCanonicalizer", () => {
     canonicalizer = new RdpCanonicalizer();
   });
 
-  it("returns the same reference for identical RDP clauses", () => {
-    const clause = {
-      prop1: () =>
-        ({ type: "nearestNeighbor", vectorProperty: "embedding" }) as any,
-      prop2: () => ({ type: "sum", property: "value" }) as any,
-    } as any;
+  const createMockRdpFn = (value: string) => () => ({ mockValue: value });
 
-    const result1 = canonicalizer.canonicalize(clause);
-    const result2 = canonicalizer.canonicalize(clause);
-
-    expect(result1).toBe(result2);
-  });
-
-  it("canonicalizes RDP clauses with different key order to the same reference", () => {
-    const fn1 = () =>
-      ({ type: "nearestNeighbor", vectorProperty: "embedding" }) as any;
-    const fn2 = () => ({ type: "sum", property: "value" }) as any;
-
-    const clause1 = { prop1: fn1, prop2: fn2 } as any;
-    const clause2 = { prop2: fn2, prop1: fn1 } as any;
-
-    const result1 = canonicalizer.canonicalize(clause1);
-    const result2 = canonicalizer.canonicalize(clause2);
-
-    expect(result1).toBe(result2);
-  });
-
-  it("returns different references for RDP clauses with different functions", () => {
-    const clause1 = {
-      prop1: () =>
-        ({ type: "nearestNeighbor", vectorProperty: "embedding1" }) as any,
-    } as any;
-    const clause2 = {
-      prop1: () =>
-        ({ type: "nearestNeighbor", vectorProperty: "embedding2" }) as any,
-    } as any;
-
-    const result1 = canonicalizer.canonicalize(clause1);
-    const result2 = canonicalizer.canonicalize(clause2);
-
-    expect(result1).not.toBe(result2);
+  it("returns undefined for undefined input", () => {
+    expect(canonicalizer.canonicalize(undefined)).toBeUndefined();
   });
 
   it("handles empty RDP clauses", () => {
-    const emptyClause = {};
-    const result1 = canonicalizer.canonicalize(emptyClause);
+    const result1 = canonicalizer.canonicalize({});
     const result2 = canonicalizer.canonicalize({});
 
     expect(result1).toEqual({});
     expect(result1).toBe(result2);
   });
 
-  it("preserves the function references in the canonical form", () => {
-    const fn = () =>
-      ({ type: "nearestNeighbor", vectorProperty: "embedding" }) as any;
-    const clause = { prop1: fn } as any;
+  it("sorts keys alphabetically", () => {
+    const fnA = createMockRdpFn("a");
+    const fnB = createMockRdpFn("b");
+    const fnC = createMockRdpFn("c");
+
+    const clause = { charlie: fnC, alpha: fnA, bravo: fnB };
+    const result = canonicalizer.canonicalize(clause);
+
+    expect(Object.keys(result || {})).toEqual(["alpha", "bravo", "charlie"]);
+  });
+
+  it("canonicalizes clauses with different key order to same reference", () => {
+    const fn1 = createMockRdpFn("1");
+    const fn2 = createMockRdpFn("2");
+
+    const clause1 = { prop1: fn1, prop2: fn2 };
+    const clause2 = { prop2: fn2, prop1: fn1 };
+
+    const result1 = canonicalizer.canonicalize(clause1);
+    const result2 = canonicalizer.canonicalize(clause2);
+
+    expect(result1).toBe(result2);
+  });
+
+  it("preserves function references", () => {
+    const fn = createMockRdpFn("test");
+    const clause = { prop1: fn };
 
     const result = canonicalizer.canonicalize(clause);
 
     expect(result?.prop1).toBe(fn);
   });
 
-  it("sorts keys alphabetically in the canonical form", () => {
-    const fnA = () => ({ type: "a" }) as any;
-    const fnB = () => ({ type: "b" }) as any;
-    const fnC = () => ({ type: "c" }) as any;
+  it("returns different references for different functions", () => {
+    const clause1 = { prop1: createMockRdpFn("1") };
+    const clause2 = { prop1: createMockRdpFn("2") };
 
-    const clause = { charlie: fnC, alpha: fnA, bravo: fnB } as any;
-    const result = canonicalizer.canonicalize(clause);
+    const result1 = canonicalizer.canonicalize(clause1);
+    const result2 = canonicalizer.canonicalize(clause2);
 
-    const keys = Object.keys(result || {});
-    expect(keys).toEqual(["alpha", "bravo", "charlie"]);
+    expect(result1).not.toBe(result2);
   });
 
-  it("uses WeakMap cache for repeated canonicalization", () => {
-    const clause = {
-      prop1: () =>
-        ({ type: "nearestNeighbor", vectorProperty: "embedding" }) as any,
-    } as any;
+  it("caches identical input objects", () => {
+    const clause = { prop1: createMockRdpFn("test") };
 
-    // First call should calculate and cache
     const result1 = canonicalizer.canonicalize(clause);
-
-    // Second call should use cache (same object reference)
     const result2 = canonicalizer.canonicalize(clause);
 
     expect(result1).toBe(result2);
   });
 
-  it("handles RDP clauses with same keys but different function references", () => {
+  it("handles complex RDP structures", () => {
+    const complexFn = () => ({
+      type: "nearestNeighbor",
+      vectorProperty: "embedding",
+      parameters: { k: 10, metric: "cosine" },
+    });
+    const simpleFn = createMockRdpFn("simple");
+
     const clause1 = {
-      prop1: function() {
-        return { type: "nearestNeighbor" } as any;
-      },
-    } as any;
+      complexProp: complexFn,
+      simpleProp: simpleFn,
+    };
     const clause2 = {
-      prop1: function() {
-        return { type: "nearestNeighbor" } as any;
-      },
-    } as any;
+      simpleProp: simpleFn,
+      complexProp: complexFn,
+    };
 
     const result1 = canonicalizer.canonicalize(clause1);
     const result2 = canonicalizer.canonicalize(clause2);
 
-    // Different function references should produce different canonical results
+    expect(result1).toBe(result2);
+    expect(Object.keys(result1!)).toEqual(["complexProp", "simpleProp"]);
+  });
+
+  it("uses structural cache for different objects with same structure", () => {
+    const fn1 = createMockRdpFn("value");
+    const fn2 = createMockRdpFn("value"); // Same return value, different function
+
+    const clause1 = { prop: fn1 };
+    const clause2 = { prop: fn2 };
+
+    const result1 = canonicalizer.canonicalize(clause1);
+    const result2 = canonicalizer.canonicalize(clause2);
+
+    // Different functions should produce different canonical results
     expect(result1).not.toBe(result2);
+    expect(result1!.prop).toBe(fn1);
+    expect(result2!.prop).toBe(fn2);
   });
 });
