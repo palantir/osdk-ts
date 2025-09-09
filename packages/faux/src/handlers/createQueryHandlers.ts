@@ -33,7 +33,7 @@ export const createQueryHandlers: FauxFoundryHandlersFactory = (
       );
 
       const version = queryParams["version"];
-      if (!valid(version)) {
+      if (version != null && !valid(version)) {
         throw new Error(
           `Invalid version "${version}" for query "${queryApiName}" in ontology "${ontologyApiName}: not semver compatible".`,
         );
