@@ -27,9 +27,11 @@ import type {
 } from "../ObservableClient/common.js";
 import { getBulkObjectLoader } from "./BulkObjectLoader.js";
 import type { CacheKey } from "./CacheKey.js";
+import type { Canonical } from "./Canonical.js";
 import type { Changes } from "./Changes.js";
 import type { Entry } from "./Layer.js";
 import { Query } from "./Query.js";
+import type { Rdp } from "./RdpCanonicalizer.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 import { tombstone } from "./tombstone.js";
 
@@ -122,6 +124,77 @@ export class ObjectQuery extends Query<
     this.store.batch({}, (batch) => {
       this.writeToStore(obj, "loaded", batch);
     });
+
+    // Check if this object has any associated RDP configurations
+    const rdpConfigs = this.store.rdpStorage.getAllRdpConfigs(this.cacheKey);
+    if (rdpConfigs.size > 0) {
+      await this._fetchAndStoreRdps(rdpConfigs);
+    }
+  }
+
+  private async _fetchAndStoreRdps(
+    rdpConfigs: Set<Canonical<Rdp>>,
+  ): Promise<void> {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "_fetchAndStoreRdps" }).debug(
+        `Fetching RDPs for object ${this.#apiName}:${this.#pk}`,
+        { rdpCount: rdpConfigs.size },
+      );
+    }
+
+    // For each RDP configuration, fetch the object with those specific RDPs
+    const promises = Array.from(rdpConfigs).map((rdpConfig) =>
+      this._fetchSingleRdpConfig(rdpConfig)
+    );
+
+    await Promise.allSettled(promises);
+  }
+
+  private async _fetchSingleRdpConfig(
+    rdpConfig: Canonical<Rdp>,
+  ): Promise<void> {
+    try {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "_fetchSingleRdpConfig" }).debug(
+          "Fetching object with RDP config",
+          { apiName: this.#apiName, pk: this.#pk, rdpConfig },
+        );
+      }
+
+      // Fetch the object with RDP configuration
+      const objWithRdp = await getBulkObjectLoader(this.store.client)
+        .fetch(this.#apiName, this.#pk);
+
+      // Extract RDP properties from the fetched object
+      const rdpKeys = Object.keys(rdpConfig);
+      const rdpData: Record<string, unknown> = {};
+
+      for (const key of rdpKeys) {
+        if (key in objWithRdp) {
+          rdpData[key] = (objWithRdp as any)[key];
+        }
+      }
+
+      // Store the RDP data if we found any
+      if (Object.keys(rdpData).length > 0) {
+        this.store.rdpStorage.set(this.cacheKey, rdpConfig, rdpData);
+
+        // Notify subscribers about the updated RDP data
+        const subject = this.store.peekSubject(this.cacheKey);
+        if (subject) {
+          const currentValue = subject.getValue();
+          // Trigger a re-emission to update any listeners
+          subject.next(currentValue);
+        }
+      }
+    } catch (error) {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "_fetchSingleRdpConfig" }).error(
+          "Failed to fetch RDP data",
+          { error, rdpConfig },
+        );
+      }
+    }
   }
 
   writeToStore(
@@ -220,18 +293,50 @@ export function storeOsdkInstances(
   store: Store,
   values: Array<ObjectHolder> | Array<Osdk.Instance<any, any, any>>,
   batch: BatchContext,
+  rdpConfig?: Canonical<Rdp>,
 ): ObjectCacheKey[] {
   // update the cache for any object that has changed
   // and save the mapped values to return
   return values.map(v => {
-    return store.objects.getQuery({
+    const objectCacheKey = store.objects.getQuery({
       apiName: v.$apiName,
       pk: v.$primaryKey as string | number,
-    })
-      .writeToStore(
+    });
+
+    if (rdpConfig) {
+      // Separate base and RDP properties
+      const rdpKeys = Object.keys(rdpConfig);
+      const baseObj = {} as ObjectHolder;
+      const rdpData: Record<string, unknown> = {};
+
+      for (const key in v) {
+        if (rdpKeys.includes(key)) {
+          rdpData[key] = (v as any)[key];
+        } else {
+          (baseObj as any)[key] = (v as any)[key];
+        }
+      }
+
+      // Store base object
+      const entry = objectCacheKey.writeToStore(
+        baseObj,
+        "loaded",
+        batch,
+      );
+
+      // Store RDP data separately
+      if (Object.keys(rdpData).length > 0) {
+        store.rdpStorage.set(entry.cacheKey, rdpConfig, rdpData);
+      }
+
+      return entry.cacheKey;
+    } else {
+      // No RDP config, store entire object as before
+      return objectCacheKey.writeToStore(
         v as ObjectHolder,
         "loaded",
         batch,
       ).cacheKey;
+    }
   });
 }

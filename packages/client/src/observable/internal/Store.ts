@@ -43,10 +43,13 @@ import { Entry, Layer } from "./Layer.js";
 import { LinksHelper } from "./links/LinksHelper.js";
 import { ListsHelper } from "./list/ListsHelper.js";
 import { ObjectsHelper } from "./object/ObjectsHelper.js";
+import type { ObjectCacheKey } from "./ObjectQuery.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { Query } from "./Query.js";
 import { RdpCanonicalizer } from "./RdpCanonicalizer.js";
+import { RdpLayer } from "./RdpLayer.js";
+import { RdpStorage } from "./RdpStorage.js";
 import { RefCounts } from "./RefCounts.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 import { tombstone } from "./tombstone.js";
@@ -130,6 +133,8 @@ export class Store {
   rdpCanonicalizer: RdpCanonicalizer = new RdpCanonicalizer();
   #truthLayer: Layer = new Layer(undefined, undefined);
   #topLayer: Layer;
+  #rdpTruthLayer: RdpLayer = new RdpLayer(undefined, undefined);
+  #rdpTopLayer: RdpLayer;
   client: Client;
 
   /** @internal */
@@ -161,6 +166,7 @@ export class Store {
   lists: ListsHelper;
   objects: ObjectsHelper;
   links: LinksHelper;
+  rdpStorage: RdpStorage;
 
   constructor(client: Client) {
     this.client = client;
@@ -180,12 +186,13 @@ export class Store {
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
     );
+    this.rdpStorage = new RdpStorage();
 
     this.#topLayer = this.#truthLayer;
+    this.#rdpTopLayer = this.#rdpTruthLayer;
     this.#cacheKeys = new CacheKeys(
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
-      this.rdpCanonicalizer,
       (k) => {
         if (DEBUG_REFCOUNTS) {
           const cacheKeyType = k.type;
@@ -301,8 +308,9 @@ export class Store {
       currentLayer = currentLayer.parentLayer;
     }
 
-    // 2. remove the layers from the chain
+    // 2. remove the layers from both chains
     this.#topLayer = this.#topLayer.removeLayer(layerId);
+    this.#rdpTopLayer = this.#rdpTopLayer.removeLayer(layerId);
 
     // 3. check each cache key to see if it is different in the new chain
     for (const [k, oldEntry] of cacheKeys) {
@@ -416,6 +424,7 @@ export class Store {
       createLayerIfNeeded: () => {
         if (needsLayer) {
           this.#topLayer = this.#topLayer.addLayer(optimisticId);
+          this.#rdpTopLayer = this.#rdpTopLayer.addLayer(optimisticId!);
           needsLayer = false;
         }
       },
@@ -488,6 +497,15 @@ export class Store {
     if (typeof apiName !== "string") {
       apiName = apiName.apiName;
     }
+
+    const objectCacheKey = this.getCacheKey<ObjectCacheKey>(
+      "object",
+      apiName,
+      pk,
+    );
+
+    // Invalidate any RDP data for this object to wipe any possible stale data
+    this.rdpStorage.invalidate(objectCacheKey);
 
     return this.objects.getQuery({
       apiName,

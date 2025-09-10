@@ -93,7 +93,6 @@ export class ListsHelper extends AbstractHelper<
       apiName,
       canonWhere,
       canonOrderBy,
-      canonRdp,
     );
 
     return this.store.getQuery(listCacheKey, () => {
@@ -105,6 +104,7 @@ export class ListsHelper extends AbstractHelper<
         objectSet,
         listCacheKey,
         options,
+        canonRdp,
       );
     });
   }

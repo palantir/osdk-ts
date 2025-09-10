@@ -23,7 +23,6 @@ import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
 import type { ListCacheKey } from "./ListCacheKey.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 import type { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
-import type { RdpCanonicalizer } from "./RdpCanonicalizer.js";
 import type { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 type CacheKeyArgs<K extends CacheKey> = [K["type"], ...K["otherKeys"]];
@@ -49,7 +48,6 @@ export class CacheKeys {
   constructor(
     whereCanonicalizer: WhereClauseCanonicalizer,
     orderByCanonicalizer: OrderByCanonicalizer,
-    rdpCanonicalizer: RdpCanonicalizer,
     onCreate: (cacheKey: KnownCacheKey) => void,
   ) {
     this.#onCreate = onCreate;
@@ -76,14 +74,13 @@ export class CacheKeys {
     );
     this.#registerCacheKeyFactory<ListCacheKey>(
       "list",
-      (type, apiName, where, orderBy, rdp) => {
+      (type, apiName, where, orderBy) => {
         const cacheKeyArgs: CacheKeyArgs<ListCacheKey> = [
           "list",
           type,
           apiName,
           whereCanonicalizer.canonicalize(where),
           orderByCanonicalizer.canonicalize(orderBy),
-          rdpCanonicalizer.canonicalize(rdp),
         ];
 
         if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {

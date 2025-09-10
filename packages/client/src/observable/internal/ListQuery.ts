@@ -25,7 +25,20 @@ import type {
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import groupBy from "object.groupby";
-import type { Connectable, Observable, Subscription } from "rxjs";
+import {
+  asapScheduler,
+  combineLatest,
+  type Connectable,
+  connectable,
+  distinctUntilChanged,
+  map,
+  type Observable,
+  of,
+  ReplaySubject,
+  scheduled,
+  type Subscription,
+  switchMap,
+} from "rxjs";
 import invariant from "tiny-invariant";
 import { additionalContext, type Client } from "../../Client.js";
 import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
@@ -58,6 +71,7 @@ import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "./obj
 import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import { Query } from "./Query.js";
+import type { Rdp } from "./RdpCanonicalizer.js";
 import { removeDuplicates } from "./removeDuplicates.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 import type { SortingStrategy } from "./sorting/SortingStrategy.js";
@@ -78,7 +92,6 @@ export const API_NAME_IDX = 1;
 export const TYPE_IDX = 0;
 export const WHERE_IDX = 2;
 export const ORDER_BY_IDX = 3;
-export const RDP_IDX = 4;
 
 export interface ListQueryOptions extends CommonObserveOptions {
   pageSize?: number;
@@ -613,6 +626,7 @@ export class ListQuery extends BaseListQuery<
   // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
+  #rdp: Canonical<Rdp> | undefined;
 
   /**
    * Register changes to the cache specific to ListQuery
@@ -629,6 +643,7 @@ export class ListQuery extends BaseListQuery<
     objectSet: ObjectSet<ObjectTypeDefinition>,
     cacheKey: ListCacheKey,
     opts: ListQueryOptions,
+    rdp: Canonical<Rdp> | undefined,
   ) {
     super(
       store,
@@ -651,6 +666,7 @@ export class ListQuery extends BaseListQuery<
     this.#whereClause = cacheKey.otherKeys[2];
     this.#orderBy = cacheKey.otherKeys[3];
     this.#objectSet = objectSet;
+    this.#rdp = rdp;
 
     // Initialize the sorting strategy
     this.sortingStrategy = new OrderBySortingStrategy(
@@ -663,6 +679,79 @@ export class ListQuery extends BaseListQuery<
 
   get canonicalWhere(): Canonical<SimpleWhereClause> {
     return this.#whereClause;
+  }
+
+  protected storeObjects(
+    objects: Array<Osdk.Instance<any>>,
+    batch: BatchContext,
+  ): Array<ObjectCacheKey> {
+    return objects.length > 0
+      ? storeOsdkInstances(this.store, objects, batch, this.#rdp)
+      : [];
+  }
+
+  protected _createConnectable(
+    subject: Observable<SubjectPayload<ListCacheKey>>,
+  ): Connectable<ListPayload> {
+    if (!this.#rdp) {
+      return super._createConnectable(subject);
+    }
+
+    return connectable<ListPayload>(
+      subject.pipe(
+        switchMap(listEntry => {
+          const resolvedData = listEntry?.value?.data == null
+              || listEntry.value.data.length === 0
+            ? of([])
+            : combineLatest(
+              listEntry.value.data.map((cacheKey: ObjectCacheKey) =>
+                this.store.getSubject(cacheKey).pipe(
+                  map(objectEntry => {
+                    if (!objectEntry?.value) return undefined;
+
+                    const baseObject = objectEntry.value;
+                    const rdpData = this.store.rdpStorage.get(
+                      cacheKey,
+                      this.#rdp!,
+                    );
+
+                    if (rdpData) {
+                      return Object.freeze({ ...baseObject, ...rdpData });
+                    }
+                    return baseObject;
+                  }),
+                  distinctUntilChanged(),
+                )
+              ),
+            );
+
+          return scheduled(
+            combineLatest({
+              resolvedData,
+              isOptimistic: of(listEntry.isOptimistic),
+              status: of(listEntry.status),
+              lastUpdated: of(listEntry.lastUpdated),
+            }).pipe(
+              map(params =>
+                this.createPayload({
+                  resolvedData: Array.isArray(params.resolvedData)
+                    ? params.resolvedData.filter(v => v != null)
+                    : [],
+                  isOptimistic: params.isOptimistic,
+                  status: params.status,
+                  lastUpdated: params.lastUpdated,
+                })
+              ),
+            ),
+            asapScheduler,
+          );
+        }),
+      ),
+      {
+        connector: () => new ReplaySubject(1),
+        resetOnDisconnect: false,
+      },
+    );
   }
 
   /**
@@ -763,7 +852,7 @@ export class ListQuery extends BaseListQuery<
       return;
     }
 
-    if (this.cacheKey.otherKeys[RDP_IDX]) {
+    if (this.#rdp) {
       try {
         const wireObjectSet = getWireObjectSet(this.#objectSet);
         const result = await getObjectTypesThatInvalidate(

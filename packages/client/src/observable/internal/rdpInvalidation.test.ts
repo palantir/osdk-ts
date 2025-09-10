@@ -136,13 +136,11 @@ describe("RDP Invalidation", () => {
           "ObjectA",
           {} as any,
           {} as any,
-          hasRdps ? { prop: "rdp" } : undefined,
         ] as [
           type: "object" | "interface",
           apiName: string,
           whereClause: any,
           orderByClause: any,
-          rdp: any | undefined,
         ],
         __cacheKey: {} as any,
       };
@@ -155,6 +153,7 @@ describe("RDP Invalidation", () => {
         mockObjectSet,
         cacheKey as any,
         {},
+        hasRdps ? ({ prop: "rdp", __canonical: true } as any) : undefined,
       );
 
       revalidateSpy = vi.spyOn(listQuery, "revalidate").mockResolvedValue();
