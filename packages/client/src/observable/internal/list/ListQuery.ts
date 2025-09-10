@@ -42,7 +42,6 @@ import { type CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
 import type { Entry } from "../Layer.js";
-import type { ListQueryOptions } from "../ListQueryOptions.js";
 import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
@@ -50,6 +49,7 @@ import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { BatchContext, Store, SubjectPayload } from "../Store.js";
 import type { ListCacheKey } from "./ListCacheKey.js";
+import type { ListQueryOptions } from "./ListQueryOptions.js";
 
 export const API_NAME_IDX = 1;
 export const TYPE_IDX = 0;

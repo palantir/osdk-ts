@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { CommonObserveOptions } from "../ObservableClient/common.js";
+import type { CommonObserveOptions } from "../../ObservableClient/common.js";
 
 export interface ListQueryOptions extends CommonObserveOptions {
   pageSize?: number;
