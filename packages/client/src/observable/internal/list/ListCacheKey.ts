@@ -17,8 +17,8 @@
 import type { CollectionStorageData } from "../BaseCollectionQuery.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
-import type { ListQuery } from "../ListQuery.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
+import type { ListQuery } from "./ListQuery.js";
 
 export interface ListStorageData extends CollectionStorageData {}
 

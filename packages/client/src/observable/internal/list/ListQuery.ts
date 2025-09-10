@@ -26,31 +26,30 @@ import type {
 import groupBy from "object.groupby";
 import type { Observable, Subscription } from "rxjs";
 import invariant from "tiny-invariant";
-import { additionalContext, type Client } from "../../Client.js";
-import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
+import { additionalContext, type Client } from "../../../Client.js";
+import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import {
   ObjectDefRef,
   UnderlyingOsdkObject,
-} from "../../object/convertWireToOsdkObjects/InternalSymbols.js";
+} from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type {
   ObjectHolder,
-} from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
-import type { ListPayload } from "../ListPayload.js";
-import type { Status } from "../ObservableClient/common.js";
-
-import { BaseListQuery } from "./BaseListQuery.js";
-import { type CacheKey } from "./CacheKey.js";
-import type { Canonical } from "./Canonical.js";
-import { type Changes, DEBUG_ONLY__changesToString } from "./Changes.js";
-import type { Entry } from "./Layer.js";
-import type { ListCacheKey } from "./list/ListCacheKey.js";
-import type { ListQueryOptions } from "./ListQueryOptions.js";
-import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "./objectMatchesWhereClause.js";
-import { type ObjectCacheKey } from "./ObjectQuery.js";
-import type { OptimisticId } from "./OptimisticId.js";
-import type { SimpleWhereClause } from "./SimpleWhereClause.js";
-import { OrderBySortingStrategy } from "./sorting/SortingStrategy.js";
-import type { BatchContext, Store, SubjectPayload } from "./Store.js";
+} from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { ListPayload } from "../../ListPayload.js";
+import type { Status } from "../../ObservableClient/common.js";
+import { BaseListQuery } from "../BaseListQuery.js";
+import { type CacheKey } from "../CacheKey.js";
+import type { Canonical } from "../Canonical.js";
+import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
+import type { Entry } from "../Layer.js";
+import type { ListQueryOptions } from "../ListQueryOptions.js";
+import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
+import { type ObjectCacheKey } from "../ObjectQuery.js";
+import type { OptimisticId } from "../OptimisticId.js";
+import type { SimpleWhereClause } from "../SimpleWhereClause.js";
+import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
+import type { BatchContext, Store, SubjectPayload } from "../Store.js";
+import type { ListCacheKey } from "./ListCacheKey.js";
 
 export const API_NAME_IDX = 1;
 export const TYPE_IDX = 0;
