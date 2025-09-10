@@ -52,6 +52,7 @@ import { createCollectionConnectable } from "./createCollectionConnectable.js";
 import { isObjectInstance } from "./isObjectInstance.js";
 import type { Entry } from "./Layer.js";
 import type { ListCacheKey, ListStorageData } from "./list/ListCacheKey.js";
+import type { ListQueryOptions } from "./ListQueryOptions.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "./objectMatchesWhereClause.js";
 import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
@@ -76,10 +77,6 @@ export const API_NAME_IDX = 1;
 export const TYPE_IDX = 0;
 export const WHERE_IDX = 2;
 export const ORDER_BY_IDX = 3;
-
-export interface ListQueryOptions extends CommonObserveOptions {
-  pageSize?: number;
-}
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   all: (ObjectHolder | InterfaceHolder)[];
