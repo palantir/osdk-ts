@@ -19,8 +19,8 @@ import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectH
 import type { CacheKey } from "./CacheKey.js";
 import { DEBUG_ONLY__cacheKeyToString } from "./CacheKey.js";
 import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
-import type { ListCacheKey } from "./ListCacheKey.js";
-import type { ObjectCacheKey } from "./ObjectQuery.js";
+import type { ListCacheKey } from "./list/ListCacheKey.js";
+import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 
 export class Changes {
   modifiedObjects: MultiMap<string, ObjectHolder> = new MultiMap();

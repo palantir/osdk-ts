@@ -17,7 +17,7 @@
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { OrderBy } from "../../ObservableClient.js";
 import type { Canonical } from "../Canonical.js";
-import type { ListCacheKey } from "../ListCacheKey.js";
+import type { ListCacheKey } from "../list/ListCacheKey.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { Store } from "../Store.js";
 

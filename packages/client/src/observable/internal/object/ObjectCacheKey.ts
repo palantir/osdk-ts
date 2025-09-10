@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
-import type { ListCacheKey } from "./list/ListCacheKey.js";
-import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
+import type { ObjectTypeDefinition, PrimaryKeyType } from "@osdk/api";
+import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { CacheKey } from "../CacheKey.js";
+import type { ObjectQuery } from "./ObjectQuery.js";
 
-export type KnownCacheKey =
-  | ObjectCacheKey
-  | SpecificLinkCacheKey
-  | ListCacheKey;
+export interface ObjectCacheKey extends
+  CacheKey<
+    "object",
+    ObjectHolder,
+    ObjectQuery,
+    [string, pk: PrimaryKeyType<ObjectTypeDefinition>]
+  >
+{
+}

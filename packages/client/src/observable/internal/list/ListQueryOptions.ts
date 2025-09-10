@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
-import type { ListCacheKey } from "./list/ListCacheKey.js";
-import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
+import type { CommonObserveOptions } from "../../ObservableClient/common.js";
 
-export type KnownCacheKey =
-  | ObjectCacheKey
-  | SpecificLinkCacheKey
-  | ListCacheKey;
+export interface ListQueryOptions extends CommonObserveOptions {
+  pageSize?: number;
+}

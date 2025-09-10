@@ -20,8 +20,8 @@ import { DEBUG_CACHE_KEYS } from "../DebugFlags.js";
 import type { CacheKey } from "./CacheKey.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
-import type { ListCacheKey } from "./ListCacheKey.js";
-import type { ObjectCacheKey } from "./ObjectQuery.js";
+import type { ListCacheKey } from "./list/ListCacheKey.js";
+import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import type { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 

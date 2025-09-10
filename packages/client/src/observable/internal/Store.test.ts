@@ -54,9 +54,9 @@ import type {
   ObserveListOptions,
   Unsubscribable,
 } from "../ObservableClient.js";
-import type { ObjectCacheKey } from "./ObjectQuery.js";
+import { runOptimisticJob } from "./actions/OptimisticJob.js";
+import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import { createOptimisticId } from "./OptimisticId.js";
-import { runOptimisticJob } from "./OptimisticJob.js";
 import { Store } from "./Store.js";
 import {
   applyCustomMatchers,
