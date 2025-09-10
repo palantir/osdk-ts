@@ -529,7 +529,10 @@ export class ListQuery extends BaseListQuery<
           : objOrIface) as unknown as ObjectHolder;
 
       this.store.batch({}, (batch) => {
-        this.storeObjects([object as Osdk.Instance<any>], batch);
+        this.store.objects.storeOsdkInstances(
+          [object as Osdk.Instance<any>],
+          batch,
+        );
       });
     } else if (state === "REMOVED") {
       this.#onOswRemoved(objOrIface, logger);

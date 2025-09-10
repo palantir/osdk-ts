@@ -102,7 +102,7 @@ export abstract class BaseListQuery<
       objectCacheKeys = [];
     } else if (isObjectInstance(items[0])) {
       // Items are object instances, need to store them first
-      objectCacheKeys = this.storeObjects(
+      objectCacheKeys = this.store.objects.storeOsdkInstances(
         items as Array<Osdk.Instance<any>>,
         batch,
       );
@@ -169,24 +169,6 @@ export abstract class BaseListQuery<
    * Implemented by subclasses to handle specific change registration
    */
   protected abstract registerCacheChanges(batch: BatchContext): void;
-
-  /**
-   * Common method to store objects in the cache and return their cache keys
-   * Used by collection queries when storing object references
-   *
-   * @param objects Array of objects to store
-   * @param batch The batch context to use
-   * @returns Array of cache keys for the stored objects
-   */
-  protected storeObjects(
-    objects: Array<Osdk.Instance<any>>,
-    batch: BatchContext,
-  ): Array<ObjectCacheKey> {
-    // Store the individual objects in their respective cache entries
-    return objects.length > 0
-      ? this.store.objects.storeOsdkInstances(objects, batch)
-      : [];
-  }
 
   /**
    * Common method for managing object reference counting and appending results
@@ -405,7 +387,7 @@ export abstract class BaseListQuery<
         const finalStatus = result.nextPageToken ? status : "loaded";
 
         return this._updateList(
-          this.storeObjects(result.data, batch),
+          this.store.objects.storeOsdkInstances(result.data, batch),
           finalStatus,
           batch,
           append,
@@ -512,7 +494,7 @@ export abstract class BaseListQuery<
       objectCacheKeys = [];
     } else if (isObjectInstance(items[0])) {
       // Items are object instances, need to store them first
-      objectCacheKeys = this.storeObjects(
+      objectCacheKeys = this.store.objects.storeOsdkInstances(
         items as Array<Osdk.Instance<any>>,
         batch,
       );
