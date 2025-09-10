@@ -33,8 +33,6 @@ import { Query } from "./Query.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 import { tombstone } from "./tombstone.js";
 
-export interface ObjectEntry extends Entry<ObjectCacheKey> {}
-
 export interface ObjectCacheKey extends
   CacheKey<
     "object",
