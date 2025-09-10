@@ -23,7 +23,7 @@ export { Attachment }
 
 // @public (undocumented)
 export type ClassificationMarking<T extends string = string> = T & {
-    	__classificationMarkingBrand?: "void"
+    	__markingBrand?: "classification"
 };
 
 // Warning: (ae-forgotten-export) The symbol "AnyEdit" needs to be exported by the entry point index.d.ts
@@ -135,7 +135,7 @@ export type Long<T extends string = string> = T & {
 
 // @public (undocumented)
 export type MandatoryMarking<T extends string = string> = T & {
-    	__mandatoryMarkingBrand?: "void"
+    	__markingBrand?: "mandatory"
 };
 
 // @public (undocumented)
