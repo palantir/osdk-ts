@@ -43,7 +43,6 @@ import { ObjectsHelper } from "./object/ObjectsHelper.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { Query } from "./Query.js";
-import { RefCounts } from "./RefCounts.js";
 import { tombstone } from "./tombstone.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
@@ -138,21 +137,12 @@ export class Store {
     KnownCacheKey,
     BehaviorSubject<SubjectPayload<any>>
   >();
-  #cacheKeys: CacheKeys;
-
-  #refCounts = new RefCounts<KnownCacheKey>(
-    DEBUG_REFCOUNTS ? 15_000 : 60_000,
-    (k) => this.#cleanupCacheKey(k),
-  );
-
-  // we are currently only using this for debug logging and should just remove it in the future if that
-  // continues to be true
-  #finalizationRegistry: FinalizationRegistry<() => void>;
+  readonly cacheKeys: CacheKeys<KnownCacheKey>;
 
   // these are hopefully temporary
-  lists: ListsHelper;
-  objects: ObjectsHelper;
-  links: LinksHelper;
+  readonly lists: ListsHelper;
+  readonly objects: ObjectsHelper;
+  readonly links: LinksHelper;
 
   constructor(client: Client) {
     this.client = client;
@@ -173,49 +163,9 @@ export class Store {
     );
 
     this.#topLayer = this.#truthLayer;
-    this.#cacheKeys = new CacheKeys(
-      this.whereCanonicalizer,
-      this.orderByCanonicalizer,
-      (k) => {
-        if (DEBUG_REFCOUNTS) {
-          const cacheKeyType = k.type;
-          const otherKeys = k.otherKeys;
-          // eslint-disable-next-line no-console
-          console.log(
-            `CacheKeys.onCreate(${cacheKeyType}, ${JSON.stringify(otherKeys)})`,
-          );
-
-          this.#finalizationRegistry.register(k, () => {
-            // eslint-disable-next-line no-console
-            console.log(
-              `CacheKey Finalization(${cacheKeyType}, ${
-                JSON.stringify(otherKeys)
-              })`,
-            );
-          });
-        }
-
-        this.#refCounts.register(k);
-      },
-    );
-
-    setInterval(() => {
-      this.#refCounts.gc();
-    }, 1000);
-
-    this.#finalizationRegistry = new FinalizationRegistry<() => void>(
-      (cleanupCallback) => {
-        try {
-          cleanupCallback();
-        } catch (e) {
-          // eslint-disable-next-line no-console
-          console.error(
-            "Caught an error while running a finalization callback",
-            e,
-          );
-        }
-      },
-    );
+    this.cacheKeys = new CacheKeys<KnownCacheKey>({
+      onDestroy: this.#cleanupCacheKey,
+    });
   }
 
   /**
@@ -237,7 +187,7 @@ export class Store {
         JSON.stringify([key.type, ...key.otherKeys], null, 2),
       );
     }
-    this.#cacheKeys.remove(key);
+
     if (process.env.NODE_ENV !== "production") {
       invariant(subject);
     }
@@ -320,7 +270,7 @@ export class Store {
     type: K["type"],
     ...args: K["__cacheKey"]["args"]
   ): K {
-    return this.#refCounts.register(this.#cacheKeys.get(type, ...args));
+    return this.cacheKeys.get(type, ...args);
   }
 
   peekSubject = <KEY extends KnownCacheKey>(
@@ -558,13 +508,5 @@ export class Store {
 
     // we use allSettled here because we don't care if it succeeds or fails, just that they all complete.
     return Promise.allSettled(promises).then(() => void 0);
-  }
-
-  retain(cacheKey: KnownCacheKey): void {
-    this.#refCounts.retain(cacheKey);
-  }
-
-  release(cacheKey: KnownCacheKey): void {
-    this.#refCounts.release(cacheKey);
   }
 }

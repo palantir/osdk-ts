@@ -190,12 +190,12 @@ export abstract class BaseListQuery<
         // N.B. the store keeps the cache keys around for a bit so we don't
         // need to worry about them being GC'd before we re-retain them
         for (const objectCacheKey of existingList?.value?.data ?? []) {
-          this.store.release(objectCacheKey);
+          this.store.cacheKeys.release(objectCacheKey);
         }
       }
 
       for (const objectCacheKey of objectCacheKeys) {
-        this.store.retain(objectCacheKey);
+        this.store.cacheKeys.retain(objectCacheKey);
       }
     }
 
@@ -209,13 +209,11 @@ export abstract class BaseListQuery<
   }
 
   _dispose(): void {
-    // eslint-disable-next-line no-console
-    console.log("DISPOSE LIST QUERY");
     this.store.batch({}, (batch) => {
       const entry = batch.read(this.cacheKey);
       if (entry) {
         for (const objectCacheKey of entry.value?.data ?? []) {
-          this.store.release(objectCacheKey);
+          this.store.cacheKeys.release(objectCacheKey);
         }
       }
     });

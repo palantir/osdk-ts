@@ -53,7 +53,7 @@ export abstract class AbstractHelper<
     >,
   ): QuerySubscription<TQuery> {
     // the ListQuery represents the shared state of the list
-    this.store.retain(query.cacheKey);
+    this.store.cacheKeys.retain(query.cacheKey);
 
     if (options.mode !== "offline") {
       query.revalidate(options.mode === "force").catch((e: unknown) => {
@@ -71,7 +71,7 @@ export abstract class AbstractHelper<
     }
     const sub = query.subscribe(subFn);
     sub.add(() => {
-      this.store.release(query.cacheKey);
+      this.store.cacheKeys.release(query.cacheKey);
     });
 
     return new QuerySubscription(query, sub);
