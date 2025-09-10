@@ -44,17 +44,17 @@ export namespace moveOffice {
     /**
      * The office's new physical address (not necessarily shipping address)
      */
-    readonly newAddress?: ActionParam.PrimitiveType<'string'> | ActionParam.NullValueType;
+    readonly newAddress?: ActionParam.PrimitiveType<'string'>;
     /**
      * The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)
      */
-    readonly newCapacity?: ActionParam.PrimitiveType<'integer'> | ActionParam.NullValueType;
+    readonly newCapacity?: ActionParam.PrimitiveType<'integer'>;
 
     readonly officeId: ActionParam.PrimitiveType<'string'>;
     /**
      * A list of all office names
      */
-    readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'integer'>> | ActionParam.NullValueType;
+    readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'integer'>>;
   }
 
   // Represents a fqn of the action
