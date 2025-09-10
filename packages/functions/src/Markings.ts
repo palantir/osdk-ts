@@ -15,9 +15,9 @@
  */
 
 export type MandatoryMarking<T extends string = string> = T & {
-  __mandatoryMarkingBrand?: "void";
+  __markingBrand?: "mandatory";
 };
 
 export type ClassificationMarking<T extends string = string> = T & {
-  __classificationMarkingBrand?: "void";
+  __markingBrand?: "classification";
 };
