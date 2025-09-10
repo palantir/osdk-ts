@@ -20,6 +20,8 @@ import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import type { ObserveLinks } from "../../ObservableClient/ObserveLink.js";
 import { AbstractHelper } from "../AbstractHelper.js";
+import type { CacheKeys } from "../CacheKeys.js";
+import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Store } from "../Store.js";
@@ -51,10 +53,11 @@ export class LinksHelper extends AbstractHelper<
 
   constructor(
     store: Store,
+    cacheKeys: CacheKeys<KnownCacheKey>,
     whereCanonicalizer: WhereClauseCanonicalizer,
     orderByCanonicalizer: OrderByCanonicalizer,
   ) {
-    super(store);
+    super(store, cacheKeys);
 
     this.whereCanonicalizer = whereCanonicalizer;
     this.orderByCanonicalizer = orderByCanonicalizer;
@@ -72,7 +75,7 @@ export class LinksHelper extends AbstractHelper<
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(
       options.orderBy ?? {},
     );
-    const linkCacheKey = this.store.getCacheKey<SpecificLinkCacheKey>(
+    const linkCacheKey = this.cacheKeys.get<SpecificLinkCacheKey>(
       "specificLink",
       apiName,
       options.pk,

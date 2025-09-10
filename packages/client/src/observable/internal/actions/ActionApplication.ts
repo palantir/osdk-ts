@@ -116,7 +116,7 @@ export class ActionApplication {
 
       this.store.batch({}, (batch) => {
         for (const { objectType, primaryKey } of deletedObjects ?? []) {
-          const cacheKey = this.store.getCacheKey<ObjectCacheKey>(
+          const cacheKey = this.store.cacheKeys.get<ObjectCacheKey>(
             "object",
             objectType,
             primaryKey,

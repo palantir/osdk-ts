@@ -677,8 +677,9 @@ export function getObject(
   type: string,
   pk: number,
 ): ObjectHolder | undefined {
-  return store.getValue(store.getCacheKey<ObjectCacheKey>("object", type, pk))
-    ?.value;
+  return store.getValue(
+    store.cacheKeys.get<ObjectCacheKey>("object", type, pk),
+  )?.value;
 }
 
 export function updateObject<T extends ObjectOrInterfaceDefinition>(

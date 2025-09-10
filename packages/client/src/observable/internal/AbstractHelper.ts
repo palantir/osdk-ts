@@ -18,6 +18,7 @@ import type {
   CommonObserveOptions,
   Observer,
 } from "../ObservableClient/common.js";
+import type { CacheKeys } from "./CacheKeys.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Query } from "./Query.js";
 import { QuerySubscription } from "./QuerySubscription.js";
@@ -28,9 +29,11 @@ export abstract class AbstractHelper<
   TObserveOptions extends CommonObserveOptions,
 > {
   protected readonly store: Store;
+  protected readonly cacheKeys: CacheKeys<KnownCacheKey>;
 
-  constructor(store: Store) {
+  constructor(store: Store, cacheKeys: CacheKeys<KnownCacheKey>) {
     this.store = store;
+    this.cacheKeys = cacheKeys;
   }
 
   observe(

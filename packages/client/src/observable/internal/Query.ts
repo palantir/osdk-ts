@@ -27,6 +27,7 @@ import type {
   CommonObserveOptions,
   Status,
 } from "../ObservableClient/common.js";
+import type { CacheKeys } from "./CacheKeys.js";
 import type { Changes } from "./Changes.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Entry } from "./Layer.js";
@@ -52,6 +53,8 @@ export abstract class Query<
   /** @internal */
   protected logger: Logger | undefined;
 
+  protected readonly cacheKeys: CacheKeys<KnownCacheKey>;
+
   constructor(
     store: Store,
     observable: Observable<SubjectPayload<KEY>>,
@@ -62,6 +65,7 @@ export abstract class Query<
     this.options = opts;
     this.cacheKey = cacheKey;
     this.store = store;
+    this.cacheKeys = store.cacheKeys;
     this.#subject = observable;
 
     this.logger = logger ?? (

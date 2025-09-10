@@ -150,22 +150,25 @@ export class Store {
       msgPrefix: "Store",
     });
 
+    this.cacheKeys = new CacheKeys<KnownCacheKey>({
+      onDestroy: this.#cleanupCacheKey,
+    });
+
     this.lists = new ListsHelper(
       this,
+      this.cacheKeys,
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
     );
-    this.objects = new ObjectsHelper(this);
+    this.objects = new ObjectsHelper(this, this.cacheKeys);
     this.links = new LinksHelper(
       this,
+      this.cacheKeys,
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
     );
 
     this.#topLayer = this.#truthLayer;
-    this.cacheKeys = new CacheKeys<KnownCacheKey>({
-      onDestroy: this.#cleanupCacheKey,
-    });
   }
 
   /**
@@ -264,13 +267,6 @@ export class Store {
         );
       }
     }
-  }
-
-  getCacheKey<K extends KnownCacheKey>(
-    type: K["type"],
-    ...args: K["__cacheKey"]["args"]
-  ): K {
-    return this.cacheKeys.get(type, ...args);
   }
 
   peekSubject = <KEY extends KnownCacheKey>(

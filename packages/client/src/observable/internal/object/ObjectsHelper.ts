@@ -48,7 +48,7 @@ export class ObjectsHelper extends AbstractHelper<
       : options.apiName.apiName;
     const { pk } = options;
 
-    const objectCacheKey = this.store.getCacheKey<ObjectCacheKey>(
+    const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
       "object",
       apiName,
       pk,

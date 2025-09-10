@@ -19,6 +19,8 @@ import type { ListPayload } from "../../ListPayload.js";
 import type { ObserveListOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
+import type { CacheKeys } from "../CacheKeys.js";
+import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Store } from "../Store.js";
@@ -35,10 +37,11 @@ export class ListsHelper extends AbstractHelper<
 
   constructor(
     store: Store,
+    cacheKeys: CacheKeys<KnownCacheKey>,
     whereCanonicalizer: WhereClauseCanonicalizer,
     orderByCanonicalizer: OrderByCanonicalizer,
   ) {
-    super(store);
+    super(store, cacheKeys);
 
     this.whereCanonicalizer = whereCanonicalizer;
     this.orderByCanonicalizer = orderByCanonicalizer;
@@ -63,7 +66,7 @@ export class ListsHelper extends AbstractHelper<
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
-    const listCacheKey = this.store.getCacheKey<ListCacheKey>(
+    const listCacheKey = this.cacheKeys.get<ListCacheKey>(
       "list",
       type,
       apiName,

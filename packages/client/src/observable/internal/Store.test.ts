@@ -55,6 +55,8 @@ import type {
   Unsubscribable,
 } from "../ObservableClient.js";
 import { runOptimisticJob } from "./actions/OptimisticJob.js";
+import type { CacheKeys } from "./CacheKeys.js";
+import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import { createOptimisticId } from "./OptimisticId.js";
 import { Store } from "./Store.js";
@@ -401,6 +403,7 @@ describe(Store, () => {
   describe("with mock server", () => {
     let client: Client;
     let cache: Store;
+    let cacheKeys: CacheKeys<KnownCacheKey>;
 
     let employeesAsServerReturns: Osdk.Instance<Employee>[];
     let mutatedEmployees: Osdk.Instance<Employee>[];
@@ -432,6 +435,7 @@ describe(Store, () => {
 
     beforeEach(() => {
       cache = new Store(client);
+      cacheKeys = cache.cacheKeys;
 
       return () => {
         cache = undefined!;
@@ -441,7 +445,7 @@ describe(Store, () => {
     it("basic single object works", async () => {
       const emp = employeesAsServerReturns[0];
 
-      const cacheKey = cache.getCacheKey<ObjectCacheKey>(
+      const cacheKey = cacheKeys.get<ObjectCacheKey>(
         "object",
         "Employee",
         emp.$primaryKey,
@@ -667,7 +671,7 @@ describe(Store, () => {
             { status: "loaded" },
           );
 
-          const cacheKey = cache.getCacheKey<ObjectCacheKey>(
+          const cacheKey = cacheKeys.get<ObjectCacheKey>(
             "object",
             emp.$apiName,
             emp.$primaryKey,
@@ -1417,7 +1421,7 @@ describe(Store, () => {
         });
 
         const object: Osdk.Instance<Todo> | undefined = store.getValue(
-          store.getCacheKey<ObjectCacheKey>("object", "Todo", 0),
+          store.cacheKeys.get<ObjectCacheKey>("object", "Todo", 0),
         )?.value as any;
         invariant(object);
 
@@ -1772,7 +1776,7 @@ describe(Store, () => {
       } as Osdk.Instance<Employee> & ObjectHolder<Osdk.Instance<Employee>>));
 
       const cacheKeys = baseObjects.map((obj) =>
-        store.getCacheKey("object", "Employee", obj.$primaryKey)
+        store.cacheKeys.get("object", "Employee", obj.$primaryKey)
       );
 
       // set the truth
