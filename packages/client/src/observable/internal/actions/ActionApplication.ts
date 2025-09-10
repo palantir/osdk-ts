@@ -19,11 +19,11 @@ import type {
   ActionEditResponse,
   ActionReturnTypeForOptions,
 } from "@osdk/api";
-import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
-import { type Changes } from "./Changes.js";
-import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
+import type { ActionSignatureFromDef } from "../../../actions/applyAction.js";
+import { type Changes } from "../Changes.js";
+import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
+import type { Store } from "../Store.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
-import type { Store } from "./Store.js";
 
 const ACTION_DELAY = process.env.NODE_ENV === "production" ? 0 : 1000;
 

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { additionalContext } from "../../Client.js";
-import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
-import type { OptimisticBuilder } from "../OptimisticBuilder.js";
-import { type Changes } from "./Changes.js";
-import { createOptimisticId, type OptimisticId } from "./OptimisticId.js";
-import type { Store } from "./Store.js";
+import { additionalContext } from "../../../Client.js";
+import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { OptimisticBuilder } from "../../OptimisticBuilder.js";
+import { type Changes } from "../Changes.js";
+import { createOptimisticId, type OptimisticId } from "../OptimisticId.js";
+import type { Store } from "../Store.js";
 
 export class OptimisticJob {
   context: OptimisticBuilder;

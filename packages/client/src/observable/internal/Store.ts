@@ -30,7 +30,7 @@ import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
-import { ActionApplication } from "./ActionApplication.js";
+import { ActionApplication } from "./actions/ActionApplication.js";
 import { CacheKeys } from "./CacheKeys.js";
 import type { Canonical } from "./Canonical.js";
 import {
