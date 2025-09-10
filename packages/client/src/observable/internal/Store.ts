@@ -88,10 +88,6 @@ export interface BatchContext {
   ) => Entry<K>;
 }
 
-interface UpdateOptions {
-  optimisticId?: OptimisticId;
-}
-
 export namespace Store {
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
