@@ -21,7 +21,7 @@ import type {
 } from "@osdk/api";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { type Changes } from "./Changes.js";
-import type { ObjectCacheKey } from "./ObjectCacheKey.js";
+import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
 import type { Store } from "./Store.js";
 

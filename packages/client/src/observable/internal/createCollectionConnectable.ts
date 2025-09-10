@@ -29,7 +29,7 @@ import {
 } from "rxjs";
 import type { Status } from "../ObservableClient/common.js";
 import type { CacheKey } from "./CacheKey.js";
-import type { ObjectCacheKey } from "./ObjectCacheKey.js";
+import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import type { Store, SubjectPayload } from "./Store.js";
 
 /**

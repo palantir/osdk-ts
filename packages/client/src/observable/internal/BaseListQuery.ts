@@ -30,7 +30,7 @@ import { type CacheKey, DEBUG_ONLY__cacheKeysToString } from "./CacheKey.js";
 import { createCollectionConnectable } from "./createCollectionConnectable.js";
 import { isObjectInstance } from "./isObjectInstance.js";
 import type { Entry } from "./Layer.js";
-import { type ObjectCacheKey } from "./ObjectCacheKey.js";
+import { type ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import { Query } from "./Query.js";
 import { removeDuplicates } from "./removeDuplicates.js";
 import type { SortingStrategy } from "./sorting/SortingStrategy.js";

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectCacheKey } from "./ObjectCacheKey.js";
+import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import type { BatchContext } from "./Store.js";
 
 /**

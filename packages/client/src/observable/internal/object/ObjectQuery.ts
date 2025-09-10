@@ -28,10 +28,10 @@ import type {
 import { getBulkObjectLoader } from "../BulkObjectLoader.js";
 import type { Changes } from "../Changes.js";
 import type { Entry } from "../Layer.js";
-import type { ObjectCacheKey } from "../ObjectCacheKey.js";
 import { Query } from "../Query.js";
 import type { BatchContext, Store, SubjectPayload } from "../Store.js";
 import { tombstone } from "../tombstone.js";
+import type { ObjectCacheKey } from "./ObjectCacheKey.js";
 
 export class ObjectQuery extends Query<
   ObjectCacheKey,
