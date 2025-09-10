@@ -36,6 +36,7 @@ import {
 import type {
   ObjectHolder,
 } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import { getWireObjectSet } from "../../objectSet/createObjectSet.js";
 import type { ListPayload } from "../ListPayload.js";
 import type {
   CommonObserveOptions,
@@ -49,8 +50,10 @@ import { type CacheKey, DEBUG_ONLY__cacheKeysToString } from "./CacheKey.js";
 import type { Canonical } from "./Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "./Changes.js";
 import { createCollectionConnectable } from "./createCollectionConnectable.js";
+import { getObjectTypesThatInvalidate } from "./getObjectTypesThatInvalidate.js";
 import { isObjectInstance } from "./isObjectInstance.js";
 import type { Entry } from "./Layer.js";
+import type { ListCacheKey, ListStorageData } from "./ListCacheKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "./objectMatchesWhereClause.js";
 import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
@@ -64,22 +67,6 @@ import {
 } from "./sorting/SortingStrategy.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 
-export interface ListStorageData extends CollectionStorageData {}
-
-export interface ListCacheKey extends
-  CacheKey<
-    "list",
-    ListStorageData,
-    ListQuery,
-    [
-      type: "object" | "interface",
-      apiName: string,
-      whereClause: Canonical<SimpleWhereClause>,
-      orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
-    ]
-  > //
-{}
-
 export interface BaseListCacheKey<
   T_Type extends string,
   T_Query extends Query<any, any, any>,
@@ -91,6 +78,7 @@ export const API_NAME_IDX = 1;
 export const TYPE_IDX = 0;
 export const WHERE_IDX = 2;
 export const ORDER_BY_IDX = 3;
+export const RDP_IDX = 4;
 
 export interface ListQueryOptions extends CommonObserveOptions {
   pageSize?: number;
@@ -638,8 +626,7 @@ export class ListQuery extends BaseListQuery<
     subject: Observable<SubjectPayload<ListCacheKey>>,
     apiType: "object" | "interface",
     apiName: string,
-    whereClause: Canonical<SimpleWhereClause>,
-    orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
+    objectSet: ObjectSet<ObjectTypeDefinition>,
     cacheKey: ListCacheKey,
     opts: ListQueryOptions,
   ) {
@@ -661,13 +648,10 @@ export class ListQuery extends BaseListQuery<
 
     this.#type = apiType;
     this.#apiName = apiName;
-    this.#whereClause = whereClause;
-    this.#orderBy = orderBy;
-    this.#objectSet = store.client({
-      type: this.#type,
-      apiName: this.#apiName,
-    } as ObjectTypeDefinition)
-      .where(this.#whereClause);
+    this.#whereClause = cacheKey.otherKeys[2];
+    this.#orderBy = cacheKey.otherKeys[3];
+    this.#objectSet = objectSet;
+
     // Initialize the sorting strategy
     this.sortingStrategy = new OrderBySortingStrategy(
       this.#apiName,
@@ -771,10 +755,34 @@ export class ListQuery extends BaseListQuery<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (this.cacheKey.otherKeys[1] === objectType) {
+    // Check if the main object type matches
+    if (this.#apiName === objectType) {
       // Only invalidate lists for the matching apiName
       changes?.modified.add(this.cacheKey);
-      return this.revalidate(true);
+      await this.revalidate(true);
+      return;
+    }
+
+    if (this.cacheKey.otherKeys[RDP_IDX]) {
+      try {
+        const wireObjectSet = getWireObjectSet(this.#objectSet);
+        const result = await getObjectTypesThatInvalidate(
+          this.store.client[additionalContext],
+          wireObjectSet,
+        );
+
+        // Only invalidate if this object type is one that our RDPs might traverse to
+        if (result.invalidationSet.has(objectType)) {
+          changes?.modified.add(this.cacheKey);
+          await this.revalidate(true);
+          return;
+        }
+      } catch (error) {
+        if (process.env.NODE_ENV !== "production") {
+          this.logger?.error("Failed to check RDP invalidation:", error);
+        }
+        // On error, be conservative and don't invalidate
+      }
     }
   };
 

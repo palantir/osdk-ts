@@ -14,63 +14,17 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
-import { Trie } from "@wry/trie";
-import type { OrderBy } from "../ObservableClient.js";
 import type { Canonical } from "./Canonical.js";
+import { CachingCanonicalizer } from "./Canonicalizer.js";
+import { WeakRefTrie } from "./WeakRefTrie.js";
 
-const defaultMakeData = () => Object.create(null);
-
-export class WeakRefTrie<X extends object> {
-  #finalizer = new FinalizationRegistry<
-    Array<string>
-  >((orderBy) => {
-    this.#trie.removeArray(
-      Object.entries(orderBy).flat(),
-    );
-  });
-
-  #trie: Trie<WeakRef<X>>;
-
-  constructor(makeData: (array: any[]) => X = defaultMakeData) {
-    this.#trie = new Trie<WeakRef<X>>(
-      false,
-      (array) => {
-        const data = makeData(array);
-        this.#finalizer.register(data, array);
-        return new WeakRef(data);
-      },
-    );
-  }
-
-  lookupArray<T extends IArguments | any[]>(array: T): X {
-    const maybe = this.#trie.lookupArray(array);
-    let ret = maybe.deref();
-    if (maybe && !ret) {
-      // in case finalizer hasn't run
-      this.#trie.removeArray(array);
-      ret = this.#trie.lookupArray(array).deref();
-    }
-    return ret!;
-  }
-
-  peekArray<T extends IArguments | any[]>(array: T): X | undefined {
-    const maybe = this.#trie.peekArray(array);
-    const ret = maybe?.deref();
-    if (maybe && !ret) {
-      // in case finalizer hasn't run
-      this.#trie.removeArray(array);
-    }
-    return ret;
-  }
-
-  removeArray<T extends IArguments | any[]>(array: T): X | undefined {
-    return this.#trie.removeArray(array)?.deref();
-  }
-}
-
-export class OrderByCanonicalizer {
-  #trie = new WeakRefTrie(
+export class OrderByCanonicalizer extends CachingCanonicalizer<
+  Record<string, "asc" | "desc" | undefined>,
+  Record<string, "asc" | "desc" | undefined>
+> {
+  private structuralCache = new WeakRefTrie<
+    Canonical<Record<string, "asc" | "desc" | undefined>>
+  >(
     (array: Array<string>) => {
       const pairs = array.reduce<Array<[string, "asc" | "desc"]>>(
         function(result, _, index, array) {
@@ -83,24 +37,23 @@ export class OrderByCanonicalizer {
         },
         [],
       );
-      let data = Object.fromEntries(pairs) satisfies Record<
+      const data = Object.fromEntries(pairs) satisfies Record<
         string,
         "asc" | "desc"
-      > as Canonical<OrderBy<ObjectTypeDefinition>>;
+      >;
 
-      if (process.env.NODE_ENV !== "production") {
-        data = Object.freeze(data);
-      }
-      return data;
+      return (process.env.NODE_ENV !== "production"
+        ? Object.freeze(data)
+        : data) as Canonical<
+          Record<string, "asc" | "desc" | undefined>
+        >;
     },
   );
 
-  canonicalize: (
+  protected lookupOrCreate(
     orderBy: Record<string, "asc" | "desc" | undefined>,
-  ) => Canonical<Record<string, "asc" | "desc" | undefined>> = (
-    orderBy,
-  ) => {
+  ): Canonical<Record<string, "asc" | "desc" | undefined>> {
     const strings = Object.entries(orderBy).flat();
-    return this.#trie.lookupArray(strings);
-  };
+    return this.structuralCache.lookupArray(strings);
+  }
 }

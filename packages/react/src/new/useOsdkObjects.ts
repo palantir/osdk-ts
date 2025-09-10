@@ -15,6 +15,7 @@
  */
 
 import type {
+  DerivedProperty,
   InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
@@ -89,6 +90,12 @@ export interface UseOsdkObjectsOptions<
   // expectedLength?: number | undefined;
 
   streamUpdates?: boolean;
+
+  /**
+   * Define derived properties (RDPs) to be computed server-side and attached to each object.
+   * These properties will be available on the returned objects alongside their regular properties.
+   */
+  withProperties?: DerivedProperty.Clause<T>;
 }
 
 export interface UseOsdkListResult<
@@ -127,6 +134,7 @@ export function useOsdkObjects<
     dedupeIntervalMs,
     where = {},
     streamUpdates,
+    withProperties,
   }: UseOsdkObjectsOptions<Q> = {},
 ): UseOsdkListResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
@@ -148,12 +156,13 @@ export function useOsdkObjects<
             pageSize,
             orderBy,
             streamUpdates,
+            withProperties,
           }, observer),
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
           : void 0,
       ),
-    [observableClient, type, canonWhere, dedupeIntervalMs],
+    [observableClient, type, canonWhere, dedupeIntervalMs, withProperties],
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);

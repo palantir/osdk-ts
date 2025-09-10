@@ -17,6 +17,7 @@
 import type {
   ActionDefinition,
   ActionValidationResponse,
+  DerivedProperty,
   InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
@@ -70,6 +71,7 @@ export interface ObserveListOptions<
   invalidationMode?: InvalidationMode;
   expectedLength?: number;
   streamUpdates?: boolean;
+  withProperties?: DerivedProperty.Clause<Q>;
 }
 
 // TODO: Rename this from `ObserveObjectArgs` => `ObserveObjectCallbackArgs`. Not doing it now to reduce churn
