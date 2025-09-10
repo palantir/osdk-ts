@@ -15,7 +15,7 @@
  */
 
 import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
-import type { ListCacheKey } from "./ListCacheKey.js";
+import type { ListCacheKey } from "./list/ListCacheKey.js";
 import type { ObjectCacheKey } from "./ObjectQuery.js";
 
 export type KnownCacheKey =

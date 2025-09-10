@@ -51,7 +51,7 @@ import { type Changes, DEBUG_ONLY__changesToString } from "./Changes.js";
 import { createCollectionConnectable } from "./createCollectionConnectable.js";
 import { isObjectInstance } from "./isObjectInstance.js";
 import type { Entry } from "./Layer.js";
-import type { ListCacheKey, ListStorageData } from "./ListCacheKey.js";
+import type { ListCacheKey, ListStorageData } from "./list/ListCacheKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "./objectMatchesWhereClause.js";
 import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
