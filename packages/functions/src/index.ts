@@ -46,4 +46,5 @@ export type {
   UrlLinkTarget,
 } from "./Notification.js";
 
+export type { ClassificationMarking, MandatoryMarking } from "./Markings.js";
 export type { GroupId, Principal, UserId } from "./UserGroup.js";
