@@ -26,21 +26,12 @@ import type {
   Status,
 } from "../ObservableClient/common.js";
 import { getBulkObjectLoader } from "./BulkObjectLoader.js";
-import type { CacheKey } from "./CacheKey.js";
 import type { Changes } from "./Changes.js";
 import type { Entry } from "./Layer.js";
+import type { ObjectCacheKey } from "./ObjectCacheKey.js";
 import { Query } from "./Query.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
 import { tombstone } from "./tombstone.js";
-
-export interface ObjectCacheKey extends
-  CacheKey<
-    "object",
-    ObjectHolder,
-    ObjectQuery,
-    [string, pk: PrimaryKeyType<ObjectTypeDefinition>]
-  >
-{}
 
 export class ObjectQuery extends Query<
   ObjectCacheKey,

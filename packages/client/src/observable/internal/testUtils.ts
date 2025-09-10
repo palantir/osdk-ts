@@ -47,7 +47,7 @@ import type { OrderBy, Status } from "../ObservableClient/common.js";
 import type { Unsubscribable } from "../Unsubscribable.js";
 import type { Entry } from "./Layer.js";
 import type { ListQueryOptions } from "./ListQueryOptions.js";
-import type { ObjectCacheKey } from "./ObjectQuery.js";
+import type { ObjectCacheKey } from "./ObjectCacheKey.js";
 import { storeOsdkInstances } from "./ObjectQuery.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import type { Store } from "./Store.js";

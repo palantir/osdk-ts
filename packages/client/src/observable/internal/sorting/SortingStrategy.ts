@@ -17,7 +17,7 @@
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { Canonical } from "../Canonical.js";
-import type { ObjectCacheKey } from "../ObjectQuery.js";
+import type { ObjectCacheKey } from "../ObjectCacheKey.js";
 import type { BatchContext } from "../Store.js";
 
 /**
