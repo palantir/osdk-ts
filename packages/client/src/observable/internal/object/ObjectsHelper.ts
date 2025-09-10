@@ -24,8 +24,8 @@ import type { ObjectPayload } from "../../ObjectPayload.js";
 import type { ObserveObjectOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
+import type { BatchContext } from "../BatchContext.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
-import type { BatchContext } from "../Store.js";
 import { type ObjectCacheKey } from "./ObjectCacheKey.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 

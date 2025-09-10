@@ -27,12 +27,14 @@ import type {
   CommonObserveOptions,
   Status,
 } from "../ObservableClient/common.js";
+import type { BatchContext } from "./BatchContext.js";
 import type { CacheKeys } from "./CacheKeys.js";
 import type { Changes } from "./Changes.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Entry } from "./Layer.js";
 import type { OptimisticId } from "./OptimisticId.js";
-import type { BatchContext, Store, SubjectPayload } from "./Store.js";
+import type { Store } from "./Store.js";
+import type { SubjectPayload } from "./SubjectPayload.js";
 
 export abstract class Query<
   KEY extends KnownCacheKey,

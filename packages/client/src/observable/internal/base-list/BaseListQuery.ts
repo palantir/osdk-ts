@@ -21,6 +21,7 @@ import type {
   CommonObserveOptions,
   Status,
 } from "../../ObservableClient/common.js";
+import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey, DEBUG_ONLY__cacheKeysToString } from "../CacheKey.js";
 import { isObjectInstance } from "../isObjectInstance.js";
 import type { Entry } from "../Layer.js";
@@ -28,7 +29,7 @@ import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { Query } from "../Query.js";
 import type { SortingStrategy } from "../sorting/SortingStrategy.js";
 import { NoOpSortingStrategy } from "../sorting/SortingStrategy.js";
-import type { BatchContext, SubjectPayload } from "../Store.js";
+import type { SubjectPayload } from "../SubjectPayload.js";
 import type {
   CollectionConnectableParams,
   CollectionStorageData,

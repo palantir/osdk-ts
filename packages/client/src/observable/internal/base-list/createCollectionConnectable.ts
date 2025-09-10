@@ -30,7 +30,8 @@ import {
 import type { Status } from "../../ObservableClient/common.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
-import type { Store, SubjectPayload } from "../Store.js";
+import type { Store } from "../Store.js";
+import type { SubjectPayload } from "../SubjectPayload.js";
 
 /**
  * Common parameters available for constructing a collection payload

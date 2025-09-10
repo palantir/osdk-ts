@@ -38,6 +38,7 @@ import type {
 import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
+import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
@@ -47,7 +48,8 @@ import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../ob
 import type { OptimisticId } from "../OptimisticId.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
-import type { BatchContext, Store, SubjectPayload } from "../Store.js";
+import type { Store } from "../Store.js";
+import type { SubjectPayload } from "../SubjectPayload.js";
 import type { ListCacheKey } from "./ListCacheKey.js";
 import type { ListQueryOptions } from "./ListQueryOptions.js";
 

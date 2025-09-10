@@ -29,6 +29,7 @@ import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./actions/ActionApplication.js";
+import type { BatchContext } from "./BatchContext.js";
 import { CacheKeys } from "./CacheKeys.js";
 import {
   type Changes,
@@ -43,49 +44,9 @@ import { ObjectsHelper } from "./object/ObjectsHelper.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { Query } from "./Query.js";
+import type { SubjectPayload } from "./SubjectPayload.js";
 import { tombstone } from "./tombstone.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
-
-/*
-    Work still to do:
-    - [x] testing for optimistic writes
-    - [x] automatic invalidation of actions
-    - [x] automatic optimistic list updates
-    - [x] useOsdkObjects
-    - [x] imply offline for objects passed directly
-    - [x] websocket subscriptions
-    - [ ] links
-    - [x] add pagination
-    - [ ] sub-selection support
-    - [ ] interfaces
-    - [ ] setup defaults
-    - [ ] reduce updates in react
-*/
-
-export interface SubjectPayload<KEY extends KnownCacheKey> extends Entry<KEY> {
-  isOptimistic: boolean;
-}
-
-export interface BatchContext {
-  changes: Changes;
-  createLayerIfNeeded: () => void;
-  optimisticWrite: boolean;
-
-  write: <K extends KnownCacheKey>(
-    k: K,
-    v: Entry<K>["value"],
-    status: Entry<K>["status"],
-  ) => Entry<K>;
-
-  read: <K extends KnownCacheKey>(
-    k: K,
-  ) => Entry<K> | undefined;
-
-  delete: <K extends KnownCacheKey>(
-    k: K,
-    status: Entry<K>["status"],
-  ) => Entry<K>;
-}
 
 export namespace Store {
   export interface ApplyActionOptions {
