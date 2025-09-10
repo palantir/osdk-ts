@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.5.0-beta.5
+
+### Minor Changes
+
+- 052a96b: Add $link support.
+
 ## 2.5.0-beta.4
 
 ## 2.5.0-beta.3
