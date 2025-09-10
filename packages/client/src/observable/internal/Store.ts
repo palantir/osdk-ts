@@ -43,7 +43,7 @@ import { ListsHelper } from "./list/ListsHelper.js";
 import { ObjectsHelper } from "./object/ObjectsHelper.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
-import type { Query } from "./Query.js";
+import { Queries } from "./Queries.js";
 import type { SubjectPayload } from "./SubjectPayload.js";
 import { tombstone } from "./tombstone.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
@@ -89,16 +89,13 @@ export class Store {
 
   // we can use a regular Map here because the refCounting will
   // handle cleanup.
-  #queries: Map<
-    KnownCacheKey,
-    Query<any, any, any>
-  > = new Map();
 
   #cacheKeyToSubject = new WeakMap<
     KnownCacheKey,
     BehaviorSubject<SubjectPayload<any>>
   >();
   readonly cacheKeys: CacheKeys<KnownCacheKey>;
+  readonly queries: Queries = new Queries();
 
   // these are hopefully temporary
   readonly lists: ListsHelper;
@@ -161,8 +158,7 @@ export class Store {
       this.#cacheKeyToSubject.delete(key);
     }
 
-    this.#queries.get(key)?.dispose();
-    this.#queries.delete(key);
+    this.queries.delete(key);
   };
 
   applyAction: <Q extends ActionDefinition<any>>(
@@ -258,24 +254,6 @@ export class Store {
 
     return subject;
   };
-
-  peekQuery<K extends KnownCacheKey>(
-    cacheKey: K,
-  ): K["__cacheKey"]["query"] | undefined {
-    return this.#queries.get(cacheKey) as K["__cacheKey"]["query"] | undefined;
-  }
-
-  getQuery<K extends KnownCacheKey>(
-    cacheKey: K,
-    createQuery: () => K["__cacheKey"]["query"],
-  ): K["__cacheKey"]["query"] {
-    let query = this.peekQuery(cacheKey);
-    if (!query) {
-      query = createQuery();
-      this.#queries.set(cacheKey, query);
-    }
-    return query;
-  }
 
   public getValue<K extends KnownCacheKey>(
     cacheKey: K,
@@ -408,8 +386,8 @@ export class Store {
 
     try {
       const promises: Array<Promise<unknown>> = [];
-      for (const cacheKey of this.#queries.keys()) {
-        const promise = this.peekQuery(cacheKey)?.maybeUpdateAndRevalidate?.(
+      for (const cacheKey of this.queries.keys()) {
+        const promise = this.queries.peek(cacheKey)?.maybeUpdateAndRevalidate?.(
           changes,
           optimisticId,
         );
@@ -457,7 +435,7 @@ export class Store {
       if (changes && changes.modified.has(cacheKey)) {
         continue;
       }
-      const query = this.peekQuery(cacheKey);
+      const query = this.queries.peek(cacheKey);
       if (!query) continue;
 
       promises.push(query.invalidateObjectType(apiName, changes));
