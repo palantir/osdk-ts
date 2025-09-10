@@ -18,20 +18,20 @@ import type { ObjectTypeDefinition, PrimaryKeyType } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import type { Connectable, Observable, Subject } from "rxjs";
 import { BehaviorSubject, connectable, map } from "rxjs";
-import { additionalContext } from "../../Client.js";
-import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
-import type { ObjectPayload } from "../ObjectPayload.js";
+import { additionalContext } from "../../../Client.js";
+import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { ObjectPayload } from "../../ObjectPayload.js";
 import type {
   CommonObserveOptions,
   Status,
-} from "../ObservableClient/common.js";
-import { getBulkObjectLoader } from "./BulkObjectLoader.js";
-import type { Changes } from "./Changes.js";
-import type { Entry } from "./Layer.js";
-import type { ObjectCacheKey } from "./ObjectCacheKey.js";
-import { Query } from "./Query.js";
-import type { BatchContext, Store, SubjectPayload } from "./Store.js";
-import { tombstone } from "./tombstone.js";
+} from "../../ObservableClient/common.js";
+import { getBulkObjectLoader } from "../BulkObjectLoader.js";
+import type { Changes } from "../Changes.js";
+import type { Entry } from "../Layer.js";
+import type { ObjectCacheKey } from "../ObjectCacheKey.js";
+import { Query } from "../Query.js";
+import type { BatchContext, Store, SubjectPayload } from "../Store.js";
+import { tombstone } from "../tombstone.js";
 
 export class ObjectQuery extends Query<
   ObjectCacheKey,

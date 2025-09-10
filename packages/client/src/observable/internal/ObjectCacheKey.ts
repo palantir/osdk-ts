@@ -17,7 +17,7 @@
 import type { ObjectTypeDefinition, PrimaryKeyType } from "@osdk/api";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { CacheKey } from "./CacheKey.js";
-import type { ObjectQuery } from "./ObjectQuery.js";
+import type { ObjectQuery } from "./object/ObjectQuery.js";
 
 export interface ObjectCacheKey extends
   CacheKey<
