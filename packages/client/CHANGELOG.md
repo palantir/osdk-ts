@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.5.0-beta.5
+
+### Minor Changes
+
+- 3d7461d: Fix applyQuery for marketplace installations
+- 052a96b: Add $link support.
+
+### Patch Changes
+
+- Updated dependencies [052a96b]
+  - @osdk/api@2.5.0-beta.5
+  - @osdk/client.unstable@2.5.0-beta.5
+  - @osdk/generator-converters@2.5.0-beta.5
+
 ## 2.5.0-beta.4
 
 ### Minor Changes
@@ -40,7 +54,6 @@
 - 7160276: Add order by relevance support to nearest neighbors
 - 7cdab1d: Update platform sdk dependencies
 - b9e9a88: Refactor Observable Client with enhanced observer architecture
-
   - Restructure observable implementation with dedicated observer classes (LinkObservers, ListObservers, ObjectObservers)
   - Improve type safety for link observation operations with enhanced generic constraints
   - Add QuerySubscription and UnsubscribableWrapper for better encapsulation
@@ -229,7 +242,6 @@
   The `useOsdkAction` hook in `@osdk/react` now provides a `validateAction` function that allows you to check if an action is valid without executing it. This is useful for providing real-time validation feedback to users before they commit to performing an action.
 
   ### New features:
-
   - **validateAction**: A new async function that validates action parameters without executing the action
   - **isValidating**: A boolean state that indicates when validation is in progress
   - **validationResult**: Contains the validation response from the server, including whether the action is valid and any validation errors
@@ -252,7 +264,6 @@
   ```
 
   ### Implementation details:
-
   - Multiple validation calls can be made - new calls automatically cancel previous pending validations
   - Validation and action execution are mutually exclusive - you cannot validate while an action is being applied and vice versa
   - The underlying `ObservableClient` in `@osdk/client` has been extended with a `validateAction` method to support this functionality
@@ -2150,7 +2161,6 @@
 - 97f627e: Supports more than one concurrent subscription
 
   Also:
-
   - Introduced an optional pino logger to the client
   - Fixes issues with where clauses for equality in subscriptions
   - Fixes issues with inconsistent id name and apiName's in the mapping data
