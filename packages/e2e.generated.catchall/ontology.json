@@ -2500,6 +2500,48 @@
           },
           "displayName": "Description",
           "description": "Description of Description"
+        },
+        "deprecatedName": {
+          "rid": "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d7",
+          "apiName": "deprecatedName",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Deprecated Name",
+          "description": "A deprecated name property",
+          "status": {
+            "type": "deprecated",
+            "message": "This property is deprecated and will be removed.",
+            "deadline": "2024-12-31",
+            "replacedBy": "name"
+          }
+        },
+        "deprecatedDescription": {
+          "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d8",
+          "apiName": "deprecatedDescription",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Deprecated Description",
+          "description": "A deprecated description property",
+          "status": {
+            "type": "deprecated",
+            "message": "Use description instead.",
+            "deadline": "2025-06-30",
+            "replacedBy": "description"
+          }
+        },
+        "experimentalProperty": {
+          "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d9",
+          "apiName": "experimentalProperty",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Experimental Property",
+          "description": "An experimental property for testing",
+          "status": {
+            "type": "experimental"
+          }
         }
       },
       "allProperties": {
@@ -2529,6 +2571,48 @@
           },
           "displayName": "Inherited Description",
           "description": "Description property we inherited from some parent interface"
+        },
+        "deprecatedName": {
+          "rid": "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d7",
+          "apiName": "deprecatedName",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Deprecated Name",
+          "description": "A deprecated name property",
+          "status": {
+            "type": "deprecated",
+            "message": "This property is deprecated and will be removed.",
+            "deadline": "2024-12-31",
+            "replacedBy": "name"
+          }
+        },
+        "deprecatedDescription": {
+          "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d8",
+          "apiName": "deprecatedDescription",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Deprecated Description",
+          "description": "A deprecated description property",
+          "status": {
+            "type": "deprecated",
+            "message": "Use description instead.",
+            "deadline": "2025-06-30",
+            "replacedBy": "description"
+          }
+        },
+        "experimentalProperty": {
+          "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d9",
+          "apiName": "experimentalProperty",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Experimental Property",
+          "description": "An experimental property for testing",
+          "status": {
+            "type": "experimental"
+          }
         }
       },
       "rid": "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",

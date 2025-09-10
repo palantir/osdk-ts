@@ -64,7 +64,6 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         description: input.description,
         type: sdkPropDefinition,
         nullable: input.nullable == null ? isNullable : input.nullable,
-        valueTypeApiName: input.valueTypeApiName,
       };
     case "array": {
       return {
@@ -73,7 +72,6 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         description: input.description,
         type: sdkPropDefinition,
         nullable: true,
-        valueTypeApiName: input.valueTypeApiName,
       };
     }
     case "cipherText": {
