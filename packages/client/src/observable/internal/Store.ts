@@ -18,11 +18,9 @@ import type {
   ActionDefinition,
   ActionEditResponse,
   ActionValidationResponse,
-  InterfaceDefinition,
   Logger,
   ObjectTypeDefinition,
   PrimaryKeyType,
-  WhereClause,
 } from "@osdk/api";
 import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
@@ -32,7 +30,6 @@ import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./actions/ActionApplication.js";
 import { CacheKeys } from "./CacheKeys.js";
-import type { Canonical } from "./Canonical.js";
 import {
   type Changes,
   createChangedObjects,
@@ -47,7 +44,6 @@ import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { Query } from "./Query.js";
 import { RefCounts } from "./RefCounts.js";
-import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 import { tombstone } from "./tombstone.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
@@ -124,8 +120,10 @@ function createInitEntry(cacheKey: KnownCacheKey): Entry<any> {
  * - Batch operations ensure consistency
  */
 export class Store {
-  whereCanonicalizer: WhereClauseCanonicalizer = new WhereClauseCanonicalizer();
-  orderByCanonicalizer: OrderByCanonicalizer = new OrderByCanonicalizer();
+  readonly whereCanonicalizer: WhereClauseCanonicalizer =
+    new WhereClauseCanonicalizer();
+  readonly orderByCanonicalizer: OrderByCanonicalizer =
+    new OrderByCanonicalizer();
   #truthLayer: Layer = new Layer(undefined, undefined);
   #topLayer: Layer;
   client: Client;
@@ -357,14 +355,6 @@ export class Store {
 
     return subject;
   };
-
-  public canonicalizeWhereClause<
-    T extends ObjectTypeDefinition | InterfaceDefinition,
-  >(
-    where: WhereClause<T>,
-  ): Canonical<SimpleWhereClause> {
-    return this.whereCanonicalizer.canonicalize(where);
-  }
 
   peekQuery<K extends KnownCacheKey>(
     cacheKey: K,
