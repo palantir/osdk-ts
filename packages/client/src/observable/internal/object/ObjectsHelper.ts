@@ -54,10 +54,10 @@ export class ObjectsHelper extends AbstractHelper<
       pk,
     );
 
-    return this.store.getQuery(objectCacheKey, () =>
+    return this.store.queries.get(objectCacheKey, () =>
       new ObjectQuery(
         this.store,
-        this.store.getSubject(objectCacheKey),
+        this.store.subjects.get(objectCacheKey),
         apiName,
         pk,
         objectCacheKey,

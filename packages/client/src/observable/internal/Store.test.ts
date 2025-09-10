@@ -504,7 +504,7 @@ describe(Store, () => {
         );
 
         // remove the optimistic write
-        cache.removeLayer(optimisticId);
+        cache.layers.remove(optimisticId);
 
         expectSingleObjectCallAndClear(subFn, emp, "loaded");
       });
@@ -584,7 +584,7 @@ describe(Store, () => {
         ]);
 
         // remove the optimistic write
-        cache.removeLayer(optimisticId);
+        cache.layers.remove(optimisticId);
 
         // see the object observation get updated
         expectSingleObjectCallAndClear(
@@ -633,7 +633,7 @@ describe(Store, () => {
         expect(subFn.next).not.toHaveBeenCalled();
 
         // remove the optimistic write
-        cache.removeLayer(optimisticId);
+        cache.layers.remove(optimisticId);
 
         expectSingleObjectCallAndClear(subFn, truthUpdatedEmployee);
         expectNoMoreCalls(subFn);
@@ -1818,7 +1818,7 @@ describe(Store, () => {
       }
 
       // remove the first layer
-      store.removeLayer(layerIds[0]);
+      store.layers.remove(layerIds[0]);
 
       // should have truth object 1 and optimistic object 2
       expect(getObject(store, "Employee", 1)).toEqual(
@@ -1829,7 +1829,7 @@ describe(Store, () => {
       );
 
       // remove the second layer
-      store.removeLayer(layerIds[1]);
+      store.layers.remove(layerIds[1]);
 
       // should have truth objects
       for (const obj of baseObjects) {

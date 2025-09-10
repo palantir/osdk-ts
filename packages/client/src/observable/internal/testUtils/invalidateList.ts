@@ -40,5 +40,5 @@ export async function invalidateList<T extends ObjectTypeDefinition>(
     orderBy as Canonical<OrderBy<T>>,
   );
 
-  await store.peekQuery(cacheKey)?.revalidate(true);
+  await store.queries.peek(cacheKey)?.revalidate(true);
 }

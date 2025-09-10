@@ -253,7 +253,7 @@ export abstract class BaseListQuery<
   ): Connectable<PAYLOAD> {
     return createCollectionConnectable<KEY, PAYLOAD>(
       subject,
-      this.store,
+      this.store.subjects,
       (params) => this.createPayload(params),
     );
   }

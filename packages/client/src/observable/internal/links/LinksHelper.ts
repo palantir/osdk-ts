@@ -84,10 +84,10 @@ export class LinksHelper extends AbstractHelper<
       canonOrderBy,
     );
 
-    return this.store.getQuery(linkCacheKey, () => {
+    return this.store.queries.get(linkCacheKey, () => {
       return new SpecificLinkQuery(
         this.store,
-        this.store.getSubject(linkCacheKey),
+        this.store.subjects.get(linkCacheKey),
         linkCacheKey,
         options,
       );

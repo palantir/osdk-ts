@@ -30,8 +30,8 @@ import {
 import type { Status } from "../../ObservableClient/common.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
-import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
+import type { Subjects } from "../Subjects.js";
 
 /**
  * Common parameters available for constructing a collection payload
@@ -71,7 +71,7 @@ export function createCollectionConnectable<
   P,
 >(
   subject: Observable<SubjectPayload<K>>,
-  store: Store,
+  subjects: Subjects,
   createPayload: (params: CollectionConnectableParams) => P,
 ): Connectable<P> {
   return connectable<P>(
@@ -82,7 +82,7 @@ export function createCollectionConnectable<
           ? of([])
           : combineLatest(
             listEntry.value.data.map((cacheKey: ObjectCacheKey) =>
-              store.getSubject(cacheKey).pipe(
+              subjects.get(cacheKey).pipe(
                 map(objectEntry => objectEntry?.value!),
                 distinctUntilChanged(),
               )

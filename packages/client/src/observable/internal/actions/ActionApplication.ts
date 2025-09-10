@@ -121,7 +121,7 @@ export class ActionApplication {
             objectType,
             primaryKey,
           );
-          this.store.peekQuery(cacheKey)?.deleteFromStore(
+          this.store.queries.peek(cacheKey)?.deleteFromStore(
             "loaded", // this is probably not the best value to use
             batch,
           );

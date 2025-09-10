@@ -43,7 +43,7 @@ export class Queries {
     return query;
   }
 
-  keys(): IteratorObject<KnownCacheKey, BuiltinIteratorReturn, unknown> {
+  keys(): IterableIterator<KnownCacheKey> {
     return this.map.keys();
   }
 

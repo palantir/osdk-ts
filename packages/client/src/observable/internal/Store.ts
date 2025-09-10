@@ -22,7 +22,6 @@ import type {
   ObjectTypeDefinition,
   PrimaryKeyType,
 } from "@osdk/api";
-import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
@@ -37,30 +36,21 @@ import {
   DEBUG_ONLY__changesToString,
 } from "./Changes.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
-import { Entry, Layer } from "./Layer.js";
+import type { Entry } from "./Layer.js";
+import { Layers } from "./Layers.js";
 import { LinksHelper } from "./links/LinksHelper.js";
 import { ListsHelper } from "./list/ListsHelper.js";
 import { ObjectsHelper } from "./object/ObjectsHelper.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import { Queries } from "./Queries.js";
-import type { SubjectPayload } from "./SubjectPayload.js";
-import { tombstone } from "./tombstone.js";
+import type { Subjects } from "./Subjects.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 export namespace Store {
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
   }
-}
-
-function createInitEntry(cacheKey: KnownCacheKey): Entry<any> {
-  return {
-    cacheKey,
-    status: "init",
-    value: undefined,
-    lastUpdated: 0,
-  };
 }
 
 /*
@@ -80,22 +70,20 @@ export class Store {
     new WhereClauseCanonicalizer();
   readonly orderByCanonicalizer: OrderByCanonicalizer =
     new OrderByCanonicalizer();
-  #truthLayer: Layer = new Layer(undefined, undefined);
-  #topLayer: Layer;
-  client: Client;
+
+  readonly client: Client;
 
   /** @internal */
-  logger?: Logger;
+  readonly logger?: Logger;
 
-  // we can use a regular Map here because the refCounting will
-  // handle cleanup.
-
-  #cacheKeyToSubject = new WeakMap<
-    KnownCacheKey,
-    BehaviorSubject<SubjectPayload<any>>
-  >();
   readonly cacheKeys: CacheKeys<KnownCacheKey>;
   readonly queries: Queries = new Queries();
+
+  readonly layers: Layers = new Layers({
+    logger: this.logger,
+    onRevalidate: this.#maybeRevalidateQueries.bind(this),
+  });
+  readonly subjects: Subjects = this.layers.subjects;
 
   // these are hopefully temporary
   readonly lists: ListsHelper;
@@ -103,10 +91,10 @@ export class Store {
   readonly links: LinksHelper;
 
   constructor(client: Client) {
-    this.client = client;
     this.logger = client[additionalContext].logger?.child({}, {
       msgPrefix: "Store",
     });
+    this.client = client;
 
     this.cacheKeys = new CacheKeys<KnownCacheKey>({
       onDestroy: this.#cleanupCacheKey,
@@ -125,8 +113,6 @@ export class Store {
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
     );
-
-    this.#topLayer = this.#truthLayer;
   }
 
   /**
@@ -134,7 +120,7 @@ export class Store {
    * @param key
    */
   #cleanupCacheKey = (key: KnownCacheKey) => {
-    const subject = this.peekSubject(key);
+    const subject = this.subjects.peek(key);
 
     if (DEBUG_REFCOUNTS) {
       // eslint-disable-next-line no-console
@@ -153,11 +139,7 @@ export class Store {
       invariant(subject);
     }
 
-    if (subject) {
-      subject.complete();
-      this.#cacheKeyToSubject.delete(key);
-    }
-
+    this.subjects.delete(key);
     this.queries.delete(key);
   };
 
@@ -182,86 +164,13 @@ export class Store {
     return result as ActionValidationResponse;
   };
 
-  removeLayer(layerId: OptimisticId): void {
-    invariant(
-      layerId != null,
-      "undefined is the reserved layerId for the truth layer",
-    );
-    // 1. collect all cache keys for a given layerId
-    let currentLayer: Layer | undefined = this.#topLayer;
-    const cacheKeys = new Map<KnownCacheKey, Entry<any>>();
-    while (currentLayer != null && currentLayer.parentLayer != null) {
-      if (currentLayer.layerId === layerId) {
-        for (const [k, v] of currentLayer.entries()) {
-          if (cacheKeys.has(k)) continue;
-          cacheKeys.set(k, v);
-        }
-      }
-
-      currentLayer = currentLayer.parentLayer;
-    }
-
-    // 2. remove the layers from the chain
-    this.#topLayer = this.#topLayer.removeLayer(layerId);
-
-    // 3. check each cache key to see if it is different in the new chain
-    for (const [k, oldEntry] of cacheKeys) {
-      const currentEntry = this.#topLayer.get(k);
-
-      // 4. if different, update the subject
-      if (oldEntry !== currentEntry) {
-        const x = currentEntry ?? createInitEntry(k);
-        // We are going to be pretty lazy here and just re-emit the value.
-        // In the future it may benefit us to deep equal check her but I think
-        // the subjects are effectively doing this anyway.
-        this.peekSubject(k)?.next(
-          {
-            // eslint-disable-next-line @typescript-eslint/no-misused-spread
-            ...(currentEntry ?? createInitEntry(k)),
-            isOptimistic:
-              currentEntry?.value !== this.#truthLayer.get(k)?.value,
-          },
-        );
-      }
-    }
-  }
-
-  peekSubject = <KEY extends KnownCacheKey>(
-    cacheKey: KEY,
-  ):
-    | BehaviorSubject<SubjectPayload<KEY>>
-    | undefined =>
-  {
-    return this.#cacheKeyToSubject.get(cacheKey);
-  };
-
-  getSubject = <KEY extends KnownCacheKey>(
-    cacheKey: KEY,
-  ): BehaviorSubject<SubjectPayload<KEY>> => {
-    let subject = this.#cacheKeyToSubject.get(cacheKey);
-    if (!subject) {
-      const initialValue: Entry<KEY> = this.#topLayer.get(cacheKey)
-        ?? createInitEntry(cacheKey);
-
-      subject = new BehaviorSubject({
-        // eslint-disable-next-line @typescript-eslint/no-misused-spread
-        ...initialValue,
-        isOptimistic:
-          initialValue.value !== this.#truthLayer.get(cacheKey)?.value,
-      });
-      this.#cacheKeyToSubject.set(cacheKey, subject);
-    }
-
-    return subject;
-  };
-
   public getValue<K extends KnownCacheKey>(
     cacheKey: K,
   ): Entry<K> | undefined {
-    return this.#topLayer.get(cacheKey);
+    return this.layers.top.get(cacheKey);
   }
 
-  batch = <X>(
+  batch<X>(
     { optimisticId, changes = createChangedObjects() }: {
       optimisticId?: OptimisticId;
       changes?: Changes;
@@ -271,82 +180,9 @@ export class Store {
     batchResult: BatchContext;
     retVal: X;
     changes: Changes;
-  } => {
-    invariant(
-      optimisticId === undefined || !!optimisticId,
-      "optimistic must be undefined or not falsy",
-    );
-
-    let needsLayer = optimisticId !== undefined;
-    const batchContext: BatchContext = {
-      changes,
-      createLayerIfNeeded: () => {
-        if (needsLayer) {
-          this.#topLayer = this.#topLayer.addLayer(optimisticId);
-          needsLayer = false;
-        }
-      },
-      optimisticWrite: !!optimisticId,
-      write: (cacheKey, value, status) => {
-        const oldTopValue = this.#topLayer.get(cacheKey);
-
-        if (optimisticId) batchContext.createLayerIfNeeded();
-
-        const writeLayer = optimisticId
-          ? this.#topLayer
-          : this.#truthLayer;
-        const newValue = new Entry(
-          cacheKey,
-          value,
-          Date.now(),
-          status,
-        );
-
-        writeLayer.set(cacheKey, newValue);
-
-        const newTopValue = this.#topLayer.get(cacheKey);
-
-        if (oldTopValue !== newTopValue) {
-          this.getSubject(cacheKey)?.next({
-            // eslint-disable-next-line @typescript-eslint/no-misused-spread
-            ...newValue,
-            isOptimistic:
-              newTopValue?.value !== this.#truthLayer.get(cacheKey)?.value,
-          });
-        }
-
-        return newValue;
-      },
-      delete: (cacheKey, status) => {
-        return batchContext.write(cacheKey, tombstone, status);
-      },
-      read: (cacheKey) => {
-        return optimisticId
-          ? this.#topLayer.get(cacheKey)
-          : this.#truthLayer.get(cacheKey);
-      },
-    };
-
-    const retVal = batchFn(batchContext);
-    this.maybeRevalidateQueries(changes, optimisticId).catch(e => {
-      // we don't want batch() to return a promise,
-      // so we settle for logging an error here instead of
-      // dropping it on the floor.
-      if (this.logger) {
-        this.logger.error("Unhandled error in batch", e);
-      } else {
-        // eslint-disable-next-line no-console
-        console.error("Unhandled error in batch", e);
-        throw e;
-      }
-    });
-
-    return {
-      batchResult: batchContext,
-      retVal: retVal,
-      changes: batchContext.changes,
-    };
-  };
+  } {
+    return this.layers.batch({ optimisticId, changes }, batchFn);
+  }
 
   public invalidateObject<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
@@ -362,26 +198,23 @@ export class Store {
     }).revalidate(/* force */ true);
   }
 
-  async maybeRevalidateQueries(
+  async #maybeRevalidateQueries(
     changes: Changes,
     optimisticId?: OptimisticId | undefined,
   ): Promise<void> {
+    const logger = process.env.NODE_ENV !== "production"
+      ? this.logger?.child({ methodName: "maybeRevalidateQueries" })
+      : undefined;
+
     if (changes.isEmpty()) {
       if (process.env.NODE_ENV !== "production") {
-        // todo
-        this.logger?.child({ methodName: "maybeRevalidateQueries" }).debug(
-          "No changes, aborting",
-        );
+        logger?.debug("No changes, aborting");
       }
       return;
     }
 
     if (process.env.NODE_ENV !== "production") {
-      // todo
-      this.logger?.child({ methodName: "maybeRevalidateQueries" }).debug(
-        DEBUG_ONLY__changesToString(changes),
-        { optimisticId },
-      );
+      logger?.debug(DEBUG_ONLY__changesToString(changes), { optimisticId });
     }
 
     try {
@@ -396,11 +229,7 @@ export class Store {
       await Promise.all(promises);
     } finally {
       if (process.env.NODE_ENV !== "production") {
-        // todo
-        this.logger?.child({ methodName: "maybeRevalidateQueries" }).debug(
-          "in finally",
-          DEBUG_ONLY__changesToString(changes),
-        );
+        logger?.debug("in finally", DEBUG_ONLY__changesToString(changes));
       }
     }
   }
@@ -431,7 +260,7 @@ export class Store {
 
     const promises: Array<Promise<void>> = [];
 
-    for (const cacheKey of this.#truthLayer.keys()) {
+    for (const cacheKey of this.layers.truth.keys()) {
       if (changes && changes.modified.has(cacheKey)) {
         continue;
       }

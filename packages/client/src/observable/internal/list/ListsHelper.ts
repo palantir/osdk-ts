@@ -74,10 +74,10 @@ export class ListsHelper extends AbstractHelper<
       canonOrderBy,
     );
 
-    return this.store.getQuery(listCacheKey, () => {
+    return this.store.queries.get(listCacheKey, () => {
       return new ListQuery(
         this.store,
-        this.store.getSubject(listCacheKey),
+        this.store.subjects.get(listCacheKey),
         type,
         apiName,
         canonWhere,
