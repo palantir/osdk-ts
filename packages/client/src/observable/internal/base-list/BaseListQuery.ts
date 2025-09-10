@@ -85,14 +85,12 @@ export abstract class BaseListQuery<
     append: boolean = false,
   ): Entry<KEY> {
     if (process.env.NODE_ENV !== "production") {
-      const logger = process.env.NODE_ENV !== "production"
-        ? this.logger?.child({ methodName: "updateList" })
-        : this.logger;
-
-      logger?.debug(
-        `{status: ${status}, append: ${append}}`,
-        JSON.stringify(items, null, 2),
-      );
+      this.logger
+        ?.child({ methodName: "updateList" })
+        .debug(
+          `{status: ${status}, append: ${append}}`,
+          JSON.stringify(items, null, 2),
+        );
     }
 
     let objectCacheKeys: ObjectCacheKey[];
