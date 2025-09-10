@@ -31,7 +31,6 @@ import { createCollectionConnectable } from "./createCollectionConnectable.js";
 import { isObjectInstance } from "./isObjectInstance.js";
 import type { Entry } from "./Layer.js";
 import { type ObjectCacheKey } from "./ObjectCacheKey.js";
-import { storeOsdkInstances } from "./ObjectQuery.js";
 import { Query } from "./Query.js";
 import { removeDuplicates } from "./removeDuplicates.js";
 import type { SortingStrategy } from "./sorting/SortingStrategy.js";
@@ -185,7 +184,7 @@ export abstract class BaseListQuery<
   ): Array<ObjectCacheKey> {
     // Store the individual objects in their respective cache entries
     return objects.length > 0
-      ? storeOsdkInstances(this.store, objects, batch)
+      ? this.store.objects.storeOsdkInstances(objects, batch)
       : [];
   }
 

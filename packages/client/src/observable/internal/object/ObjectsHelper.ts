@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
+import type {
+  InterfaceDefinition,
+  ObjectTypeDefinition,
+  Osdk,
+} from "@osdk/api";
+import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ObjectPayload } from "../../ObjectPayload.js";
 import type { ObserveObjectOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
@@ -22,6 +27,7 @@ import { AbstractHelper } from "../AbstractHelper.js";
 import { type ObjectCacheKey } from "../ObjectCacheKey.js";
 import { ObjectQuery } from "../ObjectQuery.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
+import type { BatchContext } from "../Store.js";
 
 export class ObjectsHelper extends AbstractHelper<
   ObjectQuery,
@@ -57,5 +63,28 @@ export class ObjectsHelper extends AbstractHelper<
         objectCacheKey,
         { dedupeInterval: 0 },
       ));
+  }
+
+  /**
+   * Internal helper method for writing objects to the store and returning their
+   * object keys
+   * @internal
+   */
+  public storeOsdkInstances(
+    values: Array<ObjectHolder> | Array<Osdk.Instance<any, any, any>>,
+    batch: BatchContext,
+  ): ObjectCacheKey[] {
+    // update the cache for any object that has changed
+    // and save the mapped values to return
+    return values.map(v =>
+      this.getQuery({
+        apiName: v.$apiName,
+        pk: v.$primaryKey as string | number,
+      }).writeToStore(
+        v as ObjectHolder,
+        "loaded",
+        batch,
+      ).cacheKey
+    );
   }
 }

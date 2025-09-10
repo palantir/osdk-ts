@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
+import type { ObjectTypeDefinition, PrimaryKeyType } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import type { Connectable, Observable, Subject } from "rxjs";
 import { BehaviorSubject, connectable, map } from "rxjs";
@@ -198,29 +198,4 @@ export class ObjectQuery extends Query<
     }
     return Promise.resolve();
   };
-}
-
-/**
- * Internal helper method for writing objects to the store and returning their
- * object keys
- * @internal
- */
-export function storeOsdkInstances(
-  store: Store,
-  values: Array<ObjectHolder> | Array<Osdk.Instance<any, any, any>>,
-  batch: BatchContext,
-): ObjectCacheKey[] {
-  // update the cache for any object that has changed
-  // and save the mapped values to return
-  return values.map(v => {
-    return store.objects.getQuery({
-      apiName: v.$apiName,
-      pk: v.$primaryKey as string | number,
-    })
-      .writeToStore(
-        v as ObjectHolder,
-        "loaded",
-        batch,
-      ).cacheKey;
-  });
 }
