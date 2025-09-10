@@ -37,7 +37,7 @@ import type {
 } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
-import { BaseListQuery } from "../BaseListQuery.js";
+import { BaseListQuery } from "../base-list/BaseListQuery.js";
 import { type CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";

@@ -27,7 +27,7 @@ import { additionalContext } from "../../../Client.js";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { ObserveLinks } from "../../ObservableClient/ObserveLink.js";
-import { BaseListQuery } from "../BaseListQuery.js";
+import { BaseListQuery } from "../base-list/BaseListQuery.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";

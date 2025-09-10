@@ -27,10 +27,10 @@ import {
   scheduled,
   switchMap,
 } from "rxjs";
-import type { Status } from "../ObservableClient/common.js";
-import type { CacheKey } from "./CacheKey.js";
-import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
-import type { Store, SubjectPayload } from "./Store.js";
+import type { Status } from "../../ObservableClient/common.js";
+import type { CacheKey } from "../CacheKey.js";
+import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
+import type { Store, SubjectPayload } from "../Store.js";
 
 /**
  * Common parameters available for constructing a collection payload

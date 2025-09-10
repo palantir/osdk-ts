@@ -17,25 +17,24 @@
 import type { Osdk, PageResult } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import type { Connectable, Observable } from "rxjs";
-
 import type {
   CommonObserveOptions,
   Status,
-} from "../ObservableClient/common.js";
+} from "../../ObservableClient/common.js";
+import { type CacheKey, DEBUG_ONLY__cacheKeysToString } from "../CacheKey.js";
+import { isObjectInstance } from "../isObjectInstance.js";
+import type { Entry } from "../Layer.js";
+import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
+import { Query } from "../Query.js";
+import type { SortingStrategy } from "../sorting/SortingStrategy.js";
+import { NoOpSortingStrategy } from "../sorting/SortingStrategy.js";
+import type { BatchContext, SubjectPayload } from "../Store.js";
 import type {
   CollectionConnectableParams,
   CollectionStorageData,
 } from "./BaseCollectionQuery.js";
-import { type CacheKey, DEBUG_ONLY__cacheKeysToString } from "./CacheKey.js";
 import { createCollectionConnectable } from "./createCollectionConnectable.js";
-import { isObjectInstance } from "./isObjectInstance.js";
-import type { Entry } from "./Layer.js";
-import { type ObjectCacheKey } from "./object/ObjectCacheKey.js";
-import { Query } from "./Query.js";
 import { removeDuplicates } from "./removeDuplicates.js";
-import type { SortingStrategy } from "./sorting/SortingStrategy.js";
-import { NoOpSortingStrategy } from "./sorting/SortingStrategy.js";
-import type { BatchContext, SubjectPayload } from "./Store.js";
 
 /**
  * Base class for collection-based queries (lists and links)

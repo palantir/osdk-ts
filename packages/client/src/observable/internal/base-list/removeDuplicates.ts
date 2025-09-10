@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
-import type { BatchContext } from "./Store.js";
+import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
+import type { BatchContext } from "../Store.js";
 
 /**
  * Removes duplicate object cache keys from an array while maintaining order.

@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, PrimaryKeyType } from "@osdk/api";
-import type { CollectionStorageData } from "../BaseCollectionQuery.js";
+import type { CollectionStorageData } from "../base-list/BaseCollectionQuery.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
