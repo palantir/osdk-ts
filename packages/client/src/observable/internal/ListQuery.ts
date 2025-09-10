@@ -51,7 +51,7 @@ import { type Changes, DEBUG_ONLY__changesToString } from "./Changes.js";
 import { createCollectionConnectable } from "./createCollectionConnectable.js";
 import { isObjectInstance } from "./isObjectInstance.js";
 import type { Entry } from "./Layer.js";
-import type { ListCacheKey, ListStorageData } from "./list/ListCacheKey.js";
+import type { ListCacheKey } from "./list/ListCacheKey.js";
 import type { ListQueryOptions } from "./ListQueryOptions.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "./objectMatchesWhereClause.js";
 import { type ObjectCacheKey, storeOsdkInstances } from "./ObjectQuery.js";
@@ -65,13 +65,6 @@ import {
   OrderBySortingStrategy,
 } from "./sorting/SortingStrategy.js";
 import type { BatchContext, Store, SubjectPayload } from "./Store.js";
-
-export interface BaseListCacheKey<
-  T_Type extends string,
-  T_Query extends Query<any, any, any>,
-  T_KeyFactoryArgs extends any[] = any[],
-> extends CacheKey<T_Type, ListStorageData, T_Query, T_KeyFactoryArgs> {
-}
 
 export const API_NAME_IDX = 1;
 export const TYPE_IDX = 0;
