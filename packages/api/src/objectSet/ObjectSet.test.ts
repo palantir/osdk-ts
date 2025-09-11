@@ -104,6 +104,12 @@ describe("ObjectSet", () => {
         Osdk.Instance<EmployeeApiTest, never, "fullName">
       >();
     });
+
+    it("has the right $primaryKey filters", async () => {
+      fauxObjectSet.where({ $primaryKey: { $lte: 400 } });
+      // @ts-expect-error
+      fauxObjectSet.where({ $primaryKey: "foo" });
+    });
   });
 
   describe("includeAllBaseObjectProperties", () => {

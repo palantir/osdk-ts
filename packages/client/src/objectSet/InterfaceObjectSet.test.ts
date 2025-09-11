@@ -106,4 +106,11 @@ describe("ObjectSet", () => {
       ObjectSet<FooInterface, never>
     >;
   });
+
+  it("doesn't allow $primaryKey where for interface object set", () => {
+    const objectSet = client(FooInterface).where({
+      // @ts-expect-error
+      $primaryKey: "Santa Claus",
+    });
+  });
 });
