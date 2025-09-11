@@ -11,8 +11,8 @@
     "generateExamples": "node generateExample.mjs",
     "lint": "eslint . --max-warnings=1",
     "lint:fix": "eslint . --fix",
-    "updateDocsSnippets": "node updateDocsSnippets.mjs",
-    "typecheck:examples": "tsc -p src/examples/tsconfig.examples.json --noEmit"
+    "typecheck:examples": "tsc -p src/examples/tsconfig.examples.json --noEmit",
+    "updateDocsSnippets": "node updateDocsSnippets.mjs"
   },
   "dependencies": {
     "@osdk/client": "^2.4.1",
