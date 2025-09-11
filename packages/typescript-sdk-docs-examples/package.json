@@ -1,0 +1,43 @@
+{
+  "name": "@osdk/sample-ontology",
+  "private": true,
+  "version": "0.1.0", 
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "pnpm run codeGen && pnpm run updateDocsSnippets && tsc",
+    "clean": "rm -rf dist src/generatedNoCheck examples src/examples",
+    "codeGen": "npx --yes @osdk/cli@0.28.1 unstable typescript generate --version 0.1.0 --ontologyPath ./ontology.json --outDir ./src/generatedNoCheck --clean",
+    "dev": "tsc --watch",
+    "generateExamples": "node generateExample.mjs",
+    "lint": "eslint . --max-warnings=1",
+    "lint:fix": "eslint . --fix",
+    "updateDocsSnippets": "node updateDocsSnippets.mjs",
+    "typecheck:examples": "tsc -p src/examples/tsconfig.examples.json --noEmit"
+  },
+  "dependencies": {
+    "@osdk/client": "^2.4.1",
+    "@osdk/typescript-sdk-docs": "workspace:~",
+    "handlebars": "^4.7.7"
+  },
+  "peerDependencies": {
+    "@osdk/api": "^2.4.1",
+    "@osdk/client": "^2.4.1"
+  },
+  "devDependencies": {
+    "@osdk/api": "^2.4.1",
+    "@types/node": "^20.8.0",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "ajv": "^8.12.0",
+    "eslint": "^8.50.0",
+    "typescript": "~5.5.4"
+  },
+  "files": [
+    "dist",
+    "src",
+    "types"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module"
+}

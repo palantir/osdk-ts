@@ -1,0 +1,31 @@
+{
+  "root": true,
+  "extends": ["eslint:recommended"],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "ignorePatterns": ["dist/**", "src/generatedNoCheck/**", "src/examples/**"],
+  "rules": {
+    "no-console": "off",
+    "header/header": "off",
+    "@typescript-eslint/consistent-type-imports": "off",
+    "unused-imports/no-unused-imports": "off",
+    "@typescript-eslint/require-await": "warn",
+    "@typescript-eslint/no-explicit-any": "off"
+  },
+  "overrides": [
+    {
+      "files": ["updateDocsSnippets.mjs"],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ]
+}
