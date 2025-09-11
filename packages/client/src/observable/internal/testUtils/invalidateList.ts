@@ -32,7 +32,7 @@ export async function invalidateList<T extends ObjectTypeDefinition>(
   const where = store.whereCanonicalizer.canonicalize(args.where ?? {});
   const orderBy = store.orderByCanonicalizer.canonicalize(args.orderBy ?? {});
 
-  const cacheKey = store.getCacheKey<ListCacheKey>(
+  const cacheKey = store.cacheKeys.get<ListCacheKey>(
     "list",
     args.type.type,
     args.type.apiName,
@@ -40,5 +40,5 @@ export async function invalidateList<T extends ObjectTypeDefinition>(
     orderBy as Canonical<OrderBy<T>>,
   );
 
-  await store.peekQuery(cacheKey)?.revalidate(true);
+  await store.queries.peek(cacheKey)?.revalidate(true);
 }

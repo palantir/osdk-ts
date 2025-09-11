@@ -38,6 +38,7 @@ import type {
 import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
+import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
@@ -47,7 +48,8 @@ import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../ob
 import type { OptimisticId } from "../OptimisticId.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
-import type { BatchContext, Store, SubjectPayload } from "../Store.js";
+import type { Store } from "../Store.js";
+import type { SubjectPayload } from "../SubjectPayload.js";
 import type { ListCacheKey } from "./ListCacheKey.js";
 import type { ListQueryOptions } from "./ListQueryOptions.js";
 
@@ -188,7 +190,7 @@ export class ListQuery extends BaseListQuery<
     batch: BatchContext,
   ): Entry<ListCacheKey> {
     this.logger?.error("error", error);
-    this.store.getSubject(this.cacheKey).error(error);
+    this.store.subjects.get(this.cacheKey).error(error);
 
     // We don't call super.handleFetchError because ListQuery has special error handling
     // but we still use writeToStore to create a properly structured Entry
@@ -297,7 +299,7 @@ export class ListQuery extends BaseListQuery<
         // deal with the modified objects
         for (const obj of relevantObjects.modified.all) {
           if (relevantObjects.modified.strictMatches.has(obj)) {
-            const objectCacheKey = this.store.getCacheKey<ObjectCacheKey>(
+            const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
               "object",
               obj.$objectType,
               obj.$primaryKey,
@@ -315,9 +317,7 @@ export class ListQuery extends BaseListQuery<
             continue;
           } else {
             // object is no longer a strict match
-            const existingObjectCacheKey = this.store.getCacheKey<
-              ObjectCacheKey
-            >(
+            const existingObjectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
               "object",
               obj.$objectType,
               obj.$primaryKey,
@@ -338,7 +338,7 @@ export class ListQuery extends BaseListQuery<
         }
         for (const obj of toAdd) {
           newList.push(
-            this.store.getCacheKey<ObjectCacheKey>(
+            this.cacheKeys.get<ObjectCacheKey>(
               "object",
               obj.$objectType,
               obj.$primaryKey,
@@ -551,7 +551,7 @@ export class ListQuery extends BaseListQuery<
         "the truth value for our list should exist as we already subscribed",
       );
       if (existing.status === "loaded") {
-        const objectCacheKey = this.store.getCacheKey<ObjectCacheKey>(
+        const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
           "object",
           objOrIface.$objectType,
           objOrIface.$primaryKey,

@@ -131,7 +131,7 @@ export function runOptimisticJob(
       // we don't want to leak the result
       () => undefined,
     ).finally(() => {
-      store.removeLayer(optimisticId);
+      store.layers.remove(optimisticId);
     });
   };
 }

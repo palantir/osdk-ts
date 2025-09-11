@@ -21,6 +21,7 @@ import type {
   CommonObserveOptions,
   Status,
 } from "../../ObservableClient/common.js";
+import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey, DEBUG_ONLY__cacheKeysToString } from "../CacheKey.js";
 import { isObjectInstance } from "../isObjectInstance.js";
 import type { Entry } from "../Layer.js";
@@ -28,7 +29,7 @@ import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { Query } from "../Query.js";
 import type { SortingStrategy } from "../sorting/SortingStrategy.js";
 import { NoOpSortingStrategy } from "../sorting/SortingStrategy.js";
-import type { BatchContext, SubjectPayload } from "../Store.js";
+import type { SubjectPayload } from "../SubjectPayload.js";
 import type {
   CollectionConnectableParams,
   CollectionStorageData,
@@ -85,14 +86,12 @@ export abstract class BaseListQuery<
     append: boolean = false,
   ): Entry<KEY> {
     if (process.env.NODE_ENV !== "production") {
-      const logger = process.env.NODE_ENV !== "production"
-        ? this.logger?.child({ methodName: "updateList" })
-        : this.logger;
-
-      logger?.debug(
-        `{status: ${status}, append: ${append}}`,
-        JSON.stringify(items, null, 2),
-      );
+      this.logger
+        ?.child({ methodName: "updateList" })
+        .debug(
+          `{status: ${status}, append: ${append}}`,
+          JSON.stringify(items, null, 2),
+        );
     }
 
     let objectCacheKeys: ObjectCacheKey[];
@@ -192,12 +191,12 @@ export abstract class BaseListQuery<
         // N.B. the store keeps the cache keys around for a bit so we don't
         // need to worry about them being GC'd before we re-retain them
         for (const objectCacheKey of existingList?.value?.data ?? []) {
-          this.store.release(objectCacheKey);
+          this.store.cacheKeys.release(objectCacheKey);
         }
       }
 
       for (const objectCacheKey of objectCacheKeys) {
-        this.store.retain(objectCacheKey);
+        this.store.cacheKeys.retain(objectCacheKey);
       }
     }
 
@@ -211,13 +210,11 @@ export abstract class BaseListQuery<
   }
 
   _dispose(): void {
-    // eslint-disable-next-line no-console
-    console.log("DISPOSE LIST QUERY");
     this.store.batch({}, (batch) => {
       const entry = batch.read(this.cacheKey);
       if (entry) {
         for (const objectCacheKey of entry.value?.data ?? []) {
-          this.store.release(objectCacheKey);
+          this.store.cacheKeys.release(objectCacheKey);
         }
       }
     });
@@ -256,7 +253,7 @@ export abstract class BaseListQuery<
   ): Connectable<PAYLOAD> {
     return createCollectionConnectable<KEY, PAYLOAD>(
       subject,
-      this.store,
+      this.store.subjects,
       (params) => this.createPayload(params),
     );
   }
