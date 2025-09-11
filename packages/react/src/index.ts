@@ -20,3 +20,4 @@
 
 export { OsdkProvider } from "./OsdkProvider.js";
 export { useOsdkClient } from "./useOsdkClient.js";
+export { useOsdkMetadata } from "./useOsdkMetadata.js";

@@ -1,5 +1,5 @@
 ---
-"@osdk/create-app.template.vue": minor
+"@osdk/create-app.template.vue": patch
 ---
       
 Simulated release

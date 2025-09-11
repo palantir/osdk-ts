@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-import { getNamesOfCustomersFromCountry } from "@osdk/e2e.generated.catchall";
-import { client } from "./client.js";
+import {
+  bus_1,
+  getBusFromSet,
+  getBusId,
+  getBusInterface,
+  getBusInterfaceSet,
+  getNamesOfCustomersFromCountry,
+} from "@osdk/e2e.generated.catchall";
+import { client, dsClient } from "./client.js";
 
 export async function runQueriesTest(): Promise<void> {
   const result = await client(getNamesOfCustomersFromCountry).executeFunction({
@@ -23,6 +30,41 @@ export async function runQueriesTest(): Promise<void> {
   });
 
   console.log(result);
+
+  const busesOs = dsClient(bus_1);
+
+  const buses = await busesOs.fetchPage();
+
+  const resultFetchWithInterface = await dsClient(getBusId).executeFunction({
+    bus: {
+      $objectType: "WmataBus",
+      $primaryKey: 3106,
+    },
+  });
+
+  console.log("busId fetched with interface: ", resultFetchWithInterface);
+
+  const resultFetchWithInterface2 = await dsClient(getBusId).executeFunction({
+    bus: buses.data[0],
+  });
+
+  console.log("busId fetched with interface2: ", resultFetchWithInterface2);
+
+  const resultFetchWithInterfaceSet = await dsClient(getBusFromSet)
+    .executeFunction({ busesObjectSet: busesOs });
+
+  console.log("busId fetched with interfaceSet: ", resultFetchWithInterfaceSet);
+
+  const resultGetInterface = await dsClient(getBusInterface).executeFunction({
+    vehicleIdToFind: "3016",
+  });
+
+  console.log("bus fetched with Id: ", resultGetInterface);
+
+  const resultGetInterfaceSet = await dsClient(getBusInterfaceSet)
+    .executeFunction({ vehicleIdToFind: "3106" });
+
+  console.log("bus set fetched with id", resultGetInterfaceSet);
 }
 
 void runQueriesTest();

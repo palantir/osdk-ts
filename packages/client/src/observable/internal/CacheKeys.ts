@@ -18,33 +18,37 @@ import { Trie } from "@wry/trie";
 import invariant from "tiny-invariant";
 import { DEBUG_CACHE_KEYS } from "../DebugFlags.js";
 import type { CacheKey } from "./CacheKey.js";
-import type { ListCacheKey } from "./ListQuery.js";
-import type { ObjectCacheKey } from "./ObjectQuery.js";
+import type { KnownCacheKey } from "./KnownCacheKey.js";
+import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
+import type { ListCacheKey } from "./list/ListCacheKey.js";
+import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import type { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import type { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
 type CacheKeyArgs<K extends CacheKey> = [K["type"], ...K["otherKeys"]];
 
+/**
+ * Cache key management with canonicalization.
+ * - Formats: {type}:{pk} | {type}:list:{where} | {source}:{pk}:{link}:{where}
+ * - Uses Trie structure for efficient storage and lookup
+ * - Ensures consistent keys through canonicalization
+ */
 export class CacheKeys {
-  #cacheKeys = new Trie<CacheKey<string, any, any>>(false, (keys) => {
+  #cacheKeys = new Trie<KnownCacheKey>(false, (keys) => {
     const ret = {
       type: keys[0],
       otherKeys: keys.slice(1),
-    } as unknown as CacheKey<
-      string,
-      any,
-      any
-    >;
+    } as unknown as KnownCacheKey;
     this.#onCreate(ret);
     return ret;
   });
-  #cacheKeyFactories = new Map<string, (...args: any[]) => CacheKey>();
-  #onCreate: (cacheKey: CacheKey) => void;
+  #cacheKeyFactories = new Map<string, (...args: any[]) => KnownCacheKey>();
+  #onCreate: (cacheKey: KnownCacheKey) => void;
 
   constructor(
     whereCanonicalizer: WhereClauseCanonicalizer,
     orderByCanonicalizer: OrderByCanonicalizer,
-    onCreate: (cacheKey: CacheKey) => void,
+    onCreate: (cacheKey: KnownCacheKey) => void,
   ) {
     this.#onCreate = onCreate;
     this.#registerCacheKeyFactory<ObjectCacheKey>(
@@ -71,41 +75,66 @@ export class CacheKeys {
     this.#registerCacheKeyFactory<ListCacheKey>(
       "list",
       (type, apiName, where, orderBy) => {
+        const cacheKeyArgs: CacheKeyArgs<ListCacheKey> = [
+          "list",
+          type,
+          apiName,
+          whereCanonicalizer.canonicalize(where),
+          orderByCanonicalizer.canonicalize(orderBy),
+        ];
+
         if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
           // eslint-disable-next-line no-console
           console.debug(
             `CacheKeys.get([list, ${apiName}, ${JSON.stringify(where)}, ${
               JSON.stringify(orderBy)
             }]) -- already exists? `,
-            this.#cacheKeys.peekArray([
-              "list",
-              apiName,
-              whereCanonicalizer.canonicalize(where),
-              orderByCanonicalizer.canonicalize(orderBy),
-            ]) != null,
+            this.#cacheKeys.peekArray(cacheKeyArgs) != null,
           );
         }
+
         return this.#cacheKeys.lookupArray<
           CacheKeyArgs<ListCacheKey>
-        >([
-          "list",
-          type,
-          apiName,
+        >(cacheKeyArgs) as ListCacheKey;
+      },
+    );
+    this.#registerCacheKeyFactory<SpecificLinkCacheKey>(
+      "specificLink",
+      (sourceObjectType, sourcePk, linkName, where, orderBy) => {
+        const cacheKeyArgs: CacheKeyArgs<SpecificLinkCacheKey> = [
+          "specificLink",
+          sourceObjectType,
+          sourcePk,
+          linkName,
           whereCanonicalizer.canonicalize(where),
           orderByCanonicalizer.canonicalize(orderBy),
-        ]) as ListCacheKey;
+        ];
+
+        if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
+          // eslint-disable-next-line no-console
+          console.debug(
+            `CacheKeys.get([specificLink, ${sourceObjectType}, ${sourcePk}, ${linkName}, ${
+              JSON.stringify(where)
+            }, ${JSON.stringify(orderBy)}]) -- already exists? `,
+            this.#cacheKeys.peekArray(cacheKeyArgs) != null,
+          );
+        }
+
+        return this.#cacheKeys.lookupArray(
+          cacheKeyArgs,
+        ) as SpecificLinkCacheKey;
       },
     );
   }
 
-  #registerCacheKeyFactory<K extends CacheKey>(
+  #registerCacheKeyFactory<K extends KnownCacheKey>(
     type: K["type"],
     factory: (...args: K["__cacheKey"]["args"]) => K,
   ): void {
     this.#cacheKeyFactories.set(type, factory);
   }
 
-  get<K extends CacheKey<string, any, any>>(
+  get<K extends KnownCacheKey>(
     type: K["type"],
     ...args: K["__cacheKey"]["args"]
   ): K {
@@ -114,7 +143,7 @@ export class CacheKeys {
     return factory(...args) as K;
   }
 
-  remove<K extends CacheKey<string, any, any>>(
+  remove<K extends KnownCacheKey>(
     cacheKey: K,
   ): void {
     this.#cacheKeys.remove(cacheKey.type, ...cacheKey.otherKeys);

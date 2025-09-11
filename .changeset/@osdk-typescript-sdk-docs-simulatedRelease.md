@@ -1,5 +1,5 @@
 ---
-"@osdk/typescript-sdk-docs": minor
+"@osdk/typescript-sdk-docs": patch
 ---
       
 Simulated release

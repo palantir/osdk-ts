@@ -23,6 +23,7 @@ import type {
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
+  ObjectSetArgs,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
@@ -70,7 +71,8 @@ export function getWireObjectSet(
   return objectSetDefinitions.get(objectSet)!;
 }
 
-const objectSetDefinitions = new WeakMap<
+/** @internal exported for internal use only */
+export const objectSetDefinitions = new WeakMap<
   any,
   WireObjectSet
 >();
@@ -176,9 +178,12 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherence.Default,
       T extends boolean = false,
+      ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = never,
     >(
-      args?: AsyncIterArgs<Q, L, R, A, S, T>,
-    ): AsyncIterableIterator<SingleOsdkResult<Q, L, R, S, {}, T>> {
+      args?: AsyncIterArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
+    ): AsyncIterableIterator<
+      SingleOsdkResult<Q, L, R, S, {}, T, ORDER_BY_OPTIONS>
+    > {
       let $nextPageToken: string | undefined = undefined;
       do {
         const result: FetchPageResult<
@@ -186,7 +191,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           L,
           R,
           S,
-          T
+          T,
+          ORDER_BY_OPTIONS
         > = await fetchPageInternal(
           augmentRequestContext(
             clientCtx,
@@ -200,7 +206,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         $nextPageToken = result.nextPageToken;
 
         for (const obj of result.data) {
-          yield obj as SingleOsdkResult<Q, L, R, S, {}, T>;
+          yield obj as SingleOsdkResult<Q, L, R, S, {}, T, ORDER_BY_OPTIONS>;
         }
       } while ($nextPageToken != null);
     },

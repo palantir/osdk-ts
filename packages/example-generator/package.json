@@ -1,7 +1,7 @@
 {
   "name": "@osdk/example-generator",
   "private": true,
-  "version": "0.12.0-beta.15",
+  "version": "0.13.0-beta.4",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -39,17 +39,17 @@
     "consola": "^3.4.2",
     "dir-compare": "^5.0.0",
     "find-up": "^7.0.0",
-    "globby": "^14.0.1",
+    "globby": "^14.1.0",
     "jest-diff": "^29.7.0",
-    "tmp": "^0.2.3",
+    "tmp": "^0.2.5",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@types/node": "^18.0.0",
+    "@types/node": "^18.19.124",
     "@types/tmp": "^0.2.6",
-    "@types/yargs": "^17.0.29",
+    "@types/yargs": "^17.0.33",
     "typescript": "~5.5.4"
   },
   "publishConfig": {

@@ -43,6 +43,7 @@ export const employeeObjectWithLinkTypes: ObjectTypeFullMetadata = {
       properties: {
         fooSpt: "fullName",
       },
+      links: {},
     },
   },
   sharedPropertyTypeMapping: {

@@ -17,6 +17,7 @@ export {
 export * as $Actions from './ontology/actions.js';
 export {
   Athlete,
+  bus_1,
   CollateralConcernCandidate,
   CollateralConcernList,
   EsongInterfaceA,
@@ -56,7 +57,15 @@ export {
   WeatherStation,
 } from './ontology/objects.js';
 export * as $Objects from './ontology/objects.js';
-export { getNamesOfCustomersFromCountry, getTodoCount, queryTakesAllParameterTypes } from './ontology/queries.js';
+export {
+  getBusFromSet,
+  getBusId,
+  getBusInterface,
+  getBusInterfaceSet,
+  getNamesOfCustomersFromCountry,
+  getTodoCount,
+  queryTakesAllParameterTypes,
+} from './ontology/queries.js';
 export * as $Queries from './ontology/queries.js';
 export { $osdkMetadata } from './OntologyMetadata.js';
 export { $ontologyRid } from './OntologyMetadata.js';

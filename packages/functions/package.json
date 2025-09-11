@@ -1,6 +1,6 @@
 {
   "name": "@osdk/functions",
-  "version": "1.2.0-beta.9",
+  "version": "1.3.0-beta.4",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -60,15 +60,21 @@
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "dependencies": {
+    "@osdk/foundry.core": "^2.30.0",
+    "@osdk/foundry.ontologies": "^2.30.0"
+  },
   "peerDependencies": {
     "@osdk/client": "workspace:^"
   },
   "devDependencies": {
-    "@microsoft/api-documenter": "^7.26.5",
-    "@microsoft/api-extractor": "^7.52.7",
+    "@microsoft/api-documenter": "^7.26.32",
+    "@microsoft/api-extractor": "^7.52.11",
     "@osdk/client.test.ontology": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/shared.test": "workspace:~",
+    "p-defer": "^4.0.1",
     "ts-expect": "^1.3.0",
     "typescript": "~5.5.4"
   },

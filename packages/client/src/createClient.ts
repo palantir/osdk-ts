@@ -50,7 +50,7 @@ import { createMinimalClient } from "./createMinimalClient.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
 import { MinimalLogger } from "./logger/MinimalLogger.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
-import { fetchPage } from "./object/fetchPage.js";
+import { fetchPage, fetchStaticRidPage } from "./object/fetchPage.js";
 import { fetchSingle } from "./object/fetchSingle.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
@@ -247,6 +247,27 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 objectOrInterfaceType,
                 options,
                 createWithRid(rids),
+              );
+            },
+            fetchPageByRidNoType: async <
+              const R extends boolean,
+              const S extends NullabilityAdherence,
+              const T extends boolean,
+            >(
+              rids: readonly string[],
+              options?: FetchPageArgs<
+                ObjectOrInterfaceDefinition,
+                any,
+                R,
+                any,
+                S,
+                T
+              >,
+            ) => {
+              return await fetchStaticRidPage(
+                clientCtx,
+                rids,
+                options ?? {},
               );
             },
           } as any;

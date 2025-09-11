@@ -1,5 +1,5 @@
 ---
-"@osdk/faux": minor
+"@osdk/faux": patch
 ---
       
 Simulated release

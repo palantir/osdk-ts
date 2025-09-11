@@ -1,6 +1,6 @@
 {
   "name": "@osdk/create-app",
-  "version": "2.4.0-beta.15",
+  "version": "2.5.0-beta.5",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -58,10 +58,10 @@
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@types/node": "^18.0.0",
     "@types/tmp": "^0.2.6",
-    "@types/yargs": "^17.0.29",
+    "@types/yargs": "^17.0.33",
     "dedent": "1.5.3",
     "redent": "^4.0.0",
-    "tmp": "^0.2.3",
+    "tmp": "^0.2.5",
     "typescript": "~5.5.4"
   },
   "publishConfig": {

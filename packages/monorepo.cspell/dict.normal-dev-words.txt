@@ -16,6 +16,7 @@ geosearch
 groupable
 inbetween
 isModifierable
+jsons
 Multimap
 objs
 onwarn

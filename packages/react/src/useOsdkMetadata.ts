@@ -29,26 +29,32 @@ type MetadataFor<T extends ObjectOrInterfaceDefinition> = T extends
   : T extends ObjectTypeDefinition ? ObjectMetadata
   : never;
 
-export function useOsdkMetadata<T extends ObjectOrInterfaceDefinition>(
-  type: T,
-): {
+export interface UseOsdkMetadataResult<T extends ObjectOrInterfaceDefinition> {
   loading: boolean;
   metadata?: MetadataFor<T>;
-} {
+  error?: string;
+}
+
+export function useOsdkMetadata<T extends ObjectOrInterfaceDefinition>(
+  type: T,
+): UseOsdkMetadataResult<T> {
   const client = useOsdkClient();
   const [metadata, setMetadata] = React.useState<
     MetadataFor<T> | undefined
   >(undefined);
+  const [error, setError] = React.useState<UseOsdkMetadataResult<T>["error"]>();
 
-  if (!metadata) {
+  if (!metadata && !error) {
     client.fetchMetadata(type).then((fetchedMetadata) => {
       setMetadata(fetchedMetadata as MetadataFor<T>);
     }).catch((error: unknown) => {
-      // eslint-disable-next-line no-console
-      console.error("Failed to fetch metadata", error);
+      const errorMessage = error instanceof Error
+        ? error.message
+        : String(error);
+      setError(errorMessage);
     });
     return { loading: true };
   }
 
-  return { loading: false, metadata };
+  return { loading: false, metadata, error };
 }

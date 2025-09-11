@@ -17,6 +17,7 @@
 import type { InterfaceMetadata } from "@osdk/api";
 import { extractNamespace } from "../../internal/conversions/modernToLegacyWhereClause.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
+import { get$linkForInterface } from "./getDollarLink.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
 import {
   InterfaceDefRef,
@@ -74,6 +75,12 @@ export function createOsdkInterface<
           "InterfaceMetadata": interfaceDef,
         },
         enumerable: false,
+      },
+
+      "$link": {
+        get: function(this: InterfaceHolder) {
+          return get$linkForInterface(this);
+        },
       },
 
       [InterfaceDefRef]: { value: interfaceDef },

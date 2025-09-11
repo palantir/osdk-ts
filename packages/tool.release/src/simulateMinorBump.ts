@@ -75,7 +75,7 @@ export function simulateMinorBump(): void {
       preJson.changesets.push(changesetFileName);
 
       const changeset = `---
-"${packageJson.name}": minor
+"${packageJson.name}": patch
 ---
       
 Simulated release

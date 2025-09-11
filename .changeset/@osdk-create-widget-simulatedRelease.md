@@ -1,5 +1,5 @@
 ---
-"@osdk/create-widget": minor
+"@osdk/create-widget": patch
 ---
       
 Simulated release

@@ -1,7 +1,7 @@
 {
   "name": "@osdk/cli.common",
   "private": true,
-  "version": "0.28.0-beta.16",
+  "version": "0.29.0-beta.4",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -41,16 +41,16 @@
   },
   "dependencies": {
     "consola": "^3.4.2",
-    "open": "^10.1.2",
-    "semver": "^7.6.3",
+    "open": "^10.2.0",
+    "semver": "^7.7.2",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@types/node": "^18.0.0",
-    "@types/semver": "^7.5.8",
-    "@types/yargs": "^17.0.29",
+    "@types/node": "^18.19.124",
+    "@types/semver": "^7.7.1",
+    "@types/yargs": "^17.0.33",
     "typescript": "~5.5.4"
   },
   "publishConfig": {

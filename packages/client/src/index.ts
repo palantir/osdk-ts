@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/no-deprecated */
+
+export { isOk, NULL_VALUE } from "@osdk/api";
 export type {
   ActionDefinition,
   ActionEditResponse,
@@ -51,7 +54,6 @@ export type {
   VersionBound,
   WhereClause,
 } from "@osdk/api";
-export { isOk, NULL_VALUE } from "@osdk/api";
 export { PalantirApiError } from "@osdk/shared.net.errors";
 
 export { ActionValidationError } from "./actions/ActionValidationError.js";
@@ -67,3 +69,5 @@ export {
   extractDateInLocalTime,
   extractDateInUTC,
 } from "./util/datetimeConverters.js";
+
+export { createObjectSpecifierFromPrimaryKey } from "./util/objectSpecifierUtils.js";

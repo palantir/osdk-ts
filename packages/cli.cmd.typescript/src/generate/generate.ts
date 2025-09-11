@@ -127,6 +127,11 @@ export const generateCommand: CommandModule<
             type: "string",
             description: "The branch rid of the ontology to generate from",
           },
+          skipPackageJsonUpdate: {
+            type: "boolean",
+            description: "Skip updating package.json with OSDK dependencies",
+            default: false,
+          },
         } as const,
       ).group(
         ["ontologyPath", "outDir", "version"],

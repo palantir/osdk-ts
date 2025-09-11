@@ -1,5 +1,5 @@
 ---
-"@osdk/foundry-sdk-generator": minor
+"@osdk/foundry-sdk-generator": patch
 ---
       
 Simulated release

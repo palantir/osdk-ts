@@ -1,5 +1,69 @@
 # @osdk/maker
 
+## 0.13.0-beta.4
+
+### Minor Changes
+
+- a00d2ed: Update Platform SDK dependencies
+- a96d89e: Update Platform SDK dependencies
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.4
+
+## 0.13.0-beta.3
+
+### Minor Changes
+
+- 7bdac45: Update Platform SDK dependency
+
+### Patch Changes
+
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [e48be06]
+  - @osdk/api@2.5.0-beta.3
+
+## 0.13.0-beta.2
+
+### Minor Changes
+
+- 7cdab1d: Update platform sdk dependencies
+- 40d43c2: Make codegen TS compiler friendly
+- 5f72188: Fix object action param optionality for non-array props
+
+### Patch Changes
+
+- Updated dependencies [7160276]
+- Updated dependencies [76905f5]
+  - @osdk/api@2.5.0-beta.2
+
+## 0.12.0-beta.21
+
+### Minor Changes
+
+- 3ff44da: Existing OTs as action parameters in OAC
+- 367cc04: Add default value and constraint overrides to OAC action parameters
+- 283905f: Better error message for invalid parameter ordering on actions
+- e62a890: Custom submission options for OAC actions
+- 94beece: Enable "other" option for oneOf constraints on OAC actions
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.17
+
+## 0.12.0-beta.20
+
+### Minor Changes
+
+- 45ed433: Target objects are configurable and default parameter ordering is better in OAC actions
+
+## 0.12.0-beta.19
+
+### Patch Changes
+
+- @osdk/api@2.4.0-beta.16
+
 ## 0.12.0-beta.18
 
 ### Patch Changes
