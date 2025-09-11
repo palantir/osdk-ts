@@ -27,7 +27,7 @@ export async function loadFullObjectMetadata(
     client,
     await client.ontologyRid,
     objectType,
-    { preview: true },
+    { preview: true, branch: client.branch },
   );
   const ret = wireObjectTypeFullMetadataToSdkObjectMetadata(full, true);
   return { ...ret };
