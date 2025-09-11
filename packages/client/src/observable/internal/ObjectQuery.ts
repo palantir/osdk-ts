@@ -15,6 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
+import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import deepEqual from "fast-deep-equal";
 import type { Connectable, Observable, Subject } from "rxjs";
 import { BehaviorSubject, connectable, map } from "rxjs";
@@ -51,6 +52,8 @@ export class ObjectQuery extends Query<
 > {
   #apiName: string;
   #pk: string | number | boolean;
+  #rdpMappings: Map<string, string> | undefined;
+  #rdpsToFetch: Record<string, DerivedPropertyDefinition> | undefined;
 
   constructor(
     store: Store,
@@ -59,6 +62,8 @@ export class ObjectQuery extends Query<
     pk: PrimaryKeyType<ObjectTypeDefinition>,
     cacheKey: ObjectCacheKey,
     opts: CommonObserveOptions,
+    rdpMappings?: Map<string, string>,
+    rdpsToFetch?: Record<string, DerivedPropertyDefinition>,
   ) {
     super(
       store,
@@ -77,6 +82,8 @@ export class ObjectQuery extends Query<
     );
     this.#apiName = type;
     this.#pk = pk;
+    this.#rdpMappings = rdpMappings;
+    this.#rdpsToFetch = rdpsToFetch;
   }
 
   protected _createConnectable(
@@ -85,9 +92,28 @@ export class ObjectQuery extends Query<
     return connectable<ObjectPayload>(
       subject.pipe(
         map((x) => {
+          let object = x.value;
+          if (object && this.#rdpMappings && this.#rdpMappings.size > 0) {
+            const canonicalRdpValues = this.store.getRdpForObject(
+              object.$apiName,
+              object.$primaryKey,
+            );
+
+            if (canonicalRdpValues) {
+              // Map canonical IDs back to api names
+              const userRdps: Record<string, any> = {};
+              for (const [apiName, canonicalId] of this.#rdpMappings) {
+                if (canonicalId in canonicalRdpValues) {
+                  userRdps[apiName] = canonicalRdpValues[canonicalId];
+                }
+              }
+              object = { ...object, ...userRdps } as ObjectHolder;
+            }
+          }
+
           return {
             status: x.status,
-            object: x.value,
+            object,
             lastUpdated: x.lastUpdated,
             isOptimistic: x.isOptimistic,
           };
@@ -116,12 +142,59 @@ export class ObjectQuery extends Query<
     // we're not making unnecessary network calls. This would need dedicated
     // tests separate from subscription notification tests.
 
-    const obj = await getBulkObjectLoader(this.store.client)
-      .fetch(this.#apiName, this.#pk);
+    let obj: ObjectHolder;
+
+    if (this.#rdpsToFetch && Object.keys(this.#rdpsToFetch).length > 0) {
+      const result = await this.store.client({
+        type: "object" as const,
+        apiName: this.#apiName,
+      } as ObjectTypeDefinition)
+        .where({
+          [await this.getPrimaryKeyApiName()]: { $eq: this.#pk },
+        } as any)
+        .withProperties(this.#rdpsToFetch as any)
+        // TODO: implement paging
+        .fetchPage({ $pageSize: 1 });
+
+      if (result.data.length === 0) {
+        throw new Error(`Object not found: ${this.#apiName}:${this.#pk}`);
+      }
+
+      obj = result.data[0] as ObjectHolder;
+    } else {
+      obj = await getBulkObjectLoader(this.store.client)
+        .fetch(this.#apiName, this.#pk);
+    }
 
     this.store.batch({}, (batch) => {
+      if (this.#rdpsToFetch) {
+        const rdpValues: Record<string, any> = {};
+        for (const canonicalId of Object.keys(this.#rdpsToFetch)) {
+          if (canonicalId in obj) {
+            rdpValues[canonicalId] = (obj as any)[canonicalId];
+            // Remove RDP from object before storing to avoid duplication
+            delete (obj as any)[canonicalId];
+          }
+        }
+        if (Object.keys(rdpValues).length > 0) {
+          this.store.setRdpForObject(
+            this.#apiName,
+            this.#pk as string,
+            rdpValues,
+          );
+        }
+      }
+
       this.writeToStore(obj, "loaded", batch);
     });
+  }
+
+  private async getPrimaryKeyApiName(): Promise<string> {
+    const metadata = await this.store.client.fetchMetadata({
+      type: "object" as const,
+      apiName: this.#apiName,
+    } as ObjectTypeDefinition);
+    return metadata.primaryKeyApiName;
   }
 
   writeToStore(
@@ -213,7 +286,7 @@ export class ObjectQuery extends Query<
 
 /**
  * Internal helper method for writing objects to the store and returning their
- * object keys
+ * object keys. Also extracts and stores RDP values with canonical IDs.
  * @internal
  */
 export function storeOsdkInstances(
@@ -224,6 +297,17 @@ export function storeOsdkInstances(
   // update the cache for any object that has changed
   // and save the mapped values to return
   return values.map(v => {
+    const rdpValues: Record<string, any> = {};
+    for (const key in v) {
+      if (key.startsWith("rdp_")) {
+        rdpValues[key] = v[key];
+      }
+    }
+
+    if (Object.keys(rdpValues).length > 0) {
+      store.setRdpForObject(v.$apiName, v.$primaryKey, rdpValues);
+    }
+
     return store.objects.getQuery({
       apiName: v.$apiName,
       pk: v.$primaryKey as string | number,

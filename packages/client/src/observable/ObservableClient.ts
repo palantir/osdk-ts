@@ -55,6 +55,7 @@ export interface ObserveObjectOptions<
   apiName: T["apiName"] | T;
   pk: PrimaryKeyType<T>;
   select?: PropertyKeys<T>[];
+  withProperties?: DerivedProperty.Clause<T>;
 }
 
 export type OrderBy<Q extends ObjectTypeDefinition | InterfaceDefinition> = {

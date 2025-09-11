@@ -78,7 +78,6 @@ export const API_NAME_IDX = 1;
 export const TYPE_IDX = 0;
 export const WHERE_IDX = 2;
 export const ORDER_BY_IDX = 3;
-export const RDP_IDX = 4;
 
 export interface ListQueryOptions extends CommonObserveOptions {
   pageSize?: number;
@@ -235,7 +234,6 @@ export abstract class BaseListQuery<
     objects: Array<Osdk.Instance<any>>,
     batch: BatchContext,
   ): Array<ObjectCacheKey> {
-    // Store the individual objects in their respective cache entries
     return objects.length > 0
       ? storeOsdkInstances(this.store, objects, batch)
       : [];
@@ -609,6 +607,7 @@ export class ListQuery extends BaseListQuery<
   #type: "object" | "interface";
   #apiName: string;
   #whereClause: Canonical<SimpleWhereClause>;
+  #rdpMappings: Map<string, string> | undefined;
 
   // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
@@ -629,6 +628,7 @@ export class ListQuery extends BaseListQuery<
     objectSet: ObjectSet<ObjectTypeDefinition>,
     cacheKey: ListCacheKey,
     opts: ListQueryOptions,
+    rdpMappings?: Map<string, string>,
   ) {
     super(
       store,
@@ -651,6 +651,7 @@ export class ListQuery extends BaseListQuery<
     this.#whereClause = cacheKey.otherKeys[2];
     this.#orderBy = cacheKey.otherKeys[3];
     this.#objectSet = objectSet;
+    this.#rdpMappings = rdpMappings;
 
     // Initialize the sorting strategy
     this.sortingStrategy = new OrderBySortingStrategy(
@@ -663,6 +664,53 @@ export class ListQuery extends BaseListQuery<
 
   get canonicalWhere(): Canonical<SimpleWhereClause> {
     return this.#whereClause;
+  }
+
+  protected override createPayload(
+    params: CollectionConnectableParams,
+  ): ListPayload {
+    const resolvedList = params.resolvedData;
+
+    // If we have RDP mappings, augment objects with their stored RDP values
+    if (
+      this.#rdpMappings && this.#rdpMappings.size > 0 && resolvedList.length > 0
+    ) {
+      const augmentedList = resolvedList.map(obj => {
+        const canonicalRdpValues = this.store.getRdpForObject(
+          obj.$apiName,
+          obj.$primaryKey,
+        );
+        if (canonicalRdpValues && this.#rdpMappings) {
+          // Map canonical IDs back to api names
+          const rdpByApiName: Record<string, any> = {};
+          for (const [apiName, canonicalId] of this.#rdpMappings) {
+            if (canonicalId in canonicalRdpValues) {
+              rdpByApiName[apiName] = canonicalRdpValues[canonicalId];
+            }
+          }
+          return { ...obj, ...rdpByApiName };
+        }
+        return obj;
+      });
+
+      return {
+        resolvedList: augmentedList,
+        isOptimistic: params.isOptimistic,
+        fetchMore: this.fetchMore,
+        hasMore: this.nextPageToken != null,
+        status: params.status,
+        lastUpdated: params.lastUpdated,
+      };
+    }
+
+    return {
+      resolvedList,
+      isOptimistic: params.isOptimistic,
+      fetchMore: this.fetchMore,
+      hasMore: this.nextPageToken != null,
+      status: params.status,
+      lastUpdated: params.lastUpdated,
+    };
   }
 
   /**
@@ -763,7 +811,7 @@ export class ListQuery extends BaseListQuery<
       return;
     }
 
-    if (this.cacheKey.otherKeys[RDP_IDX]) {
+    if (this.#rdpMappings && this.#rdpMappings.size > 0) {
       try {
         const wireObjectSet = getWireObjectSet(this.#objectSet);
         const result = await getObjectTypesThatInvalidate(

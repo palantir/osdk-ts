@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import { beforeEach, describe, expect, it } from "vitest";
 import { RdpCanonicalizer } from "./RdpCanonicalizer.js";
 
@@ -24,82 +25,102 @@ describe("RdpCanonicalizer", () => {
     canonicalizer = new RdpCanonicalizer();
   });
 
-  const createMockRdpFn = (value: string) => () => ({ mockValue: value });
+  const createMockDefinition = (value: string): DerivedPropertyDefinition => ({
+    type: "property",
+    apiName: value,
+  });
 
   it("returns undefined for undefined input", () => {
     expect(canonicalizer.canonicalize(undefined)).toBeUndefined();
   });
 
-  it("handles empty RDP clauses", () => {
-    const result1 = canonicalizer.canonicalize({});
-    const result2 = canonicalizer.canonicalize({});
+  it("generates canonical IDs for definitions", () => {
+    const def1 = createMockDefinition("prop1");
+    const result1 = canonicalizer.canonicalize(def1);
 
-    expect(result1).toEqual({});
+    expect(result1).toBeDefined();
+    expect(result1).toMatch(/^rdp_[a-f0-9]{16}$/);
+  });
+
+  it("canonicalizes identical definitions to same ID", () => {
+    const def1 = createMockDefinition("prop1");
+    const def2 = createMockDefinition("prop1");
+
+    const result1 = canonicalizer.canonicalize(def1);
+    const result2 = canonicalizer.canonicalize(def2);
+
     expect(result1).toBe(result2);
   });
 
-  it("canonicalizes clauses with different key order to same reference", () => {
-    const fn1 = createMockRdpFn("1");
-    const fn2 = createMockRdpFn("2");
+  it("returns different IDs for different definitions", () => {
+    const def1 = createMockDefinition("prop1");
+    const def2 = createMockDefinition("prop2");
 
-    const clause1 = { prop1: fn1, prop2: fn2 };
-    const clause2 = { prop2: fn2, prop1: fn1 };
-
-    const result1 = canonicalizer.canonicalize(clause1);
-    const result2 = canonicalizer.canonicalize(clause2);
-
-    expect(result1).toBe(result2);
-  });
-
-  it("preserves function references", () => {
-    const fn = createMockRdpFn("test");
-    const clause = { prop1: fn };
-
-    const result = canonicalizer.canonicalize(clause);
-
-    expect(result?.prop1).toBe(fn);
-  });
-
-  it("returns different references for different functions", () => {
-    const clause1 = { prop1: createMockRdpFn("1") };
-    const clause2 = { prop1: createMockRdpFn("2") };
-
-    const result1 = canonicalizer.canonicalize(clause1);
-    const result2 = canonicalizer.canonicalize(clause2);
+    const result1 = canonicalizer.canonicalize(def1);
+    const result2 = canonicalizer.canonicalize(def2);
 
     expect(result1).not.toBe(result2);
   });
 
-  it("caches identical input objects", () => {
-    const clause = { prop1: createMockRdpFn("test") };
+  it("caches identical definitions", () => {
+    const def = createMockDefinition("test");
 
-    const result1 = canonicalizer.canonicalize(clause);
-    const result2 = canonicalizer.canonicalize(clause);
+    const result1 = canonicalizer.canonicalize(def);
+    const result2 = canonicalizer.canonicalize(def);
 
     expect(result1).toBe(result2);
   });
 
   it("handles complex RDP structures", () => {
-    const complexFn = () => ({
-      type: "nearestNeighbor",
-      vectorProperty: "embedding",
-      parameters: { k: 10, metric: "cosine" },
-    });
-    const simpleFn = createMockRdpFn("simple");
+    const complexDef: DerivedPropertyDefinition = {
+      type: "selection",
+      objectSet: {
+        type: "searchAround",
+        objectSet: {
+          type: "methodInput",
+        },
+        link: "linkToObject",
+      },
+      operation: {
+        type: "get",
+        selectedPropertyApiName: "someProperty",
+      },
+    } as any;
 
-    const clause1 = {
-      complexProp: complexFn,
-      simpleProp: simpleFn,
-    };
-    const clause2 = {
-      simpleProp: simpleFn,
-      complexProp: complexFn,
-    };
+    const result = canonicalizer.canonicalize(complexDef);
 
-    const result1 = canonicalizer.canonicalize(clause1);
-    const result2 = canonicalizer.canonicalize(clause2);
+    expect(result).toBeDefined();
+    expect(result).toMatch(/^rdp_[a-f0-9]{16}$/);
+  });
+
+  it("handles definitions with different key order but same content", () => {
+    const def1: DerivedPropertyDefinition = {
+      type: "selection",
+      operation: {
+        type: "count",
+        selectedPropertyApiName: "someProperty",
+      },
+      objectSet: {
+        type: "base",
+        objectType: "SomeType",
+      },
+    } as any;
+
+    const def2: DerivedPropertyDefinition = {
+      type: "selection",
+      objectSet: {
+        type: "base",
+        objectType: "SomeType",
+      },
+      operation: {
+        type: "count",
+        selectedPropertyApiName: "someProperty",
+      },
+    } as any;
+
+    const result1 = canonicalizer.canonicalize(def1);
+    const result2 = canonicalizer.canonicalize(def2);
 
     expect(result1).toBe(result2);
-    expect(Object.keys(result1!)).toEqual(["complexProp", "simpleProp"]);
   });
 });

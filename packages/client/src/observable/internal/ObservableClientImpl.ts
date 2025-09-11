@@ -62,6 +62,7 @@ export class ObservableClientImpl implements ObservableClient {
     this.canonicalizeWhereClause = store.canonicalizeWhereClause.bind(
       store,
     ) as typeof this.canonicalizeWhereClause;
+    this.observeLinks = this.observeLinks.bind(this);
   }
 
   public observeObject: <T extends ObjectTypeDefinition>(

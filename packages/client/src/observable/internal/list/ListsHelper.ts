@@ -15,6 +15,8 @@
  */
 
 import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
+import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
+import { createWithPropertiesObjectSet } from "../../../derivedProperties/createWithPropertiesObjectSet.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { ObserveListOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
@@ -82,15 +84,46 @@ export class ListsHelper extends AbstractHelper<
       objectSet = objectSet.where(where as any);
     }
 
+    let rdpMappings: Map<string, string> | undefined;
     if (withProperties) {
-      objectSet = objectSet.withProperties(withProperties as any);
+      rdpMappings = new Map<string, string>();
+      const definitionMap = new Map<any, DerivedPropertyDefinition>();
+
+      // Get all registered RDPs for this type
+      const allRegisteredRdps = this.store.getAllRdpsForType(apiName);
+      const rdpsToFetch: Record<string, DerivedPropertyDefinition> = {};
+
+      // Process each withProperty to get its definition and canonical ID
+      for (const [userName, rdpCreator] of Object.entries(withProperties)) {
+        const derivedPropertyDefinition = (rdpCreator as any)(
+          createWithPropertiesObjectSet(
+            options.type as any,
+            { type: "methodInput" },
+            definitionMap,
+            true,
+          ),
+        );
+        const definition = definitionMap.get(derivedPropertyDefinition)!;
+        const canonicalId = this.rdpCanonicalizer.canonicalize(definition);
+        this.store.registerRdp(apiName, canonicalId, definition);
+        rdpMappings.set(userName, canonicalId);
+
+        rdpsToFetch[canonicalId] = definition;
+      }
+
+      // Add all other registered RDPs for this type
+      for (const [canonicalId, definition] of allRegisteredRdps) {
+        if (!rdpsToFetch[canonicalId]) {
+          rdpsToFetch[canonicalId] = definition;
+        }
+      }
+
+      // Update objectSet to fetch all known  RDPs using canonical IDs
+      objectSet = objectSet.withProperties(rdpsToFetch);
     }
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
-    const canonRdp = withProperties
-      ? this.rdpCanonicalizer.canonicalize(withProperties)
-      : undefined;
 
     const listCacheKey = this.store.getCacheKey<ListCacheKey>(
       "list",
@@ -98,7 +131,6 @@ export class ListsHelper extends AbstractHelper<
       apiName,
       canonWhere,
       canonOrderBy,
-      canonRdp,
     );
 
     return this.store.getQuery(listCacheKey, () => {
@@ -110,6 +142,7 @@ export class ListsHelper extends AbstractHelper<
         objectSet,
         listCacheKey,
         options,
+        rdpMappings,
       );
     });
   }

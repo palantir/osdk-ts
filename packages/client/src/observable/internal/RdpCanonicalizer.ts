@@ -14,36 +14,67 @@
  * limitations under the License.
  */
 
+import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import type { Canonical } from "./Canonical.js";
 import { CachingCanonicalizer } from "./Canonicalizer.js";
-import { WeakRefTrie } from "./WeakRefTrie.js";
 
 export type Rdp<T = any> = Record<string, T>;
 
-export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
-  private structuralCache = new WeakRefTrie<Canonical<Rdp>>(
-    (array: any[]) => {
-      // Reconstruct RDP from flattened key-value pairs
-      const pairs: Array<[string, any]> = [];
-      for (let i = 0; i < array.length; i += 2) {
-        if (i + 1 < array.length) {
-          pairs.push([array[i], array[i + 1]]);
-        }
-      }
-      const data = Object.fromEntries(pairs);
-      return (process.env.NODE_ENV !== "production"
-        ? Object.freeze(data)
-        : data) as Canonical<Rdp>;
-    },
-  );
+/**
+ * Canonicalizes RDP definitions to unique identifiers
+ * Maps structurally identical RDP definitions to the same canonical ID
+ */
+export class RdpCanonicalizer extends CachingCanonicalizer<
+  DerivedPropertyDefinition,
+  string
+> {
+  private definitionCache = new Map<string, Canonical<string>>();
 
-  protected lookupOrCreate(rdp: Rdp): Canonical<Rdp> {
-    // Extract sorted keys and their function references as trie path
-    // This ensures that RDPs with same structure but different key order
-    // map to the same canonical form
-    const sortedEntries = Object.entries(rdp).sort(([a], [b]) =>
-      a.localeCompare(b)
-    );
-    return this.structuralCache.lookupArray(sortedEntries.flat());
+  protected lookupOrCreate(
+    definition: DerivedPropertyDefinition,
+  ): Canonical<string> {
+    const definitionString = this.serializeDefinition(definition);
+    let canonicalId = this.definitionCache.get(definitionString);
+
+    if (!canonicalId) {
+      const hash = this.simpleHash(definitionString);
+      const id = `rdp_${hash}`;
+      canonicalId = id as Canonical<string>;
+      this.definitionCache.set(definitionString, canonicalId);
+    }
+
+    return canonicalId;
+  }
+
+  /**
+   * Simple synchronous hash function using djb2 algorithm
+   * This is sufficient for our use case of generating unique IDs
+   */
+  private simpleHash(str: string): string {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+    }
+    // Convert to 32bit unsigned integer in base 36 and pad with "0" to ensure length is 7.
+    return (hash >>> 0).toString(36).padStart(7, "0");
+  }
+
+  /**
+   * Creates a deterministic string representation of a DerivedPropertyDefinition
+   * This ensures structurally identical definitions map to the same string
+   */
+  private serializeDefinition(def: DerivedPropertyDefinition): string {
+    return JSON.stringify(def, (_key, value) => {
+      if (value && typeof value === "object" && !Array.isArray(value)) {
+        return Object.keys(value)
+          .sort()
+          .reduce<any>((sorted, k) => {
+            sorted[k] = value[k];
+            return sorted;
+          }, {});
+      }
+      return value;
+    });
   }
 }

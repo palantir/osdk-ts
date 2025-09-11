@@ -24,6 +24,7 @@ import type {
   PrimaryKeyType,
   WhereClause,
 } from "@osdk/api";
+import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
@@ -162,6 +163,12 @@ export class Store {
   objects: ObjectsHelper;
   links: LinksHelper;
 
+  // RDP storage: apiName -> (primaryKey -> canonical RDP values)
+  #objectRdpMap: Map<string, Map<string, Record<string, any>>> = new Map();
+
+  // RDP registry: apiName -> (canonicalId -> DerivedPropertyDefinition)
+  #rdpRegistry: Map<string, Map<string, DerivedPropertyDefinition>> = new Map();
+
   constructor(client: Client) {
     this.client = client;
     this.logger = client[additionalContext].logger?.child({}, {
@@ -174,7 +181,7 @@ export class Store {
       this.orderByCanonicalizer,
       this.rdpCanonicalizer,
     );
-    this.objects = new ObjectsHelper(this);
+    this.objects = new ObjectsHelper(this, this.rdpCanonicalizer);
     this.links = new LinksHelper(
       this,
       this.whereCanonicalizer,
@@ -185,7 +192,6 @@ export class Store {
     this.#cacheKeys = new CacheKeys(
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
-      this.rdpCanonicalizer,
       (k) => {
         if (DEBUG_REFCOUNTS) {
           const cacheKeyType = k.type;
@@ -562,6 +568,8 @@ export class Store {
       );
     }
 
+    this.clearRdpForObjectType(apiName);
+
     const promises: Array<Promise<void>> = [];
 
     for (const cacheKey of this.#truthLayer.keys()) {
@@ -584,5 +592,89 @@ export class Store {
 
   release(cacheKey: KnownCacheKey): void {
     this.#refCounts.release(cacheKey);
+  }
+
+  /**
+   * Get RDP values for a specific object
+   * @param apiName - The object type API name
+   * @param pk - The primary key of the object
+   * @returns The RDP values for the object, or undefined if not found
+   */
+  getRdpForObject(
+    apiName: string,
+    pk: PrimaryKeyType<ObjectTypeDefinition>,
+  ): Record<string, any> | undefined {
+    const typeMap = this.#objectRdpMap.get(apiName);
+    if (!typeMap) return undefined;
+    return typeMap.get(String(pk));
+  }
+
+  /**
+   * Set RDP values for a specific object
+   * @param apiName - The object type API name
+   * @param pk - The primary key of the object
+   * @param rdp - The RDP values to store
+   */
+  setRdpForObject(
+    apiName: string,
+    pk: PrimaryKeyType<ObjectTypeDefinition>,
+    rdp: Record<string, any>,
+  ): void {
+    let typeMap = this.#objectRdpMap.get(apiName);
+    if (!typeMap) {
+      typeMap = new Map();
+      this.#objectRdpMap.set(apiName, typeMap);
+    }
+
+    // Merge with existing RDP values instead of replacing
+    const existingRdp = typeMap.get(String(pk)) || {};
+    const mergedRdp = { ...existingRdp, ...rdp };
+    typeMap.set(String(pk), mergedRdp);
+  }
+
+  /**
+   * Clear all RDP values for a specific object type
+   * @param apiName - The object type API name to clear
+   */
+  clearRdpForObjectType(apiName: string): void {
+    this.#objectRdpMap.delete(apiName);
+  }
+
+  /**
+   * Register an RDP definition for an object type
+   * @param apiName - The object type API name
+   * @param canonicalId - The canonical ID for this RDP definition
+   * @param definition - The RDP definition
+   */
+  registerRdp(
+    apiName: string,
+    canonicalId: string,
+    definition: DerivedPropertyDefinition,
+  ): void {
+    let typeRegistry = this.#rdpRegistry.get(apiName);
+    if (!typeRegistry) {
+      typeRegistry = new Map();
+      this.#rdpRegistry.set(apiName, typeRegistry);
+    }
+
+    // Only register if not already present
+    if (!typeRegistry.has(canonicalId)) {
+      typeRegistry.set(canonicalId, definition);
+
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "registerRdp" }).debug(
+          `Registered RDP ${canonicalId} for ${apiName}`,
+        );
+      }
+    }
+  }
+
+  /**
+   * Get all registered RDP definitions for an object type
+   * @param apiName - The object type API name
+   * @returns Map of canonical IDs to definitions
+   */
+  getAllRdpsForType(apiName: string): Map<string, DerivedPropertyDefinition> {
+    return this.#rdpRegistry.get(apiName) || new Map();
   }
 }
