@@ -1,13 +1,11 @@
 /**
- * WARNING: This file is generated automatically by the generateExample.mjs script.
+ * WARNING: This file is generated automatically by the updateDocsSnippets.mjs script.
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
 /* eslint-disable no-unused-vars */
 
-// Example: Object set operations/Set operations
-// Title: Combining object sets using set operations
-// Description: No description provided
+// Example: objectSetOperationsGuide
 
 import { Employee } from "../../../generatedNoCheck/ontology/objects";
 

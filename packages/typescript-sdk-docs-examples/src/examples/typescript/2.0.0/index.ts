@@ -1,49 +1,226 @@
 /**
- * WARNING: This file is generated automatically by the generateExample.mjs script.
+ * WARNING: This file is generated automatically by the updateDocsSnippets.mjs script.
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
 /* eslint-disable no-unused-vars */
 
 // TYPESCRIPT Examples - SDK Version 2.0.0
-// This file was automatically generated from the documentation sections
+// This file was automatically generated from the typescript-sdk-docs package
 
-// Loading data/Load single Employee - Loading a single Employee by ID
+// loadSingleObjectGuide
 // See: ./loadSingleObjectGuide.ts
 
-// Loading data/Load pages of Employees - Loading pages of employees
+// loadObjectPageGuide
 // See: ./loadObjectPageGuide.ts
 
-// Loading data/Load pages of Employees - Loading ordered results
+// orderObjectsGuide
 // See: ./orderObjectsGuide.ts
 
-// Loading data/Load linked object types - Working with linked objects
+// searchObjectsGuide
+// See: ./searchObjectsGuide.ts
+
+// loadSingleObjectReference
+// See: ./loadSingleObjectReference.ts
+
+// loadObjectsReference
+// See: ./loadObjectsReference.ts
+
+// loadAllObjectsReference
+// See: ./loadAllObjectsReference.ts
+
+// loadLinkedObjectReference
 // See: ./loadLinkedObjectReference.ts
 
-// Filtering/String Filters - Filtering Employees by name prefix
-// See: ./stringStartsWithTemplate.ts
+// loadLinkedObjectsReference
+// See: ./loadLinkedObjectsReference.ts
 
-// Filtering/Comparison Filters - Filtering employees by salary range
-// See: ./rangeTemplate.ts
+// aggregationTemplate
+// See: ./aggregationTemplate.ts
 
-// Filtering/Comparison Filters - Filtering employees using equality and in operators
-// See: ./equalityTemplate.ts
-
-// Filtering/Boolean Filters - Using boolean operators for complex filtering
-// See: ./notTemplate.ts
-
-// Aggregations/Types of aggregations - Using aggregation operators
+// countAggregationTemplate
 // See: ./countAggregationTemplate.ts
 
-// Aggregations/Types of group bys - Using group by with aggregations
+// approximateDistinctAggregationTemplate
+// See: ./approximateDistinctAggregationTemplate.ts
+
+// exactDistinctAggregationTemplate
+// See: ./exactDistinctAggregationTemplate.ts
+
+// numericAggregationTemplate
+// See: ./numericAggregationTemplate.ts
+
+// fixedWidthGroupByTemplate
+// See: ./fixedWidthGroupByTemplate.ts
+
+// durationGroupByTemplate
+// See: ./durationGroupByTemplate.ts
+
+// exactGroupByTemplate
 // See: ./exactGroupByTemplate.ts
 
-// Object set operations/Set operations - Combining object sets using set operations
-// See: ./objectSetOperationsGuide.ts
+// rangeGroupByTemplate
+// See: ./rangeGroupByTemplate.ts
 
-// Derived Properties/Types of link aggregations - Creating and using derived properties
+// applyAction
+// See: ./applyAction.ts
+
+// batchApplyAction
+// See: ./batchApplyAction.ts
+
+// uploadAttachment
+// See: ./uploadAttachment.ts
+
+// castInterfaceToObjectReference
+// See: ./castInterfaceToObjectReference.ts
+
+// executeFunction
+// See: ./executeFunction.ts
+
+// stringStartsWithTemplate
+// See: ./stringStartsWithTemplate.ts
+
+// containsAllTermsInOrderTemplate
+// See: ./containsAllTermsInOrderTemplate.ts
+
+// containsAnyTermTemplate
+// See: ./containsAnyTermTemplate.ts
+
+// containsAllTermsTemplate
+// See: ./containsAllTermsTemplate.ts
+
+// equalityTemplate
+// See: ./equalityTemplate.ts
+
+// inFilterTemplate
+// See: ./inFilterTemplate.ts
+
+// nullTemplate
+// See: ./nullTemplate.ts
+
+// rangeTemplate
+// See: ./rangeTemplate.ts
+
+// withinDistanceTemplate
+// See: ./withinDistanceTemplate.ts
+
+// withinBoundingBoxTemplate
+// See: ./withinBoundingBoxTemplate.ts
+
+// withinPolygonTemplate
+// See: ./withinPolygonTemplate.ts
+
+// intersectsPolygonTemplate
+// See: ./intersectsPolygonTemplate.ts
+
+// intersectsBboxTemplate
+// See: ./intersectsBboxTemplate.ts
+
+// notTemplate
+// See: ./notTemplate.ts
+
+// andTemplate
+// See: ./andTemplate.ts
+
+// orTemplate
+// See: ./orTemplate.ts
+
+// containsTemplate
+// See: ./containsTemplate.ts
+
+// loadInterfacesReference
+// See: ./loadInterfacesReference.ts
+
+// loadAllInterfacesReference
+// See: ./loadAllInterfacesReference.ts
+
+// loadOrderedInterfacesReference
+// See: ./loadOrderedInterfacesReference.ts
+
+// searchInterfacesReference
+// See: ./searchInterfacesReference.ts
+
+// loadTimeSeriesPointsSnippet
+// See: ./loadTimeSeriesPointsSnippet.ts
+
+// loadRelativeTimeSeriesPointsSnippet
+// See: ./loadRelativeTimeSeriesPointsSnippet.ts
+
+// loadAbsoluteTimeSeriesPointsSnippet
+// See: ./loadAbsoluteTimeSeriesPointsSnippet.ts
+
+// loadTimeSeriesFirstPointSnippet
+// See: ./loadTimeSeriesFirstPointSnippet.ts
+
+// loadTimeSeriesLastPointSnippet
+// See: ./loadTimeSeriesLastPointSnippet.ts
+
+// loadGeotimeSeriesPointsSnippet
+// See: ./loadGeotimeSeriesPointsSnippet.ts
+
+// loadRelativeGeotimeSeriesPointsSnippet
+// See: ./loadRelativeGeotimeSeriesPointsSnippet.ts
+
+// loadAbsoluteGeotimeSeriesPointsSnippet
+// See: ./loadAbsoluteGeotimeSeriesPointsSnippet.ts
+
+// loadGeotimeSeriesLastPointSnippet
+// See: ./loadGeotimeSeriesLastPointSnippet.ts
+
+// loadObjectMetadataSnippet
+// See: ./loadObjectMetadataSnippet.ts
+
+// loadInterfaceMetadataSnippet
+// See: ./loadInterfaceMetadataSnippet.ts
+
+// subscribeToObjectSetInstructions
+// See: ./subscribeToObjectSetInstructions.ts
+
+// uploadMedia
+// See: ./uploadMedia.ts
+
+// readMedia
+// See: ./readMedia.ts
+
+// derivedPropertyBaseExample
 // See: ./derivedPropertyBaseExample.ts
 
-// Load Employee metadata - Loading object type metadata
-// See: ./loadObjectMetadataSnippet.ts
+// derivedPropertyApproximateDistinctAggregation
+// See: ./derivedPropertyApproximateDistinctAggregation.ts
+
+// derivedPropertyExactDistinctAggregation
+// See: ./derivedPropertyExactDistinctAggregation.ts
+
+// derivedPropertyCollectToListAggregation
+// See: ./derivedPropertyCollectToListAggregation.ts
+
+// derivedPropertyCollectToSetAggregation
+// See: ./derivedPropertyCollectToSetAggregation.ts
+
+// derivedPropertyCountAggregation
+// See: ./derivedPropertyCountAggregation.ts
+
+// derivedPropertySelectPropertyAggregation
+// See: ./derivedPropertySelectPropertyAggregation.ts
+
+// derivedPropertyApproximatePercentileAggregation
+// See: ./derivedPropertyApproximatePercentileAggregation.ts
+
+// derivedPropertyNumericAggregation
+// See: ./derivedPropertyNumericAggregation.ts
+
+// objectSetOperationsGuide
+// See: ./objectSetOperationsGuide.ts
+
+// objectSetOperationsUnion
+// See: ./objectSetOperationsUnion.ts
+
+// objectSetOperationsSubtract
+// See: ./objectSetOperationsSubtract.ts
+
+// objectSetOperationsIntersect
+// See: ./objectSetOperationsIntersect.ts
+
+// searchAround
+// See: ./searchAround.ts
 

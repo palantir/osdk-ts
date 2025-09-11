@@ -25,26 +25,41 @@ import { TYPESCRIPT_OSDK_SNIPPETS } from '@osdk/typescript-sdk-docs';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Path constants
-const DOCS_SECTIONS_PATH = path.join(__dirname, 'src/osdk-docs-sections.json');
-const DOCS_MAPPING_PATH = path.join(__dirname, 'src/osdk-docs-mapping.json');
+const OUTPUT_DIR = path.join(__dirname, 'src/examples');
 
 async function main() {
   try {
-    console.log('Updating documentation snippets...');
+    console.log('Generating example snippets from typescript-sdk-docs...');
 
-    // Load the docs sections and mapping
-    const docsSections = JSON.parse(await fs.readFile(DOCS_SECTIONS_PATH, 'utf8'));
-    const docsMapping = JSON.parse(await fs.readFile(DOCS_MAPPING_PATH, 'utf8'));
+    // Get snippets from version 2.0.0
+    const version = '2.0.0';
+    const snippets = TYPESCRIPT_OSDK_SNIPPETS.versions[version]?.snippets;
+    
+    if (!snippets) {
+      console.error(`No snippets found for version ${version}`);
+      process.exit(1);
+    }
 
-    // Update sections with code snippets
-    await updateAllSections(docsSections, docsMapping);
+    // Delete existing examples directory if it exists
+    try {
+      await fs.rm(OUTPUT_DIR, { recursive: true, force: true });
+      console.log('✓ Cleaned up existing examples directory');
+    } catch (err) {
+      // Directory might not exist, which is fine
+    }
 
-    // Write the updated docs sections back to the file
-    await fs.writeFile(DOCS_SECTIONS_PATH, JSON.stringify(docsSections, null, 2), 'utf8');
+    // Ensure output directory exists
+    await fs.mkdir(path.join(OUTPUT_DIR, 'typescript', version), { recursive: true });
 
-    console.log('✓ Documentation snippets updated successfully');
+    // Generate examples for each snippet
+    await generateAllExamples(snippets, version);
+    
+    // Generate client.ts file
+    await generateClientFile(version);
+
+    console.log('✓ Example snippets generated successfully');
   } catch (error) {
-    console.error('Error updating documentation snippets:', error);
+    console.error('Error generating example snippets:', error);
     process.exit(1);
   }
 }
@@ -77,93 +92,68 @@ function extractHandlebarsVariables(template) {
 }
 
 /**
- * Find a section or subsection recursively by title
- * @param {Array} sections Array of sections/subsections
- * @param {string} title Title to search for
- * @returns {Object|null} The section object or null if not found
+ * Generate examples for all snippets
+ * @param {Object} snippets The snippets object from TYPESCRIPT_OSDK_SNIPPETS
+ * @param {string} version The version to generate examples for
  */
-function findSectionByCodeSnippetTitle(sections, title, currentPath = '') {
-  for (const section of sections) {
-    const newPath = currentPath ? `${currentPath}/${section.title}` : section.title;
-    
-    // Check if this section has code snippets with the target title
-    if (section.code_snippets?.typescript?.["2.0.0"]) {
-      for (const snippet of section.code_snippets.typescript["2.0.0"]) {
-        if (snippet.title === title) {
-          return { section, sectionPath: newPath, snippet };
-        }
-      }
-    }
-    
-    // Recursively search subsections
-    if (section.subsections) {
-      const result = findSectionByCodeSnippetTitle(section.subsections, title, newPath);
-      if (result) return result;
-    }
-  }
+async function generateAllExamples(snippets, version) {
+  // Create a global context object for templates
+  const baseContext = {
+    packageName: '../../../generatedNoCheck',
+    objectType: 'Employee',
+    titleProperty: 'fullName',
+    property: 'fullName',
+    operation: 'lt',
+    propertyValueV2: 100,
+    primaryKeyPropertyV2: { apiName: 'employeeId', type: 'integer' },
+    // For linked objects
+    sourceObjectType: 'Employee',
+    linkedObjectType: 'Employee',
+    linkedPrimaryKeyPropertyV2: { apiName: "fullName", type: 'string' },
+    linkedOneSidePropertyV2: { apiName: "fullName", type: 'string' },
+    linkedManySidePropertyV2: { apiName: "salary", type: 'decimal' },
+    linkApiName: 'lead',
+    // for structured properties
+    structPropertyApiName: 'contactInfo',
+    structSubPropertyApiName: 'phone',
+    linkedPrimaryKeyProperty: "equipmentId-12345"
+  };
   
-  return null;
-}
+  // Create index file content
+  let indexContent = `/**
+ * WARNING: This file is generated automatically by the updateDocsSnippets.mjs script.
+ * DO NOT MODIFY this file directly as your changes will be overwritten.
+ */
 
-/**
- * Updates all sections with code snippets from the mapping
- */
-async function updateAllSections(docsSections, docsMapping) {
-  // Default version to use from the mapping
-  const templateVersion = docsMapping.defaultVersion || '2.0.0';
-  const outputVersion = '2.0.0';
-  const language = 'typescript';
-  
-  // For each mapping entry
-  for (const [snippetTitle, snippetKey] of Object.entries(docsMapping.mapping)) {
-    // Find section that contains this snippet title
-    const result = findSectionByCodeSnippetTitle(docsSections.sections, snippetTitle);
-    
-    if (!result) {
-      console.error(`Could not find section with code snippet titled "${snippetTitle}"`);
+/* eslint-disable no-unused-vars */
+
+// TYPESCRIPT Examples - SDK Version ${version}
+// This file was automatically generated from the typescript-sdk-docs package
+
+`;
+
+  // Process each snippet
+  for (const [snippetKey, snippetArray] of Object.entries(snippets)) {
+    if (!snippetArray || snippetArray.length === 0) {
+      console.log(`No template found for ${snippetKey}, skipping...`);
       continue;
     }
     
-    const { section, sectionPath, snippet } = result;
-    
-    // Access the template from the SDK snippets
-    const snippetData = TYPESCRIPT_OSDK_SNIPPETS.versions[templateVersion]?.snippets?.[snippetKey]?.[0];
-    
-    if (!snippetData) {
-      console.error(`Could not find snippet ${snippetKey} for version ${templateVersion}`);
+    const snippetData = snippetArray[0];
+    if (!snippetData.template) {
+      console.log(`No template content for ${snippetKey}, skipping...`);
       continue;
     }
-    
-    console.log(`Found template for ${snippetKey} (${snippetTitle}) in ${sectionPath}. Variables:`, extractHandlebarsVariables(snippetData.template));
-    
-    // Set up the context for the template
-    let context = {
-      packageName: '../../../generatedNoCheck',
-      objectType: 'Employee',
-      titleProperty: 'fullName',
-      property: 'fullName',
-      operation: 'lt',
-      propertyValueV2: 100,
-      primaryKeyPropertyV2: { apiName: 'employeeId', type: 'integer' },
-      // For linked objects
-      sourceObjectType: 'Employee',
-      linkedObjectType: 'Employee',
-      linkedPrimaryKeyPropertyV2: { apiName: "fullName", type: 'string' },
-      linkedOneSidePropertyV2: { apiName: "fullName", type: 'string' },
-      linkedManySidePropertyV2: { apiName: "salary", type: 'decimal' },
-      linkApiName: 'lead',
-      // for structured properties
-      structPropertyApiName: 'contactInfo',
-      structSubPropertyApiName: 'phone',
-      linkedPrimaryKeyProperty: "equipmentId-12345"
-    };
+
+    // Create a specific context for this snippet
+    let context = { ...baseContext };
     
     // Customize context based on snippet key
     switch (snippetKey) {
       case 'loadLinkedObjectReference':
-        context.sourceObjectType = 'Employee',
-        context.linkedObjectType = 'Equipment',
-        context.linkApiName = 'assignedEquipment'
+        context.sourceObjectType = 'Employee';
+        context.linkedObjectType = 'Equipment';
+        context.linkApiName = 'assignedEquipment';
         context.linkedPrimaryKeyPropertyV2 = { apiName: 'equipmentId', type: 'string' };
         break;
       case 'stringStartsWithTemplate':
@@ -188,16 +178,67 @@ async function updateAllSections(docsSections, docsMapping) {
       // Add more cases as needed for specific snippets
     }
     
+    console.log(`Processing template for ${snippetKey}. Variables:`, extractHandlebarsVariables(snippetData.template));
+    
     // Process the template with the context
     const processedCode = processTemplate(snippetData.template, context);
     
-    // Update the code snippet with the processed code
-    snippet.code = processedCode;
+    // Create file content with header
+    const fileContent = `/**
+ * WARNING: This file is generated automatically by the updateDocsSnippets.mjs script.
+ * DO NOT MODIFY this file directly as your changes will be overwritten.
+ */
+
+/* eslint-disable no-unused-vars */
+
+// Example: ${snippetKey}
+
+${processedCode}`;
     
-    console.log(`✓ Updated "${snippetTitle}" with template ${snippetKey}`);
+    // Write to file
+    const filePath = path.join(OUTPUT_DIR, 'typescript', version, `${snippetKey}.ts`);
+    await fs.writeFile(filePath, fileContent);
+    
+    // Add to index
+    indexContent += `// ${snippetKey}\n// See: ./${snippetKey}.ts\n\n`;
+    
+    console.log(`✓ Generated example for ${snippetKey}`);
   }
   
-  console.log('✓ All sections updated');
+  // Write the index file
+  await fs.writeFile(
+    path.join(OUTPUT_DIR, 'typescript', version, 'index.ts'), 
+    indexContent
+  );
+  
+  console.log('✓ All examples generated');
+}
+
+async function generateClientFile(version) {
+  const clientTemplate = `/**
+ * WARNING: This file is generated automatically by the updateDocsSnippets.mjs script.
+ * DO NOT MODIFY this file directly as your changes will be overwritten.
+ */
+
+/* eslint-disable no-unused-vars */
+
+import { createClient } from "@osdk/client";
+import { $ontologyRid } from "../../../generatedNoCheck";
+
+export const client = createClient(
+  "https://example.com",
+  $ontologyRid,
+  async () => {
+    return "";
+  },
+);
+`;
+
+  const dirPath = path.join(OUTPUT_DIR, 'typescript', version);
+  const clientFilePath = path.join(dirPath, 'client.ts');
+  
+  await fs.writeFile(clientFilePath, clientTemplate);
+  console.log(`✓ Generated client.ts for typescript/${version}`);
 }
 
 main();

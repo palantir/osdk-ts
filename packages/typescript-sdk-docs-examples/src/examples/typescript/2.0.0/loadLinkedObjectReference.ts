@@ -1,13 +1,11 @@
 /**
- * WARNING: This file is generated automatically by the generateExample.mjs script.
+ * WARNING: This file is generated automatically by the updateDocsSnippets.mjs script.
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
 /* eslint-disable no-unused-vars */
 
-// Example: Loading data/Load linked object types
-// Title: Working with linked objects
-// Description: You can load linked object types by using either the $link property on an object to load a single linked object or fetch a page of linked objects.
+// Example: loadLinkedObjectReference
 
 import { Employee, Equipment } from "../../../generatedNoCheck";
 // Edit this import if your client location differs

@@ -1,13 +1,11 @@
 /**
- * WARNING: This file is generated automatically by the generateExample.mjs script.
+ * WARNING: This file is generated automatically by the updateDocsSnippets.mjs script.
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
 /* eslint-disable no-unused-vars */
 
-// Example: Loading data/Load single Employee
-// Title: Loading a single Employee by ID
-// Description: Load a single Employee object using its primary key.
+// Example: loadSingleObjectGuide
 
 import { Employee } from "../../../generatedNoCheck";
 // Edit this import if your client location differs

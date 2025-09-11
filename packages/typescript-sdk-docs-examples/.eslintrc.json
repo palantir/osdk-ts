@@ -22,7 +22,7 @@
   },
   "overrides": [
     {
-      "files": ["updateDocsSnippets.mjs"],
+      "files": ["updateDocsSnippets.mjs", "generateExample.mjs"],
       "rules": {
         "no-console": "off"
       }
