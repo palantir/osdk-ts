@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
+import type {
+  InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
+} from "@osdk/api";
 import type { ListPayload } from "../../ListPayload.js";
 import type { ObserveListOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
@@ -44,11 +48,14 @@ export class ListsHelper extends AbstractHelper<
     this.orderByCanonicalizer = orderByCanonicalizer;
   }
 
-  observe<T extends ObjectTypeDefinition | InterfaceDefinition>(
+  observe<T extends ObjectOrInterfaceDefinition>(
     options: ObserveListOptions<T>,
     subFn: Observer<ListPayload>,
   ): QuerySubscription<ListQuery> {
-    const ret = super.observe(options, subFn);
+    const ret = super.observe(
+      options as ObserveListOptions<ObjectOrInterfaceDefinition>,
+      subFn,
+    );
 
     if (options.streamUpdates) {
       ret.query.registerStreamUpdates(ret.subscription);
