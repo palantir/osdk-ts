@@ -100,7 +100,7 @@ describe("ObjectSet", () => {
     expect(asEmployee2.office).toBeUndefined();
   });
 
-  it("interface links", async () => {
+  it("interface links", () => {
     const objectSet = client(BarInterface).pivotTo("toFoo");
     expectTypeOf<typeof objectSet>().toEqualTypeOf<
       ObjectSet<FooInterface, never>

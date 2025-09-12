@@ -106,7 +106,12 @@ describe("ObjectSet", () => {
     });
 
     it("has the right $primaryKey filters", async () => {
-      fauxObjectSet.where({ $primaryKey: { $lte: 400 } });
+      const filteredObject = await fauxObjectSet.where({
+        $primaryKey: { $lte: 400 },
+      }).fetchPage();
+      expectTypeOf<typeof filteredObject>().toEqualTypeOf<
+        PageResult<Osdk.Instance<EmployeeApiTest>>
+      >();
       // @ts-expect-error
       fauxObjectSet.where({ $primaryKey: "foo" });
     });
