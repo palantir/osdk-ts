@@ -264,6 +264,22 @@ export interface GetBulkObjectTypePermissionsResponse {
   >;
 }
 /**
+ * Bulk request to get the operations the user has on the provided ontologies. Ontologies that are queried
+ * with an empty branch rid will return results based on their default branch rid. Limited to 500 entries per
+ * request.
+ */
+export interface GetBulkOntologyPermissionsRequest {
+  ontologies: Array<OntologyRidAndMaybeBranch>;
+}
+/**
+ * The operations the user has on the provided ontologies. Ontologies that do not exist will not be present
+ * in the response. On the other hand, branches that do not exist will still be passed in as-is and permissions
+ * returned (usually all false).
+ */
+export interface GetBulkOntologyPermissionsResponse {
+  ontologyPermissions: Array<OntologyRidAndMaybeBranchPermissions>;
+}
+/**
  * Bulk request to get the operations the user has on the provided SharedPropertyTypes. Limited to 500 entries
  * per request.
  */
@@ -542,6 +558,17 @@ export type ObjectTypePermissionModel =
   | ObjectTypePermissionModel_publicProject;
 
 export interface OntologyParent {
+}
+export interface OntologyRidAndMaybeBranch {
+  branchRid?: _api_OntologyBranchRid | null | undefined;
+  ontologyRid: _api_OntologyRid;
+}
+/**
+ * Encapsulates the permissions a user has on a given ontology rid and branch.
+ */
+export interface OntologyRidAndMaybeBranchPermissions {
+  ontology: OntologyRidAndMaybeBranch;
+  permissions: GetOntologyPermissionsResponse;
 }
 export interface PackageParent {
   packageRid: _api_OntologyPackageRid;

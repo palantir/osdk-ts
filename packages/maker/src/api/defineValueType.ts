@@ -22,7 +22,7 @@ import type {
   ValueTypeDataConstraint,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
-import { updateOntology } from "./defineOntology.js";
+import { namespace, updateOntology } from "./defineOntology.js";
 import {
   OntologyEntityTypeEnum,
   type ValueTypeDefinitionVersion,
@@ -150,6 +150,7 @@ export function defineValueType(
 
   const vt: ValueTypeDefinitionVersion = {
     apiName,
+    packageNamespace: namespace.substring(0, namespace.length - 1),
     displayMetadata: {
       displayName: displayName,
       description: description ?? "",
