@@ -187,7 +187,13 @@
     "sourceObjectType",
     "linkApiName"
   ],
-  "uploadAttachment": [],
+  "uploadAttachment": [
+    "actionApiName",
+    "packageName",
+    "primaryKeyPropertyV2.apiName",
+    "actionParameterSampleValuesV2",
+    "property"
+  ],
   "castInterfaceToObjectReference": [
     "objectTypeApiName",
     "interfaceApiName",

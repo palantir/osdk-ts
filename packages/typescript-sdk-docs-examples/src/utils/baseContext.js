@@ -65,15 +65,15 @@ const baseContext = {
   linkName: "manager",
   
   // For action templates
-  actionApiName: "updateEmployee",
-  attachmentProperty: "attachment",
+  actionApiName: "documentEquipment",
+  attachmentProperty: "documentFile",
   funcApiName: "calculateTotal",
   functionInputValuesV2: "input",
   hasAttachmentImports: false,
   hasMediaParameter: false,
   hasAttachmentUpload: false,
   hasParameters: false,
-  actionParameterSampleValuesV2: false,
+  actionParameterSampleValuesV2: "some-pk-of-the-object",
   last: false,
   needsImports: false,
   
@@ -314,7 +314,13 @@ export function getSnippetContext(snippetKey, blockKey = null) {
       context.property = "previousTitles";
       context.arrayElementValue = `"Product manager"`;
       break;
-      
+
+      case "uploadAttachment":
+        context.primaryKeyPropertyV2 = { apiName: "equipmentId", type: "string" },
+        context.actionParameterSampleValuesV2 = `"mac-1234"`
+        context.property = "documentFile"; // the attachment property
+        break;
+
     // Default case - no customization needed
   }
   

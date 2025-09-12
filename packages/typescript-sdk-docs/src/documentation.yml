@@ -1252,14 +1252,14 @@ versions:
           computedVariables:
             - actionParameterSampleValuesV2
       uploadAttachment:
-        - template: |
+        - template: |-
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { type Result, isOk } from "@osdk/client";
+            import { createAttachmentUpload } from "@osdk/client";
             import type { AttachmentUpload } from "@osdk/api";
+            import { {{actionApiName}} } from "{{{packageName}}}";
 
-            // To upload an attachment with 2.0, it has to be linked to an action call
-
+            // To call an action with an attachment property, you first need to upload the file
             async function uploadMyFile() {
                 const file = await fetch("file.json");
                 const blob = await file.blob();
@@ -1267,8 +1267,13 @@ versions:
             }
 
             const myAttachmentUpload: AttachmentUpload = await uploadMyFile();
-
-            const actionResult = client(attachmentUploadingAction).applyAction({ attachment: myAttachmentUpload });
+            // then pass the attachment to the action in the action parameter.
+            const actionResult = client({{actionApiName}}).applyAction({ 
+                {{primaryKeyPropertyV2.apiName}}: {{{actionParameterSampleValuesV2}}},
+                {{property}}: myAttachmentUpload
+                });
+          computedVariables:
+            - actionParameterSampleValuesV2
       castInterfaceToObjectReference:
         - template: |-
             import { {{objectTypeApiName}}, {{interfaceApiName}} } from "{{{packageName}}}";

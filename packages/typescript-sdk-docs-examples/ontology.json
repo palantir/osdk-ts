@@ -322,20 +322,20 @@
           "dataType": {
             "type": "string"
           },
-          "required": true
+          "required": false
         },
         "documentDate": {
           "dataType": {
             "type": "date"
           },
-          "required": true
+          "required": false
         },
         "documentFile": {
           "description": "The equipment documentation file",
           "dataType": {
             "type": "attachment"
           },
-          "required": true
+          "required": false
         },
         "instructionalVideo": {
           "description": "Reference to related instructional video for the equipment",
