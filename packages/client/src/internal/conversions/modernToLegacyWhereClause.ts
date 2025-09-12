@@ -139,6 +139,19 @@ function handleWherePair(
     "Defined key values are only allowed when they are not undefined.",
   );
 
+  if (fieldName === "$primaryKey") {
+    invariant(
+      objectOrInterface.type === "object",
+      "Can only filter by $primaryKey on object types",
+    );
+    invariant(
+      objectOrInterface.primaryKeyApiName,
+      "$primaryKey of object type is missing from the generated object type definition. To use $primaryKey in where clauses, please regenerate your SDK using the latest version of the generator.",
+    );
+
+    fieldName = objectOrInterface.primaryKeyApiName;
+  }
+
   const propertyIdentifier: PropertyIdentifier | undefined =
     structFieldSelector != null
       ? {

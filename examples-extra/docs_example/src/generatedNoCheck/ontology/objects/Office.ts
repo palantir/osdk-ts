@@ -71,6 +71,7 @@ export interface Office extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Office';
+  primaryKeyApiName: string;
   __DefinitionMetadata?: {
     objectSet: Office.ObjectSet;
     props: Office.Props;
@@ -129,4 +130,5 @@ export const Office: Office = {
   type: 'object',
   apiName: 'Office',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'officeId',
 };

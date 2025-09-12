@@ -21,6 +21,7 @@ import type {
 import type {
   CompileTimeMetadata,
   ObjectMetadata,
+  ObjectTypeDefinition,
 } from "../ontology/ObjectTypeDefinition.js";
 import type { BaseWirePropertyTypes } from "../ontology/WirePropertyTypes.js";
 import type { IsNever } from "../OsdkObjectFrom.js";
@@ -189,10 +190,22 @@ export interface NotWhereClause<
 }
 
 export type PropertyWhereClause<T extends ObjectOrInterfaceDefinition> = {
-  [P in keyof CompileTimeMetadata<T>["properties"]]?: FilterFor<
+  [
+    P in keyof CompileTimeMetadata<T>["properties"] as
+      | P
+      | PropertyAsPrimaryKey<T, P>
+  ]?: FilterFor<
     CompileTimeMetadata<T>["properties"][P]
   >;
 };
+
+type PropertyAsPrimaryKey<
+  T extends ObjectOrInterfaceDefinition,
+  P extends keyof CompileTimeMetadata<T>["properties"],
+> = T extends ObjectTypeDefinition
+  ? CompileTimeMetadata<T>["primaryKeyApiName"] extends P ? "$primaryKey"
+  : never
+  : never;
 
 export type WhereClause<
   T extends ObjectOrInterfaceDefinition,

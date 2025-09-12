@@ -104,6 +104,17 @@ describe("ObjectSet", () => {
         Osdk.Instance<EmployeeApiTest, never, "fullName">
       >();
     });
+
+    it("has the right $primaryKey filters", async () => {
+      const filteredObject = await fauxObjectSet.where({
+        $primaryKey: { $lte: 400 },
+      }).fetchPage();
+      expectTypeOf<typeof filteredObject>().toEqualTypeOf<
+        PageResult<Osdk.Instance<EmployeeApiTest>>
+      >();
+      // @ts-expect-error
+      fauxObjectSet.where({ $primaryKey: "foo" });
+    });
   });
 
   describe("includeAllBaseObjectProperties", () => {
