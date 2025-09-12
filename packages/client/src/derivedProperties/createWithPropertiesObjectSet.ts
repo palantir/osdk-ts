@@ -22,6 +22,7 @@ import type {
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
 import { derivedPropertyDefinitionFactory } from "./derivedPropertyDefinitionFactory.js";
 
 type WithConstSelect<Q extends ObjectOrInterfaceDefinition> =
@@ -35,26 +36,44 @@ export function createWithPropertiesObjectSet<
   Q extends ObjectOrInterfaceDefinition,
 >(
   objectType: Q,
-  objectSet: WireObjectSet,
+  objectSet: Promise<WireObjectSet>,
   definitionMap: Map<any, DerivedPropertyDefinition>,
+  clientCtx: MinimalClient,
   fromBaseObjectSet: boolean = false,
 ): WithConstSelect<Q> {
   return {
     pivotTo: (link) => {
-      return createWithPropertiesObjectSet(objectType, {
-        type: "searchAround",
-        objectSet,
-        link,
-      }, definitionMap);
+      return createWithPropertiesObjectSet(
+        objectType,
+        objectSet.then(objSet => ({
+          type: "searchAround",
+          objectSet: objSet,
+          link,
+        })),
+        definitionMap,
+        clientCtx,
+      );
     },
-    where: (clause) => {
-      return createWithPropertiesObjectSet(objectType, {
-        type: "filter",
-        objectSet: objectSet,
-        where: modernToLegacyWhereClause(clause, objectType),
-      }, definitionMap);
-    },
-    aggregate: (aggregation: string, opt: any) => {
+
+    where: (clause) =>
+      createWithPropertiesObjectSet(
+        objectType,
+        Promise.all([
+          objectSet,
+          modernToLegacyWhereClause(clause, objectType, clientCtx),
+        ]).then(([objectSet, where]) => ({
+          type: "filter",
+          objectSet,
+          where,
+        })),
+        definitionMap,
+        clientCtx,
+      ),
+
+    aggregate: async (
+      aggregation: string,
+      opt: any,
+    ) => {
       const splitAggregation = aggregation.split(":");
       invariant(
         splitAggregation.length === 2 || splitAggregation[0] === "$count",
@@ -104,7 +123,7 @@ export function createWithPropertiesObjectSet<
       }
       const wrappedObjectSet: DerivedPropertyDefinition = {
         type: "selection",
-        objectSet: objectSet,
+        objectSet: await objectSet,
         operation: aggregationOperationDefinition,
       };
       const selectorResult: DerivedProperty.Definition<any, any> =
@@ -112,7 +131,10 @@ export function createWithPropertiesObjectSet<
       definitionMap.set(selectorResult, wrappedObjectSet);
       return selectorResult as any;
     },
-    selectProperty: (name) => {
+
+    selectProperty: async (
+      name,
+    ) => {
       if (fromBaseObjectSet) {
         const wrappedObjectSet: DerivedPropertyDefinition = {
           type: "property",
@@ -125,7 +147,7 @@ export function createWithPropertiesObjectSet<
       }
       const wrappedObjectSet: DerivedPropertyDefinition = {
         type: "selection",
-        objectSet: objectSet,
+        objectSet: await objectSet,
         operation: {
           type: "get",
           selectedPropertyApiName: name,

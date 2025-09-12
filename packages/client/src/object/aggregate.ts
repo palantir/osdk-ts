@@ -43,7 +43,9 @@ export async function aggregate<
 >(
   clientCtx: MinimalClient,
   objectType: Q,
-  objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
+  objectSet: Promise<ObjectSet> = Promise.resolve(
+    resolveBaseObjectSetType(objectType),
+  ),
   req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
 ): Promise<AggregationsResults<Q, AO>> {
   const resolvedObjectSet = resolveBaseObjectSetType(objectType);
@@ -63,7 +65,7 @@ export async function aggregate<
     addUserAgentAndRequestContextHeaders(clientCtx, objectType),
     await clientCtx.ontologyRid,
     {
-      objectSet,
+      objectSet: await objectSet,
       groupBy: body.groupBy,
       aggregation: body.aggregation,
     },

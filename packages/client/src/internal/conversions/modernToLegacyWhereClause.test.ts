@@ -24,6 +24,8 @@ import { expectType } from "ts-expect";
 import { describe, expect, it } from "vitest";
 import { modernToLegacyWhereClause } from "./modernToLegacyWhereClause.js";
 
+// TODO: mock MinimalClient.ontologyProvider.getObjectDefinition
+
 type ObjAllProps = objectTypeWithAllPropertyTypes;
 type structObj = BgaoNflPlayer;
 describe(modernToLegacyWhereClause, () => {

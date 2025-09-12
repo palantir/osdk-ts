@@ -81,7 +81,9 @@ export const objectSetDefinitions = new WeakMap<
 export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   objectType: Q,
   clientCtx: MinimalClient,
-  objectSet: WireObjectSet = resolveBaseObjectSetType(objectType),
+  objectSet: Promise<WireObjectSet> = Promise.resolve(
+    resolveBaseObjectSetType(objectType),
+  ),
 ): ObjectSet<Q> {
   const base: ObjectSet<Q> = {
     aggregate: (aggregate<Q, any>).bind(
@@ -108,13 +110,19 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       objectSet,
     ) as ObjectSet<Q>["fetchPageWithErrors"],
 
-    where: (clause) => {
-      return clientCtx.objectSetFactory(objectType, clientCtx, {
-        type: "filter",
-        objectSet: objectSet,
-        where: modernToLegacyWhereClause(clause, objectType),
-      });
-    },
+    where: (clause) =>
+      clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        Promise.all([
+          modernToLegacyWhereClause(clause, objectType, clientCtx),
+          objectSet,
+        ]).then(([where, objectSet]) => ({
+          type: "filter",
+          objectSet,
+          where,
+        })),
+      ),
 
     pivotTo: function<L extends LinkNames<Q>>(
       type: L,
@@ -122,35 +130,44 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return createSearchAround(type)();
     },
 
-    union: (...objectSets) => {
-      return clientCtx.objectSetFactory(objectType, clientCtx, {
-        type: "union",
-        objectSets: [
-          objectSet,
-          ...objectSets.map(os => objectSetDefinitions.get(os)!),
-        ],
-      });
-    },
+    union: (...objectSets) =>
+      clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        objectSet.then(objectSet => ({
+          type: "union",
+          objectSets: [
+            objectSet,
+            ...objectSets.map(os => objectSetDefinitions.get(os)!),
+          ],
+        })),
+      ),
 
-    intersect: (...objectSets) => {
-      return clientCtx.objectSetFactory(objectType, clientCtx, {
-        type: "intersect",
-        objectSets: [
-          objectSet,
-          ...objectSets.map(os => objectSetDefinitions.get(os)!),
-        ],
-      });
-    },
+    intersect: (...objectSets) =>
+      clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        objectSet.then(objectSet => ({
+          type: "intersect",
+          objectSets: [
+            objectSet,
+            ...objectSets.map(os => objectSetDefinitions.get(os)!),
+          ],
+        })),
+      ),
 
-    subtract: (...objectSets) => {
-      return clientCtx.objectSetFactory(objectType, clientCtx, {
-        type: "subtract",
-        objectSets: [
-          objectSet,
-          ...objectSets.map(os => objectSetDefinitions.get(os)!),
-        ],
-      });
-    },
+    subtract: (...objectSets) =>
+      clientCtx.objectSetFactory(
+        objectType,
+        clientCtx,
+        objectSet.then(objectSet => ({
+          type: "subtract",
+          objectSets: [
+            objectSet,
+            ...objectSets.map(os => objectSetDefinitions.get(os)!),
+          ],
+        })),
+      ),
 
     nearestNeighbors: (query, numNeighbors, property) => {
       const nearestNeighborsQuery = isTextQuery(query)
@@ -159,7 +176,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return clientCtx.objectSetFactory(
         objectType,
         clientCtx,
-        {
+        objectSet.then(objectSet => ({
           type: "nearestNeighbors",
           objectSet,
           propertyIdentifier: {
@@ -168,7 +185,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           },
           numNeighbors,
           query: nearestNeighborsQuery,
-        },
+        })),
       ) as ObjectSet<Q>;
     },
 
@@ -226,7 +243,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           await createWithPk(
             clientCtx,
             objectType,
-            objectSet,
+            await objectSet,
             primaryKey,
           ),
         ) as Osdk<Q>;
@@ -249,14 +266,14 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           await createWithPk(
             clientCtx,
             objectType,
-            objectSet,
+            await objectSet,
             primaryKey,
           ),
         ) as Result<Osdk<Q>>;
       }
       : undefined) as ObjectSet<Q>["fetchOneWithErrors"],
 
-    subscribe: (
+    subscribe: async (
       listener,
       opts,
     ) => {
@@ -264,7 +281,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         clientCtx,
       ).subscribe(
         objectType,
-        objectSet,
+        await objectSet,
         listener,
         opts?.properties,
       );
@@ -280,8 +297,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         const derivedPropertyDefinition = clause
           [key](createWithPropertiesObjectSet(
             objectType,
-            { type: "methodInput" },
+            Promise.resolve({ type: "methodInput" }),
             definitionMap,
+            clientCtx,
             true,
           ));
         derivedProperties[key] = definitionMap.get(
@@ -292,11 +310,11 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return clientCtx.objectSetFactory(
         objectType,
         clientCtx,
-        {
+        objectSet.then(objectSet => ({
           type: "withProperties",
           derivedProperties: derivedProperties,
           objectSet: objectSet,
-        },
+        })),
       );
     },
 
@@ -310,22 +328,24 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return clientCtx.objectSetFactory(
         objectType,
         clientCtx,
-        objectType.type === "object"
-          ? {
-            type: "searchAround",
-            objectSet,
-            link,
-          }
-          : {
-            type: "interfaceLinkSearchAround",
-            objectSet,
-            interfaceLink: link,
-          },
+        objectSet.then(objectSet =>
+          objectType.type === "object"
+            ? {
+              type: "searchAround",
+              objectSet,
+              link,
+            }
+            : {
+              type: "interfaceLinkSearchAround",
+              objectSet,
+              interfaceLink: link,
+            }
+        ),
       );
     };
   }
 
-  objectSetDefinitions.set(base, objectSet);
+  void objectSet.then(objectSet => objectSetDefinitions.set(base, objectSet));
 
   // we are using a type assertion because the marker symbol defined in BaseObjectSet isn't actually used
   // at runtime.

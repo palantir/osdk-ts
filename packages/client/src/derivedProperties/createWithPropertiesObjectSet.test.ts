@@ -20,6 +20,8 @@ import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import { describe, expect, it } from "vitest";
 import { createWithPropertiesObjectSet } from "./createWithPropertiesObjectSet.js";
 
+// TODO: mock MinimalClient.ontologyProvider.getObjectDefinition
+
 describe(createWithPropertiesObjectSet, () => {
   it("correctly creates basic object set with derived properties", () => {
     const map = new Map<any, DerivedPropertyDefinition>();

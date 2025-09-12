@@ -100,10 +100,17 @@ describe("ObjectSet", () => {
     expect(asEmployee2.office).toBeUndefined();
   });
 
-  it("interface links", async () => {
+  it("interface links", () => {
     const objectSet = client(BarInterface).pivotTo("toFoo");
     expectTypeOf<typeof objectSet>().toEqualTypeOf<
       ObjectSet<FooInterface, never>
     >;
+  });
+
+  it("doesn't allow $primaryKey where for interface object set", () => {
+    const objectSet = client(FooInterface).where({
+      // @ts-expect-error
+      $primaryKey: "Santa Claus",
+    });
   });
 });
