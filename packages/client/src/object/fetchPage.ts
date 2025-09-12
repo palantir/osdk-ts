@@ -185,7 +185,7 @@ async function fetchInterfacePage<
   client: MinimalClient,
   interfaceType: Q,
   args: FetchPageArgs<Q, L, R, any, S, T>,
-  objectSet: ObjectSet,
+  objectSet: Promise<ObjectSet>,
   useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
   if (args.$__UNSTABLE_useOldInterfaceApis) {
@@ -201,7 +201,10 @@ async function fetchInterfacePage<
           selectedObjectTypes: [],
           selectedSharedPropertyTypes: args.$select as undefined | string[]
             ?? [],
-          where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
+          where: objectSetToSearchJsonV2(
+            await objectSet,
+            interfaceType.apiName,
+          ),
         }),
         { preview: true },
       );
@@ -211,12 +214,12 @@ async function fetchInterfacePage<
       result.data as OntologyObjectV2[], // drop readonly
       interfaceType.apiName,
       !args.$includeRid,
-      await extractRdpDefinition(client, objectSet),
+      await extractRdpDefinition(client, await objectSet),
     );
     return result as any;
   }
   const resolvedInterfaceObjectSet = resolveInterfaceObjectSet(
-    objectSet,
+    await objectSet,
     interfaceType.apiName,
     args,
   );
@@ -262,7 +265,7 @@ export async function fetchPageInternal<
 >(
   client: MinimalClient,
   objectType: Q,
-  objectSet: ObjectSet,
+  objectSet: Promise<ObjectSet>,
   args: FetchPageArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS> = {},
   useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS>> {
@@ -314,7 +317,7 @@ export async function fetchPageWithErrorsInternal<
 >(
   client: MinimalClient,
   objectType: Q,
-  objectSet: ObjectSet,
+  objectSet: Promise<ObjectSet>,
   args: FetchPageArgs<Q, L, R, A, S, T> = {},
 ): Promise<Result<FetchPageResult<Q, L, R, S, T>>> {
   try {
@@ -346,7 +349,9 @@ export async function fetchPage<
   client: MinimalClient,
   objectType: Q,
   args: FetchPageArgs<Q, L, R, any, S, T>,
-  objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
+  objectSet: Promise<ObjectSet> = Promise.resolve(
+    resolveBaseObjectSetType(objectType),
+  ),
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
   return fetchPageInternal(client, objectType, objectSet, args);
 }
@@ -362,7 +367,9 @@ export async function fetchPageWithErrors<
   client: MinimalClient,
   objectType: Q,
   args: FetchPageArgs<Q, L, R, any, S, T>,
-  objectSet: ObjectSet = resolveBaseObjectSetType(objectType),
+  objectSet: Promise<ObjectSet> = Promise.resolve(
+    resolveBaseObjectSetType(objectType),
+  ),
 ): Promise<Result<FetchPageResult<Q, L, R, S, T>>> {
   return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
 }
@@ -421,7 +428,7 @@ export async function fetchObjectPage<
   client: MinimalClient,
   objectType: Q,
   args: FetchPageArgs<Q, L, R, Augments, S, T, never, ORDER_BY_OPTIONS>,
-  objectSet: ObjectSet,
+  objectSet: Promise<ObjectSet>,
   useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T, ORDER_BY_OPTIONS>> {
   // For simple object fetches, since we know the object type up front
@@ -434,7 +441,7 @@ export async function fetchObjectPage<
     addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,
     applyFetchArgs<LoadObjectSetRequestV2>(args, {
-      objectSet,
+      objectSet: await objectSet,
       // We have to do the following case because LoadObjectSetRequestV2 isn't readonly
       select: ((args?.$select as string[] | undefined) ?? []), // FIXME?
       excludeRid: !args?.$includeRid,
@@ -448,7 +455,7 @@ export async function fetchObjectPage<
       r.data as OntologyObjectV2[],
       undefined,
       undefined,
-      await extractRdpDefinition(client, objectSet),
+      await extractRdpDefinition(client, await objectSet),
       args.$select,
       false,
     ),

@@ -47,6 +47,10 @@ export type {
   SingleLinkAccessor,
 } from "./definitions/LinkDefinitions.js";
 export type { DerivedProperty } from "./derivedProperties/DerivedProperty.js";
+export type {
+  AggregateReturnType,
+  SelectPropertyReturnType,
+} from "./derivedProperties/DerivedProperty.js";
 export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
   AllGroupByValues,
@@ -131,7 +135,6 @@ export type {
   OsdkBase,
   PrimaryKeyType,
 } from "./OsdkBase.js";
-// eslint-disable-next-line @typescript-eslint/no-deprecated
 export type { OsdkObject } from "./OsdkObject.js";
 export type { ConvertProps, MaybeScore, Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";

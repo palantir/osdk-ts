@@ -25,5 +25,5 @@ export type ObjectSetFactory<
 > = (
   type: Q,
   clientCtx: MinimalClient,
-  objectSet?: WireObjectSet,
+  objectSet?: Promise<WireObjectSet>,
 ) => R;

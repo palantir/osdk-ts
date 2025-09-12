@@ -28,6 +28,7 @@ import type {
 } from "@osdk/foundry.ontologies";
 import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
+import type { MinimalClient } from "../../MinimalClientContext.js";
 
 export function extractNamespace(
   fqApiName: string,
@@ -38,32 +39,36 @@ export function extractNamespace(
 }
 
 /** @internal */
-export function modernToLegacyWhereClause<
+export const modernToLegacyWhereClause = async <
   T extends ObjectOrInterfaceDefinition,
 >(
   whereClause: WhereClause<T>,
   objectOrInterface: T,
-): SearchJsonQueryV2 {
+  clientCtx: MinimalClient,
+): Promise<SearchJsonQueryV2> => {
   if ("$and" in whereClause) {
     return {
       type: "and",
-      value: (whereClause.$and as WhereClause<T>[]).map(
-        (clause) => modernToLegacyWhereClause(clause, objectOrInterface),
-      ),
+      value: await Promise.all((whereClause.$and as WhereClause<T>[]).map(
+        (clause) =>
+          modernToLegacyWhereClause(clause, objectOrInterface, clientCtx),
+      )),
     };
   } else if ("$or" in whereClause) {
     return {
       type: "or",
-      value: (whereClause.$or as WhereClause<T>[]).map(
-        (clause) => modernToLegacyWhereClause(clause, objectOrInterface),
-      ),
+      value: await Promise.all((whereClause.$or as WhereClause<T>[]).map(
+        (clause) =>
+          modernToLegacyWhereClause(clause, objectOrInterface, clientCtx),
+      )),
     };
   } else if ("$not" in whereClause) {
     return {
       type: "not",
-      value: modernToLegacyWhereClause(
+      value: await modernToLegacyWhereClause(
         whereClause.$not as WhereClause<T>,
         objectOrInterface,
+        clientCtx,
       ),
     };
   }
@@ -71,16 +76,16 @@ export function modernToLegacyWhereClause<
   const parts = Object.entries(whereClause);
 
   if (parts.length === 1) {
-    return handleWherePair(parts[0], objectOrInterface);
+    return await handleWherePair(parts[0], objectOrInterface, clientCtx);
   }
 
   return {
     type: "and",
-    value: parts.map<SearchJsonQueryV2>(
-      v => handleWherePair(v, objectOrInterface),
-    ),
+    value: await Promise.all(parts.map<Promise<SearchJsonQueryV2>>(
+      v => handleWherePair(v, objectOrInterface, clientCtx),
+    )),
   };
-}
+};
 
 function makeGeoFilterBbox(
   bbox: BBox,
@@ -129,15 +134,28 @@ function makeGeoFilterPolygon(
   };
 }
 
-function handleWherePair(
+const handleWherePair = async (
   [fieldName, filter]: [string, any],
   objectOrInterface: ObjectOrInterfaceDefinition,
+  clientCtx: MinimalClient,
   structFieldSelector?: { propertyApiName: string; structFieldApiName: string },
-): SearchJsonQueryV2 {
+): Promise<SearchJsonQueryV2> => {
   invariant(
     filter != null,
     "Defined key values are only allowed when they are not undefined.",
   );
+
+  if (fieldName === "$primaryKey") {
+    invariant(
+      objectOrInterface.type !== "interface",
+      "Filtering on $primaryKey not allowed on interface object sets",
+    );
+
+    const objDef = await clientCtx.ontologyProvider.getObjectDefinition(
+      objectOrInterface.apiName,
+    );
+    fieldName = objDef.primaryKeyApiName;
+  }
 
   const propertyIdentifier: PropertyIdentifier | undefined =
     structFieldSelector != null
@@ -186,10 +204,15 @@ function handleWherePair(
       "Cannot filter on more than one struct field in the same clause, need to use an and clause",
     );
     const structFieldApiName = keysOfFilter[0];
-    return handleWherePair(Object.entries(filter)[0], objectOrInterface, {
-      propertyApiName: fieldName,
-      structFieldApiName,
-    });
+    return await handleWherePair(
+      Object.entries(filter)[0],
+      objectOrInterface,
+      clientCtx,
+      {
+        propertyApiName: fieldName,
+        structFieldApiName,
+      },
+    );
   }
 
   const firstKey = keysOfFilter[0] as PossibleWhereClauseFilters;
@@ -302,7 +325,7 @@ function handleWherePair(
     field,
     value: filter[firstKey] as any,
   };
-}
+};
 
 type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
   : never;

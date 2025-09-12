@@ -245,7 +245,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 clientCtx,
                 objectOrInterfaceType,
                 options,
-                createWithRid(rids),
+                Promise.resolve(createWithRid(rids)),
               );
             },
             fetchPageByRidNoType: async <

@@ -165,6 +165,17 @@ export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
     	$select: UnorderedAggregationClause<Q>
 }) : AggregateOptsThatErrors<Q, AO>;
 
+// Warning: (ae-forgotten-export) The symbol "DefinitionForType" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "CollectWithPropAggregations" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "SimplePropertyDef" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "MinMaxWithPropAggregateOption" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type AggregateReturnType<
+	Q extends ObjectOrInterfaceDefinition,
+	V extends ValidAggregationKeys<Q, "withPropertiesAggregate">
+> = DefinitionForType<Q, V extends `${infer N}:${infer P}` ? P extends CollectWithPropAggregations ? SimplePropertyDef.Make<CompileTimeMetadata<Q>["properties"][N]["type"], "nullable", "array"> : P extends MinMaxWithPropAggregateOption ? SimplePropertyDef.Make<CompileTimeMetadata<Q>["properties"][N]["type"], "nullable", "single"> : P extends "approximateDistinct" | "exactDistinct" ? SimplePropertyDef.Make<"integer", "non-nullable", "single"> : SimplePropertyDef.Make<"double", "nullable", "single"> : V extends "$count" ? SimplePropertyDef.Make<"integer", "non-nullable", "single"> : never>;
+
 // @public (undocumented)
 export type AggregationClause<Q extends ObjectOrInterfaceDefinition> = UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>;
 
@@ -458,9 +469,7 @@ export namespace DerivedProperty {
     		T extends SimplePropertyDef,
     		Q extends ObjectOrInterfaceDefinition
     	> extends Definition<T, Q>, DatetimeExpressions<Q, T> {}
-    	// Warning: (ae-forgotten-export) The symbol "SimplePropertyDef" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
+    	// (undocumented)
     export interface Definition<
     		T extends SimplePropertyDef,
     		Q extends ObjectOrInterfaceDefinition
@@ -1363,6 +1372,12 @@ export type SelectArgToKeys<
 	Q extends ObjectOrInterfaceDefinition,
 	A extends SelectArg<Q, any, any>
 > = A extends SelectArg<Q, never> ? PropertyKeys<Q> : A["$select"] extends readonly string[] ? A["$select"][number] : PropertyKeys<Q>;
+
+// @public (undocumented)
+export type SelectPropertyReturnType<
+	Q extends ObjectOrInterfaceDefinition,
+	R extends PropertyKeys<Q>
+> = DefinitionForType<Q, SimplePropertyDef.Make<CompileTimeMetadata<Q>["properties"][R]["type"], CompileTimeMetadata<Q>["properties"][R]["nullable"] extends true ? "nullable" : "non-nullable", CompileTimeMetadata<Q>["properties"][R]["multiplicity"] extends true ? "array" : "single">>;
 
 // @public (undocumented)
 export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
