@@ -1,3 +1,7 @@
+<p align="right">
+<a href="https://autorelease.general.dmz.palantir.tech/palantir/osdk-ts"><img src="https://img.shields.io/badge/Perform%20an-Autorelease-success.svg" alt="Autorelease"></a>
+</p>
+
 # TypeScript Ontology SDK
 
 ## @osdk/client [![client npm version](https://img.shields.io/npm/v/@osdk/client.svg?style=flat)](https://www.npmjs.com/package/@osdk/client) &middot; @osdk/api [![api npm version](https://img.shields.io/npm/v/@osdk/api.svg?style=flat)](https://www.npmjs.com/package/@osdk/api) &middot; @osdk/foundry-sdk-generator [![foundry-sdk-generator npm version](https://img.shields.io/npm/v/@osdk/foundry-sdk-generator.svg?style=flat)](https://www.npmjs.com/package/@osdk/foundry-sdk-generator) &middot; @osdk/oauth [![oauth npm version](https://img.shields.io/npm/v/@osdk/oauth.svg?style=flat)](https://www.npmjs.com/package/@osdk/oauth)
