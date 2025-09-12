@@ -114,6 +114,7 @@ export interface ObjectTypeDefinition {
   type: "object";
   apiName: string;
   osdkMetadata?: OsdkMetadata;
+  primaryKeyApiName?: string;
   __DefinitionMetadata?:
     & ObjectMetadata
     & ObjectInterfaceCompileDefinition;
