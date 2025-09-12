@@ -47,10 +47,6 @@ export type {
   SingleLinkAccessor,
 } from "./definitions/LinkDefinitions.js";
 export type { DerivedProperty } from "./derivedProperties/DerivedProperty.js";
-export type {
-  AggregateReturnType,
-  SelectPropertyReturnType,
-} from "./derivedProperties/DerivedProperty.js";
 export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
   AllGroupByValues,

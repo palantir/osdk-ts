@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  AggregateReturnType,
-  DerivedProperty,
-  ObjectOrInterfaceDefinition,
-  PropertyKeys,
-  SelectPropertyReturnType,
-  ValidAggregationKeys,
-} from "@osdk/api";
+import type { DerivedProperty, ObjectOrInterfaceDefinition } from "@osdk/api";
 import type {
   DerivedPropertyDefinition,
   ObjectSet as WireObjectSet,
@@ -80,9 +73,7 @@ export function createWithPropertiesObjectSet<
     aggregate: async (
       aggregation: string,
       opt: any,
-    ): Promise<
-      AggregateReturnType<Q, ValidAggregationKeys<Q, "withPropertiesAggregate">>
-    > => {
+    ) => {
       const splitAggregation = aggregation.split(":");
       invariant(
         splitAggregation.length === 2 || splitAggregation[0] === "$count",
@@ -143,7 +134,7 @@ export function createWithPropertiesObjectSet<
 
     selectProperty: async (
       name,
-    ): Promise<SelectPropertyReturnType<Q, PropertyKeys<Q>>> => {
+    ) => {
       if (fromBaseObjectSet) {
         const wrappedObjectSet: DerivedPropertyDefinition = {
           type: "property",
