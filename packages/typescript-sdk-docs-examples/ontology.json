@@ -526,6 +526,12 @@
                   "dataType": {
                     "type": "integer"
                   }
+                },
+                {
+                  "apiName": "entrance",
+                  "dataType": {
+                    "type": "geopoint"
+                  }
                 }
               ]
             },

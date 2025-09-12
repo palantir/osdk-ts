@@ -28,7 +28,6 @@ import {
   extractHandlebarsVariables,
   findBlockVariables,
   processTemplate,
-  generateBaseSnippet,
   generateBlockVariations
 } from "./src/utils/index.js";
 
@@ -124,9 +123,7 @@ async function generateAllExamples(snippets, version) {
     }
     
     if (blockVariables.length > 0) {      
-      // Generate the base snippet (with all blocks processed according to context)
-      await generateBaseSnippet(snippetData.template, snippetKey, context, version, OUTPUT_DIR);
-      
+      // For block templates, only generate variations, not base files
       // Generate variations for each block variable and add to snippetVariables
       const variations = await generateBlockVariations(
         snippetData.template, 
@@ -142,8 +139,8 @@ async function generateAllExamples(snippets, version) {
         snippetVariables[variationKey] = variations[variationKey];
       }
       
-      // Add to index for base and variations
-      indexContent += `// ${snippetKey} (and variations)\n// See: ./${snippetKey}.ts (Base version)`;      
+      // Add to index for variations only (no base file)
+      indexContent += `// ${snippetKey} (variations only)`;      
       
       // Group block variables by name (without prefix)
       const blockVarsByName = {};

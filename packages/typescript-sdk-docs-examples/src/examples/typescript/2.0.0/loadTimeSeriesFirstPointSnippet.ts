@@ -21,8 +21,9 @@
 
 // Example: loadTimeSeriesFirstPointSnippet
 
-import { Employee } from "../../../generatedNoCheck";
+import type { Osdk } from "@osdk/client";
+import { type Employee } from "../../../generatedNoCheck";
 
-function getFirstTimeSeriesPoint(obj: Employee) {
-    return obj.temperature.getFirstPoint();
+function getFirstTimeSeriesPoint(obj: Osdk.Instance<Employee>) {
+    return obj.employeeStatus?.getFirstPoint();
 }

@@ -27,5 +27,5 @@ import { client } from "./client";
 
 const filteredObjects = client(Employee)
     .where({
-        skills : { $contains: coding }
+        previousTitles : { $contains: "Product manager" }
     })

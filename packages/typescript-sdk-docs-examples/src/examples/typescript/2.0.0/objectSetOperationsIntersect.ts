@@ -21,6 +21,8 @@
 
 // Example: objectSetOperationsIntersect
 
+// Edit this import if your client location differs
+import { client } from "./client";
 import { Employee } from "../../../generatedNoCheck/ontology/objects";
 
 const objectSetA = client(Employee).where({ fullName: { $containsAnyTerm: "a"}})
@@ -31,4 +33,4 @@ const objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: "c"}})
 // Return all objects common to objectSetA, objectSetB and objectSetC
 const result = objectSetA
   .intersect(objectSetB)
-  .intersect(objectSetC); // alternatively: objectSetA.intersect(objectSetB, objectSetC)
+  .intersect(objectSetC).fetchPage(); // alternatively: objectSetA.intersect(objectSetB, objectSetC)

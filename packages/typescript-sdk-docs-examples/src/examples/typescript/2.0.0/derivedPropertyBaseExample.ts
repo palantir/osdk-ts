@@ -28,11 +28,8 @@ import { client } from "./client";
 const sumEmployee = await client(Employee)
     .withProperties({
       "newPropertyName": (baseObjectSet) =>
-        baseObjectSet.pivotTo("fooLink").pivotTo("barLink").selectProperty("foo")
+        baseObjectSet.pivotTo("lead").selectProperty("fullName")
     })
     .where({
-      "newPropertyName": { $gt: 10 }
-    })
-    .aggregate({
-      $select: { "newPropertyName:max": "unordered" }
-    });
+      "newPropertyName": { $startsWith: "foo" }
+    }).fetchPage();

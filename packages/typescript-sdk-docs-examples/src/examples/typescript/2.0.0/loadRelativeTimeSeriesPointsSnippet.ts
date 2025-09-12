@@ -21,11 +21,12 @@
 
 // Example: loadRelativeTimeSeriesPointsSnippet
 
-import { Employee } from "../../../generatedNoCheck";
+import type { Osdk } from "@osdk/client";
+import { type Employee } from "../../../generatedNoCheck";
 
 // Only supports ranges in the past
-function getRelativeTimeSeriesPoints(obj: Employee) {
-    return obj.temperature.getAllPoints({
+function getRelativeTimeSeriesPoints(obj: Osdk.Instance<Employee>) {
+    return obj.employeeStatus?.getAllPoints({
         $before: 1,
         $unit: "hours",
     })

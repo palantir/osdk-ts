@@ -21,6 +21,8 @@
 
 // Example: objectSetOperationsSubtract
 
+// Edit this import if your client location differs
+import { client } from "./client";
 import { Employee } from "../../../generatedNoCheck/ontology/objects";
 
 const objectSetA = client(Employee).where({ fullName: { $containsAnyTerm: "a"}})
@@ -31,4 +33,4 @@ const objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: "c"}})
 // Return objects in objectSetA that are not present in either objectSetB or objectSetC
 const result = objectSetA
   .subtract(objectSetB)
-  .subtract(objectSetC); // alternatively: objectSetA.subtract(objectSetB, objectSetC)
+  .subtract(objectSetC).fetchPage(); // alternatively: objectSetA.subtract(objectSetB, objectSetC)

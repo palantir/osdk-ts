@@ -23,21 +23,7 @@ export function findBlockVariables(variables) {
   // Get all variables that start with # or ^
   const blockVars = variables.filter(variable => variable.startsWith("#") || variable.startsWith("^"));
   
-  // Also handle inverted variations explicitly
-  const result = [...blockVars];
-  
-  // Find all variable names without the prefix
-  const standardVars = blockVars
-    .filter(v => v.startsWith("#"))
-    .map(v => v.substring(1));
-
-  // For each standard variable, if there's no inverted version already, add it
-  for (const varName of standardVars) {
-    const invertedVar = "^" + varName;
-    if (!variables.includes(invertedVar)) {
-      result.push(invertedVar);
-    }
-  }
-  
-  return result;
+  // Return only the block variables that actually exist in the template
+  // Don't automatically add inverted variations if they don't exist
+  return blockVars;
 }

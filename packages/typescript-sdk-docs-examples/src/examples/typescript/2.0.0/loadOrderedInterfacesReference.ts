@@ -24,15 +24,14 @@
 import { HasAddress } from "../../../generatedNoCheck";
 // Edit this import if your client location differs
 import { client } from "./client";
-import { isOk, type Osdk, type PageResult, type Result } from "@osdk/client";
+import { type Osdk, type PageResult } from "@osdk/client";
 
-const page: Result<PageResult<Osdk<HasAddress>>> = await client(HasAddress)
-    .fetchPageWithErrors({
-        $orderBy: {"someProperty": "asc"},
-        $pageSize: 30
-    });
-
-if (isOk(page)) {
-    const interfaces = page.value.data;
-    const interface1 = interfaces[0];
+try {
+    const page: PageResult<Osdk<HasAddress>> = await client(HasAddress)
+        .fetchPage({
+            $orderBy: {"someProperty": "asc"},
+            $pageSize: 30
+        });
+} catch (e) {
+    throw e;
 }

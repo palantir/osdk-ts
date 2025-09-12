@@ -21,14 +21,14 @@
 
 // Example: searchAround
 
-import { Employee } from "../../../generatedNoCheck";
+import { Equipment } from "../../../generatedNoCheck";
 // Edit this import if your client location differs
 import { client } from "./client";
 
 // Object set containing objects a, b and c
-const objects = client(Employee)
+const objects = client(Equipment)
     .where({ equipmentId: { $in: ["a", "b", "c"]}});
 
 // Traverse the selected link type to find all objects of type
-// Equipment linked to objects a, b and c
-const linkedObjects = await objects.pivotTo("assignedEquipment");
+// Employee linked to Equipment with equipmentId is a or b or c]
+const linkedObjects = await objects.pivotTo("assignedTo").fetchPage();

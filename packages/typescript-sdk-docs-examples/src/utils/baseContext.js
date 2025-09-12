@@ -85,13 +85,14 @@ const baseContext = {
 /**
  * Returns a customized context for a specific snippet
  * @param {string} snippetKey The key of the snippet to customize context for
+ * @param {string|null} blockKey The block key (e.g., "#hasStructSubProperty", "^hasStructSubProperty") or null for base
  * @returns {Object} A customized context object for the snippet
  */
-export function getSnippetContext(snippetKey) {
+export function getSnippetContext(snippetKey, blockKey = null) {
   // Create a copy of the base context
   const context = { ...baseContext };
   
-  // Customize context based on the full snippet key
+  // Customize context based on the snippet key and block key
   switch (snippetKey) {
     // Base object handling
     case "loadSingleObjectGuide":
@@ -99,7 +100,7 @@ export function getSnippetContext(snippetKey) {
     case "loadAllObjectsReference":
     case "loadSingleObjectReference":
     case "loadObjectMetadataSnippet":
-      // These use the default Employee object type
+      context.propertyValueV2 = 12345; // use as primary key for a Employee
       break;
     
     case "loadObjectPageGuide":
@@ -132,83 +133,75 @@ export function getSnippetContext(snippetKey) {
       break;
       
     case "loadLinkedObjectsReference":
-      // Base version
-      break;
-      
-    case "loadLinkedObjectsReference_#isLinkManySided":
-      context.isLinkManySided = true;
-      break;
-      
-    case "loadLinkedObjectsReference_^isLinkManySided":
-      context.isLinkManySided = false;
+      if (blockKey === "#isLinkManySided") {
+        context.isLinkManySided = true;
+      } else if (blockKey === "^isLinkManySided") {
+        context.isLinkManySided = false;
+      } else {
+        // Base version - use default context
+      }
       break;
     
     case "searchAround":
-      context.sourceObjectType = "Employee";
-      context.linkedObjectType = "Equipment";
-      context.linkApiName = "assignedEquipment";
+      context.sourceObjectType = "Equipment";
+      context.linkedObjectType = "Employee";
+      context.linkApiName = "assignedTo";
       context.rawLinkedPrimaryKeyProperty = { apiName: "equipmentId" };
       break;
     
-    // Property templates - base versions
+    // Property templates 
     case "stringStartsWithTemplate":
     case "containsAllTermsInOrderTemplate":
     case "containsAnyTermTemplate":
     case "containsAllTermsTemplate":
-      context.property = "fullName";
-      context.structPropertyApiName = "contactInfo";
-      context.structSubPropertyApiName = "phone";
-      break;
-      
-    // Property templates - variations with structSubPropertyApiName
-    case "stringStartsWithTemplate":
-    case "containsAllTermsInOrderTemplate":
-    case "containsAnyTermTemplate":
-    case "containsAllTermsTemplate":
-      if (blockKey == "#hasStructSubProperty") {
+      if (blockKey === "#hasStructSubProperty") {
         context.hasStructSubProperty = true;
         context.property = "contactInfo";
         context.structSubPropertyApiName = "phone";
-        break;
+      } else if (blockKey === "^hasStructSubProperty") {
+        context.hasStructSubProperty = false;
+        context.property = "fullName";
+      } else {
+        // Base version
+        context.property = "fullName";
+        context.structPropertyApiName = "contactInfo";
+        context.structSubPropertyApiName = "phone";
       }
-      context.property = "fullName";
       break;
             
-    // Range template variations
-    case "rangeTemplate_#hasStructSubProperty":
-      context.hasStructSubProperty = true;
-      context.property = "contactInfo";
-      context.operation = "lt";
-      context.propertyValueV2 = 100;
-      context.structSubPropertyApiName = "houseNumber";
-      break;
-      
-    case "rangeTemplate_^hasStructSubProperty":
-      context.property = "salary";
-      context.operation = "lt";
-      context.propertyValueV2 = 100;
+    // Range template
+    case "rangeTemplate":
+      if (blockKey === "#hasStructSubProperty") {
+        context.hasStructSubProperty = true;
+        context.property = "contactInfo";
+        context.operation = "lt";
+        context.propertyValueV2 = 100;
+        context.structSubPropertyApiName = "houseNumber";
+      } else if (blockKey === "^hasStructSubProperty") {
+        context.hasStructSubProperty = false;
+        context.property = "salary";
+        context.operation = "lt";
+        context.propertyValueV2 = 100;
+      } else {
+        // Base version - use default context values
+        context.operation = "lt";
+        context.propertyValueV2 = 100;
+      }
       break;
       
     case "equalityTemplate":
     case "inFilterTemplate":
-      context.property = "department";
-      context.propertyValueV2 = "Engineering";
-      break;
-      
-    // Equality template variations
-    case "equalityTemplate_#hasStructSubProperty":
-    case "inFilterTemplate_#hasStructSubProperty":
-      context.hasStructSubProperty = true;
-      context.property = "contactInfo";
-      context.structPropertyApiName = "contactInfo";
-      context.structSubPropertyApiName = "phone";
-      context.propertyValueV2 = "555-1234";
-      break;
-      
-    case "equalityTemplate_^hasStructSubProperty":
-    case "inFilterTemplate_^hasStructSubProperty":
-      context.property = "department";
-      context.propertyValueV2 = "Engineering";
+      if (blockKey === "#hasStructSubProperty") {
+        context.hasStructSubProperty = true;
+        context.property = "contactInfo";
+        context.structPropertyApiName = "contactInfo";
+        context.structSubPropertyApiName = "phone";
+        context.propertyValueV2 = `"555-1234"`;
+      } else if (blockKey === "^hasStructSubProperty") {
+        context.hasStructSubProperty = false;
+        context.property = "department";
+        context.propertyValueV2 = `"Engineering"`;
+      } 
       break;
     
     case "nullTemplate":
@@ -217,34 +210,21 @@ export function getSnippetContext(snippetKey) {
     case "withinPolygonTemplate":
     case "intersectsPolygonTemplate":
     case "intersectsBboxTemplate":
-      context.property = "location";
-      break;
-      
-    // Null template and geo template variations
-    case "nullTemplate_#hasStructSubProperty":
-    case "withinDistanceTemplate_#hasStructSubProperty":
-    case "withinBoundingBoxTemplate_#hasStructSubProperty":
-    case "withinPolygonTemplate_#hasStructSubProperty":
-    case "intersectsPolygonTemplate_#hasStructSubProperty":
-    case "intersectsBboxTemplate_#hasStructSubProperty":
-      context.hasStructSubProperty = true;
-      context.property = "contactInfo";
-      context.structPropertyApiName = "contactInfo";
-      context.structSubPropertyApiName = "location";
-      break;
-      
-    case "nullTemplate_^hasStructSubProperty":
-    case "withinDistanceTemplate_^hasStructSubProperty":
-    case "withinBoundingBoxTemplate_^hasStructSubProperty":
-    case "withinPolygonTemplate_^hasStructSubProperty":
-    case "intersectsPolygonTemplate_^hasStructSubProperty":
-    case "intersectsBboxTemplate_^hasStructSubProperty":
-      context.property = "location";
+      if (blockKey === "#hasStructSubProperty") {
+        context.hasStructSubProperty = true;
+        context.objectType = "Employee";
+        context.property = "contactInfo";
+        context.structSubPropertyApiName = "entrance";
+      } else if (blockKey === "^hasStructSubProperty") {
+        context.hasStructSubProperty = false;
+        context.objectType = "Office";
+        context.property = "entrance";
+      } 
       break;
       
     case "exactGroupByTemplate":
     case "fixedWidthGroupByTemplate":
-      context.property = "department";
+      context.property = "hourlyRate";
       break;
     
     case "rangeGroupByTemplate":
@@ -254,28 +234,30 @@ export function getSnippetContext(snippetKey) {
       break;
 
     case "durationGroupByTemplate":
-      context.property = "createdAt";
-      context.arg = "1";
-      context.unit = "DAYS";
-      break;
-      
-    // Duration variations
-    case "durationGroupByTemplate_#durationText":
-      context.property = "createdAt";
-      context.arg = "1";
-      context.unit = "DAYS";
-      context.durationText = true;
-      break;
-      
-    case "durationGroupByTemplate_^durationText":
-      context.property = "createdAt";
-      context.arg = "1";
-      context.unit = "DAYS";
-      context.durationText = false;
+      if (blockKey === "#durationText") {
+        context.property = "startDate";
+        context.arg = "1";
+        context.unit = "days";
+        context.durationText = true;
+      } else if (blockKey === "^durationText") {
+        context.property = "startDate";
+        context.arg = "1";
+        context.unit = "days";
+        context.durationText = false;
+      } 
       break;
     
+    // andTemplate
+    case "notTemplate":
+    case "andTemplate":
+    case "orTemplate":
+      context.property = "fullName";
+      context.propertyValueV2 = `"John Doe"`;
+      break;
+
     // Aggregation templates
     case "aggregationTemplate":
+    case "countAggregationTemplate":
     case "approximateDistinctAggregationTemplate":
     case "exactDistinctAggregationTemplate":
       context.property = "department";
@@ -292,28 +274,28 @@ export function getSnippetContext(snippetKey) {
     case "loadAbsoluteTimeSeriesPointsSnippet":
     case "loadTimeSeriesFirstPointSnippet":
     case "loadTimeSeriesLastPointSnippet":
-      context.property = "temperature";
+      context.property = "employeeStatus";
       context.timeUnit = "hours";
       break;
     
     // Derived property templates
     case "derivedPropertyBaseExample":
-      // Uses default context
+    case "derivedPropertySelectPropertyAggregation":
+      context.linkName = "lead";
+      context.property = "fullName";
       break;
-    
     case "derivedPropertyApproximateDistinctAggregation":
     case "derivedPropertyExactDistinctAggregation":
     case "derivedPropertyCollectToListAggregation":
     case "derivedPropertyCollectToSetAggregation":
     case "derivedPropertyCountAggregation":
-    case "derivedPropertySelectPropertyAggregation":
     case "derivedPropertyApproximatePercentileAggregation":
-      context.linkName = "directReports";
-      context.property = "department";
+      context.linkName = "assignedEquipment";
+      context.property = "purchasePrice";
       break;
     
     case "derivedPropertyNumericAggregation":
-      context.linkName = "directReports";
+      context.linkName = "peeps";
       context.property = "salary";
       context.operation = "sum";
       break;
@@ -329,8 +311,8 @@ export function getSnippetContext(snippetKey) {
       break;
     
     case "containsTemplate":
-      context.property = "skills";
-      context.arrayElementValue = "coding";
+      context.property = "previousTitles";
+      context.arrayElementValue = `"Product manager"`;
       break;
       
     // Default case - no customization needed

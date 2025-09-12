@@ -24,11 +24,10 @@
 import { Employee } from "../../../generatedNoCheck";
 // Edit this import if your client location differs
 import { client } from "./client";
-import type { Osdk, PageResult, Result } from "@osdk/client";
-
-const response:  Result<PageResult<Osdk.Instance<Employee>>>
-    = await client(Employee).fetchPageWithErrors({ $pageSize: 30 });
-
-// To fetch a page without a result wrapper, use fetchPage instead
-const responseNoErrorWrapper: PageResult<Osdk.Instance<Employee>>
-    = await client(Employee).fetchPage({ $pageSize: 30 });
+import type { Osdk, PageResult } from "@osdk/client";
+try {
+    const responseNoErrorWrapper: PageResult<Osdk.Instance<Employee>>
+        = await client(Employee).fetchPage({ $pageSize: 30 });
+} catch (e) {
+    throw e;
+}

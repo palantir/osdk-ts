@@ -24,15 +24,16 @@
 import { Employee } from "../../../generatedNoCheck";
 // Edit this import if your client location differs
 import { client } from "./client";
-import { isOk, type Osdk, type PageResult, type Result } from "@osdk/client";
+import { type Osdk, type PageResult } from "@osdk/client";
 
-const page: Result<PageResult<Osdk.Instance<Employee>>> = await client(Employee)
-    .fetchPageWithErrors({
-        $orderBy: {"fullName": "asc"},
-        $pageSize: 30
-    });
-
-if (isOk(page)) {
-    const objects = page.value.data;
+try {
+    const page: PageResult<Osdk.Instance<Employee>> = await client(Employee)
+        .fetchPage({
+            $orderBy: {"fullName": "asc"},
+            $pageSize: 30
+        });
+    const objects = page.data;
     const object = objects[0];
+} catch (e) {
+    throw e;
 }

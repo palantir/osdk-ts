@@ -28,5 +28,5 @@ import { client } from "./client";
 const groupedEmployee = await client(Employee)
     .aggregate({
         $select: { $count: "unordered" },
-        $groupBy: { department : "exact" }
+        $groupBy: { hourlyRate : "exact" }
     })

@@ -29,5 +29,5 @@ const maxObjectsInList = 75; // Adjust this value as needed between 1 and 100
 const sumEmployee = await client(Employee)
     .withProperties({
       "newPropertyName": (baseObjectSet) =>
-        baseObjectSet.pivotTo("directReports").aggregate("department:collectList", maxObjectsInList)
-    })
+        baseObjectSet.pivotTo("assignedEquipment").aggregate("purchasePrice:collectList", { limit: maxObjectsInList })
+    }).fetchPage();

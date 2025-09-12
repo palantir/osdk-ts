@@ -26,4 +26,4 @@ import { Employee } from "../../../generatedNoCheck";
 import { client } from "./client";
 
 const EmployeeObjectSet = client(Employee)
-    .where({ $not: { employeeId: { $isNull: true }}});
+    .where({ $not: { fullName: { $eq: "John Doe" }}});

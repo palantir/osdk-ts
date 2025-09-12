@@ -18,6 +18,7 @@ import fs from "fs/promises";
 import path from "path";
 import { generateFileHeader } from "./generateFileHeader.js";
 import { processTemplate } from "./processTemplate.js";
+import { getSnippetContext } from "./baseContext.js";
 
 /**
  * Generate example file variations for each block variable in a template
@@ -64,9 +65,8 @@ export async function generateBlockVariations(
     
     // Create standard block variation if it exists
     if (hasStandardBlock) {
-      // Create a modified context for standard block
-      const standardContext = JSON.parse(JSON.stringify(baseContext));
-      standardContext[varName] = true;
+      // Get customized context for this block variation
+      const standardContext = getSnippetContext(snippetKey, `#${varName}`);
       
       // Process template with standard context
       const standardCode = processTemplate(template, standardContext);
@@ -102,9 +102,8 @@ ${standardCode}`;
     
     // Create inverted block variation if it exists
     if (hasInvertedBlock) {
-      // Create a modified context for inverted block
-      const invertedContext = JSON.parse(JSON.stringify(baseContext));
-      invertedContext[varName] = false;
+      // Get customized context for this block variation
+      const invertedContext = getSnippetContext(snippetKey, `^${varName}`);
       
       // Process template with inverted context
       const invertedCode = processTemplate(template, invertedContext);

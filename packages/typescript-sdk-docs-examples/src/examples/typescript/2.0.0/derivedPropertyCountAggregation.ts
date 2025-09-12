@@ -28,5 +28,5 @@ import { client } from "./client";
 const sumEmployee = await client(Employee)
     .withProperties({
       "newPropertyName": (baseObjectSet) =>
-        baseObjectSet.pivotTo("directReports").aggregate("$count")
-    })
+        baseObjectSet.pivotTo("assignedEquipment").aggregate("$count")
+    }).fetchPage();

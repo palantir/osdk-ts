@@ -21,8 +21,9 @@
 
 // Example: loadTimeSeriesPointsSnippet
 
-import { Employee } from "../../../generatedNoCheck";
+import type { Osdk } from "@osdk/client";
+import { type Employee } from "../../../generatedNoCheck";
 
-function getAllTimeSeriesPoints(obj: Employee) {
-    return obj.temperature.getAllPoints();
+function getAllTimeSeriesPoints(obj: Osdk.Instance<Employee>) {
+    return obj.employeeStatus?.getAllPoints();
 }

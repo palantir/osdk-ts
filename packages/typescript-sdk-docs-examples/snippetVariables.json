@@ -1,12 +1,12 @@
 {
   "loadSingleObjectGuide": [
     "objectType",
-    "packageName"
+    "packageName",
+    "propertyValueV2"
   ],
   "loadObjectPageGuide": [
     "objectType",
-    "packageName",
-    "titleProperty"
+    "packageName"
   ],
   "orderObjectsGuide": [
     "objectType",
@@ -20,7 +20,8 @@
   ],
   "loadSingleObjectReference": [
     "objectType",
-    "packageName"
+    "packageName",
+    "propertyValueV2"
   ],
   "loadObjectsReference": [
     "objectType",
@@ -32,18 +33,11 @@
   ],
   "loadLinkedObjectReference": [
     "sourceObjectType",
-    "linkedObjectType",
     "packageName",
-    "linkedPrimaryKeyPropertyV2.type",
+    "linkedObjectType",
     "linkApiName"
   ],
-  "loadLinkedObjectsReference_#isLinkManySided": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
-  "loadLinkedObjectsReference_^isLinkManySided": [
+  "loadLinkedObjectsReference": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
@@ -85,12 +79,6 @@
     "sourceObjectType",
     "linkApiName"
   ],
-  "durationGroupByTemplate_^durationText": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
   "exactGroupByTemplate": [
     "objectType",
     "packageName",
@@ -109,19 +97,7 @@
     "sourceObjectType",
     "linkApiName"
   ],
-  "applyAction_^hasAttachmentImports": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
   "applyAction_#hasMediaParameter": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
-  "applyAction_^hasMediaParameter": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
@@ -133,19 +109,7 @@
     "sourceObjectType",
     "linkApiName"
   ],
-  "applyAction_^hasAttachmentUpload": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
   "applyAction_#attachmentProperty": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
-  "applyAction_^attachmentProperty": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
@@ -169,18 +133,6 @@
     "sourceObjectType",
     "linkApiName"
   ],
-  "applyAction_^actionParameterSampleValuesV2": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
-  "applyAction_#last": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
   "applyAction_^last": [
     "linkedObjectType",
     "packageName",
@@ -193,19 +145,7 @@
     "sourceObjectType",
     "linkApiName"
   ],
-  "batchApplyAction_^hasAttachmentImports": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
   "batchApplyAction_#hasMediaParameter": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
-  "batchApplyAction_^hasMediaParameter": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
@@ -217,19 +157,7 @@
     "sourceObjectType",
     "linkApiName"
   ],
-  "batchApplyAction_^hasAttachmentUpload": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
   "batchApplyAction_#attachmentProperty": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
-  "batchApplyAction_^attachmentProperty": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
@@ -248,18 +176,6 @@
     "linkApiName"
   ],
   "batchApplyAction_#actionParameterSampleValuesV2": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
-  "batchApplyAction_^actionParameterSampleValuesV2": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
-  "batchApplyAction_#last": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
@@ -285,19 +201,7 @@
     "sourceObjectType",
     "linkApiName"
   ],
-  "executeFunction_^needsImports": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
   "executeFunction_#hasAttachmentImports": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
-  "executeFunction_^hasAttachmentImports": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
@@ -309,19 +213,7 @@
     "sourceObjectType",
     "linkApiName"
   ],
-  "executeFunction_^hasAttachmentUpload": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
   "executeFunction_#attachmentProperty": [
-    "linkedObjectType",
-    "packageName",
-    "sourceObjectType",
-    "linkApiName"
-  ],
-  "executeFunction_^attachmentProperty": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
@@ -486,17 +378,22 @@
   "notTemplate": [
     "objectType",
     "packageName",
-    "primaryKeyPropertyV2.apiName"
+    "property",
+    "propertyValueV2"
   ],
   "andTemplate": [
     "objectType",
     "packageName",
-    "primaryKeyPropertyV2.apiName"
+    "primaryKeyPropertyV2.apiName",
+    "property",
+    "propertyValueV2"
   ],
   "orTemplate": [
     "objectType",
     "packageName",
-    "primaryKeyPropertyV2.apiName"
+    "primaryKeyPropertyV2.apiName",
+    "property",
+    "propertyValueV2"
   ],
   "containsTemplate": [
     "objectType",
@@ -563,7 +460,9 @@
   "readMedia": [],
   "derivedPropertyBaseExample": [
     "objectType",
-    "packageName"
+    "packageName",
+    "linkName",
+    "property"
   ],
   "derivedPropertyApproximateDistinctAggregation": [
     "objectType",

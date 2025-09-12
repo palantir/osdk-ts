@@ -47,10 +47,8 @@
 // loadLinkedObjectReference
 // See: ./loadLinkedObjectReference.ts
 
-// loadLinkedObjectsReference (and variations)
-// See: ./loadLinkedObjectsReference.ts (Base version)
-// See: ./loadLinkedObjectsReference_#isLinkManySided.ts (Standard block: isLinkManySided = true)
-// See: ./loadLinkedObjectsReference_^isLinkManySided.ts (Inverted block: isLinkManySided = false)
+// loadLinkedObjectsReference
+// See: ./loadLinkedObjectsReference.ts
 
 // aggregationTemplate
 // See: ./aggregationTemplate.ts
@@ -70,10 +68,8 @@
 // fixedWidthGroupByTemplate
 // See: ./fixedWidthGroupByTemplate.ts
 
-// durationGroupByTemplate (and variations)
-// See: ./durationGroupByTemplate.ts (Base version)
+// durationGroupByTemplate (variations only)
 // See: ./durationGroupByTemplate_#durationText.ts (Standard block: durationText = true)
-// See: ./durationGroupByTemplate_^durationText.ts (Inverted block: durationText = false)
 
 // exactGroupByTemplate
 // See: ./exactGroupByTemplate.ts
@@ -81,38 +77,24 @@
 // rangeGroupByTemplate
 // See: ./rangeGroupByTemplate.ts
 
-// applyAction (and variations)
-// See: ./applyAction.ts (Base version)
+// applyAction (variations only)
 // See: ./applyAction_#hasAttachmentImports.ts (Standard block: hasAttachmentImports = true)
-// See: ./applyAction_^hasAttachmentImports.ts (Inverted block: hasAttachmentImports = false)
 // See: ./applyAction_#hasMediaParameter.ts (Standard block: hasMediaParameter = true)
-// See: ./applyAction_^hasMediaParameter.ts (Inverted block: hasMediaParameter = false)
 // See: ./applyAction_#hasAttachmentUpload.ts (Standard block: hasAttachmentUpload = true)
-// See: ./applyAction_^hasAttachmentUpload.ts (Inverted block: hasAttachmentUpload = false)
 // See: ./applyAction_#attachmentProperty.ts (Standard block: attachmentProperty = true)
-// See: ./applyAction_^attachmentProperty.ts (Inverted block: attachmentProperty = false)
-// See: ./applyAction_#hasParameters.ts (Standard block: hasParameters = true)
 // See: ./applyAction_^hasParameters.ts (Inverted block: hasParameters = false)
+// See: ./applyAction_#hasParameters.ts (Standard block: hasParameters = true)
 // See: ./applyAction_#actionParameterSampleValuesV2.ts (Standard block: actionParameterSampleValuesV2 = true)
-// See: ./applyAction_^actionParameterSampleValuesV2.ts (Inverted block: actionParameterSampleValuesV2 = false)
-// See: ./applyAction_#last.ts (Standard block: last = true)
 // See: ./applyAction_^last.ts (Inverted block: last = false)
 
-// batchApplyAction (and variations)
-// See: ./batchApplyAction.ts (Base version)
+// batchApplyAction (variations only)
 // See: ./batchApplyAction_#hasAttachmentImports.ts (Standard block: hasAttachmentImports = true)
-// See: ./batchApplyAction_^hasAttachmentImports.ts (Inverted block: hasAttachmentImports = false)
 // See: ./batchApplyAction_#hasMediaParameter.ts (Standard block: hasMediaParameter = true)
-// See: ./batchApplyAction_^hasMediaParameter.ts (Inverted block: hasMediaParameter = false)
 // See: ./batchApplyAction_#hasAttachmentUpload.ts (Standard block: hasAttachmentUpload = true)
-// See: ./batchApplyAction_^hasAttachmentUpload.ts (Inverted block: hasAttachmentUpload = false)
 // See: ./batchApplyAction_#attachmentProperty.ts (Standard block: attachmentProperty = true)
-// See: ./batchApplyAction_^attachmentProperty.ts (Inverted block: attachmentProperty = false)
-// See: ./batchApplyAction_#hasParameters.ts (Standard block: hasParameters = true)
 // See: ./batchApplyAction_^hasParameters.ts (Inverted block: hasParameters = false)
+// See: ./batchApplyAction_#hasParameters.ts (Standard block: hasParameters = true)
 // See: ./batchApplyAction_#actionParameterSampleValuesV2.ts (Standard block: actionParameterSampleValuesV2 = true)
-// See: ./batchApplyAction_^actionParameterSampleValuesV2.ts (Inverted block: actionParameterSampleValuesV2 = false)
-// See: ./batchApplyAction_#last.ts (Standard block: last = true)
 // See: ./batchApplyAction_^last.ts (Inverted block: last = false)
 
 // uploadAttachment
@@ -121,79 +103,61 @@
 // castInterfaceToObjectReference
 // See: ./castInterfaceToObjectReference.ts
 
-// executeFunction (and variations)
-// See: ./executeFunction.ts (Base version)
+// executeFunction (variations only)
 // See: ./executeFunction_#needsImports.ts (Standard block: needsImports = true)
-// See: ./executeFunction_^needsImports.ts (Inverted block: needsImports = false)
 // See: ./executeFunction_#hasAttachmentImports.ts (Standard block: hasAttachmentImports = true)
-// See: ./executeFunction_^hasAttachmentImports.ts (Inverted block: hasAttachmentImports = false)
 // See: ./executeFunction_#hasAttachmentUpload.ts (Standard block: hasAttachmentUpload = true)
-// See: ./executeFunction_^hasAttachmentUpload.ts (Inverted block: hasAttachmentUpload = false)
 // See: ./executeFunction_#attachmentProperty.ts (Standard block: attachmentProperty = true)
-// See: ./executeFunction_^attachmentProperty.ts (Inverted block: attachmentProperty = false)
 
-// stringStartsWithTemplate (and variations)
-// See: ./stringStartsWithTemplate.ts (Base version)
+// stringStartsWithTemplate (variations only)
 // See: ./stringStartsWithTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
 // See: ./stringStartsWithTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
 
-// containsAllTermsInOrderTemplate (and variations)
-// See: ./containsAllTermsInOrderTemplate.ts (Base version)
+// containsAllTermsInOrderTemplate (variations only)
 // See: ./containsAllTermsInOrderTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
 // See: ./containsAllTermsInOrderTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
 
-// containsAnyTermTemplate (and variations)
-// See: ./containsAnyTermTemplate.ts (Base version)
+// containsAnyTermTemplate (variations only)
 // See: ./containsAnyTermTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
 // See: ./containsAnyTermTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
 
-// containsAllTermsTemplate (and variations)
-// See: ./containsAllTermsTemplate.ts (Base version)
+// containsAllTermsTemplate (variations only)
 // See: ./containsAllTermsTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
 // See: ./containsAllTermsTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
 
-// equalityTemplate (and variations)
-// See: ./equalityTemplate.ts (Base version)
+// equalityTemplate (variations only)
 // See: ./equalityTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
 // See: ./equalityTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
 
-// inFilterTemplate (and variations)
-// See: ./inFilterTemplate.ts (Base version)
+// inFilterTemplate (variations only)
 // See: ./inFilterTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
 // See: ./inFilterTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
 
-// nullTemplate (and variations)
-// See: ./nullTemplate.ts (Base version)
+// nullTemplate (variations only)
 // See: ./nullTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
 // See: ./nullTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
 
-// rangeTemplate (and variations)
-// See: ./rangeTemplate.ts (Base version)
+// rangeTemplate (variations only)
 // See: ./rangeTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
 // See: ./rangeTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
 
-// withinDistanceTemplate (and variations)
-// See: ./withinDistanceTemplate.ts (Base version)
+// withinDistanceTemplate (variations only)
 // See: ./withinDistanceTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
 // See: ./withinDistanceTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
 
-// withinBoundingBoxTemplate (and variations)
-// See: ./withinBoundingBoxTemplate.ts (Base version)
+// withinBoundingBoxTemplate (variations only)
 // See: ./withinBoundingBoxTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
 // See: ./withinBoundingBoxTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
 
-// withinPolygonTemplate (and variations)
-// See: ./withinPolygonTemplate.ts (Base version)
+// withinPolygonTemplate (variations only)
 // See: ./withinPolygonTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
 // See: ./withinPolygonTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
 
-// intersectsPolygonTemplate (and variations)
-// See: ./intersectsPolygonTemplate.ts (Base version)
+// intersectsPolygonTemplate (variations only)
 // See: ./intersectsPolygonTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
 // See: ./intersectsPolygonTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
 
-// intersectsBboxTemplate (and variations)
-// See: ./intersectsBboxTemplate.ts (Base version)
+// intersectsBboxTemplate (variations only)
 // See: ./intersectsBboxTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
 // See: ./intersectsBboxTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
 

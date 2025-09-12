@@ -28,5 +28,5 @@ import { client } from "./client";
 const EmployeeObjectSet = client(Employee)
     .where({ $and:[
         { $not: { employeeId: { $isNull: true }}},
-        { employeeId: { $eq: "<primaryKey>" }}
+        { fullName: { $eq: "John Doe" }}
     ]});

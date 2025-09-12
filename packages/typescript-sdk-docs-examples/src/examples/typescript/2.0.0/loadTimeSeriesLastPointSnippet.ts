@@ -21,8 +21,9 @@
 
 // Example: loadTimeSeriesLastPointSnippet
 
-import { Employee } from "../../../generatedNoCheck";
+import type { Osdk } from "@osdk/client";
+import { type Employee } from "../../../generatedNoCheck";
 
-function getLastTimeSeriesPoint(obj: Employee) {
-    return obj.temperature.getLastPoint();
+function getLastTimeSeriesPoint(obj: Osdk.Instance<Employee>) {
+    return obj.employeeStatus?.getLastPoint();
 }

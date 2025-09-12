@@ -49,16 +49,25 @@ export function extractHandlebarsVariables(template) {
       case "BlockStatement":
         // Block statements like {{#variable}}...{{/variable}}
         if (node.path.original) {
-          if (node.inverted) {
+          if (node.inverse && !node.program) {
             // Inverted block like {{^variable}}...{{/variable}}
+            // This has only inverse content, no program content
             variables.add("^" + node.path.original);
             // Add the block closing
             variables.add("/" + node.path.original);
-          } else {
+          } else if (node.program && !node.inverse) {
             // Standard block like {{#variable}}...{{/variable}}
+            // This has only program content, no inverse content
             variables.add("#" + node.path.original);
             // Add the block closing
             variables.add("/" + node.path.original);
+          } else if (node.program && node.inverse) {
+            // Block with else like {{#variable}}...{{else}}...{{/variable}}
+            // This has both program and inverse content
+            variables.add("#" + node.path.original);
+            // Add the block closing
+            variables.add("/" + node.path.original);
+            // Note: We don't add ^ for blocks with {{else}} since they're not pure inverted blocks
           }
         }
         

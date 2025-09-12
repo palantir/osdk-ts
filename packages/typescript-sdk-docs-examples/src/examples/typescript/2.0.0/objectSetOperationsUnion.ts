@@ -21,6 +21,8 @@
 
 // Example: objectSetOperationsUnion
 
+// Edit this import if your client location differs
+import { client } from "./client";
 import { Employee } from "../../../generatedNoCheck/ontology/objects";
 
 const objectSetA = client(Employee).where({ fullName: { $containsAnyTerm: "a"}})
@@ -30,4 +32,4 @@ const objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: "c"}})
 // Combine objectSetA, objectSetB and objectSetC
 const result = objectSetA
   .union(objectSetB)
-  .union(objectSetC); // alternatively: objectSetA.union(objectSetB, objectSetC)
+  .union(objectSetC).fetchPage(); // alternatively: objectSetA.union(objectSetB, objectSetC)

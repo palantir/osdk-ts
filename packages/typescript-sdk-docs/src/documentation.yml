@@ -951,118 +951,95 @@ versions:
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { isOk, type Osdk, type Result } from "@osdk/client";
+            import { type Osdk } from "@osdk/client";
 
-            const result: Result<Osdk.Instance<{{objectType}}>> = await client({{objectType}}).fetchOneWithErrors("<primaryKey>");
-            if (isOk(result)) {
-                const object: Osdk.Instance<{{objectType}}> = result.value;
-            } else {
-                console.error(result.error.message);
-            }
-            // You can also fetch a single object without the Result wrapper
             try {
-                const object: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne("<primaryKey>");
+                const object: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne({{propertyValueV2}});
             }
             catch(e) {
-                console.error(e);
+                throw(e);
             }
       loadObjectPageGuide:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { isOk, type Osdk, type PageResult, type Result } from "@osdk/client";
+            import { type Osdk, type PageResult } from "@osdk/client";
 
-            const firstPage: Result<PageResult<Osdk.Instance<{{objectType}}>>>
-                = await client({{objectType}}).fetchPageWithErrors({ $pageSize: 30 });
-
-            if (isOk(firstPage)) {
-                const secondPage: Result<PageResult<Osdk.Instance<{{objectType}}, never, "{{titleProperty}}">>>
-                // You can also down select properties to only get the properties you need from the object
-                = await client({{objectType}}).fetchPageWithErrors({ $select: ["{{titleProperty}}"], $pageSize: 30, $nextPageToken: firstPage.value.nextPageToken });
-
-                const objects = isOk(secondPage) ? [...firstPage.value.data, ...secondPage.value.data] : firstPage.value.data;
-                const object = objects[0];
-            }
-
-             // If you want to get rids, you need to add a flag to specifically request for it. Note how the return type now includes $rid rather than never
-            const secondPageWithRids: Result<PageResult<Osdk.Instance<{{objectType}}, "$rid", "{{titleProperty}}">>>
-                = await client({{objectType}}).fetchPageWithErrors({ $select: ["{{titleProperty}}"], $includeRid:true, $pageSize: 30, $nextPageToken: firstPage.value.nextPageToken });
-
-            // To fetch a page without a result wrapper, use fetchPage with a try/catch instead
-            try {
-                const firstPage: PageResult<Osdk.Instance<{{objectType}}>>
-                    = await client({{objectType}}).fetchPage({ $pageSize: 30 });
-                const secondPage: PageResult<Osdk.Instance<{{objectType}}>>
-                 = await client({{objectType}}).fetchPage({ $pageSize: 30, $nextPageToken: firstPage.nextPageToken });
-                const objects = [...firstPage.data, ...secondPage.data];
-                const object = objects[0];
-            }
-            catch (e) {
-                console.error(e);
+            async function getPagedData() {
+                try {
+                    const firstPage: PageResult<Osdk.Instance<{{objectType}}>>
+                        = await client({{objectType}}).fetchPage({ $pageSize: 30 });
+                    if (firstPage.nextPageToken === undefined) {
+                        return firstPage.data;
+                    }
+                    const secondPage: PageResult<Osdk.Instance<{{objectType}}>>
+                    = await client({{objectType}}).fetchPage({ $pageSize: 30, $nextPageToken: firstPage.nextPageToken });
+                    return [...firstPage.data, ...secondPage.data];
+                }
+                catch (e) {
+                    throw e;
+                }
             }
       orderObjectsGuide:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { isOk, type Osdk, type PageResult, type Result } from "@osdk/client";
+            import { type Osdk, type PageResult } from "@osdk/client";
 
-            const page: Result<PageResult<Osdk.Instance<{{objectType}}>>> = await client({{objectType}})
-                .fetchPageWithErrors({
-                    $orderBy: {"{{titleProperty}}": "asc"},
-                    $pageSize: 30
-                });
-
-            if (isOk(page)) {
-                const objects = page.value.data;
+            try {
+                const page: PageResult<Osdk.Instance<{{objectType}}>> = await client({{objectType}})
+                    .fetchPage({
+                        $orderBy: {"{{titleProperty}}": "asc"},
+                        $pageSize: 30
+                    });
+                const objects = page.data;
                 const object = objects[0];
+            } catch (e) {
+                throw e;
             }
       searchObjectsGuide:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { isOk, type Osdk, type PageResult, type Result } from "@osdk/client";
+            import { type Osdk, type PageResult } from "@osdk/client";
 
-            const page: Result<PageResult<Osdk.Instance<{{objectType}}>>> = await client({{objectType}})
-                .where({
-                    {{titleProperty}}: {$isNull: true}
-                })
-                .fetchPageWithErrors({
-                    $pageSize: 30
-                });
-
-            if (isOk(page)) {
-                const objects = page.value.data;
+            try {
+                const page: PageResult<Osdk.Instance<{{objectType}}>> = await client({{objectType}})
+                    .where({
+                        {{titleProperty}}: {$isNull: true}
+                    })
+                    .fetchPage({
+                        $pageSize: 30
+                    });
+                const objects = page.data;
                 const object = objects[0];
+            } catch (e) {
+                throw e;
             }
       loadSingleObjectReference:
         - template: |+
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import type { Osdk, Result } from "@osdk/client";
+            import type { Osdk } from "@osdk/client";
 
-            const response: Result<Osdk.Instance<{{objectType}}>> = await client({{objectType}}).fetchOneWithErrors("<primaryKey>");
-
-            // You can also fetch a single object without the Result wrapper
-
-            const responseNoErrorWrapper: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne("<primaryKey>");
+            const responseNoErrorWrapper: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne({{propertyValueV2}});
 
       loadObjectsReference:
         - template: |
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import type { Osdk, PageResult, Result } from "@osdk/client";
-
-            const response:  Result<PageResult<Osdk.Instance<{{objectType}}>>>
-                = await client({{objectType}}).fetchPageWithErrors({ $pageSize: 30 });
-
-            // To fetch a page without a result wrapper, use fetchPage instead
-            const responseNoErrorWrapper: PageResult<Osdk.Instance<{{objectType}}>>
-                = await client({{objectType}}).fetchPage({ $pageSize: 30 });
+            import type { Osdk, PageResult } from "@osdk/client";
+            try {
+                const responseNoErrorWrapper: PageResult<Osdk.Instance<{{objectType}}>>
+                    = await client({{objectType}}).fetchPage({ $pageSize: 30 });
+            } catch (e) {
+                throw e;
+            }
       loadAllObjectsReference:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1078,19 +1055,15 @@ versions:
             const object = objects[0];
       loadLinkedObjectReference:
         - template: |-
-            import { {{sourceObjectType}}, {{linkedObjectType}} } from "{{{packageName}}}";
-            // Edit this import if your client location differs
-            import { client } from "./client";
-            import { type Osdk, type Result } from "@osdk/client";
+            import { type {{sourceObjectType}} } from "{{{packageName}}}";
+            import { type Osdk } from "@osdk/client";
 
-            function getLinked{{linkedObjectType}}(source: Osdk.Instance<{{sourceObjectType}}>, linkedObjectPrimaryKey: {{linkedPrimaryKeyPropertyV2.type}}): Result<Osdk.Instance<{{linkedObjectType}}>>
-            {
-                return source.$link.{{linkApiName}}.fetchOneWithErrors(linkedObjectPrimaryKey);
-            }
-
-            // You can also get a linked object without the result wrapper
-            function getLinkedNoWrapper{{linkedObjectType}}(source: Osdk.Instance<{{sourceObjectType}}>, linkedObjectPrimaryKey: {{linkedPrimaryKeyPropertyV2.type}}): Osdk.Instance<{{linkedObjectType}}> {
-                return source.$link.{{linkApiName}}.fetchOne(linkedObjectPrimaryKey);
+            async function getLinked{{linkedObjectType}}(source: Osdk.Instance<{{sourceObjectType}}>) {
+                try {
+                    return await source.$link.{{linkApiName}}.fetchPage();
+                } catch (error) {
+                    return { error };
+                }
             }
           computedVariables:
             - linkedPrimaryKeyPropertyV2
@@ -1100,18 +1073,8 @@ versions:
             // Edit this import if your client location differs
             import { client } from "./client";
 
-            function getLinked{{linkedObjectType}}(source: Osdk.Instance<{{sourceObjectType}}>) {
-                {{#isLinkManySided}}
-                return source.$link.{{linkApiName}}.fetchPageWithErrors({ $pageSize: 30 });
-                {{/isLinkManySided}}
-                {{^isLinkManySided}}
-                return source.$link.{{linkApiName}}.fetchOneWithErrors();
-                {{/isLinkManySided}}
-            }
-
-            // You can also get a linked object by doing an object set searcharound
-            function getLinkedWithPivot{{linkedObjectType}}(){
-                return client({{sourceObjectType}}).pivotTo({{linkApiName}}).fetchPage();
+            async function getLinkedWithPivot{{linkedObjectType}}(){
+                return await client({{sourceObjectType}}).pivotTo("{{linkApiName}}").fetchPage();
             }
       aggregationTemplate:
         - template: |-
@@ -1120,10 +1083,10 @@ versions:
             import { client } from "./client";
 
             const num{{objectType}} = await client({{objectType}})
-                .where({{property}}: { $isNull : false }})
+                .where({ {{property}}: { $isNull : false }})
                 .aggregate({
                     $select: { $count: "unordered" },
-                    $groupBy: { name: "exact" },
+                    $groupBy: { {{property}}: "exact" },
                 });
       countAggregationTemplate:
         - template: |-
@@ -1162,7 +1125,7 @@ versions:
             import { client } from "./client";
 
             const {{operation}}{{objectType}} = await client({{objectType}})
-                .aggregation({
+                .aggregate({
                     $select: { "{{property}}:{{operation}}" : "unordered" }
                 });
       fixedWidthGroupByTemplate:
@@ -1185,8 +1148,8 @@ versions:
             const grouped{{objectType}} = await client({{objectType}})
                 .aggregate({
                     $select: { $count: "unordered" },
-                    $groupBy: { {{property}} : $duration: [ {{#durationText}}{{arg}}{{/durationText}}, "{{#durationText}}{{unit}}{{/durationText}}"] }
-                })
+                    $groupBy: { {{property}} : { $duration: [ {{#durationText}}{{arg}}{{/durationText}}, "{{#durationText}}{{unit}}{{/durationText}}"] } }
+                });
       exactGroupByTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1497,7 +1460,6 @@ versions:
                     {{^hasStructSubProperty}}
                     {{property}}: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}
                     {{/hasStructSubProperty}}
-
                 });
       withinPolygonTemplate:
         - template: |-
@@ -1523,10 +1485,10 @@ versions:
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
                     {{#hasStructSubProperty}}
-                    {{property}}: { {{structSubPropertyApiName}}: { $intersects: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]}}}
+                    {{property}}: { {{structSubPropertyApiName}}: { $intersects: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}}
                     {{/hasStructSubProperty}}
                     {{^hasStructSubProperty}}
-                    {{property}}: { $intersects: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]}}
+                    {{property}}: { $intersects: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}
                     {{/hasStructSubProperty}}
                 });
       intersectsBboxTemplate:
@@ -1551,9 +1513,9 @@ versions:
             import { client } from "./client";
 
             const {{objectType}}ObjectSet = client({{objectType}})
-                .where({ $not: { {{primaryKeyPropertyV2.apiName}}: { $isNull: true }}});
+                .where({ $not: { {{property}}: { $eq: {{{propertyValueV2}}} }}});
           computedVariables:
-            - primaryKeyPropertyV2
+            - propertyValueV2
       andTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1563,7 +1525,7 @@ versions:
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({ $and:[
                     { $not: { {{primaryKeyPropertyV2.apiName}}: { $isNull: true }}},
-                    { {{primaryKeyPropertyV2.apiName}}: { $eq: "<primaryKey>" }}
+                    { {{property}}: { $eq: {{{propertyValueV2}}} }}
                 ]});
           computedVariables:
             - primaryKeyPropertyV2
@@ -1576,7 +1538,7 @@ versions:
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({ $or:[
                     { $not: { {{primaryKeyPropertyV2.apiName}}: { $isNull: true }}},
-                    { {{primaryKeyPropertyV2.apiName}}: { $eq: "<primaryKey>" }}
+                    { {{property}}: { $eq: {{{propertyValueV2}}} }}
                 ]});
           computedVariables:
             - primaryKeyPropertyV2
@@ -1623,18 +1585,19 @@ versions:
             import { {{interfaceApiName}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { isOk, type Osdk, type PageResult, type Result } from "@osdk/client";
+            import { type Osdk, type PageResult } from "@osdk/client";
 
-            const page: Result<PageResult<Osdk<{{interfaceApiName}}>>> = await client({{interfaceApiName}})
-                .fetchPageWithErrors({
-                    $orderBy: {"someProperty": "asc"},
-                    $pageSize: 30
-                });
-
-            if (isOk(page)) {
-                const interfaces = page.value.data;
-                const interface1 = interfaces[0];
+            try {
+                const page: PageResult<Osdk<{{interfaceApiName}}>> = await client({{interfaceApiName}})
+                    .fetchPage({
+                        $orderBy: {"someProperty": "asc"},
+                        $pageSize: 30
+                    });
+            } catch (e) {
+                throw e;
             }
+
+
       searchInterfacesReference:
         - template: |-
             import { {{interfaceApiName}} } from "{{{packageName}}}";
@@ -1659,45 +1622,50 @@ versions:
             }
       loadTimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Osdk } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
 
-            function getAllTimeSeriesPoints(obj: {{objectType}}) {
-                return obj.{{property}}.getAllPoints();
+            function getAllTimeSeriesPoints(obj: Osdk.Instance<{{objectType}}>) {
+                return obj.{{property}}?.getAllPoints();
             }
       loadRelativeTimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Osdk } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
 
             // Only supports ranges in the past
-            function getRelativeTimeSeriesPoints(obj: {{objectType}}) {
-                return obj.{{property}}.getAllPoints({
+            function getRelativeTimeSeriesPoints(obj: Osdk.Instance<{{objectType}}>) {
+                return obj.{{property}}?.getAllPoints({
                     $before: 1,
                     $unit: "{{timeUnit}}",
                 })
             }
       loadAbsoluteTimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import { type {{objectType}} } from "{{{packageName}}}";
+            import { type Osdk } from "@osdk/client";
 
-            function getAbsoluteTimeSeriesPoints(obj: {{objectType}}) {
-                return obj.{{property}}.getAllPoints({
+            async function getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<{{objectType}}>) {
+                return await obj.{{property}}?.getAllPoints({
                     $startTime: "2022-08-13T12:34:56Z",
                     $endTime: "2022-08-14T12:34:56Z",
                 });
             }
       loadTimeSeriesFirstPointSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Osdk } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
 
-            function getFirstTimeSeriesPoint(obj: {{objectType}}) {
-                return obj.{{property}}.getFirstPoint();
+            function getFirstTimeSeriesPoint(obj: Osdk.Instance<{{objectType}}>) {
+                return obj.{{property}}?.getFirstPoint();
             }
       loadTimeSeriesLastPointSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Osdk } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
 
-            function getLastTimeSeriesPoint(obj: {{objectType}}) {
-                return obj.{{property}}.getLastPoint();
+            function getLastTimeSeriesPoint(obj: Osdk.Instance<{{objectType}}>) {
+                return obj.{{property}}?.getLastPoint();
             }
       loadGeotimeSeriesPointsSnippet:
         - template: |-
@@ -1719,7 +1687,7 @@ versions:
 
             const objectTypeMetadata = await client.fetchMetadata({{objectType}});
 
-            if (objectTypeMetadata.icon.type === "blueprint") {
+            if (objectTypeMetadata?.icon?.type === "blueprint") {
                 const blueprintIconName = objectTypeMetadata.icon.name;
             }
             const currentVisibility = objectTypeMetadata.visibility;
@@ -1752,14 +1720,11 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("fooLink").pivotTo("barLink").selectProperty("foo")
+                    baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}")
                 })
                 .where({
-                  "newPropertyName": { $gt: 10 }
-                })
-                .aggregate({
-                  $select: { "newPropertyName:max": "unordered" }
-                });
+                  "newPropertyName": { $startsWith: "foo" }
+                }).fetchPage();
       derivedPropertyApproximateDistinctAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1770,7 +1735,7 @@ versions:
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
                     baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:approximateDistinct")
-                })
+                }).fetchPage();
       derivedPropertyExactDistinctAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1781,7 +1746,7 @@ versions:
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
                     baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:exactDistinct")
-                })
+                }).fetchPage();
       derivedPropertyCollectToListAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1792,8 +1757,8 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:collectList", maxObjectsInList)
-                })
+                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:collectList", { limit: maxObjectsInList })
+                }).fetchPage();
       derivedPropertyCollectToSetAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1804,8 +1769,8 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:collectSet", maxObjectsInSet)
-                })
+                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:collectSet", { limit: maxObjectsInSet })
+                }).fetchPage();
       derivedPropertyCountAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1816,7 +1781,7 @@ versions:
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
                     baseObjectSet.pivotTo("{{linkName}}").aggregate("$count")
-                })
+                }).fetchPage();
       derivedPropertySelectPropertyAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1827,7 +1792,7 @@ versions:
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
                     baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}")
-                })
+                }).fetchPage();
       derivedPropertyApproximatePercentileAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1837,8 +1802,8 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:approximatePercentile", 0.5)
-                })
+                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:approximatePercentile", { percentile: 95 })
+                }).fetchPage();
       derivedPropertyNumericAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1849,9 +1814,11 @@ versions:
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
                     baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:{{operation}}")
-                })
+                }).fetchPage();
       objectSetOperationsGuide:
         - template: |-
+            // Edit this import if your client location differs
+            import { client } from "./client";
             import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
 
             const objectSetA = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "a"}})
@@ -1862,10 +1829,12 @@ versions:
             // that are present in objectSetB but do not exist in objectSetC:
             const result = objectSetA
               .intersect(objectSetB)
-              .subtract(objectSetC);
+              .subtract(objectSetC).fetchPage();
 
       objectSetOperationsUnion:
         - template: |-
+            // Edit this import if your client location differs
+            import { client } from "./client";
             import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
 
             const objectSetA = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "a"}})
@@ -1875,10 +1844,12 @@ versions:
             // Combine objectSetA, objectSetB and objectSetC
             const result = objectSetA
               .union(objectSetB)
-              .union(objectSetC); // alternatively: objectSetA.union(objectSetB, objectSetC)
+              .union(objectSetC).fetchPage(); // alternatively: objectSetA.union(objectSetB, objectSetC)
 
       objectSetOperationsSubtract:
         - template: |-
+            // Edit this import if your client location differs
+            import { client } from "./client";
             import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
 
             const objectSetA = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "a"}})
@@ -1889,10 +1860,12 @@ versions:
             // Return objects in objectSetA that are not present in either objectSetB or objectSetC
             const result = objectSetA
               .subtract(objectSetB)
-              .subtract(objectSetC); // alternatively: objectSetA.subtract(objectSetB, objectSetC)
+              .subtract(objectSetC).fetchPage(); // alternatively: objectSetA.subtract(objectSetB, objectSetC)
 
       objectSetOperationsIntersect:
         - template: |-
+            // Edit this import if your client location differs
+            import { client } from "./client";
             import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
 
             const objectSetA = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "a"}})
@@ -1903,7 +1876,7 @@ versions:
             // Return all objects common to objectSetA, objectSetB and objectSetC
             const result = objectSetA
               .intersect(objectSetB)
-              .intersect(objectSetC); // alternatively: objectSetA.intersect(objectSetB, objectSetC)
+              .intersect(objectSetC).fetchPage(); // alternatively: objectSetA.intersect(objectSetB, objectSetC)
       searchAround:
         - template: |-
             import { {{sourceObjectType}} } from "{{{packageName}}}";
@@ -1915,45 +1888,49 @@ versions:
                 .where({ {{rawLinkedPrimaryKeyProperty.apiName}}: { $in: ["a", "b", "c"]}});
 
             // Traverse the selected link type to find all objects of type
-            // {{linkedObjectType}} linked to objects a, b and c
-            const linkedObjects = await objects.pivotTo("{{linkApiName}}");
+            // {{linkedObjectType}} linked to {{sourceObjectType}} with {{rawLinkedPrimaryKeyProperty.apiName}} is a or b or c]
+            const linkedObjects = await objects.pivotTo("{{linkApiName}}").fetchPage();
 
   "2.1.0":
     snippets:
       loadGeotimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Osdk } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
 
-            function getAllTimeSeriesPoints(obj: {{objectType}}) {
-                return obj.{{property}}.getAllValues();
+            function getAllTimeSeriesPoints(obj: Osdk.Instance<{{objectType}}>) {
+                return obj.{{property}}?.getAllValues();
             }
       loadRelativeGeotimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Osdk } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
 
             // Only supports ranges in the past
-            function getRelativeTimeSeriesPoints(obj: {{objectType}}) {
-                return obj.{{property}}.getAllValues({
+            function getRelativeTimeSeriesPoints(obj: Osdk.Instance<{{objectType}}>) {
+                return obj.{{property}}?.getAllValues({
                     $before: 1,
                     $unit: "{{timeUnit}}",
                 })
             }
       loadAbsoluteGeotimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Osdk } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
 
-            function getAbsoluteTimeSeriesPoints(obj: {{objectType}}) {
-                return obj.{{property}}.getAllValues({
+            function getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<{{objectType}}>) {
+                return obj.{{property}}?.getAllValues({
                     $startTime: "2022-08-13T12:34:56Z",
                     $endTime: "2022-08-14T12:34:56Z",
                 });
             }
       loadGeotimeSeriesLastPointSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Osdk } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
 
-            function getLastTimeSeriesPoint(obj: {{objectType}}) {
-                return obj.{{property}}.getLatestValue();
+            function getLastTimeSeriesPoint(obj: Osdk.Instance<{{objectType}}>) {
+                return obj.{{property}}?.getLatestValue();
             }
       subscribeToObjectSetInstructions:
         - template: |-
