@@ -49,6 +49,7 @@ export interface equipment extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'equipment';
+  primaryKeyApiName: string;
   __DefinitionMetadata?: {
     objectSet: equipment.ObjectSet;
     props: equipment.Props;
@@ -91,4 +92,5 @@ export const equipment: equipment = {
   type: 'object',
   apiName: 'equipment',
   osdkMetadata: $osdkMetadata,
+  primaryKeyApiName: 'equipmentId',
 };

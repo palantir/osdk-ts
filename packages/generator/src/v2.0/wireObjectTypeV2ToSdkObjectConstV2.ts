@@ -132,7 +132,8 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     = {
       type: "${object instanceof EnhancedObjectType ? "object" : "interface"}",
       apiName: "${object.fullApiName}",
-      osdkMetadata: $osdkMetadata,  
+      osdkMetadata: $osdkMetadata,
+      primaryKeyApiName: "${wireObject.objectType.primaryKey}",
     };`;
 }
 
@@ -283,7 +284,12 @@ export function createDefinition(
   } {
       osdkMetadata: typeof $osdkMetadata;
       type: "${object instanceof EnhancedObjectType ? "object" : "interface"}";
-      apiName: "${object.fullApiName}";
+      apiName: "${object.fullApiName}";${
+    object instanceof EnhancedObjectType
+      ? `
+        primaryKeyApiName: string;`
+      : ``
+  }
       __DefinitionMetadata?: {
       objectSet: ${objectSetIdentifier};
       props: ${osdkObjectPropsIdentifier};
