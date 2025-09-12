@@ -1,0 +1,643 @@
+{
+  "loadSingleObjectGuide": [
+    "objectType",
+    "packageName"
+  ],
+  "loadObjectPageGuide": [
+    "objectType",
+    "packageName",
+    "titleProperty"
+  ],
+  "orderObjectsGuide": [
+    "objectType",
+    "packageName",
+    "titleProperty"
+  ],
+  "searchObjectsGuide": [
+    "objectType",
+    "packageName",
+    "titleProperty"
+  ],
+  "loadSingleObjectReference": [
+    "objectType",
+    "packageName"
+  ],
+  "loadObjectsReference": [
+    "objectType",
+    "packageName"
+  ],
+  "loadAllObjectsReference": [
+    "objectType",
+    "packageName"
+  ],
+  "loadLinkedObjectReference": [
+    "sourceObjectType",
+    "linkedObjectType",
+    "packageName",
+    "linkedPrimaryKeyPropertyV2.type",
+    "linkApiName"
+  ],
+  "loadLinkedObjectsReference_#isLinkManySided": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "loadLinkedObjectsReference_^isLinkManySided": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "aggregationTemplate": [
+    "objectType",
+    "packageName",
+    "property"
+  ],
+  "countAggregationTemplate": [
+    "objectType",
+    "packageName"
+  ],
+  "approximateDistinctAggregationTemplate": [
+    "objectType",
+    "packageName",
+    "property"
+  ],
+  "exactDistinctAggregationTemplate": [
+    "objectType",
+    "packageName",
+    "property"
+  ],
+  "numericAggregationTemplate": [
+    "objectType",
+    "packageName",
+    "operation",
+    "property"
+  ],
+  "fixedWidthGroupByTemplate": [
+    "objectType",
+    "packageName",
+    "property"
+  ],
+  "durationGroupByTemplate_#durationText": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "durationGroupByTemplate_^durationText": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "exactGroupByTemplate": [
+    "objectType",
+    "packageName",
+    "property"
+  ],
+  "rangeGroupByTemplate": [
+    "objectType",
+    "packageName",
+    "property",
+    "propertyValueV2",
+    "propertyValueIncrementedV2"
+  ],
+  "applyAction_#hasAttachmentImports": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "applyAction_^hasAttachmentImports": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "applyAction_#hasMediaParameter": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "applyAction_^hasMediaParameter": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "applyAction_#hasAttachmentUpload": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "applyAction_^hasAttachmentUpload": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "applyAction_#attachmentProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "applyAction_^attachmentProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "applyAction_#hasParameters": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "applyAction_^hasParameters": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "applyAction_#actionParameterSampleValuesV2": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "applyAction_^actionParameterSampleValuesV2": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "applyAction_#last": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "applyAction_^last": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "batchApplyAction_#hasAttachmentImports": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "batchApplyAction_^hasAttachmentImports": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "batchApplyAction_#hasMediaParameter": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "batchApplyAction_^hasMediaParameter": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "batchApplyAction_#hasAttachmentUpload": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "batchApplyAction_^hasAttachmentUpload": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "batchApplyAction_#attachmentProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "batchApplyAction_^attachmentProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "batchApplyAction_#hasParameters": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "batchApplyAction_^hasParameters": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "batchApplyAction_#actionParameterSampleValuesV2": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "batchApplyAction_^actionParameterSampleValuesV2": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "batchApplyAction_#last": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "batchApplyAction_^last": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "uploadAttachment": [],
+  "castInterfaceToObjectReference": [
+    "objectTypeApiName",
+    "interfaceApiName",
+    "packageName",
+    "interfaceApiNameCamelCase",
+    "objectTypeApiNameCamelCase"
+  ],
+  "executeFunction_#needsImports": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "executeFunction_^needsImports": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "executeFunction_#hasAttachmentImports": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "executeFunction_^hasAttachmentImports": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "executeFunction_#hasAttachmentUpload": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "executeFunction_^hasAttachmentUpload": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "executeFunction_#attachmentProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "executeFunction_^attachmentProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "stringStartsWithTemplate_#hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "stringStartsWithTemplate_^hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "containsAllTermsInOrderTemplate_#hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "containsAllTermsInOrderTemplate_^hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "containsAnyTermTemplate_#hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "containsAnyTermTemplate_^hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "containsAllTermsTemplate_#hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "containsAllTermsTemplate_^hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "equalityTemplate_#hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "equalityTemplate_^hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "inFilterTemplate_#hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "inFilterTemplate_^hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "nullTemplate_#hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "nullTemplate_^hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "rangeTemplate_#hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "rangeTemplate_^hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "withinDistanceTemplate_#hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "withinDistanceTemplate_^hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "withinBoundingBoxTemplate_#hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "withinBoundingBoxTemplate_^hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "withinPolygonTemplate_#hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "withinPolygonTemplate_^hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "intersectsPolygonTemplate_#hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "intersectsPolygonTemplate_^hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "intersectsBboxTemplate_#hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "intersectsBboxTemplate_^hasStructSubProperty": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "notTemplate": [
+    "objectType",
+    "packageName",
+    "primaryKeyPropertyV2.apiName"
+  ],
+  "andTemplate": [
+    "objectType",
+    "packageName",
+    "primaryKeyPropertyV2.apiName"
+  ],
+  "orTemplate": [
+    "objectType",
+    "packageName",
+    "primaryKeyPropertyV2.apiName"
+  ],
+  "containsTemplate": [
+    "objectType",
+    "packageName",
+    "property",
+    "arrayElementValue"
+  ],
+  "loadInterfacesReference": [
+    "interfaceApiName",
+    "packageName"
+  ],
+  "loadAllInterfacesReference": [
+    "interfaceApiName",
+    "packageName"
+  ],
+  "loadOrderedInterfacesReference": [
+    "interfaceApiName",
+    "packageName"
+  ],
+  "searchInterfacesReference": [
+    "interfaceApiName",
+    "packageName"
+  ],
+  "loadTimeSeriesPointsSnippet": [
+    "objectType",
+    "packageName",
+    "property"
+  ],
+  "loadRelativeTimeSeriesPointsSnippet": [
+    "objectType",
+    "packageName",
+    "property",
+    "timeUnit"
+  ],
+  "loadAbsoluteTimeSeriesPointsSnippet": [
+    "objectType",
+    "packageName",
+    "property"
+  ],
+  "loadTimeSeriesFirstPointSnippet": [
+    "objectType",
+    "packageName",
+    "property"
+  ],
+  "loadTimeSeriesLastPointSnippet": [
+    "objectType",
+    "packageName",
+    "property"
+  ],
+  "loadGeotimeSeriesPointsSnippet": [],
+  "loadRelativeGeotimeSeriesPointsSnippet": [],
+  "loadAbsoluteGeotimeSeriesPointsSnippet": [],
+  "loadGeotimeSeriesLastPointSnippet": [],
+  "loadObjectMetadataSnippet": [
+    "objectType",
+    "packageName"
+  ],
+  "loadInterfaceMetadataSnippet": [
+    "interfaceApiName",
+    "packageName"
+  ],
+  "subscribeToObjectSetInstructions": [],
+  "uploadMedia": [],
+  "readMedia": [],
+  "derivedPropertyBaseExample": [
+    "objectType",
+    "packageName"
+  ],
+  "derivedPropertyApproximateDistinctAggregation": [
+    "objectType",
+    "packageName",
+    "linkName",
+    "property"
+  ],
+  "derivedPropertyExactDistinctAggregation": [
+    "objectType",
+    "packageName",
+    "linkName",
+    "property"
+  ],
+  "derivedPropertyCollectToListAggregation": [
+    "objectType",
+    "packageName",
+    "linkName",
+    "property"
+  ],
+  "derivedPropertyCollectToSetAggregation": [
+    "objectType",
+    "packageName",
+    "linkName",
+    "property"
+  ],
+  "derivedPropertyCountAggregation": [
+    "objectType",
+    "packageName",
+    "linkName"
+  ],
+  "derivedPropertySelectPropertyAggregation": [
+    "objectType",
+    "packageName",
+    "linkName",
+    "property"
+  ],
+  "derivedPropertyApproximatePercentileAggregation": [
+    "objectType",
+    "packageName",
+    "linkName",
+    "property"
+  ],
+  "derivedPropertyNumericAggregation": [
+    "objectType",
+    "packageName",
+    "linkName",
+    "property",
+    "operation"
+  ],
+  "objectSetOperationsGuide": [
+    "objectType",
+    "packageName",
+    "titleProperty"
+  ],
+  "objectSetOperationsUnion": [
+    "objectType",
+    "packageName",
+    "titleProperty"
+  ],
+  "objectSetOperationsSubtract": [
+    "objectType",
+    "packageName",
+    "titleProperty"
+  ],
+  "objectSetOperationsIntersect": [
+    "objectType",
+    "packageName",
+    "titleProperty"
+  ],
+  "searchAround": [
+    "sourceObjectType",
+    "packageName",
+    "rawLinkedPrimaryKeyProperty.apiName",
+    "linkedObjectType",
+    "linkApiName"
+  ]
+}

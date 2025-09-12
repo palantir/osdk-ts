@@ -1,22 +1,19 @@
 {
+  "extends": "@osdk/monorepo.tsconfig/base.json",
   "compilerOptions": {
-    "target": "es2022",
-    "module": "es2022",
     "lib": ["es2022", "dom"],
     "declaration": true,
     "sourceMap": true,
     "outDir": "dist",
     "rootDir": "src",
-    "strict": true,
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "composite": true
+    "composite": true,
+    "emitDeclarationOnly": false,
+    "module": "ESNext",
+    "moduleResolution": "bundler"
   },
   "include": ["./src/**/*", "./src/generatedNoCheck/**/*"],
-  "exclude": ["node_modules", "dist", "./src/examples/**/*"],
+  "exclude": ["node_modules", "dist" ],
   "ts-node": {
     "transpileOnly": true,
     "compilerOptions": {

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,21 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * WARNING: This file is generated automatically by the generateExamples.mjs script.
- * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-/* eslint-disable no-unused-vars */
-
-// Example: rangeGroupByTemplate
-
-import { Employee } from "../../../generatedNoCheck";
-// Edit this import if your client location differs
-import { client } from "./client";
-
-const groupedEmployee = await client(Employee)
-    .aggregate({
-        $select: { $count: "unordered" },
-        $groupBy: { salary : { $ranges: [[100, 200 ]]} }
-    });
+export { baseContext, getSnippetContext } from "./baseContext.js";
+export { extractHandlebarsVariables } from "./extractHandlebarsVariables.js";
+export { findBlockVariables } from "./findBlockVariables.js";
+export { generateBaseSnippet } from "./generateBaseSnippet.js";
+export { generateBlockVariations } from "./generateBlockVariations.js";
+export { generateClientFile } from "./generateClientFile.js";
+export { generateFileHeader } from "./generateFileHeader.js";
+export { processTemplate } from "./processTemplate.js";

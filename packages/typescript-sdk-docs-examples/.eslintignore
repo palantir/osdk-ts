@@ -1,6 +1,8 @@
 dist/
 node_modules/
 src/generatedNoCheck/
-src/examples/
+src/examples/**/*
 .turbo/
 *.tsbuildinfo
+# Utility JS files that aren't part of TS project 
+src/utils/*.js

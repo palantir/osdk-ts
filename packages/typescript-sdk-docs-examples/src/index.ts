@@ -19,7 +19,7 @@
  */
 
 // Export the generated SDK
-export * from './generatedNoCheck/index';
+export * from './generatedNoCheck/index.js';
 
 // Export documentation sections schema and data
 export const DOCS_SCHEMA_PATH = './osdk-docs-schema.json';

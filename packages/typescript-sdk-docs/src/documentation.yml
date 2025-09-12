@@ -1350,12 +1350,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#structSubPropertyApiName}}
+                    {{#hasStructSubProperty}}
                     {{property}}: { {{structSubPropertyApiName}}: { $startsWith: "foo" }}
-                    {{/structSubPropertyApiName}}
-                    {{^structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
+                    {{^hasStructSubProperty}}
                     {{property}} : { $startsWith: "foo" }
-                    {{/structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
                 })
       containsAllTermsInOrderTemplate:
         - template: |-
@@ -1365,12 +1365,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#structSubPropertyApiName}}
+                    {{#hasStructSubProperty}}
                     {{property}}: { {{structSubPropertyApiName}}: { $containsAllTermsInOrder: "foo bar" }}
-                    {{/structSubPropertyApiName}}
-                    {{^structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
+                    {{^hasStructSubProperty}}
                     {{property}} : { $containsAllTermsInOrder: "foo bar" }
-                    {{/structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
                 })
       containsAnyTermTemplate:
         - template: |-
@@ -1380,12 +1380,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#structSubPropertyApiName}}
+                    {{#hasStructSubProperty}}
                     {{property}}: { {{structSubPropertyApiName}}: { $containsAnyTerm: "foo bar" }}
-                    {{/structSubPropertyApiName}}
-                    {{^structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
+                    {{^hasStructSubProperty}}
                     {{property}} : { $containsAnyTerm: "foo bar" }
-                    {{/structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
                 })
       containsAllTermsTemplate:
         - template: |-
@@ -1395,12 +1395,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#structSubPropertyApiName}}
+                    {{#hasStructSubProperty}}
                     {{property}}: { {{structSubPropertyApiName}}: { $containsAllTerms: "foo bar" }}
-                    {{/structSubPropertyApiName}}
-                    {{^structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
+                    {{^hasStructSubProperty}}
                     {{property}} : { $containsAllTerms: "foo bar" }
-                    {{/structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
                 })
       equalityTemplate:
         - template: |-
@@ -1410,12 +1410,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#structSubPropertyApiName}}
+                    {{#hasStructSubProperty}}
                     {{property}}: { {{structSubPropertyApiName}}: { $eq: {{{propertyValueV2}}} }}
-                    {{/structSubPropertyApiName}}
-                    {{^structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
+                    {{^hasStructSubProperty}}
                     {{property}}: { $eq: {{{propertyValueV2}}} }
-                    {{/structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
                 });
           computedVariables:
             - propertyValueV2
@@ -1427,12 +1427,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#structSubPropertyApiName}}
+                    {{#hasStructSubProperty}}
                     {{property}}: { {{structSubPropertyApiName}}: { $in: [{{{propertyValueV2}}}] }}
-                    {{/structSubPropertyApiName}}
-                    {{^structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
+                    {{^hasStructSubProperty}}
                     {{property}}: { $in: [{{{propertyValueV2}}}] }
-                    {{/structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
                 });
           computedVariables:
             - propertyValueV2
@@ -1444,12 +1444,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#structSubPropertyApiName}}
+                    {{#hasStructSubProperty}}
                     {{property}}: { {{structSubPropertyApiName}}: { $isNull: true }}
-                    {{/structSubPropertyApiName}}
-                    {{^structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
+                    {{^hasStructSubProperty}}
                     {{property}}: { $isNull: true }
-                    {{/structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
                 });
       rangeTemplate:
         - template: |-
@@ -1459,12 +1459,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#structSubPropertyApiName}}
+                    {{#hasStructSubProperty}}
                     {{property}}: { {{structSubPropertyApiName}}: { ${{operation}}: {{{propertyValueV2}}} }}
-                    {{/structSubPropertyApiName}}
-                    {{^structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
+                    {{^hasStructSubProperty}}
                     {{property}}: { ${{operation}}: {{{propertyValueV2}}} }
-                    {{/structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
                 });
           computedVariables:
             - propertyValueV2
@@ -1476,12 +1476,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#structSubPropertyApiName}}
+                    {{#hasStructSubProperty}}
                     {{property}}: { {{structSubPropertyApiName}}: { $within: { $distance: [100, "{{distanceUnit}}"], $of: [-74.0060, 40.7128]} }}
-                    {{/structSubPropertyApiName}}
-                    {{^structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
+                    {{^hasStructSubProperty}}
                     {{property}}: { $within: { $distance: [100, "{{distanceUnit}}"], $of: [-74.0060, 40.7128]}}
-                    {{/structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
                 })
       withinBoundingBoxTemplate:
         - template: |-
@@ -1491,12 +1491,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#structSubPropertyApiName}}
+                    {{#hasStructSubProperty}}
                     {{property}}: { {{structSubPropertyApiName}}: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}
-                    {{/structSubPropertyApiName}}
-                    {{^structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
+                    {{^hasStructSubProperty}}
                     {{property}}: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}
-                    {{/structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
 
                 });
       withinPolygonTemplate:
@@ -1507,12 +1507,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#structSubPropertyApiName}}
+                    {{#hasStructSubProperty}}
                     {{property}}: { {{structSubPropertyApiName}}: { $within: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}}
-                    {{/structSubPropertyApiName}}
-                    {{^structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
+                    {{^hasStructSubProperty}}
                     {{property}}: { $within: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}
-                    {{/structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
                 });
       intersectsPolygonTemplate:
         - template: |-
@@ -1522,12 +1522,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#structSubPropertyApiName}}
+                    {{#hasStructSubProperty}}
                     {{property}}: { {{structSubPropertyApiName}}: { $intersects: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]}}}
-                    {{/structSubPropertyApiName}}
-                    {{^structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
+                    {{^hasStructSubProperty}}
                     {{property}}: { $intersects: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]}}
-                    {{/structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
                 });
       intersectsBboxTemplate:
         - template: |-
@@ -1537,12 +1537,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#structSubPropertyApiName}}
+                    {{#hasStructSubProperty}}
                     {{property}}: { {{structSubPropertyApiName}} : { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}
-                    {{/structSubPropertyApiName}}
-                    {{^structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
+                    {{^hasStructSubProperty}}
                     {{property}} : { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}
-                    {{/structSubPropertyApiName}}
+                    {{/hasStructSubProperty}}
                 });
       notTemplate:
         - template: |-
