@@ -88,6 +88,104 @@ const baseContext = {
  * @param {string|null} blockKey The block key (e.g., "#hasStructSubProperty", "^hasStructSubProperty") or null for base
  * @returns {Object} A customized context object for the snippet
  */
+
+// Template configurations organized by category
+const TEMPLATE_CONFIGS = {
+  // Object templates
+  objects: {
+    "loadSingleObjectGuide": { propertyValueV2: 12345 },
+    "loadObjectsReference": { propertyValueV2: 12345 },
+    "loadAllObjectsReference": { propertyValueV2: 12345 },
+    "loadSingleObjectReference": { propertyValueV2: 12345 },
+    "loadObjectMetadataSnippet": { propertyValueV2: 12345 },
+    "loadObjectPageGuide": {},
+    "orderObjectsGuide": {},
+    "searchObjectsGuide": {},
+    "objectSetOperationsGuide": {},
+    "objectSetOperationsUnion": {},
+    "objectSetOperationsSubtract": {},
+    "objectSetOperationsIntersect": {},
+  },
+  
+  // Interface templates
+  interfaces: {
+    "loadInterfacesReference": { interfaceApiName: "HasAddress", property: "address" },
+    "loadAllInterfacesReference": { interfaceApiName: "HasAddress", property: "address" },
+    "loadOrderedInterfacesReference": { interfaceApiName: "HasAddress", property: "address" },
+    "searchInterfacesReference": { interfaceApiName: "HasAddress", property: "address" },
+    "loadInterfaceMetadataSnippet": { interfaceApiName: "HasAddress", property: "address" },
+    "castInterfaceToObjectReference": { interfaceApiName: "HasAddress", property: "address" },
+  },
+  
+  // Linked object templates
+  linkedObjects: {
+    "loadLinkedObjectReference": {
+      sourceObjectType: "Employee",
+      linkedObjectType: "Equipment", 
+      linkApiName: "assignedEquipment",
+      linkedPrimaryKeyPropertyV2: { apiName: "equipmentId", type: "string" }
+    },
+    "loadLinkedObjectsReference": {
+      sourceObjectType: "Equipment",
+      linkedObjectType: "Employee",
+      linkApiName: "assignedTo",
+      rawLinkedPrimaryKeyProperty: { apiName: "equipmentId" }
+    },
+    "searchAround": {
+      sourceObjectType: "Equipment",
+      linkedObjectType: "Employee", 
+      linkApiName: "assignedTo",
+      rawLinkedPrimaryKeyProperty: { apiName: "equipmentId" }
+    }
+  },
+  
+  // Aggregation templates
+  aggregations: {
+    "aggregationTemplate": { property: "department" },
+    "countAggregationTemplate": { property: "department" },
+    "approximateDistinctAggregationTemplate": { property: "department" },
+    "exactDistinctAggregationTemplate": { property: "department" },
+    "numericAggregationTemplate": { property: "salary", operation: "sum" }
+  },
+  
+  // Group by templates
+  groupBy: {
+    "exactGroupByTemplate": { property: "hourlyRate" },
+    "fixedWidthGroupByTemplate": { property: "hourlyRate" },
+    "rangeGroupByTemplate": { property: "salary", propertyValueV2: 100, propertyValueIncrementedV2: 200 }
+  },
+  
+  // Time series templates
+  timeSeries: {
+    "loadTimeSeriesPointsSnippet": { property: "employeeStatus", timeUnit: "hours" },
+    "loadRelativeTimeSeriesPointsSnippet": { property: "employeeStatus", timeUnit: "hours" },
+    "loadAbsoluteTimeSeriesPointsSnippet": { property: "employeeStatus", timeUnit: "hours" },
+    "loadTimeSeriesFirstPointSnippet": { property: "employeeStatus", timeUnit: "hours" },
+    "loadTimeSeriesLastPointSnippet": { property: "employeeStatus", timeUnit: "hours" }
+  },
+  
+  // Other templates with simple configurations
+  simple: {
+    "notTemplate": { property: "fullName", propertyValueV2: '"John Doe"' },
+    "andTemplate": { property: "fullName", propertyValueV2: '"John Doe"' },
+    "orTemplate": { property: "fullName", propertyValueV2: '"John Doe"' },
+    "containsTemplate": { property: "previousTitles", arrayElementValue: '"Product manager"' },
+    "uploadAttachment": {
+      primaryKeyPropertyV2: { apiName: "equipmentId", type: "string" },
+      actionParameterSampleValuesV2: '"mac-1234"',
+      property: "documentFile"
+    },
+    "executeFunction": {
+      funcApiName: "getTotalEmployeeCount",
+      functionInputValuesV2: "{}",
+      needsImports: true,
+      hasAttachmentImports: false,
+      hasAttachmentUpload: false,
+      attachmentProperty: null
+    }
+  }
+};
+
 // Define template hierarchy for nested blocks
 const templateHierarchy = {
   "applyAction": {
@@ -238,11 +336,141 @@ function getContextFromHierarchy(snippetKey, blockKey) {
   return {};
 }
 
+/**
+ * Optimized lookup function to find template configuration
+ * @param {string} snippetKey The snippet key to look up
+ * @returns {Object|null} The configuration object or null if not found
+ */
+function findTemplateConfig(snippetKey) {
+  // Search through all categories for the snippet
+  for (const category of Object.values(TEMPLATE_CONFIGS)) {
+    if (category[snippetKey]) {
+      return category[snippetKey];
+    }
+  }
+  return null;
+}
+
+/**
+ * Handle special block-based templates that need custom logic
+ * @param {string} snippetKey The snippet key
+ * @param {string} blockKey The block key
+ * @param {Object} context The context to modify
+ * @returns {boolean} True if handled, false if not a special case
+ */
+function handleSpecialBlockTemplates(snippetKey, blockKey, context) {
+  // Handle struct sub-property templates
+  const structTemplates = [
+    "stringStartsWithTemplate", "containsAllTermsInOrderTemplate", 
+    "containsAnyTermTemplate", "containsAllTermsTemplate", "rangeTemplate",
+    "equalityTemplate", "inFilterTemplate", "nullTemplate", 
+    "withinDistanceTemplate", "withinBoundingBoxTemplate", "withinPolygonTemplate",
+    "intersectsPolygonTemplate", "intersectsBboxTemplate"
+  ];
+  
+  if (structTemplates.includes(snippetKey)) {
+    return handleStructTemplates(snippetKey, blockKey, context);
+  }
+  
+  // Handle duration group by template
+  if (snippetKey === "durationGroupByTemplate") {
+    return handleDurationTemplate(blockKey, context);
+  }
+  
+  // Handle linked objects with special block handling
+  if (snippetKey === "loadLinkedObjectsReference" && blockKey === "#isLinkManySided") {
+    context.isLinkManySided = true;
+    return true;
+  }
+  
+  return false;
+}
+
+/**
+ * Handle struct-based templates with block variations
+ */
+function handleStructTemplates(snippetKey, blockKey, context) {
+  if (blockKey === "#hasStructSubProperty") {
+    context.hasStructSubProperty = true;
+    
+    // Different property mappings based on template type
+    if (["nullTemplate", "withinDistanceTemplate", "withinBoundingBoxTemplate", 
+         "withinPolygonTemplate", "intersectsPolygonTemplate", "intersectsBboxTemplate"].includes(snippetKey)) {
+      context.objectType = "Employee";
+      context.property = "contactInfo";
+      context.structSubPropertyApiName = "entrance";
+    } else if (snippetKey === "rangeTemplate") {
+      context.property = "contactInfo";
+      context.operation = "lt";
+      context.propertyValueV2 = 100;
+      context.structSubPropertyApiName = "houseNumber";
+    } else if (["equalityTemplate", "inFilterTemplate"].includes(snippetKey)) {
+      context.property = "contactInfo";
+      context.structPropertyApiName = "contactInfo";
+      context.structSubPropertyApiName = "phone";
+      context.propertyValueV2 = '"555-1234"';
+    } else {
+      // Default struct handling
+      context.property = "contactInfo";
+      context.structSubPropertyApiName = "phone";
+    }
+    return true;
+  } else if (blockKey === "^hasStructSubProperty") {
+    context.hasStructSubProperty = false;
+    
+    // Different property mappings for inverted blocks
+    if (["nullTemplate", "withinDistanceTemplate", "withinBoundingBoxTemplate", 
+         "withinPolygonTemplate", "intersectsPolygonTemplate", "intersectsBboxTemplate"].includes(snippetKey)) {
+      context.objectType = "Office";
+      context.property = "entrance";
+    } else if (snippetKey === "rangeTemplate") {
+      context.property = "salary";
+      context.operation = "lt";
+      context.propertyValueV2 = 100;
+    } else if (["equalityTemplate", "inFilterTemplate"].includes(snippetKey)) {
+      context.property = "department";
+      context.propertyValueV2 = '"Engineering"';
+    } else {
+      context.property = "fullName";
+    }
+    return true;
+  }
+  
+  // Base version for struct templates
+  if (!blockKey) {
+    context.property = "fullName";
+    context.structPropertyApiName = "contactInfo";
+    context.structSubPropertyApiName = "phone";
+    if (snippetKey === "rangeTemplate") {
+      context.operation = "lt";
+      context.propertyValueV2 = 100;
+    }
+    return true;
+  }
+  
+  return false;
+}
+
+/**
+ * Handle duration template variations
+ */
+function handleDurationTemplate(blockKey, context) {
+  const baseConfig = {
+    property: "startDate",
+    arg: "1",
+    unit: "days"
+  };
+  
+  Object.assign(context, baseConfig);
+  context.durationText = blockKey === "#durationText";
+  return true;
+}
+
 export function getSnippetContext(snippetKey, blockKey = null) {
   // Create a copy of the base context
   const context = { ...baseContext };
   
-  // Try to get context from hierarchy first
+  // Try to get context from hierarchy first (for complex hierarchical templates)
   if (blockKey && templateHierarchy[snippetKey]) {
     const hierarchyContext = getContextFromHierarchy(snippetKey, blockKey);
     Object.assign(context, hierarchyContext);
@@ -257,235 +485,32 @@ export function getSnippetContext(snippetKey, blockKey = null) {
     return context;
   }
   
-  // Fallback to the original switch-based logic for non-hierarchical templates
-  switch (snippetKey) {
-    // Base object handling
-    case "loadSingleObjectGuide":
-    case "loadObjectsReference":
-    case "loadAllObjectsReference":
-    case "loadSingleObjectReference":
-    case "loadObjectMetadataSnippet":
-      context.propertyValueV2 = 12345; // use as primary key for a Employee
-      break;
-    
-    case "loadObjectPageGuide":
-    case "orderObjectsGuide":
-    case "searchObjectsGuide":
-    case "objectSetOperationsGuide":
-    case "objectSetOperationsUnion":
-    case "objectSetOperationsSubtract":
-    case "objectSetOperationsIntersect":
-      // These use Employee with titleProperty
-      break;
-    
-    // Interface handling
-    case "loadInterfacesReference":
-    case "loadAllInterfacesReference":
-    case "loadOrderedInterfacesReference":
-    case "searchInterfacesReference":
-    case "loadInterfaceMetadataSnippet":
-    case "castInterfaceToObjectReference":
-      // These use HasAddress interface
-      context.interfaceApiName = "HasAddress";
-      context.property = "address";
-      break;
-    
-    // Linked object handling
-    case "loadLinkedObjectReference":
-      context.sourceObjectType = "Employee";
-      context.linkedObjectType = "Equipment";
-      context.linkApiName = "assignedEquipment";
-      context.linkedPrimaryKeyPropertyV2 = { apiName: "equipmentId", type: "string" };
-      break;
-      
-    case "loadLinkedObjectsReference":
-      if (blockKey === "#isLinkManySided") {
-        context.isLinkManySided = true;
-        break;
-      }     
-    case "searchAround":
-      context.sourceObjectType = "Equipment";
-      context.linkedObjectType = "Employee";
-      context.linkApiName = "assignedTo";
-      context.rawLinkedPrimaryKeyProperty = { apiName: "equipmentId" };
-      break;
-    
-    // Property templates 
-    case "stringStartsWithTemplate":
-    case "containsAllTermsInOrderTemplate":
-    case "containsAnyTermTemplate":
-    case "containsAllTermsTemplate":
-      if (blockKey === "#hasStructSubProperty") {
-        context.hasStructSubProperty = true;
-        context.property = "contactInfo";
-        context.structSubPropertyApiName = "phone";
-      } else if (blockKey === "^hasStructSubProperty") {
-        context.hasStructSubProperty = false;
-        context.property = "fullName";
-      } else {
-        // Base version
-        context.property = "fullName";
-        context.structPropertyApiName = "contactInfo";
-        context.structSubPropertyApiName = "phone";
-      }
-      break;
-            
-    // Range template
-    case "rangeTemplate":
-      if (blockKey === "#hasStructSubProperty") {
-        context.hasStructSubProperty = true;
-        context.property = "contactInfo";
-        context.operation = "lt";
-        context.propertyValueV2 = 100;
-        context.structSubPropertyApiName = "houseNumber";
-      } else if (blockKey === "^hasStructSubProperty") {
-        context.hasStructSubProperty = false;
-        context.property = "salary";
-        context.operation = "lt";
-        context.propertyValueV2 = 100;
-      } else {
-        // Base version - use default context values
-        context.operation = "lt";
-        context.propertyValueV2 = 100;
-      }
-      break;
-      
-    case "equalityTemplate":
-    case "inFilterTemplate":
-      if (blockKey === "#hasStructSubProperty") {
-        context.hasStructSubProperty = true;
-        context.property = "contactInfo";
-        context.structPropertyApiName = "contactInfo";
-        context.structSubPropertyApiName = "phone";
-        context.propertyValueV2 = `"555-1234"`;
-      } else if (blockKey === "^hasStructSubProperty") {
-        context.hasStructSubProperty = false;
-        context.property = "department";
-        context.propertyValueV2 = `"Engineering"`;
-      } 
-      break;
-    
-    case "nullTemplate":
-    case "withinDistanceTemplate":
-    case "withinBoundingBoxTemplate":
-    case "withinPolygonTemplate":
-    case "intersectsPolygonTemplate":
-    case "intersectsBboxTemplate":
-      if (blockKey === "#hasStructSubProperty") {
-        context.hasStructSubProperty = true;
-        context.objectType = "Employee";
-        context.property = "contactInfo";
-        context.structSubPropertyApiName = "entrance";
-      } else if (blockKey === "^hasStructSubProperty") {
-        context.hasStructSubProperty = false;
-        context.objectType = "Office";
-        context.property = "entrance";
-      } 
-      break;
-      
-    case "exactGroupByTemplate":
-    case "fixedWidthGroupByTemplate":
-      context.property = "hourlyRate";
-      break;
-    
-    case "rangeGroupByTemplate":
-      context.property = "salary";
-      context.propertyValueV2 = 100;
-      context.propertyValueIncrementedV2 = 200;
-      break;
-
-    case "durationGroupByTemplate":
-      if (blockKey === "#durationText") {
-        context.property = "startDate";
-        context.arg = "1";
-        context.unit = "days";
-        context.durationText = true;
-      } else if (blockKey === "^durationText") {
-        context.property = "startDate";
-        context.arg = "1";
-        context.unit = "days";
-        context.durationText = false;
-      } 
-      break;
-    
-    // andTemplate
-    case "notTemplate":
-    case "andTemplate":
-    case "orTemplate":
-      context.property = "fullName";
-      context.propertyValueV2 = `"John Doe"`;
-      break;
-
-    // Aggregation templates
-    case "aggregationTemplate":
-    case "countAggregationTemplate":
-    case "approximateDistinctAggregationTemplate":
-    case "exactDistinctAggregationTemplate":
-      context.property = "department";
-      break;
-    
-    case "numericAggregationTemplate":
-      context.property = "salary";
-      context.operation = "sum";
-      break;
-    
-    // Time series templates
-    case "loadTimeSeriesPointsSnippet":
-    case "loadRelativeTimeSeriesPointsSnippet":
-    case "loadAbsoluteTimeSeriesPointsSnippet":
-    case "loadTimeSeriesFirstPointSnippet":
-    case "loadTimeSeriesLastPointSnippet":
-      context.property = "employeeStatus";
-      context.timeUnit = "hours";
-      break;
-    
-    // Derived property templates
-    case "derivedPropertyBaseExample":
-    case "derivedPropertySelectPropertyAggregation":
-      context.linkName = "lead";
-      context.property = "fullName";
-      break;
-    case "derivedPropertyApproximateDistinctAggregation":
-    case "derivedPropertyExactDistinctAggregation":
-    case "derivedPropertyCollectToListAggregation":
-    case "derivedPropertyCollectToSetAggregation":
-    case "derivedPropertyCountAggregation":
-    case "derivedPropertyApproximatePercentileAggregation":
-      context.linkName = "assignedEquipment";
-      context.property = "purchasePrice";
-      break;
-    
-    case "derivedPropertyNumericAggregation":
-      context.linkName = "peeps";
-      context.property = "salary";
-      context.operation = "sum";
-      break;
-    
-    // Action templates
-    
-    case "executeFunction":
-      context.funcApiName = "getTotalEmployeeCount";
-      context.functionInputValuesV2 = "{}";
-      context.needsImports = true;
-      context.hasAttachmentImports = false;
-      context.hasAttachmentUpload = false;
-      context.attachmentProperty = null;
-      break;
-    
-    case "containsTemplate":
-      context.property = "previousTitles";
-      context.arrayElementValue = `"Product manager"`;
-      break;
-
-      case "uploadAttachment":
-        context.primaryKeyPropertyV2 = { apiName: "equipmentId", type: "string" },
-        context.actionParameterSampleValuesV2 = `"mac-1234"`
-        context.property = "documentFile"; // the attachment property
-        break;
-
-    // Default case - no customization needed
+  // Handle special block-based templates
+  if (blockKey && handleSpecialBlockTemplates(snippetKey, blockKey, context)) {
+    return context;
   }
   
+  // Look up simple template configuration
+  const templateConfig = findTemplateConfig(snippetKey);
+  if (templateConfig) {
+    Object.assign(context, templateConfig);
+    return context;
+  }
+  
+  // Handle derived property templates (these need special grouping logic)
+  if (snippetKey.startsWith("derivedProperty")) {
+    if (["derivedPropertyBaseExample", "derivedPropertySelectPropertyAggregation"].includes(snippetKey)) {
+      Object.assign(context, { linkName: "lead", property: "fullName" });
+    } else if (snippetKey === "derivedPropertyNumericAggregation") {
+      Object.assign(context, { linkName: "peeps", property: "salary", operation: "sum" });
+    } else {
+      // Most derived property templates use assignedEquipment
+      Object.assign(context, { linkName: "assignedEquipment", property: "purchasePrice" });
+    }
+    return context;
+  }
+  
+  // Default case - return base context
   return context;
 }
 

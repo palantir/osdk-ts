@@ -16,8 +16,11 @@
 
 import Handlebars from "handlebars";
 
+// Cache compiled templates to avoid recompilation
+const templateCache = new Map();
+
 /**
- * Process a template using Handlebars
+ * Process a template using Handlebars with caching for performance
  * @param {string} template The template string
  * @param {Object} context The context object with template variables
  * @returns {string} The processed template
@@ -25,15 +28,17 @@ import Handlebars from "handlebars";
 export function processTemplate(template, context) {
   try {
     // Fix spacing issues in package imports before processing
-    // This addresses the issue where the typescript-sdk-docs package has spaces around the curly braces in imports
-    // e.g.: "import { Timestamp } from \"{ {{packageName}} }\";"
     const fixedTemplate = template.replace(/\{\s+\{\{packageName\}\}\s+\}/g, "{{packageName}}");
     
-    // Compile and execute the template with the provided context
-    const compiledTemplate = Handlebars.compile(fixedTemplate);
+    // Check cache first
+    let compiledTemplate = templateCache.get(fixedTemplate);
+    if (!compiledTemplate) {
+      compiledTemplate = Handlebars.compile(fixedTemplate);
+      templateCache.set(fixedTemplate, compiledTemplate);
+    }
+    
     return compiledTemplate(context);
   } catch (error) {
-    // Instead of console.log, throw an error that can be caught by caller
     throw new Error(`Error processing template: ${error.message}`);
   }
 }

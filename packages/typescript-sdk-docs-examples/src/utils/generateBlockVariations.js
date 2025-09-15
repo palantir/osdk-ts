@@ -21,6 +21,23 @@ import { processTemplate } from "./processTemplate.js";
 import { getSnippetContext } from "./baseContext.js";
 
 /**
+ * Create optimized variable list for variations
+ * @param {string[]} blockVariables All block variables from template
+ * @returns {string[]} Deduplicated list of variables for variations
+ */
+function createVariationVariables(blockVariables) {
+  const regularVariables = blockVariables.filter(v => 
+    !v.startsWith("#") && !v.startsWith("^") && !v.startsWith("/")
+  );
+  
+  const commonVariables = [
+    "linkedObjectType", "packageName", "sourceObjectType", "linkApiName"
+  ];
+  
+  return [...new Set([...regularVariables, ...commonVariables])];
+}
+
+/**
  * Generate example file variations for each block variable in a template
  * @param {string} template The template string
  * @param {string} snippetKey The snippet key
@@ -80,20 +97,9 @@ ${standardCode}`;
       const standardPath = path.join(outputDir, "typescript", version, `${variationKey}.ts`);
       await fs.writeFile(standardPath, standardContent);
       
-      // Extract all regular variables used in the template (not block markers)
-      const regularVariables = blockVariables.filter(v => !v.startsWith("#") && !v.startsWith("^") && !v.startsWith("/"));
-      
-      // For the variation, include only regular variables (not block markers)
-      const variationVariables = [
-        ...regularVariables,        // Include all regular variables
-        "linkedObjectType",        // Common variables needed for most templates
-        "packageName",
-        "sourceObjectType",
-        "linkApiName"
-      ];
-      
-      // Add to variations object - remove duplicates
-      variations[variationKey] = [...new Set(variationVariables)];
+      // Create optimized variable list for variations
+      const variationVariables = createVariationVariables(blockVariables);
+      variations[variationKey] = variationVariables;
       
       // Log message can be enabled in production but disabled in tests
       // eslint-disable-next-line no-console
@@ -117,20 +123,9 @@ ${invertedCode}`;
       const invertedPath = path.join(outputDir, "typescript", version, `${variationKey}.ts`);
       await fs.writeFile(invertedPath, invertedContent);
       
-      // Extract all regular variables used in the template (not block markers)
-      const regularVariables = blockVariables.filter(v => !v.startsWith("#") && !v.startsWith("^") && !v.startsWith("/"));
-      
-      // For the variation, include only regular variables (not block markers)
-      const variationVariables = [
-        ...regularVariables,        // Include all regular variables
-        "linkedObjectType",        // Common variables needed for most templates
-        "packageName",
-        "sourceObjectType",
-        "linkApiName"
-      ];
-      
-      // Add to variations object - remove duplicates
-      variations[variationKey] = [...new Set(variationVariables)];
+      // Create optimized variable list for variations
+      const variationVariables = createVariationVariables(blockVariables);
+      variations[variationKey] = variationVariables;
       
       // Log message can be enabled in production but disabled in tests
       // eslint-disable-next-line no-console

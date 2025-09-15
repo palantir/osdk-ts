@@ -39,18 +39,11 @@ export const client: Client = createClient(
   $ontologyRid,
   getToken,
 );
-
 `;
 
-
-
-
-  const dirPath = path.join(outputDir, "typescript", version);
-  const clientFilePath = path.join(dirPath, "client.ts");
-  
+  const clientFilePath = path.join(outputDir, "typescript", version, "client.ts");
   await fs.writeFile(clientFilePath, clientTemplate);
   
-  // Log message can be enabled in production but disabled in tests
   // eslint-disable-next-line no-console
   console.log(`✓ Generated client.ts for typescript/${version}`);
 }
