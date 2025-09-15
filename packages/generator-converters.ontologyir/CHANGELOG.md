@@ -1,5 +1,16 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.5.0-beta.6
+
+### Minor Changes
+
+- cbcf2ad: Add branching support
+
+### Patch Changes
+
+- Updated dependencies [04fe946]
+  - @osdk/client.unstable@2.5.0-beta.6
+
 ## 2.5.0-beta.5
 
 ### Patch Changes
