@@ -16,10 +16,25 @@
 
 /**
  * This file exports the generated SDK and documentation examples
+ * 
+ * Example usage:
+ * ```typescript
+ * import { TYPESCRIPT_OSDK_EXAMPLES } from "@osdk/typescript-sdk-docs-examples";
+ * 
+ * // Access example hierarchy similar to TYPESCRIPT_OSDK_SNIPPETS
+ * const examples = TYPESCRIPT_OSDK_EXAMPLES.versions["2.0.0"].examples;
+ * const loadObjectGuideExample = examples["loadSingleObjectGuide"];
+ * 
+ * console.log(loadObjectGuideExample.filePath); // "examples/typescript/2.0.0/loadSingleObjectGuide.ts"
+ * console.log(loadObjectGuideExample.code);     // The actual trimmed TypeScript code content
+ * ```
  */
 
 // Export the generated SDK
 export * from './generatedNoCheck/index.js';
+
+// Export examples hierarchy
+export { TYPESCRIPT_OSDK_EXAMPLES } from './typescriptOsdkExamples.js';
 
 // Export documentation sections schema and data
 export const DOCS_SCHEMA_PATH = './osdk-docs-schema.json';

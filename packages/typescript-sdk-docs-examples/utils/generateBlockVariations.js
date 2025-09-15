@@ -99,7 +99,10 @@ ${standardCode}`;
       
       // Create optimized variable list for variations
       const variationVariables = createVariationVariables(blockVariables);
-      variations[variationKey] = variationVariables;
+      variations[variationKey] = {
+        variables: variationVariables,
+        code: standardCode.trim() // Include the generated code content
+      };
       
       // Log message can be enabled in production but disabled in tests
       // eslint-disable-next-line no-console
@@ -125,7 +128,10 @@ ${invertedCode}`;
       
       // Create optimized variable list for variations
       const variationVariables = createVariationVariables(blockVariables);
-      variations[variationKey] = variationVariables;
+      variations[variationKey] = {
+        variables: variationVariables,
+        code: invertedCode.trim() // Include the generated code content
+      };
       
       // Log message can be enabled in production but disabled in tests
       // eslint-disable-next-line no-console

@@ -29,7 +29,7 @@ import {
   findBlockVariables,
   processTemplate,
   generateBlockVariations
-} from "./src/utils/index.js";
+} from "./utils/index.js";
 
 
 // Import necessary modules
@@ -88,6 +88,16 @@ async function generateAllExamples(snippets, version) {
   // Create a snippetVariables object to track handlebars variables
   const snippetVariables = {};
   
+  // Create examples hierarchy object to track generated files
+  const examplesHierarchy = {
+    kind: "examples",
+    versions: {
+      [version]: {
+        examples: {}
+      }
+    }
+  };
+  
   // Create index file content using the common header utility
   let indexContent = `${generateFileHeader(`index`, `TYPESCRIPT Examples - SDK Version ${version}`)}
 // This file was automatically generated from the typescript-sdk-docs package
@@ -134,9 +144,16 @@ async function generateAllExamples(snippets, version) {
         OUTPUT_DIR
       );
       
-      // Add each variation to snippetVariables
+      // Add each variation to snippetVariables and hierarchy
       for (const variationKey in variations) {
-        snippetVariables[variationKey] = variations[variationKey];
+        const variation = variations[variationKey];
+        snippetVariables[variationKey] = variation.variables;
+        
+        // Add to hierarchy with trimmed code content
+        examplesHierarchy.versions[version].examples[variationKey] = {
+          filePath: `examples/typescript/${version}/${variationKey}.ts`,
+          code: variation.code // Include the actual generated code content
+        };
       }
       
       // Add to index for variations only (no base file)
@@ -178,6 +195,12 @@ async function generateAllExamples(snippets, version) {
       const filePath = path.join(OUTPUT_DIR, "typescript", version, `${snippetKey}.ts`);
       await fs.writeFile(filePath, fileContent);
       
+      // Add to hierarchy with trimmed code content
+      examplesHierarchy.versions[version].examples[snippetKey] = {
+        filePath: `examples/typescript/${version}/${snippetKey}.ts`,
+        code: processedCode.trim() // Include the actual generated code content
+      };
+      
       // Add to index
       indexContent += `// ${snippetKey}\n// See: ./${snippetKey}.ts\n\n`;
       
@@ -198,6 +221,42 @@ async function generateAllExamples(snippets, version) {
     "utf8"
   );
   console.log("✓ Generated snippetVariables.json");
+  
+  // Write the examples hierarchy as a TypeScript file for easier importing
+  const hierarchyContent = `/*
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * WARNING: This file is generated automatically by the generateExamples.mjs script.
+ * DO NOT MODIFY this file directly as your changes will be overwritten.
+ */
+
+/**
+ * Generated examples hierarchy for SDK documentation
+ * This provides a mapping of example names to their file paths
+ * similar to how TYPESCRIPT_OSDK_SNIPPETS works for templates
+ */
+export const TYPESCRIPT_OSDK_EXAMPLES = ${JSON.stringify(examplesHierarchy, null, 2)} as const;
+`;
+
+  await fs.writeFile(
+    path.join(__dirname, "src", "typescriptOsdkExamples.ts"),
+    hierarchyContent,
+    "utf8"
+  );
+  console.log("✓ Generated typescriptOsdkExamples.ts");
+  
   console.log("✓ All examples generated");
 }
 
