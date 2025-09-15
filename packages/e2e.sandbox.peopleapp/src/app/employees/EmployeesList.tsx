@@ -47,9 +47,13 @@ interface EmployeesListProps {
 
 export function EmployeesList(props: EmployeesListProps) {
   const employees = useObjectSet($(Employee), {
+    where: {
+      "department": "Media Team",
+    },
     withProperties: {
       peepCount: (base) => base.pivotTo("peeps").aggregate("$count"),
     },
+    dedupeIntervalMs: 5000,
   });
 
   const listResult: UseOsdkListResult<Employee> = {

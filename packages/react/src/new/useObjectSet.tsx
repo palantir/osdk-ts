@@ -27,6 +27,76 @@ import type {
 import { getWireObjectSet } from "@osdk/client/internal";
 import React from "react";
 
+interface CacheEntry<T> {
+  data?: T;
+  error?: Error;
+  isLoading: boolean;
+  revalidate: () => Promise<void>;
+}
+
+interface ObjectSetCache {
+  get(key: string): CacheEntry<any> | undefined;
+  set(key: string, entry: CacheEntry<any>): void;
+  subscribe(key: string, callback: () => void): () => void;
+  invalidate(key: string): void;
+  invalidateAll(): void;
+  invalidateByPattern(pattern: (key: string) => boolean): void;
+}
+
+export const ObjectSetCacheContext: React.Context<ObjectSetCache | null> = React
+  .createContext<ObjectSetCache | null>(null);
+
+export function ObjectSetProvider(
+  { children }: { children: React.ReactNode },
+): React.JSX.Element {
+  const cache = React.useRef(new Map<string, CacheEntry<any>>());
+  const subscribers = React.useRef(new Map<string, Set<() => void>>());
+
+  const cacheInterface: ObjectSetCache = React.useMemo(() => ({
+    get: (key) => cache.current.get(key),
+    set: (key, entry) => {
+      cache.current.set(key, entry);
+      subscribers.current.get(key)?.forEach(cb => cb());
+    },
+    subscribe: (key, callback) => {
+      if (!subscribers.current.has(key)) {
+        subscribers.current.set(key, new Set());
+      }
+      subscribers.current.get(key)!.add(callback);
+
+      return () => {
+        subscribers.current.get(key)?.delete(callback);
+      };
+    },
+    invalidate: (key) => {
+      const entry = cache.current.get(key);
+      if (entry?.revalidate) {
+        void entry.revalidate();
+      }
+    },
+    invalidateAll: () => {
+      for (const [_, entry] of cache.current) {
+        if (entry?.revalidate) {
+          void entry.revalidate();
+        }
+      }
+    },
+    invalidateByPattern: (pattern) => {
+      for (const [key, entry] of cache.current) {
+        if (pattern(key) && entry?.revalidate) {
+          void entry.revalidate();
+        }
+      }
+    },
+  }), []);
+
+  return (
+    <ObjectSetCacheContext.Provider value={cacheInterface}>
+      {children}
+    </ObjectSetCacheContext.Provider>
+  );
+}
+
 export interface UseObjectSetOptions<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
@@ -72,6 +142,11 @@ export interface UseObjectSetOptions<
   orderBy?: {
     [K in PropertyKeys<Q>]?: "asc" | "desc";
   };
+
+  /**
+   * Minimum time between fetch requests in milliseconds (defaults to 2000ms)
+   */
+  dedupeIntervalMs?: number;
 }
 
 export interface UseObjectSetResult<
@@ -104,6 +179,11 @@ export interface UseObjectSetResult<
    * The final ObjectSet after all transformations
    */
   objectSet: ObjectSet<Q, RDPs>;
+
+  /**
+   * Function to revalidate/refetch the data
+   */
+  revalidate: () => Promise<void>;
 }
 
 type ObjectSetQueryKey<Q extends ObjectOrInterfaceDefinition> = [
@@ -119,6 +199,7 @@ type ObjectSetQueryKey<Q extends ObjectOrInterfaceDefinition> = [
     orderBy?: {
       [K in PropertyKeys<Q>]?: "asc" | "desc";
     };
+    dedupeIntervalMs?: number;
   },
 ];
 
@@ -145,6 +226,7 @@ function getQueryKey<
     pivotTo: options.pivotTo,
     pageSize: options.pageSize,
     orderBy: options.orderBy,
+    dedupeIntervalMs: options.dedupeIntervalMs,
   };
 
   return [baseKey, optionsKey];
@@ -158,6 +240,7 @@ export function useObjectSet<
   baseObjectSet: ObjectSet<Q, BaseRDPs>,
   options: UseObjectSetOptions<Q, RDPs> = {},
 ): UseObjectSetResult<Q, RDPs> {
+  const cache = React.useContext(ObjectSetCacheContext);
   const [data, setData] = React.useState<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
   >();
@@ -165,6 +248,8 @@ export function useObjectSet<
   const [error, setError] = React.useState<Error>();
   const [nextPageToken, setNextPageToken] = React.useState<string>();
   const isMountedRef = React.useRef(true);
+  const lastFetchStartedRef = React.useRef<number>();
+  const pendingFetchRef = React.useRef<Promise<void>>();
 
   const queryKey = React.useMemo(
     () => getQueryKey(baseObjectSet, options),
@@ -178,6 +263,7 @@ export function useObjectSet<
       options.pivotTo,
       options.pageSize,
       options.orderBy,
+      options.dedupeIntervalMs,
     ],
   );
   const serializedKey = React.useMemo(
@@ -216,49 +302,113 @@ export function useObjectSet<
       ...(options.orderBy && { $orderBy: options.orderBy }),
     };
 
-    return finalObjectSet.fetchPage(fetchArgs);
+    const result = await finalObjectSet.fetchPage(fetchArgs);
+    return result.data as Osdk.Instance<
+      Q,
+      "$allBaseProperties",
+      PropertyKeys<Q>,
+      RDPs
+    >[];
   }, [serializedKey]);
 
-  React.useEffect(() => {
-    isMountedRef.current = true;
-    let cancelled = false;
+  const revalidate = React.useCallback(async () => {
+    const dedupeInterval = options.dedupeIntervalMs ?? 2_000;
+    if (
+      lastFetchStartedRef.current
+      && Date.now() - lastFetchStartedRef.current < dedupeInterval
+    ) {
+      return pendingFetchRef.current || Promise.resolve();
+    }
 
-    async function doFetch() {
+    if (pendingFetchRef.current) {
+      return pendingFetchRef.current;
+    }
+
+    lastFetchStartedRef.current = Date.now();
+
+    const fetchPromise = (async () => {
       setIsLoading(true);
       setError(undefined);
 
       try {
         const result = await fetcher();
 
-        if (!cancelled && isMountedRef.current) {
-          setData(
-            result.data as Osdk.Instance<
-              Q,
-              "$allBaseProperties",
-              PropertyKeys<Q>,
-              RDPs
-            >[],
-          );
-          setNextPageToken(result.nextPageToken);
+        if (isMountedRef.current) {
+          setData(result);
+          setNextPageToken(undefined);
         }
-      } catch (error) {
-        if (!cancelled && isMountedRef.current) {
-          setError(error instanceof Error ? error : new Error(String(error)));
+      } catch (err) {
+        if (isMountedRef.current) {
+          setError(err instanceof Error ? err : new Error(String(err)));
         }
       } finally {
-        if (!cancelled && isMountedRef.current) {
+        if (isMountedRef.current) {
           setIsLoading(false);
         }
+        pendingFetchRef.current = undefined;
+      }
+    })();
+
+    pendingFetchRef.current = fetchPromise;
+    return fetchPromise;
+  }, [fetcher, options.dedupeIntervalMs]);
+
+  React.useEffect(() => {
+    if (!cache) return;
+
+    const entry: CacheEntry<
+      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
+    > = {
+      data,
+      error,
+      isLoading,
+      revalidate,
+    };
+
+    cache.set(serializedKey, entry);
+  }, [
+    cache,
+    serializedKey,
+    data,
+    error,
+    isLoading,
+    revalidate,
+  ]);
+
+  React.useEffect(() => {
+    if (!cache) return;
+
+    const unsubscribe = cache.subscribe(serializedKey, () => {
+      const entry = cache.get(serializedKey);
+      if (entry) {
+        setData(entry.data);
+        setError(entry.error);
+        setIsLoading(entry.isLoading);
+      }
+    });
+
+    return unsubscribe;
+  }, [cache, serializedKey]);
+
+  React.useEffect(() => {
+    isMountedRef.current = true;
+
+    if (cache) {
+      const cached = cache.get(serializedKey);
+      if (cached?.data) {
+        setData(cached.data);
+        setIsLoading(false);
+        setError(cached.error);
+        return;
       }
     }
 
-    void doFetch();
+    void revalidate();
 
     return () => {
-      cancelled = true;
       isMountedRef.current = false;
     };
-  }, [serializedKey, fetcher]);
+  }, [serializedKey, cache, revalidate]);
 
   const fetchMore = React.useCallback(async () => {
     if (!nextPageToken || isLoading) return;
@@ -274,29 +424,28 @@ export function useObjectSet<
       const result = await finalObjectSet.fetchPage(fetchArgs);
 
       if (isMountedRef.current) {
-        setData(
-          prev => [
-            ...(prev || []),
-            ...result.data as Osdk.Instance<
-              Q,
-              "$allBaseProperties",
-              PropertyKeys<Q>,
-              RDPs
-            >[],
-          ],
-        );
+        const newData = [
+          ...(data || []),
+          ...result.data as Osdk.Instance<
+            Q,
+            "$allBaseProperties",
+            PropertyKeys<Q>,
+            RDPs
+          >[],
+        ];
+        setData(newData);
         setNextPageToken(result.nextPageToken);
       }
-    } catch (error) {
+    } catch (err) {
       if (isMountedRef.current) {
-        setError(error instanceof Error ? error : new Error(String(error)));
+        setError(err instanceof Error ? err : new Error(String(err)));
       }
     } finally {
       if (isMountedRef.current) {
         setIsLoading(false);
       }
     }
-  }, [nextPageToken, isLoading, serializedKey]);
+  }, [nextPageToken, isLoading, data, serializedKey]);
 
   return {
     data,
@@ -304,5 +453,6 @@ export function useObjectSet<
     error,
     fetchMore: nextPageToken ? fetchMore : undefined,
     objectSet: finalObjectSet,
+    revalidate,
   };
 }
