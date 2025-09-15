@@ -4,8 +4,5 @@ src/generatedNoCheck/
 src/examples/**/*
 .turbo/
 *.tsbuildinfo
-# Utility JS files that aren't part of TS project 
+# Utility JS files used for build process, not part of main codebase
 src/utils/
-src/utils/**
-src/utils/*.js
-src/utils/**/*.js

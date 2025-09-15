@@ -39,6 +39,7 @@ export const client: Client = createClient(
   $ontologyRid,
   getToken,
 );
+
 `;
 
   const clientFilePath = path.join(outputDir, "typescript", version, "client.ts");

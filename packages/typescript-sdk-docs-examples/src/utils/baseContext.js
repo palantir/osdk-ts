@@ -15,6 +15,61 @@
  */
 
 /**
+ * TEMPLATE CONTEXT SYSTEM DOCUMENTATION
+ * ====================================
+ * 
+ * This file implements a template context system for generating SDK documentation examples.
+ * The system provides different ways to customize template variables based on template type and variations.
+ * 
+ * ## How to Find Template Parameters
+ * 
+ * Given a template name, you can find its exact parameters using:
+ * 
+ * 1. **Simple Templates**: Use `TEMPLATE_REGISTRY[templateName]`
+ *    Example: TEMPLATE_REGISTRY["loadSingleObjectGuide"] = { propertyValueV2: 12345 }
+ * 
+ * 2. **Hierarchical Templates**: Use `templateHierarchy[templateName][blockKey].context`
+ *    Example: templateHierarchy["stringStartsWithTemplate"]["#hasStructSubProperty"].context = { hasStructSubProperty: true, ... }
+ *    Example: templateHierarchy["applyAction"]["#hasAttachmentProperty"].context = { objectType: "Equipment", ... }
+ * 
+ * ## Template Types
+ * 
+ * ### 1. Simple Templates (TEMPLATE_REGISTRY)
+ * - Templates that need the same parameters every time
+ * - Direct parameter overrides over baseContext
+ * - Example: "loadSingleObjectGuide", "uploadAttachment"
+ * 
+ * ### 2. Hierarchical Templates (templateHierarchy)
+ * - Templates with block variations and optional nested relationships
+ * - Block keys starting with "#" are standard blocks (condition = true)
+ * - Block keys starting with "^" are inverted blocks (condition = false)
+ * - Support parent-child block inheritance via optional `children` property
+ * - Structure: templateName -> blockKey -> { context: {...}, children?: {...} }
+ * - Examples: "stringStartsWithTemplate" (simple hierarchy), "applyAction" (nested hierarchy)
+ * 
+ * ## Usage Examples
+ * 
+ * ```javascript
+ * // Simple template - gets baseContext + TEMPLATE_REGISTRY overrides
+ * getSnippetContext("loadSingleObjectGuide") 
+ * 
+ * // Hierarchical template (single level) - gets baseContext + block context
+ * getSnippetContext("stringStartsWithTemplate", "#hasStructSubProperty")
+ * 
+ * // Hierarchical template (nested) - gets baseContext + parent + child context
+ * getSnippetContext("applyAction", "#hasAttachmentUpload") // child of #hasAttachmentProperty
+ * ```
+ * 
+ * ## Adding New Templates
+ * 
+ * 1. **Simple template**: Add to TEMPLATE_REGISTRY
+ * 2. **Template with variations**: Add to templateHierarchy (with or without children)
+ * 3. **Complex nested template**: Add to templateHierarchy with children
+ * 
+ * All templates start with `baseContext` as the foundation and apply specific overrides.
+ */
+
+/**
  * Base context object with all variables needed for template processing
  * This serves as a central repository for all variables that could be needed
  * by any template when generating examples
@@ -89,105 +144,225 @@ const baseContext = {
  * @returns {Object} A customized context object for the snippet
  */
 
-// Template configurations organized by category
-const TEMPLATE_CONFIGS = {
-  // Object templates
-  objects: {
-    "loadSingleObjectGuide": { propertyValueV2: 12345 },
-    "loadObjectsReference": { propertyValueV2: 12345 },
-    "loadAllObjectsReference": { propertyValueV2: 12345 },
-    "loadSingleObjectReference": { propertyValueV2: 12345 },
-    "loadObjectMetadataSnippet": { propertyValueV2: 12345 },
-    "loadObjectPageGuide": {},
-    "orderObjectsGuide": {},
-    "searchObjectsGuide": {},
-    "objectSetOperationsGuide": {},
-    "objectSetOperationsUnion": {},
-    "objectSetOperationsSubtract": {},
-    "objectSetOperationsIntersect": {},
+/**
+ * Complete template configuration registry
+ * Easy lookup: TEMPLATE_REGISTRY[templateName] gives you all parameters
+ */
+const TEMPLATE_REGISTRY = {
+  // === OBJECT TEMPLATES ===
+  "loadSingleObjectGuide": { propertyValueV2: 12345 },
+  "loadObjectsReference": { propertyValueV2: 12345 },
+  "loadAllObjectsReference": { propertyValueV2: 12345 },
+  "loadSingleObjectReference": { propertyValueV2: 12345 },
+  "loadObjectMetadataSnippet": { propertyValueV2: 12345 },
+  "loadObjectPageGuide": {},
+  "orderObjectsGuide": {},
+  "searchObjectsGuide": {},
+  "objectSetOperationsGuide": {},
+  "objectSetOperationsUnion": {},
+  "objectSetOperationsSubtract": {},
+  "objectSetOperationsIntersect": {},
+
+  // === INTERFACE TEMPLATES ===
+  "loadInterfacesReference": { interfaceApiName: "HasAddress", property: "address" },
+  "loadAllInterfacesReference": { interfaceApiName: "HasAddress", property: "address" },
+  "loadOrderedInterfacesReference": { interfaceApiName: "HasAddress", property: "address" },
+  "searchInterfacesReference": { interfaceApiName: "HasAddress", property: "address" },
+  "loadInterfaceMetadataSnippet": { interfaceApiName: "HasAddress", property: "address" },
+  "castInterfaceToObjectReference": { interfaceApiName: "HasAddress", property: "address" },
+
+  // === LINKED OBJECT TEMPLATES ===
+  "loadLinkedObjectReference": {
+    sourceObjectType: "Employee",
+    linkedObjectType: "Equipment", 
+    linkApiName: "assignedEquipment",
+    linkedPrimaryKeyPropertyV2: { apiName: "equipmentId", type: "string" }
   },
-  
-  // Interface templates
-  interfaces: {
-    "loadInterfacesReference": { interfaceApiName: "HasAddress", property: "address" },
-    "loadAllInterfacesReference": { interfaceApiName: "HasAddress", property: "address" },
-    "loadOrderedInterfacesReference": { interfaceApiName: "HasAddress", property: "address" },
-    "searchInterfacesReference": { interfaceApiName: "HasAddress", property: "address" },
-    "loadInterfaceMetadataSnippet": { interfaceApiName: "HasAddress", property: "address" },
-    "castInterfaceToObjectReference": { interfaceApiName: "HasAddress", property: "address" },
+  "loadLinkedObjectsReference": {
+    sourceObjectType: "Equipment",
+    linkedObjectType: "Employee",
+    linkApiName: "assignedTo",
+    rawLinkedPrimaryKeyProperty: { apiName: "equipmentId" }
   },
-  
-  // Linked object templates
-  linkedObjects: {
-    "loadLinkedObjectReference": {
-      sourceObjectType: "Employee",
-      linkedObjectType: "Equipment", 
-      linkApiName: "assignedEquipment",
-      linkedPrimaryKeyPropertyV2: { apiName: "equipmentId", type: "string" }
-    },
-    "loadLinkedObjectsReference": {
-      sourceObjectType: "Equipment",
-      linkedObjectType: "Employee",
-      linkApiName: "assignedTo",
-      rawLinkedPrimaryKeyProperty: { apiName: "equipmentId" }
-    },
-    "searchAround": {
-      sourceObjectType: "Equipment",
-      linkedObjectType: "Employee", 
-      linkApiName: "assignedTo",
-      rawLinkedPrimaryKeyProperty: { apiName: "equipmentId" }
-    }
+  "searchAround": {
+    sourceObjectType: "Equipment",
+    linkedObjectType: "Employee", 
+    linkApiName: "assignedTo",
+    rawLinkedPrimaryKeyProperty: { apiName: "equipmentId" }
   },
-  
-  // Aggregation templates
-  aggregations: {
-    "aggregationTemplate": { property: "department" },
-    "countAggregationTemplate": { property: "department" },
-    "approximateDistinctAggregationTemplate": { property: "department" },
-    "exactDistinctAggregationTemplate": { property: "department" },
-    "numericAggregationTemplate": { property: "salary", operation: "sum" }
+
+  // === AGGREGATION TEMPLATES ===
+  "aggregationTemplate": { property: "department" },
+  "countAggregationTemplate": { property: "department" },
+  "approximateDistinctAggregationTemplate": { property: "department" },
+  "exactDistinctAggregationTemplate": { property: "department" },
+  "numericAggregationTemplate": { property: "salary", operation: "sum" },
+
+  // === GROUP BY TEMPLATES ===
+  "exactGroupByTemplate": { property: "hourlyRate" },
+  "fixedWidthGroupByTemplate": { property: "hourlyRate" },
+  "rangeGroupByTemplate": { property: "salary", propertyValueV2: 100, propertyValueIncrementedV2: 200 },
+
+  // === TIME SERIES TEMPLATES ===
+  "loadTimeSeriesPointsSnippet": { property: "employeeStatus", timeUnit: "hours" },
+  "loadRelativeTimeSeriesPointsSnippet": { property: "employeeStatus", timeUnit: "hours" },
+  "loadAbsoluteTimeSeriesPointsSnippet": { property: "employeeStatus", timeUnit: "hours" },
+  "loadTimeSeriesFirstPointSnippet": { property: "employeeStatus", timeUnit: "hours" },
+  "loadTimeSeriesLastPointSnippet": { property: "employeeStatus", timeUnit: "hours" },
+
+  // === SIMPLE TEMPLATES ===
+  "notTemplate": { property: "fullName", propertyValueV2: '"John Doe"' },
+  "andTemplate": { property: "fullName", propertyValueV2: '"John Doe"' },
+  "orTemplate": { property: "fullName", propertyValueV2: '"John Doe"' },
+  "containsTemplate": { property: "previousTitles", arrayElementValue: '"Product manager"' },
+  "uploadAttachment": {
+    primaryKeyPropertyV2: { apiName: "equipmentId", type: "string" },
+    actionParameterSampleValuesV2: '"mac-1234"',
+    property: "documentFile"
   },
-  
-  // Group by templates
-  groupBy: {
-    "exactGroupByTemplate": { property: "hourlyRate" },
-    "fixedWidthGroupByTemplate": { property: "hourlyRate" },
-    "rangeGroupByTemplate": { property: "salary", propertyValueV2: 100, propertyValueIncrementedV2: 200 }
+  "executeFunction": {
+    funcApiName: "getTotalEmployeeCount",
+    functionInputValuesV2: "{}",
+    needsImports: true,
+    hasAttachmentImports: false,
+    hasAttachmentUpload: false,
+    attachmentProperty: null
   },
-  
-  // Time series templates
-  timeSeries: {
-    "loadTimeSeriesPointsSnippet": { property: "employeeStatus", timeUnit: "hours" },
-    "loadRelativeTimeSeriesPointsSnippet": { property: "employeeStatus", timeUnit: "hours" },
-    "loadAbsoluteTimeSeriesPointsSnippet": { property: "employeeStatus", timeUnit: "hours" },
-    "loadTimeSeriesFirstPointSnippet": { property: "employeeStatus", timeUnit: "hours" },
-    "loadTimeSeriesLastPointSnippet": { property: "employeeStatus", timeUnit: "hours" }
-  },
-  
-  // Other templates with simple configurations
-  simple: {
-    "notTemplate": { property: "fullName", propertyValueV2: '"John Doe"' },
-    "andTemplate": { property: "fullName", propertyValueV2: '"John Doe"' },
-    "orTemplate": { property: "fullName", propertyValueV2: '"John Doe"' },
-    "containsTemplate": { property: "previousTitles", arrayElementValue: '"Product manager"' },
-    "uploadAttachment": {
-      primaryKeyPropertyV2: { apiName: "equipmentId", type: "string" },
-      actionParameterSampleValuesV2: '"mac-1234"',
-      property: "documentFile"
-    },
-    "executeFunction": {
-      funcApiName: "getTotalEmployeeCount",
-      functionInputValuesV2: "{}",
-      needsImports: true,
-      hasAttachmentImports: false,
-      hasAttachmentUpload: false,
-      attachmentProperty: null
-    }
-  }
+
+  // === DERIVED PROPERTY TEMPLATES ===
+  "derivedPropertyBaseExample": { linkName: "lead", property: "fullName" },
+  "derivedPropertySelectPropertyAggregation": { linkName: "lead", property: "fullName" },
+  "derivedPropertyNumericAggregation": { linkName: "peeps", property: "salary", operation: "sum" },
+  // Most other derived property templates
+  "derivedPropertyApproximateDistinctAggregation": { linkName: "assignedEquipment", property: "purchasePrice" },
+  "derivedPropertyExactDistinctAggregation": { linkName: "assignedEquipment", property: "purchasePrice" },
+  "derivedPropertyCollectToListAggregation": { linkName: "assignedEquipment", property: "purchasePrice" },
+  "derivedPropertyCollectToSetAggregation": { linkName: "assignedEquipment", property: "purchasePrice" },
+  "derivedPropertyCountAggregation": { linkName: "assignedEquipment", property: "purchasePrice" },
+  "derivedPropertyApproximatePercentileAggregation": { linkName: "assignedEquipment", property: "purchasePrice" },
 };
 
-// Define template hierarchy for nested blocks
 const templateHierarchy = {
+  // === STRUCT SUB-PROPERTY TEMPLATES 
+  "stringStartsWithTemplate": {
+    "#hasStructSubProperty": {
+      context: { hasStructSubProperty: true, property: "contactInfo", structSubPropertyApiName: "phone" }
+    },
+    "^hasStructSubProperty": {
+      context: { hasStructSubProperty: false, property: "fullName" }
+    }
+  },
+  "containsAllTermsInOrderTemplate": {
+    "#hasStructSubProperty": {
+      context: { hasStructSubProperty: true, property: "contactInfo", structSubPropertyApiName: "phone" }
+    },
+    "^hasStructSubProperty": {
+      context: { hasStructSubProperty: false, property: "fullName" }
+    }
+  },
+  "containsAnyTermTemplate": {
+    "#hasStructSubProperty": {
+      context: { hasStructSubProperty: true, property: "contactInfo", structSubPropertyApiName: "phone" }
+    },
+    "^hasStructSubProperty": {
+      context: { hasStructSubProperty: false, property: "fullName" }
+    }
+  },
+  "containsAllTermsTemplate": {
+    "#hasStructSubProperty": {
+      context: { hasStructSubProperty: true, property: "contactInfo", structSubPropertyApiName: "phone" }
+    },
+    "^hasStructSubProperty": {
+      context: { hasStructSubProperty: false, property: "fullName" }
+    }
+  },
+  "rangeTemplate": {
+    "#hasStructSubProperty": {
+      context: { hasStructSubProperty: true, property: "contactInfo", operation: "lt", propertyValueV2: 100, structSubPropertyApiName: "houseNumber" }
+    },
+    "^hasStructSubProperty": {
+      context: { hasStructSubProperty: false, property: "salary", operation: "lt", propertyValueV2: 100 }
+    }
+  },
+  "equalityTemplate": {
+    "#hasStructSubProperty": {
+      context: { hasStructSubProperty: true, property: "contactInfo", structPropertyApiName: "contactInfo", structSubPropertyApiName: "phone", propertyValueV2: '"555-1234"' }
+    },
+    "^hasStructSubProperty": {
+      context: { hasStructSubProperty: false, property: "department", propertyValueV2: '"Engineering"' }
+    }
+  },
+  "inFilterTemplate": {
+    "#hasStructSubProperty": {
+      context: { hasStructSubProperty: true, property: "contactInfo", structPropertyApiName: "contactInfo", structSubPropertyApiName: "phone", propertyValueV2: '"555-1234"' }
+    },
+    "^hasStructSubProperty": {
+      context: { hasStructSubProperty: false, property: "department", propertyValueV2: '"Engineering"' }
+    }
+  },
+  "nullTemplate": {
+    "#hasStructSubProperty": {
+      context: { hasStructSubProperty: true, objectType: "Employee", property: "contactInfo", structSubPropertyApiName: "entrance" }
+    },
+    "^hasStructSubProperty": {
+      context: { hasStructSubProperty: false, objectType: "Office", property: "entrance" }
+    }
+  },
+  "withinDistanceTemplate": {
+    "#hasStructSubProperty": {
+      context: { hasStructSubProperty: true, objectType: "Employee", property: "contactInfo", structSubPropertyApiName: "entrance" }
+    },
+    "^hasStructSubProperty": {
+      context: { hasStructSubProperty: false, objectType: "Office", property: "entrance" }
+    }
+  },
+  "withinBoundingBoxTemplate": {
+    "#hasStructSubProperty": {
+      context: { hasStructSubProperty: true, objectType: "Employee", property: "contactInfo", structSubPropertyApiName: "entrance" }
+    },
+    "^hasStructSubProperty": {
+      context: { hasStructSubProperty: false, objectType: "Office", property: "entrance" }
+    }
+  },
+  "withinPolygonTemplate": {
+    "#hasStructSubProperty": {
+      context: { hasStructSubProperty: true, objectType: "Employee", property: "contactInfo", structSubPropertyApiName: "entrance" }
+    },
+    "^hasStructSubProperty": {
+      context: { hasStructSubProperty: false, objectType: "Office", property: "entrance" }
+    }
+  },
+  "intersectsPolygonTemplate": {
+    "#hasStructSubProperty": {
+      context: { hasStructSubProperty: true, objectType: "Employee", property: "contactInfo", structSubPropertyApiName: "entrance" }
+    },
+    "^hasStructSubProperty": {
+      context: { hasStructSubProperty: false, objectType: "Office", property: "entrance" }
+    }
+  },
+  "intersectsBboxTemplate": {
+    "#hasStructSubProperty": {
+      context: { hasStructSubProperty: true, objectType: "Employee", property: "contactInfo", structSubPropertyApiName: "entrance" }
+    },
+    "^hasStructSubProperty": {
+      context: { hasStructSubProperty: false, objectType: "Office", property: "entrance" }
+    }
+  },
+  "durationGroupByTemplate": {
+    "#durationText": {
+      context: { property: "startDate", arg: "1", unit: "days", durationText: true }
+    },
+    "^durationText": {
+      context: { property: "startDate", arg: "1", unit: "days", durationText: false }
+    }
+  },
+  "loadLinkedObjectsReference": {
+    "#isLinkManySided": {
+      context: { isLinkManySided: true, sourceObjectType: "Equipment", linkedObjectType: "Employee", linkApiName: "assignedeTo", rawLinkedPrimaryKeyProperty: { apiName: "equipmentId" } }
+    }
+  },
+
+  // === COMPLEX NESTED HIERARCHIES ===
   "applyAction": {
     "#hasAttachmentProperty": {
       context: { 
@@ -336,181 +511,22 @@ function getContextFromHierarchy(snippetKey, blockKey) {
   return {};
 }
 
-/**
- * Optimized lookup function to find template configuration
- * @param {string} snippetKey The snippet key to look up
- * @returns {Object|null} The configuration object or null if not found
- */
-function findTemplateConfig(snippetKey) {
-  // Search through all categories for the snippet
-  for (const category of Object.values(TEMPLATE_CONFIGS)) {
-    if (category[snippetKey]) {
-      return category[snippetKey];
-    }
-  }
-  return null;
-}
-
-/**
- * Handle special block-based templates that need custom logic
- * @param {string} snippetKey The snippet key
- * @param {string} blockKey The block key
- * @param {Object} context The context to modify
- * @returns {boolean} True if handled, false if not a special case
- */
-function handleSpecialBlockTemplates(snippetKey, blockKey, context) {
-  // Handle struct sub-property templates
-  const structTemplates = [
-    "stringStartsWithTemplate", "containsAllTermsInOrderTemplate", 
-    "containsAnyTermTemplate", "containsAllTermsTemplate", "rangeTemplate",
-    "equalityTemplate", "inFilterTemplate", "nullTemplate", 
-    "withinDistanceTemplate", "withinBoundingBoxTemplate", "withinPolygonTemplate",
-    "intersectsPolygonTemplate", "intersectsBboxTemplate"
-  ];
-  
-  if (structTemplates.includes(snippetKey)) {
-    return handleStructTemplates(snippetKey, blockKey, context);
-  }
-  
-  // Handle duration group by template
-  if (snippetKey === "durationGroupByTemplate") {
-    return handleDurationTemplate(blockKey, context);
-  }
-  
-  // Handle linked objects with special block handling
-  if (snippetKey === "loadLinkedObjectsReference" && blockKey === "#isLinkManySided") {
-    context.isLinkManySided = true;
-    return true;
-  }
-  
-  return false;
-}
-
-/**
- * Handle struct-based templates with block variations
- */
-function handleStructTemplates(snippetKey, blockKey, context) {
-  if (blockKey === "#hasStructSubProperty") {
-    context.hasStructSubProperty = true;
-    
-    // Different property mappings based on template type
-    if (["nullTemplate", "withinDistanceTemplate", "withinBoundingBoxTemplate", 
-         "withinPolygonTemplate", "intersectsPolygonTemplate", "intersectsBboxTemplate"].includes(snippetKey)) {
-      context.objectType = "Employee";
-      context.property = "contactInfo";
-      context.structSubPropertyApiName = "entrance";
-    } else if (snippetKey === "rangeTemplate") {
-      context.property = "contactInfo";
-      context.operation = "lt";
-      context.propertyValueV2 = 100;
-      context.structSubPropertyApiName = "houseNumber";
-    } else if (["equalityTemplate", "inFilterTemplate"].includes(snippetKey)) {
-      context.property = "contactInfo";
-      context.structPropertyApiName = "contactInfo";
-      context.structSubPropertyApiName = "phone";
-      context.propertyValueV2 = '"555-1234"';
-    } else {
-      // Default struct handling
-      context.property = "contactInfo";
-      context.structSubPropertyApiName = "phone";
-    }
-    return true;
-  } else if (blockKey === "^hasStructSubProperty") {
-    context.hasStructSubProperty = false;
-    
-    // Different property mappings for inverted blocks
-    if (["nullTemplate", "withinDistanceTemplate", "withinBoundingBoxTemplate", 
-         "withinPolygonTemplate", "intersectsPolygonTemplate", "intersectsBboxTemplate"].includes(snippetKey)) {
-      context.objectType = "Office";
-      context.property = "entrance";
-    } else if (snippetKey === "rangeTemplate") {
-      context.property = "salary";
-      context.operation = "lt";
-      context.propertyValueV2 = 100;
-    } else if (["equalityTemplate", "inFilterTemplate"].includes(snippetKey)) {
-      context.property = "department";
-      context.propertyValueV2 = '"Engineering"';
-    } else {
-      context.property = "fullName";
-    }
-    return true;
-  }
-  
-  // Base version for struct templates
-  if (!blockKey) {
-    context.property = "fullName";
-    context.structPropertyApiName = "contactInfo";
-    context.structSubPropertyApiName = "phone";
-    if (snippetKey === "rangeTemplate") {
-      context.operation = "lt";
-      context.propertyValueV2 = 100;
-    }
-    return true;
-  }
-  
-  return false;
-}
-
-/**
- * Handle duration template variations
- */
-function handleDurationTemplate(blockKey, context) {
-  const baseConfig = {
-    property: "startDate",
-    arg: "1",
-    unit: "days"
-  };
-  
-  Object.assign(context, baseConfig);
-  context.durationText = blockKey === "#durationText";
-  return true;
-}
 
 export function getSnippetContext(snippetKey, blockKey = null) {
-  // Create a copy of the base context
+  // Start with base context
   const context = { ...baseContext };
   
-  // Try to get context from hierarchy first (for complex hierarchical templates)
   if (blockKey && templateHierarchy[snippetKey]) {
     const hierarchyContext = getContextFromHierarchy(snippetKey, blockKey);
     Object.assign(context, hierarchyContext);
-    
-    // Add common properties for actions (only if not already set)
-    if (snippetKey === "applyAction" || snippetKey === "batchApplyAction") {
-      context.objectType = context.objectType || "Equipment";
-      context.actionApiName = context.actionApiName || "documentEquipment";
-      context.packageName = context.packageName || "../../../generatedNoCheck";
-    }
-    
+    return context;
+  }
+
+  if (TEMPLATE_REGISTRY[snippetKey]) {
+    Object.assign(context, TEMPLATE_REGISTRY[snippetKey]);
     return context;
   }
   
-  // Handle special block-based templates
-  if (blockKey && handleSpecialBlockTemplates(snippetKey, blockKey, context)) {
-    return context;
-  }
-  
-  // Look up simple template configuration
-  const templateConfig = findTemplateConfig(snippetKey);
-  if (templateConfig) {
-    Object.assign(context, templateConfig);
-    return context;
-  }
-  
-  // Handle derived property templates (these need special grouping logic)
-  if (snippetKey.startsWith("derivedProperty")) {
-    if (["derivedPropertyBaseExample", "derivedPropertySelectPropertyAggregation"].includes(snippetKey)) {
-      Object.assign(context, { linkName: "lead", property: "fullName" });
-    } else if (snippetKey === "derivedPropertyNumericAggregation") {
-      Object.assign(context, { linkName: "peeps", property: "salary", operation: "sum" });
-    } else {
-      // Most derived property templates use assignedEquipment
-      Object.assign(context, { linkName: "assignedEquipment", property: "purchasePrice" });
-    }
-    return context;
-  }
-  
-  // Default case - return base context
   return context;
 }
 
