@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
-import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
-import type { Status } from "../ObservableClient/common.js";
-import { type ObjectCacheKey } from "./ObjectQuery.js";
+import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
+import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { Status } from "../../ObservableClient/common.js";
+import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 
 /**
  * Abstract base for ListQuery and SpecificLinkQuery.

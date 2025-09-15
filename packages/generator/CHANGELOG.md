@@ -1,5 +1,17 @@
 # @osdk/generator
 
+## 2.5.0-beta.5
+
+### Minor Changes
+
+- 4248b80: Temporarily remove NullValue type from codegen
+
+### Patch Changes
+
+- Updated dependencies [052a96b]
+  - @osdk/api@2.5.0-beta.5
+  - @osdk/generator-converters@2.5.0-beta.5
+
 ## 2.5.0-beta.4
 
 ### Minor Changes

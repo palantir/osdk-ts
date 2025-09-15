@@ -127,7 +127,7 @@ describe("extractRdpDefinition", () => {
 
   it("throes with intersect, subtract, or union having different child object types", async () => {
     const intersectionObjectSet: ObjectSet = {
-      type: "intersect",
+      type: "union",
       objectSets: [
         {
           type: "interfaceLinkSearchAround",
@@ -144,7 +144,7 @@ describe("extractRdpDefinition", () => {
     await expect(
       extractObjectOrInterfaceType(mockClientCtx, intersectionObjectSet),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Can only have one object type when doing intersects, subtract, union]`,
+      `[Error: Invariant failed: Can only have one object type when doing subtract, union]`,
     );
   });
 });

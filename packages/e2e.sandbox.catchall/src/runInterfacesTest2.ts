@@ -84,9 +84,13 @@ export async function runInterfacesTest2(): Promise<void> {
   const concernList2 = await dsClient(CollateralConcernCandidate).pivotTo(
     "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList",
   ).fetchPage();
-
+  const singleLink = await concernCandidates2.data[0]
+    .$link[
+      "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList"
+    ].fetchPage();
   console.log("concern candidates", concernCandidates2.data);
   console.log("linked list entities", concernList2.data);
+  console.log("tried link instance impl", singleLink);
 
   // interface to object
   const pds = await dsClient(EsongInterfaceA).pivotTo("esongPds").fetchPage();
@@ -95,6 +99,13 @@ export async function runInterfacesTest2(): Promise<void> {
 
   const interfaceA = await dsClient(EsongInterfaceA).fetchPage();
   console.log("interfaceA instances: ", interfaceA);
+
+  const huh3 = await interfaceA.data[0].$link.esongPds.fetchPage();
+
+  console.log(
+    "lets try $link",
+    await interfaceA.data[0].$link.esongPds.fetchPage(),
+  );
 }
 
 void runInterfacesTest2();

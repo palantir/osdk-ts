@@ -29,6 +29,7 @@ import type {
   InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest,
   InterfacePropertyTypeRidOrIdInRequest
     as _api_InterfacePropertyTypeRidOrIdInRequest,
+  InterfacePropertyTypeType as _api_InterfacePropertyTypeType,
   InterfaceTypeRid as _api_InterfaceTypeRid,
   InterfaceTypeRidOrIdInRequest as _api_InterfaceTypeRidOrIdInRequest,
   LinkedEntityTypeRidOrIdInRequest as _api_LinkedEntityTypeRidOrIdInRequest,
@@ -47,6 +48,7 @@ import type {
   PropertyTypeId as _api_PropertyTypeId,
   PropertyTypeRid as _api_PropertyTypeRid,
   RestrictedViewRid as _api_RestrictedViewRid,
+  RetentionConfig as _api_RetentionConfig,
   RuleSetRid as _api_RuleSetRid,
   SchemaVersion as _api_SchemaVersion,
   SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
@@ -214,7 +216,9 @@ export interface ColumnMissingFromBackingDatasourceForLinkTypeError {
  */
 export interface ColumnMissingFromBackingDatasourceForObjectTypeError {
   objectType: _api_ObjectTypeRid;
+  objectTypeId?: _api_ObjectTypeId | null | undefined;
   propertyType: _api_PropertyTypeRid;
+  propertyTypeId?: _api_PropertyTypeId | null | undefined;
 }
 /**
  * Summary of the conflicting entities. Conflicting entities are calculated by finding the intersection of entities that are updated/deleted on a branch and entities that are updated/deleted on the default branch between the latestRebasedVersion and a target ontologyVersion.
@@ -416,6 +420,12 @@ export interface DatasourceModificationConstraintError_objectTypeDatasourceCanno
   objectTypeDatasourceCannotHaveDataSecurityUpdatedOnBranch:
     ObjectTypeDatasourceCannotHaveDataSecurityUpdatedOnBranchError;
 }
+
+export interface DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidRetentionTargetSize {
+  type: "objectTypeDatasourceWithInvalidRetentionTargetSize";
+  objectTypeDatasourceWithInvalidRetentionTargetSize:
+    ObjectTypeDatasourceWithInvalidRetentionTargetSizeError;
+}
 /**
  * A type representing validation errors associated with datasource modifications on a branch.
  */
@@ -443,7 +453,8 @@ export type DatasourceModificationConstraintError =
   | DatasourceModificationConstraintError_derivedPropertyMultiHopLinkExceedsMaximumStepCount
   | DatasourceModificationConstraintError_gpsPolicyColumnsFromRestrictedViewsAreMapped
   | DatasourceModificationConstraintError_objectTypeDatasourceCannotHaveAssumedMarkingsUpdated
-  | DatasourceModificationConstraintError_objectTypeDatasourceCannotHaveDataSecurityUpdatedOnBranch;
+  | DatasourceModificationConstraintError_objectTypeDatasourceCannotHaveDataSecurityUpdatedOnBranch
+  | DatasourceModificationConstraintError_objectTypeDatasourceWithInvalidRetentionTargetSize;
 
 export interface DefaultOntologyBranchDetails {
 }
@@ -1157,7 +1168,7 @@ export type InvalidPropertyImplementationError =
  * Expected local property implementing interface property to have the same type, but it did not.
  */
 export interface InvalidPropertyTypeError {
-  interfacePropertyType: _api_Type;
+  interfacePropertyType: _api_InterfacePropertyTypeType;
   interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
   objectPropertyType: _api_Type;
   objectRid: _api_ObjectTypeRid;
@@ -1468,9 +1479,6 @@ export interface MissingInterfacePropertyImplementation {
   missingInterfacePropertyTypeRidOrIdInRequests: Array<
     _api_InterfacePropertyTypeRidOrIdInRequest
   >;
-  missingSharedPropertyTypeRidOrIdInRequests: Array<
-    _api_SharedPropertyTypeRidOrIdInRequest
-  >;
   objectRid: _api_ObjectTypeRid;
   objectTypeId?: _api_ObjectTypeId | null | undefined;
 }
@@ -1601,6 +1609,15 @@ export interface ObjectTypeDatasourceColumnMappingMismatchError {
   nonexistentPropertyTypesMappedOnDatasources: Array<_api_PropertyTypeId>;
   objectType: _api_ObjectTypeRid;
   propertyTypesOnObject: Array<_api_PropertyTypeRid>;
+}
+/**
+ * A datasource is using an invalid retention target size. If retention is desired the selected target size must
+ * be less than or equal to the retention trigger size. Only applicable for direct datasources.
+ */
+export interface ObjectTypeDatasourceWithInvalidRetentionTargetSizeError {
+  directSourceRid: _api_DatasourceRid;
+  objectTypeRid: _api_ObjectTypeRid;
+  retentionConfig: _api_RetentionConfig;
 }
 /**
  * An error representing when an object type datasource does not include the primary key property of the

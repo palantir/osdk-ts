@@ -87,21 +87,9 @@ export class Layer {
   }
 }
 
-export class Entry<K extends KnownCacheKey> {
+export interface Entry<K extends KnownCacheKey> {
   readonly cacheKey: K;
   value: K["__cacheKey"]["value"] | undefined;
   lastUpdated: number;
   status: "init" | "loading" | "loaded" | "error";
-
-  constructor(
-    cacheKey: K,
-    value: K["__cacheKey"]["value"] | undefined,
-    lastUpdated: number,
-    status: "init" | "loading" | "loaded" | "error" = "init",
-  ) {
-    this.cacheKey = cacheKey;
-    this.value = value;
-    this.lastUpdated = lastUpdated;
-    this.status = status;
-  }
 }

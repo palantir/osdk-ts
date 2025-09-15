@@ -338,6 +338,9 @@ const referencedOntology = {
       rid: "idk",
     },
   },
+  "branch": {
+    rid: "someRidHere",
+  },
   valueTypes: {},
 } satisfies WireOntologyDefinition;
 
@@ -586,7 +589,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | ActionParam.NullValueType;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
           }
 
           // Represents a fqn of the action
@@ -662,7 +665,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo> | ActionParam.NullValueType;
+            readonly object?: ActionParam.ObjectType<Todo>;
           }
 
           // Represents a fqn of the action
@@ -1243,7 +1246,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | ActionParam.NullValueType;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
           }
 
           // Represents a fqn of the action
@@ -1319,7 +1322,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo> | ActionParam.NullValueType;
+            readonly object?: ActionParam.ObjectType<Todo>;
           }
 
           // Represents a fqn of the action
@@ -2602,6 +2605,8 @@ describe("generator", () => {
         export const $osdkMetadata = { extraUserAgent: '' };
 
         export const $ontologyRid = 'ri.ontology.main.ontology.dep';
+
+        export const $branch = 'someRidHere';
         ",
           "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';

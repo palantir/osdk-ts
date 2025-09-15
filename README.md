@@ -1,6 +1,11 @@
 # TypeScript Ontology SDK
 
-## @osdk/client [![client npm version](https://img.shields.io/npm/v/@osdk/client.svg?style=flat)](https://www.npmjs.com/package/@osdk/client) &middot; @osdk/api [![api npm version](https://img.shields.io/npm/v/@osdk/api.svg?style=flat)](https://www.npmjs.com/package/@osdk/api) &middot; @osdk/foundry-sdk-generator [![foundry-sdk-generator npm version](https://img.shields.io/npm/v/@osdk/foundry-sdk-generator.svg?style=flat)](https://www.npmjs.com/package/@osdk/foundry-sdk-generator) &middot; @osdk/oauth [![oauth npm version](https://img.shields.io/npm/v/@osdk/oauth.svg?style=flat)](https://www.npmjs.com/package/@osdk/oauth)
+| Package | Version |
+|---------|---------|
+| @osdk/client | [![npm](https://img.shields.io/npm/v/@osdk/client.svg)](https://www.npmjs.com/package/@osdk/client) |
+| @osdk/api | [![npm](https://img.shields.io/npm/v/@osdk/api.svg)](https://www.npmjs.com/package/@osdk/api) |
+| @osdk/foundry-sdk-generator | [![npm](https://img.shields.io/npm/v/@osdk/foundry-sdk-generator.svg)](https://www.npmjs.com/package/@osdk/foundry-sdk-generator) |
+| @osdk/oauth | [![npm](https://img.shields.io/npm/v/@osdk/oauth.svg)](https://www.npmjs.com/package/@osdk/oauth) |
 
 ## Getting Started
 

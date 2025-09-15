@@ -19,11 +19,11 @@ import type {
   ActionEditResponse,
   ActionReturnTypeForOptions,
 } from "@osdk/api";
-import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
-import { type Changes } from "./Changes.js";
-import type { ObjectCacheKey } from "./ObjectQuery.js";
+import type { ActionSignatureFromDef } from "../../../actions/applyAction.js";
+import { type Changes } from "../Changes.js";
+import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
+import type { Store } from "../Store.js";
 import { runOptimisticJob } from "./OptimisticJob.js";
-import type { Store } from "./Store.js";
 
 const ACTION_DELAY = process.env.NODE_ENV === "production" ? 0 : 1000;
 
@@ -116,12 +116,12 @@ export class ActionApplication {
 
       this.store.batch({}, (batch) => {
         for (const { objectType, primaryKey } of deletedObjects ?? []) {
-          const cacheKey = this.store.getCacheKey<ObjectCacheKey>(
+          const cacheKey = this.store.cacheKeys.get<ObjectCacheKey>(
             "object",
             objectType,
             primaryKey,
           );
-          this.store.peekQuery(cacheKey)?.deleteFromStore(
+          this.store.queries.peek(cacheKey)?.deleteFromStore(
             "loaded", // this is probably not the best value to use
             batch,
           );

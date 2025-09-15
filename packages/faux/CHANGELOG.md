@@ -1,5 +1,17 @@
 # @osdk/shared.test
 
+## 0.3.0-beta.5
+
+### Minor Changes
+
+- 3d7461d: Fix applyQuery for marketplace installations
+
+### Patch Changes
+
+- Updated dependencies [052a96b]
+  - @osdk/api@2.5.0-beta.5
+  - @osdk/generator-converters@2.5.0-beta.5
+
 ## 0.3.0-beta.4
 
 ### Minor Changes
