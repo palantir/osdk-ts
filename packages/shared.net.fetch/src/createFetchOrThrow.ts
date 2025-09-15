@@ -69,6 +69,7 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
           ?? fallbackMessage,
         body?.errorName,
         body?.errorCode,
+        body?.errorDescription,
         response.status,
         body?.errorInstanceId,
         body?.parameters,

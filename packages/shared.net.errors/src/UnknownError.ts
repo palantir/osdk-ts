@@ -24,7 +24,7 @@ export class UnknownError extends PalantirApiError {
     originalError?: Error,
     statusCode?: number,
   ) {
-    super(message, errorName, undefined, statusCode);
+    super(message, errorName, undefined, undefined, statusCode);
     this.originalError = originalError;
   }
 }
