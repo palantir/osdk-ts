@@ -14,7 +14,7 @@
     "buildSdkDocs": "cd ../typescript-sdk-docs && pnpm run transpileEsm && pnpm run transpileTypes && pnpm run transpileCjs",
     "transpile": "npx tsc || echo 'TypeScript compilation failed but continuing...'",
     "transpile:strict": "npx tsc",
-    "lint": "eslint . --max-warnings=1",
+    "lint": "eslint . --max-warnings=1 --ignore-pattern 'src/utils/**'",
     "lint:fix": "eslint . --fix",
     "typecheck:examples": "tsc -p src/examples/tsconfig.examples.json --noEmit",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node"

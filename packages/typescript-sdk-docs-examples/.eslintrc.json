@@ -11,7 +11,7 @@
     "node": true,
     "es6": true
   },
-  "ignorePatterns": ["dist/**", "src/generatedNoCheck/**", "src/examples/**"],
+  "ignorePatterns": ["dist/**", "src/generatedNoCheck/**", "src/examples/**", "src/utils/**"],
   "rules": {
     "no-console": "off",
     "header/header": "off",
@@ -22,7 +22,18 @@
   },
   "overrides": [
     {
-      "files": ["updateDocsSnippets.mjs", "generateExample.mjs"],
+      "files": ["updateDocsSnippets.mjs", "generateExample.mjs", "generateExamples.mjs"],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": ["src/utils/*.js"],
+      "parser": "espree",
+      "parserOptions": {
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+      },
       "rules": {
         "no-console": "off"
       }

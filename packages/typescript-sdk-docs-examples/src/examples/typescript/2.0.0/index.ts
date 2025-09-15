@@ -78,20 +78,20 @@
 // See: ./rangeGroupByTemplate.ts
 
 // applyAction (variations only)
-// See: ./applyAction_#hasAttachmentImports.ts (Standard block: hasAttachmentImports = true)
-// See: ./applyAction_#hasMediaParameter.ts (Standard block: hasMediaParameter = true)
+// See: ./applyAction_#hasAttachmentProperty.ts (Standard block: hasAttachmentProperty = true)
+// See: ./applyAction_^hasAttachmentProperty.ts (Inverted block: hasAttachmentProperty = false)
 // See: ./applyAction_#hasAttachmentUpload.ts (Standard block: hasAttachmentUpload = true)
-// See: ./applyAction_#attachmentProperty.ts (Standard block: attachmentProperty = true)
+// See: ./applyAction_^hasAttachmentUpload.ts (Inverted block: hasAttachmentUpload = false)
 // See: ./applyAction_^hasParameters.ts (Inverted block: hasParameters = false)
 // See: ./applyAction_#hasParameters.ts (Standard block: hasParameters = true)
 // See: ./applyAction_#actionParameterSampleValuesV2.ts (Standard block: actionParameterSampleValuesV2 = true)
 // See: ./applyAction_^last.ts (Inverted block: last = false)
 
 // batchApplyAction (variations only)
-// See: ./batchApplyAction_#hasAttachmentImports.ts (Standard block: hasAttachmentImports = true)
-// See: ./batchApplyAction_#hasMediaParameter.ts (Standard block: hasMediaParameter = true)
+// See: ./batchApplyAction_#hasAttachmentProperty.ts (Standard block: hasAttachmentProperty = true)
+// See: ./batchApplyAction_^hasAttachmentProperty.ts (Inverted block: hasAttachmentProperty = false)
 // See: ./batchApplyAction_#hasAttachmentUpload.ts (Standard block: hasAttachmentUpload = true)
-// See: ./batchApplyAction_#attachmentProperty.ts (Standard block: attachmentProperty = true)
+// See: ./batchApplyAction_^hasAttachmentUpload.ts (Inverted block: hasAttachmentUpload = false)
 // See: ./batchApplyAction_^hasParameters.ts (Inverted block: hasParameters = false)
 // See: ./batchApplyAction_#hasParameters.ts (Standard block: hasParameters = true)
 // See: ./batchApplyAction_#actionParameterSampleValuesV2.ts (Standard block: actionParameterSampleValuesV2 = true)
@@ -104,10 +104,10 @@
 // See: ./castInterfaceToObjectReference.ts
 
 // executeFunction (variations only)
-// See: ./executeFunction_#needsImports.ts (Standard block: needsImports = true)
-// See: ./executeFunction_#hasAttachmentImports.ts (Standard block: hasAttachmentImports = true)
+// See: ./executeFunction_#hasAttachmentProperty.ts (Standard block: hasAttachmentProperty = true)
+// See: ./executeFunction_^hasAttachmentProperty.ts (Inverted block: hasAttachmentProperty = false)
 // See: ./executeFunction_#hasAttachmentUpload.ts (Standard block: hasAttachmentUpload = true)
-// See: ./executeFunction_#attachmentProperty.ts (Standard block: attachmentProperty = true)
+// See: ./executeFunction_^hasAttachmentUpload.ts (Inverted block: hasAttachmentUpload = false)
 
 // stringStartsWithTemplate (variations only)
 // See: ./stringStartsWithTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)

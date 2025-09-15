@@ -1069,7 +1069,7 @@ versions:
             - linkedPrimaryKeyPropertyV2
       loadLinkedObjectsReference:
         - template: |-
-            import { {{linkedObjectType}} } from "{{{packageName}}}";
+            import { {{sourceObjectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
 
@@ -1177,78 +1177,147 @@ versions:
             - propertyValueIncrementedV2
       applyAction:
         - template: |-
-            import { {{actionApiName}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            {{#hasAttachmentImports}}import type { AttachmentUpload } from "@osdk/api";{{/hasAttachmentImports}}{{#hasMediaParameter}}import type { MediaReference } from "@osdk/api";{{/hasMediaParameter}}
-
+            {{#hasAttachmentProperty}}
+            {{#hasAttachmentUpload}}
+            import type { AttachmentUpload } from "@osdk/api";
+            import { createAttachmentUpload } from "@osdk/client";
+            import { {{actionApiName}} } from "{{{packageName}}}";
+            {{/hasAttachmentUpload}}
+            {{^hasAttachmentUpload}}
+            import type { Osdk } from "@osdk/client";
+            import { {{actionApiName}}, type {{objectType}} } from "{{{packageName}}}";
+            {{/hasAttachmentUpload}}
 
             {{#hasAttachmentUpload}}
-            const attachment: AttachmentUpload = uploadMyFile();
-            {{/hasAttachmentUpload}}
-            {{#attachmentProperty}}
-            const attachment: Attachment = {{{attachmentProperty}}};
-            {{/attachmentProperty}}
-            {{#hasMediaParameter}}
-            const mediaReference: MediaReference = uploadMedia();
-            {{/hasMediaParameter}}
-            const result = await client({{actionApiName}}).applyAction(
-            {{^hasParameters}}{},
-            {{/hasParameters}}{{#hasParameters}}
-                {
-                {{#actionParameterSampleValuesV2}}
-                "{{key}}": {{{value}}}{{^last}}, {{/last}}
-                {{/actionParameterSampleValuesV2}}
-                },{{/hasParameters}}
-                {
-                $returnEdits: true,
+            async function callActionWithAttachmentUpload() {
+                async function uploadMyFile() {
+                    const file = await fetch("file.json");
+                    const blob = await file.blob();
+                    return createAttachmentUpload(blob, "myFile");
                 }
-            );
-
-            if (result.type === "edits") {
-                // for new objects and updated objects edits will contain the primary key of the object
-                const updatedObject = result.editedObjectTypes[0];
-                console.log("Updated object", updatedObject);
+                const attachment: AttachmentUpload = await uploadMyFile();
+            {{/hasAttachmentUpload}}
+            {{^hasAttachmentUpload}}
+            async function callActionWithAttachmentLoaded(objectTypeWithAttachement: Osdk.Instance<{{objectType}}>) {
+                const attachment = objectTypeWithAttachement.{{attachmentProperty}}?.rid;
+            {{/hasAttachmentUpload}}
+                const result = await client({{actionApiName}}).applyAction(
+                    {{^hasParameters}}{},{{/hasParameters}}{{#hasParameters}}{
+                        {{#actionParameterSampleValuesV2}}
+                        "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                        {{/actionParameterSampleValuesV2}}
+                        {{#hasAttachmentProperty}}
+                        {{attachmentParameter}}: attachment
+                        {{/hasAttachmentProperty}}
+                    },{{/hasParameters}}
+                    {
+                    $returnEdits: true,
+                    }
+                );
+                if (result.type === "edits") {
+                    // use the result object to report back on action results
+                }
             }
+            {{/hasAttachmentProperty}}
+            {{^hasAttachmentProperty}}
+            import { {{actionApiName}} } from "{{{packageName}}}";
+
+                const result = await client({{actionApiName}}).applyAction(
+                    {{^hasParameters}}{},{{/hasParameters}}{{#hasParameters}}{
+                        {{#actionParameterSampleValuesV2}}
+                        "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                        {{/actionParameterSampleValuesV2}}
+                    },{{/hasParameters}}
+                    {
+                        $returnEdits: true,
+                    }
+                );
+                if (result.type === "edits") {
+                    // use the result object to report back on action results
+                }
+            {{/hasAttachmentProperty}}
           computedVariables:
             - actionParameterSampleValuesV2
       batchApplyAction:
         - template: |-
-            import { {{actionApiName}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            {{#hasAttachmentImports}}
+            {{#hasAttachmentProperty}}
+            {{#hasAttachmentUpload}}
             import type { AttachmentUpload } from "@osdk/api";
-            {{/hasAttachmentImports}}{{#hasMediaParameter}}import type { MediaReference } from "@osdk/api";{{/hasMediaParameter}}
-
+            import { createAttachmentUpload } from "@osdk/client";
+            import { {{actionApiName}} } from "{{{packageName}}}";
+            {{/hasAttachmentUpload}}
+            {{^hasAttachmentUpload}}
+            import type { Osdk } from "@osdk/client";
+            import { {{actionApiName}}, type {{objectType}} } from "{{{packageName}}}";
+            {{/hasAttachmentUpload}}
 
             {{#hasAttachmentUpload}}
-            const attachment: AttachmentUpload = uploadMyFile();
-            {{/hasAttachmentUpload}}
-            {{#attachmentProperty}}
-            const attachment: Attachment = {{{attachmentProperty}}};
-            {{/attachmentProperty}}
-            {{#hasMediaParameter}}
-            const mediaReference: MediaReference = uploadMedia();
-            {{/hasMediaParameter}}
-            const result = await client({{actionApiName}}).batchApplyAction(
-                [
-                    {{^hasParameters}}{},{}{{/hasParameters}}{{#hasParameters}}
-                    {
-                    {{#actionParameterSampleValuesV2}}
-                    "{{key}}": {{{value}}}{{^last}}, {{/last}}
-                    {{/actionParameterSampleValuesV2}}
-                    },
-                    {
-                    {{#actionParameterSampleValuesV2}}
-                    "{{key}}": {{{value}}}{{^last}}, {{/last}}
-                    {{/actionParameterSampleValuesV2}}
-                    },{{/hasParameters}}
-                ],
-                {
-                    $returnEdits: false,
+            async function callActionWithAttachmentUpload() {
+                async function uploadMyFile() {
+                    const file = await fetch("file.json");
+                    const blob = await file.blob();
+                    return createAttachmentUpload(blob, "myFile");
                 }
-            );
+                const attachment: AttachmentUpload = await uploadMyFile();
+            {{/hasAttachmentUpload}}
+            {{^hasAttachmentUpload}}
+            async function callActionWithAttachmentLoaded(objectTypeWithAttachement: Osdk.Instance<{{objectType}}>) {
+                const attachment = objectTypeWithAttachement.{{attachmentProperty}}?.rid;
+            {{/hasAttachmentUpload}}
+                const result = await client({{actionApiName}}).batchApplyAction([
+                        {{^hasParameters}}{},{{/hasParameters}}{{#hasParameters}}{
+                            {{#actionParameterSampleValuesV2}}
+                            "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                            {{/actionParameterSampleValuesV2}}
+                            {{#hasAttachmentProperty}}
+                            {{attachmentParameter}}: attachment
+                            {{/hasAttachmentProperty}}
+                        },
+                        {
+                            {{#actionParameterSampleValuesV2}}
+                            "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                            {{/actionParameterSampleValuesV2}}
+                            {{#hasAttachmentProperty}}
+                            {{attachmentParameter}}: attachment
+                            {{/hasAttachmentProperty}}
+                        },{{/hasParameters}}
+                    ],
+                    {
+                    $returnEdits: true,
+                    }
+                );
+                if (result.type === "edits") {
+                    // use the result object to report back on action results
+                }
+            }
+            {{/hasAttachmentProperty}}
+            {{^hasAttachmentProperty}}
+            import { {{actionApiName}} } from "{{{packageName}}}";
+            
+                const result = await client({{actionApiName}}).batchApplyAction([
+                        {{^hasParameters}}{},{{/hasParameters}}{{#hasParameters}}{
+                            {{#actionParameterSampleValuesV2}}
+                            "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                            {{/actionParameterSampleValuesV2}}
+                        },
+                        {
+                            {{#actionParameterSampleValuesV2}}
+                            "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                            {{/actionParameterSampleValuesV2}}
+                        },{{/hasParameters}}
+                    ],
+                    {
+                        $returnEdits: true,
+                    }
+                );
+                if (result.type === "edits") {
+                    // use the result object to report back on action results
+                }
+            {{/hasAttachmentProperty}}
           computedVariables:
             - actionParameterSampleValuesV2
       uploadAttachment:
@@ -1294,20 +1363,44 @@ versions:
             }
       executeFunction:
         - template: |-
-            {{#needsImports}}
-            import { {{funcApiName}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            {{#hasAttachmentImports}}import type { AttachmentUpload } from "@osdk/api";{{/hasAttachmentImports}}
-
-            {{/needsImports}}
+            {{#hasAttachmentProperty}}
             {{#hasAttachmentUpload}}
-            const attachment: AttachmentUpload = uploadMyFile();
+            import type { AttachmentUpload } from "@osdk/api";
+            import { createAttachmentUpload } from "@osdk/client";
+            import { {{funcApiName}} } from "{{{packageName}}}";
             {{/hasAttachmentUpload}}
-            {{#attachmentProperty}}
-            const attachment: Attachment = {{{attachmentProperty}}};
-            {{/attachmentProperty}}
+            {{^hasAttachmentUpload}}
+            import type { Osdk } from "@osdk/client";
+            import { {{funcApiName}}, type {{objectType}} } from "{{{packageName}}}";
+            {{/hasAttachmentUpload}}
+
+            {{#hasAttachmentUpload}}
+            async function callFunctionWithAttachmentUpload() {
+                async function uploadMyFile() {
+                    const file = await fetch("file.json");
+                    const blob = await file.blob();
+                    return createAttachmentUpload(blob, "myFile");
+                }
+                const attachment: AttachmentUpload = await uploadMyFile();
+            {{/hasAttachmentUpload}}
+            {{^hasAttachmentUpload}}
+            async function callFunctionWithAttachmentLoaded(objectWithAttachment: Osdk.Instance<{{objectType}}>) {
+                const attachment = objectWithAttachment.{{attachmentProperty}}?.rid;
+                if (attachment == null) {
+                    throw new Error("Attachment is required");
+                }
+            {{/hasAttachmentUpload}}
+                const result = await client({{funcApiName}}).executeFunction({{{functionInputValuesV2}}});
+                return result;
+            }
+            {{/hasAttachmentProperty}}
+            {{^hasAttachmentProperty}}
+            import { {{funcApiName}} } from "{{{packageName}}}";
+
             const result = await client({{funcApiName}}).executeFunction({{{functionInputValuesV2}}});
+            {{/hasAttachmentProperty}}
           computedVariables:
             - functionInputValuesV2
       stringStartsWithTemplate:
@@ -1595,7 +1688,7 @@ versions:
             try {
                 const page: PageResult<Osdk<{{interfaceApiName}}>> = await client({{interfaceApiName}})
                     .fetchPage({
-                        $orderBy: {"someProperty": "asc"},
+                        $orderBy: { {{property}}: "asc"},
                         $pageSize: 30
                     });
             } catch (e) {
@@ -1613,8 +1706,8 @@ versions:
             const page: Result<PageResult<Osdk<{{interfaceApiName}}>>> = await client({{interfaceApiName}})
                 .where({
                     $and:[
-                        { $not: { someProperty: { $isNull: true }}},
-                        { someProperty: { $eq: "foo" }}
+                        { $not: { {{property}}: { $isNull: true }}},
+                        { {{property}}: { $eq: "foo" }}
                     ]
                 })
                 .fetchPageWithErrors({

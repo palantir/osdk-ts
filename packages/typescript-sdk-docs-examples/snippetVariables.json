@@ -38,9 +38,9 @@
     "linkApiName"
   ],
   "loadLinkedObjectsReference": [
-    "linkedObjectType",
-    "packageName",
     "sourceObjectType",
+    "packageName",
+    "linkedObjectType",
     "linkApiName"
   ],
   "aggregationTemplate": [
@@ -91,13 +91,13 @@
     "propertyValueV2",
     "propertyValueIncrementedV2"
   ],
-  "applyAction_#hasAttachmentImports": [
+  "applyAction_#hasAttachmentProperty": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
     "linkApiName"
   ],
-  "applyAction_#hasMediaParameter": [
+  "applyAction_^hasAttachmentProperty": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
@@ -109,7 +109,7 @@
     "sourceObjectType",
     "linkApiName"
   ],
-  "applyAction_#attachmentProperty": [
+  "applyAction_^hasAttachmentUpload": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
@@ -139,13 +139,13 @@
     "sourceObjectType",
     "linkApiName"
   ],
-  "batchApplyAction_#hasAttachmentImports": [
+  "batchApplyAction_#hasAttachmentProperty": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
     "linkApiName"
   ],
-  "batchApplyAction_#hasMediaParameter": [
+  "batchApplyAction_^hasAttachmentProperty": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
@@ -157,7 +157,7 @@
     "sourceObjectType",
     "linkApiName"
   ],
-  "batchApplyAction_#attachmentProperty": [
+  "batchApplyAction_^hasAttachmentUpload": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
@@ -201,13 +201,13 @@
     "interfaceApiNameCamelCase",
     "objectTypeApiNameCamelCase"
   ],
-  "executeFunction_#needsImports": [
+  "executeFunction_#hasAttachmentProperty": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
     "linkApiName"
   ],
-  "executeFunction_#hasAttachmentImports": [
+  "executeFunction_^hasAttachmentProperty": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
@@ -219,7 +219,7 @@
     "sourceObjectType",
     "linkApiName"
   ],
-  "executeFunction_#attachmentProperty": [
+  "executeFunction_^hasAttachmentUpload": [
     "linkedObjectType",
     "packageName",
     "sourceObjectType",
@@ -417,11 +417,13 @@
   ],
   "loadOrderedInterfacesReference": [
     "interfaceApiName",
-    "packageName"
+    "packageName",
+    "property"
   ],
   "searchInterfacesReference": [
     "interfaceApiName",
-    "packageName"
+    "packageName",
+    "property"
   ],
   "loadTimeSeriesPointsSnippet": [
     "objectType",

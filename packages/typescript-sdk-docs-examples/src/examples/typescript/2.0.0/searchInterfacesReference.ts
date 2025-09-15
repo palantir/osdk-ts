@@ -29,8 +29,8 @@ import { isOk, type Osdk, type PageResult, type Result } from "@osdk/client";
 const page: Result<PageResult<Osdk<HasAddress>>> = await client(HasAddress)
     .where({
         $and:[
-            { $not: { someProperty: { $isNull: true }}},
-            { someProperty: { $eq: "foo" }}
+            { $not: { address: { $isNull: true }}},
+            { address: { $eq: "foo" }}
         ]
     })
     .fetchPageWithErrors({

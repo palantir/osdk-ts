@@ -21,10 +21,10 @@
 
 // Example: loadLinkedObjectsReference
 
-import { Employee } from "../../../generatedNoCheck";
+import { Equipment } from "../../../generatedNoCheck";
 // Edit this import if your client location differs
 import { client } from "./client";
 
 async function getLinkedWithPivotEmployee(){
-    return await client(Employee).pivotTo("lead").fetchPage();
+    return await client(Equipment).pivotTo("assignedTo").fetchPage();
 }

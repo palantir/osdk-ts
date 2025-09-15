@@ -21,13 +21,16 @@
 
 // Example: client (Client setup for examples)
 
-import { createClient } from "@osdk/client";
+import { createClient, type Client } from "@osdk/client";
 import { $ontologyRid } from "../../../generatedNoCheck";
 
-export const client = createClient(
+const getToken = () => {
+  return Promise.resolve("");
+};
+
+export const client: Client = createClient(
   "https://example.com",
   $ontologyRid,
-  async () => {
-    return "";
-  },
+  getToken,
 );
+

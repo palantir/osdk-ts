@@ -29,7 +29,7 @@ import { type Osdk, type PageResult } from "@osdk/client";
 try {
     const page: PageResult<Osdk<HasAddress>> = await client(HasAddress)
         .fetchPage({
-            $orderBy: {"someProperty": "asc"},
+            $orderBy: { address: "asc"},
             $pageSize: 30
         });
 } catch (e) {

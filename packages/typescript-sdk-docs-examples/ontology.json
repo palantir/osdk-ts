@@ -351,6 +351,14 @@
         "objectTypeApiName": "Equipment"
       }],
       "status": "ACTIVE"
+    },
+    "refreshData": {
+      "apiName": "refresh-data",
+      "description": "Refresh all cached data in the system",
+      "parameters": {},
+      "rid": "ri.ontology.main.action-type.refresh-data-12345",
+      "operations": [],
+      "status": "ACTIVE"
     }
   },
   "objectTypes": {
@@ -1091,5 +1099,70 @@
       ]
     }
   },
-  "queryTypes": {}
+  "queryTypes": {
+    "getTotalEmployeeCount": {
+      "apiName": "getTotalEmployeeCount",
+      "displayName": "Get Total Employee Count", 
+      "description": "Returns the total number of active employees in the system",
+      "output": {
+        "type": "integer"
+      },
+      "parameters": {},
+      "rid": "ri.function-registry.main.function.employee-count-12345",
+      "version": "1.0.0"
+    },
+    "calculateTotal": {
+      "apiName": "calculateTotal",
+      "displayName": "Calculate Total from Document",
+      "description": "Processes an uploaded document to calculate total values",
+      "output": {
+        "type": "string"
+      },
+      "parameters": {
+        "documentFile": {
+          "dataType": {
+            "type": "attachment"
+          },
+          "description": "The document to process for calculations",
+          "required": false
+        },
+        "includeMetadata": {
+          "dataType": {
+            "type": "boolean"
+          },
+          "description": "Whether to include metadata in the calculation"
+        }
+      },
+      "rid": "ri.function-registry.main.function.calculate-total-67890",
+      "version": "1.0.0"
+    }
+  },
+  "interfaceTypes": {
+    "HasAddress": {
+      "rid": "ri.ontology.main.interface.has-address-12345",
+      "apiName": "HasAddress",
+      "displayName": "Has Address",
+      "description": "Interface for objects that have address information",
+      "properties": {
+        "address": {
+          "rid": "ri.ontology.main.shared-property.address-67890",
+          "apiName": "address",
+          "displayName": "Address",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "city": {
+          "rid": "ri.ontology.main.shared-property.city-67891", 
+          "apiName": "city",
+          "displayName": "City",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        }
+      }
+    }
+  }
 }
