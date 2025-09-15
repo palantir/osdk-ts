@@ -1,5 +1,62 @@
 # @osdk/vite-plugin-oac
 
+## 0.3.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [3d7461d]
+- Updated dependencies [052a96b]
+  - @osdk/faux@0.3.0-beta.5
+  - @osdk/api@2.5.0-beta.5
+  - @osdk/client.unstable@2.5.0-beta.5
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.5
+
+## 0.3.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [a00d2ed]
+- Updated dependencies [a96d89e]
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.4
+  - @osdk/maker@0.13.0-beta.4
+  - @osdk/faux@0.3.0-beta.4
+  - @osdk/cli@0.29.0-beta.4
+  - @osdk/api@2.5.0-beta.4
+  - @osdk/client.unstable@2.5.0-beta.4
+
+## 0.3.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [7bdac45]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [e48be06]
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.3
+  - @osdk/maker@0.13.0-beta.3
+  - @osdk/faux@0.3.0-beta.3
+  - @osdk/api@2.5.0-beta.3
+  - @osdk/cli@0.29.0-beta.3
+  - @osdk/client.unstable@2.5.0-beta.3
+
+## 0.3.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [7160276]
+- Updated dependencies [9c9110c]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [40d43c2]
+- Updated dependencies [5f72188]
+- Updated dependencies [f194536]
+- Updated dependencies [76905f5]
+  - @osdk/api@2.5.0-beta.2
+  - @osdk/faux@0.3.0-beta.2
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.2
+  - @osdk/maker@0.13.0-beta.2
+  - @osdk/cli@0.29.0-beta.2
+  - @osdk/client.unstable@2.5.0-beta.2
+
 ## 0.2.0-beta.18
 
 ### Patch Changes

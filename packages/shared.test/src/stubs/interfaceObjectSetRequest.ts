@@ -170,12 +170,12 @@ const equalsFullScopeObjectSetResponse:
 export const loadInterfaceObjectSetHandlers: {
   [key: string]: LoadObjectSetV2MultipleObjectTypesResponse;
 } = {
-  [stableStringify(baseObjectSet)]: baseObjectSetResponse,
-  [stableStringify(baseObjectSetFullObject)]: baseObjectFullScopeSetResponse,
-  [stableStringify(baseObjectSetEmptyFilter)]: baseObjectSetResponse,
-  [stableStringify(eqSearchBody)]: equalsObjectSetResponse,
-  [stableStringify(baseObjectSetSelect)]: baseObjectSetResponse,
-  [stableStringify(baseObjectSetSelectFullObject)]:
+  [stableStringify(baseObjectSet)!]: baseObjectSetResponse,
+  [stableStringify(baseObjectSetFullObject)!]: baseObjectFullScopeSetResponse,
+  [stableStringify(baseObjectSetEmptyFilter)!]: baseObjectSetResponse,
+  [stableStringify(eqSearchBody)!]: equalsObjectSetResponse,
+  [stableStringify(baseObjectSetSelect)!]: baseObjectSetResponse,
+  [stableStringify(baseObjectSetSelectFullObject)!]:
     baseObjectFullScopeSetResponse,
-  [stableStringify(eqSearchBodyFullScope)]: equalsFullScopeObjectSetResponse,
+  [stableStringify(eqSearchBodyFullScope)!]: equalsFullScopeObjectSetResponse,
 };

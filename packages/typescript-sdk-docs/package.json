@@ -1,6 +1,6 @@
 {
   "name": "@osdk/typescript-sdk-docs",
-  "version": "0.4.0-beta.1",
+  "version": "0.4.0-beta.2",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -48,7 +48,7 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "typescript": "~5.5.4",
-    "yaml": "^2.8.0"
+    "yaml": "^2.8.1"
   },
   "publishConfig": {
     "access": "public"

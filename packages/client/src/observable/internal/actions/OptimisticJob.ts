@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { additionalContext } from "../../Client.js";
-import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
-import type { OptimisticBuilder } from "../OptimisticBuilder.js";
-import { type Changes } from "./Changes.js";
-import { createOptimisticId, type OptimisticId } from "./OptimisticId.js";
-import type { Store } from "./Store.js";
+import { additionalContext } from "../../../Client.js";
+import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { OptimisticBuilder } from "../../OptimisticBuilder.js";
+import { type Changes } from "../Changes.js";
+import { createOptimisticId, type OptimisticId } from "../OptimisticId.js";
+import type { Store } from "../Store.js";
 
 export class OptimisticJob {
   context: OptimisticBuilder;
@@ -53,8 +53,10 @@ export class OptimisticJob {
         const { batchResult } = store.batch({ optimisticId }, (batch) => {
           for (const obj of addedObjects) {
             if (obj.status === "fulfilled") {
-              store.getObjectQuery(obj.value.$objectType, obj.value.$primaryKey)
-                .writeToStore(obj.value, "loading", batch);
+              store.objects.getQuery({
+                apiName: obj.value.$objectType,
+                pk: obj.value.$primaryKey,
+              }).writeToStore(obj.value, "loading", batch);
             } else {
               // TODO FIXME
               throw obj;
@@ -62,13 +64,17 @@ export class OptimisticJob {
           }
 
           for (const obj of updatedObjects) {
-            store.getObjectQuery(obj.$objectType, obj.$primaryKey)
-              .writeToStore(obj, "loading", batch);
+            store.objects.getQuery({
+              apiName: obj.$objectType,
+              pk: obj.$primaryKey,
+            }).writeToStore(obj, "loading", batch);
           }
 
           for (const obj of deletedObjects) {
-            store.getObjectQuery(obj.$objectType, obj.$primaryKey)
-              .deleteFromStore("loading", batch);
+            store.objects.getQuery({
+              apiName: obj.$objectType,
+              pk: obj.$primaryKey,
+            }).deleteFromStore("loading", batch);
           }
         });
 
@@ -125,7 +131,7 @@ export function runOptimisticJob(
       // we don't want to leak the result
       () => undefined,
     ).finally(() => {
-      store.removeLayer(optimisticId);
+      store.layers.remove(optimisticId);
     });
   };
 }

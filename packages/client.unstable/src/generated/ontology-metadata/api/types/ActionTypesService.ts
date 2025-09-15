@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { batchGetEnrichedActionTypeMetadata } from "./ActionTypesService/batchGetEnrichedActionTypeMetadata.js";
 export { loadActionTypes } from "./ActionTypesService/loadActionTypes.js";
 export { loadActionTypesFromOntology } from "./ActionTypesService/loadActionTypesFromOntology.js";
 export { loadActionTypesVersioned } from "./ActionTypesService/loadActionTypesVersioned.js";

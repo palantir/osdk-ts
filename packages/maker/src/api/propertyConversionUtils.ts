@@ -19,6 +19,7 @@ import type {
   DataConstraints,
   OntologyIrStructFieldType,
   OntologyIrType,
+  OntologyIrValueTypeReferenceWithMetadata,
   PropertyTypeDataConstraints,
   PropertyTypeDataConstraints_array,
   PropertyTypeDataConstraints_boolean,
@@ -33,7 +34,6 @@ import type {
   PropertyTypeDataConstraints_struct,
   PropertyTypeDataConstraints_timestamp,
   PropertyTypeDataConstraintsWrapper,
-  ValueTypeApiNameReference,
   ValueTypeDataConstraint,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
@@ -68,10 +68,12 @@ export function getPropertyTypeName(type: PropertyTypeType): string {
 
 export function convertValueType(
   valueType: ValueTypeDefinitionVersion,
-): ValueTypeApiNameReference {
+): OntologyIrValueTypeReferenceWithMetadata {
   return {
     apiName: valueType.apiName,
     version: valueType.version,
+    packageNamespace: valueType.packageNamespace,
+    displayMetadata: valueType.displayMetadata,
   };
 }
 

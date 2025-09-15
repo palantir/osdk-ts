@@ -19,9 +19,8 @@ import type {
   HttpHandler,
   HttpResponseResolver,
   RequestHandlerOptions,
-  StrictResponse,
 } from "msw";
-import { http as http, HttpResponse } from "msw";
+import { http, HttpResponse } from "msw";
 import type { BaseAPIError } from "../../BaseError.js";
 import { authHandlerMiddleware } from "../authHandlerMiddleware.js";
 
@@ -164,7 +163,7 @@ export function handleOpenApiCall<
             );
 
             if (result instanceof Response) {
-              return new HttpResponse(result.body) as StrictResponse<
+              return new HttpResponse(result.body) as HttpResponse<
                 DefaultBodyType
               >;
             }

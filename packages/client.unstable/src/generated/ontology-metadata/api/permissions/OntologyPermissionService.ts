@@ -23,6 +23,7 @@ export { getBulkLinkTypePermissions } from "./OntologyPermissionService/getBulkL
 export { getBulkLinkTypePermissionsForUsers } from "./OntologyPermissionService/getBulkLinkTypePermissionsForUsers.js";
 export { getBulkObjectTypePermissions } from "./OntologyPermissionService/getBulkObjectTypePermissions.js";
 export { getBulkObjectTypePermissionsForUsers } from "./OntologyPermissionService/getBulkObjectTypePermissionsForUsers.js";
+export { getBulkOntologyPermissions } from "./OntologyPermissionService/getBulkOntologyPermissions.js";
 export { getBulkSharedPropertyTypePermissions } from "./OntologyPermissionService/getBulkSharedPropertyTypePermissions.js";
 export { getBulkTypeGroupPermissions } from "./OntologyPermissionService/getBulkTypeGroupPermissions.js";
 export { getCreateOntologyPermissions } from "./OntologyPermissionService/getCreateOntologyPermissions.js";

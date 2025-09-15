@@ -15,16 +15,15 @@
  */
 
 import { findUp } from "find-up";
-import { exec } from "node:child_process";
 import { promises as fsPromises } from "node:fs";
-import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
 import { autoVersion } from "./autoVersion.js";
+import { execAsync } from "./execAsync.js";
 
 vi.mock("find-up");
 vi.mock("node:child_process");
 vi.mock("node:fs");
-const execAsync = promisify(exec);
+vi.mock("./execAsync.js");
 
 describe("autoVersion", () => {
   const execMock = vi.mocked(execAsync);

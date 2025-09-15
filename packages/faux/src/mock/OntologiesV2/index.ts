@@ -29,3 +29,4 @@ export * as Queries from "./Queries.js";
 export * as QueryTypes from "./QueryTypes.js";
 export * as TimeSeriesPropertiesV2 from "./TimeSeriesPropertiesV2.js";
 export * as TimeSeriesValueBankProperties from "./TimeSeriesValueBankProperties.js";
+export * as OntologyTransactions from "./Transactions.js";

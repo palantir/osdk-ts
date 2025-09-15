@@ -65,6 +65,7 @@ export function createSharedClientContext(
           e.message,
           e.errorName,
           e.errorCode,
+          e.errorDescription,
           e.statusCode,
           e.errorInstanceId,
           e.parameters,

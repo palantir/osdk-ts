@@ -19,6 +19,7 @@ import {
   editTodo,
   Employee,
   FooInterface,
+  Office,
   Todo,
 } from "@osdk/client.test.ontology";
 import type { SetupServer } from "@osdk/shared.test";
@@ -30,6 +31,7 @@ import {
   TypeHelpers,
 } from "@osdk/shared.test";
 import chalk from "chalk";
+import { inspect } from "node:util";
 import invariant from "tiny-invariant";
 import type { Task } from "vitest";
 import {
@@ -41,8 +43,8 @@ import {
   expect,
   it,
   vi,
-  vitest,
 } from "vitest";
+import type { BaseServerObject } from "../../../../faux/build/types/FauxFoundry/BaseServerObject.js";
 import { ActionValidationError } from "../../actions/ActionValidationError.js";
 import { type Client } from "../../Client.js";
 import { createClient } from "../../createClient.js";
@@ -52,15 +54,18 @@ import type {
   ObserveListOptions,
   Unsubscribable,
 } from "../ObservableClient.js";
-import type { ObjectCacheKey } from "./ObjectQuery.js";
+import { runOptimisticJob } from "./actions/OptimisticJob.js";
+import type { CacheKeys } from "./CacheKeys.js";
+import type { KnownCacheKey } from "./KnownCacheKey.js";
+import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import { createOptimisticId } from "./OptimisticId.js";
-import { runOptimisticJob } from "./OptimisticJob.js";
-import { invalidateList, Store } from "./Store.js";
+import { Store } from "./Store.js";
 import {
   applyCustomMatchers,
   createClientMockHelper,
   createDefer,
   expectNoMoreCalls,
+  expectSingleLinkCallAndClear,
   expectSingleListCallAndClear,
   expectSingleObjectCallAndClear,
   getObject,
@@ -71,12 +76,20 @@ import {
   updateObject,
   waitForCall,
 } from "./testUtils.js";
+import { invalidateList } from "./testUtils/invalidateList.js";
+import { expectStandardObserveLink } from "./testUtils/observeLink/expectStandardObserveLink.js";
+import { expectStandardObserveObject } from "./testUtils/observeObject/expectStandardObserveObject.js";
 
 const JOHN_DOE_ID = 50030;
 
 const defer = createDefer();
 
-const logger = new TestLogger();
+const logger = new TestLogger({}, {
+  level: "debug",
+});
+
+inspect.defaultOptions.depth = 9;
+inspect.defaultOptions.colors = true;
 
 beforeAll(() => {
   vi.setConfig({
@@ -141,35 +154,256 @@ function setupOntology(fauxFoundry: FauxFoundry) {
 function setupSomeEmployees(fauxFoundry: FauxFoundry) {
   const dataStore = fauxFoundry.getDefaultDataStore();
 
-  dataStore.registerObject(Employee, {
+  const emp1 = dataStore.registerObject(Employee, {
     employeeId: 1,
   });
 
-  dataStore.registerObject(Employee, {
+  const emp2 = dataStore.registerObject(Employee, {
     employeeId: 2,
   });
 
-  dataStore.registerObject(Employee, {
+  const emp3 = dataStore.registerObject(Employee, {
     $apiName: "Employee",
     employeeId: 3,
   });
 
-  dataStore.registerObject(Employee, {
+  const emp4 = dataStore.registerObject(Employee, {
     $apiName: "Employee",
     employeeId: 4,
   });
 
-  dataStore.registerObject(Employee, {
+  const johnDoe = dataStore.registerObject(Employee, {
     $apiName: "Employee",
     employeeId: JOHN_DOE_ID,
     fullName: "John Doe",
   });
+
+  dataStore.registerLink(emp1, "peeps", johnDoe, "lead");
+
+  // Create offices
+  const office1 = dataStore.registerObject(Office, {
+    officeId: "101",
+    name: "Office 1",
+  });
+
+  const office2 = dataStore.registerObject(Office, {
+    officeId: "102",
+    name: "Office 2",
+  });
+
+  // Link employees to offices (Employee->Office: officeLink, Office->Employee: occupants)
+  dataStore.registerLink(emp1, "officeLink", office1, "occupants");
+  dataStore.registerLink(emp2, "officeLink", office2, "occupants");
 }
 
 describe(Store, () => {
+  describe("observeLinks", () => {
+    let client: Client;
+    let cache: Store;
+    let fauxFoundry: FauxFoundry;
+
+    beforeAll(async () => {
+      // Set up the mock environment and client
+      const testSetup = startNodeApiServer(
+        new FauxFoundry("https://stack.palantir.com/"),
+        createClient,
+        { logger },
+      );
+      ({ client, fauxFoundry } = testSetup);
+
+      // Use the existing setup function that adds Employee objects
+      setupOntology(fauxFoundry);
+      setupSomeEmployees(fauxFoundry);
+
+      return () => {
+        testSetup.apiServer.close();
+      };
+    });
+
+    beforeEach(() => {
+      cache = new Store(client);
+      return () => {
+        cache = undefined!;
+      };
+    });
+
+    const objectLikeJohnDoe = expect.objectContaining({
+      $apiName: "Employee",
+      $primaryKey: JOHN_DOE_ID,
+    });
+    const objectLikeEmp2 = expect.objectContaining({
+      $apiName: "Employee",
+      $primaryKey: 2,
+    });
+
+    it("removing link updates", async (x) => {
+      const { payload: emp1Payload, subFn } = await expectStandardObserveObject(
+        {
+          cache,
+          type: Employee,
+          primaryKey: 1,
+        },
+      );
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      // Set up mock callback for observing links
+      const { payload, linkSubFn } = await expectStandardObserveLink({
+        store: cache,
+        srcObject: emp1,
+        srcLinkName: "peeps",
+        targetType: Employee,
+        expected: [objectLikeJohnDoe],
+      });
+
+      // Unregister the link "in the backend"
+      fauxFoundry.getDefaultDataStore().unregisterLink(
+        asBsoStub(emp1),
+        "peeps",
+        { __apiName: "Employee", __primaryKey: JOHN_DOE_ID },
+        "lead",
+      );
+
+      const targetType = "Employee";
+      const currentLinks: Osdk.Instance<any>[] = [objectLikeJohnDoe];
+      const expectedLinks: Osdk.Instance<any>[] = [];
+
+      testStage("Observing Employee 1's peeps");
+
+      // Invalidate the employee cache
+      const invalidateEmployeePromise = cache.invalidateObjectType(
+        targetType,
+        undefined,
+      );
+
+      await waitForCall(linkSubFn);
+      // Initially go to an invalidated loading state
+      expectSingleLinkCallAndClear(linkSubFn, currentLinks, {
+        status: "loading",
+      });
+
+      await invalidateEmployeePromise;
+
+      // Should have no peeps now
+      expectSingleLinkCallAndClear(linkSubFn, expectedLinks, {
+        status: "loaded",
+      });
+    });
+
+    it("invalidating Employee type only invalidates links, not Office objects", async () => {
+      // Get an Office object that has Employee occupants
+      const { payload: office1Payload, subFn: officeSubFn } =
+        await expectStandardObserveObject(
+          {
+            cache,
+            type: Office,
+            primaryKey: "101",
+          },
+        );
+      const office1 = office1Payload?.object;
+      invariant(office1);
+
+      expect(await office1.$link.occupants.fetchPage()).toMatchInlineSnapshot(`
+        {
+          "data": [
+            {
+              "$apiName": "Employee",
+              "$objectSpecifier": "Employee:1",
+              "$objectType": "Employee",
+              "$primaryKey": 1,
+              "$title": undefined,
+              "employeeId": 1,
+              "office": "101",
+            },
+          ],
+          "nextPageToken": undefined,
+          "totalCount": undefined,
+        }
+      `);
+
+      testStage("Observing Employee 1");
+
+      // Get an Employee object linked to the office
+      const { payload: emp1Payload, subFn: empSubFn } =
+        await expectStandardObserveObject(
+          {
+            cache,
+            type: Employee,
+            primaryKey: 1,
+          },
+        );
+      const emp1 = emp1Payload?.object;
+      invariant(emp1);
+
+      testStage("Observing Office 101's occupants");
+
+      // Set up observation of occupants link
+      const { linkSubFn: occupantsLinkSubFn } = await expectStandardObserveLink(
+        {
+          store: cache,
+          srcObject: office1,
+          srcLinkName: "occupants",
+          targetType: Employee,
+          expected: [expect.objectContaining({ $primaryKey: 1 })],
+        },
+      );
+
+      // Clear any initial calls
+      officeSubFn.next.mockClear();
+      empSubFn.next.mockClear();
+      occupantsLinkSubFn.next.mockClear();
+
+      testStage("Invalidating Employee object type");
+
+      // Invalidate the Employee object type
+      // This should cause:
+      //  - any object query for Employee to be invalidated
+      //  - any object list query for Employee to be invalidated
+      //  - any link queries where the source is an Employee to be invalidated
+      //  - any link queries where the target is an Employee to be invalidated
+      const invalidateEmployeePromise = cache.invalidateObjectType(
+        Employee,
+        undefined,
+      );
+
+      // The link should be invalidated (loading state)
+      await waitForCall(occupantsLinkSubFn, 1);
+
+      expectSingleLinkCallAndClear(occupantsLinkSubFn, [emp1], {
+        status: "loading",
+      });
+
+      // The employee should be invalidated (loading state)
+      await waitForCall(empSubFn, 1);
+      expectSingleObjectCallAndClear(empSubFn, emp1, "loading");
+
+      // The link should be revalidated (loaded state)
+      await waitForCall(occupantsLinkSubFn, 1);
+      expectSingleLinkCallAndClear(occupantsLinkSubFn, [emp1], {
+        status: "loaded",
+      });
+
+      // the Employee object should also be invalidated (loading state)
+      await waitForCall(empSubFn, 1);
+      expectSingleObjectCallAndClear(empSubFn, emp1, "loaded");
+
+      // The Office object should NOT have any calls
+      // This is the key verification - no calls should be made to the office subscription
+      expect(officeSubFn.next).not.toHaveBeenCalled();
+
+      await invalidateEmployeePromise;
+
+      // ensure at the end of invalidation there are no new calls
+      expect(occupantsLinkSubFn.next).not.toHaveBeenCalled();
+      expect(empSubFn.next).not.toHaveBeenCalled();
+      expect(officeSubFn.next).not.toHaveBeenCalled();
+    });
+  });
+
   describe("with mock server", () => {
     let client: Client;
     let cache: Store;
+    let cacheKeys: CacheKeys<KnownCacheKey>;
 
     let employeesAsServerReturns: Osdk.Instance<Employee>[];
     let mutatedEmployees: Osdk.Instance<Employee>[];
@@ -201,6 +435,7 @@ describe(Store, () => {
 
     beforeEach(() => {
       cache = new Store(client);
+      cacheKeys = cache.cacheKeys;
 
       return () => {
         cache = undefined!;
@@ -210,7 +445,7 @@ describe(Store, () => {
     it("basic single object works", async () => {
       const emp = employeesAsServerReturns[0];
 
-      const cacheKey = cache.getCacheKey<ObjectCacheKey>(
+      const cacheKey = cacheKeys.get<ObjectCacheKey>(
         "object",
         "Employee",
         emp.$primaryKey,
@@ -248,12 +483,11 @@ describe(Store, () => {
 
         const subFn = mockSingleSubCallback();
         defer(
-          cache.observeObject(
-            Employee,
-            emp.$primaryKey,
-            { mode: "offline" },
-            subFn,
-          ),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: emp.$primaryKey,
+            mode: "offline",
+          }, subFn),
         );
 
         expectSingleObjectCallAndClear(subFn, emp, "loaded");
@@ -270,7 +504,7 @@ describe(Store, () => {
         );
 
         // remove the optimistic write
-        cache.removeLayer(optimisticId);
+        cache.layers.remove(optimisticId);
 
         expectSingleObjectCallAndClear(subFn, emp, "loaded");
       });
@@ -287,19 +521,18 @@ describe(Store, () => {
 
         const empSubFn = mockSingleSubCallback();
         defer(
-          cache.observeObject(
-            Employee,
-            emp.$primaryKey,
-            { mode: "offline" },
-            empSubFn,
-          ),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: emp.$primaryKey,
+            mode: "offline",
+          }, empSubFn),
         );
 
         expectSingleObjectCallAndClear(empSubFn, emp, "loaded");
 
         const listSubFn = mockListSubCallback();
         defer(
-          cache.observeList({
+          cache.lists.observe({
             type: Employee,
             mode: "offline",
           }, listSubFn),
@@ -351,7 +584,7 @@ describe(Store, () => {
         ]);
 
         // remove the optimistic write
-        cache.removeLayer(optimisticId);
+        cache.layers.remove(optimisticId);
 
         // see the object observation get updated
         expectSingleObjectCallAndClear(
@@ -374,12 +607,11 @@ describe(Store, () => {
 
         const subFn = mockSingleSubCallback();
         defer(
-          cache.observeObject(
-            Employee,
-            emp.$primaryKey,
-            { mode: "offline" },
-            subFn,
-          ),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: emp.$primaryKey,
+            mode: "offline",
+          }, subFn),
         );
         expectSingleObjectCallAndClear(subFn, emp, "loaded");
 
@@ -401,7 +633,7 @@ describe(Store, () => {
         expect(subFn.next).not.toHaveBeenCalled();
 
         // remove the optimistic write
-        cache.removeLayer(optimisticId);
+        cache.layers.remove(optimisticId);
 
         expectSingleObjectCallAndClear(subFn, truthUpdatedEmployee);
         expectNoMoreCalls(subFn);
@@ -416,18 +648,17 @@ describe(Store, () => {
 
           const subFn = mockSingleSubCallback();
           defer(
-            cache.observeObject(
-              Employee,
-              emp.$primaryKey,
-              { mode: "offline" },
-              subFn,
-            ),
+            cache.objects.observe({
+              apiName: Employee,
+              pk: emp.$primaryKey,
+              mode: "offline",
+            }, subFn),
           );
           expectSingleObjectCallAndClear(subFn, emp);
 
           const subListFn = mockListSubCallback();
           defer(
-            cache.observeList({
+            cache.lists.observe({
               type: Employee,
               mode: "offline",
             }, subListFn),
@@ -440,7 +671,7 @@ describe(Store, () => {
             { status: "loaded" },
           );
 
-          const cacheKey = cache.getCacheKey<ObjectCacheKey>(
+          const cacheKey = cacheKeys.get<ObjectCacheKey>(
             "object",
             emp.$apiName,
             emp.$primaryKey,
@@ -476,12 +707,11 @@ describe(Store, () => {
 
         const subFn = mockSingleSubCallback();
         defer(
-          cache.observeObject(
-            Employee,
-            emp.$primaryKey,
-            { mode: "offline" },
-            subFn,
-          ),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: emp.$primaryKey,
+            mode: "offline",
+          }, subFn),
         );
 
         expectSingleObjectCallAndClear(subFn, staleEmp, "loaded");
@@ -500,13 +730,6 @@ describe(Store, () => {
     });
 
     describe(".invalidateList", () => {
-      beforeEach(() => {
-        vi.useFakeTimers({});
-      });
-      afterEach(() => {
-        vi.useRealTimers();
-      });
-
       it("triggers an update", async () => {
         const emp = employeesAsServerReturns[0];
         const staleEmp = emp.$clone({ fullName: "stale" });
@@ -516,18 +739,17 @@ describe(Store, () => {
 
         const subFn = mockSingleSubCallback();
         defer(
-          cache.observeObject(
-            Employee,
-            emp.$primaryKey,
-            { mode: "offline" },
-            subFn,
-          ),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: emp.$primaryKey,
+            mode: "offline",
+          }, subFn),
         );
         expectSingleObjectCallAndClear(subFn, staleEmp);
 
         const subListFn = mockListSubCallback();
         defer(
-          cache.observeList({
+          cache.lists.observe({
             type: Employee,
             mode: "offline",
           }, subListFn),
@@ -584,18 +806,17 @@ describe(Store, () => {
 
         const subFn = mockSingleSubCallback();
         defer(
-          cache.observeObject(
-            Employee,
-            emp.$primaryKey,
-            { mode: "offline" },
-            subFn,
-          ),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: emp.$primaryKey,
+            mode: "offline",
+          }, subFn),
         );
         expectSingleObjectCallAndClear(subFn, staleEmp);
 
         const subListFn = mockListSubCallback();
         defer(
-          cache.observeList({
+          cache.lists.observe({
             type: Employee,
             where: {},
             orderBy: {},
@@ -625,8 +846,26 @@ describe(Store, () => {
         await waitForCall(subListFn, 1);
         expectSingleListCallAndClear(subListFn, employeesAsServerReturns);
 
-        await waitForCall(subFn, 1);
-        expectSingleObjectCallAndClear(subFn, emp, "loaded");
+        testStage("Check invalidation call for single sub");
+
+        await waitForCall(subFn, 2);
+        // First call is for loading state
+        expect(subFn.next).toHaveBeenNthCalledWith(
+          1,
+          objectPayloadContaining({
+            status: "loading",
+            object: staleEmp as unknown as ObjectHolder,
+          }),
+        );
+        // Second call is for loaded state with fresh data
+        expect(subFn.next).toHaveBeenNthCalledWith(
+          2,
+          objectPayloadContaining({
+            status: "loaded",
+            object: emp as unknown as ObjectHolder,
+          }),
+        );
+        subFn.next.mockClear();
 
         // we don't need this value to control the test but we want to make sure we don't have
         // any unhandled exceptions upon test completion
@@ -655,7 +894,11 @@ describe(Store, () => {
 
       it("fetches and updates twice", async () => {
         defer(
-          cache.observeObject(Employee, JOHN_DOE_ID, { mode: "force" }, subFn1),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: JOHN_DOE_ID,
+            mode: "force",
+          }, subFn1),
         );
 
         expect(subFn1.next).toHaveBeenCalledExactlyOnceWith(
@@ -681,7 +924,11 @@ describe(Store, () => {
         subFn1.next.mockClear();
 
         defer(
-          cache.observeObject(Employee, JOHN_DOE_ID, { mode: "force" }, subFn2),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: JOHN_DOE_ID,
+            mode: "force",
+          }, subFn2),
         );
         expectSingleObjectCallAndClear(subFn1, likeEmployee50030, "loading");
 
@@ -714,12 +961,11 @@ describe(Store, () => {
         subFn.error.mockClear();
 
         sub = defer(
-          cache.observeObject(
-            Employee,
-            JOHN_DOE_ID,
-            { mode: "offline" },
-            subFn,
-          ),
+          cache.objects.observe({
+            apiName: Employee,
+            pk: JOHN_DOE_ID,
+            mode: "offline",
+          }, subFn),
         );
 
         expectSingleObjectCallAndClear(subFn, undefined!, "init");
@@ -772,12 +1018,11 @@ describe(Store, () => {
       });
     });
 
-    describe(".observeList", () => {
+    describe(".lists.observe", () => {
       const listSub1 = mockListSubCallback();
       const ifaceSub = mockListSubCallback();
 
       beforeEach(() => {
-        vi.useFakeTimers({});
         vi.mocked(listSub1.next).mockReset();
         vi.mocked(listSub1.error).mockReset();
         vi.mocked(listSub1.complete).mockReset();
@@ -786,14 +1031,11 @@ describe(Store, () => {
         vi.mocked(ifaceSub.error).mockReset();
         vi.mocked(ifaceSub.complete).mockReset();
       });
-      afterEach(() => {
-        vi.useRealTimers();
-      });
 
       describe("mode=force", () => {
         it("initial load", async () => {
           defer(
-            cache.observeList({
+            cache.lists.observe({
               type: Employee,
 
               orderBy: {},
@@ -802,7 +1044,7 @@ describe(Store, () => {
           );
 
           defer(
-            cache.observeList({
+            cache.lists.observe({
               type: FooInterface,
 
               orderBy: {},
@@ -810,7 +1052,6 @@ describe(Store, () => {
             }, ifaceSub),
           );
 
-          vitest.runOnlyPendingTimers();
           await waitForCall(listSub1);
           await waitForCall(ifaceSub);
 
@@ -862,7 +1103,7 @@ describe(Store, () => {
           );
 
           defer(
-            cache.observeList({
+            cache.lists.observe({
               type: Employee,
               mode: "force",
             }, listSub1),
@@ -887,36 +1128,35 @@ describe(Store, () => {
       describe("mode = offline", () => {
         it("updates with list updates", async () => {
           defer(
-            cache.observeList({
+            cache.lists.observe({
               type: Employee,
               where: {},
               orderBy: {},
               mode: "offline",
             }, listSub1),
           );
-          expect(listSub1.next).toHaveBeenCalledTimes(0);
 
           updateList(
             cache,
             { type: Employee, where: {}, orderBy: {} },
             employeesAsServerReturns,
           );
-          vitest.runOnlyPendingTimers();
 
+          await waitForCall(listSub1);
           expectSingleListCallAndClear(listSub1, employeesAsServerReturns);
 
           // list is just now one object
           updateList(cache, { type: Employee, where: {}, orderBy: {} }, [
             employeesAsServerReturns[0],
           ]);
-          vitest.runOnlyPendingTimers();
 
+          await waitForCall(listSub1);
           expectSingleListCallAndClear(listSub1, [employeesAsServerReturns[0]]);
         });
 
         it("updates with different list updates", async () => {
           defer(
-            cache.observeList({
+            cache.lists.observe({
               type: Employee,
               where: {},
               orderBy: {},
@@ -924,15 +1164,13 @@ describe(Store, () => {
             }, listSub1),
           );
 
-          expect(listSub1.next).toHaveBeenCalledTimes(0);
-
           updateList(
             cache,
             { type: Employee, where: {}, orderBy: {} },
             employeesAsServerReturns,
           );
-          vitest.runOnlyPendingTimers();
 
+          await waitForCall(listSub1);
           expectSingleListCallAndClear(listSub1, employeesAsServerReturns);
 
           // new where === different list
@@ -941,9 +1179,9 @@ describe(Store, () => {
             where: { employeeId: { $gt: 0 } },
             orderBy: {},
           }, mutatedEmployees);
-          vitest.runOnlyPendingTimers();
 
           // original list updates still
+          await waitForCall(listSub1);
           expectSingleListCallAndClear(listSub1, mutatedEmployees);
         });
       });
@@ -959,7 +1197,7 @@ describe(Store, () => {
 
       it("works in the solo case", async () => {
         const listSub = mockListSubCallback();
-        defer(cache.observeList(
+        defer(cache.lists.observe(
           {
             type: Employee,
             where: {},
@@ -969,8 +1207,6 @@ describe(Store, () => {
           },
           listSub,
         ));
-
-        expect(listSub.next).not.toHaveBeenCalled();
 
         await waitForCall(listSub, 1);
         expectSingleListCallAndClear(listSub, [], { status: "loading" });
@@ -1037,14 +1273,19 @@ describe(Store, () => {
       // ignores unhandled rejection, like one we will get from fire-and-forget metadata call
       process.on("unhandledRejection", () => {});
 
-      store.observeList({
+      store.lists.observe({
         type: { apiName: "notReal", type: "object" },
         orderBy: {},
       }, sub);
 
-      await waitForCall(sub.error, 1);
+      await waitForCall(sub.next);
 
-      expect(sub.error).toHaveBeenCalled();
+      // initial loading state
+      expect(sub.next).toHaveBeenCalledOnce();
+      expectSingleListCallAndClear(sub, [], { status: "loading" });
+
+      await waitForCall(sub.error);
+      expect(sub.error).toHaveBeenCalledOnce();
       expect(sub.next).not.toHaveBeenCalled();
     });
 
@@ -1062,8 +1303,14 @@ describe(Store, () => {
         const a = mockSingleSubCallback();
         const b = mockSingleSubCallback();
 
-        defer(store.observeObject(Employee, 0, {}, a));
-        defer(store.observeObject(Employee, 1, {}, b));
+        defer(store.objects.observe({
+          apiName: Employee,
+          pk: 0,
+        }, a));
+        defer(store.objects.observe({
+          apiName: Employee,
+          pk: 1,
+        }, b));
 
         await a.expectLoadingAndLoaded({
           loading: objectPayloadContaining({
@@ -1104,7 +1351,10 @@ describe(Store, () => {
 
         const todoSubFn = mockSingleSubCallback();
 
-        defer(store.observeObject(Todo, 0, {}, todoSubFn));
+        defer(store.objects.observe({
+          apiName: Todo,
+          pk: 0,
+        }, todoSubFn));
 
         await todoSubFn.expectLoadingAndLoaded({
           loading: objectPayloadContaining({
@@ -1151,7 +1401,10 @@ describe(Store, () => {
 
         const todoSubFn = mockSingleSubCallback();
         defer(
-          store.observeObject(Todo, 0, {}, todoSubFn),
+          store.objects.observe({
+            apiName: Todo,
+            pk: 0,
+          }, todoSubFn),
         );
 
         await todoSubFn.expectLoadingAndLoaded({
@@ -1168,7 +1421,7 @@ describe(Store, () => {
         });
 
         const object: Osdk.Instance<Todo> | undefined = store.getValue(
-          store.getCacheKey<ObjectCacheKey>("object", "Todo", 0),
+          store.cacheKeys.get<ObjectCacheKey>("object", "Todo", 0),
         )?.value as any;
         invariant(object);
 
@@ -1240,25 +1493,29 @@ describe(Store, () => {
         },
       } satisfies ObserveListOptions<Todo>;
 
-      const subListUnordered = mockListSubCallback();
-      const subListOrdered = mockListSubCallback();
+      let subListUnordered = mockListSubCallback();
+      let subListOrdered = mockListSubCallback();
 
-      beforeEach(() => {
+      beforeEach(async () => {
+        subListUnordered = mockListSubCallback();
+        subListOrdered = mockListSubCallback();
         defer(
-          store.observeList({
+          store.lists.observe({
             ...noWhereNoOrderBy,
             mode: "offline",
           }, subListUnordered),
         );
-        expect(subListUnordered.next).toHaveBeenCalledTimes(0);
+        await waitForCall(subListUnordered);
+        expectSingleListCallAndClear(subListUnordered, [], { status: "init" });
 
         defer(
-          store.observeList({
+          store.lists.observe({
             ...noWhereOrderByText,
             mode: "offline",
           }, subListOrdered),
         );
-        expect(subListOrdered.next).toHaveBeenCalledTimes(0);
+        await waitForCall(subListOrdered);
+        expectSingleListCallAndClear(subListOrdered, [], { status: "init" });
       });
 
       it("invalidates the correct lists", async () => {
@@ -1516,10 +1773,10 @@ describe(Store, () => {
         $objectType: "Employee",
         $apiName: "Employee",
         $title: `truth ${i}`,
-      } as Osdk.Instance<Employee>));
+      } as Osdk.Instance<Employee> & ObjectHolder<Osdk.Instance<Employee>>));
 
       const cacheKeys = baseObjects.map((obj) =>
-        store.getCacheKey("object", "Employee", obj.$primaryKey)
+        store.cacheKeys.get("object", "Employee", obj.$primaryKey)
       );
 
       // set the truth
@@ -1561,7 +1818,7 @@ describe(Store, () => {
       }
 
       // remove the first layer
-      store.removeLayer(layerIds[0]);
+      store.layers.remove(layerIds[0]);
 
       // should have truth object 1 and optimistic object 2
       expect(getObject(store, "Employee", 1)).toEqual(
@@ -1572,7 +1829,7 @@ describe(Store, () => {
       );
 
       // remove the second layer
-      store.removeLayer(layerIds[1]);
+      store.layers.remove(layerIds[1]);
 
       // should have truth objects
       for (const obj of baseObjects) {
@@ -1583,3 +1840,12 @@ describe(Store, () => {
     });
   });
 });
+
+export function asBsoStub(
+  x: ObjectHolder<any> | Osdk.Instance<any>,
+): BaseServerObject {
+  return {
+    __apiName: x.$apiName,
+    __primaryKey: x.$primaryKey,
+  };
+}

@@ -19,7 +19,9 @@ export {
   createFetchHeaderMutator,
   createFetchOrThrow,
 } from "@osdk/shared.net.fetch";
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 export { createClientContext } from "./createClientContext.js";
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 export type { FetchAsJsonFn } from "./FetchAsJsonFn.js";
 export { isOk, type ResultOrError } from "./ResultOrError.js";
 export { replaceHttpIfNotLocalhost } from "./util/replaceHttpIfNotLocalhost.js";

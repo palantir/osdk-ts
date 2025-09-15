@@ -17,6 +17,7 @@
 import type { ViteDevServer } from "vite";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { extractWidgetConfig } from "../extractWidgetConfig.js";
+import * as validateWidgetConfigModule from "../validateWidgetConfig.js";
 
 const MOCK_SERVER = {
   ssrLoadModule: vi.fn(),
@@ -32,8 +33,45 @@ describe("extractWidgetConfig", () => {
       default: MOCK_CONFIG,
     });
 
+    const validateSpy = vi.spyOn(
+      validateWidgetConfigModule,
+      "validateWidgetConfig",
+    );
+
     const result = await extractWidgetConfig("/path/to/config.ts", MOCK_SERVER);
     expect(result).toEqual(MOCK_CONFIG);
+    expect(validateSpy).toHaveBeenCalledWith(MOCK_CONFIG);
+  });
+
+  test("throws for invalid widget configuration", async () => {
+    const INVALID_CONFIG = {
+      id: "Invalid-Id",
+      name: "Test Widget",
+      type: "workshop",
+      parameters: {},
+    };
+
+    vi.mocked(MOCK_SERVER.ssrLoadModule).mockResolvedValue({
+      default: INVALID_CONFIG,
+    });
+
+    vi.spyOn(validateWidgetConfigModule, "validateWidgetConfig")
+      .mockImplementation(config => {
+        throw new Error(
+          `Widget id "${config.id}" does not match allowed pattern (must be camelCase)`,
+        );
+      });
+
+    await expect(extractWidgetConfig("/path/to/config.ts", MOCK_SERVER))
+      .rejects.toThrow(
+        expect.objectContaining({
+          message: "Failed to load widget config from /path/to/config.ts",
+          cause: expect.objectContaining({
+            message:
+              `Widget id "Invalid-Id" does not match allowed pattern (must be camelCase)`,
+          }),
+        }),
+      );
   });
 
   test("throws for missing default export", async () => {

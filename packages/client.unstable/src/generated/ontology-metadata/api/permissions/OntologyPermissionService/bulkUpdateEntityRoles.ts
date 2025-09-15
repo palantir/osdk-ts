@@ -26,6 +26,7 @@ import type {
  * permissions on these entities will be unrestricted from their datasets.
  * Requires `ontology:update-entity-roles` on the entity and `ontology:unrestrict-from-datasource` on all backing
  * datasets of the resources you are updating.
+ * Limited to 500 entries per request.
  */
 export async function bulkUpdateEntityRoles(
   ctx: ConjureContext,

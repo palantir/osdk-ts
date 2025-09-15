@@ -53,6 +53,7 @@ export type {
   GroupByClause,
   GroupByRange,
 } from "./groupby/GroupByClause.js";
+export type { Logger } from "./Logger.js";
 export type {
   AllowedBucketKeyTypes,
   AllowedBucketTypes,
@@ -130,8 +131,9 @@ export type {
   OsdkBase,
   PrimaryKeyType,
 } from "./OsdkBase.js";
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 export type { OsdkObject } from "./OsdkObject.js";
-export type { ConvertProps, Osdk } from "./OsdkObjectFrom.js";
+export type { ConvertProps, MaybeScore, Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";
 export type {
   Range,
@@ -148,4 +150,3 @@ export type {
 } from "./timeseries/timeseries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export {};
-export type { Logger } from "./Logger.js";
