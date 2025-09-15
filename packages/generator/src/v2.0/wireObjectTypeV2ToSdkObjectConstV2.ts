@@ -287,7 +287,7 @@ export function createDefinition(
       apiName: "${object.fullApiName}";${
     object instanceof EnhancedObjectType
       ? `
-        primaryKeyApiName: string;`
+        primaryKeyApiName: "${object.raw.objectType.primaryKey}";`
       : ``
   }
       __DefinitionMetadata?: {
