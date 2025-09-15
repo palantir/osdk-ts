@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /*
  * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
@@ -15,63 +14,102 @@
  * limitations under the License.
  */
 
-/* eslint-disable no-console */
-
+import { TYPESCRIPT_OSDK_SNIPPETS } from "@osdk/typescript-sdk-docs";
 import fs from "fs/promises";
 import path from "path";
-import { fileURLToPath } from "url";
-import { TYPESCRIPT_OSDK_SNIPPETS } from "@osdk/typescript-sdk-docs";
-import { 
-  getSnippetContext, 
-  generateFileHeader, 
-  generateClientFile, 
+import {
   extractHandlebarsVariables,
   findBlockVariables,
+  generateBlockVariations,
+  generateClientFile,
+  generateFileHeader,
+  getSnippetContext,
   processTemplate,
-  generateBlockVariations
 } from "./utils/index.js";
 
+// Types
+interface ExamplesHierarchy {
+  kind: "examples";
+  versions: {
+    [version: string]: {
+      examples: {
+        [exampleName: string]: {
+          filePath: string;
+          code: string;
+        };
+      };
+    };
+  };
+}
 
-// Import necessary modules
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+interface SnippetVariables {
+  [snippetKey: string]: string[];
+}
 
-// Path constants
-const OUTPUT_DIR = path.join(__dirname, "src/examples");
+interface BlockVariationResult {
+  variables: string[];
+  code: string;
+}
 
-async function main() {
+interface BlockVariations {
+  [variationKey: string]: BlockVariationResult;
+}
+
+/**
+ * Generate TypeScript examples from SDK documentation templates
+ * @param outputDir - Directory to output the generated examples
+ * @param snippetVariablesPath - Path to write the snippetVariables.json file
+ * @param hierarchyOutputPath - Path to write the hierarchy TypeScript file
+ */
+export async function generateExamples(
+  outputDir: string,
+  snippetVariablesPath: string,
+  hierarchyOutputPath: string,
+): Promise<void> {
   try {
+    // eslint-disable-next-line no-console
     console.log("Generating examples from typescript-sdk-docs...");
 
     // Get snippets from version 2.0.0
     const version = "2.0.0";
     const snippets = TYPESCRIPT_OSDK_SNIPPETS.versions[version]?.snippets;
-    
+
     if (!snippets) {
-      console.error(`No snippets found for version ${version}`);
-      process.exit(1);
+      throw new Error(`No snippets found for version ${version}`);
     }
 
     // Delete existing examples directory if it exists
     try {
-      await fs.rm(OUTPUT_DIR, { recursive: true, force: true });
+      await fs.rm(outputDir, { recursive: true, force: true });
+      // eslint-disable-next-line no-console
       console.log("✓ Cleaned up existing examples directory");
     } catch (err) {
       // Directory might not exist, which is fine
     }
 
     // Ensure output directory exists
-    await fs.mkdir(path.join(OUTPUT_DIR, "typescript", version), { recursive: true });
+    await fs.mkdir(path.join(outputDir, "typescript", version), {
+      recursive: true,
+    });
 
     // Generate examples for each snippet
-    await generateAllExamples(snippets, version);
-    
-    // Generate client.ts file
-    await generateClientFile(version, OUTPUT_DIR);
+    await generateAllExamples(
+      snippets,
+      version,
+      outputDir,
+      snippetVariablesPath,
+      hierarchyOutputPath,
+    );
 
+    // Generate client.ts file
+    await generateClientFile(version, outputDir);
+
+    // eslint-disable-next-line no-console
     console.log("✓ Examples generated successfully");
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error("Error generating example snippets:", error);
-    process.exit(1);
+    throw error;
   }
 }
 
@@ -80,87 +118,93 @@ async function main() {
  * This function processes each snippet template in the TYPESCRIPT_OSDK_SNIPPETS object,
  * applies context variables using Handlebars, and generates example files.
  * It also creates an index file and a snippetVariables.json file.
- * 
- * @param {Object} snippets The snippets object from TYPESCRIPT_OSDK_SNIPPETS
- * @param {string} version The version to generate examples for
  */
-async function generateAllExamples(snippets, version) {
+async function generateAllExamples(
+  snippets: any,
+  version: string,
+  outputDir: string,
+  snippetVariablesPath: string,
+  hierarchyOutputPath: string,
+): Promise<void> {
   // Create a snippetVariables object to track handlebars variables
-  const snippetVariables = {};
-  
+  const snippetVariables: SnippetVariables = {};
+
   // Create examples hierarchy object to track generated files
-  const examplesHierarchy = {
+  const examplesHierarchy: ExamplesHierarchy = {
     kind: "examples",
     versions: {
       [version]: {
-        examples: {}
-      }
-    }
+        examples: {},
+      },
+    },
   };
-  
+
   // Create index file content using the common header utility
-  let indexContent = `${generateFileHeader(`index`, `TYPESCRIPT Examples - SDK Version ${version}`)}
+  let indexContent = `${
+    generateFileHeader(`index`, `TYPESCRIPT Examples - SDK Version ${version}`)
+  }
 // This file was automatically generated from the typescript-sdk-docs package
 
 `;
 
   // Process each snippet
   for (const [snippetKey, snippetArray] of Object.entries(snippets)) {
-    if (!snippetArray || snippetArray.length === 0) {
+    if (!Array.isArray(snippetArray) || snippetArray.length === 0) {
+      // eslint-disable-next-line no-console
       console.log(`No template found for ${snippetKey}, skipping...`);
       continue;
     }
-    
+
     const snippetData = snippetArray[0];
-    if (!snippetData.template) {
+    if (!snippetData?.template) {
+      // eslint-disable-next-line no-console
       console.log(`No template content for ${snippetKey}, skipping...`);
       continue;
     }
 
     // Get the customized context for this specific snippet
     const context = getSnippetContext(snippetKey);
-    
+
     // Extract and store the handlebars variables for this snippet
     const variables = extractHandlebarsVariables(snippetData.template);
-    
+
     // Check if this snippet has block variables
     const blockVariables = findBlockVariables(variables);
-    
+
     // Only add to snippetVariables if it doesn't have block variables
     // (block variations will be added later)
     if (blockVariables.length === 0) {
       snippetVariables[snippetKey] = variables;
     }
-    
-    if (blockVariables.length > 0) {      
+
+    if (blockVariables.length > 0) {
       // For block templates, only generate variations, not base files
       // Generate variations for each block variable and add to snippetVariables
-      const variations = await generateBlockVariations(
-        snippetData.template, 
-        snippetKey, 
-        context, 
-        blockVariables, 
-        version, 
-        OUTPUT_DIR
+      const variations: BlockVariations = await generateBlockVariations(
+        snippetData.template,
+        snippetKey,
+        context,
+        blockVariables,
+        version,
+        outputDir,
       );
-      
+
       // Add each variation to snippetVariables and hierarchy
-      for (const variationKey in variations) {
-        const variation = variations[variationKey];
+      for (const [variationKey, variation] of Object.entries(variations)) {
         snippetVariables[variationKey] = variation.variables;
-        
+
         // Add to hierarchy with trimmed code content
         examplesHierarchy.versions[version].examples[variationKey] = {
           filePath: `examples/typescript/${version}/${variationKey}.ts`,
-          code: variation.code // Include the actual generated code content
+          code: variation.code, // Include the actual generated code content
         };
       }
-      
+
       // Add to index for variations only (no base file)
-      indexContent += `// ${snippetKey} (variations only)`;      
-      
+      indexContent += `// ${snippetKey} (variations only)`;
+
       // Group block variables by name (without prefix)
-      const blockVarsByName = {};
+      const blockVarsByName: { [varName: string]: string[] } = {};
       for (const blockVar of blockVariables) {
         const varName = blockVar.replace(/^[#^/]/, ""); // Remove prefix
         const prefix = blockVar.charAt(0);
@@ -171,57 +215,66 @@ async function generateAllExamples(snippets, version) {
           blockVarsByName[varName].push(prefix);
         }
       }
-      
+
       // Add each variation to the index
       for (const [varName, prefixes] of Object.entries(blockVarsByName)) {
         for (const prefix of prefixes) {
           if (prefix === "#") {
-            indexContent += `\n// See: ./${snippetKey}_${prefix}${varName}.ts (Standard block: ${varName} = true)`;
+            indexContent +=
+              `\n// See: ./${snippetKey}_${prefix}${varName}.ts (Standard block: ${varName} = true)`;
           } else if (prefix === "^") {
-            indexContent += `\n// See: ./${snippetKey}_${prefix}${varName}.ts (Inverted block: ${varName} = false)`;
+            indexContent +=
+              `\n// See: ./${snippetKey}_${prefix}${varName}.ts (Inverted block: ${varName} = false)`;
           }
         }
       }
-      
+
       indexContent += "\n\n";
     } else {
       // Process template with provided context
       const processedCode = processTemplate(snippetData.template, context);
-      
+
       // Create file content with header
       const fileContent = `${generateFileHeader(snippetKey)}\n${processedCode}`;
 
       // Write to file
-      const filePath = path.join(OUTPUT_DIR, "typescript", version, `${snippetKey}.ts`);
+      const filePath = path.join(
+        outputDir,
+        "typescript",
+        version,
+        `${snippetKey}.ts`,
+      );
       await fs.writeFile(filePath, fileContent);
-      
+
       // Add to hierarchy with trimmed code content
       examplesHierarchy.versions[version].examples[snippetKey] = {
         filePath: `examples/typescript/${version}/${snippetKey}.ts`,
-        code: processedCode.trim() // Include the actual generated code content
+        code: processedCode.trim(), // Include the actual generated code content
       };
-      
+
       // Add to index
       indexContent += `// ${snippetKey}\n// See: ./${snippetKey}.ts\n\n`;
-      
+
+      // eslint-disable-next-line no-console
       console.log(`✓ Generated example for ${snippetKey}`);
     }
   }
-  
+
   // Write the index file
   await fs.writeFile(
-    path.join(OUTPUT_DIR, "typescript", version, "index.ts"), 
-    indexContent
+    path.join(outputDir, "typescript", version, "index.ts"),
+    indexContent,
   );
-  
+
   // Write the snippetVariables.json file
   await fs.writeFile(
-    path.join(__dirname, "snippetVariables.json"),
+    snippetVariablesPath,
     JSON.stringify(snippetVariables, null, 2),
-    "utf8"
+    "utf8",
   );
+  // eslint-disable-next-line no-console
   console.log("✓ Generated snippetVariables.json");
-  
+
   // Write the examples hierarchy as a TypeScript file for easier importing
   const hierarchyContent = `/*
  * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
@@ -238,7 +291,7 @@ async function generateAllExamples(snippets, version) {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * WARNING: This file is generated automatically by the generateExamples.mjs script.
+ * WARNING: This file is generated automatically by the generateExamples.ts script.
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
@@ -247,17 +300,19 @@ async function generateAllExamples(snippets, version) {
  * This provides a mapping of example names to their file paths
  * similar to how TYPESCRIPT_OSDK_SNIPPETS works for templates
  */
-export const TYPESCRIPT_OSDK_EXAMPLES = ${JSON.stringify(examplesHierarchy, null, 2)} as const;
+export const TYPESCRIPT_OSDK_EXAMPLES = ${
+    JSON.stringify(examplesHierarchy, null, 2)
+  } as const;
 `;
 
   await fs.writeFile(
-    path.join(__dirname, "src", "typescriptOsdkExamples.ts"),
+    hierarchyOutputPath,
     hierarchyContent,
-    "utf8"
+    "utf8",
   );
+  // eslint-disable-next-line no-console
   console.log("✓ Generated typescriptOsdkExamples.ts");
-  
+
+  // eslint-disable-next-line no-console
   console.log("✓ All examples generated");
 }
-
-main();

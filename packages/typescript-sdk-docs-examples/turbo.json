@@ -1,0 +1,22 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "codegen": {
+      "inputs": ["ontology.json"],
+      "outputs": ["src/generatedNoCheck/**/*"],
+      "dependsOn": ["@osdk/cli.cmd.typescript#transpile"]
+    },
+    "generateExamples": {
+      "dependsOn": ["@osdk/typescript-docs-example-generator#transpileEsm", "^transpileEsm", "^transpileTypes", "^transpileCjs"]
+    },
+    "build": {
+      "dependsOn": ["@osdk/typescript-docs-example-generator#transpileEsm", "@osdk/cli.cmd.typescript#transpile", "^transpileEsm", "^transpileTypes", "^transpileCjs"]
+    },
+    "build:dev": {
+      "dependsOn": ["@osdk/typescript-docs-example-generator#transpileEsm"]
+    },
+    "build:force": {
+      "dependsOn": ["@osdk/typescript-docs-example-generator#transpileEsm"]
+    }
+  }
+}

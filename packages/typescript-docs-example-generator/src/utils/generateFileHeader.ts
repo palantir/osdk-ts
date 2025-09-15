@@ -16,12 +16,15 @@
 
 /**
  * Generates a standardized file header for generated files
- * 
- * @param {string} snippetKey The snippet key/name
- * @param {string} description Optional additional description text (e.g., variation details)
- * @returns {string} The formatted file header
+ *
+ * @param snippetKey The snippet key/name
+ * @param description Optional additional description text (e.g., variation details)
+ * @returns The formatted file header
  */
-export function generateFileHeader(snippetKey, description = "") {
+export function generateFileHeader(
+  snippetKey: string,
+  description: string = "",
+): string {
   const descriptionText = description ? ` (${description})` : "";
 
   return `/**
@@ -39,7 +42,7 @@ export function generateFileHeader(snippetKey, description = "") {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * WARNING: This file is generated automatically by the generateExamples.mjs script.
+ * WARNING: This file is generated automatically by the generateExamples.ts script.
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 

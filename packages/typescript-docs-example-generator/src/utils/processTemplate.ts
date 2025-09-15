@@ -15,30 +15,41 @@
  */
 
 import Handlebars from "handlebars";
+import type { BaseContext } from "./baseContext.js";
 
 // Cache compiled templates to avoid recompilation
-const templateCache = new Map();
+const templateCache = new Map<string, Handlebars.TemplateDelegate>();
 
 /**
  * Process a template using Handlebars with caching for performance
- * @param {string} template The template string
- * @param {Object} context The context object with template variables
- * @returns {string} The processed template
+ * @param template The template string
+ * @param context The context object with template variables
+ * @returns The processed template
  */
-export function processTemplate(template, context) {
+export function processTemplate(
+  template: string,
+  context: BaseContext,
+): string {
   try {
     // Fix spacing issues in package imports before processing
-    const fixedTemplate = template.replace(/\{\s+\{\{packageName\}\}\s+\}/g, "{{packageName}}");
-    
+    const fixedTemplate = template.replace(
+      /\{\s+\{\{packageName\}\}\s+\}/g,
+      "{{packageName}}",
+    );
+
     // Check cache first
     let compiledTemplate = templateCache.get(fixedTemplate);
     if (!compiledTemplate) {
       compiledTemplate = Handlebars.compile(fixedTemplate);
       templateCache.set(fixedTemplate, compiledTemplate);
     }
-    
+
     return compiledTemplate(context);
   } catch (error) {
-    throw new Error(`Error processing template: ${error.message}`);
+    throw new Error(
+      `Error processing template: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
   }
 }

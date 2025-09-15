@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * WARNING: This file is generated automatically by the generateExamples.mjs script.
+ * WARNING: This file is generated automatically by the generateExamples.ts script.
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 

@@ -1200,8 +1200,8 @@ versions:
                 const attachment: AttachmentUpload = await uploadMyFile();
             {{/hasAttachmentUpload}}
             {{^hasAttachmentUpload}}
-            async function callActionWithAttachmentLoaded(objectTypeWithAttachement: Osdk.Instance<{{objectType}}>) {
-                const attachment = objectTypeWithAttachement.{{attachmentProperty}}?.rid;
+            async function callActionWithAttachmentLoaded(objectTypeWithAttachment: Osdk.Instance<{{objectType}}>) {
+                const attachment = objectTypeWithAttachment.{{attachmentProperty}}?.rid;
             {{/hasAttachmentUpload}}
                 const result = await client({{actionApiName}}).applyAction(
                     {{^hasParameters}}{},{{/hasParameters}}{{#hasParameters}}{
@@ -1265,8 +1265,8 @@ versions:
                 const attachment: AttachmentUpload = await uploadMyFile();
             {{/hasAttachmentUpload}}
             {{^hasAttachmentUpload}}
-            async function callActionWithAttachmentLoaded(objectTypeWithAttachement: Osdk.Instance<{{objectType}}>) {
-                const attachment = objectTypeWithAttachement.{{attachmentProperty}}?.rid;
+            async function callActionWithAttachmentLoaded(objectTypeWithAttachment: Osdk.Instance<{{objectType}}>) {
+                const attachment = objectTypeWithAttachment.{{attachmentProperty}}?.rid;
             {{/hasAttachmentUpload}}
                 const result = await client({{actionApiName}}).batchApplyAction([
                         {{^hasParameters}}{},{{/hasParameters}}{{#hasParameters}}{

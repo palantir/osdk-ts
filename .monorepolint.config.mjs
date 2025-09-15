@@ -110,6 +110,7 @@ const archetypeRules = archetypes(
       "@osdk/e2e.generated.1.1.x",
       "@osdk/examples.*",
       "@osdk/monorepo.*",
+      "@osdk/typescript-sdk-docs-examples",
     ],
     {
       ...LIBRARY_RULES,
@@ -177,6 +178,7 @@ const archetypeRules = archetypes(
       "@osdk/create-app.template-packager",
       "@osdk/example-generator",
       "@osdk/tool.*",
+      "@osdk/typescript-docs-example-generator",
       "@osdk/version-updater",
     ],
     {

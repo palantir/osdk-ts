@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-export { baseContext, getSnippetContext } from "./baseContext.js";
-export { extractHandlebarsVariables } from "./extractHandlebarsVariables.js";
-export { findBlockVariables } from "./findBlockVariables.js";
-export { generateBaseSnippet } from "./generateBaseSnippet.js";
-export { generateBlockVariations } from "./generateBlockVariations.js";
-export { generateClientFile } from "./generateClientFile.js";
-export { generateFileHeader } from "./generateFileHeader.js";
-export { processTemplate } from "./processTemplate.js";
+import { configDefaults, defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    pool: "forks",
+    exclude: [...configDefaults.exclude, "**/build/**/*"],
+    fakeTimers: {
+      toFake: ["setTimeout", "clearTimeout", "Date"],
+    },
+  },
+});

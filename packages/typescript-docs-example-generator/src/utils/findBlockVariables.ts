@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,21 +12,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * WARNING: This file is generated automatically by the generateExamples.ts script.
- * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-/* eslint-disable no-unused-vars */
+/**
+ * Find all block variables in a list of variables
+ * @param variables Array of variable names
+ * @returns Array of block variables (with # or ^ prefix)
+ */
+export function findBlockVariables(variables: string[]): string[] {
+  // Get all variables that start with # or ^
+  const blockVars = variables.filter(variable =>
+    variable.startsWith("#") || variable.startsWith("^")
+  );
 
-// Example: derivedPropertyCountAggregation
-
-import { Employee } from "../../../generatedNoCheck";
-// Edit this import if your client location differs
-import { client } from "./client";
-
-const sumEmployee = await client(Employee)
-    .withProperties({
-      "newPropertyName": (baseObjectSet) =>
-        baseObjectSet.pivotTo("assignedEquipment").aggregate("$count")
-    }).fetchPage();
+  // Return only the block variables that actually exist in the template
+  // Don't automatically add inverted variations if they don't exist
+  return blockVars;
+}

@@ -4,5 +4,3 @@ src/generatedNoCheck/
 src/examples/**/*
 .turbo/
 *.tsbuildinfo
-# Utility JS files used for build process, not part of main codebase
-src/utils/

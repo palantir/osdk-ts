@@ -10,7 +10,7 @@
     "node": true,
     "es6": true
   },
-  "ignorePatterns": ["dist/**", "src/generatedNoCheck/**", "src/examples/**", "src/utils/**"],
+  "ignorePatterns": ["dist/**", "src/generatedNoCheck/**", "src/examples/**/*"],
   "rules": {
     "no-console": "off",
     "header/header": "off"
@@ -28,18 +28,6 @@
         "@typescript-eslint/consistent-type-imports": "off",
         "unused-imports/no-unused-imports": "off",
         "@typescript-eslint/no-explicit-any": "off"
-      }
-    },
-    {
-      "files": ["updateDocsSnippets.mjs", "generateExample.mjs", "generateExamples.mjs"],
-      "rules": {
-        "no-console": "off"
-      }
-    },
-    {
-      "files": ["src/utils/**/*.js"],
-      "rules": {
-        "no-console": "off"
       }
     }
   ]

@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-/**
- * Find all block variables in a list of variables
- * @param {string[]} variables Array of variable names
- * @returns {string[]} Array of block variables (with # or ^ prefix)
- */
-export function findBlockVariables(variables) {
-  // Get all variables that start with # or ^
-  const blockVars = variables.filter(variable => variable.startsWith("#") || variable.startsWith("^"));
-  
-  // Return only the block variables that actually exist in the template
-  // Don't automatically add inverted variations if they don't exist
-  return blockVars;
-}
+export { generateExamples } from "./generateExamples.js";
+export type {
+  ActionParameterSampleValue,
+  BaseContext,
+  PropertyV2,
+} from "./utils/index.js";

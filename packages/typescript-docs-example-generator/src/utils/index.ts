@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,21 +12,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * WARNING: This file is generated automatically by the generateExamples.ts script.
- * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-/* eslint-disable no-unused-vars */
+export { baseContext, getSnippetContext } from "./baseContext.js";
+export { extractHandlebarsVariables } from "./extractHandlebarsVariables.js";
+export { findBlockVariables } from "./findBlockVariables.js";
+export { generateBlockVariations } from "./generateBlockVariations.js";
+export { generateClientFile } from "./generateClientFile.js";
+export { generateFileHeader } from "./generateFileHeader.js";
+export { processTemplate } from "./processTemplate.js";
 
-// Example: derivedPropertyCountAggregation
-
-import { Employee } from "../../../generatedNoCheck";
-// Edit this import if your client location differs
-import { client } from "./client";
-
-const sumEmployee = await client(Employee)
-    .withProperties({
-      "newPropertyName": (baseObjectSet) =>
-        baseObjectSet.pivotTo("assignedEquipment").aggregate("$count")
-    }).fetchPage();
+export type {
+  ActionParameterSampleValue,
+  BaseContext,
+  PropertyV2,
+} from "./baseContext.js";

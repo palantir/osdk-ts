@@ -21,12 +21,17 @@ import { generateFileHeader } from "./generateFileHeader.js";
 /**
  * Generate a basic client.ts file for examples to import
  * This creates a simple client implementation that can be imported by example files.
- * 
- * @param {string} version The version to generate the client for
- * @param {string} outputDir The directory to output files to
+ *
+ * @param version The version to generate the client for
+ * @param outputDir The directory to output files to
  */
-export async function generateClientFile(version, outputDir) {
-  const clientTemplate = `${generateFileHeader("client", "Client setup for examples")}
+export async function generateClientFile(
+  version: string,
+  outputDir: string,
+): Promise<void> {
+  const clientTemplate = `${
+    generateFileHeader("client", "Client setup for examples")
+  }
 import { createClient, type Client } from "@osdk/client";
 import { $ontologyRid } from "../../../generatedNoCheck";
 
@@ -42,9 +47,14 @@ export const client: Client = createClient(
 
 `;
 
-  const clientFilePath = path.join(outputDir, "typescript", version, "client.ts");
+  const clientFilePath = path.join(
+    outputDir,
+    "typescript",
+    version,
+    "client.ts",
+  );
   await fs.writeFile(clientFilePath, clientTemplate);
-  
+
   // eslint-disable-next-line no-console
   console.log(`✓ Generated client.ts for typescript/${version}`);
 }

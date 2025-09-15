@@ -12,8 +12,8 @@
     "module": "ESNext",
     "moduleResolution": "bundler"
   },
-  "include": ["./src/**/*", "./src/generatedNoCheck/**/*", "utils"],
-  "exclude": ["node_modules", "dist" ],
+  "include": ["./src/**/*", "./src/generatedNoCheck/**/*"],
+  "exclude": ["node_modules", "dist"],
   "ts-node": {
     "transpileOnly": true,
     "compilerOptions": {

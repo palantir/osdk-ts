@@ -3,37 +3,34 @@
   "private": true,
   "version": "0.1.0",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
   "scripts": {
-    "build": "pnpm run codeGen && pnpm run transpile && pnpm run buildSdkDocs && pnpm run generateExamples",
-    "build:dev": "pnpm run codeGen && pnpm run buildSdkDocs && pnpm run generateExamples",
-    "build:force": "pnpm run codeGen || true && pnpm run transpile || true && pnpm run buildSdkDocs || true && pnpm run generateExamples || true",
+    "build": "pnpm run codegen && pnpm run generateExamples && pnpm run transpileEsm",
     "clean": "rm -rf dist src/generatedNoCheck examples src/examples",
-    "codeGen": "npx --yes @osdk/cli@0.28.1 unstable typescript generate --version 0.1.0 --ontologyPath ./ontology.json --outDir ./src/generatedNoCheck --clean",
-    "dev": "tsc --watch",
-    "generateExamples": "node generateExamples.mjs",
-    "buildSdkDocs": "cd ../typescript-sdk-docs && pnpm run transpileEsm && pnpm run transpileTypes && pnpm run transpileCjs",
-    "transpile": "npx tsc || echo 'TypeScript compilation failed but continuing...'",
-    "transpile:strict": "npx tsc",
-    "lint": "eslint . --max-warnings=1 --ignore-pattern 'src/utils/**'",
+    "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --version 0.1.0 --packageType module --internal --skipPackageJsonUpdate",
+    "generateExamples": "generate-examples",
+    "lint": "eslint src/index.ts --max-warnings=1",
     "lint:fix": "eslint . --fix",
-    "typecheck:examples": "tsc -p src/examples/tsconfig.examples.json --noEmit",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node"
   },
   "dependencies": {
-    "@osdk/client": "^2.4.1",
-    "@osdk/typescript-sdk-docs": "workspace:~",
-    "handlebars": "^4.7.7"
+    "@osdk/client": "workspace:~",
+    "@osdk/typescript-docs-example-generator": "workspace:~",
+    "@osdk/typescript-sdk-docs": "workspace:~"
   },
   "peerDependencies": {
-    "@osdk/api": "^2.4.1",
-    "@osdk/client": "^2.4.1"
+    "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~"
   },
   "devDependencies": {
-    "@osdk/api": "^2.4.1",
+    "@osdk/api": "workspace:~",
+    "@osdk/cli.cmd.typescript": "workspace:~",
     "@types/node": "^20.8.0",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
-    "ajv": "^8.12.0",
     "eslint": "^8.50.0",
     "typescript": "~5.5.4"
   },
