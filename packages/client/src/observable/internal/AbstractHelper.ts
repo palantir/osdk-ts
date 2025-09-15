@@ -58,6 +58,14 @@ export abstract class AbstractHelper<
     // the ListQuery represents the shared state of the list
     this.store.cacheKeys.retain(query.cacheKey);
 
+    const sub = query.subscribe(subFn);
+    const querySub = new QuerySubscription(query, sub);
+
+    query.registerSubscriptionDedupeInterval(
+      querySub.subscriptionId,
+      (options as CommonObserveOptions).dedupeInterval,
+    );
+
     if (options.mode !== "offline") {
       query.revalidate(options.mode === "force").catch((e: unknown) => {
         subFn.error(e);
@@ -72,11 +80,12 @@ export abstract class AbstractHelper<
         }
       });
     }
-    const sub = query.subscribe(subFn);
+
     sub.add(() => {
+      query.unregisterSubscriptionDedupeInterval(querySub.subscriptionId);
       this.store.cacheKeys.release(query.cacheKey);
     });
 
-    return new QuerySubscription(query, sub);
+    return querySub;
   }
 }
