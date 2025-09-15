@@ -549,7 +549,7 @@ interface Subscribe<
   >(
     listener: ObjectSetSubscription.Listener<Q, P>,
     opts?: ObjectSetSubscription.Options<Q, P>,
-  ) => Promise<{ unsubscribe: () => void }>;
+  ) => { unsubscribe: () => void };
 }
 
 interface ObjectSetCleanedTypes<

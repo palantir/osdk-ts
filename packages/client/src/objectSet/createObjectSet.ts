@@ -273,17 +273,19 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       }
       : undefined) as ObjectSet<Q>["fetchOneWithErrors"],
 
-    subscribe: async (
+    subscribe: (
       listener,
       opts,
     ) => {
-      const pendingSubscribe = ObjectSetListenerWebsocket.getInstance(
-        clientCtx,
-      ).subscribe(
-        objectType,
-        await objectSet,
-        listener,
-        opts?.properties,
+      const pendingSubscribe = objectSet.then(objectSet =>
+        ObjectSetListenerWebsocket.getInstance(
+          clientCtx,
+        ).subscribe(
+          objectType,
+          objectSet,
+          listener,
+          opts?.properties,
+        )
       );
 
       return { unsubscribe: async () => (await pendingSubscribe)() };
