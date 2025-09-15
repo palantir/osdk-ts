@@ -1,14 +1,22 @@
 import type { Osdk, PropertyKeys } from "@osdk/api";
-import { useObjectSet } from "@osdk/react/experimental";
+import { useObjectSet, type UseOsdkListResult } from "@osdk/react/experimental";
+import type React from "react";
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";
 import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
-interface EmployeeListItemProps {
-  item: Osdk.Instance<Employee, "$allBaseProperties", PropertyKeys<Employee>, {
+type EmployeeWithPeepCount = Osdk.Instance<
+  Employee,
+  "$allBaseProperties",
+  PropertyKeys<Employee>,
+  {
     peepCount: "integer";
-  }>;
+  }
+>;
+
+interface EmployeeListItemProps {
+  item: EmployeeWithPeepCount;
   isSelected: boolean;
   onSelect: (employee: Employee.OsdkInstance) => void;
 }
@@ -43,13 +51,26 @@ export function EmployeesList(props: EmployeesListProps) {
       peepCount: (base) => base.pivotTo("peeps").aggregate("$count"),
     },
   });
-  console.log(employees);
+
+  const listResult: UseOsdkListResult<Employee> = {
+    data: employees.data,
+    isLoading: employees.isLoading,
+    error: employees.error,
+    fetchMore: undefined,
+    isOptimistic: false,
+  };
+
   return (
     <List<Employee>
       header="Employees"
-      items={employees}
-      Component={EmployeeListItem}
-      {...props}
+      items={listResult}
+      Component={EmployeeListItem as React.FC<{
+        item: Osdk.Instance<Employee>;
+        isSelected: boolean;
+        onSelect: (item: Osdk.Instance<Employee>) => void;
+      }>}
+      selected={props.selected}
+      onSelect={(item) => props.onSelect(item as Employee.OsdkInstance)}
     />
   );
 }
