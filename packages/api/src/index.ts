@@ -46,14 +46,16 @@ export type {
   OsdkObjectLinksObject,
   SingleLinkAccessor,
 } from "./definitions/LinkDefinitions.js";
-export type { DerivedProperty } from "./derivedProperties/DerivedProperty.js";
+export type {
+  DerivedProperty,
+  DerivedPropertyCreator,
+} from "./derivedProperties/DerivedProperty.js";
 export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
   AllGroupByValues,
   GroupByClause,
   GroupByRange,
 } from "./groupby/GroupByClause.js";
-export type { Logger } from "./Logger.js";
 export type {
   AllowedBucketKeyTypes,
   AllowedBucketTypes,
@@ -122,6 +124,7 @@ export type {
   ThreeDimensionalQueryAggregationDefinition,
   TwoDimensionalQueryAggregationDefinition,
 } from "./ontology/QueryDefinition.js";
+export type { SimplePropertyDef } from "./ontology/SimplePropertyDef.js";
 export type {
   BaseWirePropertyTypes,
   WirePropertyTypes,
@@ -150,3 +153,4 @@ export type {
 } from "./timeseries/timeseries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export {};
+export type { Logger } from "./Logger.js";

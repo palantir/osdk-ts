@@ -64,7 +64,6 @@ export function isObjectSet(o: any): o is ObjectSet<any> {
     && isWireObjectSet(objectSetDefinitions.get(o));
 }
 
-/** @internal */
 export function getWireObjectSet(
   objectSet: ObjectSet<any> | MinimalObjectSet<any>,
 ): WireObjectSet {

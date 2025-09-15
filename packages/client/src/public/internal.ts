@@ -19,5 +19,7 @@ export { hydrateAttachmentFromRid } from "../public-utils/hydrateAttachmentFromR
 export { hydrateObjectSetFromObjectRids } from "../public-utils/hydrateObjectSetFromObjectRids.js";
 export { hydrateObjectSetFromRid } from "../public-utils/hydrateObjectSetFromRid.js";
 
+export { getWireObjectSet } from "../objectSet/createObjectSet.js";
+
 export { BrowserLogger } from "../logger/BrowserLogger.js";
 export { MinimalLogger } from "../logger/MinimalLogger.js";
