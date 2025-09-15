@@ -69,9 +69,9 @@ const baseContext = {
   attachmentProperty: "documentFile",
   funcApiName: "calculateTotal",
   functionInputValuesV2: "input",
-  hasAttachmentImports: false,
   hasMediaParameter: false,
   hasAttachmentUpload: false,
+  hasAttachmentProperty: false,
   hasParameters: false,
   actionParameterSampleValuesV2: "some-pk-of-the-object",
   last: false,
@@ -88,11 +88,176 @@ const baseContext = {
  * @param {string|null} blockKey The block key (e.g., "#hasStructSubProperty", "^hasStructSubProperty") or null for base
  * @returns {Object} A customized context object for the snippet
  */
+// Define template hierarchy for nested blocks
+const templateHierarchy = {
+  "applyAction": {
+    "#hasAttachmentProperty": {
+      context: { 
+        objectType: "Equipment",
+        hasAttachmentProperty: true,
+        hasAttachmentUpload: false, // Default to loaded attachment
+        hasMediaParameter: false,
+        hasParameters: true,
+        attachmentProperty: "invoice",
+        attachmentParameter: "documentFile",
+        actionParameterSampleValuesV2: [
+          { key: "equipmentId", value: `"mac-1234"`, last: false }
+        ]
+      },
+      children: {
+        "#hasAttachmentUpload": {
+          hasAttachmentUpload: true,
+          actionParameterSampleValuesV2: [
+            { key: "equipmentId", value: `"mac-1234"`, last: false }
+          ]
+        },
+        "^hasAttachmentUpload": { // we have an attachment parameter which is already uploaded
+          objectType: "Equipment",
+          hasAttachmentUpload: false,
+          attachmentProperty: "invoice",
+          actionParameterSampleValuesV2: [
+            { key: "equipmentId", value: `"mac-1234"`, last: false }
+          ]
+        },
+        "#hasMediaParameter": { 
+          hasMediaParameter: true,
+          hasAttachmentUpload: false,
+          attachmentProperty: "invoice",
+          actionParameterSampleValuesV2: [
+            { key: "equipmentId", value: `"mac-1234"`, last: true }
+          ]
+        }
+      }
+    },
+    "^hasAttachmentProperty": {
+      context: { 
+        hasAttachmentProperty: false,
+        hasParameters: true,
+        actionParameterSampleValuesV2: [
+          { key: "equipmentId", value: `"mac-1234"`, last: false },
+          { key: "documentType", value: `"active"`, last: true }
+        ]
+      }
+    },
+    "#hasParameters": {
+      context: {
+        hasParameters: true,
+        actionParameterSampleValuesV2: [
+          { key: "equipmentId", value: `"mac-1234"`, last: false },
+          { key: "documentType", value: `"active"`, last: true }
+        ]
+      }
+    },
+    "^hasParameters": {
+      context: {
+        hasParameters: false,
+        actionParameterSampleValuesV2: [],
+        actionApiName: "refreshData"
+      }
+    },
+    "#actionParameterSampleValuesV2": {
+      context: {
+        hasParameters: true,
+        actionParameterSampleValuesV2: [
+          { key: "equipmentId", value: `"mac-1234"`, last: false },
+          { key: "documentType", value: `"active"`, last: true }
+        ]
+      }
+    },
+    "^last": {
+      context: {
+        hasParameters: true,
+        actionParameterSampleValuesV2: [
+          { key: "equipmentId", value: `"mac-1234"`, last: false },
+          { key: "documentType", value: `"active"`, last: true }
+        ]
+      }
+    }
+  },
+  "batchApplyAction":{
+    // context will be copied from applyAction
+  },
+  "executeFunction": {
+    "#hasAttachmentProperty": {
+      context: { 
+        objectType: "Equipment",
+        hasAttachmentProperty: true,
+        hasAttachmentUpload: false, // Default to loaded attachment
+        attachmentProperty: "invoice",
+        funcApiName: "calculateTotal",
+        functionInputValuesV2: "{ documentFile: attachment, includeMetadata: true }"
+      },
+      children: {
+        "#hasAttachmentUpload": {
+          hasAttachmentUpload: true,
+          funcApiName: "calculateTotal",
+          functionInputValuesV2: "{ documentFile: attachment, includeMetadata: true }"
+        },
+        "^hasAttachmentUpload": {
+          objectType: "Equipment",
+          hasAttachmentUpload: false,
+          attachmentProperty: "invoice",
+          funcApiName: "calculateTotal",
+          functionInputValuesV2: "{ documentFile: attachment, includeMetadata: true }"
+        }
+      }
+    },
+    "^hasAttachmentProperty": {
+      context: { 
+        hasAttachmentProperty: false,
+        funcApiName: "getTotalEmployeeCount",
+        functionInputValuesV2: null
+      }
+    }
+  }
+};
+
+// batchApplyAction uses the same hierarchy as applyAction
+templateHierarchy.batchApplyAction = templateHierarchy.applyAction;
+
+function getContextFromHierarchy(snippetKey, blockKey) {
+  const hierarchy = templateHierarchy[snippetKey];
+  if (!hierarchy || !blockKey) return {};
+  
+  // First, check if it's a top-level block
+  if (hierarchy[blockKey]) {
+    return hierarchy[blockKey].context || {};
+  }
+  
+  // Otherwise, search for it as a child block
+  for (const parentKey in hierarchy) {
+    const parent = hierarchy[parentKey];
+    if (parent.children && parent.children[blockKey]) {
+      // Merge parent context with child context
+      const parentContext = parent.context || {};
+      const childContext = parent.children[blockKey] || {};
+      return { ...parentContext, ...childContext };
+    }
+  }
+  
+  return {};
+}
+
 export function getSnippetContext(snippetKey, blockKey = null) {
   // Create a copy of the base context
   const context = { ...baseContext };
   
-  // Customize context based on the snippet key and block key
+  // Try to get context from hierarchy first
+  if (blockKey && templateHierarchy[snippetKey]) {
+    const hierarchyContext = getContextFromHierarchy(snippetKey, blockKey);
+    Object.assign(context, hierarchyContext);
+    
+    // Add common properties for actions (only if not already set)
+    if (snippetKey === "applyAction" || snippetKey === "batchApplyAction") {
+      context.objectType = context.objectType || "Equipment";
+      context.actionApiName = context.actionApiName || "documentEquipment";
+      context.packageName = context.packageName || "../../../generatedNoCheck";
+    }
+    
+    return context;
+  }
+  
+  // Fallback to the original switch-based logic for non-hierarchical templates
   switch (snippetKey) {
     // Base object handling
     case "loadSingleObjectGuide":
@@ -122,6 +287,7 @@ export function getSnippetContext(snippetKey, blockKey = null) {
     case "castInterfaceToObjectReference":
       // These use HasAddress interface
       context.interfaceApiName = "HasAddress";
+      context.property = "address";
       break;
     
     // Linked object handling
@@ -135,13 +301,8 @@ export function getSnippetContext(snippetKey, blockKey = null) {
     case "loadLinkedObjectsReference":
       if (blockKey === "#isLinkManySided") {
         context.isLinkManySided = true;
-      } else if (blockKey === "^isLinkManySided") {
-        context.isLinkManySided = false;
-      } else {
-        // Base version - use default context
-      }
-      break;
-    
+        break;
+      }     
     case "searchAround":
       context.sourceObjectType = "Equipment";
       context.linkedObjectType = "Employee";
@@ -301,13 +462,14 @@ export function getSnippetContext(snippetKey, blockKey = null) {
       break;
     
     // Action templates
-    case "applyAction":
-    case "batchApplyAction":
-      context.actionApiName = "updateEmployee";
-      break;
     
     case "executeFunction":
-      context.funcApiName = "calculateTotal";
+      context.funcApiName = "getTotalEmployeeCount";
+      context.functionInputValuesV2 = "{}";
+      context.needsImports = true;
+      context.hasAttachmentImports = false;
+      context.hasAttachmentUpload = false;
+      context.attachmentProperty = null;
       break;
     
     case "containsTemplate":
