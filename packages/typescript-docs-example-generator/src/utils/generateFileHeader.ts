@@ -17,17 +17,19 @@
 /**
  * Generates a standardized file header for generated files
  *
- * @param snippetKey The snippet key/name
- * @param description Optional additional description text (e.g., variation details)
+ * @param snippetKey Optional snippet key/name for individual example files
+ * @param description Optional description - used as JSDoc comment if snippetKey is not provided, or as variation detail if snippetKey is provided
  * @returns The formatted file header
  */
 export function generateFileHeader(
-  snippetKey: string,
-  description: string = "",
+  snippetKey?: string,
+  description?: string,
 ): string {
+  const commentStyle = snippetKey ? "/**" : "/*";
+  const commentEnd = snippetKey ? " */" : " */";
   const descriptionText = description ? ` (${description})` : "";
 
-  return `/**
+  return `${commentStyle}
  * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,10 +46,9 @@ export function generateFileHeader(
  *
  * WARNING: This file is generated automatically by the generateExamples.ts script.
  * DO NOT MODIFY this file directly as your changes will be overwritten.
- */
+${commentEnd}
 
-/* eslint-disable no-unused-vars */
-
-// Example: ${snippetKey}${descriptionText}
-`;
+${snippetKey ? `// Example: ${snippetKey}${descriptionText}\n` : ""}${
+    !snippetKey && description ? `/**\n * ${description}\n */\n` : ""
+  }`;
 }

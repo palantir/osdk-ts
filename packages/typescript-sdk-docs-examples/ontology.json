@@ -1102,7 +1102,7 @@
   "queryTypes": {
     "getTotalEmployeeCount": {
       "apiName": "getTotalEmployeeCount",
-      "displayName": "Get Total Employee Count", 
+      "displayName": "Get Total Employee Count",
       "description": "Returns the total number of active employees in the system",
       "output": {
         "type": "integer"
@@ -1154,7 +1154,7 @@
           "required": true
         },
         "city": {
-          "rid": "ri.ontology.main.shared-property.city-67891", 
+          "rid": "ri.ontology.main.shared-property.city-67891",
           "apiName": "city",
           "displayName": "City",
           "dataType": {

@@ -10,9 +10,9 @@
       "dependsOn": [
         "@osdk/typescript-sdk-docs#codegen",
         "@osdk/typescript-sdk-docs#transpileTypes",
-        "@osdk/typescript-docs-example-generator#transpileEsm", 
-        "^transpileEsm", 
-        "^transpileTypes", 
+        "@osdk/typescript-docs-example-generator#transpileEsm",
+        "^transpileEsm",
+        "^transpileTypes",
         "^transpileCjs"
       ],
       "outputs": ["src/examples/**/*", "src/typescriptOsdkExamples.ts", "src/typescriptOsdkContext.ts"]

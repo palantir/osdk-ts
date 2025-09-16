@@ -48,6 +48,7 @@ Everything starts with [`ontology.json`](./ontology.json), which defines:
 This JSON file follows the Foundry ontology schema and serves as the source of truth for code generation.
 
 Example object type definition from ontology.json:
+
 ```json
 "Employee": {
   "objectType": {
@@ -84,11 +85,13 @@ The package uses the official OSDK CLI to generate TypeScript code from the onto
    - Helper files for SDK integration
 
 Run the code generation with:
+
 ```bash
 npm run codeGen
 ```
 
 This command executes:
+
 ```bash
 npx @osdk/cli@latest unstable typescript generate --version 0.1.0 --ontologyPath ./ontology.json --outDir ./src/generatedNoCheck --clean
 ```
@@ -102,12 +105,14 @@ The package includes two important scripts for documentation generation:
 #### updateDocsSnippets.mjs
 
 This script:
+
 1. Reads the mapping defined in [`src/osdk-docs-mapping.json`](./src/osdk-docs-mapping.json)
 2. For each entry, finds the corresponding template in the OSDK SDK documentation
 3. Processes the template with Handlebars using the sample ontology context
 4. Updates the code snippets in [`src/osdk-docs-sections.json`](./src/osdk-docs-sections.json)
 
 Run this script with:
+
 ```bash
 npm run updateDocsSnippets
 ```
@@ -115,6 +120,7 @@ npm run updateDocsSnippets
 #### generateExample.mjs
 
 This script:
+
 1. Reads the sections from [`src/osdk-docs-sections.json`](./src/osdk-docs-sections.json)
 2. Extracts the code snippets from each section
 3. Organizes them by language and version
@@ -122,6 +128,7 @@ This script:
 5. Creates an index file and client.ts utility for each version
 
 Run this script with:
+
 ```bash
 npm run generateExamples
 ```
@@ -135,6 +142,7 @@ npm run build
 ```
 
 This runs the full build pipeline:
+
 1. Code generation via `npm run codeGen`
 2. Documentation snippet updates via `npm run updateDocsSnippets`
 3. TypeScript compilation via `tsc`
@@ -161,6 +169,7 @@ The sample ontology includes three main object types:
 ### Employee
 
 Represents company employees with properties like:
+
 - `employeeId` (integer, primary key)
 - `fullName` (string)
 - `title` (string)
@@ -171,6 +180,7 @@ Represents company employees with properties like:
 ### Equipment
 
 Represents physical assets with properties like:
+
 - `equipmentId` (string, primary key)
 - `type` (string)
 - `manufacturer` (string)
@@ -180,6 +190,7 @@ Represents physical assets with properties like:
 ### Office
 
 Represents company offices with properties like:
+
 - `officeId` (string, primary key)
 - `name` (string)
 - `address` (string)
@@ -192,6 +203,7 @@ The ontology defines several action types:
 ### promoteEmployee
 
 Updates an employee's title and compensation:
+
 - `employeeId` (integer)
 - `newTitle` (string)
 - `newCompensation` (double)
@@ -200,6 +212,7 @@ Updates an employee's title and compensation:
 ### createOffice
 
 Creates a new office:
+
 - `officeId` (string)
 - `address` (string, optional)
 - `capacity` (integer, optional)
@@ -209,6 +222,7 @@ Creates a new office:
 ### assignEquipment
 
 Assigns equipment to an employee:
+
 - `employeeId` (integer)
 - `equipmentId` (string)
 - `assignmentDocument` (attachment, optional)
@@ -216,6 +230,7 @@ Assigns equipment to an employee:
 ### recordTraining
 
 Records employee training completion:
+
 - `employeeId` (integer)
 - `trainingName` (string)
 - `completionDate` (date)
@@ -225,6 +240,7 @@ Records employee training completion:
 ### documentEquipment
 
 Adds documentation for equipment:
+
 - `equipmentId` (string)
 - `documentType` (string)
 - `documentTitle` (string)
@@ -235,17 +251,17 @@ Adds documentation for equipment:
 
 The code generation process maps ontology data types to TypeScript types:
 
-| Ontology Type     | TypeScript Type                       |
-|-------------------|--------------------------------------|
-| string            | string                               |
-| integer           | number                               |
-| boolean           | boolean                              |
-| double            | number                               |
-| date              | string                               |
-| attachment        | AttachmentUpload (for actions)       |
-| mediaReference    | MediaReferenceUpload (for actions)   |
-| array             | Array\<T\> (where T is the item type) |
-| struct            | Interface with fields                |
+| Ontology Type  | TypeScript Type                       |
+| -------------- | ------------------------------------- |
+| string         | string                                |
+| integer        | number                                |
+| boolean        | boolean                               |
+| double         | number                                |
+| date           | string                                |
+| attachment     | AttachmentUpload (for actions)        |
+| mediaReference | MediaReferenceUpload (for actions)    |
+| array          | Array\<T\> (where T is the item type) |
+| struct         | Interface with fields                 |
 
 ## Running the Examples
 
