@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.13.0-beta.6
+
+### Minor Changes
+
+- 07083e1: Action submission conditions can have custom metadata
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.7
+
 ## 0.13.0-beta.5
 
 ### Minor Changes

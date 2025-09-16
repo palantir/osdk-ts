@@ -1,5 +1,16 @@
 # @osdk/functions
 
+## 1.3.0-beta.6
+
+### Minor Changes
+
+- 1a647a8: Adding geometry type support
+
+### Patch Changes
+
+- Updated dependencies [ab29baa]
+  - @osdk/client@2.5.0-beta.7
+
 ## 1.3.0-beta.5
 
 ### Minor Changes
