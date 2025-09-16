@@ -35,8 +35,14 @@ import type {
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
+import { ExponentialBackoff } from "../util/exponentialBackoff.js";
 
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
+const EXPONENTIAL_BACKOFF_INITIAL_DELAY_MS = 1000;
+const EXPONENTIAL_BACKOFF_MAX_DELAY_MS = 60000;
+const EXPONENTIAL_BACKOFF_MULTIPLIER = 2;
+const EXPONENTIAL_BACKOFF_JITTER_FACTOR = 0.3;
+const WEBSOCKET_IDLE_DISCONNECT_DELAY_MS = 15000;
 
 /** Noop function to reduce conditional checks */
 function doNothing() {}
@@ -120,6 +126,7 @@ export class ObjectSetListenerWebsocket {
   #ws: WebSocket | undefined;
   #lastWsConnect = 0;
   #client: MinimalClient;
+  #backoff: ExponentialBackoff;
 
   #logger?: Logger;
 
@@ -155,6 +162,13 @@ export class ObjectSetListenerWebsocket {
   ) {
     this.MINIMUM_RECONNECT_DELAY_MS = minimumReconnectDelayMs;
     this.#client = client;
+    this.#backoff = new ExponentialBackoff({
+      initialDelayMs: minimumReconnectDelayMs
+        || EXPONENTIAL_BACKOFF_INITIAL_DELAY_MS,
+      maxDelayMs: EXPONENTIAL_BACKOFF_MAX_DELAY_MS,
+      multiplier: EXPONENTIAL_BACKOFF_MULTIPLIER,
+      jitterFactor: EXPONENTIAL_BACKOFF_JITTER_FACTOR,
+    });
     this.#logger = client.logger?.child({}, {
       msgPrefix: "<OSW> ",
     });
@@ -339,7 +353,7 @@ export class ObjectSetListenerWebsocket {
       if (this.#subscriptions.size === 0) {
         this.#cycleWebsocket();
       }
-    }, 15_000 /* ms */);
+    }, WEBSOCKET_IDLE_DISCONNECT_DELAY_MS);
   }
 
   async #ensureWebsocket() {
@@ -355,15 +369,17 @@ export class ObjectSetListenerWebsocket {
       // tokenProvider is async, there could potentially be a race to create the websocket.
       // Only the first call to reach here will find a null this.#ws, the rest will bail out
       if (this.#ws == null) {
-        // TODO this can probably be exponential backoff with jitter
-        // don't reconnect more quickly than MINIMUM_RECONNECT_DELAY
-        const nextConnectTime = (this.#lastWsConnect ?? 0)
-          + this.MINIMUM_RECONNECT_DELAY_MS;
-        if (nextConnectTime > Date.now()) {
-          await new Promise((resolve) => {
-            setTimeout(resolve, nextConnectTime - Date.now());
-          });
+        // Use exponential backoff with jitter for reconnection
+        const delay = this.#backoff.calculateDelay();
+        if (process.env.NODE_ENV !== "production") {
+          this.#logger?.debug(
+            { delay, attempt: this.#backoff.getAttempt() },
+            "Waiting before reconnect",
+          );
         }
+        await new Promise((resolve) => {
+          setTimeout(resolve, delay);
+        });
 
         this.#lastWsConnect = Date.now();
 
@@ -394,7 +410,7 @@ export class ObjectSetListenerWebsocket {
           }
           function error(evt: unknown) {
             cleanup();
-            reject(evt);
+            reject(new Error(String(evt)));
           }
           ws.addEventListener("open", open);
           ws.addEventListener("error", error);
@@ -405,12 +421,14 @@ export class ObjectSetListenerWebsocket {
   }
 
   #onOpen = () => {
+    // Reset backoff on successful connection
+    this.#backoff.reset();
     // resubscribe all of the listeners
     this.#sendSubscribeMessage();
   };
 
   #onMessage = async (message: WebSocket.MessageEvent): Promise<void> => {
-    const data = JSON.parse(message.data.toString()) as StreamMessage;
+    const data = JSON.parse(String(message.data)) as StreamMessage;
     if (process.env.NODE_ENV !== "production") {
       this.#logger?.debug({ payload: data }, "received message from ws");
     }
@@ -628,7 +646,7 @@ export class ObjectSetListenerWebsocket {
     if (process.env.NODE_ENV !== "production") {
       this.#logger?.debug({ event }, "Received close event from ws", event);
     }
-    // TODO we should probably throttle this so we don't abuse the backend
+    // The exponential backoff in #ensureWebsocket will handle throttling
     this.#cycleWebsocket();
   };
 
