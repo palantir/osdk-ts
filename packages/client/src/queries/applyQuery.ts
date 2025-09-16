@@ -200,13 +200,17 @@ async function remapQueryResponse<
         );
       }
       if (typeof responseValue === "string") {
-        return createObjectSet(def, client, {
-          type: "intersect",
-          objectSets: [
-            { type: "base", objectType: responseDataType.objectSet },
-            { type: "reference", reference: responseValue },
-          ],
-        }) as QueryReturnType<typeof responseDataType>;
+        return createObjectSet(
+          def,
+          client,
+          Promise.resolve({
+            type: "intersect",
+            objectSets: [
+              { type: "base", objectType: responseDataType.objectSet },
+              { type: "reference", reference: responseValue },
+            ],
+          }),
+        ) as QueryReturnType<typeof responseDataType>;
       }
 
       return createObjectSet(

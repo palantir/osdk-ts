@@ -197,9 +197,9 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 clientCtx,
                 objectType,
                 options,
-                createWithRid(
+                Promise.resolve(createWithRid(
                   [rid],
-                ),
+                )),
               ) as Osdk<Q>;
             },
           } as any;

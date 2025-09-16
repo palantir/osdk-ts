@@ -34,7 +34,7 @@ export function hydrateObjectSetFromRid<T extends ObjectOrInterfaceDefinition>(
   return createObjectSet(
     definition,
     client[additionalContext],
-    {
+    Promise.resolve({
       type: "intersect",
       objectSets: [
         definition.type === "interface"
@@ -48,6 +48,6 @@ export function hydrateObjectSetFromRid<T extends ObjectOrInterfaceDefinition>(
           reference: rid,
         },
       ],
-    },
+    }),
   );
 }

@@ -240,7 +240,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           ),
           objectType,
           options,
-          await createWithPk(
+          createWithPk(
             clientCtx,
             objectType,
             await objectSet,
@@ -263,7 +263,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           ),
           objectType,
           options,
-          await createWithPk(
+          createWithPk(
             clientCtx,
             objectType,
             await objectSet,

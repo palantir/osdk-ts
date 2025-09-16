@@ -33,7 +33,7 @@ export async function fetchSingle<
   client: MinimalClient,
   objectType: Q,
   args: A,
-  objectSet: ObjectSet,
+  objectSet: Promise<ObjectSet>,
 ): Promise<
   A extends FetchPageArgs<Q, infer L, infer R, any, infer S>
     ? SingleOsdkResult<Q, L, R, S>
@@ -65,7 +65,7 @@ export async function fetchSingleWithErrors<
   client: MinimalClient,
   objectType: Q,
   args: A,
-  objectSet: ObjectSet,
+  objectSet: Promise<ObjectSet>,
 ): Promise<
   Result<
     A extends FetchPageArgs<Q, infer L, infer R, any, infer S>
