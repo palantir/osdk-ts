@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-/**
- * This file exports the nested OSDK documentation context
- * for use by the osdkDocsContext package
- */
+import { configDefaults, defineConfig } from "vitest/config";
 
-// Export the nested context and types (primary exports)
-export {
-  type NestedExampleEntry,
-  type NestedExampleMetadata,
-  type NestedExamplesHierarchy,
-  type NestedVersionExamples,
-  TYPESCRIPT_OSDK_CONTEXT,
-} from "./typescriptOsdkContext.js";
-
-// Export flat hierarchy for compatibility (if needed)
-export { TYPESCRIPT_OSDK_EXAMPLES } from "./typescriptOsdkExamples.js";
+export default defineConfig({
+  test: {
+    pool: "forks",
+    exclude: [...configDefaults.exclude, "**/build/**/*"],
+  },
+});

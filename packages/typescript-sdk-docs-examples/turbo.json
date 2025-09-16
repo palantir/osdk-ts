@@ -14,15 +14,29 @@
         "^transpileEsm", 
         "^transpileTypes", 
         "^transpileCjs"
-      ]
+      ],
+      "outputs": ["src/examples/**/*", "src/typescriptOsdkExamples.ts", "src/typescriptOsdkContext.ts"]
     },
     "validateExamples": {
       "dependsOn": ["generateExamples"],
       "inputs": ["src/examples/**/*.ts"],
       "cache": false
     },
+    "transpileEsm": {
+      "dependsOn": ["generateExamples"],
+      "outputs": ["dist/**/*"]
+    },
+    "transpileTypes": {
+      "dependsOn": ["generateExamples"],
+      "outputs": ["dist/**/*.d.ts", "dist/**/*.d.ts.map"]
+    },
+    "transpileCjs": {
+      "dependsOn": ["generateExamples"],
+      "outputs": ["dist/**/*"]
+    },
     "build": {
-      "dependsOn": ["codegen", "validateExamples", "transpileEsm"]
+      "dependsOn": ["codegen", "validateExamples", "transpileEsm"],
+      "outputs": ["dist/**/*"]
     },
     "build:dev": {
       "dependsOn": ["@osdk/typescript-docs-example-generator#transpileEsm"]

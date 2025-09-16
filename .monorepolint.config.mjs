@@ -110,6 +110,7 @@ const archetypeRules = archetypes(
       "@osdk/e2e.generated.1.1.x",
       "@osdk/examples.*",
       "@osdk/monorepo.*",
+      "@osdk/osdkDocsContext",
       "@osdk/typescript-sdk-docs-examples",
     ],
     {

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["@osdk/typescript-sdk-docs-examples#build", "test"],
+      "outputs": ["build/**/*"]
+    },
+    "test": {
+      "dependsOn": ["@osdk/typescript-sdk-docs-examples#build"],
+      "inputs": ["src/**/*", "vitest.config.mts"],
+      "outputs": []
+    },
+    "typecheck": {
+      "dependsOn": ["@osdk/typescript-sdk-docs-examples#build"],
+      "outputs": []
+    },
+    "transpileTypes": {
+      "dependsOn": ["@osdk/typescript-sdk-docs-examples#build"],
+      "outputs": ["build/types/**/*"]
+    },
+    "transpileEsm": {
+      "dependsOn": ["transpileTypes"],
+      "outputs": ["build/esm/**/*"]
+    },
+    "transpileCjs": {
+      "dependsOn": ["transpileTypes"],
+      "outputs": ["build/cjs/**/*"]
+    }
+  }
+}
