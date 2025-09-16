@@ -69,105 +69,14 @@
  * All templates start with `baseContext` as the foundation and apply specific overrides.
  */
 
-// Types for template context system
-interface PropertyV2 {
-  apiName: string;
-  type: string;
-}
-
-interface ActionParameterSampleValue {
-  key: string;
-  value: string;
-  last: boolean;
-}
-
-interface BaseContext {
-  // Basic context variables
-  packageName: string;
-  objectType: string;
-  titleProperty: string;
-  property: string;
-  otherProperty?: string; // For operations needing two properties
-  operation: string;
-  propertyValueV2: number | string;
-  primaryKeyPropertyV2: PropertyV2;
-
-  // For linked objects
-  sourceObjectType: string;
-  linkedObjectType: string;
-  linkedPrimaryKeyPropertyV2: PropertyV2;
-  linkedOneSidePropertyV2: PropertyV2;
-  linkedManySidePropertyV2: PropertyV2;
-  linkApiName: string;
-  linkedPrimaryKeyProperty: string;
-  rawLinkedPrimaryKeyProperty: PropertyV2;
-
-  // For structured properties
-  hasStructSubProperty: boolean;
-  structPropertyApiName: string;
-  structSubPropertyApiName: string;
-  structSubPropertyValue: string;
-
-  // For block variables
-  isLinkManySided: boolean;
-  durationText: boolean;
-
-  // For interface templates
-  interfaceApiName: string;
-  interfaceApiNameCamelCase: string;
-  objectTypeApiName: string;
-  objectTypeApiNameCamelCase: string;
-
-  // For range and aggregation templates
-  propertyValueIncrementedV2: number;
-  distanceUnit: string;
-  arrayElementValue: string;
-  timeUnit: string;
-
-  // For derived property templates
-  linkName: string;
-
-  // For action templates
-  actionApiName: string;
-  attachmentProperty: string;
-  attachmentParameter: string;
-  funcApiName: string;
-  functionInputValuesV2: string;
-  hasMediaParameter: boolean;
-  hasAttachmentUpload: boolean;
-  hasAttachmentProperty: boolean;
-  hasParameters: boolean;
-  actionParameterSampleValuesV2: string | ActionParameterSampleValue[];
-  last: boolean;
-  needsImports: boolean;
-
-  // For duration templates
-  arg: string;
-  unit: string;
-
-  // For subscription templates (2.1.0+)
-  objectOrInterfaceApiName: string;
-  propertyNames: string[];
-
-  // For derived property expressions (2.4.0+)
-  isUnary: boolean;
-  isExtractPart: boolean;
-}
-
-interface HierarchyBlock {
-  context?: Partial<BaseContext>;
-  children?: Record<string, Partial<BaseContext>>;
-}
-
-interface TemplateHierarchy {
-  [templateName: string]: {
-    [blockKey: string]: HierarchyBlock;
-  };
-}
-
-interface TemplateRegistry {
-  [templateName: string]: Partial<BaseContext>;
-}
+import type {
+  ActionParameterSampleValue,
+  BaseContext,
+  HierarchyBlock,
+  PropertyV2,
+  TemplateHierarchy,
+  TemplateRegistry,
+} from "./baseContext.types.js";
 
 /**
  * Base context object with all variables needed for template processing
@@ -901,4 +810,11 @@ export function getSnippetContext(
 
 // Export the base context for direct access if needed
 export { baseContext };
-export type { ActionParameterSampleValue, BaseContext, PropertyV2 };
+export type {
+  ActionParameterSampleValue,
+  BaseContext,
+  HierarchyBlock,
+  PropertyV2,
+  TemplateHierarchy,
+  TemplateRegistry,
+};

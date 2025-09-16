@@ -42,10 +42,6 @@ interface ExamplesHierarchy {
   };
 }
 
-interface SnippetVariables {
-  [snippetKey: string]: string[];
-}
-
 interface BlockVariationResult {
   variables: string[];
   code: string;
@@ -58,13 +54,11 @@ interface BlockVariations {
 /**
  * Generate TypeScript examples from SDK documentation templates
  * @param outputDir - Directory to output the generated examples
- * @param snippetVariablesPath - Path to write the snippetVariables.json file
  * @param hierarchyOutputPath - Path to write the hierarchy TypeScript file
  * @param versions - Array of versions to generate examples for. Defaults to all versions > 2.0.0
  */
 export async function generateExamples(
   outputDir: string,
-  snippetVariablesPath: string,
   hierarchyOutputPath: string,
   versions: string[] = ["2.1.0", "2.4.0"],
 ): Promise<void> {
@@ -125,7 +119,6 @@ export async function generateExamples(
         snippets,
         version,
         outputDir,
-        snippetVariablesPath,
         hierarchyOutputPath,
         versionsToGenerate.length > 1, // isMultiVersion flag
       );
@@ -147,19 +140,15 @@ export async function generateExamples(
  * Generate examples for all snippets
  * This function processes each snippet template in the TYPESCRIPT_OSDK_SNIPPETS object,
  * applies context variables using Handlebars, and generates example files.
- * It also creates an index file and a snippetVariables.json file.
+ * It also creates an index file and examples hierarchy.
  */
 async function generateAllExamples(
   snippets: any,
   version: string,
   outputDir: string,
-  snippetVariablesPath: string,
   hierarchyOutputPath: string,
   isMultiVersion: boolean = false,
 ): Promise<void> {
-  // Create a snippetVariables object to track handlebars variables
-  const snippetVariables: SnippetVariables = {};
-
   // Create or update examples hierarchy object to track generated files
   let examplesHierarchy: ExamplesHierarchy;
 
@@ -245,15 +234,11 @@ async function generateAllExamples(
     // Check if this snippet has block variables
     const blockVariables = findBlockVariables(variables);
 
-    // Only add to snippetVariables if it doesn't have block variables
-    // (block variations will be added later)
-    if (blockVariables.length === 0) {
-      snippetVariables[snippetKey] = variables;
-    }
+    // Skip tracking variables for snippetVariables.json as it's no longer needed
 
     if (blockVariables.length > 0) {
       // For block templates, only generate variations, not base files
-      // Generate variations for each block variable and add to snippetVariables
+      // Generate variations for each block variable
       const variations: BlockVariations = await generateBlockVariations(
         snippetData.template,
         snippetKey,
@@ -263,10 +248,8 @@ async function generateAllExamples(
         outputDir,
       );
 
-      // Add each variation to snippetVariables and hierarchy
+      // Add each variation to hierarchy
       for (const [variationKey, variation] of Object.entries(variations)) {
-        snippetVariables[variationKey] = variation.variables;
-
         // Add to hierarchy with trimmed code content
         examplesHierarchy.versions[version].examples[variationKey] = {
           filePath: `examples/typescript/${version}/${variationKey}.ts`,
@@ -340,27 +323,7 @@ async function generateAllExamples(
     indexContent,
   );
 
-  // Write the snippetVariables.json file (merge with existing if multi-version)
-  let allSnippetVariables = snippetVariables;
-
-  if (isMultiVersion) {
-    try {
-      const existingVariables = JSON.parse(
-        await fs.readFile(snippetVariablesPath, "utf8"),
-      );
-      allSnippetVariables = { ...existingVariables, ...snippetVariables };
-    } catch {
-      // File doesn't exist or is malformed, use new variables
-    }
-  }
-
-  await fs.writeFile(
-    snippetVariablesPath,
-    JSON.stringify(allSnippetVariables, null, 2),
-    "utf8",
-  );
-  // eslint-disable-next-line no-console
-  console.log(`✓ Generated snippetVariables.json for version ${version}`);
+  // snippetVariables.json generation removed as it was not being used
 
   // Write the examples hierarchy as a TypeScript file for easier importing
   const hierarchyContent = `/*

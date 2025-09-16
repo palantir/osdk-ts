@@ -25,62 +25,6 @@
 export const TYPESCRIPT_OSDK_EXAMPLES = {
   "kind": "examples",
   "versions": {
-    "2.1.0": {
-      "examples": {
-        "loadGeotimeSeriesPointsSnippet": {
-          "filePath":
-            "examples/typescript/2.1.0/loadGeotimeSeriesPointsSnippet.ts",
-          "code":
-            "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck\";\n\nfunction getAllTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getAllValues();\n}",
-        },
-        "loadRelativeGeotimeSeriesPointsSnippet": {
-          "filePath":
-            "examples/typescript/2.1.0/loadRelativeGeotimeSeriesPointsSnippet.ts",
-          "code":
-            "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck\";\n\n// Only supports ranges in the past\nfunction getRelativeTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getAllValues({\n        $before: 1,\n        $unit: \"hours\",\n    })\n}",
-        },
-        "loadAbsoluteGeotimeSeriesPointsSnippet": {
-          "filePath":
-            "examples/typescript/2.1.0/loadAbsoluteGeotimeSeriesPointsSnippet.ts",
-          "code":
-            "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck\";\n\nfunction getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getAllValues({\n        $startTime: \"2022-08-13T12:34:56Z\",\n        $endTime: \"2022-08-14T12:34:56Z\",\n    });\n}",
-        },
-        "loadGeotimeSeriesLastPointSnippet": {
-          "filePath":
-            "examples/typescript/2.1.0/loadGeotimeSeriesLastPointSnippet.ts",
-          "code":
-            "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck\";\n\nfunction getLastTimeSeriesPoint(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getLatestValue();\n}",
-        },
-      },
-    },
-    "2.4.0": {
-      "examples": {
-        "derivedPropertyNumericExpression_#isUnary": {
-          "filePath":
-            "examples/typescript/2.4.0/derivedPropertyNumericExpression_#isUnary.ts",
-          "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"lead\")\n          .selectProperty(\"salary\")\n          .subtract(baseObjectSet.selectProperty(\"salary\"))\n    }).fetchPage();",
-        },
-        "derivedPropertyNumericExpression_^isUnary": {
-          "filePath":
-            "examples/typescript/2.4.0/derivedPropertyNumericExpression_^isUnary.ts",
-          "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"assignedEquipment\")\n              .aggregate(\"purchasePrice:avg\").divide(\n                  baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"$count\"))\n    }).fetchPage();",
-        },
-        "derivedPropertyDatetimeExpression_#isExtractPart": {
-          "filePath":
-            "examples/typescript/2.4.0/derivedPropertyDatetimeExpression_#isExtractPart.ts",
-          "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n          \"YEARS_part_of_birthDate_of_lead\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"lead\")\n              .selectProperty(\"birthDate\").extractPart(\"YEARS\")\n    }).fetchPage();",
-        },
-        "derivedPropertyDatetimeExpression_^isExtractPart": {
-          "filePath":
-            "examples/typescript/2.4.0/derivedPropertyDatetimeExpression_^isExtractPart.ts",
-          "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n          \"min_between_purchaseDate:min_and_lastMaintenanceDate:min\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"assignedEquipment\")\n              .aggregate(\"purchaseDate:min\")\n              .min(baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"lastMaintenanceDate:min\"))\n    }).fetchPage();",
-        },
-      },
-    },
     "2.0.0": {
       "examples": {
         "loadSingleObjectGuide": {
@@ -615,6 +559,62 @@ export const TYPESCRIPT_OSDK_EXAMPLES = {
           "filePath": "examples/typescript/2.0.0/searchAround.ts",
           "code":
             "import { Equipment } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\n// Object set containing objects a, b and c\nconst objects = client(Equipment)\n    .where({ equipmentId: { $in: [\"a\", \"b\", \"c\"]}});\n\n// Traverse the selected link type to find all objects of type\n// Employee linked to Equipment with equipmentId is a or b or c]\nconst linkedObjects = await objects.pivotTo(\"assignedTo\").fetchPage();",
+        },
+      },
+    },
+    "2.1.0": {
+      "examples": {
+        "loadGeotimeSeriesPointsSnippet": {
+          "filePath":
+            "examples/typescript/2.1.0/loadGeotimeSeriesPointsSnippet.ts",
+          "code":
+            "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck\";\n\nfunction getAllTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getAllValues();\n}",
+        },
+        "loadRelativeGeotimeSeriesPointsSnippet": {
+          "filePath":
+            "examples/typescript/2.1.0/loadRelativeGeotimeSeriesPointsSnippet.ts",
+          "code":
+            "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck\";\n\n// Only supports ranges in the past\nfunction getRelativeTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getAllValues({\n        $before: 1,\n        $unit: \"hours\",\n    })\n}",
+        },
+        "loadAbsoluteGeotimeSeriesPointsSnippet": {
+          "filePath":
+            "examples/typescript/2.1.0/loadAbsoluteGeotimeSeriesPointsSnippet.ts",
+          "code":
+            "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck\";\n\nfunction getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getAllValues({\n        $startTime: \"2022-08-13T12:34:56Z\",\n        $endTime: \"2022-08-14T12:34:56Z\",\n    });\n}",
+        },
+        "loadGeotimeSeriesLastPointSnippet": {
+          "filePath":
+            "examples/typescript/2.1.0/loadGeotimeSeriesLastPointSnippet.ts",
+          "code":
+            "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck\";\n\nfunction getLastTimeSeriesPoint(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getLatestValue();\n}",
+        },
+      },
+    },
+    "2.4.0": {
+      "examples": {
+        "derivedPropertyNumericExpression_#isUnary": {
+          "filePath":
+            "examples/typescript/2.4.0/derivedPropertyNumericExpression_#isUnary.ts",
+          "code":
+            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"lead\")\n          .selectProperty(\"salary\")\n          .subtract(baseObjectSet.selectProperty(\"salary\"))\n    }).fetchPage();",
+        },
+        "derivedPropertyNumericExpression_^isUnary": {
+          "filePath":
+            "examples/typescript/2.4.0/derivedPropertyNumericExpression_^isUnary.ts",
+          "code":
+            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"assignedEquipment\")\n              .aggregate(\"purchasePrice:avg\").divide(\n                  baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"$count\"))\n    }).fetchPage();",
+        },
+        "derivedPropertyDatetimeExpression_#isExtractPart": {
+          "filePath":
+            "examples/typescript/2.4.0/derivedPropertyDatetimeExpression_#isExtractPart.ts",
+          "code":
+            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n          \"YEARS_part_of_birthDate_of_lead\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"lead\")\n              .selectProperty(\"birthDate\").extractPart(\"YEARS\")\n    }).fetchPage();",
+        },
+        "derivedPropertyDatetimeExpression_^isExtractPart": {
+          "filePath":
+            "examples/typescript/2.4.0/derivedPropertyDatetimeExpression_^isExtractPart.ts",
+          "code":
+            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n          \"min_between_purchaseDate:min_and_lastMaintenanceDate:min\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"assignedEquipment\")\n              .aggregate(\"purchaseDate:min\")\n              .min(baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"lastMaintenanceDate:min\"))\n    }).fetchPage();",
         },
       },
     },

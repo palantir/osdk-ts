@@ -26,7 +26,6 @@ function parseArgs() {
   const args = process.argv.slice(2);
   const config = {
     outputDir: path.join(process.cwd(), "src/examples"),
-    snippetVariablesPath: path.join(process.cwd(), "snippetVariables.json"),
     hierarchyOutputPath: path.join(
       process.cwd(),
       "src/typescriptOsdkExamples.ts",
@@ -44,9 +43,6 @@ function parseArgs() {
     } else if (arg === "--output-dir" && i + 1 < args.length) {
       config.outputDir = args[i + 1];
       i++;
-    } else if (arg === "--snippet-variables" && i + 1 < args.length) {
-      config.snippetVariablesPath = args[i + 1];
-      i++;
     } else if (arg === "--hierarchy-output" && i + 1 < args.length) {
       config.hierarchyOutputPath = args[i + 1];
       i++;
@@ -58,7 +54,6 @@ Usage: generate-examples [options]
 Options:
   --versions <versions>         Comma-separated list of versions to generate (default: 2.1.0,2.4.0)
   --output-dir <path>          Output directory for examples (default: src/examples)
-  --snippet-variables <path>   Path for snippetVariables.json (default: snippetVariables.json)
   --hierarchy-output <path>    Path for typescriptOsdkExamples.ts (default: src/typescriptOsdkExamples.ts)
   --help, -h                   Show this help message
 
@@ -70,8 +65,7 @@ Examples:
     } else if (!arg.startsWith("--")) {
       // Positional arguments for backward compatibility
       if (i === 0) config.outputDir = arg;
-      else if (i === 1) config.snippetVariablesPath = arg;
-      else if (i === 2) config.hierarchyOutputPath = arg;
+      else if (i === 1) config.hierarchyOutputPath = arg;
     }
   }
 
@@ -83,7 +77,6 @@ const config = parseArgs();
 try {
   await generateExamples(
     config.outputDir,
-    config.snippetVariablesPath,
     config.hierarchyOutputPath,
     config.versions,
   );

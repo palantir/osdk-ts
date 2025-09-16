@@ -12,10 +12,10 @@
     "clean": "rm -rf dist src/generatedNoCheck examples src/examples",
     "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --version 0.1.0 --packageType module --internal --skipPackageJsonUpdate",
     "generateExamples": "generate-examples --versions 2.0.0,2.1.0,2.4.0",
-    "validateExamples": "tsc --noEmit --project tsconfig.json",
     "lint": "eslint src/index.ts --max-warnings=1",
     "lint:fix": "eslint . --fix",
-    "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node"
+    "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
+    "validateExamples": "tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
     "@osdk/client": "workspace:~",
