@@ -3200,8 +3200,11 @@ importers:
         specifier: ^2.28.0
         version: 2.28.0
       '@osdk/foundry.ontologies':
-        specifier: ^2.26.0
-        version: 2.29.0
+        specifier: ^2.30.0
+        version: 2.30.0
+      '@types/geojson':
+        specifier: ^7946.0.16
+        version: 7946.0.16
     devDependencies:
       '@microsoft/api-documenter':
         specifier: ^7.26.5
