@@ -7,10 +7,22 @@
       "dependsOn": ["@osdk/cli.cmd.typescript#transpile"]
     },
     "generateExamples": {
-      "dependsOn": ["@osdk/typescript-docs-example-generator#transpileEsm", "^transpileEsm", "^transpileTypes", "^transpileCjs"]
+      "dependsOn": [
+        "@osdk/typescript-sdk-docs#codegen",
+        "@osdk/typescript-sdk-docs#transpileTypes",
+        "@osdk/typescript-docs-example-generator#transpileEsm", 
+        "^transpileEsm", 
+        "^transpileTypes", 
+        "^transpileCjs"
+      ]
+    },
+    "validateExamples": {
+      "dependsOn": ["generateExamples"],
+      "inputs": ["src/examples/**/*.ts"],
+      "cache": false
     },
     "build": {
-      "dependsOn": ["@osdk/typescript-docs-example-generator#transpileEsm", "@osdk/cli.cmd.typescript#transpile", "^transpileEsm", "^transpileTypes", "^transpileCjs"]
+      "dependsOn": ["codegen", "validateExamples", "transpileEsm"]
     },
     "build:dev": {
       "dependsOn": ["@osdk/typescript-docs-example-generator#transpileEsm"]

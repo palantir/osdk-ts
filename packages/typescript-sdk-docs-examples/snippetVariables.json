@@ -451,10 +451,27 @@
     "packageName",
     "property"
   ],
-  "loadGeotimeSeriesPointsSnippet": [],
-  "loadRelativeGeotimeSeriesPointsSnippet": [],
-  "loadAbsoluteGeotimeSeriesPointsSnippet": [],
-  "loadGeotimeSeriesLastPointSnippet": [],
+  "loadGeotimeSeriesPointsSnippet": [
+    "objectType",
+    "packageName",
+    "property"
+  ],
+  "loadRelativeGeotimeSeriesPointsSnippet": [
+    "objectType",
+    "packageName",
+    "property",
+    "timeUnit"
+  ],
+  "loadAbsoluteGeotimeSeriesPointsSnippet": [
+    "objectType",
+    "packageName",
+    "property"
+  ],
+  "loadGeotimeSeriesLastPointSnippet": [
+    "objectType",
+    "packageName",
+    "property"
+  ],
   "loadObjectMetadataSnippet": [
     "objectType",
     "packageName"
@@ -464,8 +481,15 @@
     "packageName"
   ],
   "subscribeToObjectSetInstructions": [],
-  "uploadMedia": [],
-  "readMedia": [],
+  "uploadMedia": [
+    "objectType",
+    "packageName"
+  ],
+  "readMedia": [
+    "objectType",
+    "packageName",
+    "property"
+  ],
   "derivedPropertyBaseExample": [
     "objectType",
     "packageName",
@@ -545,6 +569,36 @@
     "packageName",
     "rawLinkedPrimaryKeyProperty.apiName",
     "linkedObjectType",
+    "linkApiName"
+  ],
+  "subscribeToObjectSetInstructions_#propertyNames": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "derivedPropertyNumericExpression_#isUnary": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "derivedPropertyNumericExpression_^isUnary": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "derivedPropertyDatetimeExpression_#isExtractPart": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
+    "linkApiName"
+  ],
+  "derivedPropertyDatetimeExpression_^isExtractPart": [
+    "linkedObjectType",
+    "packageName",
+    "sourceObjectType",
     "linkApiName"
   ]
 }
