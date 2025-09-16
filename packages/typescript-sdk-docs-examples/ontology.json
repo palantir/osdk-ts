@@ -449,7 +449,7 @@
           },
           "salary": {
             "dataType": {
-              "type": "decimal"
+              "type": "double"
             },
             "description": "Annual base salary"
           },

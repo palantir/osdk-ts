@@ -60,23 +60,38 @@ interface BlockVariations {
  * @param outputDir - Directory to output the generated examples
  * @param snippetVariablesPath - Path to write the snippetVariables.json file
  * @param hierarchyOutputPath - Path to write the hierarchy TypeScript file
+ * @param versions - Array of versions to generate examples for. Defaults to all versions > 2.0.0
  */
 export async function generateExamples(
   outputDir: string,
   snippetVariablesPath: string,
   hierarchyOutputPath: string,
+  versions: string[] = ["2.1.0", "2.4.0"],
 ): Promise<void> {
   try {
     // eslint-disable-next-line no-console
     console.log("Generating examples from typescript-sdk-docs...");
 
-    // Get snippets from version 2.0.0
-    const version = "2.0.0";
-    const snippets = TYPESCRIPT_OSDK_SNIPPETS.versions[version]?.snippets;
+    // Get all available versions and filter for supported ones
+    const availableVersions = Object.keys(
+      TYPESCRIPT_OSDK_SNIPPETS.versions || {},
+    );
+    const versionsToGenerate = versions.filter(v =>
+      availableVersions.includes(v)
+    );
 
-    if (!snippets) {
-      throw new Error(`No snippets found for version ${version}`);
+    if (versionsToGenerate.length === 0) {
+      throw new Error(
+        `No supported versions found in ${
+          versions.join(", ")
+        }. Available versions: ${availableVersions.join(", ")}`,
+      );
     }
+
+    // eslint-disable-next-line no-console
+    console.log(
+      `Generating examples for versions: ${versionsToGenerate.join(", ")}`,
+    );
 
     // Delete existing examples directory if it exists
     try {
@@ -87,22 +102,37 @@ export async function generateExamples(
       // Directory might not exist, which is fine
     }
 
-    // Ensure output directory exists
-    await fs.mkdir(path.join(outputDir, "typescript", version), {
-      recursive: true,
-    });
+    // Generate examples for each version
+    for (const version of versionsToGenerate) {
+      const snippets = TYPESCRIPT_OSDK_SNIPPETS.versions[version]?.snippets;
 
-    // Generate examples for each snippet
-    await generateAllExamples(
-      snippets,
-      version,
-      outputDir,
-      snippetVariablesPath,
-      hierarchyOutputPath,
-    );
+      if (!snippets) {
+        // eslint-disable-next-line no-console
+        console.warn(`⚠️ No snippets found for version ${version}, skipping...`);
+        continue;
+      }
 
-    // Generate client.ts file
-    await generateClientFile(version, outputDir);
+      // eslint-disable-next-line no-console
+      console.log(`\n📝 Generating examples for version ${version}...`);
+
+      // Ensure output directory exists for this version
+      await fs.mkdir(path.join(outputDir, "typescript", version), {
+        recursive: true,
+      });
+
+      // Generate examples for each snippet in this version
+      await generateAllExamples(
+        snippets,
+        version,
+        outputDir,
+        snippetVariablesPath,
+        hierarchyOutputPath,
+        versionsToGenerate.length > 1, // isMultiVersion flag
+      );
+
+      // Generate client.ts file for this version
+      await generateClientFile(version, outputDir);
+    }
 
     // eslint-disable-next-line no-console
     console.log("✓ Examples generated successfully");
@@ -125,19 +155,49 @@ async function generateAllExamples(
   outputDir: string,
   snippetVariablesPath: string,
   hierarchyOutputPath: string,
+  isMultiVersion: boolean = false,
 ): Promise<void> {
   // Create a snippetVariables object to track handlebars variables
   const snippetVariables: SnippetVariables = {};
 
-  // Create examples hierarchy object to track generated files
-  const examplesHierarchy: ExamplesHierarchy = {
-    kind: "examples",
-    versions: {
-      [version]: {
-        examples: {},
+  // Create or update examples hierarchy object to track generated files
+  let examplesHierarchy: ExamplesHierarchy;
+
+  if (isMultiVersion) {
+    // For multi-version generation, try to read existing hierarchy
+    try {
+      const existingContent = await fs.readFile(hierarchyOutputPath, "utf8");
+      const match = existingContent.match(
+        /export const TYPESCRIPT_OSDK_EXAMPLES = (.*?) as const;/s,
+      );
+      if (match) {
+        examplesHierarchy = JSON.parse(match[1]);
+      } else {
+        throw new Error("No existing hierarchy found");
+      }
+    } catch {
+      // Create new hierarchy if none exists
+      examplesHierarchy = {
+        kind: "examples",
+        versions: {},
+      };
+    }
+
+    // Ensure this version exists in the hierarchy
+    if (!examplesHierarchy.versions[version]) {
+      examplesHierarchy.versions[version] = { examples: {} };
+    }
+  } else {
+    // Single version generation
+    examplesHierarchy = {
+      kind: "examples",
+      versions: {
+        [version]: {
+          examples: {},
+        },
       },
-    },
-  };
+    };
+  }
 
   // Create index file content using the common header utility
   let indexContent = `${
@@ -159,6 +219,20 @@ async function generateAllExamples(
     if (!snippetData?.template) {
       // eslint-disable-next-line no-console
       console.log(`No template content for ${snippetKey}, skipping...`);
+      continue;
+    }
+
+    // Skip templates that only contain upgrade comments or invalid syntax
+    const templateContent = snippetData.template.trim();
+    if (
+      templateContent.startsWith("// Upgrade to")
+      || templateContent.includes("...")
+      || templateContent.includes("// Placeholder")
+    ) {
+      // eslint-disable-next-line no-console
+      console.log(
+        `Skipping ${snippetKey} - contains upgrade comment or placeholder syntax`,
+      );
       continue;
     }
 
@@ -266,14 +340,27 @@ async function generateAllExamples(
     indexContent,
   );
 
-  // Write the snippetVariables.json file
+  // Write the snippetVariables.json file (merge with existing if multi-version)
+  let allSnippetVariables = snippetVariables;
+
+  if (isMultiVersion) {
+    try {
+      const existingVariables = JSON.parse(
+        await fs.readFile(snippetVariablesPath, "utf8"),
+      );
+      allSnippetVariables = { ...existingVariables, ...snippetVariables };
+    } catch {
+      // File doesn't exist or is malformed, use new variables
+    }
+  }
+
   await fs.writeFile(
     snippetVariablesPath,
-    JSON.stringify(snippetVariables, null, 2),
+    JSON.stringify(allSnippetVariables, null, 2),
     "utf8",
   );
   // eslint-disable-next-line no-console
-  console.log("✓ Generated snippetVariables.json");
+  console.log(`✓ Generated snippetVariables.json for version ${version}`);
 
   // Write the examples hierarchy as a TypeScript file for easier importing
   const hierarchyContent = `/*
@@ -311,8 +398,8 @@ export const TYPESCRIPT_OSDK_EXAMPLES = ${
     "utf8",
   );
   // eslint-disable-next-line no-console
-  console.log("✓ Generated typescriptOsdkExamples.ts");
+  console.log(`✓ Generated typescriptOsdkExamples.ts for version ${version}`);
 
   // eslint-disable-next-line no-console
-  console.log("✓ All examples generated");
+  console.log(`✓ All examples generated for version ${version}`);
 }

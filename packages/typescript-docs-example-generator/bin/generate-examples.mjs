@@ -21,15 +21,72 @@ import { generateExamples } from "../build/esm/index.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Default paths relative to the consuming package
-const outputDir = process.argv[2] || path.join(process.cwd(), "src/examples");
-const snippetVariablesPath = process.argv[3]
-  || path.join(process.cwd(), "snippetVariables.json");
-const hierarchyOutputPath = process.argv[4]
-  || path.join(process.cwd(), "src/typescriptOsdkExamples.ts");
+// Parse command line arguments
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const config = {
+    outputDir: path.join(process.cwd(), "src/examples"),
+    snippetVariablesPath: path.join(process.cwd(), "snippetVariables.json"),
+    hierarchyOutputPath: path.join(
+      process.cwd(),
+      "src/typescriptOsdkExamples.ts",
+    ),
+    versions: ["2.1.0", "2.4.0"], // Default to versions > 2.0.0
+  };
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+
+    if (arg === "--versions" && i + 1 < args.length) {
+      // Parse comma-separated versions: --versions 2.1.0,2.4.0
+      config.versions = args[i + 1].split(",").map(v => v.trim());
+      i++; // Skip next argument as it's the value
+    } else if (arg === "--output-dir" && i + 1 < args.length) {
+      config.outputDir = args[i + 1];
+      i++;
+    } else if (arg === "--snippet-variables" && i + 1 < args.length) {
+      config.snippetVariablesPath = args[i + 1];
+      i++;
+    } else if (arg === "--hierarchy-output" && i + 1 < args.length) {
+      config.hierarchyOutputPath = args[i + 1];
+      i++;
+    } else if (arg === "--help" || arg === "-h") {
+      // eslint-disable-next-line no-console
+      console.log(`
+Usage: generate-examples [options]
+
+Options:
+  --versions <versions>         Comma-separated list of versions to generate (default: 2.1.0,2.4.0)
+  --output-dir <path>          Output directory for examples (default: src/examples)
+  --snippet-variables <path>   Path for snippetVariables.json (default: snippetVariables.json)
+  --hierarchy-output <path>    Path for typescriptOsdkExamples.ts (default: src/typescriptOsdkExamples.ts)
+  --help, -h                   Show this help message
+
+Examples:
+  generate-examples --versions 2.1.0,2.4.0
+  generate-examples --versions 2.1.0 --output-dir dist/examples
+      `);
+      process.exit(0);
+    } else if (!arg.startsWith("--")) {
+      // Positional arguments for backward compatibility
+      if (i === 0) config.outputDir = arg;
+      else if (i === 1) config.snippetVariablesPath = arg;
+      else if (i === 2) config.hierarchyOutputPath = arg;
+    }
+  }
+
+  return config;
+}
+
+const config = parseArgs();
 
 try {
-  await generateExamples(outputDir, snippetVariablesPath, hierarchyOutputPath);
+  await generateExamples(
+    config.outputDir,
+    config.snippetVariablesPath,
+    config.hierarchyOutputPath,
+    config.versions,
+  );
   process.exit(0);
 } catch (error) {
   // eslint-disable-next-line no-console

@@ -87,6 +87,7 @@ interface BaseContext {
   objectType: string;
   titleProperty: string;
   property: string;
+  otherProperty?: string; // For operations needing two properties
   operation: string;
   propertyValueV2: number | string;
   primaryKeyPropertyV2: PropertyV2;
@@ -143,6 +144,14 @@ interface BaseContext {
   // For duration templates
   arg: string;
   unit: string;
+
+  // For subscription templates (2.1.0+)
+  objectOrInterfaceApiName: string;
+  propertyNames: string[];
+
+  // For derived property expressions (2.4.0+)
+  isUnary: boolean;
+  isExtractPart: boolean;
 }
 
 interface HierarchyBlock {
@@ -227,6 +236,14 @@ const baseContext: BaseContext = {
   // For duration templates
   arg: "1",
   unit: "DAYS",
+
+  // For subscription templates (2.1.0+)
+  objectOrInterfaceApiName: "Employee",
+  propertyNames: ["fullName", "salary"],
+
+  // For derived property expressions (2.4.0+)
+  isUnary: false,
+  isExtractPart: false,
 };
 
 /**
@@ -330,6 +347,39 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
   "loadTimeSeriesLastPointSnippet": {
     property: "employeeStatus",
     timeUnit: "hours",
+  },
+
+  // === GEO-TIMESERIES TEMPLATES (2.1.0+) ===
+  "loadGeotimeSeriesPointsSnippet": {
+    property: "travelHistory",
+    timeUnit: "hours",
+  },
+  "loadRelativeGeotimeSeriesPointsSnippet": {
+    property: "travelHistory",
+    timeUnit: "hours",
+  },
+  "loadAbsoluteGeotimeSeriesPointsSnippet": {
+    property: "travelHistory",
+    timeUnit: "hours",
+  },
+  "loadGeotimeSeriesLastPointSnippet": {
+    property: "travelHistory",
+    timeUnit: "hours",
+  },
+
+  // === SUBSCRIPTION TEMPLATES (2.1.0+) ===
+  "subscribeToObjectSetInstructions": {
+    objectOrInterfaceApiName: "Employee",
+    propertyNames: ["fullName", "salary"],
+  },
+
+  // === MEDIA TEMPLATES (2.1.0+) ===
+  "uploadMedia": {
+    property: "profilePhoto",
+    actionParameterSampleValuesV2: "some-media-id",
+  },
+  "readMedia": {
+    property: "profilePhoto",
   },
 
   // === SIMPLE TEMPLATES ===
@@ -748,6 +798,46 @@ const templateHierarchy: TemplateHierarchy = {
         hasAttachmentProperty: false,
         funcApiName: "getTotalEmployeeCount",
         functionInputValuesV2: "",
+      },
+    },
+  },
+
+  // === DERIVED PROPERTY EXPRESSION TEMPLATES (2.4.0+) ===
+  "derivedPropertyNumericExpression": {
+    "#isUnary": {
+      context: {
+        linkName: "lead",
+        property: "salary",
+        operation: "subtract",
+        isUnary: true,
+      },
+    },
+    "^isUnary": {
+      context: {
+        linkName: "assignedEquipment",
+        property: "purchasePrice:avg",
+        operation: "divide",
+        isUnary: false,
+      },
+    },
+  },
+
+  "derivedPropertyDatetimeExpression": {
+    "#isExtractPart": {
+      context: {
+        linkName: "lead",
+        property: "birthDate",
+        operation: "extractPart",
+        isExtractPart: true,
+      },
+    },
+    "^isExtractPart": {
+      context: {
+        linkName: "assignedEquipment",
+        property: "purchaseDate:min",
+        otherProperty: "lastMaintenanceDate:min",
+        operation: "min",
+        isExtractPart: false,
       },
     },
   },

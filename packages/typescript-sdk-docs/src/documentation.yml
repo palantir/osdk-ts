@@ -2069,54 +2069,6 @@ versions:
             );
 
             subscription.unsubscribe();
-      uploadMedia:
-        - template: |-
-            import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
-            import { {{objectType}} } from "{{{packageName}}}"
-            // Edit this import if your client location differs
-            import { client } from "./client";
-            import { Result, isOk } from "@osdk/client";
-            import type { MediaReference } from "@osdk/api";
-
-            // To upload media with 2.x, it has to be linked to an Action call
-            async function uploadMedia() {
-                const file = await fetch("file.json");
-                const data = await file.blob();
-
-                // Upload media to an object type with a media property. This returns a media reference that can passed to
-                // a media parameter in an Action.
-                return await client(
-                    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-                ).createMediaReference({
-                    data,
-                    fileName: "myFile",
-                    objectType: {{objectType}},
-                    propertyType: "MediaPropertyApi",
-                });
-            }
-
-            const mediaReference: MediaReference = await uploadMedia();
-            const actionResult = client(mediaUploadingAction).applyAction({ media_parameter: mediaReference });
-      readMedia:
-        - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
-            // Edit this import if your client location differs
-            import { client } from "./client";
-            import type { MediaMetadata, MediaReference } from "@osdk/api";
-            import { Osdk, Result } from "@osdk/client";
-
-            const result = await client({{objectType}}).fetchOne("<primaryKey>");
-
-            // Fetch metadata of a media property
-            const mediaMetadata = await result.{{property}}?.fetchMetadata();
-
-            // Fetch contents of a media property
-            const response = await result.{{property}}?.fetchContents();
-
-            if (response.ok) {
-                const data = await response.blob();
-                ...
-            }
   "2.4.0":
     snippets:
         derivedPropertyNumericExpression:
@@ -2130,13 +2082,15 @@ versions:
                     "newPropertyName": (baseObjectSet) =>
                         {{^isUnary}}
                         baseObjectSet.pivotTo("{{linkName}}")
-                            .selectProperty("{{property}}").{{operation}}(
+                            .aggregate("{{property}}").{{operation}}(
                                 baseObjectSet.pivotTo("{{linkName}}").aggregate("$count"))
                         {{/isUnary}}
                         {{#isUnary}}
-                        baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}").{{operation}}()
+                        baseObjectSet.pivotTo("{{linkName}}")
+                        .selectProperty("{{property}}")
+                        .{{operation}}(baseObjectSet.selectProperty("{{property}}"))
                         {{/isUnary}}
-                  });
+                  }).fetchPage();
         derivedPropertyDatetimeExpression:
           - template: |-
               import { {{objectType}} } from "{{{packageName}}}";
@@ -2145,16 +2099,17 @@ versions:
 
               const {{objectType}}WithExpression = await client({{objectType}})
                   .withProperties({
-                    "newPropertyName": (baseObjectSet) =>
                         {{^isExtractPart}} 
+                        "{{operation}}_between_{{property}}_and_{{otherProperty}}": (baseObjectSet) =>
                         baseObjectSet.pivotTo("{{linkName}}")
-                            .selectProperty("{{property}}")
-                            .{{operation}}(baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}"))
+                            .aggregate("{{property}}")
+                            .{{operation}}(baseObjectSet.pivotTo("{{linkName}}").aggregate("{{otherProperty}}"))
                         {{/isExtractPart}}
                         {{#isExtractPart}}
+                        "YEARS_part_of_{{property}}_of_{{linkName}}": (baseObjectSet) =>
                         baseObjectSet.pivotTo("{{linkName}}")
-                            .selectProperty("{{property}}").{{operation}}("DAY")
+                            .selectProperty("{{property}}").extractPart("YEARS")
                         {{/isExtractPart}}
-                  });
+                  }).fetchPage();
             
 
