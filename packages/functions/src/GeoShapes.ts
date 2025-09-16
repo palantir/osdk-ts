@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-import type { Geometry, GeometryCollection } from "geojson";
-
 export type {
-  GeoJSON,
   Geometry,
-  GeometryCollection,
-  LineString,
-  MultiLineString,
-  MultiPoint as MultiGeoPoint, // alias for MultiGeoPoint
-  MultiPolygon,
   Point as GeoPoint, // alias for GeoPoint
-  Polygon,
 } from "geojson";
-
-export type GeoShape = Geometry | GeometryCollection; // type alias for GeoShape

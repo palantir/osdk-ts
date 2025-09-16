@@ -50,4 +50,4 @@ export type { ClassificationMarking, MandatoryMarking } from "./Markings.js";
 export type { GroupId, Principal, UserId } from "./UserGroup.js";
 
 // Export geo types for user import
-export type { GeoPoint, GeoShape } from "./GeoShapes.ts";
+export type { Geometry, GeoPoint } from "./GeoShapes.ts";
