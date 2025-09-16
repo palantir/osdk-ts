@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.5.0-beta.7
+
+### Minor Changes
+
+- ab29baa: make dedupeIntervals dynamic
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.7
+- @osdk/client.unstable@2.5.0-beta.7
+- @osdk/generator-converters@2.5.0-beta.7
+
 ## 2.5.0-beta.6
 
 ### Minor Changes
