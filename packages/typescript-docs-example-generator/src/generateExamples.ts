@@ -121,10 +121,23 @@ export async function generateExamples(
         outputDir,
         hierarchyOutputPath,
         versionsToGenerate.length > 1, // isMultiVersion flag
+        versionsToGenerate,
       );
 
       // Generate client.ts file for this version
       await generateClientFile(version, outputDir);
+    }
+
+    // Generate the nested context file after all versions are processed
+    // eslint-disable-next-line no-console
+    console.log("About to generate nested context...");
+    try {
+      await generateNestedContextFromFile(hierarchyOutputPath);
+      // eslint-disable-next-line no-console
+      console.log("Finished generating nested context.");
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Error in nested context generation:", error);
     }
 
     // eslint-disable-next-line no-console
@@ -148,6 +161,7 @@ async function generateAllExamples(
   outputDir: string,
   hierarchyOutputPath: string,
   isMultiVersion: boolean = false,
+  versionsToGenerate: string[] = [],
 ): Promise<void> {
   // Create or update examples hierarchy object to track generated files
   let examplesHierarchy: ExamplesHierarchy;
@@ -365,4 +379,144 @@ export const TYPESCRIPT_OSDK_EXAMPLES = ${
 
   // eslint-disable-next-line no-console
   console.log(`✓ All examples generated for version ${version}`);
+}
+
+/**
+ * Generate nested context structure by reading the flat hierarchy file
+ */
+async function generateNestedContextFromFile(
+  hierarchyOutputPath: string,
+): Promise<void> {
+  // eslint-disable-next-line no-console
+  console.log("📝 Generating nested context from flat hierarchy...");
+  try {
+    // Read the generated flat hierarchy file
+    const flatContent = await fs.readFile(hierarchyOutputPath, "utf8");
+
+    // Extract the TYPESCRIPT_OSDK_EXAMPLES object from the file
+    const match = flatContent.match(
+      /export const TYPESCRIPT_OSDK_EXAMPLES = (.*) as const;/s,
+    );
+    if (!match) {
+      throw new Error(
+        "Could not find TYPESCRIPT_OSDK_EXAMPLES in the flat hierarchy file",
+      );
+    }
+
+    const examplesHierarchy: ExamplesHierarchy = JSON.parse(match[1]);
+
+    // Transform flat structure to nested structure
+    const nestedContext = {
+      kind: "examples",
+      versions: {} as Record<string, any>,
+    };
+
+    for (
+      const [version, versionData] of Object.entries(examplesHierarchy.versions)
+    ) {
+      nestedContext.versions[version] = {};
+
+      for (
+        const [exampleName, exampleData] of Object.entries(versionData.examples)
+      ) {
+        // Split on underscore to find base name and variation
+        const underscoreIndex = exampleName.indexOf("_");
+
+        if (underscoreIndex === -1) {
+          // Direct example (no variation)
+          nestedContext.versions[version][exampleName] = {
+            code: exampleData.code,
+          };
+        } else {
+          // Template variation
+          const baseName = exampleName.substring(0, underscoreIndex);
+          const variationSuffix = exampleName.substring(underscoreIndex + 1);
+
+          // Initialize base name if needed
+          if (!nestedContext.versions[version][baseName]) {
+            nestedContext.versions[version][baseName] = {};
+          }
+
+          // Add the variation
+          nestedContext.versions[version][baseName][variationSuffix] = {
+            code: exampleData.code,
+          };
+        }
+      }
+    }
+
+    // Generate the nested context file
+    const contextOutputPath = hierarchyOutputPath.replace(
+      "typescriptOsdkExamples.ts",
+      "typescriptOsdkContext.ts",
+    );
+
+    const contextContent = `/*
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * WARNING: This file is generated automatically by the generateExamples.ts script.
+ * DO NOT MODIFY this file directly as your changes will be overwritten.
+ */
+
+/**
+ * Metadata for a single example
+ */
+export interface NestedExampleMetadata {
+  code: string;
+}
+
+/**
+ * A nested example entry that can either be a direct example or contain nested variations
+ */
+export type NestedExampleEntry = NestedExampleMetadata | {
+  [variationKey: string]: NestedExampleMetadata | NestedExampleEntry;
+};
+
+/**
+ * Version-specific nested examples structure
+ */
+export interface NestedVersionExamples {
+  [exampleName: string]: NestedExampleEntry;
+}
+
+/**
+ * Complete nested examples hierarchy
+ */
+export interface NestedExamplesHierarchy {
+  kind: "examples";
+  versions: {
+    [version: string]: NestedVersionExamples;
+  };
+}
+
+/**
+ * The nested OSDK documentation context with template variations grouped under their base names.
+ * Generated from TYPESCRIPT_OSDK_EXAMPLES.
+ */
+export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = ${
+      JSON.stringify(nestedContext, null, 2)
+    } as const;
+`;
+
+    await fs.writeFile(contextOutputPath, contextContent, "utf8");
+
+    // eslint-disable-next-line no-console
+    console.log("✓ Generated typescriptOsdkContext.ts");
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Error generating nested context:", error);
+    throw error;
+  }
 }
