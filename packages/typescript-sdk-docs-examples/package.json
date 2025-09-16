@@ -16,7 +16,7 @@
     "lint:fix": "eslint src --fix",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "validateExamples": "tsc --noEmit --project tsconfig.json",
-    "format": "dprint fmt --config $(find-up dprint.json)"
+    "format": "npx dprint fmt --config $(find-up dprint.json)"
   },
   "dependencies": {
     "@osdk/client": "workspace:~",
