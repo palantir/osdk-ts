@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.5.0-beta.6
+
+### Minor Changes
+
+- 04fe946: Use block data type for imports
+
 ## 2.5.0-beta.5
 
 ## 2.5.0-beta.4

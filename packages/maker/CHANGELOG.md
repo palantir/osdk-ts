@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.13.0-beta.5
+
+### Minor Changes
+
+- cbcf2ad: Add branching support
+- 04fe946: Use block data type for imports
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.6
+
 ## 0.13.0-beta.4
 
 ### Minor Changes

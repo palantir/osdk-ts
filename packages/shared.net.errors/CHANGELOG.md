@@ -1,5 +1,11 @@
 # @osdk/shared.net.errors
 
+## 2.5.0-beta.2
+
+### Minor Changes
+
+- badfbc4: Add errorDescription to PalantirApiError
+
 ## 2.2.0
 
 ### Patch Changes

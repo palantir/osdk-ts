@@ -1,5 +1,7 @@
 # @osdk/create-app.template.react
 
+## 2.5.0-beta.6
+
 ## 2.5.0-beta.5
 
 ## 2.5.0-beta.4
