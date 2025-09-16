@@ -126,10 +126,7 @@ export default async function main(
     await fs.writeFile(
       commandLineOpts.valueTypesOutput,
       JSON.stringify(
-        {
-          valueTypes: ontologyIr.valueTypes,
-          importedValueTypes: ontologyIr.importedValueTypes,
-        },
+        ontologyIr.valueTypes,
         null,
         2,
       ),
