@@ -34,7 +34,6 @@ interface ExamplesHierarchy {
     [version: string]: {
       examples: {
         [exampleName: string]: {
-          filePath: string;
           code: string;
         };
       };
@@ -266,7 +265,6 @@ async function generateAllExamples(
       for (const [variationKey, variation] of Object.entries(variations)) {
         // Add to hierarchy with trimmed code content
         examplesHierarchy.versions[version].examples[variationKey] = {
-          filePath: `examples/typescript/${version}/${variationKey}.ts`,
           code: variation.code, // Include the actual generated code content
         };
       }
@@ -319,7 +317,6 @@ async function generateAllExamples(
 
       // Add to hierarchy with trimmed code content
       examplesHierarchy.versions[version].examples[snippetKey] = {
-        filePath: `examples/typescript/${version}/${snippetKey}.ts`,
         code: processedCode.trim(), // Include the actual generated code content
       };
 
