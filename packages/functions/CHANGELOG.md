@@ -1,5 +1,12 @@
 # @osdk/functions
 
+## 1.2.2
+
+### Patch Changes
+
+- e8f52c1: add markings types to osdk/functions
+- 1b6ec6d: Add UserFacingError to functions package
+
 ## 1.2.1
 
 ### Patch Changes
