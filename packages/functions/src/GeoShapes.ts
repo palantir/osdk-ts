@@ -16,5 +16,5 @@
 
 export type {
   Geometry,
-  Point as GeoPoint, // alias for GeoPoint
+  Point, // alias for GeoPoint
 } from "geojson";
