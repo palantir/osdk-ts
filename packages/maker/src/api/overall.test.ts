@@ -6784,12 +6784,21 @@ describe("Ontology Defining", () => {
       const createObjectActionType = defineCreateObjectAction(
         {
           objectType: exampleObjectType,
-          actionLevelValidation: {
+          actionLevelValidation: [{
             condition: {
               type: "group",
               name: "actionLevelGroup",
             },
-          },
+          }, {
+            condition: {
+              type: "group",
+              name: "actionLevelGroup2",
+            },
+            displayMetadata: {
+              failureMessage: "Different custom failure message",
+              typeClasses: [],
+            },
+          }],
           parameterOrdering: ["bar", "fizz", "primary"],
           parameterConfiguration: {
             "fizz": {
@@ -6847,12 +6856,21 @@ describe("Ontology Defining", () => {
       const modifyObjectActionType = defineModifyObjectAction(
         {
           objectType: exampleObjectType,
-          actionLevelValidation: {
+          actionLevelValidation: [{
             condition: {
               type: "group",
               name: "actionLevelGroup",
             },
-          },
+          }, {
+            condition: {
+              type: "group",
+              name: "actionLevelGroup2",
+            },
+            displayMetadata: {
+              failureMessage: "Different custom failure message",
+              typeClasses: [],
+            },
+          }],
           parameterOrdering: ["bar", "fizz"],
           parameterConfiguration: {
             "fizz": {
@@ -6910,12 +6928,21 @@ describe("Ontology Defining", () => {
       const createOrModifyObjectActionType = defineCreateOrModifyObjectAction(
         {
           objectType: exampleObjectType,
-          actionLevelValidation: {
+          actionLevelValidation: [{
             condition: {
               type: "group",
               name: "actionLevelGroup",
             },
-          },
+          }, {
+            condition: {
+              type: "group",
+              name: "actionLevelGroup2",
+            },
+            displayMetadata: {
+              failureMessage: "Different custom failure message",
+              typeClasses: [],
+            },
+          }],
           parameterOrdering: ["bar", "fizz"],
           parameterConfiguration: {
             "fizz": {
@@ -7054,6 +7081,42 @@ describe("Ontology Defining", () => {
                             },
                             "displayMetadata": {
                               "failureMessage": "Did not satisfy validation",
+                              "typeClasses": [],
+                            },
+                          },
+                          "1": {
+                            "condition": {
+                              "comparison": {
+                                "left": {
+                                  "type": "userProperty",
+                                  "userProperty": {
+                                    "propertyValue": {
+                                      "groupIds": {},
+                                      "type": "groupIds",
+                                    },
+                                    "userId": {
+                                      "currentUser": {},
+                                      "type": "currentUser",
+                                    },
+                                  },
+                                },
+                                "operator": "INTERSECTS",
+                                "right": {
+                                  "staticValue": {
+                                    "stringList": {
+                                      "strings": [
+                                        "actionLevelGroup2",
+                                      ],
+                                    },
+                                    "type": "stringList",
+                                  },
+                                  "type": "staticValue",
+                                },
+                              },
+                              "type": "comparison",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "Different custom failure message",
                               "typeClasses": [],
                             },
                           },
@@ -7381,6 +7444,42 @@ describe("Ontology Defining", () => {
                             },
                             "displayMetadata": {
                               "failureMessage": "Did not satisfy validation",
+                              "typeClasses": [],
+                            },
+                          },
+                          "1": {
+                            "condition": {
+                              "comparison": {
+                                "left": {
+                                  "type": "userProperty",
+                                  "userProperty": {
+                                    "propertyValue": {
+                                      "groupIds": {},
+                                      "type": "groupIds",
+                                    },
+                                    "userId": {
+                                      "currentUser": {},
+                                      "type": "currentUser",
+                                    },
+                                  },
+                                },
+                                "operator": "INTERSECTS",
+                                "right": {
+                                  "staticValue": {
+                                    "stringList": {
+                                      "strings": [
+                                        "actionLevelGroup2",
+                                      ],
+                                    },
+                                    "type": "stringList",
+                                  },
+                                  "type": "staticValue",
+                                },
+                              },
+                              "type": "comparison",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "Different custom failure message",
                               "typeClasses": [],
                             },
                           },
@@ -7721,6 +7820,42 @@ describe("Ontology Defining", () => {
                             },
                             "displayMetadata": {
                               "failureMessage": "Did not satisfy validation",
+                              "typeClasses": [],
+                            },
+                          },
+                          "1": {
+                            "condition": {
+                              "comparison": {
+                                "left": {
+                                  "type": "userProperty",
+                                  "userProperty": {
+                                    "propertyValue": {
+                                      "groupIds": {},
+                                      "type": "groupIds",
+                                    },
+                                    "userId": {
+                                      "currentUser": {},
+                                      "type": "currentUser",
+                                    },
+                                  },
+                                },
+                                "operator": "INTERSECTS",
+                                "right": {
+                                  "staticValue": {
+                                    "stringList": {
+                                      "strings": [
+                                        "actionLevelGroup2",
+                                      ],
+                                    },
+                                    "type": "stringList",
+                                  },
+                                  "type": "staticValue",
+                                },
+                              },
+                              "type": "comparison",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "Different custom failure message",
                               "typeClasses": [],
                             },
                           },
@@ -10827,12 +10962,12 @@ describe("Ontology Defining", () => {
       });
       const createAction = defineCreateObjectAction({
         objectType: sampleObject,
-        actionLevelValidation: {
+        actionLevelValidation: [{
           condition: {
             type: "group",
             name: "testGroup",
           },
-        },
+        }],
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -11244,7 +11379,7 @@ describe("Ontology Defining", () => {
       });
       const createAction = defineCreateObjectAction({
         objectType: sampleObject,
-        actionLevelValidation: {
+        actionLevelValidation: [{
           displayMetadata: {
             failureMessage:
               "Insufficient permissions. Missing organization membership required to submit action",
@@ -11280,7 +11415,7 @@ describe("Ontology Defining", () => {
               },
             },
           },
-        },
+        }],
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
