@@ -14,7 +14,4 @@
  * limitations under the License.
  */
 
-export type {
-  Geometry,
-  Point, // alias for GeoPoint
-} from "geojson";
+export type { Geometry, Point } from "geojson";
