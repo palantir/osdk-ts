@@ -176,56 +176,52 @@ type Aggregatable<
       : P extends "approximatePercentile" ? { percentile: number }
       : never
       : never,
-  ) => Promise<
-    DefinitionForType<
-      Q,
-      V extends `${infer N}:${infer P}`
-        ? P extends CollectWithPropAggregations ? SimplePropertyDef.Make<
-            CompileTimeMetadata<Q>["properties"][N]["type"],
-            "nullable",
-            "array"
-          >
-        : P extends MinMaxWithPropAggregateOption ? SimplePropertyDef.Make<
-            CompileTimeMetadata<Q>["properties"][N]["type"],
-            "nullable",
-            "single"
-          >
-        : P extends "approximateDistinct" | "exactDistinct"
-          ? SimplePropertyDef.Make<
-            "integer",
-            "non-nullable",
-            "single"
-          >
-        : SimplePropertyDef.Make<
-          "double",
+  ) => DefinitionForType<
+    Q,
+    V extends `${infer N}:${infer P}`
+      ? P extends CollectWithPropAggregations ? SimplePropertyDef.Make<
+          CompileTimeMetadata<Q>["properties"][N]["type"],
+          "nullable",
+          "array"
+        >
+      : P extends MinMaxWithPropAggregateOption ? SimplePropertyDef.Make<
+          CompileTimeMetadata<Q>["properties"][N]["type"],
           "nullable",
           "single"
         >
-        : V extends "$count" ? SimplePropertyDef.Make<
-            "integer",
-            "non-nullable",
-            "single"
-          >
-        : never
-    >
+      : P extends "approximateDistinct" | "exactDistinct"
+        ? SimplePropertyDef.Make<
+          "integer",
+          "non-nullable",
+          "single"
+        >
+      : SimplePropertyDef.Make<
+        "double",
+        "nullable",
+        "single"
+      >
+      : V extends "$count" ? SimplePropertyDef.Make<
+          "integer",
+          "non-nullable",
+          "single"
+        >
+      : never
   >;
 };
 
 type Selectable<Q extends ObjectOrInterfaceDefinition> = {
   readonly selectProperty: <R extends PropertyKeys<Q>>(
     propertyName: R,
-  ) => Promise<
-    DefinitionForType<
-      Q,
-      SimplePropertyDef.Make<
-        CompileTimeMetadata<Q>["properties"][R]["type"],
-        CompileTimeMetadata<Q>["properties"][R]["nullable"] extends true
-          ? "nullable"
-          : "non-nullable",
-        CompileTimeMetadata<Q>["properties"][R]["multiplicity"] extends true
-          ? "array"
-          : "single"
-      >
+  ) => DefinitionForType<
+    Q,
+    SimplePropertyDef.Make<
+      CompileTimeMetadata<Q>["properties"][R]["type"],
+      CompileTimeMetadata<Q>["properties"][R]["nullable"] extends true
+        ? "nullable"
+        : "non-nullable",
+      CompileTimeMetadata<Q>["properties"][R]["multiplicity"] extends true
+        ? "array"
+        : "single"
     >
   >;
 };

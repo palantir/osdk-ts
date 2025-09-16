@@ -20,8 +20,8 @@ import invariant from "tiny-invariant";
 
 /** @internal */
 export function derivedPropertyDefinitionFactory(
-  wireDefinition: DerivedPropertyDefinition,
-  definitionMap: Map<any, DerivedPropertyDefinition>,
+  wireDefinition: Promise<DerivedPropertyDefinition>,
+  definitionMap: Map<any, Promise<DerivedPropertyDefinition>>,
 ): DerivedProperty.NumericPropertyDefinition<any, any> & {
   extractPart: DerivedProperty.DatetimePropertyDefinition<
     any,
@@ -41,81 +41,118 @@ export function derivedPropertyDefinitionFactory(
       >["extractPart"];
     } = {
       abs() {
-        return derivedPropertyDefinitionFactory({
-          type: "absoluteValue",
-          property: wireDefinition,
-        }, definitionMap);
+        return derivedPropertyDefinitionFactory(
+          wireDefinition.then(wireDefinition => ({
+            type: "absoluteValue",
+            property: wireDefinition,
+          })),
+          definitionMap,
+        );
       },
       negate() {
-        return derivedPropertyDefinitionFactory({
-          type: "negate",
-          property: wireDefinition,
-        }, definitionMap);
+        return derivedPropertyDefinitionFactory(
+          wireDefinition.then(wireDefinition => ({
+            type: "negate",
+            property: wireDefinition,
+          })),
+          definitionMap,
+        );
       },
       max(value) {
-        return derivedPropertyDefinitionFactory({
-          type: "greatest",
-          properties: [
+        return derivedPropertyDefinitionFactory(
+          Promise.all([
             wireDefinition,
             getDefinitionFromMap(value, definitionMap),
-          ],
-        }, definitionMap);
+          ]).then(([wireDefinition, definitionFromMap]) => ({
+            type: "greatest",
+            properties: [
+              wireDefinition,
+              definitionFromMap,
+            ],
+          })),
+          definitionMap,
+        );
       },
       min(value) {
-        return derivedPropertyDefinitionFactory({
-          type: "least",
-          properties: [
+        return derivedPropertyDefinitionFactory(
+          Promise.all([
             wireDefinition,
             getDefinitionFromMap(value, definitionMap),
-          ],
-        }, definitionMap);
+          ]).then(([wireDefinition, definitionFromMap]) => ({
+            type: "least",
+            properties: [
+              wireDefinition,
+              definitionFromMap,
+            ],
+          })),
+          definitionMap,
+        );
       },
-      add(
-        value,
-      ) {
-        return derivedPropertyDefinitionFactory({
-          type: "add",
-          properties: [
+      add(value) {
+        return derivedPropertyDefinitionFactory(
+          Promise.all([
             wireDefinition,
             getDefinitionFromMap(value, definitionMap),
-          ],
-        }, definitionMap);
+          ]).then(([wireDefinition, definitionFromMap]) => ({
+            type: "add",
+            properties: [
+              wireDefinition,
+              definitionFromMap,
+            ],
+          })),
+          definitionMap,
+        );
       },
-      subtract(
-        value,
-      ) {
-        return derivedPropertyDefinitionFactory({
-          "type": "subtract",
-          "left": wireDefinition,
-          "right": getDefinitionFromMap(value, definitionMap),
-        }, definitionMap);
-      },
-      multiply(
-        value,
-      ) {
-        return derivedPropertyDefinitionFactory({
-          type: "multiply",
-          properties: [
+      subtract(value) {
+        return derivedPropertyDefinitionFactory(
+          Promise.all([
             wireDefinition,
             getDefinitionFromMap(value, definitionMap),
-          ],
-        }, definitionMap);
+          ]).then(([wireDefinition, definitionFromMap]) => ({
+            "type": "subtract",
+            "left": wireDefinition,
+            "right": definitionFromMap,
+          })),
+          definitionMap,
+        );
       },
-      divide(
-        value,
-      ) {
-        return derivedPropertyDefinitionFactory({
-          "type": "subtract",
-          "left": wireDefinition,
-          "right": getDefinitionFromMap(value, definitionMap),
-        }, definitionMap);
+      multiply(value) {
+        return derivedPropertyDefinitionFactory(
+          Promise.all([
+            wireDefinition,
+            getDefinitionFromMap(value, definitionMap),
+          ]).then(([wireDefinition, definitionFromMap]) => ({
+            type: "multiply",
+            properties: [
+              wireDefinition,
+              definitionFromMap,
+            ],
+          })),
+          definitionMap,
+        );
       },
-      extractPart: (part) => {
-        return derivedPropertyDefinitionFactory({
-          type: "extract",
-          part,
-          property: wireDefinition,
-        }, definitionMap);
+      divide(value) {
+        return derivedPropertyDefinitionFactory(
+          Promise.all([
+            wireDefinition,
+            getDefinitionFromMap(value, definitionMap),
+          ]).then(([wireDefinition, definitionFromMap]) => ({
+            "type": "subtract",
+            "left": wireDefinition,
+            "right": definitionFromMap,
+          })),
+          definitionMap,
+        );
+      },
+      extractPart(part) {
+        return derivedPropertyDefinitionFactory(
+          wireDefinition.then(wireDefinition => ({
+            type: "extract",
+            part,
+            property: wireDefinition,
+          })),
+          definitionMap,
+        );
       },
     };
 
@@ -125,8 +162,8 @@ export function derivedPropertyDefinitionFactory(
 
 const getDefinitionFromMap = (
   arg: string | number | DerivedProperty.Definition<any, any>,
-  definitionMap: Map<any, DerivedPropertyDefinition>,
-): DerivedPropertyDefinition => {
+  definitionMap: Map<any, Promise<DerivedPropertyDefinition>>,
+): Promise<DerivedPropertyDefinition> => {
   if (typeof arg === "object") {
     const definition = definitionMap.get(arg);
     invariant(definition, "Derived Property is not defined");

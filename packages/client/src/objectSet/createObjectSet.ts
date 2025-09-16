@@ -292,9 +292,12 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     withProperties: (clause) => {
-      const definitionMap = new Map<any, DerivedPropertyDefinition>();
+      const definitionMap = new Map<any, Promise<DerivedPropertyDefinition>>();
 
-      const derivedProperties: Record<string, DerivedPropertyDefinition> = {};
+      const derivedProperties: Record<
+        string,
+        Promise<DerivedPropertyDefinition>
+      > = {};
       for (const key of Object.keys(clause)) {
         const derivedPropertyDefinition = clause
           [key](createWithPropertiesObjectSet(
@@ -312,11 +315,20 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       return clientCtx.objectSetFactory(
         objectType,
         clientCtx,
-        objectSet.then(objectSet => ({
-          type: "withProperties",
-          derivedProperties: derivedProperties,
-          objectSet: objectSet,
-        })),
+        Promise.all([
+          objectSet,
+          ...Object.entries(derivedProperties).map(([k, v]) =>
+            v.then(v => [k, v])
+          ),
+        ]).then(
+          ([objectSet, ...derivedProperties]) => {
+            return {
+              type: "withProperties",
+              derivedProperties: Object.fromEntries(derivedProperties),
+              objectSet: objectSet,
+            };
+          },
+        ),
       );
     },
 

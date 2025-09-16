@@ -37,7 +37,7 @@ export function createWithPropertiesObjectSet<
 >(
   objectType: Q,
   objectSet: Promise<WireObjectSet>,
-  definitionMap: Map<any, DerivedPropertyDefinition>,
+  definitionMap: Map<any, Promise<DerivedPropertyDefinition>>,
   clientCtx: MinimalClient,
   fromBaseObjectSet: boolean = false,
 ): WithConstSelect<Q> {
@@ -70,7 +70,7 @@ export function createWithPropertiesObjectSet<
         clientCtx,
       ),
 
-    aggregate: async (
+    aggregate: (
       aggregation: string,
       opt: any,
     ) => {
@@ -121,38 +121,43 @@ export function createWithPropertiesObjectSet<
             "Invalid aggregation operation " + aggregationOperation,
           );
       }
-      const wrappedObjectSet: DerivedPropertyDefinition = {
-        type: "selection",
-        objectSet: await objectSet,
-        operation: aggregationOperationDefinition,
-      };
+      const wrappedObjectSet: Promise<DerivedPropertyDefinition> = objectSet
+        .then(
+          objectSet => ({
+            type: "selection",
+            objectSet: objectSet,
+            operation: aggregationOperationDefinition,
+          }),
+        );
       const selectorResult: DerivedProperty.Definition<any, any> =
         derivedPropertyDefinitionFactory(wrappedObjectSet, definitionMap);
       definitionMap.set(selectorResult, wrappedObjectSet);
       return selectorResult as any;
     },
 
-    selectProperty: async (
+    selectProperty: (
       name,
     ) => {
       if (fromBaseObjectSet) {
-        const wrappedObjectSet: DerivedPropertyDefinition = {
-          type: "property",
-          apiName: name,
-        };
+        const wrappedObjectSet: Promise<DerivedPropertyDefinition> = Promise
+          .resolve({
+            type: "property",
+            apiName: name,
+          });
         const selectorResult: DerivedProperty.Definition<any, any> =
           derivedPropertyDefinitionFactory(wrappedObjectSet, definitionMap);
         definitionMap.set(selectorResult, wrappedObjectSet);
         return selectorResult as any;
       }
-      const wrappedObjectSet: DerivedPropertyDefinition = {
-        type: "selection",
-        objectSet: await objectSet,
-        operation: {
-          type: "get",
-          selectedPropertyApiName: name,
-        },
-      };
+      const wrappedObjectSet: Promise<DerivedPropertyDefinition> = objectSet
+        .then(objectSet => ({
+          type: "selection",
+          objectSet: objectSet,
+          operation: {
+            type: "get",
+            selectedPropertyApiName: name,
+          },
+        }));
       const selectorResult: DerivedProperty.Definition<any, any> =
         derivedPropertyDefinitionFactory(wrappedObjectSet, definitionMap);
       definitionMap.set(selectorResult, wrappedObjectSet);
