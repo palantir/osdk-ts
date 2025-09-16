@@ -28,6 +28,7 @@ import {
   defineModifyInterfaceObjectAction,
   defineModifyObjectAction,
 } from "./defineAction.js";
+import { defineFunction } from "./defineFunction.js";
 import { importSharedPropertyType } from "./defineImportSpt.js";
 import { defineInterface } from "./defineInterface.js";
 import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
@@ -14213,6 +14214,11 @@ describe("Ontology Defining", () => {
         recursive: true,
         force: true,
       });
+    });
+  });
+  describe("Functions", () => {
+    it("Sandbox", async () => {
+      console.log(JSON.stringify(defineFunction("testFunctions")));
     });
   });
 });

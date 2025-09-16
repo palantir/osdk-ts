@@ -952,3 +952,8 @@ export type ActionParameterTypeComplex =
 export type ActionParameterType =
   | ActionParameterTypePrimitive
   | ActionParameterTypeComplex;
+
+export interface FunctionIrBlockData {
+  // any represents a DiscoveryResult. Need to import or make a wrapper for this
+  functionsBlockDataV1: Record<string, any>;
+}

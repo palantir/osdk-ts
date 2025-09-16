@@ -17,11 +17,13 @@
 import { OntologyIrToFullMetadataConverter } from "@osdk/generator-converters.ontologyir";
 import { consola } from "consola";
 import { execa } from "execa";
+import { createJiti } from "jiti";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import { generateFunctionsIr } from "../api/defineFunction.js";
 import { defineOntology } from "../api/defineOntology.js";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
@@ -38,6 +40,8 @@ export default async function main(
     outputDir?: string;
     dependencies?: string;
     generateFunctionsOsdk?: string;
+    functionsRootDir?: string;
+    functionsOutput?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -92,6 +96,17 @@ export default async function main(
         type: "string",
         coerce: path.resolve,
       },
+      functionsRootDir: {
+        alias: "f",
+        describe: "Root folder containing function definitions",
+        type: "string",
+        coerce: path.resolve,
+      },
+      functionsOutput: {
+        describe: "Output folder for function IR",
+        type: "string",
+        coerce: path.resolve,
+      },
     })
     .parseAsync();
   let apiNamespace = "";
@@ -105,6 +120,20 @@ export default async function main(
       "API namespace is invalid! It is expected to conform to ^[a-z0-9-]+(\.[a-z0-9-]+)*\.$",
     );
   }
+
+  if (
+    commandLineOpts.functionsOutput !== undefined
+    && commandLineOpts.functionsRootDir !== undefined
+  ) {
+    consola.info(`Loading function IR`);
+    const functionsIr = generateFunctionsIr(commandLineOpts.functionsRootDir);
+    await fs.writeFile(
+      commandLineOpts.functionsOutput,
+      JSON.stringify(functionsIr, null, 2),
+    );
+    return;
+  }
+
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
 
   const ontology = await loadOntology(
@@ -152,7 +181,16 @@ async function loadOntology(
 ) {
   const q = await defineOntology(
     apiNamespace,
-    async () => await import(input),
+    async () => {
+      const jiti = createJiti(import.meta.filename, {
+        moduleCache: true,
+        debug: false,
+        importMeta: import.meta,
+      });
+      const module = await jiti.import(input);
+
+      // await import(input);
+    },
     outputDir,
     dependencyFile,
   );
