@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.13.0-beta.7
+
+### Minor Changes
+
+- 6da8fd2: Write value type IR correctly
+
 ## 0.13.0-beta.6
 
 ### Minor Changes
