@@ -137,7 +137,7 @@ export async function toDataValue(
     return value;
   }
   if (isObjectSet(value)) {
-    return getWireObjectSet(value);
+    return await getWireObjectSet(value);
   }
 
   if (isMediaReference(value)) {

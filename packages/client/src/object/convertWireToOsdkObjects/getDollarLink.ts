@@ -59,7 +59,7 @@ export function get$link(
                 client,
                 objDef,
                 options ?? {},
-                Promise.resolve(getWireObjectSet(objectSet)),
+                getWireObjectSet(objectSet),
               ),
             fetchOneWithErrors: <A extends SelectArg<any, any, any, any>>(
               options?: A,
@@ -68,7 +68,7 @@ export function get$link(
                 client,
                 objDef,
                 options ?? {},
-                Promise.resolve(getWireObjectSet(objectSet)),
+                getWireObjectSet(objectSet),
               ),
           } as SingleLinkAccessor<any>
           : objectSet;
@@ -111,7 +111,7 @@ export function get$linkForInterface(
                 client,
                 objDef,
                 options ?? {},
-                Promise.resolve(getWireObjectSet(objectSet)),
+                getWireObjectSet(objectSet),
               ),
             fetchOneWithErrors: <A extends SelectArg<any, any, any, any>>(
               options?: A,
@@ -120,7 +120,7 @@ export function get$linkForInterface(
                 client,
                 objDef,
                 options ?? {},
-                Promise.resolve(getWireObjectSet(objectSet)),
+                getWireObjectSet(objectSet),
               ),
           } as SingleLinkAccessor<any>
           : objectSet;

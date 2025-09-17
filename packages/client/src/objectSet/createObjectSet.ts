@@ -67,14 +67,14 @@ export function isObjectSet(o: any): o is ObjectSet<any> {
 /** @internal */
 export function getWireObjectSet(
   objectSet: ObjectSet<any> | MinimalObjectSet<any>,
-): WireObjectSet {
+): Promise<WireObjectSet> {
   return objectSetDefinitions.get(objectSet)!;
 }
 
 /** @internal exported for internal use only */
 export const objectSetDefinitions = new WeakMap<
   any,
-  WireObjectSet
+  Promise<WireObjectSet>
 >();
 
 /** @internal */
@@ -134,39 +134,36 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       clientCtx.objectSetFactory(
         objectType,
         clientCtx,
-        objectSet.then(objectSet => ({
-          type: "union",
-          objectSets: [
-            objectSet,
-            ...objectSets.map(os => objectSetDefinitions.get(os)!),
-          ],
-        })),
+        Promise.all([objectSet, ...(objectSets.map(getWireObjectSet))]).then(
+          objectSets => ({
+            type: "union",
+            objectSets,
+          }),
+        ),
       ),
 
     intersect: (...objectSets) =>
       clientCtx.objectSetFactory(
         objectType,
         clientCtx,
-        objectSet.then(objectSet => ({
-          type: "intersect",
-          objectSets: [
-            objectSet,
-            ...objectSets.map(os => objectSetDefinitions.get(os)!),
-          ],
-        })),
+        Promise.all([objectSet, ...(objectSets.map(getWireObjectSet))]).then(
+          objectSets => ({
+            type: "intersect",
+            objectSets,
+          }),
+        ),
       ),
 
     subtract: (...objectSets) =>
       clientCtx.objectSetFactory(
         objectType,
         clientCtx,
-        objectSet.then(objectSet => ({
-          type: "subtract",
-          objectSets: [
-            objectSet,
-            ...objectSets.map(os => objectSetDefinitions.get(os)!),
-          ],
-        })),
+        Promise.all([objectSet, ...(objectSets.map(getWireObjectSet))]).then(
+          objectSets => ({
+            type: "subtract",
+            objectSets,
+          }),
+        ),
       ),
 
     nearestNeighbors: (query, numNeighbors, property) => {
@@ -359,7 +356,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     };
   }
 
-  void objectSet.then(objectSet => objectSetDefinitions.set(base, objectSet));
+  objectSetDefinitions.set(base, objectSet);
 
   // we are using a type assertion because the marker symbol defined in BaseObjectSet isn't actually used
   // at runtime.

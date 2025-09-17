@@ -139,7 +139,7 @@ export async function toDataValueQueries(
         return value;
       }
       if (isObjectSet(value)) {
-        return getWireObjectSet(value);
+        return await getWireObjectSet(value);
       }
       break;
     }
