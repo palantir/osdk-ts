@@ -646,7 +646,6 @@ export class ObjectSetListenerWebsocket {
     if (process.env.NODE_ENV !== "production") {
       this.#logger?.debug({ event }, "Received close event from ws", event);
     }
-    // The exponential backoff in #ensureWebsocket will handle throttling
     this.#cycleWebsocket();
   };
 

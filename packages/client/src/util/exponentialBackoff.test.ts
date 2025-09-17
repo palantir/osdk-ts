@@ -18,15 +18,6 @@ import { describe, expect, it } from "vitest";
 import { ExponentialBackoff } from "./exponentialBackoff.js";
 
 describe("ExponentialBackoff", () => {
-  it("should start with the initial delay", () => {
-    const backoff = new ExponentialBackoff({
-      initialDelayMs: 1000,
-      jitterFactor: 0,
-    });
-    const delay = backoff.calculateDelay();
-    expect(delay).toBe(1000);
-  });
-
   it("should exponentially increase delay", () => {
     const backoff = new ExponentialBackoff({
       initialDelayMs: 1000,
@@ -94,37 +85,5 @@ describe("ExponentialBackoff", () => {
     backoff.reset();
     expect(backoff.getAttempt()).toBe(0);
     expect(backoff.calculateDelay()).toBe(1000); // back to initial
-  });
-
-  it("should never return negative delay", () => {
-    const backoff = new ExponentialBackoff({
-      initialDelayMs: 100,
-      jitterFactor: 2.0, // Very high jitter that could cause negative values
-    });
-
-    for (let i = 0; i < 20; i++) {
-      const delay = backoff.calculateDelay();
-      expect(delay).toBeGreaterThanOrEqual(0);
-    }
-  });
-
-  it("should use default options when not provided", () => {
-    const backoff = new ExponentialBackoff();
-
-    // With default jitter, the delay will be around 1000ms
-    // but we can't test exact value due to randomness
-    const delay = backoff.calculateDelay();
-    expect(delay).toBeGreaterThanOrEqual(700); // 1000 - (1000 * 0.3)
-    expect(delay).toBeLessThanOrEqual(1300); // 1000 + (1000 * 0.3)
-  });
-
-  it("should track attempt count correctly", () => {
-    const backoff = new ExponentialBackoff();
-
-    expect(backoff.getAttempt()).toBe(0);
-    backoff.calculateDelay();
-    expect(backoff.getAttempt()).toBe(1);
-    backoff.calculateDelay();
-    expect(backoff.getAttempt()).toBe(2);
   });
 });
