@@ -26,7 +26,7 @@ import { type CacheKey, DEBUG_ONLY__cacheKeysToString } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { isObjectInstance } from "../isObjectInstance.js";
 import type { Entry } from "../Layer.js";
-import { RDP_IDX } from "../list/ListQuery.js";
+import { RDP_IDX } from "../list/ListCacheKey.js";
 import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { Query } from "../Query.js";
 import type { Rdp } from "../RdpCanonicalizer.js";

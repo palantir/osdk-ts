@@ -14,13 +14,26 @@
  * limitations under the License.
  */
 
+import type {
+  DerivedProperty,
+  ObjectOrInterfaceDefinition,
+  SimplePropertyDef,
+} from "@osdk/api";
 import type { Canonical } from "./Canonical.js";
 import { CachingCanonicalizer } from "./Canonicalizer.js";
 import { WeakRefTrie } from "./WeakRefTrie.js";
 
-// Type for Runtime Defined Properties configuration
-// In practice, T will be DerivedPropertyCreator functions when used for withProperties
-export type Rdp<T = any> = Record<string, T>;
+type DerivedPropertyCreator<
+  Q extends ObjectOrInterfaceDefinition,
+  T extends SimplePropertyDef,
+> = (
+  baseObjectSet: DerivedProperty.Builder<Q, false>,
+) =>
+  | DerivedProperty.Definition<T, Q>
+  | DerivedProperty.NumericPropertyDefinition<T, Q>
+  | DerivedProperty.DatetimePropertyDefinition<T, Q>;
+
+export type Rdp<T = DerivedPropertyCreator<any, any>> = Record<string, T>;
 
 export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
   private structuralCache = new WeakRefTrie<Canonical<Rdp>>(
@@ -33,9 +46,7 @@ export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
         }
       }
       const data = Object.fromEntries(pairs);
-      return (process.env.NODE_ENV !== "production"
-        ? Object.freeze(data)
-        : data) as Canonical<Rdp>;
+      return data as Canonical<Rdp>;
     },
   );
 

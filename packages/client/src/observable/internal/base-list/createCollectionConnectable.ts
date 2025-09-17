@@ -54,14 +54,12 @@ export function createCollectionConnectable<
             || listEntry.value.data.length === 0
           ? of([])
           : combineLatest(
-            listEntry.value.data.map((cacheKey: ObjectCacheKey) => {
-              return subjects.get(cacheKey).pipe(
-                map(objectEntry => {
-                  return objectEntry?.value!;
-                }),
+            listEntry.value.data.map((cacheKey: ObjectCacheKey) =>
+              subjects.get(cacheKey).pipe(
+                map(objectEntry => objectEntry?.value!),
                 distinctUntilChanged(),
-              );
-            }),
+              )
+            ),
           );
 
         return combineLatest({
@@ -70,17 +68,16 @@ export function createCollectionConnectable<
           status: of(listEntry.status),
           lastUpdated: of(listEntry.lastUpdated),
         }).pipe(
-          map(params => {
-            const payload = createPayload({
+          map(params =>
+            createPayload({
               resolvedData: Array.isArray(params.resolvedData)
                 ? params.resolvedData
                 : [],
               isOptimistic: params.isOptimistic,
               status: params.status,
               lastUpdated: params.lastUpdated,
-            });
-            return payload;
-          }),
+            })
+          ),
         );
       }),
     ),

@@ -31,7 +31,6 @@ function EmployeeListItem(
       secondaryContent={
         <>
           {item.adUsername ?? "<username-missing>"} - #{item.employeeNumber}
-          {/* Display RDP values if available */}
           {item.managerName && <div>Manager: {item.managerName}</div>}
           {item.reportCount !== undefined && (
             <div>Direct Reports: {item.reportCount}</div>

@@ -50,14 +50,13 @@ import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
-import type { ListCacheKey } from "./ListCacheKey.js";
+import {
+  API_NAME_IDX,
+  type ListCacheKey,
+  ORDER_BY_IDX,
+  WHERE_IDX,
+} from "./ListCacheKey.js";
 import type { ListQueryOptions } from "./ListQueryOptions.js";
-
-export const WHERE_IDX = 2;
-export const API_NAME_IDX = 1;
-export const TYPE_IDX = 0;
-export const ORDER_BY_IDX = 3;
-export const RDP_IDX = 4;
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   all: (ObjectHolder | InterfaceHolder)[];
