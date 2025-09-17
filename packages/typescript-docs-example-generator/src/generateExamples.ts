@@ -59,7 +59,7 @@ interface BlockVariations {
 export async function generateExamples(
   outputDir: string,
   hierarchyOutputPath: string,
-  versions: string[] = ["2.1.0", "2.4.0"],
+  versions: string[] = ["2.0.0", "2.1.0", "2.4.0"],
 ): Promise<void> {
   try {
     // eslint-disable-next-line no-console
@@ -302,9 +302,17 @@ async function generateAllExamples(
     } else {
       // Process template with provided context
       const processedCode = processTemplate(snippetData.template, context);
-
+      // Replace import { client } from "./client"; with import { client } from "./client.js";
+      // and fix all generatedNoCheck imports to point to index.js
+      const esmCompliantCode = processedCode
+        .replace(
+          /import { client } from "\.\/client";/g,
+          "import { client } from \"./client.js\";",
+        );
       // Create file content with header
-      const fileContent = `${generateFileHeader(snippetKey)}\n${processedCode}`;
+      const fileContent = `${
+        generateFileHeader(snippetKey)
+      }\n${esmCompliantCode}`;
 
       // Write to file
       const filePath = path.join(

@@ -85,7 +85,7 @@ import type {
  */
 const baseContext: BaseContext = {
   // Basic context variables
-  packageName: "../../../generatedNoCheck",
+  packageName: "../../../generatedNoCheck/index.js",
   objectType: "Employee",
   titleProperty: "fullName",
   property: "fullName",

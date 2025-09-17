@@ -110,8 +110,6 @@ const archetypeRules = archetypes(
       "@osdk/e2e.generated.1.1.x",
       "@osdk/examples.*",
       "@osdk/monorepo.*",
-      "@osdk/osdkDocsContext",
-      "@osdk/typescript-sdk-docs-examples",
     ],
     {
       ...LIBRARY_RULES,
@@ -139,6 +137,7 @@ const archetypeRules = archetypes(
       "@osdk/widget.client",
       "@osdk/vite-plugin-oac",
       "@osdk/faux",
+      "@osdk/osdkDocsContext",
     ],
     {
       ...LIBRARY_RULES,
@@ -195,6 +194,7 @@ const archetypeRules = archetypes(
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",
       "@osdk/shared.test",
+      "@osdk/typescript-sdk-docs-examples",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,

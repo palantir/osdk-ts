@@ -58,461 +58,461 @@ export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = {
     "2.0.0": {
       "loadSingleObjectGuide": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk } from \"@osdk/client\";\n\ntry {\n    const object: Osdk.Instance<Employee> = await client(Employee).fetchOne(12345);\n}\ncatch(e) {\n    throw(e);\n}",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk } from \"@osdk/client\";\n\ntry {\n    const object: Osdk.Instance<Employee> = await client(Employee).fetchOne(12345);\n}\ncatch(e) {\n    throw(e);\n}",
       },
       "orderObjectsGuide": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk, type PageResult } from \"@osdk/client\";\n\ntry {\n    const page: PageResult<Osdk.Instance<Employee>> = await client(Employee)\n        .fetchPage({\n            $orderBy: {\"fullName\": \"asc\"},\n            $pageSize: 30\n        });\n    const objects = page.data;\n    const object = objects[0];\n} catch (e) {\n    throw e;\n}",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk, type PageResult } from \"@osdk/client\";\n\ntry {\n    const page: PageResult<Osdk.Instance<Employee>> = await client(Employee)\n        .fetchPage({\n            $orderBy: {\"fullName\": \"asc\"},\n            $pageSize: 30\n        });\n    const objects = page.data;\n    const object = objects[0];\n} catch (e) {\n    throw e;\n}",
       },
       "searchObjectsGuide": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk, type PageResult } from \"@osdk/client\";\n\ntry {\n    const page: PageResult<Osdk.Instance<Employee>> = await client(Employee)\n        .where({\n            fullName: {$isNull: true}\n        })\n        .fetchPage({\n            $pageSize: 30\n        });\n    const objects = page.data;\n    const object = objects[0];\n} catch (e) {\n    throw e;\n}",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk, type PageResult } from \"@osdk/client\";\n\ntry {\n    const page: PageResult<Osdk.Instance<Employee>> = await client(Employee)\n        .where({\n            fullName: {$isNull: true}\n        })\n        .fetchPage({\n            $pageSize: 30\n        });\n    const objects = page.data;\n    const object = objects[0];\n} catch (e) {\n    throw e;\n}",
       },
       "loadSingleObjectReference": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\n\nconst responseNoErrorWrapper: Osdk.Instance<Employee> = await client(Employee).fetchOne(12345);",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\n\nconst responseNoErrorWrapper: Osdk.Instance<Employee> = await client(Employee).fetchOne(12345);",
       },
       "loadObjectsReference": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk, PageResult } from \"@osdk/client\";\ntry {\n    const responseNoErrorWrapper: PageResult<Osdk.Instance<Employee>>\n        = await client(Employee).fetchPage({ $pageSize: 30 });\n} catch (e) {\n    throw e;\n}",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk, PageResult } from \"@osdk/client\";\ntry {\n    const responseNoErrorWrapper: PageResult<Osdk.Instance<Employee>>\n        = await client(Employee).fetchPage({ $pageSize: 30 });\n} catch (e) {\n    throw e;\n}",
       },
       "loadAllObjectsReference": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\n\nconst objects: Osdk.Instance<Employee>[]= [];\n\nfor await(const obj of client(Employee).asyncIter()) {\n    objects.push(obj);\n}\nconst object = objects[0];",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\n\nconst objects: Osdk.Instance<Employee>[]= [];\n\nfor await(const obj of client(Employee).asyncIter()) {\n    objects.push(obj);\n}\nconst object = objects[0];",
       },
       "loadLinkedObjectReference": {
         "code":
-          "import { type Employee } from \"../../../generatedNoCheck\";\nimport { type Osdk } from \"@osdk/client\";\n\nasync function getLinkedEquipment(source: Osdk.Instance<Employee>) {\n    try {\n        return await source.$link.assignedEquipment.fetchPage();\n    } catch (error) {\n        return { error };\n    }\n}",
+          "import { type Employee } from \"../../../generatedNoCheck/index.js\";\nimport { type Osdk } from \"@osdk/client\";\n\nasync function getLinkedEquipment(source: Osdk.Instance<Employee>) {\n    try {\n        return await source.$link.assignedEquipment.fetchPage();\n    } catch (error) {\n        return { error };\n    }\n}",
       },
       "loadLinkedObjectsReference": {
         "code":
-          "import { Equipment } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nasync function getLinkedWithPivotEmployee(){\n    return await client(Equipment).pivotTo(\"assignedTo\").fetchPage();\n}",
+          "import { Equipment } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nasync function getLinkedWithPivotEmployee(){\n    return await client(Equipment).pivotTo(\"assignedTo\").fetchPage();\n}",
       },
       "aggregationTemplate": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst numEmployee = await client(Employee)\n    .where({ department: { $isNull : false }})\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { department: \"exact\" },\n    });",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst numEmployee = await client(Employee)\n    .where({ department: { $isNull : false }})\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { department: \"exact\" },\n    });",
       },
       "countAggregationTemplate": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst numEmployee = await client(Employee)\n    .aggregate({\n        $select: {$count: \"unordered\"},\n    });",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst numEmployee = await client(Employee)\n    .aggregate({\n        $select: {$count: \"unordered\"},\n    });",
       },
       "approximateDistinctAggregationTemplate": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst distinctEmployee = await client(Employee)\n    .aggregate({\n        $select: { \"department:approximateDistinct\" : \"unordered\" },\n    });",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst distinctEmployee = await client(Employee)\n    .aggregate({\n        $select: { \"department:approximateDistinct\" : \"unordered\" },\n    });",
       },
       "exactDistinctAggregationTemplate": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst distinctEmployee = await client(Employee)\n    .aggregate({\n        $select: { \"department:exactDistinct\" : \"unordered\" },\n    });",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst distinctEmployee = await client(Employee)\n    .aggregate({\n        $select: { \"department:exactDistinct\" : \"unordered\" },\n    });",
       },
       "numericAggregationTemplate": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .aggregate({\n        $select: { \"salary:sum\" : \"unordered\" }\n    });",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .aggregate({\n        $select: { \"salary:sum\" : \"unordered\" }\n    });",
       },
       "fixedWidthGroupByTemplate": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst groupedEmployee = await client(Employee)\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { hourlyRate : { $fixedWidth: 10 } }\n    });",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst groupedEmployee = await client(Employee)\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { hourlyRate : { $fixedWidth: 10 } }\n    });",
       },
       "durationGroupByTemplate": {
         "#durationText": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst groupedEmployee = await client(Employee)\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { startDate : { $duration: [ 1, \"days\"] } }\n    });",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst groupedEmployee = await client(Employee)\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { startDate : { $duration: [ 1, \"days\"] } }\n    });",
         },
       },
       "exactGroupByTemplate": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst groupedEmployee = await client(Employee)\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { hourlyRate : \"exact\" }\n    })",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst groupedEmployee = await client(Employee)\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { hourlyRate : \"exact\" }\n    })",
       },
       "rangeGroupByTemplate": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst groupedEmployee = await client(Employee)\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { salary : { $ranges: [[100, 200 ]]} }\n    });",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst groupedEmployee = await client(Employee)\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { salary : { $ranges: [[100, 200 ]]} }\n    });",
       },
       "applyAction": {
         "#hasAttachmentProperty": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\nimport { documentEquipment, type Equipment } from \"../../../generatedNoCheck\";\n\nasync function callActionWithAttachmentLoaded(objectTypeWithAttachment: Osdk.Instance<Equipment>) {\n    const attachment = objectTypeWithAttachment.invoice?.rid;\n    const result = await client(documentEquipment).applyAction(\n        {\n            \"equipmentId\": \"mac-1234\", \n            documentFile: attachment\n        },\n        {\n        $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }\n}",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\nimport { documentEquipment, type Equipment } from \"../../../generatedNoCheck/index.js\";\n\nasync function callActionWithAttachmentLoaded(objectTypeWithAttachment: Osdk.Instance<Equipment>) {\n    const attachment = objectTypeWithAttachment.invoice?.rid;\n    const result = await client(documentEquipment).applyAction(\n        {\n            \"equipmentId\": \"mac-1234\", \n            documentFile: attachment\n        },\n        {\n        $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }\n}",
         },
         "^hasAttachmentProperty": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { documentEquipment } from \"../../../generatedNoCheck\";\n\n    const result = await client(documentEquipment).applyAction(\n        {\n            \"equipmentId\": \"mac-1234\", \n            \"documentType\": \"active\"\n        },\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { documentEquipment } from \"../../../generatedNoCheck/index.js\";\n\n    const result = await client(documentEquipment).applyAction(\n        {\n            \"equipmentId\": \"mac-1234\", \n            \"documentType\": \"active\"\n        },\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
         },
         "#hasAttachmentUpload": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { AttachmentUpload } from \"@osdk/api\";\nimport { createAttachmentUpload } from \"@osdk/client\";\nimport { documentEquipment } from \"../../../generatedNoCheck\";\n\nasync function callActionWithAttachmentUpload() {\n    async function uploadMyFile() {\n        const file = await fetch(\"file.json\");\n        const blob = await file.blob();\n        return createAttachmentUpload(blob, \"myFile\");\n    }\n    const attachment: AttachmentUpload = await uploadMyFile();\n    const result = await client(documentEquipment).applyAction(\n        {\n            \"equipmentId\": \"mac-1234\", \n            documentFile: attachment\n        },\n        {\n        $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }\n}",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { AttachmentUpload } from \"@osdk/api\";\nimport { createAttachmentUpload } from \"@osdk/client\";\nimport { documentEquipment } from \"../../../generatedNoCheck/index.js\";\n\nasync function callActionWithAttachmentUpload() {\n    async function uploadMyFile() {\n        const file = await fetch(\"file.json\");\n        const blob = await file.blob();\n        return createAttachmentUpload(blob, \"myFile\");\n    }\n    const attachment: AttachmentUpload = await uploadMyFile();\n    const result = await client(documentEquipment).applyAction(\n        {\n            \"equipmentId\": \"mac-1234\", \n            documentFile: attachment\n        },\n        {\n        $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }\n}",
         },
         "^hasAttachmentUpload": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\nimport { documentEquipment, type Equipment } from \"../../../generatedNoCheck\";\n\nasync function callActionWithAttachmentLoaded(objectTypeWithAttachment: Osdk.Instance<Equipment>) {\n    const attachment = objectTypeWithAttachment.invoice?.rid;\n    const result = await client(documentEquipment).applyAction(\n        {\n            \"equipmentId\": \"mac-1234\", \n            documentFile: attachment\n        },\n        {\n        $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }\n}",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\nimport { documentEquipment, type Equipment } from \"../../../generatedNoCheck/index.js\";\n\nasync function callActionWithAttachmentLoaded(objectTypeWithAttachment: Osdk.Instance<Equipment>) {\n    const attachment = objectTypeWithAttachment.invoice?.rid;\n    const result = await client(documentEquipment).applyAction(\n        {\n            \"equipmentId\": \"mac-1234\", \n            documentFile: attachment\n        },\n        {\n        $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }\n}",
         },
         "#hasParameters": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { documentEquipment } from \"../../../generatedNoCheck\";\n\n    const result = await client(documentEquipment).applyAction(\n        {\n            \"equipmentId\": \"mac-1234\", \n            \"documentType\": \"active\"\n        },\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { documentEquipment } from \"../../../generatedNoCheck/index.js\";\n\n    const result = await client(documentEquipment).applyAction(\n        {\n            \"equipmentId\": \"mac-1234\", \n            \"documentType\": \"active\"\n        },\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
         },
         "^hasParameters": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { refreshData } from \"../../../generatedNoCheck\";\n\n    const result = await client(refreshData).applyAction(\n        {},\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { refreshData } from \"../../../generatedNoCheck/index.js\";\n\n    const result = await client(refreshData).applyAction(\n        {},\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
         },
         "#actionParameterSampleValuesV2": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { documentEquipment } from \"../../../generatedNoCheck\";\n\n    const result = await client(documentEquipment).applyAction(\n        {\n            \"equipmentId\": \"mac-1234\", \n            \"documentType\": \"active\"\n        },\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { documentEquipment } from \"../../../generatedNoCheck/index.js\";\n\n    const result = await client(documentEquipment).applyAction(\n        {\n            \"equipmentId\": \"mac-1234\", \n            \"documentType\": \"active\"\n        },\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
         },
         "^last": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { documentEquipment } from \"../../../generatedNoCheck\";\n\n    const result = await client(documentEquipment).applyAction(\n        {\n            \"equipmentId\": \"mac-1234\", \n            \"documentType\": \"active\"\n        },\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { documentEquipment } from \"../../../generatedNoCheck/index.js\";\n\n    const result = await client(documentEquipment).applyAction(\n        {\n            \"equipmentId\": \"mac-1234\", \n            \"documentType\": \"active\"\n        },\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
         },
       },
       "batchApplyAction": {
         "#hasAttachmentProperty": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\nimport { documentEquipment, type Equipment } from \"../../../generatedNoCheck\";\n\nasync function callActionWithAttachmentLoaded(objectTypeWithAttachment: Osdk.Instance<Equipment>) {\n    const attachment = objectTypeWithAttachment.invoice?.rid;\n    const result = await client(documentEquipment).batchApplyAction([\n            {\n                \"equipmentId\": \"mac-1234\", \n                documentFile: attachment\n            },\n            {\n                \"equipmentId\": \"mac-1234\", \n                documentFile: attachment\n            },\n        ],\n        {\n        $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }\n}",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\nimport { documentEquipment, type Equipment } from \"../../../generatedNoCheck/index.js\";\n\nasync function callActionWithAttachmentLoaded(objectTypeWithAttachment: Osdk.Instance<Equipment>) {\n    const attachment = objectTypeWithAttachment.invoice?.rid;\n    const result = await client(documentEquipment).batchApplyAction([\n            {\n                \"equipmentId\": \"mac-1234\", \n                documentFile: attachment\n            },\n            {\n                \"equipmentId\": \"mac-1234\", \n                documentFile: attachment\n            },\n        ],\n        {\n        $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }\n}",
         },
         "^hasAttachmentProperty": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { documentEquipment } from \"../../../generatedNoCheck\";\n\n    const result = await client(documentEquipment).batchApplyAction([\n            {\n                \"equipmentId\": \"mac-1234\", \n                \"documentType\": \"active\"\n            },\n            {\n                \"equipmentId\": \"mac-1234\", \n                \"documentType\": \"active\"\n            },\n        ],\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { documentEquipment } from \"../../../generatedNoCheck/index.js\";\n\n    const result = await client(documentEquipment).batchApplyAction([\n            {\n                \"equipmentId\": \"mac-1234\", \n                \"documentType\": \"active\"\n            },\n            {\n                \"equipmentId\": \"mac-1234\", \n                \"documentType\": \"active\"\n            },\n        ],\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
         },
         "#hasAttachmentUpload": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { AttachmentUpload } from \"@osdk/api\";\nimport { createAttachmentUpload } from \"@osdk/client\";\nimport { documentEquipment } from \"../../../generatedNoCheck\";\n\nasync function callActionWithAttachmentUpload() {\n    async function uploadMyFile() {\n        const file = await fetch(\"file.json\");\n        const blob = await file.blob();\n        return createAttachmentUpload(blob, \"myFile\");\n    }\n    const attachment: AttachmentUpload = await uploadMyFile();\n    const result = await client(documentEquipment).batchApplyAction([\n            {\n                \"equipmentId\": \"mac-1234\", \n                documentFile: attachment\n            },\n            {\n                \"equipmentId\": \"mac-1234\", \n                documentFile: attachment\n            },\n        ],\n        {\n        $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }\n}",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { AttachmentUpload } from \"@osdk/api\";\nimport { createAttachmentUpload } from \"@osdk/client\";\nimport { documentEquipment } from \"../../../generatedNoCheck/index.js\";\n\nasync function callActionWithAttachmentUpload() {\n    async function uploadMyFile() {\n        const file = await fetch(\"file.json\");\n        const blob = await file.blob();\n        return createAttachmentUpload(blob, \"myFile\");\n    }\n    const attachment: AttachmentUpload = await uploadMyFile();\n    const result = await client(documentEquipment).batchApplyAction([\n            {\n                \"equipmentId\": \"mac-1234\", \n                documentFile: attachment\n            },\n            {\n                \"equipmentId\": \"mac-1234\", \n                documentFile: attachment\n            },\n        ],\n        {\n        $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }\n}",
         },
         "^hasAttachmentUpload": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\nimport { documentEquipment, type Equipment } from \"../../../generatedNoCheck\";\n\nasync function callActionWithAttachmentLoaded(objectTypeWithAttachment: Osdk.Instance<Equipment>) {\n    const attachment = objectTypeWithAttachment.invoice?.rid;\n    const result = await client(documentEquipment).batchApplyAction([\n            {\n                \"equipmentId\": \"mac-1234\", \n                documentFile: attachment\n            },\n            {\n                \"equipmentId\": \"mac-1234\", \n                documentFile: attachment\n            },\n        ],\n        {\n        $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }\n}",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\nimport { documentEquipment, type Equipment } from \"../../../generatedNoCheck/index.js\";\n\nasync function callActionWithAttachmentLoaded(objectTypeWithAttachment: Osdk.Instance<Equipment>) {\n    const attachment = objectTypeWithAttachment.invoice?.rid;\n    const result = await client(documentEquipment).batchApplyAction([\n            {\n                \"equipmentId\": \"mac-1234\", \n                documentFile: attachment\n            },\n            {\n                \"equipmentId\": \"mac-1234\", \n                documentFile: attachment\n            },\n        ],\n        {\n        $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }\n}",
         },
         "#hasParameters": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { documentEquipment } from \"../../../generatedNoCheck\";\n\n    const result = await client(documentEquipment).batchApplyAction([\n            {\n                \"equipmentId\": \"mac-1234\", \n                \"documentType\": \"active\"\n            },\n            {\n                \"equipmentId\": \"mac-1234\", \n                \"documentType\": \"active\"\n            },\n        ],\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { documentEquipment } from \"../../../generatedNoCheck/index.js\";\n\n    const result = await client(documentEquipment).batchApplyAction([\n            {\n                \"equipmentId\": \"mac-1234\", \n                \"documentType\": \"active\"\n            },\n            {\n                \"equipmentId\": \"mac-1234\", \n                \"documentType\": \"active\"\n            },\n        ],\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
         },
         "^hasParameters": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { refreshData } from \"../../../generatedNoCheck\";\n\n    const result = await client(refreshData).batchApplyAction([\n            {},\n        ],\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { refreshData } from \"../../../generatedNoCheck/index.js\";\n\n    const result = await client(refreshData).batchApplyAction([\n            {},\n        ],\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
         },
         "#actionParameterSampleValuesV2": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { documentEquipment } from \"../../../generatedNoCheck\";\n\n    const result = await client(documentEquipment).batchApplyAction([\n            {\n                \"equipmentId\": \"mac-1234\", \n                \"documentType\": \"active\"\n            },\n            {\n                \"equipmentId\": \"mac-1234\", \n                \"documentType\": \"active\"\n            },\n        ],\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { documentEquipment } from \"../../../generatedNoCheck/index.js\";\n\n    const result = await client(documentEquipment).batchApplyAction([\n            {\n                \"equipmentId\": \"mac-1234\", \n                \"documentType\": \"active\"\n            },\n            {\n                \"equipmentId\": \"mac-1234\", \n                \"documentType\": \"active\"\n            },\n        ],\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
         },
         "^last": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { documentEquipment } from \"../../../generatedNoCheck\";\n\n    const result = await client(documentEquipment).batchApplyAction([\n            {\n                \"equipmentId\": \"mac-1234\", \n                \"documentType\": \"active\"\n            },\n            {\n                \"equipmentId\": \"mac-1234\", \n                \"documentType\": \"active\"\n            },\n        ],\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { documentEquipment } from \"../../../generatedNoCheck/index.js\";\n\n    const result = await client(documentEquipment).batchApplyAction([\n            {\n                \"equipmentId\": \"mac-1234\", \n                \"documentType\": \"active\"\n            },\n            {\n                \"equipmentId\": \"mac-1234\", \n                \"documentType\": \"active\"\n            },\n        ],\n        {\n            $returnEdits: true,\n        }\n    );\n    if (result.type === \"edits\") {\n        // use the result object to report back on action results\n    }",
         },
       },
       "uploadAttachment": {
         "code":
-          "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { createAttachmentUpload } from \"@osdk/client\";\nimport type { AttachmentUpload } from \"@osdk/api\";\nimport { documentEquipment } from \"../../../generatedNoCheck\";\n\n// To call an action with an attachment property, you first need to upload the file\nasync function uploadMyFile() {\n    const file = await fetch(\"file.json\");\n    const blob = await file.blob();\n    return createAttachmentUpload(blob, \"myFile\");\n}\n\nconst myAttachmentUpload: AttachmentUpload = await uploadMyFile();\n// then pass the attachment to the action in the action parameter.\nconst actionResult = client(documentEquipment).applyAction({ \n    equipmentId: \"mac-1234\",\n    documentFile: myAttachmentUpload\n    });",
+          "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { createAttachmentUpload } from \"@osdk/client\";\nimport type { AttachmentUpload } from \"@osdk/api\";\nimport { documentEquipment } from \"../../../generatedNoCheck/index.js\";\n\n// To call an action with an attachment property, you first need to upload the file\nasync function uploadMyFile() {\n    const file = await fetch(\"file.json\");\n    const blob = await file.blob();\n    return createAttachmentUpload(blob, \"myFile\");\n}\n\nconst myAttachmentUpload: AttachmentUpload = await uploadMyFile();\n// then pass the attachment to the action in the action parameter.\nconst actionResult = client(documentEquipment).applyAction({ \n    equipmentId: \"mac-1234\",\n    documentFile: myAttachmentUpload\n    });",
       },
       "castInterfaceToObjectReference": {
         "code":
-          "import { Employee, HasAddress } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { isOk, type Osdk } from \"@osdk/client\";\n\nconst page = await client(HasAddress).fetchPageWithErrors();\n\nif (isOk(page)) {\n    const interfaces = page.value.data;\n    const hasAddress: Osdk<HasAddress> = interfaces[0];\n\n    // Cast from interface to object type\n    const employee: Osdk<Employee> = hasAddress.$as(Employee);\n    // Or from object type back to interface\n    const hasAddress2: Osdk<HasAddress> = employee.$as(HasAddress);\n}",
+          "import { Employee, HasAddress } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { isOk, type Osdk } from \"@osdk/client\";\n\nconst page = await client(HasAddress).fetchPageWithErrors();\n\nif (isOk(page)) {\n    const interfaces = page.value.data;\n    const hasAddress: Osdk<HasAddress> = interfaces[0];\n\n    // Cast from interface to object type\n    const employee: Osdk<Employee> = hasAddress.$as(Employee);\n    // Or from object type back to interface\n    const hasAddress2: Osdk<HasAddress> = employee.$as(HasAddress);\n}",
       },
       "executeFunction": {
         "#hasAttachmentProperty": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\nimport { calculateTotal, type Equipment } from \"../../../generatedNoCheck\";\n\nasync function callFunctionWithAttachmentLoaded(objectWithAttachment: Osdk.Instance<Equipment>) {\n    const attachment = objectWithAttachment.invoice?.rid;\n    if (attachment == null) {\n        throw new Error(\"Attachment is required\");\n    }\n    const result = await client(calculateTotal).executeFunction({ documentFile: attachment, includeMetadata: true });\n    return result;\n}",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\nimport { calculateTotal, type Equipment } from \"../../../generatedNoCheck/index.js\";\n\nasync function callFunctionWithAttachmentLoaded(objectWithAttachment: Osdk.Instance<Equipment>) {\n    const attachment = objectWithAttachment.invoice?.rid;\n    if (attachment == null) {\n        throw new Error(\"Attachment is required\");\n    }\n    const result = await client(calculateTotal).executeFunction({ documentFile: attachment, includeMetadata: true });\n    return result;\n}",
         },
         "^hasAttachmentProperty": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { getTotalEmployeeCount } from \"../../../generatedNoCheck\";\n\nconst result = await client(getTotalEmployeeCount).executeFunction();",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { getTotalEmployeeCount } from \"../../../generatedNoCheck/index.js\";\n\nconst result = await client(getTotalEmployeeCount).executeFunction();",
         },
         "#hasAttachmentUpload": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { AttachmentUpload } from \"@osdk/api\";\nimport { createAttachmentUpload } from \"@osdk/client\";\nimport { calculateTotal } from \"../../../generatedNoCheck\";\n\nasync function callFunctionWithAttachmentUpload() {\n    async function uploadMyFile() {\n        const file = await fetch(\"file.json\");\n        const blob = await file.blob();\n        return createAttachmentUpload(blob, \"myFile\");\n    }\n    const attachment: AttachmentUpload = await uploadMyFile();\n    const result = await client(calculateTotal).executeFunction({ documentFile: attachment, includeMetadata: true });\n    return result;\n}",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { AttachmentUpload } from \"@osdk/api\";\nimport { createAttachmentUpload } from \"@osdk/client\";\nimport { calculateTotal } from \"../../../generatedNoCheck/index.js\";\n\nasync function callFunctionWithAttachmentUpload() {\n    async function uploadMyFile() {\n        const file = await fetch(\"file.json\");\n        const blob = await file.blob();\n        return createAttachmentUpload(blob, \"myFile\");\n    }\n    const attachment: AttachmentUpload = await uploadMyFile();\n    const result = await client(calculateTotal).executeFunction({ documentFile: attachment, includeMetadata: true });\n    return result;\n}",
         },
         "^hasAttachmentUpload": {
           "code":
-            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\nimport { calculateTotal, type Equipment } from \"../../../generatedNoCheck\";\n\nasync function callFunctionWithAttachmentLoaded(objectWithAttachment: Osdk.Instance<Equipment>) {\n    const attachment = objectWithAttachment.invoice?.rid;\n    if (attachment == null) {\n        throw new Error(\"Attachment is required\");\n    }\n    const result = await client(calculateTotal).executeFunction({ documentFile: attachment, includeMetadata: true });\n    return result;\n}",
+            "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\nimport { calculateTotal, type Equipment } from \"../../../generatedNoCheck/index.js\";\n\nasync function callFunctionWithAttachmentLoaded(objectWithAttachment: Osdk.Instance<Equipment>) {\n    const attachment = objectWithAttachment.invoice?.rid;\n    if (attachment == null) {\n        throw new Error(\"Attachment is required\");\n    }\n    const result = await client(calculateTotal).executeFunction({ documentFile: attachment, includeMetadata: true });\n    return result;\n}",
         },
       },
       "stringStartsWithTemplate": {
         "#hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $startsWith: \"foo\" }}\n    })",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $startsWith: \"foo\" }}\n    })",
         },
         "^hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        fullName : { $startsWith: \"foo\" }\n    })",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        fullName : { $startsWith: \"foo\" }\n    })",
         },
       },
       "containsAllTermsInOrderTemplate": {
         "#hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $containsAllTermsInOrder: \"foo bar\" }}\n    })",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $containsAllTermsInOrder: \"foo bar\" }}\n    })",
         },
         "^hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        fullName : { $containsAllTermsInOrder: \"foo bar\" }\n    })",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        fullName : { $containsAllTermsInOrder: \"foo bar\" }\n    })",
         },
       },
       "containsAnyTermTemplate": {
         "#hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $containsAnyTerm: \"foo bar\" }}\n    })",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $containsAnyTerm: \"foo bar\" }}\n    })",
         },
         "^hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        fullName : { $containsAnyTerm: \"foo bar\" }\n    })",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        fullName : { $containsAnyTerm: \"foo bar\" }\n    })",
         },
       },
       "containsAllTermsTemplate": {
         "#hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $containsAllTerms: \"foo bar\" }}\n    })",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $containsAllTerms: \"foo bar\" }}\n    })",
         },
         "^hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        fullName : { $containsAllTerms: \"foo bar\" }\n    })",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        fullName : { $containsAllTerms: \"foo bar\" }\n    })",
         },
       },
       "equalityTemplate": {
         "#hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $eq: \"555-1234\" }}\n    });",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $eq: \"555-1234\" }}\n    });",
         },
         "^hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        department: { $eq: \"Engineering\" }\n    });",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        department: { $eq: \"Engineering\" }\n    });",
         },
       },
       "inFilterTemplate": {
         "#hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $in: [\"555-1234\"] }}\n    });",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $in: [\"555-1234\"] }}\n    });",
         },
         "^hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        department: { $in: [\"Engineering\"] }\n    });",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        department: { $in: [\"Engineering\"] }\n    });",
         },
       },
       "nullTemplate": {
         "#hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance: { $isNull: true }}\n    });",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance: { $isNull: true }}\n    });",
         },
         "^hasStructSubProperty": {
           "code":
-            "import { Office } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance: { $isNull: true }\n    });",
+            "import { Office } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance: { $isNull: true }\n    });",
         },
       },
       "rangeTemplate": {
         "#hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { houseNumber: { $lt: 100 }}\n    });",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { houseNumber: { $lt: 100 }}\n    });",
         },
         "^hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        salary: { $lt: 100 }\n    });",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        salary: { $lt: 100 }\n    });",
         },
       },
       "withinDistanceTemplate": {
         "#hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance: { $within: { $distance: [100, \"miles\"], $of: [-74.0060, 40.7128]} }}\n    })",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance: { $within: { $distance: [100, \"miles\"], $of: [-74.0060, 40.7128]} }}\n    })",
         },
         "^hasStructSubProperty": {
           "code":
-            "import { Office } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance: { $within: { $distance: [100, \"miles\"], $of: [-74.0060, 40.7128]}}\n    })",
+            "import { Office } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance: { $within: { $distance: [100, \"miles\"], $of: [-74.0060, 40.7128]}}\n    })",
         },
       },
       "withinBoundingBoxTemplate": {
         "#hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}\n    });",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}\n    });",
         },
         "^hasStructSubProperty": {
           "code":
-            "import { Office } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}\n    });",
+            "import { Office } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}\n    });",
         },
       },
       "withinPolygonTemplate": {
         "#hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance: { $within: { type: \"Polygon\", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}}\n    });",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance: { $within: { type: \"Polygon\", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}}\n    });",
         },
         "^hasStructSubProperty": {
           "code":
-            "import { Office } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance: { $within: { type: \"Polygon\", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}\n    });",
+            "import { Office } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance: { $within: { type: \"Polygon\", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}\n    });",
         },
       },
       "intersectsPolygonTemplate": {
         "#hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance: { $intersects: { type: \"Polygon\", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}}\n    });",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance: { $intersects: { type: \"Polygon\", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}}\n    });",
         },
         "^hasStructSubProperty": {
           "code":
-            "import { Office } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance: { $intersects: { type: \"Polygon\", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}\n    });",
+            "import { Office } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance: { $intersects: { type: \"Polygon\", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}\n    });",
         },
       },
       "intersectsBboxTemplate": {
         "#hasStructSubProperty": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance : { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}\n    });",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance : { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}\n    });",
         },
         "^hasStructSubProperty": {
           "code":
-            "import { Office } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance : { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}\n    });",
+            "import { Office } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance : { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}\n    });",
         },
       },
       "notTemplate": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({ $not: { fullName: { $eq: \"John Doe\" }}});",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({ $not: { fullName: { $eq: \"John Doe\" }}});",
       },
       "andTemplate": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({ $and:[\n        { $not: { employeeId: { $isNull: true }}},\n        { fullName: { $eq: \"John Doe\" }}\n    ]});",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({ $and:[\n        { $not: { employeeId: { $isNull: true }}},\n        { fullName: { $eq: \"John Doe\" }}\n    ]});",
       },
       "orTemplate": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({ $or:[\n        { $not: { employeeId: { $isNull: true }}},\n        { fullName: { $eq: \"John Doe\" }}\n    ]});",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({ $or:[\n        { $not: { employeeId: { $isNull: true }}},\n        { fullName: { $eq: \"John Doe\" }}\n    ]});",
       },
       "containsTemplate": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst filteredObjects = client(Employee)\n    .where({\n        previousTitles : { $contains: \"Product manager\" }\n    })",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst filteredObjects = client(Employee)\n    .where({\n        previousTitles : { $contains: \"Product manager\" }\n    })",
       },
       "loadInterfacesReference": {
         "code":
-          "import { HasAddress } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk, type PageResult, type Result } from \"@osdk/client\";\n\nconst response:  Result<PageResult<Osdk<HasAddress>>>\n    = await client(HasAddress).fetchPageWithErrors({ $pageSize: 30 });\n\n// To fetch a page without a result wrapper, use fetchPage instead\nconst responseNoErrorWrapper: PageResult<Osdk<HasAddress>>\n    = await client(HasAddress).fetchPage({ $pageSize: 30 });",
+          "import { HasAddress } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk, type PageResult, type Result } from \"@osdk/client\";\n\nconst response:  Result<PageResult<Osdk<HasAddress>>>\n    = await client(HasAddress).fetchPageWithErrors({ $pageSize: 30 });\n\n// To fetch a page without a result wrapper, use fetchPage instead\nconst responseNoErrorWrapper: PageResult<Osdk<HasAddress>>\n    = await client(HasAddress).fetchPage({ $pageSize: 30 });",
       },
       "loadAllInterfacesReference": {
         "code":
-          "import { HasAddress } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\n\nconst interfaces: Osdk<HasAddress>[] = [];\n\nfor await(const int of client(HasAddress).asyncIter()) {\n    interfaces.push(int);\n}\nconst interface1 = interfaces[0];",
+          "import { HasAddress } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\n\nconst interfaces: Osdk<HasAddress>[] = [];\n\nfor await(const int of client(HasAddress).asyncIter()) {\n    interfaces.push(int);\n}\nconst interface1 = interfaces[0];",
       },
       "loadOrderedInterfacesReference": {
         "code":
-          "import { HasAddress } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk, type PageResult } from \"@osdk/client\";\n\ntry {\n    const page: PageResult<Osdk<HasAddress>> = await client(HasAddress)\n        .fetchPage({\n            $orderBy: { address: \"asc\"},\n            $pageSize: 30\n        });\n} catch (e) {\n    throw e;\n}",
+          "import { HasAddress } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk, type PageResult } from \"@osdk/client\";\n\ntry {\n    const page: PageResult<Osdk<HasAddress>> = await client(HasAddress)\n        .fetchPage({\n            $orderBy: { address: \"asc\"},\n            $pageSize: 30\n        });\n} catch (e) {\n    throw e;\n}",
       },
       "searchInterfacesReference": {
         "code":
-          "import { HasAddress } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { isOk, type Osdk, type PageResult, type Result } from \"@osdk/client\";\n\nconst page: Result<PageResult<Osdk<HasAddress>>> = await client(HasAddress)\n    .where({\n        $and:[\n            { $not: { address: { $isNull: true }}},\n            { address: { $eq: \"foo\" }}\n        ]\n    })\n    .fetchPageWithErrors({\n        $pageSize: 30\n    });\n\nif (isOk(page)) {\n    const interfaces = page.value.data;\n    const interface1 = interfaces[0];\n}",
+          "import { HasAddress } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { isOk, type Osdk, type PageResult, type Result } from \"@osdk/client\";\n\nconst page: Result<PageResult<Osdk<HasAddress>>> = await client(HasAddress)\n    .where({\n        $and:[\n            { $not: { address: { $isNull: true }}},\n            { address: { $eq: \"foo\" }}\n        ]\n    })\n    .fetchPageWithErrors({\n        $pageSize: 30\n    });\n\nif (isOk(page)) {\n    const interfaces = page.value.data;\n    const interface1 = interfaces[0];\n}",
       },
       "loadTimeSeriesPointsSnippet": {
         "code":
-          "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck\";\n\nfunction getAllTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return obj.employeeStatus?.getAllPoints();\n}",
+          "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck/index.js\";\n\nfunction getAllTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return obj.employeeStatus?.getAllPoints();\n}",
       },
       "loadRelativeTimeSeriesPointsSnippet": {
         "code":
-          "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck\";\n\n// Only supports ranges in the past\nfunction getRelativeTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return obj.employeeStatus?.getAllPoints({\n        $before: 1,\n        $unit: \"hours\",\n    })\n}",
+          "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck/index.js\";\n\n// Only supports ranges in the past\nfunction getRelativeTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return obj.employeeStatus?.getAllPoints({\n        $before: 1,\n        $unit: \"hours\",\n    })\n}",
       },
       "loadAbsoluteTimeSeriesPointsSnippet": {
         "code":
-          "import { type Employee } from \"../../../generatedNoCheck\";\nimport { type Osdk } from \"@osdk/client\";\n\nasync function getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return await obj.employeeStatus?.getAllPoints({\n        $startTime: \"2022-08-13T12:34:56Z\",\n        $endTime: \"2022-08-14T12:34:56Z\",\n    });\n}",
+          "import { type Employee } from \"../../../generatedNoCheck/index.js\";\nimport { type Osdk } from \"@osdk/client\";\n\nasync function getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return await obj.employeeStatus?.getAllPoints({\n        $startTime: \"2022-08-13T12:34:56Z\",\n        $endTime: \"2022-08-14T12:34:56Z\",\n    });\n}",
       },
       "loadTimeSeriesFirstPointSnippet": {
         "code":
-          "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck\";\n\nfunction getFirstTimeSeriesPoint(obj: Osdk.Instance<Employee>) {\n    return obj.employeeStatus?.getFirstPoint();\n}",
+          "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck/index.js\";\n\nfunction getFirstTimeSeriesPoint(obj: Osdk.Instance<Employee>) {\n    return obj.employeeStatus?.getFirstPoint();\n}",
       },
       "loadTimeSeriesLastPointSnippet": {
         "code":
-          "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck\";\n\nfunction getLastTimeSeriesPoint(obj: Osdk.Instance<Employee>) {\n    return obj.employeeStatus?.getLastPoint();\n}",
+          "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck/index.js\";\n\nfunction getLastTimeSeriesPoint(obj: Osdk.Instance<Employee>) {\n    return obj.employeeStatus?.getLastPoint();\n}",
       },
       "loadObjectMetadataSnippet": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst objectTypeMetadata = await client.fetchMetadata(Employee);\n\nif (objectTypeMetadata?.icon?.type === \"blueprint\") {\n    const blueprintIconName = objectTypeMetadata.icon.name;\n}\nconst currentVisibility = objectTypeMetadata.visibility;\nconst currentDescription = objectTypeMetadata.description;",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst objectTypeMetadata = await client.fetchMetadata(Employee);\n\nif (objectTypeMetadata?.icon?.type === \"blueprint\") {\n    const blueprintIconName = objectTypeMetadata.icon.name;\n}\nconst currentVisibility = objectTypeMetadata.visibility;\nconst currentDescription = objectTypeMetadata.description;",
       },
       "loadInterfaceMetadataSnippet": {
         "code":
-          "import { HasAddress } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst interfaceTypeMetadata = await client.fetchMetadata(HasAddress);\n\nconst implementingObjectTypes = interfaceTypeMetadata.implementedBy;\nconst interfaceRid = interfaceTypeMetadata.rid;",
+          "import { HasAddress } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst interfaceTypeMetadata = await client.fetchMetadata(HasAddress);\n\nconst implementingObjectTypes = interfaceTypeMetadata.implementedBy;\nconst interfaceRid = interfaceTypeMetadata.rid;",
       },
       "derivedPropertyBaseExample": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"lead\").selectProperty(\"fullName\")\n    })\n    .where({\n      \"newPropertyName\": { $startsWith: \"foo\" }\n    }).fetchPage();",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"lead\").selectProperty(\"fullName\")\n    })\n    .where({\n      \"newPropertyName\": { $startsWith: \"foo\" }\n    }).fetchPage();",
       },
       "derivedPropertyApproximateDistinctAggregation": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"purchasePrice:approximateDistinct\")\n    }).fetchPage();",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"purchasePrice:approximateDistinct\")\n    }).fetchPage();",
       },
       "derivedPropertyExactDistinctAggregation": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"purchasePrice:exactDistinct\")\n    }).fetchPage();",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"purchasePrice:exactDistinct\")\n    }).fetchPage();",
       },
       "derivedPropertyCollectToListAggregation": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst maxObjectsInList = 75; // Adjust this value as needed between 1 and 100\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"purchasePrice:collectList\", { limit: maxObjectsInList })\n    }).fetchPage();",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst maxObjectsInList = 75; // Adjust this value as needed between 1 and 100\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"purchasePrice:collectList\", { limit: maxObjectsInList })\n    }).fetchPage();",
       },
       "derivedPropertyCollectToSetAggregation": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst maxObjectsInSet = 75; // Adjust this value as needed between 1 and 100\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"purchasePrice:collectSet\", { limit: maxObjectsInSet })\n    }).fetchPage();",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst maxObjectsInSet = 75; // Adjust this value as needed between 1 and 100\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"purchasePrice:collectSet\", { limit: maxObjectsInSet })\n    }).fetchPage();",
       },
       "derivedPropertyCountAggregation": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"$count\")\n    }).fetchPage();",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"$count\")\n    }).fetchPage();",
       },
       "derivedPropertySelectPropertyAggregation": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"lead\").selectProperty(\"fullName\")\n    }).fetchPage();",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"lead\").selectProperty(\"fullName\")\n    }).fetchPage();",
       },
       "derivedPropertyApproximatePercentileAggregation": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"purchasePrice:approximatePercentile\", { percentile: 95 })\n    }).fetchPage();",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"purchasePrice:approximatePercentile\", { percentile: 95 })\n    }).fetchPage();",
       },
       "derivedPropertyNumericAggregation": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"peeps\").aggregate(\"salary:sum\")\n    }).fetchPage();",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"peeps\").aggregate(\"salary:sum\")\n    }).fetchPage();",
       },
       "objectSetOperationsGuide": {
         "code":
-          "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { Employee } from \"../../../generatedNoCheck/ontology/objects\";\n\nconst objectSetA = client(Employee).where({ fullName: { $containsAnyTerm: \"a\"}})\nconst objectSetB = client(Employee).where({ fullName: { $containsAnyTerm: \"b\"}})\nconst objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: \"c\"}})\n\n// Object set operations can be chained. e.g. To find all objects in objectSetA \n// that are present in objectSetB but do not exist in objectSetC:\nconst result = objectSetA\n  .intersect(objectSetB)\n  .subtract(objectSetC).fetchPage();",
+          "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { Employee } from \"../../../generatedNoCheck/index.js\";\n\nconst objectSetA = client(Employee).where({ fullName: { $containsAnyTerm: \"a\"}})\nconst objectSetB = client(Employee).where({ fullName: { $containsAnyTerm: \"b\"}})\nconst objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: \"c\"}})\n\n// Object set operations can be chained. e.g. To find all objects in objectSetA \n// that are present in objectSetB but do not exist in objectSetC:\nconst result = objectSetA\n  .intersect(objectSetB)\n  .subtract(objectSetC).fetchPage();",
       },
       "objectSetOperationsUnion": {
         "code":
-          "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { Employee } from \"../../../generatedNoCheck/ontology/objects\";\n\nconst objectSetA = client(Employee).where({ fullName: { $containsAnyTerm: \"a\"}})\nconst objectSetB = client(Employee).where({ fullName: { $containsAnyTerm: \"b\"}})\nconst objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: \"c\"}})\n\n// Combine objectSetA, objectSetB and objectSetC\nconst result = objectSetA\n  .union(objectSetB)\n  .union(objectSetC).fetchPage(); // alternatively: objectSetA.union(objectSetB, objectSetC)",
+          "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { Employee } from \"../../../generatedNoCheck/index.js\";\n\nconst objectSetA = client(Employee).where({ fullName: { $containsAnyTerm: \"a\"}})\nconst objectSetB = client(Employee).where({ fullName: { $containsAnyTerm: \"b\"}})\nconst objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: \"c\"}})\n\n// Combine objectSetA, objectSetB and objectSetC\nconst result = objectSetA\n  .union(objectSetB)\n  .union(objectSetC).fetchPage(); // alternatively: objectSetA.union(objectSetB, objectSetC)",
       },
       "objectSetOperationsSubtract": {
         "code":
-          "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { Employee } from \"../../../generatedNoCheck/ontology/objects\";\n\nconst objectSetA = client(Employee).where({ fullName: { $containsAnyTerm: \"a\"}})\nconst objectSetB = client(Employee).where({ fullName: { $containsAnyTerm: \"b\"}})\nconst objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: \"c\"}})\n\n\n// Return objects in objectSetA that are not present in either objectSetB or objectSetC\nconst result = objectSetA\n  .subtract(objectSetB)\n  .subtract(objectSetC).fetchPage(); // alternatively: objectSetA.subtract(objectSetB, objectSetC)",
+          "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { Employee } from \"../../../generatedNoCheck/index.js\";\n\nconst objectSetA = client(Employee).where({ fullName: { $containsAnyTerm: \"a\"}})\nconst objectSetB = client(Employee).where({ fullName: { $containsAnyTerm: \"b\"}})\nconst objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: \"c\"}})\n\n\n// Return objects in objectSetA that are not present in either objectSetB or objectSetC\nconst result = objectSetA\n  .subtract(objectSetB)\n  .subtract(objectSetC).fetchPage(); // alternatively: objectSetA.subtract(objectSetB, objectSetC)",
       },
       "objectSetOperationsIntersect": {
         "code":
-          "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { Employee } from \"../../../generatedNoCheck/ontology/objects\";\n\nconst objectSetA = client(Employee).where({ fullName: { $containsAnyTerm: \"a\"}})\nconst objectSetB = client(Employee).where({ fullName: { $containsAnyTerm: \"b\"}})\nconst objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: \"c\"}})\n\n\n// Return all objects common to objectSetA, objectSetB and objectSetC\nconst result = objectSetA\n  .intersect(objectSetB)\n  .intersect(objectSetC).fetchPage(); // alternatively: objectSetA.intersect(objectSetB, objectSetC)",
+          "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { Employee } from \"../../../generatedNoCheck/index.js\";\n\nconst objectSetA = client(Employee).where({ fullName: { $containsAnyTerm: \"a\"}})\nconst objectSetB = client(Employee).where({ fullName: { $containsAnyTerm: \"b\"}})\nconst objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: \"c\"}})\n\n\n// Return all objects common to objectSetA, objectSetB and objectSetC\nconst result = objectSetA\n  .intersect(objectSetB)\n  .intersect(objectSetC).fetchPage(); // alternatively: objectSetA.intersect(objectSetB, objectSetC)",
       },
       "searchAround": {
         "code":
-          "import { Equipment } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\n// Object set containing objects a, b and c\nconst objects = client(Equipment)\n    .where({ equipmentId: { $in: [\"a\", \"b\", \"c\"]}});\n\n// Traverse the selected link type to find all objects of type\n// Employee linked to Equipment with equipmentId is a or b or c]\nconst linkedObjects = await objects.pivotTo(\"assignedTo\").fetchPage();",
+          "import { Equipment } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\n// Object set containing objects a, b and c\nconst objects = client(Equipment)\n    .where({ equipmentId: { $in: [\"a\", \"b\", \"c\"]}});\n\n// Traverse the selected link type to find all objects of type\n// Employee linked to Equipment with equipmentId is a or b or c]\nconst linkedObjects = await objects.pivotTo(\"assignedTo\").fetchPage();",
       },
     },
     "2.1.0": {
       "loadGeotimeSeriesPointsSnippet": {
         "code":
-          "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck\";\n\nfunction getAllTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getAllValues();\n}",
+          "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck/index.js\";\n\nfunction getAllTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getAllValues();\n}",
       },
       "loadRelativeGeotimeSeriesPointsSnippet": {
         "code":
-          "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck\";\n\n// Only supports ranges in the past\nfunction getRelativeTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getAllValues({\n        $before: 1,\n        $unit: \"hours\",\n    })\n}",
+          "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck/index.js\";\n\n// Only supports ranges in the past\nfunction getRelativeTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getAllValues({\n        $before: 1,\n        $unit: \"hours\",\n    })\n}",
       },
       "loadAbsoluteGeotimeSeriesPointsSnippet": {
         "code":
-          "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck\";\n\nfunction getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getAllValues({\n        $startTime: \"2022-08-13T12:34:56Z\",\n        $endTime: \"2022-08-14T12:34:56Z\",\n    });\n}",
+          "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck/index.js\";\n\nfunction getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getAllValues({\n        $startTime: \"2022-08-13T12:34:56Z\",\n        $endTime: \"2022-08-14T12:34:56Z\",\n    });\n}",
       },
       "loadGeotimeSeriesLastPointSnippet": {
         "code":
-          "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck\";\n\nfunction getLastTimeSeriesPoint(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getLatestValue();\n}",
+          "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck/index.js\";\n\nfunction getLastTimeSeriesPoint(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getLatestValue();\n}",
       },
     },
     "2.4.0": {
       "derivedPropertyNumericExpression": {
         "#isUnary": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"lead\")\n          .selectProperty(\"salary\")\n          .subtract(baseObjectSet.selectProperty(\"salary\"))\n    }).fetchPage();",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"lead\")\n          .selectProperty(\"salary\")\n          .subtract(baseObjectSet.selectProperty(\"salary\"))\n    }).fetchPage();",
         },
         "^isUnary": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"assignedEquipment\")\n              .aggregate(\"purchasePrice:avg\").divide(\n                  baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"$count\"))\n    }).fetchPage();",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"assignedEquipment\")\n              .aggregate(\"purchasePrice:avg\").divide(\n                  baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"$count\"))\n    }).fetchPage();",
         },
       },
       "derivedPropertyDatetimeExpression": {
         "#isExtractPart": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n          \"YEARS_part_of_birthDate_of_lead\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"lead\")\n              .selectProperty(\"birthDate\").extractPart(\"YEARS\")\n    }).fetchPage();",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n          \"YEARS_part_of_birthDate_of_lead\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"lead\")\n              .selectProperty(\"birthDate\").extractPart(\"YEARS\")\n    }).fetchPage();",
         },
         "^isExtractPart": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n          \"min_between_purchaseDate:min_and_lastMaintenanceDate:min\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"assignedEquipment\")\n              .aggregate(\"purchaseDate:min\")\n              .min(baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"lastMaintenanceDate:min\"))\n    }).fetchPage();",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n          \"min_between_purchaseDate:min_and_lastMaintenanceDate:min\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"assignedEquipment\")\n              .aggregate(\"purchaseDate:min\")\n              .min(baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"lastMaintenanceDate:min\"))\n    }).fetchPage();",
         },
       },
       "nearestNeighborsTextQuery": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst result = await client(Employee)\n  .nearestNeighbors(\"coffee\", 5, \"skillVector\")\n  .fetchPage();",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst result = await client(Employee)\n  .nearestNeighbors(\"coffee\", 5, \"skillVector\")\n  .fetchPage();",
       },
       "nearestNeighborsVectorQuery": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\n// Note that this vector maps to an arbitrary string\n// It must match the dimension of the \"skillVector\" property: 128\nconst vector_query = Array.from({ length: 128 }, () => 0.3);\nconst result = await client(Employee)\n  .nearestNeighbors(vector_query, 5, \"skillVector\")\n  .fetchPage();",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\n// Note that this vector maps to an arbitrary string\n// It must match the dimension of the \"skillVector\" property: 128\nconst vector_query = Array.from({ length: 128 }, () => 0.3);\nconst result = await client(Employee)\n  .nearestNeighbors(vector_query, 5, \"skillVector\")\n  .fetchPage();",
       },
     },
   },

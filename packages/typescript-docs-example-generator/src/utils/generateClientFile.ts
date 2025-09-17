@@ -33,7 +33,7 @@ export async function generateClientFile(
     generateFileHeader("client", "Client setup for examples")
   }
 import { createClient, type Client } from "@osdk/client";
-import { $ontologyRid } from "../../../generatedNoCheck";
+import { $ontologyRid } from "../../../generatedNoCheck/index.js";
 
 const getToken = () => {
   return Promise.resolve("");

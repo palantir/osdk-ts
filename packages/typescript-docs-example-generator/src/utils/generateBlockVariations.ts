@@ -101,11 +101,19 @@ export async function generateBlockVariations(
       // Process template with standard context
       const standardCode = processTemplate(template, standardContext);
 
+      // Replace import { client } from "./client"; with import { client } from "./client.js";
+      // and fix all generatedNoCheck imports to point to index.js
+      const esmCompliantStandardCode = standardCode
+        .replace(
+          /import { client } from "\.\/client";/g,
+          "import { client } from \"./client.js\";",
+        );
+
       // Create file content with header
       const standardContent = `${
         generateFileHeader(snippetKey, `Variation: #${varName}`)
       }
-${standardCode}`;
+${esmCompliantStandardCode}`;
 
       // Write to file with variation suffix
       const variationKey = `${snippetKey}_#${varName}`;
@@ -137,11 +145,19 @@ ${standardCode}`;
       // Process template with inverted context
       const invertedCode = processTemplate(template, invertedContext);
 
+      // Replace import { client } from "./client"; with import { client } from "./client.js";
+      // and fix all generatedNoCheck imports to point to index.js
+      const esmCompliantInvertedCode = invertedCode
+        .replace(
+          /import { client } from "\.\/client";/g,
+          "import { client } from \"./client.js\";",
+        );
+
       // Create file content with header
       const invertedContent = `${
         generateFileHeader(snippetKey, `Variation: ^${varName}`)
       }
-${invertedCode}`;
+${esmCompliantInvertedCode}`;
 
       // Write to file with variation suffix
       const variationKey = `${snippetKey}_^${varName}`;

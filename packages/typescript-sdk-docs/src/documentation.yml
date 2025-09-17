@@ -5,7 +5,7 @@ versions:
       loadSingleObjectGuide:
         - template: |-
             import { type GetObjectError, isOk, type Result } from "{{{packageName}}}";
-            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+            import { {{objectType}} } from "{{{packageName}}}";
 
             const result: Result<{{objectType}}, GetObjectError> = await client.ontology.objects.{{objectType}}.get("primaryKey");
             if (isOk(result)) {
@@ -1917,7 +1917,7 @@ versions:
         - template: |-
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+            import { {{objectType}} } from "{{{packageName}}}";
 
             const objectSetA = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "a"}})
             const objectSetB = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "b"}})
@@ -1933,7 +1933,7 @@ versions:
         - template: |-
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+            import { {{objectType}} } from "{{{packageName}}}";
 
             const objectSetA = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "a"}})
             const objectSetB = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "b"}})
@@ -1948,7 +1948,7 @@ versions:
         - template: |-
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+            import { {{objectType}} } from "{{{packageName}}}";
 
             const objectSetA = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "a"}})
             const objectSetB = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "b"}})
@@ -1964,7 +1964,7 @@ versions:
         - template: |-
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+            import { {{objectType}} } from "{{{packageName}}}";
 
             const objectSetA = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "a"}})
             const objectSetB = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "b"}})
