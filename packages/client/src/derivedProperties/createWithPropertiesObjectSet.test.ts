@@ -17,17 +17,47 @@
 import type { DerivedProperty } from "@osdk/api";
 import { Employee } from "@osdk/client.test.ontology";
 import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
-import { describe, expect, it } from "vitest";
+import type { Mock } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
+import { createMinimalClient } from "../createMinimalClient.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
 import { createWithPropertiesObjectSet } from "./createWithPropertiesObjectSet.js";
 
 // TODO: mock MinimalClient.ontologyProvider.getObjectDefinition
 
+const metadata = {
+  expectsClientVersion: "0.0.0",
+  ontologyRid: "ri.a.b.c.d",
+  ontologyApiName: "apiName",
+  userAgent: "",
+};
+
+let mockFetch: Mock;
+let clientCtx: MinimalClient;
+
+beforeAll(() => {
+  mockFetch = vi.fn();
+
+  clientCtx = createMinimalClient(
+    metadata,
+    "https://host.com",
+    async () => "myAccessToken",
+    {},
+    mockFetch,
+  );
+});
+
 describe(createWithPropertiesObjectSet, () => {
-  it("correctly creates basic object set with derived properties", () => {
-    const map = new Map<any, DerivedPropertyDefinition>();
-    const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
-      type: "methodInput",
-    }, map);
+  it("correctly creates basic object set with derived properties", async () => {
+    const map = new Map<any, Promise<DerivedPropertyDefinition>>();
+    const deriveObjectSet = createWithPropertiesObjectSet(
+      Employee,
+      Promise.resolve({
+        type: "methodInput",
+      }),
+      map,
+      clientCtx,
+    );
 
     const clause = {
       "derivedPropertyName": (base) =>
@@ -35,7 +65,7 @@ describe(createWithPropertiesObjectSet, () => {
     } satisfies DerivedProperty.Clause<Employee>;
 
     const result = clause["derivedPropertyName"](deriveObjectSet);
-    const definition = map.get(result);
+    const definition = await map.get(result);
     expect(definition).toMatchInlineSnapshot(`
         {
           "objectSet": {
@@ -54,14 +84,15 @@ describe(createWithPropertiesObjectSet, () => {
       `);
   });
 
-  it("correctly allows select property off the base object set", () => {
-    const map = new Map<any, DerivedPropertyDefinition>();
+  it("correctly allows select property off the base object set", async () => {
+    const map = new Map<any, Promise<DerivedPropertyDefinition>>();
     const deriveObjectSet = createWithPropertiesObjectSet(
       Employee,
-      {
+      Promise.resolve({
         type: "methodInput",
-      },
+      }),
       map,
+      clientCtx,
       true,
     );
 
@@ -70,7 +101,7 @@ describe(createWithPropertiesObjectSet, () => {
     } satisfies DerivedProperty.Clause<Employee>;
 
     const result = clause["derivedPropertyName"](deriveObjectSet);
-    const definition = map.get(result);
+    const definition = await map.get(result);
     expect(definition).toMatchInlineSnapshot(`
       {
         "apiName": "employeeId",
@@ -79,11 +110,16 @@ describe(createWithPropertiesObjectSet, () => {
     `);
   });
 
-  it("correctly handles multiple definitions in one clause", () => {
-    const map = new Map<any, DerivedPropertyDefinition>();
-    const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
-      type: "methodInput",
-    }, map);
+  it("correctly handles multiple definitions in one clause", async () => {
+    const map = new Map<any, Promise<DerivedPropertyDefinition>>();
+    const deriveObjectSet = createWithPropertiesObjectSet(
+      Employee,
+      Promise.resolve({
+        type: "methodInput",
+      }),
+      map,
+      clientCtx,
+    );
 
     const clause: DerivedProperty.Clause<Employee> = {
       "derivedPropertyName": (base) =>
@@ -98,12 +134,12 @@ describe(createWithPropertiesObjectSet, () => {
     };
 
     const result = clause["derivedPropertyName"](deriveObjectSet);
-    const definition = map.get(result);
+    const definition = await map.get(result);
 
     const secondResult = clause["secondaryDerivedPropertyName"](
       deriveObjectSet,
     );
-    const secondDefinition = map.get(secondResult);
+    const secondDefinition = await map.get(secondResult);
 
     expect(definition).toMatchInlineSnapshot(`
         {
@@ -143,14 +179,15 @@ describe(createWithPropertiesObjectSet, () => {
   });
 
   describe("expressions", () => {
-    it("can handle expressions referencing other property keys", () => {
-      const map = new Map<any, DerivedPropertyDefinition>();
+    it("can handle expressions referencing other property keys", async () => {
+      const map = new Map<any, Promise<DerivedPropertyDefinition>>();
       const deriveObjectSet = createWithPropertiesObjectSet(
         Employee,
-        {
+        Promise.resolve({
           type: "methodInput",
-        },
+        }),
         map,
+        clientCtx,
         true,
       );
 
@@ -164,7 +201,7 @@ describe(createWithPropertiesObjectSet, () => {
       };
 
       const result = clause["derivedPropertyName"](deriveObjectSet);
-      const definition = map.get(result);
+      const definition = await map.get(result);
 
       expect(definition).toMatchInlineSnapshot(`
         {
@@ -194,11 +231,16 @@ describe(createWithPropertiesObjectSet, () => {
     });
 
     // TODO: Add test for literal
-    it("can handle nested definitions in an expression", () => {
-      const map = new Map<any, DerivedPropertyDefinition>();
-      const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
-        type: "methodInput",
-      }, map);
+    it("can handle nested definitions in an expression", async () => {
+      const map = new Map<any, Promise<DerivedPropertyDefinition>>();
+      const deriveObjectSet = createWithPropertiesObjectSet(
+        Employee,
+        Promise.resolve({
+          type: "methodInput",
+        }),
+        map,
+        clientCtx,
+      );
 
       const clause: DerivedProperty.Clause<Employee> = {
         "derivedPropertyName": (base) =>
@@ -208,7 +250,7 @@ describe(createWithPropertiesObjectSet, () => {
       };
 
       const result = clause["derivedPropertyName"](deriveObjectSet);
-      const definition = map.get(result);
+      const definition = await map.get(result);
 
       expect(definition).toMatchInlineSnapshot(`
         {
@@ -248,11 +290,16 @@ describe(createWithPropertiesObjectSet, () => {
     });
   });
 
-  it("handles datetime expressions", () => {
-    const map = new Map<any, DerivedPropertyDefinition>();
-    const deriveObjectSet = createWithPropertiesObjectSet(Employee, {
-      type: "methodInput",
-    }, map);
+  it("handles datetime expressions", async () => {
+    const map = new Map<any, Promise<DerivedPropertyDefinition>>();
+    const deriveObjectSet = createWithPropertiesObjectSet(
+      Employee,
+      Promise.resolve({
+        type: "methodInput",
+      }),
+      map,
+      clientCtx,
+    );
 
     const clause: DerivedProperty.Clause<Employee> = {
       "derivedPropertyName": (base) =>
@@ -264,7 +311,7 @@ describe(createWithPropertiesObjectSet, () => {
     };
 
     const result = clause["derivedPropertyName"](deriveObjectSet);
-    const definition = map.get(result);
+    const definition = await map.get(result);
 
     expect(definition).toMatchInlineSnapshot(`
       {

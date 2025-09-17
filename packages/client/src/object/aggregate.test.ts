@@ -126,10 +126,10 @@ describe("aggregate", () => {
     const notGrouped = await aggregate(
       clientCtx,
       objectTypeWithAllPropertyTypes,
-      {
+      Promise.resolve({
         type: "base",
         objectType: "ToDo",
-      },
+      }),
       {
         $select: {
           "string:approximateDistinct": "unordered",
@@ -322,10 +322,10 @@ describe("aggregate", () => {
     >().toBeCallableWith(
       clientCtx,
       objectTypeWithAllPropertyTypes,
-      {
+      Promise.resolve({
         type: "base",
         objectType: "ToDo",
-      },
+      }),
       {
         $select: {
           "id:approximateDistinct": "unordered",
@@ -375,10 +375,10 @@ describe("aggregate", () => {
     const notGrouped = await aggregate(
       clientCtx,
       objectTypeWithAllPropertyTypes,
-      {
+      Promise.resolve({
         type: "base",
         objectType: "ToDo",
-      },
+      }),
       {
         $select: {
           "string:approximateDistinct": "asc",
@@ -448,10 +448,10 @@ describe("aggregate", () => {
     const grouped = await aggregate(
       clientCtx,
       objectTypeWithAllPropertyTypes,
-      {
+      Promise.resolve({
         type: "base",
         objectType: "ToDo",
-      },
+      }),
       {
         $select: {
           "id:max": "desc",
