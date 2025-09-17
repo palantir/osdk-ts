@@ -59,9 +59,9 @@ function isObjectTypeDefinition(
 }
 
 /* @internal */
-export function isObjectSet(o: any): o is ObjectSet<any> {
+export async function isObjectSet(o: any): Promise<boolean> {
   return o != null && typeof o === "object"
-    && isWireObjectSet(objectSetDefinitions.get(o));
+    && await isWireObjectSet(objectSetDefinitions.get(o));
 }
 
 /** @internal */

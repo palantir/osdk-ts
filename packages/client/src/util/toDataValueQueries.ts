@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { QueryDataTypeDefinition } from "@osdk/api";
+import type { ObjectSet, QueryDataTypeDefinition } from "@osdk/api";
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -135,11 +135,11 @@ export async function toDataValueQueries(
     case "objectSet":
     case "interfaceObjectSet": {
       // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
-      if (isWireObjectSet(value)) {
+      if (await isWireObjectSet(value)) {
         return value;
       }
-      if (isObjectSet(value)) {
-        return await getWireObjectSet(value);
+      if (await isObjectSet(value)) {
+        return await getWireObjectSet(value as ObjectSet<any>);
       }
       break;
     }

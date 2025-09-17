@@ -15,7 +15,7 @@
  */
 
 import { NULL_VALUE } from "@osdk/api";
-import type { ActionMetadata } from "@osdk/api";
+import type { ActionMetadata, ObjectSet } from "@osdk/api";
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -42,6 +42,7 @@ export async function toDataValue(
   client: MinimalClient,
   actionMetadata: ActionMetadata,
 ): Promise<DataValue> {
+  value = await Promise.resolve(value);
   if (value == null) {
     // typeof null is 'object' so do this first
     // Sending null over the wire clears the data, whereas undefined is dropped at request time.
@@ -133,11 +134,11 @@ export async function toDataValue(
   }
 
   // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
-  if (isWireObjectSet(value)) {
+  if (await isWireObjectSet(value)) {
     return value;
   }
-  if (isObjectSet(value)) {
-    return await getWireObjectSet(value);
+  if (await isObjectSet(value)) {
+    return await getWireObjectSet(value as ObjectSet<any>);
   }
 
   if (isMediaReference(value)) {
