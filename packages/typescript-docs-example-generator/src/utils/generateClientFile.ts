@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import fs from "fs/promises";
-import path from "path";
+import type { FileContent } from "./fileWriter.js";
 import { generateFileHeader } from "./generateFileHeader.js";
 
 /**
@@ -23,12 +22,9 @@ import { generateFileHeader } from "./generateFileHeader.js";
  * This creates a simple client implementation that can be imported by example files.
  *
  * @param version The version to generate the client for
- * @param outputDir The directory to output files to
+ * @returns FileContent object with the client file
  */
-export async function generateClientFile(
-  version: string,
-  outputDir: string,
-): Promise<void> {
+export function generateClientFile(version: string): FileContent {
   const clientTemplate = `${
     generateFileHeader("client", "Client setup for examples")
   }
@@ -47,14 +43,8 @@ export const client: Client = createClient(
 
 `;
 
-  const clientFilePath = path.join(
-    outputDir,
-    "typescript",
-    version,
-    "client.ts",
-  );
-  await fs.writeFile(clientFilePath, clientTemplate);
-
-  // eslint-disable-next-line no-console
-  console.log(`✓ Generated client.ts for typescript/${version}`);
+  return {
+    path: `typescript/${version}/client.ts`,
+    content: clientTemplate,
+  };
 }

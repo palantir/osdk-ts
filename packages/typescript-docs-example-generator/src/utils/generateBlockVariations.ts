@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-import fs from "fs/promises";
-import path from "path";
 import { getSnippetContext } from "./baseContext.js";
 import type { BaseContext } from "./baseContext.js";
+import { CodeTransformer } from "./codeTransformer.js";
+import type { FileContent } from "./fileWriter.js";
 import { generateFileHeader } from "./generateFileHeader.js";
 import { processTemplate } from "./processTemplate.js";
 
-interface BlockVariationResult {
+export interface BlockVariationResult {
   variables: string[];
   code: string;
 }
 
-interface BlockVariations {
+export interface BlockVariations {
   [variationKey: string]: BlockVariationResult;
+}
+
+export interface BlockVariationFiles {
+  variations: BlockVariations;
+  files: FileContent[];
 }
 
 /**
@@ -57,19 +62,18 @@ function createVariationVariables(blockVariables: string[]): string[] {
  * @param baseContext The base context for template processing
  * @param blockVariables Array of block variables
  * @param version The version number
- * @param outputDir The directory to output files to
- * @returns Object with variation keys and their variables
+ * @returns Object with variations and file contents to write
  */
-export async function generateBlockVariations(
+export function generateBlockVariations(
   template: string,
   snippetKey: string,
   baseContext: BaseContext,
   blockVariables: string[],
   version: string,
-  outputDir: string,
-): Promise<BlockVariations> {
+): BlockVariationFiles {
   // Create an object to store information about each variation
   const variations: BlockVariations = {};
+  const files: FileContent[] = [];
 
   // Group block variables by their name (without # or ^ prefix)
   const blockGroups: { [varName: string]: string[] } = {};
@@ -101,40 +105,34 @@ export async function generateBlockVariations(
       // Process template with standard context
       const standardCode = processTemplate(template, standardContext);
 
-      // Replace import { client } from "./client"; with import { client } from "./client.js";
-      // and fix all generatedNoCheck imports to point to index.js
-      const esmCompliantStandardCode = standardCode
-        .replace(
-          /import { client } from "\.\/client";/g,
-          "import { client } from \"./client.js\";",
-        );
+      // Apply code transformations using the utility
+      const transformedStandardCode = CodeTransformer.applyCommonTransforms(
+        standardCode,
+      );
 
       // Create file content with header
       const standardContent = `${
         generateFileHeader(snippetKey, `Variation: #${varName}`)
       }
-${esmCompliantStandardCode}`;
+${transformedStandardCode}`;
 
-      // Write to file with variation suffix
+      // Add to files collection with variation suffix
       const variationKey = `${snippetKey}_#${varName}`;
-      const standardPath = path.join(
-        outputDir,
-        "typescript",
-        version,
-        `${variationKey}.ts`,
-      );
-      await fs.writeFile(standardPath, standardContent);
+      files.push({
+        path: `typescript/${version}/${variationKey}.ts`,
+        content: standardContent,
+      });
 
       // Create optimized variable list for variations
       const variationVariables = createVariationVariables(blockVariables);
       variations[variationKey] = {
         variables: variationVariables,
-        code: standardCode.trim(), // Include the generated code content
+        code: standardCode.trim(), // Include the original generated code content
       };
 
       // Log message can be enabled in production but disabled in tests
       // eslint-disable-next-line no-console
-      console.log(`✓ Generated #${varName} variation for ${snippetKey}`);
+      console.log(`✓ Prepared #${varName} variation for ${snippetKey}`);
     }
 
     // Create inverted block variation if it exists
@@ -145,41 +143,35 @@ ${esmCompliantStandardCode}`;
       // Process template with inverted context
       const invertedCode = processTemplate(template, invertedContext);
 
-      // Replace import { client } from "./client"; with import { client } from "./client.js";
-      // and fix all generatedNoCheck imports to point to index.js
-      const esmCompliantInvertedCode = invertedCode
-        .replace(
-          /import { client } from "\.\/client";/g,
-          "import { client } from \"./client.js\";",
-        );
+      // Apply code transformations using the utility
+      const transformedInvertedCode = CodeTransformer.applyCommonTransforms(
+        invertedCode,
+      );
 
       // Create file content with header
       const invertedContent = `${
         generateFileHeader(snippetKey, `Variation: ^${varName}`)
       }
-${esmCompliantInvertedCode}`;
+${transformedInvertedCode}`;
 
-      // Write to file with variation suffix
+      // Add to files collection with variation suffix
       const variationKey = `${snippetKey}_^${varName}`;
-      const invertedPath = path.join(
-        outputDir,
-        "typescript",
-        version,
-        `${variationKey}.ts`,
-      );
-      await fs.writeFile(invertedPath, invertedContent);
+      files.push({
+        path: `typescript/${version}/${variationKey}.ts`,
+        content: invertedContent,
+      });
 
       // Create optimized variable list for variations
       const variationVariables = createVariationVariables(blockVariables);
       variations[variationKey] = {
         variables: variationVariables,
-        code: invertedCode.trim(), // Include the generated code content
+        code: invertedCode.trim(), // Include the original generated code content
       };
 
       // Log message can be enabled in production but disabled in tests
       // eslint-disable-next-line no-console
-      console.log(`✓ Generated ^${varName} variation for ${snippetKey}`);
+      console.log(`✓ Prepared ^${varName} variation for ${snippetKey}`);
     }
   }
-  return variations;
+  return { variations, files };
 }

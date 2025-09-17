@@ -18,37 +18,17 @@ import { TYPESCRIPT_OSDK_SNIPPETS } from "@osdk/typescript-sdk-docs";
 import fs from "fs/promises";
 import path from "path";
 import {
+  CodeTransformer,
   extractHandlebarsVariables,
+  FileWriter,
   findBlockVariables,
   generateBlockVariations,
   generateClientFile,
   generateFileHeader,
   getSnippetContext,
+  HierarchyBuilder,
   processTemplate,
 } from "./utils/index.js";
-
-// Types
-interface ExamplesHierarchy {
-  kind: "examples";
-  versions: {
-    [version: string]: {
-      examples: {
-        [exampleName: string]: {
-          code: string;
-        };
-      };
-    };
-  };
-}
-
-interface BlockVariationResult {
-  variables: string[];
-  code: string;
-}
-
-interface BlockVariations {
-  [variationKey: string]: BlockVariationResult;
-}
 
 /**
  * Generate TypeScript examples from SDK documentation templates
@@ -95,6 +75,10 @@ export async function generateExamples(
       // Directory might not exist, which is fine
     }
 
+    // Initialize utilities for batch processing
+    const fileWriter = new FileWriter({ outputDir });
+    const hierarchyBuilder = new HierarchyBuilder();
+
     // Generate examples for each version
     for (const version of versionsToGenerate) {
       const snippets = TYPESCRIPT_OSDK_SNIPPETS.versions[version]?.snippets;
@@ -106,41 +90,53 @@ export async function generateExamples(
       }
 
       // eslint-disable-next-line no-console
-      console.log(`\n📝 Generating examples for version ${version}...`);
-
-      // Ensure output directory exists for this version
-      await fs.mkdir(path.join(outputDir, "typescript", version), {
-        recursive: true,
-      });
+      console.log(`\n📝 Collecting examples for version ${version}...`);
 
       // Generate examples for each snippet in this version
-      await generateAllExamples(
+      generateAllExamples(
         snippets,
         version,
-        outputDir,
-        hierarchyOutputPath,
-        versionsToGenerate.length > 1, // isMultiVersion flag
-        versionsToGenerate,
+        fileWriter,
+        hierarchyBuilder,
       );
 
       // Generate client.ts file for this version
-      await generateClientFile(version, outputDir);
+      const clientFile = generateClientFile(version);
+      fileWriter.addFile(clientFile.path, clientFile.content);
     }
 
-    // Generate the nested context file after all versions are processed
+    // Generate both hierarchy files using the builder
     // eslint-disable-next-line no-console
-    console.log("About to generate nested context...");
-    try {
-      await generateNestedContextFromFile(hierarchyOutputPath);
-      // eslint-disable-next-line no-console
-      console.log("Finished generating nested context.");
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Error in nested context generation:", error);
-    }
+    console.log("📝 Generating hierarchy files...");
+    const { flat, nested } = hierarchyBuilder.generateHierarchyFiles();
 
+    // Add hierarchy files to the writer
+    fileWriter.addFile(
+      path.relative(outputDir, hierarchyOutputPath),
+      flat,
+    );
+    fileWriter.addFile(
+      path.relative(
+        outputDir,
+        hierarchyOutputPath.replace(
+          "typescriptOsdkExamples.ts",
+          "typescriptOsdkContext.ts",
+        ),
+      ),
+      nested,
+    );
+
+    // Batch write all files
     // eslint-disable-next-line no-console
-    console.log("✓ Examples generated successfully");
+    console.log(`📝 Writing ${fileWriter.getQueueSize()} files...`);
+    await fileWriter.writeAll();
+
+    // Display statistics
+    const stats = hierarchyBuilder.getStats();
+    // eslint-disable-next-line no-console
+    console.log(
+      `✓ Successfully generated ${stats.totalExamples} examples (${stats.variations} variations) across ${stats.versions} versions`,
+    );
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error("Error generating example snippets:", error);
@@ -149,58 +145,17 @@ export async function generateExamples(
 }
 
 /**
- * Generate examples for all snippets
+ * Generate examples for all snippets using the new utility approach
  * This function processes each snippet template in the TYPESCRIPT_OSDK_SNIPPETS object,
- * applies context variables using Handlebars, and generates example files.
- * It also creates an index file and examples hierarchy.
+ * applies context variables using Handlebars, and collects files for batch writing.
+ * It uses HierarchyBuilder for single-pass hierarchy generation.
  */
-async function generateAllExamples(
+function generateAllExamples(
   snippets: any,
   version: string,
-  outputDir: string,
-  hierarchyOutputPath: string,
-  isMultiVersion: boolean = false,
-  versionsToGenerate: string[] = [],
-): Promise<void> {
-  // Create or update examples hierarchy object to track generated files
-  let examplesHierarchy: ExamplesHierarchy;
-
-  if (isMultiVersion) {
-    // For multi-version generation, try to read existing hierarchy
-    try {
-      const existingContent = await fs.readFile(hierarchyOutputPath, "utf8");
-      const match = existingContent.match(
-        /export const TYPESCRIPT_OSDK_EXAMPLES = (.*?) as const;/s,
-      );
-      if (match) {
-        examplesHierarchy = JSON.parse(match[1]);
-      } else {
-        throw new Error("No existing hierarchy found");
-      }
-    } catch {
-      // Create new hierarchy if none exists
-      examplesHierarchy = {
-        kind: "examples",
-        versions: {},
-      };
-    }
-
-    // Ensure this version exists in the hierarchy
-    if (!examplesHierarchy.versions[version]) {
-      examplesHierarchy.versions[version] = { examples: {} };
-    }
-  } else {
-    // Single version generation
-    examplesHierarchy = {
-      kind: "examples",
-      versions: {
-        [version]: {
-          examples: {},
-        },
-      },
-    };
-  }
-
+  fileWriter: FileWriter,
+  hierarchyBuilder: HierarchyBuilder,
+): void {
   // Create index file content using the common header utility
   let indexContent = `${
     generateFileHeader(`index`, `TYPESCRIPT Examples - SDK Version ${version}`)
@@ -247,26 +202,33 @@ async function generateAllExamples(
     // Check if this snippet has block variables
     const blockVariables = findBlockVariables(variables);
 
-    // Skip tracking variables for snippetVariables.json as it's no longer needed
-
     if (blockVariables.length > 0) {
       // For block templates, only generate variations, not base files
       // Generate variations for each block variable
-      const variations: BlockVariations = await generateBlockVariations(
+      const { variations, files } = generateBlockVariations(
         snippetData.template,
         snippetKey,
         context,
         blockVariables,
         version,
-        outputDir,
       );
 
-      // Add each variation to hierarchy
+      // Add files to the writer
+      fileWriter.addFiles(files);
+
+      // Add each variation to hierarchy builder
       for (const [variationKey, variation] of Object.entries(variations)) {
-        // Add to hierarchy with trimmed code content
-        examplesHierarchy.versions[version].examples[variationKey] = {
-          code: variation.code, // Include the actual generated code content
-        };
+        // Parse the variation key to get base name and variation
+        const underscoreIndex = variationKey.indexOf("_");
+        const baseName = variationKey.substring(0, underscoreIndex);
+        const variationSuffix = variationKey.substring(underscoreIndex + 1);
+
+        hierarchyBuilder.addVariation(
+          version,
+          baseName,
+          variationSuffix,
+          variation.code,
+        );
       }
 
       // Add to index for variations only (no base file)
@@ -302,188 +264,34 @@ async function generateAllExamples(
     } else {
       // Process template with provided context
       const processedCode = processTemplate(snippetData.template, context);
-      // Replace import { client } from "./client"; with import { client } from "./client.js";
-      // and fix all generatedNoCheck imports to point to index.js
-      const esmCompliantCode = processedCode
-        .replace(
-          /import { client } from "\.\/client";/g,
-          "import { client } from \"./client.js\";",
-        );
+
+      // Apply code transformations using the utility
+      const transformedCode = CodeTransformer.applyCommonTransforms(
+        processedCode,
+      );
+
       // Create file content with header
       const fileContent = `${
         generateFileHeader(snippetKey)
-      }\n${esmCompliantCode}`;
+      }\n${transformedCode}`;
 
-      // Write to file
-      const filePath = path.join(
-        outputDir,
-        "typescript",
-        version,
-        `${snippetKey}.ts`,
-      );
-      await fs.writeFile(filePath, fileContent);
+      // Add file to the writer
+      fileWriter.addFile(`typescript/${version}/${snippetKey}.ts`, fileContent);
 
-      // Add to hierarchy with trimmed code content
-      examplesHierarchy.versions[version].examples[snippetKey] = {
-        code: processedCode.trim(), // Include the actual generated code content
-      };
+      // Add to hierarchy builder
+      hierarchyBuilder.addExample(version, snippetKey, processedCode.trim());
 
       // Add to index
       indexContent += `// ${snippetKey}\n// See: ./${snippetKey}.ts\n\n`;
 
       // eslint-disable-next-line no-console
-      console.log(`✓ Generated example for ${snippetKey}`);
+      console.log(`✓ Prepared example for ${snippetKey}`);
     }
   }
 
-  // Write the index file
-  await fs.writeFile(
-    path.join(outputDir, "typescript", version, "index.ts"),
-    indexContent,
-  );
-
-  // snippetVariables.json generation removed as it was not being used
-
-  // Write the examples hierarchy as a TypeScript file for easier importing
-  const hierarchyContent = `${
-    generateFileHeader(
-      undefined,
-      "Generated examples hierarchy for SDK documentation\n * This provides a mapping of example names to their file paths\n * similar to how TYPESCRIPT_OSDK_SNIPPETS works for templates",
-    )
-  }export const TYPESCRIPT_OSDK_EXAMPLES = ${
-    JSON.stringify(examplesHierarchy, null, 2)
-  } as const;
-`;
-
-  await fs.writeFile(
-    hierarchyOutputPath,
-    hierarchyContent,
-    "utf8",
-  );
-  // eslint-disable-next-line no-console
-  console.log(`✓ Generated typescriptOsdkExamples.ts for version ${version}`);
+  // Add the index file to the writer
+  fileWriter.addFile(`typescript/${version}/index.ts`, indexContent);
 
   // eslint-disable-next-line no-console
-  console.log(`✓ All examples generated for version ${version}`);
-}
-
-/**
- * Generate nested context structure by reading the flat hierarchy file
- */
-async function generateNestedContextFromFile(
-  hierarchyOutputPath: string,
-): Promise<void> {
-  // eslint-disable-next-line no-console
-  console.log("📝 Generating nested context from flat hierarchy...");
-  try {
-    // Read the generated flat hierarchy file
-    const flatContent = await fs.readFile(hierarchyOutputPath, "utf8");
-
-    // Extract the TYPESCRIPT_OSDK_EXAMPLES object from the file
-    const match = flatContent.match(
-      /export const TYPESCRIPT_OSDK_EXAMPLES = (.*) as const;/s,
-    );
-    if (!match) {
-      throw new Error(
-        "Could not find TYPESCRIPT_OSDK_EXAMPLES in the flat hierarchy file",
-      );
-    }
-
-    const examplesHierarchy: ExamplesHierarchy = JSON.parse(match[1]);
-
-    // Transform flat structure to nested structure
-    const nestedContext = {
-      kind: "examples",
-      versions: {} as Record<string, any>,
-    };
-
-    for (
-      const [version, versionData] of Object.entries(examplesHierarchy.versions)
-    ) {
-      nestedContext.versions[version] = {};
-
-      for (
-        const [exampleName, exampleData] of Object.entries(versionData.examples)
-      ) {
-        // Split on underscore to find base name and variation
-        const underscoreIndex = exampleName.indexOf("_");
-
-        if (underscoreIndex === -1) {
-          // Direct example (no variation)
-          nestedContext.versions[version][exampleName] = {
-            code: exampleData.code,
-          };
-        } else {
-          // Template variation
-          const baseName = exampleName.substring(0, underscoreIndex);
-          const variationSuffix = exampleName.substring(underscoreIndex + 1);
-
-          // Initialize base name if needed
-          if (!nestedContext.versions[version][baseName]) {
-            nestedContext.versions[version][baseName] = {};
-          }
-
-          // Add the variation
-          nestedContext.versions[version][baseName][variationSuffix] = {
-            code: exampleData.code,
-          };
-        }
-      }
-    }
-
-    // Generate the nested context file
-    const contextOutputPath = hierarchyOutputPath.replace(
-      "typescriptOsdkExamples.ts",
-      "typescriptOsdkContext.ts",
-    );
-
-    const contextContent = `${generateFileHeader()}/**
- * Metadata for a single example
- */
-export interface NestedExampleMetadata {
-  code: string;
-}
-
-/**
- * A nested example entry that can either be a direct example or contain nested variations
- */
-export type NestedExampleEntry = NestedExampleMetadata | {
-  [variationKey: string]: NestedExampleMetadata | NestedExampleEntry;
-};
-
-/**
- * Version-specific nested examples structure
- */
-export interface NestedVersionExamples {
-  [exampleName: string]: NestedExampleEntry;
-}
-
-/**
- * Complete nested examples hierarchy
- */
-export interface NestedExamplesHierarchy {
-  kind: "examples";
-  versions: {
-    [version: string]: NestedVersionExamples;
-  };
-}
-
-/**
- * The nested OSDK documentation context with template variations grouped under their base names.
- * Generated from TYPESCRIPT_OSDK_EXAMPLES.
- */
-export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = ${
-      JSON.stringify(nestedContext, null, 2)
-    } as const;
-`;
-
-    await fs.writeFile(contextOutputPath, contextContent, "utf8");
-
-    // eslint-disable-next-line no-console
-    console.log("✓ Generated typescriptOsdkContext.ts");
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error("Error generating nested context:", error);
-    throw error;
-  }
+  console.log(`✓ All examples collected for version ${version}`);
 }

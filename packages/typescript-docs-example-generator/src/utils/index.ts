@@ -15,11 +15,14 @@
  */
 
 export { baseContext, getSnippetContext } from "./baseContext.js";
+export { CodeTransformer } from "./codeTransformer.js";
 export { extractHandlebarsVariables } from "./extractHandlebarsVariables.js";
+export { FileWriter } from "./fileWriter.js";
 export { findBlockVariables } from "./findBlockVariables.js";
 export { generateBlockVariations } from "./generateBlockVariations.js";
 export { generateClientFile } from "./generateClientFile.js";
 export { generateFileHeader } from "./generateFileHeader.js";
+export { HierarchyBuilder } from "./hierarchyBuilder.js";
 export { processTemplate } from "./processTemplate.js";
 
 export type {
@@ -27,3 +30,17 @@ export type {
   BaseContext,
   PropertyV2,
 } from "./baseContext.js";
+export type { TransformOptions } from "./codeTransformer.js";
+export type { FileContent, FileWriterOptions } from "./fileWriter.js";
+export type {
+  BlockVariationFiles,
+  BlockVariationResult,
+  BlockVariations,
+} from "./generateBlockVariations.js";
+export type {
+  ExamplesHierarchy,
+  NestedExampleEntry,
+  NestedExampleMetadata,
+  NestedExamplesHierarchy,
+  NestedVersionExamples,
+} from "./hierarchyBuilder.js";
