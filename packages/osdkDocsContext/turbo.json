@@ -20,11 +20,11 @@
       "outputs": ["build/types/**/*"]
     },
     "transpileEsm": {
-      "dependsOn": ["transpileTypes"],
+      "dependsOn": ["@osdk/typescript-sdk-docs-examples#build", "transpileTypes"],
       "outputs": ["build/esm/**/*"]
     },
     "transpileCjs": {
-      "dependsOn": ["transpileTypes"],
+      "dependsOn": ["@osdk/typescript-sdk-docs-examples#build", "transpileTypes"],
       "outputs": ["build/cjs/**/*"]
     }
   }

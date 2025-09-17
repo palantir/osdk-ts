@@ -158,25 +158,7 @@
         "out/**",
 
         // internally chosen output dir for sanity
-        "build/site/**",
-
-        // Support for typescript-sdk-docs-examples
-        "src/**",
-        "types/**"
-      ]
-    },
-
-    "@osdk/typescript-sdk-docs-examples#build": {
-      "dependsOn": ["codegen", "generateExamples", "format", "validateExamples", "transpileEsm"],
-      "inputs": [
-        "src/**/*",
-        "ontology.json",
-        "tsconfig.json"
-      ],
-      "outputs": [
-        "dist/**",
-        "src/generatedNoCheck/**",
-        "src/examples/**"
+        "build/site/**"
       ]
     },
 
@@ -250,26 +232,7 @@
         "tsconfig.json"
       ],
       "outputs": [
-        "build/esm/**",
-        "dist/**"
-      ]
-    },
-
-    "@osdk/typescript-sdk-docs-examples#transpileEsm": {
-      "outputLogs": "new-only",
-      "dependsOn": [
-        "//#babel-config",
-        "@osdk/monorepo.tsconfig#typecheck",
-        "^transpileEsm",
-        "codegen",
-        "generateExamples"
-      ],
-      "inputs": [
-        "src/**",
-        "tsconfig.json"
-      ],
-      "outputs": [
-        "dist/**"
+        "build/esm/**"
       ]
     },
 
