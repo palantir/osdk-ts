@@ -1,5 +1,11 @@
 # @osdk/functions
 
+## 1.2.3
+
+### Patch Changes
+
+- 74d2d52: Adding geometry type support
+
 ## 1.2.2
 
 ### Patch Changes
