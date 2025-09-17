@@ -153,6 +153,10 @@ const baseContext: BaseContext = {
   // For derived property expressions (2.4.0+)
   isUnary: false,
   isExtractPart: false,
+
+  // For nearest neighbors (2.4.0+)
+  vectorProperty: "skillVector",
+  vectorDimensionSize: 128,
 };
 
 /**
@@ -347,6 +351,15 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
   "derivedPropertyApproximatePercentileAggregation": {
     linkName: "assignedEquipment",
     property: "purchasePrice",
+  },
+
+  // === NEAREST NEIGHBORS TEMPLATES (2.4.0+) ===
+  "nearestNeighborsTextQuery": {
+    property: "skillVector",
+  },
+  "nearestNeighborsVectorQuery": {
+    property: "skillVector",
+    vectorDimensionSize: 128,
   },
 };
 

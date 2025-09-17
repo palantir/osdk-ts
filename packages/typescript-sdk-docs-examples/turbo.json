@@ -1,0 +1,31 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "generateExamples": {
+      "inputs": [
+        "@osdk/typescript-sdk-docs#src/documentation.yml",
+        "@osdk/typescript-docs-example-generator#src/**"
+      ],
+      "outputs": ["src/examples/**", "src/typescriptOsdkExamples.ts"],
+      "dependsOn": [
+        "@osdk/typescript-docs-example-generator#transpileEsm",
+        "codegen"
+      ]
+    },
+    "typecheck": {
+      "dependsOn": [
+        "@osdk/typescript-docs-example-generator#codegen",
+        "@osdk/typescript-docs-example-generator#transpileTypes",
+        "generateExamples"
+      ]
+    },
+    "transpileEsm": {
+      "dependsOn": [
+        "@osdk/typescript-docs-example-generator#codegen",
+        "@osdk/typescript-docs-example-generator#transpileTypes",
+        "generateExamples"
+      ]
+    }
+  }
+}

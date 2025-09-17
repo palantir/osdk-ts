@@ -98,6 +98,10 @@ interface BaseContext {
   // For derived property expressions (2.4.0+)
   isUnary: boolean;
   isExtractPart: boolean;
+
+  // For nearest neighbors (2.4.0+)
+  vectorProperty: string;
+  vectorDimensionSize: number;
 }
 
 interface HierarchyBlock {

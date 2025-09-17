@@ -2118,7 +2118,7 @@ versions:
               import { client } from "./client";
 
               const result = await client({{objectType}})
-                .nearestNeighbors("coffee", 5, "{{vectorProperty}}")
+                .nearestNeighbors("coffee", 5, "{{property}}")
                 .fetchPage();
 
         nearestNeighborsVectorQuery:
@@ -2128,8 +2128,8 @@ versions:
               import { client } from "./client";
 
               // Note that this vector maps to an arbitrary string
-              // It must match the dimension of the "{{vectorProperty}}" property: {{vectorDimensionSize}}
-              const vector_query = Array.from({ length: {{vectorDimensionSize}} }, () => 0.3),
+              // It must match the dimension of the "{{property}}" property: {{vectorDimensionSize}}
+              const vector_query = Array.from({ length: {{vectorDimensionSize}} }, () => 0.3);
               const result = await client({{objectType}})
-                .nearestNeighbors(vector_query, 5, "{{vectorProperty}}")
+                .nearestNeighbors(vector_query, 5, "{{property}}")
                 .fetchPage();

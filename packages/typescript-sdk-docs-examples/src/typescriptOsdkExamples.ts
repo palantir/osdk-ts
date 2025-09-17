@@ -443,6 +443,14 @@ export const TYPESCRIPT_OSDK_EXAMPLES = {
           "code":
             "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n          \"min_between_purchaseDate:min_and_lastMaintenanceDate:min\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"assignedEquipment\")\n              .aggregate(\"purchaseDate:min\")\n              .min(baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"lastMaintenanceDate:min\"))\n    }).fetchPage();",
         },
+        "nearestNeighborsTextQuery": {
+          "code":
+            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst result = await client(Employee)\n  .nearestNeighbors(\"coffee\", 5, \"skillVector\")\n  .fetchPage();",
+        },
+        "nearestNeighborsVectorQuery": {
+          "code":
+            "import { Employee } from \"../../../generatedNoCheck\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\n// Note that this vector maps to an arbitrary string\n// It must match the dimension of the \"skillVector\" property: 128\nconst vector_query = Array.from({ length: 128 }, () => 0.3);\nconst result = await client(Employee)\n  .nearestNeighbors(vector_query, 5, \"skillVector\")\n  .fetchPage();",
+        },
       },
     },
   },
