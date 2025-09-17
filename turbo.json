@@ -162,6 +162,20 @@
       ]
     },
 
+    "@osdk/typescript-sdk-docs-examples#build": {
+      "dependsOn": ["codegen", "generateExamples", "format", "validateExamples", "transpileEsm"],
+      "inputs": [
+        "src/**/*",
+        "ontology.json",
+        "tsconfig.json"
+      ],
+      "outputs": [
+        "dist/**",
+        "src/generatedNoCheck/**",
+        "src/examples/**"
+      ]
+    },
+
     "bundle": {
       "dependsOn": ["bundle:esbuild"]
     },
@@ -233,6 +247,24 @@
       ],
       "outputs": [
         "build/esm/**"
+      ]
+    },
+
+    "@osdk/typescript-sdk-docs-examples#transpileEsm": {
+      "outputLogs": "new-only",
+      "dependsOn": [
+        "//#babel-config",
+        "@osdk/monorepo.tsconfig#typecheck",
+        "^transpileEsm",
+        "codegen",
+        "generateExamples"
+      ],
+      "inputs": [
+        "src/**",
+        "tsconfig.json"
+      ],
+      "outputs": [
+        "dist/**"
       ]
     },
 

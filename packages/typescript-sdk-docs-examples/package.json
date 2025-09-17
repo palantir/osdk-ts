@@ -7,6 +7,20 @@
     "type": "git",
     "url": "https://github.com/palantir/osdk-ts.git"
   },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./typescriptOsdkContext": {
+      "import": "./dist/typescriptOsdkContext.js",
+      "types": "./dist/typescriptOsdkContext.d.ts"
+    },
+    "./typescriptOsdkExamples": {
+      "import": "./dist/typescriptOsdkExamples.js",
+      "types": "./dist/typescriptOsdkExamples.d.ts"
+    }
+  },
   "scripts": {
     "build": "pnpm run codegen && pnpm run generateExamples && pnpm run format && pnpm run validateExamples && pnpm run transpileEsm",
     "clean": "rm -rf dist src/generatedNoCheck examples src/examples",
