@@ -259,20 +259,14 @@ function matchesOntologyDataType(
         `matchesOntologyDataType: ${odt.type} not implemented yet.`,
       );
     case "date":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return typeof value === "string" && isValidDateString(value);
     case "decimal":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return typeof value === "string" && isValidDecimalString(value);
     case "double":
       return typeof value === "number";
 
     case "float":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return typeof value === "number";
     case "integer":
       return (typeof value === "number" && Number.isInteger(value));
 
@@ -312,9 +306,7 @@ function matchesOntologyDataType(
         `matchesOntologyDataType: ${odt.type} not implemented yet.`,
       );
     case "timestamp":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return typeof value === "string" && isValidTimestampString(value);
     case "unsupported":
       throw new Error(
         `matchesOntologyDataType: ${odt.type} not implemented yet.`,
@@ -361,4 +353,29 @@ function isPoint(obj: any): obj is GeoJSON.Point {
     && obj.coordinates.length === 2
     && typeof obj.coordinates[0] === "number"
     && typeof obj.coordinates[1] === "number";
+}
+
+function isValidDateString(value: string): boolean {
+  // Check for ISO 8601 date format (YYYY-MM-DD)
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!dateRegex.test(value)) {
+    return false;
+  }
+
+  // Validate the date by parsing it
+  const date = new Date(value + "T00:00:00.000Z");
+  return !isNaN(date.getTime()) && date.toISOString().startsWith(value);
+}
+
+function isValidTimestampString(value: string): boolean {
+  // Try to parse as ISO timestamp
+  const date = new Date(value);
+  return !isNaN(date.getTime()) && typeof value === "string";
+}
+
+function isValidDecimalString(value: string): boolean {
+  // Check for decimal format including scientific notation
+  // Supports formats like: "123.45", "4.321E+8", "0.332E-5", "-123.456", etc.
+  const decimalRegex = /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/;
+  return decimalRegex.test(value) && !isNaN(parseFloat(value));
 }
