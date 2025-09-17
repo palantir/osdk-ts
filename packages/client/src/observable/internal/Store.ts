@@ -18,107 +18,39 @@ import type {
   ActionDefinition,
   ActionEditResponse,
   ActionValidationResponse,
-  InterfaceDefinition,
   Logger,
   ObjectTypeDefinition,
   PrimaryKeyType,
-  WhereClause,
 } from "@osdk/api";
-import type { Observer } from "rxjs";
-import { BehaviorSubject } from "rxjs";
 import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
-import type { ListPayload } from "../ListPayload.js";
-import type { ObjectPayload } from "../ObjectPayload.js";
-import type {
-  ObserveListOptions,
-  ObserveObjectOptions,
-  OrderBy,
-  Unsubscribable,
-} from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
-import { ActionApplication } from "./ActionApplication.js";
-import type { CacheKey } from "./CacheKey.js";
+import { ActionApplication } from "./actions/ActionApplication.js";
+import type { BatchContext } from "./BatchContext.js";
 import { CacheKeys } from "./CacheKeys.js";
-import type { Canonical } from "./Canonical.js";
 import {
   type Changes,
   createChangedObjects,
   DEBUG_ONLY__changesToString,
 } from "./Changes.js";
-import { Entry, Layer } from "./Layer.js";
-import type { ListCacheKey, ListQueryOptions } from "./ListQuery.js";
-import { isListCacheKey, ListQuery } from "./ListQuery.js";
-import type { ObjectCacheKey } from "./ObjectQuery.js";
-import { ObjectQuery } from "./ObjectQuery.js";
+import type { KnownCacheKey } from "./KnownCacheKey.js";
+import type { Entry } from "./Layer.js";
+import { Layers } from "./Layers.js";
+import { LinksHelper } from "./links/LinksHelper.js";
+import { ListsHelper } from "./list/ListsHelper.js";
+import { ObjectsHelper } from "./object/ObjectsHelper.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
-import type { Query } from "./Query.js";
-import { RefCounts } from "./RefCounts.js";
-import type { SimpleWhereClause } from "./SimpleWhereClause.js";
-import { tombstone } from "./tombstone.js";
+import { Queries } from "./Queries.js";
+import type { Subjects } from "./Subjects.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
-
-/*
-    Work still to do:
-    - [x] testing for optimistic writes
-    - [x] automatic invalidation of actions
-    - [x] automatic optimistic list updates
-    - [x] useOsdkObjects
-    - [x] imply offline for objects passed directly
-    - [x] websocket subscriptions
-    - [ ] links
-    - [x] add pagination
-    - [ ] sub-selection support
-    - [ ] interfaces
-    - [ ] setup defaults
-    - [ ] reduce updates in react
-*/
-
-export interface SubjectPayload<KEY extends CacheKey> extends Entry<KEY> {
-  isOptimistic: boolean;
-}
-
-export interface BatchContext {
-  changes: Changes;
-  createLayerIfNeeded: () => void;
-  optimisticWrite: boolean;
-
-  write: <K extends CacheKey<string, any, any>>(
-    k: K,
-    v: Entry<K>["value"],
-    status: Entry<K>["status"],
-  ) => Entry<K>;
-
-  read: <K extends CacheKey<string, any, any>>(
-    k: K,
-  ) => Entry<K> | undefined;
-
-  delete: <K extends CacheKey<string, any, any>>(
-    k: K,
-    status: Entry<K>["status"],
-  ) => Entry<K>;
-}
-
-interface UpdateOptions {
-  optimisticId?: OptimisticId;
-}
 
 export namespace Store {
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
   }
-}
-
-function createInitEntry(cacheKey: CacheKey): Entry<any> {
-  return {
-    cacheKey,
-    status: "init",
-    value: undefined,
-    lastUpdated: 0,
-  };
 }
 
 /*
@@ -127,86 +59,59 @@ function createInitEntry(cacheKey: CacheKey): Entry<any> {
     - Data is one per layer per cache key
 */
 
+/**
+ * Central data store with layered cache architecture.
+ * - Truth layer: server state | Optimistic layers: pending changes
+ * - Reference counting prevents memory leaks
+ * - Batch operations ensure consistency
+ */
 export class Store {
-  whereCanonicalizer: WhereClauseCanonicalizer = new WhereClauseCanonicalizer();
-  orderByCanonicalizer: OrderByCanonicalizer = new OrderByCanonicalizer();
-  #truthLayer: Layer = new Layer(undefined, undefined);
-  #topLayer: Layer;
-  client: Client;
+  readonly whereCanonicalizer: WhereClauseCanonicalizer =
+    new WhereClauseCanonicalizer();
+  readonly orderByCanonicalizer: OrderByCanonicalizer =
+    new OrderByCanonicalizer();
+
+  readonly client: Client;
 
   /** @internal */
-  logger?: Logger;
+  readonly logger?: Logger;
 
-  // we can use a regular Map here because the refCounting will
-  // handle cleanup.
-  #queries: Map<
-    CacheKey,
-    Query<any, any, any>
-  > = new Map();
+  readonly cacheKeys: CacheKeys<KnownCacheKey>;
+  readonly queries: Queries = new Queries();
 
-  #cacheKeyToSubject = new WeakMap<
-    CacheKey<string, any, any>,
-    BehaviorSubject<SubjectPayload<any>>
-  >();
-  #cacheKeys: CacheKeys;
+  readonly layers: Layers = new Layers({
+    logger: this.logger,
+    onRevalidate: this.#maybeRevalidateQueries.bind(this),
+  });
+  readonly subjects: Subjects = this.layers.subjects;
 
-  #refCounts = new RefCounts<CacheKey>(
-    DEBUG_REFCOUNTS ? 15_000 : 60_000,
-    (k) => this.#cleanupCacheKey(k),
-  );
-
-  // we are currently only using this for debug logging and should just remove it in the future if that
-  // continues to be true
-  #finalizationRegistry: FinalizationRegistry<() => void>;
+  // these are hopefully temporary
+  readonly lists: ListsHelper;
+  readonly objects: ObjectsHelper;
+  readonly links: LinksHelper;
 
   constructor(client: Client) {
-    this.client = client;
     this.logger = client[additionalContext].logger?.child({}, {
       msgPrefix: "Store",
     });
-    this.#topLayer = this.#truthLayer;
-    this.#cacheKeys = new CacheKeys(
+    this.client = client;
+
+    this.cacheKeys = new CacheKeys<KnownCacheKey>({
+      onDestroy: this.#cleanupCacheKey,
+    });
+
+    this.lists = new ListsHelper(
+      this,
+      this.cacheKeys,
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
-      (k) => {
-        if (DEBUG_REFCOUNTS) {
-          const cacheKeyType = k.type;
-          const otherKeys = k.otherKeys;
-          // eslint-disable-next-line no-console
-          console.log(
-            `CacheKeys.onCreate(${cacheKeyType}, ${JSON.stringify(otherKeys)})`,
-          );
-
-          this.#finalizationRegistry.register(k, () => {
-            // eslint-disable-next-line no-console
-            console.log(
-              `CacheKey Finalization(${cacheKeyType}, ${
-                JSON.stringify(otherKeys)
-              })`,
-            );
-          });
-        }
-
-        this.#refCounts.register(k);
-      },
     );
-
-    setInterval(() => {
-      this.#refCounts.gc();
-    }, 1000);
-
-    this.#finalizationRegistry = new FinalizationRegistry<() => void>(
-      (cleanupCallback) => {
-        try {
-          cleanupCallback();
-        } catch (e) {
-          // eslint-disable-next-line no-console
-          console.error(
-            "Caught an error while running a finalization callback",
-            e,
-          );
-        }
-      },
+    this.objects = new ObjectsHelper(this, this.cacheKeys);
+    this.links = new LinksHelper(
+      this,
+      this.cacheKeys,
+      this.whereCanonicalizer,
+      this.orderByCanonicalizer,
     );
   }
 
@@ -214,8 +119,8 @@ export class Store {
    * Called after a key is no longer retained and the timeout has elapsed
    * @param key
    */
-  #cleanupCacheKey = (key: CacheKey<string, any, any>) => {
-    const subject = this.peekSubject(key);
+  #cleanupCacheKey = (key: KnownCacheKey) => {
+    const subject = this.subjects.peek(key);
 
     if (DEBUG_REFCOUNTS) {
       // eslint-disable-next-line no-console
@@ -229,18 +134,13 @@ export class Store {
         JSON.stringify([key.type, ...key.otherKeys], null, 2),
       );
     }
-    this.#cacheKeys.remove(key);
+
     if (process.env.NODE_ENV !== "production") {
       invariant(subject);
     }
 
-    if (subject) {
-      subject.complete();
-      this.#cacheKeyToSubject.delete(key);
-    }
-
-    this.#queries.get(key)?.dispose();
-    this.#queries.delete(key);
+    this.subjects.delete(key);
+    this.queries.delete(key);
   };
 
   applyAction: <Q extends ActionDefinition<any>>(
@@ -264,245 +164,13 @@ export class Store {
     return result as ActionValidationResponse;
   };
 
-  removeLayer(layerId: OptimisticId): void {
-    invariant(
-      layerId != null,
-      "undefined is the reserved layerId for the truth layer",
-    );
-    // 1. collect all cache keys for a given layerId
-    let currentLayer: Layer | undefined = this.#topLayer;
-    const cacheKeys = new Map<CacheKey<string, any, any>, Entry<any>>();
-    while (currentLayer != null && currentLayer.parentLayer != null) {
-      if (currentLayer.layerId === layerId) {
-        for (const [k, v] of currentLayer.entries()) {
-          if (cacheKeys.has(k)) continue;
-          cacheKeys.set(k, v);
-        }
-      }
-
-      currentLayer = currentLayer.parentLayer;
-    }
-
-    // 2. remove the layers from the chain
-    this.#topLayer = this.#topLayer.removeLayer(layerId);
-
-    // 3. check each cache key to see if it is different in the new chain
-    for (const [k, oldEntry] of cacheKeys) {
-      const currentEntry = this.#topLayer.get(k);
-
-      // 4. if different, update the subject
-      if (oldEntry !== currentEntry) {
-        const x = currentEntry ?? createInitEntry(k);
-        // We are going to be pretty lazy here and just re-emit the value.
-        // In the future it may benefit us to deep equal check her but I think
-        // the subjects are effectively doing this anyway.
-        this.peekSubject(k)?.next(
-          {
-            // eslint-disable-next-line @typescript-eslint/no-misused-spread
-            ...(currentEntry ?? createInitEntry(k)),
-            isOptimistic:
-              currentEntry?.value !== this.#truthLayer.get(k)?.value,
-          },
-        );
-      }
-    }
-  }
-
-  getCacheKey<K extends CacheKey<string, any, any>>(
-    type: K["type"],
-    ...args: K["__cacheKey"]["args"]
-  ): K {
-    return this.#refCounts.register(this.#cacheKeys.get(type, ...args));
-  }
-
-  peekSubject = <KEY extends CacheKey<string, any, any>>(
-    cacheKey: KEY,
-  ):
-    | BehaviorSubject<SubjectPayload<KEY>>
-    | undefined =>
-  {
-    return this.#cacheKeyToSubject.get(cacheKey);
-  };
-
-  getSubject = <KEY extends CacheKey<string, any, any>>(
-    cacheKey: KEY,
-  ): BehaviorSubject<SubjectPayload<KEY>> => {
-    let subject = this.#cacheKeyToSubject.get(cacheKey);
-    if (!subject) {
-      const initialValue: Entry<KEY> = this.#topLayer.get(cacheKey)
-        ?? createInitEntry(cacheKey);
-
-      subject = new BehaviorSubject({
-        // eslint-disable-next-line @typescript-eslint/no-misused-spread
-        ...initialValue,
-        isOptimistic:
-          initialValue.value !== this.#truthLayer.get(cacheKey)?.value,
-      });
-      this.#cacheKeyToSubject.set(cacheKey, subject);
-    }
-
-    return subject;
-  };
-
-  public canonicalizeWhereClause<
-    T extends ObjectTypeDefinition | InterfaceDefinition,
-  >(
-    where: WhereClause<T>,
-  ): Canonical<SimpleWhereClause> {
-    return this.whereCanonicalizer.canonicalize(where);
-  }
-
-  public observeObject<T extends ObjectTypeDefinition | InterfaceDefinition>(
-    apiName: T["apiName"] | T,
-    pk: PrimaryKeyType<T>,
-    options: ObserveObjectOptions<T>,
-    subFn: Observer<ObjectPayload>,
-  ): Unsubscribable {
-    if (typeof apiName !== "string") {
-      apiName = apiName.apiName;
-    }
-
-    const query = this.getObjectQuery(apiName, pk);
-    this.retain(query.cacheKey);
-
-    if (options.mode !== "offline") {
-      query.revalidate(options.mode === "force")
-        .catch(e => {
-          subFn.error(e);
-          // we don't want observeObject() to return a promise,
-          // so we settle for logging an error here instead of
-          // dropping it on the floor.
-          if (this.logger) {
-            this.logger.error("Unhandled error in observeObject", e);
-          } else {
-            throw e;
-          }
-        });
-    }
-    const sub = query.subscribe(subFn);
-
-    return {
-      unsubscribe: () => {
-        sub.unsubscribe();
-        this.release(query.cacheKey);
-      },
-    };
-  }
-
-  public observeList<T extends ObjectTypeDefinition | InterfaceDefinition>(
-    options: ObserveListOptions<T>,
-    subFn: Observer<ListPayload>,
-  ): Unsubscribable {
-    // the ListQuery represents the shared state of the list
-    const query = this.getListQuery(
-      options.type,
-      options.where ?? {},
-      options.orderBy ?? {},
-      options,
-    );
-    this.retain(query.cacheKey);
-
-    if (options.mode !== "offline") {
-      query.revalidate(options.mode === "force").catch((x: unknown) => {
-        subFn.error(x);
-      });
-    }
-    const sub = query.subscribe(subFn);
-
-    if (options.streamUpdates) {
-      query.registerStreamUpdates(sub);
-    }
-
-    return {
-      unsubscribe: () => {
-        sub.unsubscribe();
-        this.release(query.cacheKey);
-      },
-    };
-  }
-
-  peekQuery<K extends CacheKey>(
-    cacheKey: K,
-  ): K["__cacheKey"]["query"] | undefined {
-    return this.#queries.get(cacheKey) as K["__cacheKey"]["query"] | undefined;
-  }
-
-  #getQuery<K extends CacheKey>(
-    cacheKey: K,
-    createQuery: () => K["__cacheKey"]["query"],
-  ): K["__cacheKey"]["query"] {
-    let query = this.peekQuery(cacheKey);
-    if (!query) {
-      query = createQuery();
-      this.#queries.set(cacheKey, query);
-    }
-    return query;
-  }
-
-  public getListQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
-    def: Pick<T, "type" | "apiName">,
-    where: WhereClause<T>,
-    orderBy: Record<string, "asc" | "desc" | undefined>,
-    opts: ListQueryOptions,
-  ): ListQuery {
-    const { apiName, type } = def;
-
-    const canonWhere = this.whereCanonicalizer.canonicalize(where);
-    const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy);
-    const listCacheKey = this.getCacheKey<ListCacheKey>(
-      "list",
-      type,
-      apiName,
-      canonWhere,
-      canonOrderBy,
-    );
-
-    return this.#getQuery(listCacheKey, () => {
-      return new ListQuery(
-        this,
-        this.getSubject(listCacheKey),
-        type,
-        apiName,
-        canonWhere,
-        canonOrderBy,
-        listCacheKey,
-        opts,
-      );
-    });
-  }
-
-  public getObjectQuery<T extends ObjectTypeDefinition>(
-    apiName: T["apiName"] | T,
-    pk: PrimaryKeyType<T>,
-  ): ObjectQuery {
-    if (typeof apiName !== "string") {
-      apiName = apiName.apiName;
-    }
-
-    const objectCacheKey = this.getCacheKey<ObjectCacheKey>(
-      "object",
-      apiName,
-      pk,
-    );
-
-    return this.#getQuery(objectCacheKey, () =>
-      new ObjectQuery(
-        this,
-        this.getSubject(objectCacheKey),
-        apiName,
-        pk,
-        objectCacheKey,
-        { dedupeInterval: 0 },
-      ));
-  }
-
-  public getValue<K extends CacheKey<string, any, any>>(
+  public getValue<K extends KnownCacheKey>(
     cacheKey: K,
   ): Entry<K> | undefined {
-    return this.#topLayer.get(cacheKey);
+    return this.layers.top.get(cacheKey);
   }
 
-  batch = <X>(
+  batch<X>(
     { optimisticId, changes = createChangedObjects() }: {
       optimisticId?: OptimisticId;
       changes?: Changes;
@@ -512,82 +180,9 @@ export class Store {
     batchResult: BatchContext;
     retVal: X;
     changes: Changes;
-  } => {
-    invariant(
-      optimisticId === undefined || !!optimisticId,
-      "optimistic must be undefined or not falsy",
-    );
-
-    let needsLayer = optimisticId !== undefined;
-    const batchContext: BatchContext = {
-      changes,
-      createLayerIfNeeded: () => {
-        if (needsLayer) {
-          this.#topLayer = this.#topLayer.addLayer(optimisticId);
-          needsLayer = false;
-        }
-      },
-      optimisticWrite: !!optimisticId,
-      write: (cacheKey, value, status) => {
-        const oldTopValue = this.#topLayer.get(cacheKey);
-
-        if (optimisticId) batchContext.createLayerIfNeeded();
-
-        const writeLayer = optimisticId
-          ? this.#topLayer
-          : this.#truthLayer;
-        const newValue = new Entry(
-          cacheKey,
-          value,
-          Date.now(),
-          status,
-        );
-
-        writeLayer.set(cacheKey, newValue);
-
-        const newTopValue = this.#topLayer.get(cacheKey);
-
-        if (oldTopValue !== newTopValue) {
-          this.#cacheKeyToSubject.get(cacheKey)?.next({
-            // eslint-disable-next-line @typescript-eslint/no-misused-spread
-            ...newValue,
-            isOptimistic:
-              newTopValue?.value !== this.#truthLayer.get(cacheKey)?.value,
-          });
-        }
-
-        return newValue;
-      },
-      delete: (cacheKey, status) => {
-        return batchContext.write(cacheKey, tombstone, status);
-      },
-      read: (cacheKey) => {
-        return optimisticId
-          ? this.#topLayer.get(cacheKey)
-          : this.#truthLayer.get(cacheKey);
-      },
-    };
-
-    const retVal = batchFn(batchContext);
-    this.maybeRevalidateQueries(changes, optimisticId).catch(e => {
-      // we don't want batch() to return a promise,
-      // so we settle for logging an error here instead of
-      // dropping it on the floor.
-      if (this.logger) {
-        this.logger.error("Unhandled error in batch", e);
-      } else {
-        // eslint-disable-next-line no-console
-        console.error("Unhandled error in batch", e);
-        throw e;
-      }
-    });
-
-    return {
-      batchResult: batchContext,
-      retVal: retVal,
-      changes: batchContext.changes,
-    };
-  };
+  } {
+    return this.layers.batch({ optimisticId, changes }, batchFn);
+  }
 
   public invalidateObject<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
@@ -597,36 +192,35 @@ export class Store {
       apiName = apiName.apiName;
     }
 
-    return this.getObjectQuery(apiName, pk)
-      .revalidate(/* force */ true);
+    return this.objects.getQuery({
+      apiName,
+      pk,
+    }).revalidate(/* force */ true);
   }
 
-  async maybeRevalidateQueries(
+  async #maybeRevalidateQueries(
     changes: Changes,
     optimisticId?: OptimisticId | undefined,
   ): Promise<void> {
+    const logger = process.env.NODE_ENV !== "production"
+      ? this.logger?.child({ methodName: "maybeRevalidateQueries" })
+      : undefined;
+
     if (changes.isEmpty()) {
       if (process.env.NODE_ENV !== "production") {
-        // todo
-        this.logger?.child({ methodName: "maybeRevalidateQueries" }).debug(
-          "No changes, aborting",
-        );
+        logger?.debug("No changes, aborting");
       }
       return;
     }
 
     if (process.env.NODE_ENV !== "production") {
-      // todo
-      this.logger?.child({ methodName: "maybeRevalidateQueries" }).debug(
-        DEBUG_ONLY__changesToString(changes),
-        { optimisticId },
-      );
+      logger?.debug(DEBUG_ONLY__changesToString(changes), { optimisticId });
     }
 
     try {
       const promises: Array<Promise<unknown>> = [];
-      for (const cacheKey of this.#queries.keys()) {
-        const promise = this.peekQuery(cacheKey)?.maybeUpdateAndRevalidate?.(
+      for (const cacheKey of this.queries.keys()) {
+        const promise = this.queries.peek(cacheKey)?.maybeUpdateAndRevalidate?.(
           changes,
           optimisticId,
         );
@@ -635,19 +229,21 @@ export class Store {
       await Promise.all(promises);
     } finally {
       if (process.env.NODE_ENV !== "production") {
-        // todo
-        this.logger?.child({ methodName: "maybeRevalidateQueries" }).debug(
-          "in finally",
-          DEBUG_ONLY__changesToString(changes),
-        );
+        logger?.debug("in finally", DEBUG_ONLY__changesToString(changes));
       }
     }
   }
 
   /**
-   * @param apiName
-   * @param changes The changes we know about / to update
-   * @returns
+   * Invalidates all cache entries for a specific object type.
+   * This will revalidate:
+   * 1. All objects of the specified type
+   * 2. All lists of the specified type
+   * 3. All links where the source object is of the specified type
+   *
+   * @param apiName - The API name of the object type to invalidate
+   * @param changes - Optional changes object to track what has been modified
+   * @returns Promise that resolves when all invalidations are complete
    */
   public invalidateObjectType<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
@@ -664,49 +260,17 @@ export class Store {
 
     const promises: Array<Promise<void>> = [];
 
-    for (const cacheKey of this.#truthLayer.keys()) {
-      if (isListCacheKey(cacheKey)) {
-        if (!changes || !changes.modified.has(cacheKey)) {
-          const promise = this.peekQuery(cacheKey)?.revalidate(true);
-
-          if (promise) {
-            promises.push(promise);
-            changes?.modified.add(cacheKey);
-          }
-        }
+    for (const cacheKey of this.layers.truth.keys()) {
+      if (changes && changes.modified.has(cacheKey)) {
+        continue;
       }
+      const query = this.queries.peek(cacheKey);
+      if (!query) continue;
+
+      promises.push(query.invalidateObjectType(apiName, changes));
     }
 
-    return Promise.all(promises).then(() => void 0);
+    // we use allSettled here because we don't care if it succeeds or fails, just that they all complete.
+    return Promise.allSettled(promises).then(() => void 0);
   }
-
-  retain(cacheKey: CacheKey<string, any, any>): void {
-    this.#refCounts.retain(cacheKey);
-  }
-
-  release(cacheKey: CacheKey<string, any, any>): void {
-    this.#refCounts.release(cacheKey);
-  }
-}
-
-export async function invalidateList<T extends ObjectTypeDefinition>(
-  store: Store,
-  args: {
-    type: Pick<T, "apiName" | "type">;
-    where?: WhereClause<T> | SimpleWhereClause;
-    orderBy?: OrderBy<T>;
-  },
-): Promise<void> {
-  const where = store.whereCanonicalizer.canonicalize(args.where ?? {});
-  const orderBy = store.orderByCanonicalizer.canonicalize(args.orderBy ?? {});
-
-  const cacheKey = store.getCacheKey<ListCacheKey>(
-    "list",
-    args.type.type,
-    args.type.apiName,
-    where,
-    orderBy as Canonical<OrderBy<T>>,
-  );
-
-  await store.peekQuery(cacheKey)?.revalidate(true);
 }

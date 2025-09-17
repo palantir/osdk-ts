@@ -17,7 +17,7 @@
 import type { Osdk } from "@osdk/api";
 import {
   Athlete,
-  CollateralConcernList,
+  CollateralConcernCandidate,
   EsongInterfaceA,
   NbaPlayer,
 } from "@osdk/e2e.generated.catchall";
@@ -29,7 +29,7 @@ import { dsClient } from "./client.js";
 export async function runInterfacesTest2(): Promise<void> {
   console.log("here");
   const athletes = await dsClient(Athlete).where({
-    name22: { $eq: "Michael Jordan" },
+    athleteId: { $eq: "E0DD36D0-D6B9-487B-B643-4CED57A26890" },
   }).fetchPage({ $includeAllBaseObjectProperties: true });
   console.log("here2");
 
@@ -49,7 +49,7 @@ export async function runInterfacesTest2(): Promise<void> {
   >(true);
 
   const athletesSelected = await dsClient(Athlete).where({
-    name22: { $eq: "Michael Jordan" },
+    athleteId: { $eq: "E0DD36D0-D6B9-487B-B643-4CED57A26890" },
   }).fetchPage({
     $select: ["athleteId", "jerseyNumber", "name22"],
     $includeAllBaseObjectProperties: true,
@@ -71,7 +71,7 @@ export async function runInterfacesTest2(): Promise<void> {
 
   // You cannot specify both $select and $includeAllBaseObjectProperties
   const athletesNotAllSelected = await dsClient(Athlete).where({
-    name22: { $eq: "Michael Jordan" },
+    athleteId: { $eq: "E0DD36D0-D6B9-487B-B643-4CED57A26890" },
   }).fetchPage({
     $select: ["athleteId", "name22"],
     // @ts-expect-error
@@ -79,12 +79,18 @@ export async function runInterfacesTest2(): Promise<void> {
   });
 
   // interface to interface
-  const concernList = await dsClient(CollateralConcernList).pivotTo(
-    "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity",
+  const concernCandidates2 = await dsClient(CollateralConcernCandidate)
+    .fetchPage();
+  const concernList2 = await dsClient(CollateralConcernCandidate).pivotTo(
+    "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList",
   ).fetchPage();
-
-  // this will be empty because no implementations
-  console.log("linked entities", concernList.data);
+  const singleLink = await concernCandidates2.data[0]
+    .$link[
+      "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList"
+    ].fetchPage();
+  console.log("concern candidates", concernCandidates2.data);
+  console.log("linked list entities", concernList2.data);
+  console.log("tried link instance impl", singleLink);
 
   // interface to object
   const pds = await dsClient(EsongInterfaceA).pivotTo("esongPds").fetchPage();
@@ -93,6 +99,13 @@ export async function runInterfacesTest2(): Promise<void> {
 
   const interfaceA = await dsClient(EsongInterfaceA).fetchPage();
   console.log("interfaceA instances: ", interfaceA);
+
+  const huh3 = await interfaceA.data[0].$link.esongPds.fetchPage();
+
+  console.log(
+    "lets try $link",
+    await interfaceA.data[0].$link.esongPds.fetchPage(),
+  );
 }
 
 void runInterfacesTest2();

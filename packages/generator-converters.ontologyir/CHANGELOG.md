@@ -1,5 +1,60 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.5.0-beta.7
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.0-beta.7
+
+## 2.5.0-beta.6
+
+### Minor Changes
+
+- cbcf2ad: Add branching support
+
+### Patch Changes
+
+- Updated dependencies [04fe946]
+  - @osdk/client.unstable@2.5.0-beta.6
+
+## 2.5.0-beta.5
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.0-beta.5
+
+## 2.5.0-beta.4
+
+### Minor Changes
+
+- a00d2ed: Update Platform SDK dependencies
+- a96d89e: Update Platform SDK dependencies
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.0-beta.4
+
+## 2.5.0-beta.3
+
+### Minor Changes
+
+- 7bdac45: Update Platform SDK dependency
+- 7bdac45: Support value type enum generation for strings and booleans
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.0-beta.3
+
+## 2.5.0-beta.2
+
+### Minor Changes
+
+- 7cdab1d: Update platform sdk dependencies
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.0-beta.2
+
 ## 2.4.0-beta.17
 
 ### Patch Changes

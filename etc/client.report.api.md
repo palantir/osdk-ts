@@ -21,6 +21,7 @@ import type { Experiment } from '@osdk/api/unstable';
 import type { ExperimentFns } from '@osdk/api/unstable';
 import { InterfaceDefinition } from '@osdk/api';
 import { InterfaceMetadata } from '@osdk/api';
+import type { InterfaceQueryDataType } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import { Logger } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
@@ -113,6 +114,7 @@ export function createAttachmentUpload(data: Blob, name: string): AttachmentUplo
 // @public (undocumented)
 export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
     	logger?: Logger
+    	branch?: string
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
 
 // @public

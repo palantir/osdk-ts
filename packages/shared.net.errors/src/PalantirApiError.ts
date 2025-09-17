@@ -18,6 +18,7 @@ export class PalantirApiError extends Error implements PalantirApiError {
   public message: string;
   public errorName?: string;
   public errorCode?: string;
+  public errorDescription?: string;
   public statusCode?: number;
   public errorInstanceId?: string;
   public parameters?: any;
@@ -26,6 +27,7 @@ export class PalantirApiError extends Error implements PalantirApiError {
     message: string,
     errorName?: string,
     errorCode?: string,
+    errorDescription?: string,
     statusCode?: number,
     errorInstanceId?: string,
     parameters?: any,
@@ -34,6 +36,7 @@ export class PalantirApiError extends Error implements PalantirApiError {
     this.message = message;
     this.errorName = errorName;
     this.errorCode = errorCode;
+    this.errorDescription = errorDescription;
     this.statusCode = statusCode;
     this.errorInstanceId = errorInstanceId;
     this.parameters = parameters;

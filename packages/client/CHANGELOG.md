@@ -1,5 +1,107 @@
 # @osdk/client
 
+## 2.5.0-beta.7
+
+### Minor Changes
+
+- ab29baa: make dedupeIntervals dynamic
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.7
+- @osdk/client.unstable@2.5.0-beta.7
+- @osdk/generator-converters@2.5.0-beta.7
+
+## 2.5.0-beta.6
+
+### Minor Changes
+
+- d797f0c: Falsy values other than undefined or null do not throw for query map responses
+- cbcf2ad: Add branching support
+
+### Patch Changes
+
+- Updated dependencies [badfbc4]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [04fe946]
+  - @osdk/shared.client.impl@1.5.0-beta.2
+  - @osdk/shared.net.errors@2.5.0-beta.2
+  - @osdk/shared.net.fetch@1.5.0-beta.2
+  - @osdk/generator-converters@2.5.0-beta.6
+  - @osdk/client.unstable@2.5.0-beta.6
+  - @osdk/api@2.5.0-beta.6
+
+## 2.5.0-beta.5
+
+### Minor Changes
+
+- 3d7461d: Fix applyQuery for marketplace installations
+- 052a96b: Add $link support.
+
+### Patch Changes
+
+- Updated dependencies [052a96b]
+  - @osdk/api@2.5.0-beta.5
+  - @osdk/client.unstable@2.5.0-beta.5
+  - @osdk/generator-converters@2.5.0-beta.5
+
+## 2.5.0-beta.4
+
+### Minor Changes
+
+- a00d2ed: Update Platform SDK dependencies
+- a96d89e: Update Platform SDK dependencies
+
+### Patch Changes
+
+- Updated dependencies [a00d2ed]
+- Updated dependencies [a96d89e]
+  - @osdk/generator-converters@2.5.0-beta.4
+  - @osdk/api@2.5.0-beta.4
+  - @osdk/client.unstable@2.5.0-beta.4
+
+## 2.5.0-beta.3
+
+### Minor Changes
+
+- 7bdac45: Update Platform SDK dependency
+- 20962bc: Add a new experimental fetchPageByRidNoType method
+
+### Patch Changes
+
+- Updated dependencies [7bdac45]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [e48be06]
+  - @osdk/generator-converters@2.5.0-beta.3
+  - @osdk/api@2.5.0-beta.3
+  - @osdk/client.unstable@2.5.0-beta.3
+
+## 2.5.0-beta.2
+
+### Minor Changes
+
+- b05075d: Add fix for interface links.
+- 7160276: Add order by relevance support to nearest neighbors
+- 7cdab1d: Update platform sdk dependencies
+- b9e9a88: Refactor Observable Client with enhanced observer architecture
+  - Restructure observable implementation with dedicated observer classes (LinkObservers, ListObservers, ObjectObservers)
+  - Improve type safety for link observation operations with enhanced generic constraints
+  - Add QuerySubscription and UnsubscribableWrapper for better encapsulation
+  - Maintain API compatibility while improving internal architecture
+
+- 76905f5: Remove undefined type from aggregation $group value
+- 48d52b7: Parallelize network request for getting object metadata when doing simple object fetches.
+
+### Patch Changes
+
+- Updated dependencies [7160276]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [76905f5]
+  - @osdk/api@2.5.0-beta.2
+  - @osdk/generator-converters@2.5.0-beta.2
+  - @osdk/client.unstable@2.5.0-beta.2
+
 ## 2.4.0-beta.17
 
 ### Minor Changes
@@ -171,7 +273,6 @@
   The `useOsdkAction` hook in `@osdk/react` now provides a `validateAction` function that allows you to check if an action is valid without executing it. This is useful for providing real-time validation feedback to users before they commit to performing an action.
 
   ### New features:
-
   - **validateAction**: A new async function that validates action parameters without executing the action
   - **isValidating**: A boolean state that indicates when validation is in progress
   - **validationResult**: Contains the validation response from the server, including whether the action is valid and any validation errors
@@ -194,7 +295,6 @@
   ```
 
   ### Implementation details:
-
   - Multiple validation calls can be made - new calls automatically cancel previous pending validations
   - Validation and action execution are mutually exclusive - you cannot validate while an action is being applied and vice versa
   - The underlying `ObservableClient` in `@osdk/client` has been extended with a `validateAction` method to support this functionality
@@ -2092,7 +2192,6 @@
 - 97f627e: Supports more than one concurrent subscription
 
   Also:
-
   - Introduced an optional pino logger to the client
   - Fixes issues with where clauses for equality in subscriptions
   - Fixes issues with inconsistent id name and apiName's in the mapping data

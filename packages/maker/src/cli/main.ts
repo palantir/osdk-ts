@@ -145,7 +145,7 @@ export default async function main(
 
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
 
-  const ontology = await loadOntology(
+  const ontologyIr = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
     commandLineOpts.outputDir,
@@ -155,20 +155,34 @@ export default async function main(
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
   await fs.writeFile(
     commandLineOpts.output,
-    JSON.stringify(ontology.ontology, null, 2),
+    JSON.stringify(
+      {
+        ontology: ontologyIr.ontology,
+        importedOntology: ontologyIr.importedOntology,
+      },
+      null,
+      2,
+    ),
   );
   // No point in generating block if there aren't any value types
-  if (ontology.valueType.valueTypes.length > 0) {
+  if (
+    ontologyIr.valueTypes.valueTypes.length > 0
+    || ontologyIr.importedValueTypes.valueTypes.length > 0
+  ) {
     await fs.writeFile(
       commandLineOpts.valueTypesOutput,
-      JSON.stringify(ontology.valueType, null, 2),
+      JSON.stringify(
+        ontologyIr.valueTypes,
+        null,
+        2,
+      ),
     );
   }
 
   if (commandLineOpts.generateFunctionsOsdk !== undefined) {
     // Generate full ontology metadata for functions OSDK
     const fullMetadata = OntologyIrToFullMetadataConverter
-      .getFullMetadataFromIr(ontology.ontology.blockData);
+      .getFullMetadataFromIr(ontologyIr.ontology);
     consola.info(
       `Saving full ontology metadata to ${commandLineOpts.generateFunctionsOsdk}`,
     );

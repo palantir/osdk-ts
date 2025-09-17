@@ -128,7 +128,7 @@ describe("AsyncCache", () => {
       asyncSetSpy = vi.spyOn(asyncCache, "set");
       asyncCacheSpies = {
         get: vi.spyOn(asyncCache, "get"),
-        set: vi.spyOn(asyncCache, "set"),
+        set: asyncSetSpy,
         getOrUndefined: vi.spyOn(asyncCache, "getOrUndefined"),
       };
 

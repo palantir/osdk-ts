@@ -81,11 +81,18 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
+  let error: Error | undefined;
+  if (payload && "error" in payload && payload.error) {
+    error = payload.error;
+  } else if (payload?.status === "error") {
+    error = new Error("Failed to load object");
+  }
+
   return {
     object: payload?.object as Osdk.Instance<Q> | undefined,
     isLoading: payload?.status === "loading",
     isOptimistic: !!payload?.isOptimistic,
-    error: payload && "error" in payload ? payload.error : undefined,
+    error,
     forceUpdate: () => {
       throw "not implemented";
     },

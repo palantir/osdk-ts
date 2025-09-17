@@ -7,18 +7,26 @@
 import { Attachment } from '@osdk/client';
 import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/client';
+import { Geometry } from 'geojson';
+import type { GroupId as GroupId_2 } from '@osdk/foundry.core';
 import type { InterfaceDefinition } from '@osdk/client';
 import type { ObjectMetadata } from '@osdk/client';
 import type { ObjectTypeDefinition } from '@osdk/client';
 import type { Osdk } from '@osdk/client';
 import type { OsdkObjectCreatePropertyType } from '@osdk/client';
-import type { OsdkObjectPropertyType } from '@osdk/client';
+import { Point } from 'geojson';
 import type { PropertyKeys } from '@osdk/client';
 import { Range as Range_2 } from '@osdk/client';
 import { ThreeDimensionalAggregation } from '@osdk/client';
 import { TwoDimensionalAggregation } from '@osdk/client';
+import type { UserId as UserId_2 } from '@osdk/foundry.core';
 
 export { Attachment }
+
+// @public (undocumented)
+export type ClassificationMarking<T extends string = string> = T & {
+    	__markingBrand?: "classification"
+};
 
 // Warning: (ae-forgotten-export) The symbol "AnyEdit" needs to be exported by the entry point index.d.ts
 //
@@ -112,6 +120,13 @@ export type Float<T extends number = number> = T & {
     	__floatBrand?: void
 };
 
+export { Geometry }
+
+// @public (undocumented)
+export type GroupId = GroupId_2 & {
+    	__groupIdBrand?: void
+};
+
 // @public (undocumented)
 export type Integer<T extends number = number> = T & {
     	__integerBrand?: void
@@ -120,6 +135,11 @@ export type Integer<T extends number = number> = T & {
 // @public (undocumented)
 export type Long<T extends string = string> = T & {
     	__longBrand?: void
+};
+
+// @public (undocumented)
+export type MandatoryMarking<T extends string = string> = T & {
+    	__markingBrand?: "mandatory"
 };
 
 // @public (undocumented)
@@ -160,6 +180,17 @@ export interface PlatformNotification {
     links: NotificationLink[];
 }
 
+export { Point }
+
+// @public (undocumented)
+export type Principal = {
+    	type: "user"
+    	id: string
+} | {
+    	type: "group"
+    	id: string
+};
+
 export { Range_2 as Range }
 
 // @public (undocumented)
@@ -186,6 +217,16 @@ export interface UrlLinkTarget {
     	// (undocumented)
     url: string;
 }
+
+// @public (undocumented)
+export class UserFacingError extends Error {
+    	constructor(message: string);
+}
+
+// @public (undocumented)
+export type UserId = UserId_2 & {
+    	__userIdBrand?: void
+};
 
 // (No @packageDocumentation comment for this package)
 

@@ -27,7 +27,7 @@ export async function loadInterfaceMetadata(
     client,
     await client.ontologyRid,
     objectType,
-    { preview: true },
+    { preview: true, branch: client.branch },
   );
 
   return __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(r, true);

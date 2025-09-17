@@ -77,6 +77,7 @@ export class OntologyIrToFullMetadataConverter {
         displayName: "ontology",
         description: "",
       },
+      valueTypes: {},
     };
   }
 
@@ -110,6 +111,7 @@ export class OntologyIrToFullMetadataConverter {
         displayName: "ontology",
         description: "",
       },
+      valueTypes: {},
     };
   }
 
@@ -383,6 +385,7 @@ export class OntologyIrToFullMetadataConverter {
 
         implementsInterfaces2[interfaceApiName] = {
           properties: propertyMappings,
+          links: {},
         };
       }
 

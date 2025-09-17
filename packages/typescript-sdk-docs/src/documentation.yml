@@ -1097,6 +1097,8 @@ versions:
       loadLinkedObjectsReference:
         - template: |-
             import { {{linkedObjectType}} } from "{{{packageName}}}";
+            // Edit this import if your client location differs
+            import { client } from "./client";
 
             function getLinked{{linkedObjectType}}(source: Osdk.Instance<{{sourceObjectType}}>) {
                 {{#isLinkManySided}}
@@ -1105,6 +1107,11 @@ versions:
                 {{^isLinkManySided}}
                 return source.$link.{{linkApiName}}.fetchOneWithErrors();
                 {{/isLinkManySided}}
+            }
+
+            // You can also get a linked object by doing an object set searcharound
+            function getLinkedWithPivot{{linkedObjectType}}(){
+                return client({{sourceObjectType}}).pivotTo({{linkApiName}}).fetchPage();
             }
       aggregationTemplate:
         - template: |-
@@ -2035,3 +2042,64 @@ versions:
                 const data = await response.blob();
                 ...
             }
+  "2.4.0":
+    snippets:
+        derivedPropertyNumericExpression:
+          - template: |-
+              import { {{objectType}} } from "{{{packageName}}}";
+              // Edit this import if your client location differs
+              import { client } from "./client";
+
+              const {{objectType}}WithExpression = await client({{objectType}})
+                  .withProperties({
+                    "newPropertyName": (baseObjectSet) =>
+                        {{^isUnary}}
+                        baseObjectSet.pivotTo("{{linkName}}")
+                            .selectProperty("{{property}}").{{operation}}(
+                                baseObjectSet.pivotTo("{{linkName}}").aggregate("$count"))
+                        {{/isUnary}}
+                        {{#isUnary}}
+                        baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}").{{operation}}()
+                        {{/isUnary}}
+                  });
+        derivedPropertyDatetimeExpression:
+          - template: |-
+              import { {{objectType}} } from "{{{packageName}}}";
+              // Edit this import if your client location differs
+              import { client } from "./client";
+
+              const {{objectType}}WithExpression = await client({{objectType}})
+                  .withProperties({
+                    "newPropertyName": (baseObjectSet) =>
+                        {{^isExtractPart}} 
+                        baseObjectSet.pivotTo("{{linkName}}")
+                            .selectProperty("{{property}}")
+                            .{{operation}}(baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}"))
+                        {{/isExtractPart}}
+                        {{#isExtractPart}}
+                        baseObjectSet.pivotTo("{{linkName}}")
+                            .selectProperty("{{property}}").{{operation}}("DAY")
+                        {{/isExtractPart}}
+                  });
+        nearestNeighborsTextQuery:
+          - template: |-
+              import { {{objectType}} } from "{{{packageName}}}";
+              // Edit this import if your client location differs
+              import { client } from "./client";
+
+              const result = await client({{objectType}})
+                .nearestNeighbors("coffee", 5, "{{vectorProperty}}")
+                .fetchPage();
+
+        nearestNeighborsVectorQuery:
+          - template: |-
+              import { {{objectType}} } from "{{{packageName}}}";
+              // Edit this import if your client location differs
+              import { client } from "./client";
+
+              // Note that this vector maps to an arbitrary string
+              // It must match the dimension of the "{{vectorProperty}}" property: {{vectorDimensionSize}}
+              const vector_query = Array.from({ length: {{vectorDimensionSize}} }, () => 0.3),
+              const result = await client({{objectType}})
+                .nearestNeighbors(vector_query, 5, "{{vectorProperty}}")
+                .fetchPage();

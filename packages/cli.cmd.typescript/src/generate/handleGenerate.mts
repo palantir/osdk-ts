@@ -106,6 +106,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
     const ontology = await OntologiesV2.getFullMetadata(
       ctx,
       ontologies.data[0].apiName as OntologyIdentifier,
+      { branch: args.branch },
     );
 
     function sortKeys<T extends Record<string, any>>(
@@ -186,50 +187,52 @@ async function generateClientSdk(
     if (!args.asPackage) {
       await generateSourceFiles(args, ontology, minimalFs);
 
-      const packageJsonPath = await findUp("package.json", {
-        cwd: args.outDir,
-      });
+      if (!args.skipPackageJsonUpdate) {
+        const packageJsonPath = await findUp("package.json", {
+          cwd: args.outDir,
+        });
 
-      if (!packageJsonPath) {
-        return true;
-      }
-      const packageJsonOriginal = JSON.parse(
-        await fs.promises.readFile(packageJsonPath, "utf-8"),
-      );
-      const packageJson = JSON.parse(
-        await fs.promises.readFile(packageJsonPath, "utf-8"),
-      );
-
-      const dependencyVersions = await getDependencyVersions();
-      if (args.internal) {
-        dependencyVersions.osdkApiVersion = "workspace:~";
-        dependencyVersions.osdkClientVersion = "workspace:~";
-        dependencyVersions.osdkLegacyClientVersion = "workspace:~";
-      }
-
-      const expectedDeps = getExpectedDependencies(
-        dependencyVersions,
-      );
-
-      for (const [type, deps] of Object.entries(expectedDeps)) {
-        if (!(type in packageJson)) {
-          packageJson[type] = deps;
-        } else {
-          Object.assign(packageJson[type], deps);
+        if (!packageJsonPath) {
+          return true;
         }
-      }
-
-      updateVersionsIfTheyExist(packageJson, {
-        "@osdk/client": dependencyVersions.osdkClientVersion,
-        "@osdk/api": dependencyVersions.osdkApiVersion,
-      });
-
-      // only write if changed
-      if (!deepEqual(packageJsonOriginal, packageJson)) {
-        await fs.promises.writeFile(
-          packageJsonPath,
-          JSON.stringify(packageJson, undefined, 2) + "\n",
+        const packageJsonOriginal = JSON.parse(
+          await fs.promises.readFile(packageJsonPath, "utf-8"),
         );
+        const packageJson = JSON.parse(
+          await fs.promises.readFile(packageJsonPath, "utf-8"),
+        );
+
+        const dependencyVersions = await getDependencyVersions();
+        if (args.internal) {
+          dependencyVersions.osdkApiVersion = "workspace:~";
+          dependencyVersions.osdkClientVersion = "workspace:~";
+          dependencyVersions.osdkLegacyClientVersion = "workspace:~";
+        }
+
+        const expectedDeps = getExpectedDependencies(
+          dependencyVersions,
+        );
+
+        for (const [type, deps] of Object.entries(expectedDeps)) {
+          if (!(type in packageJson)) {
+            packageJson[type] = deps;
+          } else {
+            Object.assign(packageJson[type], deps);
+          }
+        }
+
+        updateVersionsIfTheyExist(packageJson, {
+          "@osdk/client": dependencyVersions.osdkClientVersion,
+          "@osdk/api": dependencyVersions.osdkApiVersion,
+        });
+
+        // only write if changed
+        if (!deepEqual(packageJsonOriginal, packageJson)) {
+          await fs.promises.writeFile(
+            packageJsonPath,
+            JSON.stringify(packageJson, undefined, 2) + "\n",
+          );
+        }
       }
 
       return true;

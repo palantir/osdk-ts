@@ -150,9 +150,7 @@ export function defineCreateInterfaceObjectAction(
     ],
     ...(validation
       ? {
-        validation: [
-          convertValidationRule(validation),
-        ],
+        validation: convertValidationRule(validation),
       }
       : {}),
   });
@@ -184,7 +182,7 @@ export function defineCreateObjectAction(
       actionApiName,
     );
   }
-  const parameters = createParameters(def, parameterNames, true);
+  const parameters = createParameters(def, parameterNames);
   const mappings = Object.fromEntries(
     Object.entries(def.nonParameterMappings ?? {}).map((
       [id, value],
@@ -221,9 +219,7 @@ export function defineCreateObjectAction(
       ?? createDefaultParameterOrdering(def, parameters),
     ...(def.actionLevelValidation
       ? {
-        validation: [
-          convertValidationRule(def.actionLevelValidation),
-        ],
+        validation: convertValidationRule(def.actionLevelValidation),
       }
       : {}),
     ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
@@ -331,9 +327,7 @@ export function defineModifyInterfaceObjectAction(
     ],
     ...(validation
       ? {
-        validation: [
-          convertValidationRule(validation),
-        ],
+        validation: convertValidationRule(validation),
       }
       : {}),
   });
@@ -373,7 +367,7 @@ export function defineModifyObjectAction(
       actionApiName,
     );
   }
-  const parameters = createParameters(def, parameterNames, false);
+  const parameters = createParameters(def, parameterNames);
   parameters.forEach(
     p => {
       if (p.id !== MODIFY_OBJECT_PARAMETER && p.defaultValue === undefined) {
@@ -428,9 +422,7 @@ export function defineModifyObjectAction(
       ),
     ...(def.actionLevelValidation
       ? {
-        validation: [
-          convertValidationRule(def.actionLevelValidation),
-        ],
+        validation: convertValidationRule(def.actionLevelValidation),
       }
       : {}),
     ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
@@ -486,9 +478,7 @@ export function defineDeleteObjectAction(
     },
     ...(def.actionLevelValidation
       ? {
-        validation: [
-          convertValidationRule(def.actionLevelValidation),
-        ],
+        validation: convertValidationRule(def.actionLevelValidation),
       }
       : {}),
   });
@@ -528,7 +518,7 @@ export function defineCreateOrModifyObjectAction(
       actionApiName,
     );
   }
-  const parameters = createParameters(def, parameterNames, false);
+  const parameters = createParameters(def, parameterNames);
   parameters.forEach(
     p => {
       if (
@@ -586,9 +576,7 @@ export function defineCreateOrModifyObjectAction(
       ),
     ...(def.actionLevelValidation
       ? {
-        validation: [
-          convertValidationRule(def.actionLevelValidation),
-        ],
+        validation: convertValidationRule(def.actionLevelValidation),
       }
       : {}),
     ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
@@ -686,7 +674,6 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
 function createParameters(
   def: ActionTypeUserDefinition,
   parameterSet: Set<string>,
-  defaultRequired: boolean,
 ): Array<ActionParameter> {
   const targetParam: Array<ActionParameter> = [];
   parameterSet.forEach(name => {
@@ -764,7 +751,8 @@ function createParameters(
                     def.objectType.properties?.[id].type!,
                   )),
               required: def.parameterConfiguration?.[id].required
-                ?? defaultRequired,
+                ?? (def.objectType.properties?.[id]?.nullability?.noNulls
+                  ?? false),
             }
             : {
               required: (def.objectType.properties?.[id].array ?? false)
@@ -775,7 +763,7 @@ function createParameters(
                     : {},
                 }
                 : def.objectType.properties?.[id].nullability?.noNulls
-                  ?? defaultRequired,
+                  ?? false,
               allowedValues: extractAllowedValuesFromPropertyType(
                 def.objectType.properties?.[id].type!,
               ),
@@ -1098,14 +1086,16 @@ function sanitize(s: string): string {
 
 function convertValidationRule(
   actionValidation: ActionLevelValidationDefinition,
-): ActionValidationRule {
-  return {
-    condition: convertConditionDefinition(actionValidation.condition),
-    displayMetadata: actionValidation.displayMetadata ?? {
-      failureMessage: "Did not satisfy validation",
-      typeClasses: [],
-    },
-  };
+): Array<ActionValidationRule> {
+  return actionValidation.map(rule => {
+    return {
+      condition: convertConditionDefinition(rule.condition),
+      displayMetadata: rule.displayMetadata ?? {
+        failureMessage: "Did not satisfy validation",
+        typeClasses: [],
+      },
+    };
+  });
 }
 
 function validateActionConfiguration(action: ActionType): void {

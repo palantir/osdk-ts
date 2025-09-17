@@ -1,5 +1,5 @@
 ---
-"@osdk/api": minor
+"@osdk/api": patch
 ---
       
 Simulated release

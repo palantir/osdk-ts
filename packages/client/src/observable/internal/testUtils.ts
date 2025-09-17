@@ -29,6 +29,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import { Chalk } from "chalk";
+import { inspect } from "node:util";
 import type { DeferredPromise } from "p-defer";
 import pDefer from "p-defer";
 import type { Observer } from "rxjs";
@@ -39,13 +40,14 @@ import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type { Client } from "../../Client.js";
 import { additionalContext } from "../../Client.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { SpecificLinkPayload } from "../LinkPayload.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
-import type { OrderBy, Status, Unsubscribable } from "../ObservableClient.js";
+import type { OrderBy, Status } from "../ObservableClient/common.js";
+import type { Unsubscribable } from "../Unsubscribable.js";
 import type { Entry } from "./Layer.js";
-import type { ListQueryOptions } from "./ListQuery.js";
-import type { ObjectCacheKey } from "./ObjectQuery.js";
-import { storeOsdkInstances } from "./ObjectQuery.js";
+import type { ListQueryOptions } from "./list/ListQueryOptions.js";
+import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import type { Store } from "./Store.js";
 
@@ -90,11 +92,14 @@ function mockLog(...args: any[]) {
     ...args,
   );
 }
-// interface Logger.LogFn {
-//   (obj: unknown, msg?: string, ...args: any[]): void;
-//   (msg: string, ...args: any[]): void;
-// }
 
+/**
+ * Testing utilities for ObservableClient implementation.
+ * - Mock creation helpers for client, observers, and callbacks
+ * - Expectation utilities for validating payloads
+ * - Tools for managing test lifecycle and cleanup
+ * - Creates a colorized logger for test environments
+ */
 export function createTestLogger(
   bindings: Record<string, any>,
   options?: { level?: string; msgPrefix?: string },
@@ -161,6 +166,9 @@ export function createTestLogger(
   };
 }
 
+/**
+ * Creates mocked client helpers with deferred promise control
+ */
 export function createClientMockHelper(): MockClientHelper {
   const client = vitest.fn<typeof client>() as unknown as Mock<Client> & Client;
 
@@ -319,6 +327,9 @@ export function createClientMockHelper(): MockClientHelper {
   };
 }
 
+/**
+ * Manages test subscriptions with automatic cleanup
+ */
 export function createDefer() {
   let subscriptions: Unsubscribable[];
 
@@ -337,6 +348,28 @@ export function createDefer() {
     subscriptions.push(x);
     return x;
   };
+}
+
+export function expectSingleLinkCallAndClear<T extends ObjectTypeDefinition>(
+  subFn: MockedObject<Observer<SpecificLinkPayload | undefined>>,
+  resolvedList: ObjectHolder[] | Osdk.Instance<T>[] | undefined,
+  payloadOptions: Omit<Partial<SpecificLinkPayload>, "resolvedList"> = {},
+): SpecificLinkPayload | undefined {
+  if (vitest.isFakeTimers()) {
+    vitest.runOnlyPendingTimers();
+  }
+  expect(subFn.next).toHaveBeenCalledExactlyOnceWith(
+    linkPayloadContaining({
+      ...payloadOptions,
+      resolvedList: resolvedList as unknown as Array<
+        ObjectHolder
+      >,
+    }),
+  );
+
+  const ret = subFn.next.mock.calls[0][0];
+  subFn.next.mockClear();
+  return ret;
 }
 
 export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
@@ -358,18 +391,24 @@ export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
   subFn.next.mockClear();
 }
 
+/**
+ * Validates object payload emissions in tests
+ */
 export function expectSingleObjectCallAndClear<T extends ObjectTypeDefinition>(
   subFn: MockedObject<Observer<ObjectPayload | undefined>>,
   object: Osdk.Instance<T> | undefined,
   status?: Status,
-): void {
+): ObjectPayload | undefined {
   expect(subFn.next).toHaveBeenCalledExactlyOnceWith(
     expect.objectContaining({
       object,
       status: status ?? expect.any(String),
     }),
   );
+
+  const ret = subFn.next.mock.calls[0][0];
   subFn.next.mockClear();
+  return ret;
 }
 
 export async function waitForCall(
@@ -382,8 +421,19 @@ export async function waitForCall(
   try {
     await vi.waitFor(() => {
       expect(subFn).toHaveBeenCalledTimes(times);
+    }, {
+      interval: 0,
     });
   } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(
+      `We are going to fail waiting for ${times} calls because these are our calls: `,
+      inspect(subFn.mock.calls, {
+        depth: 9,
+        colors: true,
+        compact: 2,
+      }),
+    );
     // we don't need the error, it will retrigger on the next line
     // and that provides better behavior in the vitest vscode
     // plugin. This places the error in the test itself instead of
@@ -404,10 +454,8 @@ export function expectNoMoreCalls(
 function createSubscriptionHelper() {
 }
 
-export function mockSingleSubCallback():
-  & MockedObject<
-    Observer<ObjectPayload | undefined>
-  >
+export type MockedSingleSubCallback =
+  & MockedObject<Observer<ObjectPayload | undefined>>
   & {
     // expectLoaded: (value: unknown) => Promise<void>;
     // expectLoading: (value: unknown) => Promise<void>;
@@ -415,8 +463,9 @@ export function mockSingleSubCallback():
       loading?: unknown;
       loaded: unknown;
     }) => Promise<void>;
-  }
-{
+  };
+
+export function mockSingleSubCallback(): MockedSingleSubCallback {
   const ret = mockObserver<ObjectPayload | undefined>();
 
   //   async function expectLoaded(value: unknown) {
@@ -476,10 +525,18 @@ export function mockObserver<T>(): MockedObject<Observer<T>> {
   };
 }
 
+// todo: find uses of this and replace with direct call to mockObserver<ListPayload | undefined>
 export function mockListSubCallback(): MockedObject<
   Observer<ListPayload | undefined>
 > {
   return mockObserver<ListPayload | undefined>();
+}
+
+// todo: find uses of this and replace with direct call to mockObserver<SpecificLinkPayload | undefined>
+export function mockLinkSubCallback(): MockedObject<
+  Observer<SpecificLinkPayload | undefined>
+> {
+  return mockObserver<SpecificLinkPayload | undefined>();
 }
 
 export function cacheEntryContaining(x: Partial<Entry<any>>): Entry<any> {
@@ -516,6 +573,19 @@ export function objectPayloadContaining(
 export function listPayloadContaining(
   x: Partial<ListPayload>,
 ): ListPayload {
+  return {
+    fetchMore: x.fetchMore ?? expect.any(Function),
+    hasMore: x.hasMore ?? expect.any(Boolean),
+    resolvedList: x.resolvedList ?? expect.anything(),
+    isOptimistic: expect.any(Boolean),
+    status: x.status ?? expect.anything(),
+    lastUpdated: x.lastUpdated ?? expect.anything(),
+  };
+}
+
+export function linkPayloadContaining(
+  x: Partial<SpecificLinkPayload>,
+): SpecificLinkPayload {
   return {
     fetchMore: x.fetchMore ?? expect.any(Function),
     hasMore: x.hasMore ?? expect.any(Boolean),
@@ -586,16 +656,19 @@ export function updateList<
     );
   }
 
-  const query = store.getListQuery(
+  const query = store.lists.getQuery({
+    ...opts,
     type,
-    where ?? {},
-    orderBy ?? {},
-    opts,
-  );
+    where: where ?? {},
+    orderBy: orderBy ?? {},
+  });
 
   store.batch({ optimisticId }, (batch) => {
-    const objectCacheKeys = storeOsdkInstances(store, objects, batch);
-    query._updateList(objectCacheKeys, false, "loaded", batch);
+    const objectCacheKeys = store.objects.storeOsdkInstances(
+      objects,
+      batch,
+    );
+    query._updateList(objectCacheKeys, "loaded", batch, false);
   });
 }
 
@@ -604,8 +677,9 @@ export function getObject(
   type: string,
   pk: number,
 ): ObjectHolder | undefined {
-  return store.getValue(store.getCacheKey<ObjectCacheKey>("object", type, pk))
-    ?.value;
+  return store.getValue(
+    store.cacheKeys.get<ObjectCacheKey>("object", type, pk),
+  )?.value;
 }
 
 export function updateObject<T extends ObjectOrInterfaceDefinition>(
@@ -613,7 +687,10 @@ export function updateObject<T extends ObjectOrInterfaceDefinition>(
   value: Osdk.Instance<T>,
   { optimisticId }: { optimisticId?: OptimisticId } = {},
 ): Osdk.Instance<T> {
-  const query = store.getObjectQuery(value.$apiName, value.$primaryKey);
+  const query = store.objects.getQuery({
+    apiName: value.$apiName,
+    pk: value.$primaryKey,
+  });
 
   store.batch({ optimisticId }, (batch) => {
     return query.writeToStore(

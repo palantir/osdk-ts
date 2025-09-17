@@ -17,7 +17,11 @@
 import type { FetchPageArgs, SelectArg } from "../object/FetchPageArgs.js";
 import type { Result } from "../object/Result.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
-import type { PropertyKeys } from "../ontology/ObjectOrInterface.js";
+import type { InterfaceMetadata } from "../ontology/InterfaceDefinition.js";
+import type {
+  ObjectOrInterfaceDefinition,
+  PropertyKeys,
+} from "../ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
   ObjectMetadata,
@@ -28,18 +32,20 @@ import type { ExtractOptions, Osdk } from "../OsdkObjectFrom.js";
 
 /** The $link container to get from one object type to its linked objects */
 export type OsdkObjectLinksObject<
-  O extends ObjectTypeDefinition,
+  O extends ObjectOrInterfaceDefinition,
 > = ObjectTypeLinkKeysFrom2<O> extends never ? never : {
   readonly [L in ObjectTypeLinkKeysFrom2<O>]: OsdkObjectLinksEntry<O, L>;
 };
 
 export type OsdkObjectLinksEntry<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   L extends ObjectTypeLinkKeysFrom2<Q>,
 > = CompileTimeMetadata<Q>["links"][L] extends
   ObjectMetadata.Link<infer T, infer M> ? (
     M extends false ? SingleLinkAccessor<T> : ObjectSet<T>
   )
+  : CompileTimeMetadata<Q>["links"][L] extends
+    InterfaceMetadata.Link<infer T, infer M> ? ObjectSet<T>
   : never;
 
 export type DefaultToFalse<B extends boolean | undefined> = false extends B

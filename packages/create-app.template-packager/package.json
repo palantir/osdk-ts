@@ -1,7 +1,7 @@
 {
   "name": "@osdk/create-app.template-packager",
   "private": true,
-  "version": "2.4.0-beta.17",
+  "version": "2.5.0-beta.7",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -42,8 +42,8 @@
     "@types/node": "^18.0.0",
     "@types/serialize-javascript": "^5.0.4",
     "@types/tmp": "^0.2.6",
-    "@types/yargs": "^17.0.29",
-    "tmp": "^0.2.3",
+    "@types/yargs": "^17.0.33",
+    "tmp": "^0.2.5",
     "typescript": "~5.5.4"
   },
   "publishConfig": {

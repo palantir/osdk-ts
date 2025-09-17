@@ -23,20 +23,26 @@ import type {
   Subscription,
 } from "rxjs";
 import { additionalContext } from "../../Client.js";
-import type { CommonObserveOptions, Status } from "../ObservableClient.js";
-import type { CacheKey } from "./CacheKey.js";
+import type {
+  CommonObserveOptions,
+  Status,
+} from "../ObservableClient/common.js";
+import type { BatchContext } from "./BatchContext.js";
+import type { CacheKeys } from "./CacheKeys.js";
 import type { Changes } from "./Changes.js";
+import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Entry } from "./Layer.js";
 import type { OptimisticId } from "./OptimisticId.js";
-import type { BatchContext, Store, SubjectPayload } from "./Store.js";
+import type { Store } from "./Store.js";
+import type { SubjectPayload } from "./SubjectPayload.js";
 
 export abstract class Query<
-  KEY extends CacheKey,
+  KEY extends KnownCacheKey,
   PAYLOAD,
   O extends CommonObserveOptions,
 > implements Subscribable<PAYLOAD> {
   lastFetchStarted?: number;
-  pendingFetch?: Promise<unknown>;
+  pendingFetch?: Promise<void>;
   retainCount: number = 0;
   options: O;
   cacheKey: KEY;
@@ -45,9 +51,12 @@ export abstract class Query<
   #connectable?: Connectable<PAYLOAD>;
   #subscription?: Subscription;
   #subject: Observable<SubjectPayload<KEY>>;
+  #subscriptionDedupeIntervals: Map<string, number> = new Map();
 
   /** @internal */
   protected logger: Logger | undefined;
+
+  protected readonly cacheKeys: CacheKeys<KnownCacheKey>;
 
   constructor(
     store: Store,
@@ -59,6 +68,7 @@ export abstract class Query<
     this.options = opts;
     this.cacheKey = cacheKey;
     this.store = store;
+    this.cacheKeys = store.cacheKeys;
     this.#subject = observable;
 
     this.logger = logger ?? (
@@ -84,6 +94,36 @@ export abstract class Query<
     this.#connectable ??= this._createConnectable(this.#subject);
     this.#subscription = this.#connectable.connect();
     return this.#connectable.subscribe(observer);
+  }
+
+  /**
+   * Register a subscription's dedupeInterval value
+   */
+  registerSubscriptionDedupeInterval(
+    subscriptionId: string,
+    dedupeInterval: number | undefined,
+  ): void {
+    if (dedupeInterval != null && dedupeInterval > 0) {
+      this.#subscriptionDedupeIntervals.set(subscriptionId, dedupeInterval);
+    }
+  }
+
+  /**
+   * Unregister a subscription's dedupeInterval value
+   */
+  unregisterSubscriptionDedupeInterval(subscriptionId: string): void {
+    this.#subscriptionDedupeIntervals.delete(subscriptionId);
+  }
+
+  /**
+   * Get the minimum dedupeInterval from all active subscriptions
+   */
+  private getMinimumDedupeInterval(): number {
+    if (this.#subscriptionDedupeIntervals.size === 0) {
+      return this.options.dedupeInterval ?? 0;
+    }
+
+    return Math.min(...this.#subscriptionDedupeIntervals.values());
   }
 
   /**
@@ -116,11 +156,11 @@ export abstract class Query<
       return;
     }
 
+    const minDedupeInterval = this.getMinimumDedupeInterval();
     if (
-      (this.options.dedupeInterval ?? 0) > 0 && (
+      minDedupeInterval > 0 && (
         this.lastFetchStarted != null
-        && Date.now() - this.lastFetchStarted < (this.options.dedupeInterval
-            ?? 0)
+        && Date.now() - this.lastFetchStarted < minDedupeInterval
       )
     ) {
       if (process.env.NODE_ENV !== "production") {
@@ -151,7 +191,7 @@ export abstract class Query<
     }
     this.pendingFetch = this._fetchAndStore()
       .finally(() => {
-        logger?.debug("finally _fetchAndStore()");
+        logger?.debug("promise's finally for _fetchAndStore()");
         this.pendingFetch = undefined;
       });
 
@@ -161,7 +201,7 @@ export abstract class Query<
 
   protected _preFetch(): void {}
 
-  protected abstract _fetchAndStore(): Promise<unknown>;
+  protected abstract _fetchAndStore(): Promise<void>;
 
   /**
    * Sets the status of the query in the store (but does not store that in `changes`).
@@ -175,11 +215,25 @@ export abstract class Query<
     batch: BatchContext,
   ): void {
     if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "setStatus" }).debug(status);
+      this.logger?.child({ methodName: "setStatus" }).debug(
+        `Attempting to set status to '${status}'`,
+      );
     }
     const existing = batch.read(this.cacheKey);
-    if (existing?.status === status) return;
+    if (existing?.status === status) {
+      if (process.env.NODE_ENV !== "production") {
+        this.logger?.child({ methodName: "setStatus" }).debug(
+          `Status is already set to '${status}'; aborting`,
+        );
+      }
+      return;
+    }
 
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "setStatus" }).debug(
+        `Writing status '${status}' to cache`,
+      );
+    }
     batch.write(this.cacheKey, existing?.value, status);
   }
 
@@ -220,4 +274,9 @@ export abstract class Query<
     changes: Changes,
     optimisticId: OptimisticId | undefined,
   ) => Promise<void> | undefined;
+
+  abstract invalidateObjectType(
+    objectType: string,
+    changes: Changes | undefined,
+  ): Promise<void>;
 }

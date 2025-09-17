@@ -30,6 +30,8 @@ import type {
   ActionSubmissionConfiguration as _api_ActionSubmissionConfiguration,
   ActionType as _api_ActionType,
   ActionTypeApiName as _api_ActionTypeApiName,
+  ActionTypeBranchSettingsModification
+    as _api_ActionTypeBranchSettingsModification,
   ActionTypeCreate as _api_ActionTypeCreate,
   ActionTypeDisplayMetadataModification
     as _api_ActionTypeDisplayMetadataModification,
@@ -77,6 +79,9 @@ import type {
   InterfaceLinkTypeCardinality as _api_InterfaceLinkTypeCardinality,
   InterfaceLinkTypeMetadata as _api_InterfaceLinkTypeMetadata,
   InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest,
+  InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName,
+  InterfacePropertyTypeDisplayMetadata
+    as _api_InterfacePropertyTypeDisplayMetadata,
   InterfacePropertyTypeRidOrIdInRequest
     as _api_InterfacePropertyTypeRidOrIdInRequest,
   InterfaceTypeApiName as _api_InterfaceTypeApiName,
@@ -115,6 +120,7 @@ import type {
   ParameterId as _api_ParameterId,
   ParameterRid as _api_ParameterRid,
   PolicyVersion as _api_PolicyVersion,
+  PrimaryKeyConstraint as _api_PrimaryKeyConstraint,
   PropertySecurityGroupsModification as _api_PropertySecurityGroupsModification,
   PropertyTypeDisplayMetadata as _api_PropertyTypeDisplayMetadata,
   PropertyTypeId as _api_PropertyTypeId,
@@ -124,6 +130,7 @@ import type {
   PutParameterRequestModification as _api_PutParameterRequestModification,
   PutSectionRequest as _api_PutSectionRequest,
   RestrictedViewRid as _api_RestrictedViewRid,
+  RetentionConfig as _api_RetentionConfig,
   RetentionPolicy as _api_RetentionPolicy,
   RuleSetRid as _api_RuleSetRid,
   SectionId as _api_SectionId,
@@ -252,6 +259,7 @@ export interface ActionTypeModification {
     | undefined;
   actionLogConfiguration?: _api_ActionLogConfiguration | null | undefined;
   apiName: _api_ActionTypeApiName;
+  branchSettings?: _api_ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: _api_ActionTypeDisplayMetadataModification;
   entities?: _api_ActionTypeEntities | null | undefined;
   formContentOrdering?: Array<_api_FormContent> | null | undefined;
@@ -565,6 +573,23 @@ export interface InlineActionTypeModification {
   displayOptions: _api_InlineActionDisplayOptions;
   parameterId?: _api_ParameterId | null | undefined;
 }
+export interface InterfaceArrayPropertyTypeModification {
+  subtype: InterfacePropertyTypeTypeForModification;
+}
+export interface InterfaceDefinedPropertyTypeConstraintsModification {
+  dataConstraints?: DataConstraintsModification | null | undefined;
+  indexedForSearch: boolean;
+  primaryKeyConstraint: _api_PrimaryKeyConstraint;
+  requireImplementation: boolean;
+  typeClasses: Array<_api_TypeClass>;
+  valueType?: ValueTypeReferenceModification | null | undefined;
+}
+export interface InterfaceDefinedPropertyTypeModification {
+  apiName: _api_InterfacePropertyTypeApiName;
+  constraints: InterfaceDefinedPropertyTypeConstraintsModification;
+  displayMetadata: _api_InterfacePropertyTypeDisplayMetadata;
+  type: InterfacePropertyTypeTypeForModification;
+}
 export interface InterfaceLinkTypeImplementationModification {
   interfaceLinkTypeRidOrIdInRequest: _api_InterfaceLinkTypeRidOrIdInRequest;
   linkTypeIds: Array<_api_LinkTypeId>;
@@ -600,14 +625,152 @@ export interface InterfacePropertyTypeModification_sharedPropertyBasedPropertyTy
   type: "sharedPropertyBasedPropertyType";
   sharedPropertyBasedPropertyType: SharedPropertyBasedPropertyTypeModification;
 }
+
+export interface InterfacePropertyTypeModification_interfaceDefinedPropertyType {
+  type: "interfaceDefinedPropertyType";
+  interfaceDefinedPropertyType: InterfaceDefinedPropertyTypeModification;
+}
 export type InterfacePropertyTypeModification =
-  InterfacePropertyTypeModification_sharedPropertyBasedPropertyType;
+  | InterfacePropertyTypeModification_sharedPropertyBasedPropertyType
+  | InterfacePropertyTypeModification_interfaceDefinedPropertyType;
 
 export interface InterfacePropertyTypeModificationWithRidOrIdInRequest {
   interfacePropertyTypeModification: InterfacePropertyTypeModification;
   interfacePropertyTypeRidOrIdInRequest:
     _api_InterfacePropertyTypeRidOrIdInRequest;
 }
+export interface InterfacePropertyTypeTypeForModification_array {
+  type: "array";
+  array: InterfaceArrayPropertyTypeModification;
+}
+
+export interface InterfacePropertyTypeTypeForModification_boolean {
+  type: "boolean";
+  boolean: _api_BooleanPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_byte {
+  type: "byte";
+  byte: _api_BytePropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_date {
+  type: "date";
+  date: _api_DatePropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_decimal {
+  type: "decimal";
+  decimal: _api_DecimalPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_double {
+  type: "double";
+  double: _api_DoublePropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_float {
+  type: "float";
+  float: _api_FloatPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_geohash {
+  type: "geohash";
+  geohash: _api_GeohashPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_geoshape {
+  type: "geoshape";
+  geoshape: _api_GeoshapePropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_integer {
+  type: "integer";
+  integer: _api_IntegerPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_long {
+  type: "long";
+  long: _api_LongPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_short {
+  type: "short";
+  short: _api_ShortPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_string {
+  type: "string";
+  string: _api_StringPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_experimentalTimeDependentV1 {
+  type: "experimentalTimeDependentV1";
+  experimentalTimeDependentV1: _api_ExperimentalTimeDependentPropertyTypeV1;
+}
+
+export interface InterfacePropertyTypeTypeForModification_timestamp {
+  type: "timestamp";
+  timestamp: _api_TimestampPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_attachment {
+  type: "attachment";
+  attachment: _api_AttachmentPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_marking {
+  type: "marking";
+  marking: _api_MarkingPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_cipherText {
+  type: "cipherText";
+  cipherText: _api_CipherTextPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_mediaReference {
+  type: "mediaReference";
+  mediaReference: _api_MediaReferencePropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_vector {
+  type: "vector";
+  vector: _api_VectorPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_geotimeSeriesReference {
+  type: "geotimeSeriesReference";
+  geotimeSeriesReference: _api_GeotimeSeriesReferencePropertyType;
+}
+/**
+ * Duplicate of Type, with the exception of InterfaceStructPropertyTypeModification and
+ * InterfaceArrayPropertyTypeModification. InterfaceStructPropertyType has an added requireImplementation field
+ * to allow for optional struct fields on interface property types.
+ */
+export type InterfacePropertyTypeTypeForModification =
+  | InterfacePropertyTypeTypeForModification_array
+  | InterfacePropertyTypeTypeForModification_boolean
+  | InterfacePropertyTypeTypeForModification_byte
+  | InterfacePropertyTypeTypeForModification_date
+  | InterfacePropertyTypeTypeForModification_decimal
+  | InterfacePropertyTypeTypeForModification_double
+  | InterfacePropertyTypeTypeForModification_float
+  | InterfacePropertyTypeTypeForModification_geohash
+  | InterfacePropertyTypeTypeForModification_geoshape
+  | InterfacePropertyTypeTypeForModification_integer
+  | InterfacePropertyTypeTypeForModification_long
+  | InterfacePropertyTypeTypeForModification_short
+  | InterfacePropertyTypeTypeForModification_string
+  | InterfacePropertyTypeTypeForModification_experimentalTimeDependentV1
+  | InterfacePropertyTypeTypeForModification_timestamp
+  | InterfacePropertyTypeTypeForModification_attachment
+  | InterfacePropertyTypeTypeForModification_marking
+  | InterfacePropertyTypeTypeForModification_cipherText
+  | InterfacePropertyTypeTypeForModification_mediaReference
+  | InterfacePropertyTypeTypeForModification_vector
+  | InterfacePropertyTypeTypeForModification_geotimeSeriesReference;
+
 export interface InterfaceSharedPropertyTypeModification {
   required: boolean;
   sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
@@ -628,6 +791,7 @@ export interface InterfaceTypeModification {
   properties: Array<_api_SharedPropertyTypeRidOrIdInRequest>;
   propertiesV2: Array<InterfaceSharedPropertyTypeModification>;
   propertiesV3: Array<InterfacePropertyTypeModificationWithRidOrIdInRequest>;
+  provenance?: EntityProvenanceModification | null | undefined;
   searchable?: boolean | null | undefined;
   status: _api_InterfaceTypeStatus;
 }
@@ -1064,6 +1228,8 @@ export interface ObjectTypeDirectDatasourceModification {
   directSourceRid: _api_DirectSourceRid;
   propertyMapping: Record<_api_PropertyTypeId, _api_PropertyTypeMappingInfo>;
   propertySecurityGroups: _api_PropertySecurityGroupsModification;
+  retentionConfig?: _api_RetentionConfig | null | undefined;
+  retentionConfigV2?: RetentionConfigModification | null | undefined;
 }
 export interface ObjectTypeEditsOnlyDatasourceModification {
   editsOnlyRid?: _api_EditsOnlyRid | null | undefined;
@@ -1661,6 +1827,10 @@ export interface PutSectionRequestWithId {
  * remap to an `ObjectStorageV2Modification` instead.
  */
 export interface ReadOnlyV1V2Modification {
+}
+export interface RetentionConfigModification {
+  targetSize: number;
+  triggerSize: number;
 }
 export interface SensorTraitModification {
   readingPropertyTypeId: _api_PropertyTypeId;

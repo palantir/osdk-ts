@@ -1,5 +1,5 @@
 ---
-"@osdk/oauth": minor
+"@osdk/oauth": patch
 ---
       
 Simulated release

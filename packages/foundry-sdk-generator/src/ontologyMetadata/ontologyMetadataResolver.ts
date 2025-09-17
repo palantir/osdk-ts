@@ -130,6 +130,7 @@ export class OntologyMetadataResolver {
       queryTypes: filteredQueryTypes,
       interfaceTypes: filteredInterfaceTypes,
       sharedPropertyTypes: {},
+      valueTypes: {},
     };
   }
 
@@ -173,6 +174,7 @@ export class OntologyMetadataResolver {
       linkTypesApiNamesToLoad?: string[];
     },
     extPackageInfo: PackageInfo = new Map(),
+    branch: string | undefined = undefined,
   ): Promise<
     Result<OntologyInfo, string[]>
   > {
@@ -200,6 +202,7 @@ export class OntologyMetadataResolver {
       const ontologyFullMetadata = await OntologiesV2.getFullMetadata(
         this.getClientContext(),
         ontology.rid as OntologyIdentifier,
+        { branch: branch },
       );
 
       if ((ontologyFullMetadata as any).errorName != null) {
@@ -362,6 +365,7 @@ export class OntologyMetadataResolver {
         },
         {
           preview: true,
+          branch: branch,
         },
       );
 
@@ -508,6 +512,7 @@ export class OntologyMetadataResolver {
       const result = this.validateQueryParametersAndOutput(
         query,
         expectedEntities.objectTypes,
+        expectedEntities.interfaceTypes,
       );
       if (result.isErr()) {
         for (const errorString of result.error) {
@@ -558,6 +563,7 @@ export class OntologyMetadataResolver {
   private validateQueryParametersAndOutput(
     query: QueryTypeV2,
     loadedObjectApiNames: Set<string>,
+    loadedInterfaceApiNames: Set<string>,
   ): Result<{}, string[]> {
     const parameterValidation: Array<Result<{}, string[]>> = Object.entries(
       query.parameters,
@@ -568,6 +574,7 @@ export class OntologyMetadataResolver {
           paramName,
           paramData.dataType,
           loadedObjectApiNames,
+          loadedInterfaceApiNames,
         ),
     );
 
@@ -577,6 +584,7 @@ export class OntologyMetadataResolver {
         "output",
         query.output,
         loadedObjectApiNames,
+        loadedInterfaceApiNames,
       ),
     );
 
@@ -610,6 +618,7 @@ export class OntologyMetadataResolver {
     propertyName: string,
     baseType: QueryDataType,
     loadedObjectApiNames: Set<string>,
+    loadedInterfaceApiNames: Set<string>,
   ): Result<{}, string[]> {
     switch (baseType.type) {
       case "array":
@@ -619,6 +628,7 @@ export class OntologyMetadataResolver {
           propertyName,
           baseType.subType,
           loadedObjectApiNames,
+          loadedInterfaceApiNames,
         );
       case "objectSet":
       case "object":
@@ -631,6 +641,17 @@ export class OntologyMetadataResolver {
           + `Make sure to specify it as an argument with --ontologyObjects ${baseType
             .objectTypeApiName!}.}`,
         ]);
+      case "interfaceObject":
+      case "interfaceObjectSet":
+        if (loadedInterfaceApiNames.has(baseType.interfaceTypeApiName!)) {
+          return Result.ok({});
+        }
+        return Result.err([
+          `Unable to load query ${queryApiName} because it takes an unloaded interface type as a parameter: ${baseType
+            .interfaceTypeApiName!} in parameter ${propertyName}. `
+          + `Make sure to specify it as an argument with --ontologyInterfaces ${baseType
+            .interfaceTypeApiName!}.}`,
+        ]);
       case "struct":
         const results = baseType.fields?.map(field => {
           return this.visitSupportedQueryTypes(
@@ -638,6 +659,7 @@ export class OntologyMetadataResolver {
             propertyName,
             field.fieldType,
             loadedObjectApiNames,
+            loadedInterfaceApiNames,
           );
         });
 
@@ -666,12 +688,14 @@ export class OntologyMetadataResolver {
             propertyName,
             baseType.keyType,
             loadedObjectApiNames,
+            loadedInterfaceApiNames,
           ),
           this.visitSupportedQueryTypes(
             queryApiName,
             propertyName,
             baseType.valueType,
             loadedObjectApiNames,
+            loadedInterfaceApiNames,
           ),
         ]);
       case "string":
@@ -688,8 +712,6 @@ export class OntologyMetadataResolver {
       case "null":
         return Result.ok({});
       case "unsupported":
-      case "interfaceObject":
-      case "interfaceObjectSet":
         return Result.err([
           `Unable to load query ${queryApiName} because it takes an unsupported parameter type: ${
             JSON.stringify(
@@ -754,7 +776,7 @@ export class OntologyMetadataResolver {
         }
         return Result.err([
           `Unable to load action ${actionApiName} because it takes an unloaded interface type as a parameter: ${actionTypeParameter.interfaceTypeApiName} `
-          + `make sure to specify it as an argument with --ontologyInterfaces ${actionTypeParameter.interfaceTypeApiName}`,
+          + `make sure to specify it as an argument with --interfaceTypes ${actionTypeParameter.interfaceTypeApiName}`,
         ]);
       case "string":
       case "boolean":

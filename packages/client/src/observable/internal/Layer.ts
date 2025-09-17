@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { CacheKey } from "./CacheKey.js";
+import type { KnownCacheKey } from "./KnownCacheKey.js";
 import { WeakMapWithEntries } from "./WeakMapWithEntries.js";
 
 /*
@@ -30,7 +30,7 @@ import { WeakMapWithEntries } from "./WeakMapWithEntries.js";
 
 export class Layer {
   #parent: Layer | undefined;
-  #cache = new WeakMapWithEntries<CacheKey<string, any, any>, Entry<any>>();
+  #cache = new WeakMapWithEntries<KnownCacheKey, Entry<any>>();
   #layerId: unknown;
 
   constructor(parent: Layer | undefined, layerId: unknown) {
@@ -64,22 +64,22 @@ export class Layer {
     return this.#parent.removeLayer(layerId);
   }
 
-  entries(): IterableIterator<[CacheKey<string, any, any>, Entry<any>]> {
+  entries(): IterableIterator<[KnownCacheKey, Entry<any>]> {
     return this.#cache.entries();
   }
 
-  keys(): IterableIterator<CacheKey<string, any, any>> {
+  keys(): IterableIterator<KnownCacheKey> {
     return this.#cache.keys();
   }
 
-  public get<K extends CacheKey<string, unknown, any>>(
+  public get<K extends KnownCacheKey>(
     cacheKey: K,
   ): Entry<K> | undefined {
     return this.#cache.get(cacheKey) as Entry<K> | undefined
       ?? this.#parent?.get(cacheKey) as Entry<K> | undefined;
   }
 
-  public set<K extends CacheKey<string, unknown, any>>(
+  public set<K extends KnownCacheKey>(
     cacheKey: K,
     value: Entry<K>,
   ): void {
@@ -87,21 +87,9 @@ export class Layer {
   }
 }
 
-export class Entry<K extends CacheKey<any, any, any>> {
+export interface Entry<K extends KnownCacheKey> {
   readonly cacheKey: K;
   value: K["__cacheKey"]["value"] | undefined;
   lastUpdated: number;
   status: "init" | "loading" | "loaded" | "error";
-
-  constructor(
-    cacheKey: K,
-    value: K["__cacheKey"]["value"],
-    lastUpdated: number,
-    status: "init" | "loading" | "loaded" | "error" = "init",
-  ) {
-    this.cacheKey = cacheKey;
-    this.value = value;
-    this.lastUpdated = lastUpdated;
-    this.status = status;
-  }
 }

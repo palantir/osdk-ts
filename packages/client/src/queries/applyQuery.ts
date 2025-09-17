@@ -18,6 +18,7 @@ import type {
   AllowedBucketKeyTypes,
   AllowedBucketTypes,
   CompileTimeMetadata,
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   OsdkBase,
@@ -34,7 +35,10 @@ import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { hydrateAttachmentFromRidInternal } from "../public-utils/hydrateAttachmentFromRid.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
-import { createObjectSpecifierFromPrimaryKey } from "../util/objectSpecifierUtils.js";
+import {
+  createObjectSpecifierFromInterfaceSpecifier,
+  createObjectSpecifierFromPrimaryKey,
+} from "../util/objectSpecifierUtils.js";
 import { toDataValueQueries } from "../util/toDataValueQueries.js";
 import type { QueryParameterType, QueryReturnType } from "./types.js";
 
@@ -69,7 +73,7 @@ export async function applyQuery<
         )
         : {},
     },
-    { version: qd.version },
+    { version: query.isFixedVersion ? query.version : undefined },
   );
   const objectOutputDefs = await getRequiredDefinitions(qd.output, client);
   const remappedResponse = await remapQueryResponse(
@@ -172,6 +176,22 @@ async function remapQueryResponse<
       >;
     }
 
+    case "interface": {
+      const def = definitions.get(responseDataType.interface);
+      if (!def || def.type !== "interface") {
+        throw new Error(
+          `Missing definition for ${responseDataType.interface}`,
+        );
+      }
+
+      return createQueryInterfaceResponse(
+        responseValue,
+        def,
+      ) as QueryReturnType<
+        typeof responseDataType
+      >;
+    }
+
     case "objectSet": {
       const def = definitions.get(responseDataType.objectSet);
       if (!def) {
@@ -218,8 +238,8 @@ async function remapQueryResponse<
 
       invariant(Array.isArray(responseValue), "Expected array entry");
       for (const entry of responseValue) {
-        invariant(entry.key, "Expected key");
-        invariant(entry.value, "Expected value");
+        invariant(entry.key != null, "Expected key");
+        invariant(entry.value != null, "Expected value");
         const key = responseDataType.keyType.type === "object"
           ? getObjectSpecifier(
             entry.key,
@@ -286,6 +306,14 @@ async function getRequiredDefinitions(
         dataType.object,
       );
       result.set(dataType.object, objectDef);
+      break;
+    }
+
+    case "interface": {
+      const interfaceDef = await client.ontologyProvider.getInterfaceDefinition(
+        dataType.interface,
+      );
+      result.set(dataType.interface, interfaceDef);
       break;
     }
 
@@ -403,6 +431,27 @@ export function createQueryObjectResponse<
     $objectSpecifier: createObjectSpecifierFromPrimaryKey(
       objectDef,
       primaryKey,
+    ),
+  };
+}
+
+export function createQueryInterfaceResponse<
+  Q extends InterfaceDefinition,
+>(
+  interfaceSpecifier: {
+    objectTypeApiName: string;
+    primaryKeyValue: PrimaryKeyType<Q>;
+  },
+  interfaceDef: Q,
+): OsdkBase<Q> {
+  return {
+    $apiName: interfaceDef.apiName,
+    $title: undefined,
+    $objectType: interfaceSpecifier.objectTypeApiName,
+    $primaryKey: interfaceSpecifier.primaryKeyValue,
+    $objectSpecifier: createObjectSpecifierFromInterfaceSpecifier(
+      interfaceDef,
+      interfaceSpecifier,
     ),
   };
 }

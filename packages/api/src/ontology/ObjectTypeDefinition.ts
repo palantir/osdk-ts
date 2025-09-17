@@ -97,6 +97,7 @@ export namespace ObjectMetadata {
     type: WirePropertyTypes;
     multiplicity?: boolean;
     nullable?: boolean;
+    valueTypeApiName?: string;
   }
 
   export interface Link<
@@ -119,7 +120,7 @@ export interface ObjectTypeDefinition {
 }
 
 export type ObjectTypeLinkKeysFrom2<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
 > =
   & keyof CompileTimeMetadata<Q>["links"]
   & string;

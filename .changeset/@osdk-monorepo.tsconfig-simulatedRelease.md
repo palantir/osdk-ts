@@ -1,5 +1,5 @@
 ---
-"@osdk/monorepo.tsconfig": minor
+"@osdk/monorepo.tsconfig": patch
 ---
       
 Simulated release
