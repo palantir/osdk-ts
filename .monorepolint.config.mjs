@@ -74,14 +74,23 @@ const INTERNAL_LIBRARY_RULES = {
   private: true,
 };
 
+/** @type {OsdkPackageOptions}  */
+const SANDBOX_RULES = {
+  ...INTERNAL_LIBRARY_RULES,
+  skipTypes: true,
+};
+
 const archetypeRules = archetypes(
   standardPackageRules,
   {
     unmatched: "error",
   },
 )
+  //
+  // LIBRARY ARCHETYPES
+  //
   .addArchetype(
-    "checkApiPackages",
+    "Library: Public",
     [
       "@osdk/client",
       "@osdk/api",
@@ -93,32 +102,7 @@ const archetypeRules = archetypes(
     },
   )
   .addArchetype(
-    "tests and benchmarks",
-    [
-      "@osdk/tests.*",
-      "@osdk/benchmarks.*",
-    ],
-    {
-      ...LIBRARY_RULES,
-      minimalChangesOnly: true,
-      private: true,
-    },
-  )
-  .addArchetype(
-    "minimal packages",
-    [
-      "@osdk/e2e.generated.1.1.x",
-      "@osdk/examples.*",
-      "@osdk/monorepo.*",
-    ],
-    {
-      ...LIBRARY_RULES,
-      minimalChangesOnly: true,
-      private: true,
-    },
-  )
-  .addArchetype(
-    "standardLibraries",
+    "Library: Standard",
     [
       "@osdk/foundry-config-json",
       "@osdk/generator-converters",
@@ -143,25 +127,7 @@ const archetypeRules = archetypes(
     },
   )
   .addArchetype(
-    "consumerCliPackages",
-    [
-      "@osdk/cli",
-      "@osdk/create-app",
-      "@osdk/create-widget",
-      "@osdk/foundry-sdk-generator",
-    ],
-    {
-      ...LIBRARY_RULES,
-      output: {
-        browser: undefined,
-        cjs: undefined,
-        esm: "bundle",
-      },
-      fixedDepsOnly: true,
-    },
-  )
-  .addArchetype(
-    "forceBundle",
+    "Library: Bundled", // conjure based packages for tree shaking
     [
       "@osdk/client.unstable",
       "@osdk/client.unstable.tpsa",
@@ -172,20 +138,7 @@ const archetypeRules = archetypes(
     },
   )
   .addArchetype(
-    "internal clis",
-    [
-      "@osdk/create-app.template-packager",
-      "@osdk/example-generator",
-      "@osdk/tool.*",
-      "@osdk/version-updater",
-    ],
-    {
-      ...INTERNAL_LIBRARY_RULES,
-      skipTypes: true,
-    },
-  )
-  .addArchetype(
-    "internal libraries / templates",
+    "Library: Internal",
     [
       "@osdk/cli.*",
       "@osdk/client.test.ontology",
@@ -197,21 +150,18 @@ const archetypeRules = archetypes(
       ...INTERNAL_LIBRARY_RULES,
     },
   )
-  .addArchetype("publishedSandboxes", [
-    "@osdk/e2e.sandbox.catchall",
-  ], {
-    ...INTERNAL_LIBRARY_RULES,
-    skipTypes: true,
-    private: false,
-    extraFiles: ["src/"],
-    skipBuildInFiles: true,
-  })
-  .addArchetype("publishedGeneratedSdks", ["@osdk/e2e.generated.catchall"], {
-    ...LIBRARY_RULES,
-    skipAttw: true,
-  })
   .addArchetype(
-    "currentlyGeneratedSdks",
+    "Library: Generated SDK (Public)", // used for multi-version back compat testing
+    [
+      "@osdk/e2e.generated.catchall",
+    ],
+    {
+      ...LIBRARY_RULES,
+      skipAttw: true,
+    },
+  )
+  .addArchetype(
+    "Library: Generated SDK (Internal)",
     [
       "@osdk/e2e.generated.api-namespace.*",
     ],
@@ -222,45 +172,7 @@ const archetypeRules = archetypes(
     },
   )
   .addArchetype(
-    "viteSandboxes",
-    [
-      "@osdk/e2e.sandbox.todowidget",
-      "@osdk/e2e.sandbox.todoapp",
-      "@osdk/e2e.sandbox.peopleapp",
-      "@osdk/e2e.sandbox.oauth.public.react-router",
-    ],
-    {
-      ...INTERNAL_LIBRARY_RULES,
-      skipTypes: true,
-      react: true,
-      extraTsConfigCompilerOptions: {
-        "isolatedDeclarations": false,
-      },
-    },
-  )
-  .addArchetype(
-    "nodeSandboxes",
-    [
-      "@osdk/e2e.sandbox.oauth",
-    ],
-    {
-      ...INTERNAL_LIBRARY_RULES,
-      skipTypes: true,
-    },
-  )
-  .addArchetype(
-    "e2eTests",
-    [
-      "@osdk/e2e.test.foundry-sdk-generator",
-    ],
-    {
-      ...INTERNAL_LIBRARY_RULES,
-      output: OUTPUT_NORMAL,
-      skipTypes: true,
-    },
-  )
-  .addArchetype(
-    "vitePlugin",
+    "Library: Hybrid (Vite)",
     [
       "@osdk/widget.vite-plugin",
     ],
@@ -272,7 +184,7 @@ const archetypeRules = archetypes(
     },
   )
   .addArchetype(
-    "reactLibrary",
+    "Library: React",
     [
       "@osdk/widget.client-react",
       "@osdk/react",
@@ -280,6 +192,125 @@ const archetypeRules = archetypes(
     {
       ...LIBRARY_RULES,
       react: true,
+    },
+  )
+  //
+  // TEST ARCHETYPES
+  //
+  .addArchetype(
+    "Test: Standard",
+    [
+      "@osdk/tests.*",
+      "@osdk/benchmarks.*",
+    ],
+    {
+      ...LIBRARY_RULES,
+      minimalChangesOnly: true,
+      private: true,
+    },
+  )
+  .addArchetype(
+    "Test: E2E",
+    [
+      "@osdk/e2e.test.foundry-sdk-generator",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      output: OUTPUT_NORMAL,
+      skipTypes: true,
+    },
+  )
+  //
+  // SPECIAL ARCHETYPES
+  //
+  .addArchetype(
+    "Special: Minimal Rules",
+    [
+      "@osdk/e2e.generated.1.1.x",
+      "@osdk/examples.*",
+      "@osdk/monorepo.*",
+    ],
+    {
+      ...LIBRARY_RULES,
+      minimalChangesOnly: true,
+      private: true,
+    },
+  )
+  //
+  // CLI ARCHETYPES
+  //
+  .addArchetype(
+    "CLI: Public",
+    [
+      "@osdk/cli",
+      "@osdk/create-app",
+      "@osdk/create-widget",
+      "@osdk/foundry-sdk-generator",
+    ],
+    {
+      ...LIBRARY_RULES,
+      output: {
+        browser: undefined,
+        cjs: undefined,
+        esm: "bundle", // forces anything not in `dependencies` to be bundled
+      },
+      fixedDepsOnly: true,
+    },
+  )
+  .addArchetype(
+    "CLI: Internal",
+    [
+      "@osdk/create-app.template-packager",
+      "@osdk/example-generator",
+      "@osdk/tool.*",
+      "@osdk/version-updater",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      skipTypes: true,
+    },
+  )
+  //
+  // SANDBOX ARCHETYPES
+  //
+  .addArchetype(
+    "Sandbox: Published",
+    [
+      "@osdk/e2e.sandbox.catchall", // used for multi-version back compat testing
+    ],
+    {
+      ...SANDBOX_RULES,
+      private: false,
+      extraPublishFiles: ["src/"], // used for multi-version back compat testing
+      excludeBuildInPublishFiles: true, // exclude the build files to ensure it rebuilds in test
+    },
+  )
+  .addArchetype(
+    "Sandbox: Web",
+    [
+      // Ideally we could just do ["@osdk/e2e.sandbox.*", "!@osdk/e2e.sandbox.catchall"]
+      // but the second entry causes almost everything else to match, which we don't want
+      // This is a bug in mrl I think.
+      "@osdk/e2e.sandbox.todowidget",
+      "@osdk/e2e.sandbox.todoapp",
+      "@osdk/e2e.sandbox.peopleapp",
+      "@osdk/e2e.sandbox.oauth.public.react-router",
+    ],
+    {
+      ...SANDBOX_RULES,
+      react: true,
+      extraTsConfigCompilerOptions: {
+        "isolatedDeclarations": false, // means nothing can depend on this or the builds will fail
+      },
+    },
+  )
+  .addArchetype(
+    "Sandbox: Node",
+    [
+      "@osdk/e2e.sandbox.oauth",
+    ],
+    {
+      ...SANDBOX_RULES,
     },
   );
 
@@ -636,7 +667,6 @@ const formattedGeneratorHelper = (contents, ext) => async (context) => {
  *   outDir: string
  *   commonjs?: boolean
  *   singlePackageName?: string
- *   react?: boolean
  *   extraTsConfigCompilerOptions?: import("typescript").CompilerOptions
  * }} opts
  * @returns {Parameters<import("@monorepolint/rules")["standardTsconfig"]>[0]["options"]}
@@ -732,13 +762,12 @@ function minimalPackageRules(shared, options) {
  * @property { typeof LATEST_TYPESCRIPT_DEP | "^4.9.5"=} tsVersion
  * @property { boolean } [react]
  * @property { string[] } [extraPublishFiles]
- * * @property { boolean } [skipBuildInFiles]
+ * @property { boolean } [excludeBuildInPublishFiles]
  * @property { "happy-dom" } [vitestEnvironment]
  * @property { boolean } [skipTsconfigReferences]
  * @property { boolean } [aliasConsola]
  * @property { Record<"esm" | "cjs" | "browser", "bundle" | "normal" | undefined>} output
  * @property { boolean } [skipTypes]
- * @property { string[] } [extraFiles]
  * @property { boolean } [skipAttw]
  * @property { boolean } [fixedDepsOnly]
  * @property { boolean } [checkApi]
@@ -801,7 +830,6 @@ function standardPackageRules(shared, options) {
           customTsconfigExcludes: options.customTsconfigExcludes,
           skipTsconfigReferences: options.skipTsconfigReferences,
           outDir: "build/esm",
-          react: options.react || options.vitestEnvironment === "happy-dom",
           extraTsConfigCompilerOptions: options.extraTsConfigCompilerOptions,
         },
       ),
@@ -872,17 +900,16 @@ function standardPackageRules(shared, options) {
           files: !options.private
             ? [
               ...(options.extraPublishFiles ?? []),
-              ...(options.extraFiles ?? []),
-              ...(options.output.cjs && !options.skipBuildInFiles
+              ...(options.output.cjs && !options.excludeBuildInPublishFiles
                 ? ["build/cjs"]
                 : []),
-              ...(options.output.esm && !options.skipBuildInFiles
+              ...(options.output.esm && !options.excludeBuildInPublishFiles
                 ? ["build/esm"]
                 : []),
-              ...(options.output.browser && !options.skipBuildInFiles
+              ...(options.output.browser && !options.excludeBuildInPublishFiles
                 ? ["build/browser"]
                 : []),
-              ...(options.skipTypes || options.skipBuildInFiles
+              ...(options.skipTypes || options.excludeBuildInPublishFiles
                 ? []
                 : ["build/types"]),
               "CHANGELOG.md",
