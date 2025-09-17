@@ -150,9 +150,7 @@ export function defineCreateInterfaceObjectAction(
     ],
     ...(validation
       ? {
-        validation: [
-          convertValidationRule(validation),
-        ],
+        validation: convertValidationRule(validation),
       }
       : {}),
   });
@@ -221,9 +219,7 @@ export function defineCreateObjectAction(
       ?? createDefaultParameterOrdering(def, parameters),
     ...(def.actionLevelValidation
       ? {
-        validation: [
-          convertValidationRule(def.actionLevelValidation),
-        ],
+        validation: convertValidationRule(def.actionLevelValidation),
       }
       : {}),
     ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
@@ -331,9 +327,7 @@ export function defineModifyInterfaceObjectAction(
     ],
     ...(validation
       ? {
-        validation: [
-          convertValidationRule(validation),
-        ],
+        validation: convertValidationRule(validation),
       }
       : {}),
   });
@@ -428,9 +422,7 @@ export function defineModifyObjectAction(
       ),
     ...(def.actionLevelValidation
       ? {
-        validation: [
-          convertValidationRule(def.actionLevelValidation),
-        ],
+        validation: convertValidationRule(def.actionLevelValidation),
       }
       : {}),
     ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
@@ -486,9 +478,7 @@ export function defineDeleteObjectAction(
     },
     ...(def.actionLevelValidation
       ? {
-        validation: [
-          convertValidationRule(def.actionLevelValidation),
-        ],
+        validation: convertValidationRule(def.actionLevelValidation),
       }
       : {}),
   });
@@ -586,9 +576,7 @@ export function defineCreateOrModifyObjectAction(
       ),
     ...(def.actionLevelValidation
       ? {
-        validation: [
-          convertValidationRule(def.actionLevelValidation),
-        ],
+        validation: convertValidationRule(def.actionLevelValidation),
       }
       : {}),
     ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
@@ -1098,14 +1086,16 @@ function sanitize(s: string): string {
 
 function convertValidationRule(
   actionValidation: ActionLevelValidationDefinition,
-): ActionValidationRule {
-  return {
-    condition: convertConditionDefinition(actionValidation.condition),
-    displayMetadata: actionValidation.displayMetadata ?? {
-      failureMessage: "Did not satisfy validation",
-      typeClasses: [],
-    },
-  };
+): Array<ActionValidationRule> {
+  return actionValidation.map(rule => {
+    return {
+      condition: convertConditionDefinition(rule.condition),
+      displayMetadata: rule.displayMetadata ?? {
+        failureMessage: "Did not satisfy validation",
+        typeClasses: [],
+      },
+    };
+  });
 }
 
 function validateActionConfiguration(action: ActionType): void {

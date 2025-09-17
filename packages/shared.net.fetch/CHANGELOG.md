@@ -1,5 +1,16 @@
 # @osdk/shared.net.fetch
 
+## 1.5.0-beta.2
+
+### Minor Changes
+
+- badfbc4: Add errorDescription to PalantirApiError
+
+### Patch Changes
+
+- Updated dependencies [badfbc4]
+  - @osdk/shared.net.errors@2.5.0-beta.2
+
 ## 1.2.0
 
 ### Patch Changes

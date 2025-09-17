@@ -1,5 +1,17 @@
 # @osdk/shared.test
 
+## 2.5.0-beta.5
+
+### Minor Changes
+
+- cbcf2ad: Add branching support
+
+### Patch Changes
+
+- Updated dependencies [cbcf2ad]
+  - @osdk/generator-converters@2.5.0-beta.6
+  - @osdk/api@2.5.0-beta.6
+
 ## 2.5.0-beta.4
 
 ### Minor Changes
