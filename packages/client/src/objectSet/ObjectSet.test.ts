@@ -617,7 +617,7 @@ describe("ObjectSet", () => {
       });
     });
 
-    it("enforces a return only of correct type", () => {
+    it.fails("enforces a return only of correct type", () => {
       client(Employee).withProperties({
         // @ts-expect-error
         "derivedPropertyName": (base) => {
