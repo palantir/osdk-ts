@@ -27,8 +27,6 @@ import { createMinimalClient } from "../../createMinimalClient.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import { modernToLegacyWhereClause } from "./modernToLegacyWhereClause.js";
 
-// TODO: mock MinimalClient.ontologyProvider.getObjectDefinition
-
 const metadata = {
   expectsClientVersion: "0.0.0",
   ontologyRid: "ri.a.b.c.d",
@@ -1107,6 +1105,50 @@ describe(modernToLegacyWhereClause, () => {
             }
           `);
       });
+    });
+  });
+
+  describe("$primaryKey", () => {
+    it("properly converts $primaryKey", async () => {
+      expect(
+        await modernToLegacyWhereClause<ObjAllProps>(
+          {
+            $or: [{
+              $primaryKey: 5,
+            }, {
+              $primaryKey: 10,
+            }],
+          },
+          objectTypeWithAllPropertyTypes,
+          {
+            ...clientCtx,
+            // poor man's mock
+            ontologyProvider: {
+              async getObjectDefinition(_apiName: string) {
+                return Promise.resolve({
+                  primaryKeyApiName: "id",
+                });
+              },
+            } as any,
+          },
+        ),
+      ).toMatchInlineSnapshot(`
+            {
+              "type": "or",
+              "value": [
+                {
+                  "field": "id",
+                  "type": "eq",
+                  "value": 5,
+                },
+                {
+                  "field": "id",
+                  "type": "eq",
+                  "value": 10,
+                },
+              ],
+            }
+          `);
     });
   });
 });

@@ -23,8 +23,6 @@ import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createWithPropertiesObjectSet } from "./createWithPropertiesObjectSet.js";
 
-// TODO: mock MinimalClient.ontologyProvider.getObjectDefinition
-
 const metadata = {
   expectsClientVersion: "0.0.0",
   ontologyRid: "ri.a.b.c.d",

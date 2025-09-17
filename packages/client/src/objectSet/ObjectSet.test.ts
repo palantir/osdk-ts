@@ -923,7 +923,7 @@ describe("ObjectSet", () => {
             base.pivotTo("linkedObjectType").aggregate(
               "geoShapeArray:collectList",
             ),
-        }).where({ "id": { "$eq": 5 } }).fetchPage();
+        }).where({ "$primaryKey": { "$eq": 5 } }).fetchPage();
 
       expect(fetchPageTest.data[0].attachmentSelectDp).toMatchInlineSnapshot(
         `
@@ -969,7 +969,7 @@ describe("ObjectSet", () => {
       );
 
       const filteredObjectSet = await nearestNeighborsObjectSet.where({
-        employeeId: { $in: [50030, 50031] },
+        $primaryKey: { $in: [50030, 50031] },
       }).fetchPage();
 
       expect(filteredObjectSet.data.length).toEqual(2);
