@@ -326,7 +326,9 @@ export interface ActionTypeInner {
 
 export type ActionValidationRule = OntologyIrValidationRule;
 
-export type ActionLevelValidationDefinition = {
+export type ActionLevelValidationDefinition = Array<ActionLevelValidationRule>;
+
+export type ActionLevelValidationRule = {
   condition: ConditionDefinition;
   displayMetadata?: ValidationRuleDisplayMetadata;
 };

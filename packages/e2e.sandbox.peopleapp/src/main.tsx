@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { OsdkProvider2 } from "@osdk/react/experimental";
-import { $ } from "./foundryClientWithDebug.js";
+import { $ } from "./foundryClient.js";
 import { Router } from "./router.js";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

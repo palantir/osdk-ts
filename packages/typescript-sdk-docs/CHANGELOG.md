@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.4.0-beta.3
+
+### Minor Changes
+
+- f38abb0: Nearest neighbor docs
+
 ## 0.4.0-beta.2
 
 ### Minor Changes

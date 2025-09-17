@@ -23,6 +23,8 @@ import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Query } from "./Query.js";
 import { UnsubscribableWrapper } from "./UnsubscribableWrapper.js";
 
+let subscriptionIdCounter = 0;
+
 /** @internal */
 export class QuerySubscription<
   TQuery extends Query<
@@ -37,15 +39,20 @@ export class QuerySubscription<
   /** @internal */
   subscription: Subscription;
 
+  /** @internal */
+  subscriptionId: string;
+
   constructor(query: TQuery, subscription: Subscription) {
     super(subscription);
     this.query = query;
     this.subscription = subscription;
+    this.subscriptionId = `sub_${++subscriptionIdCounter}`;
 
     // hide these from introspection
     Object.defineProperties(this, {
       query: { enumerable: false },
       subscription: { enumerable: false },
+      subscriptionId: { enumerable: false },
     });
   }
 }

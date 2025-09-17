@@ -72,11 +72,20 @@ export abstract class AbstractHelper<
         }
       });
     }
+
     const sub = query.subscribe(subFn);
+    const querySub = new QuerySubscription(query, sub);
+
+    query.registerSubscriptionDedupeInterval(
+      querySub.subscriptionId,
+      (options as CommonObserveOptions).dedupeInterval,
+    );
+
     sub.add(() => {
+      query.unregisterSubscriptionDedupeInterval(querySub.subscriptionId);
       this.store.cacheKeys.release(query.cacheKey);
     });
 
-    return new QuerySubscription(query, sub);
+    return querySub;
   }
 }
