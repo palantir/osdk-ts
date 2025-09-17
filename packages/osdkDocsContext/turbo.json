@@ -26,6 +26,9 @@
     "transpileCjs": {
       "dependsOn": ["@osdk/typescript-sdk-docs-examples#build", "transpileTypes"],
       "outputs": ["build/cjs/**/*"]
+    },
+    "transpile": {
+      "dependsOn": ["@osdk/typescript-sdk-docs-examples#build"]
     }
   }
 }
