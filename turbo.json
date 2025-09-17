@@ -158,7 +158,11 @@
         "out/**",
 
         // internally chosen output dir for sanity
-        "build/site/**"
+        "build/site/**",
+
+        // Support for typescript-sdk-docs-examples
+        "src/**",
+        "types/**"
       ]
     },
 
@@ -246,7 +250,8 @@
         "tsconfig.json"
       ],
       "outputs": [
-        "build/esm/**"
+        "build/esm/**",
+        "dist/**"
       ]
     },
 
