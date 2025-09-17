@@ -17,6 +17,7 @@
 import type { CollectionStorageData } from "../base-list/BaseCollectionQuery.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { ListQuery } from "./ListQuery.js";
 
@@ -32,6 +33,7 @@ export interface ListCacheKey extends
       apiName: string,
       whereClause: Canonical<SimpleWhereClause>,
       orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
+      rdpConfig: Canonical<Rdp> | undefined,
     ]
   >
 {

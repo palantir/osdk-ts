@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { DerivedProperty, WhereClauseWithRdp } from "@osdk/api";
 import type {
   InterfaceDefinition,
   ObjectTypeDefinition,
@@ -32,7 +33,7 @@ export interface UseOsdkObjectsOptions<
   /**
    * Standard OSDK Where
    */
-  where?: WhereClause<T>;
+  where?: WhereClauseWithRdp<T, any>;
 
   /**
    *  The preferred page size for the list.
@@ -43,6 +44,12 @@ export interface UseOsdkObjectsOptions<
   orderBy?: {
     [K in PropertyKeys<T>]?: "asc" | "desc";
   };
+
+  /**
+   * Define derived properties (RDPs) to be computed server-side and attached to each object.
+   * These properties will be available on the returned objects alongside their regular properties.
+   */
+  withProperties?: DerivedProperty.Clause<T>;
 
   /**
    * Causes the list to automatically fetch more as soon as the previous page
@@ -97,6 +104,8 @@ export interface UseOsdkListResult<
   fetchMore: (() => Promise<unknown>) | undefined;
   data: Osdk.Instance<T>[] | undefined;
   isLoading: boolean;
+
+  // FIXME populate error!
   error: Error | undefined;
 
   /**
@@ -125,6 +134,7 @@ export function useOsdkObjects<
     dedupeIntervalMs,
     where = {},
     streamUpdates,
+    withProperties,
   }: UseOsdkObjectsOptions<Q> = {},
 ): UseOsdkListResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
@@ -133,7 +143,14 @@ export function useOsdkObjects<
       is stable. No real added cost as we canonicalize internal to
       the ObservableClient anyway.
    */
-  const canonWhere = observableClient.canonicalizeWhereClause(where ?? {});
+  const canonWhere = observableClient.canonicalizeWhereClause(
+    where as WhereClause<Q> ?? {},
+  );
+
+  const stableWithProperties = React.useMemo(
+    () => withProperties,
+    [JSON.stringify(withProperties)],
+  );
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
@@ -146,26 +163,29 @@ export function useOsdkObjects<
             pageSize,
             orderBy,
             streamUpdates,
+            withProperties: stableWithProperties,
           }, observer),
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
           : void 0,
       ),
-    [observableClient, type, canonWhere, dedupeIntervalMs],
+    [
+      observableClient,
+      type,
+      canonWhere,
+      dedupeIntervalMs,
+      stableWithProperties,
+    ],
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  let error: Error | undefined;
-  if (listPayload && "error" in listPayload && listPayload.error) {
-    error = listPayload.error;
-  } else if (listPayload?.status === "error") {
-    error = new Error("Failed to load objects");
-  }
-
+  // TODO: we need to expose the error in the result
   return {
     fetchMore: listPayload?.fetchMore,
-    error,
+    error: listPayload && "error" in listPayload
+      ? listPayload?.error
+      : undefined,
     data: listPayload?.resolvedList as Osdk.Instance<Q>[],
     isLoading: listPayload?.status === "loading",
     isOptimistic: listPayload?.isOptimistic ?? false,

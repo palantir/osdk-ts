@@ -449,6 +449,7 @@ describe(Store, () => {
         "object",
         "Employee",
         emp.$primaryKey,
+        undefined,
       );
 
       // starts empty
@@ -675,6 +676,7 @@ describe(Store, () => {
             "object",
             emp.$apiName,
             emp.$primaryKey,
+            undefined,
           );
 
           // Actual test is here, prior to this is setup
@@ -1421,7 +1423,7 @@ describe(Store, () => {
         });
 
         const object: Osdk.Instance<Todo> | undefined = store.getValue(
-          store.cacheKeys.get<ObjectCacheKey>("object", "Todo", 0),
+          store.cacheKeys.get<ObjectCacheKey>("object", "Todo", 0, undefined),
         )?.value as any;
         invariant(object);
 
@@ -1776,7 +1778,7 @@ describe(Store, () => {
       } as Osdk.Instance<Employee> & ObjectHolder<Osdk.Instance<Employee>>));
 
       const cacheKeys = baseObjects.map((obj) =>
-        store.cacheKeys.get("object", "Employee", obj.$primaryKey)
+        store.cacheKeys.get("object", "Employee", obj.$primaryKey, undefined)
       );
 
       // set the truth

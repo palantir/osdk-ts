@@ -15,27 +15,23 @@
  */
 
 import type {
-  GeoFilterOptions,
   ObjectOrInterfaceDefinition,
   PossibleWhereClauseFilters,
   WhereClause,
 } from "@osdk/api";
-import { DistanceUnitMapping } from "@osdk/api";
 
 import type {
   PropertyIdentifier,
   SearchJsonQueryV2,
 } from "@osdk/foundry.ontologies";
-import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
-
-export function extractNamespace(
-  fqApiName: string,
-): [string | undefined, string] {
-  const last = fqApiName.lastIndexOf(".");
-  if (last === -1) return [undefined, fqApiName];
-  return [fqApiName.slice(0, last), fqApiName.slice(last + 1)];
-}
+import {
+  type DropDollarSign,
+  fullyQualifyPropName,
+  handleRdpFilter,
+  makeGeoFilterIntersects,
+  makeGeoFilterWithin,
+} from "./modernToLegacyUtils.js";
 
 /** @internal */
 export function modernToLegacyWhereClause<
@@ -82,53 +78,6 @@ export function modernToLegacyWhereClause<
   };
 }
 
-function makeGeoFilterBbox(
-  bbox: BBox,
-  filterType: "$within" | "$intersects",
-  propertyIdentifier?: PropertyIdentifier,
-  field?: string,
-): SearchJsonQueryV2 {
-  return {
-    type: filterType === "$within"
-      ? "withinBoundingBox"
-      : "intersectsBoundingBox",
-    /**
-     * This is a bit ugly, but did this so that propertyIdentifier only shows up in the return object if its defined,
-     * this makes it so we don't need to go update our entire test bed either to include a field which may change in near future.
-     * Once we solidify that this is the way forward, I can remove field and clean this up
-     */
-    ...(propertyIdentifier != null && { propertyIdentifier }),
-    field,
-    value: {
-      topLeft: {
-        type: "Point",
-        coordinates: [bbox[0], bbox[3]],
-      },
-      bottomRight: {
-        type: "Point",
-        coordinates: [bbox[2], bbox[1]],
-      },
-    },
-  };
-}
-
-function makeGeoFilterPolygon(
-  coordinates: Position[][],
-  filterType: "intersectsPolygon" | "withinPolygon",
-  propertyIdentifier?: PropertyIdentifier,
-  field?: string,
-): SearchJsonQueryV2 {
-  return {
-    type: filterType,
-    ...(propertyIdentifier != null && { propertyIdentifier }),
-    field,
-    value: {
-      type: "Polygon",
-      coordinates,
-    },
-  };
-}
-
 function handleWherePair(
   [fieldName, filter]: [string, any],
   objectOrInterface: ObjectOrInterfaceDefinition,
@@ -138,6 +87,20 @@ function handleWherePair(
     filter != null,
     "Defined key values are only allowed when they are not undefined.",
   );
+
+  if (fieldName === "$rdp" && typeof filter === "object") {
+    const rdpFilters = Object.entries(filter).map(([rdpName, rdpFilter]) =>
+      handleRdpFilter(rdpName, rdpFilter)
+    );
+    if (rdpFilters.length === 1) {
+      return rdpFilters[0];
+    }
+
+    return {
+      type: "and",
+      value: rdpFilters,
+    };
+  }
 
   const propertyIdentifier: PropertyIdentifier | undefined =
     structFieldSelector != null
@@ -208,78 +171,10 @@ function handleWherePair(
   }
 
   if (firstKey === "$within") {
-    const withinBody = filter[firstKey] as GeoFilterOptions["$within"];
-
-    if (Array.isArray(withinBody)) {
-      return makeGeoFilterBbox(withinBody, firstKey, propertyIdentifier, field);
-    } else if ("$bbox" in withinBody && withinBody.$bbox != null) {
-      return makeGeoFilterBbox(
-        withinBody.$bbox,
-        firstKey,
-        propertyIdentifier,
-        field,
-      );
-    } else if (
-      ("$distance" in withinBody && "$of" in withinBody)
-      && withinBody.$distance != null
-      && withinBody.$of != null
-    ) {
-      return {
-        type: "withinDistanceOf",
-        ...(propertyIdentifier != null && { propertyIdentifier }),
-        field,
-        value: {
-          center: Array.isArray(withinBody.$of)
-            ? {
-              type: "Point",
-              coordinates: withinBody.$of,
-            }
-            : withinBody.$of,
-          distance: {
-            value: withinBody.$distance[0],
-            unit: DistanceUnitMapping[withinBody.$distance[1]],
-          },
-        },
-      };
-    } else {
-      const coordinates = ("$polygon" in withinBody)
-        ? withinBody.$polygon
-        : withinBody.coordinates;
-      return makeGeoFilterPolygon(
-        coordinates,
-        "withinPolygon",
-        propertyIdentifier,
-        fieldName,
-      );
-    }
+    return makeGeoFilterWithin(filter[firstKey], propertyIdentifier, field);
   }
   if (firstKey === "$intersects") {
-    const intersectsBody = filter[firstKey] as GeoFilterOptions["$intersects"];
-    if (Array.isArray(intersectsBody)) {
-      return makeGeoFilterBbox(
-        intersectsBody,
-        firstKey,
-        propertyIdentifier,
-        field,
-      );
-    } else if ("$bbox" in intersectsBody && intersectsBody.$bbox != null) {
-      return makeGeoFilterBbox(
-        intersectsBody.$bbox,
-        firstKey,
-        propertyIdentifier,
-        field,
-      );
-    } else {
-      const coordinates = ("$polygon" in intersectsBody)
-        ? intersectsBody.$polygon
-        : intersectsBody.coordinates;
-      return makeGeoFilterPolygon(
-        coordinates,
-        "intersectsPolygon",
-        propertyIdentifier,
-        field,
-      );
-    }
+    return makeGeoFilterIntersects(filter[firstKey], propertyIdentifier, field);
   }
 
   if (firstKey === "$containsAllTerms" || firstKey === "$containsAnyTerm") {
@@ -302,21 +197,4 @@ function handleWherePair(
     field,
     value: filter[firstKey] as any,
   };
-}
-
-type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
-  : never;
-
-function fullyQualifyPropName(
-  fieldName: string,
-  objectOrInterface: ObjectOrInterfaceDefinition,
-) {
-  if (objectOrInterface.type === "interface") {
-    const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);
-    const [fieldApiNamespace, fieldShortName] = extractNamespace(fieldName);
-    return (fieldApiNamespace == null && objApiNamespace != null)
-      ? `${objApiNamespace}.${fieldShortName}`
-      : fieldName;
-  }
-  return fieldName;
 }

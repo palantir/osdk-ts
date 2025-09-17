@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
+import type {
+  DerivedProperty,
+  InterfaceDefinition,
+  ObjectTypeDefinition,
+} from "@osdk/api";
 import type { ListPayload } from "../../ListPayload.js";
 import type { ObserveListOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
@@ -23,6 +27,7 @@ import type { CacheKeys } from "../CacheKeys.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
+import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
 import type { ListCacheKey } from "./ListCacheKey.js";
@@ -34,17 +39,20 @@ export class ListsHelper extends AbstractHelper<
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
+  rdpCanonicalizer: RdpCanonicalizer;
 
   constructor(
     store: Store,
     cacheKeys: CacheKeys<KnownCacheKey>,
     whereCanonicalizer: WhereClauseCanonicalizer,
     orderByCanonicalizer: OrderByCanonicalizer,
+    rdpCanonicalizer: RdpCanonicalizer,
   ) {
     super(store, cacheKeys);
 
     this.whereCanonicalizer = whereCanonicalizer;
     this.orderByCanonicalizer = orderByCanonicalizer;
+    this.rdpCanonicalizer = rdpCanonicalizer;
   }
 
   observe<T extends ObjectTypeDefinition | InterfaceDefinition>(
@@ -62,16 +70,40 @@ export class ListsHelper extends AbstractHelper<
   getQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
   ): ListQuery {
-    const { type: { apiName, type }, where, orderBy } = options;
+    const { type: typeDefinition, where, orderBy, withProperties } = options;
+    const { apiName, type } = typeDefinition;
+
+    let objectSet: any;
+    if (type === "object") {
+      objectSet = this.store.client(typeDefinition as ObjectTypeDefinition);
+    } else {
+      objectSet = this.store.client(typeDefinition as InterfaceDefinition);
+    }
+
+    // Order matters - apply withProperties first (before filtering) so RDPs are available for later clauses
+    if (withProperties) {
+      objectSet = objectSet.withProperties(
+        withProperties as DerivedProperty.Clause<ObjectTypeDefinition>,
+      );
+    }
+
+    if (where) {
+      objectSet = objectSet.where(where);
+    }
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
+    const canonRdp = withProperties
+      ? this.rdpCanonicalizer.canonicalize(withProperties)
+      : undefined;
+
     const listCacheKey = this.cacheKeys.get<ListCacheKey>(
       "list",
       type,
       apiName,
       canonWhere,
       canonOrderBy,
+      canonRdp,
     );
 
     return this.store.queries.get(listCacheKey, () => {
@@ -80,8 +112,7 @@ export class ListsHelper extends AbstractHelper<
         this.store.subjects.get(listCacheKey),
         type,
         apiName,
-        canonWhere,
-        canonOrderBy,
+        objectSet,
         listCacheKey,
         options,
       );
