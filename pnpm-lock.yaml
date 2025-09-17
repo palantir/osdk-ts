@@ -3197,11 +3197,11 @@ importers:
         specifier: workspace:^
         version: link:../client
       '@osdk/foundry.core':
-        specifier: ^2.28.0
-        version: 2.28.0
+        specifier: ^2.30.0
+        version: 2.31.0
       '@osdk/foundry.ontologies':
         specifier: ^2.30.0
-        version: 2.30.0
+        version: 2.31.0
       '@types/geojson':
         specifier: ^7946.0.16
         version: 7946.0.16
@@ -6024,8 +6024,8 @@ packages:
   '@osdk/foundry.core@2.28.0':
     resolution: {integrity: sha512-ETCcpHZoROhamo7WlQBIs6q9vM/I3TYyuy1NQSZRaLbIFmCXff05Cl/KDjOL48jy5G0btevI+gAhacvGvvm8Mw==}
 
-  '@osdk/foundry.core@2.29.0':
-    resolution: {integrity: sha512-F2Fq4f1gi4SVEv9VK7d++QN1vyDAo73SjtudC4ToYm6QkwTvt3mMUziMdjmvy824MQWL3kbvxu6LHTldkkqByg==}
+  '@osdk/foundry.core@2.31.0':
+    resolution: {integrity: sha512-vO/jlZvEFEFLEtouNbX/A/3Z5OtG6nIN28o5QM4WUVOntzq6yMSE+r355s+sLJ06HQSjShXtLrI459VOJL3UuQ==}
 
   '@osdk/foundry.core@2.5.0':
     resolution: {integrity: sha512-LV+m6/3Y+Q0lN16PAwQvoWtutY0xXdntuwOQjMR2ZqdLRlZOK2KSvfwNZnX4q8EKuvF1mJC8iaTtWh3lChpU1Q==}
@@ -6057,8 +6057,8 @@ packages:
   '@osdk/foundry.geo@2.28.0':
     resolution: {integrity: sha512-yC5nkSgktnj8JPtW5ROuRYqe6s3gfg3ihN4vCm+aPAa85LjfBg/woY/ZkET4Tgy27+HOkGr7SwB77jzTzl4rzQ==}
 
-  '@osdk/foundry.geo@2.29.0':
-    resolution: {integrity: sha512-lBi+BlFi1oqTpPLTzC5MZlmicMnP3UBEpUsD7D7eK6EqwHGNgO/gQCXJi4b9mqt/4zYxC89DyLizGKHKLqozzQ==}
+  '@osdk/foundry.geo@2.31.0':
+    resolution: {integrity: sha512-KSKc+ZC5AbBy31JWLWG9eCD6AXj0DnkCcgv+4EPuIu8sFe82GVbXrnf+yv9X1ekRe3aymecBMDdVVns0cJsRCA==}
 
   '@osdk/foundry.geo@2.5.0':
     resolution: {integrity: sha512-kL615eqHvn1MkP0le2r6vx/ub+lit5bKdmoWNRELMqi9s2BlLuoKAQW5H9YDQPqhHuJDjrBJAWiviOin9mUKqw==}
@@ -6081,8 +6081,8 @@ packages:
   '@osdk/foundry.ontologies@2.28.0':
     resolution: {integrity: sha512-PoV+QUNP94sXi2wwi3N57DD2tnlzsGP9vKrmSqgbnJaGVPo7EMMBzVzI6jPJMzJk61b00U4lwZB6qL3S5If7SA==}
 
-  '@osdk/foundry.ontologies@2.29.0':
-    resolution: {integrity: sha512-d8i/vZju/dcPs5LkD0rXugEE23NegDWehDLUjgjZJ3V4YurNd1F4YgRm0KLr2Df7w3XrnI04U73Wo75/MG0kfQ==}
+  '@osdk/foundry.ontologies@2.31.0':
+    resolution: {integrity: sha512-IlOfZZLqdNPxSef9CnM27tLa8jOMEHOgSK+vxi5vGAAKHaL/8tkDOfhQP2a5v6af1l1CxNEp0oykUJ6ncqeJ9Q==}
 
   '@osdk/foundry.operations@2.28.0':
     resolution: {integrity: sha512-CNvl1d5yqNRiXeu6RNrSHIKygVtnM8FnYSkvuRZkdpiti/8tsM3Dck2uChw0SIyeeirmJEKNULZtEg1K54/Gmg==}
@@ -7565,6 +7565,9 @@ packages:
 
   '@types/geojson@7946.0.14':
     resolution: {integrity: sha512-WCfD5Ht3ZesJUsONdhvm84dmzWOiOzOAqOncN0++w0lBw1o8OuDNJF2McvvCef/yBqb/HYRahp1BYtODFQ8bRg==}
+
+  '@types/geojson@7946.0.16':
+    resolution: {integrity: sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==}
 
   '@types/graceful-fs@4.1.9':
     resolution: {integrity: sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==}
@@ -16810,9 +16813,9 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.core@2.29.0':
+  '@osdk/foundry.core@2.31.0':
     dependencies:
-      '@osdk/foundry.geo': 2.29.0
+      '@osdk/foundry.geo': 2.31.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
@@ -16889,7 +16892,7 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.geo@2.29.0':
+  '@osdk/foundry.geo@2.31.0':
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
@@ -16946,10 +16949,10 @@ snapshots:
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
 
-  '@osdk/foundry.ontologies@2.29.0':
+  '@osdk/foundry.ontologies@2.31.0':
     dependencies:
-      '@osdk/foundry.core': 2.29.0
-      '@osdk/foundry.geo': 2.29.0
+      '@osdk/foundry.core': 2.31.0
+      '@osdk/foundry.geo': 2.31.0
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
       '@osdk/shared.net.platformapi': 1.4.0
@@ -18650,6 +18653,8 @@ snapshots:
       '@types/node': 20.19.1
 
   '@types/geojson@7946.0.14': {}
+
+  '@types/geojson@7946.0.16': {}
 
   '@types/graceful-fs@4.1.9':
     dependencies:
