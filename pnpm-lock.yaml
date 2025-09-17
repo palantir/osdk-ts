@@ -3627,16 +3627,19 @@ importers:
 
   packages/osdkDocsContext:
     dependencies:
-      '@osdk/typescript-sdk-docs-examples':
-        specifier: workspace:~
-        version: link:../typescript-sdk-docs-examples
       semver:
         specifier: ^7.7.2
         version: 7.7.2
     devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
+      '@osdk/typescript-sdk-docs-examples':
+        specifier: workspace:~
+        version: link:../typescript-sdk-docs-examples
       '@types/semver':
         specifier: ^7.7.1
         version: 7.7.1
@@ -4042,12 +4045,6 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../client
-      '@osdk/typescript-docs-example-generator':
-        specifier: workspace:~
-        version: link:../typescript-docs-example-generator
-      '@osdk/typescript-sdk-docs':
-        specifier: workspace:~
-        version: link:../typescript-sdk-docs
     devDependencies:
       '@osdk/api':
         specifier: workspace:~
@@ -4055,6 +4052,18 @@ importers:
       '@osdk/cli.cmd.typescript':
         specifier: workspace:~
         version: link:../cli.cmd.typescript
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/typescript-docs-example-generator':
+        specifier: workspace:~
+        version: link:../typescript-docs-example-generator
+      '@osdk/typescript-sdk-docs':
+        specifier: workspace:~
+        version: link:../typescript-sdk-docs
       '@types/node':
         specifier: ^20.8.0
         version: 20.19.13
