@@ -29,6 +29,7 @@
     "lint": "eslint src/index.ts --max-warnings=1",
     "lint:fix": "eslint src --fix",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
+    "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --project tsconfig.json"
   },
   "dependencies": {
