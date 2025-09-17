@@ -23,7 +23,7 @@
   },
   "scripts": {
     "clean": "rm -rf dist src/generatedNoCheck examples src/examples",
-    "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --version 0.1.0 --packageType module --internal --skipPackageJsonUpdate",
+    "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --version 0.1.0 --packageType module --internal --skipPackageJsonUpdate && rm -rf src/examples/* && generate-examples --versions 2.0.0,2.1.0,2.4.0 && pnpm run format",
     "format": "npx dprint fmt --config $(find-up dprint.json)",
     "generateExamples": "rm -rf src/examples/* && generate-examples --versions 2.0.0,2.1.0,2.4.0 && pnpm run format",
     "lint": "eslint src/index.ts --max-warnings=1",
