@@ -92,6 +92,9 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: "pnpm"
 
+      - name: Install canvas build dependencies
+        run: sudo apt-get update && sudo apt-get install -y libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++ pkg-config libpixman-1-dev
+
       - name: Install dependencies
         run: pnpm install
 
@@ -136,6 +139,9 @@ jobs:
         with:
           node-version: 22
           cache: "pnpm"
+
+      - name: Install canvas build dependencies
+        run: sudo apt-get update && sudo apt-get install -y libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++ pkg-config libpixman-1-dev
 
       - name: Install dependencies
         run: pnpm install

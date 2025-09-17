@@ -137,6 +137,7 @@ const archetypeRules = archetypes(
       "@osdk/widget.client",
       "@osdk/vite-plugin-oac",
       "@osdk/faux",
+      "@osdk/osdkDocsContext",
     ],
     {
       ...LIBRARY_RULES,
@@ -177,6 +178,7 @@ const archetypeRules = archetypes(
       "@osdk/create-app.template-packager",
       "@osdk/example-generator",
       "@osdk/tool.*",
+      "@osdk/typescript-docs-example-generator",
       "@osdk/version-updater",
     ],
     {
@@ -192,6 +194,7 @@ const archetypeRules = archetypes(
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",
       "@osdk/shared.test",
+      "@osdk/typescript-sdk-docs-examples",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
