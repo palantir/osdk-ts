@@ -18,6 +18,7 @@ import * as path from "path";
 import * as ts from "typescript";
 
 import { FunctionDiscoverer } from "@foundry/functions-typescript-osdk-discovery";
+import type { IEntityMetadataMapping } from "@foundry/functions-typescript-osdk-ontology-code-generator";
 import type { FunctionIrBlockData } from "./types.js";
 
 export function defineFunction(dirPath: string): FunctionIrBlockData {
@@ -63,10 +64,18 @@ function createProgram(
   });
 }
 
-export function generateFunctionsIr(rootDir: string): FunctionIrBlockData {
-  const tsConfigPath = "tsconfig.json";
+export function generateFunctionsIr(
+  rootDir: string,
+  configPath?: string,
+): FunctionIrBlockData {
+  const tsConfigPath = configPath ?? "tsconfig.json";
   const program = createProgram(tsConfigPath, rootDir);
-  const fd = new FunctionDiscoverer(program, rootDir, rootDir + "/functions");
+  const fd = new FunctionDiscoverer(
+    program,
+    rootDir,
+    rootDir + "/functions",
+    getEntityMapping,
+  );
   const functions = fd.discover();
   return {
     functionsBlockDataV1: Object.fromEntries(
@@ -78,5 +87,25 @@ export function generateFunctionsIr(rootDir: string): FunctionIrBlockData {
           })()
       ),
     ),
+  };
+}
+
+function getEntityMapping(): IEntityMetadataMapping {
+  const entityMetadataMapping: IEntityMetadataMapping = {
+    ontologies: {
+      ontologyRid: {
+        objectTypes: {
+          "com.palantir.test-group.test-ontology-ontology.employees26": {
+            objectTypeId: "employee-id",
+            primaryKey: {
+              propertyId: "id",
+            },
+            propertyTypes: {},
+            linkTypes: {},
+          },
+        },
+        interfaceTypes: {},
+      },
+    },
   };
 }

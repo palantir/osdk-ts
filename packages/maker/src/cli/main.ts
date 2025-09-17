@@ -42,6 +42,7 @@ export default async function main(
     generateFunctionsOsdk?: string;
     functionsRootDir?: string;
     functionsOutput?: string;
+    configPath?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -107,6 +108,11 @@ export default async function main(
         type: "string",
         coerce: path.resolve,
       },
+      configPath: {
+        describe: "Path to the TypeScript config file",
+        type: "string",
+        coerce: path.resolve,
+      },
     })
     .parseAsync();
   let apiNamespace = "";
@@ -126,7 +132,10 @@ export default async function main(
     && commandLineOpts.functionsRootDir !== undefined
   ) {
     consola.info(`Loading function IR`);
-    const functionsIr = generateFunctionsIr(commandLineOpts.functionsRootDir);
+    const functionsIr = generateFunctionsIr(
+      commandLineOpts.functionsRootDir,
+      commandLineOpts.configPath,
+    );
     await fs.writeFile(
       commandLineOpts.functionsOutput,
       JSON.stringify(functionsIr, null, 2),
