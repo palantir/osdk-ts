@@ -26,7 +26,8 @@ import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
 import type { ListCacheKey } from "./ListCacheKey.js";
-import { ListQuery } from "./ListQuery.js";
+import type { ListQuery} from "./ListQuery.js";
+import { InterfaceListQuery, ObjectListQuery } from "./ListQuery.js";
 
 export class ListsHelper extends AbstractHelper<
   ListQuery,
@@ -75,10 +76,12 @@ export class ListsHelper extends AbstractHelper<
     );
 
     return this.store.queries.get(listCacheKey, () => {
-      return new ListQuery(
+      const QueryClass = type === "object"
+        ? ObjectListQuery
+        : InterfaceListQuery;
+      return new QueryClass(
         this.store,
         this.store.subjects.get(listCacheKey),
-        type,
         apiName,
         canonWhere,
         canonOrderBy,
