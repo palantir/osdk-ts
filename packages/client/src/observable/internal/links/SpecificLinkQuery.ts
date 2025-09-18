@@ -19,7 +19,6 @@ import type {
   Osdk,
   PageResult,
   PrimaryKeyType,
-  WhereClause,
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import { type Subject } from "rxjs";
@@ -129,7 +128,7 @@ export class SpecificLinkQuery extends BaseListQuery<
     // Query for the specific source object
     const sourceQuery = client(sourceObjectDef).where({
       [sourceMetadata.primaryKeyApiName]: this.#sourcePk,
-    } as WhereClause<any>);
+    } as any);
 
     // Pivot to the linked objects
     const linkQuery = sourceQuery.pivotTo(this.#linkName);
