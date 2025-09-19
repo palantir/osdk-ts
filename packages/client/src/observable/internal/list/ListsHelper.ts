@@ -25,9 +25,10 @@ import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
+import { InterfaceListQuery } from "./InterfaceListQuery.js";
 import type { ListCacheKey } from "./ListCacheKey.js";
-import type { ListQuery} from "./ListQuery.js";
-import { InterfaceListQuery, ObjectListQuery } from "./ListQuery.js";
+import type { ListQuery } from "./ListQuery.js";
+import { ObjectListQuery } from "./ObjectListQuery.js";
 
 export class ListsHelper extends AbstractHelper<
   ListQuery,
