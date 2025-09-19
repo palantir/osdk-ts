@@ -23,6 +23,7 @@ interface StringFilterOptions extends BaseFilterOptions<string> {
   "$containsAnyTerm": string | { term: string; fuzzySearch?: boolean };
   "$containsAllTerms": string | { term: string; fuzzySearch?: boolean };
   "$in": ReadonlyArray<string>;
+  "$endsWith": string;
 }
 
 export namespace StringFilter {
@@ -46,6 +47,7 @@ export namespace StringFilter {
   {
   }
   export interface $in extends Just<"$in", StringFilterOptions> {}
+  export interface $endsWith extends Just<"$endsWith", StringFilterOptions> {}
 }
 
 export type StringFilter =
@@ -57,7 +59,8 @@ export type StringFilter =
   | StringFilter.$startsWith
   | StringFilter.$containsAllTermsInOrder
   | StringFilter.$containsAnyTerm
-  | StringFilter.$containsAllTerms;
+  | StringFilter.$containsAllTerms
+  | StringFilter.$endsWith;
 
 /** @internal */
 function _typeCheck() {

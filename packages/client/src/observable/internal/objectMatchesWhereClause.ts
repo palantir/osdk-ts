@@ -121,6 +121,8 @@ export function objectSortaMatchesWhereClause(
           return realValue.startsWith(
             expected,
           );
+        case "$endsWith":
+          return realValue.endsWith(expected);
         case "$contains":
         case "$containsAllTerms":
         case "$containsAllTermsInOrder":
