@@ -23,15 +23,10 @@ import type {
   PageResult,
   PropertyKeys,
 } from "@osdk/api";
-import groupBy from "object.groupby";
 import type { Observable, Subscription } from "rxjs";
 import invariant from "tiny-invariant";
-import { additionalContext, type Client } from "../../../Client.js";
+import { additionalContext } from "../../../Client.js";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
-import {
-  ObjectDefRef,
-  UnderlyingOsdkObject,
-} from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type {
   ObjectHolder,
 } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
@@ -65,21 +60,20 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
 }>;
 
 /**
- * Implements filtered and sorted object collection queries.
+ * Base class for filtered and sorted object collection queries.
  * - Handles where clause filtering and orderBy sorting
  * - Manages pagination through fetchMore
  * - Auto-updates when matching objects change
  * - Uses canonicalized cache keys for consistency
  */
-export class ListQuery extends BaseListQuery<
+export abstract class ListQuery extends BaseListQuery<
   ListCacheKey,
   ListPayload,
   ListQueryOptions
 > {
   // pageSize?: number; // this is the internal page size. we need to track this properly
 
-  #type: "object" | "interface";
-  #apiName: string;
+  protected apiName: string;
   #whereClause: Canonical<SimpleWhereClause>;
 
   // Using base class minResultsToLoad instead of a private property
@@ -96,7 +90,6 @@ export class ListQuery extends BaseListQuery<
   constructor(
     store: Store,
     subject: Observable<SubjectPayload<ListCacheKey>>,
-    apiType: "object" | "interface",
     apiName: string,
     whereClause: Canonical<SimpleWhereClause>,
     orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
@@ -119,18 +112,13 @@ export class ListQuery extends BaseListQuery<
         : undefined,
     );
 
-    this.#type = apiType;
-    this.#apiName = apiName;
+    this.apiName = apiName;
     this.#whereClause = whereClause;
     this.#orderBy = orderBy;
-    this.#objectSet = store.client({
-      type: this.#type,
-      apiName: this.#apiName,
-    } as ObjectTypeDefinition)
-      .where(this.#whereClause);
+    this.#objectSet = this.createObjectSet(store);
     // Initialize the sorting strategy
     this.sortingStrategy = new OrderBySortingStrategy(
-      this.#apiName,
+      this.apiName,
       this.#orderBy,
     );
     // Initialize the minResultsToLoad inherited from BaseCollectionQuery
@@ -140,6 +128,13 @@ export class ListQuery extends BaseListQuery<
   get canonicalWhere(): Canonical<SimpleWhereClause> {
     return this.#whereClause;
   }
+
+  /**
+   * Create the ObjectSet for this query.
+   */
+  protected abstract createObjectSet(
+    store: Store,
+  ): ObjectSet<ObjectTypeDefinition>;
 
   /**
    * Implements fetchPageData from BaseCollectionQuery template method
@@ -164,16 +159,7 @@ export class ListQuery extends BaseListQuery<
     }
 
     this.nextPageToken = resp.nextPageToken;
-    let fetchedData = resp.data;
-
-    // Our caching really expects to have the full objects in the list
-    // so we need to fetch them all here
-    if (this.#type === "interface") {
-      fetchedData = await reloadDataAsFullObjects(
-        this.store.client,
-        fetchedData,
-      );
-    }
+    const fetchedData = await this.postProcessFetchedData(resp.data);
 
     return {
       ...resp,
@@ -204,28 +190,14 @@ export class ListQuery extends BaseListQuery<
    * @param apiName to invalidate
    * @returns
    */
-  revalidateObjectType = async (
-    apiName: string,
-  ): Promise<void> => {
-    if (this.#type === "object") {
-      if (this.#apiName === apiName) {
-        await this.revalidate(/* force */ true);
-        return;
-      } else {
-        return;
-      }
-    }
-    //
-    const objectMetadata = await this.store.client.fetchMetadata({
-      type: "object",
-      apiName,
-    });
+  abstract revalidateObjectType(apiName: string): Promise<void>;
 
-    if (this.#apiName in objectMetadata.interfaceMap) {
-      await this.revalidate(/* force */ true);
-      return;
-    }
-  };
+  /**
+   * Postprocess fetched data.
+   */
+  protected abstract postProcessFetchedData(
+    data: Osdk.Instance<any>[],
+  ): Promise<Osdk.Instance<any>[]>;
 
   invalidateObjectType = async (
     objectType: string,
@@ -266,7 +238,9 @@ export class ListQuery extends BaseListQuery<
     changes.modified.add(this.cacheKey);
 
     try {
-      const relevantObjects = this._extractRelevantObjects(changes);
+      const relevantObjects = this._extractAndCategorizeRelevantObjects(
+        changes,
+      );
 
       // If we got purely strict matches we can just update the list and move
       // on with our lives. But if we got sorta matches, then we need to revalidate
@@ -378,13 +352,10 @@ export class ListQuery extends BaseListQuery<
     return false;
   }
 
-  protected _extractRelevantObjects(
+  protected _extractAndCategorizeRelevantObjects(
     changes: Changes,
   ): ExtractRelevantObjectsResult {
-    // TODO refactor this ternary into subclasses
-    const relevantObjects = this.#type === "object"
-      ? this.#extractRelevantObjectsForTypeObject(changes)
-      : this.#extractRelevantObjectsForTypeInterface(changes);
+    const relevantObjects = this.extractRelevantObjects(changes);
 
     // categorize
     for (const group of Object.values(relevantObjects)) {
@@ -399,54 +370,12 @@ export class ListQuery extends BaseListQuery<
     return relevantObjects;
   }
 
-  #extractRelevantObjectsForTypeInterface(
+  /**
+   * Extract relevant objects for this query type.
+   */
+  protected abstract extractRelevantObjects(
     changes: Changes,
-  ): ExtractRelevantObjectsResult {
-    const matchesApiName = ([, object]: [unknown, ObjectHolder]) => {
-      return this.#apiName in object[ObjectDefRef].interfaceMap;
-    };
-
-    const added = Array.from(changes.addedObjects).filter(matchesApiName).map((
-      [, object],
-    ) => object.$as(this.#apiName));
-
-    const modified = Array.from(changes.modifiedObjects).filter(matchesApiName)
-      .map((
-        [, object],
-      ) => object.$as(this.#apiName));
-
-    return {
-      added: {
-        all: added,
-        strictMatches: new Set(),
-        sortaMatches: new Set(),
-      },
-      modified: {
-        all: modified,
-        strictMatches: new Set(),
-        sortaMatches: new Set(),
-      },
-    };
-  }
-
-  #extractRelevantObjectsForTypeObject(
-    changes: Changes,
-  ): ExtractRelevantObjectsResult {
-    return {
-      added: {
-        all: changes.addedObjects.get(this.cacheKey.otherKeys[API_NAME_IDX])
-          ?? [],
-        strictMatches: new Set(),
-        sortaMatches: new Set(),
-      },
-      modified: {
-        all: changes.modifiedObjects.get(this.cacheKey.otherKeys[API_NAME_IDX])
-          ?? [],
-        strictMatches: new Set(),
-        sortaMatches: new Set(),
-      },
-    };
-  }
+  ): ExtractRelevantObjectsResult;
 
   registerStreamUpdates(sub: Subscription): void {
     const logger = process.env.NODE_ENV !== "production"
@@ -463,10 +392,10 @@ export class ListQuery extends BaseListQuery<
     // just reuse it.
 
     const websocketSubscription = this.#objectSet.subscribe({
-      onChange: this.#onOswChange.bind(this),
-      onError: this.#onOswError.bind(this),
-      onOutOfDate: this.#onOswOutOfDate.bind(this),
-      onSuccessfulSubscription: this.#onOswSuccessfulSubscription.bind(this),
+      onChange: this.onOswChange.bind(this),
+      onError: this.onOswError.bind(this),
+      onOutOfDate: this.onOswOutOfDate.bind(this),
+      onSuccessfulSubscription: this.onOswSuccessfulSubscription.bind(this),
     });
 
     sub.add(() => {
@@ -480,7 +409,7 @@ export class ListQuery extends BaseListQuery<
     });
   }
 
-  #onOswSuccessfulSubscription(): void {
+  protected onOswSuccessfulSubscription(): void {
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child(
         { methodName: "onSuccessfulSubscription" },
@@ -488,7 +417,7 @@ export class ListQuery extends BaseListQuery<
     }
   }
 
-  #onOswOutOfDate(): void {
+  protected onOswOutOfDate(): void {
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child(
         { methodName: "onOutOfDate" },
@@ -496,10 +425,10 @@ export class ListQuery extends BaseListQuery<
     }
   }
 
-  #onOswError(errors: {
+  protected onOswError(errors: {
     subscriptionClosed: boolean;
     error: any;
-  }) {
+  }): void {
     if (this.logger) {
       this.logger?.child({ methodName: "onError" }).error(
         "subscription errors",
@@ -508,7 +437,7 @@ export class ListQuery extends BaseListQuery<
     }
   }
 
-  #onOswChange(
+  protected onOswChange(
     { object: objOrIface, state }: ObjectUpdate<ObjectTypeDefinition, string>,
   ): void {
     const logger = process.env.NODE_ENV !== "production"
@@ -535,14 +464,14 @@ export class ListQuery extends BaseListQuery<
         );
       });
     } else if (state === "REMOVED") {
-      this.#onOswRemoved(objOrIface, logger);
+      this.onOswRemoved(objOrIface, logger);
     }
   }
 
-  #onOswRemoved(
+  protected onOswRemoved(
     objOrIface: Osdk.Instance<ObjectTypeDefinition, never, string, {}>,
     logger: Logger | undefined,
-  ) {
+  ): void {
     this.store.batch({}, (batch) => {
       // Read the truth layer (since not optimistic)
       const existing = batch.read(this.cacheKey);
@@ -600,58 +529,6 @@ export class ListQuery extends BaseListQuery<
       });
     });
   }
-}
-
-// Hopefully this can go away when we can just request the full object properties on first load
-async function reloadDataAsFullObjects(
-  client: Client,
-  data: Osdk.Instance<any>[],
-) {
-  const groups = groupBy(data, (x) => x.$objectType);
-  const objectTypeToPrimaryKeyToObject = Object.fromEntries(
-    await Promise.all(
-      Object.entries(groups).map<
-        Promise<
-          [
-            /** objectType **/ string,
-            Record<string | number, Osdk.Instance<ObjectTypeDefinition>>,
-          ]
-        >
-      >(async ([apiName, objects]) => {
-        // to keep InternalSimpleOsdkInstance simple, we make both the `ObjectDefRef` and
-        // the `InterfaceDefRef` optional but we know that the right one is on there
-        // thus we can `!`
-        const objectDef = (objects[0] as ObjectHolder)[UnderlyingOsdkObject][
-          ObjectDefRef
-        ]!;
-        const where: SimpleWhereClause = {
-          [objectDef.primaryKeyApiName]: {
-            $in: objects.map(x => x.$primaryKey),
-          },
-        };
-
-        const result = await client(
-          objectDef as ObjectTypeDefinition,
-        ).where(where).fetchPage();
-        return [
-          apiName,
-          Object.fromEntries(result.data.map(
-            x => [x.$primaryKey, x],
-          )),
-        ];
-      }),
-    ),
-  );
-
-  data = data.map((obj) => {
-    invariant(
-      objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey],
-      `Could not find object ${obj.$objectType} ${obj.$primaryKey}`,
-    );
-    return objectTypeToPrimaryKeyToObject[obj.$objectType][obj.$primaryKey];
-  });
-
-  return data;
 }
 
 export function isListCacheKey(
