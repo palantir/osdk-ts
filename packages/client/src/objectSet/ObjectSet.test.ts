@@ -467,10 +467,7 @@ describe("ObjectSet", () => {
 
   it("does not allow both $primaryKey and primary key in a where", () => {
     // @ts-expect-error
-    client(Employee).where({
-      $primaryKey: { $eq: 3 },
-      employeeId: { $eq: 3 },
-    });
+    client(Employee).where({ $primaryKey: { $eq: 3 }, employeeId: { $eq: 3 } });
   });
 
   it("type checking containsallterm and containsanyterm", () => {
