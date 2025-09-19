@@ -125,7 +125,7 @@ export class ListQuery extends BaseListQuery<
       type: this.#type,
       apiName: this.#apiName,
     } as ObjectTypeDefinition)
-      .where(this.#whereClause as any);
+      .where(this.#whereClause);
     // Initialize the sorting strategy
     this.sortingStrategy = new OrderBySortingStrategy(
       this.#apiName,
@@ -632,7 +632,7 @@ async function reloadDataAsFullObjects(
 
         const result = await client(
           objectDef as ObjectTypeDefinition,
-        ).where(where as any).fetchPage();
+        ).where(where).fetchPage();
         return [
           apiName,
           Object.fromEntries(result.data.map(

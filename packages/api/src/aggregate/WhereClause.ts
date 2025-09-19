@@ -189,46 +189,23 @@ export interface NotWhereClause<
   $not: WhereClause<T>;
 }
 
-type WithPrimaryKeyWhereClause<T extends ObjectOrInterfaceDefinition> =
-  & {
-    [
-      P in keyof CompileTimeMetadata<T>["properties"]
-    ]?: FilterFor<
-      CompileTimeMetadata<T>["properties"][P]
-    >;
-  }
-  & (T extends ObjectTypeDefinition ? { $primaryKey?: never }
-    : {});
-
-type With$PrimaryKeyWhereClause<T extends ObjectOrInterfaceDefinition> =
-  & {
-    [
-      P in keyof CompileTimeMetadata<T>["properties"] as PropertyAsPrimaryKey<
-        T,
-        P
-      >
-    ]?: FilterFor<
-      CompileTimeMetadata<T>["properties"][P]
-    >;
-  }
-  & (T extends ObjectTypeDefinition ? ExcludePrimaryKeyProperty<T>
-    : {});
-
-type ExcludePrimaryKeyProperty<T extends ObjectTypeDefinition> = {
-  [K in CompileTimeMetadata<T>["primaryKeyApiName"]]?: never;
+export type PropertyWhereClause<T extends ObjectOrInterfaceDefinition> = {
+  [
+    P in keyof CompileTimeMetadata<T>["properties"] as
+      | P
+      | PropertyAsPrimaryKey<T, P>
+  ]?: FilterFor<
+    CompileTimeMetadata<T>["properties"][P]
+  >;
 };
-
-export type PropertyWhereClause<T extends ObjectOrInterfaceDefinition> =
-  | With$PrimaryKeyWhereClause<T>
-  | WithPrimaryKeyWhereClause<T>;
 
 type PropertyAsPrimaryKey<
   T extends ObjectOrInterfaceDefinition,
   P extends keyof CompileTimeMetadata<T>["properties"],
 > = T extends ObjectTypeDefinition
   ? CompileTimeMetadata<T>["primaryKeyApiName"] extends P ? "$primaryKey"
-  : P
-  : P;
+  : never
+  : never;
 
 export type WhereClause<
   T extends ObjectOrInterfaceDefinition,

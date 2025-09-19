@@ -1122,6 +1122,7 @@ describe(modernToLegacyWhereClause, () => {
           objectTypeWithAllPropertyTypes,
           {
             ...clientCtx,
+            // poor man's mock
             ontologyProvider: {
               async getObjectDefinition(_apiName: string) {
                 return Promise.resolve({
