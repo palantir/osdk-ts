@@ -227,7 +227,7 @@ export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFi
 
       for (const entityModuleName of entityModuleNames) {
         topLevelExportStatements.push(
-          `export { ${entityModuleName} } from "./codegen/${typeDirName}/${entityModuleName}.ts";`,
+          `export { ${entityModuleName} } from "./codegen/${typeDirName}/${entityModuleName}.js";`,
         );
       }
     },
