@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.4.0-beta.4
+
+### Minor Changes
+
+- 2bb698d: Fix knn doc snippet
+
 ## 0.4.0-beta.3
 
 ### Minor Changes
