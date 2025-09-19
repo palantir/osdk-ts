@@ -152,7 +152,7 @@ describe(toDataValue, () => {
 
   it("passes through object set definitions", async () => {
     const clientObjectSet = client(Task).where({ id: 0 });
-    const definition = getWireObjectSet(clientObjectSet);
+    const definition = await getWireObjectSet(clientObjectSet);
 
     const expected = `
     {

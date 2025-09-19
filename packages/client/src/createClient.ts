@@ -198,9 +198,9 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 clientCtx,
                 objectType,
                 options,
-                createWithRid(
+                Promise.resolve(createWithRid(
                   [rid],
-                ),
+                )),
               ) as Osdk<Q>;
             },
           } as any;
@@ -246,7 +246,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 clientCtx,
                 objectOrInterfaceType,
                 options,
-                createWithRid(rids),
+                Promise.resolve(createWithRid(rids)),
               );
             },
             fetchPageByRidNoType: async <

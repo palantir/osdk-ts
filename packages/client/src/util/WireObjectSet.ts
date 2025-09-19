@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
-
 const WIRE_OBJECT_SET_TYPES = new Set([
   "base",
   "filter",
@@ -29,7 +27,8 @@ const WIRE_OBJECT_SET_TYPES = new Set([
 ]);
 
 /** @internal */
-export function isWireObjectSet(o: any): o is WireObjectSet {
+export async function isWireObjectSet(obj: any): Promise<boolean> {
+  const o = await Promise.resolve(obj);
   return o != null && typeof o === "object"
     && WIRE_OBJECT_SET_TYPES.has(o.type);
 }

@@ -41,7 +41,7 @@ export async function createAndFetchTempObjectSetRid<
     client,
     await client[additionalContext].ontologyRid,
     {
-      objectSet: getWireObjectSet(objectSet),
+      objectSet: await getWireObjectSet(objectSet),
     },
   );
   return response.objectSetRid;

@@ -21,8 +21,9 @@ import {
 } from "@osdk/client.test.ontology";
 import { beforeAll, describe, expect, expectTypeOf, it } from "vitest";
 
-import type { ObjectSet, Osdk, PropertyKeys } from "@osdk/api";
+import type { ObjectSet, Osdk, PropertyKeys, WhereClause } from "@osdk/api";
 import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
+import { expectType } from "ts-expect";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -100,10 +101,17 @@ describe("ObjectSet", () => {
     expect(asEmployee2.office).toBeUndefined();
   });
 
-  it("interface links", async () => {
+  it("interface links", () => {
     const objectSet = client(BarInterface).pivotTo("toFoo");
     expectTypeOf<typeof objectSet>().toEqualTypeOf<
       ObjectSet<FooInterface, never>
     >;
+  });
+
+  it("doesn't allow $primaryKey where for interface object set", async () => {
+    expectType<WhereClause<FooInterface>>({
+      // @ts-expect-error
+      $primaryKey: "Santa Claus",
+    });
   });
 });
