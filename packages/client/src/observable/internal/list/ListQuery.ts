@@ -50,13 +50,13 @@ import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
-import type { ListCacheKey } from "./ListCacheKey.js";
+import {
+  API_NAME_IDX,
+  type ListCacheKey,
+  ORDER_BY_IDX,
+  WHERE_IDX,
+} from "./ListCacheKey.js";
 import type { ListQueryOptions } from "./ListQueryOptions.js";
-
-export const API_NAME_IDX = 1;
-export const TYPE_IDX = 0;
-export const WHERE_IDX = 2;
-export const ORDER_BY_IDX = 3;
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   all: (ObjectHolder | InterfaceHolder)[];
@@ -98,8 +98,7 @@ export class ListQuery extends BaseListQuery<
     subject: Observable<SubjectPayload<ListCacheKey>>,
     apiType: "object" | "interface",
     apiName: string,
-    whereClause: Canonical<SimpleWhereClause>,
-    orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>,
+    objectSet: ObjectSet<ObjectTypeDefinition>,
     cacheKey: ListCacheKey,
     opts: ListQueryOptions,
   ) {
@@ -121,13 +120,9 @@ export class ListQuery extends BaseListQuery<
 
     this.#type = apiType;
     this.#apiName = apiName;
-    this.#whereClause = whereClause;
-    this.#orderBy = orderBy;
-    this.#objectSet = store.client({
-      type: this.#type,
-      apiName: this.#apiName,
-    } as ObjectTypeDefinition)
-      .where(this.#whereClause);
+    this.#whereClause = cacheKey.otherKeys[WHERE_IDX];
+    this.#orderBy = cacheKey.otherKeys[ORDER_BY_IDX];
+    this.#objectSet = objectSet;
     // Initialize the sorting strategy
     this.sortingStrategy = new OrderBySortingStrategy(
       this.#apiName,
@@ -231,7 +226,7 @@ export class ListQuery extends BaseListQuery<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (this.cacheKey.otherKeys[1] === objectType) {
+    if (this.cacheKey.otherKeys[API_NAME_IDX] === objectType) {
       // Only invalidate lists for the matching apiName
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
@@ -303,6 +298,7 @@ export class ListQuery extends BaseListQuery<
               "object",
               obj.$objectType,
               obj.$primaryKey,
+              this.rdpConfig,
             );
 
             if (!existingList.has(objectCacheKey)) {
@@ -321,6 +317,7 @@ export class ListQuery extends BaseListQuery<
               "object",
               obj.$objectType,
               obj.$primaryKey,
+              this.rdpConfig,
             );
 
             toRemove.add(existingObjectCacheKey);
@@ -342,6 +339,7 @@ export class ListQuery extends BaseListQuery<
               "object",
               obj.$objectType,
               obj.$primaryKey,
+              this.rdpConfig,
             ),
           );
         }
@@ -532,6 +530,7 @@ export class ListQuery extends BaseListQuery<
         this.store.objects.storeOsdkInstances(
           [object as Osdk.Instance<any>],
           batch,
+          this.rdpConfig,
         );
       });
     } else if (state === "REMOVED") {
@@ -555,6 +554,7 @@ export class ListQuery extends BaseListQuery<
           "object",
           objOrIface.$objectType,
           objOrIface.$primaryKey,
+          this.rdpConfig,
         );
         // remove the object from the list
         const newObjects = existing.value?.data.filter(

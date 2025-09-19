@@ -22,6 +22,7 @@ import type {
   CompileTimeMetadata,
   ObjectMetadata,
 } from "../ontology/ObjectTypeDefinition.js";
+import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { BaseWirePropertyTypes } from "../ontology/WirePropertyTypes.js";
 import type { IsNever } from "../OsdkObjectFrom.js";
 import type { ArrayFilter } from "./ArrayFilter.js";
@@ -194,6 +195,14 @@ export type PropertyWhereClause<T extends ObjectOrInterfaceDefinition> = {
   >;
 };
 
+export type RdpWhereClause<
+  RDPs extends Record<string, SimplePropertyDef>,
+> = {
+  $rdp?: {
+    [K in keyof RDPs]?: FilterFor<SimplePropertyDef.ToPropertyDef<RDPs[K]>>;
+  };
+};
+
 export type WhereClause<
   T extends ObjectOrInterfaceDefinition,
 > =
@@ -203,3 +212,35 @@ export type WhereClause<
   | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true
     ? Record<string, never>
     : PropertyWhereClause<T>);
+
+export type WhereClauseWithRdp<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> =
+  | OrWhereClauseWithRdp<T, RDPs>
+  | AndWhereClauseWithRdp<T, RDPs>
+  | NotWhereClauseWithRdp<T, RDPs>
+  | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true
+    ? RdpWhereClause<RDPs>
+    : PropertyWhereClause<T> & RdpWhereClause<RDPs>);
+
+export interface AndWhereClauseWithRdp<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> {
+  $and: WhereClauseWithRdp<T, RDPs>[];
+}
+
+export interface OrWhereClauseWithRdp<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> {
+  $or: WhereClauseWithRdp<T, RDPs>[];
+}
+
+export interface NotWhereClauseWithRdp<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> {
+  $not: WhereClauseWithRdp<T, RDPs>;
+}

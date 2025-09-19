@@ -33,14 +33,10 @@ export class OrderByCanonicalizer {
         },
         [],
       );
-      let data = Object.fromEntries(pairs) satisfies Record<
+      const data = Object.fromEntries(pairs) satisfies Record<
         string,
         "asc" | "desc"
       > as Canonical<OrderBy<ObjectTypeDefinition>>;
-
-      if (process.env.NODE_ENV !== "production") {
-        data = Object.freeze(data);
-      }
       return data;
     },
   );

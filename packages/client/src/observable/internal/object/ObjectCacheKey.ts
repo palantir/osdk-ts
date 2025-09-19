@@ -17,6 +17,8 @@
 import type { ObjectTypeDefinition, PrimaryKeyType } from "@osdk/api";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { CacheKey } from "../CacheKey.js";
+import type { Canonical } from "../Canonical.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { ObjectQuery } from "./ObjectQuery.js";
 
 export interface ObjectCacheKey extends
@@ -24,7 +26,11 @@ export interface ObjectCacheKey extends
     "object",
     ObjectHolder,
     ObjectQuery,
-    [string, pk: PrimaryKeyType<ObjectTypeDefinition>]
+    [
+      apiName: string,
+      pk: PrimaryKeyType<ObjectTypeDefinition>,
+      rdpConfig: Canonical<Rdp> | undefined,
+    ]
   >
 {
 }

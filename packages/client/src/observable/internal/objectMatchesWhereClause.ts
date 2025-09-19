@@ -96,50 +96,25 @@ export function objectSortaMatchesWhereClause(
   }
 
   return Object.entries(whereClause).every(([key, filter]) => {
+    if (key === "$rdp" && typeof filter === "object" && filter != null) {
+      return Object.entries(filter).every(([rdpKey, rdpFilter]) => {
+        const rdpValue = o[rdpKey as keyof typeof o];
+        if (typeof rdpFilter === "object" && rdpFilter != null) {
+          const [f] = Object.keys(rdpFilter) as Array<
+            PossibleWhereClauseFilters
+          >;
+          const expected = rdpFilter[f];
+          return evaluateFilter(f, rdpValue, expected, strict);
+        }
+        return rdpValue === rdpFilter;
+      });
+    }
+
     if (typeof filter === "object") {
       const realValue: any = o[key as keyof typeof o];
       const [f] = Object.keys(filter) as Array<PossibleWhereClauseFilters>;
       const expected = (filter as any)[f];
-      switch (f) {
-        case "$eq":
-          return realValue === expected;
-        case "$gt":
-          return realValue > expected;
-        case "$lt":
-          return realValue < expected;
-        case "$gte":
-          return realValue >= expected;
-        case "$lte":
-          return realValue <= expected;
-        case "$ne":
-          return realValue !== expected;
-        case "$in":
-          return expected.$in.includes(realValue);
-        case "$isNull":
-          return realValue == null;
-        case "$startsWith":
-          return realValue.startsWith(
-            expected,
-          );
-        case "$contains":
-        case "$containsAllTerms":
-        case "$containsAllTermsInOrder":
-        case "$containsAnyTerm":
-        case "$intersects":
-        case "$within":
-          // for these we will strictly say no and loosely say yes
-          // so that they don't change things now but may if reloaded
-          return !strict;
-
-        default:
-          // same thing here as the above cases but we will catch the
-          // exhaustive check in dev
-          if (process.env.NODE_ENV !== "production") {
-            const exhaustive: never = f;
-            invariant(false, `Unknown where filter ${f}`);
-          }
-          return !strict;
-      }
+      return evaluateFilter(f, realValue, expected, strict);
     }
 
     if (key in o) {
@@ -149,4 +124,50 @@ export function objectSortaMatchesWhereClause(
     }
     return false;
   });
+}
+
+function evaluateFilter(
+  f: PossibleWhereClauseFilters,
+  realValue: any,
+  expected: any,
+  strict: boolean,
+): boolean {
+  switch (f) {
+    case "$eq":
+      return realValue === expected;
+    case "$gt":
+      return realValue > expected;
+    case "$lt":
+      return realValue < expected;
+    case "$gte":
+      return realValue >= expected;
+    case "$lte":
+      return realValue <= expected;
+    case "$ne":
+      return realValue !== expected;
+    case "$in":
+      return expected.$in.includes(realValue);
+    case "$isNull":
+      return realValue == null;
+    case "$startsWith":
+      return realValue.startsWith(expected);
+    case "$contains":
+    case "$containsAllTerms":
+    case "$containsAllTermsInOrder":
+    case "$containsAnyTerm":
+    case "$intersects":
+    case "$within":
+      // for these we will strictly say no and loosely say yes
+      // so that they don't change things now but may if reloaded
+      return !strict;
+
+    default:
+      // same thing here as the above cases but we will catch the
+      // exhaustive check in dev
+      if (process.env.NODE_ENV !== "production") {
+        const exhaustive: never = f;
+        invariant(false, `Unknown where filter ${f}`);
+      }
+      return !strict;
+  }
 }
