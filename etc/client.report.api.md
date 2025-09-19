@@ -29,6 +29,7 @@ import { NULL_VALUE } from '@osdk/api';
 import { ObjectMetadata } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/api';
+import type { ObjectSet as ObjectSet_2 } from '@osdk/foundry.ontologies';
 import type { ObjectSetQueryDataType } from '@osdk/api';
 import { ObjectSpecifier } from '@osdk/api';
 import { ObjectTypeDefinition } from '@osdk/api';
@@ -142,6 +143,9 @@ export const extractDateInLocalTime: (date: Date) => string;
 //
 // @public
 export const extractDateInUTC: (date: Date) => string;
+
+// @public (undocumented)
+export function getWireObjectSet(objectSet: ObjectSet<any> | MinimalObjectSet<any>): ObjectSet_2;
 
 export { InterfaceDefinition }
 

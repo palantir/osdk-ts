@@ -41,6 +41,7 @@ import { Layers } from "./Layers.js";
 import { LinksHelper } from "./links/LinksHelper.js";
 import { ListsHelper } from "./list/ListsHelper.js";
 import { ObjectsHelper } from "./object/ObjectsHelper.js";
+import { ObjectSetHelper } from "./objectset/ObjectSetHelper.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import { Queries } from "./Queries.js";
@@ -89,6 +90,7 @@ export class Store {
   readonly lists: ListsHelper;
   readonly objects: ObjectsHelper;
   readonly links: LinksHelper;
+  readonly objectSets: ObjectSetHelper;
 
   constructor(client: Client) {
     this.logger = client[additionalContext].logger?.child({}, {
@@ -108,6 +110,12 @@ export class Store {
     );
     this.objects = new ObjectsHelper(this, this.cacheKeys);
     this.links = new LinksHelper(
+      this,
+      this.cacheKeys,
+      this.whereCanonicalizer,
+      this.orderByCanonicalizer,
+    );
+    this.objectSets = new ObjectSetHelper(
       this,
       this.cacheKeys,
       this.whereCanonicalizer,

@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-export { createAndFetchTempObjectSetRid } from "../public-utils/createAndFetchTempObjectSetRid.js";
-export { hydrateAttachmentFromRid } from "../public-utils/hydrateAttachmentFromRid.js";
-export { hydrateObjectSetFromObjectRids } from "../public-utils/hydrateObjectSetFromObjectRids.js";
-export { hydrateObjectSetFromRid } from "../public-utils/hydrateObjectSetFromRid.js";
+import type { ObjectSet } from "@osdk/api";
+import type { BaseCollectionPayload } from "./internal/base-list/BaseCollectionQuery.js";
 
-export { getWireObjectSet } from "../objectSet/createObjectSet.js";
-
-export { BrowserLogger } from "../logger/BrowserLogger.js";
-export { MinimalLogger } from "../logger/MinimalLogger.js";
+export interface ObjectSetPayload extends BaseCollectionPayload {
+  objectSet: ObjectSet<any, any>;
+}

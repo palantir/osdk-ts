@@ -449,8 +449,13 @@ export namespace DerivedProperty {
     	> extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q>, Constant<Q> {}
     	// (undocumented)
     export type Clause<Q extends ObjectOrInterfaceDefinition> = {
-        		[key: string]: DerivedPropertyCreator<Q, SimplePropertyDef>
+        		[key: string]: Creator<Q, SimplePropertyDef>
         	};
+    	// (undocumented)
+    export type Creator<
+    		Q extends ObjectOrInterfaceDefinition,
+    		T extends SimplePropertyDef
+    	> = (baseObjectSet: Builder<Q, false>) => Definition<T, Q> | NumericPropertyDefinition<T, Q> | DatetimePropertyDefinition<T, Q>;
     	// Warning: (ae-forgotten-export) The symbol "DatetimeExpressions" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -458,9 +463,7 @@ export namespace DerivedProperty {
     		T extends SimplePropertyDef,
     		Q extends ObjectOrInterfaceDefinition
     	> extends Definition<T, Q>, DatetimeExpressions<Q, T> {}
-    	// Warning: (ae-forgotten-export) The symbol "SimplePropertyDef" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
+    	// (undocumented)
     export interface Definition<
     		T extends SimplePropertyDef,
     		Q extends ObjectOrInterfaceDefinition
@@ -1365,6 +1368,33 @@ export type SelectArgToKeys<
 > = A extends SelectArg<Q, never> ? PropertyKeys<Q> : A["$select"] extends readonly string[] ? A["$select"][number] : PropertyKeys<Q>;
 
 // @public (undocumented)
+export type SimplePropertyDef = WirePropertyTypes | undefined | Array<WirePropertyTypes>;
+
+// @public (undocumented)
+export namespace SimplePropertyDef {
+    	// (undocumented)
+    export type ExtractMultiplicity<T extends WirePropertyTypes | undefined | Array<WirePropertyTypes>> = NonNullable<T> extends Array<any> ? "array" : "single";
+    	// (undocumented)
+    export type ExtractNullable<T extends SimplePropertyDef> = [undefined] extends [T] ? "nullable" : [[undefined]] extends [T] ? "nullable" : "non-nullable";
+    	// (undocumented)
+    export type ExtractRuntimeBaseType<S extends SimplePropertyDef> = GetClientPropertyValueFromWire<SimplePropertyDef.ExtractWirePropertyType<S>>;
+    	// (undocumented)
+    export type ExtractWirePropertyType<T extends SimplePropertyDef> = T extends Array<infer Z> ? NonNullable<Z> : NonNullable<T>;
+    	// (undocumented)
+    export type FromPropertyMetadata<P extends ObjectMetadata.Property> = Make<P["type"], P["nullable"] extends true ? "nullable" : "non-nullable", P["multiplicity"] extends true ? "array" : "single">;
+    	// (undocumented)
+    export type Make<
+    		T extends WirePropertyTypes,
+    		N extends "nullable" | "non-nullable",
+    		M extends "array" | "single"
+    	> = M extends "array" ? N extends "nullable" ? Array<T> | undefined : Array<T> : N extends "nullable" ? T | undefined : T;
+    	// (undocumented)
+    export type ToPropertyDef<S extends SimplePropertyDef> = PropertyDef<SimplePropertyDef.ExtractWirePropertyType<S>, SimplePropertyDef.ExtractNullable<S>, SimplePropertyDef.ExtractMultiplicity<S>>;
+    	// (undocumented)
+    export type ToRuntimeProperty<S extends SimplePropertyDef> = ExtractMultiplicity<S> extends "array" ? ExtractNullable<S> extends "nullable" ? Array<ExtractRuntimeBaseType<S>> | undefined : Array<ExtractRuntimeBaseType<S>> : ExtractNullable<S> extends "nullable" ? ExtractRuntimeBaseType<S> | undefined : ExtractRuntimeBaseType<S>;
+}
+
+// @public (undocumented)
 export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
     	fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L & PropertyKeys<T>> : Osdk.Instance<T>>;
     	fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<Result<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L> : Osdk.Instance<T>>>;
@@ -1528,7 +1558,6 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "OsdkObjectPropertyTypeNotUndefined" needs to be exported by the entry point index.d.ts
-// src/derivedProperties/DerivedProperty.ts:58:7 - (ae-forgotten-export) The symbol "DerivedPropertyCreator" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

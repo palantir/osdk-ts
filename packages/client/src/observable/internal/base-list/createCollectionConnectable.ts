@@ -96,16 +96,16 @@ export function createCollectionConnectable<
             status: of(listEntry.status),
             lastUpdated: of(listEntry.lastUpdated),
           }).pipe(
-            map(params =>
-              createPayload({
+            map(params => {
+              return createPayload({
                 resolvedData: Array.isArray(params.resolvedData)
                   ? params.resolvedData
                   : [],
                 isOptimistic: params.isOptimistic,
                 status: params.status,
                 lastUpdated: params.lastUpdated,
-              })
-            ),
+              });
+            }),
           ),
           asapScheduler,
         );
