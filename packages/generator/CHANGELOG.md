@@ -1,5 +1,17 @@
 # @osdk/generator
 
+## 2.5.0-beta.8
+
+### Minor Changes
+
+- 78be29f: mark deprecated properties with JSDoc for interface types
+
+### Patch Changes
+
+- Updated dependencies [ca1fabe]
+  - @osdk/api@2.5.0-beta.8
+  - @osdk/generator-converters@2.5.0-beta.8
+
 ## 2.5.0-beta.7
 
 ### Patch Changes

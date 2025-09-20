@@ -1,5 +1,14 @@
 # @osdk/client
 
+## 2.5.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [ca1fabe]
+  - @osdk/api@2.5.0-beta.8
+  - @osdk/client.unstable@2.5.0-beta.8
+  - @osdk/generator-converters@2.5.0-beta.8
+
 ## 2.5.0-beta.7
 
 ### Minor Changes

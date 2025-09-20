@@ -1,5 +1,12 @@
 # @osdk/generator-converters
 
+## 2.5.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [ca1fabe]
+  - @osdk/api@2.5.0-beta.8
+
 ## 2.5.0-beta.7
 
 ### Patch Changes
