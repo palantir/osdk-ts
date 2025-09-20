@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-import { describe, it, expect } from "vitest";
-import { extractHandlebarsVariables } from "../utils/extractHandlebarsVariables.js";
-import { processTemplateV2 } from "../utils/processTemplate.v2.js";
+import { mkdtemp, rm } from "fs/promises";
+import { tmpdir } from "os";
+import { join } from "path";
+import { describe, expect, it } from "vitest";
 import { TemplateAnalyzer } from "../analyzer/template-analyzer.js";
+import { generateExamples } from "../generateExamples.js";
+import type { BlockVariable } from "../types/index.js";
 import { getSnippetContext } from "../utils/baseContext.js";
+import { generateBlockVariations } from "../utils/generateBlockVariations.js";
+import { processTemplateV2 } from "../utils/processTemplate.v2.js";
 
 /**
- * Test to reproduce the silent failure issue described in MASTER-PLAN.md
- * This demonstrates the problem where incorrect Handlebars syntax fails silently
+ * Consolidated test suite for silent failure fixes across template processing,
+ * block variations, and full integration. Tests that incorrect Handlebars syntax
+ * fails clearly instead of silently continuing.
  */
-describe("Silent Failure Reproduction", () => {
+describe("Silent Failure Prevention", () => {
   const validTemplate = `
 import { objectSet } from "@osdk/api";
 {{#propertyNames}}
@@ -41,46 +47,27 @@ const property = "{{this}}";
 export { objectSet };
   `;
 
+  const validBlockTemplate = `
+import { objectSet } from "@osdk/api";
+{{#hasProperty}}
+const property = "{{propertyName}}";
+{{/hasProperty}}
+export { objectSet };
+  `;
+
+  const invalidBlockTemplate = `
+import { objectSet } from "@osdk/api";
+{{#hasProperty}}
+const property = "{{propertyName}}";
+{{/invalidSyntax  // BROKEN: missing closing }}
+{{/hasProperty}}
+export { objectSet };
+  `;
+
   const context = {
     ...getSnippetContext("testSnippet"),
-    propertyNames: ["name", "age", "email"]
+    propertyNames: ["name", "age", "email"],
   };
-
-  describe("extractHandlebarsVariables", () => {
-    it("should handle valid template with block syntax", () => {
-      const variables = extractHandlebarsVariables(validTemplate);
-      expect(variables).toContain("#propertyNames");
-      expect(variables).toContain("/propertyNames");
-    });
-
-    it("should throw or fail clearly on invalid template", () => {
-      // The current issue: this might fail silently or throw unexpectedly
-      expect(() => {
-        const variables = extractHandlebarsVariables(invalidTemplate);
-      }).toThrow(); // We expect this to throw, not fail silently
-    });
-  });
-
-  describe("processTemplateV2", () => {
-    it("should process valid template successfully", () => {
-      const result = processTemplateV2(validTemplate, context);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.value).toContain("const property = \"name\";");
-      }
-    });
-
-    it("should fail clearly on invalid template with helpful error message", () => {
-      const result = processTemplateV2(invalidTemplate, context);
-      // Should return a clear error, not succeed or fail silently
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.message).toContain("Parse error");
-        expect(result.error.message).not.toBe(""); // Should not be empty
-        console.log("✓ Error correctly caught:", result.error.message);
-      }
-    });
-  });
 
   describe("TemplateAnalyzer", () => {
     const analyzer = new TemplateAnalyzer();
@@ -96,7 +83,6 @@ export { objectSet };
 
     it("should fail clearly on invalid template", () => {
       const result = analyzer.analyze(invalidTemplate);
-      // Should return a clear error indicating the problem
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.message).toContain("parse");
@@ -104,21 +90,141 @@ export { objectSet };
     });
   });
 
-  describe("Integration: The Silent Failure Bug", () => {
-    it("demonstrates how template analysis errors get swallowed", () => {
+  describe("processTemplateV2", () => {
+    it("should process valid template successfully", () => {
+      const result = processTemplateV2(validTemplate, context);
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.value).toContain("const property = \"name\";");
+      }
+    });
+
+    it("should fail clearly on invalid template with helpful error message", () => {
+      const result = processTemplateV2(invalidTemplate, context);
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.message).toContain("Parse error");
+        expect(result.error.message).not.toBe("");
+        console.log("✓ Error correctly caught:", result.error.message);
+      }
+    });
+  });
+
+  describe("Block Variations", () => {
+    const blocks: BlockVariable[] = [
+      {
+        name: "#hasProperty",
+        isInverted: false,
+        content: "const property = \"{{propertyName}}\";",
+      },
+    ];
+    const version = "2.0.0";
+
+    it("should process valid block template successfully", () => {
+      const result = generateBlockVariations(
+        validBlockTemplate,
+        "testSnippet",
+        context,
+        blocks,
+        version,
+      );
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.value.variations).toBeDefined();
+        expect(result.value.files).toBeDefined();
+        expect(result.value.files.length).toBeGreaterThan(0);
+      }
+    });
+
+    it("should fail clearly on invalid block template", () => {
+      const result = generateBlockVariations(
+        invalidBlockTemplate,
+        "testSnippet",
+        context,
+        blocks,
+        version,
+      );
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.message).toContain(
+          "Failed to process block variation",
+        );
+        expect(result.error.message).toContain("testSnippet#hasProperty");
+      }
+    });
+  });
+
+  describe("Integration Tests", () => {
+    it("should succeed when all templates have valid Handlebars syntax", async () => {
+      const tempDir = await mkdtemp(join(tmpdir(), "example-generator-test-"));
+      const outputDir = join(tempDir, "examples");
+      const hierarchyFile = join(tempDir, "hierarchy.ts");
+
+      try {
+        const result = await generateExamples(outputDir, hierarchyFile, [
+          "2.1.0",
+        ]);
+
+        expect(result.success).toBe(true);
+
+        if (result.success) {
+          expect(result.value.successful).toBeGreaterThan(0);
+          expect(result.value.failed).toBe(0);
+          expect(result.value.versions).toContain("2.1.0");
+
+          console.log(
+            "✅ Build correctly succeeded with",
+            result.value.successful,
+            "examples generated",
+          );
+        }
+      } finally {
+        await rm(tempDir, { recursive: true, force: true });
+      }
+    });
+
+    it("should handle large template sets correctly", async () => {
+      const tempDir = await mkdtemp(join(tmpdir(), "example-generator-test-"));
+      const outputDir = join(tempDir, "examples");
+      const hierarchyFile = join(tempDir, "hierarchy.ts");
+
+      try {
+        const result = await generateExamples(outputDir, hierarchyFile, [
+          "2.0.0",
+        ]);
+
+        expect(result.success).toBe(true);
+
+        if (result.success) {
+          expect(result.value.successful).toBeGreaterThan(0);
+          expect(result.value.failed).toBe(0);
+
+          console.log(
+            "✅ Build correctly succeeded, confirming error handling works for valid templates",
+          );
+        }
+      } finally {
+        await rm(tempDir, { recursive: true, force: true });
+      }
+    });
+
+    it("demonstrates the silent failure bug fix", () => {
       const analyzer = new TemplateAnalyzer();
-      
-      // This simulates the problematic code in generateExamples.ts:268
+
+      // This simulates the problematic code that was fixed
       const analysis = analyzer.analyze(invalidTemplate);
       if (!analysis.success) {
-        // The bug: this error gets converted to a warning and execution continues
-        const warning = `Failed to analyze template test: ${analysis.error.message}`;
+        // Previously: this error got converted to a warning and execution continued
+        // Now: this error properly fails the build
+        const warning =
+          `Failed to analyze template test: ${analysis.error.message}`;
         expect(warning).toContain("Failed to analyze template");
-        
-        // Then the code falls back to extractHandlebarsVariables which might throw
-        expect(() => {
-          extractHandlebarsVariables(invalidTemplate);
-        }).toThrow();
+
+        // Verify the error propagates correctly
+        const fallbackResult = analyzer.analyze(invalidTemplate);
+        expect(fallbackResult.success).toBe(false);
       }
     });
   });

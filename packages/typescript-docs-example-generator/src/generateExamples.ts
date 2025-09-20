@@ -17,6 +17,19 @@
 import { TYPESCRIPT_OSDK_SNIPPETS } from "@osdk/typescript-sdk-docs";
 import fs from "fs/promises";
 import path from "path";
+import { TemplateAnalyzer } from "./analyzer/template-analyzer.js";
+import {
+  type GeneratorError,
+  toErrorResult,
+} from "./errors/generator-errors.js";
+import type {
+  ExampleCollection,
+  GenerationReport,
+  GenerationSummary,
+  ProcessingError,
+  Result,
+} from "./types/index.js";
+import { BatchProcessor } from "./utils/batch-processor.js";
 import {
   CodeTransformer,
   FileWriter,
@@ -26,13 +39,8 @@ import {
   getSnippetContext,
   HierarchyBuilder,
 } from "./utils/index.js";
-import { TemplateAnalyzer } from "./analyzer/template-analyzer.js";
 import { processTemplateV2 } from "./utils/processTemplate.v2.js";
 import { TemplateValidator } from "./validation/template-validator.js";
-import { CodeFormatter } from "./formatter/code-formatter.js";
-import { createTypeScriptValidator } from "./compiler/typescript-validator.js";
-import type { Result, GenerationReport, ProcessingError, ExampleCollection } from "./types/index.js";
-import { toErrorResult, type GeneratorError } from "./errors/generator-errors.js";
 
 /**
  * Generate TypeScript examples from SDK documentation templates
@@ -97,8 +105,6 @@ export async function generateExamples(
     const hierarchyBuilder = new HierarchyBuilder();
     const analyzer = new TemplateAnalyzer();
     const templateValidator = new TemplateValidator();
-    const codeFormatter = new CodeFormatter();
-    const typeScriptValidator = createTypeScriptValidator();
 
     // Generate examples for each version
     for (const version of versionsToGenerate) {
@@ -114,15 +120,13 @@ export async function generateExamples(
       console.log(`\n📝 Collecting examples for version ${version}...`);
 
       // Generate examples for each snippet in this version
-      const versionResult = generateAllExamples(
+      const versionResult = generateAllExamplesForVersion(
         snippets,
         version,
         fileWriter,
         hierarchyBuilder,
         analyzer,
         templateValidator,
-        codeFormatter,
-        typeScriptValidator,
       );
 
       if (!versionResult.success) {
@@ -188,7 +192,7 @@ export async function generateExamples(
     // Display any warnings or errors
     if (report.warnings.length > 0) {
       // eslint-disable-next-line no-console
-      console.warn(`\n⚠️  Warnings:\n${report.warnings.join('\n')}`);
+      console.warn(`\n⚠️  Warnings:\n${report.warnings.join("\n")}`);
     }
 
     if (report.failed > 0) {
@@ -202,10 +206,12 @@ export async function generateExamples(
           console.error(`    Suggestion: ${err.error.getSuggestion()}`);
         }
       });
-      
+
       const firstError = report.errors[0];
       return toErrorResult(
-        new Error(`Template generation failed for ${report.failed} templates. First error in ${firstError.templateId}: ${firstError.error.message}`)
+        new Error(
+          `Template generation failed for ${report.failed} templates. First error in ${firstError.templateId}: ${firstError.error.message}`,
+        ),
       );
     }
 
@@ -218,30 +224,27 @@ export async function generateExamples(
 }
 
 /**
- * Generate examples for all snippets using the new utility approach
+ * Generate examples for all snippets in a specific version using the new utility approach
  * This function processes each snippet template in the TYPESCRIPT_OSDK_SNIPPETS object,
  * applies context variables using Handlebars, and collects files for batch writing.
  * It uses HierarchyBuilder for single-pass hierarchy generation.
  */
-function generateAllExamples(
+function generateAllExamplesForVersion(
   snippets: any,
   version: string,
   fileWriter: FileWriter,
   hierarchyBuilder: HierarchyBuilder,
   analyzer: TemplateAnalyzer,
   templateValidator: TemplateValidator,
-  codeFormatter: CodeFormatter,
-  typeScriptValidator: ReturnType<typeof createTypeScriptValidator>,
-): Result<{ successful: number; failed: number; errors: Array<{ templateId: string; error: GeneratorError }>; warnings: string[]; totalVariations: number }, ProcessingError> {
+): Result<GenerationSummary, ProcessingError> {
   const collection: ExampleCollection = {
     examples: new Map(),
     versions: [version],
     totalExamples: 0,
     totalVariations: 0,
   };
-  const errors: Array<{ templateId: string; error: GeneratorError }> = [];
+  const { errors, addError, hasErrors } = BatchProcessor.createErrorCollector();
   const warnings: string[] = [];
-  // Create index file content using the common header utility
   let indexContent = `${
     generateFileHeader(`index`, `TYPESCRIPT Examples - SDK Version ${version}`)
   }
@@ -249,7 +252,6 @@ function generateAllExamples(
 
 `;
 
-  // Process each snippet
   for (const [snippetKey, snippetArray] of Object.entries(snippets)) {
     if (!Array.isArray(snippetArray) || snippetArray.length === 0) {
       // eslint-disable-next-line no-console
@@ -285,12 +287,9 @@ function generateAllExamples(
     if (!analysis.success) {
       // DO NOT convert template parsing errors to warnings - they indicate broken templates
       // Template syntax errors should stop generation immediately
-      errors.push({
-        templateId: snippetKey,
-        error: analysis.error as any, // Template parse errors are fatal
-      });
+      addError(snippetKey, analysis.error as any); // Template parse errors are fatal
       collection.totalExamples++;
-      continue; // Skip this template - it's broken and cannot be processed
+      continue;
     }
 
     // Extract blocks using TemplateAnalyzer
@@ -308,20 +307,15 @@ function generateAllExamples(
       );
 
       if (!blockResult.success) {
-        errors.push({
-          templateId: snippetKey,
-          error: blockResult.error as GeneratorError,
-        });
+        addError(snippetKey, blockResult.error as GeneratorError);
         collection.totalExamples++;
         continue;
       }
 
       const { variations, files } = blockResult.value;
 
-      // Add files to the writer
       fileWriter.addFiles(files);
 
-      // Add each variation to hierarchy builder
       for (const [variationKey, variation] of Object.entries(variations)) {
         // Parse the variation key to get base name and variation
         const underscoreIndex = variationKey.indexOf("_");
@@ -342,7 +336,7 @@ function generateAllExamples(
       // Group block variables by name (without prefix)
       const blockVarsByName: { [varName: string]: string[] } = {};
       for (const block of blocks) {
-        const varName = block.name.replace(/^[#^]/, ""); // Remove prefix
+        const varName = block.name.replace(/^[#^]/, "");
         const prefix = block.isInverted ? "^" : "#";
 
         if (!blockVarsByName[varName]) {
@@ -351,7 +345,6 @@ function generateAllExamples(
         blockVarsByName[varName].push(prefix);
       }
 
-      // Add each variation to the index
       for (const [varName, prefixes] of Object.entries(blockVarsByName)) {
         for (const prefix of prefixes) {
           if (prefix === "#") {
@@ -366,18 +359,14 @@ function generateAllExamples(
 
       indexContent += "\n\n";
     } else {
-      // Process template with the new Result-based approach
       const processResult = processTemplateV2(
         snippetData.template,
         context,
-        { templateId: snippetKey, useCache: true }
+        { templateId: snippetKey, useCache: true },
       );
 
       if (!processResult.success) {
-        errors.push({
-          templateId: snippetKey,
-          error: processResult.error as GeneratorError,
-        });
+        addError(snippetKey, processResult.error as GeneratorError);
         collection.totalExamples++;
         continue;
       }
@@ -389,71 +378,17 @@ function generateAllExamples(
         processedCode,
       );
 
-      // Format the code using the modern formatter
-      const formatResult = codeFormatter.formatTypeScript(transformedCode);
-      if (!formatResult.success) {
-        errors.push({
-          templateId: snippetKey,
-          error: formatResult.error as GeneratorError,
-        });
-        collection.totalExamples++;
-        continue;
-      }
-      const formattedCode = formatResult.value;
-
-      // CRITICAL: Validate that the generated TypeScript code compiles
-      const compilationResult = typeScriptValidator.validateTypeScriptCode(
-        formattedCode,
-        `${snippetKey}.ts`
-      );
-
-      if (!compilationResult.success) {
-        errors.push({
-          templateId: snippetKey,
-          error: {
-            code: 'VALIDATION_ERROR',
-            message: `TypeScript validator failed: ${compilationResult.error.message}`,
-            getSuggestion: () => 'Check the TypeScript validator implementation',
-          } as GeneratorError,
-        });
-        collection.totalExamples++;
-        continue;
-      }
-
-      const compilation = compilationResult.value;
-      if (!compilation.success) {
-        const errorMessages = compilation.diagnostics
-          .filter(d => d.category === 'error')
-          .map(d => `Line ${d.line || '?'}: ${d.messageText} (TS${d.code})`)
-          .join('; ');
-
-        errors.push({
-          templateId: snippetKey,
-          error: {
-            code: 'TYPESCRIPT_COMPILATION_ERROR',
-            message: `Generated TypeScript code does not compile: ${errorMessages}`,
-            getSuggestion: () => 'Review the template and context variables to ensure valid TypeScript is generated',
-          } as GeneratorError,
-        });
-        collection.totalExamples++;
-        continue;
-      }
-
-      // Create file content with header
       const fileContent = `${
         generateFileHeader(snippetKey)
-      }\n${formattedCode}`;
+      }\n${transformedCode}`;
 
-      // Add file to the writer
       fileWriter.addFile(`typescript/${version}/${snippetKey}.ts`, fileContent);
 
-      // Add to hierarchy builder
       hierarchyBuilder.addExample(version, snippetKey, processedCode.trim());
 
-      // Add to collection
       collection.examples.set(`${version}/${snippetKey}`, {
         templateId: snippetKey,
-        code: formattedCode,
+        code: transformedCode,
         metadata: {
           generatedAt: new Date(),
           context: context as unknown as Record<string, unknown>,
@@ -461,8 +396,6 @@ function generateAllExamples(
         },
       });
       collection.totalExamples++;
-
-      // Add to index
       indexContent += `// ${snippetKey}\n// See: ./${snippetKey}.ts\n\n`;
 
       // eslint-disable-next-line no-console
@@ -470,19 +403,23 @@ function generateAllExamples(
     }
   }
 
-  // Add the index file to the writer
   fileWriter.addFile(`typescript/${version}/index.ts`, indexContent);
 
   // eslint-disable-next-line no-console
   console.log(`✓ All examples collected for version ${version}`);
 
-  // Return the collection result
+  // Convert BatchProcessor errors back to expected format
+  const formattedErrors = errors.map(error => ({
+    templateId: error.id,
+    error: error.error as GeneratorError,
+  }));
+
   return {
     success: true,
     value: {
-      successful: collection.totalExamples - errors.length,
-      failed: errors.length,
-      errors,
+      successful: collection.totalExamples - formattedErrors.length,
+      failed: formattedErrors.length,
+      errors: formattedErrors,
       warnings,
       totalVariations: collection.totalVariations,
     },

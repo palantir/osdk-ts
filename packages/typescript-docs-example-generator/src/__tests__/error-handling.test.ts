@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { describe, it, expect } from "vitest";
-import { extractHandlebarsVariables } from "../utils/extractHandlebarsVariables.js";
-import { processTemplateV2 } from "../utils/processTemplate.v2.js";
+import { describe, expect, it } from "vitest";
 import { TemplateAnalyzer } from "../analyzer/template-analyzer.js";
 import { TemplateParseError } from "../errors/generator-errors.js";
 import { getSnippetContext } from "../utils/baseContext.js";
+import { processTemplateV2 } from "../utils/processTemplate.v2.js";
 
 /**
  * Comprehensive error handling tests to prevent regression of silent failures
@@ -31,36 +30,39 @@ describe("Error Handling - No Silent Failures", () => {
       {
         name: "Missing # in block opening",
         template: "{{propertyNames}}content{{/propertyNames}}",
-        expectedError: "Parse error"
+        expectedError: "Parse error",
       },
       {
         name: "Unmatched block closing",
-        template: "{{#each items}}content{{/wrong}}",  
-        expectedError: "each doesn't match wrong"
+        template: "{{#each items}}content{{/wrong}}",
+        expectedError: "each doesn't match wrong",
       },
       {
         name: "Invalid helper syntax",
         template: "{{#if}}missing condition{{/if}}",
-        expectedError: "#if requires exactly one argument"
+        expectedError: "#if requires exactly one argument",
       },
       {
         name: "Nested blocks with wrong closing",
         template: "{{#if condition}}{{#each items}}content{{/if}}{{/each}}",
-        expectedError: "each doesn't match if"
+        expectedError: "each doesn't match if",
       },
       {
         name: "Incomplete mustache",
         template: "{{incomplete",
-        expectedError: "Parse error"
-      }
+        expectedError: "Parse error",
+      },
     ];
 
     testCases.forEach(({ name, template, expectedError }) => {
       describe(name, () => {
-        it("extractHandlebarsVariables should throw on invalid syntax", () => {
-          expect(() => {
-            extractHandlebarsVariables(template);
-          }).toThrow();
+        it("TemplateAnalyzer should return error result on invalid syntax", () => {
+          const analyzer = new TemplateAnalyzer();
+          const result = analyzer.analyze(template);
+          expect(result.success).toBe(false);
+          if (!result.success) {
+            expect(result.error.message).toContain("parse");
+          }
         });
 
         it("processTemplateV2 should return error result", () => {
@@ -89,7 +91,7 @@ describe("Error Handling - No Silent Failures", () => {
         "test-template",
         "Parse error on line 5: unexpected token",
         5,
-        10
+        10,
       );
 
       expect(error.message).toContain("test-template");
@@ -104,12 +106,15 @@ describe("Error Handling - No Silent Failures", () => {
   describe("Error Propagation", () => {
     it("should not swallow errors in try-catch blocks", () => {
       const invalidTemplate = "{{#missing}}{{/different}}";
-      
+
       // Simulate the old problematic pattern where errors were swallowed
       let caughtError: any = null;
-      
+
       try {
-        const result = processTemplateV2(invalidTemplate, getSnippetContext("test"));
+        const result = processTemplateV2(
+          invalidTemplate,
+          getSnippetContext("test"),
+        );
         if (!result.success) {
           // This should happen - the error should be in the result
           caughtError = result.error;
@@ -128,7 +133,7 @@ describe("Error Handling - No Silent Failures", () => {
     it("should handle missing context variables gracefully", () => {
       const template = "Hello {{name}}!";
       const result = processTemplateV2(template, getSnippetContext("test")); // Using base context
-      
+
       // This should succeed but produce empty output for missing variables
       expect(result.success).toBe(true);
       if (result.success) {
@@ -139,7 +144,7 @@ describe("Error Handling - No Silent Failures", () => {
     it("should handle undefined context", () => {
       const template = "Hello {{name}}!";
       const result = processTemplateV2(template, null as any);
-      
+
       expect(result.success).toBe(true);
     });
   });
@@ -154,7 +159,10 @@ describe("Error Handling - No Silent Failures", () => {
     });
 
     it("should handle templates with only whitespace", () => {
-      const result = processTemplateV2("   \n  \t  ", getSnippetContext("test"));
+      const result = processTemplateV2(
+        "   \n  \t  ",
+        getSnippetContext("test"),
+      );
       expect(result.success).toBe(true);
     });
 
@@ -162,8 +170,8 @@ describe("Error Handling - No Silent Failures", () => {
       const largeContext = {
         ...getSnippetContext("test"),
         ...Object.fromEntries(
-          Array.from({ length: 1000 }, (_, i) => [`key${i}`, `value${i}`])
-        )
+          Array.from({ length: 1000 }, (_, i) => [`key${i}`, `value${i}`]),
+        ),
       };
 
       const template = "{{key0}} ... {{key999}}";

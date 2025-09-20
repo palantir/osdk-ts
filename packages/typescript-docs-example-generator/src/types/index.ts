@@ -16,7 +16,7 @@
 
 export interface TemplateVariable {
   name: string;
-  type: 'string' | 'boolean' | 'number' | 'object';
+  type: "string" | "boolean" | "number" | "object";
   required: boolean;
   defaultValue?: unknown;
 }
@@ -48,7 +48,7 @@ export interface ExampleMetadata {
 }
 
 export interface ValidationError {
-  type: 'missing-variable' | 'type-mismatch' | 'invalid-block';
+  type: "missing-variable" | "type-mismatch" | "invalid-block";
   message: string;
   template?: string;
   variable?: string;
@@ -68,7 +68,7 @@ export interface TemplateAnalysis {
   complexity: number;
 }
 
-export type Result<T, E = Error> = 
+export type Result<T, E = Error> =
   | { success: true; value: T }
   | { success: false; error: E };
 
@@ -130,7 +130,7 @@ export interface TypeScriptDiagnostic {
   column?: number;
   length?: number;
   messageText: string;
-  category: 'error' | 'warning' | 'suggestion' | 'message';
+  category: "error" | "warning" | "suggestion" | "message";
   code: number;
 }
 
@@ -138,4 +138,12 @@ export interface CompilationResult {
   success: boolean;
   diagnostics: TypeScriptDiagnostic[];
   generatedJs?: string;
+}
+
+export interface GenerationSummary {
+  successful: number;
+  failed: number;
+  errors: Array<{ templateId: string; error: GeneratorError }>;
+  warnings: string[];
+  totalVariations: number;
 }
