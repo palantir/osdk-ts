@@ -15,11 +15,13 @@
  */
 
 import { getSnippetContext } from "./baseContext.js";
-import type { BaseContext } from "./baseContext.js";
+import type { BaseTemplateContext } from "../types/context.js";
 import { CodeTransformer } from "./codeTransformer.js";
 import type { FileContent } from "./fileWriter.js";
 import { generateFileHeader } from "./generateFileHeader.js";
-import { processTemplate } from "./processTemplate.js";
+import { processTemplateV2 } from "./processTemplate.v2.js";
+import type { Result, BlockVariable } from "../types/index.js";
+import { toErrorResult, type GeneratorError } from "../errors/generator-errors.js";
 
 export interface BlockVariationResult {
   variables: string[];
@@ -37,12 +39,13 @@ export interface BlockVariationFiles {
 
 /**
  * Create optimized variable list for variations
- * @param blockVariables All block variables from template
+ * @param blocks All block variables from template
  * @returns Deduplicated list of variables for variations
  */
-function createVariationVariables(blockVariables: string[]): string[] {
-  const regularVariables = blockVariables.filter(v =>
-    !v.startsWith("#") && !v.startsWith("^") && !v.startsWith("/")
+function createVariationVariables(blocks: BlockVariable[]): string[] {
+  // Extract variable names from blocks (remove # or ^ prefix)
+  const regularVariables = blocks.map(block =>
+    block.name.replace(/^[#^]/, "")
   );
 
   const commonVariables = [
@@ -56,122 +59,148 @@ function createVariationVariables(blockVariables: string[]): string[] {
 }
 
 /**
+ * Create a single block variation (standard or inverted)
+ * @param template The template string
+ * @param snippetKey The snippet key
+ * @param varName The variable name (without prefix)
+ * @param prefix Either '#' for standard or '^' for inverted
+ * @param blocks Array of all block variables
+ * @param version The version number
+ * @returns Result with variation key, file content, and variation data
+ */
+function createBlockVariation(
+  template: string,
+  snippetKey: string,
+  varName: string,
+  prefix: '#' | '^',
+  blocks: BlockVariable[],
+  version: string,
+): Result<{ variationKey: string; fileContent: FileContent; variation: BlockVariationResult }, GeneratorError> {
+  // Get customized context for this block variation
+  const context = getSnippetContext(snippetKey, `${prefix}${varName}`);
+
+  // Process template with context using Result-based approach
+  const processResult = processTemplateV2(
+    template,
+    context,
+    { templateId: `${snippetKey}${prefix}${varName}`, useCache: true }
+  );
+
+  if (!processResult.success) {
+    return toErrorResult(
+      new Error(`Failed to process block variation ${snippetKey}${prefix}${varName}: ${processResult.error.message}`)
+    );
+  }
+
+  const code = processResult.value;
+
+  // Apply code transformations using the utility
+  const transformedCode = CodeTransformer.applyCommonTransforms(code);
+
+  // Create file content with header
+  const content = `${
+    generateFileHeader(snippetKey, `Variation: ${prefix}${varName}`)
+  }\n${transformedCode}`;
+
+  // Create variation key and file path
+  const variationKey = `${snippetKey}_${prefix}${varName}`;
+  const fileContent: FileContent = {
+    path: `typescript/${version}/${variationKey}.ts`,
+    content,
+  };
+
+  // Create optimized variable list for variations
+  const variationVariables = createVariationVariables(blocks);
+  const variation: BlockVariationResult = {
+    variables: variationVariables,
+    code: code.trim(),
+  };
+
+  // Log message can be enabled in production but disabled in tests
+  // eslint-disable-next-line no-console
+  console.log(`✓ Prepared ${prefix}${varName} variation for ${snippetKey}`);
+
+  return { success: true, value: { variationKey, fileContent, variation } };
+}
+
+/**
  * Generate example file variations for each block variable in a template
  * @param template The template string
  * @param snippetKey The snippet key
  * @param baseContext The base context for template processing
- * @param blockVariables Array of block variables
+ * @param blocks Array of block variables from TemplateAnalyzer
  * @param version The version number
- * @returns Object with variations and file contents to write
+ * @returns Result with variations and file contents to write, or error if template processing fails
  */
 export function generateBlockVariations(
   template: string,
   snippetKey: string,
-  baseContext: BaseContext,
-  blockVariables: string[],
+  baseContext: BaseTemplateContext,
+  blocks: BlockVariable[],
   version: string,
-): BlockVariationFiles {
+): Result<BlockVariationFiles, GeneratorError> {
   // Create an object to store information about each variation
   const variations: BlockVariations = {};
   const files: FileContent[] = [];
 
   // Group block variables by their name (without # or ^ prefix)
-  const blockGroups: { [varName: string]: string[] } = {};
+  const blockGroups: { [varName: string]: BlockVariable[] } = {};
 
-  for (const blockVar of blockVariables) {
-    const prefix = blockVar.charAt(0); // # or ^
-    const varName = blockVar.replace(/^[#^/]/, ""); // Remove prefix
-
-    // Skip closing tags
-    if (prefix === "/") continue;
+  for (const block of blocks) {
+    // Extract variable name without prefix
+    const varName = block.name.replace(/^[#^]/, "");
 
     if (!blockGroups[varName]) {
       blockGroups[varName] = [];
     }
-    blockGroups[varName].push(prefix + varName);
+    blockGroups[varName].push(block);
   }
 
   // Generate variations for each block group
   for (const [varName, blockVars] of Object.entries(blockGroups)) {
     // Check if there's a standard (#) or inverted (^) block for this variable
-    const hasStandardBlock = blockVars.some(v => v.startsWith("#"));
-    const hasInvertedBlock = blockVars.some(v => v.startsWith("^"));
+    const hasStandardBlock = blockVars.some(block => !block.isInverted);
+    const hasInvertedBlock = blockVars.some(block => block.isInverted);
 
     // Create standard block variation if it exists
     if (hasStandardBlock) {
-      // Get customized context for this block variation
-      const standardContext = getSnippetContext(snippetKey, `#${varName}`);
-
-      // Process template with standard context
-      const standardCode = processTemplate(template, standardContext);
-
-      // Apply code transformations using the utility
-      const transformedStandardCode = CodeTransformer.applyCommonTransforms(
-        standardCode,
+      const standardResult = createBlockVariation(
+        template,
+        snippetKey,
+        varName,
+        '#',
+        blocks,
+        version
       );
 
-      // Create file content with header
-      const standardContent = `${
-        generateFileHeader(snippetKey, `Variation: #${varName}`)
+      if (!standardResult.success) {
+        return standardResult;
       }
-${transformedStandardCode}`;
 
-      // Add to files collection with variation suffix
-      const variationKey = `${snippetKey}_#${varName}`;
-      files.push({
-        path: `typescript/${version}/${variationKey}.ts`,
-        content: standardContent,
-      });
-
-      // Create optimized variable list for variations
-      const variationVariables = createVariationVariables(blockVariables);
-      variations[variationKey] = {
-        variables: variationVariables,
-        code: standardCode.trim(), // Include the original generated code content
-      };
-
-      // Log message can be enabled in production but disabled in tests
-      // eslint-disable-next-line no-console
-      console.log(`✓ Prepared #${varName} variation for ${snippetKey}`);
+      const { variationKey, fileContent, variation } = standardResult.value;
+      files.push(fileContent);
+      variations[variationKey] = variation;
     }
 
     // Create inverted block variation if it exists
     if (hasInvertedBlock) {
-      // Get customized context for this block variation
-      const invertedContext = getSnippetContext(snippetKey, `^${varName}`);
-
-      // Process template with inverted context
-      const invertedCode = processTemplate(template, invertedContext);
-
-      // Apply code transformations using the utility
-      const transformedInvertedCode = CodeTransformer.applyCommonTransforms(
-        invertedCode,
+      const invertedResult = createBlockVariation(
+        template,
+        snippetKey,
+        varName,
+        '^',
+        blocks,
+        version
       );
 
-      // Create file content with header
-      const invertedContent = `${
-        generateFileHeader(snippetKey, `Variation: ^${varName}`)
+      if (!invertedResult.success) {
+        return invertedResult;
       }
-${transformedInvertedCode}`;
 
-      // Add to files collection with variation suffix
-      const variationKey = `${snippetKey}_^${varName}`;
-      files.push({
-        path: `typescript/${version}/${variationKey}.ts`,
-        content: invertedContent,
-      });
-
-      // Create optimized variable list for variations
-      const variationVariables = createVariationVariables(blockVariables);
-      variations[variationKey] = {
-        variables: variationVariables,
-        code: invertedCode.trim(), // Include the original generated code content
-      };
-
-      // Log message can be enabled in production but disabled in tests
-      // eslint-disable-next-line no-console
-      console.log(`✓ Prepared ^${varName} variation for ${snippetKey}`);
+      const { variationKey, fileContent, variation } = invertedResult.value;
+      files.push(fileContent);
+      variations[variationKey] = variation;
     }
   }
-  return { variations, files };
+  return { success: true, value: { variations, files } };
 }

@@ -75,11 +75,18 @@ Examples:
 const config = parseArgs();
 
 try {
-  await generateExamples(
+  const result = await generateExamples(
     config.outputDir,
     config.hierarchyOutputPath,
     config.versions,
   );
+
+  if (!result.success) {
+    // eslint-disable-next-line no-console
+    console.error("Error generating examples:", result.error.message);
+    process.exit(1);
+  }
+
   process.exit(0);
 } catch (error) {
   // eslint-disable-next-line no-console

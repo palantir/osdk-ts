@@ -17,6 +17,6 @@
 export { generateExamples } from "./generateExamples.js";
 export type {
   ActionParameterSampleValue,
-  BaseContext,
+  BaseTemplateContext,
   PropertyV2,
 } from "./utils/index.js";

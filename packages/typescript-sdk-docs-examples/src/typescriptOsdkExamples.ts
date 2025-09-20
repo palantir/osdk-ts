@@ -31,6 +31,10 @@ export const TYPESCRIPT_OSDK_EXAMPLES = {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk } from \"@osdk/client\";\n\ntry {\n    const object: Osdk.Instance<Employee> = await client(Employee).fetchOne(12345);\n}\ncatch(e) {\n    throw(e);\n}",
         },
+        "loadObjectPageGuide": {
+          "code":
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk, type PageResult } from \"@osdk/client\";\n\nasync function getPagedData() {\n    try {\n        const firstPage: PageResult<Osdk.Instance<Employee>>\n            = await client(Employee).fetchPage({ $pageSize: 30 });\n        if (firstPage.nextPageToken === undefined) {\n            return firstPage.data;\n        }\n        const secondPage: PageResult<Osdk.Instance<Employee>>\n        = await client(Employee).fetchPage({ $pageSize: 30, $nextPageToken: firstPage.nextPageToken });\n        return [...firstPage.data, ...secondPage.data];\n    }\n    catch (e) {\n        throw e;\n    }\n}",
+        },
         "orderObjectsGuide": {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk, type PageResult } from \"@osdk/client\";\n\ntry {\n    const page: PageResult<Osdk.Instance<Employee>> = await client(Employee)\n        .fetchPage({\n            $orderBy: {\"fullName\": \"asc\"},\n            $pageSize: 30\n        });\n    const objects = page.data;\n    const object = objects[0];\n} catch (e) {\n    throw e;\n}",
@@ -422,6 +426,10 @@ export const TYPESCRIPT_OSDK_EXAMPLES = {
         "loadGeotimeSeriesLastPointSnippet": {
           "code":
             "import type { Osdk } from \"@osdk/client\";\nimport { type Employee } from \"../../../generatedNoCheck/index.js\";\n\nfunction getLastTimeSeriesPoint(obj: Osdk.Instance<Employee>) {\n    return obj.travelHistory?.getLatestValue();\n}",
+        },
+        "subscribeToObjectSetInstructions": {
+          "code":
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\ntype subscriptionError = {\n    subscriptionClosed: boolean;\n    error: any;\n}\n\nconst subscription = client(Employee).subscribe(\n    {\n        onChange(update) {\n            if (update.state === \"ADDED_OR_UPDATED\") {\n                // An object has received an update or an object was added to the object set\n                // Get the object using the $primaryKey from your cache\n                // const currentObject = objects[update.object.$primaryKey];\n                // use the update.object[\"<propertyName>\"] to update your cache \n                //currentObject[\"<propertyName>\"] = update.object[\"<propertyName>\"] ?? currentObject[\"<propertyName>\"];\n            }\n            else if (update.state === \"REMOVED\") {\n                // The object was removed from the object set, which could mean it was deleted or no longer meets the filter criteria\n                // Remove the object from your cache using the $primaryKey\n                // delete objects[update.object.$primaryKey];\n            }\n        },\n        onSuccessfulSubscription() {\n            // The subscription was successful and you can expect to receive updates\n        },\n        onError(err: subscriptionError) {\n            // There was an error with the subscription and you will not receive any more updates\n            throw new Error(err.error instanceof Error ? err.error.message : String(err.error));\n        },\n        onOutOfDate() {\n            // We could not keep track of all changes. Please reload the objects in your set.\n        },\n    },\n    { properties: [ \"fullName\",\"salary\" ] }\n);\n\n// On dismount unsubscribe\nsubscription.unsubscribe();",
         },
       },
     },

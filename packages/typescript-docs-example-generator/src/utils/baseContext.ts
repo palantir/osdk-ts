@@ -14,83 +14,28 @@
  * limitations under the License.
  */
 
-/**
- * TEMPLATE CONTEXT SYSTEM DOCUMENTATION
- * ====================================
- *
- * This file implements a template context system for generating SDK documentation examples.
- * The system provides different ways to customize template variables based on template type and variations.
- *
- * ## How to Find Template Parameters
- *
- * Given a template name, you can find its exact parameters using:
- *
- * 1. **Simple Templates**: Use `TEMPLATE_REGISTRY[templateName]`
- *    Example: TEMPLATE_REGISTRY["loadSingleObjectGuide"] = { propertyValueV2: 12345 }
- *
- * 2. **Hierarchical Templates**: Use `templateHierarchy[templateName][blockKey].context`
- *    Example: templateHierarchy["stringStartsWithTemplate"]["#hasStructSubProperty"].context = { hasStructSubProperty: true, ... }
- *    Example: templateHierarchy["applyAction"]["#hasAttachmentProperty"].context = { objectType: "Equipment", ... }
- *
- * ## Template Types
- *
- * ### 1. Simple Templates (TEMPLATE_REGISTRY)
- * - Templates that need the same parameters every time
- * - Direct parameter overrides over baseContext
- * - Example: "loadSingleObjectGuide", "uploadAttachment"
- *
- * ### 2. Hierarchical Templates (templateHierarchy)
- * - Templates with block variations and optional nested relationships
- * - Block keys starting with "#" are standard blocks (condition = true)
- * - Block keys starting with "^" are inverted blocks (condition = false)
- * - Support parent-child block inheritance via optional `children` property
- * - Structure: templateName -> blockKey -> { context: {...}, children?: {...} }
- * - Examples: "stringStartsWithTemplate" (simple hierarchy), "applyAction" (nested hierarchy)
- *
- * ## Usage Examples
- *
- * ```typescript
- * // Simple template - gets baseContext + TEMPLATE_REGISTRY overrides
- * getSnippetContext("loadSingleObjectGuide")
- *
- * // Hierarchical template (single level) - gets baseContext + block context
- * getSnippetContext("stringStartsWithTemplate", "#hasStructSubProperty")
- *
- * // Hierarchical template (nested) - gets baseContext + parent + child context
- * getSnippetContext("applyAction", "#hasAttachmentUpload") // child of #hasAttachmentProperty
- * ```
- *
- * ## Adding New Templates
- *
- * 1. **Simple template**: Add to TEMPLATE_REGISTRY
- * 2. **Template with variations**: Add to templateHierarchy (with or without children)
- * 3. **Complex nested template**: Add to templateHierarchy with children
- *
- * All templates start with `baseContext` as the foundation and apply specific overrides.
- */
-
-import type {
-  ActionParameterSampleValue,
-  BaseContext,
-  HierarchyBlock,
-  PropertyV2,
-  TemplateHierarchy,
-  TemplateRegistry,
-} from "./baseContext.types.js";
+import type { 
+  BaseTemplateContext, 
+  TemplateRegistry, 
+  TemplateHierarchyNode
+} from '../types/context.js';
 
 /**
  * Base context object with all variables needed for template processing
  * This serves as a central repository for all variables that could be needed
- * by any template when generating examples
+ * by any template when generating examples.
+ * If build is failing while generating examples, check the baseContext and
+ * TEMPLATE_REGISTRY for missing or incorrect parameters. This could be either from a wrong value set to the context (most cases)
+ * OR from the template NOT using a pre-defined context variable.
  */
-const baseContext: BaseContext = {
+const baseContext: BaseTemplateContext = {
   // Basic context variables
   packageName: "../../../generatedNoCheck/index.js",
   objectType: "Employee",
   titleProperty: "fullName",
   property: "fullName",
   operation: "lt",
-  propertyValueV2: 100, // Can be either number or string depending on template
+  propertyValueV2: 100,
   primaryKeyPropertyV2: { apiName: "employeeId", type: "integer" },
 
   // For linked objects
@@ -104,10 +49,10 @@ const baseContext: BaseContext = {
   rawLinkedPrimaryKeyProperty: { apiName: "equipmentId", type: "string" },
 
   // For structured properties
-  hasStructSubProperty: false, // Default to false and override in struct variation
+  hasStructSubProperty: false,
   structPropertyApiName: "contactInfo",
-  structSubPropertyApiName: "phone", // This is both a flag and a value in the template
-  structSubPropertyValue: "phone", // This is just the value for structured properties
+  structSubPropertyApiName: "phone",
+  structSubPropertyValue: "phone",
 
   // For block variables
   isLinkManySided: false,
@@ -127,6 +72,7 @@ const baseContext: BaseContext = {
 
   // For derived property templates
   linkName: "manager",
+  otherProperty: "lastMaintenanceDate:min",
 
   // For action templates
   actionApiName: "documentEquipment",
@@ -283,7 +229,7 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
   // === SUBSCRIPTION TEMPLATES (2.1.0+) ===
   "subscribeToObjectSetInstructions": {
     objectOrInterfaceApiName: "Employee",
-    propertyNames: ["fullName", "salary"],
+    propertyNames: [`"fullName"`, `"salary"`],
   },
 
   // === MEDIA TEMPLATES (2.1.0+) ===
@@ -296,9 +242,9 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
   },
 
   // === SIMPLE TEMPLATES ===
-  "notTemplate": { property: "fullName", propertyValueV2: "\"John Doe\"" },
-  "andTemplate": { property: "fullName", propertyValueV2: "\"John Doe\"" },
-  "orTemplate": { property: "fullName", propertyValueV2: "\"John Doe\"" },
+  "notTemplate": { property: "fullName", propertyValueV2: `"John Doe"` },
+  "andTemplate": { property: "fullName", propertyValueV2: `"John Doe"` },
+  "orTemplate": { property: "fullName", propertyValueV2: `"John Doe"` },
   "containsTemplate": {
     property: "previousTitles",
     arrayElementValue: "\"Product manager\"",
@@ -363,7 +309,7 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
   },
 };
 
-const templateHierarchy: TemplateHierarchy = {
+const templateHierarchy: Record<string, TemplateHierarchyNode> = {
   // === STRUCT SUB-PROPERTY TEMPLATES
   "stringStartsWithTemplate": {
     "#hasStructSubProperty": {
@@ -439,14 +385,14 @@ const templateHierarchy: TemplateHierarchy = {
         property: "contactInfo",
         structPropertyApiName: "contactInfo",
         structSubPropertyApiName: "phone",
-        propertyValueV2: "\"555-1234\"",
+        propertyValueV2: `"555-1234"`,
       },
     },
     "^hasStructSubProperty": {
       context: {
         hasStructSubProperty: false,
         property: "department",
-        propertyValueV2: "\"Engineering\"",
+        propertyValueV2: `"Engineering"`,
       },
     },
   },
@@ -457,14 +403,14 @@ const templateHierarchy: TemplateHierarchy = {
         property: "contactInfo",
         structPropertyApiName: "contactInfo",
         structSubPropertyApiName: "phone",
-        propertyValueV2: "\"555-1234\"",
+        propertyValueV2: `"555-1234"`,
       },
     },
     "^hasStructSubProperty": {
       context: {
         hasStructSubProperty: false,
         property: "department",
-        propertyValueV2: "\"Engineering\"",
+        propertyValueV2: `"Engineering"`,
       },
     },
   },
@@ -616,26 +562,32 @@ const templateHierarchy: TemplateHierarchy = {
       },
       children: {
         "#hasAttachmentUpload": {
-          hasAttachmentUpload: true,
-          actionParameterSampleValuesV2: [
-            { key: "equipmentId", value: `"mac-1234"`, last: false },
-          ],
+          context: {
+            hasAttachmentUpload: true,
+            actionParameterSampleValuesV2: [
+              { key: "equipmentId", value: `"mac-1234"`, last: false },
+            ],
+          },
         },
-        "^hasAttachmentUpload": { // we have an attachment parameter which is already uploaded
-          objectType: "Equipment",
-          hasAttachmentUpload: false,
-          attachmentProperty: "invoice",
-          actionParameterSampleValuesV2: [
-            { key: "equipmentId", value: `"mac-1234"`, last: false },
-          ],
+        "^hasAttachmentUpload": {
+          context: {
+            objectType: "Equipment",
+            hasAttachmentUpload: false,
+            attachmentProperty: "invoice",
+            actionParameterSampleValuesV2: [
+              { key: "equipmentId", value: `"mac-1234"`, last: false },
+            ],
+          },
         },
         "#hasMediaParameter": {
-          hasMediaParameter: true,
-          hasAttachmentUpload: false,
-          attachmentProperty: "invoice",
-          actionParameterSampleValuesV2: [
-            { key: "equipmentId", value: `"mac-1234"`, last: true },
-          ],
+          context: {
+            hasMediaParameter: true,
+            hasAttachmentUpload: false,
+            attachmentProperty: "invoice",
+            actionParameterSampleValuesV2: [
+              { key: "equipmentId", value: `"mac-1234"`, last: true },
+            ],
+          },
         },
       },
     },
@@ -700,18 +652,22 @@ const templateHierarchy: TemplateHierarchy = {
       },
       children: {
         "#hasAttachmentUpload": {
-          hasAttachmentUpload: true,
-          funcApiName: "calculateTotal",
-          functionInputValuesV2:
-            "{ documentFile: attachment, includeMetadata: true }",
+          context: {
+            hasAttachmentUpload: true,
+            funcApiName: "calculateTotal",
+            functionInputValuesV2:
+              "{ documentFile: attachment, includeMetadata: true }",
+          },
         },
         "^hasAttachmentUpload": {
-          objectType: "Equipment",
-          hasAttachmentUpload: false,
-          attachmentProperty: "invoice",
-          funcApiName: "calculateTotal",
-          functionInputValuesV2:
-            "{ documentFile: attachment, includeMetadata: true }",
+          context: {
+            objectType: "Equipment",
+            hasAttachmentUpload: false,
+            attachmentProperty: "invoice",
+            funcApiName: "calculateTotal",
+            functionInputValuesV2:
+              "{ documentFile: attachment, includeMetadata: true }",
+          },
         },
       },
     },
@@ -771,7 +727,7 @@ templateHierarchy.batchApplyAction = templateHierarchy.applyAction;
 function getContextFromHierarchy(
   snippetKey: string,
   blockKey: string,
-): Partial<BaseContext> {
+): Partial<BaseTemplateContext> {
   const hierarchy = templateHierarchy[snippetKey];
   if (!hierarchy || !blockKey) return {};
 
@@ -786,7 +742,7 @@ function getContextFromHierarchy(
     if (parent.children && parent.children[blockKey]) {
       // Merge parent context with child context
       const parentContext = parent.context || {};
-      const childContext = parent.children[blockKey] || {};
+      const childContext = parent.children[blockKey]?.context || {};
       return { ...parentContext, ...childContext };
     }
   }
@@ -803,7 +759,7 @@ function getContextFromHierarchy(
 export function getSnippetContext(
   snippetKey: string,
   blockKey: string | null = null,
-): BaseContext {
+): BaseTemplateContext {
   // Start with base context
   const context = { ...baseContext };
 
@@ -823,11 +779,3 @@ export function getSnippetContext(
 
 // Export the base context for direct access if needed
 export { baseContext };
-export type {
-  ActionParameterSampleValue,
-  BaseContext,
-  HierarchyBlock,
-  PropertyV2,
-  TemplateHierarchy,
-  TemplateRegistry,
-};

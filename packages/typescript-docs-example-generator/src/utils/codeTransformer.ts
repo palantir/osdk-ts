@@ -17,11 +17,11 @@
 export interface TransformOptions {
   fixEsmImports?: boolean;
   trimWhitespace?: boolean;
+  replacePlaceholderEllipsis?: boolean;
 }
 
 /**
  * Utility class for common code transformations
- * Consolidates duplicated transformation logic from multiple files
  */
 export class CodeTransformer {
   /**

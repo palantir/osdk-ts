@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,17 @@
  * limitations under the License.
  */
 
-// Type definitions for template context system
-
-interface PropertyV2 {
-  apiName: string;
-  type: string;
-}
-
-interface ActionParameterSampleValue {
-  key: string;
-  value: string;
-  last: boolean;
-}
-
-interface BaseContext {
+export interface BaseTemplateContext {
   // Basic context variables
   packageName: string;
   objectType: string;
   titleProperty: string;
   property: string;
-  otherProperty?: string; // For operations needing two properties
+  otherProperty: string;
   operation: string;
   propertyValueV2: number | string;
   primaryKeyPropertyV2: PropertyV2;
-
+  
   // For linked objects
   sourceObjectType: string;
   linkedObjectType: string;
@@ -47,32 +34,32 @@ interface BaseContext {
   linkApiName: string;
   linkedPrimaryKeyProperty: string;
   rawLinkedPrimaryKeyProperty: PropertyV2;
-
+  
   // For structured properties
   hasStructSubProperty: boolean;
   structPropertyApiName: string;
   structSubPropertyApiName: string;
   structSubPropertyValue: string;
-
+  
   // For block variables
   isLinkManySided: boolean;
   durationText: boolean;
-
+  
   // For interface templates
   interfaceApiName: string;
   interfaceApiNameCamelCase: string;
   objectTypeApiName: string;
   objectTypeApiNameCamelCase: string;
-
+  
   // For range and aggregation templates
   propertyValueIncrementedV2: number;
   distanceUnit: string;
   arrayElementValue: string;
   timeUnit: string;
-
+  
   // For derived property templates
   linkName: string;
-
+  
   // For action templates
   actionApiName: string;
   attachmentProperty: string;
@@ -86,44 +73,50 @@ interface BaseContext {
   actionParameterSampleValuesV2: string | ActionParameterSampleValue[];
   last: boolean;
   needsImports: boolean;
-
+  
   // For duration templates
   arg: string;
   unit: string;
-
+  
   // For subscription templates (2.1.0+)
   objectOrInterfaceApiName: string;
   propertyNames: string[];
-
+  
   // For derived property expressions (2.4.0+)
   isUnary: boolean;
   isExtractPart: boolean;
-
+  
   // For nearest neighbors (2.4.0+)
   vectorProperty: string;
   vectorDimensionSize: number;
 }
 
-interface HierarchyBlock {
-  context?: Partial<BaseContext>;
-  children?: Record<string, Partial<BaseContext>>;
+export type PartialTemplateContext = Partial<BaseTemplateContext>;
+
+export interface TemplateContextOverride {
+  [key: string]: string | boolean | number | undefined;
 }
 
-interface TemplateHierarchy {
-  [templateName: string]: {
-    [blockKey: string]: HierarchyBlock;
-  };
+export interface TemplateRegistry {
+  [templateName: string]: PartialTemplateContext;
 }
 
-interface TemplateRegistry {
-  [templateName: string]: Partial<BaseContext>;
+export interface PropertyV2 {
+  apiName: string;
+  type: string;
 }
 
-export type {
-  ActionParameterSampleValue,
-  BaseContext,
-  HierarchyBlock,
-  PropertyV2,
-  TemplateHierarchy,
-  TemplateRegistry,
-};
+export interface ActionParameterSampleValue {
+  key: string;
+  value: string;
+  last: boolean;
+}
+
+export interface HierarchyBlock {
+  context?: PartialTemplateContext;
+  children?: Record<string, HierarchyBlock>;
+}
+
+export interface TemplateHierarchyNode {
+  [blockKey: string]: HierarchyBlock;
+}
