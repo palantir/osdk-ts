@@ -28,7 +28,11 @@ export type {
   BaseTemplateContext,
   PropertyV2,
 } from "../types/context.js";
-export type { BatchError, BatchItem, BatchProcessorOptions } from "./batch-processor.js";
+export type {
+  BatchError,
+  BatchItem,
+  BatchProcessorOptions,
+} from "./batch-processor.js";
 export type { TransformOptions } from "./codeTransformer.js";
 export type { FileContent, FileWriterOptions } from "./fileWriter.js";
 export type {

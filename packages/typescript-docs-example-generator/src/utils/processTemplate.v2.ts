@@ -15,9 +15,12 @@
  */
 
 import Handlebars from "handlebars";
+import {
+  TemplateParseError,
+  toErrorResult,
+} from "../errors/generator-errors.js";
 import type { BaseTemplateContext } from "../types/context.js";
 import type { Result } from "../types/index.js";
-import { TemplateParseError, toErrorResult } from "../errors/generator-errors.js";
 
 // Cache compiled templates to avoid recompilation
 const templateCache = new Map<string, Handlebars.TemplateDelegate>();
@@ -37,9 +40,9 @@ export interface ProcessTemplateOptions {
 export function processTemplateV2(
   template: string,
   context: BaseTemplateContext,
-  options: ProcessTemplateOptions = {}
+  options: ProcessTemplateOptions = {},
 ): Result<string> {
-  const { templateId = 'unknown', useCache = true } = options;
+  const { templateId = "unknown", useCache = true } = options;
 
   try {
     // Get or compile template
@@ -68,14 +71,17 @@ export function batchProcessTemplates(
     content: string;
     context: BaseTemplateContext;
     options?: ProcessTemplateOptions;
-  }>
+  }>,
 ): Result<Map<string, string>> {
   const results = new Map<string, string>();
   const errors: Array<{ id: string; error: any }> = [];
 
   // Process templates synchronously
   for (const { id, content, context, options } of templates) {
-    const result = processTemplateV2(content, context, { ...options, templateId: id });
+    const result = processTemplateV2(content, context, {
+      ...options,
+      templateId: id,
+    });
     if (result.success) {
       results.set(id, result.value);
     } else {
@@ -86,8 +92,10 @@ export function batchProcessTemplates(
   if (errors.length > 0) {
     const errorMessage = errors
       .map(e => `${e.id}: ${e.error.message}`)
-      .join('\n');
-    return toErrorResult(new Error(`Failed to process templates:\n${errorMessage}`));
+      .join("\n");
+    return toErrorResult(
+      new Error(`Failed to process templates:\n${errorMessage}`),
+    );
   }
 
   return { success: true, value: results };
@@ -98,10 +106,10 @@ export function batchProcessTemplates(
  */
 function getCachedTemplate(
   template: string,
-  templateId: string
+  templateId: string,
 ): Result<Handlebars.TemplateDelegate> {
   const cacheKey = `${templateId}:${template}`;
-  
+
   const cached = templateCache.get(cacheKey);
   if (cached) {
     return { success: true, value: cached };
@@ -111,7 +119,7 @@ function getCachedTemplate(
   if (compiled.success) {
     templateCache.set(cacheKey, compiled.value);
   }
-  
+
   return compiled;
 }
 
@@ -120,7 +128,7 @@ function getCachedTemplate(
  */
 function compileTemplate(
   template: string,
-  templateId: string
+  templateId: string,
 ): Result<Handlebars.TemplateDelegate> {
   try {
     const compiled = Handlebars.compile(template);
@@ -131,13 +139,13 @@ function compileTemplate(
       const match = error.message.match(/line (\d+), column (\d+)/);
       const line = match ? parseInt(match[1], 10) : undefined;
       const column = match ? parseInt(match[2], 10) : undefined;
-      
+
       return {
         success: false,
         error: new TemplateParseError(templateId, error.message, line, column),
       };
     }
-    
+
     return toErrorResult(error);
   }
 }

@@ -5,6 +5,7 @@ Transforms Handlebars templates from `@osdk/typescript-sdk-docs` into runnable T
 ## Architecture
 
 ### Input Flow
+
 ```
 YAML Templates → Handlebars Processing → TypeScript Examples → Build Validation
     ↓                      ↓                    ↓                   ↓
@@ -28,6 +29,7 @@ documentation.yml    baseContext.ts      example files      pnpm typecheck
 5. **Validation**: Build process ensures generated code compiles
 
 ### Template Variations Example
+
 ```handlebars
 {{#hasProperty}}
 const property = "{{propertyName}}";
@@ -110,8 +112,8 @@ When templates require new context variables:
    ```typescript
    const TEMPLATE_REGISTRY: TemplateRegistry = {
      mySpecificTemplate: {
-       myNewVariable: "specificValue"
-     }
+       myNewVariable: "specificValue",
+     },
    };
    ```
 
@@ -193,6 +195,7 @@ The generator uses explicit error handling with `Result<T, E>` patterns:
 ```
 Parse error on line 5: Expecting 'EOF', got 'OPEN_ENDBLOCK'
 ```
+
 → Fix Handlebars syntax in `documentation.yml`
 
 **Missing Variable Errors**
@@ -200,6 +203,7 @@ Parse error on line 5: Expecting 'EOF', got 'OPEN_ENDBLOCK'
 ```
 Variable 'newProperty' not found in context
 ```
+
 → Add variable to `baseContext.ts` or template-specific registry
 
 **Generation Failures**
@@ -207,6 +211,7 @@ Variable 'newProperty' not found in context
 ```
 Failed to process block variation templateName#blockName
 ```
+
 → Check block syntax and context variable values
 
 ### Error Recovery

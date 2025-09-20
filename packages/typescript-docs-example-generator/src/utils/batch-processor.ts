@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import {
+  type GeneratorError,
+  toErrorResult,
+} from "../errors/generator-errors.js";
 import type { Result } from "../types/index.js";
-import { toErrorResult, type GeneratorError } from "../errors/generator-errors.js";
 
 /**
  * Common interface for batch processing items with error collection
@@ -55,13 +58,15 @@ export class BatchProcessor {
    */
   static async processBatch<TInput, TOutput>(
     items: Array<BatchItem<TInput>>,
-    processor: (item: BatchItem<TInput>) => Promise<Result<TOutput>> | Result<TOutput>,
-    options: BatchProcessorOptions = {}
+    processor: (
+      item: BatchItem<TInput>,
+    ) => Promise<Result<TOutput>> | Result<TOutput>,
+    options: BatchProcessorOptions = {},
   ): Promise<Result<Map<string, TOutput>>> {
     const {
       maxErrors = Infinity,
       continueOnError = true,
-      errorPrefix = "Batch processing failed"
+      errorPrefix = "Batch processing failed",
     } = options;
 
     const results = new Map<string, TOutput>();
@@ -82,7 +87,9 @@ export class BatchProcessor {
           }
         }
       } catch (error) {
-        const generatorError = error instanceof Error ? error : new Error(String(error));
+        const generatorError = error instanceof Error
+          ? error
+          : new Error(String(error));
         errors.push({ id: item.id, error: generatorError });
 
         if (errors.length >= maxErrors || !continueOnError) {
@@ -103,12 +110,14 @@ export class BatchProcessor {
    */
   static async processBatchParallel<TInput, TOutput>(
     items: Array<BatchItem<TInput>>,
-    processor: (item: BatchItem<TInput>) => Promise<Result<TOutput>> | Result<TOutput>,
-    options: BatchProcessorOptions & { concurrency?: number } = {}
+    processor: (
+      item: BatchItem<TInput>,
+    ) => Promise<Result<TOutput>> | Result<TOutput>,
+    options: BatchProcessorOptions & { concurrency?: number } = {},
   ): Promise<Result<Map<string, TOutput>>> {
     const {
       concurrency = 5,
-      errorPrefix = "Parallel batch processing failed"
+      errorPrefix = "Parallel batch processing failed",
     } = options;
 
     const results = new Map<string, TOutput>();
@@ -123,8 +132,15 @@ export class BatchProcessor {
           const result = await processor(item);
           return { item, result };
         } catch (error) {
-          const generatorError = error instanceof Error ? error : new Error(String(error));
-          return { item, result: { success: false, error: generatorError } as Result<TOutput> };
+          const generatorError = error instanceof Error
+            ? error
+            : new Error(String(error));
+          return {
+            item,
+            result: { success: false, error: generatorError } as Result<
+              TOutput
+            >,
+          };
         }
       });
 
@@ -153,12 +169,13 @@ export class BatchProcessor {
     validators: Array<{
       name: string;
       validate: () => Result<T> | Promise<Result<T>>;
-    }>
+    }>,
   ): Promise<Result<Map<string, T>>> {
-    const items: Array<BatchItem<() => Result<T> | Promise<Result<T>>>> = validators.map(v => ({
-      id: v.name,
-      data: v.validate
-    }));
+    const items: Array<BatchItem<() => Result<T> | Promise<Result<T>>>> =
+      validators.map(v => ({
+        id: v.name,
+        data: v.validate,
+      }));
 
     return this.processBatch(
       items,
@@ -166,7 +183,7 @@ export class BatchProcessor {
         const result = await item.data();
         return result;
       },
-      { errorPrefix: "Validation failed" }
+      { errorPrefix: "Validation failed" },
     );
   }
 
@@ -175,11 +192,11 @@ export class BatchProcessor {
    */
   private static createBatchErrorResult(
     errors: BatchError[],
-    prefix: string
+    prefix: string,
   ): Result<never> {
     const errorMessage = errors
       .map(e => `${e.id}: ${e.error.message}`)
-      .join('\n');
+      .join("\n");
 
     return toErrorResult(new Error(`${prefix}:\n${errorMessage}`));
   }
@@ -189,7 +206,7 @@ export class BatchProcessor {
    */
   static aggregateResults<T>(
     results: Array<{ id: string; result: Result<T> }>,
-    errorPrefix: string = "Multiple operations failed"
+    errorPrefix: string = "Multiple operations failed",
   ): Result<Map<string, T>> {
     const successes = new Map<string, T>();
     const errors: BatchError[] = [];
@@ -227,7 +244,7 @@ export class BatchProcessor {
       },
       hasErrors: () => errors.length > 0,
       createErrorResult: (prefix = "Operation failed") =>
-        this.createBatchErrorResult(errors, prefix)
+        this.createBatchErrorResult(errors, prefix),
     };
   }
 }

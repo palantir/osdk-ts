@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { 
-  BaseTemplateContext, 
-  TemplateRegistry, 
-  TemplateHierarchyNode
-} from '../types/context.js';
+import type {
+  BaseTemplateContext,
+  TemplateHierarchyNode,
+  TemplateRegistry,
+} from "../types/context.js";
 
 /**
  * Base context object with all variables needed for template processing

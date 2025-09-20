@@ -16,22 +16,25 @@
 
 import Handlebars from "handlebars";
 import type {
-  TemplateAnalysis,
-  TemplateVariable,
-  BlockVariable,
-  Result,
-  ProcessingError,
-} from "../types/index.js";
-import type {
-  HandlebarsAST,
   BlockStatement,
+  HandlebarsAST,
   MustacheStatement,
   PathExpression,
   Program,
 } from "../types/handlebars-ast.js";
+import type {
+  BlockVariable,
+  ProcessingError,
+  Result,
+  TemplateAnalysis,
+  TemplateVariable,
+} from "../types/index.js";
 
 export class TemplateAnalyzer {
-  private readonly variableTypeCache = new Map<string, 'string' | 'boolean' | 'number' | 'object'>();
+  private readonly variableTypeCache = new Map<
+    string,
+    "string" | "boolean" | "number" | "object"
+  >();
 
   constructor() {
     // Initialize with known variable types
@@ -66,7 +69,9 @@ export class TemplateAnalyzer {
       return {
         success: false,
         error: {
-          message: `Failed to analyze template: ${error instanceof Error ? error.message : String(error)}`,
+          message: `Failed to analyze template: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
           cause: error instanceof Error ? error : undefined,
         },
       };
@@ -76,7 +81,9 @@ export class TemplateAnalyzer {
   /**
    * Parses a template string into an AST
    */
-  private parseTemplate(template: string): Result<HandlebarsAST, ProcessingError> {
+  private parseTemplate(
+    template: string,
+  ): Result<HandlebarsAST, ProcessingError> {
     try {
       const ast = Handlebars.parse(template) as unknown as HandlebarsAST;
 
@@ -90,7 +97,9 @@ export class TemplateAnalyzer {
       return {
         success: false,
         error: {
-          message: `Failed to parse template: ${error instanceof Error ? error.message : String(error)}`,
+          message: `Failed to parse template: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
           cause: error instanceof Error ? error : undefined,
         },
       };
@@ -106,7 +115,7 @@ export class TemplateAnalyzer {
 
     this.traverseAST(ast, {
       onMustache: (node: MustacheStatement) => {
-        if ('original' in node.path && node.path.original) {
+        if ("original" in node.path && node.path.original) {
           const name = node.path.original;
           if (!variables.has(name)) {
             variables.set(name, {
@@ -125,7 +134,7 @@ export class TemplateAnalyzer {
           if (!variables.has(name)) {
             variables.set(name, {
               name,
-              type: 'boolean', // Block variables are typically boolean
+              type: "boolean", // Block variables are typically boolean
               required: false, // Blocks are optional by nature
               defaultValue: false,
             });
@@ -133,7 +142,7 @@ export class TemplateAnalyzer {
         }
       },
       onPath: (node: PathExpression) => {
-        if (node.original && !node.original.includes('.')) {
+        if (node.original && !node.original.includes(".")) {
           const name = node.original;
           if (!variables.has(name)) {
             variables.set(name, {
@@ -161,11 +170,13 @@ export class TemplateAnalyzer {
         if (node.path?.original) {
           const name = node.path.original;
           const isInverted = !node.program && !!node.inverse;
-          
+
           blocks.push({
             name: isInverted ? `^${name}` : `#${name}`,
             isInverted,
-            content: this.extractBlockContent(isInverted ? node.inverse : node.program),
+            content: this.extractBlockContent(
+              isInverted ? node.inverse : node.program,
+            ),
           });
         }
       },
@@ -186,7 +197,7 @@ export class TemplateAnalyzer {
       },
       onHelper: (name: string) => {
         // Exclude built-in helpers
-        if (!['if', 'unless', 'each', 'with', 'lookup', 'log'].includes(name)) {
+        if (!["if", "unless", "each", "with", "lookup", "log"].includes(name)) {
           dependencies.add(`helper:${name}`);
         }
       },
@@ -222,25 +233,25 @@ export class TemplateAnalyzer {
       onPath?: (node: PathExpression) => void;
       onPartial?: (name: string) => void;
       onHelper?: (name: string) => void;
-    }
+    },
   ): void {
     if (!node) return;
 
     switch (node.type) {
-      case 'Program':
+      case "Program":
         const program = node as Program;
         program.body?.forEach(stmt => this.traverseAST(stmt, callbacks));
         break;
 
-      case 'MustacheStatement':
+      case "MustacheStatement":
         const mustache = node as MustacheStatement;
         callbacks.onMustache?.(mustache);
-        if ('original' in mustache.path && mustache.params.length > 0) {
+        if ("original" in mustache.path && mustache.params.length > 0) {
           callbacks.onHelper?.(mustache.path.original);
         }
         break;
 
-      case 'BlockStatement':
+      case "BlockStatement":
         const block = node as BlockStatement;
         callbacks.onBlock?.(block);
         this.traverseAST(block.program, callbacks);
@@ -249,21 +260,23 @@ export class TemplateAnalyzer {
         }
         break;
 
-      case 'PartialStatement':
-        if ('original' in node.name) {
+      case "PartialStatement":
+        if ("original" in node.name) {
           callbacks.onPartial?.(node.name.original);
         }
         break;
 
-      case 'PathExpression':
+      case "PathExpression":
         callbacks.onPath?.(node as PathExpression);
         break;
 
-      case 'SubExpression':
+      case "SubExpression":
         if (node.path) {
           this.traverseAST(node.path, callbacks);
         }
-        node.params?.forEach((param: any) => this.traverseAST(param, callbacks));
+        node.params?.forEach((param: any) =>
+          this.traverseAST(param, callbacks)
+        );
         break;
     }
   }
@@ -272,53 +285,60 @@ export class TemplateAnalyzer {
    * Extracts content from a block program
    */
   private extractBlockContent(program: Program | undefined): string {
-    if (!program) return '';
-    
+    if (!program) return "";
+
     return program.body
       .map(stmt => {
         switch (stmt.type) {
-          case 'ContentStatement':
+          case "ContentStatement":
             return stmt.value;
-          case 'MustacheStatement':
-            return `{{${(stmt as any).path?.original || ''}}}`;
+          case "MustacheStatement":
+            return `{{${(stmt as any).path?.original || ""}}}`;
           default:
-            return '';
+            return "";
         }
       })
-      .join('');
+      .join("");
   }
 
   /**
    * Infers variable type based on naming conventions and known patterns
    */
-  private inferVariableType(name: string): 'string' | 'boolean' | 'number' | 'object' {
+  private inferVariableType(
+    name: string,
+  ): "string" | "boolean" | "number" | "object" {
     // Check cache first
     const cached = this.variableTypeCache.get(name);
     if (cached) return cached;
 
     // Boolean indicators
-    if (name.startsWith('has') || name.startsWith('is') || name.startsWith('should')) {
-      return 'boolean';
+    if (
+      name.startsWith("has") || name.startsWith("is")
+      || name.startsWith("should")
+    ) {
+      return "boolean";
     }
 
     // Number indicators
-    if (name.includes('Count') || name.includes('Size') || name.includes('Index') || 
-        name.includes('Value') && name.includes('Incremented')) {
-      return 'number';
+    if (
+      name.includes("Count") || name.includes("Size") || name.includes("Index")
+      || name.includes("Value") && name.includes("Incremented")
+    ) {
+      return "number";
     }
 
     // Object indicators
-    if (name.endsWith('V2') && name.includes('Property')) {
-      return 'object';
+    if (name.endsWith("V2") && name.includes("Property")) {
+      return "object";
     }
 
     // Array indicators
-    if (name.includes('Names') && name.endsWith('Names')) {
-      return 'object';
+    if (name.includes("Names") && name.endsWith("Names")) {
+      return "object";
     }
 
     // Default to string
-    return 'string';
+    return "string";
   }
 
   /**
@@ -326,22 +346,38 @@ export class TemplateAnalyzer {
    */
   private initializeKnownTypes(): void {
     // Booleans
-    ['hasStructSubProperty', 'isLinkManySided', 'durationText', 'hasMediaParameter', 
-     'hasAttachmentUpload', 'hasAttachmentProperty', 'hasParameters', 'last', 
-     'needsImports', 'isUnary', 'isExtractPart'].forEach(
-      name => this.variableTypeCache.set(name, 'boolean')
+    [
+      "hasStructSubProperty",
+      "isLinkManySided",
+      "durationText",
+      "hasMediaParameter",
+      "hasAttachmentUpload",
+      "hasAttachmentProperty",
+      "hasParameters",
+      "last",
+      "needsImports",
+      "isUnary",
+      "isExtractPart",
+    ].forEach(
+      name => this.variableTypeCache.set(name, "boolean"),
     );
 
     // Numbers
-    ['propertyValueIncrementedV2', 'vectorDimensionSize'].forEach(
-      name => this.variableTypeCache.set(name, 'number')
+    ["propertyValueIncrementedV2", "vectorDimensionSize"].forEach(
+      name => this.variableTypeCache.set(name, "number"),
     );
 
     // Objects
-    ['primaryKeyPropertyV2', 'linkedPrimaryKeyPropertyV2', 'linkedOneSidePropertyV2',
-     'linkedManySidePropertyV2', 'rawLinkedPrimaryKeyProperty', 'propertyNames',
-     'actionParameterSampleValuesV2'].forEach(
-      name => this.variableTypeCache.set(name, 'object')
+    [
+      "primaryKeyPropertyV2",
+      "linkedPrimaryKeyPropertyV2",
+      "linkedOneSidePropertyV2",
+      "linkedManySidePropertyV2",
+      "rawLinkedPrimaryKeyProperty",
+      "propertyNames",
+      "actionParameterSampleValuesV2",
+    ].forEach(
+      name => this.variableTypeCache.set(name, "object"),
     );
   }
 }

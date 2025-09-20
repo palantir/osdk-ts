@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type {
-  ParsedTemplate,
-  ValidationError,
-  ValidationResult,
-  Result,
-  ProcessingError,
-} from "../types/index.js";
-import type { BaseTemplateContext } from "../types/context.js";
 import { TemplateAnalyzer } from "../analyzer/template-analyzer.js";
 import { ContextValidator } from "../context/validator.js";
+import type { BaseTemplateContext } from "../types/context.js";
+import type {
+  ParsedTemplate,
+  ProcessingError,
+  Result,
+  ValidationError,
+  ValidationResult,
+} from "../types/index.js";
 
 export class TemplateValidator {
   private readonly analyzer: TemplateAnalyzer;
@@ -39,7 +39,7 @@ export class TemplateValidator {
    */
   validateTemplate(
     template: ParsedTemplate,
-    context: BaseTemplateContext
+    context: BaseTemplateContext,
   ): ValidationResult {
     const errors: ValidationError[] = [];
 
@@ -53,8 +53,9 @@ export class TemplateValidator {
     for (const variable of template.variables) {
       if (variable.required && !(variable.name in context)) {
         errors.push({
-          type: 'missing-variable',
-          message: `Required variable "${variable.name}" is missing from context`,
+          type: "missing-variable",
+          message:
+            `Required variable "${variable.name}" is missing from context`,
           template: template.id,
           variable: variable.name,
         });
@@ -67,7 +68,7 @@ export class TemplateValidator {
         const value = (context as any)[variable.name];
         if (!this.isValidType(value, variable.type)) {
           errors.push({
-            type: 'type-mismatch',
+            type: "type-mismatch",
             message: `Variable "${variable.name}" has incorrect type`,
             template: template.id,
             variable: variable.name,
@@ -83,13 +84,13 @@ export class TemplateValidator {
       const varName = block.name.substring(1); // Remove # or ^ prefix
       if (varName in context) {
         const value = (context as any)[varName];
-        if (typeof value !== 'boolean') {
+        if (typeof value !== "boolean") {
           errors.push({
-            type: 'type-mismatch',
+            type: "type-mismatch",
             message: `Block variable "${varName}" must be boolean`,
             template: template.id,
             variable: varName,
-            expected: 'boolean',
+            expected: "boolean",
             actual: typeof value,
           });
         }
@@ -105,8 +106,11 @@ export class TemplateValidator {
   analyzeAndValidate(
     templateId: string,
     templateContent: string,
-    context?: Partial<BaseTemplateContext>
-  ): Result<{ template: ParsedTemplate; validation?: ValidationResult }, ProcessingError> {
+    context?: Partial<BaseTemplateContext>,
+  ): Result<
+    { template: ParsedTemplate; validation?: ValidationResult },
+    ProcessingError
+  > {
     // Analyze the template
     const analysisResult = this.analyzer.analyze(templateContent);
     if (!analysisResult.success) {
@@ -125,10 +129,10 @@ export class TemplateValidator {
     if (context) {
       const fullContext = this.contextValidator.mergeContexts(
         this.getDefaultContext(),
-        context
+        context,
       );
       const validation = this.validateTemplate(parsedTemplate, fullContext);
-      
+
       return {
         success: true,
         value: { template: parsedTemplate, validation },
@@ -145,7 +149,9 @@ export class TemplateValidator {
    * Batch validates multiple templates
    */
   batchValidate(
-    templates: Array<{ id: string; content: string; context?: Partial<BaseTemplateContext> }>
+    templates: Array<
+      { id: string; content: string; context?: Partial<BaseTemplateContext> }
+    >,
   ): Result<Map<string, ValidationResult>, ProcessingError> {
     const results = new Map<string, ValidationResult>();
     const defaultContext = this.getDefaultContext();
@@ -156,8 +162,9 @@ export class TemplateValidator {
         results.set(id, {
           valid: false,
           errors: [{
-            type: 'invalid-block',
-            message: `Failed to analyze template: ${analysisResult.error.message}`,
+            type: "invalid-block",
+            message:
+              `Failed to analyze template: ${analysisResult.error.message}`,
             template: id,
           }],
         });
@@ -171,7 +178,7 @@ export class TemplateValidator {
         blocks: analysisResult.value.blocks,
       };
 
-      const fullContext = context 
+      const fullContext = context
         ? this.contextValidator.mergeContexts(defaultContext, context)
         : defaultContext;
 
@@ -188,15 +195,19 @@ export class TemplateValidator {
   getSuggestions(errors: ValidationError[]): string[] {
     return errors.map(error => {
       switch (error.type) {
-        case 'missing-variable':
-          return `Add "${error.variable}" to your context object with type ${this.getExpectedType(error.variable || 'unknown')}`;
-        
-        case 'type-mismatch':
-          return `Change "${error.variable || 'unknown'}" from ${error.actual || 'unknown'} to ${error.expected || 'unknown'}`;
-        
-        case 'invalid-block':
+        case "missing-variable":
+          return `Add "${error.variable}" to your context object with type ${
+            this.getExpectedType(error.variable || "unknown")
+          }`;
+
+        case "type-mismatch":
+          return `Change "${error.variable || "unknown"}" from ${
+            error.actual || "unknown"
+          } to ${error.expected || "unknown"}`;
+
+        case "invalid-block":
           return `Check the syntax of your template blocks`;
-        
+
         default:
           return error.message;
       }
@@ -205,14 +216,14 @@ export class TemplateValidator {
 
   private isValidType(value: unknown, expectedType: string): boolean {
     switch (expectedType) {
-      case 'string':
-        return typeof value === 'string';
-      case 'boolean':
-        return typeof value === 'boolean';
-      case 'number':
-        return typeof value === 'number';
-      case 'object':
-        return typeof value === 'object' && value !== null;
+      case "string":
+        return typeof value === "string";
+      case "boolean":
+        return typeof value === "boolean";
+      case "number":
+        return typeof value === "number";
+      case "object":
+        return typeof value === "object" && value != null;
       default:
         return true;
     }
@@ -220,16 +231,16 @@ export class TemplateValidator {
 
   private getExpectedType(variableName: string): string {
     // Use naming conventions to suggest type
-    if (variableName.startsWith('has') || variableName.startsWith('is')) {
-      return 'boolean';
+    if (variableName.startsWith("has") || variableName.startsWith("is")) {
+      return "boolean";
     }
-    if (variableName.includes('Count') || variableName.includes('Size')) {
-      return 'number';
+    if (variableName.includes("Count") || variableName.includes("Size")) {
+      return "number";
     }
-    if (variableName.endsWith('s') || variableName.includes('List')) {
-      return 'array';
+    if (variableName.endsWith("s") || variableName.includes("List")) {
+      return "array";
     }
-    return 'string';
+    return "string";
   }
 
   private getDefaultContext(): BaseTemplateContext {

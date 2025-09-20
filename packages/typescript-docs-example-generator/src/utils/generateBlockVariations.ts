@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import { getSnippetContext } from "./baseContext.js";
+import {
+  type GeneratorError,
+  toErrorResult,
+} from "../errors/generator-errors.js";
 import type { BaseTemplateContext } from "../types/context.js";
+import type { BlockVariable, Result } from "../types/index.js";
+import { getSnippetContext } from "./baseContext.js";
 import { CodeTransformer } from "./codeTransformer.js";
 import type { FileContent } from "./fileWriter.js";
 import { generateFileHeader } from "./generateFileHeader.js";
 import { processTemplateV2 } from "./processTemplate.v2.js";
-import type { Result, BlockVariable } from "../types/index.js";
-import { toErrorResult, type GeneratorError } from "../errors/generator-errors.js";
 
 export interface BlockVariationResult {
   variables: string[];
@@ -44,9 +47,7 @@ export interface BlockVariationFiles {
  */
 function createVariationVariables(blocks: BlockVariable[]): string[] {
   // Extract variable names from blocks (remove # or ^ prefix)
-  const regularVariables = blocks.map(block =>
-    block.name.replace(/^[#^]/, "")
-  );
+  const regularVariables = blocks.map(block => block.name.replace(/^[#^]/, ""));
 
   const commonVariables = [
     "linkedObjectType",
@@ -72,10 +73,17 @@ function createBlockVariation(
   template: string,
   snippetKey: string,
   varName: string,
-  prefix: '#' | '^',
+  prefix: "#" | "^",
   blocks: BlockVariable[],
   version: string,
-): Result<{ variationKey: string; fileContent: FileContent; variation: BlockVariationResult }, GeneratorError> {
+): Result<
+  {
+    variationKey: string;
+    fileContent: FileContent;
+    variation: BlockVariationResult;
+  },
+  GeneratorError
+> {
   // Get customized context for this block variation
   const context = getSnippetContext(snippetKey, `${prefix}${varName}`);
 
@@ -83,12 +91,14 @@ function createBlockVariation(
   const processResult = processTemplateV2(
     template,
     context,
-    { templateId: `${snippetKey}${prefix}${varName}`, useCache: true }
+    { templateId: `${snippetKey}${prefix}${varName}`, useCache: true },
   );
 
   if (!processResult.success) {
     return toErrorResult(
-      new Error(`Failed to process block variation ${snippetKey}${prefix}${varName}: ${processResult.error.message}`)
+      new Error(
+        `Failed to process block variation ${snippetKey}${prefix}${varName}: ${processResult.error.message}`,
+      ),
     );
   }
 
@@ -168,9 +178,9 @@ export function generateBlockVariations(
         template,
         snippetKey,
         varName,
-        '#',
+        "#",
         blocks,
-        version
+        version,
       );
 
       if (!standardResult.success) {
@@ -188,9 +198,9 @@ export function generateBlockVariations(
         template,
         snippetKey,
         varName,
-        '^',
+        "^",
         blocks,
-        version
+        version,
       );
 
       if (!invertedResult.success) {

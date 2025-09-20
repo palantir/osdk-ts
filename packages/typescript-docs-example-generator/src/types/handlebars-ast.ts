@@ -15,12 +15,12 @@
  */
 
 export interface HandlebarsAST {
-  type: 'Program';
+  type: "Program";
   body: Statement[];
   loc?: SourceLocation;
 }
 
-export type Statement = 
+export type Statement =
   | MustacheStatement
   | BlockStatement
   | PartialStatement
@@ -28,7 +28,7 @@ export type Statement =
   | CommentStatement;
 
 export interface MustacheStatement {
-  type: 'MustacheStatement';
+  type: "MustacheStatement";
   path: PathExpression | SubExpression;
   params: Expression[];
   hash?: Hash;
@@ -37,7 +37,7 @@ export interface MustacheStatement {
 }
 
 export interface BlockStatement {
-  type: 'BlockStatement';
+  type: "BlockStatement";
   path: PathExpression;
   params: Expression[];
   hash?: Hash;
@@ -47,7 +47,7 @@ export interface BlockStatement {
 }
 
 export interface PartialStatement {
-  type: 'PartialStatement';
+  type: "PartialStatement";
   name: PathExpression | SubExpression;
   params: Expression[];
   hash?: Hash;
@@ -57,33 +57,33 @@ export interface PartialStatement {
 }
 
 export interface ContentStatement {
-  type: 'ContentStatement';
+  type: "ContentStatement";
   value: string;
   original: string;
   loc?: SourceLocation;
 }
 
 export interface CommentStatement {
-  type: 'CommentStatement';
+  type: "CommentStatement";
   value: string;
   strip: StripFlags;
   loc?: SourceLocation;
 }
 
 export interface Program {
-  type: 'Program';
+  type: "Program";
   body: Statement[];
   blockParams?: string[];
   loc?: SourceLocation;
 }
 
-export type Expression = 
+export type Expression =
   | SubExpression
   | PathExpression
   | Literal;
 
 export interface SubExpression {
-  type: 'SubExpression';
+  type: "SubExpression";
   path: PathExpression;
   params: Expression[];
   hash?: Hash;
@@ -91,7 +91,7 @@ export interface SubExpression {
 }
 
 export interface PathExpression {
-  type: 'PathExpression';
+  type: "PathExpression";
   data: boolean;
   depth: number;
   parts: string[];
@@ -99,7 +99,7 @@ export interface PathExpression {
   loc?: SourceLocation;
 }
 
-export type Literal = 
+export type Literal =
   | StringLiteral
   | BooleanLiteral
   | NumberLiteral
@@ -107,44 +107,44 @@ export type Literal =
   | NullLiteral;
 
 export interface StringLiteral {
-  type: 'StringLiteral';
+  type: "StringLiteral";
   value: string;
   original: string;
   loc?: SourceLocation;
 }
 
 export interface BooleanLiteral {
-  type: 'BooleanLiteral';
+  type: "BooleanLiteral";
   value: boolean;
   original: boolean;
   loc?: SourceLocation;
 }
 
 export interface NumberLiteral {
-  type: 'NumberLiteral';
+  type: "NumberLiteral";
   value: number;
   original: number;
   loc?: SourceLocation;
 }
 
 export interface UndefinedLiteral {
-  type: 'UndefinedLiteral';
+  type: "UndefinedLiteral";
   loc?: SourceLocation;
 }
 
 export interface NullLiteral {
-  type: 'NullLiteral';
+  type: "NullLiteral";
   loc?: SourceLocation;
 }
 
 export interface Hash {
-  type: 'Hash';
+  type: "Hash";
   pairs: HashPair[];
   loc?: SourceLocation;
 }
 
 export interface HashPair {
-  type: 'HashPair';
+  type: "HashPair";
   key: string;
   value: Expression;
   loc?: SourceLocation;
@@ -166,7 +166,7 @@ export interface Position {
   column: number;
 }
 
-export type ASTNode = 
+export type ASTNode =
   | HandlebarsAST
   | Statement
   | Expression
