@@ -3497,9 +3497,6 @@ importers:
       '@osdk/client.unstable':
         specifier: workspace:~
         version: link:../client.unstable
-      '@osdk/foundry.ontologies':
-        specifier: 2.30.0
-        version: 2.30.0
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
