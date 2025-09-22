@@ -127,6 +127,7 @@ export class ObjectSetListenerWebsocket {
   #lastWsConnect = 0;
   #client: MinimalClient;
   #backoff: ExponentialBackoff;
+  #isFirstConnection = true;
 
   #logger?: Logger;
 
@@ -163,8 +164,7 @@ export class ObjectSetListenerWebsocket {
     this.MINIMUM_RECONNECT_DELAY_MS = minimumReconnectDelayMs;
     this.#client = client;
     this.#backoff = new ExponentialBackoff({
-      initialDelayMs: minimumReconnectDelayMs
-        || EXPONENTIAL_BACKOFF_INITIAL_DELAY_MS,
+      initialDelayMs: EXPONENTIAL_BACKOFF_INITIAL_DELAY_MS,
       maxDelayMs: EXPONENTIAL_BACKOFF_MAX_DELAY_MS,
       multiplier: EXPONENTIAL_BACKOFF_MULTIPLIER,
       jitterFactor: EXPONENTIAL_BACKOFF_JITTER_FACTOR,
@@ -369,17 +369,19 @@ export class ObjectSetListenerWebsocket {
       // tokenProvider is async, there could potentially be a race to create the websocket.
       // Only the first call to reach here will find a null this.#ws, the rest will bail out
       if (this.#ws == null) {
-        // Use exponential backoff with jitter for reconnection
-        const delay = this.#backoff.calculateDelay();
-        if (process.env.NODE_ENV !== "production") {
-          this.#logger?.debug(
-            { delay, attempt: this.#backoff.getAttempt() },
-            "Waiting before reconnect",
-          );
+        // Only apply exponential backoff delay on reconnection attempts, not the first connection
+        if (!this.#isFirstConnection) {
+          const delay = this.#backoff.calculateDelay();
+          if (process.env.NODE_ENV !== "production") {
+            this.#logger?.debug(
+              { delay, attempt: this.#backoff.getAttempt() },
+              "Waiting before reconnect",
+            );
+          }
+          await new Promise((resolve) => {
+            setTimeout(resolve, delay);
+          });
         }
-        await new Promise((resolve) => {
-          setTimeout(resolve, delay);
-        });
 
         this.#lastWsConnect = Date.now();
 
@@ -421,6 +423,8 @@ export class ObjectSetListenerWebsocket {
   }
 
   #onOpen = () => {
+    // Mark that we've successfully connected at least once
+    this.#isFirstConnection = false;
     // Reset backoff on successful connection
     this.#backoff.reset();
     // resubscribe all of the listeners
