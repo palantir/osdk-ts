@@ -54,6 +54,7 @@ export interface ObjectInterfaceCompileDefinition {
   props?: any;
   strictProps?: any;
   linksType?: any;
+  manyToManyLinks?: any;
 }
 
 export interface VersionBound<V extends VersionString<any, any, any>> {
@@ -116,7 +117,8 @@ export interface ObjectTypeDefinition {
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
     & ObjectMetadata
-    & ObjectInterfaceCompileDefinition;
+    & ObjectInterfaceCompileDefinition
+    & any;
 }
 
 export type ObjectTypeLinkKeysFrom2<

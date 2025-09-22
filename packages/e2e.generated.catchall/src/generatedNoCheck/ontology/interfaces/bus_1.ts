@@ -45,6 +45,7 @@ export interface bus_1 extends $InterfaceDefinition {
     props: bus_1.Props;
     linksType: OsdkObjectLinks$bus_1;
     strictProps: bus_1.StrictProps;
+    manyToManyLinks: never;
     apiName: 'bus_1';
     description: '';
     displayName: 'Bus';

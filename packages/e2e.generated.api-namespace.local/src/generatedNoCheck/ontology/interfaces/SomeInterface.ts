@@ -45,6 +45,7 @@ export interface SomeInterface extends $InterfaceDefinition {
     props: SomeInterface.Props;
     linksType: OsdkObjectLinks$SomeInterface;
     strictProps: SomeInterface.StrictProps;
+    manyToManyLinks: never;
     apiName: 'com.example.local.SomeInterface';
     description: undefined;
     displayName: 'Sum Interface';

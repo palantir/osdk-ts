@@ -59,6 +59,7 @@ export interface Athlete extends $InterfaceDefinition {
     props: Athlete.Props;
     linksType: OsdkObjectLinks$Athlete;
     strictProps: Athlete.StrictProps;
+    manyToManyLinks: never;
     apiName: 'Athlete';
     description: 'Its an athlete.';
     displayName: 'Athlete interface';

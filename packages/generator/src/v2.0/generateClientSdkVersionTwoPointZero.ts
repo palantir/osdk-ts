@@ -38,6 +38,7 @@ export async function generateClientSdkVersionTwoPointZero(
   externalSpts: Map<string, string> = new Map(),
   forInternalUse: boolean = false,
   fixedVersionQueryTypes: string[] = [],
+  manyToManyLinkTypes: { [key: string]: string[] } = {},
 ): Promise<void> {
   const importExt = ".js"; // turns out you can always use the extension
 
@@ -55,6 +56,7 @@ export async function generateClientSdkVersionTwoPointZero(
     externalObjects,
     externalInterfaces,
     externalSpts,
+    manyToManyLinkTypes,
   });
 
   const ctx: GenerateContext = {

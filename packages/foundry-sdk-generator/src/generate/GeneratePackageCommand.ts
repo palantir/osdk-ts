@@ -237,6 +237,7 @@ export class GeneratePackageCommand
       ontologyJsonOnly: args.experimentalFeatures?.includes("ontologyJsonOnly")
         ?? false,
       packageRid: args.packageRid,
+      manyToManyLinkTypes: [],
     });
 
     const elapsedTime = Date.now() - timeStart;

@@ -44,6 +44,7 @@ describe("LinkDefinitions", () => {
             readonly lead: SingleLinkAccessor<Employee>;
             readonly officeLink: SingleLinkAccessor<Office>;
             readonly peeps: ObjectSet<Employee>;
+            readonly friends: ObjectSet<Employee>;
           }
         >();
     });

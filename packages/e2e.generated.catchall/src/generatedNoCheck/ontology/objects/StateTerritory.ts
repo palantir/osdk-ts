@@ -61,6 +61,7 @@ export interface StateTerritory extends $ObjectTypeDefinition {
     props: StateTerritory.Props;
     linksType: StateTerritory.Links;
     strictProps: StateTerritory.StrictProps;
+    manyToManyLinks: never;
     apiName: 'StateTerritory';
     description: '';
     displayName: 'State/Territory';

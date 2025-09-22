@@ -49,6 +49,7 @@ export interface TodoLike extends $InterfaceDefinition {
     props: TodoLike.Props;
     linksType: OsdkObjectLinks$TodoLike;
     strictProps: TodoLike.StrictProps;
+    manyToManyLinks: never;
     apiName: 'TodoLike';
     description: '';
     displayName: 'TodoLike';

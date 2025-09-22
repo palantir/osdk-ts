@@ -40,6 +40,7 @@ export interface InterfaceNoProps extends $InterfaceDefinition {
     props: InterfaceNoProps.Props;
     linksType: OsdkObjectLinks$InterfaceNoProps;
     strictProps: InterfaceNoProps.StrictProps;
+    manyToManyLinks: never;
     apiName: 'InterfaceNoProps';
     description: 'Its a Foo.';
     displayName: 'FInterfaceNoProps';

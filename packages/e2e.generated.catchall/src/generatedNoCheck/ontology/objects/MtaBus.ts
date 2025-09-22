@@ -62,6 +62,7 @@ export interface MtaBus extends $ObjectTypeDefinition {
     props: MtaBus.Props;
     linksType: MtaBus.Links;
     strictProps: MtaBus.StrictProps;
+    manyToManyLinks: never;
     apiName: 'MtaBus';
     description: 'MtaBus';
     displayName: 'MtaBus';

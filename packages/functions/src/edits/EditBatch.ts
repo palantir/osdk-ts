@@ -60,8 +60,10 @@ export type AddLinkTargets<
 > = X extends AddLink<ObjectTypeDefinitionForLocator<SOL>, A>
   ? (X extends AddLink<infer OTD, A>
     ? (CompileTimeMetadata<OTD>["links"][A]["multiplicity"] extends true
-      ? Array<X["target"]> | X["target"]
-      : X["target"])
+      ? A extends CompileTimeMetadata<OTD>["manyToManyLinks"]
+        ? Array<X["target"]> | X["target"]
+      : never
+      : never)
     : never)
   : never;
 

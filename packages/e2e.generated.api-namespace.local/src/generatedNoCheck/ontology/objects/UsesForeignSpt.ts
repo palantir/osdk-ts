@@ -54,6 +54,7 @@ export interface UsesForeignSpt extends $ObjectTypeDefinition {
     props: UsesForeignSpt.Props;
     linksType: UsesForeignSpt.Links;
     strictProps: UsesForeignSpt.StrictProps;
+    manyToManyLinks: never;
     apiName: 'UsesForeignSpt';
     description: undefined;
     displayName: 'Uses Foreign Spt';

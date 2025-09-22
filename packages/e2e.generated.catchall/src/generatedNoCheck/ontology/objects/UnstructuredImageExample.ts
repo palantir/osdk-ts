@@ -58,6 +58,7 @@ export interface UnstructuredImageExample extends $ObjectTypeDefinition {
     props: UnstructuredImageExample.Props;
     linksType: UnstructuredImageExample.Links;
     strictProps: UnstructuredImageExample.StrictProps;
+    manyToManyLinks: never;
     apiName: 'UnstructuredImageExample';
     description: 'Media OT for OSDK e2e testing';
     displayName: 'Unstructured Image Example';

@@ -55,6 +55,7 @@ export interface CollateralConcernList extends $InterfaceDefinition {
     props: CollateralConcernList.Props;
     linksType: OsdkObjectLinks$CollateralConcernList;
     strictProps: CollateralConcernList.StrictProps;
+    manyToManyLinks: never;
     apiName: 'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernList';
     description: 'A list of entities that can be considered as collateral concerns.';
     displayName: 'Collateral Concern List';

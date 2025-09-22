@@ -58,6 +58,7 @@ export interface BuilderDeploymentState extends $ObjectTypeDefinition {
     props: BuilderDeploymentState.Props;
     linksType: BuilderDeploymentState.Links;
     strictProps: BuilderDeploymentState.StrictProps;
+    manyToManyLinks: never;
     apiName: 'BuilderDeploymentState';
     description: 'Builder Deployment State';
     displayName: 'BuilderDeploymentState';

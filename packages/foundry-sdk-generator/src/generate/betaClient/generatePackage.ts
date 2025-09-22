@@ -42,6 +42,7 @@ export async function generatePackage(
     beta: boolean;
     ontologyJsonOnly: boolean;
     packageRid: string | undefined;
+    manyToManyLinkTypes: string[];
   },
 ): Promise<void> {
   const { consola } = await import("consola");

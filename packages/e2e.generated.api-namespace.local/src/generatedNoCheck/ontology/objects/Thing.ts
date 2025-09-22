@@ -54,6 +54,7 @@ export interface Thing extends $ObjectTypeDefinition {
     props: Thing.Props;
     linksType: Thing.Links;
     strictProps: Thing.StrictProps;
+    manyToManyLinks: never;
     apiName: 'Thing';
     description: undefined;
     displayName: 'Thing';

@@ -34,6 +34,8 @@ type TestEditScope =
   | Edits.Link<Task, "RP">
   | Edits.Link<Task, "Todos">
   | Edits.Link<Office, "occupants">
+  | Edits.Link<Employee, "friends">
+  | Edits.Link<Office, "occupants">
   | Edits.Interface<FooInterface>;
 
 describe(createEditBatch, () => {
@@ -103,28 +105,16 @@ describe(createEditBatch, () => {
     }, { fooSpt: "fooSpt2" });
     editBatch.delete(fooInterfaceInstance);
 
-    editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
-      $apiName: "Person",
-      $primaryKey: 0,
-    });
-    editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
-      $apiName: "Person",
-      $primaryKey: 1,
-    });
-    editBatch.link(taskInstance, "RP", personInstance);
-    editBatch.unlink({ $apiName: "Task", $primaryKey: 0 }, "RP", {
-      $apiName: "Person",
-      $primaryKey: 1,
-    });
-    editBatch.link(taskInstance, "Todos", { $apiName: "Todo", $primaryKey: 0 });
-    editBatch.link(taskInstance, "Todos", [
-      { $apiName: "Todo", $primaryKey: 1 },
-      { $apiName: "Todo", $primaryKey: 2 },
-    ]);
+    editBatch.link(employeeInstance, "friends", employeeInstance);
+
+    // @ts-expect-error
+    editBatch.link(officeInstance, "occupants", employeeInstance);
+
     editBatch.unlink({ $apiName: "Task", $primaryKey: 2 }, "Todos", {
       $apiName: "Todo",
       $primaryKey: 0,
     });
+    // @ts-expect-error
     editBatch.link(officeInstance, "occupants", employeeInstance);
     editBatch.unlink(
       { $apiName: "Office", $primaryKey: "2" },
