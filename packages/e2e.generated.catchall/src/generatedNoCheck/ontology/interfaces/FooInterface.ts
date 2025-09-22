@@ -101,6 +101,7 @@ export interface FooInterface extends $InterfaceDefinition {
     props: FooInterface.Props;
     linksType: OsdkObjectLinks$FooInterface;
     strictProps: FooInterface.StrictProps;
+    manyToManyLinks: never;
     apiName: 'FooInterface';
     description: 'Its a Foo.';
     displayName: 'Foo interface';

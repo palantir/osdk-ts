@@ -202,6 +202,7 @@ export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition {
     props: ObjectTypeWithAllPropertyTypes.Props;
     linksType: ObjectTypeWithAllPropertyTypes.Links;
     strictProps: ObjectTypeWithAllPropertyTypes.StrictProps;
+    manyToManyLinks: never;
     apiName: 'ObjectTypeWithAllPropertyTypes';
     description: 'A type with all property types';
     displayName: 'ObjectTypeWithAllPropertyTypes';

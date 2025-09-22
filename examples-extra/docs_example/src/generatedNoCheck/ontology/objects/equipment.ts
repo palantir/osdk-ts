@@ -54,6 +54,7 @@ export interface equipment extends $ObjectTypeDefinition {
     props: equipment.Props;
     linksType: equipment.Links;
     strictProps: equipment.StrictProps;
+    manyToManyLinks: never;
     apiName: 'equipment';
     description: undefined;
     displayName: 'Equipment';

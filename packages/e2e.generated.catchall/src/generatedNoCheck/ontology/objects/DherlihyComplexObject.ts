@@ -58,6 +58,7 @@ export interface DherlihyComplexObject extends $ObjectTypeDefinition {
     props: DherlihyComplexObject.Props;
     linksType: DherlihyComplexObject.Links;
     strictProps: DherlihyComplexObject.StrictProps;
+    manyToManyLinks: never;
     apiName: 'DherlihyComplexObject';
     description: 'Dherlihy Complex Object';
     displayName: 'Dherlihy Complex Object';

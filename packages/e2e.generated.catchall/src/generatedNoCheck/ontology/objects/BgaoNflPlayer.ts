@@ -78,6 +78,7 @@ export interface BgaoNflPlayer extends $ObjectTypeDefinition {
     props: BgaoNflPlayer.Props;
     linksType: BgaoNflPlayer.Links;
     strictProps: BgaoNflPlayer.StrictProps;
+    manyToManyLinks: never;
     apiName: 'BgaoNflPlayer';
     description: 'BgaoNflPlayer';
     displayName: 'BgaoNflPlayer';

@@ -40,6 +40,7 @@ export interface OntologyInfo {
   externalInterfaces: Map<string, string>;
   externalObjects: Map<string, string>;
   fixedVersionQueryTypes: string[];
+  manyToManyLinkTypes: string[];
 }
 
 export class OntologyMetadataResolver {
@@ -313,6 +314,7 @@ export class OntologyMetadataResolver {
         externalInterfaces,
         externalObjects,
         fixedVersionQueryTypes: [],
+        manyToManyLinkTypes: [],
       });
     } else {
       const objectTypes = new Set(entities.objectTypesApiNamesToLoad);
@@ -369,6 +371,8 @@ export class OntologyMetadataResolver {
         },
       );
 
+      const manyToManyLinkTypes: string[] = [];
+
       const validData: Result<{}, string[]> = this
         .validateLoadedOntologyMetadata(
           requestedMetadata,
@@ -390,6 +394,7 @@ export class OntologyMetadataResolver {
         externalInterfaces: new Map(),
         externalObjects: new Map(),
         fixedVersionQueryTypes,
+        manyToManyLinkTypes,
       });
     }
   }

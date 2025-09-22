@@ -66,6 +66,7 @@ export interface Country_1 extends $ObjectTypeDefinition {
     props: Country_1.Props;
     linksType: Country_1.Links;
     strictProps: Country_1.StrictProps;
+    manyToManyLinks: never;
     apiName: 'Country_1';
     description: '';
     displayName: 'Country';

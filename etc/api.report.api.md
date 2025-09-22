@@ -996,7 +996,7 @@ export type ObjectSpecifier<Q extends ObjectOrInterfaceDefinition> = string & {
 // @public (undocumented)
 export interface ObjectTypeDefinition {
     	// (undocumented)
-    __DefinitionMetadata?: ObjectMetadata & ObjectInterfaceCompileDefinition;
+    __DefinitionMetadata?: ObjectMetadata & ObjectInterfaceCompileDefinition & any;
     	// (undocumented)
     apiName: string;
     	// (undocumented)

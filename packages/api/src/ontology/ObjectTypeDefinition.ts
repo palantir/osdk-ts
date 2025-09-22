@@ -116,7 +116,8 @@ export interface ObjectTypeDefinition {
   osdkMetadata?: OsdkMetadata;
   __DefinitionMetadata?:
     & ObjectMetadata
-    & ObjectInterfaceCompileDefinition;
+    & ObjectInterfaceCompileDefinition
+    & any;
 }
 
 export type ObjectTypeLinkKeysFrom2<

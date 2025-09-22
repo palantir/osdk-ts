@@ -91,4 +91,5 @@ await generateClientSdkVersionTwoPointZero(
   undefined,
   true,
   ["addOne"],
+  { "Employee": ["friends"] },
 );

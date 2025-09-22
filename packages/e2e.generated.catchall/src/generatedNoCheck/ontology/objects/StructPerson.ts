@@ -54,6 +54,7 @@ export interface StructPerson extends $ObjectTypeDefinition {
     props: StructPerson.Props;
     linksType: StructPerson.Links;
     strictProps: StructPerson.StrictProps;
+    manyToManyLinks: never;
     apiName: 'StructPerson';
     description: 'StructPerson';
     displayName: 'StructPerson';

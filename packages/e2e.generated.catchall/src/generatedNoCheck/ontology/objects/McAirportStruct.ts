@@ -72,6 +72,7 @@ export interface McAirportStruct extends $ObjectTypeDefinition {
     props: McAirportStruct.Props;
     linksType: McAirportStruct.Links;
     strictProps: McAirportStruct.StrictProps;
+    manyToManyLinks: never;
     apiName: 'McAirportStruct';
     description: 'McAirportStruct';
     displayName: 'McAirportStruct';

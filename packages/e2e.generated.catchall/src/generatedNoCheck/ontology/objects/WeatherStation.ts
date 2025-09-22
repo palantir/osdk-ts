@@ -56,6 +56,7 @@ export interface WeatherStation extends $ObjectTypeDefinition {
     props: WeatherStation.Props;
     linksType: WeatherStation.Links;
     strictProps: WeatherStation.StrictProps;
+    manyToManyLinks: never;
     apiName: 'WeatherStation';
     description: 'Weather Station';
     displayName: 'Weather Station';

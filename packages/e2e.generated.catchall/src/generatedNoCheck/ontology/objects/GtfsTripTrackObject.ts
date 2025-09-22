@@ -58,6 +58,7 @@ export interface GtfsTripTrackObject extends $ObjectTypeDefinition {
     props: GtfsTripTrackObject.Props;
     linksType: GtfsTripTrackObject.Links;
     strictProps: GtfsTripTrackObject.StrictProps;
+    manyToManyLinks: never;
     apiName: 'GtfsTripTrackObject';
     description: 'GtfsTripTrackObject';
     displayName: 'GtfsTripTrackObject';

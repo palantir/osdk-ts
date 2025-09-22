@@ -47,6 +47,7 @@ export interface EsongInterfaceA extends $InterfaceDefinition {
     props: EsongInterfaceA.Props;
     linksType: OsdkObjectLinks$EsongInterfaceA;
     strictProps: EsongInterfaceA.StrictProps;
+    manyToManyLinks: never;
     apiName: 'EsongInterfaceA';
     description: '';
     displayName: '[esong] Interface A';

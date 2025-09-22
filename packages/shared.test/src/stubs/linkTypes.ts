@@ -50,6 +50,15 @@ export const officeLinkType: LinkTypeSideV2 = {
   foreignKeyPropertyApiName: "office",
 };
 
+export const friendsLinkType: LinkTypeSideV2 = {
+  apiName: "friends",
+  status: "EXPERIMENTAL",
+  objectTypeApiName: employeeObjectType.apiName,
+  cardinality: "MANY",
+  displayName: "friends",
+  linkTypeRid: "ri.a.b.friends",
+};
+
 export const occupants: LinkTypeSideV2 = {
   apiName: "occupants",
   status: "EXPERIMENTAL",

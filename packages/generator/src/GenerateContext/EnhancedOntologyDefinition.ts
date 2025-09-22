@@ -57,12 +57,15 @@ export class EnhancedOntologyDefinition {
   raw: WireOntologyDefinition;
   common: EnhanceCommon;
 
+  manyToManyLinkTypes: { [key: string]: string[] | undefined };
+
   constructor(
     raw: WireOntologyDefinition,
     importExt: string,
     externalObjects?: Map<string, string>,
     externalInterfaces?: Map<string, string>,
     externalSpts?: Map<string, string>,
+    manyToManyLinkTypes: { [key: string]: string[] } = {},
   ) {
     this.common = {
       enhancedOntology: this,
@@ -98,6 +101,7 @@ export class EnhancedOntologyDefinition {
       EnhancedSharedPropertyType,
       externalSpts,
     );
+    this.manyToManyLinkTypes = manyToManyLinkTypes;
   }
 
   #createRequireType = <

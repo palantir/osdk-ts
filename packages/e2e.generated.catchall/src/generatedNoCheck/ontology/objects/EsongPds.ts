@@ -98,6 +98,7 @@ export interface EsongPds extends $ObjectTypeDefinition {
     props: EsongPds.Props;
     linksType: EsongPds.Links;
     strictProps: EsongPds.StrictProps;
+    manyToManyLinks: never;
     apiName: 'EsongPds';
     description: 'asdaaaaa';
     displayName: '[esong] Pds';

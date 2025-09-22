@@ -24,12 +24,14 @@ export function enhanceOntology(
     externalObjects,
     externalInterfaces,
     externalSpts,
+    manyToManyLinkTypes = {},
   }: {
     sanitized: WireOntologyDefinition;
     externalObjects?: Map<string, string>;
     externalInterfaces?: Map<string, string>;
     externalSpts?: Map<string, string>;
     importExt: string;
+    manyToManyLinkTypes?: { [key: string]: string[] };
   },
 ): EnhancedOntologyDefinition {
   return new EnhancedOntologyDefinition(
@@ -38,5 +40,6 @@ export function enhanceOntology(
     externalObjects,
     externalInterfaces,
     externalSpts,
+    manyToManyLinkTypes,
   );
 }

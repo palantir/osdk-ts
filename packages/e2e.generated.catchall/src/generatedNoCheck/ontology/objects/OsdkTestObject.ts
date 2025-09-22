@@ -62,6 +62,7 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
     props: OsdkTestObject.Props;
     linksType: OsdkTestObject.Links;
     strictProps: OsdkTestObject.StrictProps;
+    manyToManyLinks: never;
     apiName: 'OsdkTestObject';
     description: '';
     displayName: 'Osdk Test Object';

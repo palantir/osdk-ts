@@ -300,6 +300,11 @@ export function createDefinition(
       props: ${osdkObjectPropsIdentifier};
       linksType: ${osdkObjectLinksIdentifier};
       strictProps: ${osdkObjectStrictPropsIdentifier};
+      manyToManyLinks: ${
+    ontology.manyToManyLinkTypes[object.fullApiName]?.map(x => `"${x}"`).join(
+      " | ",
+    ) || "never"
+  };
       ${
     stringify(definition, {
       links: (_value) =>
