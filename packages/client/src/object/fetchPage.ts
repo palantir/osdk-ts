@@ -148,7 +148,7 @@ export async function fetchStaticRidPage<
       snapshot: useSnapshot,
     } as LoadObjectSetV2MultipleObjectTypesRequest,
     client,
-    { type: "object", apiName: "" } as any,
+    { type: "object", apiName: "" },
   );
 
   const result = await OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
@@ -496,7 +496,7 @@ async function applyFetchArgs<
   const orderBy = args?.$orderBy;
   if (orderBy) {
     if (orderBy === "relevance") {
-      body.orderBy = { orderType: "relevance", fields: [] } as any;
+      body.orderBy = { orderType: "relevance", fields: [] };
     } else {
       const orderByEntries = Object.entries(orderBy);
       const fieldNames = orderByEntries.map(([field]) => field);
