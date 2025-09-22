@@ -390,6 +390,22 @@ function TodoList() {
 }
 ```
 
+## Manual Cache Invalidation
+
+```tsx
+function MyComponent({ observableClient }) {
+  const handleRefresh = async () => {
+    // Invalidate specific objects
+    await observableClient.invalidateObjects([todo1, todo2]);
+    
+    // Invalidate all Todos
+    await observableClient.invalidateObjectType(Todo);
+    
+    await observableClient.invalidateAll();
+  };
+}
+```
+
 # Debugging Issues
 
 ## NPM Install Concerns
