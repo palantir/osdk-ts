@@ -54,7 +54,6 @@ export interface ObjectInterfaceCompileDefinition {
   props?: any;
   strictProps?: any;
   linksType?: any;
-  manyToManyLinks?: any;
 }
 
 export interface VersionBound<V extends VersionString<any, any, any>> {
