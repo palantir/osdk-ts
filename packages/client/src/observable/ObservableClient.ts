@@ -202,6 +202,38 @@ export interface ObservableClient extends ObserveLinks {
   >(
     where: WhereClause<T>,
   ) => Canonical<WhereClause<T>>;
+
+  /**
+   * Prefetch a single object and populate the cache without subscribing.
+   *
+   * @param apiName - The object type definition or name
+   * @param pk - The object's primary key
+   * @param options - Observation options including deduplication interval
+   * @returns Promise that resolves when the prefetch completes
+   *
+   * This method fetches the object data and stores it in the cache,
+   * making it immediately available for subsequent `observeObject` calls
+   * or `useOsdkObject` hooks without a loading state.
+   */
+  prefetchObject<T extends ObjectTypeDefinition>(
+    apiName: T["apiName"] | T,
+    pk: PrimaryKeyType<T>,
+    options?: Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
+  ): Promise<void>;
+
+  /**
+   * Prefetch a filtered and sorted collection of objects and populate the cache.
+   *
+   * @param options - Filter, sort, and pagination options
+   * @returns Promise that resolves when the prefetch completes
+   *
+   * This method fetches the list data and stores it in the cache,
+   * making it immediately available for subsequent `observeList` calls
+   * or `useOsdkObjects` hooks without a loading state.
+   */
+  prefetchList<T extends ObjectTypeDefinition | InterfaceDefinition>(
+    options: ObserveListOptions<T>,
+  ): Promise<void>;
 }
 
 export function createObservableClient(client: Client): ObservableClient {

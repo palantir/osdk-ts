@@ -18,10 +18,15 @@ import type {
   InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
+  PrimaryKeyType,
   PropertyKeys,
   WhereClause,
-} from "@osdk/client";
-import type { ObserveObjectsArgs } from "@osdk/client/unstable-do-not-use";
+} from "@osdk/api";
+import type {
+  ObserveListOptions,
+  ObserveObjectOptions,
+  ObserveObjectsArgs,
+} from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
@@ -89,6 +94,24 @@ export interface UseOsdkObjectsOptions<
   // expectedLength?: number | undefined;
 
   streamUpdates?: boolean;
+
+  /**
+   * Optional queries to prefetch alongside this query.
+   * These queries will be fetched in parallel with the main query,
+   * populating the cache for future use.
+   */
+  prefetch?: Array<
+    | ObserveListOptions<ObjectTypeDefinition | InterfaceDefinition>
+    | {
+      type: "object";
+      apiName: ObjectTypeDefinition["apiName"] | ObjectTypeDefinition;
+      pk: PrimaryKeyType<ObjectTypeDefinition>;
+      options?: Omit<
+        ObserveObjectOptions<ObjectTypeDefinition>,
+        "apiName" | "pk"
+      >;
+    }
+  >;
 }
 
 export interface UseOsdkListResult<
@@ -125,6 +148,7 @@ export function useOsdkObjects<
     dedupeIntervalMs,
     where = {},
     streamUpdates,
+    prefetch,
   }: UseOsdkObjectsOptions<Q> = {},
 ): UseOsdkListResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
@@ -134,6 +158,37 @@ export function useOsdkObjects<
       the ObservableClient anyway.
    */
   const canonWhere = observableClient.canonicalizeWhereClause(where ?? {});
+
+  // Execute prefetches when they change
+  React.useEffect(() => {
+    if (prefetch && prefetch.length > 0) {
+      const prefetchPromises = prefetch.map((prefetchQuery) => {
+        if ("type" in prefetchQuery && prefetchQuery.type === "object") {
+          // Object prefetch
+          return observableClient.prefetchObject(
+            prefetchQuery.apiName,
+            prefetchQuery.pk,
+            prefetchQuery.options,
+          );
+        } else {
+          // List prefetch
+          return observableClient.prefetchList(
+            prefetchQuery as ObserveListOptions<
+              ObjectTypeDefinition | InterfaceDefinition
+            >,
+          );
+        }
+      });
+
+      // Execute all prefetches in parallel, but don't block on them
+      Promise.all(prefetchPromises).catch((error: unknown) => {
+        // Log prefetch errors but don't fail the main query
+        if (process.env.NODE_ENV !== "production") {
+          error = new Error("Prefetch error:");
+        }
+      });
+    }
+  }, [prefetch, observableClient]);
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>

@@ -146,4 +146,34 @@ export class ObservableClientImpl implements ObservableClient {
     return this.__experimentalStore.whereCanonicalizer
       .canonicalize(where) as Canonical<WhereClause<T>>;
   }
+
+  public async prefetchObject<T extends ObjectTypeDefinition>(
+    apiName: T["apiName"] | T,
+    pk: PrimaryKeyType<T>,
+    options?: Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
+  ): Promise<void> {
+    const query = this.__experimentalStore.objects.getQuery({
+      apiName,
+      pk,
+      mode: options?.mode,
+      select: options?.select,
+    });
+
+    // Fetch data into cache without subscribing
+    await query.revalidate();
+  }
+
+  public async prefetchList<
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+  >(
+    options: ObserveListOptions<T>,
+  ): Promise<void> {
+    const query = this.__experimentalStore.lists.getQuery({
+      ...options,
+      dedupeInterval: options.dedupeInterval ?? 5000,
+    });
+
+    // Fetch data into cache without subscribing
+    await query.revalidate();
+  }
 }
