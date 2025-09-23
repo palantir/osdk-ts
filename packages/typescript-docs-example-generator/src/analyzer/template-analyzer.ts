@@ -29,6 +29,10 @@ import type {
   TemplateAnalysis,
   TemplateVariable,
 } from "../types/index.js";
+import {
+  convertHandlebarsAST,
+  getMustacheOriginal,
+} from "../utils/ast-helpers.js";
 
 export class TemplateAnalyzer {
   private readonly variableTypeCache = new Map<
@@ -85,7 +89,8 @@ export class TemplateAnalyzer {
     template: string,
   ): Result<HandlebarsAST, ProcessingError> {
     try {
-      const ast = Handlebars.parse(template) as unknown as HandlebarsAST;
+      // Use helper to safely convert from Handlebars native types to our interface
+      const ast = convertHandlebarsAST(Handlebars.parse(template));
 
       // Also try to compile and execute the template to catch semantic errors like "#if requires exactly one argument"
       const compiled = Handlebars.compile(template);
@@ -293,7 +298,7 @@ export class TemplateAnalyzer {
           case "ContentStatement":
             return stmt.value;
           case "MustacheStatement":
-            return `{{${(stmt as any).path?.original || ""}}}`;
+            return `{{${getMustacheOriginal(stmt)}}}`;
           default:
             return "";
         }

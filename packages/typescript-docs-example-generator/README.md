@@ -268,7 +268,7 @@ src/
 
 ### Development Tips
 
-- Use `console.log` statements in templates are preserved in output
+- `console.log` statements in templates are preserved in output
 - Test individual templates with `processTemplateV2` in unit tests
 - Check `HierarchyBuilder.getStats()` for generation metrics
 - Template analysis failures are treated as build failures (not warnings)

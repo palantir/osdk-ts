@@ -29,6 +29,10 @@ import type {
   ProcessingError,
   Result,
 } from "./types/index.js";
+import {
+  contextToRecord,
+  processingErrorToError,
+} from "./utils/ast-helpers.js";
 import { BatchProcessor } from "./utils/batch-processor.js";
 import {
   CodeTransformer,
@@ -287,7 +291,8 @@ function generateAllExamplesForVersion(
     if (!analysis.success) {
       // DO NOT convert template parsing errors to warnings - they indicate broken templates
       // Template syntax errors should stop generation immediately
-      addError(snippetKey, analysis.error as any); // Template parse errors are fatal
+      // Convert ProcessingError to Error for error collector compatibility
+      addError(snippetKey, processingErrorToError(analysis.error));
       collection.totalExamples++;
       continue;
     }
@@ -391,7 +396,7 @@ function generateAllExamplesForVersion(
         code: transformedCode,
         metadata: {
           generatedAt: new Date(),
-          context: context as unknown as Record<string, unknown>,
+          context: contextToRecord(context),
           blockStates: {},
         },
       });

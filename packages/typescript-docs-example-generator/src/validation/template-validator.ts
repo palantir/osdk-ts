@@ -65,7 +65,7 @@ export class TemplateValidator {
     // Type check provided values
     for (const variable of template.variables) {
       if (variable.name in context) {
-        const value = (context as any)[variable.name];
+        const value = context[variable.name as keyof BaseTemplateContext];
         if (!this.isValidType(value, variable.type)) {
           errors.push({
             type: "type-mismatch",
@@ -83,7 +83,7 @@ export class TemplateValidator {
     for (const block of template.blocks) {
       const varName = block.name.substring(1); // Remove # or ^ prefix
       if (varName in context) {
-        const value = (context as any)[varName];
+        const value = context[varName as keyof BaseTemplateContext];
         if (typeof value !== "boolean") {
           errors.push({
             type: "type-mismatch",
