@@ -34,6 +34,7 @@ type TestEditScope =
   | Edits.Link<Task, "RP">
   | Edits.Link<Task, "Todos">
   | Edits.Link<Office, "occupants">
+  | Edits.Link<Employee, "visitedOffices">
   | Edits.Interface<FooInterface>;
 
 describe(createEditBatch, () => {
@@ -103,19 +104,23 @@ describe(createEditBatch, () => {
     }, { fooSpt: "fooSpt2" });
     editBatch.delete(fooInterfaceInstance);
 
-    editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
-      $apiName: "Person",
-      $primaryKey: 0,
+    editBatch.link({ $apiName: "Employee", $primaryKey: 0 }, "visitedOffices", {
+      $apiName: "Office",
+      $primaryKey: "Seattle",
     });
-    editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
-      $apiName: "Person",
-      $primaryKey: 1,
+    editBatch.link({ $apiName: "Employee", $primaryKey: 0 }, "visitedOffices", {
+      $apiName: "Office",
+      $primaryKey: "Palo Alto",
     });
-    editBatch.link(taskInstance, "RP", personInstance);
-    editBatch.unlink({ $apiName: "Task", $primaryKey: 0 }, "RP", {
-      $apiName: "Person",
-      $primaryKey: 1,
-    });
+    editBatch.link(employeeInstance, "visitedOffices", officeInstance);
+    editBatch.unlink(
+      { $apiName: "Employee", $primaryKey: 0 },
+      "visitedOffices",
+      {
+        $apiName: "Office",
+        $primaryKey: "New York",
+      },
+    );
     editBatch.link(taskInstance, "Todos", { $apiName: "Todo", $primaryKey: 0 });
     editBatch.link(taskInstance, "Todos", [
       { $apiName: "Todo", $primaryKey: 1 },
@@ -297,8 +302,9 @@ describe(createEditBatch, () => {
       taskInstance,
       "RP",
       // @ts-expect-error
-      [personInstance],
-    ); // Using list for non-multiplicity link
+      personInstance,
+    );
+    // Trying to traverse ONE direction
 
     editBatch.link(
       { $apiName: "Task", $primaryKey: 2 },
