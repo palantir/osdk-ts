@@ -302,15 +302,14 @@ export function matchesOntologyDataType(
     case "cipherText":
       return isValidCipherText(value);
     case "date":
-      return isValidDateString(value);
+      return typeof value === "string" && isValidDateString(value);
     case "decimal":
-      return isValidDecimalString(value);
+      return typeof value === "string" && isValidDecimalString(value);
     case "double":
       return typeof value === "number"
         && isInBounds(value, NUMERIC_LITERAL_BOUNDS.double);
     case "float":
-      return typeof value === "number"
-        && isInBounds(value, NUMERIC_LITERAL_BOUNDS.float);
+      return typeof value === "number";
     case "integer":
       return (typeof value === "number" && Number.isInteger(value)
         && isInBounds(value, NUMERIC_LITERAL_BOUNDS.integer));
@@ -345,7 +344,7 @@ export function matchesOntologyDataType(
         `matchesOntologyDataType: ${odt.type} not implemented yet.`,
       );
     case "timestamp":
-      return isValidTimestampString(value);
+      return typeof value === "string" && isValidTimestampString(value);
     case "unsupported":
       throw new Error(
         `matchesOntologyDataType: ${odt.type} not implemented yet.`,
@@ -401,11 +400,8 @@ function isInBounds(
   return bounds.minimum <= value && value <= bounds.maximum;
 }
 
-function isValidDateString(value: unknown): boolean {
-  if (typeof value !== "string") {
-    return false;
-  }
-
+function isValidDateString(value: string): boolean {
+  // Check for ISO 8601 date format (YYYY-MM-DD)
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
   if (!dateRegex.test(value)) {
     return false;
@@ -450,11 +446,9 @@ function isValidCipherAffix(
     && (prefixOnly || parts[3] === affix);
 }
 
-function isValidDecimalString(value: unknown): boolean {
-  if (typeof value !== "string") {
-    return false;
-  }
-
-  const decimalRegex = /^[+-]?(\d+\.?\d*|\.\d+)(E[+-]?\d+)?$/;
+function isValidDecimalString(value: string): boolean {
+  // Check for decimal format including scientific notation
+  // Supports formats like: "123.45", "4.321E+8", "0.332E-5", "-123.456", etc.
+  const decimalRegex = /^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/;
   return decimalRegex.test(value) && !isNaN(parseFloat(value));
 }

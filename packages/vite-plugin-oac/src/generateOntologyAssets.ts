@@ -15,14 +15,12 @@
  */
 
 import {
-  type OntologyIrOntologyBlockDataV2,
   OntologyIrToFullMetadataConverter,
 } from "@osdk/generator-converters.ontologyir";
 import { execa } from "execa";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { inspect } from "node:util";
-import type { Logger } from "./Logger.js";
 import type { OacContext } from "./OacContext.js";
 import { syncDirectories } from "./syncDirectories.js";
 
@@ -100,8 +98,7 @@ async function ontologyIrToFullMetadata(
     const irContent = await fs.promises.readFile(ontologyIrPath(workDir), {
       encoding: "utf-8",
     });
-    const blockData = JSON.parse(irContent)
-      .blockData as OntologyIrOntologyBlockDataV2;
+    const blockData = JSON.parse(irContent).ontology;
 
     const fullMeta = OntologyIrToFullMetadataConverter.getFullMetadataFromIr(
       blockData,
@@ -189,8 +186,6 @@ async function fullMetadataToOsdk(
           `Successfully synchronized ${targetDir} with newly generated code`,
         );
 
-        await compileOsdk(logger);
-
         // Clean up temporary directory after successful sync
         await fs.promises.rm(tempDir, { recursive: true, force: true });
       } catch (error) {
@@ -216,20 +211,4 @@ async function fullMetadataToOsdk(
     }
     throw error;
   }
-}
-
-async function compileOsdk(logger: Logger) {
-  const { stdout, stderr, exitCode } = await execa("pnpm", [
-    "exec",
-    "tsc",
-  ], {
-    cwd: ".osdk",
-  });
-
-  logger.debug(`OSDK generation output: ${stdout}`);
-
-  if (stderr) {
-    logger.error(`OSDK generation stderr: ${stderr}`);
-  }
-  return exitCode;
 }
