@@ -9,7 +9,11 @@ function PeopleApp() {
   const path = location.pathname;
   const activeTab = path === "/" || path === "/employees"
     ? "employees"
-    : "offices";
+    : path === "/offices"
+    ? "offices"
+    : path === "/prefetch"
+    ? "prefetch"
+    : "employees";
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
@@ -29,6 +33,13 @@ function PeopleApp() {
           onClick={() => navigate("/offices")}
         >
           Offices
+        </Button>
+        <Button
+          variant="tab"
+          active={activeTab === "prefetch"}
+          onClick={() => navigate("/prefetch")}
+        >
+          Prefetch Demo
         </Button>
       </div>
 
