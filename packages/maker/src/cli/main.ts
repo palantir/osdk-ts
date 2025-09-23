@@ -15,6 +15,7 @@
  */
 
 import { consola } from "consola";
+import { createJiti } from "jiti";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
@@ -142,7 +143,14 @@ async function loadOntology(
 ) {
   const q = await defineOntology(
     apiNamespace,
-    async () => await import(input),
+    async () => {
+      const jiti = createJiti(import.meta.filename, {
+        moduleCache: true,
+        debug: false,
+        importMeta: import.meta,
+      });
+      await jiti.import(input);
+    },
     outputDir,
     dependencyFile,
   );

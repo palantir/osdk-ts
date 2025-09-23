@@ -68,7 +68,7 @@ export class OntologyIrToFullMetadataConverter {
         description: "",
       },
       valueTypes: {},
-    };
+    } as any;
   }
 
   /**
@@ -177,7 +177,7 @@ export class OntologyIrToFullMetadataConverter {
         implementsInterfaces2[interfaceApiName] = {
           properties: propertyMappings,
           links: {},
-        };
+        } as any;
       }
 
       const objectApiName = object.apiName;
