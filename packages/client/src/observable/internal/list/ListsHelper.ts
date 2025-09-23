@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  DerivedProperty,
-  InterfaceDefinition,
-  ObjectTypeDefinition,
-} from "@osdk/api";
+import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import type { ListPayload } from "../../ListPayload.js";
 import type { ObserveListOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
@@ -30,8 +26,10 @@ import type { QuerySubscription } from "../QuerySubscription.js";
 import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
+import { InterfaceListQuery } from "./InterfaceListQuery.js";
 import type { ListCacheKey } from "./ListCacheKey.js";
-import { ListQuery } from "./ListQuery.js";
+import type { ListQuery } from "./ListQuery.js";
+import { ObjectListQuery } from "./ObjectListQuery.js";
 
 export class ListsHelper extends AbstractHelper<
   ListQuery,
@@ -73,24 +71,6 @@ export class ListsHelper extends AbstractHelper<
     const { type: typeDefinition, where, orderBy, withProperties } = options;
     const { apiName, type } = typeDefinition;
 
-    let objectSet: any;
-    if (type === "object") {
-      objectSet = this.store.client(typeDefinition as ObjectTypeDefinition);
-    } else {
-      objectSet = this.store.client(typeDefinition as InterfaceDefinition);
-    }
-
-    // Order matters - apply withProperties first (before filtering) so RDPs are available for later clauses
-    if (withProperties) {
-      objectSet = objectSet.withProperties(
-        withProperties as DerivedProperty.Clause<ObjectTypeDefinition>,
-      );
-    }
-
-    if (where) {
-      objectSet = objectSet.where(where);
-    }
-
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
     const canonRdp = withProperties
@@ -107,12 +87,13 @@ export class ListsHelper extends AbstractHelper<
     );
 
     return this.store.queries.get(listCacheKey, () => {
-      return new ListQuery(
+      const QueryClass = type === "object"
+        ? ObjectListQuery
+        : InterfaceListQuery;
+      return new QueryClass(
         this.store,
         this.store.subjects.get(listCacheKey),
-        type,
         apiName,
-        objectSet,
         listCacheKey,
         options,
       );
