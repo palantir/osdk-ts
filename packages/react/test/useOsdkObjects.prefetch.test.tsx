@@ -47,13 +47,14 @@ describe("useOsdkObjects prefetch prop", () => {
   } as ObjectTypeDefinition;
 
   const createMockObservableClient = () => {
-    const mockObservable = {
-      subscribe: vi.fn((observer: any) => {
+    return {
+      prefetchObject: vi.fn().mockResolvedValue(undefined),
+      prefetchList: vi.fn().mockResolvedValue(undefined),
+      observeList: vi.fn((options, observer) => {
         // Immediately emit data
         setTimeout(() => {
           observer.next({
-            status: "hasData" as const,
-            value: [
+            resolvedList: [
               {
                 $apiName: "Employee",
                 $primaryKey: "emp-1",
@@ -67,21 +68,18 @@ describe("useOsdkObjects prefetch prop", () => {
                 fullName: "Jane Smith",
               },
             ] as Osdk.Instance<typeof mockEmployee>[],
-            isLoading: false,
-            error: undefined,
+            status: "loaded" as const,
+            isOptimistic: false,
+            lastUpdated: Date.now(),
+            fetchMore: vi.fn(),
+            hasMore: false,
           });
         }, 0);
-        
+
         return {
           unsubscribe: vi.fn(),
         };
       }),
-    };
-
-    return {
-      prefetchObject: vi.fn().mockResolvedValue(undefined),
-      prefetchList: vi.fn().mockResolvedValue(undefined),
-      observeList: vi.fn().mockReturnValue(mockObservable),
       canonicalizeWhereClause: vi.fn((where) => where),
     } as unknown as ObservableClient;
   };
@@ -284,11 +282,11 @@ describe("useOsdkObjects prefetch prop", () => {
     const prefetchQueries: Array<
       | ObserveListOptions<ObjectTypeDefinition | InterfaceDefinition>
       | {
-          type: "object";
-          apiName: ObjectTypeDefinition["apiName"] | ObjectTypeDefinition;
-          pk: PrimaryKeyType<ObjectTypeDefinition>;
-          options?: any;
-        }
+        type: "object";
+        apiName: ObjectTypeDefinition["apiName"] | ObjectTypeDefinition;
+        pk: PrimaryKeyType<ObjectTypeDefinition>;
+        options?: any;
+      }
     > = [
       // List prefetch
       {
@@ -444,11 +442,15 @@ describe("useOsdkObjects prefetch prop", () => {
 
     const mockObservableClient = createMockObservableClient();
     const prefetchError = new Error("Prefetch network error");
-    mockObservableClient.prefetchList = vi.fn().mockRejectedValue(prefetchError);
+    mockObservableClient.prefetchList = vi.fn().mockRejectedValue(
+      prefetchError,
+    );
 
     const wrapper = createWrapper(mockObservableClient);
 
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(
+      () => {},
+    );
 
     const { result } = renderHook(
       () =>
@@ -470,7 +472,7 @@ describe("useOsdkObjects prefetch prop", () => {
     // In development, errors should be logged (implementation would log them)
     // Note: The actual implementation in useOsdkObjects.ts currently creates a new Error
     // but doesn't log it. This test shows the expected behavior.
-    
+
     consoleErrorSpy.mockRestore();
     process.env.NODE_ENV = originalNodeEnv;
   });

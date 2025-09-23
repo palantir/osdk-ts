@@ -159,54 +159,59 @@ export function useOsdkObjects<
    */
   const canonWhere = observableClient.canonicalizeWhereClause(where ?? {});
 
-  // Execute prefetches when they change
-  React.useEffect(() => {
-    if (prefetch && prefetch.length > 0) {
-      const prefetchPromises = prefetch.map((prefetchQuery) => {
-        if ("type" in prefetchQuery && prefetchQuery.type === "object") {
-          // Object prefetch
-          return observableClient.prefetchObject(
-            prefetchQuery.apiName,
-            prefetchQuery.pk,
-            prefetchQuery.options,
-          );
-        } else {
-          // List prefetch
-          return observableClient.prefetchList(
-            prefetchQuery as ObserveListOptions<
-              ObjectTypeDefinition | InterfaceDefinition
-            >,
-          );
-        }
-      });
-
-      // Execute all prefetches in parallel, but don't block on them
-      Promise.all(prefetchPromises).catch((error: unknown) => {
-        // Log prefetch errors but don't fail the main query
-        if (process.env.NODE_ENV !== "production") {
-          error = new Error("Prefetch error:");
-        }
-      });
-    }
-  }, [prefetch, observableClient]);
-
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
       makeExternalStore<ObserveObjectsArgs<Q>>(
-        (observer) =>
-          observableClient.observeList({
+        (observer) => {
+          // Execute prefetches as part of subscription setup
+          if (prefetch && prefetch.length > 0) {
+            prefetch.forEach((prefetchQuery) => {
+              if ("type" in prefetchQuery && prefetchQuery.type === "object") {
+                // Object prefetch
+                observableClient.prefetchObject(
+                  prefetchQuery.apiName,
+                  prefetchQuery.pk,
+                  prefetchQuery.options,
+                ).catch(() => {
+                  // Prefetch errors are silently ignored to not affect the main query
+                });
+              } else {
+                // List prefetch
+                observableClient.prefetchList(
+                  prefetchQuery as ObserveListOptions<
+                    ObjectTypeDefinition | InterfaceDefinition
+                  >,
+                ).catch(() => {
+                  // Prefetch errors are silently ignored to not affect the main query
+                });
+              }
+            });
+          }
+
+          // Create and return the main subscription
+          return observableClient.observeList({
             type,
             where: canonWhere,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
             pageSize,
             orderBy,
             streamUpdates,
-          }, observer),
+          }, observer);
+        },
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
           : void 0,
       ),
-    [observableClient, type, canonWhere, dedupeIntervalMs],
+    [
+      observableClient,
+      type,
+      canonWhere,
+      dedupeIntervalMs,
+      pageSize,
+      orderBy,
+      streamUpdates,
+      prefetch,
+    ],
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);

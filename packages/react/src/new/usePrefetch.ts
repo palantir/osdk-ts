@@ -98,7 +98,9 @@ export function usePrefetch(): UsePrefetchResult {
               return observableClient.prefetchObject(
                 objectOptions.apiName,
                 objectOptions.pk,
-                { mode: objectOptions.mode, select: objectOptions.select },
+                objectOptions.mode || objectOptions.select
+                  ? { mode: objectOptions.mode, select: objectOptions.select }
+                  : undefined,
               );
             } else {
               return observableClient.prefetchList(

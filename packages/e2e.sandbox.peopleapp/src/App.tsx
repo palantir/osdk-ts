@@ -11,8 +11,6 @@ function PeopleApp() {
     ? "employees"
     : path === "/offices"
     ? "offices"
-    : path === "/prefetch"
-    ? "prefetch"
     : "employees";
 
   return (
@@ -33,13 +31,6 @@ function PeopleApp() {
           onClick={() => navigate("/offices")}
         >
           Offices
-        </Button>
-        <Button
-          variant="tab"
-          active={activeTab === "prefetch"}
-          onClick={() => navigate("/prefetch")}
-        >
-          Prefetch Demo
         </Button>
       </div>
 
