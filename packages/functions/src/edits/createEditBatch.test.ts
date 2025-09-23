@@ -132,7 +132,7 @@ describe(createEditBatch, () => {
     });
     editBatch.link(officeInstance, "occupants", employeeInstance);
     editBatch.unlink(
-      { $apiName: "Office", $primaryKey: "2" },
+      { $apiName: "Office", $primaryKey: "Denver" },
       "occupants",
       [employeeInstance, { $apiName: "Employee", $primaryKey: 3 }],
     );
@@ -227,27 +227,27 @@ describe(createEditBatch, () => {
       },
       {
         type: "addLink",
-        apiName: "RP",
-        source: { $apiName: "Task", $primaryKey: 0 },
-        target: { $apiName: "Person", $primaryKey: 0 },
+        apiName: "visitedOffices",
+        source: { $apiName: "Employee", $primaryKey: 0 },
+        target: { $apiName: "Office", $primaryKey: "Seattle" },
       },
       {
         type: "addLink",
-        apiName: "RP",
-        source: { $apiName: "Task", $primaryKey: 0 },
-        target: { $apiName: "Person", $primaryKey: 1 },
+        apiName: "visitedOffices",
+        source: { $apiName: "Employee", $primaryKey: 0 },
+        target: { $apiName: "Office", $primaryKey: "Palo Alto" },
       },
       {
         type: "addLink",
-        apiName: "RP",
-        source: { $apiName: "Task", $primaryKey: 2 },
-        target: { $apiName: "Person", $primaryKey: 2 },
+        apiName: "visitedOffices",
+        source: { $apiName: "Employee", $primaryKey: 2 },
+        target: { $apiName: "Office", $primaryKey: "2" },
       },
       {
         type: "removeLink",
-        apiName: "RP",
-        source: { $apiName: "Task", $primaryKey: 0 },
-        target: { $apiName: "Person", $primaryKey: 1 },
+        apiName: "visitedOffices",
+        source: { $apiName: "Employee", $primaryKey: 0 },
+        target: { $apiName: "Office", $primaryKey: "New York" },
       },
       {
         type: "addLink",
@@ -282,13 +282,13 @@ describe(createEditBatch, () => {
       {
         type: "removeLink",
         apiName: "occupants",
-        source: { $apiName: "Office", $primaryKey: "2" },
+        source: { $apiName: "Office", $primaryKey: "Denver" },
         target: { $apiName: "Employee", $primaryKey: 2 },
       },
       {
         type: "removeLink",
         apiName: "occupants",
-        source: { $apiName: "Office", $primaryKey: "2" },
+        source: { $apiName: "Office", $primaryKey: "Denver" },
         target: { $apiName: "Employee", $primaryKey: 3 },
       },
     ]);

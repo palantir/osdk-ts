@@ -87,6 +87,10 @@ describe("FetchMetadata", () => {
             "multiplicity": true,
             "targetType": "Employee",
           },
+          "visitedOffices": {
+            "multiplicity": true,
+            "targetType": "Office",
+          },
         },
         "pluralDisplayName": "Employees",
         "primaryKeyApiName": "employeeId",
