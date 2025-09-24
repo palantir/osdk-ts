@@ -1,5 +1,5 @@
 {
-  "name": "@osdk/osdkDocsContext",
+  "name": "@osdk/osdk-docs-context",
   "version": "0.1.0",
   "description": "OSDK Documentation Context utilities and examples registry",
   "license": "Apache-2.0",

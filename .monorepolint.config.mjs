@@ -137,7 +137,7 @@ const archetypeRules = archetypes(
       "@osdk/widget.client",
       "@osdk/vite-plugin-oac",
       "@osdk/faux",
-      "@osdk/osdkDocsContext",
+      "@osdk/osdk-docs-context",
     ],
     {
       ...LIBRARY_RULES,

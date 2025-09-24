@@ -474,7 +474,7 @@ versions:
                 const object: {{objectType}} = await client.ontology.objects.{{objectType}}.fetchOne("primaryKey");
             }
             catch(e) {
-                console.error(e);
+                throw e;
             }
       loadObjectPageGuide:
         - template: |-
@@ -500,7 +500,7 @@ versions:
                 const object = objects[0];
             }
             catch (e) {
-                console.error(e);
+                throw e;
             }
       orderObjectsGuide:
         - template: |-
@@ -957,7 +957,7 @@ versions:
                 const object: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne({{propertyValueV2}});
             }
             catch(e) {
-                throw(e);
+                throw e;
             }
       loadObjectPageGuide:
         - template: |-
@@ -1176,6 +1176,11 @@ versions:
             - propertyValueV2
             - propertyValueIncrementedV2
       applyAction:
+        # Template updated to handle attachment properties properly:
+        # - Split into multiple conditional blocks based on attachment handling needs
+        # - hasAttachmentProperty: Whether action has attachment parameters
+        # - hasAttachmentUpload: Whether to demonstrate file upload vs using existing attachment RID
+        # - This provides complete, runnable examples for both attachment workflows
         - template: |-
             // Edit this import if your client location differs
             import { client } from "./client";
@@ -1241,6 +1246,8 @@ versions:
           computedVariables:
             - actionParameterSampleValuesV2
       batchApplyAction:
+        # Similar template structure to applyAction but for batch operations
+        # Uses same conditional logic for attachment handling consistency
         - template: |-
             // Edit this import if your client location differs
             import { client } from "./client";

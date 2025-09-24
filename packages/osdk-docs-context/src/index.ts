@@ -15,18 +15,26 @@
  */
 
 /**
- * This file exports the nested OSDK documentation context
- * for use by the osdk-docs-context package
+ * OSDK Documentation Context utilities and examples registry.
+ *
+ * This package provides utilities for working with OSDK examples and context,
+ * making it easier to access and work with generated TypeScript examples for
+ * documentation and tooling purposes (e.g., MCP/LLM integration).
  */
 
-// Export the nested context and types (primary exports)
 export {
   type NestedExampleEntry,
-  type NestedExampleMetadata,
+  type NestedExampleMetadata as ExampleMetadata,
   type NestedExamplesHierarchy,
   type NestedVersionExamples,
   TYPESCRIPT_OSDK_CONTEXT,
-} from "./typescriptOsdkContext.js";
+} from "@osdk/typescript-sdk-docs-examples";
 
-// Export flat hierarchy for compatibility (if needed)
-export { TYPESCRIPT_OSDK_EXAMPLES } from "./typescriptOsdkExamples.js";
+export { NestedOsdkExamplesContext } from "./nestedOsdkExamplesContext.js";
+export {
+  type ExamplesHierarchy,
+  OsdkExamplesContext,
+  type VersionExamples,
+} from "./OsdkExamplesContext.js";
+
+export { OsdkExamplesContext as default } from "./OsdkExamplesContext.js";

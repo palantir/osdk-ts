@@ -3625,7 +3625,7 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
-  packages/osdkDocsContext:
+  packages/osdk-docs-context:
     dependencies:
       semver:
         specifier: ^7.7.2

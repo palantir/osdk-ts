@@ -14,26 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * @fileoverview OSDK Context utilities and examples registry
- *
- * This package provides utilities for working with OSDK examples and context,
- * re-exporting the TYPESCRIPT_OSDK_EXAMPLES from the examples generator.
- */
-
-// Export the generated nested structure and types from the examples package
-export {
-  type NestedExampleEntry,
-  type NestedExampleMetadata as ExampleMetadata,
-  type NestedExamplesHierarchy,
-  type NestedVersionExamples,
-  TYPESCRIPT_OSDK_CONTEXT,
-} from "@osdk/typescript-sdk-docs-examples";
-
-// Export the utility class
-export { NestedOsdkExamplesContext } from "./nestedOsdkExamplesContext.js";
-
-// Import for internal use
 import {
   type NestedExampleMetadata,
   TYPESCRIPT_OSDK_EXAMPLES,
@@ -56,7 +36,9 @@ export interface ExamplesHierarchy {
   };
 }
 
-// Utility functions for working with the original flat examples structure
+/**
+ * Utility class for working with the original flat examples structure
+ */
 export class OsdkExamplesContext {
   /**
    * Get all available versions in the examples hierarchy
@@ -169,6 +151,3 @@ export class OsdkExamplesContext {
     return results;
   }
 }
-
-// Export the class as default as well
-export default OsdkExamplesContext;
