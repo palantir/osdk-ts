@@ -19,11 +19,13 @@ This package exists as a **separate public package** to:
 This public package exports OSDK examples in **two complementary formats**:
 
 ### 1. **Flat Structure** (`TYPESCRIPT_OSDK_EXAMPLES`)
+
 - **Direct re-export** from internal `@osdk/typescript-sdk-docs-examples`
 - **Use case**: Simple access when you know exact template names
 - **Format**: `{ "2.4.0": { "examples": { "templateName_variation": {...} } } }`
 
 ### 2. **Nested Structure** (`OSDK_DOCS_CONTEXT`)
+
 - **Hierarchical organization** with variations nested under base templates
 - **Pre-generated at build time** for optimal performance
 - **Use case**: MCP servers, documentation tools, exploration interfaces
@@ -145,7 +147,10 @@ This package is specifically designed to be consumed by MCP servers:
 
 ```typescript
 // MCP server can directly import this public package
-import { NestedOsdkExamplesContext, TYPESCRIPT_OSDK_EXAMPLES } from "@osdk/osdk-docs-context";
+import {
+  NestedOsdkExamplesContext,
+  TYPESCRIPT_OSDK_EXAMPLES,
+} from "@osdk/osdk-docs-context";
 
 // Provide OSDK examples to LLMs through MCP protocol
 function getOsdkExamples(version: string, templateName?: string) {
