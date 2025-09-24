@@ -79,10 +79,94 @@ export class WhereClauseCanonicalizer {
     return canon;
   }
 
+  #flattenAndMergeAnd = (
+    andArray: SimpleWhereClause[],
+    set: Set<string>,
+  ): SimpleWhereClause[] => {
+    const flattened: SimpleWhereClause[] = [];
+    const propertyMergeMap = new Map<string, any>();
+
+    for (const clause of andArray) {
+      if ("$and" in clause) {
+        // Recursively flatten nested $and
+        const nestedFlattened = this.#flattenAndMergeAnd(
+          (clause as { $and: SimpleWhereClause[] }).$and,
+          set,
+        );
+        for (const nestedClause of nestedFlattened) {
+          this.#mergeIntoPropertyMap(nestedClause, propertyMergeMap, flattened);
+        }
+      } else {
+        this.#mergeIntoPropertyMap(clause, propertyMergeMap, flattened);
+      }
+    }
+
+    // Add merged properties as a single clause if any exist
+    if (propertyMergeMap.size > 0) {
+      flattened.unshift(Object.fromEntries(propertyMergeMap));
+    }
+
+    return flattened;
+  };
+
+  #mergeIntoPropertyMap = (
+    clause: SimpleWhereClause,
+    propertyMergeMap: Map<string, any>,
+    complexClauses: SimpleWhereClause[],
+  ): void => {
+    // Check if this clause contains only property filters (no logical operators)
+    const hasOnlyProperties = !Object.keys(clause).some(key =>
+      key === "$and" || key === "$or" || key === "$not"
+    );
+
+    if (hasOnlyProperties) {
+      // Merge property filters - use consistent ordering for deterministic merging
+      const sortedEntries = Object.entries(clause).sort(([a], [b]) =>
+        a.localeCompare(b)
+      );
+      for (const [key, value] of sortedEntries) {
+        // For deterministic results, we need a consistent merge strategy
+        // We'll keep the "smallest" value when merging duplicate keys
+        if (
+          !propertyMergeMap.has(key)
+          || JSON.stringify(value) < JSON.stringify(propertyMergeMap.get(key))
+        ) {
+          propertyMergeMap.set(key, value);
+        }
+      }
+    } else {
+      // Keep complex clauses separate
+      complexClauses.push(clause);
+    }
+  };
+
+  #flattenOr = (
+    orArray: SimpleWhereClause[],
+    set: Set<string>,
+  ): SimpleWhereClause[] => {
+    const flattened: SimpleWhereClause[] = [];
+
+    for (const clause of orArray) {
+      if ("$or" in clause) {
+        // Recursively flatten nested $or
+        const nestedFlattened = this.#flattenOr(
+          (clause as { $or: SimpleWhereClause[] }).$or,
+          set,
+        );
+        flattened.push(...nestedFlattened);
+      } else {
+        flattened.push(clause);
+      }
+    }
+
+    return flattened;
+  };
+
   #toCanon = <T extends ObjectOrInterfaceDefinition>(
     where: WhereClause<T> | SimpleWhereClause,
     set: Set<string> = new Set<string>(),
   ): Canonical<SimpleWhereClause> => {
+    // Handle $and optimization
     if ("$and" in where) {
       if (process.env.NODE_ENV !== "production") {
         invariant(Array.isArray(where.$and), "expected $and to be an array");
@@ -91,28 +175,107 @@ export class WhereClauseCanonicalizer {
           "expected only $and to be present",
         );
       }
-      if ((where as { $and: SimpleWhereClause[] }).$and.length === 0) {
+      const andArray = (where as { $and: SimpleWhereClause[] }).$and;
+
+      if (andArray.length === 0) {
         // empty $and is a no-op
         return {} as Canonical<SimpleWhereClause>;
       }
-      if ((where as { $and: SimpleWhereClause[] }).$and.length === 1) {
+      if (andArray.length === 1) {
+        return this.#toCanon(andArray[0], set);
+      }
+
+      // Flatten nested $and clauses and merge properties
+      const flattened = this.#flattenAndMergeAnd(andArray, set);
+
+      if (flattened.length === 1) {
+        return this.#toCanon(flattened[0], set);
+      }
+
+      set.add("$and");
+      const canonicalizedClauses = flattened.map(clause =>
+        this.#toCanon(clause, set)
+      );
+      // Sort clauses by their stringified representation for consistent ordering
+      canonicalizedClauses.sort((a, b) =>
+        JSON.stringify(a).localeCompare(JSON.stringify(b))
+      );
+      return { $and: canonicalizedClauses } as unknown as Canonical<
+        SimpleWhereClause
+      >;
+    }
+
+    // Handle $or optimization
+    if ("$or" in where) {
+      if (process.env.NODE_ENV !== "production") {
+        invariant(Array.isArray(where.$or), "expected $or to be an array");
+        invariant(
+          Object.keys(where).length === 1,
+          "expected only $or to be present",
+        );
+      }
+      const orArray = (where as { $or: SimpleWhereClause[] }).$or;
+
+      if (orArray.length === 0) {
+        // empty $or is a no-op
+        return {} as Canonical<SimpleWhereClause>;
+      }
+      if (orArray.length === 1) {
+        return this.#toCanon(orArray[0], set);
+      }
+
+      // Flatten nested $or clauses
+      const flattened = this.#flattenOr(orArray, set);
+
+      if (flattened.length === 1) {
+        return this.#toCanon(flattened[0], set);
+      }
+
+      set.add("$or");
+      const canonicalizedClauses = flattened.map(clause =>
+        this.#toCanon(clause, set)
+      );
+      // Sort clauses by their stringified representation for consistent ordering
+      canonicalizedClauses.sort((a, b) =>
+        JSON.stringify(a).localeCompare(JSON.stringify(b))
+      );
+      return { $or: canonicalizedClauses } as unknown as Canonical<
+        SimpleWhereClause
+      >;
+    }
+
+    // Handle $not optimization
+    if ("$not" in where) {
+      if (process.env.NODE_ENV !== "production") {
+        invariant(
+          Object.keys(where).length === 1,
+          "expected only $not to be present",
+        );
+      }
+      const notClause = (where as { $not: SimpleWhereClause }).$not;
+
+      // Handle double negation: $not { $not: X } => X
+      if ("$not" in notClause) {
         return this.#toCanon(
-          (where as { $and: SimpleWhereClause[] }).$and[0],
+          (notClause as { $not: SimpleWhereClause }).$not,
           set,
         );
       }
+
+      set.add("$not");
+      return { $not: this.#toCanon(notClause, set) } as unknown as Canonical<
+        SimpleWhereClause
+      >;
     }
-    // This is incomplete for all the cases possible but it gets us started
 
     return Object.fromEntries(
       Object.entries(where)
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([k, v]) => {
           set.add(k);
-          if (k === "$and" || k === "$or") {
-            return [k, (v as Array<any>).map(x => this.#toCanon(x, set))];
-          }
-          if (k !== "$not" && typeof v === "object" && "$eq" in v) {
+          if (
+            k !== "$not" && typeof v === "object" && v != null && "$eq" in v
+          ) {
             return [k, v["$eq"]];
           }
           return [k, v];
