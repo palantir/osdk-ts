@@ -46,7 +46,7 @@ import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import { type ListCacheKey, ORDER_BY_IDX, WHERE_IDX } from "./ListCacheKey.js";
-export { API_NAME_IDX } from "./ListCacheKey.js";
+export { API_NAME_IDX, RDP_IDX } from "./ListCacheKey.js";
 import type { ListQueryOptions } from "./ListQueryOptions.js";
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {

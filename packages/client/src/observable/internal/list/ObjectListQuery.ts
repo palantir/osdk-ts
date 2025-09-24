@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition, Osdk } from "@osdk/api";
+import type {
+  DerivedProperty,
+  ObjectSet,
+  ObjectTypeDefinition,
+  Osdk,
+} from "@osdk/api";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { Changes } from "../Changes.js";
 import type { Store } from "../Store.js";
-import { API_NAME_IDX, ListQuery } from "./ListQuery.js";
+import { API_NAME_IDX, ListQuery, RDP_IDX } from "./ListQuery.js";
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   all: (ObjectHolder | InterfaceHolder)[];
@@ -29,11 +34,22 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
 
 export class ObjectListQuery extends ListQuery {
   protected createObjectSet(store: Store): ObjectSet<ObjectTypeDefinition> {
-    return store.client({
+    const baseObjectSet = store.client({
       type: "object",
       apiName: this.apiName,
-    } as ObjectTypeDefinition)
-      .where(this.canonicalWhere);
+    } as ObjectTypeDefinition);
+
+    const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+    let objectSet = baseObjectSet;
+    // Note: order matters here, we need to apply withProperties before the where clause
+    if (rdpConfig) {
+      objectSet = objectSet.withProperties(
+        rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+      );
+    }
+    objectSet = objectSet.where(this.canonicalWhere);
+
+    return objectSet;
   }
 
   async revalidateObjectType(apiName: string): Promise<void> {

@@ -37,7 +37,7 @@ import type {
   SearchOrderByV2,
 } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
-import { extractNamespace } from "../internal/conversions/modernToLegacyWhereClause.js";
+import { extractNamespace } from "../internal/conversions/modernToLegacyUtils.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
