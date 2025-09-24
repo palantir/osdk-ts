@@ -2218,6 +2218,9 @@
         "float": {
           "dataType": { "type": "float" }
         },
+        "with spaces": {
+          "dataType": { "type": "float" }
+        },
         "integer": {
           "dataType": { "type": "integer" }
         },
