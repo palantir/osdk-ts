@@ -159,13 +159,18 @@ export function useOsdkObjects<
    */
   const canonWhere = observableClient.canonicalizeWhereClause(where ?? {});
 
+  const stablePrefetch = React.useMemo(
+    () => prefetch,
+    [JSON.stringify(prefetch)],
+  );
+
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
       makeExternalStore<ObserveObjectsArgs<Q>>(
         (observer) => {
           // Execute prefetches as part of subscription setup
-          if (prefetch && prefetch.length > 0) {
-            prefetch.forEach((prefetchQuery) => {
+          if (stablePrefetch && stablePrefetch.length > 0) {
+            stablePrefetch.forEach((prefetchQuery) => {
               if ("type" in prefetchQuery && prefetchQuery.type === "object") {
                 // Object prefetch
                 observableClient.prefetchObject(
@@ -210,7 +215,7 @@ export function useOsdkObjects<
       pageSize,
       orderBy,
       streamUpdates,
-      prefetch,
+      stablePrefetch,
     ],
   );
 
