@@ -1,6 +1,0 @@
-dist/
-node_modules/
-src/generatedNoCheck/
-src/examples/**/*
-.turbo/
-*.tsbuildinfo
