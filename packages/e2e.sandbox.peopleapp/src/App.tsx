@@ -9,9 +9,7 @@ function PeopleApp() {
   const path = location.pathname;
   const activeTab = path === "/" || path === "/employees"
     ? "employees"
-    : path === "/offices"
-    ? "offices"
-    : "employees";
+    : "offices";
 
   return (
     <main className="flex min-h-screen flex-col items-center p-24">
