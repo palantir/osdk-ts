@@ -542,9 +542,13 @@ const allLocalDepsMustNotBePrivate = createRuleFactory({
         if (theirPackageJson.private) {
           const message =
             `${dep} is private and cannot be used as a regular dependency for this package`;
+          const longMessage = `${message}. To fix this, either:
+  1. Move ${dep} to devDependencies if it's only used at build time
+  2. Make ${dep} public by removing its "private: true" field
+  3. Make this package (${packageJson.name}) private by adding "private: true"`;
           context.addError({
             message,
-            longMessage: message,
+            longMessage,
             file: context.getPackageJsonPath(),
           });
         }
