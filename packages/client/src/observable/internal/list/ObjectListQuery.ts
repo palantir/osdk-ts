@@ -34,22 +34,24 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
 
 export class ObjectListQuery extends ListQuery {
   protected createObjectSet(store: Store): ObjectSet<ObjectTypeDefinition> {
-    const baseObjectSet = store.client({
+    const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+    if (rdpConfig != null) {
+      return store.client({
+        type: "object",
+        apiName: this.apiName,
+      } as ObjectTypeDefinition)
+        // Note: order matters here, we need to apply withProperties before the where clause
+        .withProperties(
+          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+        )
+        .where(this.canonicalWhere);
+    }
+
+    return store.client({
       type: "object",
       apiName: this.apiName,
-    } as ObjectTypeDefinition);
-
-    const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
-    let objectSet = baseObjectSet;
-    // Note: order matters here, we need to apply withProperties before the where clause
-    if (rdpConfig) {
-      objectSet = objectSet.withProperties(
-        rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
-      );
-    }
-    objectSet = objectSet.where(this.canonicalWhere);
-
-    return objectSet;
+    } as ObjectTypeDefinition)
+      .where(this.canonicalWhere);
   }
 
   async revalidateObjectType(apiName: string): Promise<void> {

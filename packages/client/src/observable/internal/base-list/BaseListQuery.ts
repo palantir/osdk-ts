@@ -60,7 +60,7 @@ export abstract class BaseListQuery<
    * @protected
    */
   protected get rdpConfig(): Canonical<Rdp> | undefined {
-    return (this.cacheKey as any).otherKeys[RDP_IDX];
+    return this.cacheKey.otherKeys[RDP_IDX];
   }
 
   // Collection-specific behavior is implemented by subclasses
