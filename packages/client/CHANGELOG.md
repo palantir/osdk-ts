@@ -1,5 +1,14 @@
 # @osdk/client
 
+## 2.4.2
+
+### Patch Changes
+
+- 13e5433: Falsy values other than undefined or null do not throw for query map responses
+  - @osdk/api@2.4.2
+  - @osdk/client.unstable@2.4.2
+  - @osdk/generator-converters@2.4.2
+
 ## 2.4.1
 
 ### Patch Changes

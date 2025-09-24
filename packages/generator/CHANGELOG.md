@@ -1,5 +1,13 @@
 # @osdk/generator
 
+## 2.4.2
+
+### Patch Changes
+
+- 77894e8: Fixes query generation with disallowed javascript identifiers.
+  - @osdk/api@2.4.2
+  - @osdk/generator-converters@2.4.2
+
 ## 2.4.1
 
 ### Patch Changes
