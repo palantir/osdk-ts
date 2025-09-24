@@ -29,7 +29,7 @@ export const TYPESCRIPT_OSDK_EXAMPLES = {
       "examples": {
         "loadSingleObjectGuide": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk } from \"@osdk/client\";\n\ntry {\n    const object: Osdk.Instance<Employee> = await client(Employee).fetchOne(12345);\n}\ncatch(e) {\n    throw(e);\n}",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk } from \"@osdk/client\";\n\ntry {\n    const object: Osdk.Instance<Employee> = await client(Employee).fetchOne(12345);\n}\ncatch(e) {\n    throw e;\n}",
         },
         "loadObjectPageGuide": {
           "code":
