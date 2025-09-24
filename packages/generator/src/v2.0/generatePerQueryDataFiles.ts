@@ -241,7 +241,7 @@ function parameterDefsForType(
 ) {
   return stringify(query.parameters, {
     "*": (parameter, valueFormatter, apiName) => [
-      `${queryParamJsDoc(paramToDef(parameter), { apiName })} ${apiName}`,
+      `${queryParamJsDoc(paramToDef(parameter), { apiName })} "${apiName}"`,
       ` {
           ${stringify(deleteUndefineds(paramToDef(parameter)))},
           ${getLineFor__OsdkTargetType(ontology, parameter.dataType)}
