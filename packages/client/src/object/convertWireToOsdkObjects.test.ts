@@ -71,6 +71,7 @@ describe("convertWireToOsdkObjects", () => {
       "lead",
       "officeLink",
       "peeps",
+      "visitedOffices",
     ]);
 
     const asFoo = employee.$as(FooInterface);
