@@ -197,6 +197,36 @@ export interface ObservableClient extends ObserveLinks {
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
   ) => Promise<ActionValidationResponse>;
 
+  /**
+   * Invalidates the entire cache, forcing all queries to refetch.
+   * Use sparingly as this can cause significant network traffic.
+   */
+  invalidateAll(): Promise<void>;
+
+  /**
+   * Invalidates specific objects in the cache.
+   * @param objects - Single object or array of objects to invalidate
+   */
+  invalidateObjects(
+    objects:
+      | Osdk.Instance<ObjectTypeDefinition>
+      | ReadonlyArray<Osdk.Instance<ObjectTypeDefinition>>,
+  ): Promise<void>;
+
+  /**
+   * Invalidates all cached data for a specific object type.
+   * This includes:
+   * - All objects of the specified type
+   * - All lists containing objects of this type
+   * - All links where the source is of this type
+   *
+   * @param type - Object type definition or API name string
+   * @returns Promise that resolves when invalidation is complete
+   */
+  invalidateObjectType<T extends ObjectTypeDefinition>(
+    type: T | T["apiName"],
+  ): Promise<void>;
+
   canonicalizeWhereClause: <
     T extends ObjectTypeDefinition | InterfaceDefinition,
   >(
