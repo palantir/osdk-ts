@@ -29,9 +29,14 @@ export class OacContext extends OacConfig {
   constructor(config: OacConfig, resolvedConfig: ResolvedConfig) {
     super(config);
 
-    this.serverUrl = `http${
-      resolvedConfig.server.https ? "s" : ""
-    }://localhost:${resolvedConfig.server.port}`;
+    if (resolvedConfig.server.origin != null) {
+      this.serverUrl = resolvedConfig.server.origin + resolvedConfig.base;
+    } else {
+      this.serverUrl = `http${
+        resolvedConfig.server.https ? "s" : ""
+      }://localhost:${resolvedConfig.server.port}`;
+    }
+
     this.defaultOntologyRid =
       `ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000`;
     this.workDir = path.join("node_modules", ".osdk", ".oac");
