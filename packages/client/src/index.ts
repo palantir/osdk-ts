@@ -71,5 +71,3 @@ export {
 } from "./util/datetimeConverters.js";
 
 export { createObjectSpecifierFromPrimaryKey } from "./util/objectSpecifierUtils.js";
-
-export { getWireObjectSet } from "./objectSet/createObjectSet.js";
