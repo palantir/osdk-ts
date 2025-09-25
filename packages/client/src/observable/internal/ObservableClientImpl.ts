@@ -163,6 +163,24 @@ export class ObservableClientImpl implements ObservableClient {
     );
   }
 
+  public invalidateAll(): Promise<void> {
+    return this.__experimentalStore.invalidateAll();
+  }
+
+  public invalidateObjects(
+    objects:
+      | Osdk.Instance<ObjectTypeDefinition>
+      | ReadonlyArray<Osdk.Instance<ObjectTypeDefinition>>,
+  ): Promise<void> {
+    return this.__experimentalStore.invalidateObjects(objects);
+  }
+
+  public invalidateObjectType<T extends ObjectTypeDefinition>(
+    type: T | T["apiName"],
+  ): Promise<void> {
+    return this.__experimentalStore.invalidateObjectType(type, undefined);
+  }
+
   public canonicalizeWhereClause<
     T extends ObjectTypeDefinition | InterfaceDefinition,
   >(where: WhereClause<T>): Canonical<WhereClause<T>> {

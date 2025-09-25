@@ -119,6 +119,11 @@ export namespace queryTakesAllParameterTypes {
      *   description: a union of strings and integers but its optional
      */
     readonly unionNullable?: QueryParam.PrimitiveType<'string'> | QueryParam.PrimitiveType<'integer'>;
+
+    /**
+     * (no ontology metadata)
+     */
+    readonly 'with spaces': QueryParam.PrimitiveType<'float'>;
   }
 
   export type ReturnType = QueryResult.PrimitiveType<'string'>;
@@ -350,6 +355,13 @@ export interface queryTakesAllParameterTypes
             nullable: false;
           },
         ];
+      };
+      /**
+       * (no ontology metadata)
+       */
+      'with spaces': {
+        nullable: false;
+        type: 'float';
       };
     };
     output: {

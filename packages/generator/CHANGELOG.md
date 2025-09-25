@@ -1,5 +1,16 @@
 # @osdk/generator
 
+## 2.5.0-beta.9
+
+### Minor Changes
+
+- d29cdfb: Fixes query generation with disallowed javascript identifiers.
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.9
+- @osdk/generator-converters@2.5.0-beta.9
+
 ## 2.5.0-beta.8
 
 ### Minor Changes

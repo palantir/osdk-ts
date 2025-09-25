@@ -94,7 +94,7 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
     isOptimistic: !!payload?.isOptimistic,
     error,
     forceUpdate: () => {
-      throw "not implemented";
+      throw new Error("not implemented");
     },
   };
 }
