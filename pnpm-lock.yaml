@@ -4008,18 +4008,12 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@types/handlebars':
-        specifier: ^4.1.0
-        version: 4.1.0
       '@types/mustache':
         specifier: ^4.2.5
         version: 4.2.6
       '@types/node':
         specifier: ^18.19.124
         version: 18.19.124
-      handlebars:
-        specifier: ^4.7.7
-        version: 4.7.8
       typescript:
         specifier: ~5.5.4
         version: 5.5.4
@@ -8009,10 +8003,6 @@ packages:
 
   '@types/hammerjs@2.0.46':
     resolution: {integrity: sha512-ynRvcq6wvqexJ9brDMS4BnBLzmr0e14d6ZJTEShTBWKymQiHwlAyGu0ZPEFI2Fh1U53F7tN9ufClWM5KvqkKOw==}
-
-  '@types/handlebars@4.1.0':
-    resolution: {integrity: sha512-gq9YweFKNNB1uFK71eRqsd4niVkXrxHugqWFQkeLRJvGjnxsLr16bYtcsG4tOFwmYi0Bax+wCkbf1reUfdl4kA==}
-    deprecated: This is a stub types definition. handlebars provides its own type definitions, so you do not need this installed.
 
   '@types/hast@3.0.4':
     resolution: {integrity: sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==}
@@ -19803,10 +19793,6 @@ snapshots:
       '@types/node': 20.19.13
 
   '@types/hammerjs@2.0.46': {}
-
-  '@types/handlebars@4.1.0':
-    dependencies:
-      handlebars: 4.7.8
 
   '@types/hast@3.0.4':
     dependencies:
