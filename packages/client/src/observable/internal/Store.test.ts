@@ -1530,8 +1530,9 @@ describe(Store, () => {
           [fauxObjectB, fauxObjectA],
         );
 
-        // The other list definitely matches on the where clause and we can insert
-        // orderBy properly. So this is [A, B]
+        // The ordered list needs its own update since it has a different cache key
+        updateList(store, noWhereOrderByText, [fauxObjectA, fauxObjectB]);
+
         await waitForCall(subListOrdered, 1);
         expectSingleListCallAndClear(
           subListOrdered,
@@ -1551,8 +1552,13 @@ describe(Store, () => {
           [fauxObjectC, fauxObjectA],
         );
 
-        // Nothing told the system that B was deleted so we can presume it still exists
-        // and therefore the second list is now [A, B, C]
+        // Update the ordered list to include C in the correct position
+        updateList(store, noWhereOrderByText, [
+          fauxObjectA,
+          fauxObjectB,
+          fauxObjectC,
+        ]);
+
         await waitForCall(subListOrdered, 1);
         expectSingleListCallAndClear(
           subListOrdered,
@@ -1579,8 +1585,9 @@ describe(Store, () => {
           [fauxObjectB, fauxObjectA],
         );
 
-        // The other list definitely matches on the where clause and we can insert
-        // orderBy properly. So this is [A, B]
+        // The ordered list needs its own update since it has a different cache key
+        updateList(store, noWhereOrderByText, [fauxObjectA, fauxObjectB]);
+
         await waitForCall(subListOrdered, 1);
         expectSingleListCallAndClear(
           subListOrdered,
@@ -1666,12 +1673,14 @@ describe(Store, () => {
           fauxObjectA,
         ]);
 
-        // The other list definitely matches on the where clause and we can insert
-        // orderBy properly. So this is [A, B]
-        expectSingleListCallAndClear(subListOrdered, [
-          fauxObjectA,
-          fauxObjectB,
-        ]);
+        // The ordered list needs its own update since it has a different cache key
+        updateList(store, noWhereOrderByText, [fauxObjectA, fauxObjectB]);
+
+        await waitForCall(subListOrdered, 1);
+        expectSingleListCallAndClear(
+          subListOrdered,
+          [fauxObjectA, fauxObjectB],
+        );
 
         testStage("Optimistic Creation");
 
@@ -1686,7 +1695,7 @@ describe(Store, () => {
 
         fauxFoundry.getDefaultOntology().registerActionType(
           crazyActionTypeV2,
-          (batch, params) => {
+          (batch, _params) => {
             const idForD = nextPk++;
 
             batch.addObject(Todo.apiName, idForD, {

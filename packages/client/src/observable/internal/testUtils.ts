@@ -664,9 +664,13 @@ export function updateList<
   });
 
   store.batch({ optimisticId }, (batch) => {
+    // Get RDP config from the query's cache key to ensure objects are stored with matching keys
+    // The rdpConfig will be undefined for queries without RDP support
+    const rdpConfig = (query as any).rdpConfig;
     const objectCacheKeys = store.objects.storeOsdkInstances(
       objects,
       batch,
+      rdpConfig,
     );
     query._updateList(objectCacheKeys, "loaded", batch, false);
   });
@@ -690,7 +694,7 @@ export function updateObject<T extends ObjectOrInterfaceDefinition>(
   const query = store.objects.getQuery({
     apiName: value.$apiName,
     pk: value.$primaryKey,
-  });
+  }, undefined);
 
   store.batch({ optimisticId }, (batch) => {
     return query.writeToStore(

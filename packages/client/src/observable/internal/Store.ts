@@ -199,7 +199,7 @@ export class Store {
     return this.objects.getQuery({
       apiName,
       pk,
-    }).revalidate(/* force */ true);
+    }, undefined).revalidate(/* force */ true);
   }
 
   async #maybeRevalidateQueries(
