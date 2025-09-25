@@ -20,7 +20,7 @@ import type {
   ObjectTypeDefinition,
   WirePropertyTypes,
 } from "@osdk/api";
-import { getWireObjectSet } from "@osdk/client/internal";
+import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import type { ObserveObjectSetOptions } from "./internal/objectset/ObjectSetQueryOptions.js";
 import { OrderByCanonicalizer } from "./internal/OrderByCanonicalizer.js";
 import { WhereClauseCanonicalizer } from "./internal/WhereClauseCanonicalizer.js";

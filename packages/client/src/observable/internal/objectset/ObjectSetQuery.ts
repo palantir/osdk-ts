@@ -15,9 +15,9 @@
  */
 
 import type { ObjectSet, Osdk, PageResult } from "@osdk/api";
-import { getWireObjectSet } from "@osdk/client/internal";
 import type { Observable } from "rxjs";
 import { additionalContext } from "../../../Client.js";
+import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";

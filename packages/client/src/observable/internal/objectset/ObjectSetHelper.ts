@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getWireObjectSet } from "@osdk/client/internal";
+import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";

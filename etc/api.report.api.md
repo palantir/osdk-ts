@@ -463,7 +463,9 @@ export namespace DerivedProperty {
     		T extends SimplePropertyDef,
     		Q extends ObjectOrInterfaceDefinition
     	> extends Definition<T, Q>, DatetimeExpressions<Q, T> {}
-    	// (undocumented)
+    	// Warning: (ae-forgotten-export) The symbol "SimplePropertyDef" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
     export interface Definition<
     		T extends SimplePropertyDef,
     		Q extends ObjectOrInterfaceDefinition
@@ -1366,33 +1368,6 @@ export type SelectArgToKeys<
 	Q extends ObjectOrInterfaceDefinition,
 	A extends SelectArg<Q, any, any>
 > = A extends SelectArg<Q, never> ? PropertyKeys<Q> : A["$select"] extends readonly string[] ? A["$select"][number] : PropertyKeys<Q>;
-
-// @public (undocumented)
-export type SimplePropertyDef = WirePropertyTypes | undefined | Array<WirePropertyTypes>;
-
-// @public (undocumented)
-export namespace SimplePropertyDef {
-    	// (undocumented)
-    export type ExtractMultiplicity<T extends WirePropertyTypes | undefined | Array<WirePropertyTypes>> = NonNullable<T> extends Array<any> ? "array" : "single";
-    	// (undocumented)
-    export type ExtractNullable<T extends SimplePropertyDef> = [undefined] extends [T] ? "nullable" : [[undefined]] extends [T] ? "nullable" : "non-nullable";
-    	// (undocumented)
-    export type ExtractRuntimeBaseType<S extends SimplePropertyDef> = GetClientPropertyValueFromWire<SimplePropertyDef.ExtractWirePropertyType<S>>;
-    	// (undocumented)
-    export type ExtractWirePropertyType<T extends SimplePropertyDef> = T extends Array<infer Z> ? NonNullable<Z> : NonNullable<T>;
-    	// (undocumented)
-    export type FromPropertyMetadata<P extends ObjectMetadata.Property> = Make<P["type"], P["nullable"] extends true ? "nullable" : "non-nullable", P["multiplicity"] extends true ? "array" : "single">;
-    	// (undocumented)
-    export type Make<
-    		T extends WirePropertyTypes,
-    		N extends "nullable" | "non-nullable",
-    		M extends "array" | "single"
-    	> = M extends "array" ? N extends "nullable" ? Array<T> | undefined : Array<T> : N extends "nullable" ? T | undefined : T;
-    	// (undocumented)
-    export type ToPropertyDef<S extends SimplePropertyDef> = PropertyDef<SimplePropertyDef.ExtractWirePropertyType<S>, SimplePropertyDef.ExtractNullable<S>, SimplePropertyDef.ExtractMultiplicity<S>>;
-    	// (undocumented)
-    export type ToRuntimeProperty<S extends SimplePropertyDef> = ExtractMultiplicity<S> extends "array" ? ExtractNullable<S> extends "nullable" ? Array<ExtractRuntimeBaseType<S>> | undefined : Array<ExtractRuntimeBaseType<S>> : ExtractNullable<S> extends "nullable" ? ExtractRuntimeBaseType<S> | undefined : ExtractRuntimeBaseType<S>;
-}
 
 // @public (undocumented)
 export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
