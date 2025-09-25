@@ -51,6 +51,7 @@ export abstract class Query<
   #connectable?: Connectable<PAYLOAD>;
   #subscription?: Subscription;
   #subject: Observable<SubjectPayload<KEY>>;
+  #subscriptionDedupeIntervals: Map<string, number> = new Map();
 
   /** @internal */
   protected logger: Logger | undefined;
@@ -113,6 +114,36 @@ export abstract class Query<
   }
 
   /**
+   * Register a subscription's dedupeInterval value
+   */
+  registerSubscriptionDedupeInterval(
+    subscriptionId: string,
+    dedupeInterval: number | undefined,
+  ): void {
+    if (dedupeInterval != null && dedupeInterval > 0) {
+      this.#subscriptionDedupeIntervals.set(subscriptionId, dedupeInterval);
+    }
+  }
+
+  /**
+   * Unregister a subscription's dedupeInterval value
+   */
+  unregisterSubscriptionDedupeInterval(subscriptionId: string): void {
+    this.#subscriptionDedupeIntervals.delete(subscriptionId);
+  }
+
+  /**
+   * Get the minimum dedupeInterval from all active subscriptions
+   */
+  private getMinimumDedupeInterval(): number {
+    if (this.#subscriptionDedupeIntervals.size === 0) {
+      return this.options.dedupeInterval ?? 0;
+    }
+
+    return Math.min(...this.#subscriptionDedupeIntervals.values());
+  }
+
+  /**
    * Causes the query to revalidate. This will cause the query to fetch
    * the latest data from the server and update the store if it is deemed
    * "stale" or if `force` is true.
@@ -142,12 +173,11 @@ export abstract class Query<
       return;
     }
 
-    // FIXME: This gets set to the first value used
+    const minDedupeInterval = this.getMinimumDedupeInterval();
     if (
-      (this.options.dedupeInterval ?? 0) > 0 && (
+      minDedupeInterval > 0 && (
         this.lastFetchStarted != null
-        && Date.now() - this.lastFetchStarted < (this.options.dedupeInterval
-            ?? 0)
+        && Date.now() - this.lastFetchStarted < minDedupeInterval
       )
     ) {
       if (process.env.NODE_ENV !== "production") {

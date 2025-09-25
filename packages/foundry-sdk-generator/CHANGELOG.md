@@ -1,5 +1,40 @@
 # @osdk/foundry-sdk-generator
 
+## 2.5.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [78be29f]
+- Updated dependencies [ca1fabe]
+  - @osdk/generator@2.5.0-beta.8
+  - @osdk/api@2.5.0-beta.8
+  - @osdk/client@2.5.0-beta.8
+
+## 2.5.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [ab29baa]
+  - @osdk/client@2.5.0-beta.7
+  - @osdk/api@2.5.0-beta.7
+  - @osdk/generator@2.5.0-beta.7
+
+## 2.5.0-beta.6
+
+### Minor Changes
+
+- cbcf2ad: Add branching support
+
+### Patch Changes
+
+- Updated dependencies [badfbc4]
+- Updated dependencies [d797f0c]
+- Updated dependencies [cbcf2ad]
+  - @osdk/shared.client.impl@1.5.0-beta.2
+  - @osdk/client@2.5.0-beta.6
+  - @osdk/generator@2.5.0-beta.6
+  - @osdk/api@2.5.0-beta.6
+
 ## 2.5.0-beta.5
 
 ### Patch Changes

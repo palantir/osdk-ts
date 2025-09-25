@@ -1,5 +1,17 @@
 # @osdkkit/react
 
+## 0.7.0-beta.4
+
+### Minor Changes
+
+- 46ae415: improve useOsdkObject, useOsdkObjects error handling
+
+### Patch Changes
+
+- Updated dependencies [ab29baa]
+  - @osdk/client@2.5.0-beta.7
+  - @osdk/api@2.5.0-beta.7
+
 ## 0.7.0-beta.3
 
 ### Minor Changes

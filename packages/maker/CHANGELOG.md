@@ -1,5 +1,44 @@
 # @osdk/maker
 
+## 0.13.0-beta.8
+
+### Minor Changes
+
+- f9b6dc4: Write value types to ontology IR file
+- b1c99bf: Revert .js -> .ts extension for codegen
+
+### Patch Changes
+
+- Updated dependencies [ca1fabe]
+  - @osdk/api@2.5.0-beta.8
+
+## 0.13.0-beta.7
+
+### Minor Changes
+
+- 6da8fd2: Write value type IR correctly
+
+## 0.13.0-beta.6
+
+### Minor Changes
+
+- 07083e1: Action submission conditions can have custom metadata
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.7
+
+## 0.13.0-beta.5
+
+### Minor Changes
+
+- cbcf2ad: Add branching support
+- 04fe946: Use block data type for imports
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.6
+
 ## 0.13.0-beta.4
 
 ### Minor Changes

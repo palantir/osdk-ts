@@ -110,10 +110,7 @@ export default async function main(
   await fs.writeFile(
     commandLineOpts.output,
     JSON.stringify(
-      {
-        ontology: ontologyIr.ontology,
-        importedOntology: ontologyIr.importedOntology,
-      },
+      ontologyIr,
       null,
       2,
     ),
@@ -126,10 +123,7 @@ export default async function main(
     await fs.writeFile(
       commandLineOpts.valueTypesOutput,
       JSON.stringify(
-        {
-          valueTypes: ontologyIr.valueTypes,
-          importedValueTypes: ontologyIr.importedValueTypes,
-        },
+        ontologyIr.valueTypes,
         null,
         2,
       ),

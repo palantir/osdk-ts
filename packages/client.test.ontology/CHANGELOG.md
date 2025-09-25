@@ -1,5 +1,24 @@
 # @osdk/client.test.ontology
 
+## 2.5.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [ca1fabe]
+  - @osdk/api@2.5.0-beta.8
+
+## 2.5.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.7
+
+## 2.5.0-beta.6
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.6
+
 ## 2.5.0-beta.5
 
 ### Patch Changes
