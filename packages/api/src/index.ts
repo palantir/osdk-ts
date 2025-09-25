@@ -53,6 +53,7 @@ export type {
   GroupByClause,
   GroupByRange,
 } from "./groupby/GroupByClause.js";
+export type { Logger } from "./Logger.js";
 export type {
   AllowedBucketKeyTypes,
   AllowedBucketTypes,
@@ -149,4 +150,3 @@ export type {
 } from "./timeseries/timeseries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export {};
-export type { Logger } from "./Logger.js";

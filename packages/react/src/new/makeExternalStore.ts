@@ -38,7 +38,7 @@ export function makeExternalStore<X>(
   }
 
   function subscribe(notifyUpdate: () => void) {
-    const observer: Observer<X | undefined> = {
+    const obs = createObservation({
       next: (payload) => {
         lastResult = payload as Snapshot<X>;
         notifyUpdate();
@@ -50,12 +50,8 @@ export function makeExternalStore<X>(
         } as Snapshot<X>;
         notifyUpdate();
       },
-      complete: () => {
-        // No-op
-      },
-    };
-
-    const obs = createObservation(observer);
+      complete: () => {},
+    });
 
     return (): void => {
       obs.unsubscribe();
