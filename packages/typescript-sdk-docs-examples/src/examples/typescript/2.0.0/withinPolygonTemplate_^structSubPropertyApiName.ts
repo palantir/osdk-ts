@@ -17,13 +17,13 @@
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-// Example: withinBoundingBoxTemplate (Variation: #hasStructSubProperty)
+// Example: withinPolygonTemplate (Variation: ^structSubPropertyApiName)
 
-import { Employee } from "../../../generatedNoCheck/index.js";
+import { Office } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const EmployeeObjectSet = client(Employee)
+const OfficeObjectSet = client(Office)
     .where({
-        contactInfo: { entrance: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}
+        entrance: { $within: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}
     });

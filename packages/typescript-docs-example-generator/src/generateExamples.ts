@@ -230,7 +230,7 @@ export async function generateExamples(
 /**
  * Generate examples for all snippets in a specific version using the new utility approach
  * This function processes each snippet template in the TYPESCRIPT_OSDK_SNIPPETS object,
- * applies context variables using Handlebars, and collects files for batch writing.
+ * applies context variables using Mustache, and collects files for batch writing.
  * It uses HierarchyBuilder for single-pass hierarchy generation.
  */
 function generateAllExamplesForVersion(

@@ -17,13 +17,13 @@
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-// Example: containsAnyTermTemplate (Variation: #hasStructSubProperty)
+// Example: nullTemplate (Variation: ^structSubPropertyApiName)
 
-import { Employee } from "../../../generatedNoCheck/index.js";
+import { Office } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const EmployeeObjectSet = client(Employee)
+const OfficeObjectSet = client(Office)
     .where({
-        contactInfo: { phone: { $containsAnyTerm: "foo bar" }}
-    })
+        entrance: { $isNull: true }
+    });

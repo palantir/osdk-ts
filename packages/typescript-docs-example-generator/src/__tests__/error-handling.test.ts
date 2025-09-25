@@ -25,32 +25,32 @@ import { processTemplateV2 } from "../utils/processTemplate.v2.js";
  * These tests verify that template syntax errors are caught and reported properly
  */
 describe("Error Handling - No Silent Failures", () => {
-  describe("Handlebars Syntax Errors", () => {
+  describe("Mustache Syntax Errors", () => {
     const testCases = [
       {
         name: "Missing # in block opening",
         template: "{{propertyNames}}content{{/propertyNames}}",
-        expectedError: "Parse error",
+        expectedError: "Unopened section",
       },
       {
         name: "Unmatched block closing",
         template: "{{#each items}}content{{/wrong}}",
-        expectedError: "each doesn't match wrong",
+        expectedError: "Unclosed section",
       },
       {
         name: "Invalid helper syntax",
         template: "{{#if}}missing condition{{/if}}",
-        expectedError: "#if requires exactly one argument",
+        expectedError: "", // Mustache doesn't have if helper - this is valid section syntax
       },
       {
         name: "Nested blocks with wrong closing",
         template: "{{#if condition}}{{#each items}}content{{/if}}{{/each}}",
-        expectedError: "each doesn't match if",
+        expectedError: "Unclosed section",
       },
       {
         name: "Incomplete mustache",
         template: "{{incomplete",
-        expectedError: "Parse error",
+        expectedError: "Unclosed tag",
       },
     ];
 
@@ -59,26 +59,41 @@ describe("Error Handling - No Silent Failures", () => {
         it("TemplateAnalyzer should return error result on invalid syntax", () => {
           const analyzer = new TemplateAnalyzer();
           const result = analyzer.analyze(template);
-          expect(result.success).toBe(false);
-          if (!result.success) {
-            expect(result.error.message).toContain("parse");
+          if (expectedError === "") {
+            // This case should succeed in Mustache
+            expect(result.success).toBe(true);
+          } else {
+            expect(result.success).toBe(false);
+            if (!result.success) {
+              expect(result.error.message).toContain("parse");
+            }
           }
         });
 
         it("processTemplateV2 should return error result", () => {
           const result = processTemplateV2(template, getSnippetContext("test"));
-          expect(result.success).toBe(false);
-          if (!result.success) {
-            expect(result.error.message).toContain(expectedError);
+          if (expectedError === "") {
+            // This case should succeed in Mustache
+            expect(result.success).toBe(true);
+          } else {
+            expect(result.success).toBe(false);
+            if (!result.success) {
+              expect(result.error.message).toContain(expectedError);
+            }
           }
         });
 
         it("TemplateAnalyzer should return error result", () => {
           const analyzer = new TemplateAnalyzer();
           const result = analyzer.analyze(template);
-          expect(result.success).toBe(false);
-          if (!result.success) {
-            expect(result.error.message).toContain("parse");
+          if (expectedError === "") {
+            // This case should succeed in Mustache
+            expect(result.success).toBe(true);
+          } else {
+            expect(result.success).toBe(false);
+            if (!result.success) {
+              expect(result.error.message).toContain("parse");
+            }
           }
         });
       });
@@ -125,7 +140,7 @@ describe("Error Handling - No Silent Failures", () => {
       }
 
       expect(caughtError).toBeTruthy();
-      expect(caughtError.message).toContain("missing doesn't match different");
+      expect(caughtError.message).toContain("Unclosed section");
     });
   });
 
@@ -145,7 +160,7 @@ describe("Error Handling - No Silent Failures", () => {
       const template = "Hello {{name}}!";
       const result = processTemplateV2(template, null as any);
 
-      expect(result.success).toBe(true);
+      expect(result.success).toBe(false);
     });
   });
 

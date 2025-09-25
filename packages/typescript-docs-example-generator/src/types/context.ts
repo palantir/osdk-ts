@@ -15,7 +15,7 @@
  */
 
 /**
- * Base template context containing all variables available to Handlebars templates.
+ * Base template context containing all variables available to Mustache templates.
  * This interface defines the complete set of variables that can be used in
  * TypeScript SDK documentation templates across all versions.
  */
@@ -36,6 +36,8 @@ export interface BaseTemplateContext {
   propertyValueV2: number | string;
   /** Primary key property details */
   primaryKeyPropertyV2: PropertyV2;
+  /** Primary key property value (string or number) */
+  primaryKeyPropertyValueV2: number | string;
 
   // For linked objects
   sourceObjectType: string;
@@ -48,9 +50,8 @@ export interface BaseTemplateContext {
   rawLinkedPrimaryKeyProperty: PropertyV2;
 
   // For structured properties
-  hasStructSubProperty: boolean;
   structPropertyApiName: string;
-  structSubPropertyApiName: string;
+  structSubPropertyApiName: string | null;
   structSubPropertyValue: string;
 
   // For block variables

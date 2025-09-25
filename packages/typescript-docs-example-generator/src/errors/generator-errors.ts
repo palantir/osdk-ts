@@ -63,9 +63,9 @@ export class TemplateParseError extends GeneratorError {
       return "Check that all blocks are properly closed with {{/blockName}}";
     }
     if (this.parseError.includes("syntax")) {
-      return "Verify Handlebars syntax - use {{variable}} for variables and {{#block}}...{{/block}} for blocks";
+      return "Verify Mustache syntax - use {{variable}} for variables and {{#block}}...{{/block}} for blocks";
     }
-    return "Check template syntax and review Handlebars documentation for correct syntax";
+    return "Check template syntax and review Mustache documentation for correct syntax";
   }
 }
 

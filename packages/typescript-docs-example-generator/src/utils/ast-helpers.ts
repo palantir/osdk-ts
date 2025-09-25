@@ -14,51 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  HandlebarsAST,
-  MustacheStatement,
-} from "../types/handlebars-ast.js";
-
-/**
- * Type-safe helper to convert Handlebars.parse() result to our internal AST format.
- *
- * This is needed because:
- * 1. Handlebars' actual runtime output differs from their TypeScript definitions
- * 2. Our AST types are simplified and focused on what we actually use
- * 3. Properties like blockParams, hash, and strip have different nullability
- *
- * @param nativeAst The result from Handlebars.parse()
- * @returns Safely typed AST for our internal use
- */
-export function convertHandlebarsAST(nativeAst: unknown): HandlebarsAST {
-  // Runtime check to ensure it's the shape we expect
-  if (
-    typeof nativeAst !== "object" || nativeAst == null || !("type" in nativeAst)
-  ) {
-    throw new Error("Invalid AST structure from Handlebars.parse()");
-  }
-
-  // The runtime structure is compatible with our interface, despite type differences
-  return nativeAst as HandlebarsAST;
-}
-
-/**
- * Type-safe helper to get the original path from a MustacheStatement.
- * Handles the differences between our types and Handlebars' actual structure.
- */
-export function getMustacheOriginal(stmt: MustacheStatement): string {
-  if ("original" in stmt.path && typeof stmt.path.original === "string") {
-    return stmt.path.original;
-  }
-  return "";
-}
-
-/**
- * Helper to safely check if a statement has a hash property with actual values.
- */
-export function hasActualHash(stmt: { hash?: unknown }): boolean {
-  return stmt.hash != null && typeof stmt.hash === "object";
-}
+// Generic helpers that are not template-engine specific
 
 /**
  * Convert ProcessingError to Error for compatibility with error collectors.

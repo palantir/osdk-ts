@@ -147,3 +147,22 @@ export interface GenerationSummary {
   warnings: string[];
   totalVariations: number;
 }
+
+// Re-export Mustache token types
+export type {
+  InvertedSectionToken,
+  MustacheToken,
+  NameToken,
+  SectionToken,
+  TextToken,
+  UnescapedToken,
+} from "./mustache-tokens.js";
+export {
+  isBlockToken,
+  isInvertedSectionToken,
+  isNameToken,
+  isSectionToken,
+  isTextToken,
+  isUnescapedToken,
+  isVariableToken,
+} from "./mustache-tokens.js";

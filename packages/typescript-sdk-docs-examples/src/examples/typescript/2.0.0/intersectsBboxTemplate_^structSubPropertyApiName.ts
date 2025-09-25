@@ -17,13 +17,13 @@
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-// Example: inFilterTemplate (Variation: #hasStructSubProperty)
+// Example: intersectsBboxTemplate (Variation: ^structSubPropertyApiName)
 
-import { Employee } from "../../../generatedNoCheck/index.js";
+import { Office } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const EmployeeObjectSet = client(Employee)
+const OfficeObjectSet = client(Office)
     .where({
-        contactInfo: { phone: { $in: ["555-1234"] }}
+        entrance: { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}
     });

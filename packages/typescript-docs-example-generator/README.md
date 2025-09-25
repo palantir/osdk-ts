@@ -1,13 +1,13 @@
 # TypeScript Docs Example Generator
 
-Transforms Handlebars templates from `@osdk/typescript-sdk-docs` into runnable TypeScript examples. Automatically generates variations for conditional blocks to test different code paths and validates template syntax at build time.
+Transforms Mustache templates from `@osdk/typescript-sdk-docs` into runnable TypeScript examples. Automatically generates variations for conditional blocks to test different code paths and validates template syntax at build time.
 
 ## Architecture
 
 ### Input Flow
 
 ```
-YAML Templates → Handlebars Processing → TypeScript Examples → Build Validation
+YAML Templates → Mustache Processing → TypeScript Examples → Build Validation
     ↓                      ↓                    ↓                   ↓
 documentation.yml    baseContext.ts      example files      pnpm typecheck
 ```
@@ -15,8 +15,8 @@ documentation.yml    baseContext.ts      example files      pnpm typecheck
 ### Key Components
 
 - **`generateExamples.ts`** - Main orchestrator that processes all templates
-- **`TemplateAnalyzer`** - Parses Handlebars AST to extract blocks and variables
-- **`processTemplateV2`** - Applies context variables using Handlebars engine
+- **`TemplateAnalyzer`** - Parses Mustache tokens to extract blocks and variables
+- **`processTemplateV2`** - Applies context variables using Mustache engine
 - **`generateBlockVariations`** - Creates variations for `{{#block}}` conditionals
 - **`HierarchyBuilder`** - Generates export files for downstream consumption
 
@@ -93,7 +93,7 @@ When all required Handlebars variables already exist in `baseContext.ts`:
 
 4. **Validate output**: Check generated files compile with `pnpm typecheck`
 
-### Adding New Handlebars Variables
+### Adding New Mustache Variables
 
 When templates require new context variables:
 
@@ -103,7 +103,7 @@ When templates require new context variables:
    const baseContext: BaseTemplateContext = {
      // ... existing variables
      myNewVariable: "defaultValue",
-     isFeatureEnabled: false, // for block helpers
+     isFeatureEnabled: false, // for block sections
    };
    ```
 
@@ -145,7 +145,7 @@ When templates require new context variables:
 
 ### Block Variable Naming
 
-Block helpers follow these conventions:
+Block sections follow these conventions:
 
 - `{{#variableName}}` - Standard block (true condition)
 - `{{^variableName}}` - Inverted block (false condition)
@@ -196,7 +196,7 @@ The generator uses explicit error handling with `Result<T, E>` patterns:
 Parse error on line 5: Expecting 'EOF', got 'OPEN_ENDBLOCK'
 ```
 
-→ Fix Handlebars syntax in `documentation.yml`
+→ Fix Mustache syntax in `documentation.yml`
 
 **Missing Variable Errors**
 
@@ -227,10 +227,10 @@ src/
 ├── generateExamples.ts           # Main entry point
 ├── index.ts                      # Public exports
 ├── analyzer/
-│   └── template-analyzer.ts      # Handlebars AST parsing
+│   └── template-analyzer.ts      # Mustache token parsing
 ├── utils/
 │   ├── baseContext.ts           # Template variable definitions
-│   ├── processTemplate.v2.ts    # Handlebars processing
+│   ├── processTemplate.v2.ts    # Mustache processing
 │   ├── generateBlockVariations.ts # Block helper variations
 │   ├── hierarchyBuilder.ts      # Export file generation
 │   └── codeTransformer.ts       # ESM import fixing
@@ -251,7 +251,7 @@ src/
 **"Template generation failed"**
 
 - Check `documentation.yml` syntax with a YAML validator
-- Verify all Handlebars variables exist in `baseContext.ts`
+- Verify all Mustache variables exist in `baseContext.ts`
 - Run `pnpm test` to identify specific failures
 
 **"Generated code has compilation errors"**
@@ -275,8 +275,8 @@ src/
 
 ## Dependencies
 
-- **`@osdk/typescript-sdk-docs`** - Source of Handlebars templates
-- **`handlebars`** - Template processing engine
+- **`@osdk/typescript-sdk-docs`** - Source of Mustache templates
+- **`mustache`** - Template processing engine
 - **`vitest`** - Testing framework
 
 ## Contributing

@@ -36,7 +36,7 @@ We organize OSDK templates into logical groups based on common development tasks
         "sumAggregationTemplate",
         "avgAggregationTemplate"
       ]
-    },
+    }
   }
 }
 ```
@@ -44,6 +44,7 @@ We organize OSDK templates into logical groups based on common development tasks
 ## MCP Tool Interface
 
 ### Tool Description
+
 Using this tool you can get detailed OSDK TypeScript examples on the following topics:
 
 - **loading**: Templates for retrieving objects and data from the ontology
@@ -54,37 +55,40 @@ Using this tool you can get detailed OSDK TypeScript examples on the following t
 - **timeseries**: Templates for time-based data and analytics operations
 
 ### Tool Parameters
+
 The tool takes two parameters and returns a JSON string:
 
 ```typescript
 interface GetOsdkExamplesParams {
-  topic: string;     // Topic name (e.g., "loading", "aggregation")
-  version: string;   // OSDK version (e.g., "2.4.0")
+  topic: string; // Topic name (e.g., "loading", "aggregation")
+  version: string; // OSDK version (e.g., "2.4.0")
 }
 
 // Returns: JSON string containing the examples for the requested topic
-function getOsdkExamples(params: GetOsdkExamplesParams): string
+function getOsdkExamples(params: GetOsdkExamplesParams): string;
 ```
 
 ## Usage Examples
 
 ### Basic Topic Request
+
 ```typescript
 // Agent requests loading examples
 const jsonResponse = getOsdkExamples({
   topic: "loading",
-  version: "2.4.0"
+  version: "2.4.0",
 });
 // Returns JSON string containing loadSingleObjectGuide, loadObjectPageGuide, etc.
 // with full code examples, file paths, and metadata
 ```
 
 ### Aggregation Examples
+
 ```typescript
 // Agent requests aggregation examples
 const jsonResponse = getOsdkExamples({
   topic: "aggregation",
-  version: "2.4.0"
+  version: "2.4.0",
 });
 // Returns JSON string with countAggregationTemplate,
 // approximateDistinctAggregationTemplate, etc.
@@ -93,6 +97,7 @@ const jsonResponse = getOsdkExamples({
 ### Example Response Format
 
 The tool returns a JSON string with this structure:
+
 ```json
 {
   "topic": "loading",
@@ -108,4 +113,3 @@ The tool returns a JSON string with this structure:
   ]
 }
 ```
-

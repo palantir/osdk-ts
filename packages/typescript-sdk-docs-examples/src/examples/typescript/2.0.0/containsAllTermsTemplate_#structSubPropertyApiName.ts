@@ -17,13 +17,13 @@
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-// Example: withinBoundingBoxTemplate (Variation: ^hasStructSubProperty)
+// Example: containsAllTermsTemplate (Variation: #structSubPropertyApiName)
 
-import { Office } from "../../../generatedNoCheck/index.js";
+import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const OfficeObjectSet = client(Office)
+const EmployeeObjectSet = client(Employee)
     .where({
-        entrance: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}
-    });
+        contactInfo: { phone: { $containsAllTerms: "foo bar" }}
+    })

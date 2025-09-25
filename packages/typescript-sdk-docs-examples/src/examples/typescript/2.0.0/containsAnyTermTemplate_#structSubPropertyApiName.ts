@@ -17,13 +17,13 @@
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-// Example: withinDistanceTemplate (Variation: ^hasStructSubProperty)
+// Example: containsAnyTermTemplate (Variation: #structSubPropertyApiName)
 
-import { Office } from "../../../generatedNoCheck/index.js";
+import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-const OfficeObjectSet = client(Office)
+const EmployeeObjectSet = client(Employee)
     .where({
-        entrance: { $within: { $distance: [100, "miles"], $of: [-74.0060, 40.7128]}}
+        contactInfo: { phone: { $containsAnyTerm: "foo bar" }}
     })

@@ -17,7 +17,7 @@
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-// Example: rangeTemplate (Variation: ^hasStructSubProperty)
+// Example: withinBoundingBoxTemplate (Variation: #structSubPropertyApiName)
 
 import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
@@ -25,5 +25,5 @@ import { client } from "./client.js";
 
 const EmployeeObjectSet = client(Employee)
     .where({
-        salary: { $lt: 100 }
+        contactInfo: { entrance: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}
     });

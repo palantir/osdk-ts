@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-import Handlebars from "handlebars";
-import {
-  TemplateParseError,
-  toErrorResult,
-} from "../errors/generator-errors.js";
+import Mustache from "mustache";
+import { toErrorResult } from "../errors/generator-errors.js";
 import type { BaseTemplateContext } from "../types/context.js";
 import type { Result } from "../types/index.js";
 
 // Cache compiled templates to avoid recompilation
-const templateCache = new Map<string, Handlebars.TemplateDelegate>();
+const templateCache = new Map<string, string>();
 
 export interface ProcessTemplateOptions {
   /** Template identifier for better error messages */
@@ -45,17 +42,9 @@ export function processTemplateV2(
   const { templateId = "unknown", useCache = true } = options;
 
   try {
-    // Get or compile template
-    const compiledTemplate = useCache
-      ? getCachedTemplate(template, templateId)
-      : compileTemplate(template, templateId);
+    // Process the template with Mustache
+    const result = Mustache.render(template, context);
 
-    if (!compiledTemplate.success) {
-      return compiledTemplate;
-    }
-
-    // Process the template
-    const result = compiledTemplate.value(context);
     return { success: true, value: result };
   } catch (error) {
     return toErrorResult(error);
@@ -99,70 +88,4 @@ export function batchProcessTemplates(
   }
 
   return { success: true, value: results };
-}
-
-/**
- * Get cached template or compile and cache
- */
-function getCachedTemplate(
-  template: string,
-  templateId: string,
-): Result<Handlebars.TemplateDelegate> {
-  const cacheKey = `${templateId}:${template}`;
-
-  const cached = templateCache.get(cacheKey);
-  if (cached) {
-    return { success: true, value: cached };
-  }
-
-  const compiled = compileTemplate(template, templateId);
-  if (compiled.success) {
-    templateCache.set(cacheKey, compiled.value);
-  }
-
-  return compiled;
-}
-
-/**
- * Compile a Handlebars template with error handling
- */
-function compileTemplate(
-  template: string,
-  templateId: string,
-): Result<Handlebars.TemplateDelegate> {
-  try {
-    const compiled = Handlebars.compile(template);
-    return { success: true, value: compiled };
-  } catch (error) {
-    if (error instanceof Error) {
-      // Try to extract line/column from error message
-      const match = error.message.match(/line (\d+), column (\d+)/);
-      const line = match ? parseInt(match[1], 10) : undefined;
-      const column = match ? parseInt(match[2], 10) : undefined;
-
-      return {
-        success: false,
-        error: new TemplateParseError(templateId, error.message, line, column),
-      };
-    }
-
-    return toErrorResult(error);
-  }
-}
-
-/**
- * Clear the template cache
- */
-export function clearTemplateCache(): void {
-  templateCache.clear();
-}
-
-/**
- * Get cache statistics
- */
-export function getCacheStats(): { size: number; keys: string[] } {
-  return {
-    size: templateCache.size,
-    keys: Array.from(templateCache.keys()),
-  };
 }

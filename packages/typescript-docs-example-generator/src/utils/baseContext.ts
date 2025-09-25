@@ -37,6 +37,7 @@ const baseContext: BaseTemplateContext = {
   operation: "lt",
   propertyValueV2: 100,
   primaryKeyPropertyV2: { apiName: "employeeId", type: "integer" },
+  primaryKeyPropertyValueV2: 12345,
 
   // For linked objects
   sourceObjectType: "Employee",
@@ -49,9 +50,8 @@ const baseContext: BaseTemplateContext = {
   rawLinkedPrimaryKeyProperty: { apiName: "equipmentId", type: "string" },
 
   // For structured properties
-  hasStructSubProperty: false,
   structPropertyApiName: "contactInfo",
-  structSubPropertyApiName: "phone",
+  structSubPropertyApiName: null,
   structSubPropertyValue: "phone",
 
   // For block variables
@@ -111,11 +111,8 @@ const baseContext: BaseTemplateContext = {
  */
 const TEMPLATE_REGISTRY: TemplateRegistry = {
   // === OBJECT TEMPLATES ===
-  "loadSingleObjectGuide": { propertyValueV2: 12345 },
-  "loadObjectsReference": { propertyValueV2: 12345 },
-  "loadAllObjectsReference": { propertyValueV2: 12345 },
-  "loadSingleObjectReference": { propertyValueV2: 12345 },
-  "loadObjectMetadataSnippet": { propertyValueV2: 12345 },
+  "loadSingleObjectGuide": { primaryKeyPropertyValueV2: 12345 },
+  "loadSingleObjectReference": { primaryKeyPropertyValueV2: 12345 },
   "loadObjectPageGuide": {},
   "orderObjectsGuide": {},
   "searchObjectsGuide": {},
@@ -155,7 +152,6 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
     sourceObjectType: "Employee",
     linkedObjectType: "Equipment",
     linkApiName: "assignedEquipment",
-    linkedPrimaryKeyPropertyV2: { apiName: "equipmentId", type: "string" },
   },
   "loadLinkedObjectsReference": {
     sourceObjectType: "Equipment",
@@ -312,66 +308,61 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
 const templateHierarchy: Record<string, TemplateHierarchyNode> = {
   // === STRUCT SUB-PROPERTY TEMPLATES
   "stringStartsWithTemplate": {
-    "#hasStructSubProperty": {
+    "#structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: true,
         property: "contactInfo",
         structSubPropertyApiName: "phone",
       },
     },
-    "^hasStructSubProperty": {
-      context: { hasStructSubProperty: false, property: "fullName" },
+    "^structSubPropertyApiName": {
+      context: { structSubPropertyApiName: null, property: "fullName" },
     },
   },
   "containsAllTermsInOrderTemplate": {
-    "#hasStructSubProperty": {
+    "#structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: true,
         property: "contactInfo",
         structSubPropertyApiName: "phone",
       },
     },
-    "^hasStructSubProperty": {
-      context: { hasStructSubProperty: false, property: "fullName" },
+    "^structSubPropertyApiName": {
+      context: { structSubPropertyApiName: null, property: "fullName" },
     },
   },
   "containsAnyTermTemplate": {
-    "#hasStructSubProperty": {
+    "#structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: true,
         property: "contactInfo",
         structSubPropertyApiName: "phone",
       },
     },
-    "^hasStructSubProperty": {
-      context: { hasStructSubProperty: false, property: "fullName" },
+    "^structSubPropertyApiName": {
+      context: { structSubPropertyApiName: null, property: "fullName" },
     },
   },
   "containsAllTermsTemplate": {
-    "#hasStructSubProperty": {
+    "#structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: true,
         property: "contactInfo",
         structSubPropertyApiName: "phone",
       },
     },
-    "^hasStructSubProperty": {
-      context: { hasStructSubProperty: false, property: "fullName" },
+    "^structSubPropertyApiName": {
+      context: { structSubPropertyApiName: null, property: "fullName" },
     },
   },
   "rangeTemplate": {
-    "#hasStructSubProperty": {
+    "#structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: true,
         property: "contactInfo",
         operation: "lt",
         propertyValueV2: 100,
         structSubPropertyApiName: "houseNumber",
       },
     },
-    "^hasStructSubProperty": {
+    "^structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: false,
+        structSubPropertyApiName: null,
         property: "salary",
         operation: "lt",
         propertyValueV2: 100,
@@ -379,138 +370,130 @@ const templateHierarchy: Record<string, TemplateHierarchyNode> = {
     },
   },
   "equalityTemplate": {
-    "#hasStructSubProperty": {
+    "#structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: true,
         property: "contactInfo",
         structPropertyApiName: "contactInfo",
         structSubPropertyApiName: "phone",
         propertyValueV2: `"555-1234"`,
       },
     },
-    "^hasStructSubProperty": {
+    "^structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: false,
+        structSubPropertyApiName: null,
         property: "department",
         propertyValueV2: `"Engineering"`,
       },
     },
   },
   "inFilterTemplate": {
-    "#hasStructSubProperty": {
+    "#structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: true,
         property: "contactInfo",
         structPropertyApiName: "contactInfo",
         structSubPropertyApiName: "phone",
         propertyValueV2: `"555-1234"`,
       },
     },
-    "^hasStructSubProperty": {
+    "^structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: false,
+        structSubPropertyApiName: null,
         property: "department",
         propertyValueV2: `"Engineering"`,
       },
     },
   },
   "nullTemplate": {
-    "#hasStructSubProperty": {
+    "#structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: true,
         objectType: "Employee",
         property: "contactInfo",
         structSubPropertyApiName: "entrance",
       },
     },
-    "^hasStructSubProperty": {
+    "^structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: false,
+        structSubPropertyApiName: null,
         objectType: "Office",
         property: "entrance",
       },
     },
   },
   "withinDistanceTemplate": {
-    "#hasStructSubProperty": {
+    "#structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: true,
         objectType: "Employee",
         property: "contactInfo",
         structSubPropertyApiName: "entrance",
       },
     },
-    "^hasStructSubProperty": {
+    "^structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: false,
+        structSubPropertyApiName: null,
         objectType: "Office",
         property: "entrance",
       },
     },
   },
   "withinBoundingBoxTemplate": {
-    "#hasStructSubProperty": {
+    "#structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: true,
         objectType: "Employee",
         property: "contactInfo",
         structSubPropertyApiName: "entrance",
       },
     },
-    "^hasStructSubProperty": {
+    "^structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: false,
+        structSubPropertyApiName: null,
         objectType: "Office",
         property: "entrance",
       },
     },
   },
   "withinPolygonTemplate": {
-    "#hasStructSubProperty": {
+    "#structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: true,
         objectType: "Employee",
         property: "contactInfo",
         structSubPropertyApiName: "entrance",
       },
     },
-    "^hasStructSubProperty": {
+    "^structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: false,
+        structSubPropertyApiName: null,
         objectType: "Office",
         property: "entrance",
       },
     },
   },
   "intersectsPolygonTemplate": {
-    "#hasStructSubProperty": {
+    "#structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: true,
         objectType: "Employee",
         property: "contactInfo",
         structSubPropertyApiName: "entrance",
       },
     },
-    "^hasStructSubProperty": {
+    "^structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: false,
+        structSubPropertyApiName: null,
         objectType: "Office",
         property: "entrance",
       },
     },
   },
   "intersectsBboxTemplate": {
-    "#hasStructSubProperty": {
+    "#structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: true,
         objectType: "Employee",
         property: "contactInfo",
         structSubPropertyApiName: "entrance",
       },
     },
-    "^hasStructSubProperty": {
+    "^structSubPropertyApiName": {
       context: {
-        hasStructSubProperty: false,
+        structSubPropertyApiName: null,
         objectType: "Office",
         property: "entrance",
       },
@@ -729,6 +712,7 @@ function getContextFromHierarchy(
   blockKey: string,
 ): Partial<BaseTemplateContext> {
   const hierarchy = templateHierarchy[snippetKey];
+
   if (!hierarchy || !blockKey) return {};
 
   // First, check if it's a top-level block
@@ -753,7 +737,7 @@ function getContextFromHierarchy(
 /**
  * Returns a customized context for a specific snippet
  * @param snippetKey The key of the snippet to customize context for
- * @param blockKey The block key (e.g., "#hasStructSubProperty", "^hasStructSubProperty") or null for base
+ * @param blockKey The block key (e.g., "#structSubPropertyApiName", "^structSubPropertyApiName") or null for base
  * @returns A customized context object for the snippet
  */
 export function getSnippetContext(
@@ -762,7 +746,6 @@ export function getSnippetContext(
 ): BaseTemplateContext {
   // Start with base context
   const context = { ...baseContext };
-
   if (blockKey && templateHierarchy[snippetKey]) {
     const hierarchyContext = getContextFromHierarchy(snippetKey, blockKey);
     Object.assign(context, hierarchyContext);

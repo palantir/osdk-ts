@@ -954,11 +954,13 @@ versions:
             import { type Osdk } from "@osdk/client";
 
             try {
-                const object: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne({{propertyValueV2}});
+                const object: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne({{{primaryKeyPropertyValueV2}}});
             }
             catch(e) {
                 throw e;
             }
+          computedVariables:
+            - primaryKeyPropertyValueV2
       loadObjectPageGuide:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1026,7 +1028,10 @@ versions:
             import { client } from "./client";
             import type { Osdk } from "@osdk/client";
 
-            const responseNoErrorWrapper: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne({{propertyValueV2}});
+            const responseNoErrorWrapper: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne({{{primaryKeyPropertyValueV2}}});
+
+          computedVariables:
+            - primaryKeyPropertyValueV2
 
       loadObjectsReference:
         - template: |
@@ -1065,8 +1070,6 @@ versions:
                     return { error };
                 }
             }
-          computedVariables:
-            - linkedPrimaryKeyPropertyV2
       loadLinkedObjectsReference:
         - template: |-
             import { {{sourceObjectType}} } from "{{{packageName}}}";
@@ -1137,7 +1140,7 @@ versions:
             const grouped{{objectType}} = await client({{objectType}})
                 .aggregate({
                     $select: { $count: "unordered" },
-                    $groupBy: { {{property}} : { $fixedWidth: 10 } }
+                    $groupBy: { {{property}}: { $fixedWidth: 10 } }
                 });
       durationGroupByTemplate:
         - template: |-
@@ -1148,7 +1151,7 @@ versions:
             const grouped{{objectType}} = await client({{objectType}})
                 .aggregate({
                     $select: { $count: "unordered" },
-                    $groupBy: { {{property}} : { $duration: [ {{#durationText}}{{arg}}{{/durationText}}, "{{#durationText}}{{unit}}{{/durationText}}"] } }
+                    $groupBy: { {{property}}: { $duration: [ {{#durationText}}{{arg}}{{/durationText}}, "{{#durationText}}{{unit}}{{/durationText}}"] } }
                 });
       exactGroupByTemplate:
         - template: |-
@@ -1159,7 +1162,7 @@ versions:
             const grouped{{objectType}} = await client({{objectType}})
                 .aggregate({
                     $select: { $count: "unordered" },
-                    $groupBy: { {{property}} : "exact" }
+                    $groupBy: { {{property}}: "exact" }
                 })
       rangeGroupByTemplate:
         - template: |-
@@ -1170,7 +1173,7 @@ versions:
             const grouped{{objectType}} = await client({{objectType}})
                 .aggregate({
                     $select: { $count: "unordered" },
-                    $groupBy: { {{property}} : { $ranges: [[{{{propertyValueV2}}}, {{{propertyValueIncrementedV2}}} ]]} }
+                    $groupBy: { {{property}}: { $ranges: [[{{{propertyValueV2}}}, {{{propertyValueIncrementedV2}}} ]]} }
                 });
           computedVariables:
             - propertyValueV2
@@ -1418,12 +1421,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#hasStructSubProperty}}
+                    {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $startsWith: "foo" }}
-                    {{/hasStructSubProperty}}
-                    {{^hasStructSubProperty}}
-                    {{property}} : { $startsWith: "foo" }
-                    {{/hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $startsWith: "foo" }
+                    {{/structSubPropertyApiName}}
                 })
       containsAllTermsInOrderTemplate:
         - template: |-
@@ -1433,12 +1436,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#hasStructSubProperty}}
+                    {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $containsAllTermsInOrder: "foo bar" }}
-                    {{/hasStructSubProperty}}
-                    {{^hasStructSubProperty}}
-                    {{property}} : { $containsAllTermsInOrder: "foo bar" }
-                    {{/hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $containsAllTermsInOrder: "foo bar" }
+                    {{/structSubPropertyApiName}}
                 })
       containsAnyTermTemplate:
         - template: |-
@@ -1448,12 +1451,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#hasStructSubProperty}}
+                    {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $containsAnyTerm: "foo bar" }}
-                    {{/hasStructSubProperty}}
-                    {{^hasStructSubProperty}}
-                    {{property}} : { $containsAnyTerm: "foo bar" }
-                    {{/hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $containsAnyTerm: "foo bar" }
+                    {{/structSubPropertyApiName}}
                 })
       containsAllTermsTemplate:
         - template: |-
@@ -1463,12 +1466,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#hasStructSubProperty}}
+                    {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $containsAllTerms: "foo bar" }}
-                    {{/hasStructSubProperty}}
-                    {{^hasStructSubProperty}}
-                    {{property}} : { $containsAllTerms: "foo bar" }
-                    {{/hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $containsAllTerms: "foo bar" }
+                    {{/structSubPropertyApiName}}
                 })
       equalityTemplate:
         - template: |-
@@ -1478,12 +1481,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#hasStructSubProperty}}
+                    {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $eq: {{{propertyValueV2}}} }}
-                    {{/hasStructSubProperty}}
-                    {{^hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
                     {{property}}: { $eq: {{{propertyValueV2}}} }
-                    {{/hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
                 });
           computedVariables:
             - propertyValueV2
@@ -1495,12 +1498,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#hasStructSubProperty}}
+                    {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $in: [{{{propertyValueV2}}}] }}
-                    {{/hasStructSubProperty}}
-                    {{^hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
                     {{property}}: { $in: [{{{propertyValueV2}}}] }
-                    {{/hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
                 });
           computedVariables:
             - propertyValueV2
@@ -1512,12 +1515,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#hasStructSubProperty}}
+                    {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $isNull: true }}
-                    {{/hasStructSubProperty}}
-                    {{^hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
                     {{property}}: { $isNull: true }
-                    {{/hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
                 });
       rangeTemplate:
         - template: |-
@@ -1527,12 +1530,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#hasStructSubProperty}}
+                    {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { ${{operation}}: {{{propertyValueV2}}} }}
-                    {{/hasStructSubProperty}}
-                    {{^hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
                     {{property}}: { ${{operation}}: {{{propertyValueV2}}} }
-                    {{/hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
                 });
           computedVariables:
             - propertyValueV2
@@ -1544,12 +1547,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#hasStructSubProperty}}
+                    {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $within: { $distance: [100, "{{distanceUnit}}"], $of: [-74.0060, 40.7128]} }}
-                    {{/hasStructSubProperty}}
-                    {{^hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
                     {{property}}: { $within: { $distance: [100, "{{distanceUnit}}"], $of: [-74.0060, 40.7128]}}
-                    {{/hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
                 })
       withinBoundingBoxTemplate:
         - template: |-
@@ -1559,12 +1562,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#hasStructSubProperty}}
+                    {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}
-                    {{/hasStructSubProperty}}
-                    {{^hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
                     {{property}}: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}
-                    {{/hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
                 });
       withinPolygonTemplate:
         - template: |-
@@ -1574,12 +1577,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#hasStructSubProperty}}
+                    {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $within: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}}
-                    {{/hasStructSubProperty}}
-                    {{^hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
                     {{property}}: { $within: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}
-                    {{/hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
                 });
       intersectsPolygonTemplate:
         - template: |-
@@ -1589,12 +1592,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#hasStructSubProperty}}
+                    {{#structSubPropertyApiName}}
                     {{property}}: { {{structSubPropertyApiName}}: { $intersects: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}}
-                    {{/hasStructSubProperty}}
-                    {{^hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
                     {{property}}: { $intersects: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}
-                    {{/hasStructSubProperty}}
+                    {{/structSubPropertyApiName}}
                 });
       intersectsBboxTemplate:
         - template: |-
@@ -1604,12 +1607,12 @@ versions:
 
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
-                    {{#hasStructSubProperty}}
-                    {{property}}: { {{structSubPropertyApiName}} : { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}
-                    {{/hasStructSubProperty}}
-                    {{^hasStructSubProperty}}
-                    {{property}} : { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}
-                    {{/hasStructSubProperty}}
+                    {{#structSubPropertyApiName}}
+                    {{property}}: { {{structSubPropertyApiName}}: { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}
+                    {{/structSubPropertyApiName}}
+                    {{^structSubPropertyApiName}}
+                    {{property}}: { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}
+                    {{/structSubPropertyApiName}}
                 });
       notTemplate:
         - template: |-
@@ -1655,7 +1658,7 @@ versions:
 
             const filteredObjects = client({{objectType}})
                 .where({
-                    {{property}} : { $contains: {{{arrayElementValue}}} }
+                    {{property}}: { $contains: {{{arrayElementValue}}} }
                 })
           computedVariables:
             - arrayElementValue

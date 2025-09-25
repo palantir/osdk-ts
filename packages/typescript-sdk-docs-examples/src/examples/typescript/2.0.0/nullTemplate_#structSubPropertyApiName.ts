@@ -17,7 +17,7 @@
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-// Example: containsAllTermsInOrderTemplate (Variation: #hasStructSubProperty)
+// Example: nullTemplate (Variation: #structSubPropertyApiName)
 
 import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
@@ -25,5 +25,5 @@ import { client } from "./client.js";
 
 const EmployeeObjectSet = client(Employee)
     .where({
-        contactInfo: { phone: { $containsAllTermsInOrder: "foo bar" }}
-    })
+        contactInfo: { entrance: { $isNull: true }}
+    });

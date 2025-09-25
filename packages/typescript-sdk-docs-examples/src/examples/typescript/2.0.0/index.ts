@@ -130,56 +130,56 @@
 // See: ./executeFunction_^hasAttachmentUpload.ts (Inverted block: hasAttachmentUpload = false)
 
 // stringStartsWithTemplate (variations only)
-// See: ./stringStartsWithTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
-// See: ./stringStartsWithTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
+// See: ./stringStartsWithTemplate_#structSubPropertyApiName.ts (Standard block: structSubPropertyApiName = true)
+// See: ./stringStartsWithTemplate_^structSubPropertyApiName.ts (Inverted block: structSubPropertyApiName = false)
 
 // containsAllTermsInOrderTemplate (variations only)
-// See: ./containsAllTermsInOrderTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
-// See: ./containsAllTermsInOrderTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
+// See: ./containsAllTermsInOrderTemplate_#structSubPropertyApiName.ts (Standard block: structSubPropertyApiName = true)
+// See: ./containsAllTermsInOrderTemplate_^structSubPropertyApiName.ts (Inverted block: structSubPropertyApiName = false)
 
 // containsAnyTermTemplate (variations only)
-// See: ./containsAnyTermTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
-// See: ./containsAnyTermTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
+// See: ./containsAnyTermTemplate_#structSubPropertyApiName.ts (Standard block: structSubPropertyApiName = true)
+// See: ./containsAnyTermTemplate_^structSubPropertyApiName.ts (Inverted block: structSubPropertyApiName = false)
 
 // containsAllTermsTemplate (variations only)
-// See: ./containsAllTermsTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
-// See: ./containsAllTermsTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
+// See: ./containsAllTermsTemplate_#structSubPropertyApiName.ts (Standard block: structSubPropertyApiName = true)
+// See: ./containsAllTermsTemplate_^structSubPropertyApiName.ts (Inverted block: structSubPropertyApiName = false)
 
 // equalityTemplate (variations only)
-// See: ./equalityTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
-// See: ./equalityTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
+// See: ./equalityTemplate_#structSubPropertyApiName.ts (Standard block: structSubPropertyApiName = true)
+// See: ./equalityTemplate_^structSubPropertyApiName.ts (Inverted block: structSubPropertyApiName = false)
 
 // inFilterTemplate (variations only)
-// See: ./inFilterTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
-// See: ./inFilterTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
+// See: ./inFilterTemplate_#structSubPropertyApiName.ts (Standard block: structSubPropertyApiName = true)
+// See: ./inFilterTemplate_^structSubPropertyApiName.ts (Inverted block: structSubPropertyApiName = false)
 
 // nullTemplate (variations only)
-// See: ./nullTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
-// See: ./nullTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
+// See: ./nullTemplate_#structSubPropertyApiName.ts (Standard block: structSubPropertyApiName = true)
+// See: ./nullTemplate_^structSubPropertyApiName.ts (Inverted block: structSubPropertyApiName = false)
 
 // rangeTemplate (variations only)
-// See: ./rangeTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
-// See: ./rangeTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
+// See: ./rangeTemplate_#structSubPropertyApiName.ts (Standard block: structSubPropertyApiName = true)
+// See: ./rangeTemplate_^structSubPropertyApiName.ts (Inverted block: structSubPropertyApiName = false)
 
 // withinDistanceTemplate (variations only)
-// See: ./withinDistanceTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
-// See: ./withinDistanceTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
+// See: ./withinDistanceTemplate_#structSubPropertyApiName.ts (Standard block: structSubPropertyApiName = true)
+// See: ./withinDistanceTemplate_^structSubPropertyApiName.ts (Inverted block: structSubPropertyApiName = false)
 
 // withinBoundingBoxTemplate (variations only)
-// See: ./withinBoundingBoxTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
-// See: ./withinBoundingBoxTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
+// See: ./withinBoundingBoxTemplate_#structSubPropertyApiName.ts (Standard block: structSubPropertyApiName = true)
+// See: ./withinBoundingBoxTemplate_^structSubPropertyApiName.ts (Inverted block: structSubPropertyApiName = false)
 
 // withinPolygonTemplate (variations only)
-// See: ./withinPolygonTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
-// See: ./withinPolygonTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
+// See: ./withinPolygonTemplate_#structSubPropertyApiName.ts (Standard block: structSubPropertyApiName = true)
+// See: ./withinPolygonTemplate_^structSubPropertyApiName.ts (Inverted block: structSubPropertyApiName = false)
 
 // intersectsPolygonTemplate (variations only)
-// See: ./intersectsPolygonTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
-// See: ./intersectsPolygonTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
+// See: ./intersectsPolygonTemplate_#structSubPropertyApiName.ts (Standard block: structSubPropertyApiName = true)
+// See: ./intersectsPolygonTemplate_^structSubPropertyApiName.ts (Inverted block: structSubPropertyApiName = false)
 
 // intersectsBboxTemplate (variations only)
-// See: ./intersectsBboxTemplate_#hasStructSubProperty.ts (Standard block: hasStructSubProperty = true)
-// See: ./intersectsBboxTemplate_^hasStructSubProperty.ts (Inverted block: hasStructSubProperty = false)
+// See: ./intersectsBboxTemplate_#structSubPropertyApiName.ts (Standard block: structSubPropertyApiName = true)
+// See: ./intersectsBboxTemplate_^structSubPropertyApiName.ts (Inverted block: structSubPropertyApiName = false)
 
 // notTemplate
 // See: ./notTemplate.ts

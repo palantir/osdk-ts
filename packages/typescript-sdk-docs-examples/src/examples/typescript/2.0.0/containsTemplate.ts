@@ -25,5 +25,5 @@ import { client } from "./client.js";
 
 const filteredObjects = client(Employee)
     .where({
-        previousTitles : { $contains: "Product manager" }
+        previousTitles: { $contains: "Product manager" }
     })

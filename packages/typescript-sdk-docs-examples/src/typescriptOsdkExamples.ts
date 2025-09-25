@@ -85,19 +85,19 @@ export const TYPESCRIPT_OSDK_EXAMPLES = {
         },
         "fixedWidthGroupByTemplate": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst groupedEmployee = await client(Employee)\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { hourlyRate : { $fixedWidth: 10 } }\n    });",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst groupedEmployee = await client(Employee)\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { hourlyRate: { $fixedWidth: 10 } }\n    });",
         },
         "durationGroupByTemplate_#durationText": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst groupedEmployee = await client(Employee)\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { startDate : { $duration: [ 1, \"days\"] } }\n    });",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst groupedEmployee = await client(Employee)\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { startDate: { $duration: [ 1, \"days\"] } }\n    });",
         },
         "exactGroupByTemplate": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst groupedEmployee = await client(Employee)\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { hourlyRate : \"exact\" }\n    })",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst groupedEmployee = await client(Employee)\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { hourlyRate: \"exact\" }\n    })",
         },
         "rangeGroupByTemplate": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst groupedEmployee = await client(Employee)\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { salary : { $ranges: [[100, 200 ]]} }\n    });",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst groupedEmployee = await client(Employee)\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { salary: { $ranges: [[100, 200 ]]} }\n    });",
         },
         "applyAction_#hasAttachmentProperty": {
           "code":
@@ -187,109 +187,109 @@ export const TYPESCRIPT_OSDK_EXAMPLES = {
           "code":
             "// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\nimport { calculateTotal, type Equipment } from \"../../../generatedNoCheck/index.js\";\n\nasync function callFunctionWithAttachmentLoaded(objectWithAttachment: Osdk.Instance<Equipment>) {\n    const attachment = objectWithAttachment.invoice?.rid;\n    if (attachment == null) {\n        throw new Error(\"Attachment is required\");\n    }\n    const result = await client(calculateTotal).executeFunction({ documentFile: attachment, includeMetadata: true });\n    return result;\n}",
         },
-        "stringStartsWithTemplate_#hasStructSubProperty": {
+        "stringStartsWithTemplate_#structSubPropertyApiName": {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $startsWith: \"foo\" }}\n    })",
         },
-        "stringStartsWithTemplate_^hasStructSubProperty": {
+        "stringStartsWithTemplate_^structSubPropertyApiName": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        fullName : { $startsWith: \"foo\" }\n    })",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        fullName: { $startsWith: \"foo\" }\n    })",
         },
-        "containsAllTermsInOrderTemplate_#hasStructSubProperty": {
+        "containsAllTermsInOrderTemplate_#structSubPropertyApiName": {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $containsAllTermsInOrder: \"foo bar\" }}\n    })",
         },
-        "containsAllTermsInOrderTemplate_^hasStructSubProperty": {
+        "containsAllTermsInOrderTemplate_^structSubPropertyApiName": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        fullName : { $containsAllTermsInOrder: \"foo bar\" }\n    })",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        fullName: { $containsAllTermsInOrder: \"foo bar\" }\n    })",
         },
-        "containsAnyTermTemplate_#hasStructSubProperty": {
+        "containsAnyTermTemplate_#structSubPropertyApiName": {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $containsAnyTerm: \"foo bar\" }}\n    })",
         },
-        "containsAnyTermTemplate_^hasStructSubProperty": {
+        "containsAnyTermTemplate_^structSubPropertyApiName": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        fullName : { $containsAnyTerm: \"foo bar\" }\n    })",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        fullName: { $containsAnyTerm: \"foo bar\" }\n    })",
         },
-        "containsAllTermsTemplate_#hasStructSubProperty": {
+        "containsAllTermsTemplate_#structSubPropertyApiName": {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $containsAllTerms: \"foo bar\" }}\n    })",
         },
-        "containsAllTermsTemplate_^hasStructSubProperty": {
+        "containsAllTermsTemplate_^structSubPropertyApiName": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        fullName : { $containsAllTerms: \"foo bar\" }\n    })",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        fullName: { $containsAllTerms: \"foo bar\" }\n    })",
         },
-        "equalityTemplate_#hasStructSubProperty": {
+        "equalityTemplate_#structSubPropertyApiName": {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $eq: \"555-1234\" }}\n    });",
         },
-        "equalityTemplate_^hasStructSubProperty": {
+        "equalityTemplate_^structSubPropertyApiName": {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        department: { $eq: \"Engineering\" }\n    });",
         },
-        "inFilterTemplate_#hasStructSubProperty": {
+        "inFilterTemplate_#structSubPropertyApiName": {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { phone: { $in: [\"555-1234\"] }}\n    });",
         },
-        "inFilterTemplate_^hasStructSubProperty": {
+        "inFilterTemplate_^structSubPropertyApiName": {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        department: { $in: [\"Engineering\"] }\n    });",
         },
-        "nullTemplate_#hasStructSubProperty": {
+        "nullTemplate_#structSubPropertyApiName": {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance: { $isNull: true }}\n    });",
         },
-        "nullTemplate_^hasStructSubProperty": {
+        "nullTemplate_^structSubPropertyApiName": {
           "code":
             "import { Office } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance: { $isNull: true }\n    });",
         },
-        "rangeTemplate_#hasStructSubProperty": {
+        "rangeTemplate_#structSubPropertyApiName": {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { houseNumber: { $lt: 100 }}\n    });",
         },
-        "rangeTemplate_^hasStructSubProperty": {
+        "rangeTemplate_^structSubPropertyApiName": {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        salary: { $lt: 100 }\n    });",
         },
-        "withinDistanceTemplate_#hasStructSubProperty": {
+        "withinDistanceTemplate_#structSubPropertyApiName": {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance: { $within: { $distance: [100, \"miles\"], $of: [-74.0060, 40.7128]} }}\n    })",
         },
-        "withinDistanceTemplate_^hasStructSubProperty": {
+        "withinDistanceTemplate_^structSubPropertyApiName": {
           "code":
             "import { Office } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance: { $within: { $distance: [100, \"miles\"], $of: [-74.0060, 40.7128]}}\n    })",
         },
-        "withinBoundingBoxTemplate_#hasStructSubProperty": {
+        "withinBoundingBoxTemplate_#structSubPropertyApiName": {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}\n    });",
         },
-        "withinBoundingBoxTemplate_^hasStructSubProperty": {
+        "withinBoundingBoxTemplate_^structSubPropertyApiName": {
           "code":
             "import { Office } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}\n    });",
         },
-        "withinPolygonTemplate_#hasStructSubProperty": {
+        "withinPolygonTemplate_#structSubPropertyApiName": {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance: { $within: { type: \"Polygon\", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}}\n    });",
         },
-        "withinPolygonTemplate_^hasStructSubProperty": {
+        "withinPolygonTemplate_^structSubPropertyApiName": {
           "code":
             "import { Office } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance: { $within: { type: \"Polygon\", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}\n    });",
         },
-        "intersectsPolygonTemplate_#hasStructSubProperty": {
+        "intersectsPolygonTemplate_#structSubPropertyApiName": {
           "code":
             "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance: { $intersects: { type: \"Polygon\", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}}\n    });",
         },
-        "intersectsPolygonTemplate_^hasStructSubProperty": {
+        "intersectsPolygonTemplate_^structSubPropertyApiName": {
           "code":
             "import { Office } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance: { $intersects: { type: \"Polygon\", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}\n    });",
         },
-        "intersectsBboxTemplate_#hasStructSubProperty": {
+        "intersectsBboxTemplate_#structSubPropertyApiName": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance : { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}\n    });",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeObjectSet = client(Employee)\n    .where({\n        contactInfo: { entrance: { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}\n    });",
         },
-        "intersectsBboxTemplate_^hasStructSubProperty": {
+        "intersectsBboxTemplate_^structSubPropertyApiName": {
           "code":
-            "import { Office } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance : { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}\n    });",
+            "import { Office } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst OfficeObjectSet = client(Office)\n    .where({\n        entrance: { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}\n    });",
         },
         "notTemplate": {
           "code":
@@ -305,7 +305,7 @@ export const TYPESCRIPT_OSDK_EXAMPLES = {
         },
         "containsTemplate": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst filteredObjects = client(Employee)\n    .where({\n        previousTitles : { $contains: \"Product manager\" }\n    })",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst filteredObjects = client(Employee)\n    .where({\n        previousTitles: { $contains: \"Product manager\" }\n    })",
         },
         "loadInterfacesReference": {
           "code":

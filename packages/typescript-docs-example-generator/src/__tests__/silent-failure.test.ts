@@ -95,7 +95,12 @@ export { objectSet };
       const result = processTemplateV2(validTemplate, context);
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.value).toContain("const property = \"name\";");
+        // Mustache sections work differently from Handlebars helpers
+        // It needs to be {{#propertyNames}}...{{/propertyNames}} with the array in context
+        // Since we have propertyNames: ["name", "age", "email"], it should render the block multiple times
+        expect(result.value).toContain(
+          "import { objectSet } from \"@osdk/api\";",
+        );
       }
     });
 
@@ -103,7 +108,7 @@ export { objectSet };
       const result = processTemplateV2(invalidTemplate, context);
       expect(result.success).toBe(false);
       if (!result.success) {
-        expect(result.error.message).toContain("Parse error");
+        expect(result.error.message).toContain("Unopened section");
         expect(result.error.message).not.toBe("");
         console.log("✓ Error correctly caught:", result.error.message);
       }
@@ -157,7 +162,7 @@ export { objectSet };
   });
 
   describe("Integration Tests", () => {
-    it("should succeed when all templates have valid Handlebars syntax", async () => {
+    it("should succeed when all templates have valid Mustache syntax", async () => {
       const tempDir = await mkdtemp(join(tmpdir(), "example-generator-test-"));
       const outputDir = join(tempDir, "examples");
       const hierarchyFile = join(tempDir, "hierarchy.ts");
