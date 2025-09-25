@@ -47,14 +47,25 @@ describe("modernToLegacyWhereClause with $rdp", () => {
           value: "Engineering",
         },
         {
-          type: "gte",
-          field: "reportCount",
-          value: 5,
-        },
-        {
-          type: "eq",
-          field: "managerName",
-          value: "John",
+          type: "and",
+          value: [
+            {
+              type: "gte",
+              propertyIdentifier: {
+                type: "property",
+                apiName: "reportCount",
+              },
+              value: 5,
+            },
+            {
+              type: "eq",
+              propertyIdentifier: {
+                type: "property",
+                apiName: "managerName",
+              },
+              value: "John",
+            },
+          ],
         },
       ],
     });
@@ -83,7 +94,10 @@ describe("modernToLegacyWhereClause with $rdp", () => {
         },
         {
           type: "gte",
-          field: "reportCount",
+          propertyIdentifier: {
+            type: "property",
+            apiName: "reportCount",
+          },
           value: 5,
         },
       ],
@@ -113,7 +127,10 @@ describe("modernToLegacyWhereClause with $rdp", () => {
         },
         {
           type: "gte",
-          field: "reportCount",
+          propertyIdentifier: {
+            type: "property",
+            apiName: "reportCount",
+          },
           value: 5,
         },
       ],
@@ -138,7 +155,10 @@ describe("modernToLegacyWhereClause with $rdp", () => {
       type: "not",
       value: {
         type: "eq",
-        field: "reportCount",
+        propertyIdentifier: {
+          type: "property",
+          apiName: "reportCount",
+        },
         value: 0,
       },
     });
@@ -181,7 +201,10 @@ describe("modernToLegacyWhereClause with $rdp", () => {
             },
             {
               type: "gte",
-              field: "reportCount",
+              propertyIdentifier: {
+                type: "property",
+                apiName: "reportCount",
+              },
               value: 10,
             },
           ],
@@ -190,7 +213,10 @@ describe("modernToLegacyWhereClause with $rdp", () => {
           type: "not",
           value: {
             type: "eq",
-            field: "managerName",
+            propertyIdentifier: {
+              type: "property",
+              apiName: "managerName",
+            },
             value: "Admin",
           },
         },
@@ -216,12 +242,18 @@ describe("modernToLegacyWhereClause with $rdp", () => {
       value: [
         {
           type: "gte",
-          field: "reportCount",
+          propertyIdentifier: {
+            type: "property",
+            apiName: "reportCount",
+          },
           value: 5,
         },
         {
           type: "eq",
-          field: "managerName",
+          propertyIdentifier: {
+            type: "property",
+            apiName: "managerName",
+          },
           value: "John",
         },
       ],
