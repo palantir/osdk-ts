@@ -20,6 +20,7 @@ import type {
   ActionValidationResponse,
   Logger,
   ObjectTypeDefinition,
+  Osdk,
   PrimaryKeyType,
 } from "@osdk/api";
 import invariant from "tiny-invariant";
@@ -271,6 +272,34 @@ export class Store {
       if (!query) continue;
 
       promises.push(query.invalidateObjectType(apiName, changes));
+    }
+
+    // we use allSettled here because we don't care if it succeeds or fails, just that they all complete.
+    return Promise.allSettled(promises).then(() => void 0);
+  }
+
+  public async invalidateAll(): Promise<void> {
+    const promises: Array<Promise<unknown>> = [];
+    for (const cacheKey of this.queries.keys()) {
+      const query = this.queries.peek(cacheKey);
+      if (query) {
+        promises.push(query.revalidate(true));
+      }
+    }
+    // we use allSettled here because we don't care if it succeeds or fails, just that they all complete.
+    return Promise.allSettled(promises).then(() => void 0);
+  }
+
+  public async invalidateObjects(
+    objects:
+      | Osdk.Instance<ObjectTypeDefinition>
+      | ReadonlyArray<Osdk.Instance<ObjectTypeDefinition>>,
+  ): Promise<void> {
+    const objectsArray = Array.isArray(objects) ? objects : [objects];
+    const promises: Array<Promise<unknown>> = [];
+
+    for (const obj of objectsArray) {
+      promises.push(this.invalidateObject(obj.$objectType, obj.$primaryKey));
     }
 
     // we use allSettled here because we don't care if it succeeds or fails, just that they all complete.

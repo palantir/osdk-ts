@@ -472,4 +472,179 @@ describe("Store Invalidation Type Isolation", () => {
       expect(officeOccupantsLinkSubFn.next).not.toHaveBeenCalled();
     });
   });
+
+  describe("invalidateAll", () => {
+    it("should invalidate all cached queries", async () => {
+      const { subFn: empSubFn } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+      const { subFn: officeSubFn } = await expectStandardObserveObject({
+        cache,
+        type: Office,
+        primaryKey: OFFICE_1_ID,
+      });
+      const { subFn: todoSubFn } = await expectStandardObserveObject({
+        cache,
+        type: Todo,
+        primaryKey: TODO_1_ID,
+      });
+
+      empSubFn.next.mockClear();
+      officeSubFn.next.mockClear();
+      todoSubFn.next.mockClear();
+
+      await cache.invalidateAll();
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      expect(empSubFn.next).toHaveBeenCalled();
+      expect(officeSubFn.next).toHaveBeenCalled();
+      expect(todoSubFn.next).toHaveBeenCalled();
+    });
+
+    it("should invalidate all list queries", async () => {
+      const empListSubFn = mockListSubCallback();
+      defer(cache.lists.observe({
+        type: Employee,
+        where: {},
+        orderBy: {},
+        pageSize: 10,
+      }, empListSubFn));
+
+      const officeListSubFn = mockListSubCallback();
+      defer(cache.lists.observe({
+        type: Office,
+        where: {},
+        orderBy: {},
+        pageSize: 10,
+      }, officeListSubFn));
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+      empListSubFn.next.mockClear();
+      officeListSubFn.next.mockClear();
+
+      await cache.invalidateAll();
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      expect(empListSubFn.next).toHaveBeenCalled();
+      expect(officeListSubFn.next).toHaveBeenCalled();
+    });
+  });
+
+  describe("invalidateObjects", () => {
+    it("should invalidate a single object", async () => {
+      const { subFn: empSubFn } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+      const { subFn: emp2SubFn } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_2_ID,
+      });
+
+      empSubFn.next.mockClear();
+      emp2SubFn.next.mockClear();
+
+      const emp1 = await client(Employee).fetchOne(EMPLOYEE_1_ID);
+      invariant(emp1);
+
+      await cache.invalidateObjects(emp1);
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      expect(empSubFn.next).toHaveBeenCalled();
+      expect(emp2SubFn.next).not.toHaveBeenCalled();
+    });
+
+    it("should invalidate multiple objects", async () => {
+      const { subFn: empSubFn } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+      const { subFn: emp2SubFn } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_2_ID,
+      });
+      const { subFn: officeSubFn } = await expectStandardObserveObject({
+        cache,
+        type: Office,
+        primaryKey: OFFICE_1_ID,
+      });
+
+      empSubFn.next.mockClear();
+      emp2SubFn.next.mockClear();
+      officeSubFn.next.mockClear();
+
+      const emp1 = await client(Employee).fetchOne(EMPLOYEE_1_ID);
+      const emp2 = await client(Employee).fetchOne(EMPLOYEE_2_ID);
+      invariant(emp1);
+      invariant(emp2);
+
+      await cache.invalidateObjects([emp1, emp2]);
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      expect(empSubFn.next).toHaveBeenCalled();
+      expect(emp2SubFn.next).toHaveBeenCalled();
+      expect(officeSubFn.next).not.toHaveBeenCalled();
+    });
+
+    it("should invalidate mixed object types", async () => {
+      const { subFn: empSubFn } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+      const { subFn: officeSubFn } = await expectStandardObserveObject({
+        cache,
+        type: Office,
+        primaryKey: OFFICE_1_ID,
+      });
+      const { subFn: todoSubFn } = await expectStandardObserveObject({
+        cache,
+        type: Todo,
+        primaryKey: TODO_1_ID,
+      });
+
+      empSubFn.next.mockClear();
+      officeSubFn.next.mockClear();
+      todoSubFn.next.mockClear();
+
+      const emp1 = await client(Employee).fetchOne(EMPLOYEE_1_ID);
+      const office1 = await client(Office).fetchOne(OFFICE_1_ID);
+      invariant(emp1);
+      invariant(office1);
+
+      await cache.invalidateObjects([emp1, office1]);
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      expect(empSubFn.next).toHaveBeenCalled();
+      expect(officeSubFn.next).toHaveBeenCalled();
+      expect(todoSubFn.next).not.toHaveBeenCalled();
+    });
+
+    it("should handle empty array", async () => {
+      const { subFn: empSubFn } = await expectStandardObserveObject({
+        cache,
+        type: Employee,
+        primaryKey: EMPLOYEE_1_ID,
+      });
+
+      empSubFn.next.mockClear();
+
+      await cache.invalidateObjects([]);
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      expect(empSubFn.next).not.toHaveBeenCalled();
+    });
+  });
 });
