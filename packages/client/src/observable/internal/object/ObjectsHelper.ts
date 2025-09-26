@@ -44,19 +44,18 @@ export class ObjectsHelper extends AbstractHelper<
 
   getQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveObjectOptions<T>,
-    rdpConfig?: Canonical<Rdp>,
+    rdpConfig?: Canonical<Rdp> | null,
   ): ObjectQuery {
     const apiName = typeof options.apiName === "string"
       ? options.apiName
       : options.apiName.apiName;
     const { pk } = options;
 
-    // Always use 4-parameter cache keys for consistency
     const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
       "object",
       apiName,
       pk,
-      rdpConfig,
+      rdpConfig ?? undefined,
     );
 
     return this.store.queries.get(objectCacheKey, () =>
@@ -79,19 +78,20 @@ export class ObjectsHelper extends AbstractHelper<
   public storeOsdkInstances(
     values: Array<ObjectHolder> | Array<Osdk.Instance<any, any, any>>,
     batch: BatchContext,
-    rdpConfig?: Canonical<Rdp>,
+    rdpConfig?: Canonical<Rdp> | null,
   ): ObjectCacheKey[] {
-    // TODO: This causes double notifications in tests - need to investigate
-    // Use getQuery mechanism which properly handles cache keys and notifications
-    return values.map(v =>
-      this.getQuery({
-        apiName: v.$apiName,
-        pk: v.$primaryKey as string | number,
-      }, rdpConfig).writeToStore(
-        v as ObjectHolder,
-        "loaded",
-        batch,
-      ).cacheKey
-    );
+    // Create cache keys with rdpConfig if provided (for lists with RDPs)
+    return values.map(v => {
+      const cacheKey = this.cacheKeys.get<ObjectCacheKey>(
+        "object",
+        v.$apiName,
+        v.$primaryKey as string,
+        rdpConfig ?? undefined,
+      );
+
+      // Write to the cache
+      batch.write(cacheKey, v as ObjectHolder, "loaded");
+      return cacheKey;
+    });
   }
 }

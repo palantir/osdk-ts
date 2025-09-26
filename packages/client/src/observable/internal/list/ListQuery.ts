@@ -271,7 +271,7 @@ export abstract class ListQuery extends BaseListQuery<
               "object",
               obj.$objectType,
               obj.$primaryKey,
-              this.rdpConfig,
+              this.rdpConfig ?? undefined,
             );
 
             if (!existingList.has(objectCacheKey)) {
@@ -290,7 +290,7 @@ export abstract class ListQuery extends BaseListQuery<
               "object",
               obj.$objectType,
               obj.$primaryKey,
-              this.rdpConfig,
+              this.rdpConfig ?? undefined,
             );
 
             toRemove.add(existingObjectCacheKey);
@@ -312,7 +312,7 @@ export abstract class ListQuery extends BaseListQuery<
               "object",
               obj.$objectType,
               obj.$primaryKey,
-              this.rdpConfig,
+              this.rdpConfig ?? undefined,
             ),
           );
         }
@@ -482,7 +482,7 @@ export abstract class ListQuery extends BaseListQuery<
           "object",
           objOrIface.$objectType,
           objOrIface.$primaryKey,
-          this.rdpConfig,
+          this.rdpConfig ?? undefined,
         );
         // remove the object from the list
         const newObjects = existing.value?.data.filter(
