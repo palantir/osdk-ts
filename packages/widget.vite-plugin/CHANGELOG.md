@@ -1,5 +1,12 @@
 # @osdk/widget.vite-plugin
 
+## 3.1.2
+
+### Patch Changes
+
+- 81a42b4: Fix widgets dev mode on Windows
+  - @osdk/widget.api@3.1.2
+
 ## 3.1.1
 
 ### Patch Changes
