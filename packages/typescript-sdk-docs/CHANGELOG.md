@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.4.0-beta.5
+
+### Minor Changes
+
+- 1796b98: Update load all objects snippet
+
 ## 0.4.0-beta.4
 
 ### Minor Changes
