@@ -1,5 +1,25 @@
 # @osdk/maker
 
+## 0.13.0-beta.10
+
+### Minor Changes
+
+- 11fd3fb: Add api name validation for object types
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.10
+
+## 0.13.0-beta.9
+
+### Minor Changes
+
+- 1b60527: Remove foundry.ontologies dependency
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.9
+
 ## 0.13.0-beta.8
 
 ### Minor Changes

@@ -1,5 +1,30 @@
 # @osdk/client
 
+## 2.5.0-beta.10
+
+### Minor Changes
+
+- 48040a8: add exponential backoff behavior for ObjectSetListener websocket nextConnectTime
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.10
+- @osdk/client.unstable@2.5.0-beta.10
+- @osdk/generator-converters@2.5.0-beta.10
+
+## 2.5.0-beta.9
+
+### Minor Changes
+
+- eeaf8eb: refactor ListQuery into InterfaceListQuery and ObjectListQuery
+- f49171a: Remaps simple API names for orderby and select arguments to match expected fully qualified API names
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.9
+- @osdk/client.unstable@2.5.0-beta.9
+- @osdk/generator-converters@2.5.0-beta.9
+
 ## 2.5.0-beta.8
 
 ### Patch Changes

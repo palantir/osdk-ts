@@ -1584,6 +1584,20 @@ describe("Ontology Defining", () => {
   });
 
   describe("Objects", () => {
+    it("Fails if the api name is invalid", () => {
+      expect(() => {
+        defineObject({
+          titlePropertyApiName: "bar",
+          displayName: "Foo",
+          pluralDisplayName: "Foo",
+          apiName: "foo_with_underscores",
+          primaryKeyPropertyApiName: "bar",
+          properties: { "bar": { type: "string" } },
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Invalid API name foo_with_underscores. API names must match the regex /^([a-zA-Z][a-zA-Z0-9\\\\-]*)$/.]`,
+      );
+    });
     it("Fails if any property reference does not exist", () => {
       const spt = defineSharedPropertyType({
         apiName: "foo",

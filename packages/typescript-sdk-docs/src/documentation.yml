@@ -1052,12 +1052,19 @@ versions:
             import { client } from "./client";
             import type { Osdk } from "@osdk/client";
 
-            const objects: Osdk.Instance<{{objectType}}>[]= [];
+            async function getAll(): Promise<Array<Osdk.Instance<{{objectType}}>>> {
+                const objects: Osdk.Instance<{{objectType}}>[]= [];
+                for await(const obj of client({{objectType}}).asyncIter()) {
+                    objects.push(obj);
+                }
 
-            for await(const obj of client({{objectType}}).asyncIter()) {
-                objects.push(obj);
+                return objects;
             }
-            const object = objects[0];
+
+            // If Array.fromAsync() is available in your target environment
+            function getAllFromAsync(): Promise<Array<Osdk.Instance<{{objectType}}>>> {
+                return Array.fromAsync(client({{objectType}}).asyncIter());
+            }
       loadLinkedObjectReference:
         - template: |-
             import { type {{sourceObjectType}} } from "{{{packageName}}}";
