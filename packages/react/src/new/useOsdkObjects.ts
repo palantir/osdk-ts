@@ -18,10 +18,15 @@ import type {
   InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
+  PrimaryKeyType,
   PropertyKeys,
   WhereClause,
-} from "@osdk/client";
-import type { ObserveObjectsArgs } from "@osdk/client/unstable-do-not-use";
+} from "@osdk/api";
+import type {
+  ObserveListOptions,
+  ObserveObjectOptions,
+  ObserveObjectsArgs,
+} from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
@@ -89,6 +94,24 @@ export interface UseOsdkObjectsOptions<
   // expectedLength?: number | undefined;
 
   streamUpdates?: boolean;
+
+  /**
+   * Optional queries to prefetch alongside this query.
+   * These queries will be fetched in parallel with the main query,
+   * populating the cache for future use.
+   */
+  prefetch?: Array<
+    | ObserveListOptions<ObjectTypeDefinition | InterfaceDefinition>
+    | {
+      type: "object";
+      apiName: ObjectTypeDefinition["apiName"] | ObjectTypeDefinition;
+      pk: PrimaryKeyType<ObjectTypeDefinition>;
+      options?: Omit<
+        ObserveObjectOptions<ObjectTypeDefinition>,
+        "apiName" | "pk"
+      >;
+    }
+  >;
 }
 
 export interface UseOsdkListResult<
@@ -125,6 +148,7 @@ export function useOsdkObjects<
     dedupeIntervalMs,
     where = {},
     streamUpdates,
+    prefetch,
   }: UseOsdkObjectsOptions<Q> = {},
 ): UseOsdkListResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
@@ -135,23 +159,64 @@ export function useOsdkObjects<
    */
   const canonWhere = observableClient.canonicalizeWhereClause(where ?? {});
 
+  const stablePrefetch = React.useMemo(
+    () => prefetch,
+    [JSON.stringify(prefetch)],
+  );
+
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
       makeExternalStore<ObserveObjectsArgs<Q>>(
-        (observer) =>
-          observableClient.observeList({
+        (observer) => {
+          // Execute prefetches as part of subscription setup
+          if (stablePrefetch && stablePrefetch.length > 0) {
+            stablePrefetch.forEach((prefetchQuery) => {
+              if ("type" in prefetchQuery && prefetchQuery.type === "object") {
+                // Object prefetch
+                observableClient.prefetchObject(
+                  prefetchQuery.apiName,
+                  prefetchQuery.pk,
+                  prefetchQuery.options,
+                ).catch(() => {
+                  // Prefetch errors are silently ignored to not affect the main query
+                });
+              } else {
+                // List prefetch
+                observableClient.prefetchList(
+                  prefetchQuery as ObserveListOptions<
+                    ObjectTypeDefinition | InterfaceDefinition
+                  >,
+                ).catch(() => {
+                  // Prefetch errors are silently ignored to not affect the main query
+                });
+              }
+            });
+          }
+
+          // Create and return the main subscription
+          return observableClient.observeList({
             type,
             where: canonWhere,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
             pageSize,
             orderBy,
             streamUpdates,
-          }, observer),
+          }, observer);
+        },
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
           : void 0,
       ),
-    [observableClient, type, canonWhere, dedupeIntervalMs],
+    [
+      observableClient,
+      type,
+      canonWhere,
+      dedupeIntervalMs,
+      pageSize,
+      orderBy,
+      streamUpdates,
+      stablePrefetch,
+    ],
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);

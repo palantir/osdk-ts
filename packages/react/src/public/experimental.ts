@@ -20,6 +20,8 @@ export { useOsdkAction } from "../new/useOsdkAction.js";
 export { useOsdkObject } from "../new/useOsdkObject.js";
 export type { UseOsdkListResult } from "../new/useOsdkObjects.js";
 export { useOsdkObjects } from "../new/useOsdkObjects.js";
+export { usePrefetch } from "../new/usePrefetch.js";
+export type { PrefetchQuery, UsePrefetchResult } from "../new/usePrefetch.js";
 export { useOsdkClient } from "../useOsdkClient.js";
 export { useOsdkMetadata } from "../useOsdkMetadata.js";
 export type { UseOsdkMetadataResult } from "../useOsdkMetadata.js";

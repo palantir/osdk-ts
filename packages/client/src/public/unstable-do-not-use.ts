@@ -21,7 +21,9 @@ export type { ActionSignatureFromDef } from "../actions/applyAction.js";
 export { createObservableClient } from "../observable/ObservableClient.js";
 export type {
   ObservableClient,
+  ObserveListOptions,
   ObserveObjectArgs,
+  ObserveObjectOptions,
   ObserveObjectsArgs,
   Unsubscribable,
 } from "../observable/ObservableClient.js";
