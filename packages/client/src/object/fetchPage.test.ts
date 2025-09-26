@@ -140,7 +140,7 @@ describe(fetchPage, () => {
     );
   });
 
-  it("converts interface objectsets to search properly part 2", () => {
+  it("converts interface objectsets to search properly part 2", async () => {
     const client = createMinimalClient(
       metadata,
       "https://foo",
@@ -152,7 +152,7 @@ describe(fetchPage, () => {
       id: { $gt: 2 },
     });
 
-    const wireObjectSet = getWireObjectSet(objectSet);
+    const wireObjectSet = await getWireObjectSet(objectSet);
 
     expect(objectSetToSearchJsonV2(wireObjectSet, "Todo", undefined)).toEqual(
       {
@@ -173,7 +173,7 @@ describe(fetchPage, () => {
     );
   });
 
-  it("converts interface object set for new API correctly", () => {
+  it("converts interface object set for new API correctly", async () => {
     const client = createMinimalClient(
       metadata,
       "https://foo",
@@ -186,7 +186,7 @@ describe(fetchPage, () => {
     const wireObjectSet = getWireObjectSet(objectSet);
 
     expect(
-      resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {
+      resolveInterfaceObjectSet(await wireObjectSet, "FooInterface", {
         $includeAllBaseObjectProperties: true,
       }),
     ).toEqual(
@@ -212,7 +212,7 @@ describe(fetchPage, () => {
     );
 
     expect(
-      resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {}),
+      resolveInterfaceObjectSet(await wireObjectSet, "FooInterface", {}),
     ).toEqual(
       {
         type: "filter",
@@ -225,7 +225,7 @@ describe(fetchPage, () => {
       },
     );
     expect(
-      resolveInterfaceObjectSet(wireObjectSet, "FooInterface", {
+      resolveInterfaceObjectSet(await wireObjectSet, "FooInterface", {
         $includeAllBaseObjectProperties: false,
       }),
     ).toEqual(

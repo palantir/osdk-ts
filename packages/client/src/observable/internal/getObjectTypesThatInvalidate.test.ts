@@ -63,7 +63,7 @@ describe(getObjectTypesThatInvalidate, () => {
     const { resultType, invalidationSet, counts } =
       await getObjectTypesThatInvalidate(
         client[additionalContext],
-        wireObjectSet,
+        await wireObjectSet,
       );
 
     return {

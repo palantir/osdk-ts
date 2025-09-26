@@ -29,21 +29,25 @@ import { createObjectSet } from "../objectSet/createObjectSet.js";
 export function hydrateObjectSetFromObjectRids<
   T extends ObjectOrInterfaceDefinition,
 >(client: Client, definition: T, rids: readonly string[]): ObjectSet<T> {
-  return createObjectSet(definition, client[additionalContext], {
-    type: "intersect",
-    objectSets: [
-      definition.type === "interface"
-        ? { type: "interfaceBase", interfaceType: definition.apiName }
-        : {
-          type: "base",
-          objectType: definition.apiName,
+  return createObjectSet(
+    definition,
+    client[additionalContext],
+    Promise.resolve({
+      type: "intersect",
+      objectSets: [
+        definition.type === "interface"
+          ? { type: "interfaceBase", interfaceType: definition.apiName }
+          : {
+            type: "base",
+            objectType: definition.apiName,
+          },
+        {
+          type: "static",
+          objects: asMutableArray(rids),
         },
-      {
-        type: "static",
-        objects: asMutableArray(rids),
-      },
-    ],
-  });
+      ],
+    }),
+  );
 }
 
 function asMutableArray<T>(array: readonly T[]): T[] {
