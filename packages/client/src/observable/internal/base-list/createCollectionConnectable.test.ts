@@ -22,7 +22,8 @@ import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/Obje
 import type { Status } from "../../ObservableClient/common.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
-import type { Store, SubjectPayload } from "../Store.js";
+import type { SubjectPayload } from "../SubjectPayload.js";
+import type { Subjects } from "../Subjects.js";
 import {
   createClientMockHelper,
   mockObserver,
@@ -68,16 +69,15 @@ const mockEmployee3: Osdk.Instance<Employee> & ObjectHolder = {
 } as any;
 
 describe("createCollectionConnectable", () => {
-  let mockStore: Store;
+  let mockSubjects: Subjects;
   let createPayload: ReturnType<typeof vi.fn>;
   let mockListCacheKey: CacheKey<any, any, any, any>;
 
   beforeEach(() => {
     const { client } = createClientMockHelper();
 
-    // Mock the store with minimal required methods
-    mockStore = {
-      getSubject: vi.fn(),
+    mockSubjects = {
+      get: vi.fn(),
     } as any;
 
     // Mock cache key for list
@@ -123,7 +123,7 @@ describe("createCollectionConnectable", () => {
       const subject = new BehaviorSubject(subjectPayload);
 
       // Mock store.getSubject to return object observables
-      vi.mocked(mockStore.getSubject).mockImplementation((cacheKey: any) => {
+      vi.mocked(mockSubjects.get).mockImplementation((cacheKey: any) => {
         if (cacheKey === objectKey1) {
           return new BehaviorSubject({
             cacheKey: objectKey1,
@@ -147,7 +147,7 @@ describe("createCollectionConnectable", () => {
 
       const connectable = actualCreateCollectionConnectable(
         subject,
-        mockStore,
+        mockSubjects,
         createPayload,
       );
 
@@ -188,7 +188,7 @@ describe("createCollectionConnectable", () => {
 
       const connectable = actualCreateCollectionConnectable(
         subject,
-        mockStore,
+        mockSubjects,
         createPayload,
       );
 
@@ -226,7 +226,7 @@ describe("createCollectionConnectable", () => {
 
       const connectable = actualCreateCollectionConnectable(
         subject,
-        mockStore,
+        mockSubjects,
         createPayload,
       );
 
@@ -269,7 +269,7 @@ describe("createCollectionConnectable", () => {
 
       const subject = new BehaviorSubject(subjectPayload);
 
-      vi.mocked(mockStore.getSubject).mockReturnValue(
+      vi.mocked(mockSubjects.get).mockReturnValue(
         new BehaviorSubject({
           cacheKey: objectKey1,
           value: mockEmployee1,
@@ -281,7 +281,7 @@ describe("createCollectionConnectable", () => {
 
       const connectable = actualCreateCollectionConnectable(
         subject,
-        mockStore,
+        mockSubjects,
         createPayload,
       );
 
@@ -324,7 +324,7 @@ describe("createCollectionConnectable", () => {
 
       const subject = new BehaviorSubject(basePayload);
 
-      vi.mocked(mockStore.getSubject).mockReturnValue(
+      vi.mocked(mockSubjects.get).mockReturnValue(
         new BehaviorSubject({
           cacheKey: objectKey1,
           value: mockEmployee1,
@@ -336,7 +336,7 @@ describe("createCollectionConnectable", () => {
 
       const connectable = actualCreateCollectionConnectable(
         subject,
-        mockStore,
+        mockSubjects,
         createPayload,
       );
 
@@ -411,7 +411,7 @@ describe("createCollectionConnectable", () => {
       const subject = new BehaviorSubject(subjectPayload);
 
       // Mock store.getSubject for all three objects
-      vi.mocked(mockStore.getSubject).mockImplementation((cacheKey: any) => {
+      vi.mocked(mockSubjects.get).mockImplementation((cacheKey: any) => {
         if (cacheKey === objectKey1) {
           return new BehaviorSubject({
             cacheKey: objectKey1,
@@ -444,7 +444,7 @@ describe("createCollectionConnectable", () => {
 
       const connectable = actualCreateCollectionConnectable(
         subject,
-        mockStore,
+        mockSubjects,
         createPayload,
       );
 
@@ -491,7 +491,7 @@ describe("createCollectionConnectable", () => {
 
       const subject = new BehaviorSubject(initialPayload);
 
-      vi.mocked(mockStore.getSubject).mockImplementation((cacheKey: any) => {
+      vi.mocked(mockSubjects.get).mockImplementation((cacheKey: any) => {
         if (cacheKey === objectKey1) {
           return new BehaviorSubject({
             cacheKey: objectKey1,
@@ -515,7 +515,7 @@ describe("createCollectionConnectable", () => {
 
       const connectable = actualCreateCollectionConnectable(
         subject,
-        mockStore,
+        mockSubjects,
         createPayload,
       );
 
@@ -578,7 +578,7 @@ describe("createCollectionConnectable", () => {
 
       const subject = new BehaviorSubject(subjectPayload);
 
-      vi.mocked(mockStore.getSubject).mockReturnValue(
+      vi.mocked(mockSubjects.get).mockReturnValue(
         new BehaviorSubject({
           cacheKey: objectKey1,
           value: mockEmployee1,
@@ -590,7 +590,7 @@ describe("createCollectionConnectable", () => {
 
       const connectable = actualCreateCollectionConnectable(
         subject,
-        mockStore,
+        mockSubjects,
         createPayload,
       );
 
@@ -640,7 +640,7 @@ describe("createCollectionConnectable", () => {
 
       const subject = new BehaviorSubject(subjectPayload);
 
-      vi.mocked(mockStore.getSubject).mockReturnValue(
+      vi.mocked(mockSubjects.get).mockReturnValue(
         new BehaviorSubject({
           cacheKey: objectKey1,
           value: mockEmployee1,
@@ -652,7 +652,7 @@ describe("createCollectionConnectable", () => {
 
       const connectable = actualCreateCollectionConnectable(
         subject,
-        mockStore,
+        mockSubjects,
         createPayload,
       );
 
@@ -707,7 +707,7 @@ describe("createCollectionConnectable", () => {
       const subject = new BehaviorSubject(subjectPayload);
 
       // Mock store.getSubject to return undefined entry - this creates an object with undefined value
-      vi.mocked(mockStore.getSubject).mockReturnValue(
+      vi.mocked(mockSubjects.get).mockReturnValue(
         new BehaviorSubject({
           cacheKey: objectKey1,
           value: undefined, // This is the key - undefined value
@@ -719,7 +719,7 @@ describe("createCollectionConnectable", () => {
 
       const connectable = actualCreateCollectionConnectable(
         subject,
-        mockStore,
+        mockSubjects,
         createPayload,
       );
 
@@ -760,7 +760,7 @@ describe("createCollectionConnectable", () => {
 
       const subject = new BehaviorSubject(subjectPayload);
 
-      vi.mocked(mockStore.getSubject).mockReturnValue(
+      vi.mocked(mockSubjects.get).mockReturnValue(
         new BehaviorSubject({
           cacheKey: objectKey1,
           value: mockEmployee1,
@@ -777,7 +777,7 @@ describe("createCollectionConnectable", () => {
 
       const connectable = actualCreateCollectionConnectable(
         subject,
-        mockStore,
+        mockSubjects,
         errorThrowingCreatePayload,
       );
 

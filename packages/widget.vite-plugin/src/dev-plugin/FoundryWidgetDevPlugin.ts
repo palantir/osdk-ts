@@ -191,10 +191,17 @@ export function FoundryWidgetDevPlugin(): Plugin {
 
       // Standardize the source file extension and get the full path
       const standardizedSource = standardizeFileExtension(
-        getFullSourcePath(source.slice(1), importer),
+        getFullSourcePath(
+          // If the source path is absolute, resolve it against the current working directory
+          source.startsWith("/") ? path.join(process.cwd(), source) : source,
+          importer,
+        ),
       );
       // Importers are already full paths, so just standardize the extension
-      const standardizedImporter = standardizeFileExtension(importer);
+      // Normalize to ensure consistent path separators on Windows
+      const standardizedImporter = standardizeFileExtension(
+        path.normalize(importer),
+      );
 
       // In dev mode all entrypoints have a generic HTML importer value
       if (
@@ -227,7 +234,8 @@ function getFullSourcePath(source: string, importer: string): string {
 }
 
 function serverPath(server: ViteDevServer, subPath: string): string {
-  return path.resolve(server.config.base, subPath);
+  // Don't use Windows-style paths when constructing URL paths for the HTTP server
+  return path.posix.resolve(server.config.base, subPath);
 }
 
 function printSetupPageUrl(server: ViteDevServer) {

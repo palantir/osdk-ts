@@ -1,5 +1,54 @@
 # @osdk/generator
 
+## 2.5.0-beta.10
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.10
+- @osdk/generator-converters@2.5.0-beta.10
+
+## 2.5.0-beta.9
+
+### Minor Changes
+
+- d29cdfb: Fixes query generation with disallowed javascript identifiers.
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.9
+- @osdk/generator-converters@2.5.0-beta.9
+
+## 2.5.0-beta.8
+
+### Minor Changes
+
+- 78be29f: mark deprecated properties with JSDoc for interface types
+
+### Patch Changes
+
+- Updated dependencies [ca1fabe]
+  - @osdk/api@2.5.0-beta.8
+  - @osdk/generator-converters@2.5.0-beta.8
+
+## 2.5.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.7
+- @osdk/generator-converters@2.5.0-beta.7
+
+## 2.5.0-beta.6
+
+### Minor Changes
+
+- cbcf2ad: Add branching support
+
+### Patch Changes
+
+- Updated dependencies [cbcf2ad]
+  - @osdk/generator-converters@2.5.0-beta.6
+  - @osdk/api@2.5.0-beta.6
+
 ## 2.5.0-beta.5
 
 ### Minor Changes

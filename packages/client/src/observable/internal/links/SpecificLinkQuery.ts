@@ -28,6 +28,7 @@ import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import type { ObserveLinks } from "../../ObservableClient/ObserveLink.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
+import type { BatchContext } from "../BatchContext.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import type { Changes } from "../Changes.js";
@@ -35,7 +36,8 @@ import type { Entry } from "../Layer.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
-import type { BatchContext, Store, SubjectPayload } from "../Store.js";
+import type { Store } from "../Store.js";
+import type { SubjectPayload } from "../SubjectPayload.js";
 import { tombstone } from "../tombstone.js";
 import type { SpecificLinkCacheKey } from "./SpecificLinkCacheKey.js";
 

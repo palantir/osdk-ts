@@ -113,12 +113,17 @@ describe("Ontology Defining", () => {
 
       const ontology = dumpOntologyFullMetadata();
       const objectPropertyType =
-        ontology.blockData.objectTypes["com.palantir.testObject"]
+        ontology.ontology.objectTypes["com.palantir.testObject"]
           .objectType.propertyTypes["constrainedString"];
 
       expect(objectPropertyType.valueType).toEqual({
         apiName: "stringWithConstraints",
         version: "1.0.0",
+        packageNamespace: "com.palantir",
+        displayMetadata: {
+          displayName: "String With Constraints",
+          description: "A string type with additional constraints",
+        },
       });
 
       expect(objectPropertyType.dataConstraints).toBeDefined();
@@ -156,49 +161,50 @@ describe("Ontology Defining", () => {
         version: "0.1.0",
       });
       expect(dumpValueTypeWireType()).toMatchInlineSnapshot(`
- {
-   "valueTypes": [
-     {
-       "metadata": {
-         "apiName": "apiName",
-         "displayMetadata": {
-           "description": "",
-           "displayName": "displayName",
-         },
-         "status": {
-           "active": {},
-           "type": "active",
-         },
-       },
-       "versions": [
-         {
-           "baseType": {
-             "boolean": {},
-             "type": "boolean",
-           },
-           "constraints": [
-             {
-               "constraint": {
-                 "constraint": {
-                   "boolean": {
-                     "allowedValues": [
-                       "TRUE_VALUE",
-                     ],
-                   },
-                   "type": "boolean",
-                 },
-                 "failureMessage": undefined,
-               },
-             },
-           ],
-           "exampleValues": [],
-           "version": "0.1.0",
-         },
-       ],
-     },
-   ],
- }
-        `);
+        {
+          "valueTypes": [
+            {
+              "metadata": {
+                "apiName": "apiName",
+                "displayMetadata": {
+                  "description": "",
+                  "displayName": "displayName",
+                },
+                "packageNamespace": "com.palantir",
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+              "versions": [
+                {
+                  "baseType": {
+                    "boolean": {},
+                    "type": "boolean",
+                  },
+                  "constraints": [
+                    {
+                      "constraint": {
+                        "constraint": {
+                          "boolean": {
+                            "allowedValues": [
+                              "TRUE_VALUE",
+                            ],
+                          },
+                          "type": "boolean",
+                        },
+                        "failureMessage": undefined,
+                      },
+                    },
+                  ],
+                  "exampleValues": [],
+                  "version": "0.1.0",
+                },
+              ],
+            },
+          ],
+        }
+      `);
     });
 
     // N.B Not sure what this is for but I don't want to break anything so I added the eslint ignore
@@ -240,7 +246,7 @@ describe("Ontology Defining", () => {
           },
         });
 
-        expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+        expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
           {
             "actionTypes": {},
             "blockPermissionInformation": {
@@ -255,7 +261,6 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "Foo",
                     "displayName": "Foo",
-                    "icon": undefined,
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -358,7 +363,7 @@ describe("Ontology Defining", () => {
           type: "string",
         });
 
-        expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+        expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
           {
             "actionTypes": {},
             "blockPermissionInformation": {
@@ -438,7 +443,7 @@ describe("Ontology Defining", () => {
         extends: [parentInterface],
       });
 
-      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+      expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
         {
           "actionTypes": {},
           "blockPermissionInformation": {
@@ -453,7 +458,6 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "childInterface",
                   "displayName": "childInterface",
-                  "icon": undefined,
                 },
                 "extendsInterfaces": [
                   "com.palantir.parentInterface",
@@ -513,7 +517,6 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "parentInterface",
                   "displayName": "parentInterface",
-                  "icon": undefined,
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -654,7 +657,7 @@ describe("Ontology Defining", () => {
         },
       });
 
-      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+      expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
         {
           "actionTypes": {},
           "blockPermissionInformation": {
@@ -669,7 +672,6 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "parentInterface",
                   "displayName": "parentInterface",
-                  "icon": undefined,
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -781,7 +783,7 @@ describe("Ontology Defining", () => {
         extends: parentInterface,
       });
 
-      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+      expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
         {
           "actionTypes": {},
           "blockPermissionInformation": {
@@ -796,7 +798,6 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "childInterface",
                   "displayName": "childInterface",
-                  "icon": undefined,
                 },
                 "extendsInterfaces": [
                   "com.palantir.parentInterface",
@@ -856,7 +857,6 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "parentInterface",
                   "displayName": "parentInterface",
-                  "icon": undefined,
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -995,7 +995,7 @@ describe("Ontology Defining", () => {
         searchable: false,
       });
 
-      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+      expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
         {
           "actionTypes": {},
           "blockPermissionInformation": {
@@ -1010,7 +1010,6 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "parentInterface",
                   "displayName": "parentInterface",
-                  "icon": undefined,
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -1050,7 +1049,7 @@ describe("Ontology Defining", () => {
         apiName: "singleLink",
       });
 
-      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+      expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
         {
           "actionTypes": {},
           "blockPermissionInformation": {
@@ -1065,7 +1064,6 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "A",
                   "displayName": "A",
-                  "icon": undefined,
                 },
                 "extendsInterfaces": [],
                 "links": [
@@ -1099,7 +1097,6 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "B",
                   "displayName": "B",
-                  "icon": undefined,
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -1128,7 +1125,7 @@ describe("Ontology Defining", () => {
         apiName: "manyLink",
       });
 
-      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+      expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
         {
           "actionTypes": {},
           "blockPermissionInformation": {
@@ -1143,7 +1140,6 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "A",
                   "displayName": "A",
-                  "icon": undefined,
                 },
                 "extendsInterfaces": [],
                 "links": [
@@ -1177,7 +1173,6 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "B",
                   "displayName": "B",
-                  "icon": undefined,
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -1233,7 +1228,7 @@ describe("Ontology Defining", () => {
       icon: { color: "#00000", locator: "airplane" },
     });
 
-    expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+    expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
       {
         "actionTypes": {},
         "blockPermissionInformation": {
@@ -1248,13 +1243,6 @@ describe("Ontology Defining", () => {
               "displayMetadata": {
                 "description": "Foo Interface",
                 "displayName": "Foo Interface",
-                "icon": {
-                  "blueprint": {
-                    "color": "#00000",
-                    "locator": "airplane",
-                  },
-                  "type": "blueprint",
-                },
               },
               "extendsInterfaces": [],
               "links": [],
@@ -1369,7 +1357,7 @@ describe("Ontology Defining", () => {
       },
     });
 
-    expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+    expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
               {
                 "actionTypes": {},
                 "blockPermissionInformation": {
@@ -1452,7 +1440,7 @@ describe("Ontology Defining", () => {
       properties: { foo: spt },
     });
 
-    expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+    expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
       {
         "actionTypes": {},
         "blockPermissionInformation": {
@@ -1467,7 +1455,6 @@ describe("Ontology Defining", () => {
               "displayMetadata": {
                 "description": "interface",
                 "displayName": "interface",
-                "icon": undefined,
               },
               "extendsInterfaces": [],
               "links": [],
@@ -1597,6 +1584,20 @@ describe("Ontology Defining", () => {
   });
 
   describe("Objects", () => {
+    it("Fails if the api name is invalid", () => {
+      expect(() => {
+        defineObject({
+          titlePropertyApiName: "bar",
+          displayName: "Foo",
+          pluralDisplayName: "Foo",
+          apiName: "foo_with_underscores",
+          primaryKeyPropertyApiName: "bar",
+          properties: { "bar": { type: "string" } },
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Invalid API name foo_with_underscores. API names must match the regex /^([a-zA-Z][a-zA-Z0-9\\\\-]*)$/.]`,
+      );
+    });
     it("Fails if any property reference does not exist", () => {
       const spt = defineSharedPropertyType({
         apiName: "foo",
@@ -1719,7 +1720,7 @@ describe("Ontology Defining", () => {
         }],
       });
 
-      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+      expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
         {
           "actionTypes": {},
           "blockPermissionInformation": {
@@ -1734,7 +1735,6 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "interface",
                   "displayName": "interface",
-                  "icon": undefined,
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -2097,7 +2097,7 @@ describe("Ontology Defining", () => {
         manyForeignKeyProperty: "bar",
       });
 
-      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+      expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
         {
           "actionTypes": {},
           "blockPermissionInformation": {
@@ -2443,7 +2443,7 @@ describe("Ontology Defining", () => {
           },
         },
       });
-      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+      expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
         {
           "actionTypes": {},
           "blockPermissionInformation": {
@@ -2832,7 +2832,7 @@ describe("Ontology Defining", () => {
         manyForeignKeyProperty: "bar",
       });
 
-      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+      expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
         {
           "actionTypes": {},
           "blockPermissionInformation": {
@@ -3171,7 +3171,7 @@ describe("Ontology Defining", () => {
         datasource: { type: "stream", retentionPeriod: "PT1H" },
       });
 
-      expect(dumpOntologyFullMetadata().blockData).toMatchInlineSnapshot(`
+      expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
         {
           "actionTypes": {},
           "blockPermissionInformation": {
@@ -3537,7 +3537,22 @@ describe("Ontology Defining", () => {
       });
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
@@ -3646,12 +3661,8 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -3676,7 +3687,22 @@ describe("Ontology Defining", () => {
       });
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
@@ -3829,12 +3855,8 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -3890,7 +3912,22 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
@@ -4044,12 +4081,8 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -4081,7 +4114,7 @@ describe("Ontology Defining", () => {
       });
 
       const ontology = dumpOntologyFullMetadata();
-      const classificationConstraint = ontology.blockData
+      const classificationConstraint = ontology.ontology
         .objectTypes["com.palantir.document"].datasources[0].dataSecurity
         ?.classificationConstraint!;
       expect(classificationConstraint.markingGroupName).toEqual(
@@ -4114,7 +4147,22 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.foo": {
                 "actionType": {
@@ -4250,12 +4298,8 @@ describe("Ontology Defining", () => {
             "objectTypes": {},
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -4330,7 +4374,22 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.create-example-interface-foo": {
                 "actionType": {
@@ -4812,7 +4871,6 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "exampleInterface",
                     "displayName": "exampleInterface",
-                    "icon": undefined,
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -5283,12 +5341,8 @@ describe("Ontology Defining", () => {
               },
             },
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -5322,7 +5376,22 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.foo": {
                 "actionType": {
@@ -5463,12 +5532,8 @@ describe("Ontology Defining", () => {
             "objectTypes": {},
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -5524,7 +5589,22 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.foo": {
                 "actionType": {
@@ -5752,12 +5832,8 @@ describe("Ontology Defining", () => {
             "objectTypes": {},
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -5805,7 +5881,22 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.create-object-foo": {
                 "actionType": {
@@ -6682,12 +6773,8 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -6711,12 +6798,21 @@ describe("Ontology Defining", () => {
       const createObjectActionType = defineCreateObjectAction(
         {
           objectType: exampleObjectType,
-          actionLevelValidation: {
+          actionLevelValidation: [{
             condition: {
               type: "group",
               name: "actionLevelGroup",
             },
-          },
+          }, {
+            condition: {
+              type: "group",
+              name: "actionLevelGroup2",
+            },
+            displayMetadata: {
+              failureMessage: "Different custom failure message",
+              typeClasses: [],
+            },
+          }],
           parameterOrdering: ["bar", "fizz", "primary"],
           parameterConfiguration: {
             "fizz": {
@@ -6774,12 +6870,21 @@ describe("Ontology Defining", () => {
       const modifyObjectActionType = defineModifyObjectAction(
         {
           objectType: exampleObjectType,
-          actionLevelValidation: {
+          actionLevelValidation: [{
             condition: {
               type: "group",
               name: "actionLevelGroup",
             },
-          },
+          }, {
+            condition: {
+              type: "group",
+              name: "actionLevelGroup2",
+            },
+            displayMetadata: {
+              failureMessage: "Different custom failure message",
+              typeClasses: [],
+            },
+          }],
           parameterOrdering: ["bar", "fizz"],
           parameterConfiguration: {
             "fizz": {
@@ -6837,12 +6942,21 @@ describe("Ontology Defining", () => {
       const createOrModifyObjectActionType = defineCreateOrModifyObjectAction(
         {
           objectType: exampleObjectType,
-          actionLevelValidation: {
+          actionLevelValidation: [{
             condition: {
               type: "group",
               name: "actionLevelGroup",
             },
-          },
+          }, {
+            condition: {
+              type: "group",
+              name: "actionLevelGroup2",
+            },
+            displayMetadata: {
+              failureMessage: "Different custom failure message",
+              typeClasses: [],
+            },
+          }],
           parameterOrdering: ["bar", "fizz"],
           parameterConfiguration: {
             "fizz": {
@@ -6900,7 +7014,22 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.create-object-foo": {
                 "actionType": {
@@ -6966,6 +7095,42 @@ describe("Ontology Defining", () => {
                             },
                             "displayMetadata": {
                               "failureMessage": "Did not satisfy validation",
+                              "typeClasses": [],
+                            },
+                          },
+                          "1": {
+                            "condition": {
+                              "comparison": {
+                                "left": {
+                                  "type": "userProperty",
+                                  "userProperty": {
+                                    "propertyValue": {
+                                      "groupIds": {},
+                                      "type": "groupIds",
+                                    },
+                                    "userId": {
+                                      "currentUser": {},
+                                      "type": "currentUser",
+                                    },
+                                  },
+                                },
+                                "operator": "INTERSECTS",
+                                "right": {
+                                  "staticValue": {
+                                    "stringList": {
+                                      "strings": [
+                                        "actionLevelGroup2",
+                                      ],
+                                    },
+                                    "type": "stringList",
+                                  },
+                                  "type": "staticValue",
+                                },
+                              },
+                              "type": "comparison",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "Different custom failure message",
                               "typeClasses": [],
                             },
                           },
@@ -7293,6 +7458,42 @@ describe("Ontology Defining", () => {
                             },
                             "displayMetadata": {
                               "failureMessage": "Did not satisfy validation",
+                              "typeClasses": [],
+                            },
+                          },
+                          "1": {
+                            "condition": {
+                              "comparison": {
+                                "left": {
+                                  "type": "userProperty",
+                                  "userProperty": {
+                                    "propertyValue": {
+                                      "groupIds": {},
+                                      "type": "groupIds",
+                                    },
+                                    "userId": {
+                                      "currentUser": {},
+                                      "type": "currentUser",
+                                    },
+                                  },
+                                },
+                                "operator": "INTERSECTS",
+                                "right": {
+                                  "staticValue": {
+                                    "stringList": {
+                                      "strings": [
+                                        "actionLevelGroup2",
+                                      ],
+                                    },
+                                    "type": "stringList",
+                                  },
+                                  "type": "staticValue",
+                                },
+                              },
+                              "type": "comparison",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "Different custom failure message",
                               "typeClasses": [],
                             },
                           },
@@ -7633,6 +7834,42 @@ describe("Ontology Defining", () => {
                             },
                             "displayMetadata": {
                               "failureMessage": "Did not satisfy validation",
+                              "typeClasses": [],
+                            },
+                          },
+                          "1": {
+                            "condition": {
+                              "comparison": {
+                                "left": {
+                                  "type": "userProperty",
+                                  "userProperty": {
+                                    "propertyValue": {
+                                      "groupIds": {},
+                                      "type": "groupIds",
+                                    },
+                                    "userId": {
+                                      "currentUser": {},
+                                      "type": "currentUser",
+                                    },
+                                  },
+                                },
+                                "operator": "INTERSECTS",
+                                "right": {
+                                  "staticValue": {
+                                    "stringList": {
+                                      "strings": [
+                                        "actionLevelGroup2",
+                                      ],
+                                    },
+                                    "type": "stringList",
+                                  },
+                                  "type": "staticValue",
+                                },
+                              },
+                              "type": "comparison",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "Different custom failure message",
                               "typeClasses": [],
                             },
                           },
@@ -8171,12 +8408,8 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -8237,7 +8470,22 @@ describe("Ontology Defining", () => {
       );
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.create-object-foo": {
                 "actionType": {
@@ -8843,12 +9091,8 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -9035,7 +9279,22 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.create-or-modify-employee": {
                 "actionType": {
@@ -9643,12 +9902,8 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -9709,7 +9964,22 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.create-object-employee": {
                 "actionType": {
@@ -10184,12 +10454,8 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -10207,7 +10473,22 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.create-example-interface": {
                 "actionType": {
@@ -10573,7 +10854,6 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "exampleInterface",
                     "displayName": "exampleInterface",
-                    "icon": undefined,
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -10667,12 +10947,8 @@ describe("Ontology Defining", () => {
               },
             },
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -10700,17 +10976,32 @@ describe("Ontology Defining", () => {
       });
       const createAction = defineCreateObjectAction({
         objectType: sampleObject,
-        actionLevelValidation: {
+        actionLevelValidation: [{
           condition: {
             type: "group",
             name: "testGroup",
           },
-        },
+        }],
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.create-object-sample-object": {
                 "actionType": {
@@ -11073,12 +11364,8 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -11106,7 +11393,7 @@ describe("Ontology Defining", () => {
       });
       const createAction = defineCreateObjectAction({
         objectType: sampleObject,
-        actionLevelValidation: {
+        actionLevelValidation: [{
           displayMetadata: {
             failureMessage:
               "Insufficient permissions. Missing organization membership required to submit action",
@@ -11142,12 +11429,27 @@ describe("Ontology Defining", () => {
               },
             },
           },
-        },
+        }],
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.create-object-sample-object": {
                 "actionType": {
@@ -11510,12 +11812,8 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -11545,7 +11843,22 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.create-object-object-with-arrays": {
                 "actionType": {
@@ -12352,12 +12665,8 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -12398,7 +12707,22 @@ describe("Ontology Defining", () => {
       });
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.create-object-sample-object": {
                 "actionType": {
@@ -12807,12 +13131,8 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -12956,7 +13276,22 @@ describe("Ontology Defining", () => {
       });
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {
               "com.palantir.create-object-sample-object": {
                 "actionType": {
@@ -13405,12 +13740,8 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -13431,7 +13762,50 @@ describe("Ontology Defining", () => {
       });
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {
+              "com.palantir.core.ontology.types.id": {
+                "sharedPropertyType": {
+                  "aliases": [],
+                  "apiName": "com.palantir.core.ontology.types.id",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "com.palantir.core.ontology.types.id",
+                    "visibility": "NORMAL",
+                  },
+                  "gothamMapping": undefined,
+                  "indexedForSearch": true,
+                  "type": {
+                    "string": {
+                      "analyzerOverride": undefined,
+                      "enableAsciiFolding": undefined,
+                      "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
+                      "supportsExactMatching": true,
+                    },
+                    "type": "string",
+                  },
+                  "typeClasses": [],
+                  "valueType": undefined,
+                },
+              },
+            },
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
@@ -13445,7 +13819,6 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "myInterface",
                     "displayName": "myInterface",
-                    "icon": undefined,
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -13493,29 +13866,8 @@ describe("Ontology Defining", () => {
             "objectTypes": {},
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [
-              {
-                "apiName": "com.palantir.core.ontology.types.id",
-                "description": undefined,
-                "displayName": "com.palantir.core.ontology.types.id",
-                "type": {
-                  "string": {
-                    "analyzerOverride": undefined,
-                    "enableAsciiFolding": undefined,
-                    "isLongText": false,
-                    "supportsEfficientLeadingWildcard": false,
-                    "supportsExactMatching": true,
-                  },
-                  "type": "string",
-                },
-                "valueType": undefined,
-              },
-            ],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -13538,7 +13890,50 @@ describe("Ontology Defining", () => {
       });
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {
+              "com.other.package.spt": {
+                "sharedPropertyType": {
+                  "aliases": [],
+                  "apiName": "com.other.package.spt",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "com.other.package.spt",
+                    "visibility": "NORMAL",
+                  },
+                  "gothamMapping": undefined,
+                  "indexedForSearch": true,
+                  "type": {
+                    "string": {
+                      "analyzerOverride": undefined,
+                      "enableAsciiFolding": undefined,
+                      "isLongText": false,
+                      "supportsEfficientLeadingWildcard": false,
+                      "supportsExactMatching": true,
+                    },
+                    "type": "string",
+                  },
+                  "typeClasses": [],
+                  "valueType": undefined,
+                },
+              },
+            },
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
@@ -13552,7 +13947,6 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "myInterface",
                     "displayName": "myInterface",
-                    "icon": undefined,
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -13600,29 +13994,8 @@ describe("Ontology Defining", () => {
             "objectTypes": {},
             "sharedPropertyTypes": {},
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [
-              {
-                "apiName": "com.other.package.spt",
-                "description": undefined,
-                "displayName": "com.other.package.spt",
-                "type": {
-                  "string": {
-                    "analyzerOverride": undefined,
-                    "enableAsciiFolding": undefined,
-                    "isLongText": false,
-                    "supportsEfficientLeadingWildcard": false,
-                    "supportsExactMatching": true,
-                  },
-                  "type": "string",
-                },
-                "valueType": undefined,
-              },
-            ],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);
@@ -13989,7 +14362,22 @@ describe("Ontology Defining", () => {
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
-          "blockData": {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
             "actionTypes": {},
             "blockPermissionInformation": {
               "actionTypes": {},
@@ -14003,7 +14391,6 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "childInterface",
                     "displayName": "childInterface",
-                    "icon": undefined,
                   },
                   "extendsInterfaces": [
                     "com.palantir.parentInterface",
@@ -14063,7 +14450,6 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "parentInterface",
                     "displayName": "parentInterface",
-                    "icon": undefined,
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -14348,12 +14734,8 @@ describe("Ontology Defining", () => {
               },
             },
           },
-          "importedTypes": {
-            "actionTypes": [],
-            "interfaceTypes": [],
-            "linkTypes": [],
-            "objectTypes": [],
-            "sharedPropertyTypes": [],
+          "valueTypes": {
+            "valueTypes": [],
           },
         }
       `);

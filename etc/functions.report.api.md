@@ -7,12 +7,14 @@
 import { Attachment } from '@osdk/client';
 import type { Client } from '@osdk/client';
 import type { CompileTimeMetadata } from '@osdk/client';
+import { Geometry } from 'geojson';
 import type { GroupId as GroupId_2 } from '@osdk/foundry.core';
 import type { InterfaceDefinition } from '@osdk/client';
 import type { ObjectMetadata } from '@osdk/client';
 import type { ObjectTypeDefinition } from '@osdk/client';
 import type { Osdk } from '@osdk/client';
 import type { OsdkObjectCreatePropertyType } from '@osdk/client';
+import { Point } from 'geojson';
 import type { PropertyKeys } from '@osdk/client';
 import { Range as Range_2 } from '@osdk/client';
 import { ThreeDimensionalAggregation } from '@osdk/client';
@@ -118,6 +120,8 @@ export type Float<T extends number = number> = T & {
     	__floatBrand?: void
 };
 
+export { Geometry }
+
 // @public (undocumented)
 export type GroupId = GroupId_2 & {
     	__groupIdBrand?: void
@@ -175,6 +179,8 @@ export interface PlatformNotification {
     	// (undocumented)
     links: NotificationLink[];
 }
+
+export { Point }
 
 // @public (undocumented)
 export type Principal = {

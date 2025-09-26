@@ -1070,12 +1070,19 @@ versions:
             import { client } from "./client";
             import type { Osdk } from "@osdk/client";
 
-            const objects: Osdk.Instance<{{objectType}}>[]= [];
+            async function getAll(): Promise<Array<Osdk.Instance<{{objectType}}>>> {
+                const objects: Osdk.Instance<{{objectType}}>[]= [];
+                for await(const obj of client({{objectType}}).asyncIter()) {
+                    objects.push(obj);
+                }
 
-            for await(const obj of client({{objectType}}).asyncIter()) {
-                objects.push(obj);
+                return objects;
             }
-            const object = objects[0];
+
+            // If Array.fromAsync() is available in your target environment
+            function getAllFromAsync(): Promise<Array<Osdk.Instance<{{objectType}}>>> {
+                return Array.fromAsync(client({{objectType}}).asyncIter());
+            }
       loadLinkedObjectReference:
         - template: |-
             import { {{sourceObjectType}}, {{linkedObjectType}} } from "{{{packageName}}}";
@@ -2081,5 +2088,25 @@ versions:
                             .selectProperty("{{property}}").{{operation}}("DAY")
                         {{/isExtractPart}}
                   });
-            
+        nearestNeighborsTextQuery:
+          - template: |-
+              import { {{objectType}} } from "{{{packageName}}}";
+              // Edit this import if your client location differs
+              import { client } from "./client";
 
+              const result = await client({{objectType}})
+                .nearestNeighbors("coffee", 5, "{{property}}")
+                .fetchPage();
+
+        nearestNeighborsVectorQuery:
+          - template: |-
+              import { {{objectType}} } from "{{{packageName}}}";
+              // Edit this import if your client location differs
+              import { client } from "./client";
+
+              // Note that this vector maps to an arbitrary string
+              // It must match the dimension of the "{{property}}" property: {{vectorDimensionSize}}
+              const vector_query = Array.from({ length: {{vectorDimensionSize}} }, () => 0.3),
+              const result = await client({{objectType}})
+                .nearestNeighbors(vector_query, 5, "{{property}}")
+                .fetchPage();

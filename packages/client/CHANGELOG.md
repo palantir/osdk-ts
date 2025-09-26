@@ -1,5 +1,70 @@
 # @osdk/client
 
+## 2.5.0-beta.10
+
+### Minor Changes
+
+- 48040a8: add exponential backoff behavior for ObjectSetListener websocket nextConnectTime
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.10
+- @osdk/client.unstable@2.5.0-beta.10
+- @osdk/generator-converters@2.5.0-beta.10
+
+## 2.5.0-beta.9
+
+### Minor Changes
+
+- eeaf8eb: refactor ListQuery into InterfaceListQuery and ObjectListQuery
+- f49171a: Remaps simple API names for orderby and select arguments to match expected fully qualified API names
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.9
+- @osdk/client.unstable@2.5.0-beta.9
+- @osdk/generator-converters@2.5.0-beta.9
+
+## 2.5.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [ca1fabe]
+  - @osdk/api@2.5.0-beta.8
+  - @osdk/client.unstable@2.5.0-beta.8
+  - @osdk/generator-converters@2.5.0-beta.8
+
+## 2.5.0-beta.7
+
+### Minor Changes
+
+- ab29baa: make dedupeIntervals dynamic
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.7
+- @osdk/client.unstable@2.5.0-beta.7
+- @osdk/generator-converters@2.5.0-beta.7
+
+## 2.5.0-beta.6
+
+### Minor Changes
+
+- d797f0c: Falsy values other than undefined or null do not throw for query map responses
+- cbcf2ad: Add branching support
+
+### Patch Changes
+
+- Updated dependencies [badfbc4]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [04fe946]
+  - @osdk/shared.client.impl@1.5.0-beta.2
+  - @osdk/shared.net.errors@2.5.0-beta.2
+  - @osdk/shared.net.fetch@1.5.0-beta.2
+  - @osdk/generator-converters@2.5.0-beta.6
+  - @osdk/client.unstable@2.5.0-beta.6
+  - @osdk/api@2.5.0-beta.6
+
 ## 2.5.0-beta.5
 
 ### Minor Changes

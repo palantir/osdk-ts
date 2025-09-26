@@ -1,5 +1,19 @@
 # @osdk/api
 
+## 2.5.0-beta.10
+
+## 2.5.0-beta.9
+
+## 2.5.0-beta.8
+
+### Minor Changes
+
+- ca1fabe: Fix experimental metadata types for objects
+
+## 2.5.0-beta.7
+
+## 2.5.0-beta.6
+
 ## 2.5.0-beta.5
 
 ### Minor Changes

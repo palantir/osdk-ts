@@ -18,12 +18,14 @@ import type { ObjectMetadata } from "@osdk/api";
 import type {
   ObjectTypeFullMetadata,
   OntologyValueType,
+  PropertyApiName,
+  SharedPropertyTypeApiName,
   ValueTypeApiName,
   ValueTypeConstraint,
 } from "@osdk/foundry.ontologies";
 import { wireObjectTypeFullMetadataToSdkObjectMetadata } from "@osdk/generator-converters";
 import consola from "consola";
-import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
+import { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
 import { ForeignType } from "../GenerateContext/ForeignType.js";
@@ -31,6 +33,8 @@ import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { getObjectImports } from "../shared/getObjectImports.js";
 import { propertyJsdoc } from "../shared/propertyJsdoc.js";
 import { stringify } from "../util/stringify.js";
+
+type PropertyApiNameUnion = PropertyApiName | SharedPropertyTypeApiName;
 
 /** @internal */
 export function wireObjectTypeV2ToSdkObjectConstV2(
@@ -227,14 +231,19 @@ export function createProps(
   const definition = type.getCleanedUpDefinition(true);
   const propertyMetadata = type instanceof EnhancedObjectType
     ? type.raw.objectType.properties
+    : type instanceof EnhancedInterfaceType
+    ? type.raw.properties
     : undefined;
   return `export interface ${identifier} {
 ${
     stringify(definition.properties, {
       "*": (propertyDefinition, _, apiName) => {
+        const metadata = propertyMetadata
+          ? (propertyMetadata as Record<PropertyApiNameUnion, any>)[apiName]
+          : undefined;
         return [
           `${
-            propertyJsdoc(propertyDefinition, propertyMetadata?.[apiName], {
+            propertyJsdoc(propertyDefinition, metadata, {
               apiName,
             })
           }readonly "${maybeStripNamespace(type, apiName)}"`,
@@ -274,6 +283,8 @@ export function createDefinition(
   const definition = object.getCleanedUpDefinition(true);
   const propertyMetadata = object instanceof EnhancedObjectType
     ? object.raw.objectType.properties
+    : object instanceof EnhancedInterfaceType
+    ? object.raw.properties
     : undefined;
   return `
     export interface ${identifier} extends ${
@@ -323,9 +334,15 @@ export function createDefinition(
           "*": (propertyDefinition, _, apiName) =>
             [
               `${
-                propertyJsdoc(propertyDefinition, propertyMetadata?.[apiName], {
-                  apiName,
-                })
+                propertyJsdoc(
+                  propertyDefinition,
+                  (propertyMetadata as Record<PropertyApiNameUnion, any>)[
+                    apiName
+                  ],
+                  {
+                    apiName,
+                  },
+                )
               }"${maybeStripNamespace(object, apiName)}"`,
               `$PropertyDef<${JSON.stringify(propertyDefinition.type)}, "${
                 propertyDefinition.nullable ? "nullable" : "non-nullable"

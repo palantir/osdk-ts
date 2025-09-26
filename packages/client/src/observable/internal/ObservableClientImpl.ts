@@ -59,9 +59,6 @@ export class ObservableClientImpl implements ObservableClient {
 
     this.applyAction = store.applyAction.bind(store);
     this.validateAction = store.validateAction.bind(store);
-    this.canonicalizeWhereClause = store.canonicalizeWhereClause.bind(
-      store,
-    ) as typeof this.canonicalizeWhereClause;
   }
 
   public observeObject: <T extends ObjectTypeDefinition>(
@@ -143,9 +140,28 @@ export class ObservableClientImpl implements ObservableClient {
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
   ) => Promise<ActionValidationResponse>;
 
-  public canonicalizeWhereClause: <
+  public invalidateAll(): Promise<void> {
+    return this.__experimentalStore.invalidateAll();
+  }
+
+  public invalidateObjects(
+    objects:
+      | Osdk.Instance<ObjectTypeDefinition>
+      | ReadonlyArray<Osdk.Instance<ObjectTypeDefinition>>,
+  ): Promise<void> {
+    return this.__experimentalStore.invalidateObjects(objects);
+  }
+
+  public invalidateObjectType<T extends ObjectTypeDefinition>(
+    type: T | T["apiName"],
+  ): Promise<void> {
+    return this.__experimentalStore.invalidateObjectType(type, undefined);
+  }
+
+  public canonicalizeWhereClause<
     T extends ObjectTypeDefinition | InterfaceDefinition,
-  >(
-    where: WhereClause<T>,
-  ) => Canonical<WhereClause<T>>;
+  >(where: WhereClause<T>): Canonical<WhereClause<T>> {
+    return this.__experimentalStore.whereCanonicalizer
+      .canonicalize(where) as Canonical<WhereClause<T>>;
+  }
 }

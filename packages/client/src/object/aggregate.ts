@@ -69,6 +69,7 @@ export async function aggregate<
       groupBy: body.groupBy,
       aggregation: body.aggregation,
     },
+    { branch: clientCtx.branch },
   );
 
   if (!req.$groupBy) {

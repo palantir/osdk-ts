@@ -209,6 +209,10 @@ import type {
     as _api_permissions_GetBulkObjectTypePermissionsRequest,
   GetBulkObjectTypePermissionsResponse
     as _api_permissions_GetBulkObjectTypePermissionsResponse,
+  GetBulkOntologyPermissionsRequest
+    as _api_permissions_GetBulkOntologyPermissionsRequest,
+  GetBulkOntologyPermissionsResponse
+    as _api_permissions_GetBulkOntologyPermissionsResponse,
   GetBulkSharedPropertyTypePermissionsRequest
     as _api_permissions_GetBulkSharedPropertyTypePermissionsRequest,
   GetBulkSharedPropertyTypePermissionsResponse
@@ -627,6 +631,7 @@ export type OntologyMetadataAuditEvent =
   | "ACTION_TYPES_SERVICE_LOAD_ALL_ACTION_TYPES_FROM_ONTOLOGY"
   | "ACTION_TYPES_SERVICE_PAGE_LOAD_ALL_ACTION_TYPES_FROM_ONTOLOGY"
   | "ACTION_TYPES_SERVICE_LOAD_ACTION_TYPES_FROM_ONTOLOGY"
+  | "ACTION_TYPES_SERVICE_BATCH_GET_ENRICHED_ACTION_TYPE_METADATA"
   | "ONTOLOGY_METADATA_SERVICE_BULK_LOAD_ONTOLOGY_ENTITIES"
   | "ONTOLOGY_METADATA_SERVICE_BULK_LOAD_ONTOLOGY_ENTITIES_BY_DATASOURCES"
   | "ONTOLOGY_METADATA_SERVICE_GET_FEATURE_CONFIGURATIONS"
@@ -684,6 +689,7 @@ export type OntologyMetadataAuditEvent =
   | "ONTOLOGY_METADATA_SERVICE_GET_ONTOLOGY_SUMMARY"
   | "ONTOLOGY_PERMISSION_SERVICE_GET_ONTOLOGY_CREATE_PERMISSIONS"
   | "ONTOLOGY_PERMISSION_SERVICE_GET_ONTOLOGY_PERMISSIONS"
+  | "ONTOLOGY_PERMISSION_SERVICE_GET_BULK_ONTOLOGY_PERMISSIONS"
   | "ONTOLOGY_PERMISSION_SERVICE_GET_OBJECT_TYPE_PERMISSIONS"
   | "ONTOLOGY_PERMISSION_SERVICE_GET_BULK_OBJECT_TYPE_PERMISSIONS"
   | "ONTOLOGY_PERMISSION_SERVICE_GET_BULK_OBJECT_TYPE_PERMISSIONS_FOR_USERS"
@@ -1130,6 +1136,12 @@ export interface OntologyPermissionServiceGetBulkObjectTypePermissionsRequestPar
 }
 export interface OntologyPermissionServiceGetBulkObjectTypePermissionsResultParams {
   request: _api_permissions_GetBulkObjectTypePermissionsResponse;
+}
+export interface OntologyPermissionServiceGetBulkOntologyPermissionsRequestParams {
+  request: _api_permissions_GetBulkOntologyPermissionsRequest;
+}
+export interface OntologyPermissionServiceGetBulkOntologyPermissionsResultParams {
+  response: _api_permissions_GetBulkOntologyPermissionsResponse;
 }
 export interface OntologyPermissionServiceGetBulkSharedPropertyTypePermissionsRequestParams {
   request: _api_permissions_GetBulkSharedPropertyTypePermissionsRequest;

@@ -55,6 +55,8 @@ import type {
   Unsubscribable,
 } from "../ObservableClient.js";
 import { runOptimisticJob } from "./actions/OptimisticJob.js";
+import type { CacheKeys } from "./CacheKeys.js";
+import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import { createOptimisticId } from "./OptimisticId.js";
 import { Store } from "./Store.js";
@@ -401,6 +403,7 @@ describe(Store, () => {
   describe("with mock server", () => {
     let client: Client;
     let cache: Store;
+    let cacheKeys: CacheKeys<KnownCacheKey>;
 
     let employeesAsServerReturns: Osdk.Instance<Employee>[];
     let mutatedEmployees: Osdk.Instance<Employee>[];
@@ -432,6 +435,7 @@ describe(Store, () => {
 
     beforeEach(() => {
       cache = new Store(client);
+      cacheKeys = cache.cacheKeys;
 
       return () => {
         cache = undefined!;
@@ -441,7 +445,7 @@ describe(Store, () => {
     it("basic single object works", async () => {
       const emp = employeesAsServerReturns[0];
 
-      const cacheKey = cache.getCacheKey<ObjectCacheKey>(
+      const cacheKey = cacheKeys.get<ObjectCacheKey>(
         "object",
         "Employee",
         emp.$primaryKey,
@@ -500,7 +504,7 @@ describe(Store, () => {
         );
 
         // remove the optimistic write
-        cache.removeLayer(optimisticId);
+        cache.layers.remove(optimisticId);
 
         expectSingleObjectCallAndClear(subFn, emp, "loaded");
       });
@@ -580,7 +584,7 @@ describe(Store, () => {
         ]);
 
         // remove the optimistic write
-        cache.removeLayer(optimisticId);
+        cache.layers.remove(optimisticId);
 
         // see the object observation get updated
         expectSingleObjectCallAndClear(
@@ -629,7 +633,7 @@ describe(Store, () => {
         expect(subFn.next).not.toHaveBeenCalled();
 
         // remove the optimistic write
-        cache.removeLayer(optimisticId);
+        cache.layers.remove(optimisticId);
 
         expectSingleObjectCallAndClear(subFn, truthUpdatedEmployee);
         expectNoMoreCalls(subFn);
@@ -667,7 +671,7 @@ describe(Store, () => {
             { status: "loaded" },
           );
 
-          const cacheKey = cache.getCacheKey<ObjectCacheKey>(
+          const cacheKey = cacheKeys.get<ObjectCacheKey>(
             "object",
             emp.$apiName,
             emp.$primaryKey,
@@ -1417,7 +1421,7 @@ describe(Store, () => {
         });
 
         const object: Osdk.Instance<Todo> | undefined = store.getValue(
-          store.getCacheKey<ObjectCacheKey>("object", "Todo", 0),
+          store.cacheKeys.get<ObjectCacheKey>("object", "Todo", 0),
         )?.value as any;
         invariant(object);
 
@@ -1772,7 +1776,7 @@ describe(Store, () => {
       } as Osdk.Instance<Employee> & ObjectHolder<Osdk.Instance<Employee>>));
 
       const cacheKeys = baseObjects.map((obj) =>
-        store.getCacheKey("object", "Employee", obj.$primaryKey)
+        store.cacheKeys.get("object", "Employee", obj.$primaryKey)
       );
 
       // set the truth
@@ -1814,7 +1818,7 @@ describe(Store, () => {
       }
 
       // remove the first layer
-      store.removeLayer(layerIds[0]);
+      store.layers.remove(layerIds[0]);
 
       // should have truth object 1 and optimistic object 2
       expect(getObject(store, "Employee", 1)).toEqual(
@@ -1825,7 +1829,7 @@ describe(Store, () => {
       );
 
       // remove the second layer
-      store.removeLayer(layerIds[1]);
+      store.layers.remove(layerIds[1]);
 
       // should have truth objects
       for (const obj of baseObjects) {

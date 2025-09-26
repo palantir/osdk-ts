@@ -1,5 +1,19 @@
 # @osdk/cli.cmd.typescript
 
+## 0.29.0-beta.5
+
+### Minor Changes
+
+- cbcf2ad: Add branching support
+
+### Patch Changes
+
+- Updated dependencies [badfbc4]
+- Updated dependencies [cbcf2ad]
+  - @osdk/shared.client.impl@1.5.0-beta.2
+  - @osdk/generator@2.5.0-beta.6
+  - @osdk/cli.common@0.29.0-beta.5
+
 ## 0.29.0-beta.4
 
 ### Minor Changes

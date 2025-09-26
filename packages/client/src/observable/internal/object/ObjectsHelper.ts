@@ -24,8 +24,8 @@ import type { ObjectPayload } from "../../ObjectPayload.js";
 import type { ObserveObjectOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
+import type { BatchContext } from "../BatchContext.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
-import type { BatchContext } from "../Store.js";
 import { type ObjectCacheKey } from "./ObjectCacheKey.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 
@@ -48,16 +48,16 @@ export class ObjectsHelper extends AbstractHelper<
       : options.apiName.apiName;
     const { pk } = options;
 
-    const objectCacheKey = this.store.getCacheKey<ObjectCacheKey>(
+    const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
       "object",
       apiName,
       pk,
     );
 
-    return this.store.getQuery(objectCacheKey, () =>
+    return this.store.queries.get(objectCacheKey, () =>
       new ObjectQuery(
         this.store,
-        this.store.getSubject(objectCacheKey),
+        this.store.subjects.get(objectCacheKey),
         apiName,
         pk,
         objectCacheKey,

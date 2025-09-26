@@ -25,11 +25,13 @@ import type {
   CommonObserveOptions,
   Status,
 } from "../../ObservableClient/common.js";
+import type { BatchContext } from "../BatchContext.js";
 import { getBulkObjectLoader } from "../BulkObjectLoader.js";
 import type { Changes } from "../Changes.js";
 import type { Entry } from "../Layer.js";
 import { Query } from "../Query.js";
-import type { BatchContext, Store, SubjectPayload } from "../Store.js";
+import type { Store } from "../Store.js";
+import type { SubjectPayload } from "../SubjectPayload.js";
 import { tombstone } from "../tombstone.js";
 import type { ObjectCacheKey } from "./ObjectCacheKey.js";
 

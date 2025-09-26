@@ -48,3 +48,5 @@ export type {
 
 export type { ClassificationMarking, MandatoryMarking } from "./Markings.js";
 export type { GroupId, Principal, UserId } from "./UserGroup.js";
+
+export type { Geometry, Point } from "geojson";
