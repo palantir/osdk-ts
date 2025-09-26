@@ -17,12 +17,16 @@
 import type {
   ActionDefinition,
   ActionValidationResponse,
+  DerivedProperty,
   InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
+  SimplePropertyDef,
   WhereClause,
+  WhereClauseWithRdp,
 } from "@osdk/api";
 import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
 import type { ActionSignatureFromDef } from "../actions/applyAction.js";
@@ -60,16 +64,38 @@ export type OrderBy<Q extends ObjectTypeDefinition | InterfaceDefinition> = {
   [K in PropertyKeys<Q>]?: "asc" | "desc" | undefined;
 };
 
+type ExtractRdpTypesFromClause<
+  Q extends ObjectOrInterfaceDefinition,
+  C extends DerivedProperty.Clause<Q> | undefined,
+> = C extends DerivedProperty.Clause<Q> ? {
+    [K in keyof C]: C[K] extends DerivedPropertyCreator<Q, infer T> ? T : never;
+  }
+  : {};
+
+type DerivedPropertyCreator<
+  Q extends ObjectOrInterfaceDefinition,
+  T extends SimplePropertyDef,
+> = (
+  baseObjectSet: DerivedProperty.Builder<Q, false>,
+) =>
+  | DerivedProperty.Definition<T, Q>
+  | DerivedProperty.NumericPropertyDefinition<T, Q>
+  | DerivedProperty.DatetimePropertyDefinition<T, Q>;
+
 export interface ObserveListOptions<
   Q extends ObjectTypeDefinition | InterfaceDefinition,
 > extends CommonObserveOptions, ObserveOptions {
   type: Pick<Q, "apiName" | "type">;
-  where?: WhereClause<Q>;
+  where?: WhereClauseWithRdp<
+    Q,
+    ExtractRdpTypesFromClause<Q, this["withProperties"]>
+  >;
   pageSize?: number;
   orderBy?: OrderBy<Q>;
   invalidationMode?: InvalidationMode;
   expectedLength?: number;
   streamUpdates?: boolean;
+  withProperties?: DerivedProperty.Clause<Q>;
 }
 
 // TODO: Rename this from `ObserveObjectArgs` => `ObserveObjectCallbackArgs`. Not doing it now to reduce churn

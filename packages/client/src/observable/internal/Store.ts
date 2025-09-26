@@ -45,6 +45,7 @@ import { ObjectsHelper } from "./object/ObjectsHelper.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import { Queries } from "./Queries.js";
+import { RdpCanonicalizer } from "./RdpCanonicalizer.js";
 import type { Subjects } from "./Subjects.js";
 import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 
@@ -71,6 +72,7 @@ export class Store {
     new WhereClauseCanonicalizer();
   readonly orderByCanonicalizer: OrderByCanonicalizer =
     new OrderByCanonicalizer();
+  readonly rdpCanonicalizer: RdpCanonicalizer = new RdpCanonicalizer();
 
   readonly client: Client;
 
@@ -106,6 +108,7 @@ export class Store {
       this.cacheKeys,
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
+      this.rdpCanonicalizer,
     );
     this.objects = new ObjectsHelper(this, this.cacheKeys);
     this.links = new LinksHelper(

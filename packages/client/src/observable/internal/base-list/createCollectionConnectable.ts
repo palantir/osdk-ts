@@ -15,7 +15,6 @@
  */
 
 import {
-  asapScheduler,
   combineLatest,
   type Connectable,
   connectable,
@@ -24,39 +23,13 @@ import {
   type Observable,
   of,
   ReplaySubject,
-  scheduled,
   switchMap,
 } from "rxjs";
-import type { Status } from "../../ObservableClient/common.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import type { Subjects } from "../Subjects.js";
-
-/**
- * Common parameters available for constructing a collection payload
- */
-interface CollectionConnectableParams {
-  /**
-   * Array of resolved objects
-   */
-  resolvedData: any[];
-
-  /**
-   * Whether the data is from an optimistic update
-   */
-  isOptimistic: boolean;
-
-  /**
-   * Current loading status
-   */
-  status: Status;
-
-  /**
-   * Timestamp of the last update
-   */
-  lastUpdated: number;
-}
+import type { CollectionConnectableParams } from "./BaseCollectionQuery.js";
 
 /**
  * Creates a connectable observable for a collection of objects
@@ -89,25 +62,22 @@ export function createCollectionConnectable<
             ),
           );
 
-        return scheduled(
-          combineLatest({
-            resolvedData,
-            isOptimistic: of(listEntry.isOptimistic),
-            status: of(listEntry.status),
-            lastUpdated: of(listEntry.lastUpdated),
-          }).pipe(
-            map(params =>
-              createPayload({
-                resolvedData: Array.isArray(params.resolvedData)
-                  ? params.resolvedData
-                  : [],
-                isOptimistic: params.isOptimistic,
-                status: params.status,
-                lastUpdated: params.lastUpdated,
-              })
-            ),
+        return combineLatest({
+          resolvedData,
+          isOptimistic: of(listEntry.isOptimistic),
+          status: of(listEntry.status),
+          lastUpdated: of(listEntry.lastUpdated),
+        }).pipe(
+          map(params =>
+            createPayload({
+              resolvedData: Array.isArray(params.resolvedData)
+                ? params.resolvedData
+                : [],
+              isOptimistic: params.isOptimistic,
+              status: params.status,
+              lastUpdated: params.lastUpdated,
+            })
           ),
-          asapScheduler,
         );
       }),
     ),

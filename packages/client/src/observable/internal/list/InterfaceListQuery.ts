@@ -15,6 +15,7 @@
  */
 
 import type {
+  DerivedProperty,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -32,7 +33,7 @@ import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/Obje
 import type { Changes } from "../Changes.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { Store } from "../Store.js";
-import { ListQuery } from "./ListQuery.js";
+import { ListQuery, RDP_IDX } from "./ListQuery.js";
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   all: (ObjectHolder | InterfaceHolder)[];
@@ -42,6 +43,19 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
 
 export class InterfaceListQuery extends ListQuery {
   protected createObjectSet(store: Store): ObjectSet<ObjectTypeDefinition> {
+    const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+    if (rdpConfig != null) {
+      return store.client({
+        type: "interface" as const,
+        apiName: this.apiName,
+      } as ObjectOrInterfaceDefinition as ObjectTypeDefinition)
+        // Note: order matters here, we need to apply withProperties before the where clause
+        .withProperties(
+          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+        )
+        .where(this.canonicalWhere);
+    }
+
     return store.client({
       type: "interface" as const,
       apiName: this.apiName,

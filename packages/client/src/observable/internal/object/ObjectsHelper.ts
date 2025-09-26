@@ -25,7 +25,9 @@ import type { ObserveObjectOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
 import type { BatchContext } from "../BatchContext.js";
+import type { Canonical } from "../Canonical.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import { type ObjectCacheKey } from "./ObjectCacheKey.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 
@@ -52,6 +54,7 @@ export class ObjectsHelper extends AbstractHelper<
       "object",
       apiName,
       pk,
+      undefined,
     );
 
     return this.store.queries.get(objectCacheKey, () =>
@@ -67,24 +70,27 @@ export class ObjectsHelper extends AbstractHelper<
 
   /**
    * Internal helper method for writing objects to the store and returning their
-   * object keys
+   * object keys. For list queries with RDPs, the rdpConfig is included in the
+   * cache key to ensure proper data isolation.
    * @internal
    */
   public storeOsdkInstances(
     values: Array<ObjectHolder> | Array<Osdk.Instance<any, any, any>>,
     batch: BatchContext,
+    rdpConfig?: Canonical<Rdp>,
   ): ObjectCacheKey[] {
-    // update the cache for any object that has changed
-    // and save the mapped values to return
-    return values.map(v =>
-      this.getQuery({
-        apiName: v.$apiName,
-        pk: v.$primaryKey as string | number,
-      }).writeToStore(
-        v as ObjectHolder,
-        "loaded",
-        batch,
-      ).cacheKey
-    );
+    // Create cache keys with rdpConfig if provided (for lists with RDPs)
+    return values.map(v => {
+      const cacheKey = this.cacheKeys.get<ObjectCacheKey>(
+        "object",
+        v.$apiName,
+        v.$primaryKey as string,
+        rdpConfig,
+      );
+
+      // Write to the cache
+      batch.write(cacheKey, v as ObjectHolder, "loaded");
+      return cacheKey;
+    });
   }
 }
