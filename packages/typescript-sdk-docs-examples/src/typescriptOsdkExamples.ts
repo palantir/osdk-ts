@@ -53,7 +53,7 @@ export const TYPESCRIPT_OSDK_EXAMPLES = {
         },
         "loadAllObjectsReference": {
           "code":
-            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\n\nconst objects: Osdk.Instance<Employee>[]= [];\n\nfor await(const obj of client(Employee).asyncIter()) {\n    objects.push(obj);\n}\nconst object = objects[0];",
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\n\nasync function getAll(): Promise<Array<Osdk.Instance<Employee>>> {\n    const objects: Osdk.Instance<Employee>[]= [];\n    for await(const obj of client(Employee).asyncIter()) {\n        objects.push(obj);\n    }\n\n    return objects;\n}\n\n// If Array.fromAsync() is available in your target environment\nfunction getAllFromAsync(): Promise<Array<Osdk.Instance<Employee>>> {\n    return Array.fromAsync(client(Employee).asyncIter());\n}",
         },
         "loadLinkedObjectReference": {
           "code":

@@ -194,10 +194,21 @@ const archetypeRules = archetypes(
       "@osdk/create-app.template.*",
       "@osdk/create-widget.template.*",
       "@osdk/shared.test",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+    },
+  )
+  .addArchetype(
+    "internal libraries / templates with modern tooling ES2023",
+    [
       "@osdk/typescript-sdk-docs-examples",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
+      extraTsConfigCompilerOptions: {
+        "lib": ["ES2023", "DOM", "ESNEXT.Array"],
+      },
     },
   )
   .addArchetype("publishedSandboxes", [
