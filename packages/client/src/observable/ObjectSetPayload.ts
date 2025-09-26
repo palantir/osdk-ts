@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
-import type { ListCacheKey } from "./list/ListCacheKey.js";
-import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
-import type { ObjectSetCacheKey } from "./objectset/ObjectSetCacheKey.js";
+import type { ObjectSet } from "@osdk/api";
+import type { BaseCollectionPayload } from "./internal/base-list/BaseCollectionQuery.js";
 
-export type KnownCacheKey =
-  | ObjectCacheKey
-  | SpecificLinkCacheKey
-  | ListCacheKey
-  | ObjectSetCacheKey;
+export interface ObjectSetPayload extends BaseCollectionPayload {
+  objectSet: ObjectSet<any, any>;
+}
