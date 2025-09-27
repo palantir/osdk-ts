@@ -296,6 +296,15 @@ function handleWherePair(
     };
   }
 
+  if (firstKey === "$endsWith") {
+    return {
+      type: "wildcard",
+      ...(propertyIdentifier != null && { propertyIdentifier }),
+      field,
+      value: "*" + (filter[firstKey] as string),
+    };
+  }
+
   return {
     type: firstKey.substring(1) as DropDollarSign<typeof firstKey>,
     ...(propertyIdentifier != null && { propertyIdentifier }),

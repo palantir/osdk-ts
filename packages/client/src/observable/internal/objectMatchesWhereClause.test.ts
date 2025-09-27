@@ -53,7 +53,7 @@ const fauxObject: Osdk.Instance<objectTypeWithAllPropertyTypes> = {
   mediaReference: undefined,
   short: 5,
   shortArray: [],
-  string: "Hi there",
+  string: "Hi there Bye",
   stringArray: [],
 } satisfies objectTypeWithAllPropertyTypes.Props as unknown as Osdk.Instance<
   objectTypeWithAllPropertyTypes
@@ -75,6 +75,16 @@ const whereClauses = {
   stringStartsWithBye: {
     string: {
       $startsWith: "Bye",
+    },
+  },
+  stringEndsWithHi: {
+    string: {
+      $endsWith: "Hi",
+    },
+  },
+  stringEndsWithBye: {
+    string: {
+      $endsWith: "Bye",
     },
   },
   mediaReferenceIsNull: {
@@ -99,6 +109,12 @@ const whereClauses = {
   stringStartsWithHiOrBye: {
     $or: [] as WhereClause<objectTypeWithAllPropertyTypes>[],
   },
+  stringEndsWithHiAndBye: {
+    $and: [] as WhereClause<objectTypeWithAllPropertyTypes>[],
+  },
+  stringEndsWithHiOrBye: {
+    $or: [] as WhereClause<objectTypeWithAllPropertyTypes>[],
+  },
   whereStrictAndNot: {
     $and: [] as WhereClause<objectTypeWithAllPropertyTypes>[],
   },
@@ -120,6 +136,16 @@ whereClauses.stringStartsWithHiOrBye.$or.push(
   whereClauses.stringStartsWithBye,
 );
 
+whereClauses.stringEndsWithHiAndBye.$and.push(
+  whereClauses.stringEndsWithHi,
+  whereClauses.stringEndsWithBye,
+);
+
+whereClauses.stringEndsWithHiOrBye.$or.push(
+  whereClauses.stringEndsWithHi,
+  whereClauses.stringEndsWithBye,
+);
+
 whereClauses.whereStrictAndNot.$and.push(
   whereClauses.stringStartsWithHi,
   whereClauses.geopointIntersects,
@@ -135,10 +161,14 @@ const cases = [
   ["fauxObject", "booleanTrue", true, true],
   ["fauxObject", "stringStartsWithHi", true, true],
   ["fauxObject", "stringStartsWithBye", false, false],
+  ["fauxObject", "stringEndsWithHi", false, false],
+  ["fauxObject", "stringEndsWithBye", true, true],
   ["fauxObject", "mediaReferenceIsNull", true, true],
   ["fauxObject", "mediaReferenceNotIsNull", false, false],
   ["fauxObject", "geopointIntersects", false, true],
   ["fauxObject", "stringStartsWithHiAndBye", false, false],
+  ["fauxObject", "stringEndsWithHiOrBye", true, true],
+  ["fauxObject", "stringEndsWithHiAndBye", false, false],
   ["fauxObject", "stringStartsWithHiOrBye", true, true],
   ["fauxObject", "whereStrictAndNot", false, true],
   ["fauxObject", "whereStrictOrNot", true, true],

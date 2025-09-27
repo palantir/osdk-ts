@@ -765,6 +765,17 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
       });
+      it("converts $endsWith correctly", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          string: { $endsWith: "test" },
+        }, objectTypeWithAllPropertyTypes)).toMatchInlineSnapshot(`
+        {
+          "field": "string",
+          "type": "wildcard",
+          "value": "*test",
+        }
+      `);
+      });
       it("converts struct where clauses correctly", () => {
         expect(modernToLegacyWhereClause<structObj>({
           address: { state: { $eq: "NJ" } },
