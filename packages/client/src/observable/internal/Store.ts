@@ -41,6 +41,7 @@ import type { Entry } from "./Layer.js";
 import { Layers } from "./Layers.js";
 import { LinksHelper } from "./links/LinksHelper.js";
 import { ListsHelper } from "./list/ListsHelper.js";
+import { ObjectCacheKeyRegistry } from "./object/ObjectCacheKeyRegistry.js";
 import { ObjectsHelper } from "./object/ObjectsHelper.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
@@ -81,6 +82,8 @@ export class Store {
 
   readonly cacheKeys: CacheKeys<KnownCacheKey>;
   readonly queries: Queries = new Queries();
+  readonly objectCacheKeyRegistry: ObjectCacheKeyRegistry =
+    new ObjectCacheKeyRegistry();
 
   readonly layers: Layers = new Layers({
     logger: this.logger,
@@ -143,6 +146,11 @@ export class Store {
       invariant(subject);
     }
 
+    // Unregister from object cache key registry if it's an object key
+    if (key.type === "object") {
+      this.objectCacheKeyRegistry.unregister(key);
+    }
+
     this.subjects.delete(key);
     this.queries.delete(key);
   };
@@ -195,11 +203,25 @@ export class Store {
     if (typeof apiName !== "string") {
       apiName = apiName.apiName;
     }
+    const allKeys = this.objectCacheKeyRegistry.getVariants(apiName, pk);
 
-    return this.objects.getQuery({
-      apiName,
-      pk,
-    }, undefined).revalidate(/* force */ true);
+    if (allKeys.size === 0) {
+      return this.objects.getQuery({
+        apiName,
+        pk,
+      }, undefined).revalidate(/* force */ true);
+    }
+
+    // Invalidate all variant cache entries
+    const promises: Promise<void>[] = [];
+    for (const key of allKeys) {
+      const query = this.queries.peek(key);
+      if (query) {
+        promises.push(query.revalidate(/* force */ true));
+      }
+    }
+
+    return Promise.allSettled(promises);
   }
 
   async #maybeRevalidateQueries(

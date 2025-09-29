@@ -409,6 +409,8 @@ export abstract class BaseListQuery<
         );
       });
 
+      this.nextPageToken = result.nextPageToken;
+
       return retVal;
     } catch (error: unknown) {
       // Log any errors that occur

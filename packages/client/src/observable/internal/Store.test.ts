@@ -30,7 +30,6 @@ import {
   stubData,
   TypeHelpers,
 } from "@osdk/shared.test";
-import chalk from "chalk";
 import { inspect } from "node:util";
 import invariant from "tiny-invariant";
 import type { Task } from "vitest";
@@ -121,14 +120,10 @@ function fullTaskName(task?: Task): string {
 }
 
 beforeEach((x) => {
-  console.log(
-    chalk.bgRed(chalk.white(fullTaskName(x.task))),
-  );
 });
 
 // helper method to make debugging tests easier
 function testStage(s: string) {
-  console.log(chalk.bgYellow(`Test Stage: ${s}`));
 }
 
 applyCustomMatchers();
@@ -735,6 +730,7 @@ describe(Store, () => {
       it("triggers an update", async () => {
         const emp = employeesAsServerReturns[0];
         const staleEmp = emp.$clone({ fullName: "stale" });
+
         updateList(cache, { type: Employee, where: {}, orderBy: {} }, [
           staleEmp,
         ]);
@@ -750,6 +746,7 @@ describe(Store, () => {
         expectSingleObjectCallAndClear(subFn, staleEmp);
 
         const subListFn = mockListSubCallback();
+
         defer(
           cache.lists.observe({
             type: Employee,
@@ -767,9 +764,11 @@ describe(Store, () => {
         testStage("invalidate");
 
         const invalidateListPromise = invalidateList(cache, { type: Employee });
+
         testStage("check invalidate");
 
         await waitForCall(subListFn, 1);
+
         expectSingleListCallAndClear(
           subListFn,
           [staleEmp],
@@ -777,6 +776,7 @@ describe(Store, () => {
         );
 
         await waitForCall(subListFn, 1);
+
         expectSingleListCallAndClear(
           subListFn,
           employeesAsServerReturns,
@@ -1055,6 +1055,7 @@ describe(Store, () => {
           );
 
           await waitForCall(listSub1);
+
           await waitForCall(ifaceSub);
 
           expectSingleListCallAndClear(
@@ -1070,6 +1071,7 @@ describe(Store, () => {
           );
 
           await waitForCall(listSub1);
+
           expectSingleListCallAndClear(
             listSub1,
             employeesAsServerReturns,
@@ -1079,6 +1081,7 @@ describe(Store, () => {
           );
 
           await waitForCall(ifaceSub);
+
           expectSingleListCallAndClear(
             ifaceSub,
             employeesAsServerReturns,

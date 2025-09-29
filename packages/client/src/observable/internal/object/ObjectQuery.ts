@@ -15,7 +15,6 @@
  */
 
 import type { ObjectTypeDefinition, PrimaryKeyType } from "@osdk/api";
-import deepEqual from "fast-deep-equal";
 import type { Connectable, Observable, Subject } from "rxjs";
 import { BehaviorSubject, connectable, map } from "rxjs";
 import { additionalContext } from "../../../Client.js";
@@ -32,8 +31,7 @@ import type { Entry } from "../Layer.js";
 import { Query } from "../Query.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
-import { tombstone } from "../tombstone.js";
-import type { ObjectCacheKey } from "./ObjectCacheKey.js";
+import { type ObjectCacheKey, RDP_CONFIG_IDX } from "./ObjectCacheKey.js";
 
 export class ObjectQuery extends Query<
   ObjectCacheKey,
@@ -111,7 +109,17 @@ export class ObjectQuery extends Query<
       .fetch(this.#apiName, this.#pk);
 
     this.store.batch({}, (batch) => {
-      this.writeToStore(obj, "loaded", batch);
+      // Register this cache key if not already registered
+      const rdpConfig = this.cacheKey.otherKeys[RDP_CONFIG_IDX];
+      this.store.objectCacheKeyRegistry.register(
+        this.cacheKey,
+        this.#apiName,
+        this.#pk,
+        rdpConfig,
+      );
+
+      // Write to all related cache keys
+      this.store.objects.propagateWrite(this.cacheKey, obj, "loaded", batch);
     });
   }
 
@@ -122,72 +130,46 @@ export class ObjectQuery extends Query<
   ): Entry<ObjectCacheKey> {
     const entry = batch.read(this.cacheKey);
 
-    if (entry && deepEqual(data, entry.value)) {
-      // Check if both data AND status are the same
-      if (entry.status === status) {
-        if (process.env.NODE_ENV !== "production") {
-          this.logger?.child({ methodName: "writeToStore" }).debug(
-            `Object was deep equal and status unchanged (${status}), skipping update`,
-          );
-        }
-        // Return the existing entry without writing to avoid unnecessary notifications
-        return entry;
-      }
+    // Register this cache key if not already registered
+    const rdpConfig = this.cacheKey.otherKeys[RDP_CONFIG_IDX];
+    this.store.objectCacheKeyRegistry.register(
+      this.cacheKey,
+      this.#apiName,
+      this.#pk,
+      rdpConfig,
+    );
 
-      if (process.env.NODE_ENV !== "production") {
-        this.logger?.child({ methodName: "writeToStore" }).debug(
-          `Object was deep equal, just setting status (old status: ${entry.status}, new status: ${status})`,
-        );
-      }
-      // must do a "full write" here so that the lastUpdated is updated but we
-      // don't want to retrigger anyone's memoization on the value!
-      return batch.write(this.cacheKey, entry.value, status);
-    }
+    // Use propagation to write to all related cache keys
+    this.store.objects.propagateWrite(this.cacheKey, data, status, batch);
 
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "writeToStore" }).debug(
-        JSON.stringify({ status }),
-        data,
-      );
-    }
-    const ret = batch.write(this.cacheKey, data, status);
+    // Register the change
     batch.changes.registerObject(this.cacheKey, data, /* isNew */ !entry);
 
-    return ret;
+    // Return the entry that was written
+    return batch.read(this.cacheKey)!;
   }
 
   deleteFromStore(
     status: Status,
     batch: BatchContext,
   ): Entry<ObjectCacheKey> | undefined {
-    const entry = batch.read(this.cacheKey);
+    // Register this cache key if not already registered
+    const rdpConfig = this.cacheKey.otherKeys[RDP_CONFIG_IDX];
+    this.store.objectCacheKeyRegistry.register(
+      this.cacheKey,
+      this.#apiName,
+      this.#pk,
+      rdpConfig,
+    );
 
-    if (entry && deepEqual(tombstone, entry.value)) {
-      if (process.env.NODE_ENV !== "production") {
-        this.logger?.child({ methodName: "deleteFromStore" }).debug(
-          `Object was deep equal, just setting status`,
-        );
-      }
-      // must do a "full write" here so that the lastUpdated is updated but we
-      // don't want to retrigger anyone's memoization on the value!
-      return batch.write(this.cacheKey, entry.value, status);
-    }
+    // Use propagation to write tombstone to all related cache keys
+    this.store.objects.propagateWrite(this.cacheKey, undefined, status, batch);
 
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "deleteFromStore" }).debug(
-        JSON.stringify({ status }),
-      );
-    }
-
-    // if there is no entry then there is nothing to do
-    if (!entry || !entry.value) {
-      return;
-    }
-
-    const ret = batch.delete(this.cacheKey, status);
+    // Register the deletion
     batch.changes.deleteObject(this.cacheKey);
 
-    return ret;
+    // Return the entry that was written
+    return batch.read(this.cacheKey);
   }
 
   invalidateObjectType = (

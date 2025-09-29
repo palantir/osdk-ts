@@ -17,11 +17,13 @@
 import type {
   DerivedProperty,
   ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
+import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
+import { createWithPropertiesObjectSet } from "../../derivedProperties/createWithPropertiesObjectSet.js";
 import type { Canonical } from "./Canonical.js";
 import { CachingCanonicalizer } from "./Canonicalizer.js";
-import { WeakRefTrie } from "./WeakRefTrie.js";
 
 type DerivedPropertyCreator<
   Q extends ObjectOrInterfaceDefinition,
@@ -36,27 +38,57 @@ type DerivedPropertyCreator<
 export type Rdp<T = DerivedPropertyCreator<any, any>> = Record<string, T>;
 
 export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
-  private structuralCache = new WeakRefTrie<Canonical<Rdp>>(
-    (array: any[]) => {
-      // Reconstruct RDP from flattened key-value pairs
-      const pairs: Array<[string, any]> = [];
-      for (let i = 0; i < array.length; i += 2) {
-        if (i + 1 < array.length) {
-          pairs.push([array[i], array[i + 1]]);
-        }
-      }
-      const data = Object.fromEntries(pairs);
-      return data as Canonical<Rdp>;
-    },
-  );
+  private structuralCache = new Map<string, Canonical<Rdp>>();
 
   protected lookupOrCreate(rdp: Rdp): Canonical<Rdp> {
-    // Extract sorted keys and their function references as trie path
-    // This ensures that RDPs with same structure but different key order
-    // map to the same canonical form
-    const sortedEntries = Object.entries(rdp).sort(([a], [b]) =>
-      a.localeCompare(b)
-    );
-    return this.structuralCache.lookupArray(sortedEntries.flat());
+    const definitionMap = new Map<any, DerivedPropertyDefinition>();
+    const computedProperties: Record<string, DerivedPropertyDefinition> = {};
+
+    // Create a wrapper holding object type for the builder to let us extract the definition structure
+    const objectTypeHolder = {
+      type: "object" as const,
+      apiName: "__rdp_canonicalizer_holder__",
+    } as ObjectTypeDefinition;
+
+    for (const [key, rdpFunction] of Object.entries(rdp)) {
+      const builder = createWithPropertiesObjectSet(
+        objectTypeHolder,
+        { type: "methodInput" },
+        definitionMap,
+        true, /* fromBaseObjectSet */
+      );
+
+      const result = rdpFunction(builder);
+      const definition = definitionMap.get(result);
+
+      if (definition) {
+        computedProperties[key] = definition;
+      }
+    }
+
+    // Sort entries by key for consistent ordering
+    const sortedKeys = Object.keys(computedProperties).sort();
+
+    // Create a serialized key for the computed definitions
+    const sortedDefinitions: Record<string, DerivedPropertyDefinition> = {};
+    for (const key of sortedKeys) {
+      sortedDefinitions[key] = computedProperties[key];
+    }
+    const definitionsKey = JSON.stringify(sortedDefinitions);
+
+    // Check if we already have a canonical RDP for these definitions
+    let canonical = this.structuralCache.get(definitionsKey);
+
+    if (!canonical) {
+      // Create a canonical RDP object with sorted keys
+      const sortedRdp: Rdp = {};
+      for (const key of Object.keys(rdp).sort()) {
+        sortedRdp[key] = rdp[key];
+      }
+      canonical = sortedRdp as Canonical<Rdp>;
+      this.structuralCache.set(definitionsKey, canonical);
+    }
+
+    return canonical;
   }
 }
