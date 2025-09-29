@@ -536,7 +536,9 @@ export async function fetchObjectPage<
   // we can parallelize network requests for loading metadata and loading the actual objects
   // In our object factory we await and block on loading the metadata, which if this call finishes, should already be cached on the client
 
-  void client.ontologyProvider.getObjectDefinition(objectType.apiName);
+  void client.ontologyProvider.getObjectDefinition(objectType.apiName).catch(
+    () => {},
+  );
 
   const requestBody = await buildAndRemapRequestBody(
     args,
