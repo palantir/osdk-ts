@@ -1644,6 +1644,7 @@ versions:
                 ]});
           computedVariables:
             - primaryKeyPropertyV2
+            - propertyValueV2
       orTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1657,6 +1658,7 @@ versions:
                 ]});
           computedVariables:
             - primaryKeyPropertyV2
+            - propertyValueV2
       containsTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1724,7 +1726,7 @@ versions:
                 .where({
                     $and:[
                         { $not: { {{property}}: { $isNull: true }}},
-                        { {{property}}: { $eq: "foo" }}
+                        { {{property}}: { $eq: {{{propertyValueV2}}} }}
                     ]
                 })
                 .fetchPageWithErrors({
@@ -1735,6 +1737,8 @@ versions:
                 const interfaces = page.value.data;
                 const interface1 = interfaces[0];
             }
+          computedVariables:
+            - propertyValueV2
       loadTimeSeriesPointsSnippet:
         - template: |-
             import type { Osdk } from "@osdk/client";
@@ -1835,10 +1839,10 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}")
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("$count")
                 })
                 .where({
-                  "newPropertyName": { $startsWith: "foo" }
+                  "newPropertyName": { $gt: 0 }
                 }).fetchPage();
       derivedPropertyApproximateDistinctAggregation:
         - template: |-
@@ -1849,7 +1853,7 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:approximateDistinct")
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:approximateDistinct")
                 }).fetchPage();
       derivedPropertyExactDistinctAggregation:
         - template: |-
@@ -1860,7 +1864,7 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:exactDistinct")
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:exactDistinct")
                 }).fetchPage();
       derivedPropertyCollectToListAggregation:
         - template: |-
@@ -1872,7 +1876,7 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:collectList", { limit: maxObjectsInList })
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:collectList", { limit: maxObjectsInList })
                 }).fetchPage();
       derivedPropertyCollectToSetAggregation:
         - template: |-
@@ -1884,7 +1888,7 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:collectSet", { limit: maxObjectsInSet })
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:collectSet", { limit: maxObjectsInSet })
                 }).fetchPage();
       derivedPropertyCountAggregation:
         - template: |-
@@ -1895,7 +1899,7 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("$count")
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("$count")
                 }).fetchPage();
       derivedPropertySelectPropertyAggregation:
         - template: |-
@@ -1906,7 +1910,7 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}")
+                    baseObjectSet.pivotTo("{{linkApiName}}").selectProperty("{{property}}")
                 }).fetchPage();
       derivedPropertyApproximatePercentileAggregation:
         - template: |-
@@ -1917,7 +1921,7 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:approximatePercentile", { percentile: 95 })
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:approximatePercentile", { percentile: 95 })
                 }).fetchPage();
       derivedPropertyNumericAggregation:
         - template: |-
@@ -1928,7 +1932,7 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:{{operation}}")
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:{{operation}}")
                 }).fetchPage();
       objectSetOperationsGuide:
         - template: |-
@@ -2102,12 +2106,12 @@ versions:
                   .withProperties({
                     "newPropertyName": (baseObjectSet) =>
                         {{^isUnary}}
-                        baseObjectSet.pivotTo("{{linkName}}")
+                        baseObjectSet.pivotTo("{{linkApiName}}")
                             .aggregate("{{property}}").{{operation}}(
-                                baseObjectSet.pivotTo("{{linkName}}").aggregate("$count"))
+                                baseObjectSet.pivotTo("{{linkApiName}}").aggregate("$count"))
                         {{/isUnary}}
                         {{#isUnary}}
-                        baseObjectSet.pivotTo("{{linkName}}")
+                        baseObjectSet.pivotTo("{{linkApiName}}")
                         .selectProperty("{{property}}")
                         .{{operation}}(baseObjectSet.selectProperty("{{property}}"))
                         {{/isUnary}}
@@ -2122,13 +2126,13 @@ versions:
                   .withProperties({
                         {{^isExtractPart}} 
                         "{{operation}}_between_{{property}}_and_{{otherProperty}}": (baseObjectSet) =>
-                        baseObjectSet.pivotTo("{{linkName}}")
+                        baseObjectSet.pivotTo("{{linkApiName}}")
                             .aggregate("{{property}}")
-                            .{{operation}}(baseObjectSet.pivotTo("{{linkName}}").aggregate("{{otherProperty}}"))
+                            .{{operation}}(baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{otherProperty}}"))
                         {{/isExtractPart}}
                         {{#isExtractPart}}
-                        "YEARS_part_of_{{property}}_of_{{linkName}}": (baseObjectSet) =>
-                        baseObjectSet.pivotTo("{{linkName}}")
+                        "YEARS_part_of_{{property}}_of_{{linkApiName}}": (baseObjectSet) =>
+                        baseObjectSet.pivotTo("{{linkApiName}}")
                             .selectProperty("{{property}}").extractPart("YEARS")
                         {{/isExtractPart}}
                   }).fetchPage();

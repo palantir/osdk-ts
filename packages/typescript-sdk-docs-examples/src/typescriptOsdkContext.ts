@@ -416,7 +416,7 @@ export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = {
       },
       "derivedPropertyBaseExample": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"lead\").selectProperty(\"fullName\")\n    })\n    .where({\n      \"newPropertyName\": { $startsWith: \"foo\" }\n    }).fetchPage();",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst sumEmployee = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n        baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"$count\")\n    })\n    .where({\n      \"newPropertyName\": { $gt: 0 }\n    }).fetchPage();",
       },
       "derivedPropertyApproximateDistinctAggregation": {
         "code":

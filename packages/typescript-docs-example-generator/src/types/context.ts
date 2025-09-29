@@ -70,9 +70,6 @@ export interface BaseTemplateContext {
   arrayElementValue: string;
   timeUnit: string;
 
-  // For derived property templates
-  linkName: string;
-
   // For action templates
   actionApiName: string;
   attachmentProperty: string;

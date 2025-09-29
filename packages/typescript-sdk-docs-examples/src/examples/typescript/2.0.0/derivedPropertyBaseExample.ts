@@ -26,8 +26,8 @@ import { client } from "./client.js";
 const sumEmployee = await client(Employee)
     .withProperties({
       "newPropertyName": (baseObjectSet) =>
-        baseObjectSet.pivotTo("lead").selectProperty("fullName")
+        baseObjectSet.pivotTo("assignedEquipment").aggregate("$count")
     })
     .where({
-      "newPropertyName": { $startsWith: "foo" }
+      "newPropertyName": { $gt: 0 }
     }).fetchPage();

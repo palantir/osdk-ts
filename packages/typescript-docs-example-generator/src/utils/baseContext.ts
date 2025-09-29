@@ -71,7 +71,6 @@ const baseContext: BaseTemplateContext = {
   timeUnit: "hours",
 
   // For derived property templates
-  linkName: "manager",
   otherProperty: "lastMaintenanceDate:min",
 
   // For action templates
@@ -137,6 +136,7 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
   "searchInterfacesReference": {
     interfaceApiName: "HasAddress",
     property: "address",
+    propertyValueV2: "\"foo\"",
   },
   "loadInterfaceMetadataSnippet": {
     interfaceApiName: "HasAddress",
@@ -259,39 +259,39 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
   },
 
   // === DERIVED PROPERTY TEMPLATES ===
-  "derivedPropertyBaseExample": { linkName: "lead", property: "fullName" },
+  "derivedPropertyBaseExample": { linkApiName: "assignedEquipment" },
   "derivedPropertySelectPropertyAggregation": {
-    linkName: "lead",
+    linkApiName: "lead",
     property: "fullName",
   },
   "derivedPropertyNumericAggregation": {
-    linkName: "peeps",
+    linkApiName: "peeps",
     property: "salary",
     operation: "sum",
   },
   // Most other derived property templates
   "derivedPropertyApproximateDistinctAggregation": {
-    linkName: "assignedEquipment",
+    linkApiName: "assignedEquipment",
     property: "purchasePrice",
   },
   "derivedPropertyExactDistinctAggregation": {
-    linkName: "assignedEquipment",
+    linkApiName: "assignedEquipment",
     property: "purchasePrice",
   },
   "derivedPropertyCollectToListAggregation": {
-    linkName: "assignedEquipment",
+    linkApiName: "assignedEquipment",
     property: "purchasePrice",
   },
   "derivedPropertyCollectToSetAggregation": {
-    linkName: "assignedEquipment",
+    linkApiName: "assignedEquipment",
     property: "purchasePrice",
   },
   "derivedPropertyCountAggregation": {
-    linkName: "assignedEquipment",
+    linkApiName: "assignedEquipment",
     property: "purchasePrice",
   },
   "derivedPropertyApproximatePercentileAggregation": {
-    linkName: "assignedEquipment",
+    linkApiName: "assignedEquipment",
     property: "purchasePrice",
   },
 
@@ -667,7 +667,7 @@ const templateHierarchy: Record<string, TemplateHierarchyNode> = {
   "derivedPropertyNumericExpression": {
     "#isUnary": {
       context: {
-        linkName: "lead",
+        linkApiName: "lead",
         property: "salary",
         operation: "subtract",
         isUnary: true,
@@ -675,7 +675,7 @@ const templateHierarchy: Record<string, TemplateHierarchyNode> = {
     },
     "^isUnary": {
       context: {
-        linkName: "assignedEquipment",
+        linkApiName: "assignedEquipment",
         property: "purchasePrice:avg",
         operation: "divide",
         isUnary: false,
@@ -686,7 +686,7 @@ const templateHierarchy: Record<string, TemplateHierarchyNode> = {
   "derivedPropertyDatetimeExpression": {
     "#isExtractPart": {
       context: {
-        linkName: "lead",
+        linkApiName: "lead",
         property: "birthDate",
         operation: "extractPart",
         isExtractPart: true,
@@ -694,7 +694,7 @@ const templateHierarchy: Record<string, TemplateHierarchyNode> = {
     },
     "^isExtractPart": {
       context: {
-        linkName: "assignedEquipment",
+        linkApiName: "assignedEquipment",
         property: "purchaseDate:min",
         otherProperty: "lastMaintenanceDate:min",
         operation: "min",

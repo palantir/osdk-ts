@@ -277,7 +277,6 @@ export class TemplateValidator {
       distanceUnit: "",
       arrayElementValue: "",
       timeUnit: "",
-      linkName: "",
       actionApiName: "",
       attachmentProperty: "",
       attachmentParameter: "",
