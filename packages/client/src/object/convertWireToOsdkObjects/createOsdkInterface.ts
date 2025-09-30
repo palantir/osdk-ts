@@ -15,7 +15,7 @@
  */
 
 import type { InterfaceMetadata } from "@osdk/api";
-import { extractNamespace } from "../../internal/conversions/modernToLegacyUtils.js";
+import { extractNamespace } from "../../internal/conversions/extractNamespace.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { get$linkForInterface } from "./getDollarLink.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";

@@ -15,6 +15,7 @@
  */
 
 import {
+  asapScheduler,
   combineLatest,
   type Connectable,
   connectable,
@@ -23,6 +24,7 @@ import {
   type Observable,
   of,
   ReplaySubject,
+  scheduled,
   switchMap,
 } from "rxjs";
 import type { CacheKey } from "../CacheKey.js";
@@ -62,22 +64,25 @@ export function createCollectionConnectable<
             ),
           );
 
-        return combineLatest({
-          resolvedData,
-          isOptimistic: of(listEntry.isOptimistic),
-          status: of(listEntry.status),
-          lastUpdated: of(listEntry.lastUpdated),
-        }).pipe(
-          map(params =>
-            createPayload({
-              resolvedData: Array.isArray(params.resolvedData)
-                ? params.resolvedData
-                : [],
-              isOptimistic: params.isOptimistic,
-              status: params.status,
-              lastUpdated: params.lastUpdated,
-            })
+        return scheduled(
+          combineLatest({
+            resolvedData,
+            isOptimistic: of(listEntry.isOptimistic),
+            status: of(listEntry.status),
+            lastUpdated: of(listEntry.lastUpdated),
+          }).pipe(
+            map(params =>
+              createPayload({
+                resolvedData: Array.isArray(params.resolvedData)
+                  ? params.resolvedData
+                  : [],
+                isOptimistic: params.isOptimistic,
+                status: params.status,
+                lastUpdated: params.lastUpdated,
+              })
+            ),
           ),
+          asapScheduler,
         );
       }),
     ),

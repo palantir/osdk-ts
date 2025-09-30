@@ -25,13 +25,13 @@ import type {
   SearchJsonQueryV2,
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
-import {
-  type DropDollarSign,
-  fullyQualifyPropName,
-  handleRdpFilter,
-  makeGeoFilterIntersects,
-  makeGeoFilterWithin,
-} from "./modernToLegacyUtils.js";
+import { fullyQualifyPropName } from "./fullyQualifyPropName.js";
+import { handleRdpFilter } from "./handleRdpFilter.js";
+import { makeGeoFilterIntersects } from "./makeGeoFilterIntersects.js";
+import { makeGeoFilterWithin } from "./makeGeoFilterWithin.js";
+
+export type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
+  : never;
 
 /** @internal */
 export function modernToLegacyWhereClause<

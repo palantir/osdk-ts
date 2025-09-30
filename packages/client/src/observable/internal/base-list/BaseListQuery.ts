@@ -400,7 +400,6 @@ export abstract class BaseListQuery<
           this.rdpConfig,
         );
 
-        // Then update the list with those object keys
         return this._updateList(
           objectKeys,
           finalStatus,

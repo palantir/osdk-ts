@@ -16,26 +16,14 @@
 
 import type {
   DerivedProperty,
-  ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
-  SimplePropertyDef,
 } from "@osdk/api";
 import type { DerivedPropertyDefinition } from "@osdk/foundry.ontologies";
 import { createWithPropertiesObjectSet } from "../../derivedProperties/createWithPropertiesObjectSet.js";
 import type { Canonical } from "./Canonical.js";
 import { CachingCanonicalizer } from "./Canonicalizer.js";
 
-type DerivedPropertyCreator<
-  Q extends ObjectOrInterfaceDefinition,
-  T extends SimplePropertyDef,
-> = (
-  baseObjectSet: DerivedProperty.Builder<Q, false>,
-) =>
-  | DerivedProperty.Definition<T, Q>
-  | DerivedProperty.NumericPropertyDefinition<T, Q>
-  | DerivedProperty.DatetimePropertyDefinition<T, Q>;
-
-export type Rdp<T = DerivedPropertyCreator<any, any>> = Record<string, T>;
+export type Rdp = DerivedProperty.Clause<any>;
 
 export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
   private structuralCache = new Map<string, Canonical<Rdp>>();

@@ -251,14 +251,20 @@ export class ObjectsHelper extends AbstractHelper<
     sourceRdp?: Canonical<Rdp>,
     targetRdp?: Canonical<Rdp>,
   ): boolean {
-    if (!targetRdp) return true;
-    if (!sourceRdp) return false;
+    if (!targetRdp) {
+      return true;
+    }
+    if (!sourceRdp) {
+      return false;
+    }
 
     const sourceFields = this.getRdpFields(sourceRdp);
     const targetFields = this.getRdpFields(targetRdp);
 
     for (const field of targetFields) {
-      if (!sourceFields.has(field)) return false;
+      if (!sourceFields.has(field)) {
+        return false;
+      }
     }
 
     return true;
@@ -270,8 +276,6 @@ export class ObjectsHelper extends AbstractHelper<
   private getRdpFields(rdpConfig?: Canonical<Rdp>): Set<string> {
     if (!rdpConfig) return new Set();
 
-    // Rdp is typed as Record<string, DerivedPropertyCreator>
-    // The keys are the field names that should be included
     return new Set(Object.keys(rdpConfig));
   }
 }
