@@ -29,9 +29,7 @@ import type {
  * coupling consumers to the Mustache library. In a future refactor, we could
  * use the TokenConverter to work with abstract tokens throughout.
  */
-import type {
-  MustacheToken,
-} from "../types/mustache-tokens.js";
+import type { MustacheToken } from "../types/mustache-tokens.js";
 import {
   isBlockToken,
   isInvertedSectionToken,
