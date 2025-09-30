@@ -22,12 +22,25 @@ import type {
   TemplateAnalysis,
   TemplateVariable,
 } from "../types/index.js";
-import type { MustacheToken } from "../types/mustache-tokens.js";
+
+/**
+ * NOTE: This analyzer still uses Mustache types internally for implementation.
+ * The public API exports abstract token types via types/index.ts to avoid
+ * coupling consumers to the Mustache library. In a future refactor, we could
+ * use the TokenConverter to work with abstract tokens throughout.
+ */
+import type {
+  MustacheToken,
+} from "../types/mustache-tokens.js";
 import {
   isBlockToken,
   isInvertedSectionToken,
+  isNameToken,
   isSectionToken,
+  isTextToken,
+  isUnescapedToken,
   isVariableToken,
+  TokenAccessor,
 } from "../types/mustache-tokens.js";
 
 export class TemplateAnalyzer {
@@ -114,7 +127,7 @@ export class TemplateAnalyzer {
 
     this.traverseTokens(tokens, (token) => {
       if (isVariableToken(token)) {
-        const name = token[1]; // variable name is at index 1
+        const name = TokenAccessor.getName(token);
         if (!variables.has(name)) {
           variables.set(name, {
             name,
@@ -124,7 +137,7 @@ export class TemplateAnalyzer {
           });
         }
       } else if (isBlockToken(token)) {
-        const name = token[1]; // section name is at index 1
+        const name = TokenAccessor.getName(token);
         if (!variables.has(name)) {
           variables.set(name, {
             name,
@@ -147,16 +160,20 @@ export class TemplateAnalyzer {
 
     this.traverseTokens(tokens, (token) => {
       if (isSectionToken(token)) {
-        const name = token[1]; // section name
-        const content = this.extractTokenContent(token[4]); // child tokens
+        const name = TokenAccessor.getName(token);
+        const content = this.extractTokenContent(
+          TokenAccessor.getChildren(token),
+        );
         blocks.push({
           name: `#${name}`,
           isInverted: false,
           content,
         });
       } else if (isInvertedSectionToken(token)) {
-        const name = token[1]; // section name
-        const content = this.extractTokenContent(token[4]); // child tokens
+        const name = TokenAccessor.getName(token);
+        const content = this.extractTokenContent(
+          TokenAccessor.getChildren(token),
+        );
         blocks.push({
           name: `^${name}`,
           isInverted: true,
@@ -205,7 +222,7 @@ export class TemplateAnalyzer {
 
       // If it's a section or inverted section, traverse child tokens
       if (isBlockToken(token)) {
-        this.traverseTokens(token[4], callback); // child tokens at index 4
+        this.traverseTokens(TokenAccessor.getChildren(token), callback);
       }
     }
   }
@@ -216,24 +233,30 @@ export class TemplateAnalyzer {
   private extractTokenContent(tokens: MustacheToken[]): string {
     return tokens
       .map(token => {
-        switch (token[0]) {
-          case "text":
-            return token[1]; // text content
-          case "name":
-            return `{{${token[1]}}}`; // variable
-          case "&":
-            return `{{{${token[1]}}}}`; // unescaped variable
-          case "#":
-            return `{{#${token[1]}}}${this.extractTokenContent(token[4])}{{/${
-              token[1]
-            }}}`;
-          case "^":
-            return `{{^${token[1]}}}${this.extractTokenContent(token[4])}{{/${
-              token[1]
-            }}}`;
-          default:
-            return "";
+        if (isTextToken(token)) {
+          return TokenAccessor.getText(token);
         }
+        if (isNameToken(token)) {
+          return `{{${TokenAccessor.getName(token)}}}`;
+        }
+        if (isUnescapedToken(token)) {
+          return `{{{${TokenAccessor.getName(token)}}}}`;
+        }
+        if (isSectionToken(token)) {
+          const name = TokenAccessor.getName(token);
+          const children = TokenAccessor.getChildren(token);
+          return `{{#${name}}}${
+            this.extractTokenContent(children)
+          }}{{/${name}}}`;
+        }
+        if (isInvertedSectionToken(token)) {
+          const name = TokenAccessor.getName(token);
+          const children = TokenAccessor.getChildren(token);
+          return `{{^${name}}}${
+            this.extractTokenContent(children)
+          }}{{/${name}}}`;
+        }
+        return "";
       })
       .join("");
   }

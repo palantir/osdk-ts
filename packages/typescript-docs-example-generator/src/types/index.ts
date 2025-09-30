@@ -34,19 +34,6 @@ export interface BlockVariable {
   content: string;
 }
 
-export interface GeneratedExample {
-  templateId: string;
-  variation?: string;
-  code: string;
-  metadata: ExampleMetadata;
-}
-
-export interface ExampleMetadata {
-  generatedAt: Date;
-  context: Record<string, unknown>;
-  blockStates: Record<string, boolean>;
-}
-
 export interface ValidationError {
   type: "missing-variable" | "type-mismatch" | "invalid-block";
   message: string;
@@ -78,26 +65,12 @@ export interface ProcessingError {
   cause?: Error;
 }
 
-export interface GeneratedOutput {
-  examples: Map<string, GeneratedExample>;
-  flatHierarchy: Record<string, any>;
-  nestedHierarchy: Record<string, any>;
-  metrics?: GenerationMetrics;
-}
-
-export interface GenerationMetrics {
-  totalTemplates: number;
-  totalExamples: number;
-  processingTime: number;
-  errors: ProcessingError[];
-}
-
 export interface GenerationReport {
   successful: number;
   failed: number;
   errors: Array<{
     templateId: string;
-    error: GeneratorError;
+    error: any; // GeneratorError from errors/generator-errors.ts
   }>;
   warnings: string[];
   versions: string[];
@@ -105,64 +78,16 @@ export interface GenerationReport {
 }
 
 export interface ExampleCollection {
-  examples: Map<string, GeneratedExample>;
+  examples: Map<string, any>; // GeneratedExample - defined locally in generateExamples
   versions: string[];
   totalExamples: number;
   totalVariations: number;
 }
 
-export interface VersionStats {
-  version: string;
-  templatesProcessed: number;
-  examplesGenerated: number;
-  errors: number;
-}
-
-export interface GeneratorError {
-  code: string;
-  message: string;
-  getSuggestion(): string;
-}
-
-export interface TypeScriptDiagnostic {
-  file?: string;
-  line?: number;
-  column?: number;
-  length?: number;
-  messageText: string;
-  category: "error" | "warning" | "suggestion" | "message";
-  code: number;
-}
-
-export interface CompilationResult {
-  success: boolean;
-  diagnostics: TypeScriptDiagnostic[];
-  generatedJs?: string;
-}
-
 export interface GenerationSummary {
   successful: number;
   failed: number;
-  errors: Array<{ templateId: string; error: GeneratorError }>;
+  errors: Array<{ templateId: string; error: any }>; // GeneratorError
   warnings: string[];
   totalVariations: number;
 }
-
-// Re-export Mustache token types
-export type {
-  InvertedSectionToken,
-  MustacheToken,
-  NameToken,
-  SectionToken,
-  TextToken,
-  UnescapedToken,
-} from "./mustache-tokens.js";
-export {
-  isBlockToken,
-  isInvertedSectionToken,
-  isNameToken,
-  isSectionToken,
-  isTextToken,
-  isUnescapedToken,
-  isVariableToken,
-} from "./mustache-tokens.js";

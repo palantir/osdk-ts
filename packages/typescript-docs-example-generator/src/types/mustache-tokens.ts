@@ -109,3 +109,21 @@ export function isBlockToken(
 ): token is SectionToken | InvertedSectionToken {
   return token[0] === "#" || token[0] === "^";
 }
+
+/**
+ * Token property accessors to avoid magic index usage
+ * These provide a more maintainable way to access token properties
+ */
+export const TokenAccessor = {
+  getType: (token: MustacheToken): string => token[0],
+  getName: (
+    token: NameToken | UnescapedToken | SectionToken | InvertedSectionToken,
+  ): string => token[1],
+  getText: (token: TextToken): string => token[1],
+  getStartPosition: (token: MustacheToken): number => token[2],
+  getEndPosition: (token: MustacheToken): number => token[3],
+  getChildren: (token: SectionToken | InvertedSectionToken): MustacheToken[] =>
+    token[4],
+  getClosePosition: (token: SectionToken | InvertedSectionToken): number =>
+    token[5],
+} as const;
