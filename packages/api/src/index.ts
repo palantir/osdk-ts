@@ -98,9 +98,6 @@ export type {
   InterfaceMetadata,
 } from "./ontology/InterfaceDefinition.js";
 export type {
-  DerivedObjectOrInterfaceDefinition,
-} from "./ontology/ObjectOrInterface.js";
-export type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "./ontology/ObjectOrInterface.js";

@@ -39,7 +39,7 @@ export interface ListCacheKey extends
       apiName: string,
       whereClause: Canonical<SimpleWhereClause>,
       orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
-      rdpConfig: Canonical<Rdp> | undefined,
+      rdpConfig?: Canonical<Rdp> | undefined,
     ]
   >
 {

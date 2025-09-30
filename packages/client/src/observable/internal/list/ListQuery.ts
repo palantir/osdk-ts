@@ -267,12 +267,7 @@ export abstract class ListQuery extends BaseListQuery<
         // deal with the modified objects
         for (const obj of relevantObjects.modified.all) {
           if (relevantObjects.modified.strictMatches.has(obj)) {
-            const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
-              "object",
-              obj.$objectType,
-              obj.$primaryKey,
-              this.rdpConfig ?? undefined,
-            );
+            const objectCacheKey = this.getObjectCacheKey(obj);
 
             if (!existingList.has(objectCacheKey)) {
               // object is new to the list
@@ -286,12 +281,7 @@ export abstract class ListQuery extends BaseListQuery<
             continue;
           } else {
             // object is no longer a strict match
-            const existingObjectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
-              "object",
-              obj.$objectType,
-              obj.$primaryKey,
-              this.rdpConfig ?? undefined,
-            );
+            const existingObjectCacheKey = this.getObjectCacheKey(obj);
 
             toRemove.add(existingObjectCacheKey);
 
@@ -307,14 +297,7 @@ export abstract class ListQuery extends BaseListQuery<
           newList.push(key);
         }
         for (const obj of toAdd) {
-          newList.push(
-            this.cacheKeys.get<ObjectCacheKey>(
-              "object",
-              obj.$objectType,
-              obj.$primaryKey,
-              this.rdpConfig ?? undefined,
-            ),
-          );
+          newList.push(this.getObjectCacheKey(obj));
         }
 
         this._updateList(
@@ -455,11 +438,18 @@ export abstract class ListQuery extends BaseListQuery<
           : objOrIface) as unknown as ObjectHolder;
 
       this.store.batch({}, (batch) => {
-        this.store.objects.storeOsdkInstances(
-          [object as Osdk.Instance<any>],
-          batch,
-          this.rdpConfig,
-        );
+        if (this.rdpConfig !== undefined) {
+          this.store.objects.storeOsdkInstances(
+            [object as Osdk.Instance<any>],
+            batch,
+            this.rdpConfig,
+          );
+        } else {
+          this.store.objects.storeOsdkInstances(
+            [object as Osdk.Instance<any>],
+            batch,
+          );
+        }
       });
     } else if (state === "REMOVED") {
       this.onOswRemoved(objOrIface, logger);
@@ -478,12 +468,7 @@ export abstract class ListQuery extends BaseListQuery<
         "the truth value for our list should exist as we already subscribed",
       );
       if (existing.status === "loaded") {
-        const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
-          "object",
-          objOrIface.$objectType,
-          objOrIface.$primaryKey,
-          this.rdpConfig ?? undefined,
-        );
+        const objectCacheKey = this.getObjectCacheKey(objOrIface);
         // remove the object from the list
         const newObjects = existing.value?.data.filter(
           (o) => o !== objectCacheKey,
@@ -527,6 +512,27 @@ export abstract class ListQuery extends BaseListQuery<
         }
       });
     });
+  }
+
+  /**
+   * Get cache key for object, conditionally including RDP config to match cache key creation logic
+   */
+  private getObjectCacheKey(
+    obj: { $objectType: string; $primaryKey: string | number | boolean },
+  ): ObjectCacheKey {
+    const pk = obj.$primaryKey as string | number;
+    return this.rdpConfig != null
+      ? this.cacheKeys.get<ObjectCacheKey>(
+        "object",
+        obj.$objectType,
+        pk,
+        this.rdpConfig,
+      )
+      : this.cacheKeys.get<ObjectCacheKey>(
+        "object",
+        obj.$objectType,
+        pk,
+      );
   }
 }
 

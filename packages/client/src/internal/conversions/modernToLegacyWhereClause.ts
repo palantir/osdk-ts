@@ -30,7 +30,7 @@ import { handleRdpFilter } from "./handleRdpFilter.js";
 import { makeGeoFilterIntersects } from "./makeGeoFilterIntersects.js";
 import { makeGeoFilterWithin } from "./makeGeoFilterWithin.js";
 
-export type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
+type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
   : never;
 
 /** @internal */

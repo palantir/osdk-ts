@@ -30,6 +30,7 @@ import {
   stubData,
   TypeHelpers,
 } from "@osdk/shared.test";
+import chalk from "chalk";
 import { inspect } from "node:util";
 import invariant from "tiny-invariant";
 import type { Task } from "vitest";
@@ -120,10 +121,14 @@ function fullTaskName(task?: Task): string {
 }
 
 beforeEach((x) => {
+  console.log(
+    chalk.bgRed(chalk.white(fullTaskName(x.task))),
+  );
 });
 
 // helper method to make debugging tests easier
 function testStage(s: string) {
+  console.log(chalk.bgYellow(`Test Stage: ${s}`));
 }
 
 applyCustomMatchers();
@@ -444,7 +449,6 @@ describe(Store, () => {
         "object",
         "Employee",
         emp.$primaryKey,
-        undefined,
       );
 
       // starts empty
@@ -671,7 +675,6 @@ describe(Store, () => {
             "object",
             emp.$apiName,
             emp.$primaryKey,
-            undefined,
           );
 
           // Actual test is here, prior to this is setup
@@ -730,7 +733,6 @@ describe(Store, () => {
       it("triggers an update", async () => {
         const emp = employeesAsServerReturns[0];
         const staleEmp = emp.$clone({ fullName: "stale" });
-
         updateList(cache, { type: Employee, where: {}, orderBy: {} }, [
           staleEmp,
         ]);
@@ -746,7 +748,6 @@ describe(Store, () => {
         expectSingleObjectCallAndClear(subFn, staleEmp);
 
         const subListFn = mockListSubCallback();
-
         defer(
           cache.lists.observe({
             type: Employee,
@@ -764,11 +765,9 @@ describe(Store, () => {
         testStage("invalidate");
 
         const invalidateListPromise = invalidateList(cache, { type: Employee });
-
         testStage("check invalidate");
 
         await waitForCall(subListFn, 1);
-
         expectSingleListCallAndClear(
           subListFn,
           [staleEmp],
@@ -776,7 +775,6 @@ describe(Store, () => {
         );
 
         await waitForCall(subListFn, 1);
-
         expectSingleListCallAndClear(
           subListFn,
           employeesAsServerReturns,
@@ -1055,7 +1053,6 @@ describe(Store, () => {
           );
 
           await waitForCall(listSub1);
-
           await waitForCall(ifaceSub);
 
           expectSingleListCallAndClear(
@@ -1071,7 +1068,6 @@ describe(Store, () => {
           );
 
           await waitForCall(listSub1);
-
           expectSingleListCallAndClear(
             listSub1,
             employeesAsServerReturns,
@@ -1081,7 +1077,6 @@ describe(Store, () => {
           );
 
           await waitForCall(ifaceSub);
-
           expectSingleListCallAndClear(
             ifaceSub,
             employeesAsServerReturns,
@@ -1426,7 +1421,7 @@ describe(Store, () => {
         });
 
         const object: Osdk.Instance<Todo> | undefined = store.getValue(
-          store.cacheKeys.get<ObjectCacheKey>("object", "Todo", 0, undefined),
+          store.cacheKeys.get<ObjectCacheKey>("object", "Todo", 0),
         )?.value as any;
         invariant(object);
 
@@ -1533,9 +1528,8 @@ describe(Store, () => {
           [fauxObjectB, fauxObjectA],
         );
 
-        // The ordered list needs its own update since it has a different cache key
-        updateList(store, noWhereOrderByText, [fauxObjectA, fauxObjectB]);
-
+        // The other list definitely matches on the where clause and we can insert
+        // orderBy properly. So this is [A, B]
         await waitForCall(subListOrdered, 1);
         expectSingleListCallAndClear(
           subListOrdered,
@@ -1555,13 +1549,8 @@ describe(Store, () => {
           [fauxObjectC, fauxObjectA],
         );
 
-        // Update the ordered list to include C in the correct position
-        updateList(store, noWhereOrderByText, [
-          fauxObjectA,
-          fauxObjectB,
-          fauxObjectC,
-        ]);
-
+        // Nothing told the system that B was deleted so we can presume it still exists
+        // and therefore the second list is now [A, B, C]
         await waitForCall(subListOrdered, 1);
         expectSingleListCallAndClear(
           subListOrdered,
@@ -1588,9 +1577,8 @@ describe(Store, () => {
           [fauxObjectB, fauxObjectA],
         );
 
-        // The ordered list needs its own update since it has a different cache key
-        updateList(store, noWhereOrderByText, [fauxObjectA, fauxObjectB]);
-
+        // The other list definitely matches on the where clause and we can insert
+        // orderBy properly. So this is [A, B]
         await waitForCall(subListOrdered, 1);
         expectSingleListCallAndClear(
           subListOrdered,
@@ -1676,14 +1664,12 @@ describe(Store, () => {
           fauxObjectA,
         ]);
 
-        // The ordered list needs its own update since it has a different cache key
-        updateList(store, noWhereOrderByText, [fauxObjectA, fauxObjectB]);
-
-        await waitForCall(subListOrdered, 1);
-        expectSingleListCallAndClear(
-          subListOrdered,
-          [fauxObjectA, fauxObjectB],
-        );
+        // The other list definitely matches on the where clause and we can insert
+        // orderBy properly. So this is [A, B]
+        expectSingleListCallAndClear(subListOrdered, [
+          fauxObjectA,
+          fauxObjectB,
+        ]);
 
         testStage("Optimistic Creation");
 
@@ -1698,7 +1684,7 @@ describe(Store, () => {
 
         fauxFoundry.getDefaultOntology().registerActionType(
           crazyActionTypeV2,
-          (batch, _params) => {
+          (batch, params) => {
             const idForD = nextPk++;
 
             batch.addObject(Todo.apiName, idForD, {
@@ -1790,7 +1776,7 @@ describe(Store, () => {
       } as Osdk.Instance<Employee> & ObjectHolder<Osdk.Instance<Employee>>));
 
       const cacheKeys = baseObjects.map((obj) =>
-        store.cacheKeys.get("object", "Employee", obj.$primaryKey, undefined)
+        store.cacheKeys.get("object", "Employee", obj.$primaryKey)
       );
 
       // set the truth

@@ -34,7 +34,7 @@ export interface ObjectCacheKey extends
     [
       apiName: string,
       pk: PrimaryKeyType<ObjectTypeDefinition>,
-      rdpConfig: Canonical<Rdp> | undefined,
+      rdpConfig?: Canonical<Rdp> | undefined,
     ]
   >
 {

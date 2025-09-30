@@ -18,7 +18,9 @@ import type {
   InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
+  PropertyValueWireToClient,
 } from "@osdk/api";
+import deepEqual from "fast-deep-equal";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ObjectPayload } from "../../ObjectPayload.js";
 import type { ObserveObjectOptions } from "../../ObservableClient.js";
@@ -28,6 +30,7 @@ import type { BatchContext } from "../BatchContext.js";
 import type { Canonical } from "../Canonical.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
+import { tombstone } from "../tombstone.js";
 import { type ObjectCacheKey } from "./ObjectCacheKey.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 
@@ -51,12 +54,9 @@ export class ObjectsHelper extends AbstractHelper<
       : options.apiName.apiName;
     const { pk } = options;
 
-    const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
-      "object",
-      apiName,
-      pk,
-      rdpConfig ?? undefined,
-    );
+    const objectCacheKey = rdpConfig != null
+      ? this.cacheKeys.get<ObjectCacheKey>("object", apiName, pk, rdpConfig)
+      : this.cacheKeys.get<ObjectCacheKey>("object", apiName, pk);
 
     return this.store.queries.get(objectCacheKey, () =>
       new ObjectQuery(
@@ -80,27 +80,18 @@ export class ObjectsHelper extends AbstractHelper<
     batch: BatchContext,
     rdpConfig?: Canonical<Rdp> | null,
   ): ObjectCacheKey[] {
-    // Create cache keys with rdpConfig if provided (for lists with RDPs)
-    return values.map(v => {
-      const cacheKey = this.cacheKeys.get<ObjectCacheKey>(
-        "object",
-        v.$apiName,
-        v.$primaryKey as string,
-        rdpConfig ?? undefined,
-      );
-
-      // Register the cache key variant
-      this.store.objectCacheKeyRegistry.register(
-        cacheKey,
-        v.$apiName,
-        v.$primaryKey as string,
-        rdpConfig ?? undefined,
-      );
-
-      // Write with propagation to related cache keys
-      this.propagateWrite(cacheKey, v as ObjectHolder, "loaded", batch);
-      return cacheKey;
-    });
+    // update the cache for any object that has changed
+    // and save the mapped values to return
+    return values.map(v =>
+      this.getQuery({
+        apiName: v.$apiName,
+        pk: v.$primaryKey as string | number,
+      }, rdpConfig).writeToStore(
+        v as ObjectHolder,
+        "loaded",
+        batch,
+      ).cacheKey
+    );
   }
 
   /**
@@ -109,11 +100,28 @@ export class ObjectsHelper extends AbstractHelper<
    */
   public propagateWrite(
     sourceCacheKey: ObjectCacheKey,
-    value: ObjectHolder | undefined,
+    value: ObjectHolder | typeof tombstone,
     status: Status,
     batch: BatchContext,
   ): void {
-    batch.write(sourceCacheKey, value, status);
+    const existing = batch.read(sourceCacheKey);
+    const dataChanged = !existing
+      || existing.value === undefined
+      || value === tombstone
+      || !deepEqual(existing.value, value);
+    const statusChanged = !existing || existing.status !== status;
+
+    if (!dataChanged && !statusChanged) {
+      return;
+    }
+
+    const valueToWrite = !dataChanged && existing ? existing.value : value;
+    batch.write(sourceCacheKey, valueToWrite, status);
+
+    if (value !== tombstone) {
+      batch.changes.registerObject(sourceCacheKey, value, /* isNew */ !existing);
+    }
+
     const relatedKeys = this.store.objectCacheKeyRegistry.getRelated(
       sourceCacheKey,
     );
@@ -123,9 +131,8 @@ export class ObjectsHelper extends AbstractHelper<
         continue;
       }
 
-      // Propagate tombstones
-      if (value === undefined) {
-        batch.write(targetKey, undefined, status);
+      if (value === tombstone) {
+        batch.write(targetKey, tombstone, status);
         continue;
       }
 
@@ -155,7 +162,7 @@ export class ObjectsHelper extends AbstractHelper<
   /**
    * Type guard to check if a value is an ObjectHolder
    */
-  private isObjectHolder(value: unknown): value is ObjectHolder {
+  private isObjectHolder(value: ObjectHolder | undefined): value is ObjectHolder {
     return value != null
       && typeof value === "object"
       && "$apiName" in value
@@ -164,7 +171,7 @@ export class ObjectsHelper extends AbstractHelper<
 
   /**
    * Merge object data for a specific target cache key, preserving RDP fields
-   * TODO: this can likely be simplified, perhaps through external library use
+   * TODO: this could potentially be made more concise via an external library
    */
   private mergeForTarget(
     sourceValue: ObjectHolder,
@@ -191,9 +198,9 @@ export class ObjectsHelper extends AbstractHelper<
         return sourceValue;
       }
 
-      const filtered: ObjectHolder & Record<string, unknown> = {
+      const filtered: ObjectHolder & Record<string, PropertyValueWireToClient> = {
         ...sourceValue,
-      } as ObjectHolder & Record<string, unknown>;
+      } as ObjectHolder & Record<string, PropertyValueWireToClient>;
       for (const field of sourceRdpFields) {
         if (!targetRdpFields.has(field)) {
           delete filtered[field];
@@ -202,16 +209,18 @@ export class ObjectsHelper extends AbstractHelper<
       return filtered;
     }
 
-    const merged: ObjectHolder & Record<string, unknown> = { ...sourceValue } as
+    const merged: ObjectHolder & Record<string, PropertyValueWireToClient> = {
+      ...sourceValue,
+    } as
       & ObjectHolder
-      & Record<string, unknown>;
+      & Record<string, PropertyValueWireToClient>;
 
     if (targetCurrentValue) {
       const targetRdpFields = this.getRdpFields(targetRdp);
       const sourceRdpFields = this.getRdpFields(sourceRdp);
       const targetWithProps = targetCurrentValue as
         & ObjectHolder
-        & Record<string, unknown>;
+        & Record<string, PropertyValueWireToClient>;
 
       for (const field of targetRdpFields) {
         if (!sourceRdpFields.has(field) && field in targetWithProps) {
@@ -232,9 +241,11 @@ export class ObjectsHelper extends AbstractHelper<
   ): ObjectHolder {
     if (!rdpConfig) return value;
 
-    const stripped: ObjectHolder & Record<string, unknown> = { ...value } as
+    const stripped: ObjectHolder & Record<string, PropertyValueWireToClient> = {
+      ...value,
+    } as
       & ObjectHolder
-      & Record<string, unknown>;
+      & Record<string, PropertyValueWireToClient>;
     const rdpFields = this.getRdpFields(rdpConfig);
 
     for (const field of rdpFields) {

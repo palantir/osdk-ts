@@ -664,9 +664,7 @@ export function updateList<
   });
 
   store.batch({ optimisticId }, (batch) => {
-    // Get RDP config from the query's cache key to ensure objects are stored with matching keys
-    // The rdpConfig will be undefined for queries without RDP support
-    const rdpConfig = (query as any).rdpConfig;
+    const rdpConfig = query.rdpConfig;
     const objectCacheKeys = store.objects.storeOsdkInstances(
       objects,
       batch,
@@ -682,7 +680,7 @@ export function getObject(
   pk: number,
 ): ObjectHolder | undefined {
   return store.getValue(
-    store.cacheKeys.get<ObjectCacheKey>("object", type, pk, undefined),
+    store.cacheKeys.get<ObjectCacheKey>("object", type, pk),
   )?.value;
 }
 

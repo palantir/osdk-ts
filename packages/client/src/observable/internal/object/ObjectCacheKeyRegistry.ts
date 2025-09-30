@@ -26,7 +26,7 @@ interface CacheKeyMetadata {
 
 /**
  * Registry that tracks relationships between object cache keys with different RDP configurations.
- * This enables cache coherency by propagating updates across all "variants" of the same object.
+ * This ensures we propagate updates across all "variants" of the same object.
  */
 export class ObjectCacheKeyRegistry {
   /**
@@ -64,12 +64,12 @@ export class ObjectCacheKeyRegistry {
   }
 
   /**
-   * Get all related cache keys for a given cache key
+   * Get all related cache keys for a given cache key, including itself
    */
   getRelated(cacheKey: ObjectCacheKey): Set<ObjectCacheKey> {
     const metadata = this.keyMetadata.get(cacheKey);
     if (!metadata) {
-      // Not registered, return just this key
+      // Not registered, fallback and just return this key for safety
       return new Set([cacheKey]);
     }
 

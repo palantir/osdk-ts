@@ -20,9 +20,15 @@ import type {
   SearchJsonQueryV2,
 } from "@osdk/foundry.ontologies";
 
+type RdpFilterValue =
+  | string
+  | number
+  | boolean
+  | { [K in PossibleWhereClauseFilters]?: unknown };
+
 export function handleRdpFilter(
   rdpName: string,
-  filter: any,
+  filter: RdpFilterValue,
 ): SearchJsonQueryV2 {
   // Handle simple equality
   if (

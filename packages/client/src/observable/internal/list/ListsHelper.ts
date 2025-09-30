@@ -77,14 +77,22 @@ export class ListsHelper extends AbstractHelper<
       ? this.rdpCanonicalizer.canonicalize(withProperties)
       : undefined;
 
-    const listCacheKey = this.cacheKeys.get<ListCacheKey>(
-      "list",
-      type,
-      apiName,
-      canonWhere,
-      canonOrderBy,
-      canonRdp,
-    );
+    const listCacheKey = canonRdp !== undefined
+      ? this.cacheKeys.get<ListCacheKey>(
+        "list",
+        type,
+        apiName,
+        canonWhere,
+        canonOrderBy,
+        canonRdp,
+      )
+      : this.cacheKeys.get<ListCacheKey>(
+        "list",
+        type,
+        apiName,
+        canonWhere,
+        canonOrderBy,
+      );
 
     return this.store.queries.get(listCacheKey, () => {
       const QueryClass = type === "object"

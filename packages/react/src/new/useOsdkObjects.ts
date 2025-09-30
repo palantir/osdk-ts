@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
+import type { SimplePropertyDef, WhereClause } from "@osdk/api";
 import type {
   DerivedProperty,
-  SimplePropertyDef,
-  WhereClause,
-} from "@osdk/api";
-import type {
   InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
@@ -150,6 +147,7 @@ export function useOsdkObjects<
     where as WhereClause<Q> ?? {},
   );
 
+  // TODO: replace with improved stabilization
   const stableWithProperties = React.useMemo(
     () => withProperties,
     [JSON.stringify(withProperties)],

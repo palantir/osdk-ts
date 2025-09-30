@@ -17,6 +17,7 @@ import type { AttachmentUpload } from '@osdk/api';
 import { CompileTimeMetadata } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/api';
 import type { DataValueWireToClient } from '@osdk/api';
+import { DerivedProperty } from '@osdk/api';
 import type { Experiment } from '@osdk/api/unstable';
 import type { ExperimentFns } from '@osdk/api/unstable';
 import { InterfaceDefinition } from '@osdk/api';
@@ -127,6 +128,8 @@ export function createObjectSpecifierFromPrimaryKey<Q extends ObjectTypeDefiniti
 //
 // @public
 export function createPlatformClient(baseUrl: string, tokenProvider: () => Promise<string>, options?: undefined, fetchFn?: typeof globalThis.fetch): PlatformClient;
+
+export { DerivedProperty }
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 //

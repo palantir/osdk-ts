@@ -19,6 +19,7 @@ import deepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
 import type { InterfaceHolder } from "../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import { evaluateFilter } from "./evaluateFilter.js";
 import type { SimpleWhereClause } from "./SimpleWhereClause.js";
 
 function is$and(
@@ -110,50 +111,4 @@ export function objectSortaMatchesWhereClause(
     }
     return false;
   });
-}
-
-function evaluateFilter(
-  f: PossibleWhereClauseFilters,
-  realValue: any,
-  expected: any,
-  strict: boolean,
-): boolean {
-  switch (f) {
-    case "$eq":
-      return realValue === expected;
-    case "$gt":
-      return realValue > expected;
-    case "$lt":
-      return realValue < expected;
-    case "$gte":
-      return realValue >= expected;
-    case "$lte":
-      return realValue <= expected;
-    case "$ne":
-      return realValue !== expected;
-    case "$in":
-      return expected.$in.includes(realValue);
-    case "$isNull":
-      return realValue == null;
-    case "$startsWith":
-      return realValue.startsWith(expected);
-    case "$contains":
-    case "$containsAllTerms":
-    case "$containsAllTermsInOrder":
-    case "$containsAnyTerm":
-    case "$intersects":
-    case "$within":
-      // for these we will strictly say no and loosely say yes
-      // so that they don't change things now but may if reloaded
-      return !strict;
-
-    default:
-      // same thing here as the above cases but we will catch the
-      // exhaustive check in dev
-      if (process.env.NODE_ENV !== "production") {
-        const exhaustive: never = f;
-        invariant(false, `Unknown where filter ${f}`);
-      }
-      return !strict;
-  }
 }

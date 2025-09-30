@@ -943,4 +943,151 @@ describe(modernToLegacyWhereClause, () => {
       });
     });
   });
+
+  describe("RDP properties", () => {
+    const mockObjectType: ObjectOrInterfaceDefinition = {
+      type: "object",
+      apiName: "TestObject",
+    } as ObjectOrInterfaceDefinition;
+
+    it("should handle RDP properties at top level", () => {
+      const whereClause = {
+        department: "Engineering",
+        reportCount: { $gte: 5 },
+        managerName: "John",
+      };
+
+      const rdpNames = new Set(["reportCount", "managerName"]);
+
+      const result = modernToLegacyWhereClause(
+        whereClause as any,
+        mockObjectType,
+        rdpNames,
+      );
+
+      expect(result).toEqual({
+        type: "and",
+        value: [
+          {
+            type: "eq",
+            field: "department",
+            value: "Engineering",
+          },
+          {
+            type: "gte",
+            propertyIdentifier: {
+              type: "property",
+              apiName: "reportCount",
+            },
+            value: 5,
+          },
+          {
+            type: "eq",
+            propertyIdentifier: {
+              type: "property",
+              apiName: "managerName",
+            },
+            value: "John",
+          },
+        ],
+      });
+    });
+
+    it("should handle RDP properties in $and clauses", () => {
+      const whereClause = {
+        $and: [
+          { department: "Engineering" },
+          { reportCount: { $gte: 5 } },
+        ],
+      };
+
+      const rdpNames = new Set(["reportCount"]);
+
+      const result = modernToLegacyWhereClause(
+        whereClause as any,
+        mockObjectType,
+        rdpNames,
+      );
+
+      expect(result).toEqual({
+        type: "and",
+        value: [
+          {
+            type: "eq",
+            field: "department",
+            value: "Engineering",
+          },
+          {
+            type: "gte",
+            propertyIdentifier: {
+              type: "property",
+              apiName: "reportCount",
+            },
+            value: 5,
+          },
+        ],
+      });
+    });
+
+    it("should handle complex nested structures with RDP", () => {
+      const whereClause = {
+        department: "Engineering",
+        $and: [
+          {
+            $or: [
+              { status: "active" },
+              { reportCount: { $gte: 10 } },
+            ],
+          },
+          {
+            managerName: { $ne: "Admin" },
+          },
+        ],
+      };
+
+      const rdpNames = new Set(["reportCount", "managerName"]);
+
+      const result = modernToLegacyWhereClause(
+        whereClause as any,
+        mockObjectType,
+        rdpNames,
+      );
+
+      // The actual structure flattens the nested $and differently
+      expect(result).toEqual({
+        type: "and",
+        value: [
+          {
+            type: "or",
+            value: [
+              {
+                type: "eq",
+                field: "status",
+                value: "active",
+              },
+              {
+                type: "gte",
+                propertyIdentifier: {
+                  type: "property",
+                  apiName: "reportCount",
+                },
+                value: 10,
+              },
+            ],
+          },
+          {
+            type: "not",
+            value: {
+              type: "eq",
+              propertyIdentifier: {
+                type: "property",
+                apiName: "managerName",
+              },
+              value: "Admin",
+            },
+          },
+        ],
+      });
+    });
+  });
 });

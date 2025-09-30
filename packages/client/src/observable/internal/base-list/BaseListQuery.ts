@@ -57,9 +57,8 @@ export abstract class BaseListQuery<
 
   /**
    * Get RDP configuration from the cache key
-   * @protected
    */
-  protected get rdpConfig(): Canonical<Rdp> | null {
+  public get rdpConfig(): Canonical<Rdp> | null {
     return this.cacheKey.otherKeys[RDP_IDX];
   }
 
@@ -392,7 +391,7 @@ export abstract class BaseListQuery<
       // Store the fetched data using batch operations
       const { retVal } = this.store.batch({}, (batch) => {
         const append = this.nextPageToken != null;
-        const finalStatus = "loaded";
+        const finalStatus = result.nextPageToken ? status : "loaded";
 
         const objectKeys = this.store.objects.storeOsdkInstances(
           result.data,
@@ -407,8 +406,6 @@ export abstract class BaseListQuery<
           append,
         );
       });
-
-      this.nextPageToken = result.nextPageToken;
 
       return retVal;
     } catch (error: unknown) {
