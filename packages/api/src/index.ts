@@ -33,15 +33,10 @@ export type { AggregationsResults } from "./aggregate/AggregationsResults.js";
 export type { GeoFilterOptions } from "./aggregate/GeoFilter.js";
 export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
 export type {
-  AndWhereClauseWithRdp,
   GeoFilter_Intersects,
   GeoFilter_Within,
-  NotWhereClauseWithRdp,
-  OrWhereClauseWithRdp,
   PossibleWhereClauseFilters,
-  RdpWhereClause,
   WhereClause,
-  WhereClauseWithRdp,
 } from "./aggregate/WhereClause.js";
 export type {
   OsdkObjectCreatePropertyType,
@@ -102,6 +97,9 @@ export type {
   InterfaceDefinition,
   InterfaceMetadata,
 } from "./ontology/InterfaceDefinition.js";
+export type {
+  DerivedObjectOrInterfaceDefinition,
+} from "./ontology/ObjectOrInterface.js";
 export type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,

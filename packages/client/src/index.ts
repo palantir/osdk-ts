@@ -28,6 +28,7 @@ export type {
   ApplyBatchActionOptions,
   Attachment,
   CompileTimeMetadata,
+  DerivedObjectOrInterfaceDefinition,
   InterfaceDefinition,
   InterfaceMetadata,
   Logger,

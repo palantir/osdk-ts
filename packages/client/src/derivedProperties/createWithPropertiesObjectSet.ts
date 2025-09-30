@@ -48,10 +48,11 @@ export function createWithPropertiesObjectSet<
       }, definitionMap);
     },
     where: (clause) => {
+      const rdpNames = new Set(definitionMap.keys());
       return createWithPropertiesObjectSet(objectType, {
         type: "filter",
         objectSet: objectSet,
-        where: modernToLegacyWhereClause(clause, objectType),
+        where: modernToLegacyWhereClause(clause, objectType, rdpNames),
       }, definitionMap);
     },
     aggregate: (aggregation: string, opt: any) => {

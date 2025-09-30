@@ -24,18 +24,19 @@ describe("modernToLegacyWhereClause with $rdp", () => {
     apiName: "TestObject",
   } as ObjectOrInterfaceDefinition;
 
-  it("should flatten $rdp properties to top level", () => {
+  it("should handle RDP properties at top level", () => {
     const whereClause = {
       department: "Engineering",
-      $rdp: {
-        reportCount: { $gte: 5 },
-        managerName: "John",
-      },
+      reportCount: { $gte: 5 },
+      managerName: "John",
     };
+
+    const rdpNames = new Set(["reportCount", "managerName"]);
 
     const result = modernToLegacyWhereClause(
       whereClause as any,
       mockObjectType,
+      rdpNames,
     );
 
     expect(result).toEqual({
@@ -47,41 +48,39 @@ describe("modernToLegacyWhereClause with $rdp", () => {
           value: "Engineering",
         },
         {
-          type: "and",
-          value: [
-            {
-              type: "gte",
-              propertyIdentifier: {
-                type: "property",
-                apiName: "reportCount",
-              },
-              value: 5,
-            },
-            {
-              type: "eq",
-              propertyIdentifier: {
-                type: "property",
-                apiName: "managerName",
-              },
-              value: "John",
-            },
-          ],
+          type: "gte",
+          propertyIdentifier: {
+            type: "property",
+            apiName: "reportCount",
+          },
+          value: 5,
+        },
+        {
+          type: "eq",
+          propertyIdentifier: {
+            type: "property",
+            apiName: "managerName",
+          },
+          value: "John",
         },
       ],
     });
   });
 
-  it("should handle $rdp in $and clauses", () => {
+  it("should handle RDP properties in $and clauses", () => {
     const whereClause = {
       $and: [
         { department: "Engineering" },
-        { $rdp: { reportCount: { $gte: 5 } } },
+        { reportCount: { $gte: 5 } },
       ],
     };
+
+    const rdpNames = new Set(["reportCount"]);
 
     const result = modernToLegacyWhereClause(
       whereClause as any,
       mockObjectType,
+      rdpNames,
     );
 
     expect(result).toEqual({
@@ -104,17 +103,20 @@ describe("modernToLegacyWhereClause with $rdp", () => {
     });
   });
 
-  it("should handle $rdp in $or clauses", () => {
+  it("should handle RDP in $or clauses", () => {
     const whereClause = {
       $or: [
         { department: "Engineering" },
-        { $rdp: { reportCount: { $gte: 5 } } },
+        { reportCount: { $gte: 5 } },
       ],
     };
+
+    const rdpNames = new Set(["reportCount"]);
 
     const result = modernToLegacyWhereClause(
       whereClause as any,
       mockObjectType,
+      rdpNames,
     );
 
     expect(result).toEqual({
@@ -137,18 +139,19 @@ describe("modernToLegacyWhereClause with $rdp", () => {
     });
   });
 
-  it("should handle $rdp in $not clauses", () => {
+  it("should handle RDP in $not clauses", () => {
     const whereClause = {
       $not: {
-        $rdp: {
-          reportCount: { $eq: 0 },
-        },
+        reportCount: { $eq: 0 },
       },
     };
+
+    const rdpNames = new Set(["reportCount"]);
 
     const result = modernToLegacyWhereClause(
       whereClause as any,
       mockObjectType,
+      rdpNames,
     );
 
     expect(result).toEqual({
@@ -164,27 +167,28 @@ describe("modernToLegacyWhereClause with $rdp", () => {
     });
   });
 
-  it("should handle complex nested structures with $rdp", () => {
+  it("should handle complex nested structures with RDP", () => {
     const whereClause = {
       department: "Engineering",
       $and: [
         {
           $or: [
             { status: "active" },
-            { $rdp: { reportCount: { $gte: 10 } } },
+            { reportCount: { $gte: 10 } },
           ],
         },
         {
-          $rdp: {
-            managerName: { $ne: "Admin" },
-          },
+          managerName: { $ne: "Admin" },
         },
       ],
     };
 
+    const rdpNames = new Set(["reportCount", "managerName"]);
+
     const result = modernToLegacyWhereClause(
       whereClause as any,
       mockObjectType,
+      rdpNames,
     );
 
     // The actual structure flattens the nested $and differently
@@ -224,17 +228,18 @@ describe("modernToLegacyWhereClause with $rdp", () => {
     });
   });
 
-  it("should handle $rdp with only RDP properties", () => {
+  it("should handle only RDP properties", () => {
     const whereClause = {
-      $rdp: {
-        reportCount: { $gte: 5 },
-        managerName: "John",
-      },
+      reportCount: { $gte: 5 },
+      managerName: "John",
     };
+
+    const rdpNames = new Set(["reportCount", "managerName"]);
 
     const result = modernToLegacyWhereClause(
       whereClause as any,
       mockObjectType,
+      rdpNames,
     );
 
     expect(result).toEqual({

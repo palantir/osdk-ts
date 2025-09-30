@@ -214,15 +214,6 @@ export type AllowedBucketKeyTypes = AllowedBucketTypes | {
 export type AllowedBucketTypes = string | number | boolean;
 
 // @public (undocumented)
-export interface AndWhereClauseWithRdp<
-	T extends ObjectOrInterfaceDefinition,
-	RDPs extends Record<string, SimplePropertyDef> = {}
-> {
-    	// (undocumented)
-    $and: WhereClauseWithRdp<T, RDPs>[];
-}
-
-// @public (undocumented)
 export type ApplyActionOptions = {
     	$returnEdits?: true
     	$validateOnly?: false
@@ -808,15 +799,6 @@ export interface MediaUpload {
 }
 
 // @public (undocumented)
-export interface NotWhereClauseWithRdp<
-	T extends ObjectOrInterfaceDefinition,
-	RDPs extends Record<string, SimplePropertyDef> = {}
-> {
-    	// (undocumented)
-    $not: WhereClauseWithRdp<T, RDPs>;
-}
-
-// @public (undocumented)
 export const NULL_VALUE: symbol & {
     	__type: "NULL_VALUE"
 };
@@ -1031,15 +1013,6 @@ export interface OntologyMetadata<_NEVER_USED_KEPT_FOR_BACKCOMPAT = any> {
     ontologyRid: string;
     	// (undocumented)
     userAgent: string;
-}
-
-// @public (undocumented)
-export interface OrWhereClauseWithRdp<
-	T extends ObjectOrInterfaceDefinition,
-	RDPs extends Record<string, SimplePropertyDef> = {}
-> {
-    	// (undocumented)
-    $or: WhereClauseWithRdp<T, RDPs>[];
 }
 
 // Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
@@ -1364,11 +1337,6 @@ type Range_2<T extends AllowedBucketTypes_2> = {
 };
 export { Range_2 as Range }
 
-// @public (undocumented)
-export type RdpWhereClause<RDPs extends Record<string, SimplePropertyDef>> = {
-    	$rdp?: { [K in keyof RDPs]? : FilterFor<SimplePropertyDef.ToPropertyDef<RDPs[K]>> }
-};
-
 // Warning: (ae-forgotten-export) The symbol "ErrorResult" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -1573,12 +1541,6 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
 export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T> | AndWhereClause<T> | NotWhereClause<T> | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true ? Record<string, never> : PropertyWhereClause<T>);
 
 // @public (undocumented)
-export type WhereClauseWithRdp<
-	T extends ObjectOrInterfaceDefinition,
-	RDPs extends Record<string, SimplePropertyDef> = {}
-> = OrWhereClauseWithRdp<T, RDPs> | AndWhereClauseWithRdp<T, RDPs> | NotWhereClauseWithRdp<T, RDPs> | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true ? RdpWhereClause<RDPs> : PropertyWhereClause<T> & RdpWhereClause<RDPs>);
-
-// @public (undocumented)
 export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWirePropertyTypes>;
 
 // Warnings were encountered during analysis:
@@ -1591,7 +1553,6 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "OsdkObjectPropertyTypeNotUndefined" needs to be exported by the entry point index.d.ts
-// src/aggregate/WhereClause.ts:201:3 - (ae-forgotten-export) The symbol "FilterFor" needs to be exported by the entry point index.d.ts
 // src/derivedProperties/DerivedProperty.ts:58:7 - (ae-forgotten-export) The symbol "DerivedPropertyCreator" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)

@@ -112,23 +112,6 @@ export class WhereClauseCanonicalizer {
           if (k === "$and" || k === "$or") {
             return [k, (v as Array<any>).map(x => this.#toCanon(x, set))];
           }
-          if (k === "$rdp" && typeof v === "object" && v != null) {
-            const canonicalizedRdp = Object.fromEntries(
-              Object.entries(v)
-                .sort(([a], [b]) => a.localeCompare(b))
-                .map(([rdpKey, rdpValue]) => {
-                  set.add(`$rdp.${rdpKey}`);
-                  if (
-                    typeof rdpValue === "object" && rdpValue != null
-                    && "$eq" in rdpValue
-                  ) {
-                    return [rdpKey, (rdpValue as any)["$eq"]];
-                  }
-                  return [rdpKey, rdpValue];
-                }),
-            );
-            return [k, canonicalizedRdp];
-          }
           if (k !== "$not" && typeof v === "object" && "$eq" in v) {
             return [k, v["$eq"]];
           }

@@ -54,9 +54,7 @@ export function EmployeesList(props: EmployeesListProps) {
     },
     where: {
       department: "Media Team",
-      $rdp: {
-        reportCount: { $eq: 0 },
-      },
+      reportCount: { $gte: 1 },
     },
   });
 

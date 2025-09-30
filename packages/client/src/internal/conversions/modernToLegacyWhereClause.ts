@@ -39,19 +39,22 @@ export function modernToLegacyWhereClause<
 >(
   whereClause: WhereClause<T>,
   objectOrInterface: T,
+  rdpNames?: Set<string>,
 ): SearchJsonQueryV2 {
   if ("$and" in whereClause) {
     return {
       type: "and",
       value: (whereClause.$and as WhereClause<T>[]).map(
-        (clause) => modernToLegacyWhereClause(clause, objectOrInterface),
+        (clause) =>
+          modernToLegacyWhereClause(clause, objectOrInterface, rdpNames),
       ),
     };
   } else if ("$or" in whereClause) {
     return {
       type: "or",
       value: (whereClause.$or as WhereClause<T>[]).map(
-        (clause) => modernToLegacyWhereClause(clause, objectOrInterface),
+        (clause) =>
+          modernToLegacyWhereClause(clause, objectOrInterface, rdpNames),
       ),
     };
   } else if ("$not" in whereClause) {
@@ -60,6 +63,7 @@ export function modernToLegacyWhereClause<
       value: modernToLegacyWhereClause(
         whereClause.$not as WhereClause<T>,
         objectOrInterface,
+        rdpNames,
       ),
     };
   }
@@ -67,13 +71,13 @@ export function modernToLegacyWhereClause<
   const parts = Object.entries(whereClause);
 
   if (parts.length === 1) {
-    return handleWherePair(parts[0], objectOrInterface);
+    return handleWherePair(parts[0], objectOrInterface, undefined, rdpNames);
   }
 
   return {
     type: "and",
     value: parts.map<SearchJsonQueryV2>(
-      v => handleWherePair(v, objectOrInterface),
+      v => handleWherePair(v, objectOrInterface, undefined, rdpNames),
     ),
   };
 }
@@ -82,24 +86,15 @@ function handleWherePair(
   [fieldName, filter]: [string, any],
   objectOrInterface: ObjectOrInterfaceDefinition,
   structFieldSelector?: { propertyApiName: string; structFieldApiName: string },
+  rdpNames?: Set<string>,
 ): SearchJsonQueryV2 {
   invariant(
     filter != null,
     "Defined key values are only allowed when they are not undefined.",
   );
 
-  if (fieldName === "$rdp" && typeof filter === "object") {
-    const rdpFilters = Object.entries(filter).map(([rdpName, rdpFilter]) =>
-      handleRdpFilter(rdpName, rdpFilter)
-    );
-    if (rdpFilters.length === 1) {
-      return rdpFilters[0];
-    }
-
-    return {
-      type: "and",
-      value: rdpFilters,
-    };
+  if (rdpNames?.has(fieldName) && !structFieldSelector) {
+    return handleRdpFilter(fieldName, filter);
   }
 
   const propertyIdentifier: PropertyIdentifier | undefined =
@@ -152,7 +147,7 @@ function handleWherePair(
     return handleWherePair(Object.entries(filter)[0], objectOrInterface, {
       propertyApiName: fieldName,
       structFieldApiName,
-    });
+    }, rdpNames);
   }
 
   const firstKey = keysOfFilter[0] as PossibleWhereClauseFilters;

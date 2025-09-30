@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import type { DerivedProperty, WhereClauseWithRdp } from "@osdk/api";
+import type {
+  DerivedProperty,
+  SimplePropertyDef,
+  WhereClause,
+} from "@osdk/api";
 import type {
   InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
-  WhereClause,
 } from "@osdk/client";
 import type { ObserveObjectsArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
@@ -29,11 +32,12 @@ import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseOsdkObjectsOptions<
   T extends ObjectTypeDefinition | InterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > {
   /**
    * Standard OSDK Where
    */
-  where?: WhereClauseWithRdp<T, any>;
+  where?: WhereClause<T, RDPs>;
 
   /**
    *  The preferred page size for the list.

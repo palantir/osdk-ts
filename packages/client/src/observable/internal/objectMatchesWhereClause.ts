@@ -96,20 +96,6 @@ export function objectSortaMatchesWhereClause(
   }
 
   return Object.entries(whereClause).every(([key, filter]) => {
-    if (key === "$rdp" && typeof filter === "object" && filter != null) {
-      return Object.entries(filter).every(([rdpKey, rdpFilter]) => {
-        const rdpValue = o[rdpKey as keyof typeof o];
-        if (typeof rdpFilter === "object" && rdpFilter != null) {
-          const [f] = Object.keys(rdpFilter) as Array<
-            PossibleWhereClauseFilters
-          >;
-          const expected = rdpFilter[f];
-          return evaluateFilter(f, rdpValue, expected, strict);
-        }
-        return rdpValue === rdpFilter;
-      });
-    }
-
     if (typeof filter === "object") {
       const realValue: any = o[key as keyof typeof o];
       const [f] = Object.keys(filter) as Array<PossibleWhereClauseFilters>;
