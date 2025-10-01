@@ -100,3 +100,5 @@ export const UnstructuredImageExample: UnstructuredImageExample = {
   apiName: 'UnstructuredImageExample',
   osdkMetadata: $osdkMetadata,
 };
+
+(UnstructuredImageExample as any).__experimental_do_not_use__rid = 'rid.a.b.c.d';

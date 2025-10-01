@@ -106,3 +106,5 @@ export const StructPersonOpisTeam: StructPersonOpisTeam = {
   apiName: 'StructPersonOpisTeam',
   osdkMetadata: $osdkMetadata,
 };
+
+(StructPersonOpisTeam as any).__experimental_do_not_use__rid = 'ri.a.b.c.d';

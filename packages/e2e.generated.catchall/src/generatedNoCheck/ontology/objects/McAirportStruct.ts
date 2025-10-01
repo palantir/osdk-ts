@@ -122,3 +122,5 @@ export const McAirportStruct: McAirportStruct = {
   apiName: 'McAirportStruct',
   osdkMetadata: $osdkMetadata,
 };
+
+(McAirportStruct as any).__experimental_do_not_use__rid = 'rid.a.b.c.d';

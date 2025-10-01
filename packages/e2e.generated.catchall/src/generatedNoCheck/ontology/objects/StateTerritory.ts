@@ -105,3 +105,6 @@ export const StateTerritory: StateTerritory = {
   apiName: 'StateTerritory',
   osdkMetadata: $osdkMetadata,
 };
+
+(StateTerritory as any).__experimental_do_not_use__rid =
+  'ri.ontology.main.object-type.98f324e1-b8f4-42ef-aee7-5c4a1494ce5e';

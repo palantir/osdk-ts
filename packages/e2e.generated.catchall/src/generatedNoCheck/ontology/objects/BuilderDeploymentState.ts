@@ -100,3 +100,5 @@ export const BuilderDeploymentState: BuilderDeploymentState = {
   apiName: 'BuilderDeploymentState',
   osdkMetadata: $osdkMetadata,
 };
+
+(BuilderDeploymentState as any).__experimental_do_not_use__rid = 'rid.a.b.c.d';

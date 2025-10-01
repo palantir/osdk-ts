@@ -203,3 +203,5 @@ export const Employee: Employee = {
   apiName: 'Employee',
   osdkMetadata: $osdkMetadata,
 };
+
+(Employee as any).__experimental_do_not_use__rid = 'rid.a.b.c.d';

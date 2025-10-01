@@ -132,3 +132,5 @@ export const FintrafficAis: FintrafficAis = {
   apiName: 'FintrafficAis',
   osdkMetadata: $osdkMetadata,
 };
+
+(FintrafficAis as any).__experimental_do_not_use__rid = 'ri.a.b.c.d';

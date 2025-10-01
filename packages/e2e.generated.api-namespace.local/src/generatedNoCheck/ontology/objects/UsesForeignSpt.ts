@@ -92,3 +92,5 @@ export const UsesForeignSpt: UsesForeignSpt = {
   apiName: 'UsesForeignSpt',
   osdkMetadata: $osdkMetadata,
 };
+
+(UsesForeignSpt as any).__experimental_do_not_use__rid = 'theRid';

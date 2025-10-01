@@ -136,8 +136,10 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
     = {
       type: "${object instanceof EnhancedObjectType ? "object" : "interface"}",
       apiName: "${object.fullApiName}",
-      osdkMetadata: $osdkMetadata,  
-    };`;
+      osdkMetadata: $osdkMetadata,
+    };
+    
+    (${object.shortApiName} as any).__experimental_do_not_use__rid = "${definition.rid}"`;
 }
 
 export interface Identifiers extends

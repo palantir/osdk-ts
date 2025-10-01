@@ -92,3 +92,5 @@ export const Task: Task = {
   apiName: 'com.example.dep.Task',
   osdkMetadata: $osdkMetadata,
 };
+
+(Task as any).__experimental_do_not_use__rid = 'ridForTask';

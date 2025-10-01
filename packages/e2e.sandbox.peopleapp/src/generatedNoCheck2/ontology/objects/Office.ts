@@ -129,3 +129,5 @@ export const Office: Office = {
   apiName: 'Office',
   osdkMetadata: $osdkMetadata,
 };
+
+(Office as any).__experimental_do_not_use__rid = 'ri.ontology.main.object-type.bbca9c02-5c6a-4d3a-8bf1-e4db0177ab5f';

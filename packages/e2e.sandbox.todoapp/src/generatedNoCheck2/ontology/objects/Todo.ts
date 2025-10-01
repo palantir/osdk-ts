@@ -136,3 +136,5 @@ export const Todo: Todo = {
   apiName: 'Todo',
   osdkMetadata: $osdkMetadata,
 };
+
+(Todo as any).__experimental_do_not_use__rid = 'ri.ontology.main.object-type.a3fcfef9-ec11-4f2d-8a4c-dc010de837bf';

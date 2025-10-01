@@ -593,3 +593,5 @@ export const Employee: Employee = {
   apiName: 'Employee',
   osdkMetadata: $osdkMetadata,
 };
+
+(Employee as any).__experimental_do_not_use__rid = 'ri.ontology.main.object-type.ade16a88-ecc4-4f96-9751-ca1799247d64';

@@ -116,3 +116,5 @@ export const SotSensor: SotSensor = {
   apiName: 'SotSensor',
   osdkMetadata: $osdkMetadata,
 };
+
+(SotSensor as any).__experimental_do_not_use__rid = 'rid.a.b.c.d';

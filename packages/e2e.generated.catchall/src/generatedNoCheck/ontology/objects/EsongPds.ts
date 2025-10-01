@@ -179,3 +179,5 @@ export const EsongPds: EsongPds = {
   apiName: 'EsongPds',
   osdkMetadata: $osdkMetadata,
 };
+
+(EsongPds as any).__experimental_do_not_use__rid = 'ri.ontology.main.object-type.afa55844-81e8-4a1f-9b8e-bf51a9938a4d';

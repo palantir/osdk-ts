@@ -124,3 +124,6 @@ export const OsdkTestObject: OsdkTestObject = {
   apiName: 'OsdkTestObject',
   osdkMetadata: $osdkMetadata,
 };
+
+(OsdkTestObject as any).__experimental_do_not_use__rid =
+  'ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb';

@@ -117,3 +117,5 @@ export const RhemmingsObjectWithGtsrProperty2: RhemmingsObjectWithGtsrProperty2 
   apiName: 'RhemmingsObjectWithGtsrProperty2',
   osdkMetadata: $osdkMetadata,
 };
+
+(RhemmingsObjectWithGtsrProperty2 as any).__experimental_do_not_use__rid = 'ri.a.b.c.d';

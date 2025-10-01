@@ -112,3 +112,5 @@ export const BoundariesUsState: BoundariesUsState = {
   apiName: 'BoundariesUsState',
   osdkMetadata: $osdkMetadata,
 };
+
+(BoundariesUsState as any).__experimental_do_not_use__rid = 'ri.a.b.c.d';

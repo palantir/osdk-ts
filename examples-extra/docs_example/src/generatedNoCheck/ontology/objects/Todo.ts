@@ -104,3 +104,5 @@ export const Todo: Todo = {
   apiName: 'Todo',
   osdkMetadata: $osdkMetadata,
 };
+
+(Todo as any).__experimental_do_not_use__rid = 'ridForTodo';

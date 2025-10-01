@@ -91,3 +91,5 @@ export const Person: Person = {
   apiName: 'Person',
   osdkMetadata: $osdkMetadata,
 };
+
+(Person as any).__experimental_do_not_use__rid = 'rid.a.b.c.d';

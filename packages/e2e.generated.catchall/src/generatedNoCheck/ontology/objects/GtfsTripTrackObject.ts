@@ -100,3 +100,5 @@ export const GtfsTripTrackObject: GtfsTripTrackObject = {
   apiName: 'GtfsTripTrackObject',
   osdkMetadata: $osdkMetadata,
 };
+
+(GtfsTripTrackObject as any).__experimental_do_not_use__rid = 'ri.a.b.c.d';

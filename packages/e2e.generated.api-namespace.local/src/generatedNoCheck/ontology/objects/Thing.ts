@@ -100,3 +100,5 @@ export const Thing: Thing = {
   apiName: 'Thing',
   osdkMetadata: $osdkMetadata,
 };
+
+(Thing as any).__experimental_do_not_use__rid = 'ridForThing';

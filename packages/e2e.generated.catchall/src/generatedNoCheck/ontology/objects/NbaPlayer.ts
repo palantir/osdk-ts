@@ -128,3 +128,5 @@ export const NbaPlayer: NbaPlayer = {
   apiName: 'NbaPlayer',
   osdkMetadata: $osdkMetadata,
 };
+
+(NbaPlayer as any).__experimental_do_not_use__rid = 'ri.a.b.c.d';
