@@ -322,7 +322,7 @@ function convertToWireBlockData(
       Object.entries(ontology[OntologyEntityTypeEnum.LINK_TYPE]).map<
         [string, OntologyIrLinkTypeBlockDataV2]
       >(([id, link]) => {
-        return [id, convertLink(link)];
+        return [cleanAndValidateLinkTypeId(id), convertLink(link)];
       }),
     ),
     actionTypes: Object.fromEntries(
