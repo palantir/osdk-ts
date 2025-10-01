@@ -778,6 +778,10 @@ function convertInterface(
     displayMetadata: {
       displayName: interfaceType.displayMetadata.displayName,
       description: interfaceType.displayMetadata.description,
+      icon: interfaceType.displayMetadata.icon ?? {
+        type: "blueprint",
+        blueprint: { locator: "cube", color: "#2F343C" },
+      },
     },
     extendsInterfaces: interfaceType.extendsInterfaces.map(i => i.apiName),
     // these are omitted from our internal types but we need to re-add them for the final json
