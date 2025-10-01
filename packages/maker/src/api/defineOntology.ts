@@ -710,14 +710,16 @@ function convertLink(
               apiName: linkType.many.object.primaryKeyPropertyApiName,
               object: linkType.many.object.apiName,
             },
-            column: linkType.many.object.primaryKeyPropertyApiName,
+            column: linkType.many.object.apiName + "-"
+              + linkType.many.object.primaryKeyPropertyApiName,
           }],
           objectTypeBPrimaryKeyMapping: [{
             property: {
               apiName: linkType.toMany.object.primaryKeyPropertyApiName,
               object: linkType.toMany.object.apiName,
             },
-            column: linkType.toMany.object.primaryKeyPropertyApiName,
+            column: linkType.toMany.object.apiName + "-"
+              + linkType.toMany.object.primaryKeyPropertyApiName,
           }],
         },
       },
