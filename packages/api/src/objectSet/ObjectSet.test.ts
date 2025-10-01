@@ -83,8 +83,6 @@ describe("ObjectSet", () => {
 
   const interfaceObjectSet = createMockObjectSet<FooInterfaceApiTest>();
 
-  interfaceObjectSet.asType({ type: "interface", apiName: "" });
-
   describe("normal", () => {
     test("select none", async () => {
       const result = await fauxObjectSet.fetchPage();
@@ -1457,7 +1455,9 @@ describe("ObjectSet", () => {
   });
   describe("asType", () => {
     it("restricts casting from interface to object type", () => {
-      const objectSet = {} as $ObjectSet<FooInterfaceApiTest>;
+      const objectSet = { asType: () => {} } as unknown as $ObjectSet<
+        FooInterfaceApiTest
+      >;
 
       objectSet.asType(EmployeeApiTest);
 
