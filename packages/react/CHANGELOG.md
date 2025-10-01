@@ -1,5 +1,17 @@
 # @osdkkit/react
 
+## 0.7.0-beta.5
+
+### Minor Changes
+
+- 7b97128: add useObjectSet hook
+
+### Patch Changes
+
+- Updated dependencies [7b97128]
+  - @osdk/client@2.5.0-beta.11
+  - @osdk/api@2.5.0-beta.11
+
 ## 0.7.0-beta.4
 
 ### Minor Changes
