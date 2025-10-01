@@ -887,6 +887,8 @@ describe("generator", () => {
           apiName: 'Person',
           osdkMetadata: $osdkMetadata,
         };
+
+        (Person as any).__experimental_do_not_use__rid = 'ridForPerson';
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1015,6 +1017,8 @@ describe("generator", () => {
           apiName: 'Todo',
           osdkMetadata: $osdkMetadata,
         };
+
+        (Todo as any).__experimental_do_not_use__rid = 'ridForTodo';
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -1544,6 +1548,8 @@ describe("generator", () => {
           apiName: 'foo.bar.Person',
           osdkMetadata: $osdkMetadata,
         };
+
+        (Person as any).__experimental_do_not_use__rid = 'ridForPerson';
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1672,6 +1678,8 @@ describe("generator", () => {
           apiName: 'foo.bar.Todo',
           osdkMetadata: $osdkMetadata,
         };
+
+        (Todo as any).__experimental_do_not_use__rid = 'ridForTodo';
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -2074,6 +2082,8 @@ describe("generator", () => {
             apiName: 'UsesForeignSpt',
             osdkMetadata: $osdkMetadata,
           };
+
+          (UsesForeignSpt as any).__experimental_do_not_use__rid = 'theRid';
           "
         `);
     });
@@ -2329,6 +2339,8 @@ describe("generator", () => {
           apiName: 'Person',
           osdkMetadata: $osdkMetadata,
         };
+
+        (Person as any).__experimental_do_not_use__rid = 'ridForPerson';
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -2457,6 +2469,8 @@ describe("generator", () => {
           apiName: 'Todo',
           osdkMetadata: $osdkMetadata,
         };
+
+        (Todo as any).__experimental_do_not_use__rid = 'ridForTodo';
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -2797,6 +2811,8 @@ describe("generator", () => {
           apiName: 'com.example.dep.Task',
           osdkMetadata: $osdkMetadata,
         };
+
+        (Task as any).__experimental_do_not_use__rid = 'ridForTask';
         ",
           "/foo/ontology/queries.ts": "export {};
         ",
