@@ -25,6 +25,8 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { generateFunctionsIr } from "../api/defineFunction.js";
 import { defineOntology } from "../api/defineOntology.js";
+import { IEntityMetadataMapping } from "@foundry/functions-typescript-osdk-ontology-code-generator";
+import { OntologyIr } from "@osdk/client.unstable";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
 
@@ -127,22 +129,6 @@ export default async function main(
     );
   }
 
-  if (
-    commandLineOpts.functionsOutput !== undefined
-    && commandLineOpts.functionsRootDir !== undefined
-  ) {
-    consola.info(`Loading function IR`);
-    const functionsIr = generateFunctionsIr(
-      commandLineOpts.functionsRootDir,
-      commandLineOpts.configPath,
-    );
-    await fs.writeFile(
-      commandLineOpts.functionsOutput,
-      JSON.stringify(functionsIr, null, 2),
-    );
-    return;
-  }
-
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
 
   const ontologyIr = await loadOntology(
@@ -151,6 +137,7 @@ export default async function main(
     commandLineOpts.outputDir,
     commandLineOpts.dependencies,
   );
+  consola.log(JSON.stringify(ontologyIr, null, 2));
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
   await fs.writeFile(
@@ -177,6 +164,24 @@ export default async function main(
         2,
       ),
     );
+  }
+
+  if (
+    commandLineOpts.functionsOutput !== undefined
+    && commandLineOpts.functionsRootDir !== undefined
+  ) {
+    consola.info(`Loading function IR`);
+    const functionsIr = generateFunctionsIr(
+      commandLineOpts.functionsRootDir,
+      commandLineOpts.configPath,
+      createEntityMappings(ontologyIr),
+    );
+    consola.log(JSON.stringify(functionsIr, null, 2));
+    await fs.writeFile(
+      commandLineOpts.functionsOutput,
+      JSON.stringify(functionsIr, null, 2),
+    );
+    return;
   }
 
   if (commandLineOpts.generateFunctionsOsdk !== undefined) {
@@ -252,6 +257,37 @@ async function fullMetadataToOsdk(
     ]);
   } catch (error) {
     await fs.rm(functionOsdkDir, { recursive: true, force: true });
-    throw error;
+    throw error;  
   }
+}
+
+function createEntityMappings(ontologyIr: OntologyIr): IEntityMetadataMapping {
+  const entityMappings: IEntityMetadataMapping = {
+    ontologies: {}
+  };
+  
+  const ontologyRid = "ontology";
+  entityMappings.ontologies[ontologyRid] = {
+    objectTypes: {},
+    interfaceTypes: {}
+  };
+  
+  for (const [apiName, blockData] of Object.entries(ontologyIr.ontology.objectTypes)) {
+    const propertyTypesMap: Record<string, { propertyId: string }> = {};
+    
+    Object.keys(blockData.objectType.propertyTypes).forEach((propertyName) => {
+      propertyTypesMap[propertyName] = { propertyId: propertyName };
+    });
+    
+    entityMappings.ontologies[ontologyRid].objectTypes[apiName] = {
+      objectTypeId: apiName,
+      primaryKey: {
+        propertyId: blockData.objectType.primaryKeys[0],
+      },
+      propertyTypes: propertyTypesMap,
+      linkTypes: {}
+    };
+  }
+
+  return entityMappings;
 }
