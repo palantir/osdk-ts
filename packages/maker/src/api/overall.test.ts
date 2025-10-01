@@ -4403,6 +4403,13 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "foo",
                     "displayName": "foo",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#2F343C",
+                        "locator": "cube",
+                      },
+                      "type": "blueprint",
+                    },
                   },
                   "extendsInterfaces": [],
                   "links": [],
