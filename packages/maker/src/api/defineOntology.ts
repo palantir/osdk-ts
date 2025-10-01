@@ -710,7 +710,7 @@ function convertLink(
               apiName: linkType.many.object.primaryKeyPropertyApiName,
               object: linkType.many.object.apiName,
             },
-            column: linkType.many.object.apiName + "-"
+            column: unNamespace(linkType.many.object.apiName) + "-"
               + linkType.many.object.primaryKeyPropertyApiName,
           }],
           objectTypeBPrimaryKeyMapping: [{
@@ -718,7 +718,7 @@ function convertLink(
               apiName: linkType.toMany.object.primaryKeyPropertyApiName,
               object: linkType.toMany.object.apiName,
             },
-            column: linkType.toMany.object.apiName + "-"
+            column: unNamespace(linkType.toMany.object.apiName) + "-"
               + linkType.toMany.object.primaryKeyPropertyApiName,
           }],
         },
@@ -1326,4 +1326,8 @@ function convertCardinality(
     return "ONE_TO_MANY";
   }
   return "ONE_TO_ONE";
+}
+
+function unNamespace(text: string) {
+  return text.split(".").pop();
 }

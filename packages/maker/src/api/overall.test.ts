@@ -2107,7 +2107,7 @@ describe("Ontology Defining", () => {
           },
           "interfaceTypes": {},
           "linkTypes": {
-            "fizzToFoo": {
+            "fizz-to-foo": {
               "datasources": [],
               "entityMetadata": {
                 "arePatchesEnabled": false,
@@ -2453,7 +2453,7 @@ describe("Ontology Defining", () => {
           },
           "interfaceTypes": {},
           "linkTypes": {
-            "fizzToFoo": {
+            "fizz-to-foo": {
               "datasources": [
                 {
                   "datasource": {
@@ -2461,7 +2461,7 @@ describe("Ontology Defining", () => {
                       "datasetRid": "link-fizzToFoo",
                       "objectTypeAPrimaryKeyMapping": [
                         {
-                          "column": "bar",
+                          "column": "foo-bar",
                           "property": {
                             "apiName": "bar",
                             "object": "com.palantir.foo",
@@ -2470,7 +2470,7 @@ describe("Ontology Defining", () => {
                       ],
                       "objectTypeBPrimaryKeyMapping": [
                         {
-                          "column": "fizz",
+                          "column": "fizz-fizz",
                           "property": {
                             "apiName": "fizz",
                             "object": "com.palantir.fizz",
@@ -2842,7 +2842,7 @@ describe("Ontology Defining", () => {
           },
           "interfaceTypes": {},
           "linkTypes": {
-            "fizzToFoo": {
+            "fizz-to-foo": {
               "datasources": [],
               "entityMetadata": {
                 "arePatchesEnabled": false,
