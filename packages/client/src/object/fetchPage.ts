@@ -103,7 +103,7 @@ export function resolveInterfaceObjectSet(
       type: "intersect",
       objectSets: [objectSet, {
         type: "interfaceBase",
-        interfaceType: interfaceTypeApiName,
+        interfaceType: "NihalbCastingLinkedInterfaceTypeA",
         includeAllBaseObjectProperties: true,
       }],
     }
