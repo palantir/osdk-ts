@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.5.0-beta.11
+
+### Minor Changes
+
+- 7b97128: add useObjectSet hook
+
+### Patch Changes
+
+- Updated dependencies [7b97128]
+  - @osdk/api@2.5.0-beta.11
+  - @osdk/client.unstable@2.5.0-beta.11
+  - @osdk/generator-converters@2.5.0-beta.11
+
 ## 2.5.0-beta.10
 
 ### Minor Changes
