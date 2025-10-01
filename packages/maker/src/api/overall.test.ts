@@ -4125,6 +4125,11 @@ describe("Ontology Defining", () => {
 
   describe("Actions", () => {
     it("Interface actions are properly defined", () => {
+      const foo = defineInterface({
+        apiName: "foo",
+        displayName: "foo",
+        properties: {},
+      });
       const exampleAction = defineAction({
         apiName: "foo",
         displayName: "exampleAction",
@@ -4293,7 +4298,28 @@ describe("Ontology Defining", () => {
               "linkTypes": {},
               "objectTypes": {},
             },
-            "interfaceTypes": {},
+            "interfaceTypes": {
+              "com.palantir.foo": {
+                "interfaceType": {
+                  "apiName": "com.palantir.foo",
+                  "displayMetadata": {
+                    "description": "foo",
+                    "displayName": "foo",
+                    "icon": undefined,
+                  },
+                  "extendsInterfaces": [],
+                  "links": [],
+                  "properties": [],
+                  "propertiesV2": {},
+                  "propertiesV3": {},
+                  "searchable": true,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                },
+              },
+            },
             "linkTypes": {},
             "objectTypes": {},
             "sharedPropertyTypes": {},
@@ -13745,6 +13771,166 @@ describe("Ontology Defining", () => {
           },
         }
       `);
+    });
+    it("Interface actions validate SPT existence globally", () => {
+      expect(() => {
+        const spt = defineSharedPropertyType({
+          apiName: "spt",
+          type: "string",
+        });
+        const pulseRepetitionIntervalSecs: SharedPropertyType = {
+          "apiName": "com.palantir.other.ontology.pulseRepetitionIntervalSecs",
+          "displayName": "Pulse Repetition Interval (s)",
+          "description": "Pulse Repetition Interval in seconds.",
+          "type": "double",
+          "nonNameSpacedApiName": "pulseRepetitionIntervalSecs",
+          "typeClasses": [],
+          "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
+        } as unknown as SharedPropertyType;
+        importOntologyEntity(pulseRepetitionIntervalSecs);
+        const interfaceType = defineInterface({
+          apiName: "interfaceType",
+          properties: {
+            spt,
+            pulseRepetitionIntervalSecs,
+          },
+        });
+        const action = defineAction({
+          apiName: "action",
+          displayName: "action",
+          status: "active",
+          parameters: [{
+            id: "interfaceObjectToModifyParameter",
+            displayName: "Interface object to modify",
+            type: {
+              type: "interfaceReference",
+              interfaceReference: {
+                interfaceTypeRid: interfaceType.apiName,
+              },
+            },
+            validation: {
+              required: true,
+              allowedValues: { type: "interfaceObjectQuery" },
+            },
+          }, {
+            id: "sptParameter",
+            displayName: "SPT",
+            type: "string",
+            validation: {
+              required: true,
+              allowedValues: { type: "text" },
+            },
+          }, {
+            id: "otherParameter",
+            displayName: "Other parameter",
+            type: "string",
+            validation: {
+              required: true,
+              allowedValues: { type: "text" },
+            },
+          }],
+          rules: [{
+            type: "modifyInterfaceRule",
+            modifyInterfaceRule: {
+              interfaceObjectToModifyParameter:
+                "interfaceObjectToModifyParameter",
+              sharedPropertyValues: {
+                spt: {
+                  type: "parameterId",
+                  parameterId: "sptParameter",
+                },
+                [pulseRepetitionIntervalSecs.apiName]: {
+                  type: "staticValue",
+                  staticValue: {
+                    type: "double",
+                    double: 4,
+                  },
+                },
+                other: {
+                  type: "parameterId",
+                  parameterId: "otherParameter",
+                },
+              },
+            },
+          }],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(`
+        [Error: Invariant failed: Shared property type com.palantir.other does not exist.
+                    If this SPT was imported, you may need to use [spt.apiName] as the key so that it is qualified with the right namespace]
+      `);
+    });
+    it("Interface actions validate SPT existence on the interface", () => {
+      expect(() => {
+        const spt = defineSharedPropertyType({
+          apiName: "spt",
+          type: "string",
+        });
+        const pulseRepetitionIntervalSecs: SharedPropertyType = {
+          "apiName": "com.palantir.other.ontology.pulseRepetitionIntervalSecs",
+          "displayName": "Pulse Repetition Interval (s)",
+          "description": "Pulse Repetition Interval in seconds.",
+          "type": "double",
+          "nonNameSpacedApiName": "pulseRepetitionIntervalSecs",
+          "typeClasses": [],
+          "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
+        } as unknown as SharedPropertyType;
+        importOntologyEntity(pulseRepetitionIntervalSecs);
+        const interfaceType = defineInterface({
+          apiName: "interfaceType",
+          properties: {
+            spt,
+          },
+        });
+        const action = defineAction({
+          apiName: "action",
+          displayName: "action",
+          status: "active",
+          parameters: [{
+            id: "interfaceObjectToModifyParameter",
+            displayName: "Interface object to modify",
+            type: {
+              type: "interfaceReference",
+              interfaceReference: {
+                interfaceTypeRid: interfaceType.apiName,
+              },
+            },
+            validation: {
+              required: true,
+              allowedValues: { type: "interfaceObjectQuery" },
+            },
+          }, {
+            id: "sptParameter",
+            displayName: "SPT",
+            type: "string",
+            validation: {
+              required: true,
+              allowedValues: { type: "text" },
+            },
+          }],
+          rules: [{
+            type: "modifyInterfaceRule",
+            modifyInterfaceRule: {
+              interfaceObjectToModifyParameter:
+                "interfaceObjectToModifyParameter",
+              sharedPropertyValues: {
+                spt: {
+                  type: "parameterId",
+                  parameterId: "sptParameter",
+                },
+                [pulseRepetitionIntervalSecs.apiName]: {
+                  type: "staticValue",
+                  staticValue: {
+                    type: "double",
+                    double: 4,
+                  },
+                },
+              },
+            },
+          }],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Shared property type com.palantir.other.ontology.pulseRepetitionIntervalSecs does not exist in interface type com.palantir.interfaceType]`,
+      );
     });
   });
   describe("Imports", () => {
