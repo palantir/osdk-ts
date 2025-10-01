@@ -261,6 +261,13 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "Foo",
                     "displayName": "Foo",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
+                      },
+                      "type": "blueprint",
+                    },
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -458,6 +465,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "childInterface",
                   "displayName": "childInterface",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [
                   "com.palantir.parentInterface",
@@ -517,6 +531,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "parentInterface",
                   "displayName": "parentInterface",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -672,6 +693,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "parentInterface",
                   "displayName": "parentInterface",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -798,6 +826,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "childInterface",
                   "displayName": "childInterface",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [
                   "com.palantir.parentInterface",
@@ -857,6 +892,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "parentInterface",
                   "displayName": "parentInterface",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -1010,6 +1052,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "parentInterface",
                   "displayName": "parentInterface",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -1064,6 +1113,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "A",
                   "displayName": "A",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [
@@ -1097,6 +1153,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "B",
                   "displayName": "B",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -1140,6 +1203,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "A",
                   "displayName": "A",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [
@@ -1173,6 +1243,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "B",
                   "displayName": "B",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -1243,6 +1320,13 @@ describe("Ontology Defining", () => {
               "displayMetadata": {
                 "description": "Foo Interface",
                 "displayName": "Foo Interface",
+                "icon": {
+                  "blueprint": {
+                    "color": "#00000",
+                    "locator": "airplane",
+                  },
+                  "type": "blueprint",
+                },
               },
               "extendsInterfaces": [],
               "links": [],
@@ -1455,6 +1539,13 @@ describe("Ontology Defining", () => {
               "displayMetadata": {
                 "description": "interface",
                 "displayName": "interface",
+                "icon": {
+                  "blueprint": {
+                    "color": "#4C90F0",
+                    "locator": "layout-hierarchy",
+                  },
+                  "type": "blueprint",
+                },
               },
               "extendsInterfaces": [],
               "links": [],
@@ -1735,6 +1826,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "interface",
                   "displayName": "interface",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -4305,6 +4403,13 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "foo",
                     "displayName": "foo",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
+                      },
+                      "type": "blueprint",
+                    },
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -4345,6 +4450,7 @@ describe("Ontology Defining", () => {
       });
       const exampleInterface = defineInterface({
         apiName: "exampleInterface",
+        icon: { color: "#c7cdd6ff", locator: "globe" },
         properties: {
           mySpt,
           property1: "string",
@@ -4896,6 +5002,13 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "exampleInterface",
                     "displayName": "exampleInterface",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#c7cdd6ff",
+                        "locator": "globe",
+                      },
+                      "type": "blueprint",
+                    },
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -10879,6 +10992,13 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "exampleInterface",
                     "displayName": "exampleInterface",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
+                      },
+                      "type": "blueprint",
+                    },
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -14004,6 +14124,13 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "myInterface",
                     "displayName": "myInterface",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
+                      },
+                      "type": "blueprint",
+                    },
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -14132,6 +14259,13 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "myInterface",
                     "displayName": "myInterface",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
+                      },
+                      "type": "blueprint",
+                    },
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -14576,6 +14710,13 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "childInterface",
                     "displayName": "childInterface",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
+                      },
+                      "type": "blueprint",
+                    },
                   },
                   "extendsInterfaces": [
                     "com.palantir.parentInterface",
@@ -14635,6 +14776,13 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "parentInterface",
                     "displayName": "parentInterface",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
+                      },
+                      "type": "blueprint",
+                    },
                   },
                   "extendsInterfaces": [],
                   "links": [],
