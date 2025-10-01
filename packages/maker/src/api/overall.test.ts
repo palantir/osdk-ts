@@ -4305,7 +4305,6 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "foo",
                     "displayName": "foo",
-                    "icon": undefined,
                   },
                   "extendsInterfaces": [],
                   "links": [],
