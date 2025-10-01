@@ -263,8 +263,8 @@ describe("Ontology Defining", () => {
                     "displayName": "Foo",
                     "icon": {
                       "blueprint": {
-                        "color": "#2F343C",
-                        "locator": "cube",
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
                       },
                       "type": "blueprint",
                     },
@@ -467,8 +467,8 @@ describe("Ontology Defining", () => {
                   "displayName": "childInterface",
                   "icon": {
                     "blueprint": {
-                      "color": "#2F343C",
-                      "locator": "cube",
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
                     },
                     "type": "blueprint",
                   },
@@ -533,8 +533,8 @@ describe("Ontology Defining", () => {
                   "displayName": "parentInterface",
                   "icon": {
                     "blueprint": {
-                      "color": "#2F343C",
-                      "locator": "cube",
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
                     },
                     "type": "blueprint",
                   },
@@ -695,8 +695,8 @@ describe("Ontology Defining", () => {
                   "displayName": "parentInterface",
                   "icon": {
                     "blueprint": {
-                      "color": "#2F343C",
-                      "locator": "cube",
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
                     },
                     "type": "blueprint",
                   },
@@ -828,8 +828,8 @@ describe("Ontology Defining", () => {
                   "displayName": "childInterface",
                   "icon": {
                     "blueprint": {
-                      "color": "#2F343C",
-                      "locator": "cube",
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
                     },
                     "type": "blueprint",
                   },
@@ -894,8 +894,8 @@ describe("Ontology Defining", () => {
                   "displayName": "parentInterface",
                   "icon": {
                     "blueprint": {
-                      "color": "#2F343C",
-                      "locator": "cube",
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
                     },
                     "type": "blueprint",
                   },
@@ -1054,8 +1054,8 @@ describe("Ontology Defining", () => {
                   "displayName": "parentInterface",
                   "icon": {
                     "blueprint": {
-                      "color": "#2F343C",
-                      "locator": "cube",
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
                     },
                     "type": "blueprint",
                   },
@@ -1115,8 +1115,8 @@ describe("Ontology Defining", () => {
                   "displayName": "A",
                   "icon": {
                     "blueprint": {
-                      "color": "#2F343C",
-                      "locator": "cube",
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
                     },
                     "type": "blueprint",
                   },
@@ -1155,8 +1155,8 @@ describe("Ontology Defining", () => {
                   "displayName": "B",
                   "icon": {
                     "blueprint": {
-                      "color": "#2F343C",
-                      "locator": "cube",
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
                     },
                     "type": "blueprint",
                   },
@@ -1205,8 +1205,8 @@ describe("Ontology Defining", () => {
                   "displayName": "A",
                   "icon": {
                     "blueprint": {
-                      "color": "#2F343C",
-                      "locator": "cube",
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
                     },
                     "type": "blueprint",
                   },
@@ -1245,8 +1245,8 @@ describe("Ontology Defining", () => {
                   "displayName": "B",
                   "icon": {
                     "blueprint": {
-                      "color": "#2F343C",
-                      "locator": "cube",
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
                     },
                     "type": "blueprint",
                   },
@@ -1541,8 +1541,8 @@ describe("Ontology Defining", () => {
                 "displayName": "interface",
                 "icon": {
                   "blueprint": {
-                    "color": "#2F343C",
-                    "locator": "cube",
+                    "color": "#4C90F0",
+                    "locator": "layout-hierarchy",
                   },
                   "type": "blueprint",
                 },
@@ -1828,8 +1828,8 @@ describe("Ontology Defining", () => {
                   "displayName": "interface",
                   "icon": {
                     "blueprint": {
-                      "color": "#2F343C",
-                      "locator": "cube",
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
                     },
                     "type": "blueprint",
                   },
@@ -4405,8 +4405,8 @@ describe("Ontology Defining", () => {
                     "displayName": "foo",
                     "icon": {
                       "blueprint": {
-                        "color": "#2F343C",
-                        "locator": "cube",
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
                       },
                       "type": "blueprint",
                     },
@@ -4450,6 +4450,7 @@ describe("Ontology Defining", () => {
       });
       const exampleInterface = defineInterface({
         apiName: "exampleInterface",
+        icon: { color: "#c7cdd6ff", locator: "globe" },
         properties: {
           mySpt,
           property1: "string",
@@ -5003,8 +5004,8 @@ describe("Ontology Defining", () => {
                     "displayName": "exampleInterface",
                     "icon": {
                       "blueprint": {
-                        "color": "#2F343C",
-                        "locator": "cube",
+                        "color": "#c7cdd6ff",
+                        "locator": "globe",
                       },
                       "type": "blueprint",
                     },
@@ -10993,8 +10994,8 @@ describe("Ontology Defining", () => {
                     "displayName": "exampleInterface",
                     "icon": {
                       "blueprint": {
-                        "color": "#2F343C",
-                        "locator": "cube",
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
                       },
                       "type": "blueprint",
                     },
@@ -14125,8 +14126,8 @@ describe("Ontology Defining", () => {
                     "displayName": "myInterface",
                     "icon": {
                       "blueprint": {
-                        "color": "#2F343C",
-                        "locator": "cube",
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
                       },
                       "type": "blueprint",
                     },
@@ -14260,8 +14261,8 @@ describe("Ontology Defining", () => {
                     "displayName": "myInterface",
                     "icon": {
                       "blueprint": {
-                        "color": "#2F343C",
-                        "locator": "cube",
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
                       },
                       "type": "blueprint",
                     },
@@ -14711,8 +14712,8 @@ describe("Ontology Defining", () => {
                     "displayName": "childInterface",
                     "icon": {
                       "blueprint": {
-                        "color": "#2F343C",
-                        "locator": "cube",
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
                       },
                       "type": "blueprint",
                     },
@@ -14777,8 +14778,8 @@ describe("Ontology Defining", () => {
                     "displayName": "parentInterface",
                     "icon": {
                       "blueprint": {
-                        "color": "#2F343C",
-                        "locator": "cube",
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
                       },
                       "type": "blueprint",
                     },
