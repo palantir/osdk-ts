@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.5.0-beta.12
+
+### Minor Changes
+
+- 85e8edb: Fix unhandled promise rejection error.
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.12
+- @osdk/client.unstable@2.5.0-beta.12
+- @osdk/generator-converters@2.5.0-beta.12
+
 ## 2.5.0-beta.11
 
 ### Minor Changes
