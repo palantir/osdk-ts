@@ -20,22 +20,20 @@ import type {
   Visibility,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
   namespace,
   ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
+import { type PropertyTypeType } from "./properties/PropertyTypeType.js";
+import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
 import {
   defaultTypeClasses,
   getPropertyTypeName,
   hasRenderHints,
   shouldNotHaveRenderHints,
 } from "./propertyConversionUtils.js";
-import {
-  OntologyEntityTypeEnum,
-  type PropertyTypeType,
-  type SharedPropertyType,
-} from "./types.js";
 
 export interface SharedPropertyTypeDefinition {
   apiName: string;
