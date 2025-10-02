@@ -103,8 +103,11 @@ export interface TestGeoAction extends $ObjectTypeDefinition {
   };
 }
 
-export const TestGeoAction: TestGeoAction = {
+export const TestGeoAction = {
   type: 'object',
   apiName: 'TestGeoAction',
   osdkMetadata: $osdkMetadata,
-};
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
+} satisfies TestGeoAction & { experimentalDoNotUseMetadata: { rid: string } } as TestGeoAction;

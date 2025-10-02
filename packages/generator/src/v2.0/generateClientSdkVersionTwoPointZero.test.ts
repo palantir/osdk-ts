@@ -878,11 +878,14 @@ describe("generator", () => {
           };
         }
 
-        export const Person: Person = {
+        export const Person = {
           type: 'object',
           apiName: 'Person',
           osdkMetadata: $osdkMetadata,
-        };
+          experimentalDoNotUseMetadata: {
+            rid: 'ridForPerson',
+          },
+        } satisfies Person & { experimentalDoNotUseMetadata: { rid: string } } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -998,11 +1001,14 @@ describe("generator", () => {
           };
         }
 
-        export const Todo: Todo = {
+        export const Todo = {
           type: 'object',
           apiName: 'Todo',
           osdkMetadata: $osdkMetadata,
-        };
+          experimentalDoNotUseMetadata: {
+            rid: 'ridForTodo',
+          },
+        } satisfies Todo & { experimentalDoNotUseMetadata: { rid: string } } as Todo;
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -1527,11 +1533,14 @@ describe("generator", () => {
           };
         }
 
-        export const Person: Person = {
+        export const Person = {
           type: 'object',
           apiName: 'foo.bar.Person',
           osdkMetadata: $osdkMetadata,
-        };
+          experimentalDoNotUseMetadata: {
+            rid: 'ridForPerson',
+          },
+        } satisfies Person & { experimentalDoNotUseMetadata: { rid: string } } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1647,11 +1656,14 @@ describe("generator", () => {
           };
         }
 
-        export const Todo: Todo = {
+        export const Todo = {
           type: 'object',
           apiName: 'foo.bar.Todo',
           osdkMetadata: $osdkMetadata,
-        };
+          experimentalDoNotUseMetadata: {
+            rid: 'ridForTodo',
+          },
+        } satisfies Todo & { experimentalDoNotUseMetadata: { rid: string } } as Todo;
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -2049,11 +2061,14 @@ describe("generator", () => {
             };
           }
 
-          export const UsesForeignSpt: UsesForeignSpt = {
+          export const UsesForeignSpt = {
             type: 'object',
             apiName: 'UsesForeignSpt',
             osdkMetadata: $osdkMetadata,
-          };
+            experimentalDoNotUseMetadata: {
+              rid: 'theRid',
+            },
+          } satisfies UsesForeignSpt & { experimentalDoNotUseMetadata: { rid: string } } as UsesForeignSpt;
           "
         `);
     });
@@ -2304,11 +2319,14 @@ describe("generator", () => {
           };
         }
 
-        export const Person: Person = {
+        export const Person = {
           type: 'object',
           apiName: 'Person',
           osdkMetadata: $osdkMetadata,
-        };
+          experimentalDoNotUseMetadata: {
+            rid: 'ridForPerson',
+          },
+        } satisfies Person & { experimentalDoNotUseMetadata: { rid: string } } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -2424,11 +2442,14 @@ describe("generator", () => {
           };
         }
 
-        export const Todo: Todo = {
+        export const Todo = {
           type: 'object',
           apiName: 'Todo',
           osdkMetadata: $osdkMetadata,
-        };
+          experimentalDoNotUseMetadata: {
+            rid: 'ridForTodo',
+          },
+        } satisfies Todo & { experimentalDoNotUseMetadata: { rid: string } } as Todo;
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -2762,11 +2783,14 @@ describe("generator", () => {
           };
         }
 
-        export const Task: Task = {
+        export const Task = {
           type: 'object',
           apiName: 'com.example.dep.Task',
           osdkMetadata: $osdkMetadata,
-        };
+          experimentalDoNotUseMetadata: {
+            rid: 'ridForTask',
+          },
+        } satisfies Task & { experimentalDoNotUseMetadata: { rid: string } } as Task;
         ",
           "/foo/ontology/queries.ts": "export {};
         ",
