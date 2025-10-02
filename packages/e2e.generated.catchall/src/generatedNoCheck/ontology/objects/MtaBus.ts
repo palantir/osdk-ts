@@ -103,8 +103,11 @@ export interface MtaBus extends $ObjectTypeDefinition {
   };
 }
 
-export const MtaBus: MtaBus = {
+export const MtaBus = {
   type: 'object',
   apiName: 'MtaBus',
   osdkMetadata: $osdkMetadata,
-};
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
+} satisfies MtaBus & { experimentalDoNotUseMetadata: { rid: string } } as MtaBus;

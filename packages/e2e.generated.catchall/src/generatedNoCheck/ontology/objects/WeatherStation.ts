@@ -91,8 +91,11 @@ export interface WeatherStation extends $ObjectTypeDefinition {
   };
 }
 
-export const WeatherStation: WeatherStation = {
+export const WeatherStation = {
   type: 'object',
   apiName: 'WeatherStation',
   osdkMetadata: $osdkMetadata,
-};
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
+} satisfies WeatherStation & { experimentalDoNotUseMetadata: { rid: string } } as WeatherStation;

@@ -95,8 +95,11 @@ export interface Thing extends $ObjectTypeDefinition {
   };
 }
 
-export const Thing: Thing = {
+export const Thing = {
   type: 'object',
   apiName: 'Thing',
   osdkMetadata: $osdkMetadata,
-};
+  experimentalDoNotUseMetadata: {
+    rid: 'ridForThing',
+  },
+} satisfies Thing & { experimentalDoNotUseMetadata: { rid: string } } as Thing;

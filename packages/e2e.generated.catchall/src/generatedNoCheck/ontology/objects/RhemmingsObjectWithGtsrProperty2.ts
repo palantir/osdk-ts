@@ -112,8 +112,13 @@ export interface RhemmingsObjectWithGtsrProperty2 extends $ObjectTypeDefinition 
   };
 }
 
-export const RhemmingsObjectWithGtsrProperty2: RhemmingsObjectWithGtsrProperty2 = {
+export const RhemmingsObjectWithGtsrProperty2 = {
   type: 'object',
   apiName: 'RhemmingsObjectWithGtsrProperty2',
   osdkMetadata: $osdkMetadata,
-};
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
+} satisfies RhemmingsObjectWithGtsrProperty2 & {
+  experimentalDoNotUseMetadata: { rid: string };
+} as RhemmingsObjectWithGtsrProperty2;

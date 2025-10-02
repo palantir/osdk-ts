@@ -131,8 +131,11 @@ export interface BgaoNflPlayer extends $ObjectTypeDefinition {
   };
 }
 
-export const BgaoNflPlayer: BgaoNflPlayer = {
+export const BgaoNflPlayer = {
   type: 'object',
   apiName: 'BgaoNflPlayer',
   osdkMetadata: $osdkMetadata,
-};
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
+} satisfies BgaoNflPlayer & { experimentalDoNotUseMetadata: { rid: string } } as BgaoNflPlayer;

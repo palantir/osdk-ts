@@ -95,8 +95,11 @@ export interface BuilderDeploymentState extends $ObjectTypeDefinition {
   };
 }
 
-export const BuilderDeploymentState: BuilderDeploymentState = {
+export const BuilderDeploymentState = {
   type: 'object',
   apiName: 'BuilderDeploymentState',
   osdkMetadata: $osdkMetadata,
-};
+  experimentalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies BuilderDeploymentState & { experimentalDoNotUseMetadata: { rid: string } } as BuilderDeploymentState;

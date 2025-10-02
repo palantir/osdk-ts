@@ -123,8 +123,11 @@ export interface NbaPlayer extends $ObjectTypeDefinition {
   };
 }
 
-export const NbaPlayer: NbaPlayer = {
+export const NbaPlayer = {
   type: 'object',
   apiName: 'NbaPlayer',
   osdkMetadata: $osdkMetadata,
-};
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
+} satisfies NbaPlayer & { experimentalDoNotUseMetadata: { rid: string } } as NbaPlayer;

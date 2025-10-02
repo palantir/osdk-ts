@@ -101,8 +101,11 @@ export interface StructPersonOpisTeam extends $ObjectTypeDefinition {
   };
 }
 
-export const StructPersonOpisTeam: StructPersonOpisTeam = {
+export const StructPersonOpisTeam = {
   type: 'object',
   apiName: 'StructPersonOpisTeam',
   osdkMetadata: $osdkMetadata,
-};
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
+} satisfies StructPersonOpisTeam & { experimentalDoNotUseMetadata: { rid: string } } as StructPersonOpisTeam;
