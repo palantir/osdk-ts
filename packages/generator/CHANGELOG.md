@@ -1,5 +1,16 @@
 # @osdk/generator
 
+## 2.5.0-beta.12
+
+### Minor Changes
+
+- 4b4a458: Allow exporting rid for object types
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.12
+- @osdk/generator-converters@2.5.0-beta.12
+
 ## 2.5.0-beta.11
 
 ### Patch Changes

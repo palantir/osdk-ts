@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.13.0-beta.12
+
+### Minor Changes
+
+- f025f30: Fix semantic merge conflict
+- 7f0ad5c: Check extended interfaces when verifying interface actions
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.12
+
 ## 0.13.0-beta.11
 
 ### Minor Changes
