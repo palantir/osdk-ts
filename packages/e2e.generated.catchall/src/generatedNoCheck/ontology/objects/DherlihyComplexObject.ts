@@ -95,8 +95,11 @@ export interface DherlihyComplexObject extends $ObjectTypeDefinition {
   };
 }
 
-export const DherlihyComplexObject: DherlihyComplexObject = {
+export const DherlihyComplexObject = {
   type: 'object',
   apiName: 'DherlihyComplexObject',
   osdkMetadata: $osdkMetadata,
-};
+  experimentalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies DherlihyComplexObject & { experimentalDoNotUseMetadata: { rid: string } } as DherlihyComplexObject;

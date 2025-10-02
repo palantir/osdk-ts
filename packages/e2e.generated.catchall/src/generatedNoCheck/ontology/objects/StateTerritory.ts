@@ -100,8 +100,11 @@ export interface StateTerritory extends $ObjectTypeDefinition {
   };
 }
 
-export const StateTerritory: StateTerritory = {
+export const StateTerritory = {
   type: 'object',
   apiName: 'StateTerritory',
   osdkMetadata: $osdkMetadata,
-};
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.object-type.98f324e1-b8f4-42ef-aee7-5c4a1494ce5e',
+  },
+} satisfies StateTerritory & { experimentalDoNotUseMetadata: { rid: string } } as StateTerritory;
