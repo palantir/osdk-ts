@@ -53,9 +53,6 @@ export interface DherlihyComplexObject extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'DherlihyComplexObject';
-  experimentalDoNotUseMetadata?: {
-    rid: 'rid.a.b.c.d';
-  };
   __DefinitionMetadata?: {
     objectSet: DherlihyComplexObject.ObjectSet;
     props: DherlihyComplexObject.Props;
@@ -98,11 +95,11 @@ export interface DherlihyComplexObject extends $ObjectTypeDefinition {
   };
 }
 
-export const DherlihyComplexObject: DherlihyComplexObject = {
+export const DherlihyComplexObject = {
   type: 'object',
   apiName: 'DherlihyComplexObject',
   osdkMetadata: $osdkMetadata,
   experimentalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-};
+} as DherlihyComplexObject;

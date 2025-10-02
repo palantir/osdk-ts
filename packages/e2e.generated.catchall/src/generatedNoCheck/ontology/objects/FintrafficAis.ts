@@ -69,9 +69,6 @@ export interface FintrafficAis extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'FintrafficAis';
-  experimentalDoNotUseMetadata?: {
-    rid: 'ri.a.b.c.d';
-  };
   __DefinitionMetadata?: {
     objectSet: FintrafficAis.ObjectSet;
     props: FintrafficAis.Props;
@@ -130,11 +127,11 @@ export interface FintrafficAis extends $ObjectTypeDefinition {
   };
 }
 
-export const FintrafficAis: FintrafficAis = {
+export const FintrafficAis = {
   type: 'object',
   apiName: 'FintrafficAis',
   osdkMetadata: $osdkMetadata,
   experimentalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-};
+} as FintrafficAis;

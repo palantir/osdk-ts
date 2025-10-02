@@ -56,9 +56,6 @@ export interface Venture extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Venture';
-  experimentalDoNotUseMetadata?: {
-    rid: 'rid.a.b.c.d';
-  };
   __DefinitionMetadata?: {
     objectSet: Venture.ObjectSet;
     props: Venture.Props;
@@ -103,11 +100,11 @@ export interface Venture extends $ObjectTypeDefinition {
   };
 }
 
-export const Venture: Venture = {
+export const Venture = {
   type: 'object',
   apiName: 'Venture',
   osdkMetadata: $osdkMetadata,
   experimentalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-};
+} as Venture;

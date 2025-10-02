@@ -49,9 +49,6 @@ export interface Task extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'com.example.dep.Task';
-  experimentalDoNotUseMetadata?: {
-    rid: 'ridForTask';
-  };
   __DefinitionMetadata?: {
     objectSet: Task.ObjectSet;
     props: Task.Props;
@@ -90,11 +87,11 @@ export interface Task extends $ObjectTypeDefinition {
   };
 }
 
-export const Task: Task = {
+export const Task = {
   type: 'object',
   apiName: 'com.example.dep.Task',
   osdkMetadata: $osdkMetadata,
   experimentalDoNotUseMetadata: {
     rid: 'ridForTask',
   },
-};
+} as Task;

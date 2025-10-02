@@ -49,9 +49,6 @@ export interface Thing extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Thing';
-  experimentalDoNotUseMetadata?: {
-    rid: 'ridForThing';
-  };
   __DefinitionMetadata?: {
     objectSet: Thing.ObjectSet;
     props: Thing.Props;
@@ -98,11 +95,11 @@ export interface Thing extends $ObjectTypeDefinition {
   };
 }
 
-export const Thing: Thing = {
+export const Thing = {
   type: 'object',
   apiName: 'Thing',
   osdkMetadata: $osdkMetadata,
   experimentalDoNotUseMetadata: {
     rid: 'ridForThing',
   },
-};
+} as Thing;

@@ -51,9 +51,6 @@ export interface WeatherStation extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'WeatherStation';
-  experimentalDoNotUseMetadata?: {
-    rid: 'ri.a.b.c.d';
-  };
   __DefinitionMetadata?: {
     objectSet: WeatherStation.ObjectSet;
     props: WeatherStation.Props;
@@ -94,11 +91,11 @@ export interface WeatherStation extends $ObjectTypeDefinition {
   };
 }
 
-export const WeatherStation: WeatherStation = {
+export const WeatherStation = {
   type: 'object',
   apiName: 'WeatherStation',
   osdkMetadata: $osdkMetadata,
   experimentalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-};
+} as WeatherStation;

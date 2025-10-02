@@ -73,9 +73,6 @@ export interface BgaoNflPlayer extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'BgaoNflPlayer';
-  experimentalDoNotUseMetadata?: {
-    rid: 'ri.a.b.c.d';
-  };
   __DefinitionMetadata?: {
     objectSet: BgaoNflPlayer.ObjectSet;
     props: BgaoNflPlayer.Props;
@@ -134,11 +131,11 @@ export interface BgaoNflPlayer extends $ObjectTypeDefinition {
   };
 }
 
-export const BgaoNflPlayer: BgaoNflPlayer = {
+export const BgaoNflPlayer = {
   type: 'object',
   apiName: 'BgaoNflPlayer',
   osdkMetadata: $osdkMetadata,
   experimentalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-};
+} as BgaoNflPlayer;

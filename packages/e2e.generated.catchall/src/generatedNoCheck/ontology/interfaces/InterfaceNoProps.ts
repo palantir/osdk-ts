@@ -35,9 +35,6 @@ export interface InterfaceNoProps extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'InterfaceNoProps';
-  experimentalDoNotUseMetadata?: {
-    rid: 'ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b';
-  };
   __DefinitionMetadata?: {
     objectSet: InterfaceNoProps.ObjectSet;
     props: InterfaceNoProps.Props;

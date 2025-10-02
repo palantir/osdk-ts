@@ -53,9 +53,6 @@ export interface GtfsTripTrackObject extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'GtfsTripTrackObject';
-  experimentalDoNotUseMetadata?: {
-    rid: 'ri.a.b.c.d';
-  };
   __DefinitionMetadata?: {
     objectSet: GtfsTripTrackObject.ObjectSet;
     props: GtfsTripTrackObject.Props;
@@ -98,11 +95,11 @@ export interface GtfsTripTrackObject extends $ObjectTypeDefinition {
   };
 }
 
-export const GtfsTripTrackObject: GtfsTripTrackObject = {
+export const GtfsTripTrackObject = {
   type: 'object',
   apiName: 'GtfsTripTrackObject',
   osdkMetadata: $osdkMetadata,
   experimentalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-};
+} as GtfsTripTrackObject;

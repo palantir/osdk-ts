@@ -53,9 +53,6 @@ export interface UnstructuredImageExample extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'UnstructuredImageExample';
-  experimentalDoNotUseMetadata?: {
-    rid: 'rid.a.b.c.d';
-  };
   __DefinitionMetadata?: {
     objectSet: UnstructuredImageExample.ObjectSet;
     props: UnstructuredImageExample.Props;
@@ -98,11 +95,11 @@ export interface UnstructuredImageExample extends $ObjectTypeDefinition {
   };
 }
 
-export const UnstructuredImageExample: UnstructuredImageExample = {
+export const UnstructuredImageExample = {
   type: 'object',
   apiName: 'UnstructuredImageExample',
   osdkMetadata: $osdkMetadata,
   experimentalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-};
+} as UnstructuredImageExample;

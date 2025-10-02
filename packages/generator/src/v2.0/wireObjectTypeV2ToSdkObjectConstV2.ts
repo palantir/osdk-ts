@@ -132,7 +132,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
   return `${imports}${getV2Types(object, forInternalUse)}
 
-    export const ${object.shortApiName}: ${objectDefIdentifier}
+    export const ${object.shortApiName}
     = {
       type: "${object instanceof EnhancedObjectType ? "object" : "interface"}",
       apiName: "${object.fullApiName}",
@@ -140,7 +140,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
       experimentalDoNotUseMetadata: {
         rid: "${definition.rid}",
       },
-    };`;
+    } as ${objectDefIdentifier};`;
 }
 
 export interface Identifiers extends
@@ -298,9 +298,6 @@ export function createDefinition(
       osdkMetadata: typeof $osdkMetadata;
       type: "${object instanceof EnhancedObjectType ? "object" : "interface"}";
       apiName: "${object.fullApiName}";
-      experimentalDoNotUseMetadata?: {
-        rid: "${definition.rid}";
-      };
       __DefinitionMetadata?: {
       objectSet: ${objectSetIdentifier};
       props: ${osdkObjectPropsIdentifier};
