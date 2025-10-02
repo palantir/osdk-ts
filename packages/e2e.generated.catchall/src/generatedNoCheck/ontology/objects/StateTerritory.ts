@@ -56,6 +56,9 @@ export interface StateTerritory extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'StateTerritory';
+  experimentalDoNotUseMetadata?: {
+    rid: 'ri.ontology.main.object-type.98f324e1-b8f4-42ef-aee7-5c4a1494ce5e';
+  };
   __DefinitionMetadata?: {
     objectSet: StateTerritory.ObjectSet;
     props: StateTerritory.Props;
@@ -104,7 +107,7 @@ export const StateTerritory: StateTerritory = {
   type: 'object',
   apiName: 'StateTerritory',
   osdkMetadata: $osdkMetadata,
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.object-type.98f324e1-b8f4-42ef-aee7-5c4a1494ce5e',
+  },
 };
-
-(StateTerritory as any).__experimental_do_not_use__rid =
-  'ri.ontology.main.object-type.98f324e1-b8f4-42ef-aee7-5c4a1494ce5e';

@@ -57,6 +57,9 @@ export interface MatthewvsDevOrderEmbedding extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'MatthewvsDevOrderEmbedding';
+  experimentalDoNotUseMetadata?: {
+    rid: 'rid.a.b.c.d';
+  };
   __DefinitionMetadata?: {
     objectSet: MatthewvsDevOrderEmbedding.ObjectSet;
     props: MatthewvsDevOrderEmbedding.Props;
@@ -107,6 +110,7 @@ export const MatthewvsDevOrderEmbedding: MatthewvsDevOrderEmbedding = {
   type: 'object',
   apiName: 'MatthewvsDevOrderEmbedding',
   osdkMetadata: $osdkMetadata,
+  experimentalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
 };
-
-(MatthewvsDevOrderEmbedding as any).__experimental_do_not_use__rid = 'rid.a.b.c.d';

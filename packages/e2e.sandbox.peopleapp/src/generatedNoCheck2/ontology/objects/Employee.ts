@@ -316,6 +316,9 @@ export interface Employee extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Employee';
+  experimentalDoNotUseMetadata?: {
+    rid: 'ri.ontology.main.object-type.ade16a88-ecc4-4f96-9751-ca1799247d64';
+  };
   __DefinitionMetadata?: {
     objectSet: Employee.ObjectSet;
     props: Employee.Props;
@@ -592,6 +595,7 @@ export const Employee: Employee = {
   type: 'object',
   apiName: 'Employee',
   osdkMetadata: $osdkMetadata,
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.object-type.ade16a88-ecc4-4f96-9751-ca1799247d64',
+  },
 };
-
-(Employee as any).__experimental_do_not_use__rid = 'ri.ontology.main.object-type.ade16a88-ecc4-4f96-9751-ca1799247d64';

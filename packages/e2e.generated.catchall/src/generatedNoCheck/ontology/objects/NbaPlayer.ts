@@ -61,6 +61,9 @@ export interface NbaPlayer extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'NbaPlayer';
+  experimentalDoNotUseMetadata?: {
+    rid: 'ri.a.b.c.d';
+  };
   __DefinitionMetadata?: {
     objectSet: NbaPlayer.ObjectSet;
     props: NbaPlayer.Props;
@@ -127,6 +130,7 @@ export const NbaPlayer: NbaPlayer = {
   type: 'object',
   apiName: 'NbaPlayer',
   osdkMetadata: $osdkMetadata,
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
 };
-
-(NbaPlayer as any).__experimental_do_not_use__rid = 'ri.a.b.c.d';

@@ -57,6 +57,9 @@ export interface TestGeoAction extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'TestGeoAction';
+  experimentalDoNotUseMetadata?: {
+    rid: 'ri.a.b.c.d';
+  };
   __DefinitionMetadata?: {
     objectSet: TestGeoAction.ObjectSet;
     props: TestGeoAction.Props;
@@ -107,6 +110,7 @@ export const TestGeoAction: TestGeoAction = {
   type: 'object',
   apiName: 'TestGeoAction',
   osdkMetadata: $osdkMetadata,
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
 };
-
-(TestGeoAction as any).__experimental_do_not_use__rid = 'ri.a.b.c.d';

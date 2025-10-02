@@ -44,6 +44,9 @@ export interface TodoLike extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'TodoLike';
+  experimentalDoNotUseMetadata?: {
+    rid: 'ri.ontology.main.interface.fe6b2917-915d-4952-b89d-1231dad224e0';
+  };
   __DefinitionMetadata?: {
     objectSet: TodoLike.ObjectSet;
     props: TodoLike.Props;

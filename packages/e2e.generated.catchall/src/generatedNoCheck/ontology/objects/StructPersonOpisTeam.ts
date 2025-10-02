@@ -59,6 +59,9 @@ export interface StructPersonOpisTeam extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'StructPersonOpisTeam';
+  experimentalDoNotUseMetadata?: {
+    rid: 'ri.a.b.c.d';
+  };
   __DefinitionMetadata?: {
     objectSet: StructPersonOpisTeam.ObjectSet;
     props: StructPersonOpisTeam.Props;
@@ -105,6 +108,7 @@ export const StructPersonOpisTeam: StructPersonOpisTeam = {
   type: 'object',
   apiName: 'StructPersonOpisTeam',
   osdkMetadata: $osdkMetadata,
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
 };
-
-(StructPersonOpisTeam as any).__experimental_do_not_use__rid = 'ri.a.b.c.d';

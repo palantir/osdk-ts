@@ -57,6 +57,9 @@ export interface MtaBus extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'MtaBus';
+  experimentalDoNotUseMetadata?: {
+    rid: 'ri.a.b.c.d';
+  };
   __DefinitionMetadata?: {
     objectSet: MtaBus.ObjectSet;
     props: MtaBus.Props;
@@ -107,6 +110,7 @@ export const MtaBus: MtaBus = {
   type: 'object',
   apiName: 'MtaBus',
   osdkMetadata: $osdkMetadata,
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
 };
-
-(MtaBus as any).__experimental_do_not_use__rid = 'ri.a.b.c.d';

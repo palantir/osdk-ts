@@ -67,6 +67,9 @@ export interface McAirportStruct extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'McAirportStruct';
+  experimentalDoNotUseMetadata?: {
+    rid: 'rid.a.b.c.d';
+  };
   __DefinitionMetadata?: {
     objectSet: McAirportStruct.ObjectSet;
     props: McAirportStruct.Props;
@@ -121,6 +124,7 @@ export const McAirportStruct: McAirportStruct = {
   type: 'object',
   apiName: 'McAirportStruct',
   osdkMetadata: $osdkMetadata,
+  experimentalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
 };
-
-(McAirportStruct as any).__experimental_do_not_use__rid = 'rid.a.b.c.d';

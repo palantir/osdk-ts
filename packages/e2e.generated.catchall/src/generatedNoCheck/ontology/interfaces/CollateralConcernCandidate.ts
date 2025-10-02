@@ -50,6 +50,9 @@ export interface CollateralConcernCandidate extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'com.palantir.pcl.civpro.collateral-concern-core.CollateralConcernCandidate';
+  experimentalDoNotUseMetadata?: {
+    rid: 'ri.ontology.main.interface.81202dc9-3dcb-4031-b102-bfdb01a0e17c';
+  };
   __DefinitionMetadata?: {
     objectSet: CollateralConcernCandidate.ObjectSet;
     props: CollateralConcernCandidate.Props;

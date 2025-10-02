@@ -40,6 +40,9 @@ export interface bus_1 extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'bus_1';
+  experimentalDoNotUseMetadata?: {
+    rid: 'ri.ontology.main.interface.13ac66ef-d94e-4020-ac20-3285557149dd';
+  };
   __DefinitionMetadata?: {
     objectSet: bus_1.ObjectSet;
     props: bus_1.Props;

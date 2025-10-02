@@ -66,6 +66,9 @@ export interface Todo extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Todo';
+  experimentalDoNotUseMetadata?: {
+    rid: 'rid.a.b.c.d';
+  };
   __DefinitionMetadata?: {
     objectSet: Todo.ObjectSet;
     props: Todo.Props;
@@ -124,6 +127,7 @@ export const Todo: Todo = {
   type: 'object',
   apiName: 'Todo',
   osdkMetadata: $osdkMetadata,
+  experimentalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
 };
-
-(Todo as any).__experimental_do_not_use__rid = 'rid.a.b.c.d';

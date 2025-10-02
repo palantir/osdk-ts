@@ -40,6 +40,9 @@ export interface SomeInterface extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'com.example.local.SomeInterface';
+  experimentalDoNotUseMetadata?: {
+    rid: 'idk2';
+  };
   __DefinitionMetadata?: {
     objectSet: SomeInterface.ObjectSet;
     props: SomeInterface.Props;

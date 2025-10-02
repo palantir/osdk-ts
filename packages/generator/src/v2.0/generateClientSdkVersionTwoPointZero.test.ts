@@ -763,6 +763,9 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'interface';
           apiName: 'SomeInterface';
+          experimentalDoNotUseMetadata?: {
+            rid: 'idk';
+          };
           __DefinitionMetadata?: {
             objectSet: SomeInterface.ObjectSet;
             props: SomeInterface.Props;
@@ -846,6 +849,9 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'Person';
+          experimentalDoNotUseMetadata?: {
+            rid: 'ridForPerson';
+          };
           __DefinitionMetadata?: {
             objectSet: Person.ObjectSet;
             props: Person.Props;
@@ -886,9 +892,10 @@ describe("generator", () => {
           type: 'object',
           apiName: 'Person',
           osdkMetadata: $osdkMetadata,
+          experimentalDoNotUseMetadata: {
+            rid: 'ridForPerson',
+          },
         };
-
-        (Person as any).__experimental_do_not_use__rid = 'ridForPerson';
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -954,6 +961,9 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'Todo';
+          experimentalDoNotUseMetadata?: {
+            rid: 'ridForTodo';
+          };
           __DefinitionMetadata?: {
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
@@ -1016,9 +1026,10 @@ describe("generator", () => {
           type: 'object',
           apiName: 'Todo',
           osdkMetadata: $osdkMetadata,
+          experimentalDoNotUseMetadata: {
+            rid: 'ridForTodo',
+          },
         };
-
-        (Todo as any).__experimental_do_not_use__rid = 'ridForTodo';
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -1424,6 +1435,9 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'interface';
           apiName: 'foo.bar.SomeInterface';
+          experimentalDoNotUseMetadata?: {
+            rid: 'idk';
+          };
           __DefinitionMetadata?: {
             objectSet: SomeInterface.ObjectSet;
             props: SomeInterface.Props;
@@ -1507,6 +1521,9 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'foo.bar.Person';
+          experimentalDoNotUseMetadata?: {
+            rid: 'ridForPerson';
+          };
           __DefinitionMetadata?: {
             objectSet: Person.ObjectSet;
             props: Person.Props;
@@ -1547,9 +1564,10 @@ describe("generator", () => {
           type: 'object',
           apiName: 'foo.bar.Person',
           osdkMetadata: $osdkMetadata,
+          experimentalDoNotUseMetadata: {
+            rid: 'ridForPerson',
+          },
         };
-
-        (Person as any).__experimental_do_not_use__rid = 'ridForPerson';
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1615,6 +1633,9 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'foo.bar.Todo';
+          experimentalDoNotUseMetadata?: {
+            rid: 'ridForTodo';
+          };
           __DefinitionMetadata?: {
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
@@ -1677,9 +1698,10 @@ describe("generator", () => {
           type: 'object',
           apiName: 'foo.bar.Todo',
           osdkMetadata: $osdkMetadata,
+          experimentalDoNotUseMetadata: {
+            rid: 'ridForTodo',
+          },
         };
-
-        (Todo as any).__experimental_do_not_use__rid = 'ridForTodo';
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -2039,6 +2061,9 @@ describe("generator", () => {
             osdkMetadata: typeof $osdkMetadata;
             type: 'object';
             apiName: 'UsesForeignSpt';
+            experimentalDoNotUseMetadata?: {
+              rid: 'theRid';
+            };
             __DefinitionMetadata?: {
               objectSet: UsesForeignSpt.ObjectSet;
               props: UsesForeignSpt.Props;
@@ -2081,9 +2106,10 @@ describe("generator", () => {
             type: 'object',
             apiName: 'UsesForeignSpt',
             osdkMetadata: $osdkMetadata,
+            experimentalDoNotUseMetadata: {
+              rid: 'theRid',
+            },
           };
-
-          (UsesForeignSpt as any).__experimental_do_not_use__rid = 'theRid';
           "
         `);
     });
@@ -2298,6 +2324,9 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'Person';
+          experimentalDoNotUseMetadata?: {
+            rid: 'ridForPerson';
+          };
           __DefinitionMetadata?: {
             objectSet: Person.ObjectSet;
             props: Person.Props;
@@ -2338,9 +2367,10 @@ describe("generator", () => {
           type: 'object',
           apiName: 'Person',
           osdkMetadata: $osdkMetadata,
+          experimentalDoNotUseMetadata: {
+            rid: 'ridForPerson',
+          },
         };
-
-        (Person as any).__experimental_do_not_use__rid = 'ridForPerson';
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -2406,6 +2436,9 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'Todo';
+          experimentalDoNotUseMetadata?: {
+            rid: 'ridForTodo';
+          };
           __DefinitionMetadata?: {
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
@@ -2468,9 +2501,10 @@ describe("generator", () => {
           type: 'object',
           apiName: 'Todo',
           osdkMetadata: $osdkMetadata,
+          experimentalDoNotUseMetadata: {
+            rid: 'ridForTodo',
+          },
         };
-
-        (Todo as any).__experimental_do_not_use__rid = 'ridForTodo';
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -2683,6 +2717,9 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'interface';
           apiName: 'com.example.dep.SomeInterface';
+          experimentalDoNotUseMetadata?: {
+            rid: 'idk2';
+          };
           __DefinitionMetadata?: {
             objectSet: SomeInterface.ObjectSet;
             props: SomeInterface.Props;
@@ -2768,6 +2805,9 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           type: 'object';
           apiName: 'com.example.dep.Task';
+          experimentalDoNotUseMetadata?: {
+            rid: 'ridForTask';
+          };
           __DefinitionMetadata?: {
             objectSet: Task.ObjectSet;
             props: Task.Props;
@@ -2810,9 +2850,10 @@ describe("generator", () => {
           type: 'object',
           apiName: 'com.example.dep.Task',
           osdkMetadata: $osdkMetadata,
+          experimentalDoNotUseMetadata: {
+            rid: 'ridForTask',
+          },
         };
-
-        (Task as any).__experimental_do_not_use__rid = 'ridForTask';
         ",
           "/foo/ontology/queries.ts": "export {};
         ",

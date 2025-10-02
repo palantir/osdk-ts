@@ -40,6 +40,9 @@ export interface OsdkTestInterface extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'OsdkTestInterface';
+  experimentalDoNotUseMetadata?: {
+    rid: 'ri.ontology.main.interface.06c534fd-4f68-44d9-b268-72729a47eaab';
+  };
   __DefinitionMetadata?: {
     objectSet: OsdkTestInterface.ObjectSet;
     props: OsdkTestInterface.Props;

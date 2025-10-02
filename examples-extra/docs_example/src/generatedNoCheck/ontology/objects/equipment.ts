@@ -49,6 +49,9 @@ export interface equipment extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'equipment';
+  experimentalDoNotUseMetadata?: {
+    rid: 'ri.ontology.main.object-type.808ac022-89eb-4591-8b7e-1a912b9efb45';
+  };
   __DefinitionMetadata?: {
     objectSet: equipment.ObjectSet;
     props: equipment.Props;
@@ -91,6 +94,7 @@ export const equipment: equipment = {
   type: 'object',
   apiName: 'equipment',
   osdkMetadata: $osdkMetadata,
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.object-type.808ac022-89eb-4591-8b7e-1a912b9efb45',
+  },
 };
-
-(equipment as any).__experimental_do_not_use__rid = 'ri.ontology.main.object-type.808ac022-89eb-4591-8b7e-1a912b9efb45';

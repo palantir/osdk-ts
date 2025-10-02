@@ -42,6 +42,9 @@ export interface EsongInterfaceA extends $InterfaceDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'interface';
   apiName: 'EsongInterfaceA';
+  experimentalDoNotUseMetadata?: {
+    rid: 'ri.ontology.main.interface.3f52b54b-dab9-41f1-b02c-4eba39846673';
+  };
   __DefinitionMetadata?: {
     objectSet: EsongInterfaceA.ObjectSet;
     props: EsongInterfaceA.Props;

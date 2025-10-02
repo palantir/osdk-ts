@@ -61,6 +61,9 @@ export interface Country_1 extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'Country_1';
+  experimentalDoNotUseMetadata?: {
+    rid: 'ri.ontology.main.object-type.0a276176-8d93-489e-93b4-77673de56b9e';
+  };
   __DefinitionMetadata?: {
     objectSet: Country_1.ObjectSet;
     props: Country_1.Props;
@@ -114,6 +117,7 @@ export const Country_1: Country_1 = {
   type: 'object',
   apiName: 'Country_1',
   osdkMetadata: $osdkMetadata,
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.object-type.0a276176-8d93-489e-93b4-77673de56b9e',
+  },
 };
-
-(Country_1 as any).__experimental_do_not_use__rid = 'ri.ontology.main.object-type.0a276176-8d93-489e-93b4-77673de56b9e';

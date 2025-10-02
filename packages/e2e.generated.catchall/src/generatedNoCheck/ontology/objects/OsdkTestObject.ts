@@ -57,6 +57,9 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'OsdkTestObject';
+  experimentalDoNotUseMetadata?: {
+    rid: 'ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb';
+  };
   __DefinitionMetadata?: {
     objectSet: OsdkTestObject.ObjectSet;
     props: OsdkTestObject.Props;
@@ -123,7 +126,7 @@ export const OsdkTestObject: OsdkTestObject = {
   type: 'object',
   apiName: 'OsdkTestObject',
   osdkMetadata: $osdkMetadata,
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb',
+  },
 };
-
-(OsdkTestObject as any).__experimental_do_not_use__rid =
-  'ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb';

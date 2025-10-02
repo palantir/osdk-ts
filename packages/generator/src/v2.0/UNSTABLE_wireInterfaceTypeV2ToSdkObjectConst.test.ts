@@ -164,6 +164,9 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         osdkMetadata: typeof $osdkMetadata;
         type: "interface";
         apiName: "Bar";
+        experimentalDoNotUseMetadata?: {
+          rid: "BarRid";
+        };
         __DefinitionMetadata?: {
           objectSet: Bar.ObjectSet;
           props: Bar.Props;
@@ -263,6 +266,9 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         osdkMetadata: typeof $osdkMetadata;
         type: "interface";
         apiName: "Foo";
+        experimentalDoNotUseMetadata?: {
+          rid: "FooRid";
+        };
         __DefinitionMetadata?: {
           objectSet: Foo.ObjectSet;
           props: Foo.Props;
@@ -369,6 +375,9 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         osdkMetadata: typeof $osdkMetadata;
         type: "interface";
         apiName: "Foo";
+        experimentalDoNotUseMetadata?: {
+          rid: "FooRid";
+        };
         __DefinitionMetadata?: {
           objectSet: Foo.ObjectSet;
           props: Foo.Props;
@@ -475,6 +484,9 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         osdkMetadata: typeof $osdkMetadata;
         type: "interface";
         apiName: "Foo";
+        experimentalDoNotUseMetadata?: {
+          rid: "FooRid";
+        };
         __DefinitionMetadata?: {
           objectSet: Foo.ObjectSet;
           props: Foo.Props;

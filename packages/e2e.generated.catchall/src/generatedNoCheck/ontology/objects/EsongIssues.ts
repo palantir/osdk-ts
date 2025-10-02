@@ -117,6 +117,9 @@ export interface EsongIssues extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'EsongIssues';
+  experimentalDoNotUseMetadata?: {
+    rid: 'ri.ontology.main.object-type.9e50a0d3-5b89-41f5-a894-b0e9bb388950';
+  };
   __DefinitionMetadata?: {
     objectSet: EsongIssues.ObjectSet;
     props: EsongIssues.Props;
@@ -238,7 +241,7 @@ export const EsongIssues: EsongIssues = {
   type: 'object',
   apiName: 'EsongIssues',
   osdkMetadata: $osdkMetadata,
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.object-type.9e50a0d3-5b89-41f5-a894-b0e9bb388950',
+  },
 };
-
-(EsongIssues as any).__experimental_do_not_use__rid =
-  'ri.ontology.main.object-type.9e50a0d3-5b89-41f5-a894-b0e9bb388950';

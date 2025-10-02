@@ -49,6 +49,9 @@ export interface UsesForeignSpt extends $ObjectTypeDefinition {
   osdkMetadata: typeof $osdkMetadata;
   type: 'object';
   apiName: 'UsesForeignSpt';
+  experimentalDoNotUseMetadata?: {
+    rid: 'theRid';
+  };
   __DefinitionMetadata?: {
     objectSet: UsesForeignSpt.ObjectSet;
     props: UsesForeignSpt.Props;
@@ -91,6 +94,7 @@ export const UsesForeignSpt: UsesForeignSpt = {
   type: 'object',
   apiName: 'UsesForeignSpt',
   osdkMetadata: $osdkMetadata,
+  experimentalDoNotUseMetadata: {
+    rid: 'theRid',
+  },
 };
-
-(UsesForeignSpt as any).__experimental_do_not_use__rid = 'theRid';
