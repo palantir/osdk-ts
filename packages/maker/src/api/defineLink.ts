@@ -16,9 +16,10 @@
 
 import type { LinkTypeMetadata } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
-  convertToDisplayName,
   convertToPluralDisplayName,
+  uppercaseFirstLetter,
 } from "./defineObject.js";
 import { updateOntology } from "./defineOntology.js";
 import type {
@@ -29,8 +30,7 @@ import type {
   ManyToManyObjectLinkReferenceUserDefinition,
   OneToManyObjectLinkReference,
   OneToManyObjectLinkReferenceUserDefinition,
-} from "./types.js";
-import { OntologyEntityTypeEnum } from "./types.js";
+} from "./links/LinkType.js";
 
 const typeIdPattern = /([a-z][a-z0-9\\-]*)/;
 
@@ -105,7 +105,7 @@ function convertLinkTypeMetadata(
     apiName: metadata.apiName,
     displayMetadata: {
       displayName: metadata.displayName
-        ?? convertToDisplayName(metadata.apiName),
+        ?? uppercaseFirstLetter(metadata.apiName),
       pluralDisplayName: metadata.pluralDisplayName
         ?? convertToPluralDisplayName(metadata.apiName),
       visibility: metadata.visibility ?? "NORMAL",

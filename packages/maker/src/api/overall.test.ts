@@ -19,7 +19,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { beforeEach, describe, expect, it } from "vitest";
 import { addDependency } from "./addDependency.js";
+import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
+  CREATE_OR_MODIFY_OBJECT_PARAMETER,
   defineAction,
   defineCreateInterfaceObjectAction,
   defineCreateObjectAction,
@@ -27,8 +29,8 @@ import {
   defineDeleteObjectAction,
   defineModifyInterfaceObjectAction,
   defineModifyObjectAction,
+  MODIFY_OBJECT_PARAMETER,
 } from "./defineAction.js";
-import { importSharedPropertyType } from "./defineImportSpt.js";
 import { defineInterface } from "./defineInterface.js";
 import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
 import { defineLink } from "./defineLink.js";
@@ -41,13 +43,9 @@ import {
 import { defineSharedPropertyType } from "./defineSpt.js";
 import { defineValueType } from "./defineValueType.js";
 import { importOntologyEntity } from "./importOntologyEntity.js";
-import {
-  CREATE_OR_MODIFY_OBJECT_PARAMETER,
-  type InterfaceType,
-  MODIFY_OBJECT_PARAMETER,
-  OntologyEntityTypeEnum,
-  type SharedPropertyType,
-} from "./types.js";
+import { importSharedPropertyType } from "./importSharedPropertyType.js";
+import { type InterfaceType } from "./interface/InterfaceType.js";
+import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
 
 describe("Ontology Defining", () => {
   beforeEach(async () => {
