@@ -13891,30 +13891,65 @@ describe("Ontology Defining", () => {
         }
       `);
     });
-    it("Interface actions validate SPT existence globally", () => {
-      expect(() => {
-        const spt = defineSharedPropertyType({
-          apiName: "spt",
-          type: "string",
-        });
-        const pulseRepetitionIntervalSecs: SharedPropertyType = {
-          "apiName": "com.palantir.other.ontology.pulseRepetitionIntervalSecs",
-          "displayName": "Pulse Repetition Interval (s)",
-          "description": "Pulse Repetition Interval in seconds.",
-          "type": "double",
-          "nonNameSpacedApiName": "pulseRepetitionIntervalSecs",
-          "typeClasses": [],
-          "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
-        } as unknown as SharedPropertyType;
-        importOntologyEntity(pulseRepetitionIntervalSecs);
-        const interfaceType = defineInterface({
-          apiName: "interfaceType",
-          properties: {
-            spt,
-            pulseRepetitionIntervalSecs,
+    it("Interface actions validate SPT existence", () => {
+      const spt = defineSharedPropertyType({
+        apiName: "spt",
+        type: "string",
+      });
+      const importedInterface: InterfaceType = {
+        "apiName": "com.palantir.other.ontology.event.Event",
+        "displayMetadata": {
+          "displayName": "Event",
+          "description": "Event",
+          "icon": {
+            "type": "blueprint",
+            "blueprint": {
+              "color": "#4C90F0",
+              "locator": "timeline-events",
+            },
           },
-        });
-        const action = defineAction({
+        },
+        "extendsInterfaces": [],
+        "links": [],
+        "status": {
+          "type": "active",
+          "active": {},
+        },
+        "propertiesV2": {
+          "com.palantir.other.ontology.types.id": {
+            "required": true,
+            "sharedPropertyType": {
+              "displayName": "Id",
+              "apiName": "com.palantir.other.ontology.types.id",
+              "type": "string",
+              "nonNameSpacedApiName": "id",
+              "typeClasses": [
+                {
+                  "kind": "render_hint",
+                  "name": "SELECTABLE",
+                },
+                {
+                  "kind": "render_hint",
+                  "name": "SORTABLE",
+                },
+              ],
+              "__type": "SHARED_PROPERTY_TYPE",
+            },
+          },
+        },
+        "searchable": false,
+        "__type": "INTERFACE_TYPE",
+      } as unknown as InterfaceType;
+      importOntologyEntity(importedInterface);
+      const interfaceType = defineInterface({
+        apiName: "interfaceType",
+        properties: {
+          spt,
+        },
+        extends: importedInterface,
+      });
+      expect(() =>
+        defineAction({
           apiName: "action",
           displayName: "action",
           status: "active",
@@ -13958,7 +13993,7 @@ describe("Ontology Defining", () => {
                   type: "parameterId",
                   parameterId: "sptParameter",
                 },
-                [pulseRepetitionIntervalSecs.apiName]: {
+                "com.palantir.other.invalid.spt": {
                   type: "staticValue",
                   staticValue: {
                     type: "double",
@@ -13972,11 +14007,12 @@ describe("Ontology Defining", () => {
               },
             },
           }],
-        });
-      }).toThrowErrorMatchingInlineSnapshot(`
-        [Error: Invariant failed: Shared property type com.palantir.other does not exist.
-                    If this SPT was imported, you may need to use [spt.apiName] as the key so that it is qualified with the right namespace]
-      `);
+        })
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Shared property type com.palantir.other.invalid.spt does not exist in interface type com.palantir.interfaceType]`,
+      );
+      expect(() => defineCreateInterfaceObjectAction(interfaceType)).not
+        .toThrow();
     });
     it("Interface actions validate SPT existence on the interface", () => {
       expect(() => {

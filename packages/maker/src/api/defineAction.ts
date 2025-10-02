@@ -655,18 +655,6 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
       );
     }
     if (rule.type === "modifyInterfaceRule") {
-      // all referenced SPTs exist globally
-      Object.keys(rule.modifyInterfaceRule.sharedPropertyValues).forEach(
-        spt => {
-          invariant(
-            ontologyDefinition.SHARED_PROPERTY_TYPE[spt] !== undefined
-              || importedTypes.SHARED_PROPERTY_TYPE[spt] !== undefined,
-            `Shared property type ${spt} does not exist.
-            If this SPT was imported, you may need to use [spt.apiName] as the key so that it is qualified with the right namespace`,
-          );
-        },
-      );
-
       // The there must be a parameter for the interface, and the interface there must exist
       const interfaceParam = actionDef.parameters!.find(p =>
         p.id === rule.modifyInterfaceRule.interfaceObjectToModifyParameter
@@ -700,16 +688,6 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
       );
     }
     if (rule.type === "addInterfaceRule") {
-      // All referenced SPTs must exist globally
-      Object.keys(rule.addInterfaceRule.sharedPropertyValues).forEach(spt => {
-        invariant(
-          ontologyDefinition.SHARED_PROPERTY_TYPE[spt] !== undefined
-            || importedTypes.SHARED_PROPERTY_TYPE[spt] !== undefined,
-          `Shared property type ${spt} does not exist. 
-          If this SPT was imported, you may need to use [spt.apiName] as the key so that it is qualified with the right namespace`,
-        );
-      });
-
       // The referenced interface must exist globally
       const interfaceType = ontologyDefinition
         .INTERFACE_TYPE[rule.addInterfaceRule.interfaceApiName]
