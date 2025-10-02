@@ -102,4 +102,4 @@ export const DherlihyComplexObject = {
   experimentalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} as DherlihyComplexObject;
+} satisfies DherlihyComplexObject & { experimentalDoNotUseMetadata: { rid: string } } as DherlihyComplexObject;

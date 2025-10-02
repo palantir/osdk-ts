@@ -107,4 +107,4 @@ export const Venture = {
   experimentalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} as Venture;
+} satisfies Venture & { experimentalDoNotUseMetadata: { rid: string } } as Venture;

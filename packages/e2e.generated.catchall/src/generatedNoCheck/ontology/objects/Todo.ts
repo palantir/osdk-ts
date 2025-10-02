@@ -127,4 +127,4 @@ export const Todo = {
   experimentalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} as Todo;
+} satisfies Todo & { experimentalDoNotUseMetadata: { rid: string } } as Todo;

@@ -134,4 +134,4 @@ export const FintrafficAis = {
   experimentalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} as FintrafficAis;
+} satisfies FintrafficAis & { experimentalDoNotUseMetadata: { rid: string } } as FintrafficAis;

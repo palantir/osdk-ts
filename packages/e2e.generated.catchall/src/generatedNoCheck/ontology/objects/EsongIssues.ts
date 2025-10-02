@@ -241,4 +241,4 @@ export const EsongIssues = {
   experimentalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.9e50a0d3-5b89-41f5-a894-b0e9bb388950',
   },
-} as EsongIssues;
+} satisfies EsongIssues & { experimentalDoNotUseMetadata: { rid: string } } as EsongIssues;

@@ -102,4 +102,4 @@ export const Thing = {
   experimentalDoNotUseMetadata: {
     rid: 'ridForThing',
   },
-} as Thing;
+} satisfies Thing & { experimentalDoNotUseMetadata: { rid: string } } as Thing;

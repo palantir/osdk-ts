@@ -119,4 +119,6 @@ export const RhemmingsObjectWithGtsrProperty2 = {
   experimentalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
+} satisfies RhemmingsObjectWithGtsrProperty2 & {
+  experimentalDoNotUseMetadata: { rid: string };
 } as RhemmingsObjectWithGtsrProperty2;

@@ -98,4 +98,4 @@ export const WeatherStation = {
   experimentalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} as WeatherStation;
+} satisfies WeatherStation & { experimentalDoNotUseMetadata: { rid: string } } as WeatherStation;

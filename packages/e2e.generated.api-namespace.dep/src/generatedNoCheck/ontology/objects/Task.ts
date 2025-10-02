@@ -94,4 +94,4 @@ export const Task = {
   experimentalDoNotUseMetadata: {
     rid: 'ridForTask',
   },
-} as Task;
+} satisfies Task & { experimentalDoNotUseMetadata: { rid: string } } as Task;

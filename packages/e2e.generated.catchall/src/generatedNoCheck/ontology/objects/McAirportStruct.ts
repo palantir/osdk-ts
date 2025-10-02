@@ -124,4 +124,4 @@ export const McAirportStruct = {
   experimentalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} as McAirportStruct;
+} satisfies McAirportStruct & { experimentalDoNotUseMetadata: { rid: string } } as McAirportStruct;

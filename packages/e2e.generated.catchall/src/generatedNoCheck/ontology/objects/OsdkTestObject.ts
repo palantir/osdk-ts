@@ -126,4 +126,4 @@ export const OsdkTestObject = {
   experimentalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb',
   },
-} as OsdkTestObject;
+} satisfies OsdkTestObject & { experimentalDoNotUseMetadata: { rid: string } } as OsdkTestObject;

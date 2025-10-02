@@ -140,7 +140,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
       experimentalDoNotUseMetadata: {
         rid: "${definition.rid}",
       },
-    } as ${objectDefIdentifier};`;
+    } satisfies ${objectDefIdentifier} & { experimentalDoNotUseMetadata: { rid: string } } as ${objectDefIdentifier};`;
 }
 
 export interface Identifiers extends

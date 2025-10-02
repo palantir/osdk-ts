@@ -93,4 +93,4 @@ export const Person = {
   experimentalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} as Person;
+} satisfies Person & { experimentalDoNotUseMetadata: { rid: string } } as Person;

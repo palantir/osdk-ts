@@ -102,4 +102,4 @@ export const GtfsTripTrackObject = {
   experimentalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} as GtfsTripTrackObject;
+} satisfies GtfsTripTrackObject & { experimentalDoNotUseMetadata: { rid: string } } as GtfsTripTrackObject;

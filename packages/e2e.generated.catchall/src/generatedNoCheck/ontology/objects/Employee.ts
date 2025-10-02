@@ -205,4 +205,4 @@ export const Employee = {
   experimentalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} as Employee;
+} satisfies Employee & { experimentalDoNotUseMetadata: { rid: string } } as Employee;

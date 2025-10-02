@@ -102,4 +102,4 @@ export const MnayanOsdkMediaObject = {
   experimentalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} as MnayanOsdkMediaObject;
+} satisfies MnayanOsdkMediaObject & { experimentalDoNotUseMetadata: { rid: string } } as MnayanOsdkMediaObject;

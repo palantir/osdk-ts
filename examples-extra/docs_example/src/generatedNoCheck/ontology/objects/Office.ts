@@ -132,4 +132,4 @@ export const Office = {
   experimentalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45',
   },
-} as Office;
+} satisfies Office & { experimentalDoNotUseMetadata: { rid: string } } as Office;

@@ -110,4 +110,6 @@ export const MatthewvsDevOrderEmbedding = {
   experimentalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
+} satisfies MatthewvsDevOrderEmbedding & {
+  experimentalDoNotUseMetadata: { rid: string };
 } as MatthewvsDevOrderEmbedding;

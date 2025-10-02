@@ -118,4 +118,4 @@ export const SotSensor = {
   experimentalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} as SotSensor;
+} satisfies SotSensor & { experimentalDoNotUseMetadata: { rid: string } } as SotSensor;

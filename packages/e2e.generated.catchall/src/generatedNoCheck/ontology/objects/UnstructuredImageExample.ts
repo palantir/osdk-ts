@@ -102,4 +102,4 @@ export const UnstructuredImageExample = {
   experimentalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} as UnstructuredImageExample;
+} satisfies UnstructuredImageExample & { experimentalDoNotUseMetadata: { rid: string } } as UnstructuredImageExample;

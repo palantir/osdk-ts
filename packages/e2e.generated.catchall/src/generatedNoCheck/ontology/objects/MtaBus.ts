@@ -110,4 +110,4 @@ export const MtaBus = {
   experimentalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} as MtaBus;
+} satisfies MtaBus & { experimentalDoNotUseMetadata: { rid: string } } as MtaBus;

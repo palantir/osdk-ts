@@ -114,4 +114,4 @@ export const BoundariesUsState = {
   experimentalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} as BoundariesUsState;
+} satisfies BoundariesUsState & { experimentalDoNotUseMetadata: { rid: string } } as BoundariesUsState;

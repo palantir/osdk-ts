@@ -102,4 +102,4 @@ export const BuilderDeploymentState = {
   experimentalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} as BuilderDeploymentState;
+} satisfies BuilderDeploymentState & { experimentalDoNotUseMetadata: { rid: string } } as BuilderDeploymentState;

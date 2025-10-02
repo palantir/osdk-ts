@@ -138,4 +138,4 @@ export const BgaoNflPlayer = {
   experimentalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} as BgaoNflPlayer;
+} satisfies BgaoNflPlayer & { experimentalDoNotUseMetadata: { rid: string } } as BgaoNflPlayer;

@@ -108,4 +108,4 @@ export const StructPersonOpisTeam = {
   experimentalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} as StructPersonOpisTeam;
+} satisfies StructPersonOpisTeam & { experimentalDoNotUseMetadata: { rid: string } } as StructPersonOpisTeam;

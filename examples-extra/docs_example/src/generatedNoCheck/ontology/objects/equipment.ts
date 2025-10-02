@@ -94,4 +94,4 @@ export const equipment = {
   experimentalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.808ac022-89eb-4591-8b7e-1a912b9efb45',
   },
-} as equipment;
+} satisfies equipment & { experimentalDoNotUseMetadata: { rid: string } } as equipment;

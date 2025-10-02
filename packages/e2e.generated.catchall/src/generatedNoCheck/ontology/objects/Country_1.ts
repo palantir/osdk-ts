@@ -117,4 +117,4 @@ export const Country_1 = {
   experimentalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.0a276176-8d93-489e-93b4-77673de56b9e',
   },
-} as Country_1;
+} satisfies Country_1 & { experimentalDoNotUseMetadata: { rid: string } } as Country_1;

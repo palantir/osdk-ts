@@ -94,4 +94,4 @@ export const UsesForeignSpt = {
   experimentalDoNotUseMetadata: {
     rid: 'theRid',
   },
-} as UsesForeignSpt;
+} satisfies UsesForeignSpt & { experimentalDoNotUseMetadata: { rid: string } } as UsesForeignSpt;

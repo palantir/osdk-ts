@@ -110,4 +110,4 @@ export const TestGeoAction = {
   experimentalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} as TestGeoAction;
+} satisfies TestGeoAction & { experimentalDoNotUseMetadata: { rid: string } } as TestGeoAction;

@@ -94,4 +94,4 @@ export const StructPerson = {
   experimentalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} as StructPerson;
+} satisfies StructPerson & { experimentalDoNotUseMetadata: { rid: string } } as StructPerson;

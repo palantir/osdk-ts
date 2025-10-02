@@ -358,4 +358,6 @@ export const ObjectTypeWithAllPropertyTypes = {
   experimentalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
+} satisfies ObjectTypeWithAllPropertyTypes & {
+  experimentalDoNotUseMetadata: { rid: string };
 } as ObjectTypeWithAllPropertyTypes;

@@ -130,4 +130,4 @@ export const NbaPlayer = {
   experimentalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} as NbaPlayer;
+} satisfies NbaPlayer & { experimentalDoNotUseMetadata: { rid: string } } as NbaPlayer;
