@@ -715,7 +715,8 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
       Object.keys(rule.modifyInterfaceRule.sharedPropertyValues).forEach(
         spt => {
           invariant(
-            Object.keys(getAllInterfaceProperties(interfaceType)).includes(spt),
+            Object.keys(getFlattenedInterfaceProperties(interfaceType))
+              .includes(spt),
             `Shared property type ${spt} does not exist in interface type ${interfaceReference}`,
           );
         },
@@ -734,7 +735,9 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
       // All referenced SPTs must exist on the interface
       Object.keys(rule.addInterfaceRule.sharedPropertyValues).forEach(spt => {
         invariant(
-          Object.keys(getAllInterfaceProperties(interfaceType)).includes(spt),
+          Object.keys(getFlattenedInterfaceProperties(interfaceType)).includes(
+            spt,
+          ),
           `Shared property type ${spt} does not exist in interface type ${interfaceType.apiName}`,
         );
       });
