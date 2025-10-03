@@ -45,9 +45,9 @@ export interface AbstractParameterValue<T extends PrimitiveParameterType> {
 
 export interface ObjectSetParameterValue<T extends ObjectType> {
   type: "objectSet";
+  objectType: T;
   value: AsyncValue<{
     objectSetRid: string;
-    objectType: T;
   }>;
 }
 

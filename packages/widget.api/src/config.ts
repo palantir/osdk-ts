@@ -79,9 +79,9 @@ export type AsyncParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
     : never
     : C["parameters"][K] extends ObjectSetParameterDefinition<infer T> ? {
         type: "objectSet";
+        objectType: T;
         value: AsyncValue<{
           objectSetRid: string;
-          objectType: T;
         }>;
       }
     : Extract<
