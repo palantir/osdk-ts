@@ -28,5 +28,5 @@ const objects = client(Equipment)
     .where({ equipmentId: { $in: ["a", "b", "c"]}});
 
 // Traverse the selected link type to find all objects of type
-// Employee linked to Equipment with equipmentId is a or b or c]
+// Find Employee objects linked to the filtered Equipment objects
 const linkedObjects = await objects.pivotTo("assignedTo").fetchPage();

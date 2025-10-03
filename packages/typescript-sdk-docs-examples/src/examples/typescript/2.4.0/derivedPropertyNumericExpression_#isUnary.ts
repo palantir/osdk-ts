@@ -25,8 +25,10 @@ import { client } from "./client.js";
 
 const EmployeeWithExpression = await client(Employee)
     .withProperties({
-      "newPropertyName": (baseObjectSet) =>
+      "abs_salary": (baseObjectSet) =>
           baseObjectSet.pivotTo("lead")
-          .selectProperty("salary")
-          .subtract(baseObjectSet.selectProperty("salary"))
+          .selectProperty("salary").abs(),
+      "negate_salary": (baseObjectSet) =>
+          baseObjectSet.pivotTo("lead")
+          .selectProperty("salary").negate()
     }).fetchPage();

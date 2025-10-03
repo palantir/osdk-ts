@@ -47,7 +47,7 @@ const subscription = client(Employee).subscribe(
         onSuccessfulSubscription() {
             // The subscription was successful and you can expect to receive updates
         },
-        onError(err: subscriptionError) {
+        onError(err) {
             // There was an error with the subscription and you will not receive any more updates
             throw new Error(err.error instanceof Error ? err.error.message : String(err.error));
         },

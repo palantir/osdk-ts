@@ -24,18 +24,18 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 import { client } from "./client.js";
 import { type Osdk, type PageResult } from "@osdk/client";
 
-async function getPagedData() {
-    try {
-        const firstPage: PageResult<Osdk.Instance<Employee>>
-            = await client(Employee).fetchPage({ $pageSize: 30 });
-        if (firstPage.nextPageToken === undefined) {
-            return firstPage.data;
-        }
-        const secondPage: PageResult<Osdk.Instance<Employee>>
-        = await client(Employee).fetchPage({ $pageSize: 30, $nextPageToken: firstPage.nextPageToken });
-        return [...firstPage.data, ...secondPage.data];
+try {
+    const firstPage: PageResult<Osdk.Instance<Employee>>
+        = await client(Employee).fetchPage({ $pageSize: 30 });
+    if (firstPage.nextPageToken === undefined) {
+        // eslint-disable-next-line no-console
+        console.log(firstPage.data);
     }
-    catch (e) {
-        throw e;
-    }
+    const secondPage: PageResult<Osdk.Instance<Employee>>
+    = await client(Employee).fetchPage({ $pageSize: 30, $nextPageToken: firstPage.nextPageToken });
+    // eslint-disable-next-line no-console
+    console.log([...firstPage.data, ...secondPage.data]);
+}
+catch (e) {
+    throw e;
 }

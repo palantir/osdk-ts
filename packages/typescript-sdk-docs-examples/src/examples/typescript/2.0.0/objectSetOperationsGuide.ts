@@ -31,4 +31,4 @@ const objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: "c"}})
 // that are present in objectSetB but do not exist in objectSetC:
 const result = objectSetA
   .intersect(objectSetB)
-  .subtract(objectSetC).fetchPage();
+  .subtract(objectSetC)

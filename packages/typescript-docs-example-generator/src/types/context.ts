@@ -84,6 +84,9 @@ export interface BaseTemplateContext {
   last: boolean;
   needsImports: boolean;
 
+  // the name of the media parameter in the action
+  mediaParameter: string;
+
   // For duration templates
   arg: string;
   unit: string;

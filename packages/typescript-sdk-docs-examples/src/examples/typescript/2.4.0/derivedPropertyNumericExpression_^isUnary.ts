@@ -29,4 +29,4 @@ const EmployeeWithExpression = await client(Employee)
           baseObjectSet.pivotTo("assignedEquipment")
               .aggregate("purchasePrice:avg").divide(
                   baseObjectSet.pivotTo("assignedEquipment").aggregate("$count"))
-    }).fetchPage();
+      }).fetchPage();

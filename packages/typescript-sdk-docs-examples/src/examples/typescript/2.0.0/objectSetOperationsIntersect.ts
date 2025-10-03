@@ -31,4 +31,4 @@ const objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: "c"}})
 // Return all objects common to objectSetA, objectSetB and objectSetC
 const result = objectSetA
   .intersect(objectSetB)
-  .intersect(objectSetC).fetchPage(); // alternatively: objectSetA.intersect(objectSetB, objectSetC)
+  .intersect(objectSetC) // alternatively: objectSetA.intersect(objectSetB, objectSetC)

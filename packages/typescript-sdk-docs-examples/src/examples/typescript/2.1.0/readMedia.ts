@@ -17,17 +17,18 @@
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-// Example: objectSetOperationsUnion
+// Example: readMedia
 
+import { Equipment } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
-import { Employee } from "../../../generatedNoCheck/index.js";
-
-const objectSetA = client(Employee).where({ fullName: { $containsAnyTerm: "a"}})
-const objectSetB = client(Employee).where({ fullName: { $containsAnyTerm: "b"}})
-const objectSetC = client(Employee).where({ fullName: { $containsAnyTerm: "c"}})
-
-// Combine objectSetA, objectSetB and objectSetC
-const result = objectSetA
-  .union(objectSetB)
-  .union(objectSetC) // alternatively: objectSetA.union(objectSetB, objectSetC)
+const result = await client(Equipment).fetchOne("mac-1234");
+// Fetch metadata of a media property
+const mediaMetadata = await result.trainingMaterial?.fetchMetadata();
+// eslint-disable-next-line no-console
+console.log(mediaMetadata?.mediaType, mediaMetadata?.sizeBytes, mediaMetadata?.path);
+// Fetch contents of a media property
+const mediaContent = await result.trainingMaterial?.fetchContents();
+if (mediaContent?.ok) {
+    const data = await mediaContent.blob();
+}

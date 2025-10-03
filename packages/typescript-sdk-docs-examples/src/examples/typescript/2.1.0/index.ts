@@ -36,3 +36,9 @@
 // subscribeToObjectSetInstructions
 // See: ./subscribeToObjectSetInstructions.ts
 
+// uploadMedia
+// See: ./uploadMedia.ts
+
+// readMedia
+// See: ./readMedia.ts
+

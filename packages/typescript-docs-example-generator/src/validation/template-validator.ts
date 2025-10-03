@@ -297,6 +297,7 @@ export class TemplateValidator {
       isExtractPart: false,
       vectorProperty: "",
       vectorDimensionSize: 0,
+      mediaParameter: "instructionalVideo",
     };
   }
 }

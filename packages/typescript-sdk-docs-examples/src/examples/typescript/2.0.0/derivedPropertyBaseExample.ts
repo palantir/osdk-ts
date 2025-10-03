@@ -30,4 +30,6 @@ const sumEmployee = await client(Employee)
     })
     .where({
       "newPropertyName": { $gt: 0 }
-    }).fetchPage();
+    }).aggregate({
+      $select: { "newPropertyName:max": "unordered" }
+    })

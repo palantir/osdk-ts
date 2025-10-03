@@ -87,6 +87,8 @@ const baseContext: BaseTemplateContext = {
   last: false,
   needsImports: false,
 
+  mediaParameter: "instructionalVideo",
+
   // For duration templates
   arg: "1",
   unit: "DAYS",
@@ -230,11 +232,17 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
 
   // === MEDIA TEMPLATES (2.1.0+) ===
   "uploadMedia": {
-    property: "profilePhoto",
-    actionParameterSampleValuesV2: "some-media-id",
+    objectType: "Equipment",
+    property: "trainingMaterial",
+    actionApiName: "documentEquipment",
+    primaryKeyPropertyV2: { apiName: "equipmentId", type: "string" },
+    propertyValueV2: `"mac-1234"`,
+    mediaParameter: "instructionalVideo",
   },
   "readMedia": {
-    property: "profilePhoto",
+    objectType: "Equipment",
+    property: "trainingMaterial",
+    primaryKeyPropertyValueV2: `"mac-1234"`,
   },
 
   // === SIMPLE TEMPLATES ===
