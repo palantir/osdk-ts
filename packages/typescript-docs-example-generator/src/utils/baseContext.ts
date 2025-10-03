@@ -149,12 +149,6 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
     property: "address",
   },
 
-  // === LINKED OBJECT TEMPLATES ===
-  "loadLinkedObjectReference": {
-    sourceObjectType: "Employee",
-    linkedObjectType: "Equipment",
-    linkApiName: "assignedEquipment",
-  },
   "loadLinkedObjectsReference": {
     sourceObjectType: "Equipment",
     linkedObjectType: "Employee",
@@ -525,14 +519,19 @@ const templateHierarchy: Record<string, TemplateHierarchyNode> = {
       },
     },
   },
-  "loadLinkedObjectsReference": {
+  "loadLinkedObjectReference": {
     "#isLinkManySided": {
       context: {
         isLinkManySided: true,
-        sourceObjectType: "Equipment",
-        linkedObjectType: "Employee",
-        linkApiName: "assignedTo",
-        rawLinkedPrimaryKeyProperty: { apiName: "equipmentId", type: "string" },
+        objectType: "Employee",
+        linkApiName: "assignedEquipment",
+      },
+    },
+    "^isLinkManySided": {
+      context: {
+        isLinkManySided: false,
+        objectType: "Employee",
+        linkApiName: "lead",
       },
     },
   },

@@ -42,8 +42,9 @@
 // loadAllObjectsReference
 // See: ./loadAllObjectsReference.ts
 
-// loadLinkedObjectReference
-// See: ./loadLinkedObjectReference.ts
+// loadLinkedObjectReference (variations only)
+// See: ./loadLinkedObjectReference_#isLinkManySided.ts (Standard block: isLinkManySided = true)
+// See: ./loadLinkedObjectReference_^isLinkManySided.ts (Inverted block: isLinkManySided = false)
 
 // loadLinkedObjectsReference
 // See: ./loadLinkedObjectsReference.ts

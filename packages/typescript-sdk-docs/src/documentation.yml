@@ -1067,12 +1067,17 @@ versions:
             }
       loadLinkedObjectReference:
         - template: |-
-            import { type {{sourceObjectType}} } from "{{{packageName}}}";
+            import { type {{objectType}} } from "{{{packageName}}}";
             import { type Osdk } from "@osdk/client";
 
-            async function getLinked{{linkedObjectType}}(source: Osdk.Instance<{{sourceObjectType}}>) {
+            async function getLinked{{linkedObjectType}}(source: Osdk.Instance<{{objectType}}>) {
                 try {
+                    {{#isLinkManySided}}
                     return await source.$link.{{linkApiName}}.fetchPage();
+                    {{/isLinkManySided}}
+                    {{^isLinkManySided}}
+                    return await source.$link.{{linkApiName}}.fetchOne();
+                    {{/isLinkManySided}}
                 } catch (error) {
                     return { error };
                 }
@@ -1096,7 +1101,7 @@ versions:
                 .where({ {{property}}: { $isNull : false }})
                 .aggregate({
                     $select: { $count: "unordered" },
-                    $groupBy: { {{property}}: "exact" },
+                    //$groupBy: { {{property}}: "exact" },
                 });
       countAggregationTemplate:
         - template: |-

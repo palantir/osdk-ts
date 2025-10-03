@@ -17,15 +17,15 @@
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-// Example: aggregationTemplate
+// Example: loadLinkedObjectReference (Variation: #isLinkManySided)
 
-import { Employee } from "../../../generatedNoCheck/index.js";
-// Edit this import if your client location differs
-import { client } from "./client.js";
+import { type Employee } from "../../../generatedNoCheck/index.js";
+import { type Osdk } from "@osdk/client";
 
-const numEmployee = await client(Employee)
-    .where({ department: { $isNull : false }})
-    .aggregate({
-        $select: { $count: "unordered" },
-        //$groupBy: { department: "exact" },
-    });
+async function getLinkedEmployee(source: Osdk.Instance<Employee>) {
+    try {
+        return await source.$link.assignedEquipment.fetchPage();
+    } catch (error) {
+        return { error };
+    }
+}

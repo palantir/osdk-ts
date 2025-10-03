@@ -85,8 +85,14 @@ export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = {
           "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { Osdk } from \"@osdk/client\";\n\nasync function getAll(): Promise<Array<Osdk.Instance<Employee>>> {\n    const objects: Osdk.Instance<Employee>[]= [];\n    for await(const obj of client(Employee).asyncIter()) {\n        objects.push(obj);\n    }\n\n    return objects;\n}\n\n// If Array.fromAsync() is available in your target environment\nfunction getAllFromAsync(): Promise<Array<Osdk.Instance<Employee>>> {\n    return Array.fromAsync(client(Employee).asyncIter());\n}",
       },
       "loadLinkedObjectReference": {
-        "code":
-          "import { type Employee } from \"../../../generatedNoCheck/index.js\";\nimport { type Osdk } from \"@osdk/client\";\n\nasync function getLinkedEquipment(source: Osdk.Instance<Employee>) {\n    try {\n        return await source.$link.assignedEquipment.fetchPage();\n    } catch (error) {\n        return { error };\n    }\n}",
+        "#isLinkManySided": {
+          "code":
+            "import { type Employee } from \"../../../generatedNoCheck/index.js\";\nimport { type Osdk } from \"@osdk/client\";\n\nasync function getLinkedEmployee(source: Osdk.Instance<Employee>) {\n    try {\n        return await source.$link.assignedEquipment.fetchPage();\n    } catch (error) {\n        return { error };\n    }\n}",
+        },
+        "^isLinkManySided": {
+          "code":
+            "import { type Employee } from \"../../../generatedNoCheck/index.js\";\nimport { type Osdk } from \"@osdk/client\";\n\nasync function getLinkedEmployee(source: Osdk.Instance<Employee>) {\n    try {\n        return await source.$link.lead.fetchOne();\n    } catch (error) {\n        return { error };\n    }\n}",
+        },
       },
       "loadLinkedObjectsReference": {
         "code":
@@ -94,7 +100,7 @@ export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = {
       },
       "aggregationTemplate": {
         "code":
-          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst numEmployee = await client(Employee)\n    .where({ department: { $isNull : false }})\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        $groupBy: { department: \"exact\" },\n    });",
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst numEmployee = await client(Employee)\n    .where({ department: { $isNull : false }})\n    .aggregate({\n        $select: { $count: \"unordered\" },\n        //$groupBy: { department: \"exact\" },\n    });",
       },
       "countAggregationTemplate": {
         "code":

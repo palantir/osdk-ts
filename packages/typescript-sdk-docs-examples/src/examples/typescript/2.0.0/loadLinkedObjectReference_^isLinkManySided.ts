@@ -17,14 +17,14 @@
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-// Example: loadLinkedObjectReference
+// Example: loadLinkedObjectReference (Variation: ^isLinkManySided)
 
 import { type Employee } from "../../../generatedNoCheck/index.js";
 import { type Osdk } from "@osdk/client";
 
-async function getLinkedEquipment(source: Osdk.Instance<Employee>) {
+async function getLinkedEmployee(source: Osdk.Instance<Employee>) {
     try {
-        return await source.$link.assignedEquipment.fetchPage();
+        return await source.$link.lead.fetchOne();
     } catch (error) {
         return { error };
     }
