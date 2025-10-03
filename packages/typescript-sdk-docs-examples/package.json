@@ -37,7 +37,6 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/client": "workspace:~"
   },
   "peerDependencies": {
     "@osdk/api": "workspace:~",

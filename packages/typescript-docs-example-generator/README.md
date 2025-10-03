@@ -2,6 +2,31 @@
 
 Transforms Mustache templates from `@osdk/typescript-sdk-docs` into runnable TypeScript examples. Automatically generates variations for conditional blocks to test different code paths and validates template syntax at build time.
 
+## 🚀 Quick Start: Adding New Templates
+
+**When adding a new template to documentation.yml:**
+
+1. **Check if variables exist** in `src/baseContext.ts` - look for your variable names in the `baseContext` object
+2. **If variables are missing**, add them to `baseContext.ts`:
+   ```typescript
+   const baseContext = {
+     // ... existing variables
+     myNewVariable: "defaultValue",
+   };
+   ```
+3. **If your template needs specific values**, add overrides to `TEMPLATE_REGISTRY` in `baseContext.ts`:
+   ```typescript
+   const TEMPLATE_REGISTRY = {
+     myTemplateKey: {
+       myNewVariable: "specificValue",
+     },
+   };
+   ```
+4. **Run generation**: `pnpm generateExamples`
+5. **Validate**: `pnpm typecheck`
+
+⚠️ **Common Issue**: If generation fails with "Variable 'X' not found", add it to `baseContext.ts`
+
 ## Architecture
 
 ### Input Flow
@@ -226,10 +251,10 @@ Failed to process block variation templateName#blockName
 src/
 ├── generateExamples.ts           # Main entry point
 ├── index.ts                      # Public exports
+├── baseContext.ts               # ⭐ Template variable definitions (top-level for easy access)
 ├── analyzer/
 │   └── template-analyzer.ts      # Mustache token parsing
 ├── utils/
-│   ├── baseContext.ts           # Template variable definitions
 │   ├── processTemplate.v2.ts    # Mustache processing
 │   ├── generateBlockVariations.ts # Block helper variations
 │   ├── hierarchyBuilder.ts      # Export file generation

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { getSnippetContext } from "../baseContext.js";
 import {
   type GeneratorError,
   toErrorResult,
 } from "../errors/generator-errors.js";
 import type { BaseTemplateContext } from "../types/context.js";
 import type { BlockVariable, Result } from "../types/index.js";
-import { getSnippetContext } from "./baseContext.js";
 import { CodeTransformer } from "./codeTransformer.js";
 import type { FileContent } from "./fileWriter.js";
 import { generateFileHeader } from "./generateFileHeader.js";

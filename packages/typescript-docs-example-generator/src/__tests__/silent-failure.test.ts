@@ -19,9 +19,9 @@ import { tmpdir } from "os";
 import { join } from "path";
 import { describe, expect, it } from "vitest";
 import { TemplateAnalyzer } from "../analyzer/template-analyzer.js";
+import { getSnippetContext } from "../baseContext.js";
 import { generateExamples } from "../generateExamples.js";
 import type { BlockVariable } from "../types/index.js";
-import { getSnippetContext } from "../utils/baseContext.js";
 import { generateBlockVariations } from "../utils/generateBlockVariations.js";
 import { processTemplateV2 } from "../utils/processTemplate.v2.js";
 

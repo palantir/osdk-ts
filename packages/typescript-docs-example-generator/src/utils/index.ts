@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { baseContext, getSnippetContext } from "./baseContext.js";
+export { baseContext, getSnippetContext } from "../baseContext.js";
 export { BatchProcessor } from "./batch-processor.js";
 export { CodeTransformer } from "./codeTransformer.js";
 export { FileWriter } from "./fileWriter.js";

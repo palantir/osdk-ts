@@ -16,8 +16,8 @@
 
 import { describe, expect, it } from "vitest";
 import { TemplateAnalyzer } from "../analyzer/template-analyzer.js";
+import { getSnippetContext } from "../baseContext.js";
 import { TemplateParseError } from "../errors/generator-errors.js";
-import { getSnippetContext } from "../utils/baseContext.js";
 import { processTemplateV2 } from "../utils/processTemplate.v2.js";
 
 /**

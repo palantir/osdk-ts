@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+export { baseContext, getSnippetContext } from "./baseContext.js";
 export { generateExamples } from "./generateExamples.js";
 export type {
   ActionParameterSampleValue,
   BaseTemplateContext,
   PropertyV2,
-} from "./utils/index.js";
+} from "./types/context.js";
