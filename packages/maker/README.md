@@ -609,7 +609,9 @@ import {
 } from "@osdk/maker";
 
 // Define an action to create objects implementing an interface
-const createPersonAction = defineCreateInterfaceObjectAction(personInterface);
+const createPersonAction = defineCreateInterfaceObjectAction({
+  interfaceType: personInterface,
+});
 
 // Define an action for a specific object type that implements an interface
 const createEmployeePersonAction = defineCreateInterfaceObjectAction(
@@ -618,7 +620,9 @@ const createEmployeePersonAction = defineCreateInterfaceObjectAction(
 );
 
 // Define an action to modify objects implementing an interface
-const modifyPersonAction = defineModifyInterfaceObjectAction(personInterface);
+const modifyPersonAction = defineModifyInterfaceObjectAction({
+  interfaceType: personInterface,
+});
 ```
 
 ### Custom Action
