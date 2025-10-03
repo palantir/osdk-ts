@@ -129,7 +129,8 @@ describe("NestedOsdkExamplesContext", () => {
       expect(variations).toBeDefined();
       expect(Object.keys(variations!)).toContain("#isUnary");
       expect(Object.keys(variations!)).toContain("^isUnary");
-      expect(variations!["#isUnary"].code).toContain("subtract");
+      expect(variations!["#isUnary"].code).toContain("abs");
+      expect(variations!["#isUnary"].code).toContain("negate");
     });
 
     it("returns undefined for simple examples without variations", () => {
