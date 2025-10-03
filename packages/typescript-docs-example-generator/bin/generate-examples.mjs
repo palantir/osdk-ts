@@ -30,7 +30,7 @@ function parseArgs() {
       process.cwd(),
       "src/typescriptOsdkExamples.ts",
     ),
-    versions: ["2.1.0", "2.4.0"], // Default to versions > 2.0.0
+    versions: undefined, // Default to auto-discovery of all versions >= 2.0.0
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -52,13 +52,14 @@ function parseArgs() {
 Usage: generate-examples [options]
 
 Options:
-  --versions <versions>         Comma-separated list of versions to generate (default: 2.1.0,2.4.0)
+  --versions <versions>         Comma-separated list of versions to generate (default: auto-discover all versions >= 2.0.0)
   --output-dir <path>          Output directory for examples (default: src/examples)
   --hierarchy-output <path>    Path for typescriptOsdkExamples.ts (default: src/typescriptOsdkExamples.ts)
   --help, -h                   Show this help message
 
 Examples:
-  generate-examples --versions 2.1.0,2.4.0
+  generate-examples                                  # Auto-discover all versions >= 2.0.0
+  generate-examples --versions 2.1.0,2.4.0          # Generate specific versions
   generate-examples --versions 2.1.0 --output-dir dist/examples
       `);
       process.exit(0);

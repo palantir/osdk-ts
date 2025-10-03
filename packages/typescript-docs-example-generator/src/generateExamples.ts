@@ -17,6 +17,7 @@
 import { TYPESCRIPT_OSDK_SNIPPETS } from "@osdk/typescript-sdk-docs";
 import fs from "fs/promises";
 import path from "path";
+import semver from "semver";
 import { TemplateAnalyzer } from "./analyzer/template-analyzer.js";
 import {
   type GeneratorError,
@@ -47,15 +48,32 @@ import { processTemplateV2 } from "./utils/processTemplate.v2.js";
 import { TemplateValidator } from "./validation/template-validator.js";
 
 /**
+ * Get all versions from TYPESCRIPT_OSDK_SNIPPETS that are >= 2.0.0
+ * Uses semantic versioning comparison
+ */
+function getAllSupportedVersions(): string[] {
+  const allVersions = Object.keys(TYPESCRIPT_OSDK_SNIPPETS.versions || {});
+
+  // Filter for versions >= 2.0.0 using proper semver comparison
+  return allVersions
+    .filter(version => {
+      // Validate the version string and check if it's >= 2.0.0
+      const valid = semver.valid(version);
+      return valid && semver.gte(valid, "2.0.0");
+    })
+    .sort(semver.compare);
+}
+
+/**
  * Generate TypeScript examples from SDK documentation templates
  * @param outputDir - Directory to output the generated examples
  * @param hierarchyOutputPath - Path to write the hierarchy TypeScript file
- * @param versions - Array of versions to generate examples for. Defaults to all versions > 2.0.0
+ * @param versions - Array of versions to generate examples for. If not specified, generates for all versions >= 2.0.0
  */
 export async function generateExamples(
   outputDir: string,
   hierarchyOutputPath: string,
-  versions: string[] = ["2.0.0", "2.1.0", "2.4.0"],
+  versions?: string[],
 ): Promise<Result<GenerationReport, GeneratorError>> {
   const startTime = Date.now();
   const report: GenerationReport = {
@@ -71,19 +89,22 @@ export async function generateExamples(
     // eslint-disable-next-line no-console
     console.log("Generating examples from typescript-sdk-docs...");
 
+    // Use all supported versions if none specified
+    const requestedVersions = versions || getAllSupportedVersions();
+
     // Get all available versions and filter for supported ones
     const availableVersions = Object.keys(
       TYPESCRIPT_OSDK_SNIPPETS.versions || {},
     );
-    const versionsToGenerate = versions.filter(v =>
+    const versionsToGenerate = requestedVersions.filter(v =>
       availableVersions.includes(v)
     );
 
     if (versionsToGenerate.length === 0) {
       return toErrorResult(
         new Error(
-          `No supported versions found in ${
-            versions.join(", ")
+          `No supported versions found${
+            versions ? ` in ${versions.join(", ")}` : " >= 2.0.0"
           }. Available versions: ${availableVersions.join(", ")}`,
         ),
       );
