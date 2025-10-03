@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ParameterValue } from "./parameters.js";
+import type { ObjectType, ParameterValue } from "./parameters.js";
 import type { AsyncValue } from "./utils/asyncValue.js";
 
 interface PrimitiveParameterDefinition<T extends ParameterValue.PrimitiveType> {
@@ -26,9 +26,15 @@ interface ArrayParameterDefinition<S extends ParameterValue.PrimitiveType> {
   displayName: string;
   subType: S;
 }
+interface ObjectSetParameterDefinition<T extends ObjectType> {
+  type: "objectSet";
+  displayName: string;
+  objectType: T;
+}
 export type ParameterDefinition =
   | PrimitiveParameterDefinition<ParameterValue.PrimitiveType>
-  | ArrayParameterDefinition<ParameterValue.PrimitiveType>;
+  | ArrayParameterDefinition<ParameterValue.PrimitiveType>
+  | ObjectSetParameterDefinition<ObjectType>;
 
 export interface EventDefinition<P extends ParameterConfig> {
   displayName: string;
@@ -71,6 +77,13 @@ export type AsyncParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
         value: AsyncValue<P>;
       }
     : never
+    : C["parameters"][K] extends ObjectSetParameterDefinition<infer T> ? {
+        type: "objectSet";
+        value: AsyncValue<{
+          objectSetRid: string;
+          objectType: T;
+        }>;
+      }
     : Extract<
       ParameterValue,
       { type: C["parameters"][K]["type"] }
@@ -94,6 +107,10 @@ export type ParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
       { type: C["parameters"][K]["type"]; subType: S }
     >["value"] extends AsyncValue<infer P> ? P
     : never
+    : C["parameters"][K] extends ObjectSetParameterDefinition<infer T> ? {
+        objectSetRid: string;
+        objectType: T;
+      }
     : Extract<
       ParameterValue,
       { type: C["parameters"][K]["type"] }

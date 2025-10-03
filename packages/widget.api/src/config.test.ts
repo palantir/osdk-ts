@@ -280,5 +280,43 @@ describe("WidgetConfig", () => {
         test2: string[];
       }>();
     });
+
+    it("should support objectSet parameter types with generic object type", () => {
+      const Employee = {
+        type: "object",
+        apiName: "employee",
+        experimentalDoNotUseMetadata: {
+          rid: "ri.object-type.employee",
+        },
+      } as const;
+
+      type Employee = typeof Employee;
+
+      const test = defineConfig({
+        id: "widgetId",
+        name: "Widget Name",
+        description: "Widget Description",
+        type: "workshop",
+        parameters: {
+          myObjectSet: {
+            displayName: "My Object Set",
+            type: "objectSet",
+            objectType: Employee,
+          },
+          normalParam: {
+            displayName: "Normal Parameter",
+            type: "string",
+          },
+        },
+        events: {},
+      });
+
+      expectTypeOf<ParameterValueMap<typeof test>>().toMatchTypeOf<{
+        myObjectSet: {
+          objectSetRid: string;
+          objectType: Employee;
+        };
+      }>();
+    });
   });
 });
