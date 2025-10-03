@@ -438,18 +438,11 @@ export abstract class ListQuery extends BaseListQuery<
           : objOrIface) as unknown as ObjectHolder;
 
       this.store.batch({}, (batch) => {
-        if (this.rdpConfig !== undefined) {
-          this.store.objects.storeOsdkInstances(
-            [object as Osdk.Instance<any>],
-            batch,
-            this.rdpConfig,
-          );
-        } else {
-          this.store.objects.storeOsdkInstances(
-            [object as Osdk.Instance<any>],
-            batch,
-          );
-        }
+        this.store.objects.storeOsdkInstances(
+          [object as Osdk.Instance<any>],
+          batch,
+          this.rdpConfig,
+        );
       });
     } else if (state === "REMOVED") {
       this.onOswRemoved(objOrIface, logger);
@@ -515,24 +508,18 @@ export abstract class ListQuery extends BaseListQuery<
   }
 
   /**
-   * Get cache key for object, conditionally including RDP config to match cache key creation logic
+   * Get cache key for object.
    */
   private getObjectCacheKey(
     obj: { $objectType: string; $primaryKey: string | number | boolean },
   ): ObjectCacheKey {
     const pk = obj.$primaryKey as string | number;
-    return this.rdpConfig != null
-      ? this.cacheKeys.get<ObjectCacheKey>(
-        "object",
-        obj.$objectType,
-        pk,
-        this.rdpConfig,
-      )
-      : this.cacheKeys.get<ObjectCacheKey>(
-        "object",
-        obj.$objectType,
-        pk,
-      );
+    return this.cacheKeys.get<ObjectCacheKey>(
+      "object",
+      obj.$objectType,
+      pk,
+      this.rdpConfig,
+    );
   }
 }
 

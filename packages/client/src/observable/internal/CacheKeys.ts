@@ -95,12 +95,22 @@ export class CacheKeys<TCacheKey extends CacheKey> {
     type: K["type"],
     ...args: K["__cacheKey"]["args"]
   ): K {
-    const cacheKeyArgs = [type, ...args];
+    // Normalize trailing undefined values to ensure consistent cache key creation
+    // This makes get("object", "Foo", 1, undefined) === get("object", "Foo", 1)
+    const normalizedArgs = [...args];
+    while (
+      normalizedArgs.length > 0
+      && normalizedArgs[normalizedArgs.length - 1] === undefined
+    ) {
+      normalizedArgs.pop();
+    }
+
+    const cacheKeyArgs = [type, ...normalizedArgs];
     if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
       // eslint-disable-next-line no-console
       console.debug(
-        `CacheKeys.get([${type}, 
-        ${args.map(x => JSON.stringify(x)).join(", ")}]) - already exists? `,
+        `CacheKeys.get([${type},
+        ${normalizedArgs.map(x => JSON.stringify(x)).join(", ")}]) - already exists? `,
         this.#cacheKeys.peekArray(cacheKeyArgs) != null,
       );
     }
