@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.13.0-beta.13
+
+### Minor Changes
+
+- d815339: Allow interface props to be excluded from actions
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.13
+
 ## 0.13.0-beta.12
 
 ### Minor Changes
