@@ -101,6 +101,37 @@ describe("validateWidgetConfig", () => {
       "Parameter id length can be at most 100 characters",
     );
   });
+
+  test("accepts valid object set parameter", () => {
+    const validConfig = getValidConfig();
+    validConfig.parameters.myObjectSet = {
+      type: "objectSet",
+      displayName: "My Object Set",
+      objectType: {
+        type: "object",
+        apiName: "employee",
+        experimentalDoNotUseMetadata: {
+          rid: "ri.object-type.employee",
+        },
+      },
+    };
+    expect(() => validateWidgetConfig(validConfig)).not.toThrow();
+  });
+
+  test("throws for invalid object set parameter", () => {
+    const invalidConfig = getValidConfig();
+    invalidConfig.parameters.myObjectSet = {
+      type: "objectSet",
+      displayName: "My Object Set",
+      objectType: {
+        type: "object",
+        apiName: "employee",
+      },
+    };
+    expect(() => validateWidgetConfig(invalidConfig)).toThrow(
+      "ObjectSet parameter \"myObjectSet\" must have a valid rid in its metadata",
+    );
+  });
 });
 
 function getValidConfig(): WidgetConfig<ParameterConfig> {

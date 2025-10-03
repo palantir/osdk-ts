@@ -64,7 +64,7 @@ function validateWidgetDescription(description?: string): void {
 }
 
 function validateWidgetParameters(parameters: ParameterConfig): void {
-  for (const parameterId of Object.keys(parameters)) {
+  for (const [parameterId, parameterConfig] of Object.entries(parameters)) {
     if (parameterId.length > ID_MAX_LENGTH) {
       throw new Error(
         `Parameter id length can be at most ${ID_MAX_LENGTH} characters`,
@@ -74,6 +74,16 @@ function validateWidgetParameters(parameters: ParameterConfig): void {
       throw new Error(
         `Parameter id "${parameterId}" does not match allowed pattern (must be camelCase)`,
       );
+    }
+    if (parameterConfig.type === "objectSet") {
+      if (
+        typeof parameterConfig.objectType.experimentalDoNotUseMetadata?.rid
+          !== "string"
+      ) {
+        throw new Error(
+          `ObjectSet parameter "${parameterId}" must have a valid rid in its metadata`,
+        );
+      }
     }
   }
 }
