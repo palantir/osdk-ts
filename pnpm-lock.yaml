@@ -4001,6 +4001,9 @@ importers:
       semver:
         specifier: ^7.7.2
         version: 7.7.2
+      yargs:
+        specifier: ^17.7.2
+        version: 17.7.2
     devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
@@ -4017,6 +4020,9 @@ importers:
       '@types/semver':
         specifier: ^7.7.1
         version: 7.7.1
+      '@types/yargs':
+        specifier: ^17.0.24
+        version: 17.0.33
       typescript:
         specifier: ~5.5.4
         version: 5.5.4

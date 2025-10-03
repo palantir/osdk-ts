@@ -36,7 +36,8 @@
   "dependencies": {
     "@osdk/typescript-sdk-docs": "workspace:~",
     "mustache": "^4.2.0",
-    "semver": "^7.7.2"
+    "semver": "^7.7.2",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
@@ -44,6 +45,7 @@
     "@types/mustache": "^4.2.5",
     "@types/node": "^18.19.124",
     "@types/semver": "^7.7.1",
+    "@types/yargs": "^17.0.24",
     "typescript": "~5.5.4",
     "vitest": "^3.2.4"
   },

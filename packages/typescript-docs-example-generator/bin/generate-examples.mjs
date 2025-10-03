@@ -16,64 +16,50 @@
  */
 
 import path from "path";
-import { fileURLToPath } from "url";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
 import { generateExamples } from "../build/esm/index.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Parse command line arguments using yargs
+const argv = yargs(hideBin(process.argv))
+  .scriptName("generate-examples")
+  .usage("$0 [options]")
+  .options({
+    versions: {
+      describe: "Comma-separated list of versions to generate",
+      type: "string",
+      coerce: (value) =>
+        value ? value.split(",").map(v => v.trim()) : undefined,
+      default: undefined,
+      defaultDescription: "auto-discover all versions >= 2.0.0",
+    },
+    "output-dir": {
+      describe: "Output directory for examples",
+      type: "string",
+      default: path.join(process.cwd(), "src/examples"),
+    },
+    "hierarchy-output": {
+      describe: "Path for typescriptOsdkExamples.ts",
+      type: "string",
+      default: path.join(process.cwd(), "src/typescriptOsdkExamples.ts"),
+    },
+  })
+  .example("$0", "Auto-discover all versions >= 2.0.0")
+  .example("$0 --versions 2.1.0,2.4.0", "Generate specific versions")
+  .example(
+    "$0 --versions 2.1.0 --output-dir dist/examples",
+    "Generate specific version to custom directory",
+  )
+  .help()
+  .alias("help", "h")
+  .strict()
+  .argv;
 
-// Parse command line arguments
-function parseArgs() {
-  const args = process.argv.slice(2);
-  const config = {
-    outputDir: path.join(process.cwd(), "src/examples"),
-    hierarchyOutputPath: path.join(
-      process.cwd(),
-      "src/typescriptOsdkExamples.ts",
-    ),
-    versions: undefined, // Default to auto-discovery of all versions >= 2.0.0
-  };
-
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-
-    if (arg === "--versions" && i + 1 < args.length) {
-      // Parse comma-separated versions: --versions 2.1.0,2.4.0
-      config.versions = args[i + 1].split(",").map(v => v.trim());
-      i++; // Skip next argument as it's the value
-    } else if (arg === "--output-dir" && i + 1 < args.length) {
-      config.outputDir = args[i + 1];
-      i++;
-    } else if (arg === "--hierarchy-output" && i + 1 < args.length) {
-      config.hierarchyOutputPath = args[i + 1];
-      i++;
-    } else if (arg === "--help" || arg === "-h") {
-      // eslint-disable-next-line no-console
-      console.log(`
-Usage: generate-examples [options]
-
-Options:
-  --versions <versions>         Comma-separated list of versions to generate (default: auto-discover all versions >= 2.0.0)
-  --output-dir <path>          Output directory for examples (default: src/examples)
-  --hierarchy-output <path>    Path for typescriptOsdkExamples.ts (default: src/typescriptOsdkExamples.ts)
-  --help, -h                   Show this help message
-
-Examples:
-  generate-examples                                  # Auto-discover all versions >= 2.0.0
-  generate-examples --versions 2.1.0,2.4.0          # Generate specific versions
-  generate-examples --versions 2.1.0 --output-dir dist/examples
-      `);
-      process.exit(0);
-    } else if (!arg.startsWith("--")) {
-      // Positional arguments for backward compatibility
-      if (i === 0) config.outputDir = arg;
-      else if (i === 1) config.hierarchyOutputPath = arg;
-    }
-  }
-
-  return config;
-}
-
-const config = parseArgs();
+const config = {
+  outputDir: argv["output-dir"],
+  hierarchyOutputPath: argv["hierarchy-output"],
+  versions: argv.versions,
+};
 
 try {
   const result = await generateExamples(
