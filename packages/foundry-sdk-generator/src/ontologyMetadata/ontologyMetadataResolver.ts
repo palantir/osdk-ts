@@ -750,7 +750,7 @@ export class OntologyMetadataResolver {
           actionTypeParameter.subType.type === "array"
         ) {
           return Result.err([
-            `Unable to load action ${actionApiName} because it takes a nested array or set as a parameter`,
+            `Unable to load action ${actionApiName} because it takes a nested array as a parameter`,
           ]);
         }
         return this.isSupportedActionTypeParameter(
