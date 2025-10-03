@@ -45,6 +45,7 @@ export const TYPESCRIPT_OSDK_SNIPPETS: SdkSnippets<typeof OSDK_SNIPPETS_SPEC> =
       propertiesV2: handlePropertiesV2,
       primaryKeyPropertyV1: handlePrimaryKeyPropertyV1,
       primaryKeyPropertyV2: handlePrimaryKeyPropertyV2,
+      primaryKeyPropertyValueV2: handlePrimaryKeyPropertyValueV2,
       linkedPropertiesV1: handleLinkedPropertiesV1,
       linkedPropertiesV2: handleLinkedPropertiesV2,
       linkedPrimaryKeyPropertyV1: handleLinkedPrimaryKeyPropertyV1,
@@ -193,6 +194,18 @@ function handlePrimaryKeyPropertyV2(
     apiName: rawPrimaryKeyProperty.apiName,
     value: renderPropertyValue(rawPrimaryKeyProperty.value, SdkMajorVersion.V2),
   };
+}
+
+function handlePrimaryKeyPropertyValueV2({
+  rawPrimaryKeyProperty,
+}: {
+  rawPrimaryKeyProperty?: PropertySampleIR;
+}) {
+  if (rawPrimaryKeyProperty == null) {
+    throw new Error("Cannot render with null rawPrimaryKeyProperty");
+  }
+
+  return renderPropertyValue(rawPrimaryKeyProperty.value, SdkMajorVersion.V2);
 }
 
 function handleLinkedPropertiesV1(
