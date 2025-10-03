@@ -25,10 +25,7 @@ import {
   type ParameterId,
   type ParameterValueMap,
 } from "./config.js";
-import type {
-  ObjectTypeWithMaybeMetadata,
-  ParameterValue,
-} from "./parameters.js";
+import type { ObjectType, ParameterValue } from "./parameters.js";
 
 describe("WidgetConfig", () => {
   describe("ParameterConfigId", () => {
@@ -294,7 +291,7 @@ describe("WidgetConfig", () => {
         },
       } as const satisfies ObjectTypeDefinition & {
         experimentalDoNotUseMetadata: { rid: string };
-      } & ObjectTypeWithMaybeMetadata;
+      } & ObjectType;
 
       type Employee = typeof Employee;
 
@@ -308,10 +305,6 @@ describe("WidgetConfig", () => {
             displayName: "My Object Set",
             type: "objectSet",
             objectType: Employee,
-          },
-          normalParam: {
-            displayName: "Normal Parameter",
-            type: "string",
           },
         },
         events: {},
