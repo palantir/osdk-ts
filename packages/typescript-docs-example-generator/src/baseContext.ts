@@ -110,6 +110,7 @@ const baseContext: BaseTemplateContext = {
  * Complete template configuration registry
  * Easy lookup: TEMPLATE_REGISTRY[templateName] gives you all parameters
  */
+// TODO: see how we can base these on the SPEC
 const TEMPLATE_REGISTRY: TemplateRegistry = {
   // === OBJECT TEMPLATES ===
   "loadSingleObjectGuide": { primaryKeyPropertyValueV2: 12345 },

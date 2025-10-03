@@ -20,7 +20,6 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { generateExamples } from "../build/esm/index.js";
 
-// Parse command line arguments using yargs
 const argv = yargs(hideBin(process.argv))
   .scriptName("generate-examples")
   .usage("$0 [options]")
