@@ -25,7 +25,10 @@ import type {
 } from "@osdk/client.unstable";
 import { type OntologyDefinition } from "../../api/common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../../api/common/OntologyEntityTypeEnum.js";
-import { convertAction } from "../../api/defineOntology.js";
+import {
+  cleanAndValidateLinkTypeId,
+  convertAction,
+} from "../../api/defineOntology.js";
 import { convertInterface } from "./convertInterface.js";
 import { convertLink } from "./convertLink.js";
 import { convertObject } from "./convertObject.js";
@@ -66,7 +69,7 @@ export function convertOntologyDefinitionToWireBlockData(
       Object.entries(ontology[OntologyEntityTypeEnum.LINK_TYPE]).map<
         [string, OntologyIrLinkTypeBlockDataV2]
       >(([id, link]) => {
-        return [id, convertLink(link)];
+        return [cleanAndValidateLinkTypeId(id), convertLink(link)];
       }),
     ),
     actionTypes: Object.fromEntries(
