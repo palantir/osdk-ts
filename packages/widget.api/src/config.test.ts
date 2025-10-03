@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeDefinition } from "@osdk/api";
 import { describe, expectTypeOf, it } from "vitest";
 import {
   type AsyncParameterValueMap,
@@ -24,7 +25,10 @@ import {
   type ParameterId,
   type ParameterValueMap,
 } from "./config.js";
-import type { ParameterValue } from "./parameters.js";
+import type {
+  ObjectTypeWithMaybeMetadata,
+  ParameterValue,
+} from "./parameters.js";
 
 describe("WidgetConfig", () => {
   describe("ParameterConfigId", () => {
@@ -288,7 +292,9 @@ describe("WidgetConfig", () => {
         experimentalDoNotUseMetadata: {
           rid: "ri.object-type.employee",
         },
-      } as const;
+      } as const satisfies ObjectTypeDefinition & {
+        experimentalDoNotUseMetadata: { rid: string };
+      } & ObjectTypeWithMaybeMetadata;
 
       type Employee = typeof Employee;
 

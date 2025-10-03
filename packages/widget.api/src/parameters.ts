@@ -16,6 +16,14 @@
 
 import type { AsyncValue } from "./utils/asyncValue.js";
 
+export type ObjectType = {
+  type: "object";
+  apiName: string;
+  experimentalDoNotUseMetadata?: {
+    rid: string;
+  };
+};
+
 /**
  * Map of the name of the type to the corresponding JavaScript type.
  */
@@ -34,14 +42,6 @@ export interface AbstractParameterValue<T extends PrimitiveParameterType> {
   type: T;
   value: AsyncValue<PrimitiveParameterTypes[T]>;
 }
-
-export type ObjectType = {
-  type: "object";
-  apiName: string;
-  experimentalDoNotUseMetadata?: {
-    rid: string;
-  };
-};
 
 export interface ObjectSetParameterValue<T extends ObjectType> {
   type: "objectSet";
