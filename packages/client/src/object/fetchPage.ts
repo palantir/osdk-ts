@@ -259,7 +259,7 @@ async function fetchInterfacePage<
     addUserAgentAndRequestContextHeaders(client, interfaceType),
     await client.ontologyRid,
     requestBody,
-    { preview: true, branch: client.branch },
+    { preview: true },
   );
 
   return Promise.resolve({
@@ -557,7 +557,6 @@ export async function fetchObjectPage<
     addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,
     requestBody,
-    { branch: client.branch },
   );
 
   return Promise.resolve({

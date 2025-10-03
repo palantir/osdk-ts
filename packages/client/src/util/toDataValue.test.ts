@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import { NULL_VALUE } from "@osdk/api";
-import type { ActionMetadata, MediaUpload } from "@osdk/api";
+import type { ActionMetadata } from "@osdk/api";
 import { Employee, Task } from "@osdk/client.test.ontology";
 import type { MediaReference } from "@osdk/foundry.core";
 import type { SetupServer } from "@osdk/shared.test";
 import {
   LegacyFauxFoundry,
-  MockOntologiesV2,
   startNodeApiServer,
   stubData,
 } from "@osdk/shared.test";
@@ -32,7 +30,6 @@ import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAttachmentUpload } from "../object/AttachmentUpload.js";
-import { isMediaReference } from "../object/mediaUpload.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import { toDataValue } from "./toDataValue.js";
 
@@ -212,41 +209,6 @@ describe(toDataValue, () => {
     expect(converted).toMatch(/ri\.attachments.main.attachment\.[a-z0-9\-]+/i);
   });
 
-  it("converts media uploads correctly", async () => {
-    const file: MediaUpload = {
-      data: new Blob([
-        JSON.stringify({ name: "Hello World" }, null, 2),
-      ], {
-        type: "application/json",
-      }),
-      path: "file.txt",
-    };
-
-    // TODO: Mock MediaUpload properly in FauxFoundry
-    apiServer.boundary(async () => {
-      apiServer.use(
-        MockOntologiesV2.MediaReferenceProperties.uploadMedia(
-          "https://stack.palantir.com",
-          () => {
-            return {
-              mimeType: "application/json",
-              reference: {
-                type: "mediaSetViewItem",
-                mediaSetViewItem: {
-                  mediaItemRid: "media-item-rid",
-                  mediaSetRid: "media-set-rid",
-                  mediaSetViewRid: "media-set-view-rid",
-                },
-              },
-            };
-          },
-        ),
-      );
-      const converted = await toDataValue(file, clientCtx, mockActionMetadata);
-      expect(isMediaReference(converted)).toBe(true);
-    });
-  });
-
   it("converts media reference correctly", async () => {
     const mediaReference: MediaReference = {
       mimeType: "application/json",
@@ -266,26 +228,5 @@ describe(toDataValue, () => {
       mockActionMetadata,
     );
     expect(converted).toEqual(mediaReference);
-  });
-
-  it("Converts NULL_VALUE to null", async () => {
-    const converted = await toDataValue(
-      NULL_VALUE,
-      clientCtx,
-      mockActionMetadata,
-    );
-    expect(converted).toBeNull();
-  });
-
-  it("Converts NULL_VALUE equivalents to null", async () => {
-    const clearData = Symbol.for("NULL_VALUE") as symbol & {
-      __type: "NULL_VALUE";
-    };
-    const converted = await toDataValue(
-      clearData,
-      clientCtx,
-      mockActionMetadata,
-    );
-    expect(converted).toEqual(null);
   });
 });
