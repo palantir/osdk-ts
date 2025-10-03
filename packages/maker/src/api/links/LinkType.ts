@@ -32,6 +32,9 @@ export type LinkType =
   })
   | (OntologyEntityBase & ManyToManyLinkTypeDefinition & {
     __type: OntologyEntityTypeEnum.LINK_TYPE;
+  })
+  | (OntologyEntityBase & IntermediaryLinkTypeDefinition & {
+    __type: OntologyEntityTypeEnum.LINK_TYPE;
   });
 
 export type LinkTypeDefinition =
@@ -43,6 +46,12 @@ export type LinkTypeDefinition =
   >
   | Omit<
     OntologyEntityBase & ManyToManyLinkTypeUserDefinition & {
+      __type: OntologyEntityTypeEnum.LINK_TYPE;
+    },
+    "__type"
+  >
+  | Omit<
+    OntologyEntityBase & IntermediaryLinkTypeUserDefinition & {
       __type: OntologyEntityTypeEnum.LINK_TYPE;
     },
     "__type"
@@ -100,6 +109,37 @@ export interface ManyToManyLinkTypeUserDefinition {
 }
 
 export interface ManyToManyObjectLinkReferenceUserDefinition {
+  object: ObjectTypeDefinition;
+  metadata: LinkTypeMetadataUserDefinition;
+}
+
+export interface IntermediaryLinkTypeDefinition {
+  apiName: string;
+  manyObjectA: IntermediaryObjectLinkReference;
+  toManyObjectB: IntermediaryObjectLinkReference;
+  linkTypeA: LinkType;
+  linkTypeB: LinkType;
+  intermediaryObjectType: ObjectTypeDefinition;
+  editsEnabled?: boolean;
+  status?: OntologyIrLinkTypeStatus;
+  redacted?: boolean;
+}
+
+export interface IntermediaryObjectLinkReference {
+  object: ObjectTypeDefinition;
+  metadata: LinkTypeMetadata;
+}
+
+export interface IntermediaryLinkTypeUserDefinition {
+  apiName: string;
+  manyObjectA: IntermediaryObjectLinkReferenceUserDefinition;
+  toManyObjectB: IntermediaryObjectLinkReferenceUserDefinition;
+  linkTypeA: LinkType;
+  linkTypeB: LinkType;
+  intermediaryObjectType: ObjectTypeDefinition;
+}
+
+export interface IntermediaryObjectLinkReferenceUserDefinition {
   object: ObjectTypeDefinition;
   metadata: LinkTypeMetadataUserDefinition;
 }

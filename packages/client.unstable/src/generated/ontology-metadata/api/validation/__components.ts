@@ -294,6 +294,11 @@ export interface ActionTypeInsufficientPermissionsToAddStringCbacPickerTypeclass
 export interface ActionTypeInsufficientPermissionsToModifyMaxClassificationOfNonSecuringCbacParameter {
 }
 /**
+ * Interface reference parameter prefill value references non interface reference parameter.
+ */
+export interface ActionTypeInterfaceReferenceParameterPrefillReferencesNonInterfaceReferenceParameter {
+}
+/**
  * The entities' API name prefixes do not match the API Namespace ID stored in Compass and therefore are invalid.
  */
 export interface ActionTypeInvalidApiNamePrefixes {
@@ -354,6 +359,16 @@ export interface ActionTypeNonExistentParametersUsedInParameterPrefill {
 export interface ActionTypeObjectMissingPrimaryKey {
 }
 /**
+ * The object type referenced by an object parameter prefill could not be found.
+ */
+export interface ActionTypeObjectParameterPrefillReferencesNonExistentObjectType {
+}
+/**
+ * The property type referenced by an object parameter prefill could not be found.
+ */
+export interface ActionTypeObjectParameterPrefillReferencesNonExistentPropertyType {
+}
+/**
  * ObjectParameterPropertyValue cannot reference a struct property; only ObjectParameterStruct/StructListFieldValue can reference struct properties.
  */
 export interface ActionTypeObjectParameterPropertyValueCannotReferenceStructProperty {
@@ -362,6 +377,11 @@ export interface ActionTypeObjectParameterPropertyValueCannotReferenceStructProp
  * ObjectParameterPropertyValue cannot reference a struct property; only ObjectParameterStruct/StructListFieldValue can reference struct properties.
  */
 export interface ActionTypeObjectParameterPropertyValueInPrefillsCannotReferenceStructProperty {
+}
+/**
+ * Object reference parameter prefill value references non object reference parameter.
+ */
+export interface ActionTypeObjectReferenceParameterPrefillReferencesNonObjectReferenceParameter {
 }
 /**
  * The maybeCreateObjectOption field of ObjectReferenceType fails sanity check. Namely, maybeCreateObjectOption should be empty or non-empty when instead the opposite is observed.
@@ -428,6 +448,11 @@ export interface ActionTypeParameterOrderingNotExactlySameAsParameterSet {
 export interface ActionTypeParameterPrefillCannotReferenceHighCardinalityObjectReferenceParameter {
 }
 /**
+ * Parameter prefill value type does not match base parameter type.
+ */
+export interface ActionTypeParameterPrefillValueTypeDoesNotMatchBaseParameterType {
+}
+/**
  * Some ParameterIds are not matching between ActionType and ParameterOrdering.
  */
 export interface ActionTypeParametersDoNotMatchParameterOrdering {
@@ -436,6 +461,11 @@ export interface ActionTypeParametersDoNotMatchParameterOrdering {
  * The relative ordering of parameters and parameters nested in sections doesn't match the global ParameterOrdering.
  */
 export interface ActionTypeParametersInFormContentOrderingDontMatchParameterOrdering {
+}
+/**
+ * Parameter transform operation is not supported.
+ */
+export interface ActionTypeParameterTransformNotSupported {
 }
 /**
  * Parameter type does not match parameter validation type.
@@ -451,6 +481,11 @@ export interface ActionTypeParameterValidationNotFound {
  * Parameter submission criteria is referencing later parameters.
  */
 export interface ActionTypeParameterValidationReferencesLaterParameters {
+}
+/**
+ * Prefill value type is not supported.
+ */
+export interface ActionTypePrefillValueTypeIsNotSupported {
 }
 /**
  * Cannot create/edit ActionType because the primary key in an AddObjectRule does not use a Parameter or UniqueIdentifier or Webhook output.
@@ -511,6 +546,11 @@ export interface ActionTypeStaticValueTooLong {
  * Parameters used with the string-cbac-picker typeclass must be of type String or List<String>.
  */
 export interface ActionTypeStringCbacPickerTypeclassUsedOnNonStringParameter {
+}
+/**
+ * The ActionType containing LogicRuleValue mappings for struct property must have StructFieldLogicRuleValue mappings for exactly all of the struct fields present in the interface struct property but has missing or extraneous structFieldRids mapped.
+ */
+export interface ActionTypeStructFieldLogicMappingDoesNotMatchInterfaceStructPropertyDefinition {
 }
 /**
  * The ActionType containing LogicRuleValue mappings for struct property must have StructFieldLogicRuleValue mappings for exactly all of the struct fields present in the struct property but has missing or extraneous structFieldRids mapped.
@@ -671,6 +711,11 @@ export interface ActionTypeValidationsOrderingNotExactlySameAsValidationRuleSet 
  * Branch indexing config can only be set for many to many link types, as it isn't applicable for other link type types
  */
 export interface BranchIndexingConfigCanOnlyBeSetForManyToManyLinkTypes {
+}
+/**
+ * CipherText property types can only have string plainText types.
+ */
+export interface CipherTextPropertyTypetWithNonStringPlainTextType {
 }
 export interface EasedPipelineBuilderError {
 }
@@ -1806,6 +1851,12 @@ export interface ErrorType_objectTypeStructFieldBasePropertyTypeInvalid {
     ObjectTypeStructFieldBasePropertyTypeInvalid;
 }
 
+export interface ErrorType_cipherTextPropertyTypetWithNonStringPlainTextType {
+  type: "cipherTextPropertyTypetWithNonStringPlainTextType";
+  cipherTextPropertyTypetWithNonStringPlainTextType:
+    CipherTextPropertyTypetWithNonStringPlainTextType;
+}
+
 export interface ErrorType_objectTypeStructPropertyTypeIsTitle {
   type: "objectTypeStructPropertyTypeIsTitle";
   objectTypeStructPropertyTypeIsTitle: ObjectTypeStructPropertyTypeIsTitle;
@@ -2242,12 +2293,6 @@ export interface ErrorType_objectTypeInterfaceImplementationDoesNotImplementAllP
     ObjectTypeInterfaceImplementationDoesNotImplementAllProperties;
 }
 
-export interface ErrorType_objectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct {
-  type: "objectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct";
-  objectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct:
-    ObjectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct;
-}
-
 export interface ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeDoesNotReferenceObjectType {
   type:
     "objectTypeInterfaceImplementationImplementingLinkTypeDoesNotReferenceObjectType";
@@ -2285,6 +2330,18 @@ export interface ErrorType_objectTypeInterfaceImplementationLinkTypeImplementedM
   type: "objectTypeInterfaceImplementationLinkTypeImplementedMoreThanOnce";
   objectTypeInterfaceImplementationLinkTypeImplementedMoreThanOnce:
     ObjectTypeInterfaceImplementationLinkTypeImplementedMoreThanOnce;
+}
+
+export interface ErrorType_objectTypeInterfaceImplementationNotUsingPrimaryKey {
+  type: "objectTypeInterfaceImplementationNotUsingPrimaryKey";
+  objectTypeInterfaceImplementationNotUsingPrimaryKey:
+    ObjectTypeInterfaceImplementationNotUsingPrimaryKey;
+}
+
+export interface ErrorType_objectTypeInterfaceImplementationUsingPrimaryKey {
+  type: "objectTypeInterfaceImplementationUsingPrimaryKey";
+  objectTypeInterfaceImplementationUsingPrimaryKey:
+    ObjectTypeInterfaceImplementationUsingPrimaryKey;
 }
 
 export interface ErrorType_objectTypePropertyImplementationImplicitAndExplicit {
@@ -2919,6 +2976,13 @@ export interface ErrorType_actionTypeStructFieldLogicMappingDoesNotMatchStructPr
     ActionTypeStructFieldLogicMappingDoesNotMatchStructPropertyDefinition;
 }
 
+export interface ErrorType_actionTypeStructFieldLogicMappingDoesNotMatchInterfaceStructPropertyDefinition {
+  type:
+    "actionTypeStructFieldLogicMappingDoesNotMatchInterfaceStructPropertyDefinition";
+  actionTypeStructFieldLogicMappingDoesNotMatchInterfaceStructPropertyDefinition:
+    ActionTypeStructFieldLogicMappingDoesNotMatchInterfaceStructPropertyDefinition;
+}
+
 export interface ErrorType_actionTypeObjectParameterPropertyValueInPrefillsCannotReferenceStructProperty {
   type:
     "actionTypeObjectParameterPropertyValueInPrefillsCannotReferenceStructProperty";
@@ -3439,6 +3503,50 @@ export interface ErrorType_actionTypeInvalidApiNamePrefixes {
   actionTypeInvalidApiNamePrefixes: ActionTypeInvalidApiNamePrefixes;
 }
 
+export interface ErrorType_actionTypeParameterPrefillValueTypeDoesNotMatchBaseParameterType {
+  type: "actionTypeParameterPrefillValueTypeDoesNotMatchBaseParameterType";
+  actionTypeParameterPrefillValueTypeDoesNotMatchBaseParameterType:
+    ActionTypeParameterPrefillValueTypeDoesNotMatchBaseParameterType;
+}
+
+export interface ErrorType_actionTypeInterfaceReferenceParameterPrefillReferencesNonInterfaceReferenceParameter {
+  type:
+    "actionTypeInterfaceReferenceParameterPrefillReferencesNonInterfaceReferenceParameter";
+  actionTypeInterfaceReferenceParameterPrefillReferencesNonInterfaceReferenceParameter:
+    ActionTypeInterfaceReferenceParameterPrefillReferencesNonInterfaceReferenceParameter;
+}
+
+export interface ErrorType_actionTypeObjectReferenceParameterPrefillReferencesNonObjectReferenceParameter {
+  type:
+    "actionTypeObjectReferenceParameterPrefillReferencesNonObjectReferenceParameter";
+  actionTypeObjectReferenceParameterPrefillReferencesNonObjectReferenceParameter:
+    ActionTypeObjectReferenceParameterPrefillReferencesNonObjectReferenceParameter;
+}
+
+export interface ErrorType_actionTypePrefillValueTypeIsNotSupported {
+  type: "actionTypePrefillValueTypeIsNotSupported";
+  actionTypePrefillValueTypeIsNotSupported:
+    ActionTypePrefillValueTypeIsNotSupported;
+}
+
+export interface ErrorType_actionTypeParameterTransformNotSupported {
+  type: "actionTypeParameterTransformNotSupported";
+  actionTypeParameterTransformNotSupported:
+    ActionTypeParameterTransformNotSupported;
+}
+
+export interface ErrorType_actionTypeObjectParameterPrefillReferencesNonExistentPropertyType {
+  type: "actionTypeObjectParameterPrefillReferencesNonExistentPropertyType";
+  actionTypeObjectParameterPrefillReferencesNonExistentPropertyType:
+    ActionTypeObjectParameterPrefillReferencesNonExistentPropertyType;
+}
+
+export interface ErrorType_actionTypeObjectParameterPrefillReferencesNonExistentObjectType {
+  type: "actionTypeObjectParameterPrefillReferencesNonExistentObjectType";
+  actionTypeObjectParameterPrefillReferencesNonExistentObjectType:
+    ActionTypeObjectParameterPrefillReferencesNonExistentObjectType;
+}
+
 export interface ErrorType_typeGroupCountExceeded {
   type: "typeGroupCountExceeded";
   typeGroupCountExceeded: TypeGroupCountExceeded;
@@ -3726,6 +3834,7 @@ export type ErrorType =
   | ErrorType_objectTypeStructPropertyTypeFieldHasTooManyAliases
   | ErrorType_objectTypeStructPropertyTypeFieldTypeClassNameTooLong
   | ErrorType_objectTypeStructFieldBasePropertyTypeInvalid
+  | ErrorType_cipherTextPropertyTypetWithNonStringPlainTextType
   | ErrorType_objectTypeStructPropertyTypeIsTitle
   | ErrorType_objectTypeStructPropertyTypeFieldDescriptionTooLong
   | ErrorType_objectTypeStructPropertyTypeShouldNotHaveRenderHintsError
@@ -3800,13 +3909,14 @@ export type ErrorType =
   | ErrorType_objectTypeInterfaceImplementationValueTypeDoesNotMatch
   | ErrorType_objectTypeInterfaceImplementationImplementsPropertyThatDoesNotExist
   | ErrorType_objectTypeInterfaceImplementationDoesNotImplementAllProperties
-  | ErrorType_objectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct
   | ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeDoesNotReferenceObjectType
   | ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeSideIsAmbiguous
   | ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeSideDoesNotMatchLinkDefinitionType
   | ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeSideIsIncorrect
   | ErrorType_objectTypeInterfaceImplementationInvalidLinkedEntityImplementingLinkType
   | ErrorType_objectTypeInterfaceImplementationLinkTypeImplementedMoreThanOnce
+  | ErrorType_objectTypeInterfaceImplementationNotUsingPrimaryKey
+  | ErrorType_objectTypeInterfaceImplementationUsingPrimaryKey
   | ErrorType_objectTypePropertyImplementationImplicitAndExplicit
   | ErrorType_objectTypeInterfaceLinkNotFound
   | ErrorType_objectTypeInterfaceLinkTypeImplementedTooOften
@@ -3919,6 +4029,7 @@ export type ErrorType =
   | ErrorType_actionTypePropertyTypeDoesNotMatchMappedLogicRuleValue
   | ErrorType_actionTypeStructPropertyTypesNotAllowedInPropertyTypeLogicRuleValueMappings
   | ErrorType_actionTypeStructFieldLogicMappingDoesNotMatchStructPropertyDefinition
+  | ErrorType_actionTypeStructFieldLogicMappingDoesNotMatchInterfaceStructPropertyDefinition
   | ErrorType_actionTypeObjectParameterPropertyValueInPrefillsCannotReferenceStructProperty
   | ErrorType_actionTypeParameterTypeDoesNotMatchParameterValidationType
   | ErrorType_actionTypeConditionValueCannotReferenceHighCardinalityObjectReferenceParameter
@@ -4007,6 +4118,13 @@ export type ErrorType =
   | ErrorType_actionTypeTypeClassKindTooLong
   | ErrorType_actionTypeTypeClassValueTooLong
   | ErrorType_actionTypeInvalidApiNamePrefixes
+  | ErrorType_actionTypeParameterPrefillValueTypeDoesNotMatchBaseParameterType
+  | ErrorType_actionTypeInterfaceReferenceParameterPrefillReferencesNonInterfaceReferenceParameter
+  | ErrorType_actionTypeObjectReferenceParameterPrefillReferencesNonObjectReferenceParameter
+  | ErrorType_actionTypePrefillValueTypeIsNotSupported
+  | ErrorType_actionTypeParameterTransformNotSupported
+  | ErrorType_actionTypeObjectParameterPrefillReferencesNonExistentPropertyType
+  | ErrorType_actionTypeObjectParameterPrefillReferencesNonExistentObjectType
   | ErrorType_typeGroupCountExceeded
   | ErrorType_typeGroupDisplayNameTooLong
   | ErrorType_typeGroupDescriptionTooLong
@@ -5178,9 +5296,9 @@ export interface ObjectTypeInterfaceImplementationInvalidLinkedEntityImplementin
 export interface ObjectTypeInterfaceImplementationLinkTypeImplementedMoreThanOnce {
 }
 /**
- * The object type attempts to use a local property to implement a struct shared property on the interface.
+ * An object type is not using a primary key property to implement an interface property that must be implemented with a primary key property.
  */
-export interface ObjectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct {
+export interface ObjectTypeInterfaceImplementationNotUsingPrimaryKey {
 }
 /**
  * Expected local property implementing interface property to have the same type, but it did not.
@@ -5201,6 +5319,11 @@ export interface ObjectTypeInterfaceImplementationPropertyTypesHaveConflictingAp
  * The object type implements the interface but the property type classes do not match.
  */
 export interface ObjectTypeInterfaceImplementationTypeClassesDoNotMatch {
+}
+/**
+ * An object type is using a primary key property to implement an interface property that cannot be implemented with a primary key property.
+ */
+export interface ObjectTypeInterfaceImplementationUsingPrimaryKey {
 }
 /**
  * The object type implements the interface but the value type of the property does not match the value type of the interface property.

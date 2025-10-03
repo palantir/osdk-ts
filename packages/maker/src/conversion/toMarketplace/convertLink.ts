@@ -50,7 +50,7 @@ export function convertLink(
         }],
       },
     };
-  } else {
+  } else if ("many" in linkType) {
     definition = {
       type: "manyToMany",
       manyToMany: {
@@ -109,6 +109,23 @@ export function convertLink(
         onlyAllowPrivilegedEdits: false,
       },
       redacted: linkType.redacted,
+    };
+  } else {
+    definition = {
+      type: "intermediary",
+      intermediary: {
+        objectTypeAToBLinkMetadata: linkType.manyObjectA.metadata,
+        objectTypeBToALinkMetadata: linkType.toManyObjectB.metadata,
+        objectTypeRidA: linkType.manyObjectA.object.apiName,
+        objectTypeRidB: linkType.toManyObjectB.object.apiName,
+        intermediaryObjectTypeRid: linkType.intermediaryObjectType.apiName,
+        aToIntermediaryLinkTypeRid: cleanAndValidateLinkTypeId(
+          linkType.linkTypeA.apiName,
+        ),
+        intermediaryToBLinkTypeRid: cleanAndValidateLinkTypeId(
+          linkType.linkTypeB.apiName,
+        ),
+      },
     };
   }
 

@@ -31,6 +31,8 @@ import type {
   ActionTypeVersion as _api_ActionTypeVersion,
   ButtonDisplayMetadata as _api_ButtonDisplayMetadata,
   ColumnName as _api_ColumnName,
+  DataNullability as _api_DataNullability,
+  DataNullabilityV2 as _api_DataNullabilityV2,
   DatasourceRid as _api_DatasourceRid,
   FormContent as _api_FormContent,
   FunctionRid as _api_FunctionRid,
@@ -41,7 +43,10 @@ import type {
   InterfaceLinkTypeApiName as _api_InterfaceLinkTypeApiName,
   InterfaceLinkTypeRid as _api_InterfaceLinkTypeRid,
   InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName,
+  InterfacePropertyTypeDisplayMetadata
+    as _api_InterfacePropertyTypeDisplayMetadata,
   InterfacePropertyTypeRid as _api_InterfacePropertyTypeRid,
+  InterfacePropertyTypeType as _api_InterfacePropertyTypeType,
   InterfaceSharedPropertyType as _api_InterfaceSharedPropertyType,
   InterfaceTypeApiName as _api_InterfaceTypeApiName,
   InterfaceTypeRid as _api_InterfaceTypeRid,
@@ -65,6 +70,8 @@ import type {
     as _api_OntologyIrActionTypeRichTextComponent,
   OntologyIrActionTypeStatus as _api_OntologyIrActionTypeStatus,
   OntologyIrFormContent as _api_OntologyIrFormContent,
+  OntologyIrInterfacePropertyTypeType
+    as _api_OntologyIrInterfacePropertyTypeType,
   OntologyIrInterfaceSharedPropertyType
     as _api_OntologyIrInterfaceSharedPropertyType,
   OntologyIrLinkedEntityTypeId as _api_OntologyIrLinkedEntityTypeId,
@@ -80,6 +87,7 @@ import type {
   Parameter as _api_Parameter,
   ParameterId as _api_ParameterId,
   ParameterRid as _api_ParameterRid,
+  PrimaryKeyConstraint as _api_PrimaryKeyConstraint,
   PropertyId as _api_PropertyId,
   PropertyTypeId as _api_PropertyTypeId,
   PropertyTypeRid as _api_PropertyTypeRid,
@@ -91,6 +99,7 @@ import type {
   SharedPropertyTypeRid as _api_SharedPropertyTypeRid,
   TimeSeriesSyncRid as _api_TimeSeriesSyncRid,
   TypeClass as _api_TypeClass,
+  ValueTypeReference as _api_ValueTypeReference,
   ValueTypeRid as _api_ValueTypeRid,
   ValueTypeVersionId as _api_ValueTypeVersionId,
   WebhookRid as _api_WebhookRid,
@@ -302,6 +311,10 @@ export interface MarketplaceActionTypeMetadata {
 }
 export interface MarketplaceActiveInterfaceTypeStatus {
 }
+export interface MarketplaceDataConstraints {
+  nullability?: _api_DataNullability | null | undefined;
+  nullabilityV2?: _api_DataNullabilityV2 | null | undefined;
+}
 export interface MarketplaceDeprecatedInterfaceTypeStatus {
   deadline: string;
   message: string;
@@ -310,6 +323,21 @@ export interface MarketplaceDeprecatedInterfaceTypeStatus {
 export interface MarketplaceExampleInterfaceTypeStatus {
 }
 export interface MarketplaceExperimentalInterfaceTypeStatus {
+}
+export interface MarketplaceInterfaceDefinedPropertyType {
+  apiName: _api_InterfacePropertyTypeApiName;
+  constraints: MarketplaceInterfaceDefinedPropertyTypeConstraints;
+  displayMetadata: _api_InterfacePropertyTypeDisplayMetadata;
+  rid: _api_InterfacePropertyTypeRid;
+  type: _api_InterfacePropertyTypeType;
+}
+export interface MarketplaceInterfaceDefinedPropertyTypeConstraints {
+  dataConstraints?: MarketplaceDataConstraints | null | undefined;
+  indexedForSearch: boolean;
+  primaryKeyConstraint: _api_PrimaryKeyConstraint;
+  requireImplementation: boolean;
+  typeClasses: Array<_api_TypeClass>;
+  valueType?: _api_ValueTypeReference | null | undefined;
 }
 export interface MarketplaceInterfaceLinkType {
   cardinality: MarketplaceInterfaceLinkTypeCardinality;
@@ -328,8 +356,14 @@ export interface MarketplaceInterfacePropertyType_sharedPropertyBasedPropertyTyp
   type: "sharedPropertyBasedPropertyType";
   sharedPropertyBasedPropertyType: MarketplaceSharedPropertyBasedPropertyType;
 }
+
+export interface MarketplaceInterfacePropertyType_interfaceDefinedPropertyType {
+  type: "interfaceDefinedPropertyType";
+  interfaceDefinedPropertyType: MarketplaceInterfaceDefinedPropertyType;
+}
 export type MarketplaceInterfacePropertyType =
-  MarketplaceInterfacePropertyType_sharedPropertyBasedPropertyType;
+  | MarketplaceInterfacePropertyType_sharedPropertyBasedPropertyType
+  | MarketplaceInterfacePropertyType_interfaceDefinedPropertyType;
 
 export interface MarketplaceInterfaceType {
   apiName: _api_InterfaceTypeApiName;
@@ -410,6 +444,7 @@ export interface MarketplaceObjectTypeEntityMetadata {
     | undefined;
   redacted?: boolean | null | undefined;
   targetStorageBackend: _api_entitymetadata_StorageBackend;
+  usesOnlyOsv2ObjectRids?: boolean | null | undefined;
 }
 export interface MarketplaceSharedPropertyBasedPropertyType {
   requireImplementation: boolean;
@@ -561,6 +596,20 @@ export interface OntologyIrMarketplaceDeprecatedInterfaceTypeStatus {
   message: string;
   replacedBy?: _api_InterfaceTypeApiName | null | undefined;
 }
+export interface OntologyIrMarketplaceInterfaceDefinedPropertyType {
+  apiName: _api_InterfacePropertyTypeApiName;
+  constraints: OntologyIrMarketplaceInterfaceDefinedPropertyTypeConstraints;
+  displayMetadata: _api_InterfacePropertyTypeDisplayMetadata;
+  type: _api_OntologyIrInterfacePropertyTypeType;
+}
+export interface OntologyIrMarketplaceInterfaceDefinedPropertyTypeConstraints {
+  dataConstraints?: MarketplaceDataConstraints | null | undefined;
+  indexedForSearch: boolean;
+  primaryKeyConstraint: _api_PrimaryKeyConstraint;
+  requireImplementation: boolean;
+  typeClasses: Array<_api_TypeClass>;
+  valueType?: OntologyIrValueTypeReferenceWithMetadata | null | undefined;
+}
 export interface OntologyIrMarketplaceInterfaceLinkType {
   cardinality: MarketplaceInterfaceLinkTypeCardinality;
   linkedEntityTypeId: _api_OntologyIrLinkedEntityTypeId;
@@ -572,8 +621,15 @@ export interface OntologyIrMarketplaceInterfacePropertyType_sharedPropertyBasedP
   sharedPropertyBasedPropertyType:
     OntologyIrMarketplaceSharedPropertyBasedPropertyType;
 }
+
+export interface OntologyIrMarketplaceInterfacePropertyType_interfaceDefinedPropertyType {
+  type: "interfaceDefinedPropertyType";
+  interfaceDefinedPropertyType:
+    OntologyIrMarketplaceInterfaceDefinedPropertyType;
+}
 export type OntologyIrMarketplaceInterfacePropertyType =
-  OntologyIrMarketplaceInterfacePropertyType_sharedPropertyBasedPropertyType;
+  | OntologyIrMarketplaceInterfacePropertyType_sharedPropertyBasedPropertyType
+  | OntologyIrMarketplaceInterfacePropertyType_interfaceDefinedPropertyType;
 
 export interface OntologyIrMarketplaceInterfaceType {
   apiName: _api_InterfaceTypeApiName;
