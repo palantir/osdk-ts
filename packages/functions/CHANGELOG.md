@@ -1,5 +1,16 @@
 # @osdk/functions
 
+## 1.3.0-beta.7
+
+### Minor Changes
+
+- 9bbe664: Add compile check to prevent link and unlink edits when traversing a One direction
+
+### Patch Changes
+
+- Updated dependencies [85e8edb]
+  - @osdk/client@2.5.0-beta.12
+
 ## 1.3.0-beta.6
 
 ### Minor Changes

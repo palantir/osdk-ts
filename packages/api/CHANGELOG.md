@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.5.0-beta.12
+
+## 2.5.0-beta.11
+
+### Minor Changes
+
+- 7b97128: add useObjectSet hook
+
 ## 2.5.0-beta.10
 
 ## 2.5.0-beta.9

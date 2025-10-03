@@ -19,7 +19,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { beforeEach, describe, expect, it } from "vitest";
 import { addDependency } from "./addDependency.js";
+import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
+  CREATE_OR_MODIFY_OBJECT_PARAMETER,
   defineAction,
   defineCreateInterfaceObjectAction,
   defineCreateObjectAction,
@@ -27,8 +29,8 @@ import {
   defineDeleteObjectAction,
   defineModifyInterfaceObjectAction,
   defineModifyObjectAction,
+  MODIFY_OBJECT_PARAMETER,
 } from "./defineAction.js";
-import { importSharedPropertyType } from "./defineImportSpt.js";
 import { defineInterface } from "./defineInterface.js";
 import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
 import { defineLink } from "./defineLink.js";
@@ -41,13 +43,9 @@ import {
 import { defineSharedPropertyType } from "./defineSpt.js";
 import { defineValueType } from "./defineValueType.js";
 import { importOntologyEntity } from "./importOntologyEntity.js";
-import {
-  CREATE_OR_MODIFY_OBJECT_PARAMETER,
-  type InterfaceType,
-  MODIFY_OBJECT_PARAMETER,
-  OntologyEntityTypeEnum,
-  type SharedPropertyType,
-} from "./types.js";
+import { importSharedPropertyType } from "./importSharedPropertyType.js";
+import { type InterfaceType } from "./interface/InterfaceType.js";
+import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
 
 describe("Ontology Defining", () => {
   beforeEach(async () => {
@@ -261,6 +259,13 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "Foo",
                     "displayName": "Foo",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
+                      },
+                      "type": "blueprint",
+                    },
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -458,6 +463,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "childInterface",
                   "displayName": "childInterface",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [
                   "com.palantir.parentInterface",
@@ -517,6 +529,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "parentInterface",
                   "displayName": "parentInterface",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -672,6 +691,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "parentInterface",
                   "displayName": "parentInterface",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -798,6 +824,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "childInterface",
                   "displayName": "childInterface",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [
                   "com.palantir.parentInterface",
@@ -857,6 +890,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "parentInterface",
                   "displayName": "parentInterface",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -1010,6 +1050,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "parentInterface",
                   "displayName": "parentInterface",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -1064,6 +1111,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "A",
                   "displayName": "A",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [
@@ -1097,6 +1151,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "B",
                   "displayName": "B",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -1140,6 +1201,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "A",
                   "displayName": "A",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [
@@ -1173,6 +1241,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "B",
                   "displayName": "B",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -1243,6 +1318,13 @@ describe("Ontology Defining", () => {
               "displayMetadata": {
                 "description": "Foo Interface",
                 "displayName": "Foo Interface",
+                "icon": {
+                  "blueprint": {
+                    "color": "#00000",
+                    "locator": "airplane",
+                  },
+                  "type": "blueprint",
+                },
               },
               "extendsInterfaces": [],
               "links": [],
@@ -1455,6 +1537,13 @@ describe("Ontology Defining", () => {
               "displayMetadata": {
                 "description": "interface",
                 "displayName": "interface",
+                "icon": {
+                  "blueprint": {
+                    "color": "#4C90F0",
+                    "locator": "layout-hierarchy",
+                  },
+                  "type": "blueprint",
+                },
               },
               "extendsInterfaces": [],
               "links": [],
@@ -1735,6 +1824,13 @@ describe("Ontology Defining", () => {
                 "displayMetadata": {
                   "description": "interface",
                   "displayName": "interface",
+                  "icon": {
+                    "blueprint": {
+                      "color": "#4C90F0",
+                      "locator": "layout-hierarchy",
+                    },
+                    "type": "blueprint",
+                  },
                 },
                 "extendsInterfaces": [],
                 "links": [],
@@ -4125,6 +4221,11 @@ describe("Ontology Defining", () => {
 
   describe("Actions", () => {
     it("Interface actions are properly defined", () => {
+      const foo = defineInterface({
+        apiName: "foo",
+        displayName: "foo",
+        properties: {},
+      });
       const exampleAction = defineAction({
         apiName: "foo",
         displayName: "exampleAction",
@@ -4293,7 +4394,34 @@ describe("Ontology Defining", () => {
               "linkTypes": {},
               "objectTypes": {},
             },
-            "interfaceTypes": {},
+            "interfaceTypes": {
+              "com.palantir.foo": {
+                "interfaceType": {
+                  "apiName": "com.palantir.foo",
+                  "displayMetadata": {
+                    "description": "foo",
+                    "displayName": "foo",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
+                      },
+                      "type": "blueprint",
+                    },
+                  },
+                  "extendsInterfaces": [],
+                  "links": [],
+                  "properties": [],
+                  "propertiesV2": {},
+                  "propertiesV3": {},
+                  "searchable": true,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                },
+              },
+            },
             "linkTypes": {},
             "objectTypes": {},
             "sharedPropertyTypes": {},
@@ -4320,6 +4448,7 @@ describe("Ontology Defining", () => {
       });
       const exampleInterface = defineInterface({
         apiName: "exampleInterface",
+        icon: { color: "#c7cdd6ff", locator: "globe" },
         properties: {
           mySpt,
           property1: "string",
@@ -4871,6 +5000,13 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "exampleInterface",
                     "displayName": "exampleInterface",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#c7cdd6ff",
+                        "locator": "globe",
+                      },
+                      "type": "blueprint",
+                    },
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -10854,6 +10990,13 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "exampleInterface",
                     "displayName": "exampleInterface",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
+                      },
+                      "type": "blueprint",
+                    },
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -13746,6 +13889,202 @@ describe("Ontology Defining", () => {
         }
       `);
     });
+    it("Interface actions validate SPT existence", () => {
+      const spt = defineSharedPropertyType({
+        apiName: "spt",
+        type: "string",
+      });
+      const importedInterface: InterfaceType = {
+        "apiName": "com.palantir.other.ontology.event.Event",
+        "displayMetadata": {
+          "displayName": "Event",
+          "description": "Event",
+          "icon": {
+            "type": "blueprint",
+            "blueprint": {
+              "color": "#4C90F0",
+              "locator": "timeline-events",
+            },
+          },
+        },
+        "extendsInterfaces": [],
+        "links": [],
+        "status": {
+          "type": "active",
+          "active": {},
+        },
+        "propertiesV2": {
+          "com.palantir.other.ontology.types.id": {
+            "required": true,
+            "sharedPropertyType": {
+              "displayName": "Id",
+              "apiName": "com.palantir.other.ontology.types.id",
+              "type": "string",
+              "nonNameSpacedApiName": "id",
+              "typeClasses": [
+                {
+                  "kind": "render_hint",
+                  "name": "SELECTABLE",
+                },
+                {
+                  "kind": "render_hint",
+                  "name": "SORTABLE",
+                },
+              ],
+              "__type": "SHARED_PROPERTY_TYPE",
+            },
+          },
+        },
+        "searchable": false,
+        "__type": "INTERFACE_TYPE",
+      } as unknown as InterfaceType;
+      importOntologyEntity(importedInterface);
+      const interfaceType = defineInterface({
+        apiName: "interfaceType",
+        properties: {
+          spt,
+        },
+        extends: importedInterface,
+      });
+      expect(() =>
+        defineAction({
+          apiName: "action",
+          displayName: "action",
+          status: "active",
+          parameters: [{
+            id: "interfaceObjectToModifyParameter",
+            displayName: "Interface object to modify",
+            type: {
+              type: "interfaceReference",
+              interfaceReference: {
+                interfaceTypeRid: interfaceType.apiName,
+              },
+            },
+            validation: {
+              required: true,
+              allowedValues: { type: "interfaceObjectQuery" },
+            },
+          }, {
+            id: "sptParameter",
+            displayName: "SPT",
+            type: "string",
+            validation: {
+              required: true,
+              allowedValues: { type: "text" },
+            },
+          }, {
+            id: "otherParameter",
+            displayName: "Other parameter",
+            type: "string",
+            validation: {
+              required: true,
+              allowedValues: { type: "text" },
+            },
+          }],
+          rules: [{
+            type: "modifyInterfaceRule",
+            modifyInterfaceRule: {
+              interfaceObjectToModifyParameter:
+                "interfaceObjectToModifyParameter",
+              sharedPropertyValues: {
+                spt: {
+                  type: "parameterId",
+                  parameterId: "sptParameter",
+                },
+                "com.palantir.other.invalid.spt": {
+                  type: "staticValue",
+                  staticValue: {
+                    type: "double",
+                    double: 4,
+                  },
+                },
+                other: {
+                  type: "parameterId",
+                  parameterId: "otherParameter",
+                },
+              },
+            },
+          }],
+        })
+      ).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Shared property type com.palantir.other.invalid.spt does not exist in interface type com.palantir.interfaceType]`,
+      );
+      expect(() => defineCreateInterfaceObjectAction(interfaceType)).not
+        .toThrow();
+    });
+    it("Interface actions validate SPT existence on the interface", () => {
+      expect(() => {
+        const spt = defineSharedPropertyType({
+          apiName: "spt",
+          type: "string",
+        });
+        const pulseRepetitionIntervalSecs: SharedPropertyType = {
+          "apiName": "com.palantir.other.ontology.pulseRepetitionIntervalSecs",
+          "displayName": "Pulse Repetition Interval (s)",
+          "description": "Pulse Repetition Interval in seconds.",
+          "type": "double",
+          "nonNameSpacedApiName": "pulseRepetitionIntervalSecs",
+          "typeClasses": [],
+          "__type": OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE,
+        } as unknown as SharedPropertyType;
+        importOntologyEntity(pulseRepetitionIntervalSecs);
+        const interfaceType = defineInterface({
+          apiName: "interfaceType",
+          properties: {
+            spt,
+          },
+        });
+        const action = defineAction({
+          apiName: "action",
+          displayName: "action",
+          status: "active",
+          parameters: [{
+            id: "interfaceObjectToModifyParameter",
+            displayName: "Interface object to modify",
+            type: {
+              type: "interfaceReference",
+              interfaceReference: {
+                interfaceTypeRid: interfaceType.apiName,
+              },
+            },
+            validation: {
+              required: true,
+              allowedValues: { type: "interfaceObjectQuery" },
+            },
+          }, {
+            id: "sptParameter",
+            displayName: "SPT",
+            type: "string",
+            validation: {
+              required: true,
+              allowedValues: { type: "text" },
+            },
+          }],
+          rules: [{
+            type: "modifyInterfaceRule",
+            modifyInterfaceRule: {
+              interfaceObjectToModifyParameter:
+                "interfaceObjectToModifyParameter",
+              sharedPropertyValues: {
+                spt: {
+                  type: "parameterId",
+                  parameterId: "sptParameter",
+                },
+                [pulseRepetitionIntervalSecs.apiName]: {
+                  type: "staticValue",
+                  staticValue: {
+                    type: "double",
+                    double: 4,
+                  },
+                },
+              },
+            },
+          }],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Shared property type com.palantir.other.ontology.pulseRepetitionIntervalSecs does not exist in interface type com.palantir.interfaceType]`,
+      );
+    });
   });
   describe("Imports", () => {
     it("Legacy importing works", () => {
@@ -13819,6 +14158,13 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "myInterface",
                     "displayName": "myInterface",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
+                      },
+                      "type": "blueprint",
+                    },
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -13947,6 +14293,13 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "myInterface",
                     "displayName": "myInterface",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
+                      },
+                      "type": "blueprint",
+                    },
                   },
                   "extendsInterfaces": [],
                   "links": [],
@@ -14391,6 +14744,13 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "childInterface",
                     "displayName": "childInterface",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
+                      },
+                      "type": "blueprint",
+                    },
                   },
                   "extendsInterfaces": [
                     "com.palantir.parentInterface",
@@ -14450,6 +14810,13 @@ describe("Ontology Defining", () => {
                   "displayMetadata": {
                     "description": "parentInterface",
                     "displayName": "parentInterface",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#4C90F0",
+                        "locator": "layout-hierarchy",
+                      },
+                      "type": "blueprint",
+                    },
                   },
                   "extendsInterfaces": [],
                   "links": [],

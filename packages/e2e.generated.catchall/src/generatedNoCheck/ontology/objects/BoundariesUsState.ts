@@ -107,8 +107,11 @@ export interface BoundariesUsState extends $ObjectTypeDefinition {
   };
 }
 
-export const BoundariesUsState: BoundariesUsState = {
+export const BoundariesUsState = {
   type: 'object',
   apiName: 'BoundariesUsState',
   osdkMetadata: $osdkMetadata,
-};
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
+} satisfies BoundariesUsState & { experimentalDoNotUseMetadata: { rid: string } } as BoundariesUsState;

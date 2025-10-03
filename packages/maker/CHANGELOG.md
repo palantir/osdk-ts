@@ -1,5 +1,29 @@
 # @osdk/maker
 
+## 0.13.0-beta.12
+
+### Minor Changes
+
+- f025f30: Fix semantic merge conflict
+- 7f0ad5c: Check extended interfaces when verifying interface actions
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.12
+
+## 0.13.0-beta.11
+
+### Minor Changes
+
+- 5fd12eb: Fix interface display metadata to include icon
+- f2dbc3d: Fix test from semantic merge conflict
+- 712dfbe: Improve interface action validation
+
+### Patch Changes
+
+- Updated dependencies [7b97128]
+  - @osdk/api@2.5.0-beta.11
+
 ## 0.13.0-beta.10
 
 ### Minor Changes

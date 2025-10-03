@@ -15,12 +15,10 @@
  */
 
 import invariant from "tiny-invariant";
+import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import { importOntologyEntity } from "./importOntologyEntity.js";
-import {
-  OntologyEntityTypeEnum,
-  type PropertyTypeType,
-  type SharedPropertyType,
-} from "./types.js";
+import { type PropertyTypeType } from "./properties/PropertyTypeType.js";
+import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
 
 /**
  * Defines a foreign shared property type you want to take as an input to your product. The typeHint field is used for OSDK generation

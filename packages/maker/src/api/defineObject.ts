@@ -15,24 +15,21 @@
  */
 
 import invariant from "tiny-invariant";
+import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
   addNamespaceIfNone,
   namespace,
   ontologyDefinition,
   updateOntology,
 } from "./defineOntology.js";
-import type {
-  InterfacePropertyType,
-  InterfaceType,
-  ObjectPropertyType,
-  ObjectPropertyTypeUserDefinition,
-  ObjectType,
-  ObjectTypeDefinition,
-  PropertyTypeType,
-  PropertyTypeTypeExotic,
-  SharedPropertyType,
-} from "./types.js";
-import { OntologyEntityTypeEnum } from "./types.js";
+import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfaceProperties.js";
+import type { InterfacePropertyType } from "./interface/InterfacePropertyType.js";
+import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
+import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTypeUserDefinition.js";
+import type { ObjectType } from "./object/ObjectType.js";
+import type { ObjectTypeDefinition } from "./object/ObjectTypeDefinition.js";
+import { isExotic } from "./properties/PropertyTypeType.js";
+import type { SharedPropertyType } from "./properties/SharedPropertyType.js";
 
 // From https://stackoverflow.com/a/79288714
 const ISO_8601_DURATION =
@@ -124,7 +121,7 @@ export function defineObject(
   );
 
   objectDef.implementsInterfaces?.forEach(interfaceImpl => {
-    const allInterfaceProperties = getAllInterfaceProperties(
+    const allInterfaceProperties = getFlattenedInterfaceProperties(
       interfaceImpl.implements,
     );
     const nonExistentInterfaceProperties: ValidationResult[] = interfaceImpl
@@ -167,7 +164,7 @@ export function defineObject(
       };
     };
     const validations = Object.entries(
-      getAllInterfaceProperties(interfaceImpl.implements),
+      getFlattenedInterfaceProperties(interfaceImpl.implements),
     ).map(validateProperty);
     const allFailedValidations = validations.concat(
       nonExistentInterfaceProperties,
@@ -193,22 +190,6 @@ export function defineObject(
   updateOntology(finalObject);
   objectDef.apiName = apiName;
   return objectDef;
-}
-
-export function isExotic(
-  type: PropertyTypeType | undefined,
-): type is PropertyTypeTypeExotic {
-  if (type === undefined) {
-    return false;
-  }
-  if (typeof type === "string") {
-    return ["geopoint", "geoshape", "mediaReference", "geotimeSeries"].includes(
-      type,
-    );
-  } else if (typeof type === "object" && type != null) {
-    return type.type === "marking" || type.type === "struct";
-  }
-  return false;
 }
 
 type ValidationResult = { type: "valid" } | { type: "invalid"; reason: string };
@@ -244,7 +225,7 @@ function validateInterfaceImplProperty(
   return { type: "valid" };
 }
 
-export function convertToDisplayName(s: string | undefined | null): string {
+export function uppercaseFirstLetter(s: string | undefined | null): string {
   return s === undefined || s == null
     ? ""
     : s.charAt(0).toUpperCase() + s.slice(1);
@@ -257,18 +238,8 @@ export function convertToPluralDisplayName(
   return s === undefined || s == null
     ? ""
     : s.endsWith("s")
-    ? convertToDisplayName(s)
-    : convertToDisplayName(s) + "s";
-}
-
-export function getAllInterfaceProperties(
-  interfaceType: InterfaceType,
-): Record<string, InterfacePropertyType> {
-  let properties = interfaceType.propertiesV2;
-  interfaceType.extendsInterfaces.forEach(ext => {
-    properties = { ...properties, ...getAllInterfaceProperties(ext) };
-  });
-  return properties;
+    ? uppercaseFirstLetter(s)
+    : uppercaseFirstLetter(s) + "s";
 }
 
 function convertUserObjectPropertyType(
@@ -277,11 +248,11 @@ function convertUserObjectPropertyType(
 ): ObjectPropertyType {
   // fill in missing fields to be used by actions
   property.apiName = apiName;
-  property.displayName = property.displayName ?? convertToDisplayName(apiName);
+  property.displayName = property.displayName ?? uppercaseFirstLetter(apiName);
   return {
     ...property,
     apiName: apiName,
-    displayName: property.displayName ?? convertToDisplayName(apiName),
+    displayName: property.displayName ?? uppercaseFirstLetter(apiName),
     type: property.type,
   };
 }
