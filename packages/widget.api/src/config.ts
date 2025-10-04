@@ -81,7 +81,6 @@ export type AsyncParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
         type: "objectSet";
         value: AsyncValue<{
           objectSetRid: string;
-          objectType: T;
         }>;
       }
     : Extract<
@@ -109,7 +108,6 @@ export type ParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
     : never
     : C["parameters"][K] extends ObjectSetParameterDefinition<infer T> ? {
         objectSetRid: string;
-        objectType: T;
       }
     : Extract<
       ParameterValue,

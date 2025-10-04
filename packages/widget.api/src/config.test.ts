@@ -26,6 +26,7 @@ import {
   type ParameterValueMap,
 } from "./config.js";
 import type { ObjectType, ParameterValue } from "./parameters.js";
+import type { AsyncValue } from "./utils/asyncValue.js";
 
 describe("WidgetConfig", () => {
   describe("ParameterConfigId", () => {
@@ -310,10 +311,18 @@ describe("WidgetConfig", () => {
         events: {},
       });
 
-      expectTypeOf<ParameterValueMap<typeof test>>().toMatchTypeOf<{
+      expectTypeOf<ParameterValueMap<typeof test>>().toEqualTypeOf<{
         myObjectSet: {
           objectSetRid: string;
-          objectType: Employee;
+        };
+      }>();
+
+      expectTypeOf<AsyncParameterValueMap<typeof test>>().toEqualTypeOf<{
+        myObjectSet: {
+          type: "objectSet";
+          value: AsyncValue<{
+            objectSetRid: string;
+          }>;
         };
       }>();
     });
