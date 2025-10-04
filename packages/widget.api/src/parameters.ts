@@ -16,6 +16,14 @@
 
 import type { AsyncValue } from "./utils/asyncValue.js";
 
+export type ObjectType = {
+  type: "object";
+  apiName: string;
+  experimentalDoNotUseMetadata?: {
+    rid: string;
+  };
+};
+
 /**
  * Map of the name of the type to the corresponding JavaScript type.
  */
@@ -35,6 +43,14 @@ export interface AbstractParameterValue<T extends PrimitiveParameterType> {
   value: AsyncValue<PrimitiveParameterTypes[T]>;
 }
 
+export interface ObjectSetParameterValue<T extends ObjectType> {
+  type: "objectSet";
+  value: AsyncValue<{
+    objectSetRid: string;
+    objectType: T;
+  }>;
+}
+
 export interface GenericArrayParameterValue<T extends PrimitiveParameterType> {
   type: "array";
   subType: T;
@@ -50,6 +66,8 @@ export namespace ParameterValue {
   export type Boolean = AbstractParameterValue<"boolean">;
   export type Date = AbstractParameterValue<"date">;
   export type Timestamp = AbstractParameterValue<"timestamp">;
+  export type ObjectSet<T extends ObjectType = ObjectType> =
+    ObjectSetParameterValue<T>;
 
   export type StringArray = GenericArrayParameterValue<"string">;
   export type NumberArray = GenericArrayParameterValue<"number">;
@@ -72,4 +90,5 @@ export type ParameterValue =
   | ParameterValue.Boolean
   | ParameterValue.Date
   | ParameterValue.Timestamp
+  | ParameterValue.ObjectSet
   | ParameterValue.Array;
