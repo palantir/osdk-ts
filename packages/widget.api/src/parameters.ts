@@ -47,7 +47,6 @@ export interface ObjectSetParameterValue<T extends ObjectType> {
   type: "objectSet";
   value: AsyncValue<{
     objectSetRid: string;
-    objectType: T;
   }>;
 }
 
