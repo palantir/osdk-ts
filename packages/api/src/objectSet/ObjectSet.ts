@@ -567,28 +567,24 @@ interface AsType<Q extends ObjectOrInterfaceDefinition> {
   ) => ObjectSet<CONVERT_TO>;
 }
 
-type RestrictToImplementingObjectTypes<
-  CURRENT extends ObjectOrInterfaceDefinition,
-> = CURRENT extends ObjectTypeDefinition
-  ? CompileTimeMetadata<CURRENT> extends { implements: infer U }
-    ? U extends ReadonlyArray<infer V>
-      ? V extends string ? (InterfaceDefinition & {
-          apiName: V;
-        })
-      : never
+type RestrictToImplementingObjectTypes<T extends ObjectOrInterfaceDefinition> =
+  T extends ObjectTypeDefinition ? ExtractImplementedInterfaces<T>
+    : T extends InterfaceDefinition ? ExtractImplementingTypes<T>
+    : never;
+
+type ExtractImplementedInterfaces<T extends ObjectTypeDefinition> =
+  CompileTimeMetadata<T> extends { implements: ReadonlyArray<infer API_NAME> }
+    ? API_NAME extends string ? InterfaceDefinition & { apiName: API_NAME }
     : never
-  : never
-  : CURRENT extends InterfaceDefinition
-    ? CompileTimeMetadata<CURRENT> extends { implementedBy: infer U }
-      ? U extends ReadonlyArray<infer V> ? V extends string ?
-            | (ObjectTypeDefinition & {
-              apiName: V;
-            })
-            | InterfaceDefinition
-        : never
-      : never
+    : never;
+
+type ExtractImplementingTypes<T extends InterfaceDefinition> =
+  CompileTimeMetadata<T> extends
+    { implementedBy: ReadonlyArray<infer API_NAME> }
+    ? API_NAME extends string
+      ? (ObjectTypeDefinition & { apiName: API_NAME }) | InterfaceDefinition
     : never
-  : never;
+    : never;
 
 interface ObjectSetCleanedTypes<
   Q extends ObjectOrInterfaceDefinition,

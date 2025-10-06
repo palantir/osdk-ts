@@ -14,102 +14,95 @@
  * limitations under the License.
  */
 
+import type { Osdk } from "@osdk/api";
 import {
   $Objects,
+  Athlete,
+  CollateralConcernCandidate,
+  EsongInterfaceA,
+  NbaPlayer,
   NihalbCastingInterfaceB,
   NihalbCastingInterfaceTypeA,
   NihalbCastingLinkedInterfaceTypeA,
 } from "@osdk/e2e.generated.catchall";
-import { client } from "./client.js";
+import invariant from "tiny-invariant";
+import type { TypeOf } from "ts-expect";
+import { expectType } from "ts-expect";
+import { client, dsClient } from "./client.js";
 
 export async function runInterfacesTest2(): Promise<void> {
-  // const athletes = await dsClient(Athlete).where({
-  //   athleteId: { $eq: "E0DD36D0-D6B9-487B-B643-4CED57A26890" },
-  // }).fetchPage({ $includeAllBaseObjectProperties: true });
+  const athletes = await dsClient(Athlete).where({
+    athleteId: { $eq: "E0DD36D0-D6B9-487B-B643-4CED57A26890" },
+  }).fetchPage({ $includeAllBaseObjectProperties: true });
 
-  // invariant(athletes.data.length > 0);
+  invariant(athletes.data.length > 0);
 
-  // const athlete1 = athletes.data[0];
-  // console.log("interface scoped: ", athlete1);
+  const athlete1 = athletes.data[0];
+  console.log("interface scoped: ", athlete1);
 
-  // const nbaPlayer = athlete1.$as(NbaPlayer);
-  // console.log("object scoped should have all properties: ", nbaPlayer);
+  const nbaPlayer = athlete1.$as(NbaPlayer);
+  console.log("object scoped should have all properties: ", nbaPlayer);
 
-  // expectType<
-  //   TypeOf<
-  //     Osdk.Instance<NbaPlayer>,
-  //     typeof nbaPlayer
-  //   >
-  // >(true);
+  expectType<
+    TypeOf<
+      Osdk.Instance<NbaPlayer>,
+      typeof nbaPlayer
+    >
+  >(true);
 
-  // const athletesSelected = await dsClient(Athlete).where({
-  //   athleteId: { $eq: "E0DD36D0-D6B9-487B-B643-4CED57A26890" },
-  // }).fetchPage({
-  //   $select: ["athleteId", "jerseyNumber", "name22"],
-  //   $includeAllBaseObjectProperties: true,
-  // });
+  const athletesSelected = await dsClient(Athlete).where({
+    athleteId: { $eq: "E0DD36D0-D6B9-487B-B643-4CED57A26890" },
+  }).fetchPage({
+    $select: ["athleteId", "jerseyNumber", "name22"],
+    $includeAllBaseObjectProperties: true,
+  });
 
-  // invariant(athletesSelected.data.length > 0);
-  // const athleteSelected1 = athletesSelected.data[0];
-  // console.log("again interface scoped: ", athleteSelected1);
+  invariant(athletesSelected.data.length > 0);
+  const athleteSelected1 = athletesSelected.data[0];
+  console.log("again interface scoped: ", athleteSelected1);
 
-  // const nbaPlayer1 = athleteSelected1.$as(NbaPlayer);
-  // console.log("object scoped should have only selected: ", nbaPlayer1);
+  const nbaPlayer1 = athleteSelected1.$as(NbaPlayer);
+  console.log("object scoped should have only selected: ", nbaPlayer1);
 
-  // expectType<
-  //   TypeOf<
-  //     Osdk.Instance<NbaPlayer, never, "id">,
-  //     typeof nbaPlayer1
-  //   >
-  // >(true);
+  expectType<
+    TypeOf<
+      Osdk.Instance<NbaPlayer, never, "id">,
+      typeof nbaPlayer1
+    >
+  >(true);
 
-  // // You cannot specify both $select and $includeAllBaseObjectProperties
-  // const athletesNotAllSelected = await dsClient(Athlete).where({
-  //   athleteId: { $eq: "E0DD36D0-D6B9-487B-B643-4CED57A26890" },
-  // }).fetchPage({
-  //   $select: ["athleteId", "name22"],
-  //   // @ts-expect-error
-  //   $includeAllBaseObjectProperties: true,
-  // });
+  // You cannot specify both $select and $includeAllBaseObjectProperties
+  const athletesNotAllSelected = await dsClient(Athlete).where({
+    athleteId: { $eq: "E0DD36D0-D6B9-487B-B643-4CED57A26890" },
+  }).fetchPage({
+    $select: ["athleteId", "name22"],
+    // @ts-expect-error
+    $includeAllBaseObjectProperties: true,
+  });
 
-  // // interface to interface
-  // const concernCandidates2 = await dsClient(CollateralConcernCandidate)
-  //   .fetchPage();
-  // const concernList2 = await dsClient(CollateralConcernCandidate).pivotTo(
-  //   "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList",
-  // ).fetchPage({ $includeAllBaseObjectProperties: true });
-  // const singleLink = await concernCandidates2.data[0]
-  //   .$link[
-  //     "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList"
-  //   ].fetchPage();
-  // console.log("concern candidates", concernCandidates2.data);
-  // console.log("linked list entities", concernList2.data);
-  // console.log("tried link instance impl", singleLink);
+  // interface to interface
+  const concernCandidates2 = await dsClient(CollateralConcernCandidate)
+    .fetchPage();
+  const concernList2 = await dsClient(CollateralConcernCandidate).pivotTo(
+    "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList",
+  ).fetchPage({ $includeAllBaseObjectProperties: true });
+  const singleLink = await concernCandidates2.data[0]
+    .$link[
+      "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList"
+    ].fetchPage();
+  console.log("concern candidates", concernCandidates2.data);
+  console.log("linked list entities", concernList2.data);
+  console.log("tried link instance impl", singleLink);
 
   // interface to object
+  const pds = await dsClient(EsongInterfaceA).pivotTo("esongPds").fetchPage();
 
-  // const pds = await dsClient(EsongInterfaceA).where({
-  //   esongSptA: { $eq: "tech debt" },
-  // }).asType(EsongInterfaceC).pivotTo(
-  //   "esongPds",
-  // ).fetchPage();
+  console.log("linkedPds ticket: ", pds.data);
 
-  // console.log("linkedPds ticket: ", pds.data);
+  const interfaceA = await dsClient(EsongInterfaceA).fetchPage();
+  console.log("interfaceA instances: ", interfaceA);
 
-  // const interfaceA = await dsClient(EsongInterfaceA).fetchPage();
-  // console.log("interfaceA instances: ", interfaceA);
-
-  // const huh3 = await interfaceA.data[0].$link.esongPds.fetchPage();
-
-  // console.log(
-  //   "lets try $link",
-  //   await interfaceA.data[0].$link.esongPds.fetchPage(),
-  // );
-
-  // const pds = await dsClient(EsongInterfaceA).pivotTo("esongPds").fetchPage({
-  //   $includeAllBaseObjectProperties: true,
-  // });
-  // console.error(pds);
+  const huh3 = await interfaceA.data[0].$link.esongPds.fetchPage();
 
   const implementObjectTypeAAndB = await client(
     NihalbCastingInterfaceTypeA,
