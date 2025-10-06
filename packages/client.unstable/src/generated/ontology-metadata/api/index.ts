@@ -19,7 +19,6 @@ export * as OntologyAssociationMetadataService from "./OntologyAssociationMetada
 export * as OntologyLlmService from "./OntologyLlmService.js";
 export * as OntologyMetadataGothamTypeMappingService from "./OntologyMetadataGothamTypeMappingService.js";
 export * as OntologyMetadataSearchService from "./OntologyMetadataSearchService.js";
-export * as OntologyMetadataSemanticSearchService from "./OntologyMetadataSemanticSearchService.js";
 export * as OntologyMetadataService from "./OntologyMetadataService.js";
 export * as TypeGroupOrgsService from "./TypeGroupOrgsService.js";
 
@@ -210,6 +209,7 @@ export type {
   ComparisonCondition,
   ComparisonConditionModification,
   ComparisonOperator,
+  CompassFolderRid,
   CompassProjectRid,
   Condition,
   ConditionalOverride,
@@ -412,6 +412,7 @@ export type {
   IntegerTypeDataValue,
   IntegerTypeRangeConstraint,
   InterfaceArrayPropertyType,
+  InterfaceCipherTextPropertyType,
   InterfaceDefinedPropertyType,
   InterfaceDefinedPropertyTypeConstraints,
   InterfaceLinkType,
@@ -460,6 +461,7 @@ export type {
   InterfaceTypeStatus,
   InterfaceTypeUpdatedEvent,
   IntermediaryLinkDefinition,
+  InvalidCompassNameReason,
   JoinDefinition,
   KnownFormatter,
   LabelledValue,
@@ -769,6 +771,8 @@ export type {
   OntologyIrFunctionRule,
   OntologyIrImplementingLinkType,
   OntologyIrInlineActionType,
+  OntologyIrInterfaceArrayPropertyType,
+  OntologyIrInterfaceCipherTextPropertyType,
   OntologyIrInterfaceObjectParameterStructFieldValue,
   OntologyIrInterfaceObjectParameterStructListFieldValue,
   OntologyIrInterfaceParameterPropertyValue,
@@ -776,7 +780,10 @@ export type {
   OntologyIrInterfacePropertyImplementation,
   OntologyIrInterfacePropertyLogicRuleValue,
   OntologyIrInterfacePropertyTypeImplementation,
+  OntologyIrInterfacePropertyTypeType,
   OntologyIrInterfaceSharedPropertyType,
+  OntologyIrInterfaceStructFieldType,
+  OntologyIrInterfaceStructPropertyType,
   OntologyIrIntermediaryLinkDefinition,
   OntologyIrLabelledValue,
   OntologyIrLinkDefinition,
@@ -906,6 +913,7 @@ export type {
   OntologyIrSeriesValueMetadata,
   OntologyIrSharedPropertyType,
   OntologyIrShortBody,
+  OntologyIrStaticObjectPrefillV2,
   OntologyIrStaticValue,
   OntologyIrStaticWebhookWithDirectInput,
   OntologyIrStaticWebhookWithFunctionResultInput,
@@ -1067,6 +1075,8 @@ export type {
   ParameterValueOneOfOrEmpty,
   ParameterValueType,
   ParameterValueTypeOrEmpty,
+  ParameterValueTypeReference,
+  ParameterValueTypeReferenceWithVersionId,
   ParameterValueTypeWithVersionId,
   ParameterValueTypeWithVersionIdOrEmpty,
   PartialObjectType,
@@ -1241,6 +1251,7 @@ export type {
   SoftLinkType,
   StandardAnalyzer,
   StaticObjectPrefill,
+  StaticObjectPrefillV2,
   StaticValue,
   StaticWebhookWithDirectInput,
   StaticWebhookWithDirectInputModification,
@@ -1366,7 +1377,6 @@ export type {
   ValidationRuleRid,
   ValueReferenceId,
   ValueReferenceSource,
-  ValueType,
   ValueTypeApiNameReference,
   ValueTypeIdInRequest,
   ValueTypeInputManagerRid,
@@ -1374,7 +1384,6 @@ export type {
   ValueTypeReference,
   ValueTypeRid,
   ValueTypeVersionId,
-  ValueTypeWithVersionId,
   VectorPropertyType,
   VectorSimilarityFunction,
   VersionedActionTypeRid,

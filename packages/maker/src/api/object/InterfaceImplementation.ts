@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-export type {
-  OntologyObjectTypeSemanticSearchStatus,
-  SemanticSearchObjectTypeResponseEntry,
-  SemanticSearchObjectTypesRequest,
-  SemanticSearchObjectTypesResponse,
-} from "./__components.js";
+import type { InterfaceType } from "../interface/InterfaceType.js";
+
+export type InterfaceImplementation = {
+  implements: InterfaceType;
+  propertyMapping: { interfaceProperty: string; mapsTo: string }[];
+};

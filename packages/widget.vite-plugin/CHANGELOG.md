@@ -1,5 +1,15 @@
 # @osdk/widget.vite-plugin
 
+## 3.2.0-beta.4
+
+### Minor Changes
+
+- 34df269: Fix widgets dev mode on Windows
+
+### Patch Changes
+
+- @osdk/widget.api@3.2.0-beta.4
+
 ## 3.2.0-beta.3
 
 ### Minor Changes

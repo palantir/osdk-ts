@@ -14,4 +14,31 @@
  * limitations under the License.
  */
 
-export { semanticSearchObjectTypes } from "./OntologyMetadataSemanticSearchService/semanticSearchObjectTypes.js";
+import type {
+  OntologyIrCondition,
+  OntologyIrConditionValue,
+} from "@osdk/client.unstable";
+
+// TODO(ethana): add more commonly used conditions - parameter matching, organizations, etc.
+
+export type ConditionDefinition =
+  | UnionCondition
+  | OntologyIrCondition
+  | GroupValidationRule
+  | ParameterValidationRule;
+
+export type UnionCondition = {
+  type: "and" | "or";
+  conditions: Array<ConditionDefinition>;
+};
+
+export type GroupValidationRule = {
+  type: "group";
+  name: string;
+};
+
+export type ParameterValidationRule = {
+  type: "parameter";
+  parameterId: string;
+  matches: OntologyIrConditionValue;
+};

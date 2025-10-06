@@ -17,7 +17,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { defineObject } from "./defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "./defineOntology.js";
-import type { ObjectTypeStatus } from "./types.js";
+import type { ObjectTypeStatus } from "./object/ObjectTypeStatus.js";
 
 describe("Object Status", () => {
   beforeEach(async () => {

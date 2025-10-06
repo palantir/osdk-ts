@@ -15,73 +15,33 @@
  */
 
 import type {
-  ActionTypePermissionInformation,
   ActionTypeStatus,
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
-  OntologyIrActionValidation,
   OntologyIrAllowedParameterValues,
-  OntologyIrBaseParameterType,
-  OntologyIrInterfaceTypeBlockDataV2,
-  OntologyIrLinkDefinition,
-  OntologyIrLinkTypeBlockDataV2,
-  OntologyIrManyToManyLinkTypeDatasource,
-  OntologyIrMarketplaceInterfaceType,
-  OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
-  OntologyIrOneToManyLinkDefinition,
-  OntologyIrOntologyBlockDataV2,
   OntologyIrParameter,
-  OntologyIrPropertyType,
   OntologyIrSection,
-  OntologyIrSharedPropertyType,
-  OntologyIrSharedPropertyTypeBlockDataV2,
   OntologyIrValueTypeBlockData,
-  OntologyIrValueTypeBlockDataEntry,
   ParameterId,
   ParameterRenderHint,
-  ParameterRequiredConfiguration,
-  PropertyTypeMappingInfo,
-  RetentionPolicy,
   SectionId,
 } from "@osdk/client.unstable";
 import * as fs from "fs";
 import * as path from "path";
-import invariant from "tiny-invariant";
-import { convertToDisplayName, isExotic } from "./defineObject.js";
-import {
-  convertActionParameterConditionalOverride,
-  convertActionVisibility,
-  convertSectionConditionalOverride,
-  getFormContentOrdering,
-} from "./ontologyUtils.js";
-import {
-  convertNullabilityToDataConstraint,
-  convertType,
-  convertValueType,
-  convertValueTypeDataConstraints,
-  defaultTypeClasses,
-  getPropertyTypeName,
-  hasRenderHints,
-  shouldNotHaveRenderHints,
-} from "./propertyConversionUtils.js";
-import type {
-  ActionParameter,
-  ActionParameterAllowedValues,
-  ActionParameterRequirementConstraint,
-  ActionType,
-  InterfaceType,
-  LinkType,
-  ObjectPropertyType,
-  ObjectType,
-  OneToManyLinkTypeDefinition,
-  OntologyDefinition,
-  OntologyEntityType,
-  SharedPropertyType,
-  ValueTypeDefinitionVersion,
-} from "./types.js";
-import { OntologyEntityTypeEnum } from "./types.js";
+import { convertActionParameters } from "../conversion/toMarketplace/convertActionParameters.js";
+import { convertActionSections } from "../conversion/toMarketplace/convertActionSections.js";
+import { convertActionValidation } from "../conversion/toMarketplace/convertActionValidation.js";
+import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
+import { convertOntologyToValueTypeIr } from "../conversion/toMarketplace/convertOntologyToValueTypeIr.js";
+import { getFormContentOrdering } from "../conversion/toMarketplace/getFormContentOrdering.js";
+import type { ActionParameter } from "./action/ActionParameter.js";
+import type { ActionParameterAllowedValues } from "./action/ActionParameterAllowedValues.js";
+import type { ActionType } from "./action/ActionType.js";
+import type { OntologyDefinition } from "./common/OntologyDefinition.js";
+import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
+import type { OntologyEntityType } from "./common/OntologyEntityTypeMapping.js";
 
 // type -> apiName -> entity
 /** @internal */
@@ -159,7 +119,7 @@ export async function defineOntology(
   if (dependencyFile) {
     writeDependencyFile(dependencyFile);
   }
-  return convertToWireOntologyIr(ontologyDefinition);
+  return convertOntologyDefinition(ontologyDefinition);
 }
 
 export function writeStaticObjects(outputDir: string): void {
@@ -241,232 +201,7 @@ export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFi
   }
 }
 
-function convertOntologyToValueTypeIr(
-  ontology: OntologyDefinition,
-): OntologyIrValueTypeBlockData {
-  return {
-    valueTypes: convertValueTypesToIr(
-      ontology[OntologyEntityTypeEnum.VALUE_TYPE],
-    ),
-  };
-}
-
-function convertValueTypesToIr(
-  valueTypes: Record<string, ValueTypeDefinitionVersion[]>,
-) {
-  return Object.values(valueTypes).map<
-    OntologyIrValueTypeBlockDataEntry
-  >(definitions => ({
-    metadata: {
-      apiName: definitions[0].apiName,
-      packageNamespace: definitions[0].packageNamespace,
-      displayMetadata: definitions[0].displayMetadata,
-      status: definitions[0].status,
-    },
-    // TODO(dpaquin): instead of deduping here, we should refactor the value type types from arrays to maps
-    versions: Array.from(
-      new Map(definitions.map(definition => [definition.version, definition]))
-        .values(),
-    ).map(definition => ({
-      version: definition.version,
-      baseType: definition.baseType,
-      constraints: definition.constraints,
-      exampleValues: definition.exampleValues,
-    })),
-  }));
-}
-
-function convertToWireOntologyIr(
-  ontology: OntologyDefinition,
-): OntologyIr {
-  return {
-    ontology: convertToWireBlockData(ontology),
-    importedOntology: convertToWireBlockData(importedTypes),
-    valueTypes: convertOntologyToValueTypeIr(ontology),
-    importedValueTypes: convertOntologyToValueTypeIr(importedTypes),
-  };
-}
-
-function convertToWireBlockData(
-  ontology: OntologyDefinition,
-): OntologyIrOntologyBlockDataV2 {
-  return ({
-    objectTypes: Object.fromEntries(
-      Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map<
-        [string, OntologyIrObjectTypeBlockDataV2]
-      >(([apiName, objectType]) => {
-        return [apiName, convertObject(objectType)];
-      }),
-    ),
-    sharedPropertyTypes: Object.fromEntries(
-      Object.entries(
-        ontology[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
-      )
-        .map<[string, OntologyIrSharedPropertyTypeBlockDataV2]>((
-          [apiName, spt],
-        ) => [apiName, { sharedPropertyType: convertSpt(spt) }]),
-    ),
-    interfaceTypes: Object.fromEntries(
-      Object.entries(
-        ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
-      )
-        .map<[string, OntologyIrInterfaceTypeBlockDataV2]>(
-          ([apiName, interfaceType]) => {
-            return [apiName, {
-              interfaceType: convertInterface(interfaceType),
-            }];
-          },
-        ),
-    ),
-    linkTypes: Object.fromEntries(
-      Object.entries(ontology[OntologyEntityTypeEnum.LINK_TYPE]).map<
-        [string, OntologyIrLinkTypeBlockDataV2]
-      >(([id, link]) => {
-        return [id, convertLink(link)];
-      }),
-    ),
-    actionTypes: Object.fromEntries(
-      Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE]).map<
-        [string, OntologyIrActionTypeBlockDataV2]
-      >(([apiName, action]) => {
-        return [apiName, convertAction(action)];
-      }),
-    ),
-    blockPermissionInformation: {
-      actionTypes: Object.fromEntries(
-        Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE])
-          .filter(([apiName, action]) => action.validation)
-          .map<
-            [string, ActionTypePermissionInformation]
-          >(([apiName, action]) => {
-            return [apiName, {
-              restrictionStatus: {
-                hasRolesApplied: true,
-                ontologyPackageRid: null,
-                publicProject: false,
-              },
-            }];
-          }),
-      ),
-      linkTypes: {},
-      objectTypes: {},
-    },
-  });
-}
-
-function convertObject(
-  objectType: ObjectType,
-): OntologyIrObjectTypeBlockDataV2 {
-  const propertyDatasources: OntologyIrObjectTypeDatasource[] =
-    (objectType.properties ?? [])
-      .flatMap(prop => extractPropertyDatasource(prop, objectType.apiName));
-
-  const classificationGroupMarkingNames = extractMarkingGroups(
-    objectType.properties ?? [],
-    "CBAC",
-  );
-
-  const mandatoryMarkingNames = extractMarkingGroups(
-    objectType.properties ?? [],
-    "MANDATORY",
-  );
-
-  const classificationInputGroup = classificationGroupMarkingNames.length > 0
-    ? classificationGroupMarkingNames.reduce((l, r) => l + "/" + r)
-    : undefined;
-
-  const mandatoryInputGroup = mandatoryMarkingNames.length > 0
-    ? mandatoryMarkingNames.reduce((l, r) => l + "/" + r)
-    : undefined;
-
-  const objectDatasource = buildDatasource(
-    objectType.apiName,
-    convertDatasourceDefinition(
-      objectType,
-      objectType.properties ?? [],
-    ),
-    classificationInputGroup,
-    mandatoryInputGroup,
-  );
-
-  const implementations = objectType.implementsInterfaces ?? [];
-
-  return {
-    objectType: {
-      displayMetadata: {
-        description: objectType.description,
-        displayName: objectType.displayName,
-        groupDisplayName: undefined,
-        icon: {
-          type: "blueprint",
-          blueprint: objectType.icon ?? { locator: "cube", color: "#2D72D2" },
-        },
-        pluralDisplayName: objectType.pluralDisplayName,
-        visibility: objectType.visibility ?? "NORMAL",
-      },
-      primaryKeys: [objectType.primaryKeyPropertyApiName],
-      propertyTypes: Object.fromEntries(
-        objectType.properties?.map<[string, OntologyIrPropertyType]>(
-          val => [val.apiName, convertProperty(val)],
-        ) ?? [],
-      ),
-      titlePropertyTypeRid: objectType.titlePropertyApiName,
-      apiName: objectType.apiName,
-      status: convertObjectStatus(objectType.status),
-      redacted: false,
-      implementsInterfaces2: implementations.map(impl => ({
-        interfaceTypeApiName: impl.implements.apiName,
-        linksV2: {},
-        propertiesV2: {},
-        properties: Object.fromEntries(
-          impl.propertyMapping.map(
-            mapping => [addNamespaceIfNone(mapping.interfaceProperty), {
-              propertyTypeRid: mapping.mapsTo,
-            }],
-          ),
-        ),
-      })),
-      allImplementsInterfaces: {},
-    },
-    datasources: [...propertyDatasources, objectDatasource],
-    entityMetadata: { arePatchesEnabled: objectType.editsEnabled ?? false },
-  };
-}
-
-function extractPropertyDatasource(
-  property: ObjectPropertyType,
-  objectTypeApiName: string,
-): OntologyIrObjectTypeDatasource[] {
-  if (!isExotic(property.type)) {
-    return [];
-  }
-  const identifier = objectTypeApiName + "." + property.apiName;
-  switch (property.type as string) {
-    case "geotimeSeries":
-      const geotimeDefinition: OntologyIrObjectTypeDatasourceDefinition = {
-        type: "geotimeSeries",
-        geotimeSeries: {
-          geotimeSeriesIntegrationRid: identifier,
-          properties: [property.apiName],
-        },
-      };
-      return [buildDatasource(property.apiName, geotimeDefinition)];
-    case "mediaReference":
-      const mediaSetDefinition: OntologyIrObjectTypeDatasourceDefinition = {
-        type: "mediaSetView",
-        mediaSetView: {
-          assumedMarkings: [],
-          mediaSetViewLocator: identifier,
-          properties: [property.apiName],
-        },
-      };
-      return [buildDatasource(property.apiName, mediaSetDefinition)];
-    default:
-      return [];
-  }
-}
-
-function buildDatasource(
+export function buildDatasource(
   apiName: string,
   definition: OntologyIrObjectTypeDatasourceDefinition,
   classificationMarkingGroupName?: string,
@@ -500,249 +235,7 @@ function buildDatasource(
   });
 }
 
-function convertDatasourceDefinition(
-  objectType: ObjectType,
-  properties: ObjectPropertyType[],
-): OntologyIrObjectTypeDatasourceDefinition {
-  switch (objectType.datasource?.type) {
-    case "stream":
-      const window = objectType.datasource.retentionPeriod;
-      const retentionPolicy: RetentionPolicy = window
-        ? { type: "time", time: { window } }
-        : { type: "none", none: {} };
-      const propertyMapping = Object.fromEntries(
-        properties.map((
-          prop,
-        ) => [prop.apiName, prop.apiName]),
-      );
-      return {
-        type: "streamV2",
-        streamV2: {
-          streamLocator: objectType.apiName,
-          propertyMapping,
-          retentionPolicy,
-          propertySecurityGroups: undefined,
-        },
-      };
-    case "restrictedView":
-      return {
-        type: "restrictedViewV2",
-        restrictedViewV2: {
-          restrictedViewRid: objectType.apiName,
-          propertyMapping: buildPropertyMapping(properties),
-        },
-      };
-    case "dataset":
-    default:
-      return {
-        type: "datasetV2",
-        datasetV2: {
-          datasetRid: objectType.apiName,
-          propertyMapping: buildPropertyMapping(properties),
-        },
-      };
-  }
-}
-
-/**
- * Extracts marking group names of a specific type from object properties
- */
-function extractMarkingGroups(
-  properties: ObjectPropertyType[],
-  markingType: "CBAC" | "MANDATORY",
-): string[] {
-  return properties
-    .map(prop => {
-      if (
-        typeof prop.type === "object"
-        && prop.type.type === "marking"
-        && prop.type.markingType === markingType
-      ) {
-        return prop.type.markingInputGroupName;
-      }
-      return undefined;
-    })
-    .filter((val): val is string => val !== undefined);
-}
-
-function buildPropertyMapping(
-  properties: ObjectPropertyType[],
-): Record<string, PropertyTypeMappingInfo> {
-  return Object.fromEntries(
-    properties.map((prop) => {
-      // editOnly
-      if (prop.editOnly) {
-        return [prop.apiName, { type: "editOnly", editOnly: {} }];
-      }
-      // structs
-      if (typeof prop.type === "object" && prop.type?.type === "struct") {
-        const structMapping = {
-          type: "struct",
-          struct: {
-            column: prop.apiName,
-            mapping: Object.fromEntries(
-              Object.keys(prop.type.structDefinition).map((fieldName) => [
-                fieldName,
-                { apiName: fieldName, mappings: {} },
-              ]),
-            ),
-          },
-        };
-        return [prop.apiName, structMapping];
-      }
-      // default: column mapping
-      return [prop.apiName, { type: "column", column: prop.apiName }];
-    }),
-  );
-}
-
-function convertProperty(property: ObjectPropertyType): OntologyIrPropertyType {
-  const apiName = namespace + property.apiName;
-  invariant(
-    !shouldNotHaveRenderHints(property.type)
-      || !hasRenderHints(property.typeClasses),
-    `Property type ${apiName} of type '${
-      getPropertyTypeName(property.type)
-    }' should not have render hints`,
-  );
-  const output: OntologyIrPropertyType = {
-    apiName: property.apiName,
-    sharedPropertyTypeApiName: property.sharedPropertyType?.apiName,
-    displayMetadata: {
-      displayName: property.displayName,
-      description: property.description,
-      visibility: property.visibility ?? "NORMAL",
-    },
-    indexedForSearch: property.indexedForSearch ?? true,
-    ruleSetBinding: undefined,
-    baseFormatter: property.baseFormatter,
-    type: property.array
-      ? {
-        type: "array" as const,
-        array: {
-          subtype: convertType(property.type),
-        },
-      }
-      : convertType(property.type),
-    typeClasses: property.typeClasses
-      ?? (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
-    status: convertObjectStatus(property.status),
-    inlineAction: undefined,
-    dataConstraints: property.valueType
-      ? convertValueTypeDataConstraints(property.valueType.constraints)
-      : convertNullabilityToDataConstraint(property),
-    sharedPropertyTypeRid: property.sharedPropertyType?.apiName,
-    valueType: property.valueType
-      ? convertValueType(property.valueType)
-      : undefined,
-  };
-  return output;
-}
-
-function convertLink(
-  linkType: LinkType,
-): OntologyIrLinkTypeBlockDataV2 {
-  let definition: OntologyIrLinkDefinition;
-  let datasource: OntologyIrManyToManyLinkTypeDatasource | undefined =
-    undefined;
-  if ("one" in linkType) {
-    definition = {
-      type: "oneToMany",
-      oneToMany: {
-        cardinalityHint: convertCardinality(linkType.cardinality),
-        manyToOneLinkMetadata: linkType.toMany.metadata,
-        objectTypeRidManySide: linkType.toMany.object.apiName,
-        objectTypeRidOneSide: linkType.one.object.apiName,
-        oneToManyLinkMetadata: linkType.one.metadata,
-        oneSidePrimaryKeyToManySidePropertyMapping: [{
-          from: {
-            apiName: linkType.one.object.primaryKeyPropertyApiName,
-            object: linkType.one.object.apiName,
-          },
-          to: {
-            apiName: linkType.manyForeignKeyProperty,
-            object: linkType.toMany.object.apiName,
-          },
-        }],
-      },
-    };
-  } else {
-    definition = {
-      type: "manyToMany",
-      manyToMany: {
-        objectTypeAToBLinkMetadata: linkType.many.metadata,
-        objectTypeBToALinkMetadata: linkType.toMany.metadata,
-        objectTypeRidA: linkType.many.object.apiName,
-        objectTypeRidB: linkType.toMany.object.apiName,
-        peeringMetadata: undefined,
-        objectTypeAPrimaryKeyPropertyMapping: [{
-          from: {
-            apiName: linkType.many.object.primaryKeyPropertyApiName,
-            object: linkType.many.object.apiName,
-          },
-          to: {
-            apiName: linkType.many.object.primaryKeyPropertyApiName,
-            object: linkType.many.object.apiName,
-          },
-        }],
-        objectTypeBPrimaryKeyPropertyMapping: [{
-          from: {
-            apiName: linkType.toMany.object.primaryKeyPropertyApiName,
-            object: linkType.toMany.object.apiName,
-          },
-          to: {
-            apiName: linkType.toMany.object.primaryKeyPropertyApiName,
-            object: linkType.toMany.object.apiName,
-          },
-        }],
-      },
-    };
-
-    datasource = {
-      rid: "ri.ontology.main.datasource.link-".concat(linkType.apiName),
-      datasource: {
-        type: "dataset",
-        dataset: {
-          datasetRid: "link-".concat(linkType.apiName),
-          writebackDatasetRid: undefined,
-          objectTypeAPrimaryKeyMapping: [{
-            property: {
-              apiName: linkType.many.object.primaryKeyPropertyApiName,
-              object: linkType.many.object.apiName,
-            },
-            column: linkType.many.object.primaryKeyPropertyApiName,
-          }],
-          objectTypeBPrimaryKeyMapping: [{
-            property: {
-              apiName: linkType.toMany.object.primaryKeyPropertyApiName,
-              object: linkType.toMany.object.apiName,
-            },
-            column: linkType.toMany.object.primaryKeyPropertyApiName,
-          }],
-        },
-      },
-      editsConfiguration: {
-        onlyAllowPrivilegedEdits: false,
-      },
-      redacted: linkType.redacted,
-    };
-  }
-
-  return {
-    linkType: {
-      definition: definition,
-      id: cleanAndValidateLinkTypeId(linkType.apiName),
-      status: linkType.status ?? { type: "active", active: {} },
-      redacted: linkType.redacted ?? false,
-    },
-    datasources: datasource !== undefined ? [datasource] : [],
-    entityMetadata: {
-      arePatchesEnabled: linkType.editsEnabled ?? false,
-    },
-  };
-}
-
-function cleanAndValidateLinkTypeId(apiName: string): string {
+export function cleanAndValidateLinkTypeId(apiName: string): string {
   // Insert a dash before any uppercase letter that follows a lowercase letter or digit
   const step1 = apiName.replace(/([a-z0-9])([A-Z])/g, "$1-$2");
   // Insert a dash after a sequence of uppercase letters when followed by a lowercase letter
@@ -760,89 +253,15 @@ function cleanAndValidateLinkTypeId(apiName: string): string {
   return linkTypeId;
 }
 
-function convertInterface(
-  interfaceType: InterfaceType,
-): OntologyIrMarketplaceInterfaceType {
-  const { __type, ...other } = interfaceType;
-  return {
-    ...other,
-    propertiesV2: Object.fromEntries(
-      Object.values(interfaceType.propertiesV2)
-        .map((
-          spt,
-        ) => [spt.sharedPropertyType.apiName, {
-          required: spt.required,
-          sharedPropertyType: convertSpt(spt.sharedPropertyType),
-        }]),
-    ),
-    displayMetadata: {
-      displayName: interfaceType.displayMetadata.displayName,
-      description: interfaceType.displayMetadata.description,
-    },
-    extendsInterfaces: interfaceType.extendsInterfaces.map(i => i.apiName),
-    // these are omitted from our internal types but we need to re-add them for the final json
-    properties: [],
-    // TODO(mwalther): Support propertiesV3
-    propertiesV3: {},
-  };
-}
-
 export function dumpOntologyFullMetadata(): OntologyIr {
-  return convertToWireOntologyIr(ontologyDefinition);
+  return convertOntologyDefinition(ontologyDefinition);
 }
 
 export function dumpValueTypeWireType(): OntologyIrValueTypeBlockData {
   return convertOntologyToValueTypeIr(ontologyDefinition);
 }
 
-function convertSpt(
-  {
-    type,
-    array,
-    description,
-    apiName,
-    displayName,
-    visibility,
-    gothamMapping,
-    typeClasses,
-    valueType,
-    nullability,
-  }: SharedPropertyType,
-): OntologyIrSharedPropertyType {
-  const dataConstraint:
-    | OntologyIrSharedPropertyType["dataConstraints"]
-    | undefined = convertNullabilityToDataConstraint({ type, nullability });
-  return {
-    apiName,
-    displayMetadata: {
-      displayName: displayName ?? apiName,
-      visibility: visibility ?? "NORMAL",
-      description,
-    },
-    type: array
-      ? {
-        type: "array" as const,
-        array: {
-          subtype: convertType(type),
-        },
-      }
-      : convertType(type),
-    aliases: [],
-    baseFormatter: undefined,
-    dataConstraints: dataConstraint,
-    gothamMapping: gothamMapping,
-    indexedForSearch: true,
-    typeClasses: typeClasses ?? [],
-    valueType: valueType === undefined ? undefined : {
-      apiName: valueType.apiName,
-      version: valueType.version,
-      packageNamespace: valueType.packageNamespace,
-      displayMetadata: valueType.displayMetadata,
-    },
-  };
-}
-
-function convertObjectStatus(status: any): any {
+export function convertObjectStatus(status: any): any {
   if (status === undefined) {
     return {
       type: "active",
@@ -878,7 +297,9 @@ function convertObjectStatus(status: any): any {
   return status;
 }
 
-function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
+export function convertAction(
+  action: ActionType,
+): OntologyIrActionTypeBlockDataV2 {
   const actionValidation = convertActionValidation(action);
   const actionParameters: Record<ParameterId, OntologyIrParameter> =
     convertActionParameters(action);
@@ -948,132 +369,6 @@ function convertAction(action: ActionType): OntologyIrActionTypeBlockDataV2 {
       },
     },
   };
-}
-
-function convertActionValidation(
-  action: ActionType,
-): OntologyIrActionValidation {
-  return {
-    actionTypeLevelValidation: {
-      rules: Object.fromEntries(
-        (action.validation
-          ?? [{
-            condition: { type: "true", true: {} },
-            displayMetadata: { failureMessage: "", typeClasses: [] },
-          }]).map((rule, idx) => [idx, rule]),
-      ),
-    },
-    parameterValidations: Object.fromEntries(
-      (action.parameters ?? []).map(p => {
-        return [
-          p.id,
-          {
-            defaultValidation: {
-              display: {
-                renderHint: renderHintFromBaseType(p),
-                visibility: convertActionVisibility(
-                  p.validation.defaultVisibility,
-                ),
-                ...p.defaultValue
-                  && { prefill: p.defaultValue },
-              },
-              validation: {
-                allowedValues: extractAllowedValues(
-                  p.validation.allowedValues!,
-                ),
-                required: convertParameterRequirementConstraint(
-                  p.validation.required!,
-                ),
-              },
-            },
-            conditionalOverrides: p.validation.conditionalOverrides?.map(
-              (override) =>
-                convertActionParameterConditionalOverride(
-                  override,
-                  p.validation,
-                ),
-            ) ?? [],
-          },
-        ];
-      }),
-    ),
-    sectionValidations: {
-      ...Object.fromEntries(
-        Object.entries(action.sections ?? {}).map((
-          [sectionId, section],
-        ) => [
-          section.id,
-          {
-            defaultDisplayMetadata: section.defaultVisibility === "hidden"
-              ? {
-                visibility: {
-                  type: "hidden",
-                  hidden: {},
-                },
-              }
-              : {
-                visibility: {
-                  type: "visible",
-                  visible: {},
-                },
-              },
-            conditionalOverrides: section.conditionalOverrides?.map(
-              (override) =>
-                convertSectionConditionalOverride(
-                  override,
-                  section.defaultVisibility ?? "visible",
-                ),
-            ) ?? [],
-          },
-        ]),
-      ),
-    },
-  };
-}
-
-function convertActionParameters(
-  action: ActionType,
-): Record<ParameterId, OntologyIrParameter> {
-  return Object.fromEntries((action.parameters ?? []).map(p => [p.id, {
-    id: p.id,
-    type: (typeof p.type === "string"
-      ? { type: p.type, [p.type]: {} }
-      : p.type) as OntologyIrBaseParameterType,
-    displayMetadata: {
-      displayName: p.displayName,
-      description: p.description ?? "",
-      typeClasses: [],
-    },
-  }]));
-}
-
-function convertActionSections(
-  action: ActionType,
-): Record<SectionId, OntologyIrSection> {
-  return Object.fromEntries(
-    Object.entries(action.sections ?? {}).map((
-      [sectionId, section],
-    ) => [sectionId, {
-      id: sectionId,
-      content: section.parameters.map(p => ({
-        type: "parameterId",
-        parameterId: p,
-      })),
-      displayMetadata: {
-        collapsedByDefault: section.collapsedByDefault ?? false,
-        columnCount: section.columnCount ?? 1,
-        description: section.description ?? "",
-        displayName: section.displayName ?? convertToDisplayName(sectionId),
-        showTitleBar: section.showTitleBar ?? true,
-        ...section.style
-          && {
-            style: section.style === "box"
-              ? { type: "box", box: {} }
-              : { type: "minimal", minimal: {} },
-          },
-      },
-    }]),
-  );
 }
 
 export function extractAllowedValues(
@@ -1178,7 +473,7 @@ export function extractAllowedValues(
   }
 }
 
-function renderHintFromBaseType(
+export function renderHintFromBaseType(
   parameter: ActionParameter,
 ): ParameterRenderHint {
   // TODO(dpaquin): these are just guesses, we should find where they're actually defined
@@ -1244,25 +539,6 @@ function renderHintFromBaseType(
   }
 }
 
-function convertParameterRequirementConstraint(
-  required: ActionParameterRequirementConstraint,
-): ParameterRequiredConfiguration {
-  if (typeof required === "boolean") {
-    return required
-      ? { type: "required", required: {} }
-      : { type: "notRequired", notRequired: {} };
-  }
-  const { min, max } = required.listLength;
-  return {
-    type: "listLengthValidation",
-    listLengthValidation: { minLength: min, maxLength: max },
-  };
-}
-
-export function sanitize(namespace: string, s: string): string {
-  return s.includes(".") ? s : namespace + s;
-}
-
 export function extractNamespace(apiName: string): string {
   return apiName.substring(0, apiName.lastIndexOf(".") + 1);
 }
@@ -1315,13 +591,4 @@ addDependency("${namespaceNoDot}", new URL(import.meta.url).pathname);
 
 export function addNamespaceIfNone(apiName: string): string {
   return apiName.includes(".") ? apiName : namespace + apiName;
-}
-
-function convertCardinality(
-  cardinality: OneToManyLinkTypeDefinition["cardinality"],
-): OntologyIrOneToManyLinkDefinition["cardinalityHint"] {
-  if (cardinality === "OneToMany" || cardinality === undefined) {
-    return "ONE_TO_MANY";
-  }
-  return "ONE_TO_ONE";
 }

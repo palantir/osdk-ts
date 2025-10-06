@@ -623,6 +623,13 @@ export class OntologyMetadataResolver {
     switch (baseType.type) {
       case "array":
       case "set":
+        if (
+          baseType.subType.type === "array" || baseType.subType.type === "set"
+        ) {
+          return Result.err([
+            `Unable to load query ${queryApiName} because it takes a nested array or set in parameter ${propertyName}`,
+          ]);
+        }
         return this.visitSupportedQueryTypes(
           queryApiName,
           propertyName,
@@ -739,6 +746,13 @@ export class OntologyMetadataResolver {
   ): Result<{}, string[]> {
     switch (actionTypeParameter.type) {
       case "array":
+        if (
+          actionTypeParameter.subType.type === "array"
+        ) {
+          return Result.err([
+            `Unable to load action ${actionApiName} because it takes a nested array as a parameter`,
+          ]);
+        }
         return this.isSupportedActionTypeParameter(
           actionApiName,
           actionTypeParameter.subType,

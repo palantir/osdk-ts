@@ -8,6 +8,7 @@ Nativewind
 nihalb
 osdk
 palantirfoundry
+Palo
 paperplane
 Pivotable
 Pressable

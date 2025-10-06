@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  SemanticSearchObjectTypesRequest
-    as _api_search_semantic_SemanticSearchObjectTypesRequest,
-  SemanticSearchObjectTypesResponse
-    as _api_search_semantic_SemanticSearchObjectTypesResponse,
-} from "../search/semantic/__components.js";
-export async function semanticSearchObjectTypes(
-  ctx: ConjureContext,
-  request: _api_search_semantic_SemanticSearchObjectTypesRequest,
-): Promise<_api_search_semantic_SemanticSearchObjectTypesResponse> {
-  return conjureFetch(
-    ctx,
-    `/ontology/semantic-search/v0/semantic-search-object-types`,
-    "PUT",
-    request,
-  );
+  OntologyIrBaseParameterType,
+  OntologyIrParameter,
+  ParameterId,
+} from "@osdk/client.unstable";
+import type { ActionType } from "../../api/action/ActionType.js";
+
+export function convertActionParameters(
+  action: ActionType,
+): Record<ParameterId, OntologyIrParameter> {
+  return Object.fromEntries((action.parameters ?? []).map(p => [p.id, {
+    id: p.id,
+    type: (typeof p.type === "string"
+      ? { type: p.type, [p.type]: {} }
+      : p.type) as OntologyIrBaseParameterType,
+    displayMetadata: {
+      displayName: p.displayName,
+      description: p.description ?? "",
+      typeClasses: [],
+    },
+  }]));
 }

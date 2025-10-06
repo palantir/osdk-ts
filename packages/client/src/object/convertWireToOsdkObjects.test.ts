@@ -71,6 +71,7 @@ describe("convertWireToOsdkObjects", () => {
       "lead",
       "officeLink",
       "peeps",
+      "visitedOffices",
     ]);
 
     const asFoo = employee.$as(FooInterface);
@@ -853,6 +854,10 @@ describe("convertWireToOsdkObjects", () => {
                 "peeps": {
                   "multiplicity": true,
                   "targetType": "Employee",
+                },
+                "visitedOffices": {
+                  "multiplicity": true,
+                  "targetType": "Office",
                 },
               },
               "pluralDisplayName": "Employees",
