@@ -542,14 +542,15 @@ const productToCategoriesLink = defineLink({
 ```
 
 ### Intermediary Link
+
 ```typescript
-// Define an object-backed link type between aircrafts and flights using a manifest
+// Define an object-backed link type between aircraft and flights using a manifest
 const manifest = defineObject(...); // define an intermediary object
-const aircraftsToManifestLink = defineLink(...); // define a one-to-many link between aircrafts and intermediary object
+const aircraftToManifestLink = defineLink(...); // define a one-to-many link between aircraft and intermediary object
 const flightsToManifestLink = defineLink(...); // define a one-to-many link between flights and intermediary object
 
-const aircraftsToFlightsLink = defineLink({
-  apiName: "aircraftsToFlights",
+const aircraftToFlightsLink = defineLink({
+  apiName: "aircraftToFlights",
   many: {
     object: aircraft,
     metadata: {
@@ -557,21 +558,20 @@ const aircraftsToFlightsLink = defineLink({
       pluralDisplayName: "Flights",
       apiName: "flights",
     },
-    linkToIntermediary: aircraftsToManifestLink,
+    linkToIntermediary: aircraftToManifestLink,
   },
   toMany: {
     object: flight,
     metadata: {
       displayName: "Aircraft",
-      pluralDisplayName: "Aircrafts",
-      apiName: "aircrafts",
+      pluralDisplayName: "Aircraft",
+      apiName: "aircraft",
     },
     linkToIntermediary: flightsToManifestLink,
   },
   intermediaryObjectType: manifest,
 });
 ```
-
 
 ## Interface Link Constraints
 
