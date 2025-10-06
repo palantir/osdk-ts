@@ -26,12 +26,12 @@ import { createAttachmentUpload } from "@osdk/client";
 import { documentEquipment } from "../../../generatedNoCheck/index.js";
 
 async function callActionWithAttachmentUpload() {
-    async function uploadMyFile() {
+    async function createAttachmentReference() {
         const file = await fetch("file.json");
         const blob = await file.blob();
         return createAttachmentUpload(blob, "myFile");
     }
-    const attachment: AttachmentUpload = await uploadMyFile();
+    const attachment: AttachmentUpload = await createAttachmentReference();
     const result = await client(documentEquipment).applyAction(
         {
             "equipmentId": "mac-1234", 

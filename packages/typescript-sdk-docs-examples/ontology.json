@@ -1107,7 +1107,15 @@
       "output": {
         "type": "integer"
       },
-      "parameters": {},
+      "parameters": {
+        "departmentId": {
+          "description": "The department to count employees for",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        }
+      },
       "rid": "ri.function-registry.main.function.employee-count-12345",
       "version": "1.0.0"
     },

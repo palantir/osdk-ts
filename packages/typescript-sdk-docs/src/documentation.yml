@@ -1212,12 +1212,12 @@ versions:
 
             {{#hasAttachmentUpload}}
             async function callActionWithAttachmentUpload() {
-                async function uploadMyFile() {
+                async function createAttachmentReference() {
                     const file = await fetch("file.json");
                     const blob = await file.blob();
                     return createAttachmentUpload(blob, "myFile");
                 }
-                const attachment: AttachmentUpload = await uploadMyFile();
+                const attachment: AttachmentUpload = await createAttachmentReference();
             {{/hasAttachmentUpload}}
             {{^hasAttachmentUpload}}
             async function callActionWithAttachmentLoaded(objectTypeWithAttachment: Osdk.Instance<{{objectType}}>) {
@@ -1279,12 +1279,12 @@ versions:
 
             {{#hasAttachmentUpload}}
             async function callActionWithAttachmentUpload() {
-                async function uploadMyFile() {
+                async function createAttachmentReference() {
                     const file = await fetch("file.json");
                     const blob = await file.blob();
                     return createAttachmentUpload(blob, "myFile");
                 }
-                const attachment: AttachmentUpload = await uploadMyFile();
+                const attachment: AttachmentUpload = await createAttachmentReference();
             {{/hasAttachmentUpload}}
             {{^hasAttachmentUpload}}
             async function callActionWithAttachmentLoaded(objectTypeWithAttachment: Osdk.Instance<{{objectType}}>) {
@@ -1351,13 +1351,13 @@ versions:
             import { {{actionApiName}} } from "{{{packageName}}}";
 
             // To call an action with an attachment property, you first need to upload the file
-            async function uploadMyFile() {
+            async function createAttachmentReference() {
                 const file = await fetch("file.json");
                 const blob = await file.blob();
                 return createAttachmentUpload(blob, "myFile");
             }
 
-            const myAttachmentUpload: AttachmentUpload = await uploadMyFile();
+            const myAttachmentUpload: AttachmentUpload = await createAttachmentReference();
             // then pass the attachment to the action in the action parameter.
             const actionResult = client({{actionApiName}}).applyAction({ 
                 {{primaryKeyPropertyV2.apiName}}: {{{actionParameterSampleValuesV2}}},
@@ -1400,12 +1400,12 @@ versions:
 
             {{#hasAttachmentUpload}}
             async function callFunctionWithAttachmentUpload() {
-                async function uploadMyFile() {
+                async function createAttachmentReference() {
                     const file = await fetch("file.json");
                     const blob = await file.blob();
                     return createAttachmentUpload(blob, "myFile");
                 }
-                const attachment: AttachmentUpload = await uploadMyFile();
+                const attachment: AttachmentUpload = await createAttachmentReference();
             {{/hasAttachmentUpload}}
             {{^hasAttachmentUpload}}
             async function callFunctionWithAttachmentLoaded(objectWithAttachment: Osdk.Instance<{{objectType}}>) {
@@ -2109,7 +2109,7 @@ versions:
             import { client } from "./client";
             import type { MediaReference } from "@osdk/api";
             // To upload media with 2.x, it has to be linked to an Action call
-            async function uploadMedia() {
+            async function createMediaReference() {
                 const file = await fetch("file.json");
                 const data = await file.blob();
                 // Upload media to an object type with a media property. This returns a media reference that can passed to
@@ -2123,7 +2123,7 @@ versions:
                     propertyType: "{{property}}",
                 });
             }
-            const mediaReference: MediaReference = await uploadMedia();
+            const mediaReference: MediaReference = await createMediaReference();
             const actionResult = client({{actionApiName}}).applyAction({ 
                 {{primaryKeyPropertyV2.apiName}}: {{{propertyValueV2}}},
                 {{mediaParameter}}: mediaReference 
@@ -2182,10 +2182,10 @@ versions:
               const {{objectType}}WithExpression = await client({{objectType}})
                   .withProperties({
                         {{^isExtractPart}} 
-                        "{{operation}}_between_{{property}}_and_{{otherProperty}}": (baseObjectSet) =>
+                        "derivedPropertyDatetime_{{operation}}": (baseObjectSet) =>
                         baseObjectSet.pivotTo("{{linkApiName}}")
-                            .aggregate("{{property}}")
-                            .{{operation}}(baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{otherProperty}}"))
+                            .selectProperty("{{property}}")
+                            .{{operation}}(baseObjectSet.selectProperty("{{property}}"))
                         {{/isExtractPart}}
                         {{#isExtractPart}}
                         "YEARS_part_of_{{property}}_of_{{linkApiName}}": (baseObjectSet) =>

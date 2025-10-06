@@ -253,13 +253,6 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
     actionParameterSampleValuesV2: "\"mac-1234\"",
     property: "documentFile",
   },
-  "executeFunction": {
-    funcApiName: "getTotalEmployeeCount",
-    functionInputValuesV2: "{}",
-    needsImports: true,
-    hasAttachmentUpload: false,
-    attachmentProperty: "",
-  },
 
   // === DERIVED PROPERTY TEMPLATES ===
   "derivedPropertyBaseExample": { linkApiName: "assignedEquipment" },
@@ -666,7 +659,9 @@ const templateHierarchy: Record<string, TemplateHierarchyNode> = {
       context: {
         hasAttachmentProperty: false,
         funcApiName: "getTotalEmployeeCount",
-        functionInputValuesV2: "",
+        functionInputValuesV2: `{
+          "departmentId": "engineering"
+        }`,
       },
     },
   },
@@ -702,9 +697,8 @@ const templateHierarchy: Record<string, TemplateHierarchyNode> = {
     },
     "^isExtractPart": {
       context: {
-        linkApiName: "assignedEquipment",
-        property: "purchaseDate:min",
-        otherProperty: "lastMaintenanceDate:min",
+        linkApiName: "lead",
+        property: "startDate",
         operation: "min",
         isExtractPart: false,
       },

@@ -25,7 +25,7 @@ import { Equipment, documentEquipment } from "../../../generatedNoCheck/index.js
 import { client } from "./client.js";
 import type { MediaReference } from "@osdk/api";
 // To upload media with 2.x, it has to be linked to an Action call
-async function uploadMedia() {
+async function createMediaReference() {
     const file = await fetch("file.json");
     const data = await file.blob();
     // Upload media to an object type with a media property. This returns a media reference that can passed to
@@ -39,7 +39,7 @@ async function uploadMedia() {
         propertyType: "trainingMaterial",
     });
 }
-const mediaReference: MediaReference = await uploadMedia();
+const mediaReference: MediaReference = await createMediaReference();
 const actionResult = client(documentEquipment).applyAction({ 
     equipmentId: "mac-1234",
     instructionalVideo: mediaReference 

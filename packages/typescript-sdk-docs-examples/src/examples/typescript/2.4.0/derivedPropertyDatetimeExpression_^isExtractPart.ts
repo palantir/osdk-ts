@@ -25,8 +25,8 @@ import { client } from "./client.js";
 
 const EmployeeWithExpression = await client(Employee)
     .withProperties({
-          "min_between_purchaseDate:min_and_lastMaintenanceDate:min": (baseObjectSet) =>
-          baseObjectSet.pivotTo("assignedEquipment")
-              .aggregate("purchaseDate:min")
-              .min(baseObjectSet.pivotTo("assignedEquipment").aggregate("lastMaintenanceDate:min"))
+          "derivedPropertyDatetime_min": (baseObjectSet) =>
+          baseObjectSet.pivotTo("lead")
+              .selectProperty("startDate")
+              .min(baseObjectSet.selectProperty("startDate"))
     }).fetchPage();

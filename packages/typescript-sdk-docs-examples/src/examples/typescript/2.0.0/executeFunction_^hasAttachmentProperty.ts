@@ -23,4 +23,6 @@
 import { client } from "./client.js";
 import { getTotalEmployeeCount } from "../../../generatedNoCheck/index.js";
 
-const result = await client(getTotalEmployeeCount).executeFunction();
+const result = await client(getTotalEmployeeCount).executeFunction({
+          "departmentId": "engineering"
+        });

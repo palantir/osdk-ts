@@ -26,12 +26,12 @@ import { createAttachmentUpload } from "@osdk/client";
 import { calculateTotal } from "../../../generatedNoCheck/index.js";
 
 async function callFunctionWithAttachmentUpload() {
-    async function uploadMyFile() {
+    async function createAttachmentReference() {
         const file = await fetch("file.json");
         const blob = await file.blob();
         return createAttachmentUpload(blob, "myFile");
     }
-    const attachment: AttachmentUpload = await uploadMyFile();
+    const attachment: AttachmentUpload = await createAttachmentReference();
     const result = await client(calculateTotal).executeFunction({ documentFile: attachment, includeMetadata: true });
     return result;
 }

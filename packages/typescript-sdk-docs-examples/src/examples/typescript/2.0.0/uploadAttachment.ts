@@ -26,13 +26,13 @@ import type { AttachmentUpload } from "@osdk/api";
 import { documentEquipment } from "../../../generatedNoCheck/index.js";
 
 // To call an action with an attachment property, you first need to upload the file
-async function uploadMyFile() {
+async function createAttachmentReference() {
     const file = await fetch("file.json");
     const blob = await file.blob();
     return createAttachmentUpload(blob, "myFile");
 }
 
-const myAttachmentUpload: AttachmentUpload = await uploadMyFile();
+const myAttachmentUpload: AttachmentUpload = await createAttachmentReference();
 // then pass the attachment to the action in the action parameter.
 const actionResult = client(documentEquipment).applyAction({ 
     equipmentId: "mac-1234",
