@@ -62,20 +62,20 @@ export function defineLink(
   }
   if ("intermediaryObjectType" in linkDefinition) {
     invariant(
-      "one" in linkDefinition.linkTypeA
-        && linkDefinition.linkTypeA.one.object.apiName
-          === linkDefinition.manyObjectA.object.apiName
-        && linkDefinition.linkTypeA.toMany.object.apiName
+      "one" in linkDefinition.many.linkToIntermediary
+        && linkDefinition.many.linkToIntermediary.one.object.apiName
+          === linkDefinition.many.object.apiName
+        && linkDefinition.many.linkToIntermediary.toMany.object.apiName
           === linkDefinition.intermediaryObjectType.apiName,
-      `LinkTypeA ${linkDefinition.linkTypeA.apiName} must be a many to one link from intermediary object ${linkDefinition.intermediaryObjectType.apiName} to objectA ${linkDefinition.manyObjectA.object.apiName}`,
+      `LinkTypeA ${linkDefinition.many.linkToIntermediary.apiName} must be a many to one link from intermediary object ${linkDefinition.intermediaryObjectType.apiName} to objectA ${linkDefinition.many.object.apiName}`,
     );
     invariant(
-      "one" in linkDefinition.linkTypeB
-        && linkDefinition.linkTypeB.one.object.apiName
-          === linkDefinition.toManyObjectB.object.apiName
-        && linkDefinition.linkTypeB.toMany.object.apiName
+      "one" in linkDefinition.toMany.linkToIntermediary
+        && linkDefinition.toMany.linkToIntermediary.one.object.apiName
+          === linkDefinition.toMany.object.apiName
+        && linkDefinition.toMany.linkToIntermediary.toMany.object.apiName
           === linkDefinition.intermediaryObjectType.apiName,
-      `LinkTypeB ${linkDefinition.linkTypeB.apiName} must be a many to one link from intermediary object ${linkDefinition.intermediaryObjectType.apiName} to objectB ${linkDefinition.toManyObjectB.object.apiName}`,
+      `LinkTypeB ${linkDefinition.toMany.linkToIntermediary.apiName} must be a many to one link from intermediary object ${linkDefinition.intermediaryObjectType.apiName} to objectB ${linkDefinition.toMany.object.apiName}`,
     );
   }
   let fullLinkDefinition;
@@ -85,21 +85,21 @@ export function defineLink(
       one: convertUserOneToManyLinkDefinition(linkDefinition.one),
       toMany: convertUserOneToManyLinkDefinition(linkDefinition.toMany),
     };
-  } else if ("many" in linkDefinition) {
+  } else if ("intermediaryObjectType" in linkDefinition) {
     fullLinkDefinition = {
       ...linkDefinition,
-      many: convertUserManyToManyLinkDefinition(linkDefinition.many),
-      toMany: convertUserManyToManyLinkDefinition(linkDefinition.toMany),
+      many: convertUserIntermediaryLinkDefinition(
+        linkDefinition.many,
+      ),
+      toMany: convertUserIntermediaryLinkDefinition(
+        linkDefinition.toMany,
+      ),
     };
   } else {
     fullLinkDefinition = {
       ...linkDefinition,
-      manyObjectA: convertUserIntermediaryLinkDefinition(
-        linkDefinition.manyObjectA,
-      ),
-      toManyObjectB: convertUserIntermediaryLinkDefinition(
-        linkDefinition.toManyObjectB,
-      ),
+      many: convertUserManyToManyLinkDefinition(linkDefinition.many),
+      toMany: convertUserManyToManyLinkDefinition(linkDefinition.toMany),
     };
   }
   const linkType: LinkType = {

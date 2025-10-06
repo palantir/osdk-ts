@@ -2968,24 +2968,24 @@ describe("Ontology Defining", () => {
 
       defineLink({
         apiName: "fizzToBar",
-        manyObjectA: {
+        many: {
           object: bar,
           metadata: {
             displayName: "Fizz",
             pluralDisplayName: "Fizzes",
             apiName: "fizzes1",
           },
+          linkToIntermediary: barToBuzz,
         },
-        toManyObjectB: {
+        toMany: {
           object: fizz,
           metadata: {
             displayName: "Bar",
             pluralDisplayName: "Bars",
             apiName: "bars1",
           },
+          linkToIntermediary: fizzToBuzz,
         },
-        linkTypeA: barToBuzz,
-        linkTypeB: fizzToBuzz,
         intermediaryObjectType: intermediaryObject,
       });
       expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`

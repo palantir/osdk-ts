@@ -115,10 +115,8 @@ export interface ManyToManyObjectLinkReferenceUserDefinition {
 
 export interface IntermediaryLinkTypeDefinition {
   apiName: string;
-  manyObjectA: IntermediaryObjectLinkReference;
-  toManyObjectB: IntermediaryObjectLinkReference;
-  linkTypeA: LinkType;
-  linkTypeB: LinkType;
+  many: IntermediaryObjectLinkReference;
+  toMany: IntermediaryObjectLinkReference;
   intermediaryObjectType: ObjectTypeDefinition;
   editsEnabled?: boolean;
   status?: OntologyIrLinkTypeStatus;
@@ -128,20 +126,20 @@ export interface IntermediaryLinkTypeDefinition {
 export interface IntermediaryObjectLinkReference {
   object: ObjectTypeDefinition;
   metadata: LinkTypeMetadata;
+  linkToIntermediary: LinkType;
 }
 
 export interface IntermediaryLinkTypeUserDefinition {
   apiName: string;
-  manyObjectA: IntermediaryObjectLinkReferenceUserDefinition;
-  toManyObjectB: IntermediaryObjectLinkReferenceUserDefinition;
-  linkTypeA: LinkType;
-  linkTypeB: LinkType;
+  many: IntermediaryObjectLinkReferenceUserDefinition;
+  toMany: IntermediaryObjectLinkReferenceUserDefinition;
   intermediaryObjectType: ObjectTypeDefinition;
 }
 
 export interface IntermediaryObjectLinkReferenceUserDefinition {
   object: ObjectTypeDefinition;
   metadata: LinkTypeMetadataUserDefinition;
+  linkToIntermediary: LinkType;
 }
 
 export interface LinkTypeMetadataUserDefinition {
