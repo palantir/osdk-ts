@@ -23,11 +23,12 @@ import type {
 } from "../__components.js";
 
 /**
- * Moves the specified entities to the target project.
- * - The project must exist in the same namespace as the ontology.
- * - The user must be owner of the requested entities and have write permissions on the project.
+ * Moves the specified entities to the target folder.
+ * - The folder must exist in the same namespace as the ontology.
+ * - The user must be owner of the requested entities and have write permissions on the folder.
  * - At most 50 projects per request
  * - At most 2000 entities per project
+ * - TypeGroups are not allowed. OMS will throw if any TypeGroups are attempted to be migrated.
  */
 export async function migrateEntitiesToProjects(
   ctx: ConjureContext,
