@@ -123,8 +123,13 @@ export interface NihalbCastingLinkedObjectTypeA extends $ObjectTypeDefinition {
   };
 }
 
-export const NihalbCastingLinkedObjectTypeA: NihalbCastingLinkedObjectTypeA = {
+export const NihalbCastingLinkedObjectTypeA = {
   type: 'object',
   apiName: 'NihalbCastingLinkedObjectTypeA',
   osdkMetadata: $osdkMetadata,
-};
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.object-type.e257ea9e-8127-471f-9253-d641f5585d26',
+  },
+} satisfies NihalbCastingLinkedObjectTypeA & {
+  experimentalDoNotUseMetadata: { rid: string };
+} as NihalbCastingLinkedObjectTypeA;

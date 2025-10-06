@@ -116,8 +116,11 @@ export interface NihalbCastingObjectTypeC extends $ObjectTypeDefinition {
   };
 }
 
-export const NihalbCastingObjectTypeC: NihalbCastingObjectTypeC = {
+export const NihalbCastingObjectTypeC = {
   type: 'object',
   apiName: 'NihalbCastingObjectTypeC',
   osdkMetadata: $osdkMetadata,
-};
+  experimentalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.object-type.cf0cc2e5-f032-4659-9f5a-aec285317898',
+  },
+} satisfies NihalbCastingObjectTypeC & { experimentalDoNotUseMetadata: { rid: string } } as NihalbCastingObjectTypeC;
