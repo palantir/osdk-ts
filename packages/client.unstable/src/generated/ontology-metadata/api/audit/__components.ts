@@ -44,6 +44,8 @@ import type {
     as _api_GetActionTypesForObjectTypeResponse,
   GetEntityDelegateDatasetRequest as _api_GetEntityDelegateDatasetRequest,
   GetEntityDelegateDatasetResponse as _api_GetEntityDelegateDatasetResponse,
+  GetEntityQueryableSourceRequest as _api_GetEntityQueryableSourceRequest,
+  GetEntityQueryableSourceResponse as _api_GetEntityQueryableSourceResponse,
   GetFeatureConfigurationsResponse as _api_GetFeatureConfigurationsResponse,
   GetLinkTypesForObjectTypesRequest as _api_GetLinkTypesForObjectTypesRequest,
   GetObjectTypesForInterfaceTypesRequest
@@ -659,6 +661,7 @@ export type OntologyMetadataAuditEvent =
   | "ONTOLOGY_METADATA_SERVICE_LOAD_ALL_TYPE_GROUPS_FROM_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_LOAD_ONTOLOGY_DATASOURCES"
   | "ONTOLOGY_METADATA_SERVICE_GET_ENTITY_DELEGATE_DATASET"
+  | "ONTOLOGY_METADATA_SERVICE_GET_ENTITY_QUERYABLE_SOURCE"
   | "ONTOLOGY_METADATA_SERVICE_MODIFY_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_DRY_RUN_MODIFY_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_MODIFICATION"
@@ -837,6 +840,12 @@ export interface OntologyMetadataServiceGetEntityModificationHistoryV2RequestPar
 }
 export interface OntologyMetadataServiceGetEntityModificationHistoryV2ResultParams {
   response: _api_modification_GetEntityModificationHistoryResponse;
+}
+export interface OntologyMetadataServiceGetEntityQueryableSourceRequestParams {
+  request: _api_GetEntityQueryableSourceRequest;
+}
+export interface OntologyMetadataServiceGetEntityQueryableSourceResponseParams {
+  response: _api_GetEntityQueryableSourceResponse;
 }
 export interface OntologyMetadataServiceGetFeatureConfigurationsRequestParams {
 }

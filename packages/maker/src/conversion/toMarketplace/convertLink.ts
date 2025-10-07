@@ -83,7 +83,7 @@ export function convertLink(
     };
 
     datasource = {
-      rid: "ri.ontology.main.datasource.link-".concat(linkType.apiName),
+      datasourceName: linkType.apiName,
       datasource: {
         type: "dataset",
         dataset: {

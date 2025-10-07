@@ -118,7 +118,8 @@ export type GothamDatasourceMetadata =
   | "GOTHAM_DSR_CREATED_BY"
   | "GOTHAM_DSR_LAST_UPDATED_BY"
   | "GOTHAM_DSR_CREATED_AT"
-  | "GOTHAM_DSR_LAST_UPDATED_AT";
+  | "GOTHAM_DSR_LAST_UPDATED_AT"
+  | "GOTHAM_DSR_CUSTOM_METADATA";
 export interface GothamIntrinsic_startDate {
   type: "startDate";
   startDate: GothamIntrinsicStartDate;
