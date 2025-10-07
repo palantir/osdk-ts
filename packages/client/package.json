@@ -65,7 +65,7 @@
     "@osdk/api": "workspace:*",
     "@osdk/client.unstable": "workspace:*",
     "@osdk/foundry.core": "2.30.0",
-    "@osdk/foundry.ontologies": "2.30.0",
+    "@osdk/foundry.ontologies": "2.34.0",
     "@osdk/generator-converters": "workspace:*",
     "@osdk/shared.client": "^1.0.1",
     "@osdk/shared.client.impl": "workspace:~",

@@ -45,7 +45,7 @@
     "@osdk/api": "workspace:~",
     "@osdk/foundry.core": "2.30.0",
     "@osdk/foundry.geo": "2.30.0",
-    "@osdk/foundry.ontologies": "2.30.0",
+    "@osdk/foundry.ontologies": "2.34.0",
     "@osdk/generator-converters": "workspace:~",
     "@osdk/internal.foundry.ontologies": "2.30.0",
     "date-fns": "^4.1.0",
