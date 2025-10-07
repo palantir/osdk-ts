@@ -83,7 +83,9 @@ const baseContext: BaseTemplateContext = {
   hasAttachmentUpload: false,
   hasAttachmentProperty: false,
   hasParameters: false,
-  actionParameterSampleValuesV2: "some-pk-of-the-object",
+  actionParameterSampleValuesV2: [
+    { key: "primaryKey", value: `"some-pk-of-the-object"`, last: true },
+  ],
   last: false,
   needsImports: false,
 
@@ -250,7 +252,7 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
   },
   "uploadAttachment": {
     primaryKeyPropertyV2: { apiName: "equipmentId", type: "string" },
-    actionParameterSampleValuesV2: "\"mac-1234\"",
+    propertyValueV2: `"mac-1234"`,
     property: "documentFile",
   },
 
@@ -532,90 +534,49 @@ const templateHierarchy: Record<string, TemplateHierarchyNode> = {
 
   // === COMPLEX NESTED HIERARCHIES ===
   "applyAction": {
+    "#actionParameterSampleValuesV2": {
+      context: {
+        objectType: "Equipment",
+        hasAttachmentProperty: false,
+        hasMediaParameter: false,
+        actionApiName: "refreshData",
+        actionParameterSampleValuesV2: [],
+      },
+    },
     "#hasAttachmentProperty": {
       context: {
         objectType: "Equipment",
         hasAttachmentProperty: true,
-        hasAttachmentUpload: false, // Default to loaded attachment
         hasMediaParameter: false,
-        hasParameters: true,
         attachmentProperty: "invoice",
+        attachmentParameter: "documentFile",
+        actionParameterSampleValuesV2: [
+          { key: "equipmentId", value: `"mac-1234"`, last: false },
+          { key: "documentType", value: `"invoice"`, last: true },
+        ],
+      },
+    },
+    "#hasMediaParameter": {
+      context: {
+        objectType: "Equipment",
+        hasAttachmentProperty: true,
+        hasMediaParameter: true,
+        mediaParameter: "instructionalVideo",
+        property: "trainingMaterial",
         actionParameterSampleValuesV2: [
           { key: "equipmentId", value: `"mac-1234"`, last: false },
         ],
-      },
-      children: {
-        "#hasAttachmentUpload": {
-          context: {
-            hasAttachmentUpload: true,
-            actionParameterSampleValuesV2: [
-              { key: "equipmentId", value: `"mac-1234"`, last: false },
-            ],
-          },
-        },
-        "^hasAttachmentUpload": {
-          context: {
-            objectType: "Equipment",
-            hasAttachmentUpload: false,
-            attachmentProperty: "invoice",
-            actionParameterSampleValuesV2: [
-              { key: "equipmentId", value: `"mac-1234"`, last: false },
-            ],
-          },
-        },
-        "#hasMediaParameter": {
-          context: {
-            hasMediaParameter: true,
-            hasAttachmentUpload: false,
-            attachmentProperty: "invoice",
-            actionParameterSampleValuesV2: [
-              { key: "equipmentId", value: `"mac-1234"`, last: true },
-            ],
-          },
-        },
       },
     },
     "^hasAttachmentProperty": {
       context: {
+        objectType: "Equipment",
         hasAttachmentProperty: false,
-        hasParameters: true,
+        hasMediaParameter: true,
+        mediaParameter: "instructionalVideo",
+        property: "trainingMaterial",
         actionParameterSampleValuesV2: [
           { key: "equipmentId", value: `"mac-1234"`, last: false },
-          { key: "documentType", value: `"active"`, last: true },
-        ],
-      },
-    },
-    "#hasParameters": {
-      context: {
-        hasParameters: true,
-        actionParameterSampleValuesV2: [
-          { key: "equipmentId", value: `"mac-1234"`, last: false },
-          { key: "documentType", value: `"active"`, last: true },
-        ],
-      },
-    },
-    "^hasParameters": {
-      context: {
-        hasParameters: false,
-        actionParameterSampleValuesV2: [],
-        actionApiName: "refreshData",
-      },
-    },
-    "#actionParameterSampleValuesV2": {
-      context: {
-        hasParameters: true,
-        actionParameterSampleValuesV2: [
-          { key: "equipmentId", value: `"mac-1234"`, last: false },
-          { key: "documentType", value: `"active"`, last: true },
-        ],
-      },
-    },
-    "^last": {
-      context: {
-        hasParameters: true,
-        actionParameterSampleValuesV2: [
-          { key: "equipmentId", value: `"mac-1234"`, last: false },
-          { key: "documentType", value: `"active"`, last: true },
         ],
       },
     },

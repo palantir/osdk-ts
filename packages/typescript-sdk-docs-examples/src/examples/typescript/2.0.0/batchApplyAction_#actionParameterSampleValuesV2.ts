@@ -21,16 +21,13 @@
 
 // Edit this import if your client location differs
 import { client } from "./client.js";
-import { documentEquipment } from "../../../generatedNoCheck/index.js";
+import { refreshData  } from "../../../generatedNoCheck/index.js";
 
-    const result = await client(documentEquipment).batchApplyAction([
+async function callBatchAction() {
+    const result = await client(refreshData).batchApplyAction([
             {
-                "equipmentId": "mac-1234", 
-                "documentType": "active"
             },
             {
-                "equipmentId": "mac-1234", 
-                "documentType": "active"
             },
         ],
         {
@@ -40,3 +37,4 @@ import { documentEquipment } from "../../../generatedNoCheck/index.js";
     if (result.type === "edits") {
         // use the result object to report back on action results
     }
+}

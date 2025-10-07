@@ -17,28 +17,39 @@
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-// Example: applyAction (Variation: #hasAttachmentUpload)
+// Example: applyAction (Variation: #hasMediaParameter)
 
 // Edit this import if your client location differs
 import { client } from "./client.js";
-import type { AttachmentUpload } from "@osdk/api";
+import type { AttachmentUpload , MediaReference  } from "@osdk/api";
 import { createAttachmentUpload } from "@osdk/client";
-import { documentEquipment } from "../../../generatedNoCheck/index.js";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
+import { documentEquipment , Equipment  } from "../../../generatedNoCheck/index.js";
 
-async function callActionWithAttachmentUpload() {
-    async function createAttachmentReference() {
-        const file = await fetch("file.json");
-        const blob = await file.blob();
-        return createAttachmentUpload(blob, "myFile");
-    }
-    const attachment: AttachmentUpload = await createAttachmentReference();
+async function callAction() {
+    // Create attachment upload
+    const attachmentFile = await fetch("file.json");
+    const attachmentBlob = await attachmentFile.blob();
+    const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
+    // Create media reference
+    const mediaFile = await fetch("media.mp4");
+    const mediaBlob = await mediaFile.blob();
+    const mediaReference: MediaReference = await client(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+    ).createMediaReference({
+        data: mediaBlob,
+        fileName: "myMedia",
+        objectType: Equipment,
+        propertyType: "trainingMaterial",
+    });
     const result = await client(documentEquipment).applyAction(
         {
-            "equipmentId": "mac-1234", 
-            documentFile: attachment
+            "equipmentId": "mac-1234",
+            documentFile: attachment,
+            instructionalVideo: mediaReference,
         },
         {
-        $returnEdits: true,
+            $returnEdits: true,
         }
     );
     if (result.type === "edits") {

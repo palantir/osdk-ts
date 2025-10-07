@@ -17,15 +17,20 @@
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-// Example: applyAction (Variation: ^hasAttachmentProperty)
+// Example: batchApplyAction (Variation: #hasMediaParameter)
 
 // Edit this import if your client location differs
 import { client } from "./client.js";
-import type { MediaReference } from "@osdk/api";
+import type { AttachmentUpload , MediaReference  } from "@osdk/api";
+import { createAttachmentUpload } from "@osdk/client";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
 import { documentEquipment , Equipment  } from "../../../generatedNoCheck/index.js";
 
-async function callAction() {
+async function callBatchAction() {
+    // Create attachment upload
+    const attachmentFile = await fetch("file.json");
+    const attachmentBlob = await attachmentFile.blob();
+    const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
     // Create media reference
     const mediaFile = await fetch("media.mp4");
     const mediaBlob = await mediaFile.blob();
@@ -37,11 +42,18 @@ async function callAction() {
         objectType: Equipment,
         propertyType: "trainingMaterial",
     });
-    const result = await client(documentEquipment).applyAction(
-        {
-            "equipmentId": "mac-1234",
-            instructionalVideo: mediaReference,
-        },
+    const result = await client(documentEquipment).batchApplyAction([
+            {
+                "equipmentId": "mac-1234",
+                documentFile: attachment,
+                instructionalVideo: mediaReference,
+            },
+            {
+                "equipmentId": "mac-1234",
+                documentFile: attachment,
+                instructionalVideo: mediaReference,
+            },
+        ],
         {
             $returnEdits: true,
         }

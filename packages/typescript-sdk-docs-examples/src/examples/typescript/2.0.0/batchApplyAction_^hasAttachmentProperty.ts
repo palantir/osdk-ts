@@ -21,16 +21,30 @@
 
 // Edit this import if your client location differs
 import { client } from "./client.js";
-import { documentEquipment } from "../../../generatedNoCheck/index.js";
+import type { MediaReference } from "@osdk/api";
+import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
+import { documentEquipment , Equipment  } from "../../../generatedNoCheck/index.js";
 
+async function callBatchAction() {
+    // Create media reference
+    const mediaFile = await fetch("media.mp4");
+    const mediaBlob = await mediaFile.blob();
+    const mediaReference: MediaReference = await client(
+        __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+    ).createMediaReference({
+        data: mediaBlob,
+        fileName: "myMedia",
+        objectType: Equipment,
+        propertyType: "trainingMaterial",
+    });
     const result = await client(documentEquipment).batchApplyAction([
             {
-                "equipmentId": "mac-1234", 
-                "documentType": "active"
+                "equipmentId": "mac-1234",
+                instructionalVideo: mediaReference,
             },
             {
-                "equipmentId": "mac-1234", 
-                "documentType": "active"
+                "equipmentId": "mac-1234",
+                instructionalVideo: mediaReference,
             },
         ],
         {
@@ -40,3 +54,4 @@ import { documentEquipment } from "../../../generatedNoCheck/index.js";
     if (result.type === "edits") {
         // use the result object to report back on action results
     }
+}

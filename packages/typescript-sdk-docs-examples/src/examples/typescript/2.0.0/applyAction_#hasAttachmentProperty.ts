@@ -21,18 +21,23 @@
 
 // Edit this import if your client location differs
 import { client } from "./client.js";
-import type { Osdk } from "@osdk/client";
-import { documentEquipment, type Equipment } from "../../../generatedNoCheck/index.js";
+import type { AttachmentUpload  } from "@osdk/api";
+import { createAttachmentUpload } from "@osdk/client";
+import { documentEquipment  } from "../../../generatedNoCheck/index.js";
 
-async function callActionWithAttachmentLoaded(objectTypeWithAttachment: Osdk.Instance<Equipment>) {
-    const attachment = objectTypeWithAttachment.invoice?.rid;
+async function callAction() {
+    // Create attachment upload
+    const attachmentFile = await fetch("file.json");
+    const attachmentBlob = await attachmentFile.blob();
+    const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
     const result = await client(documentEquipment).applyAction(
         {
-            "equipmentId": "mac-1234", 
-            documentFile: attachment
+            "equipmentId": "mac-1234",
+            "documentType": "invoice",
+            documentFile: attachment,
         },
         {
-        $returnEdits: true,
+            $returnEdits: true,
         }
     );
     if (result.type === "edits") {

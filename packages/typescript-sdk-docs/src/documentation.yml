@@ -1191,65 +1191,59 @@ versions:
             - propertyValueV2
             - propertyValueIncrementedV2
       applyAction:
-        # Template updated to handle attachment properties properly:
-        # - Split into multiple conditional blocks based on attachment handling needs
-        # - hasAttachmentProperty: Whether action has attachment parameters
-        # - hasAttachmentUpload: Whether to demonstrate file upload vs using existing attachment RID
-        # - This provides complete, runnable examples for both attachment workflows
+        # Simplified template supporting 4 cases:
+        # - hasAttachmentProperty: Whether action has attachment parameters (true/false)
+        # - hasMediaParameter: Whether action has media parameters (true/false)
+        # This creates 4 combinations: none, attachment only, media only, both
         - template: |-
             // Edit this import if your client location differs
             import { client } from "./client";
             {{#hasAttachmentProperty}}
-            {{#hasAttachmentUpload}}
-            import type { AttachmentUpload } from "@osdk/api";
+            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference {{/hasMediaParameter}} } from "@osdk/api";
+            {{/hasAttachmentProperty}}
+            {{^hasAttachmentProperty}}{{#hasMediaParameter}}
+            import type { MediaReference } from "@osdk/api";
+            {{/hasMediaParameter}}{{/hasAttachmentProperty}}
+            {{#hasAttachmentProperty}}
             import { createAttachmentUpload } from "@osdk/client";
-            import { {{actionApiName}} } from "{{{packageName}}}";
-            {{/hasAttachmentUpload}}
-            {{^hasAttachmentUpload}}
-            import type { Osdk } from "@osdk/client";
-            import { {{actionApiName}}, type {{objectType}} } from "{{{packageName}}}";
-            {{/hasAttachmentUpload}}
+            {{/hasAttachmentProperty}}
+            {{#hasMediaParameter}}
+            import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
+            {{/hasMediaParameter}}
+            import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
 
-            {{#hasAttachmentUpload}}
-            async function callActionWithAttachmentUpload() {
-                async function createAttachmentReference() {
-                    const file = await fetch("file.json");
-                    const blob = await file.blob();
-                    return createAttachmentUpload(blob, "myFile");
-                }
-                const attachment: AttachmentUpload = await createAttachmentReference();
-            {{/hasAttachmentUpload}}
-            {{^hasAttachmentUpload}}
-            async function callActionWithAttachmentLoaded(objectTypeWithAttachment: Osdk.Instance<{{objectType}}>) {
-                const attachment = objectTypeWithAttachment.{{attachmentProperty}}?.rid;
-            {{/hasAttachmentUpload}}
+            async function callAction() {
+            {{#hasAttachmentProperty}}
+                // Create attachment upload
+                const attachmentFile = await fetch("file.json");
+                const attachmentBlob = await attachmentFile.blob();
+                const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
+            {{/hasAttachmentProperty}}
+            {{#hasMediaParameter}}
+                // Create media reference
+                const mediaFile = await fetch("media.mp4");
+                const mediaBlob = await mediaFile.blob();
+                const mediaReference: MediaReference = await client(
+                    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+                ).createMediaReference({
+                    data: mediaBlob,
+                    fileName: "myMedia",
+                    objectType: {{objectType}},
+                    propertyType: "{{property}}",
+                });
+            {{/hasMediaParameter}}
                 const result = await client({{actionApiName}}).applyAction(
-                    {{^hasParameters}}{},{{/hasParameters}}{{#hasParameters}}{
+                    {
                         {{#actionParameterSampleValuesV2}}
-                        "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                        "{{key}}": {{{value}}},
                         {{/actionParameterSampleValuesV2}}
                         {{#hasAttachmentProperty}}
-                        {{attachmentParameter}}: attachment
+                        {{attachmentParameter}}: attachment,
                         {{/hasAttachmentProperty}}
-                    },{{/hasParameters}}
-                    {
-                    $returnEdits: true,
-                    }
-                );
-                if (result.type === "edits") {
-                    // use the result object to report back on action results
-                }
-            }
-            {{/hasAttachmentProperty}}
-            {{^hasAttachmentProperty}}
-            import { {{actionApiName}} } from "{{{packageName}}}";
-
-                const result = await client({{actionApiName}}).applyAction(
-                    {{^hasParameters}}{},{{/hasParameters}}{{#hasParameters}}{
-                        {{#actionParameterSampleValuesV2}}
-                        "{{key}}": {{{value}}}{{^last}}, {{/last}}
-                        {{/actionParameterSampleValuesV2}}
-                    },{{/hasParameters}}
+                        {{#hasMediaParameter}}
+                        {{mediaParameter}}: mediaReference,
+                        {{/hasMediaParameter}}
+                    },
                     {
                         $returnEdits: true,
                     }
@@ -1257,80 +1251,72 @@ versions:
                 if (result.type === "edits") {
                     // use the result object to report back on action results
                 }
-            {{/hasAttachmentProperty}}
-          computedVariables:
-            - actionParameterSampleValuesV2
+            }
       batchApplyAction:
-        # Similar template structure to applyAction but for batch operations
-        # Uses same conditional logic for attachment handling consistency
+        # Simplified template supporting 4 cases (same as applyAction):
+        # - hasAttachmentProperty: Whether action has attachment parameters (true/false)
+        # - hasMediaParameter: Whether action has media parameters (true/false)
+        # This creates 4 combinations: none, attachment only, media only, both
         - template: |-
             // Edit this import if your client location differs
             import { client } from "./client";
             {{#hasAttachmentProperty}}
-            {{#hasAttachmentUpload}}
-            import type { AttachmentUpload } from "@osdk/api";
-            import { createAttachmentUpload } from "@osdk/client";
-            import { {{actionApiName}} } from "{{{packageName}}}";
-            {{/hasAttachmentUpload}}
-            {{^hasAttachmentUpload}}
-            import type { Osdk } from "@osdk/client";
-            import { {{actionApiName}}, type {{objectType}} } from "{{{packageName}}}";
-            {{/hasAttachmentUpload}}
-
-            {{#hasAttachmentUpload}}
-            async function callActionWithAttachmentUpload() {
-                async function createAttachmentReference() {
-                    const file = await fetch("file.json");
-                    const blob = await file.blob();
-                    return createAttachmentUpload(blob, "myFile");
-                }
-                const attachment: AttachmentUpload = await createAttachmentReference();
-            {{/hasAttachmentUpload}}
-            {{^hasAttachmentUpload}}
-            async function callActionWithAttachmentLoaded(objectTypeWithAttachment: Osdk.Instance<{{objectType}}>) {
-                const attachment = objectTypeWithAttachment.{{attachmentProperty}}?.rid;
-            {{/hasAttachmentUpload}}
-                const result = await client({{actionApiName}}).batchApplyAction([
-                        {{^hasParameters}}{},{{/hasParameters}}{{#hasParameters}}{
-                            {{#actionParameterSampleValuesV2}}
-                            "{{key}}": {{{value}}}{{^last}}, {{/last}}
-                            {{/actionParameterSampleValuesV2}}
-                            {{#hasAttachmentProperty}}
-                            {{attachmentParameter}}: attachment
-                            {{/hasAttachmentProperty}}
-                        },
-                        {
-                            {{#actionParameterSampleValuesV2}}
-                            "{{key}}": {{{value}}}{{^last}}, {{/last}}
-                            {{/actionParameterSampleValuesV2}}
-                            {{#hasAttachmentProperty}}
-                            {{attachmentParameter}}: attachment
-                            {{/hasAttachmentProperty}}
-                        },{{/hasParameters}}
-                    ],
-                    {
-                    $returnEdits: true,
-                    }
-                );
-                if (result.type === "edits") {
-                    // use the result object to report back on action results
-                }
-            }
+            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference {{/hasMediaParameter}} } from "@osdk/api";
             {{/hasAttachmentProperty}}
-            {{^hasAttachmentProperty}}
-            import { {{actionApiName}} } from "{{{packageName}}}";
-            
+            {{^hasAttachmentProperty}}{{#hasMediaParameter}}
+            import type { MediaReference } from "@osdk/api";
+            {{/hasMediaParameter}}{{/hasAttachmentProperty}}
+            {{#hasAttachmentProperty}}
+            import { createAttachmentUpload } from "@osdk/client";
+            {{/hasAttachmentProperty}}
+            {{#hasMediaParameter}}
+            import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
+            {{/hasMediaParameter}}
+            import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
+
+            async function callBatchAction() {
+            {{#hasAttachmentProperty}}
+                // Create attachment upload
+                const attachmentFile = await fetch("file.json");
+                const attachmentBlob = await attachmentFile.blob();
+                const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
+            {{/hasAttachmentProperty}}
+            {{#hasMediaParameter}}
+                // Create media reference
+                const mediaFile = await fetch("media.mp4");
+                const mediaBlob = await mediaFile.blob();
+                const mediaReference: MediaReference = await client(
+                    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+                ).createMediaReference({
+                    data: mediaBlob,
+                    fileName: "myMedia",
+                    objectType: {{objectType}},
+                    propertyType: "{{property}}",
+                });
+            {{/hasMediaParameter}}
                 const result = await client({{actionApiName}}).batchApplyAction([
-                        {{^hasParameters}}{},{{/hasParameters}}{{#hasParameters}}{
+                        {
                             {{#actionParameterSampleValuesV2}}
-                            "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                            "{{key}}": {{{value}}},
                             {{/actionParameterSampleValuesV2}}
+                            {{#hasAttachmentProperty}}
+                            {{attachmentParameter}}: attachment,
+                            {{/hasAttachmentProperty}}
+                            {{#hasMediaParameter}}
+                            {{mediaParameter}}: mediaReference,
+                            {{/hasMediaParameter}}
                         },
                         {
                             {{#actionParameterSampleValuesV2}}
-                            "{{key}}": {{{value}}}{{^last}}, {{/last}}
+                            "{{key}}": {{{value}}},
                             {{/actionParameterSampleValuesV2}}
-                        },{{/hasParameters}}
+                            {{#hasAttachmentProperty}}
+                            {{attachmentParameter}}: attachment,
+                            {{/hasAttachmentProperty}}
+                            {{#hasMediaParameter}}
+                            {{mediaParameter}}: mediaReference,
+                            {{/hasMediaParameter}}
+                        },
                     ],
                     {
                         $returnEdits: true,
@@ -1339,9 +1325,7 @@ versions:
                 if (result.type === "edits") {
                     // use the result object to report back on action results
                 }
-            {{/hasAttachmentProperty}}
-          computedVariables:
-            - actionParameterSampleValuesV2
+            }
       uploadAttachment:
         - template: |-
             // Edit this import if your client location differs
@@ -1360,11 +1344,11 @@ versions:
             const myAttachmentUpload: AttachmentUpload = await createAttachmentReference();
             // then pass the attachment to the action in the action parameter.
             const actionResult = client({{actionApiName}}).applyAction({ 
-                {{primaryKeyPropertyV2.apiName}}: {{{actionParameterSampleValuesV2}}},
+                {{primaryKeyPropertyV2.apiName}}: {{{propertyValueV2}}},
                 {{property}}: myAttachmentUpload
                 });
           computedVariables:
-            - actionParameterSampleValuesV2
+            - propertyValueV2
       castInterfaceToObjectReference:
         - template: |-
             import { {{objectTypeApiName}}, {{interfaceApiName}} } from "{{{packageName}}}";

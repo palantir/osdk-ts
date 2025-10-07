@@ -21,12 +21,11 @@
 
 // Edit this import if your client location differs
 import { client } from "./client.js";
-import { documentEquipment } from "../../../generatedNoCheck/index.js";
+import { refreshData  } from "../../../generatedNoCheck/index.js";
 
-    const result = await client(documentEquipment).applyAction(
+async function callAction() {
+    const result = await client(refreshData).applyAction(
         {
-            "equipmentId": "mac-1234", 
-            "documentType": "active"
         },
         {
             $returnEdits: true,
@@ -35,3 +34,4 @@ import { documentEquipment } from "../../../generatedNoCheck/index.js";
     if (result.type === "edits") {
         // use the result object to report back on action results
     }
+}
