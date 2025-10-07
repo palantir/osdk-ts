@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.13.0-beta.15
+
+### Minor Changes
+
+- 04e664e: readme update and missing changeset for wiring up randomness key
+
 ## 0.13.0-beta.14
 
 ### Minor Changes
