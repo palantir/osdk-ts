@@ -26,8 +26,7 @@ import type {
   PropertyKeys,
 } from "../index.js";
 import type { DerivedObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
-import { EmployeeApiTest } from "../test/EmployeeApiTest.js";
-import { FooInterfaceApiTest } from "../test/FooInterfaceApiTest.js";
+import type { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 
 export function createMockObjectSet<
   Q extends ObjectOrInterfaceDefinition,
@@ -80,8 +79,6 @@ export function createMockObjectSet<
 
 describe("ObjectSet", () => {
   const fauxObjectSet = createMockObjectSet<EmployeeApiTest>();
-
-  const interfaceObjectSet = createMockObjectSet<FooInterfaceApiTest>();
 
   describe("normal", () => {
     test("select none", async () => {
@@ -1393,37 +1390,6 @@ describe("ObjectSet", () => {
 
       expectTypeOf(nearestNeighborsObjectSetWithErrors.value?.data[0]).not
         .toHaveProperty("$score");
-    });
-  });
-  describe("asType", () => {
-    it("restricts casting from interface to object type", () => {
-      const objectSet = { asType: () => {} } as unknown as $ObjectSet<
-        FooInterfaceApiTest
-      >;
-
-      objectSet.asType(EmployeeApiTest);
-
-      objectSet.asType(FooInterfaceApiTest);
-
-      objectSet.asType({ type: "interface", apiName: "AnyInterface :)" });
-
-      // @ts-expect-error
-      objectSet.asType({ type: "object", apiName: "NotImplemented" });
-    });
-    it("restricts casting from object type to interface", () => {
-      const objectSet = {} as $ObjectSet<EmployeeApiTest>;
-      type AsTypeAllowedInterfaceTypes = Parameters<
-        typeof objectSet.asType
-      >[0]["apiName"];
-      type AsTypeAllowedTypes = Parameters<
-        typeof objectSet.asType
-      >[0]["type"];
-
-      expectTypeOf<AsTypeAllowedTypes>().toEqualTypeOf<"interface">();
-
-      expectTypeOf<AsTypeAllowedInterfaceTypes>().toEqualTypeOf<
-        "FooInterface"
-      >();
     });
   });
 });

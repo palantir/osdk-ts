@@ -45,7 +45,6 @@ export interface MinimalClient extends SharedClientContext {
 
   clientCacheKey: ClientCacheKey;
   requestContext: RequestContext;
-  asTypeInterfaceOrObjectMapping: Record<string, "object" | "interface">;
 }
 
 export type MinimalClientParams = {

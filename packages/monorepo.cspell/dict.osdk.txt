@@ -5,7 +5,6 @@ haptics
 mediaset
 mwalther
 Nativewind
-nihalb
 osdk
 palantirfoundry
 Palo
