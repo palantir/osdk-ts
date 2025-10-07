@@ -1,10 +1,34 @@
 {
   "$schema": "https://turbo.build/schema.json",
+
+  /*
+   * OSDK TypeScript Monorepo - Turbo Task Configuration
+   *
+   * This file defines task orchestration for maximum parallelization across the monorepo.
+   *
+   * Key Concepts:
+   * - Turbo handles task orchestration and caching
+   * - monorepolint enforces consistency to keep caching working
+   * - Tasks run in parallel when dependencies allow
+   *
+   * Dependency Prefixes:
+   * - `^taskName` - Run this task in all workspace dependencies first
+   * - `//#taskName` - Root-level pseudo-task (configuration watchers)
+   * - `@package#taskName` - Package-specific task override
+   *
+   * Build Philosophy:
+   * All transpilation runs in parallel, then all type checking runs in parallel.
+   * This maximizes parallelization across the entire monorepo.
+   */
+
   "ui": "stream",
   "tasks": {
+    // Empty root task - each package defines its own codegen with specific inputs/outputs
     "codegen": {
       "outputLogs": "new-only"
     }, // empty for overriding
+
+    // Non-deterministic task that modifies files
     "fix-lint": {
       "cache": false
     },
@@ -13,6 +37,7 @@
       "dependsOn": ["//#cspell:all"]
     },
 
+    // Configuration watcher - no cache because it tracks external spell check state
     "//#cspell:all": {
       "cache": false
     },
@@ -30,7 +55,7 @@
       "dependsOn": ["//#global-eslint-config", "//#dprint", "typecheck"]
     },
 
-    /* Psuedo task to let us depend on dprint config */
+    // Configuration watcher - tracks dprint.json changes for cache invalidation
     "//#dprint": {
       "outputLogs": "new-only",
       "inputs": ["dprint.json"]
@@ -47,19 +72,22 @@
       "inputs": ["**/*.{ts,tsx,cts,mts,md,json,js,mjs,cjs}"]
     },
 
-    /* Psuedo task to depend on the script contents */
+    // Configuration watcher - tracks babel.config.mjs changes for transpilation cache invalidation
     "//#babel-config": {
       "inputs": ["babel.config.mjs"]
     },
 
+    // Configuration watcher - tracks eslint.config.mjs changes for linting cache invalidation
     "//#global-eslint-config": {
       "inputs": ["eslint.config.mjs"]
     },
 
+    // Cleanup task - no cache because it's meant to remove cached outputs
     "clean": {
       "cache": false
     },
 
+    // Package-specific override: legacy e2e package with unusual dependencies and outputs
     "@osdk/e2e.generated.1.1.x#typecheck": {
       "outputLogs": "new-only",
       "inputs": [
@@ -89,10 +117,12 @@
       ]
     },
 
+    // Package-specific override: fallback package tests need CJS specifically
     "@osdk/tests.verify-fallback-package-v2#typecheck": {
       "dependsOn": ["^transpileCjs"]
     },
 
+    // Virtual task - tracks tsup.mjs config changes
     "@osdk/monorepo.tsup#typecheck": {
       "outputLogs": "new-only",
       "inputs": ["tsup.mjs"]
@@ -120,6 +150,7 @@
     "postVersioning": {
     },
 
+    // Package-specific override: version updater automation that modifies other packages
     "@osdk/version-updater#postVersioning": {
       "inputs": [
         "scripts/postVersioning.mjs",
@@ -130,11 +161,13 @@
       "outputs": ["../client/src/Client.ts", "../generator/src/v2.0/generateMetadata.ts"]
     },
 
+    // Virtual task - tracks base TypeScript config changes
     "@osdk/monorepo.tsconfig#typecheck": {
       "outputLogs": "new-only",
       "inputs": ["tsconfig.base.json"]
     },
 
+    // For web applications - builds deployable assets (Vite, Next.js, etc.)
     "build": {
       "dependsOn": ["transpile", "transpileTypes", "typecheck"],
       "inputs": [
@@ -162,24 +195,29 @@
       ]
     },
 
+    // Meta task - aggregates bundling tasks
     "bundle": {
       "dependsOn": ["bundle:esbuild"]
     },
 
+    // ESBuild bundling for optimized benchmark builds
     "bundle:esbuild": {
       "outputs": ["build/esbuild/**"],
       "dependsOn": ["transpile", "typecheck"]
     },
 
+    // Performance benchmarking - depends on optimized bundles
     "benchmark": {
       "dependsOn": ["bundle"]
     },
 
+    // Package-specific override: sandbox app with custom build inputs
     "@osdk/e2e.sandbox.todoapp#build": {
       "inputs": ["src/**/*", "vite.config.ts", "index.html"],
       "dependsOn": ["transpile", "typecheck"]
     },
 
+    // Meta task - aggregates all transpilation formats (run in parallel)
     "transpile": {
       "outputLogs": "new-only",
       "dependsOn": [
@@ -194,6 +232,7 @@
       "inputs": ["bin/**"]
     },
 
+    // TypeScript declarations using oxc-transform
     "transpileTypes": {
       "outputLogs": "new-only",
       "dependsOn": [
@@ -211,6 +250,7 @@
       ]
     },
 
+    // ES Modules transpilation using Babel (normal mechanism)
     "transpileEsm": {
       "outputLogs": "new-only",
       "dependsOn": [
@@ -236,6 +276,7 @@
       ]
     },
 
+    // Browser-optimized transpilation using tsup
     "transpileBrowser": {
       "outputLogs": "new-only",
       "dependsOn": [
@@ -255,9 +296,9 @@
       ]
     },
 
-    // This one both transpiles to CJS and it creates the .d.ts files
-    // to let cjs work. As a result, we need to rely on our dependency's
-    // transpileCjs tasks too.
+    // CommonJS transpilation using tsup (bundle mechanism)
+    // CJS is special: needs BOTH ^transpileCjs AND ^transpileTypes because
+    // tsup generates different .d.ts files for CJS vs ESM, and CJS resolution needs both
     "transpileCjs": {
       "outputLogs": "new-only",
       "dependsOn": [
@@ -287,6 +328,7 @@
       "dependsOn": ["^transpile"]
     },
 
+    // Configuration watcher - tracks monorepolint config and package.json files
     "//#check-mrl": {
       "inputs": [
         "package.json",
@@ -302,6 +344,7 @@
       ]
     },
 
+    // Full CI suite - runs all quality checks and builds
     "check": {
       "dependsOn": [
         "//#check-mrl",
