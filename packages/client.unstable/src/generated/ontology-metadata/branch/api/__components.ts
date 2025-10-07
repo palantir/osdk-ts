@@ -1230,6 +1230,7 @@ export interface InvalidTypeClassesError {
   interfacePropertyTypeRidOrIdInRequest:
     _api_InterfacePropertyTypeRidOrIdInRequest;
   interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+  missingObjectPropertyTypeClasses: Array<_api_TypeClass>;
   objectPropertyTypeClasses: Array<_api_TypeClass>;
   objectRid: _api_ObjectTypeRid;
   objectTypeId?: _api_ObjectTypeId | null | undefined;

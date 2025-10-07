@@ -563,6 +563,11 @@ export interface ActionTypeStructFieldLogicMappingDoesNotMatchStructPropertyDefi
 export interface ActionTypeStructParameterFieldAllowedValueIsIncompatibleWithFieldType {
 }
 /**
+ * The object reference struct parameter field references an object type that does not exist.
+ */
+export interface ActionTypeStructParameterFieldObjectReferenceReferencesNonExistentObjectType {
+}
+/**
  * Struct parameter field's prefill references incompatible interface type struct property field.
  */
 export interface ActionTypeStructParameterFieldPrefillReferencesIncompatibleInterfacePropertyTypeStructField {
@@ -3451,6 +3456,13 @@ export interface ErrorType_actionTypeStructParameterHasInvalidTopLevelAllowedVal
     ActionTypeStructParameterHasInvalidTopLevelAllowedValues;
 }
 
+export interface ErrorType_actionTypeStructParameterFieldObjectReferenceReferencesNonExistentObjectType {
+  type:
+    "actionTypeStructParameterFieldObjectReferenceReferencesNonExistentObjectType";
+  actionTypeStructParameterFieldObjectReferenceReferencesNonExistentObjectType:
+    ActionTypeStructParameterFieldObjectReferenceReferencesNonExistentObjectType;
+}
+
 export interface ErrorType_actionTypeParameterCbacConstraintContainsInvalidMaxClassification {
   type: "actionTypeParameterCbacConstraintContainsInvalidMaxClassification";
   actionTypeParameterCbacConstraintContainsInvalidMaxClassification:
@@ -4109,6 +4121,7 @@ export type ErrorType =
   | ErrorType_actionTypeStructParameterFieldAllowedValueIsIncompatibleWithFieldType
   | ErrorType_actionTypeStructParameterFieldRenderHintIsIncompatibleWithFieldTypeAndAllowedValue
   | ErrorType_actionTypeStructParameterHasInvalidTopLevelAllowedValues
+  | ErrorType_actionTypeStructParameterFieldObjectReferenceReferencesNonExistentObjectType
   | ErrorType_actionTypeParameterCbacConstraintContainsInvalidMaxClassification
   | ErrorType_actionTypeCbacConstraintOnNonSecuringCbacParameterMissingMaxClassification
   | ErrorType_actionTypeStringCbacPickerTypeclassUsedOnNonStringParameter

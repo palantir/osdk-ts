@@ -83,6 +83,7 @@ export async function defineOntology(
   body: () => void | Promise<void>,
   outputDir: string | undefined,
   dependencyFile?: string,
+  uniquenessKey?: string,
 ): Promise<OntologyIr> {
   namespace = ns;
   dependencies = {};
@@ -225,7 +226,7 @@ export function buildDatasource(
     }
     : undefined;
   return ({
-    rid: "ri.ontology.main.datasource.".concat(apiName),
+    datasourceName: apiName,
     datasource: definition,
     editsConfiguration: {
       onlyAllowPrivilegedEdits: false,

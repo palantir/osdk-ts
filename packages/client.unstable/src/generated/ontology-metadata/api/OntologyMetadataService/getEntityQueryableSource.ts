@@ -16,16 +16,16 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  GetEntityDelegateDatasetRequest as _api_GetEntityDelegateDatasetRequest,
-  GetEntityDelegateDatasetResponse as _api_GetEntityDelegateDatasetResponse,
+  GetEntityQueryableSourceRequest as _api_GetEntityQueryableSourceRequest,
+  GetEntityQueryableSourceResponse as _api_GetEntityQueryableSourceResponse,
 } from "../__components.js";
 
 /**
  * Resolves an ontology entity (object or link type) to a suitable delegate source for Spark input.
  */
-export async function getEntityDelegateDataset(
+export async function getEntityQueryableSource(
   ctx: ConjureContext,
-  request: _api_GetEntityDelegateDatasetRequest,
-): Promise<_api_GetEntityDelegateDatasetResponse> {
-  return conjureFetch(ctx, `/ontology/entityDelegateDataset`, "POST", request);
+  request: _api_GetEntityQueryableSourceRequest,
+): Promise<_api_GetEntityQueryableSourceResponse> {
+  return conjureFetch(ctx, `/ontology/entityQueryableSource`, "POST", request);
 }

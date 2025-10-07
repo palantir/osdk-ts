@@ -169,6 +169,11 @@ export interface DataFilter {
  * Ontology as code uses this as a stable ID for the datasource input
  */
 export type DataSetName = string;
+
+/**
+ * Ontology as code uses this as a stable ID for datasource rids
+ */
+export type DatasourceName = string;
 export interface DatasourcePredicate_or {
   type: "or";
   or: Array<DatasourcePredicate>;
