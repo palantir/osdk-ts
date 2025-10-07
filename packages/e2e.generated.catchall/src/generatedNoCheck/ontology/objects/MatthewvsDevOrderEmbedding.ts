@@ -107,9 +107,9 @@ export const MatthewvsDevOrderEmbedding = {
   type: 'object',
   apiName: 'MatthewvsDevOrderEmbedding',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
 } satisfies MatthewvsDevOrderEmbedding & {
-  experimentalDoNotUseMetadata: { rid: string };
+  internalDoNotUseMetadata: { rid: string };
 } as MatthewvsDevOrderEmbedding;

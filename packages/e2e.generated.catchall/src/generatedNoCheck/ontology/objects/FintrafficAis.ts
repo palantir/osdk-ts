@@ -131,7 +131,7 @@ export const FintrafficAis = {
   type: 'object',
   apiName: 'FintrafficAis',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} satisfies FintrafficAis & { experimentalDoNotUseMetadata: { rid: string } } as FintrafficAis;
+} satisfies FintrafficAis & { internalDoNotUseMetadata: { rid: string } } as FintrafficAis;

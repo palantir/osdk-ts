@@ -99,7 +99,7 @@ export const Thing = {
   type: 'object',
   apiName: 'Thing',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ridForThing',
   },
-} satisfies Thing & { experimentalDoNotUseMetadata: { rid: string } } as Thing;
+} satisfies Thing & { internalDoNotUseMetadata: { rid: string } } as Thing;
