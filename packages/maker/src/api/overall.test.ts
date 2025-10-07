@@ -4399,6 +4399,7 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -4593,6 +4594,7 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -4819,6 +4821,7 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -5068,6 +5071,7 @@ describe("Ontology Defining", () => {
             "objectTypes": {},
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -6119,6 +6123,7 @@ describe("Ontology Defining", () => {
               },
             },
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -6310,6 +6315,7 @@ describe("Ontology Defining", () => {
             "objectTypes": {},
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -6610,6 +6616,7 @@ describe("Ontology Defining", () => {
             "objectTypes": {},
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -7551,6 +7558,7 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -9186,6 +9194,7 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -9869,6 +9878,7 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -10680,6 +10690,7 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -11232,6 +11243,7 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -11736,6 +11748,7 @@ describe("Ontology Defining", () => {
               },
             },
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -12316,6 +12329,7 @@ describe("Ontology Defining", () => {
               },
             },
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -12733,6 +12747,7 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -13181,6 +13196,7 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -14034,6 +14050,7 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -14500,6 +14517,7 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -15109,6 +15127,7 @@ describe("Ontology Defining", () => {
             },
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -15440,6 +15459,7 @@ describe("Ontology Defining", () => {
             "objectTypes": {},
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -15575,6 +15595,7 @@ describe("Ontology Defining", () => {
             "objectTypes": {},
             "sharedPropertyTypes": {},
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
@@ -16329,6 +16350,7 @@ describe("Ontology Defining", () => {
               },
             },
           },
+          "randomnessKey": undefined,
           "valueTypes": {
             "valueTypes": [],
           },
