@@ -22,11 +22,13 @@ import { convertOntologyToValueTypeIr } from "./convertOntologyToValueTypeIr.js"
 
 export function convertOntologyDefinition(
   ontology: OntologyDefinition,
+  randomnessKey?: string,
 ): OntologyIr {
   return {
     ontology: convertOntologyDefinitionToWireBlockData(ontology),
     importedOntology: convertOntologyDefinitionToWireBlockData(importedTypes),
     valueTypes: convertOntologyToValueTypeIr(ontology),
     importedValueTypes: convertOntologyToValueTypeIr(importedTypes),
+    randomnessKey,
   };
 }

@@ -83,7 +83,7 @@ export async function defineOntology(
   body: () => void | Promise<void>,
   outputDir: string | undefined,
   dependencyFile?: string,
-  uniquenessKey?: string,
+  randomnessKey?: string,
 ): Promise<OntologyIr> {
   namespace = ns;
   dependencies = {};
@@ -120,7 +120,7 @@ export async function defineOntology(
   if (dependencyFile) {
     writeDependencyFile(dependencyFile);
   }
-  return convertOntologyDefinition(ontologyDefinition);
+  return convertOntologyDefinition(ontologyDefinition, randomnessKey);
 }
 
 export function writeStaticObjects(outputDir: string): void {
