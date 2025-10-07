@@ -36,11 +36,16 @@ export type ParameterDefinition =
   | ArrayParameterDefinition<ParameterValue.PrimitiveType>
   | ObjectSetParameterDefinition<ObjectType>;
 
+interface ManifestObjectSetParameterDefinition<T extends ObjectType> {
+  type: ObjectSetParameterDefinition<T>["type"];
+  displayName: string;
+  objectTypeRids: [string];
+}
+
 export type ManifestParameterDefinition =
-  | Exclude<ParameterDefinition, ObjectSetParameterDefinition<ObjectType>>
-  | (Omit<ObjectSetParameterDefinition<ObjectType>, "objectType">) & {
-    objectTypeRids: [string];
-  };
+  | PrimitiveParameterDefinition<ParameterValue.PrimitiveType>
+  | ArrayParameterDefinition<ParameterValue.PrimitiveType>
+  | ManifestObjectSetParameterDefinition<ObjectType>;
 
 export interface EventDefinition<P extends ParameterConfig> {
   displayName: string;

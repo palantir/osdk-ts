@@ -20,7 +20,7 @@ import { buildWidgetSetManifest } from "../buildWidgetSetManifest.js";
 import type { WidgetBuildOutputs } from "../getWidgetBuildOutputs.js";
 
 describe("buildWidgetSetManifest", () => {
-  const WIDGET_SET_RID = "ri.foundry.main.widget-set.test-widget-set";
+  const WIDGET_SET_RID = "ri.widgetregistry.widget-set..test-widget-set";
   const WIDGET_SET_VERSION = "1.0.0";
 
   test("builds a valid manifest with multiple widgets", () => {
@@ -116,7 +116,7 @@ describe("buildWidgetSetManifest", () => {
           type: "object",
           apiName: "employee",
           internalDoNotUseMetadata: {
-            rid: "ri.object-type.employee",
+            rid: "ri.ontology.main.object-type.employee",
           },
         },
       },
@@ -136,7 +136,7 @@ describe("buildWidgetSetManifest", () => {
       {
         type: "objectSet",
         displayName: "Object Set Parameter",
-        objectTypeRids: ["ri.object-type.employee"],
+        objectTypeRids: ["ri.ontology.main.object-type.employee"],
       },
     );
   });
