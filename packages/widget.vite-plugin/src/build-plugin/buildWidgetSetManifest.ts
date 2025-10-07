@@ -15,6 +15,8 @@
  */
 
 import type {
+  ManifestParameterDefinition,
+  ParameterDefinition,
   WidgetManifestConfig,
   WidgetSetInputSpec,
   WidgetSetManifest,
@@ -58,9 +60,34 @@ function buildWidgetManifest(
     entrypointCss: widgetBuild.stylesheets.map((path) => ({
       path: trimLeadingSlash(path),
     })),
-    parameters: widgetConfig.parameters,
+    parameters: convertParameters(widgetConfig.parameters),
     events: widgetConfig.events,
   };
+}
+
+function convertParameters(
+  parameters: Record<string, ParameterDefinition>,
+): Record<string, ManifestParameterDefinition> {
+  return Object.fromEntries(
+    Object.entries(parameters).map(([key, param]) => [
+      key,
+      convertParameter(param),
+    ]),
+  );
+}
+
+function convertParameter(
+  parameter: ParameterDefinition,
+): ManifestParameterDefinition {
+  if (parameter.type === "objectSet") {
+    return {
+      type: "objectSet",
+      displayName: parameter.displayName,
+      // Config has already been validated so rid must be present
+      objectTypeRids: [parameter.objectType.experimentalDoNotUseMetadata!.rid],
+    };
+  }
+  return parameter;
 }
 
 function trimLeadingSlash(path: string): string {

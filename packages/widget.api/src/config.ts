@@ -36,6 +36,12 @@ export type ParameterDefinition =
   | ArrayParameterDefinition<ParameterValue.PrimitiveType>
   | ObjectSetParameterDefinition<ObjectType>;
 
+export type ManifestParameterDefinition =
+  | Exclude<ParameterDefinition, ObjectSetParameterDefinition<ObjectType>>
+  | (Omit<ObjectSetParameterDefinition<ObjectType>, "objectType">) & {
+    objectTypeRids: [string];
+  };
+
 export interface EventDefinition<P extends ParameterConfig> {
   displayName: string;
   parameterUpdateIds: Array<ParameterId<P>>;
