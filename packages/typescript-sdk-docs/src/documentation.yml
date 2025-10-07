@@ -1218,6 +1218,8 @@ versions:
                 const attachmentFile = await fetch("file.json");
                 const attachmentBlob = await attachmentFile.blob();
                 const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
+                // alternatively, you can get the Rid from the attachment property on the object type you are modifying 
+                // const attachmentRid = objectTypeWithAttachment.{attachmentProperty}?.rid;
             {{/hasAttachmentProperty}}
             {{#hasMediaParameter}}
                 // Create media reference
@@ -1238,7 +1240,7 @@ versions:
                         "{{key}}": {{{value}}},
                         {{/actionParameterSampleValuesV2}}
                         {{#hasAttachmentProperty}}
-                        {{attachmentParameter}}: attachment,
+                        {{attachmentParameter}}: attachment,  // or attachmentRid
                         {{/hasAttachmentProperty}}
                         {{#hasMediaParameter}}
                         {{mediaParameter}}: mediaReference,

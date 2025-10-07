@@ -30,11 +30,13 @@ async function callAction() {
     const attachmentFile = await fetch("file.json");
     const attachmentBlob = await attachmentFile.blob();
     const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
+    // alternatively, you can get the Rid from the attachment property on the object type you are modifying 
+    // const attachmentRid = objectTypeWithAttachment.{attachmentProperty}?.rid;
     const result = await client(documentEquipment).applyAction(
         {
             "equipmentId": "mac-1234",
             "documentType": "invoice",
-            documentFile: attachment,
+            documentFile: attachment,  // or attachmentRid
         },
         {
             $returnEdits: true,

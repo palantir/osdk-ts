@@ -31,6 +31,8 @@ async function callAction() {
     const attachmentFile = await fetch("file.json");
     const attachmentBlob = await attachmentFile.blob();
     const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
+    // alternatively, you can get the Rid from the attachment property on the object type you are modifying 
+    // const attachmentRid = objectTypeWithAttachment.{attachmentProperty}?.rid;
     // Create media reference
     const mediaFile = await fetch("media.mp4");
     const mediaBlob = await mediaFile.blob();
@@ -45,7 +47,7 @@ async function callAction() {
     const result = await client(documentEquipment).applyAction(
         {
             "equipmentId": "mac-1234",
-            documentFile: attachment,
+            documentFile: attachment,  // or attachmentRid
             instructionalVideo: mediaReference,
         },
         {
