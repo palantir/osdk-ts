@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-export type {
-  OntologyObjectTypeSemanticSearchStatus,
-  SemanticSearchObjectTypeResponseEntry,
-  SemanticSearchObjectTypesRequest,
-  SemanticSearchObjectTypesResponse,
-} from "./__components.js";
+import { type ConjureContext, conjureFetch } from "conjure-lite";
+import type {
+  GetEntityQueryableSourceRequest as _api_GetEntityQueryableSourceRequest,
+  GetEntityQueryableSourceResponse as _api_GetEntityQueryableSourceResponse,
+} from "../__components.js";
+
+/**
+ * Resolves an ontology entity (object or link type) to a suitable delegate source for Spark input.
+ */
+export async function getEntityQueryableSource(
+  ctx: ConjureContext,
+  request: _api_GetEntityQueryableSourceRequest,
+): Promise<_api_GetEntityQueryableSourceResponse> {
+  return conjureFetch(ctx, `/ontology/entityQueryableSource`, "POST", request);
+}

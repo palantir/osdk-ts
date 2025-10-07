@@ -128,7 +128,7 @@ export const Office = {
   type: 'object',
   apiName: 'Office',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.bbca9c02-5c6a-4d3a-8bf1-e4db0177ab5f',
   },
-} satisfies Office & { experimentalDoNotUseMetadata: { rid: string } } as Office;
+} satisfies Office & { internalDoNotUseMetadata: { rid: string } } as Office;

@@ -135,7 +135,7 @@ export const BgaoNflPlayer = {
   type: 'object',
   apiName: 'BgaoNflPlayer',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} satisfies BgaoNflPlayer & { experimentalDoNotUseMetadata: { rid: string } } as BgaoNflPlayer;
+} satisfies BgaoNflPlayer & { internalDoNotUseMetadata: { rid: string } } as BgaoNflPlayer;

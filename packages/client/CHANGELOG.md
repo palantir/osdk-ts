@@ -1,5 +1,28 @@
 # @osdk/client
 
+## 2.5.0-beta.14
+
+### Minor Changes
+
+- b7edfb5: Add support for object type casts
+
+### Patch Changes
+
+- Updated dependencies [9dd5a63]
+- Updated dependencies [e62408b]
+- Updated dependencies [b7edfb5]
+  - @osdk/client.unstable@2.5.0-beta.14
+  - @osdk/api@2.5.0-beta.14
+  - @osdk/generator-converters@2.5.0-beta.14
+
+## 2.5.0-beta.13
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.13
+- @osdk/client.unstable@2.5.0-beta.13
+- @osdk/generator-converters@2.5.0-beta.13
+
 ## 2.5.0-beta.12
 
 ### Minor Changes
