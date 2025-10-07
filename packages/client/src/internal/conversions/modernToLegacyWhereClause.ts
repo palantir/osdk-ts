@@ -17,6 +17,7 @@
 import type {
   ObjectOrInterfaceDefinition,
   PossibleWhereClauseFilters,
+  SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
 
@@ -36,15 +37,16 @@ type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
 /** @internal */
 export function modernToLegacyWhereClause<
   T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
-  whereClause: WhereClause<T>,
+  whereClause: WhereClause<T, RDPs>,
   objectOrInterface: T,
   rdpNames?: Set<string>,
 ): SearchJsonQueryV2 {
   if ("$and" in whereClause) {
     return {
       type: "and",
-      value: (whereClause.$and as WhereClause<T>[]).map(
+      value: whereClause.$and.map(
         (clause) =>
           modernToLegacyWhereClause(clause, objectOrInterface, rdpNames),
       ),
@@ -52,7 +54,7 @@ export function modernToLegacyWhereClause<
   } else if ("$or" in whereClause) {
     return {
       type: "or",
-      value: (whereClause.$or as WhereClause<T>[]).map(
+      value: whereClause.$or.map(
         (clause) =>
           modernToLegacyWhereClause(clause, objectOrInterface, rdpNames),
       ),
@@ -61,7 +63,7 @@ export function modernToLegacyWhereClause<
     return {
       type: "not",
       value: modernToLegacyWhereClause(
-        whereClause.$not as WhereClause<T>,
+        whereClause.$not,
         objectOrInterface,
         rdpNames,
       ),

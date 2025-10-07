@@ -960,7 +960,7 @@ describe(modernToLegacyWhereClause, () => {
       const rdpNames = new Set(["reportCount", "managerName"]);
 
       const result = modernToLegacyWhereClause(
-        whereClause as any,
+        whereClause,
         mockObjectType,
         rdpNames,
       );
@@ -1004,7 +1004,7 @@ describe(modernToLegacyWhereClause, () => {
       const rdpNames = new Set(["reportCount"]);
 
       const result = modernToLegacyWhereClause(
-        whereClause as any,
+        whereClause,
         mockObjectType,
         rdpNames,
       );
@@ -1048,7 +1048,7 @@ describe(modernToLegacyWhereClause, () => {
       const rdpNames = new Set(["reportCount", "managerName"]);
 
       const result = modernToLegacyWhereClause(
-        whereClause as any,
+        whereClause,
         mockObjectType,
         rdpNames,
       );

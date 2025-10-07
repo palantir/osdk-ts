@@ -204,19 +204,7 @@ type MergedPropertyWhereClause<
   RDPs extends Record<string, SimplePropertyDef> = {},
 > = PropertyWhereClause<
   DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
-> & {
-  [key: string]: 
-    | StringFilter 
-    | NumberFilter 
-    | BooleanFilter 
-    | DatetimeFilter
-    | GeoFilter
-    | ArrayFilter<string>
-    | ArrayFilter<number>
-    | ArrayFilter<boolean>
-    | BaseFilter<any>
-    | undefined;
-};
+>;
 
 export type WhereClause<
   T extends ObjectOrInterfaceDefinition,

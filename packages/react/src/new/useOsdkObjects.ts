@@ -143,9 +143,7 @@ export function useOsdkObjects<
       is stable. No real added cost as we canonicalize internal to
       the ObservableClient anyway.
    */
-  const canonWhere = observableClient.canonicalizeWhereClause(
-    where as WhereClause<Q> ?? {},
-  );
+  const canonWhere = observableClient.canonicalizeWhereClause(where ?? {});
 
   // TODO: replace with improved stabilization
   const stableWithProperties = React.useMemo(

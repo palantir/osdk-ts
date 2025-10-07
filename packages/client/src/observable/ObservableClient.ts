@@ -157,8 +157,11 @@ export interface ObservableClient extends ObserveLinks {
    * - Pagination via fetchMore() in the payload
    * - Automatic updates when any matching object changes
    */
-  observeList<T extends ObjectTypeDefinition | InterfaceDefinition>(
-    options: ObserveListOptions<T>,
+  observeList<
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options: ObserveListOptions<T, RDPs>,
     subFn: Observer<ObserveObjectsArgs<T>>,
   ): Unsubscribable;
 
@@ -233,9 +236,10 @@ export interface ObservableClient extends ObserveLinks {
 
   canonicalizeWhereClause: <
     T extends ObjectTypeDefinition | InterfaceDefinition,
+    RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    where: WhereClause<T>,
-  ) => Canonical<WhereClause<T>>;
+    where: WhereClause<T, RDPs>,
+  ) => Canonical<WhereClause<T, RDPs>>;
 }
 
 export function createObservableClient(client: Client): ObservableClient {
