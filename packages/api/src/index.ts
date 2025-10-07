@@ -33,8 +33,11 @@ export type { AggregationsResults } from "./aggregate/AggregationsResults.js";
 export type { GeoFilterOptions } from "./aggregate/GeoFilter.js";
 export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
 export type {
+  AndWhereClause,
   GeoFilter_Intersects,
   GeoFilter_Within,
+  NotWhereClause,
+  OrWhereClause,
   PossibleWhereClauseFilters,
   WhereClause,
 } from "./aggregate/WhereClause.js";
@@ -46,7 +49,7 @@ export type {
   OsdkObjectLinksObject,
   SingleLinkAccessor,
 } from "./definitions/LinkDefinitions.js";
-export type { DerivedProperty } from "./derivedProperties/DerivedProperty.js";
+export { type DerivedProperty } from "./derivedProperties/DerivedProperty.js";
 export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
   AllGroupByValues,

@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import type { WhereClause } from "@osdk/api";
 
-export type SimpleWhereClause = WhereClause<
-  any
->;
+/**
+ * A where clause without specific type information - used for runtime matching logic.
+ * This type accepts any WhereClause<T> via structural typing.
+ */
+export type SimpleWhereClause =
+  | { $and?: SimpleWhereClause[]; $or?: never; $not?: never }
+  | { $or?: SimpleWhereClause[]; $and?: never; $not?: never }
+  | { $not?: SimpleWhereClause; $and?: never; $or?: never }
+  | Record<string, unknown>;

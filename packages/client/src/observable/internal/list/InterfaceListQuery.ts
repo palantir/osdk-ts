@@ -53,14 +53,22 @@ export class InterfaceListQuery extends ListQuery {
         .withProperties(
           rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
         )
-        .where(this.canonicalWhere);
+        .where(
+          this.canonicalWhere as Parameters<
+            ObjectSet<ObjectTypeDefinition>["where"]
+          >[0],
+        );
     }
 
     return store.client({
       type: "interface" as const,
       apiName: this.apiName,
     } as ObjectOrInterfaceDefinition as ObjectTypeDefinition)
-      .where(this.canonicalWhere);
+      .where(
+        this.canonicalWhere as Parameters<
+          ObjectSet<ObjectTypeDefinition>["where"]
+        >[0],
+      );
   }
 
   async revalidateObjectType(apiName: string): Promise<void> {
@@ -141,7 +149,9 @@ async function reloadDataAsFullObjects(
 
         const result = await client(
           objectDef as ObjectTypeDefinition,
-        ).where(where).fetchPage();
+        ).where(
+          where as Parameters<ObjectSet<ObjectTypeDefinition>["where"]>[0],
+        ).fetchPage();
         return [
           apiName,
           Object.fromEntries(result.data.map(

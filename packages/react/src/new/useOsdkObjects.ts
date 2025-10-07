@@ -50,7 +50,7 @@ export interface UseOsdkObjectsOptions<
    * Define derived properties (RDPs) to be computed server-side and attached to each object.
    * These properties will be available on the returned objects alongside their regular properties.
    */
-  withProperties?: DerivedProperty.Clause<T>;
+  withProperties?: { [K in keyof RDPs]: DerivedProperty.Creator<T, RDPs[K]> };
 
   /**
    * Causes the list to automatically fetch more as soon as the previous page
@@ -126,6 +126,7 @@ declare const process: {
 
 export function useOsdkObjects<
   Q extends ObjectTypeDefinition | InterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   type: Q,
   {
@@ -135,7 +136,7 @@ export function useOsdkObjects<
     where = {},
     streamUpdates,
     withProperties,
-  }: UseOsdkObjectsOptions<Q> = {},
+  }: UseOsdkObjectsOptions<Q, RDPs> = {},
 ): UseOsdkListResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
 

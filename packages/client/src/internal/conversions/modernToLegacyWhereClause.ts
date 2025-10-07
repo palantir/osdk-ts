@@ -15,7 +15,10 @@
  */
 
 import type {
+  AndWhereClause,
+  NotWhereClause,
   ObjectOrInterfaceDefinition,
+  OrWhereClause,
   PossibleWhereClauseFilters,
   SimplePropertyDef,
   WhereClause,
@@ -34,6 +37,33 @@ import { makeGeoFilterWithin } from "./makeGeoFilterWithin.js";
 type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
   : never;
 
+function isAndClause<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  whereClause: WhereClause<T, RDPs>,
+): whereClause is AndWhereClause<T, RDPs> {
+  return "$and" in whereClause && whereClause.$and !== undefined;
+}
+
+function isOrClause<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  whereClause: WhereClause<T, RDPs>,
+): whereClause is OrWhereClause<T, RDPs> {
+  return "$or" in whereClause && whereClause.$or !== undefined;
+}
+
+function isNotClause<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  whereClause: WhereClause<T, RDPs>,
+): whereClause is NotWhereClause<T, RDPs> {
+  return "$not" in whereClause && whereClause.$not !== undefined;
+}
+
 /** @internal */
 export function modernToLegacyWhereClause<
   T extends ObjectOrInterfaceDefinition,
@@ -43,7 +73,7 @@ export function modernToLegacyWhereClause<
   objectOrInterface: T,
   rdpNames?: Set<string>,
 ): SearchJsonQueryV2 {
-  if ("$and" in whereClause) {
+  if (isAndClause(whereClause)) {
     return {
       type: "and",
       value: whereClause.$and.map(
@@ -51,7 +81,7 @@ export function modernToLegacyWhereClause<
           modernToLegacyWhereClause(clause, objectOrInterface, rdpNames),
       ),
     };
-  } else if ("$or" in whereClause) {
+  } else if (isOrClause(whereClause)) {
     return {
       type: "or",
       value: whereClause.$or.map(
@@ -59,7 +89,7 @@ export function modernToLegacyWhereClause<
           modernToLegacyWhereClause(clause, objectOrInterface, rdpNames),
       ),
     };
-  } else if ("$not" in whereClause) {
+  } else if (isNotClause(whereClause)) {
     return {
       type: "not",
       value: modernToLegacyWhereClause(
