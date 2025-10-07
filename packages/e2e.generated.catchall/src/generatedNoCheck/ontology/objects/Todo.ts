@@ -124,7 +124,7 @@ export const Todo = {
   type: 'object',
   apiName: 'Todo',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} satisfies Todo & { experimentalDoNotUseMetadata: { rid: string } } as Todo;
+} satisfies Todo & { internalDoNotUseMetadata: { rid: string } } as Todo;

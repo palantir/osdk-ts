@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.5.0-beta.14
+
+### Minor Changes
+
+- b7edfb5: Add support for object type casts
+
+## 2.5.0-beta.13
+
 ## 2.5.0-beta.12
 
 ## 2.5.0-beta.11

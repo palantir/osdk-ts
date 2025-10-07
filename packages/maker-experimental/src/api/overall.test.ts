@@ -380,11 +380,11 @@ describe("Experimental Test Suite", () => {
                     },
                     "type": "datasetV2",
                   },
+                  "datasourceName": "com.palantir.foo",
                   "editsConfiguration": {
                     "onlyAllowPrivilegedEdits": false,
                   },
                   "redacted": false,
-                  "rid": "ri.ontology.main.datasource.com.palantir.foo",
                 },
               ],
               "entityMetadata": {
@@ -570,11 +570,11 @@ describe("Experimental Test Suite", () => {
                     },
                     "type": "datasetV2",
                   },
+                  "datasourceName": "myImport",
                   "editsConfiguration": {
                     "onlyAllowPrivilegedEdits": false,
                   },
                   "redacted": false,
-                  "rid": "ri.ontology.main.datasource.myImport",
                 },
               ],
               "entityMetadata": {

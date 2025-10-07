@@ -107,7 +107,7 @@ export const TestGeoAction = {
   type: 'object',
   apiName: 'TestGeoAction',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} satisfies TestGeoAction & { experimentalDoNotUseMetadata: { rid: string } } as TestGeoAction;
+} satisfies TestGeoAction & { internalDoNotUseMetadata: { rid: string } } as TestGeoAction;

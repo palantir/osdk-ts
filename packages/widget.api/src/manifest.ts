@@ -16,8 +16,8 @@
 
 import type {
   EventDefinition,
+  ManifestParameterDefinition,
   ParameterConfig,
-  ParameterDefinition,
 } from "./config.js";
 
 export interface WidgetSetManifestV1 {
@@ -93,7 +93,7 @@ export interface WidgetManifestConfigV1 {
   /**
    * The map of parameter IDs to their definition
    */
-  parameters: Record<string, ParameterDefinition>;
+  parameters: Record<string, ManifestParameterDefinition>;
 
   /**
    * The map of events to their definition. Any parameter IDs referenced must be defined in the `parameters` field

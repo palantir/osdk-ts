@@ -25,7 +25,11 @@ import type {
  * Will throw if the given BranchRid does not have a corresponding OntologyBranchRid.
  *
  * Note that it is ok for services to cache the result of this map, since this mapping only encodes a rid to
- * rid mapping. The only permission check performed in this endpoint is a check that the token is valid.
+ * rid mapping. The mapping is also immutable and we validate that a global branch is only ever mapped to at
+ * most one ontology branch and vice versa. Furthermore a created global branch  will always correspond to
+ * an ontology branch but the reverse may not be true.
+ *
+ * The only permission check performed in this endpoint is a check that the token is valid.
  */
 export async function getOntologyBranchRid(
   ctx: ConjureContext,

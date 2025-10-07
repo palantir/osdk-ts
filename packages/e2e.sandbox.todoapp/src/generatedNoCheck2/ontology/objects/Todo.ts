@@ -135,7 +135,7 @@ export const Todo = {
   type: 'object',
   apiName: 'Todo',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.a3fcfef9-ec11-4f2d-8a4c-dc010de837bf',
   },
-} satisfies Todo & { experimentalDoNotUseMetadata: { rid: string } } as Todo;
+} satisfies Todo & { internalDoNotUseMetadata: { rid: string } } as Todo;

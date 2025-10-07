@@ -104,7 +104,7 @@ export const Venture = {
   type: 'object',
   apiName: 'Venture',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} satisfies Venture & { experimentalDoNotUseMetadata: { rid: string } } as Venture;
+} satisfies Venture & { internalDoNotUseMetadata: { rid: string } } as Venture;

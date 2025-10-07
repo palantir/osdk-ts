@@ -23,6 +23,8 @@ import {
 } from "./defineObject.js";
 import { updateOntology } from "./defineOntology.js";
 import type {
+  IntermediaryObjectLinkReference,
+  IntermediaryObjectLinkReferenceUserDefinition,
   LinkType,
   LinkTypeDefinition,
   LinkTypeMetadataUserDefinition,
@@ -58,17 +60,48 @@ export function defineLink(
       `Link ${linkDefinition.apiName} has type mismatch between the one side's primary key and the foreign key on the many side`,
     );
   }
-  const fullLinkDefinition = "one" in linkDefinition
-    ? {
+  if ("intermediaryObjectType" in linkDefinition) {
+    invariant(
+      "one" in linkDefinition.many.linkToIntermediary
+        && linkDefinition.many.linkToIntermediary.one.object.apiName
+          === linkDefinition.many.object.apiName
+        && linkDefinition.many.linkToIntermediary.toMany.object.apiName
+          === linkDefinition.intermediaryObjectType.apiName,
+      `LinkTypeA ${linkDefinition.many.linkToIntermediary.apiName} must be a many to one link from intermediary object ${linkDefinition.intermediaryObjectType.apiName} to objectA ${linkDefinition.many.object.apiName}`,
+    );
+    invariant(
+      "one" in linkDefinition.toMany.linkToIntermediary
+        && linkDefinition.toMany.linkToIntermediary.one.object.apiName
+          === linkDefinition.toMany.object.apiName
+        && linkDefinition.toMany.linkToIntermediary.toMany.object.apiName
+          === linkDefinition.intermediaryObjectType.apiName,
+      `LinkTypeB ${linkDefinition.toMany.linkToIntermediary.apiName} must be a many to one link from intermediary object ${linkDefinition.intermediaryObjectType.apiName} to objectB ${linkDefinition.toMany.object.apiName}`,
+    );
+  }
+  let fullLinkDefinition;
+  if ("one" in linkDefinition) {
+    fullLinkDefinition = {
       ...linkDefinition,
       one: convertUserOneToManyLinkDefinition(linkDefinition.one),
       toMany: convertUserOneToManyLinkDefinition(linkDefinition.toMany),
-    }
-    : {
+    };
+  } else if ("intermediaryObjectType" in linkDefinition) {
+    fullLinkDefinition = {
+      ...linkDefinition,
+      many: convertUserIntermediaryLinkDefinition(
+        linkDefinition.many,
+      ),
+      toMany: convertUserIntermediaryLinkDefinition(
+        linkDefinition.toMany,
+      ),
+    };
+  } else {
+    fullLinkDefinition = {
       ...linkDefinition,
       many: convertUserManyToManyLinkDefinition(linkDefinition.many),
       toMany: convertUserManyToManyLinkDefinition(linkDefinition.toMany),
     };
+  }
   const linkType: LinkType = {
     cardinality: "one" in linkDefinition
       ? linkDefinition.cardinality
@@ -95,6 +128,15 @@ function convertUserManyToManyLinkDefinition(
   return {
     ...manyToMany,
     metadata: convertLinkTypeMetadata(manyToMany.metadata),
+  };
+}
+
+function convertUserIntermediaryLinkDefinition(
+  intermediary: IntermediaryObjectLinkReferenceUserDefinition,
+): IntermediaryObjectLinkReference {
+  return {
+    ...intermediary,
+    metadata: convertLinkTypeMetadata(intermediary.metadata),
   };
 }
 
