@@ -99,7 +99,7 @@ export const MnayanOsdkMediaObject = {
   type: 'object',
   apiName: 'MnayanOsdkMediaObject',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} satisfies MnayanOsdkMediaObject & { experimentalDoNotUseMetadata: { rid: string } } as MnayanOsdkMediaObject;
+} satisfies MnayanOsdkMediaObject & { internalDoNotUseMetadata: { rid: string } } as MnayanOsdkMediaObject;

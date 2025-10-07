@@ -111,7 +111,7 @@ export const BoundariesUsState = {
   type: 'object',
   apiName: 'BoundariesUsState',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} satisfies BoundariesUsState & { experimentalDoNotUseMetadata: { rid: string } } as BoundariesUsState;
+} satisfies BoundariesUsState & { internalDoNotUseMetadata: { rid: string } } as BoundariesUsState;

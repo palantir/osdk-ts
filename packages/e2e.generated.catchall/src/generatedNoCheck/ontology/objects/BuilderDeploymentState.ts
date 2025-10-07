@@ -99,7 +99,7 @@ export const BuilderDeploymentState = {
   type: 'object',
   apiName: 'BuilderDeploymentState',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} satisfies BuilderDeploymentState & { experimentalDoNotUseMetadata: { rid: string } } as BuilderDeploymentState;
+} satisfies BuilderDeploymentState & { internalDoNotUseMetadata: { rid: string } } as BuilderDeploymentState;

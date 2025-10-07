@@ -115,7 +115,7 @@ export const SotSensor = {
   type: 'object',
   apiName: 'SotSensor',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} satisfies SotSensor & { experimentalDoNotUseMetadata: { rid: string } } as SotSensor;
+} satisfies SotSensor & { internalDoNotUseMetadata: { rid: string } } as SotSensor;

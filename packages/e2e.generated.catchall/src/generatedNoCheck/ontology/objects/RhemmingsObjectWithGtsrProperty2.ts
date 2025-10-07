@@ -116,9 +116,9 @@ export const RhemmingsObjectWithGtsrProperty2 = {
   type: 'object',
   apiName: 'RhemmingsObjectWithGtsrProperty2',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
 } satisfies RhemmingsObjectWithGtsrProperty2 & {
-  experimentalDoNotUseMetadata: { rid: string };
+  internalDoNotUseMetadata: { rid: string };
 } as RhemmingsObjectWithGtsrProperty2;

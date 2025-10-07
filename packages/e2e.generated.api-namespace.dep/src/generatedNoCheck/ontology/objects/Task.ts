@@ -91,7 +91,7 @@ export const Task = {
   type: 'object',
   apiName: 'com.example.dep.Task',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ridForTask',
   },
-} satisfies Task & { experimentalDoNotUseMetadata: { rid: string } } as Task;
+} satisfies Task & { internalDoNotUseMetadata: { rid: string } } as Task;

@@ -129,7 +129,7 @@ export const Employee = {
   type: 'object',
   apiName: 'Employee',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0aa912b9efb44',
   },
-} satisfies Employee & { experimentalDoNotUseMetadata: { rid: string } } as Employee;
+} satisfies Employee & { internalDoNotUseMetadata: { rid: string } } as Employee;

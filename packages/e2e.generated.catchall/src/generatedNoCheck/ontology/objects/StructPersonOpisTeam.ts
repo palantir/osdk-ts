@@ -105,7 +105,7 @@ export const StructPersonOpisTeam = {
   type: 'object',
   apiName: 'StructPersonOpisTeam',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} satisfies StructPersonOpisTeam & { experimentalDoNotUseMetadata: { rid: string } } as StructPersonOpisTeam;
+} satisfies StructPersonOpisTeam & { internalDoNotUseMetadata: { rid: string } } as StructPersonOpisTeam;
