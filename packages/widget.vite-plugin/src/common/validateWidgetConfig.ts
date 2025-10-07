@@ -77,7 +77,7 @@ function validateWidgetParameters(parameters: ParameterConfig): void {
     }
     if (parameterConfig.type === "objectSet") {
       if (
-        typeof parameterConfig.objectType.experimentalDoNotUseMetadata?.rid
+        typeof parameterConfig.objectType.internalDoNotUseMetadata?.rid
           !== "string"
       ) {
         throw new Error(

@@ -110,7 +110,7 @@ describe("validateWidgetConfig", () => {
       objectType: {
         type: "object",
         apiName: "employee",
-        experimentalDoNotUseMetadata: {
+        internalDoNotUseMetadata: {
           rid: "ri.object-type.employee",
         },
       },

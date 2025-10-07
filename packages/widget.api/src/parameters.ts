@@ -19,7 +19,7 @@ import type { AsyncValue } from "./utils/asyncValue.js";
 export type ObjectType = {
   type: "object";
   apiName: string;
-  experimentalDoNotUseMetadata?: {
+  internalDoNotUseMetadata?: {
     rid: string;
   };
 };

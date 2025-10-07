@@ -84,7 +84,7 @@ function convertParameter(
       type: "objectSet",
       displayName: parameter.displayName,
       // Config has already been validated so rid must be present
-      objectTypeRids: [parameter.objectType.experimentalDoNotUseMetadata!.rid],
+      objectTypeRids: [parameter.objectType.internalDoNotUseMetadata!.rid],
     };
   }
   return parameter;
