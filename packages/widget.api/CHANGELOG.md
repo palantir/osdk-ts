@@ -1,5 +1,13 @@
 # @osdk/widget.api
 
+## 3.2.0-beta.5
+
+### Minor Changes
+
+- faffea0: Allow specifying object sets in widget configs
+
+## 3.2.0-beta.4
+
 ## 3.2.0-beta.3
 
 ## 3.2.0-beta.2

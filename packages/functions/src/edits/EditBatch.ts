@@ -61,7 +61,7 @@ export type AddLinkTargets<
   ? (X extends AddLink<infer OTD, A>
     ? (CompileTimeMetadata<OTD>["links"][A]["multiplicity"] extends true
       ? Array<X["target"]> | X["target"]
-      : X["target"])
+      : never)
     : never)
   : never;
 
@@ -83,7 +83,7 @@ export type RemoveLinkTargets<
   ? (X extends RemoveLink<infer OTD, A>
     ? (CompileTimeMetadata<OTD>["links"][A]["multiplicity"] extends true
       ? Array<X["target"]> | X["target"]
-      : X["target"])
+      : never)
     : never)
   : never;
 

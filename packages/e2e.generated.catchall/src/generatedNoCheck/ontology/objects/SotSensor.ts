@@ -111,8 +111,11 @@ export interface SotSensor extends $ObjectTypeDefinition {
   };
 }
 
-export const SotSensor: SotSensor = {
+export const SotSensor = {
   type: 'object',
   apiName: 'SotSensor',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies SotSensor & { internalDoNotUseMetadata: { rid: string } } as SotSensor;

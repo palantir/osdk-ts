@@ -238,9 +238,14 @@ async function fetchInterfacePage<
     );
     return result as any;
   }
+
+  const extractedInterfaceTypeApiName = (await extractObjectOrInterfaceType(
+    client,
+    objectSet,
+  ))?.apiName ?? interfaceType.apiName;
   const resolvedInterfaceObjectSet = resolveInterfaceObjectSet(
     objectSet,
-    interfaceType.apiName,
+    extractedInterfaceTypeApiName,
     args,
   );
   const requestBody = await buildAndRemapRequestBody(
@@ -266,9 +271,7 @@ async function fetchInterfacePage<
     data: await client.objectFactory2(
       client,
       result.data,
-      (await extractObjectOrInterfaceType(client, resolvedInterfaceObjectSet))
-        ?.apiName
-        ?? interfaceType.apiName,
+      extractedInterfaceTypeApiName,
       {},
       !args.$includeRid,
       args.$select,
@@ -535,8 +538,11 @@ export async function fetchObjectPage<
   // For simple object fetches, since we know the object type up front
   // we can parallelize network requests for loading metadata and loading the actual objects
   // In our object factory we await and block on loading the metadata, which if this call finishes, should already be cached on the client
-
-  void client.ontologyProvider.getObjectDefinition(objectType.apiName);
+  // We have an empty catch here so that if this call errors before we await later, we won't have an unhandled promise rejection that would crash the process
+  // Swallowing the error is ok because we await the metadata load in the objectFactory later anyways which eventually bubbles up the error to the user
+  void client.ontologyProvider.getObjectDefinition(objectType.apiName).catch(
+    () => {},
+  );
 
   const requestBody = await buildAndRemapRequestBody(
     args,

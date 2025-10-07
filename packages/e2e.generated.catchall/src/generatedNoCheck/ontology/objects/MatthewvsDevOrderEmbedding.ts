@@ -103,8 +103,11 @@ export interface MatthewvsDevOrderEmbedding extends $ObjectTypeDefinition {
   };
 }
 
-export const MatthewvsDevOrderEmbedding: MatthewvsDevOrderEmbedding = {
+export const MatthewvsDevOrderEmbedding = {
   type: 'object',
   apiName: 'MatthewvsDevOrderEmbedding',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies MatthewvsDevOrderEmbedding & { internalDoNotUseMetadata: { rid: string } } as MatthewvsDevOrderEmbedding;

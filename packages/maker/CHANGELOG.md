@@ -1,5 +1,57 @@
 # @osdk/maker
 
+## 0.13.0-beta.15
+
+### Minor Changes
+
+- 04e664e: readme update and missing changeset for wiring up randomness key
+
+## 0.13.0-beta.14
+
+### Minor Changes
+
+- 9dd5a63: Intermediary links in oac
+- e62408b: Fix Maker Rid Generation
+
+### Patch Changes
+
+- Updated dependencies [b7edfb5]
+  - @osdk/api@2.5.0-beta.14
+
+## 0.13.0-beta.13
+
+### Minor Changes
+
+- d815339: Allow interface props to be excluded from actions
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.13
+
+## 0.13.0-beta.12
+
+### Minor Changes
+
+- f025f30: Fix semantic merge conflict
+- 7f0ad5c: Check extended interfaces when verifying interface actions
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.12
+
+## 0.13.0-beta.11
+
+### Minor Changes
+
+- 5fd12eb: Fix interface display metadata to include icon
+- f2dbc3d: Fix test from semantic merge conflict
+- 712dfbe: Improve interface action validation
+
+### Patch Changes
+
+- Updated dependencies [7b97128]
+  - @osdk/api@2.5.0-beta.11
+
 ## 0.13.0-beta.10
 
 ### Minor Changes

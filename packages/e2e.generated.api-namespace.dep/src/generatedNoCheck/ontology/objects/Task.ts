@@ -87,8 +87,11 @@ export interface Task extends $ObjectTypeDefinition {
   };
 }
 
-export const Task: Task = {
+export const Task = {
   type: 'object',
   apiName: 'com.example.dep.Task',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ridForTask',
+  },
+} satisfies Task & { internalDoNotUseMetadata: { rid: string } } as Task;

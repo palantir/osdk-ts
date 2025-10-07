@@ -131,8 +131,11 @@ export interface Todo extends $ObjectTypeDefinition {
   };
 }
 
-export const Todo: Todo = {
+export const Todo = {
   type: 'object',
   apiName: 'Todo',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.object-type.a3fcfef9-ec11-4f2d-8a4c-dc010de837bf',
+  },
+} satisfies Todo & { internalDoNotUseMetadata: { rid: string } } as Todo;

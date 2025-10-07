@@ -1,5 +1,46 @@
 # @osdk/foundry-sdk-generator
 
+## 2.5.0-beta.14
+
+### Patch Changes
+
+- Updated dependencies [b7edfb5]
+- Updated dependencies [6ddb3ed]
+  - @osdk/client@2.5.0-beta.14
+  - @osdk/api@2.5.0-beta.14
+  - @osdk/generator@2.5.0-beta.14
+
+## 2.5.0-beta.13
+
+### Minor Changes
+
+- 774dc06: Throw an error when trying to generate nested arrays for queries and actions
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.13
+- @osdk/client@2.5.0-beta.13
+- @osdk/generator@2.5.0-beta.13
+
+## 2.5.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [4b4a458]
+- Updated dependencies [85e8edb]
+  - @osdk/generator@2.5.0-beta.12
+  - @osdk/client@2.5.0-beta.12
+  - @osdk/api@2.5.0-beta.12
+
+## 2.5.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [7b97128]
+  - @osdk/client@2.5.0-beta.11
+  - @osdk/api@2.5.0-beta.11
+  - @osdk/generator@2.5.0-beta.11
+
 ## 2.5.0-beta.10
 
 ### Patch Changes

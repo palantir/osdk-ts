@@ -19,28 +19,33 @@ import type {
   ActionValidationResponse,
   CompileTimeMetadata,
   InterfaceDefinition,
+  ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
   SimplePropertyDef,
   WhereClause,
+  WirePropertyTypes,
 } from "@osdk/api";
 import { Subscription } from "rxjs";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type { SpecificLinkPayload } from "../LinkPayload.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
+import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import type {
   ObservableClient,
   ObserveListOptions,
   ObserveObjectArgs,
   ObserveObjectOptions,
   ObserveObjectsArgs,
+  ObserveObjectSetArgs,
   Unsubscribable,
 } from "../ObservableClient.js";
 import type { Observer } from "../ObservableClient/common.js";
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
 import type { Canonical } from "./Canonical.js";
+import type { ObserveObjectSetOptions } from "./objectset/ObjectSetQueryOptions.js";
 import type { Store } from "./Store.js";
 import { UnsubscribableWrapper } from "./UnsubscribableWrapper.js";
 
@@ -143,6 +148,24 @@ export class ObservableClientImpl implements ObservableClient {
     action: Q,
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
   ) => Promise<ActionValidationResponse>;
+
+  public observeObjectSet<
+    T extends ObjectTypeDefinition,
+    RDPs extends Record<
+      string,
+      WirePropertyTypes | undefined | Array<WirePropertyTypes>
+    > = {},
+  >(
+    baseObjectSet: ObjectSet<T>,
+    options: ObserveObjectSetOptions<T, RDPs>,
+    subFn: Observer<ObserveObjectSetArgs<T, RDPs>>,
+  ): Unsubscribable {
+    return this.__experimentalStore.objectSets.observe(
+      { baseObjectSet, ...options },
+      // cast to cross typed to untyped barrier
+      subFn as unknown as Observer<ObjectSetPayload>,
+    );
+  }
 
   public invalidateAll(): Promise<void> {
     return this.__experimentalStore.invalidateAll();

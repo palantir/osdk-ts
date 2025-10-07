@@ -86,8 +86,11 @@ export interface Person extends $ObjectTypeDefinition {
   };
 }
 
-export const Person: Person = {
+export const Person = {
   type: 'object',
   apiName: 'Person',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;

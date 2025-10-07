@@ -119,8 +119,11 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
   };
 }
 
-export const OsdkTestObject: OsdkTestObject = {
+export const OsdkTestObject = {
   type: 'object',
   apiName: 'OsdkTestObject',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb',
+  },
+} satisfies OsdkTestObject & { internalDoNotUseMetadata: { rid: string } } as OsdkTestObject;

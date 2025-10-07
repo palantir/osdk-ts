@@ -48,9 +48,8 @@ import type {
   BaseFormatter as _api_BaseFormatter,
   BooleanPropertyType as _api_BooleanPropertyType,
   BytePropertyType as _api_BytePropertyType,
-  CipherTextPropertyType as _api_CipherTextPropertyType,
   ColumnName as _api_ColumnName,
-  CompassProjectRid as _api_CompassProjectRid,
+  CompassFolderRid as _api_CompassFolderRid,
   DataNullability as _api_DataNullability,
   DataNullabilityV2 as _api_DataNullabilityV2,
   DataSecurity as _api_DataSecurity,
@@ -200,7 +199,6 @@ import type {
   SchemaMigrationModification
     as _api_schemamigrations_SchemaMigrationModification,
 } from "../schemamigrations/__components.js";
-import type { OntologyObjectTypeSemanticSearchStatus as _api_search_semantic_OntologyObjectTypeSemanticSearchStatus } from "../search/semantic/__components.js";
 import type {
   ExternalMappingConfiguration as _api_typemapping_ExternalMappingConfiguration,
   ExternalMappingConfigurationFilter
@@ -336,10 +334,13 @@ export interface CheckExistingUniqueIdentifiersResponse {
   existingPerOntologyUniqueIdentifiers: Array<PerOntologyUniqueIdentifier>;
 }
 /**
- * A rid identifying a Compass folder. This rid is generated randomly and is safe for logging purposes.
+ * Duplicate of CipherTextPropertyType in ontology-metadata-api, with the exception that the plainTextType is a
+ * TypeForModification.
  */
-export type CompassFolderRid = string;
-
+export interface CipherTextPropertyTypeModification {
+  defaultCipherChannelRid?: string | null | undefined;
+  plainTextType: TypeForModification;
+}
 /**
  * An rid identifying a Compass namespace. This rid is generated randomly and is safe for logging purposes.
  */
@@ -576,6 +577,10 @@ export interface InlineActionTypeModification {
 export interface InterfaceArrayPropertyTypeModification {
   subtype: InterfacePropertyTypeTypeForModification;
 }
+export interface InterfaceCipherTextPropertyTypeModification {
+  defaultCipherChannelRid?: string | null | undefined;
+  plainTextType: InterfacePropertyTypeTypeForModification;
+}
 export interface InterfaceDefinedPropertyTypeConstraintsModification {
   dataConstraints?: DataConstraintsModification | null | undefined;
   indexedForSearch: boolean;
@@ -726,7 +731,7 @@ export interface InterfacePropertyTypeTypeForModification_marking {
 
 export interface InterfacePropertyTypeTypeForModification_cipherText {
   type: "cipherText";
-  cipherText: _api_CipherTextPropertyType;
+  cipherText: InterfaceCipherTextPropertyTypeModification;
 }
 
 export interface InterfacePropertyTypeTypeForModification_mediaReference {
@@ -743,10 +748,15 @@ export interface InterfacePropertyTypeTypeForModification_geotimeSeriesReference
   type: "geotimeSeriesReference";
   geotimeSeriesReference: _api_GeotimeSeriesReferencePropertyType;
 }
+
+export interface InterfacePropertyTypeTypeForModification_struct {
+  type: "struct";
+  struct: InterfaceStructPropertyTypeModification;
+}
 /**
- * Duplicate of Type, with the exception of InterfaceStructPropertyTypeModification and
- * InterfaceArrayPropertyTypeModification. InterfaceStructPropertyType has an added requireImplementation field
- * to allow for optional struct fields on interface property types.
+ * Duplicate of TypeForModification, with the exception of InterfaceStructPropertyTypeModification and
+ * InterfaceArrayPropertyTypeModification. InterfaceStructPropertyTypeModification has an added
+ * requireImplementation field to allow for optional struct fields on interface property types.
  */
 export type InterfacePropertyTypeTypeForModification =
   | InterfacePropertyTypeTypeForModification_array
@@ -769,11 +779,24 @@ export type InterfacePropertyTypeTypeForModification =
   | InterfacePropertyTypeTypeForModification_cipherText
   | InterfacePropertyTypeTypeForModification_mediaReference
   | InterfacePropertyTypeTypeForModification_vector
-  | InterfacePropertyTypeTypeForModification_geotimeSeriesReference;
+  | InterfacePropertyTypeTypeForModification_geotimeSeriesReference
+  | InterfacePropertyTypeTypeForModification_struct;
 
 export interface InterfaceSharedPropertyTypeModification {
   required: boolean;
   sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
+}
+export interface InterfaceStructFieldTypeModification {
+  aliases: Array<_api_StructFieldAlias>;
+  apiName: _api_ObjectTypeFieldApiName;
+  displayMetadata: _api_StructFieldDisplayMetadata;
+  fieldType: InterfacePropertyTypeTypeForModification;
+  requireImplementation: boolean;
+  rid?: _api_StructFieldRid | null | undefined;
+  typeClasses: Array<_api_TypeClass>;
+}
+export interface InterfaceStructPropertyTypeModification {
+  structFields: Array<InterfaceStructFieldTypeModification>;
 }
 /**
  * This includes metadata which can be used by front-ends when displaying an interface.
@@ -832,7 +855,7 @@ export type LinkDefinitionModification =
 export interface LinkTypeCreate {
   linkType: LinkTypeModification;
   packageRid?: _api_OntologyPackageRid | null | undefined;
-  projectRid?: _api_CompassProjectRid | null | undefined;
+  projectRid?: _api_CompassFolderRid | null | undefined;
 }
 export interface LinkTypeDelete {
 }
@@ -1058,7 +1081,7 @@ export interface ObjectTypeBranchIndexingConfiguration {
 export interface ObjectTypeCreate {
   objectType: ObjectTypeModification;
   packageRid?: _api_OntologyPackageRid | null | undefined;
-  projectRid?: _api_CompassProjectRid | null | undefined;
+  projectRid?: _api_CompassFolderRid | null | undefined;
 }
 /**
  * Deprecated in favor of ObjectTypeDatasetDatasourceV2Modification
@@ -1261,6 +1284,7 @@ export interface ObjectTypeEntityMetadataModifyRequest {
     | undefined;
   provenance?: EntityProvenanceModification | null | undefined;
   targetStorageBackend?: StorageBackendModification | null | undefined;
+  usesOnlyOsv2ObjectRids?: boolean | null | undefined;
 }
 /**
  * Object type datasource that is backed by Geotime, uniquely identified by its rid.
@@ -1418,6 +1442,7 @@ export interface ObjectTypeTraitsModification {
 }
 export interface ObjectTypeUpdate {
   objectType: ObjectTypeModification;
+  propertyTypeIdMappings?: PropertyTypeIdMappings | null | undefined;
 }
 export interface OneToManyLinkDefinitionModification {
   cardinalityHint: _api_OneToManyLinkCardinalityHint;
@@ -1526,8 +1551,7 @@ export interface OntologyInformationInternal {
   permissionModel: _api_permissions_PermissionModel;
   restrictedRoleGrants: Array<_api_permissions_RoleGrant>;
   roleGrants: Array<_api_permissions_RoleGrant>;
-  semanticSearchIndexingStatus:
-    _api_search_semantic_OntologyObjectTypeSemanticSearchStatus;
+  semanticSearchIndexingStatus: OntologyObjectTypeSemanticSearchStatus;
 }
 /**
  * A short summary of the changes made, and the reason for those changes. Currently this is only used for modifications
@@ -1579,7 +1603,7 @@ export interface OntologyModificationRequest {
   >;
   interfaceTypesToCreateInProject: Record<
     _api_InterfaceTypeIdInRequest,
-    _api_CompassProjectRid
+    _api_CompassFolderRid
   >;
   interfaceTypesToDelete: Array<_api_InterfaceTypeRid>;
   interfaceTypesToUpdate: Record<
@@ -1630,7 +1654,7 @@ export interface OntologyModificationRequest {
   >;
   sharedPropertyTypesToCreateInProject: Record<
     _api_SharedPropertyTypeIdInRequest,
-    _api_CompassProjectRid
+    _api_CompassFolderRid
   >;
   sharedPropertyTypesToDelete: Array<_api_SharedPropertyTypeRid>;
   sharedPropertyTypesToUpdate: Record<
@@ -1641,7 +1665,7 @@ export interface OntologyModificationRequest {
   typeGroupsToCreate: Record<_api_TypeGroupIdInRequest, TypeGroupModification>;
   typeGroupsToCreateInProject: Record<
     _api_TypeGroupIdInRequest,
-    _api_CompassProjectRid
+    _api_CompassFolderRid
   >;
   typeGroupsToDelete: Array<_api_TypeGroupRid>;
   typeGroupsToUpdate: Record<_api_TypeGroupRid, TypeGroupModification>;
@@ -1685,6 +1709,11 @@ export interface OntologyModificationResponse {
  * in the corresponding Ontology.
  */
 export type OntologyNamespace = string;
+export type OntologyObjectTypeSemanticSearchStatus =
+  | "AVAILABLE"
+  | "INDEXING"
+  | "AIP_DISABLED"
+  | "NOT_READY";
 
 /**
  * The rid for an Ontology project. This rid is generated randomly and is safe for logging purposes.
@@ -1751,6 +1780,15 @@ export type PerOntologyUniqueIdentifier =
   | PerOntologyUniqueIdentifier_objectTypeApiName
   | PerOntologyUniqueIdentifier_linkTypeId;
 
+/**
+ * Request to change the ids of the given PropertyTypeRid(s) to the given PropertyTypeId(s).
+ */
+export interface PropertyTypeIdMappings {
+  existingPropertyTypeRenames: Record<
+    _api_PropertyTypeRid,
+    _api_PropertyTypeId
+  >;
+}
 export interface PropertyTypeModification {
   apiName?: _api_ObjectTypeFieldApiName | null | undefined;
   baseFormatter?: _api_BaseFormatter | null | undefined;
@@ -1986,7 +2024,7 @@ export interface TypeForModification_marking {
 
 export interface TypeForModification_cipherText {
   type: "cipherText";
-  cipherText: _api_CipherTextPropertyType;
+  cipherText: CipherTextPropertyTypeModification;
 }
 
 export interface TypeForModification_mediaReference {

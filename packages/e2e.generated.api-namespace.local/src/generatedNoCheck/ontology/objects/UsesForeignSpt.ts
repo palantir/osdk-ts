@@ -87,8 +87,11 @@ export interface UsesForeignSpt extends $ObjectTypeDefinition {
   };
 }
 
-export const UsesForeignSpt: UsesForeignSpt = {
+export const UsesForeignSpt = {
   type: 'object',
   apiName: 'UsesForeignSpt',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'theRid',
+  },
+} satisfies UsesForeignSpt & { internalDoNotUseMetadata: { rid: string } } as UsesForeignSpt;

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import type { OntologyEntityBase } from "./common/OntologyEntityBase.js";
 import { importOntologyEntity } from "./importOntologyEntity.js";
-import type { OntologyEntityBase } from "./types.js";
 
 /**
  * Wraps an OntologyEntityType with a Proxy that calls importOntologyEntity when properties are accessed.

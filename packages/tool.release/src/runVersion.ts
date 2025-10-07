@@ -150,6 +150,10 @@ export async function runVersion({
     // Disable committing when in snapshot mode
     commit: snapshot || !runGitCommands ? false : config.commit,
     changelog: ["@changesets/changelog-git", null],
+    ___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH: {
+      onlyUpdatePeerDependentsWhenOutOfRange: true,
+      updateInternalDependents: "out-of-range",
+    },
   };
 
   const releasePlan = assembleReleasePlan(

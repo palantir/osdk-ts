@@ -132,12 +132,15 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
   return `${imports}${getV2Types(object, forInternalUse)}
 
-    export const ${object.shortApiName}: ${objectDefIdentifier}
+    export const ${object.shortApiName}
     = {
       type: "${object instanceof EnhancedObjectType ? "object" : "interface"}",
       apiName: "${object.fullApiName}",
-      osdkMetadata: $osdkMetadata,  
-    };`;
+      osdkMetadata: $osdkMetadata,
+      internalDoNotUseMetadata: {
+        rid: "${definition.rid}",
+      },
+    } satisfies ${objectDefIdentifier} & { internalDoNotUseMetadata: { rid: string } } as ${objectDefIdentifier};`;
 }
 
 export interface Identifiers extends

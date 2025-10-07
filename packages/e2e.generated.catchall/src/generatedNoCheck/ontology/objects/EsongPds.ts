@@ -174,8 +174,11 @@ export interface EsongPds extends $ObjectTypeDefinition {
   };
 }
 
-export const EsongPds: EsongPds = {
+export const EsongPds = {
   type: 'object',
   apiName: 'EsongPds',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.object-type.afa55844-81e8-4a1f-9b8e-bf51a9938a4d',
+  },
+} satisfies EsongPds & { internalDoNotUseMetadata: { rid: string } } as EsongPds;

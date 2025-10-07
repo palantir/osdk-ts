@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import type { InterfaceTypeStatus } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
+import type { BlueprintIcon } from "./common/BlueprintIcons.js";
+import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
   namespace,
   ontologyDefinition,
@@ -22,16 +25,16 @@ import {
   withoutNamespace,
 } from "./defineOntology.js";
 import { defineSharedPropertyType } from "./defineSpt.js";
-import type { BlueprintIcon } from "./iconNames.js";
+import { type InterfaceType } from "./interface/InterfaceType.js";
+import { mapSimplifiedStatusToInterfaceTypeStatus } from "./interface/mapSimplifiedStatusToInterfaceTypeStatus.js";
+import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
 import {
-  type InterfaceType,
-  type InterfaceTypeStatus,
-  OntologyEntityTypeEnum,
+  isPropertyTypeType,
   type PropertyTypeType,
-  type SharedPropertyType,
-} from "./types.js";
+} from "./properties/PropertyTypeType.js";
+import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
 
-type SimplifiedInterfaceTypeStatus =
+export type SimplifiedInterfaceTypeStatus =
   | { type: "deprecated"; message: string; deadline: string }
   | { type: "active" }
   | { type: "experimental" };
@@ -70,23 +73,39 @@ export function defineInterface(
     Object.entries(interfaceDef.properties ?? {}).map<
       [string, { required: boolean; sharedPropertyType: SharedPropertyType }]
     >(
-      ([propApiName, type]) => {
+      ([unNamespacedPropApiName, type]) => {
         if (typeof type === "object" && "propertyDefinition" in type) {
-          return [namespace + propApiName, {
+          // If the property is an imported SPT, use the SPT's apiName
+          const apiName = combineApiNamespaceIfMissing(
+            namespace,
+            typeof type.propertyDefinition === "object"
+              && "apiName" in type.propertyDefinition
+              ? type.propertyDefinition.apiName
+              : unNamespacedPropApiName,
+          );
+
+          return [apiName, {
             required: type.required,
             sharedPropertyType: unifyBasePropertyDefinition(
               namespace,
-              propApiName,
+              unNamespacedPropApiName,
               type.propertyDefinition,
             ),
           }];
         }
 
-        return [namespace + propApiName, {
+        // If the property is an imported SPT, use the SPT's apiName
+        const apiName = combineApiNamespaceIfMissing(
+          namespace,
+          typeof type === "object" && "apiName" in type
+            ? type.apiName
+            : unNamespacedPropApiName,
+        );
+        return [apiName, {
           required: true,
           sharedPropertyType: unifyBasePropertyDefinition(
             namespace,
-            propApiName,
+            unNamespacedPropApiName,
             type,
           ),
         }];
@@ -136,46 +155,6 @@ export function defineInterface(
 
   updateOntology(fullInterface);
   return fullInterface;
-}
-
-function isPropertyTypeType(
-  v: PropertyTypeType,
-): v is PropertyTypeType {
-  return v === "boolean" || v === "byte"
-    || v === "date" || v === "decimal" || v === "double"
-    || v === "float" || v === "geopoint" || v === "geoshape"
-    || v === "integer" || v === "long"
-    || (typeof v === "object" && v.type === "marking")
-    || v === "short" || v === "string"
-    || v === "timestamp";
-}
-
-function mapSimplifiedStatusToInterfaceTypeStatus(
-  status: SimplifiedInterfaceTypeStatus,
-): InterfaceTypeStatus {
-  switch (status.type) {
-    case "deprecated":
-      return {
-        type: "deprecated",
-        deprecated: {
-          message: status.message,
-          deadline: status.deadline,
-          replacedBy: undefined,
-        },
-      };
-    case "active":
-      return {
-        type: "active",
-        active: {},
-      };
-    case "experimental":
-      return {
-        type: "experimental",
-        experimental: {},
-      };
-    default:
-      throw new Error(`Invalid status type: ${(status as any).type}`);
-  }
 }
 
 function unifyBasePropertyDefinition(

@@ -125,8 +125,11 @@ export interface Office extends $ObjectTypeDefinition {
   };
 }
 
-export const Office: Office = {
+export const Office = {
   type: 'object',
   apiName: 'Office',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45',
+  },
+} satisfies Office & { internalDoNotUseMetadata: { rid: string } } as Office;

@@ -351,8 +351,13 @@ export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition {
   };
 }
 
-export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypes = {
+export const ObjectTypeWithAllPropertyTypes = {
   type: 'object',
   apiName: 'ObjectTypeWithAllPropertyTypes',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies ObjectTypeWithAllPropertyTypes & {
+  internalDoNotUseMetadata: { rid: string };
+} as ObjectTypeWithAllPropertyTypes;

@@ -19,12 +19,14 @@ import type {
   ActionValidationResponse,
   DerivedProperty,
   InterfaceDefinition,
+  ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
   SimplePropertyDef,
   WhereClause,
+  WirePropertyTypes,
 } from "@osdk/api";
 import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
 import type { ActionSignatureFromDef } from "../actions/applyAction.js";
@@ -32,6 +34,7 @@ import { additionalContext, type Client } from "../Client.js";
 import { createClientFromContext } from "../createClient.js";
 import { OBSERVABLE_USER_AGENT } from "../util/UserAgent.js";
 import type { Canonical } from "./internal/Canonical.js";
+import type { ObserveObjectSetOptions } from "./internal/objectset/ObjectSetQueryOptions.js";
 import { ObservableClientImpl } from "./internal/ObservableClientImpl.js";
 import { Store } from "./internal/Store.js";
 import type {
@@ -95,6 +98,24 @@ export interface ObserveObjectsArgs<
   fetchMore: () => Promise<void>;
   hasMore: boolean;
   status: Status;
+}
+
+export interface ObserveObjectSetArgs<
+  T extends ObjectTypeDefinition | InterfaceDefinition,
+  RDPs extends Record<
+    string,
+    WirePropertyTypes | undefined | Array<WirePropertyTypes>
+  > = {},
+> {
+  resolvedList: Array<
+    Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
+  >;
+  isOptimistic: boolean;
+  lastUpdated: number;
+  fetchMore: () => Promise<void>;
+  hasMore: boolean;
+  status: Status;
+  objectSet: ObjectSet<T, RDPs>;
 }
 
 /**
@@ -163,6 +184,33 @@ export interface ObservableClient extends ObserveLinks {
   >(
     options: ObserveListOptions<T, RDPs>,
     subFn: Observer<ObserveObjectsArgs<T>>,
+  ): Unsubscribable;
+
+  /**
+   * Observe an ObjectSet with automatic updates when matching objects change.
+   *
+   * @param baseObjectSet - The base ObjectSet to observe
+   * @param options - Options for transforming and observing the ObjectSet
+   * @param subFn - Observer that receives ObjectSet state updates
+   * @returns Subscription that can be unsubscribed to stop updates
+   *
+   * Supports all ObjectSet operations:
+   * - Filtering with where clauses
+   * - Derived properties with withProperties
+   * - Set operations (union, intersect, subtract)
+   * - Link traversal with pivotTo
+   * - Sorting and pagination
+   */
+  observeObjectSet<
+    T extends ObjectTypeDefinition,
+    RDPs extends Record<
+      string,
+      WirePropertyTypes | undefined | Array<WirePropertyTypes>
+    > = {},
+  >(
+    baseObjectSet: ObjectSet<T>,
+    options: ObserveObjectSetOptions<T, RDPs>,
+    subFn: Observer<ObserveObjectSetArgs<T, RDPs>>,
   ): Unsubscribable;
 
   /**
