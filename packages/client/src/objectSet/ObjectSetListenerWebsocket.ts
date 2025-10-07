@@ -43,6 +43,7 @@ const EXPONENTIAL_BACKOFF_MAX_DELAY_MS = 60000;
 const EXPONENTIAL_BACKOFF_MULTIPLIER = 2;
 const EXPONENTIAL_BACKOFF_JITTER_FACTOR = 0.3;
 const WEBSOCKET_IDLE_DISCONNECT_DELAY_MS = 15000;
+const WEBSOCKET_HEARTBEAT_INTERVAL_MS = 45 * 1000;
 
 /** Noop function to reduce conditional checks */
 function doNothing() {}
@@ -153,6 +154,7 @@ export class ObjectSetListenerWebsocket {
   >();
 
   #maybeDisconnectTimeout: ReturnType<typeof setTimeout> | undefined;
+  #heartbeatInterval: ReturnType<typeof setInterval> | undefined;
 
   // DO NOT CONSTRUCT DIRECTLY. ONLY EXPOSED AS A TESTING SEAM
   constructor(
@@ -429,6 +431,16 @@ export class ObjectSetListenerWebsocket {
     this.#backoff.reset();
     // resubscribe all of the listeners
     this.#sendSubscribeMessage();
+
+    // Start heartbeat to keep connection alive
+    if (this.#heartbeatInterval) {
+      clearInterval(this.#heartbeatInterval);
+    }
+    this.#heartbeatInterval = setInterval(() => {
+      if (this.#ws?.readyState === WebSocket.OPEN) {
+        this.#sendSubscribeMessage();
+      }
+    }, WEBSOCKET_HEARTBEAT_INTERVAL_MS);
   };
 
   #onMessage = async (message: WebSocket.MessageEvent): Promise<void> => {
@@ -654,6 +666,12 @@ export class ObjectSetListenerWebsocket {
   };
 
   #cycleWebsocket = () => {
+    // Clear heartbeat interval
+    if (this.#heartbeatInterval) {
+      clearInterval(this.#heartbeatInterval);
+      this.#heartbeatInterval = undefined;
+    }
+
     if (this.#ws) {
       this.#ws.removeEventListener("open", this.#onOpen);
       this.#ws.removeEventListener("message", this.#onMessage);
