@@ -22,7 +22,6 @@ import type {
   InterfaceDefinition,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
-  ObjectSetArgs,
   ObjectTypeDefinition,
   PropertyKeys,
   Result,
@@ -288,7 +287,7 @@ export async function fetchPageInternal<
   A extends Augments,
   S extends NullabilityAdherence,
   T extends boolean,
-  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L>,
+  ORDER_BY_OPTIONS extends ({ [K in L]?: "asc" | "desc" } | "relevance"),
 >(
   client: MinimalClient,
   objectType: Q,
@@ -479,7 +478,7 @@ async function applyFetchArgs<
     any,
     any,
     any,
-    ObjectSetArgs.OrderByOptions<any>
+    { [K in any]?: "asc" | "desc" } | "relevance"
   >,
   body: X,
   _client: MinimalClient,
@@ -524,7 +523,7 @@ export async function fetchObjectPage<
   R extends boolean,
   S extends NullabilityAdherence,
   T extends boolean,
-  ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L>,
+  ORDER_BY_OPTIONS extends ({ [K in L]?: "asc" | "desc" } | "relevance"),
 >(
   client: MinimalClient,
   objectType: Q,

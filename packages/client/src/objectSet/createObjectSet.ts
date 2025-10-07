@@ -23,7 +23,6 @@ import type {
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
-  ObjectSetArgs,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
@@ -178,7 +177,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherence.Default,
       T extends boolean = false,
-      ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = never,
+      ORDER_BY_OPTIONS extends ({ [K in L]?: "asc" | "desc" } | "relevance") =
+        never,
     >(
       args?: AsyncIterArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
     ): AsyncIterableIterator<

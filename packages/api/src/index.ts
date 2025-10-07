@@ -69,7 +69,6 @@ export type {
   Augments,
   FetchPageArgs,
   NullabilityAdherence,
-  ObjectSetArgs,
   SelectArg,
   SelectArgToKeys,
 } from "./object/FetchPageArgs.js";
@@ -127,7 +126,7 @@ export type {
 } from "./OsdkBase.js";
 // eslint-disable-next-line @typescript-eslint/no-deprecated
 export type { OsdkObject } from "./OsdkObject.js";
-export type { ConvertProps, MaybeScore, Osdk } from "./OsdkObjectFrom.js";
+export type { ConvertProps, Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";
 export type {
   Range,
