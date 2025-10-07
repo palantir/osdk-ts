@@ -91,7 +91,7 @@ export const equipment = {
   type: 'object',
   apiName: 'equipment',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.808ac022-89eb-4591-8b7e-1a912b9efb45',
   },
-} satisfies equipment & { experimentalDoNotUseMetadata: { rid: string } } as equipment;
+} satisfies equipment & { internalDoNotUseMetadata: { rid: string } } as equipment;

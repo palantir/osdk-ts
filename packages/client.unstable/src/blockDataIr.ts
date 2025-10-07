@@ -35,6 +35,7 @@ export interface OntologyIr {
   importedOntology: OntologyIrOntologyBlockDataV2;
   valueTypes: OntologyIrValueTypeBlockData;
   importedValueTypes: OntologyIrValueTypeBlockData;
+  randomnessKey?: string;
 }
 
 export type OntologyIrPackagedValueType = {

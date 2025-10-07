@@ -99,7 +99,7 @@ export const DherlihyComplexObject = {
   type: 'object',
   apiName: 'DherlihyComplexObject',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} satisfies DherlihyComplexObject & { experimentalDoNotUseMetadata: { rid: string } } as DherlihyComplexObject;
+} satisfies DherlihyComplexObject & { internalDoNotUseMetadata: { rid: string } } as DherlihyComplexObject;

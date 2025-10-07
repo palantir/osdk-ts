@@ -99,5 +99,3 @@ export type {
   TypeGroupSortBy,
   TypeGroupSortOrder,
 } from "./__components.js";
-
-export * as semantic from "./semantic/index.js";

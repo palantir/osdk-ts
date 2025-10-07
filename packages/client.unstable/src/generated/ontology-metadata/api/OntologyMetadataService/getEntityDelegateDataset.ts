@@ -21,7 +21,7 @@ import type {
 } from "../__components.js";
 
 /**
- * Resolves an ontology entity (object or link type) to a suitable delegate dataset for Spark input.
+ * Resolves an ontology entity (object or link type) to a suitable delegate source for Spark input.
  */
 export async function getEntityDelegateDataset(
   ctx: ConjureContext,

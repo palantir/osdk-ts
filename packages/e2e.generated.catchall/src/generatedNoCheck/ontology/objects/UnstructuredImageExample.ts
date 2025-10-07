@@ -99,7 +99,7 @@ export const UnstructuredImageExample = {
   type: 'object',
   apiName: 'UnstructuredImageExample',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} satisfies UnstructuredImageExample & { experimentalDoNotUseMetadata: { rid: string } } as UnstructuredImageExample;
+} satisfies UnstructuredImageExample & { internalDoNotUseMetadata: { rid: string } } as UnstructuredImageExample;
