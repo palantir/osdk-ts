@@ -18,6 +18,7 @@ export type {
   AsyncParameterValueMap,
   EventId,
   EventParameterValueMap,
+  ManifestParameterDefinition,
   ParameterConfig,
   ParameterDefinition,
   ParameterValueMap,

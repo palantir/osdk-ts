@@ -99,7 +99,7 @@ export const GtfsTripTrackObject = {
   type: 'object',
   apiName: 'GtfsTripTrackObject',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} satisfies GtfsTripTrackObject & { experimentalDoNotUseMetadata: { rid: string } } as GtfsTripTrackObject;
+} satisfies GtfsTripTrackObject & { internalDoNotUseMetadata: { rid: string } } as GtfsTripTrackObject;

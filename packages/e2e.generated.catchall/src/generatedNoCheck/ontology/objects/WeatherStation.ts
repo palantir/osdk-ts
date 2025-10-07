@@ -95,7 +95,7 @@ export const WeatherStation = {
   type: 'object',
   apiName: 'WeatherStation',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} satisfies WeatherStation & { experimentalDoNotUseMetadata: { rid: string } } as WeatherStation;
+} satisfies WeatherStation & { internalDoNotUseMetadata: { rid: string } } as WeatherStation;
