@@ -495,18 +495,18 @@ const departmentToEmployeesLink = defineLink({
   one: {
     object: departmentObject, // The "one" side of the relationship
     metadata: {
-      apiName: "department",
-      displayName: "Department",
-      pluralDisplayName: "Departments",
+      apiName: "employees",
+      displayName: "Employee",
+      pluralDisplayName: "Employees",
       visibility: "NORMAL",
     },
   },
   toMany: {
     object: employeeObject, // The "many" side of the relationship
     metadata: {
-      apiName: "employees",
-      displayName: "Employee",
-      pluralDisplayName: "Employees",
+      apiName: "department",
+      displayName: "Department",
+      pluralDisplayName: "Departments",
       visibility: "NORMAL",
     },
   },
@@ -523,21 +523,53 @@ const productToCategoriesLink = defineLink({
   many: {
     object: productObject, // One side of the many-to-many relationship
     metadata: {
-      apiName: "products",
-      displayName: "Product",
-      pluralDisplayName: "Products",
-      visibility: "NORMAL",
-    },
-  },
-  toMany: {
-    object: categoryObject, // Other side of the many-to-many relationship
-    metadata: {
       apiName: "categories",
       displayName: "Category",
       pluralDisplayName: "Categories",
       visibility: "NORMAL",
     },
   },
+  toMany: {
+    object: categoryObject, // Other side of the many-to-many relationship
+    metadata: {
+      apiName: "products",
+      displayName: "Product",
+      pluralDisplayName: "Products",
+      visibility: "NORMAL",
+    },
+  },
+});
+```
+
+### Intermediary Link
+
+```typescript
+// Define an object-backed link type between aircraft and flights using a manifest
+const manifest = defineObject(...); // define an intermediary object
+const aircraftToManifestLink = defineLink(...); // define a one-to-many link between aircraft and intermediary object
+const flightsToManifestLink = defineLink(...); // define a one-to-many link between flights and intermediary object
+
+const aircraftToFlightsLink = defineLink({
+  apiName: "aircraftToFlights",
+  many: {
+    object: aircraft,
+    metadata: {
+      displayName: "Flight",
+      pluralDisplayName: "Flights",
+      apiName: "flights",
+    },
+    linkToIntermediary: aircraftToManifestLink,
+  },
+  toMany: {
+    object: flight,
+    metadata: {
+      displayName: "Aircraft",
+      pluralDisplayName: "Aircraft",
+      apiName: "aircraft",
+    },
+    linkToIntermediary: flightsToManifestLink,
+  },
+  intermediaryObjectType: manifest,
 });
 ```
 
@@ -622,6 +654,12 @@ const createEmployeePersonAction = defineCreateInterfaceObjectAction(
 // Define an action to modify objects implementing an interface
 const modifyPersonAction = defineModifyInterfaceObjectAction({
   interfaceType: personInterface,
+});
+
+// Define a more complex interface action
+const modifyPersonAction = defineModifyInterfaceObjectAction({
+  interfaceType: personInterface,
+  excludedProperties: ["primaryKey"],
 });
 ```
 

@@ -18,6 +18,7 @@ import type {
   AsyncIterArgs,
   Augments,
   FetchPageResult,
+  InterfaceDefinition,
   LinkedType,
   LinkNames,
   NullabilityAdherence,
@@ -37,6 +38,7 @@ import type {
   ObjectSet as WireObjectSet,
   PropertyApiName,
 } from "@osdk/foundry.ontologies";
+import invariant from "tiny-invariant";
 import { createWithPropertiesObjectSet } from "../derivedProperties/createWithPropertiesObjectSet.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -296,6 +298,27 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           type: "withProperties",
           derivedProperties: derivedProperties,
           objectSet: objectSet,
+        },
+      );
+    },
+
+    asType: (objectTypeDef: ObjectTypeDefinition | InterfaceDefinition) => {
+      const existingMapping =
+        clientCtx.asTypeInterfaceOrObjectMapping[objectTypeDef.apiName];
+      invariant(
+        !existingMapping || existingMapping === objectTypeDef.type,
+        `${objectTypeDef.apiName} was previously used as an ${existingMapping}, but now used as a ${objectTypeDef.type}.`,
+      );
+      clientCtx.asTypeInterfaceOrObjectMapping[objectTypeDef.apiName] =
+        objectTypeDef.type;
+
+      return clientCtx.objectSetFactory(
+        objectTypeDef,
+        clientCtx,
+        {
+          type: "asType",
+          objectSet: objectSet,
+          entityType: objectTypeDef.apiName,
         },
       );
     },

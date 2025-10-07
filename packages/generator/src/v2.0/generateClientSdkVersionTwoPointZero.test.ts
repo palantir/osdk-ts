@@ -886,10 +886,10 @@ describe("generator", () => {
           type: 'object',
           apiName: 'Person',
           osdkMetadata: $osdkMetadata,
-          experimentalDoNotUseMetadata: {
+          internalDoNotUseMetadata: {
             rid: 'ridForPerson',
           },
-        } satisfies Person & { experimentalDoNotUseMetadata: { rid: string } } as Person;
+        } satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1017,10 +1017,10 @@ describe("generator", () => {
           type: 'object',
           apiName: 'Todo',
           osdkMetadata: $osdkMetadata,
-          experimentalDoNotUseMetadata: {
+          internalDoNotUseMetadata: {
             rid: 'ridForTodo',
           },
-        } satisfies Todo & { experimentalDoNotUseMetadata: { rid: string } } as Todo;
+        } satisfies Todo & { internalDoNotUseMetadata: { rid: string } } as Todo;
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -1549,10 +1549,10 @@ describe("generator", () => {
           type: 'object',
           apiName: 'foo.bar.Person',
           osdkMetadata: $osdkMetadata,
-          experimentalDoNotUseMetadata: {
+          internalDoNotUseMetadata: {
             rid: 'ridForPerson',
           },
-        } satisfies Person & { experimentalDoNotUseMetadata: { rid: string } } as Person;
+        } satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1680,10 +1680,10 @@ describe("generator", () => {
           type: 'object',
           apiName: 'foo.bar.Todo',
           osdkMetadata: $osdkMetadata,
-          experimentalDoNotUseMetadata: {
+          internalDoNotUseMetadata: {
             rid: 'ridForTodo',
           },
-        } satisfies Todo & { experimentalDoNotUseMetadata: { rid: string } } as Todo;
+        } satisfies Todo & { internalDoNotUseMetadata: { rid: string } } as Todo;
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -2085,10 +2085,10 @@ describe("generator", () => {
             type: 'object',
             apiName: 'UsesForeignSpt',
             osdkMetadata: $osdkMetadata,
-            experimentalDoNotUseMetadata: {
+            internalDoNotUseMetadata: {
               rid: 'theRid',
             },
-          } satisfies UsesForeignSpt & { experimentalDoNotUseMetadata: { rid: string } } as UsesForeignSpt;
+          } satisfies UsesForeignSpt & { internalDoNotUseMetadata: { rid: string } } as UsesForeignSpt;
           "
         `);
     });
@@ -2343,10 +2343,10 @@ describe("generator", () => {
           type: 'object',
           apiName: 'Person',
           osdkMetadata: $osdkMetadata,
-          experimentalDoNotUseMetadata: {
+          internalDoNotUseMetadata: {
             rid: 'ridForPerson',
           },
-        } satisfies Person & { experimentalDoNotUseMetadata: { rid: string } } as Person;
+        } satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -2474,10 +2474,10 @@ describe("generator", () => {
           type: 'object',
           apiName: 'Todo',
           osdkMetadata: $osdkMetadata,
-          experimentalDoNotUseMetadata: {
+          internalDoNotUseMetadata: {
             rid: 'ridForTodo',
           },
-        } satisfies Todo & { experimentalDoNotUseMetadata: { rid: string } } as Todo;
+        } satisfies Todo & { internalDoNotUseMetadata: { rid: string } } as Todo;
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -2817,10 +2817,10 @@ describe("generator", () => {
           type: 'object',
           apiName: 'com.example.dep.Task',
           osdkMetadata: $osdkMetadata,
-          experimentalDoNotUseMetadata: {
+          internalDoNotUseMetadata: {
             rid: 'ridForTask',
           },
-        } satisfies Task & { experimentalDoNotUseMetadata: { rid: string } } as Task;
+        } satisfies Task & { internalDoNotUseMetadata: { rid: string } } as Task;
         ",
           "/foo/ontology/queries.ts": "export {};
         ",

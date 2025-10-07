@@ -91,7 +91,7 @@ export const UsesForeignSpt = {
   type: 'object',
   apiName: 'UsesForeignSpt',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'theRid',
   },
-} satisfies UsesForeignSpt & { experimentalDoNotUseMetadata: { rid: string } } as UsesForeignSpt;
+} satisfies UsesForeignSpt & { internalDoNotUseMetadata: { rid: string } } as UsesForeignSpt;

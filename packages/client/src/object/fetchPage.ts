@@ -237,9 +237,14 @@ async function fetchInterfacePage<
     );
     return result as any;
   }
+
+  const extractedInterfaceTypeApiName = (await extractObjectOrInterfaceType(
+    client,
+    objectSet,
+  ))?.apiName ?? interfaceType.apiName;
   const resolvedInterfaceObjectSet = resolveInterfaceObjectSet(
     objectSet,
-    interfaceType.apiName,
+    extractedInterfaceTypeApiName,
     args,
   );
   const requestBody = await buildAndRemapRequestBody(
@@ -265,9 +270,7 @@ async function fetchInterfacePage<
     data: await client.objectFactory2(
       client,
       result.data,
-      (await extractObjectOrInterfaceType(client, resolvedInterfaceObjectSet))
-        ?.apiName
-        ?? interfaceType.apiName,
+      extractedInterfaceTypeApiName,
       {},
       !args.$includeRid,
       args.$select,

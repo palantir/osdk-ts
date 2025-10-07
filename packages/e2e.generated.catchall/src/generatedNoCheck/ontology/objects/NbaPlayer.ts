@@ -127,7 +127,7 @@ export const NbaPlayer = {
   type: 'object',
   apiName: 'NbaPlayer',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} satisfies NbaPlayer & { experimentalDoNotUseMetadata: { rid: string } } as NbaPlayer;
+} satisfies NbaPlayer & { internalDoNotUseMetadata: { rid: string } } as NbaPlayer;

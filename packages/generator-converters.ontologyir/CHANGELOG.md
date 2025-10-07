@@ -1,5 +1,23 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.5.0-beta.14
+
+### Minor Changes
+
+- e62408b: Fix Maker Rid Generation
+
+### Patch Changes
+
+- Updated dependencies [9dd5a63]
+- Updated dependencies [e62408b]
+  - @osdk/client.unstable@2.5.0-beta.14
+
+## 2.5.0-beta.13
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.0-beta.13
+
 ## 2.5.0-beta.12
 
 ### Patch Changes

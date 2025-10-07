@@ -90,7 +90,7 @@ export const Person = {
   type: 'object',
   apiName: 'Person',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} satisfies Person & { experimentalDoNotUseMetadata: { rid: string } } as Person;
+} satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;

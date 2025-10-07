@@ -502,6 +502,7 @@ export interface ObjectTypeEntityMetadata {
     | undefined;
   redacted?: boolean | null | undefined;
   targetStorageBackend: StorageBackend;
+  usesOnlyOsv2ObjectRids: boolean;
 }
 /**
  * Request to load ObjectTypeEntityMetadata of an ObjectType.
