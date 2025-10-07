@@ -50,6 +50,23 @@ export function convertLink(
         }],
       },
     };
+  } else if ("intermediaryObjectType" in linkType) {
+    definition = {
+      type: "intermediary",
+      intermediary: {
+        objectTypeAToBLinkMetadata: linkType.many.metadata,
+        objectTypeBToALinkMetadata: linkType.toMany.metadata,
+        objectTypeRidA: linkType.many.object.apiName,
+        objectTypeRidB: linkType.toMany.object.apiName,
+        intermediaryObjectTypeRid: linkType.intermediaryObjectType.apiName,
+        aToIntermediaryLinkTypeRid: cleanAndValidateLinkTypeId(
+          linkType.many.linkToIntermediary.apiName,
+        ),
+        intermediaryToBLinkTypeRid: cleanAndValidateLinkTypeId(
+          linkType.toMany.linkToIntermediary.apiName,
+        ),
+      },
+    };
   } else {
     definition = {
       type: "manyToMany",
