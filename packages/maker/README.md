@@ -655,6 +655,12 @@ const createEmployeePersonAction = defineCreateInterfaceObjectAction(
 const modifyPersonAction = defineModifyInterfaceObjectAction({
   interfaceType: personInterface,
 });
+
+// Define a more complex interface action
+const modifyPersonAction = defineModifyInterfaceObjectAction({
+  interfaceType: personInterface,
+  excludedProperties: ["primaryKey"],
+});
 ```
 
 ### Custom Action
