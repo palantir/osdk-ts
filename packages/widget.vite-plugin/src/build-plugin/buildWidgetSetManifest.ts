@@ -80,13 +80,9 @@ function convertParameter(
   parameter: ParameterDefinition,
 ): ManifestParameterDefinition {
   if (parameter.type === "objectSet") {
-    // We expect to always have a rid here because the config has already been validated
-    if (
-      typeof parameter.objectType.internalDoNotUseMetadata?.rid !== "string"
-    ) {
-      throw new Error(
-        `Missing object type rid for object set parameter '${parameter.displayName}'`,
-      );
+    // Config has already been validated so rid must be present
+    if (parameter.objectType.internalDoNotUseMetadata == null) {
+      throw new Error("Expected internal metadata to be present");
     }
     return {
       type: "objectSet",

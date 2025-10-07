@@ -20,7 +20,7 @@ import { buildWidgetSetManifest } from "../buildWidgetSetManifest.js";
 import type { WidgetBuildOutputs } from "../getWidgetBuildOutputs.js";
 
 describe("buildWidgetSetManifest", () => {
-  const WIDGET_SET_RID = "ri.widgetregistry.widget-set..test-widget-set";
+  const WIDGET_SET_RID = "ri.widgetregistry..widget-set.test-widget-set";
   const WIDGET_SET_VERSION = "1.0.0";
 
   test("builds a valid manifest with multiple widgets", () => {
