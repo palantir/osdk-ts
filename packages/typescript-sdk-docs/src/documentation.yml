@@ -1233,6 +1233,8 @@ versions:
                     objectType: {{objectType}},
                     propertyType: "{{property}}",
                 });
+                // alternatively, you can get the Rid from the media property on the object type you are modifying
+                // const mediaRid = objectTypeWithMedia.{mediaProperty}?.rid;
             {{/hasMediaParameter}}
                 const result = await client({{actionApiName}}).applyAction(
                     {

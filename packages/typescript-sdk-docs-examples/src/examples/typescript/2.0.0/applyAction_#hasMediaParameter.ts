@@ -44,6 +44,8 @@ async function callAction() {
         objectType: Equipment,
         propertyType: "trainingMaterial",
     });
+    // alternatively, you can get the Rid from the media property on the object type you are modifying
+    // const mediaRid = objectTypeWithMedia.{mediaProperty}?.rid;
     const result = await client(documentEquipment).applyAction(
         {
             "equipmentId": "mac-1234",
