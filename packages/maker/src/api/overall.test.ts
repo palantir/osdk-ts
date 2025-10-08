@@ -15647,6 +15647,7 @@ describe("Ontology Defining", () => {
         import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
         import type { InterfaceType } from '@osdk/maker';
 
+        /** @type {import('@osdk/maker').InterfaceType} */
         const myInterface_base: InterfaceType = {
           "apiName": "com.my.package.myInterface",
           "displayMetadata": {
@@ -15699,6 +15700,7 @@ describe("Ontology Defining", () => {
         import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
         import type { ObjectType } from '@osdk/maker';
 
+        /** @type {import('@osdk/maker').ObjectType} */
         const myObject_base: ObjectType = {
           "titlePropertyApiName": "bar",
           "displayName": "My Object",
@@ -15776,6 +15778,7 @@ describe("Ontology Defining", () => {
         import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
         import type { SharedPropertyType } from '@osdk/maker';
 
+        /** @type {import('@osdk/maker').SharedPropertyType} */
         const mySpt_base: SharedPropertyType = {
           "apiName": "com.my.package.mySpt",
           "type": "string",
@@ -15835,6 +15838,7 @@ describe("Ontology Defining", () => {
         import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
         import type { InterfaceType } from '@osdk/maker';
 
+        /** @type {import('@osdk/maker').InterfaceType} */
         const childInterface_base: InterfaceType = {
           "apiName": "com.palantir.childInterface",
           "displayMetadata": {
