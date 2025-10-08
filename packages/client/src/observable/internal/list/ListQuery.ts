@@ -518,7 +518,7 @@ export abstract class ListQuery extends BaseListQuery<
       "object",
       obj.$objectType,
       pk,
-      this.rdpConfig,
+      this.rdpConfig ?? undefined,
     );
   }
 }

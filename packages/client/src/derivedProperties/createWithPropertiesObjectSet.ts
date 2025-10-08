@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { DerivedProperty, ObjectOrInterfaceDefinition } from "@osdk/api";
+import type {
+  DerivedProperty,
+  ObjectOrInterfaceDefinition,
+  WhereClause,
+} from "@osdk/api";
 import type {
   DerivedPropertyDefinition,
   ObjectSet as WireObjectSet,
@@ -22,6 +26,7 @@ import type {
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
+import type { SimpleWhereClause } from "../observable/internal/SimpleWhereClause.js";
 import { derivedPropertyDefinitionFactory } from "./derivedPropertyDefinitionFactory.js";
 
 type WithConstSelect<Q extends ObjectOrInterfaceDefinition> =

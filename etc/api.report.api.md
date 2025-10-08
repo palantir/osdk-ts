@@ -214,6 +214,14 @@ export type AllowedBucketKeyTypes = AllowedBucketTypes | {
 export type AllowedBucketTypes = string | number | boolean;
 
 // @public (undocumented)
+export type AndWhereClause<
+	T extends ObjectOrInterfaceDefinition,
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = {
+    	$and: WhereClause<T, RDPs>[]
+};
+
+// @public (undocumented)
 export type ApplyActionOptions = {
     	$returnEdits?: true
     	$validateOnly?: false
@@ -804,6 +812,14 @@ export interface MediaUpload {
 }
 
 // @public (undocumented)
+export type NotWhereClause<
+	T extends ObjectOrInterfaceDefinition,
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = {
+    	$not: WhereClause<T, RDPs>
+};
+
+// @public (undocumented)
 export const NULL_VALUE: symbol & {
     	__type: "NULL_VALUE"
 };
@@ -1019,6 +1035,14 @@ export interface OntologyMetadata<_NEVER_USED_KEPT_FOR_BACKCOMPAT = any> {
     	// (undocumented)
     userAgent: string;
 }
+
+// @public (undocumented)
+export type OrWhereClause<
+	T extends ObjectOrInterfaceDefinition,
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = {
+    	$or: WhereClause<T, RDPs>[]
+};
 
 // Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "IsAny" needs to be exported by the entry point index.d.ts
@@ -1537,9 +1561,6 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
     __expectedClientVersion?: V;
 }
 
-// Warning: (ae-forgotten-export) The symbol "OrWhereClause" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "AndWhereClause" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "NotWhereClause" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MergedPropertyWhereClause" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)

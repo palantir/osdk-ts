@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition, WhereClause } from "@osdk/api";
+import type {
+  ObjectOrInterfaceDefinition,
+  SimplePropertyDef,
+  WhereClause,
+} from "@osdk/api";
 import { Trie } from "@wry/trie";
 import deepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
@@ -50,8 +54,11 @@ export class WhereClauseCanonicalizer {
     options: WeakRef<Canonical<SimpleWhereClause>>[];
   }> = new Map();
 
-  public canonicalize<T extends ObjectOrInterfaceDefinition>(
-    where: WhereClause<T> | SimpleWhereClause,
+  public canonicalize<
+    T extends ObjectOrInterfaceDefinition,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    where: WhereClause<T, RDPs> | SimpleWhereClause,
   ): Canonical<SimpleWhereClause> {
     // fastest shortcut
     if (this.#cache.has(where)) {
@@ -79,8 +86,11 @@ export class WhereClauseCanonicalizer {
     return canon;
   }
 
-  #toCanon = <T extends ObjectOrInterfaceDefinition>(
-    where: WhereClause<T> | SimpleWhereClause,
+  #toCanon = <
+    T extends ObjectOrInterfaceDefinition,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    where: WhereClause<T, RDPs> | SimpleWhereClause,
     set: Set<string> = new Set<string>(),
   ): Canonical<SimpleWhereClause> => {
     if ("$and" in where) {
@@ -112,7 +122,7 @@ export class WhereClauseCanonicalizer {
           if (k === "$and" || k === "$or") {
             return [k, (v as Array<any>).map(x => this.#toCanon(x, set))];
           }
-          if (k !== "$not" && typeof v === "object" && "$eq" in v) {
+          if (k !== "$not" && typeof v === "object" && v !== null && "$eq" in v) {
             return [k, v["$eq"]];
           }
           return [k, v];

@@ -18,7 +18,6 @@ import type {
   InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
-  PropertyValueWireToClient,
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
@@ -31,6 +30,7 @@ import type { Canonical } from "../Canonical.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import { tombstone } from "../tombstone.js";
+import { mergeObjectFields } from "../utils/rdpFieldOperations.js";
 import { type ObjectCacheKey } from "./ObjectCacheKey.js";
 import { ObjectQuery } from "./ObjectQuery.js";
 
@@ -122,12 +122,19 @@ export class ObjectsHelper extends AbstractHelper<
     batch.write(sourceCacheKey, valueToWrite, status);
 
     if (value !== tombstone) {
-      batch.changes.registerObject(sourceCacheKey, value, /* isNew */ !existing);
+      batch.changes.registerObject(sourceCacheKey, value, !existing);
     }
 
-    const relatedKeys = this.store.objectCacheKeyRegistry.getRelated(
+    const metadata = this.store.objectCacheKeyRegistry.getMetadata(
       sourceCacheKey,
     );
+
+    const relatedKeys = metadata
+      ? this.store.objectCacheKeyRegistry.getVariants(
+        metadata.apiName,
+        metadata.primaryKey,
+      )
+      : new Set([sourceCacheKey]);
 
     for (const targetKey of relatedKeys) {
       if (targetKey === sourceCacheKey || !this.isKeyActive(targetKey)) {
@@ -139,7 +146,6 @@ export class ObjectsHelper extends AbstractHelper<
         continue;
       }
 
-      // Merge RDPs
       const targetCurrentValue = batch.read(targetKey)?.value;
       const merged = this.mergeForTarget(
         value,
@@ -165,7 +171,9 @@ export class ObjectsHelper extends AbstractHelper<
   /**
    * Type guard to check if a value is an ObjectHolder
    */
-  private isObjectHolder(value: ObjectHolder | undefined): value is ObjectHolder {
+  private isObjectHolder(
+    value: ObjectHolder | undefined,
+  ): value is ObjectHolder {
     return value != null
       && typeof value === "object"
       && "$apiName" in value
@@ -174,7 +182,6 @@ export class ObjectsHelper extends AbstractHelper<
 
   /**
    * Merge object data for a specific target cache key, preserving RDP fields
-   * TODO: this could potentially be made more concise via an external library
    */
   private mergeForTarget(
     sourceValue: ObjectHolder,
@@ -182,114 +189,18 @@ export class ObjectsHelper extends AbstractHelper<
     sourceCacheKey: ObjectCacheKey,
     targetCacheKey: ObjectCacheKey,
   ): ObjectHolder {
-    const sourceRdp = this.store.objectCacheKeyRegistry.getRdpConfig(
+    const sourceRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
       sourceCacheKey,
     );
-    const targetRdp = this.store.objectCacheKeyRegistry.getRdpConfig(
+    const targetRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
       targetCacheKey,
     );
 
-    if (!targetRdp) {
-      return this.stripRdpFields(sourceValue, sourceRdp);
-    }
-
-    if (this.rdpContainsAll(sourceRdp, targetRdp)) {
-      const targetRdpFields = this.getRdpFields(targetRdp);
-      const sourceRdpFields = this.getRdpFields(sourceRdp);
-
-      if (targetRdpFields.size === sourceRdpFields.size) {
-        return sourceValue;
-      }
-
-      const filtered: ObjectHolder & Record<string, PropertyValueWireToClient> = {
-        ...sourceValue,
-      } as ObjectHolder & Record<string, PropertyValueWireToClient>;
-      for (const field of sourceRdpFields) {
-        if (!targetRdpFields.has(field)) {
-          delete filtered[field];
-        }
-      }
-      return filtered;
-    }
-
-    const merged: ObjectHolder & Record<string, PropertyValueWireToClient> = {
-      ...sourceValue,
-    } as
-      & ObjectHolder
-      & Record<string, PropertyValueWireToClient>;
-
-    if (targetCurrentValue) {
-      const targetRdpFields = this.getRdpFields(targetRdp);
-      const sourceRdpFields = this.getRdpFields(sourceRdp);
-      const targetWithProps = targetCurrentValue as
-        & ObjectHolder
-        & Record<string, PropertyValueWireToClient>;
-
-      for (const field of targetRdpFields) {
-        if (!sourceRdpFields.has(field) && field in targetWithProps) {
-          merged[field] = targetWithProps[field];
-        }
-      }
-    }
-
-    return merged;
-  }
-
-  /**
-   * Strip RDP fields from an object, keeping only base fields
-   */
-  private stripRdpFields(
-    value: ObjectHolder,
-    rdpConfig?: Canonical<Rdp>,
-  ): ObjectHolder {
-    if (!rdpConfig) return value;
-
-    const stripped: ObjectHolder & Record<string, PropertyValueWireToClient> = {
-      ...value,
-    } as
-      & ObjectHolder
-      & Record<string, PropertyValueWireToClient>;
-    const rdpFields = this.getRdpFields(rdpConfig);
-
-    for (const field of rdpFields) {
-      delete stripped[field];
-    }
-
-    return stripped;
-  }
-
-  /**
-   * Check if source RDP contains all fields of target RDP
-   */
-  private rdpContainsAll(
-    sourceRdp?: Canonical<Rdp>,
-    targetRdp?: Canonical<Rdp>,
-  ): boolean {
-    if (!targetRdp) {
-      return true;
-    }
-    if (!sourceRdp) {
-      return false;
-    }
-
-    const sourceFields = this.getRdpFields(sourceRdp);
-    const targetFields = this.getRdpFields(targetRdp);
-
-    for (const field of targetFields) {
-      if (!sourceFields.has(field)) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  /**
-   * Extract RDP field names from RDP configuration
-   */
-  private getRdpFields(rdpConfig?: Canonical<Rdp>): Set<string> {
-    if (!rdpConfig) return new Set();
-
-    return new Set(Object.keys(rdpConfig));
+    return mergeObjectFields(
+      sourceValue,
+      sourceRdpFields,
+      targetRdpFields,
+      targetCurrentValue,
+    );
   }
 }

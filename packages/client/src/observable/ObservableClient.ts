@@ -19,6 +19,7 @@ import type {
   ActionValidationResponse,
   DerivedProperty,
   InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
@@ -66,7 +67,7 @@ export type OrderBy<Q extends ObjectTypeDefinition | InterfaceDefinition> = {
 };
 
 export interface ObserveListOptions<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > extends CommonObserveOptions, ObserveOptions {
   type: Pick<Q, "apiName" | "type">;

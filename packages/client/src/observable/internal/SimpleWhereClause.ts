@@ -15,12 +15,17 @@
  */
 
 
+import type {
+  ObjectOrInterfaceDefinition,
+  SimplePropertyDef,
+  WhereClause,
+} from "@osdk/api";
+
 /**
  * A where clause without specific type information - used for runtime matching logic.
- * This type accepts any WhereClause<T> via structural typing.
+ * This accepts any WhereClause<T, RDPs> by using the base types.
  */
-export type SimpleWhereClause =
-  | { $and?: SimpleWhereClause[]; $or?: never; $not?: never }
-  | { $or?: SimpleWhereClause[]; $and?: never; $not?: never }
-  | { $not?: SimpleWhereClause; $and?: never; $or?: never }
-  | Record<string, unknown>;
+export type SimpleWhereClause = WhereClause<
+  ObjectOrInterfaceDefinition,
+  Record<string, SimplePropertyDef>
+>;

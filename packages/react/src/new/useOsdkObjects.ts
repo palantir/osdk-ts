@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { SimplePropertyDef, WhereClause } from "@osdk/api";
+import type { WhereClause } from "@osdk/api";
 import type {
   DerivedProperty,
   InterfaceDefinition,
@@ -27,14 +27,26 @@ import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
+/**
+ * Infer RDP types from withProperties in a simpler way
+ */
+type InferRdpTypes<
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  WP extends DerivedProperty.Clause<Q> | undefined,
+> = WP extends DerivedProperty.Clause<Q> ? {
+    [K in keyof WP]: WP[K] extends DerivedProperty.Creator<Q, infer T> ? T
+      : never;
+  }
+  : {};
+
 export interface UseOsdkObjectsOptions<
   T extends ObjectTypeDefinition | InterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = {},
+  WithProps extends DerivedProperty.Clause<T> | undefined = undefined,
 > {
   /**
-   * Standard OSDK Where
+   * Standard OSDK Where with RDP support
    */
-  where?: WhereClause<T, RDPs>;
+  where?: WhereClause<T, InferRdpTypes<T, WithProps>>;
 
   /**
    *  The preferred page size for the list.
@@ -50,7 +62,7 @@ export interface UseOsdkObjectsOptions<
    * Define derived properties (RDPs) to be computed server-side and attached to each object.
    * These properties will be available on the returned objects alongside their regular properties.
    */
-  withProperties?: { [K in keyof RDPs]: DerivedProperty.Creator<T, RDPs[K]> };
+  withProperties?: WithProps;
 
   /**
    * Causes the list to automatically fetch more as soon as the previous page
@@ -126,25 +138,26 @@ declare const process: {
 
 export function useOsdkObjects<
   Q extends ObjectTypeDefinition | InterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = {},
+  WP extends DerivedProperty.Clause<Q> | undefined = undefined,
 >(
   type: Q,
-  {
+  options?: UseOsdkObjectsOptions<Q, WP>,
+): UseOsdkListResult<Q> {
+  const {
     pageSize,
     orderBy,
     dedupeIntervalMs,
     where = {},
     streamUpdates,
     withProperties,
-  }: UseOsdkObjectsOptions<Q, RDPs> = {},
-): UseOsdkListResult<Q> {
+  } = options ?? {};
   const { observableClient } = React.useContext(OsdkContext2);
 
   /*  We want the canonical where clause so that the use of `React.useMemo`
       is stable. No real added cost as we canonicalize internal to
       the ObservableClient anyway.
    */
-  const canonWhere = observableClient.canonicalizeWhereClause(where ?? {});
+  const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
 
   // TODO: replace with improved stabilization
   const stableWithProperties = React.useMemo(

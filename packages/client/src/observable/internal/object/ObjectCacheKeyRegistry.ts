@@ -16,12 +16,20 @@
 
 import type { Canonical } from "../Canonical.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
+import { extractRdpFieldNames } from "../utils/rdpFieldOperations.js";
 import type { ObjectCacheKey } from "./ObjectCacheKey.js";
 
 interface CacheKeyMetadata {
   apiName: string;
   primaryKey: string;
   rdpConfig?: Canonical<Rdp>;
+  rdpFieldSet?: ReadonlySet<string>;
+}
+
+interface BaseKeyEntry {
+  variants: Set<ObjectCacheKey>;
+  apiName: string;
+  primaryKey: string;
 }
 
 /**
@@ -30,9 +38,9 @@ interface CacheKeyMetadata {
  */
 export class ObjectCacheKeyRegistry {
   /**
-   * Map from base key (apiName:primaryKey) to all related cache key variants
+   * Map from base key (apiName:primaryKey) to all related cache key variants and metadata
    */
-  private baseToVariants = new Map<string, Set<ObjectCacheKey>>();
+  private baseToVariants = new Map<string, BaseKeyEntry>();
 
   /**
    * Metadata for each cache key (apiName, primaryKey, rdpConfig)
@@ -48,33 +56,26 @@ export class ObjectCacheKeyRegistry {
     primaryKey: string | number | boolean,
     rdpConfig?: Canonical<Rdp>,
   ): void {
-    const baseKey = this.getBaseKey(apiName, primaryKey);
+    const baseKey = this.makeBaseKey(apiName, primaryKey);
+    const primaryKeyStr = String(primaryKey);
+
     this.keyMetadata.set(cacheKey, {
       apiName,
-      primaryKey: String(primaryKey),
+      primaryKey: primaryKeyStr,
       rdpConfig,
+      rdpFieldSet: rdpConfig ? extractRdpFieldNames(rdpConfig) : undefined,
     });
 
-    let variants = this.baseToVariants.get(baseKey);
-    if (!variants) {
-      variants = new Set();
-      this.baseToVariants.set(baseKey, variants);
+    let entry = this.baseToVariants.get(baseKey);
+    if (!entry) {
+      entry = {
+        variants: new Set(),
+        apiName,
+        primaryKey: primaryKeyStr,
+      };
+      this.baseToVariants.set(baseKey, entry);
     }
-    variants.add(cacheKey);
-  }
-
-  /**
-   * Get all related cache keys for a given cache key, including itself
-   */
-  getRelated(cacheKey: ObjectCacheKey): Set<ObjectCacheKey> {
-    const metadata = this.keyMetadata.get(cacheKey);
-    if (!metadata) {
-      // Not registered, fallback and just return this key for safety
-      return new Set([cacheKey]);
-    }
-
-    const baseKey = this.getBaseKey(metadata.apiName, metadata.primaryKey);
-    return new Set(this.baseToVariants.get(baseKey) ?? [cacheKey]);
+    entry.variants.add(cacheKey);
   }
 
   /**
@@ -84,8 +85,9 @@ export class ObjectCacheKeyRegistry {
     apiName: string,
     primaryKey: string | number | boolean,
   ): Set<ObjectCacheKey> {
-    const baseKey = this.getBaseKey(apiName, primaryKey);
-    return new Set(this.baseToVariants.get(baseKey) ?? []);
+    const baseKey = this.makeBaseKey(apiName, primaryKey);
+    const entry = this.baseToVariants.get(baseKey);
+    return new Set(entry?.variants ?? []);
   }
 
   /**
@@ -95,12 +97,12 @@ export class ObjectCacheKeyRegistry {
     const metadata = this.keyMetadata.get(cacheKey);
     if (!metadata) return;
 
-    const baseKey = this.getBaseKey(metadata.apiName, metadata.primaryKey);
-    const variants = this.baseToVariants.get(baseKey);
+    const baseKey = this.makeBaseKey(metadata.apiName, metadata.primaryKey);
+    const entry = this.baseToVariants.get(baseKey);
 
-    if (variants) {
-      variants.delete(cacheKey);
-      if (variants.size === 0) {
+    if (entry) {
+      entry.variants.delete(cacheKey);
+      if (entry.variants.size === 0) {
         this.baseToVariants.delete(baseKey);
       }
     }
@@ -116,9 +118,20 @@ export class ObjectCacheKeyRegistry {
   }
 
   /**
+   * Get the count of variants for a specific object
+   */
+  getVariantCount(
+    apiName: string,
+    primaryKey: string | number | boolean,
+  ): number {
+    const baseKey = this.makeBaseKey(apiName, primaryKey);
+    return this.baseToVariants.get(baseKey)?.variants.size ?? 0;
+  }
+
+  /**
    * Generate a base key from apiName and primaryKey
    */
-  private getBaseKey(
+  private makeBaseKey(
     apiName: string,
     primaryKey: string | number | boolean,
   ): string {
@@ -137,5 +150,12 @@ export class ObjectCacheKeyRegistry {
    */
   getRdpConfig(cacheKey: ObjectCacheKey): Canonical<Rdp> | undefined {
     return this.keyMetadata.get(cacheKey)?.rdpConfig;
+  }
+
+  /**
+   * Get the cached RDP field set for a cache key
+   */
+  getRdpFieldSet(cacheKey: ObjectCacheKey): ReadonlySet<string> {
+    return this.keyMetadata.get(cacheKey)?.rdpFieldSet ?? new Set();
   }
 }

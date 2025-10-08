@@ -19,12 +19,12 @@ import invariant from "tiny-invariant";
 
 /**
  * Evaluates a where clause filter against a value.
- * Uses unknown for flexibility since filters can apply to different property types.
+ * This is a runtime evaluation function that handles different property types.
  */
 export function evaluateFilter(
   f: PossibleWhereClauseFilters,
-  realValue: unknown,
-  expected: unknown,
+  realValue: any,
+  expected: any,
   strict: boolean,
 ): boolean {
   switch (f) {

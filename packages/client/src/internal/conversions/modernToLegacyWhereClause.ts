@@ -30,7 +30,6 @@ import type {
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { fullyQualifyPropName } from "./fullyQualifyPropName.js";
-import { handleRdpFilter } from "./handleRdpFilter.js";
 import { makeGeoFilterIntersects } from "./makeGeoFilterIntersects.js";
 import { makeGeoFilterWithin } from "./makeGeoFilterWithin.js";
 
@@ -76,7 +75,7 @@ export function modernToLegacyWhereClause<
   if (isAndClause(whereClause)) {
     return {
       type: "and",
-      value: whereClause.$and.map(
+      value: (whereClause.$and as WhereClause<T, RDPs>[]).map(
         (clause) =>
           modernToLegacyWhereClause(clause, objectOrInterface, rdpNames),
       ),
@@ -84,7 +83,7 @@ export function modernToLegacyWhereClause<
   } else if (isOrClause(whereClause)) {
     return {
       type: "or",
-      value: whereClause.$or.map(
+      value: (whereClause.$or as WhereClause<T, RDPs>[]).map(
         (clause) =>
           modernToLegacyWhereClause(clause, objectOrInterface, rdpNames),
       ),
@@ -93,7 +92,7 @@ export function modernToLegacyWhereClause<
     return {
       type: "not",
       value: modernToLegacyWhereClause(
-        whereClause.$not,
+        whereClause.$not as WhereClause<T, RDPs>,
         objectOrInterface,
         rdpNames,
       ),
@@ -125,22 +124,26 @@ function handleWherePair(
     "Defined key values are only allowed when they are not undefined.",
   );
 
-  if (rdpNames?.has(fieldName) && !structFieldSelector) {
-    return handleRdpFilter(fieldName, filter);
-  }
+  // Check if this is an RDP
+  const isRdp = !structFieldSelector && rdpNames?.has(fieldName);
 
-  const propertyIdentifier: PropertyIdentifier | undefined =
-    structFieldSelector != null
-      ? {
-        type: "structField",
-        ...structFieldSelector,
-        propertyApiName: fullyQualifyPropName(
-          structFieldSelector.propertyApiName,
-          objectOrInterface,
-        ),
-      }
-      : undefined;
-  const field = structFieldSelector == null
+  const propertyIdentifier: PropertyIdentifier | undefined = isRdp
+    ? {
+      type: "property",
+      apiName: fieldName,
+    }
+    : structFieldSelector != null
+    ? {
+      type: "structField",
+      ...structFieldSelector,
+      propertyApiName: fullyQualifyPropName(
+        structFieldSelector.propertyApiName,
+        objectOrInterface,
+      ),
+    }
+    : undefined;
+
+  const field = !isRdp && structFieldSelector == null
     ? fullyQualifyPropName(fieldName, objectOrInterface)
     : undefined;
 

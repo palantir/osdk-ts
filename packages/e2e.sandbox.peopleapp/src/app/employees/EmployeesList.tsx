@@ -1,27 +1,20 @@
-import type { Osdk, PropertyKeys } from "@osdk/api";
+import type { DerivedProperty } from "@osdk/client";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
-type EmployeeWithPeepCount = Osdk.Instance<
-  Employee,
-  "$allBaseProperties",
-  PropertyKeys<Employee>,
-  {
-    managerName: "string";
-    reportCount: "integer";
-  }
->;
-
 interface EmployeeListItemProps {
-  item: EmployeeWithPeepCount;
+  item: Employee.OsdkInstance & {
+    managerName?: string;
+    reportCount?: number;
+  };
   isSelected: boolean;
   onSelect: (employee: Employee.OsdkInstance) => void;
 }
 
 function EmployeeListItem(
-  { item: item, isSelected, onSelect }: EmployeeListItemProps,
+  { item, isSelected, onSelect }: EmployeeListItemProps,
 ) {
   return (
     <ListItem
@@ -47,28 +40,26 @@ interface EmployeesListProps {
 }
 
 export function EmployeesList(props: EmployeesListProps) {
+  const withProperties = {
+    managerName: (base: DerivedProperty.Builder<Employee, false>) =>
+      base.pivotTo("lead").selectProperty("fullName"),
+    reportCount: (base: DerivedProperty.Builder<Employee, false>) =>
+      base.pivotTo("peeps").aggregate("$count"),
+  } satisfies DerivedProperty.Clause<Employee>;
+
   const employees = useOsdkObjects(Employee, {
-    withProperties: {
-      managerName: (base) => base.pivotTo("lead").selectProperty("fullName"),
-      reportCount: (base) => base.pivotTo("peeps").aggregate("$count"),
-    },
+    withProperties,
     where: {
       department: "Media Team",
       reportCount: { $gt: 0 },
     },
   });
 
-  const EmployeeListItemWithRdp = EmployeeListItem as React.FC<{
-    item: Employee.OsdkInstance;
-    isSelected: boolean;
-    onSelect: (item: Employee.OsdkInstance) => void;
-  }>;
-
   return (
     <List<Employee>
       header="Employees"
       items={employees}
-      Component={EmployeeListItemWithRdp}
+      Component={EmployeeListItem}
       {...props}
     />
   );
