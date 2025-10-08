@@ -17,7 +17,9 @@
 import type { FauxFoundry, msw } from "@osdk/faux";
 import EventEmitter from "node:events";
 import * as fs from "node:fs";
+import fsPromises from "node:fs/promises";
 import type { IncomingMessage, ServerResponse } from "node:http";
+import path from "node:path";
 import * as util from "node:util";
 import type { Connect, ViteDevServer } from "vite";
 import { applyOntologyAndSeed } from "./applyOntologyAndSeed.js";
@@ -38,6 +40,19 @@ export class OacDevServer extends OacServerContext {
     this.emitter.on("generatedOntologyAssets", async () => {
       this.foundry = this.fauxFoundryFactory();
       await applyOntologyAndSeed(this.foundry, this);
+      const dataStore = this.foundry.getDataStore(
+        "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000",
+      );
+      const objectsByApiName = dataStore.ontology.getAllObjectTypes().map((
+        { objectType },
+      ) => [
+        objectType.apiName,
+        [...dataStore.getObjectsOfType(objectType.apiName)],
+      ]);
+      await fsPromises.writeFile(
+        path.join(this.workDir, ".faux-datastore.json"),
+        JSON.stringify(objectsByApiName, null, 2),
+      );
       server.hot.send({ type: "full-reload" });
     });
 
@@ -52,8 +67,9 @@ export class OacDevServer extends OacServerContext {
     const mswEmitter = new EventEmitter<msw.LifeCycleEventsMap>();
 
     return void await routeConnectToMsw(
+      this,
       this.serverUrl,
-      this.foundry.handlers,
+      this.foundry,
       mswEmitter,
       req,
       res,
@@ -85,7 +101,11 @@ export class OacDevServer extends OacServerContext {
   };
 
   #handleOacFileChanged = async (filePath: string | undefined) => {
-    if (filePath && !filePath.startsWith(`${this.ontologyDir}/`)) {
+    if (
+      filePath
+      && (!filePath.startsWith(`${this.ontologyDir}/`)
+        || !isTypescriptFile(filePath))
+    ) {
       return;
     }
 
@@ -104,3 +124,6 @@ export class OacDevServer extends OacServerContext {
     }
   };
 }
+
+const isTypescriptFile = (filePath: string) =>
+  filePath.endsWith(".ts") || filePath.endsWith(".mts");

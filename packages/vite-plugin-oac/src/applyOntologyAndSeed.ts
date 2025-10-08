@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
+import type { OntologyIrOntologyBlockDataV2 } from "@osdk/client.unstable";
 import type { FauxFoundry } from "@osdk/faux";
 import type { OntologyFullMetadata } from "@osdk/foundry.ontologies";
 import * as path from "node:path";
 import { inspect } from "node:util";
 import { applySeed } from "./applySeed.js";
-import { ontologyFullMetadataPath } from "./generateOntologyAssets.js";
+import {
+  ontologyFullMetadataPath,
+  ontologyIrPath,
+} from "./generateOntologyAssets.js";
 import { type OacContext } from "./OacContext.js";
 import { registerOntologyFullMetadata } from "./registerOntologyFullMetadata.js";
 import { readJsonFile } from "./utils/readJsonFile.js";
@@ -30,10 +34,21 @@ export async function applyOntologyAndSeed(
 ): Promise<void> {
   const ontology = fauxFoundry.getDefaultOntology();
 
-  const ontologyFullMetadata = readJsonFile<OntologyFullMetadata>(
-    ontologyFullMetadataPath(ctx.workDir),
+  const [ontologyFullMetadata, { ontology: ontologyIrBlockData }] =
+    await Promise
+      .all([
+        readJsonFile<OntologyFullMetadata>(
+          ontologyFullMetadataPath(ctx.workDir),
+        ),
+        readJsonFile<{ ontology: OntologyIrOntologyBlockDataV2 }>(
+          ontologyIrPath(ctx.workDir),
+        ),
+      ]);
+  registerOntologyFullMetadata(
+    ontology,
+    ontologyFullMetadata,
+    ontologyIrBlockData,
   );
-  registerOntologyFullMetadata(ontology, ontologyFullMetadata);
 
   try {
     if (ctx.hooks?.preSeed) {

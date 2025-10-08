@@ -41,10 +41,30 @@ export async function generateOntologyAssets(
     logger.info("Created .ontology directory");
   }
 
-  // Generate the assets in sequence
-  await ontologyJsToIr(opts);
-  await ontologyIrToFullMetadata(opts);
-  await fullMetadataToOsdk(opts);
+  await generateAssets(opts);
+}
+
+let isGenerating = false;
+let needsRerun = false;
+
+async function generateAssets(opts: OacContext) {
+  if (isGenerating) {
+    needsRerun = true;
+    return;
+  }
+  isGenerating = true;
+  needsRerun = false;
+  try {
+    // Generate the assets in sequence
+    await ontologyJsToIr(opts);
+    await ontologyIrToFullMetadata(opts);
+    await fullMetadataToOsdk(opts);
+  } finally {
+    isGenerating = false;
+    if (needsRerun) {
+      return generateAssets(opts);
+    }
+  }
 }
 
 export function ontologyIrPath(workDir: string): string {

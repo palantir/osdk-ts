@@ -18,12 +18,16 @@ import type { FauxFoundry } from "@osdk/faux";
 import { msw } from "@osdk/faux";
 import type { IncomingMessage, ServerResponse } from "http";
 import type { EventEmitter } from "node:events";
+import fs from "node:fs/promises";
+import path from "path";
 import { Readable } from "stream";
 import type { Connect } from "vite";
+import type { OacContext } from "./OacContext.js";
 
 export async function routeConnectToMsw(
+  oacContext: OacContext,
   baseUrl: string,
-  handlers: FauxFoundry["handlers"],
+  foundry: FauxFoundry,
   emitter: EventEmitter<msw.LifeCycleEventsMap>,
   req: Connect.IncomingMessage,
   res: ServerResponse<IncomingMessage>,
@@ -46,7 +50,7 @@ export async function routeConnectToMsw(
   await msw.handleRequest(
     mockRequest,
     crypto.randomUUID(),
-    handlers,
+    foundry.handlers,
     {
       onUnhandledRequest: "bypass",
     },
@@ -55,7 +59,6 @@ export async function routeConnectToMsw(
       resolutionContext: {
         baseUrl,
       },
-      // eslint-disable-next-line @typescript-eslint/require-await
       async onMockedResponse(mockedResponse) {
         const { status, statusText, headers } = mockedResponse;
 
@@ -67,9 +70,22 @@ export async function routeConnectToMsw(
         });
 
         if (mockedResponse.body) {
+          const dataStore = foundry.getDataStore(
+            "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000",
+          );
+          const objectsByApiName = dataStore.ontology.getAllObjectTypes().map((
+            { objectType },
+          ) => [
+            objectType.apiName,
+            [...dataStore.getObjectsOfType(objectType.apiName)],
+          ]);
           // @ts-expect-error Types don't match exactly
           const stream = Readable.fromWeb(mockedResponse.body);
           stream.pipe(res);
+          await fs.writeFile(
+            path.join(oacContext.workDir, ".faux-datastore.json"),
+            JSON.stringify(objectsByApiName, null, 2),
+          );
         } else {
           res.end();
         }
