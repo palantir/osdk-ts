@@ -23,11 +23,6 @@ import { Employee } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 
-type subscriptionError = {
-    subscriptionClosed: boolean;
-    error: any;
-}
-
 const subscription = client(Employee).subscribe(
     {
         onChange(update) {
@@ -58,5 +53,5 @@ const subscription = client(Employee).subscribe(
     { properties: [ "fullName","salary" ] }
 );
 
-// On dismount unsubscribe
+// To stop receiving updates, call unsubscribe
 subscription.unsubscribe();

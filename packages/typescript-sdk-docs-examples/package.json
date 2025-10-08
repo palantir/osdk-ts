@@ -39,7 +39,6 @@
   "dependencies": {
   },
   "peerDependencies": {
-    "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~"
   },
   "devDependencies": {

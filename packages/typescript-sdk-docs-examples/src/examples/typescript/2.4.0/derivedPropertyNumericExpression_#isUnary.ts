@@ -27,8 +27,5 @@ const EmployeeWithExpression = await client(Employee)
     .withProperties({
       "abs_salary": (baseObjectSet) =>
           baseObjectSet.pivotTo("lead")
-          .selectProperty("salary").abs(),
-      "negate_salary": (baseObjectSet) =>
-          baseObjectSet.pivotTo("lead")
-          .selectProperty("salary").negate()
+          .selectProperty("salary").abs()
     }).fetchPage();

@@ -972,12 +972,10 @@ versions:
                 const firstPage: PageResult<Osdk.Instance<{{objectType}}>>
                     = await client({{objectType}}).fetchPage({ $pageSize: 30 });
                 if (firstPage.nextPageToken === undefined) {
-                    // eslint-disable-next-line no-console
                     console.log(firstPage.data);
                 }
                 const secondPage: PageResult<Osdk.Instance<{{objectType}}>>
                 = await client({{objectType}}).fetchPage({ $pageSize: 30, $nextPageToken: firstPage.nextPageToken });
-                // eslint-disable-next-line no-console
                 console.log([...firstPage.data, ...secondPage.data]);
             }
             catch (e) {
@@ -1254,6 +1252,8 @@ versions:
                 );
                 if (result.type === "edits") {
                     // use the result object to report back on action results
+                    const updatedObject = result.editedObjectTypes[0];
+                    console.log("Updated object", updatedObject);
                 }
             }
       batchApplyAction:
@@ -1328,6 +1328,8 @@ versions:
                 );
                 if (result.type === "edits") {
                     // use the result object to report back on action results
+                    const updatedObject = result.editedObjectTypes[0];
+                    console.log("Updated object", updatedObject);
                 }
             }
       uploadAttachment:
@@ -2052,11 +2054,6 @@ versions:
             // Edit this import if your client location differs
             import { client } from "./client";
 
-            type subscriptionError = {
-                subscriptionClosed: boolean;
-                error: any;
-            }
-
             const subscription = client({{objectOrInterfaceApiName}}).subscribe(
                 {
                     onChange(update) {
@@ -2087,7 +2084,7 @@ versions:
                 { properties: [ {{{propertyNames}}} ] }
             );
 
-            // On dismount unsubscribe
+            // To stop receiving updates, call unsubscribe
             subscription.unsubscribe();
       uploadMedia:
         - template: |-
@@ -2126,7 +2123,6 @@ versions:
             const result = await client({{objectType}}).fetchOne({{{primaryKeyPropertyValueV2}}});
             // Fetch metadata of a media property
             const mediaMetadata = await result.{{property}}?.fetchMetadata();
-            // eslint-disable-next-line no-console
             console.log(mediaMetadata?.mediaType, mediaMetadata?.sizeBytes, mediaMetadata?.path);
             // Fetch contents of a media property
             const mediaContent = await result.{{property}}?.fetchContents();
@@ -2153,12 +2149,9 @@ versions:
                     }).fetchPage();
                     {{/isUnary}}
                     {{#isUnary}}
-                    "abs_{{property}}": (baseObjectSet) =>
+                    "{{operation}}_{{property}}": (baseObjectSet) =>
                         baseObjectSet.pivotTo("{{linkApiName}}")
-                        .selectProperty("{{property}}").abs(),
-                    "negate_{{property}}": (baseObjectSet) =>
-                        baseObjectSet.pivotTo("{{linkApiName}}")
-                        .selectProperty("{{property}}").negate()
+                        .selectProperty("{{property}}").{{operation}}()
                   }).fetchPage();
                     {{/isUnary}}
         derivedPropertyDatetimeExpression:
@@ -2173,7 +2166,7 @@ versions:
                         "derivedPropertyDatetime_{{operation}}": (baseObjectSet) =>
                         baseObjectSet.pivotTo("{{linkApiName}}")
                             .selectProperty("{{property}}")
-                            .{{operation}}(baseObjectSet.selectProperty("{{property}}"))
+                            .{{operation}}(baseObjectSet.pivotTo("{{linkApiName}}").selectProperty("{{property}}"))
                         {{/isExtractPart}}
                         {{#isExtractPart}}
                         "YEARS_part_of_{{property}}_of_{{linkApiName}}": (baseObjectSet) =>

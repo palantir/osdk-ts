@@ -28,12 +28,10 @@ try {
     const firstPage: PageResult<Osdk.Instance<Employee>>
         = await client(Employee).fetchPage({ $pageSize: 30 });
     if (firstPage.nextPageToken === undefined) {
-        // eslint-disable-next-line no-console
         console.log(firstPage.data);
     }
     const secondPage: PageResult<Osdk.Instance<Employee>>
     = await client(Employee).fetchPage({ $pageSize: 30, $nextPageToken: firstPage.nextPageToken });
-    // eslint-disable-next-line no-console
     console.log([...firstPage.data, ...secondPage.data]);
 }
 catch (e) {

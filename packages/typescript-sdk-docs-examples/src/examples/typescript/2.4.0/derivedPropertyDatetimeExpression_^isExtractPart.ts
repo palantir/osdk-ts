@@ -28,5 +28,5 @@ const EmployeeWithExpression = await client(Employee)
           "derivedPropertyDatetime_min": (baseObjectSet) =>
           baseObjectSet.pivotTo("lead")
               .selectProperty("startDate")
-              .min(baseObjectSet.selectProperty("startDate"))
+              .min(baseObjectSet.pivotTo("lead").selectProperty("startDate"))
     }).fetchPage();

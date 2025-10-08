@@ -633,7 +633,7 @@ const templateHierarchy: Record<string, TemplateHierarchyNode> = {
       context: {
         linkApiName: "lead",
         property: "salary",
-        operation: "subtract",
+        operation: "abs",
         isUnary: true,
       },
     },

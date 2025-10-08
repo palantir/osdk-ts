@@ -60,5 +60,7 @@ async function callBatchAction() {
     );
     if (result.type === "edits") {
         // use the result object to report back on action results
+        const updatedObject = result.editedObjectTypes[0];
+        console.log("Updated object", updatedObject);
     }
 }
