@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.13.0-beta.17
+
+### Minor Changes
+
+- 58e9f56: Add condition validations for oac actions
+
 ## 0.13.0-beta.16
 
 ### Minor Changes

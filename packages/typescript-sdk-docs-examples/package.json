@@ -1,7 +1,7 @@
 {
   "name": "@osdk/typescript-sdk-docs-examples",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0-beta.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -36,8 +36,7 @@
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "peerDependencies": {
     "@osdk/client": "workspace:~"
   },
