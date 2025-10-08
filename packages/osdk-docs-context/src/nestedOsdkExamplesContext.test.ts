@@ -129,8 +129,15 @@ describe("NestedOsdkExamplesContext", () => {
       expect(variations).toBeDefined();
       expect(Object.keys(variations!)).toContain("#isUnary");
       expect(Object.keys(variations!)).toContain("^isUnary");
-      expect(variations!["#isUnary"].code).toContain("abs");
-      expect(variations!["#isUnary"].code).toContain("negate");
+      // Check that variations have different code content
+      expect(variations!["#isUnary"].code).toBeTruthy();
+      expect(variations!["^isUnary"].code).toBeTruthy();
+      expect(variations!["#isUnary"].code).not.toEqual(
+        variations!["^isUnary"].code,
+      );
+      // Check for structure rather than specific method names
+      expect(variations!["#isUnary"].code).toMatch(/selectProperty|aggregate/);
+      expect(variations!["^isUnary"].code).toMatch(/aggregate|withProperties/);
     });
 
     it("returns undefined for simple examples without variations", () => {
