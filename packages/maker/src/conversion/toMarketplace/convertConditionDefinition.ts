@@ -15,10 +15,12 @@
  */
 
 import type { OntologyIrCondition } from "@osdk/client.unstable";
+import invariant from "tiny-invariant";
 import type { ConditionDefinition } from "../../api/action/ConditionDefinition.js";
 
 export function convertConditionDefinition(
   condition: ConditionDefinition,
+  objectProperties?: Array<String>,
 ): OntologyIrCondition {
   switch (condition.type) {
     case "and":
@@ -27,7 +29,7 @@ export function convertConditionDefinition(
           type: "and",
           and: {
             conditions: condition.conditions.map(c =>
-              convertConditionDefinition(c)
+              convertConditionDefinition(c, objectProperties)
             ),
           },
         };
@@ -40,7 +42,7 @@ export function convertConditionDefinition(
           type: "or",
           or: {
             conditions: condition.conditions.map(c =>
-              convertConditionDefinition(c)
+              convertConditionDefinition(c, objectProperties)
             ),
           },
         };
@@ -79,6 +81,10 @@ export function convertConditionDefinition(
         },
       };
     case "parameter":
+      invariant(
+        objectProperties?.includes(condition.parameterId),
+        `Action parameter condition references unknown parameter ${condition.parameterId}`,
+      );
       return {
         type: "comparison",
         comparison: {

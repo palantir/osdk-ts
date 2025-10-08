@@ -9938,6 +9938,33 @@ describe("Ontology Defining", () => {
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleObject]`,
       );
+      expect(() => {
+        const createAction = defineCreateObjectAction({
+          objectType: sampleObject,
+          actionLevelValidation: [
+            {
+              condition: {
+                type: "or",
+                conditions: [
+                  {
+                    type: "parameter",
+                    parameterId: "non_existent_parameter",
+                    matches: {
+                      type: "staticValue",
+                      staticValue: {
+                        type: "string",
+                        string: "value",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Action parameter condition references unknown parameter non_existent_parameter]`,
+      );
     });
 
     it("Static default action parameters must match type", () => {

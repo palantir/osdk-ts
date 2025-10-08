@@ -271,7 +271,10 @@ export function defineCreateObjectAction(
       ?? createDefaultParameterOrdering(def, parameters),
     ...(def.actionLevelValidation
       ? {
-        validation: convertValidationRule(def.actionLevelValidation),
+        validation: convertValidationRule(
+          def.actionLevelValidation,
+          Object.keys(def.objectType.properties ?? {}),
+        ),
       }
       : {}),
     ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
@@ -485,7 +488,10 @@ export function defineModifyObjectAction(
       ),
     ...(def.actionLevelValidation
       ? {
-        validation: convertValidationRule(def.actionLevelValidation),
+        validation: convertValidationRule(
+          def.actionLevelValidation,
+          Object.keys(def.objectType.properties ?? {}),
+        ),
       }
       : {}),
     ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
@@ -541,7 +547,10 @@ export function defineDeleteObjectAction(
     },
     ...(def.actionLevelValidation
       ? {
-        validation: convertValidationRule(def.actionLevelValidation),
+        validation: convertValidationRule(
+          def.actionLevelValidation,
+          Object.keys(def.objectType.properties ?? {}),
+        ),
       }
       : {}),
   });
@@ -639,7 +648,10 @@ export function defineCreateOrModifyObjectAction(
       ),
     ...(def.actionLevelValidation
       ? {
-        validation: convertValidationRule(def.actionLevelValidation),
+        validation: convertValidationRule(
+          def.actionLevelValidation,
+          Object.keys(def.objectType.properties ?? {}),
+        ),
       }
       : {}),
     ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
@@ -1161,10 +1173,11 @@ function sanitize(s: string): string {
 
 function convertValidationRule(
   actionValidation: ActionLevelValidationDefinition,
+  objectProperties?: Array<String>,
 ): Array<ActionValidationRule> {
   return actionValidation.map(rule => {
     return {
-      condition: convertConditionDefinition(rule.condition),
+      condition: convertConditionDefinition(rule.condition, objectProperties),
       displayMetadata: rule.displayMetadata ?? {
         failureMessage: "Did not satisfy validation",
         typeClasses: [],
