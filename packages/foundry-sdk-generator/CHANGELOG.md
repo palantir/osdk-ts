@@ -1,5 +1,15 @@
 # @osdk/foundry-sdk-generator
 
+## 2.5.0-beta.15
+
+### Patch Changes
+
+- Updated dependencies [b01375c]
+- Updated dependencies [6e60727]
+  - @osdk/client@2.5.0-beta.15
+  - @osdk/api@2.5.0-beta.15
+  - @osdk/generator@2.5.0-beta.15
+
 ## 2.5.0-beta.14
 
 ### Patch Changes
