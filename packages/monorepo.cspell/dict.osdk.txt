@@ -18,3 +18,4 @@ timecode
 unistyles
 widgetregistry
 widgetset
+timecode

@@ -28,7 +28,7 @@ import { createObjectSpecifierFromPrimaryKey } from "../../util/objectSpecifierU
 import {
   applyPropertyFormatter,
   type FormatPropertyOptions,
-} from "../formatting/applyPropertyFormatters.js";
+} from "../formatting/applyPropertyFormatter.js";
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { get$as } from "./getDollarAs.js";
 import { get$link } from "./getDollarLink.js";
@@ -121,7 +121,7 @@ const basePropDefs = {
       const def = this[ObjectDefRef];
       const propertyValue = rawObj[propertyApiName];
 
-      return applyPropertyFormatter(def, propertyValue, options);
+      return applyPropertyFormatter(propertyValue, def.properties[propertyApiName], rawObj, options);
     },
     enumerable: false,
   },

@@ -15,7 +15,7 @@
  */
 
 import type { InterfaceMetadata, ObjectMetadata, Osdk } from "@osdk/api";
-import type { FormatPropertyOptions } from "../formatting/applyPropertyFormatters.js";
+import type { FormatPropertyOptions } from "../formatting/applyPropertyFormatter.js";
 import type { BaseHolder } from "./BaseHolder.js";
 import type { InterfaceDefRef } from "./InternalSymbols.js";
 

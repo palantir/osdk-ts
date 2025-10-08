@@ -19,7 +19,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectSpecifier,
 } from "@osdk/api";
-import type { FormatPropertyOptions } from "../formatting/applyPropertyFormatters.js";
+import type { FormatPropertyOptions } from "../formatting/applyPropertyFormatter.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
 import type { UnderlyingOsdkObject } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
