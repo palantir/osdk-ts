@@ -118,6 +118,7 @@ export default async function main(
     apiNamespace,
     commandLineOpts.outputDir,
     commandLineOpts.dependencies,
+    commandLineOpts.randomnessKey,
   );
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
@@ -150,12 +151,14 @@ async function loadOntology(
   apiNamespace: string,
   outputDir: string | undefined,
   dependencyFile: string | undefined,
+  randomnessKey?: string,
 ) {
   const q = await defineOntology(
     apiNamespace,
     async () => await import(input),
     outputDir,
     dependencyFile,
+    randomnessKey,
   );
   return q;
 }

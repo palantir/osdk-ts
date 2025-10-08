@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.13.0-beta.16
+
+### Minor Changes
+
+- 7f22c27: Finish wiring up randomness key
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.15
+
 ## 0.13.0-beta.15
 
 ### Minor Changes
