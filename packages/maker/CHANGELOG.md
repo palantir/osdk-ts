@@ -1,5 +1,12 @@
 # @osdk/maker
 
+## 0.13.0-beta.18
+
+### Minor Changes
+
+- 6dee3cc: Typechecks improvement
+- 242cdb7: Remove uuid import from maker
+
 ## 0.13.0-beta.17
 
 ### Minor Changes
