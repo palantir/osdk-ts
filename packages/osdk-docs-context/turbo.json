@@ -1,0 +1,12 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "codegen": {
+      "outputs": ["src/generated/**/*"],
+      "dependsOn": [
+        "@osdk/osdk-docs-context-generator#transpile",
+        "@osdk/typescript-sdk-docs-examples#codegen"
+      ]
+    }
+  }
+}

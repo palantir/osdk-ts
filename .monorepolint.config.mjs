@@ -180,6 +180,7 @@ const archetypeRules = archetypes(
       "@osdk/tool.*",
       "@osdk/typescript-docs-example-generator",
       "@osdk/version-updater",
+      "@osdk/osdk-docs-context-generator",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
