@@ -122,7 +122,9 @@ export class WhereClauseCanonicalizer {
           if (k === "$and" || k === "$or") {
             return [k, (v as Array<any>).map(x => this.#toCanon(x, set))];
           }
-          if (k !== "$not" && typeof v === "object" && v !== null && "$eq" in v) {
+          if (
+            k !== "$not" && typeof v === "object" && v != null && "$eq" in v
+          ) {
             return [k, v["$eq"]];
           }
           return [k, v];
