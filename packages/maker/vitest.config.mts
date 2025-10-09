@@ -19,6 +19,11 @@ import { configDefaults, defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     pool: "forks",
+    poolOptions: {
+      forks: {
+        singleFork: true
+      }
+    },
     exclude: [...configDefaults.exclude, "**/build/**/*"],
     fakeTimers: {
       toFake: ["setTimeout", "clearTimeout", "Date"],
