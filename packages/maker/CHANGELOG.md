@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.14.0-rc.2
+
+### Minor Changes
+
+- 7601f9f: Fix condition validation
+
 ## 0.13.0-beta.18
 
 ### Minor Changes
