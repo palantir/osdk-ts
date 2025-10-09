@@ -145,6 +145,14 @@ export type ActionReturnTypeForOptions<Op extends ApplyActionOptions | ApplyBatc
 export type ActionValidationResponse = ValidateActionResponseV2;
 
 // @public (undocumented)
+export interface Affix {
+    	// (undocumented)
+    postfix?: PropertyTypeReferenceOrStringConstant;
+    	// (undocumented)
+    prefix?: PropertyTypeReferenceOrStringConstant;
+}
+
+// @public (undocumented)
 export type AggregateOpts<Q extends ObjectOrInterfaceDefinition> = {
     	$select: UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>
     	$groupBy?: GroupByClause<Q>
@@ -423,6 +431,45 @@ export interface DataValueWireToClient {
 }
 
 // @public (undocumented)
+export type DatetimeFormat = DatetimeStringFormat | DatetimeLocalizedFormat;
+
+// @public
+export interface DatetimeLocalizedFormat {
+    	// (undocumented)
+    format: DatetimeLocalizedFormatType;
+    	// (undocumented)
+    type: "localizedFormat";
+}
+
+// @public (undocumented)
+export type DatetimeLocalizedFormatType = "DATE_FORMAT_RELATIVE_TO_NOW" | "DATE_FORMAT_DATE" | "DATE_FORMAT_YEAR_AND_MONTH" | "DATE_FORMAT_DATE_TIME" | "DATE_FORMAT_DATE_TIME_SHORT" | "DATE_FORMAT_TIME" | "DATE_FORMAT_ISO_INSTANT";
+
+// @public
+export interface DatetimeStringFormat {
+    	// (undocumented)
+    pattern: string;
+    	// (undocumented)
+    type: "stringFormat";
+}
+
+// @public (undocumented)
+export type DatetimeTimezone = DatetimeTimezoneStatic | DatetimeTimezoneUser;
+
+// @public (undocumented)
+export interface DatetimeTimezoneStatic {
+    	// (undocumented)
+    type: "static";
+    	// (undocumented)
+    zoneId: PropertyTypeReferenceOrStringConstant;
+}
+
+// @public
+export interface DatetimeTimezoneUser {
+    	// (undocumented)
+    type: "user";
+}
+
+// @public (undocumented)
 export namespace DerivedProperty {
     	// Warning: (ae-forgotten-export) The symbol "Aggregatable" needs to be exported by the entry point index.d.ts
     //
@@ -515,6 +562,12 @@ export const DistanceUnitMapping: {
 };
 
 // @public (undocumented)
+export type DurationBaseValue = "SECONDS" | "MILLISECONDS";
+
+// @public (undocumented)
+export type DurationFormatStyle = HumanReadableFormat | TimeCodeFormat;
+
+// @public (undocumented)
 export const DurationMapping: {
     	quarter: "QUARTERS"
     	quarters: "QUARTERS"
@@ -539,6 +592,9 @@ export const DurationMapping: {
     	year: "YEARS"
     	years: "YEARS"
 };
+
+// @public (undocumented)
+export type DurationPrecision = "DAYS" | "HOURS" | "MINUTES" | "SECONDS" | "AUTO";
 
 // @public (undocumented)
 export interface FetchPageArgs<
@@ -654,6 +710,14 @@ export type GroupByClause<Q extends ObjectOrInterfaceDefinition> = { [P in Aggre
 export type GroupByRange<T> = [T, T];
 
 // @public (undocumented)
+export interface HumanReadableFormat {
+    	// (undocumented)
+    showFullUnits?: boolean;
+    	// (undocumented)
+    type: "humanReadable";
+}
+
+// @public (undocumented)
 export interface InterfaceDefinition {
     	// Warning: (ae-forgotten-export) The symbol "ObjectInterfaceCompileDefinition" needs to be exported by the entry point index.d.ts
     //
@@ -711,6 +775,9 @@ export interface InterfaceQueryDataType<T_Target extends ObjectOrInterfaceDefini
 //
 // @public
 export function isOk<X>(a: Result<X>): a is OkResult<X>;
+
+// @public
+export type KnownType = "userOrGroupRid" | "resourceRid" | "artifactGid";
 
 // @public (undocumented)
 export type LinkedType<
@@ -819,6 +886,133 @@ export namespace NullabilityAdherence {
     export type Default = "throw";
 }
 
+// @public
+export interface NumberFormatAffix {
+    	// (undocumented)
+    affix: Affix;
+    	// (undocumented)
+    baseFormatOptions: NumberFormatOptions;
+    	// (undocumented)
+    type: "affix";
+}
+
+// @public
+export interface NumberFormatCurrency {
+    	// (undocumented)
+    baseFormatOptions: NumberFormatOptions;
+    	// (undocumented)
+    currencyCode: PropertyTypeReferenceOrStringConstant;
+    	// (undocumented)
+    style: NumberFormatCurrencyStyle;
+    	// (undocumented)
+    type: "currency";
+}
+
+// @public (undocumented)
+export type NumberFormatCurrencyStyle = "STANDARD" | "COMPACT";
+
+// @public
+export interface NumberFormatCustomUnit {
+    	// (undocumented)
+    baseFormatOptions: NumberFormatOptions;
+    	// (undocumented)
+    type: "customUnit";
+    	// (undocumented)
+    unit: PropertyTypeReferenceOrStringConstant;
+}
+
+// @public
+export interface NumberFormatDuration {
+    	// (undocumented)
+    baseValue: DurationBaseValue;
+    	// (undocumented)
+    formatStyle: DurationFormatStyle;
+    	// (undocumented)
+    precision?: DurationPrecision;
+    	// (undocumented)
+    type: "duration";
+}
+
+// @public
+export interface NumberFormatFixedValues {
+    	// (undocumented)
+    type: "fixedValues";
+    	// (undocumented)
+    values: Record<number, string>;
+}
+
+// @public
+export type NumberFormatNotation = "STANDARD" | "SCIENTIFIC" | "ENGINEERING" | "COMPACT";
+
+// @public
+export interface NumberFormatOptions {
+    	// (undocumented)
+    convertNegativeToParenthesis?: boolean;
+    	// (undocumented)
+    maximumFractionDigits?: number;
+    	// (undocumented)
+    maximumSignificantDigits?: number;
+    	// (undocumented)
+    minimumFractionDigits?: number;
+    	// (undocumented)
+    minimumIntegerDigits?: number;
+    	// (undocumented)
+    minimumSignificantDigits?: number;
+    	// (undocumented)
+    notation?: NumberFormatNotation;
+    	// (undocumented)
+    roundingMode?: NumberRoundingMode;
+    	// (undocumented)
+    useGrouping?: boolean;
+}
+
+// @public
+export interface NumberFormatRatio {
+    	// (undocumented)
+    baseFormatOptions: NumberFormatOptions;
+    	// (undocumented)
+    ratioType: NumberRatioType;
+    	// (undocumented)
+    type: "ratio";
+}
+
+// @public
+export interface NumberFormatScale {
+    	// (undocumented)
+    baseFormatOptions: NumberFormatOptions;
+    	// (undocumented)
+    scaleType: NumberScaleType;
+    	// (undocumented)
+    type: "scale";
+}
+
+// @public
+export interface NumberFormatStandard {
+    	// (undocumented)
+    baseFormatOptions: NumberFormatOptions;
+    	// (undocumented)
+    type: "standard";
+}
+
+// @public
+export interface NumberFormatStandardUnit {
+    	// (undocumented)
+    baseFormatOptions: NumberFormatOptions;
+    	// (undocumented)
+    type: "standardUnit";
+    	// (undocumented)
+    unit: PropertyTypeReferenceOrStringConstant;
+}
+
+// @public (undocumented)
+export type NumberRatioType = "PERCENTAGE" | "PER_MILLE" | "BASIS_POINTS";
+
+// @public
+export type NumberRoundingMode = "CEIL" | "FLOOR" | "ROUND_CLOSEST";
+
+// @public (undocumented)
+export type NumberScaleType = "THOUSANDS" | "MILLIONS" | "BILLIONS";
+
 // @public (undocumented)
 export type ObjectIdentifiers<Q extends ObjectOrInterfaceDefinition> = {
     	readonly $apiName: Q["apiName"]
@@ -883,6 +1077,8 @@ export namespace ObjectMetadata {
         readonly?: boolean;
         		// (undocumented)
         type: WirePropertyTypes;
+        		// (undocumented)
+        valueFormatting?: PropertyValueFormattingRule;
         		// (undocumented)
         valueTypeApiName?: string;
         	}
@@ -1131,6 +1327,24 @@ export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> = (Q extends O
 export type PrimaryKeyTypes = "string" | "datetime" | "double" | "integer" | "timestamp" | "short" | "long" | "byte";
 
 // @public (undocumented)
+export interface PropertyBooleanFormattingRule {
+    	// (undocumented)
+    type: "boolean";
+    	// (undocumented)
+    valueIfFalse: string;
+    	// (undocumented)
+    valueIfTrue: string;
+}
+
+// @public (undocumented)
+export interface PropertyDateFormattingRule {
+    	// (undocumented)
+    format: DatetimeFormat;
+    	// (undocumented)
+    type: "date";
+}
+
+// @public (undocumented)
 export interface PropertyDef<
 	T extends WirePropertyTypes,
 	N extends "nullable" | "non-nullable" = "nullable",
@@ -1159,6 +1373,49 @@ export namespace PropertyKeys {
         		type: T
         	}>;
 }
+
+// @public (undocumented)
+export interface PropertyKnownTypeFormattingRule {
+    	// (undocumented)
+    knownType: KnownType;
+    	// (undocumented)
+    type: "knownType";
+}
+
+// @public (undocumented)
+export interface PropertyNumberFormattingRule {
+    	// (undocumented)
+    numberType: PropertyNumberFormattingRuleType;
+    	// (undocumented)
+    type: "number";
+}
+
+// @public (undocumented)
+export type PropertyNumberFormattingRuleType = NumberFormatStandard | NumberFormatFixedValues | NumberFormatCurrency | NumberFormatStandardUnit | NumberFormatCustomUnit | NumberFormatAffix | NumberFormatDuration | NumberFormatScale | NumberFormatRatio;
+
+// @public (undocumented)
+export interface PropertyTimestampFormattingRule {
+    	// (undocumented)
+    displayTimezone: DatetimeTimezone;
+    	// (undocumented)
+    format: DatetimeFormat;
+    	// (undocumented)
+    type: "timestamp";
+}
+
+// @public (undocumented)
+export interface PropertyTypeReference {
+    	// (undocumented)
+    propertyApiName: string;
+    	// (undocumented)
+    type: "propertyType";
+}
+
+// @public
+export type PropertyTypeReferenceOrStringConstant = StringConstant | PropertyTypeReference;
+
+// @public
+export type PropertyValueFormattingRule = PropertyNumberFormattingRule | PropertyTimestampFormattingRule | PropertyDateFormattingRule | PropertyBooleanFormattingRule | PropertyKnownTypeFormattingRule;
 
 // @public
 export interface PropertyValueWireToClient {
@@ -1386,6 +1643,14 @@ export type SingleOsdkResult<
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
 > = MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>, ORDER_BY_OPTIONS>;
 
+// @public (undocumented)
+export interface StringConstant {
+    	// (undocumented)
+    type: "constant";
+    	// (undocumented)
+    value: string;
+}
+
 // Warning: (ae-forgotten-export) The symbol "AllowedBucketKeyTypes_2" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -1405,6 +1670,12 @@ export type ThreeDimensionalAggregation<
 //
 // @public (undocumented)
 export type ThreeDimensionalQueryAggregationDefinition = AggregationKeyDataType<TwoDimensionalQueryAggregationDefinition>;
+
+// @public (undocumented)
+export interface TimeCodeFormat {
+    	// (undocumented)
+    type: "timecode";
+}
 
 // @public (undocumented)
 export const TimeseriesDurationMapping: {
