@@ -28,7 +28,7 @@ export {
   type NestedExamplesHierarchy,
   type NestedVersionExamples,
   TYPESCRIPT_OSDK_CONTEXT,
-} from "@osdk/typescript-sdk-docs-examples";
+} from "./generated/inlinedExamples.js";
 
 export { NestedOsdkExamplesContext } from "./nestedOsdkExamplesContext.js";
 export {
