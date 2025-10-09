@@ -70,4 +70,7 @@ export {
   extractDateInUTC,
 } from "./util/datetimeConverters.js";
 
-export { createObjectSpecifierFromPrimaryKey } from "./util/objectSpecifierUtils.js";
+export {
+  createObjectSpecifierFromPrimaryKey,
+  extractPrimaryKeyFromObjectSpecifier,
+} from "./util/objectSpecifierUtils.js";

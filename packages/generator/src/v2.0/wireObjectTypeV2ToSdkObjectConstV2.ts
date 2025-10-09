@@ -137,10 +137,10 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
       type: "${object instanceof EnhancedObjectType ? "object" : "interface"}",
       apiName: "${object.fullApiName}",
       osdkMetadata: $osdkMetadata,
-      experimentalDoNotUseMetadata: {
+      internalDoNotUseMetadata: {
         rid: "${definition.rid}",
       },
-    } satisfies ${objectDefIdentifier} & { experimentalDoNotUseMetadata: { rid: string } } as ${objectDefIdentifier};`;
+    } satisfies ${objectDefIdentifier} & { internalDoNotUseMetadata: { rid: string } } as ${objectDefIdentifier};`;
 }
 
 export interface Identifiers extends

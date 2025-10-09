@@ -104,7 +104,7 @@ export const StateTerritory = {
   type: 'object',
   apiName: 'StateTerritory',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.98f324e1-b8f4-42ef-aee7-5c4a1494ce5e',
   },
-} satisfies StateTerritory & { experimentalDoNotUseMetadata: { rid: string } } as StateTerritory;
+} satisfies StateTerritory & { internalDoNotUseMetadata: { rid: string } } as StateTerritory;

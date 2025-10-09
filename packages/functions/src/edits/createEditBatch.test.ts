@@ -78,6 +78,7 @@ describe(createEditBatch, () => {
       id: 0,
       attachment: "ri.foo",
       attachment2: { rid: "ri.bar" } as Attachment,
+      vector: [1, 2, 3],
     });
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Task, { id: 1, name: "My Other Task Name" });
@@ -145,6 +146,7 @@ describe(createEditBatch, () => {
           id: 0,
           attachment: "ri.foo",
           attachment2: { rid: "ri.bar" },
+          vector: [1, 2, 3],
         },
       },
       {

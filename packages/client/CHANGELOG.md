@@ -1,5 +1,33 @@
 # @osdk/client
 
+## 2.5.0-beta.15
+
+### Minor Changes
+
+- b01375c: Fire and forget query metadata loads if no parameters
+- 6e60727: Export extractPrimaryKetFromObjectSpecifier from client
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.15
+- @osdk/client.unstable@2.5.0-beta.15
+- @osdk/generator-converters@2.5.0-beta.15
+
+## 2.5.0-beta.14
+
+### Minor Changes
+
+- b7edfb5: Add support for object type casts
+
+### Patch Changes
+
+- Updated dependencies [9dd5a63]
+- Updated dependencies [e62408b]
+- Updated dependencies [b7edfb5]
+  - @osdk/client.unstable@2.5.0-beta.14
+  - @osdk/api@2.5.0-beta.14
+  - @osdk/generator-converters@2.5.0-beta.14
+
 ## 2.5.0-beta.13
 
 ### Patch Changes

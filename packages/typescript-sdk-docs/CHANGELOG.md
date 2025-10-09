@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.4.0-beta.6
+
+### Minor Changes
+
+- 81af4c8: A set of compiled examples based on the documentation YAML
+
 ## 0.4.0-beta.5
 
 ### Minor Changes

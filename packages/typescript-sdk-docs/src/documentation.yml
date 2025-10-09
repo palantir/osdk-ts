@@ -5,7 +5,7 @@ versions:
       loadSingleObjectGuide:
         - template: |-
             import { type GetObjectError, isOk, type Result } from "{{{packageName}}}";
-            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+            import { {{objectType}} } from "{{{packageName}}}";
 
             const result: Result<{{objectType}}, GetObjectError> = await client.ontology.objects.{{objectType}}.get("primaryKey");
             if (isOk(result)) {
@@ -474,7 +474,7 @@ versions:
                 const object: {{objectType}} = await client.ontology.objects.{{objectType}}.fetchOne("primaryKey");
             }
             catch(e) {
-                console.error(e);
+                throw e;
             }
       loadObjectPageGuide:
         - template: |-
@@ -500,7 +500,7 @@ versions:
                 const object = objects[0];
             }
             catch (e) {
-                console.error(e);
+                throw e;
             }
       orderObjectsGuide:
         - template: |-
@@ -951,118 +951,98 @@ versions:
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { isOk, type Osdk, type Result } from "@osdk/client";
+            import { type Osdk } from "@osdk/client";
 
-            const result: Result<Osdk.Instance<{{objectType}}>> = await client({{objectType}}).fetchOneWithErrors("<primaryKey>");
-            if (isOk(result)) {
-                const object: Osdk.Instance<{{objectType}}> = result.value;
-            } else {
-                console.error(result.error.message);
-            }
-            // You can also fetch a single object without the Result wrapper
             try {
-                const object: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne("<primaryKey>");
+                const object: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne({{{primaryKeyPropertyValueV2}}});
             }
             catch(e) {
-                console.error(e);
+                throw e;
             }
+          computedVariables:
+            - primaryKeyPropertyValueV2
       loadObjectPageGuide:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { isOk, type Osdk, type PageResult, type Result } from "@osdk/client";
+            import { type Osdk, type PageResult } from "@osdk/client";
 
-            const firstPage: Result<PageResult<Osdk.Instance<{{objectType}}>>>
-                = await client({{objectType}}).fetchPageWithErrors({ $pageSize: 30 });
-
-            if (isOk(firstPage)) {
-                const secondPage: Result<PageResult<Osdk.Instance<{{objectType}}, never, "{{titleProperty}}">>>
-                // You can also down select properties to only get the properties you need from the object
-                = await client({{objectType}}).fetchPageWithErrors({ $select: ["{{titleProperty}}"], $pageSize: 30, $nextPageToken: firstPage.value.nextPageToken });
-
-                const objects = isOk(secondPage) ? [...firstPage.value.data, ...secondPage.value.data] : firstPage.value.data;
-                const object = objects[0];
-            }
-
-             // If you want to get rids, you need to add a flag to specifically request for it. Note how the return type now includes $rid rather than never
-            const secondPageWithRids: Result<PageResult<Osdk.Instance<{{objectType}}, "$rid", "{{titleProperty}}">>>
-                = await client({{objectType}}).fetchPageWithErrors({ $select: ["{{titleProperty}}"], $includeRid:true, $pageSize: 30, $nextPageToken: firstPage.value.nextPageToken });
-
-            // To fetch a page without a result wrapper, use fetchPage with a try/catch instead
             try {
                 const firstPage: PageResult<Osdk.Instance<{{objectType}}>>
                     = await client({{objectType}}).fetchPage({ $pageSize: 30 });
+                if (firstPage.nextPageToken === undefined) {
+                    console.log(firstPage.data);
+                }
                 const secondPage: PageResult<Osdk.Instance<{{objectType}}>>
-                 = await client({{objectType}}).fetchPage({ $pageSize: 30, $nextPageToken: firstPage.nextPageToken });
-                const objects = [...firstPage.data, ...secondPage.data];
-                const object = objects[0];
+                = await client({{objectType}}).fetchPage({ $pageSize: 30, $nextPageToken: firstPage.nextPageToken });
+                console.log([...firstPage.data, ...secondPage.data]);
             }
             catch (e) {
-                console.error(e);
+                throw e;
             }
       orderObjectsGuide:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { isOk, type Osdk, type PageResult, type Result } from "@osdk/client";
+            import { type Osdk, type PageResult } from "@osdk/client";
 
-            const page: Result<PageResult<Osdk.Instance<{{objectType}}>>> = await client({{objectType}})
-                .fetchPageWithErrors({
-                    $orderBy: {"{{titleProperty}}": "asc"},
-                    $pageSize: 30
-                });
-
-            if (isOk(page)) {
-                const objects = page.value.data;
+            try {
+                const page: PageResult<Osdk.Instance<{{objectType}}>> = await client({{objectType}})
+                    .fetchPage({
+                        $orderBy: {"{{titleProperty}}": "asc"},
+                        $pageSize: 30
+                    });
+                const objects = page.data;
                 const object = objects[0];
+            } catch (e) {
+                throw e;
             }
       searchObjectsGuide:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { isOk, type Osdk, type PageResult, type Result } from "@osdk/client";
+            import { type Osdk, type PageResult } from "@osdk/client";
 
-            const page: Result<PageResult<Osdk.Instance<{{objectType}}>>> = await client({{objectType}})
-                .where({
-                    {{titleProperty}}: {$isNull: true}
-                })
-                .fetchPageWithErrors({
-                    $pageSize: 30
-                });
-
-            if (isOk(page)) {
-                const objects = page.value.data;
+            try {
+                const page: PageResult<Osdk.Instance<{{objectType}}>> = await client({{objectType}})
+                    .where({
+                        {{titleProperty}}: {$isNull: true}
+                    })
+                    .fetchPage({
+                        $pageSize: 30
+                    });
+                const objects = page.data;
                 const object = objects[0];
+            } catch (e) {
+                throw e;
             }
       loadSingleObjectReference:
         - template: |+
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import type { Osdk, Result } from "@osdk/client";
+            import type { Osdk } from "@osdk/client";
 
-            const response: Result<Osdk.Instance<{{objectType}}>> = await client({{objectType}}).fetchOneWithErrors("<primaryKey>");
+            const responseNoErrorWrapper: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne({{{primaryKeyPropertyValueV2}}});
 
-            // You can also fetch a single object without the Result wrapper
-
-            const responseNoErrorWrapper: Osdk.Instance<{{objectType}}> = await client({{objectType}}).fetchOne("<primaryKey>");
+          computedVariables:
+            - primaryKeyPropertyValueV2
 
       loadObjectsReference:
         - template: |
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import type { Osdk, PageResult, Result } from "@osdk/client";
-
-            const response:  Result<PageResult<Osdk.Instance<{{objectType}}>>>
-                = await client({{objectType}}).fetchPageWithErrors({ $pageSize: 30 });
-
-            // To fetch a page without a result wrapper, use fetchPage instead
-            const responseNoErrorWrapper: PageResult<Osdk.Instance<{{objectType}}>>
-                = await client({{objectType}}).fetchPage({ $pageSize: 30 });
+            import type { Osdk, PageResult } from "@osdk/client";
+            try {
+                const responseNoErrorWrapper: PageResult<Osdk.Instance<{{objectType}}>>
+                    = await client({{objectType}}).fetchPage({ $pageSize: 30 });
+            } catch (e) {
+                throw e;
+            }
       loadAllObjectsReference:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1085,40 +1065,29 @@ versions:
             }
       loadLinkedObjectReference:
         - template: |-
-            import { {{sourceObjectType}}, {{linkedObjectType}} } from "{{{packageName}}}";
-            // Edit this import if your client location differs
-            import { client } from "./client";
-            import { type Osdk, type Result } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
+            import { type Osdk } from "@osdk/client";
 
-            function getLinked{{linkedObjectType}}(source: Osdk.Instance<{{sourceObjectType}}>, linkedObjectPrimaryKey: {{linkedPrimaryKeyPropertyV2.type}}): Result<Osdk.Instance<{{linkedObjectType}}>>
-            {
-                return source.$link.{{linkApiName}}.fetchOneWithErrors(linkedObjectPrimaryKey);
+            async function getLinked{{linkedObjectType}}(source: Osdk.Instance<{{objectType}}>) {
+                try {
+                    {{#isLinkManySided}}
+                    return await source.$link.{{linkApiName}}.fetchPage();
+                    {{/isLinkManySided}}
+                    {{^isLinkManySided}}
+                    return await source.$link.{{linkApiName}}.fetchOne();
+                    {{/isLinkManySided}}
+                } catch (error) {
+                    return { error };
+                }
             }
-
-            // You can also get a linked object without the result wrapper
-            function getLinkedNoWrapper{{linkedObjectType}}(source: Osdk.Instance<{{sourceObjectType}}>, linkedObjectPrimaryKey: {{linkedPrimaryKeyPropertyV2.type}}): Osdk.Instance<{{linkedObjectType}}> {
-                return source.$link.{{linkApiName}}.fetchOne(linkedObjectPrimaryKey);
-            }
-          computedVariables:
-            - linkedPrimaryKeyPropertyV2
       loadLinkedObjectsReference:
         - template: |-
-            import { {{linkedObjectType}} } from "{{{packageName}}}";
+            import { {{sourceObjectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
 
-            function getLinked{{linkedObjectType}}(source: Osdk.Instance<{{sourceObjectType}}>) {
-                {{#isLinkManySided}}
-                return source.$link.{{linkApiName}}.fetchPageWithErrors({ $pageSize: 30 });
-                {{/isLinkManySided}}
-                {{^isLinkManySided}}
-                return source.$link.{{linkApiName}}.fetchOneWithErrors();
-                {{/isLinkManySided}}
-            }
-
-            // You can also get a linked object by doing an object set searcharound
-            function getLinkedWithPivot{{linkedObjectType}}(){
-                return client({{sourceObjectType}}).pivotTo({{linkApiName}}).fetchPage();
+            async function getLinkedWithPivot{{linkedObjectType}}(){
+                return await client({{sourceObjectType}}).pivotTo("{{linkApiName}}").fetchPage();
             }
       aggregationTemplate:
         - template: |-
@@ -1127,10 +1096,10 @@ versions:
             import { client } from "./client";
 
             const num{{objectType}} = await client({{objectType}})
-                .where({{property}}: { $isNull : false }})
+                .where({ {{property}}: { $isNull : false }})
                 .aggregate({
                     $select: { $count: "unordered" },
-                    $groupBy: { name: "exact" },
+                    //$groupBy: { {{property}}: "exact" },
                 });
       countAggregationTemplate:
         - template: |-
@@ -1169,7 +1138,7 @@ versions:
             import { client } from "./client";
 
             const {{operation}}{{objectType}} = await client({{objectType}})
-                .aggregation({
+                .aggregate({
                     $select: { "{{property}}:{{operation}}" : "unordered" }
                 });
       fixedWidthGroupByTemplate:
@@ -1181,7 +1150,7 @@ versions:
             const grouped{{objectType}} = await client({{objectType}})
                 .aggregate({
                     $select: { $count: "unordered" },
-                    $groupBy: { {{property}} : { $fixedWidth: 10 } }
+                    $groupBy: { {{property}}: { $fixedWidth: 10 } }
                 });
       durationGroupByTemplate:
         - template: |-
@@ -1192,8 +1161,8 @@ versions:
             const grouped{{objectType}} = await client({{objectType}})
                 .aggregate({
                     $select: { $count: "unordered" },
-                    $groupBy: { {{property}} : $duration: [ {{#durationText}}{{arg}}{{/durationText}}, "{{#durationText}}{{unit}}{{/durationText}}"] }
-                })
+                    $groupBy: { {{property}}: { $duration: [ {{#durationText}}{{arg}}{{/durationText}}, "{{#durationText}}{{unit}}{{/durationText}}"] } }
+                });
       exactGroupByTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1203,7 +1172,7 @@ versions:
             const grouped{{objectType}} = await client({{objectType}})
                 .aggregate({
                     $select: { $count: "unordered" },
-                    $groupBy: { {{property}} : "exact" }
+                    $groupBy: { {{property}}: "exact" }
                 })
       rangeGroupByTemplate:
         - template: |-
@@ -1214,105 +1183,178 @@ versions:
             const grouped{{objectType}} = await client({{objectType}})
                 .aggregate({
                     $select: { $count: "unordered" },
-                    $groupBy: { {{property}} : { $ranges: [[{{{propertyValueV2}}}, {{{propertyValueIncrementedV2}}} ]]} }
+                    $groupBy: { {{property}}: { $ranges: [[{{{propertyValueV2}}}, {{{propertyValueIncrementedV2}}} ]]} }
                 });
           computedVariables:
             - propertyValueV2
             - propertyValueIncrementedV2
       applyAction:
+        # Simplified template supporting 4 cases:
+        # - hasAttachmentProperty: Whether action has attachment parameters (true/false)
+        # - hasMediaParameter: Whether action has media parameters (true/false)
+        # This creates 4 combinations: none, attachment only, media only, both
         - template: |-
-            import { {{actionApiName}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            {{#hasAttachmentImports}}import type { AttachmentUpload } from "@osdk/api";{{/hasAttachmentImports}}{{#hasMediaParameter}}import type { MediaReference } from "@osdk/api";{{/hasMediaParameter}}
-
-
-            {{#hasAttachmentUpload}}
-            const attachment: AttachmentUpload = uploadMyFile();
-            {{/hasAttachmentUpload}}
-            {{#attachmentProperty}}
-            const attachment: Attachment = {{{attachmentProperty}}};
-            {{/attachmentProperty}}
+            {{#hasAttachmentProperty}}
+            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference {{/hasMediaParameter}} } from "@osdk/api";
+            {{/hasAttachmentProperty}}
+            {{^hasAttachmentProperty}}{{#hasMediaParameter}}
+            import type { MediaReference } from "@osdk/api";
+            {{/hasMediaParameter}}{{/hasAttachmentProperty}}
+            {{#hasAttachmentProperty}}
+            import { createAttachmentUpload } from "@osdk/client";
+            {{/hasAttachmentProperty}}
             {{#hasMediaParameter}}
-            const mediaReference: MediaReference = uploadMedia();
+            import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
             {{/hasMediaParameter}}
-            const result = await client({{actionApiName}}).applyAction(
-            {{^hasParameters}}{},
-            {{/hasParameters}}{{#hasParameters}}
-                {
-                {{#actionParameterSampleValuesV2}}
-                "{{key}}": {{{value}}}{{^last}}, {{/last}}
-                {{/actionParameterSampleValuesV2}}
-                },{{/hasParameters}}
-                {
-                $returnEdits: true,
-                }
-            );
+            import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
 
-            if (result.type === "edits") {
-                // for new objects and updated objects edits will contain the primary key of the object
-                const updatedObject = result.editedObjectTypes[0];
-                console.log("Updated object", updatedObject);
-            }
-          computedVariables:
-            - actionParameterSampleValuesV2
-      batchApplyAction:
-        - template: |-
-            import { {{actionApiName}} } from "{{{packageName}}}";
-            // Edit this import if your client location differs
-            import { client } from "./client";
-            {{#hasAttachmentImports}}
-            import type { AttachmentUpload } from "@osdk/api";
-            {{/hasAttachmentImports}}{{#hasMediaParameter}}import type { MediaReference } from "@osdk/api";{{/hasMediaParameter}}
-
-
-            {{#hasAttachmentUpload}}
-            const attachment: AttachmentUpload = uploadMyFile();
-            {{/hasAttachmentUpload}}
-            {{#attachmentProperty}}
-            const attachment: Attachment = {{{attachmentProperty}}};
-            {{/attachmentProperty}}
+            async function callAction() {
+            {{#hasAttachmentProperty}}
+                // Create attachment upload
+                const attachmentFile = await fetch("file.json");
+                const attachmentBlob = await attachmentFile.blob();
+                const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
+                // alternatively, you can get the Rid from the attachment property on the object type you are modifying 
+                // const attachmentRid = objectTypeWithAttachment.{attachmentProperty}?.rid;
+            {{/hasAttachmentProperty}}
             {{#hasMediaParameter}}
-            const mediaReference: MediaReference = uploadMedia();
+                // Create media reference
+                const mediaFile = await fetch("media.mp4");
+                const mediaBlob = await mediaFile.blob();
+                const mediaReference: MediaReference = await client(
+                    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+                ).createMediaReference({
+                    data: mediaBlob,
+                    fileName: "myMedia",
+                    objectType: {{objectType}},
+                    propertyType: "{{property}}",
+                });
+                // alternatively, you can get the Rid from the media property on the object type you are modifying
+                // const mediaRid = objectTypeWithMedia.{mediaProperty}?.rid;
             {{/hasMediaParameter}}
-            const result = await client({{actionApiName}}).batchApplyAction(
-                [
-                    {{^hasParameters}}{},{}{{/hasParameters}}{{#hasParameters}}
+                const result = await client({{actionApiName}}).applyAction(
                     {
-                    {{#actionParameterSampleValuesV2}}
-                    "{{key}}": {{{value}}}{{^last}}, {{/last}}
-                    {{/actionParameterSampleValuesV2}}
+                        {{#actionParameterSampleValuesV2}}
+                        "{{key}}": {{{value}}},
+                        {{/actionParameterSampleValuesV2}}
+                        {{#hasAttachmentProperty}}
+                        {{attachmentParameter}}: attachment,  // or attachmentRid
+                        {{/hasAttachmentProperty}}
+                        {{#hasMediaParameter}}
+                        {{mediaParameter}}: mediaReference,
+                        {{/hasMediaParameter}}
                     },
                     {
-                    {{#actionParameterSampleValuesV2}}
-                    "{{key}}": {{{value}}}{{^last}}, {{/last}}
-                    {{/actionParameterSampleValuesV2}}
-                    },{{/hasParameters}}
-                ],
-                {
-                    $returnEdits: false,
+                        $returnEdits: true,
+                    }
+                );
+                if (result.type === "edits") {
+                    // use the result object to report back on action results
+                    const updatedObject = result.editedObjectTypes[0];
+                    console.log("Updated object", updatedObject);
                 }
-            );
-          computedVariables:
-            - actionParameterSampleValuesV2
-      uploadAttachment:
-        - template: |
+            }
+      batchApplyAction:
+        # Simplified template supporting 4 cases (same as applyAction):
+        # - hasAttachmentProperty: Whether action has attachment parameters (true/false)
+        # - hasMediaParameter: Whether action has media parameters (true/false)
+        # This creates 4 combinations: none, attachment only, media only, both
+        - template: |-
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { type Result, isOk } from "@osdk/client";
+            {{#hasAttachmentProperty}}
+            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference {{/hasMediaParameter}} } from "@osdk/api";
+            {{/hasAttachmentProperty}}
+            {{^hasAttachmentProperty}}{{#hasMediaParameter}}
+            import type { MediaReference } from "@osdk/api";
+            {{/hasMediaParameter}}{{/hasAttachmentProperty}}
+            {{#hasAttachmentProperty}}
+            import { createAttachmentUpload } from "@osdk/client";
+            {{/hasAttachmentProperty}}
+            {{#hasMediaParameter}}
+            import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
+            {{/hasMediaParameter}}
+            import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
+
+            async function callBatchAction() {
+            {{#hasAttachmentProperty}}
+                // Create attachment upload
+                const attachmentFile = await fetch("file.json");
+                const attachmentBlob = await attachmentFile.blob();
+                const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
+            {{/hasAttachmentProperty}}
+            {{#hasMediaParameter}}
+                // Create media reference
+                const mediaFile = await fetch("media.mp4");
+                const mediaBlob = await mediaFile.blob();
+                const mediaReference: MediaReference = await client(
+                    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+                ).createMediaReference({
+                    data: mediaBlob,
+                    fileName: "myMedia",
+                    objectType: {{objectType}},
+                    propertyType: "{{property}}",
+                });
+            {{/hasMediaParameter}}
+                const result = await client({{actionApiName}}).batchApplyAction([
+                        {
+                            {{#actionParameterSampleValuesV2}}
+                            "{{key}}": {{{value}}},
+                            {{/actionParameterSampleValuesV2}}
+                            {{#hasAttachmentProperty}}
+                            {{attachmentParameter}}: attachment,
+                            {{/hasAttachmentProperty}}
+                            {{#hasMediaParameter}}
+                            {{mediaParameter}}: mediaReference,
+                            {{/hasMediaParameter}}
+                        },
+                        {
+                            {{#actionParameterSampleValuesV2}}
+                            "{{key}}": {{{value}}},
+                            {{/actionParameterSampleValuesV2}}
+                            {{#hasAttachmentProperty}}
+                            {{attachmentParameter}}: attachment,
+                            {{/hasAttachmentProperty}}
+                            {{#hasMediaParameter}}
+                            {{mediaParameter}}: mediaReference,
+                            {{/hasMediaParameter}}
+                        },
+                    ],
+                    {
+                        $returnEdits: true,
+                    }
+                );
+                if (result.type === "edits") {
+                    // use the result object to report back on action results
+                    const updatedObject = result.editedObjectTypes[0];
+                    console.log("Updated object", updatedObject);
+                }
+            }
+      uploadAttachment:
+        - template: |-
+            // Edit this import if your client location differs
+            import { client } from "./client";
+            import { createAttachmentUpload } from "@osdk/client";
             import type { AttachmentUpload } from "@osdk/api";
+            import { {{actionApiName}} } from "{{{packageName}}}";
 
-            // To upload an attachment with 2.0, it has to be linked to an action call
-
-            async function uploadMyFile() {
+            // To call an action with an attachment property, you first need to upload the file
+            async function createAttachmentReference() {
                 const file = await fetch("file.json");
                 const blob = await file.blob();
                 return createAttachmentUpload(blob, "myFile");
             }
 
-            const myAttachmentUpload: AttachmentUpload = await uploadMyFile();
-
-            const actionResult = client(attachmentUploadingAction).applyAction({ attachment: myAttachmentUpload });
+            const myAttachmentUpload: AttachmentUpload = await createAttachmentReference();
+            // then pass the attachment to the action in the action parameter.
+            const actionResult = client({{actionApiName}}).applyAction({ 
+                {{primaryKeyPropertyV2.apiName}}: {{{propertyValueV2}}},
+                {{property}}: myAttachmentUpload
+                });
+          computedVariables:
+            - propertyValueV2
       castInterfaceToObjectReference:
         - template: |-
             import { {{objectTypeApiName}}, {{interfaceApiName}} } from "{{{packageName}}}";
@@ -1333,20 +1375,44 @@ versions:
             }
       executeFunction:
         - template: |-
-            {{#needsImports}}
-            import { {{funcApiName}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            {{#hasAttachmentImports}}import type { AttachmentUpload } from "@osdk/api";{{/hasAttachmentImports}}
-
-            {{/needsImports}}
+            {{#hasAttachmentProperty}}
             {{#hasAttachmentUpload}}
-            const attachment: AttachmentUpload = uploadMyFile();
+            import type { AttachmentUpload } from "@osdk/api";
+            import { createAttachmentUpload } from "@osdk/client";
+            import { {{funcApiName}} } from "{{{packageName}}}";
             {{/hasAttachmentUpload}}
-            {{#attachmentProperty}}
-            const attachment: Attachment = {{{attachmentProperty}}};
-            {{/attachmentProperty}}
+            {{^hasAttachmentUpload}}
+            import type { Osdk } from "@osdk/client";
+            import { {{funcApiName}}, type {{objectType}} } from "{{{packageName}}}";
+            {{/hasAttachmentUpload}}
+
+            {{#hasAttachmentUpload}}
+            async function callFunctionWithAttachmentUpload() {
+                async function createAttachmentReference() {
+                    const file = await fetch("file.json");
+                    const blob = await file.blob();
+                    return createAttachmentUpload(blob, "myFile");
+                }
+                const attachment: AttachmentUpload = await createAttachmentReference();
+            {{/hasAttachmentUpload}}
+            {{^hasAttachmentUpload}}
+            async function callFunctionWithAttachmentLoaded(objectWithAttachment: Osdk.Instance<{{objectType}}>) {
+                const attachment = objectWithAttachment.{{attachmentProperty}}?.rid;
+                if (attachment == null) {
+                    throw new Error("Attachment is required");
+                }
+            {{/hasAttachmentUpload}}
+                const result = await client({{funcApiName}}).executeFunction({{{functionInputValuesV2}}});
+                return result;
+            }
+            {{/hasAttachmentProperty}}
+            {{^hasAttachmentProperty}}
+            import { {{funcApiName}} } from "{{{packageName}}}";
+
             const result = await client({{funcApiName}}).executeFunction({{{functionInputValuesV2}}});
+            {{/hasAttachmentProperty}}
           computedVariables:
             - functionInputValuesV2
       stringStartsWithTemplate:
@@ -1361,7 +1427,7 @@ versions:
                     {{property}}: { {{structSubPropertyApiName}}: { $startsWith: "foo" }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
-                    {{property}} : { $startsWith: "foo" }
+                    {{property}}: { $startsWith: "foo" }
                     {{/structSubPropertyApiName}}
                 })
       containsAllTermsInOrderTemplate:
@@ -1376,7 +1442,7 @@ versions:
                     {{property}}: { {{structSubPropertyApiName}}: { $containsAllTermsInOrder: "foo bar" }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
-                    {{property}} : { $containsAllTermsInOrder: "foo bar" }
+                    {{property}}: { $containsAllTermsInOrder: "foo bar" }
                     {{/structSubPropertyApiName}}
                 })
       containsAnyTermTemplate:
@@ -1391,7 +1457,7 @@ versions:
                     {{property}}: { {{structSubPropertyApiName}}: { $containsAnyTerm: "foo bar" }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
-                    {{property}} : { $containsAnyTerm: "foo bar" }
+                    {{property}}: { $containsAnyTerm: "foo bar" }
                     {{/structSubPropertyApiName}}
                 })
       containsAllTermsTemplate:
@@ -1406,7 +1472,7 @@ versions:
                     {{property}}: { {{structSubPropertyApiName}}: { $containsAllTerms: "foo bar" }}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
-                    {{property}} : { $containsAllTerms: "foo bar" }
+                    {{property}}: { $containsAllTerms: "foo bar" }
                     {{/structSubPropertyApiName}}
                 })
       equalityTemplate:
@@ -1504,7 +1570,6 @@ versions:
                     {{^structSubPropertyApiName}}
                     {{property}}: { $within: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}
                     {{/structSubPropertyApiName}}
-
                 });
       withinPolygonTemplate:
         - template: |-
@@ -1530,10 +1595,10 @@ versions:
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
                     {{#structSubPropertyApiName}}
-                    {{property}}: { {{structSubPropertyApiName}}: { $intersects: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]}}}
+                    {{property}}: { {{structSubPropertyApiName}}: { $intersects: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
-                    {{property}}: { $intersects: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]}}
+                    {{property}}: { $intersects: { type: "Polygon", coordinates: [[[10.0, 40.0], [20.0, 50.0], [20.0, 30.0], [10.0, 40.0]]]}}
                     {{/structSubPropertyApiName}}
                 });
       intersectsBboxTemplate:
@@ -1545,10 +1610,10 @@ versions:
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({
                     {{#structSubPropertyApiName}}
-                    {{property}}: { {{structSubPropertyApiName}} : { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}
+                    {{property}}: { {{structSubPropertyApiName}}: { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}}
                     {{/structSubPropertyApiName}}
                     {{^structSubPropertyApiName}}
-                    {{property}} : { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}
+                    {{property}}: { $intersects: { $bbox: [-74.0060, 25.123, 80.4231, 40.7128]}}
                     {{/structSubPropertyApiName}}
                 });
       notTemplate:
@@ -1558,9 +1623,9 @@ versions:
             import { client } from "./client";
 
             const {{objectType}}ObjectSet = client({{objectType}})
-                .where({ $not: { {{primaryKeyPropertyV2.apiName}}: { $isNull: true }}});
+                .where({ $not: { {{property}}: { $eq: {{{propertyValueV2}}} }}});
           computedVariables:
-            - primaryKeyPropertyV2
+            - propertyValueV2
       andTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1570,10 +1635,11 @@ versions:
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({ $and:[
                     { $not: { {{primaryKeyPropertyV2.apiName}}: { $isNull: true }}},
-                    { {{primaryKeyPropertyV2.apiName}}: { $eq: "<primaryKey>" }}
+                    { {{property}}: { $eq: {{{propertyValueV2}}} }}
                 ]});
           computedVariables:
             - primaryKeyPropertyV2
+            - propertyValueV2
       orTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1583,10 +1649,11 @@ versions:
             const {{objectType}}ObjectSet = client({{objectType}})
                 .where({ $or:[
                     { $not: { {{primaryKeyPropertyV2.apiName}}: { $isNull: true }}},
-                    { {{primaryKeyPropertyV2.apiName}}: { $eq: "<primaryKey>" }}
+                    { {{property}}: { $eq: {{{propertyValueV2}}} }}
                 ]});
           computedVariables:
             - primaryKeyPropertyV2
+            - propertyValueV2
       containsTemplate:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1595,7 +1662,7 @@ versions:
 
             const filteredObjects = client({{objectType}})
                 .where({
-                    {{property}} : { $contains: {{{arrayElementValue}}} }
+                    {{property}}: { $contains: {{{arrayElementValue}}} }
                 })
           computedVariables:
             - arrayElementValue
@@ -1630,18 +1697,19 @@ versions:
             import { {{interfaceApiName}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { isOk, type Osdk, type PageResult, type Result } from "@osdk/client";
+            import { type Osdk, type PageResult } from "@osdk/client";
 
-            const page: Result<PageResult<Osdk<{{interfaceApiName}}>>> = await client({{interfaceApiName}})
-                .fetchPageWithErrors({
-                    $orderBy: {"someProperty": "asc"},
-                    $pageSize: 30
-                });
-
-            if (isOk(page)) {
-                const interfaces = page.value.data;
-                const interface1 = interfaces[0];
+            try {
+                const page: PageResult<Osdk<{{interfaceApiName}}>> = await client({{interfaceApiName}})
+                    .fetchPage({
+                        $orderBy: { {{property}}: "asc"},
+                        $pageSize: 30
+                    });
+            } catch (e) {
+                throw e;
             }
+
+
       searchInterfacesReference:
         - template: |-
             import { {{interfaceApiName}} } from "{{{packageName}}}";
@@ -1652,8 +1720,8 @@ versions:
             const page: Result<PageResult<Osdk<{{interfaceApiName}}>>> = await client({{interfaceApiName}})
                 .where({
                     $and:[
-                        { $not: { someProperty: { $isNull: true }}},
-                        { someProperty: { $eq: "foo" }}
+                        { $not: { {{property}}: { $isNull: true }}},
+                        { {{property}}: { $eq: {{{propertyValueV2}}} }}
                     ]
                 })
                 .fetchPageWithErrors({
@@ -1664,47 +1732,54 @@ versions:
                 const interfaces = page.value.data;
                 const interface1 = interfaces[0];
             }
+          computedVariables:
+            - propertyValueV2
       loadTimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Osdk } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
 
-            function getAllTimeSeriesPoints(obj: {{objectType}}) {
-                return obj.{{property}}.getAllPoints();
+            function getAllTimeSeriesPoints(obj: Osdk.Instance<{{objectType}}>) {
+                return obj.{{property}}?.getAllPoints();
             }
       loadRelativeTimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Osdk } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
 
             // Only supports ranges in the past
-            function getRelativeTimeSeriesPoints(obj: {{objectType}}) {
-                return obj.{{property}}.getAllPoints({
+            function getRelativeTimeSeriesPoints(obj: Osdk.Instance<{{objectType}}>) {
+                return obj.{{property}}?.getAllPoints({
                     $before: 1,
                     $unit: "{{timeUnit}}",
                 })
             }
       loadAbsoluteTimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import { type {{objectType}} } from "{{{packageName}}}";
+            import { type Osdk } from "@osdk/client";
 
-            function getAbsoluteTimeSeriesPoints(obj: {{objectType}}) {
-                return obj.{{property}}.getAllPoints({
+            async function getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<{{objectType}}>) {
+                return await obj.{{property}}?.getAllPoints({
                     $startTime: "2022-08-13T12:34:56Z",
                     $endTime: "2022-08-14T12:34:56Z",
                 });
             }
       loadTimeSeriesFirstPointSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Osdk } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
 
-            function getFirstTimeSeriesPoint(obj: {{objectType}}) {
-                return obj.{{property}}.getFirstPoint();
+            function getFirstTimeSeriesPoint(obj: Osdk.Instance<{{objectType}}>) {
+                return obj.{{property}}?.getFirstPoint();
             }
       loadTimeSeriesLastPointSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Osdk } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
 
-            function getLastTimeSeriesPoint(obj: {{objectType}}) {
-                return obj.{{property}}.getLastPoint();
+            function getLastTimeSeriesPoint(obj: Osdk.Instance<{{objectType}}>) {
+                return obj.{{property}}?.getLastPoint();
             }
       loadGeotimeSeriesPointsSnippet:
         - template: |-
@@ -1726,7 +1801,7 @@ versions:
 
             const objectTypeMetadata = await client.fetchMetadata({{objectType}});
 
-            if (objectTypeMetadata.icon.type === "blueprint") {
+            if (objectTypeMetadata?.icon?.type === "blueprint") {
                 const blueprintIconName = objectTypeMetadata.icon.name;
             }
             const currentVisibility = objectTypeMetadata.visibility;
@@ -1759,14 +1834,13 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("fooLink").pivotTo("barLink").selectProperty("foo")
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("$count")
                 })
                 .where({
-                  "newPropertyName": { $gt: 10 }
-                })
-                .aggregate({
+                  "newPropertyName": { $gt: 0 }
+                }).aggregate({
                   $select: { "newPropertyName:max": "unordered" }
-                });
+                })
       derivedPropertyApproximateDistinctAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1776,8 +1850,8 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:approximateDistinct")
-                })
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:approximateDistinct")
+                }).fetchPage();
       derivedPropertyExactDistinctAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1787,8 +1861,8 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:exactDistinct")
-                })
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:exactDistinct")
+                }).fetchPage();
       derivedPropertyCollectToListAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1799,8 +1873,8 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:collectList", maxObjectsInList)
-                })
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:collectList", { limit: maxObjectsInList })
+                }).fetchPage();
       derivedPropertyCollectToSetAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1811,8 +1885,8 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:collectSet", maxObjectsInSet)
-                })
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:collectSet", { limit: maxObjectsInSet })
+                }).fetchPage();
       derivedPropertyCountAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1822,8 +1896,8 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("$count")
-                })
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("$count")
+                }).fetchPage();
       derivedPropertySelectPropertyAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1833,8 +1907,8 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}")
-                })
+                    baseObjectSet.pivotTo("{{linkApiName}}").selectProperty("{{property}}")
+                }).fetchPage();
       derivedPropertyApproximatePercentileAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1844,8 +1918,8 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:approximatePercentile", 0.5)
-                })
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:approximatePercentile", { percentile: 95 })
+                }).fetchPage();
       derivedPropertyNumericAggregation:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
@@ -1855,11 +1929,13 @@ versions:
             const sum{{objectType}} = await client({{objectType}})
                 .withProperties({
                   "newPropertyName": (baseObjectSet) =>
-                    baseObjectSet.pivotTo("{{linkName}}").aggregate("{{property}}:{{operation}}")
-                })
+                    baseObjectSet.pivotTo("{{linkApiName}}").aggregate("{{property}}:{{operation}}")
+                }).fetchPage();
       objectSetOperationsGuide:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+            // Edit this import if your client location differs
+            import { client } from "./client";
+            import { {{objectType}} } from "{{{packageName}}}";
 
             const objectSetA = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "a"}})
             const objectSetB = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "b"}})
@@ -1869,11 +1945,13 @@ versions:
             // that are present in objectSetB but do not exist in objectSetC:
             const result = objectSetA
               .intersect(objectSetB)
-              .subtract(objectSetC);
+              .subtract(objectSetC)
 
       objectSetOperationsUnion:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+            // Edit this import if your client location differs
+            import { client } from "./client";
+            import { {{objectType}} } from "{{{packageName}}}";
 
             const objectSetA = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "a"}})
             const objectSetB = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "b"}})
@@ -1882,11 +1960,13 @@ versions:
             // Combine objectSetA, objectSetB and objectSetC
             const result = objectSetA
               .union(objectSetB)
-              .union(objectSetC); // alternatively: objectSetA.union(objectSetB, objectSetC)
+              .union(objectSetC) // alternatively: objectSetA.union(objectSetB, objectSetC)
 
       objectSetOperationsSubtract:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+            // Edit this import if your client location differs
+            import { client } from "./client";
+            import { {{objectType}} } from "{{{packageName}}}";
 
             const objectSetA = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "a"}})
             const objectSetB = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "b"}})
@@ -1896,11 +1976,13 @@ versions:
             // Return objects in objectSetA that are not present in either objectSetB or objectSetC
             const result = objectSetA
               .subtract(objectSetB)
-              .subtract(objectSetC); // alternatively: objectSetA.subtract(objectSetB, objectSetC)
+              .subtract(objectSetC) // alternatively: objectSetA.subtract(objectSetB, objectSetC)
 
       objectSetOperationsIntersect:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}/ontology/objects";
+            // Edit this import if your client location differs
+            import { client } from "./client";
+            import { {{objectType}} } from "{{{packageName}}}";
 
             const objectSetA = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "a"}})
             const objectSetB = client({{objectType}}).where({ {{titleProperty}}: { $containsAnyTerm: "b"}})
@@ -1910,7 +1992,7 @@ versions:
             // Return all objects common to objectSetA, objectSetB and objectSetC
             const result = objectSetA
               .intersect(objectSetB)
-              .intersect(objectSetC); // alternatively: objectSetA.intersect(objectSetB, objectSetC)
+              .intersect(objectSetC) // alternatively: objectSetA.intersect(objectSetB, objectSetC)
       searchAround:
         - template: |-
             import { {{sourceObjectType}} } from "{{{packageName}}}";
@@ -1922,45 +2004,49 @@ versions:
                 .where({ {{rawLinkedPrimaryKeyProperty.apiName}}: { $in: ["a", "b", "c"]}});
 
             // Traverse the selected link type to find all objects of type
-            // {{linkedObjectType}} linked to objects a, b and c
-            const linkedObjects = await objects.pivotTo("{{linkApiName}}");
+            // Find {{linkedObjectType}} objects linked to the filtered {{sourceObjectType}} objects
+            const linkedObjects = await objects.pivotTo("{{linkApiName}}").fetchPage();
 
   "2.1.0":
     snippets:
       loadGeotimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Osdk } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
 
-            function getAllTimeSeriesPoints(obj: {{objectType}}) {
-                return obj.{{property}}.getAllValues();
+            function getAllTimeSeriesPoints(obj: Osdk.Instance<{{objectType}}>) {
+                return obj.{{property}}?.getAllValues();
             }
       loadRelativeGeotimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Osdk } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
 
             // Only supports ranges in the past
-            function getRelativeTimeSeriesPoints(obj: {{objectType}}) {
-                return obj.{{property}}.getAllValues({
+            function getRelativeTimeSeriesPoints(obj: Osdk.Instance<{{objectType}}>) {
+                return obj.{{property}}?.getAllValues({
                     $before: 1,
                     $unit: "{{timeUnit}}",
                 })
             }
       loadAbsoluteGeotimeSeriesPointsSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Osdk } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
 
-            function getAbsoluteTimeSeriesPoints(obj: {{objectType}}) {
-                return obj.{{property}}.getAllValues({
+            function getAbsoluteTimeSeriesPoints(obj: Osdk.Instance<{{objectType}}>) {
+                return obj.{{property}}?.getAllValues({
                     $startTime: "2022-08-13T12:34:56Z",
                     $endTime: "2022-08-14T12:34:56Z",
                 });
             }
       loadGeotimeSeriesLastPointSnippet:
         - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Osdk } from "@osdk/client";
+            import { type {{objectType}} } from "{{{packageName}}}";
 
-            function getLastTimeSeriesPoint(obj: {{objectType}}) {
-                return obj.{{property}}.getLatestValue();
+            function getLastTimeSeriesPoint(obj: Osdk.Instance<{{objectType}}>) {
+                return obj.{{property}}?.getLatestValue();
             }
       subscribeToObjectSetInstructions:
         - template: |-
@@ -1968,22 +2054,20 @@ versions:
             // Edit this import if your client location differs
             import { client } from "./client";
 
-            // A map of primary keys to objects loaded through the SDK
-            const objects: { [key: string]: {{objectOrInterfaceApiName}}.OsdkInstance } = ...
-
             const subscription = client({{objectOrInterfaceApiName}}).subscribe(
                 {
                     onChange(update) {
                         if (update.state === "ADDED_OR_UPDATED") {
                             // An object has received an update or an object was added to the object set
-                            const currentObject = objects[update.object.$primaryKey];
-                            if (currentObject !== undefined) {
-                                currentObject["<propertyName>"] = update.object["<propertyName>"] ?? currentObject["<propertyName>"];
-                            }
+                            // Get the object using the $primaryKey from your cache
+                            // const currentObject = objects[update.object.$primaryKey];
+                            // use the update.object["<propertyName>"] to update your cache 
+                            //currentObject["<propertyName>"] = update.object["<propertyName>"] ?? currentObject["<propertyName>"];
                         }
                         else if (update.state === "REMOVED") {
                             // The object was removed from the object set, which could mean it was deleted or no longer meets the filter criteria
-                            delete objects[update.object.$primaryKey];
+                            // Remove the object from your cache using the $primaryKey
+                            // delete objects[update.object.$primaryKey];
                         }
                     },
                     onSuccessfulSubscription() {
@@ -1991,30 +2075,28 @@ versions:
                     },
                     onError(err) {
                         // There was an error with the subscription and you will not receive any more updates
-                        console.error(err);
+                        throw new Error(err.error instanceof Error ? err.error.message : String(err.error));
                     },
                     onOutOfDate() {
                         // We could not keep track of all changes. Please reload the objects in your set.
                     },
                 },
-                { properties: [ {{#propertyNames}}"{{.}}", {{/propertyNames}}] }
+                { properties: [ {{{propertyNames}}} ] }
             );
 
+            // To stop receiving updates, call unsubscribe
             subscription.unsubscribe();
       uploadMedia:
         - template: |-
             import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
-            import { {{objectType}} } from "{{{packageName}}}"
+            import { {{objectType}}, {{actionApiName}} } from "{{{packageName}}}"
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { Result, isOk } from "@osdk/client";
             import type { MediaReference } from "@osdk/api";
-
             // To upload media with 2.x, it has to be linked to an Action call
-            async function uploadMedia() {
+            async function createMediaReference() {
                 const file = await fetch("file.json");
                 const data = await file.blob();
-
                 // Upload media to an object type with a media property. This returns a media reference that can passed to
                 // a media parameter in an Action.
                 return await client(
@@ -2023,32 +2105,32 @@ versions:
                     data,
                     fileName: "myFile",
                     objectType: {{objectType}},
-                    propertyType: "MediaPropertyApi",
+                    propertyType: "{{property}}",
                 });
             }
-
-            const mediaReference: MediaReference = await uploadMedia();
-            const actionResult = client(mediaUploadingAction).applyAction({ media_parameter: mediaReference });
+            const mediaReference: MediaReference = await createMediaReference();
+            const actionResult = client({{actionApiName}}).applyAction({ 
+                {{primaryKeyPropertyV2.apiName}}: {{{propertyValueV2}}},
+                {{mediaParameter}}: mediaReference 
+            });
+          computedVariables:
+            - propertyValueV2
       readMedia:
         - template: |-
             import { {{objectType}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import type { MediaMetadata, MediaReference } from "@osdk/api";
-            import { Osdk, Result } from "@osdk/client";
-
-            const result = await client({{objectType}}).fetchOne("<primaryKey>");
-
+            const result = await client({{objectType}}).fetchOne({{{primaryKeyPropertyValueV2}}});
             // Fetch metadata of a media property
             const mediaMetadata = await result.{{property}}?.fetchMetadata();
-
+            console.log(mediaMetadata?.mediaType, mediaMetadata?.sizeBytes, mediaMetadata?.path);
             // Fetch contents of a media property
-            const response = await result.{{property}}?.fetchContents();
-
-            if (response.ok) {
-                const data = await response.blob();
-                ...
+            const mediaContent = await result.{{property}}?.fetchContents();
+            if (mediaContent?.ok) {
+                const data = await mediaContent.blob();
             }
+          computedVariables:
+            - primaryKeyPropertyValueV2
   "2.4.0":
     snippets:
         derivedPropertyNumericExpression:
@@ -2059,16 +2141,19 @@ versions:
 
               const {{objectType}}WithExpression = await client({{objectType}})
                   .withProperties({
+                    {{^isUnary}}
                     "newPropertyName": (baseObjectSet) =>
-                        {{^isUnary}}
-                        baseObjectSet.pivotTo("{{linkName}}")
-                            .selectProperty("{{property}}").{{operation}}(
-                                baseObjectSet.pivotTo("{{linkName}}").aggregate("$count"))
-                        {{/isUnary}}
-                        {{#isUnary}}
-                        baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}").{{operation}}()
-                        {{/isUnary}}
-                  });
+                        baseObjectSet.pivotTo("{{linkApiName}}")
+                            .aggregate("{{property}}").{{operation}}(
+                                baseObjectSet.pivotTo("{{linkApiName}}").aggregate("$count"))
+                    }).fetchPage();
+                    {{/isUnary}}
+                    {{#isUnary}}
+                    "{{operation}}_{{property}}": (baseObjectSet) =>
+                        baseObjectSet.pivotTo("{{linkApiName}}")
+                        .selectProperty("{{property}}").{{operation}}()
+                  }).fetchPage();
+                    {{/isUnary}}
         derivedPropertyDatetimeExpression:
           - template: |-
               import { {{objectType}} } from "{{{packageName}}}";
@@ -2077,17 +2162,18 @@ versions:
 
               const {{objectType}}WithExpression = await client({{objectType}})
                   .withProperties({
-                    "newPropertyName": (baseObjectSet) =>
                         {{^isExtractPart}} 
-                        baseObjectSet.pivotTo("{{linkName}}")
+                        "derivedPropertyDatetime_{{operation}}": (baseObjectSet) =>
+                        baseObjectSet.pivotTo("{{linkApiName}}")
                             .selectProperty("{{property}}")
-                            .{{operation}}(baseObjectSet.pivotTo("{{linkName}}").selectProperty("{{property}}"))
+                            .{{operation}}(baseObjectSet.pivotTo("{{linkApiName}}").selectProperty("{{property}}"))
                         {{/isExtractPart}}
                         {{#isExtractPart}}
-                        baseObjectSet.pivotTo("{{linkName}}")
-                            .selectProperty("{{property}}").{{operation}}("DAY")
+                        "YEARS_part_of_{{property}}_of_{{linkApiName}}": (baseObjectSet) =>
+                        baseObjectSet.pivotTo("{{linkApiName}}")
+                            .selectProperty("{{property}}").extractPart("YEARS")
                         {{/isExtractPart}}
-                  });
+                  }).fetchPage();
         nearestNeighborsTextQuery:
           - template: |-
               import { {{objectType}} } from "{{{packageName}}}";
@@ -2106,7 +2192,7 @@ versions:
 
               // Note that this vector maps to an arbitrary string
               // It must match the dimension of the "{{property}}" property: {{vectorDimensionSize}}
-              const vector_query = Array.from({ length: {{vectorDimensionSize}} }, () => 0.3),
+              const vector_query = Array.from({ length: {{vectorDimensionSize}} }, () => 0.3);
               const result = await client({{objectType}})
                 .nearestNeighbors(vector_query, 5, "{{property}}")
                 .fetchPage();

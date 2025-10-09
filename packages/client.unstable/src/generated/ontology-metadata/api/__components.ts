@@ -17,6 +17,7 @@
 import type { WorkflowRid as _workflow_api_WorkflowRid } from "../workflow/api/__components.js";
 import type {
   DataSetName as _api_blockdata_DataSetName,
+  DatasourceName as _api_blockdata_DatasourceName,
   GeotimeSeriesIntegrationName as _api_blockdata_GeotimeSeriesIntegrationName,
   MarkingGroupName as _api_blockdata_MarkingGroupName,
   MediaSetViewName as _api_blockdata_MediaSetViewName,
@@ -1880,6 +1881,11 @@ export interface AllowedStructFieldValues_geoshape {
   type: "geoshape";
   geoshape: ParameterGeoshapeOrEmpty;
 }
+
+export interface AllowedStructFieldValues_objectQuery {
+  type: "objectQuery";
+  objectQuery: ParameterObjectQueryOrEmpty;
+}
 export type AllowedStructFieldValues =
   | AllowedStructFieldValues_oneOf
   | AllowedStructFieldValues_range
@@ -1887,7 +1893,8 @@ export type AllowedStructFieldValues =
   | AllowedStructFieldValues_datetime
   | AllowedStructFieldValues_boolean
   | AllowedStructFieldValues_geohash
-  | AllowedStructFieldValues_geoshape;
+  | AllowedStructFieldValues_geoshape
+  | AllowedStructFieldValues_objectQuery;
 
 export interface AllowedStructFieldValuesModification_oneOf {
   type: "oneOf";
@@ -1923,6 +1930,11 @@ export interface AllowedStructFieldValuesModification_geoshape {
   type: "geoshape";
   geoshape: ParameterGeoshapeOrEmpty;
 }
+
+export interface AllowedStructFieldValuesModification_objectQuery {
+  type: "objectQuery";
+  objectQuery: ParameterObjectQueryOrEmptyModification;
+}
 export type AllowedStructFieldValuesModification =
   | AllowedStructFieldValuesModification_oneOf
   | AllowedStructFieldValuesModification_range
@@ -1930,7 +1942,8 @@ export type AllowedStructFieldValuesModification =
   | AllowedStructFieldValuesModification_datetime
   | AllowedStructFieldValuesModification_boolean
   | AllowedStructFieldValuesModification_geohash
-  | AllowedStructFieldValuesModification_geoshape;
+  | AllowedStructFieldValuesModification_geoshape
+  | AllowedStructFieldValuesModification_objectQuery;
 
 export interface AllowedStructFieldValuesOverride {
   allowedValues: AllowedStructFieldValues;
@@ -3857,6 +3870,12 @@ export interface GetEntityDelegateDatasetRequest {
 }
 export interface GetEntityDelegateDatasetResponse {
   delegateDataset: OntologySparkDelegateDataset;
+}
+export interface GetEntityQueryableSourceRequest {
+  ontologyEntityRid: ObjectOrLinkTypeRid;
+}
+export interface GetEntityQueryableSourceResponse {
+  queryableSource: OntologySparkQueryableSource;
 }
 /**
  * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
@@ -7460,6 +7479,11 @@ export interface OntologyIrAllowedStructFieldValues_geoshape {
   type: "geoshape";
   geoshape: ParameterGeoshapeOrEmpty;
 }
+
+export interface OntologyIrAllowedStructFieldValues_objectQuery {
+  type: "objectQuery";
+  objectQuery: OntologyIrParameterObjectQueryOrEmpty;
+}
 export type OntologyIrAllowedStructFieldValues =
   | OntologyIrAllowedStructFieldValues_oneOf
   | OntologyIrAllowedStructFieldValues_range
@@ -7467,7 +7491,8 @@ export type OntologyIrAllowedStructFieldValues =
   | OntologyIrAllowedStructFieldValues_datetime
   | OntologyIrAllowedStructFieldValues_boolean
   | OntologyIrAllowedStructFieldValues_geohash
-  | OntologyIrAllowedStructFieldValues_geoshape;
+  | OntologyIrAllowedStructFieldValues_geoshape
+  | OntologyIrAllowedStructFieldValues_objectQuery;
 
 export interface OntologyIrAllowedStructFieldValuesOverride {
   allowedValues: OntologyIrAllowedStructFieldValues;
@@ -8360,9 +8385,9 @@ export interface OntologyIrManyToManyLinkTypeDatasetDatasource {
 }
 export interface OntologyIrManyToManyLinkTypeDatasource {
   datasource: OntologyIrManyToManyLinkTypeDatasourceDefinition;
+  datasourceName: _api_blockdata_DatasourceName;
   editsConfiguration?: EditsConfiguration | null | undefined;
   redacted?: boolean | null | undefined;
-  rid: DatasourceRid;
 }
 export interface OntologyIrManyToManyLinkTypeDatasourceDefinition_dataset {
   type: "dataset";
@@ -8750,9 +8775,9 @@ export interface OntologyIrObjectTypeDatasetDatasourceV3 {
 export interface OntologyIrObjectTypeDatasource {
   dataSecurity?: OntologyIrDataSecurity | null | undefined;
   datasource: OntologyIrObjectTypeDatasourceDefinition;
+  datasourceName: _api_blockdata_DatasourceName;
   editsConfiguration?: EditsConfiguration | null | undefined;
   redacted?: boolean | null | undefined;
-  rid: DatasourceRid;
 }
 export interface OntologyIrObjectTypeDatasourceDefinition_streamV2 {
   type: "streamV2";
@@ -10527,6 +10552,8 @@ export interface OntologyRidsForEntitiesRequest {
 export interface OntologyRidsForEntitiesResponse {
   ontologyRids: Record<string, OntologyRid>;
 }
+export type OntologySourceType = "DATASOURCE" | "MATERIALIZATION";
+
 /**
  * Delegate dataset for an ontology entity, including dataset, branch, type, and ontology version.
  */
@@ -10547,10 +10574,19 @@ export type OntologySparkInputManagerRid = string;
 export interface OntologySparkInputProperties {
   datasetRid: DatasetRid;
   endTransactionRid: string;
-  ontologyDatasetType: OntologyDatasetType;
+  ontologySourceType: OntologySourceType;
   ontologyVersion: OntologyVersion;
   schemaBranchId: string;
   schemaVersionId: string;
+}
+/**
+ * Delegate source for an ontology entity, including source rid, branch, type, and ontology version.
+ */
+export interface OntologySparkQueryableSource {
+  branchId: BranchId;
+  ontologySourceType: OntologySourceType;
+  ontologyVersion: OntologyVersion;
+  sourceRid: string;
 }
 /**
  * The version of an Ontology.

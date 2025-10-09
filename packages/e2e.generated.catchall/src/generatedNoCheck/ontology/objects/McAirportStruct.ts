@@ -121,7 +121,7 @@ export const McAirportStruct = {
   type: 'object',
   apiName: 'McAirportStruct',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
-} satisfies McAirportStruct & { experimentalDoNotUseMetadata: { rid: string } } as McAirportStruct;
+} satisfies McAirportStruct & { internalDoNotUseMetadata: { rid: string } } as McAirportStruct;

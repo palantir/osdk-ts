@@ -23,6 +23,8 @@ import { hideBin } from "yargs/helpers";
 import { defineOntology } from "../api/defineOntology.js";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
+const uuidRegex =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 export default async function main(
   args: string[] = process.argv,
@@ -35,6 +37,7 @@ export default async function main(
     valueTypesOutput: string;
     outputDir?: string;
     dependencies?: string;
+    randomnessKey?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -84,6 +87,11 @@ export default async function main(
         type: "string",
         coerce: path.resolve,
       },
+      randomnessKey: {
+        describe: "Value used to assure uniqueness of entities",
+        type: "string",
+        coerce: path.resolve,
+      },
     })
     .parseAsync();
   let apiNamespace = "";
@@ -99,11 +107,19 @@ export default async function main(
   }
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
 
+  if (commandLineOpts.randomnessKey !== undefined) {
+    invariant(
+      uuidRegex.test(commandLineOpts.randomnessKey),
+      "Supplied randomness key is not a uuid and shouldn't be used as a uniqueness guarantee",
+    );
+  }
+
   const ontologyIr = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
     commandLineOpts.outputDir,
     commandLineOpts.dependencies,
+    commandLineOpts.randomnessKey,
   );
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
@@ -136,12 +152,14 @@ async function loadOntology(
   apiNamespace: string,
   outputDir: string | undefined,
   dependencyFile: string | undefined,
+  randomnessKey?: string,
 ) {
   const q = await defineOntology(
     apiNamespace,
     async () => await import(input),
     outputDir,
     dependencyFile,
+    randomnessKey,
   );
   return q;
 }

@@ -355,9 +355,9 @@ export const ObjectTypeWithAllPropertyTypes = {
   type: 'object',
   apiName: 'ObjectTypeWithAllPropertyTypes',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
   },
 } satisfies ObjectTypeWithAllPropertyTypes & {
-  experimentalDoNotUseMetadata: { rid: string };
+  internalDoNotUseMetadata: { rid: string };
 } as ObjectTypeWithAllPropertyTypes;

@@ -107,7 +107,7 @@ export const MtaBus = {
   type: 'object',
   apiName: 'MtaBus',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
   },
-} satisfies MtaBus & { experimentalDoNotUseMetadata: { rid: string } } as MtaBus;
+} satisfies MtaBus & { internalDoNotUseMetadata: { rid: string } } as MtaBus;

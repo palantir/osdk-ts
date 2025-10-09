@@ -1,5 +1,46 @@
 # @osdk/maker
 
+## 0.13.0-beta.18
+
+### Minor Changes
+
+- 6dee3cc: Typechecks improvement
+- 242cdb7: Remove uuid import from maker
+
+## 0.13.0-beta.17
+
+### Minor Changes
+
+- 58e9f56: Add condition validations for oac actions
+
+## 0.13.0-beta.16
+
+### Minor Changes
+
+- 7f22c27: Finish wiring up randomness key
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.15
+
+## 0.13.0-beta.15
+
+### Minor Changes
+
+- 04e664e: readme update and missing changeset for wiring up randomness key
+
+## 0.13.0-beta.14
+
+### Minor Changes
+
+- 9dd5a63: Intermediary links in oac
+- e62408b: Fix Maker Rid Generation
+
+### Patch Changes
+
+- Updated dependencies [b7edfb5]
+  - @osdk/api@2.5.0-beta.14
+
 ## 0.13.0-beta.13
 
 ### Minor Changes

@@ -27,6 +27,7 @@ export type {
   ColumnNameType,
   DataFilter,
   DataSetName,
+  DatasourceName,
   DatasourcePredicate,
   GeotimeSeriesIntegrationName,
   InstallLocationBlockShapeId,

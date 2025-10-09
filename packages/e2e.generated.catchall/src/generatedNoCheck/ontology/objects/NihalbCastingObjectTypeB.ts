@@ -126,7 +126,7 @@ export const NihalbCastingObjectTypeB = {
   type: 'object',
   apiName: 'NihalbCastingObjectTypeB',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.66898c81-9a3f-4f8b-937a-6934f6d9f660',
   },
-} satisfies NihalbCastingObjectTypeB & { experimentalDoNotUseMetadata: { rid: string } } as NihalbCastingObjectTypeB;
+} satisfies NihalbCastingObjectTypeB & { internalDoNotUseMetadata: { rid: string } } as NihalbCastingObjectTypeB;
