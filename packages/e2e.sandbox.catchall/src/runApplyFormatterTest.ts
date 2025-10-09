@@ -284,6 +284,7 @@ export async function runApplyFormatterTest(): Promise<void> {
   if (testObject.doubleCurrencyUsd !== undefined) {
     console.log(
       "doubleCurrencyUsd (de-DE):",
+      
       testObject.doubleCurrencyUsd,
       "→",
       testObject.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(

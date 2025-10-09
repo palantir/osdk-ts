@@ -209,6 +209,11 @@ describe("getFormattedValue", () => {
     };
 
     const obj = createOsdkObject(mockClient, objectDef, objectData);
+<<<<<<< HEAD:packages/client/src/object/formatting/applyPropertyFormatter.test.ts
+=======
+    const formattedValues = obj
+      .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValues();
+>>>>>>> 3850dcbe3 (With testing and complete):packages/client/src/object/formatting/getFormattedValues.test.ts
 
     // Should still format the number even without currency
     const formattedAmount = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue("amount");
@@ -262,6 +267,11 @@ describe("getFormattedValue", () => {
     };
 
     const obj = createOsdkObject(mockClient, objectDef, objectData);
+<<<<<<< HEAD:packages/client/src/object/formatting/applyPropertyFormatter.test.ts
+=======
+    const formattedValues = obj
+      .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValues();
+>>>>>>> 3850dcbe3 (With testing and complete):packages/client/src/object/formatting/getFormattedValues.test.ts
 
     expect(obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue("nullValue")).toBeUndefined();
     expect(obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue("undefinedValue")).toBeUndefined();
@@ -320,6 +330,7 @@ describe("getFormattedValue", () => {
 
     const obj = createOsdkObject(mockClient, objectDef, objectData);
 
+<<<<<<< HEAD:packages/client/src/object/formatting/applyPropertyFormatter.test.ts
     // Test with German locale
     const formattedAmountDE = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue("amount", {
       locale: "de-DE",
@@ -332,5 +343,20 @@ describe("getFormattedValue", () => {
       timezoneId: "America/New_York",
     });
     expect(formattedTimestamp).toBeDefined();
+=======
+    const formattedValuesDE = obj
+      .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValues({
+        locale: "de-DE",
+      });
+    expect(formattedValuesDE.amount).toBe("1.234,56");
+
+    // Test with custom timezone
+    const formattedValuesWithTZ = obj
+      .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValues({
+        locale: "en-US",
+        timezoneId: "America/New_York",
+      });
+    expect(formattedValuesWithTZ.timestamp).toBeDefined();
+>>>>>>> 3850dcbe3 (With testing and complete):packages/client/src/object/formatting/getFormattedValues.test.ts
   });
 });

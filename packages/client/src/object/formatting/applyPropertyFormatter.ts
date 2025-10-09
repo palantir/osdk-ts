@@ -18,6 +18,7 @@ import type {
   ObjectMetadata,
   PropertyValueFormattingRule,
 } from "@osdk/api";
+import type { KnownType } from "@osdk/foundry.ontologies";
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { formatBoolean } from "./formatBoolean.js";
 import { formatDateTime } from "./formatDateTime.js";
@@ -119,7 +120,7 @@ function formatPropertyValue(
   }
 }
 
-function formatKnownType(value: any, knownType: string): string | undefined {
+function formatKnownType(value: any, knownType: KnownType): string | undefined {
   if (typeof value !== "string") {
     return undefined;
   }
