@@ -1440,7 +1440,7 @@ export const GraphqlFormatting = {
   type: 'object',
   apiName: 'GraphqlFormatting',
   osdkMetadata: $osdkMetadata,
-  experimentalDoNotUseMetadata: {
+  internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.353eb83c-df7e-4c97-a362-1e94689869bc',
   },
-} satisfies GraphqlFormatting & { experimentalDoNotUseMetadata: { rid: string } } as GraphqlFormatting;
+} satisfies GraphqlFormatting & { internalDoNotUseMetadata: { rid: string } } as GraphqlFormatting;
