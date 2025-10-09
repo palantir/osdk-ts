@@ -40,8 +40,6 @@ import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
 export function convertObject(
   objectType: ObjectType,
 ): OntologyIrObjectTypeBlockDataV2 {
-  // TODO(dpaquin): don't extract property datasources from properties that already have derived datasources?
-
   const { derivedDatasources, derivedPropertyNames } =
     extractDerivedDatasources(objectType);
 
