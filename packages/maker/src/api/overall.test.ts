@@ -5036,7 +5036,7 @@ describe("Ontology Defining", () => {
                               "type": "multiHopLink",
                             },
                             "propertyTypeMapping": {
-                              "numPassengers": {
+                              "passengersList": {
                                 "collectList": {
                                   "limit": 100,
                                   "linkedProperty": {
@@ -5144,8 +5144,8 @@ describe("Ontology Defining", () => {
                       ],
                       "valueType": undefined,
                     },
-                    "numPassengers": {
-                      "apiName": "numPassengers",
+                    "passengersList": {
+                      "apiName": "passengersList",
                       "baseFormatter": undefined,
                       "dataConstraints": undefined,
                       "displayMetadata": {
