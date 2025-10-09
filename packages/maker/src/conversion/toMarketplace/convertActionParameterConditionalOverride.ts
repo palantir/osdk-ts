@@ -26,6 +26,7 @@ import { convertConditionDefinition } from "./convertConditionDefinition.js";
 export function convertActionParameterConditionalOverride(
   override: ActionParameterConditionalOverride,
   validation: ActionParameterValidation,
+  objectProperties?: Array<String>,
 ): OntologyIrConditionalOverride {
   let parameterBlockOverride: OntologyIrParameterValidationBlockOverride;
   switch (override.type) {
@@ -97,7 +98,7 @@ export function convertActionParameterConditionalOverride(
       throw new Error(`Unknown parameter override type`);
   }
   return {
-    condition: convertConditionDefinition(override.condition),
+    condition: convertConditionDefinition(override.condition, objectProperties),
     parameterBlockOverrides: [parameterBlockOverride],
   };
 }

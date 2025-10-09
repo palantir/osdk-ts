@@ -137,6 +137,7 @@ const archetypeRules = archetypes(
       "@osdk/widget.client",
       "@osdk/vite-plugin-oac",
       "@osdk/faux",
+      "@osdk/osdk-docs-context",
     ],
     {
       ...LIBRARY_RULES,
@@ -177,6 +178,7 @@ const archetypeRules = archetypes(
       "@osdk/create-app.template-packager",
       "@osdk/example-generator",
       "@osdk/tool.*",
+      "@osdk/typescript-docs-example-generator",
       "@osdk/version-updater",
     ],
     {
@@ -195,6 +197,18 @@ const archetypeRules = archetypes(
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
+    },
+  )
+  .addArchetype(
+    "internal libraries / templates with modern tooling ES2023",
+    [
+      "@osdk/typescript-sdk-docs-examples",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      extraTsConfigCompilerOptions: {
+        "lib": ["ES2023", "DOM", "ESNEXT.Array"],
+      },
     },
   )
   .addArchetype("publishedSandboxes", [

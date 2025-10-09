@@ -9938,6 +9938,33 @@ describe("Ontology Defining", () => {
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleObject]`,
       );
+      expect(() => {
+        const createAction = defineCreateObjectAction({
+          objectType: sampleObject,
+          actionLevelValidation: [
+            {
+              condition: {
+                type: "or",
+                conditions: [
+                  {
+                    type: "parameter",
+                    parameterId: "non_existent_parameter",
+                    matches: {
+                      type: "staticValue",
+                      staticValue: {
+                        type: "string",
+                        string: "value",
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Action parameter condition references unknown parameter non_existent_parameter]`,
+      );
     });
 
     it("Static default action parameters must match type", () => {
@@ -15647,6 +15674,7 @@ describe("Ontology Defining", () => {
         import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
         import type { InterfaceType } from '@osdk/maker';
 
+        /** @type {import('@osdk/maker').InterfaceType} */
         const myInterface_base: InterfaceType = {
           "apiName": "com.my.package.myInterface",
           "displayMetadata": {
@@ -15699,6 +15727,7 @@ describe("Ontology Defining", () => {
         import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
         import type { ObjectType } from '@osdk/maker';
 
+        /** @type {import('@osdk/maker').ObjectType} */
         const myObject_base: ObjectType = {
           "titlePropertyApiName": "bar",
           "displayName": "My Object",
@@ -15776,6 +15805,7 @@ describe("Ontology Defining", () => {
         import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
         import type { SharedPropertyType } from '@osdk/maker';
 
+        /** @type {import('@osdk/maker').SharedPropertyType} */
         const mySpt_base: SharedPropertyType = {
           "apiName": "com.my.package.mySpt",
           "type": "string",
@@ -15835,6 +15865,7 @@ describe("Ontology Defining", () => {
         import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
         import type { InterfaceType } from '@osdk/maker';
 
+        /** @type {import('@osdk/maker').InterfaceType} */
         const childInterface_base: InterfaceType = {
           "apiName": "com.palantir.childInterface",
           "displayMetadata": {

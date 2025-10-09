@@ -83,6 +83,19 @@
     "@osdk/tests.verify-cjs-node16": "0.0.3",
     "@osdk/tests.verify-esm-node16": "0.0.3",
     "@osdk/tests.verify-fallback-package-v2": "0.0.3"
+    "@osdk/examples.widget-minimal-react-sdk-2.x": "0.0.0",
+    "@osdk/create-widget.template.minimal-react.v2": "3.1.0",
+    "@osdk/functions": "1.2.0",
+    "@osdk/examples.advance-to-do-application": "0.0.0",
+    "@osdk/typescript-sdk-docs": "0.3.0",
+    "@osdk/faux": "0.2.0",
+    "@osdk/generator-converters.ontologyir": "2.4.0",
+    "@osdk/vite-plugin-oac": "0.2.0",
+    "@osdk/maker-experimental": "0.2.0",
+    "@osdk/e2e.sandbox.peopleapp": "3.3.0-beta.1",
+    "@osdk/osdk-docs-context": "0.1.0",
+    "@osdk/typescript-docs-example-generator": "0.1.0",
+    "@osdk/typescript-sdk-docs-examples": "0.1.0"
   },
   "changesets": [
     "@osdk-api-simulatedRelease",

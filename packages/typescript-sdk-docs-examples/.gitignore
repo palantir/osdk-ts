@@ -1,0 +1,22 @@
+# Build output
+dist/
+
+# Generated files
+src/generatedNoCheck/
+
+# Node modules
+node_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+.turbo
+
+# Temporary directory
+temp/
+tmp/
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+

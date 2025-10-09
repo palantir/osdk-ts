@@ -222,6 +222,7 @@ export default tseslint.config(
       "**/test/*",
       "examples-extra/**/*",
       "packages/e2e.sandbox.*/**/*",
+      "packages/typescript-sdk-docs-examples/**/*",
     ],
     rules: {
       "no-console": "off",

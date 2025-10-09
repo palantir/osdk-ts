@@ -21,9 +21,10 @@ import { convertConditionDefinition } from "./convertConditionDefinition.js";
 export function convertSectionConditionalOverride(
   override: SectionConditionalOverride,
   defaultVisibility: "visible" | "hidden",
+  objectProperties?: Array<String>,
 ): OntologyIrSectionConditionalOverride {
   return {
-    condition: convertConditionDefinition(override.condition),
+    condition: convertConditionDefinition(override.condition, objectProperties),
     sectionBlockOverrides: [
       {
         type: "visibility",

@@ -1,0 +1,16 @@
+{
+  "extends": "@osdk/monorepo.tsconfig/base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "build/esm",
+    "lib": [
+      "ES2023",
+      "DOM",
+      "ESNEXT.Array"
+    ]
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "references": []
+}
