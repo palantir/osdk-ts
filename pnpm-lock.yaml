@@ -3656,6 +3656,9 @@ importers:
         specifier: workspace:~
         version: link:../typescript-sdk-docs-examples
     devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
