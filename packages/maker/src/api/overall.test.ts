@@ -2554,7 +2554,7 @@ describe("Ontology Defining", () => {
                 {
                   "datasource": {
                     "dataset": {
-                      "datasetRid": "link-fizzToFoo",
+                      "datasetRid": "link-fizz-to-foo",
                       "objectTypeAPrimaryKeyMapping": [
                         {
                           "column": "bar",
@@ -2577,7 +2577,7 @@ describe("Ontology Defining", () => {
                     },
                     "type": "dataset",
                   },
-                  "datasourceName": "fizzToFoo",
+                  "datasourceName": "fizz-to-foo",
                   "editsConfiguration": {
                     "onlyAllowPrivilegedEdits": false,
                   },
@@ -3886,7 +3886,7 @@ describe("Ontology Defining", () => {
         apiName: "foo",
         primaryKeyPropertyApiName: "bar",
         properties: { "bar": { type: "string" } },
-        datasource: { type: "dataset" },
+        datasources: [{ type: "dataset" }],
       });
 
       const streamBackedObjectNoRetention = defineObject({
@@ -3896,7 +3896,7 @@ describe("Ontology Defining", () => {
         apiName: "fizz",
         primaryKeyPropertyApiName: "fizz",
         properties: { "fizz": { type: "string" }, "bar": { type: "string" } },
-        datasource: { type: "stream" },
+        datasources: [{ type: "stream" }],
       });
 
       const streamBackedObjectWithRetention = defineObject({
@@ -3906,7 +3906,7 @@ describe("Ontology Defining", () => {
         apiName: "buzz",
         primaryKeyPropertyApiName: "buzz",
         properties: { "buzz": { type: "string" } },
-        datasource: { type: "stream", retentionPeriod: "PT1H" },
+        datasources: [{ type: "stream", retentionPeriod: "PT1H" }],
       });
 
       expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
@@ -4271,7 +4271,7 @@ describe("Ontology Defining", () => {
         properties: {
           "bar": { type: "string" },
         },
-        datasource: { type: "restrictedView" },
+        datasources: [{ type: "restrictedView" }],
       });
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
@@ -4626,10 +4626,10 @@ describe("Ontology Defining", () => {
           apiName: "buzz",
           primaryKeyPropertyApiName: "buzz",
           properties: { "buzz": { type: "string" } },
-          datasource: {
+          datasources: [{
             type: "stream",
             retentionPeriod: "bad retention period string",
-          },
+          }],
         })
       ).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Retention period "bad retention period string" on object "buzz" is not a valid ISO 8601 duration string]`,
@@ -4647,7 +4647,7 @@ describe("Ontology Defining", () => {
           "fizz": { type: "mediaReference" },
           "bar": { type: "string" },
         },
-        datasource: { type: "stream" },
+        datasources: [{ type: "stream" }],
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -4816,6 +4816,482 @@ describe("Ontology Defining", () => {
                     "type": "active",
                   },
                   "titlePropertyTypeRid": "bar",
+                },
+              },
+            },
+            "sharedPropertyTypes": {},
+          },
+          "randomnessKey": undefined,
+          "valueTypes": {
+            "valueTypes": [],
+          },
+        }
+      `);
+    });
+    it("Derived datasources are properly defined", () => {
+      const passenger = defineObject({
+        displayName: "Passenger",
+        pluralDisplayName: "Passengers",
+        apiName: "passenger",
+        primaryKeyPropertyApiName: "name",
+        titlePropertyApiName: "name",
+        properties: {
+          "name": {
+            type: "string",
+            displayName: "Name",
+          },
+        },
+      });
+      const flightToPassengers = defineLink({
+        apiName: "flightToPassengersLink",
+        one: {
+          object: "com.palantir.flight",
+          metadata: {
+            apiName: "flightFromPassengers",
+          },
+        },
+        toMany: {
+          object: passenger.apiName,
+          metadata: {
+            apiName: "passengersFromFlight",
+          },
+        },
+        manyForeignKeyProperty: "name",
+      });
+      expect(() => {
+        defineObject({
+          displayName: "Flight",
+          pluralDisplayName: "Flights",
+          apiName: "flight",
+          primaryKeyPropertyApiName: "id",
+          titlePropertyApiName: "id",
+          properties: {
+            id: {
+              type: "string",
+              displayName: "ID",
+            },
+            numPassengers: {
+              type: "string",
+              displayName: "Passengers",
+            },
+          },
+          datasources: [
+            { type: "dataset" },
+            {
+              type: "derived",
+              linkDefinition: [{
+                linkType: flightToPassengers,
+              }],
+              propertyMapping: {
+                numPassengers: {
+                  type: "collectList",
+                  property: "name",
+                  limit: 100,
+                },
+              },
+            },
+          ],
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Property 'numPassengers' on object 'flight' is not collectible]`,
+      );
+      const flight = defineObject({
+        displayName: "Flight",
+        pluralDisplayName: "Flights",
+        apiName: "flight",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        properties: {
+          id: {
+            type: "string",
+            displayName: "ID",
+          },
+          passengersList: {
+            type: "string",
+            array: true,
+            displayName: "Passengers",
+          },
+        },
+        datasources: [
+          { type: "dataset" },
+          {
+            type: "derived",
+            linkDefinition: [{
+              linkType: flightToPassengers,
+            }],
+            propertyMapping: {
+              passengersList: {
+                type: "collectList",
+                property: "name",
+                limit: 100,
+              },
+            },
+          },
+        ],
+      });
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {
+              "flight-to-passengers-link": {
+                "datasources": [],
+                "entityMetadata": {
+                  "arePatchesEnabled": false,
+                },
+                "linkType": {
+                  "definition": {
+                    "oneToMany": {
+                      "cardinalityHint": "ONE_TO_MANY",
+                      "manyToOneLinkMetadata": {
+                        "apiName": "passengers-from-flight",
+                        "displayMetadata": {
+                          "displayName": "PassengersFromFlight",
+                          "groupDisplayName": "",
+                          "pluralDisplayName": "PassengersFromFlights",
+                          "visibility": "NORMAL",
+                        },
+                        "typeClasses": [],
+                      },
+                      "objectTypeRidManySide": "com.palantir.passenger",
+                      "objectTypeRidOneSide": "com.palantir.flight",
+                      "oneSidePrimaryKeyToManySidePropertyMapping": [
+                        {
+                          "from": {
+                            "apiName": "id",
+                            "object": "com.palantir.flight",
+                          },
+                          "to": {
+                            "apiName": "name",
+                            "object": "com.palantir.passenger",
+                          },
+                        },
+                      ],
+                      "oneToManyLinkMetadata": {
+                        "apiName": "flight-from-passengers",
+                        "displayMetadata": {
+                          "displayName": "FlightFromPassengers",
+                          "groupDisplayName": "",
+                          "pluralDisplayName": "FlightFromPassengers",
+                          "visibility": "NORMAL",
+                        },
+                        "typeClasses": [],
+                      },
+                    },
+                    "type": "oneToMany",
+                  },
+                  "id": "flight-to-passengers-link",
+                  "redacted": false,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                },
+              },
+            },
+            "objectTypes": {
+              "com.palantir.flight": {
+                "datasources": [
+                  {
+                    "datasource": {
+                      "derived": {
+                        "definition": {
+                          "aggregatedProperties": {
+                            "linkDefinition": {
+                              "multiHopLink": {
+                                "steps": [
+                                  {
+                                    "searchAround": {
+                                      "linkTypeIdentifier": {
+                                        "linkType": "flight-to-passengers-link",
+                                        "type": "linkType",
+                                      },
+                                      "linkTypeSide": "SOURCE",
+                                    },
+                                    "type": "searchAround",
+                                  },
+                                ],
+                              },
+                              "type": "multiHopLink",
+                            },
+                            "propertyTypeMapping": {
+                              "numPassengers": {
+                                "collectList": {
+                                  "limit": 100,
+                                  "linkedProperty": {
+                                    "propertyType": "name",
+                                    "type": "propertyType",
+                                  },
+                                },
+                                "type": "collectList",
+                              },
+                            },
+                          },
+                          "type": "aggregatedProperties",
+                        },
+                      },
+                      "type": "derived",
+                    },
+                    "datasourceName": "com.palantir.flight.derived.0",
+                    "editsConfiguration": {
+                      "onlyAllowPrivilegedEdits": false,
+                    },
+                    "redacted": false,
+                  },
+                  {
+                    "datasource": {
+                      "datasetV2": {
+                        "datasetRid": "com.palantir.flight",
+                        "propertyMapping": {
+                          "id": {
+                            "column": "id",
+                            "type": "column",
+                          },
+                        },
+                      },
+                      "type": "datasetV2",
+                    },
+                    "datasourceName": "com.palantir.flight",
+                    "editsConfiguration": {
+                      "onlyAllowPrivilegedEdits": false,
+                    },
+                    "redacted": false,
+                  },
+                ],
+                "entityMetadata": {
+                  "arePatchesEnabled": false,
+                },
+                "objectType": {
+                  "allImplementsInterfaces": {},
+                  "apiName": "com.palantir.flight",
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "Flight",
+                    "groupDisplayName": undefined,
+                    "icon": {
+                      "blueprint": {
+                        "color": "#2D72D2",
+                        "locator": "cube",
+                      },
+                      "type": "blueprint",
+                    },
+                    "pluralDisplayName": "Flights",
+                    "visibility": "NORMAL",
+                  },
+                  "implementsInterfaces2": [],
+                  "primaryKeys": [
+                    "id",
+                  ],
+                  "propertyTypes": {
+                    "id": {
+                      "apiName": "id",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "ID",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "numPassengers": {
+                      "apiName": "numPassengers",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Passengers",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "array": {
+                          "subtype": {
+                            "string": {
+                              "analyzerOverride": undefined,
+                              "enableAsciiFolding": undefined,
+                              "isLongText": false,
+                              "supportsEfficientLeadingWildcard": false,
+                              "supportsExactMatching": true,
+                            },
+                            "type": "string",
+                          },
+                        },
+                        "type": "array",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                  },
+                  "redacted": false,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "titlePropertyTypeRid": "id",
+                },
+              },
+              "com.palantir.passenger": {
+                "datasources": [
+                  {
+                    "datasource": {
+                      "datasetV2": {
+                        "datasetRid": "com.palantir.passenger",
+                        "propertyMapping": {
+                          "name": {
+                            "column": "name",
+                            "type": "column",
+                          },
+                        },
+                      },
+                      "type": "datasetV2",
+                    },
+                    "datasourceName": "com.palantir.passenger",
+                    "editsConfiguration": {
+                      "onlyAllowPrivilegedEdits": false,
+                    },
+                    "redacted": false,
+                  },
+                ],
+                "entityMetadata": {
+                  "arePatchesEnabled": false,
+                },
+                "objectType": {
+                  "allImplementsInterfaces": {},
+                  "apiName": "com.palantir.passenger",
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "Passenger",
+                    "groupDisplayName": undefined,
+                    "icon": {
+                      "blueprint": {
+                        "color": "#2D72D2",
+                        "locator": "cube",
+                      },
+                      "type": "blueprint",
+                    },
+                    "pluralDisplayName": "Passengers",
+                    "visibility": "NORMAL",
+                  },
+                  "implementsInterfaces2": [],
+                  "primaryKeys": [
+                    "name",
+                  ],
+                  "propertyTypes": {
+                    "name": {
+                      "apiName": "name",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Name",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                  },
+                  "redacted": false,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "titlePropertyTypeRid": "name",
                 },
               },
             },

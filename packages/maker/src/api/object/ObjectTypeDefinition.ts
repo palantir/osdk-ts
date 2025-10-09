@@ -34,5 +34,5 @@ export type ObjectTypeDefinition = {
   visibility?: Visibility;
   editsEnabled?: boolean;
   status?: ObjectTypeStatus;
-  datasource?: ObjectTypeDatasourceDefinition;
+  datasources?: Array<ObjectTypeDatasourceDefinition>;
 };
