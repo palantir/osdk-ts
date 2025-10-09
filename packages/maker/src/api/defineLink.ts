@@ -15,13 +15,15 @@
  */
 
 import type { LinkTypeMetadata } from "@osdk/client.unstable";
-import invariant from "tiny-invariant";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
   convertToPluralDisplayName,
   uppercaseFirstLetter,
 } from "./defineObject.js";
-import { updateOntology } from "./defineOntology.js";
+import {
+  cleanAndValidateLinkTypeId,
+  updateOntology,
+} from "./defineOntology.js";
 import type {
   IntermediaryObjectLinkReference,
   IntermediaryObjectLinkReferenceUserDefinition,
@@ -34,50 +36,13 @@ import type {
   OneToManyObjectLinkReferenceUserDefinition,
 } from "./links/LinkType.js";
 
-const typeIdPattern = /([a-z][a-z0-9\\-]*)/;
-
 export function defineLink(
   linkDefinition: LinkTypeDefinition,
 ): LinkType {
-  if ("one" in linkDefinition) {
-    const foreignKey = linkDefinition.toMany.object.properties
-      ?.[linkDefinition.manyForeignKeyProperty];
-    invariant(
-      foreignKey !== undefined,
-      `Foreign key ${linkDefinition.manyForeignKeyProperty} on link ${linkDefinition.apiName} does not exist on object ${linkDefinition.toMany.object.apiName}}`,
-    );
+  // NOTE: we would normally do validation here, but because of circular dependencies
+  // we have to wait to validate until everything has been defined. The code for validation
+  // was moved to convertLink.ts.
 
-    invariant(
-      typeIdPattern.test(linkDefinition.apiName),
-      `Top level link api names are expected to match the regex pattern ([a-z][a-z0-9\\-]*) ${linkDefinition.apiName} does not match`,
-    );
-
-    const typesMatch = foreignKey.type
-      === linkDefinition.one.object.properties
-        ?.[linkDefinition.one.object.primaryKeyPropertyApiName].type;
-    invariant(
-      typesMatch,
-      `Link ${linkDefinition.apiName} has type mismatch between the one side's primary key and the foreign key on the many side`,
-    );
-  }
-  if ("intermediaryObjectType" in linkDefinition) {
-    invariant(
-      "one" in linkDefinition.many.linkToIntermediary
-        && linkDefinition.many.linkToIntermediary.one.object.apiName
-          === linkDefinition.many.object.apiName
-        && linkDefinition.many.linkToIntermediary.toMany.object.apiName
-          === linkDefinition.intermediaryObjectType.apiName,
-      `LinkTypeA ${linkDefinition.many.linkToIntermediary.apiName} must be a many to one link from intermediary object ${linkDefinition.intermediaryObjectType.apiName} to objectA ${linkDefinition.many.object.apiName}`,
-    );
-    invariant(
-      "one" in linkDefinition.toMany.linkToIntermediary
-        && linkDefinition.toMany.linkToIntermediary.one.object.apiName
-          === linkDefinition.toMany.object.apiName
-        && linkDefinition.toMany.linkToIntermediary.toMany.object.apiName
-          === linkDefinition.intermediaryObjectType.apiName,
-      `LinkTypeB ${linkDefinition.toMany.linkToIntermediary.apiName} must be a many to one link from intermediary object ${linkDefinition.intermediaryObjectType.apiName} to objectB ${linkDefinition.toMany.object.apiName}`,
-    );
-  }
   let fullLinkDefinition;
   if ("one" in linkDefinition) {
     fullLinkDefinition = {
@@ -107,6 +72,7 @@ export function defineLink(
       ? linkDefinition.cardinality
       : undefined,
     ...fullLinkDefinition,
+    apiName: cleanAndValidateLinkTypeId(linkDefinition.apiName),
     __type: OntologyEntityTypeEnum.LINK_TYPE,
   };
   updateOntology(linkType);
@@ -144,7 +110,7 @@ function convertLinkTypeMetadata(
   metadata: LinkTypeMetadataUserDefinition,
 ): LinkTypeMetadata {
   return {
-    apiName: metadata.apiName,
+    apiName: cleanAndValidateLinkTypeId(metadata.apiName),
     displayMetadata: {
       displayName: metadata.displayName
         ?? uppercaseFirstLetter(metadata.apiName),
