@@ -126,12 +126,12 @@
     "@osdk-foundry-config-json-simulatedRelease",
     "@osdk-foundry-sdk-generator-simulatedRelease",
     "@osdk-functions-simulatedRelease",
-    "@osdk-generator-simulatedRelease",
     "@osdk-generator-converters-simulatedRelease",
     "@osdk-generator-converters.ontologyir-simulatedRelease",
+    "@osdk-generator-simulatedRelease",
     "@osdk-generator-utils-simulatedRelease",
-    "@osdk-maker-simulatedRelease",
     "@osdk-maker-experimental-simulatedRelease",
+    "@osdk-maker-simulatedRelease",
     "@osdk-monorepo.api-extractor-simulatedRelease",
     "@osdk-monorepo.cspell-simulatedRelease",
     "@osdk-monorepo.tool.transpile-simulatedRelease",
@@ -147,13 +147,14 @@
     "@osdk-tool.generate-with-mock-ontology-simulatedRelease",
     "@osdk-tool.release-simulatedRelease",
     "@osdk-typescript-docs-example-generator-simulatedRelease",
-    "@osdk-typescript-sdk-docs-simulatedRelease",
     "@osdk-typescript-sdk-docs-examples-simulatedRelease",
+    "@osdk-typescript-sdk-docs-simulatedRelease",
     "@osdk-version-updater-simulatedRelease",
     "@osdk-vite-plugin-oac-simulatedRelease",
     "@osdk-widget.api-simulatedRelease",
-    "@osdk-widget.client-simulatedRelease",
     "@osdk-widget.client-react-simulatedRelease",
-    "@osdk-widget.vite-plugin-simulatedRelease"
+    "@osdk-widget.client-simulatedRelease",
+    "@osdk-widget.vite-plugin-simulatedRelease",
+    "shy-lizards-smash"
   ]
 }
