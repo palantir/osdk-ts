@@ -1,5 +1,34 @@
 # @osdk/maker
 
+## 0.14.0-beta.2
+
+### Minor Changes
+
+- 7601f9f: Fix condition validation
+
+## 0.13.0-beta.18
+
+### Minor Changes
+
+- 6dee3cc: Typechecks improvement
+- 242cdb7: Remove uuid import from maker
+
+## 0.13.0-beta.17
+
+### Minor Changes
+
+- 58e9f56: Add condition validations for oac actions
+
+## 0.13.0-beta.16
+
+### Minor Changes
+
+- 7f22c27: Finish wiring up randomness key
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.15
+
 ## 0.13.0-beta.15
 
 ### Minor Changes

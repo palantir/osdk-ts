@@ -496,6 +496,14 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
       },
       rid: "rid",
     },
+    vector: {
+      dataType: {
+        type: "vector",
+        dimension: 100,
+        supportsSearchWith: [],
+      },
+      rid: "rid",
+    },
   },
   rid: "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
   status: "ACTIVE",

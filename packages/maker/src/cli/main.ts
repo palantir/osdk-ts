@@ -18,12 +18,13 @@ import { consola } from "consola";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
-import { validate as validateUuid } from "uuid";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineOntology } from "../api/defineOntology.js";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
+const uuidRegex =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 export default async function main(
   args: string[] = process.argv,
@@ -108,7 +109,7 @@ export default async function main(
 
   if (commandLineOpts.randomnessKey !== undefined) {
     invariant(
-      validateUuid(commandLineOpts.randomnessKey),
+      uuidRegex.test(commandLineOpts.randomnessKey),
       "Supplied randomness key is not a uuid and shouldn't be used as a uniqueness guarantee",
     );
   }
@@ -118,6 +119,7 @@ export default async function main(
     apiNamespace,
     commandLineOpts.outputDir,
     commandLineOpts.dependencies,
+    commandLineOpts.randomnessKey,
   );
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
@@ -150,12 +152,14 @@ async function loadOntology(
   apiNamespace: string,
   outputDir: string | undefined,
   dependencyFile: string | undefined,
+  randomnessKey?: string,
 ) {
   const q = await defineOntology(
     apiNamespace,
     async () => await import(input),
     outputDir,
     dependencyFile,
+    randomnessKey,
   );
   return q;
 }
