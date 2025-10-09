@@ -69,7 +69,7 @@ export function convertActionValidation(
                 convertActionParameterConditionalOverride(
                   override,
                   p.validation,
-                  getActionTypeObjectParameters(action),
+                  action.parameters,
                 ),
             ) ?? [],
           },
@@ -101,7 +101,7 @@ export function convertActionValidation(
                 convertSectionConditionalOverride(
                   override,
                   section.defaultVisibility ?? "visible",
-                  getActionTypeObjectParameters(action),
+                  action.parameters,
                 ),
             ) ?? [],
           },
@@ -124,23 +124,4 @@ function convertParameterRequirementConstraint(
     type: "listLengthValidation",
     listLengthValidation: { minLength: min, maxLength: max },
   };
-}
-
-export function getActionTypeObjectParameters(
-  actionType: ActionType,
-): Array<String> | undefined {
-  switch (actionType.rules[0].type) {
-    case "addObjectRule":
-      return Object.keys(actionType.rules[0].addObjectRule.propertyValues);
-    case "modifyObjectRule":
-      return Object.keys(actionType.rules[0].modifyObjectRule.propertyValues);
-    case "addOrModifyObjectRuleV2":
-      return Object.keys(
-        actionType.rules[0].addOrModifyObjectRuleV2.propertyValues,
-      );
-    case "deleteObjectRule":
-      return [];
-    default:
-      return undefined;
-  }
 }
