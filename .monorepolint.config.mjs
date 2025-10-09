@@ -926,6 +926,7 @@ function standardPackageRules(shared, options) {
     }),
     fileContents({
       ...shared,
+      excludePackages: ["@osdk/maker"],
       options: {
         file: "vitest.config.mts",
         generator: formattedGeneratorHelper(

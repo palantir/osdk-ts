@@ -21,8 +21,8 @@ export default defineConfig({
     pool: "forks",
     poolOptions: {
       forks: {
-        singleFork: true
-      }
+        singleFork: true,
+      },
     },
     exclude: [...configDefaults.exclude, "**/build/**/*"],
     fakeTimers: {
