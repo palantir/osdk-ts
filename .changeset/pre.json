@@ -85,7 +85,8 @@
     "@osdk/tests.verify-cjs-node10": "0.0.3",
     "@osdk/tests.verify-cjs-node16": "0.0.3",
     "@osdk/tests.verify-esm-node16": "0.0.3",
-    "@osdk/tests.verify-fallback-package-v2": "0.0.3"
+    "@osdk/tests.verify-fallback-package-v2": "0.0.3",
+    "@osdk/osdk-docs-context-generator": "0.1.0"
   },
   "changesets": [
     "@osdk-api-simulatedRelease",
@@ -155,6 +156,8 @@
     "@osdk-widget.client-react-simulatedRelease",
     "@osdk-widget.client-simulatedRelease",
     "@osdk-widget.vite-plugin-simulatedRelease",
+    "dull-flies-call",
+    "rare-wings-jog",
     "shy-lizards-smash"
   ]
 }
