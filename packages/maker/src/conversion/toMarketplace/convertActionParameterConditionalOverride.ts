@@ -18,7 +18,10 @@ import type {
   OntologyIrConditionalOverride,
   OntologyIrParameterValidationBlockOverride,
 } from "@osdk/client.unstable";
-import type { ActionParameterValidation } from "../../api/action/ActionParameter.js";
+import type {
+  ActionParameter,
+  ActionParameterValidation,
+} from "../../api/action/ActionParameter.js";
 import type { ActionParameterConditionalOverride } from "../../api/action/ActionParameterConditionalOverride.js";
 import { extractAllowedValues } from "../../api/defineOntology.js";
 import { convertConditionDefinition } from "./convertConditionDefinition.js";
@@ -26,7 +29,7 @@ import { convertConditionDefinition } from "./convertConditionDefinition.js";
 export function convertActionParameterConditionalOverride(
   override: ActionParameterConditionalOverride,
   validation: ActionParameterValidation,
-  objectProperties?: Array<String>,
+  actionParameters?: ActionParameter[],
 ): OntologyIrConditionalOverride {
   let parameterBlockOverride: OntologyIrParameterValidationBlockOverride;
   switch (override.type) {
@@ -98,7 +101,7 @@ export function convertActionParameterConditionalOverride(
       throw new Error(`Unknown parameter override type`);
   }
   return {
-    condition: convertConditionDefinition(override.condition, objectProperties),
+    condition: convertConditionDefinition(override.condition, actionParameters),
     parameterBlockOverrides: [parameterBlockOverride],
   };
 }

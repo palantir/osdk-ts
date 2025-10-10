@@ -17,7 +17,7 @@
 import {
   type NestedExampleMetadata,
   TYPESCRIPT_OSDK_EXAMPLES,
-} from "@osdk/typescript-sdk-docs-examples";
+} from "./generated/inlinedExamples.js";
 
 // Type alias for compatibility
 type ExampleMetadata = NestedExampleMetadata;

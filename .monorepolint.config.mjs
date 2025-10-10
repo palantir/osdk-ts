@@ -180,6 +180,7 @@ const archetypeRules = archetypes(
       "@osdk/tool.*",
       "@osdk/typescript-docs-example-generator",
       "@osdk/version-updater",
+      "@osdk/osdk-docs-context-generator",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
@@ -926,6 +927,7 @@ function standardPackageRules(shared, options) {
     }),
     fileContents({
       ...shared,
+      excludePackages: ["@osdk/maker"],
       options: {
         file: "vitest.config.mts",
         generator: formattedGeneratorHelper(

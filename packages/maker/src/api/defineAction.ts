@@ -273,7 +273,7 @@ export function defineCreateObjectAction(
       ? {
         validation: convertValidationRule(
           def.actionLevelValidation,
-          Object.keys(def.objectType.properties ?? {}),
+          parameters,
         ),
       }
       : {}),
@@ -490,7 +490,7 @@ export function defineModifyObjectAction(
       ? {
         validation: convertValidationRule(
           def.actionLevelValidation,
-          Object.keys(def.objectType.properties ?? {}),
+          parameters,
         ),
       }
       : {}),
@@ -549,7 +549,6 @@ export function defineDeleteObjectAction(
       ? {
         validation: convertValidationRule(
           def.actionLevelValidation,
-          Object.keys(def.objectType.properties ?? {}),
         ),
       }
       : {}),
@@ -650,7 +649,7 @@ export function defineCreateOrModifyObjectAction(
       ? {
         validation: convertValidationRule(
           def.actionLevelValidation,
-          Object.keys(def.objectType.properties ?? {}),
+          parameters,
         ),
       }
       : {}),
@@ -1173,11 +1172,11 @@ function sanitize(s: string): string {
 
 function convertValidationRule(
   actionValidation: ActionLevelValidationDefinition,
-  objectProperties?: Array<String>,
+  actionParameters?: ActionParameter[],
 ): Array<ActionValidationRule> {
   return actionValidation.map(rule => {
     return {
-      condition: convertConditionDefinition(rule.condition, objectProperties),
+      condition: convertConditionDefinition(rule.condition, actionParameters),
       displayMetadata: rule.displayMetadata ?? {
         failureMessage: "Did not satisfy validation",
         typeClasses: [],

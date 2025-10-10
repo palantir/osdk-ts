@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.14.0-beta.3
+
+### Minor Changes
+
+- 995064b: Make tests run synchronously
+
+## 0.14.0-beta.2
+
+### Minor Changes
+
+- 7601f9f: Fix condition validation
+
 ## 0.13.0-beta.18
 
 ### Minor Changes
