@@ -753,6 +753,8 @@ const passenger = defineObject({
 const flightToPassengers = defineLink({
   apiName: "flightToPassengersLink",
   one: {
+    // because the object has not been created yet,
+    // reference it by its fully qualified API name manually
     object: "com.palantir.flight",
     metadata: {
       apiName: "flightFromPassengers",
