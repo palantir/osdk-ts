@@ -21,6 +21,13 @@ import type { Canonical } from "../Canonical.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { SpecificLinkQuery } from "./SpecificLinkQuery.js";
 
+// Index constants for accessing otherKeys array elements
+export const SOURCE_OBJECT_TYPE_IDX = 0;
+export const SOURCE_PK_IDX = 1;
+export const LINK_NAME_IDX = 2;
+export const WHERE_CLAUSE_IDX = 3;
+export const ORDER_BY_CLAUSE_IDX = 4;
+
 /**
  * Storage data format for link query cache entries, similar to ListStorageData
  */

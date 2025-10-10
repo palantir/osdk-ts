@@ -15,16 +15,24 @@
  */
 
 import type {
-  ObjectOrInterfaceDefinition,
-  SimplePropertyDef,
-  WhereClause,
-} from "@osdk/api";
+  PropertyIdentifier,
+  SearchJsonQueryV2,
+} from "@osdk/foundry.ontologies";
+import type { Position } from "geojson";
 
-/**
- * A where clause without specific type information - used for runtime matching logic.
- * This accepts any WhereClause<T, RDPs> by using the base types.
- */
-export type SimpleWhereClause = WhereClause<
-  ObjectOrInterfaceDefinition,
-  Record<string, SimplePropertyDef>
->;
+export function makeGeoFilterPolygon(
+  coordinates: Position[][],
+  filterType: "intersectsPolygon" | "withinPolygon",
+  propertyIdentifier?: PropertyIdentifier,
+  field?: string,
+): SearchJsonQueryV2 {
+  return {
+    type: filterType,
+    ...(propertyIdentifier != null && { propertyIdentifier }),
+    field,
+    value: {
+      type: "Polygon",
+      coordinates,
+    },
+  };
+}

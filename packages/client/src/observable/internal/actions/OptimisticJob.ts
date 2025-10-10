@@ -56,7 +56,7 @@ export class OptimisticJob {
               store.objects.getQuery({
                 apiName: obj.value.$objectType,
                 pk: obj.value.$primaryKey,
-              }).writeToStore(obj.value, "loading", batch);
+              }, undefined).writeToStore(obj.value, "loading", batch);
             } else {
               // TODO FIXME
               throw obj;
@@ -67,14 +67,14 @@ export class OptimisticJob {
             store.objects.getQuery({
               apiName: obj.$objectType,
               pk: obj.$primaryKey,
-            }).writeToStore(obj, "loading", batch);
+            }, undefined).writeToStore(obj, "loading", batch);
           }
 
           for (const obj of deletedObjects) {
             store.objects.getQuery({
               apiName: obj.$objectType,
               pk: obj.$primaryKey,
-            }).deleteFromStore("loading", batch);
+            }, undefined).deleteFromStore("loading", batch);
           }
         });
 

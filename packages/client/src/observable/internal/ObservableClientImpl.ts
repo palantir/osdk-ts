@@ -23,6 +23,7 @@ import type {
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
+  SimplePropertyDef,
   WhereClause,
   WirePropertyTypes,
 } from "@osdk/api";
@@ -83,8 +84,11 @@ export class ObservableClientImpl implements ObservableClient {
     );
   };
 
-  public observeList: <T extends ObjectTypeDefinition | InterfaceDefinition>(
-    options: ObserveListOptions<T>,
+  public observeList: <
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options: ObserveListOptions<T, RDPs>,
     subFn: Observer<ObserveObjectsArgs<T>>,
   ) => Unsubscribable = (options, subFn) => {
     return this.__experimentalStore.lists.observe(
@@ -183,8 +187,9 @@ export class ObservableClientImpl implements ObservableClient {
 
   public canonicalizeWhereClause<
     T extends ObjectTypeDefinition | InterfaceDefinition,
-  >(where: WhereClause<T>): Canonical<WhereClause<T>> {
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(where: WhereClause<T, RDPs>): Canonical<WhereClause<T, RDPs>> {
     return this.__experimentalStore.whereCanonicalizer
-      .canonicalize(where) as Canonical<WhereClause<T>>;
+      .canonicalize(where) as Canonical<WhereClause<T, RDPs>>;
   }
 }

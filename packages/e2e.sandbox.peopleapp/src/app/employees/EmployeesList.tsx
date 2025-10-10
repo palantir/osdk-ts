@@ -1,28 +1,20 @@
-import type { Osdk, PropertyKeys } from "@osdk/api";
-import { useObjectSet, type UseOsdkListResult } from "@osdk/react/experimental";
-import type React from "react";
+import type { DerivedProperty } from "@osdk/client";
+import { useOsdkObjects } from "@osdk/react/experimental";
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";
-import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
-type EmployeeWithPeepCount = Osdk.Instance<
-  Employee,
-  "$allBaseProperties",
-  PropertyKeys<Employee>,
-  {
-    peepCount: "integer";
-  }
->;
-
 interface EmployeeListItemProps {
-  item: EmployeeWithPeepCount;
+  item: Employee.OsdkInstance & {
+    managerName?: string;
+    reportCount?: number;
+  };
   isSelected: boolean;
   onSelect: (employee: Employee.OsdkInstance) => void;
 }
 
 function EmployeeListItem(
-  { item: item, isSelected, onSelect }: EmployeeListItemProps,
+  { item, isSelected, onSelect }: EmployeeListItemProps,
 ) {
   return (
     <ListItem
@@ -31,9 +23,11 @@ function EmployeeListItem(
       primaryContent={item.fullName ?? "<full-name-missing>"}
       secondaryContent={
         <>
-          {item.adUsername ?? "<username-missing>"} - #{item.employeeNumber} -
-          {" "}
-          {item.peepCount} peeps
+          {item.adUsername ?? "<username-missing>"} - #{item.employeeNumber}
+          {item.managerName && <div>Manager: {item.managerName}</div>}
+          {item.reportCount !== undefined && (
+            <div>Direct Reports: {item.reportCount}</div>
+          )}
         </>
       }
     />
@@ -46,35 +40,27 @@ interface EmployeesListProps {
 }
 
 export function EmployeesList(props: EmployeesListProps) {
-  const employees = useObjectSet($(Employee), {
-    where: {
-      "department": "Media Team",
-    },
-    withProperties: {
-      peepCount: (base) => base.pivotTo("peeps").aggregate("$count"),
-    },
-    dedupeIntervalMs: 5000,
-  });
+  const withProperties = {
+    managerName: (base: DerivedProperty.Builder<Employee, false>) =>
+      base.pivotTo("lead").selectProperty("fullName"),
+    reportCount: (base: DerivedProperty.Builder<Employee, false>) =>
+      base.pivotTo("peeps").aggregate("$count"),
+  } satisfies DerivedProperty.Clause<Employee>;
 
-  const listResult: UseOsdkListResult<Employee> = {
-    data: employees.data,
-    isLoading: employees.isLoading,
-    error: employees.error,
-    fetchMore: undefined,
-    isOptimistic: false,
-  };
+  const employees = useOsdkObjects(Employee, {
+    withProperties,
+    where: {
+      department: "Media Team",
+      reportCount: { $gt: 0 },
+    },
+  });
 
   return (
     <List<Employee>
       header="Employees"
-      items={listResult}
-      Component={EmployeeListItem as React.FC<{
-        item: Osdk.Instance<Employee>;
-        isSelected: boolean;
-        onSelect: (item: Osdk.Instance<Employee>) => void;
-      }>}
-      selected={props.selected}
-      onSelect={(item) => props.onSelect(item as Employee.OsdkInstance)}
+      items={employees}
+      Component={EmployeeListItem}
+      {...props}
     />
   );
 }

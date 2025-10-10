@@ -120,6 +120,7 @@ export class ActionApplication {
             "object",
             objectType,
             primaryKey,
+            /* rdpConfig */ undefined,
           );
           this.store.queries.peek(cacheKey)?.deleteFromStore(
             "loaded", // this is probably not the best value to use

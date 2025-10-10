@@ -17,8 +17,16 @@
 import type { CollectionStorageData } from "../base-list/BaseCollectionQuery.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { ListQuery } from "./ListQuery.js";
+
+// Index constants for accessing otherKeys array elements
+export const TYPE_IDX = 0;
+export const API_NAME_IDX = 1;
+export const WHERE_IDX = 2;
+export const ORDER_BY_IDX = 3;
+export const RDP_IDX = 4;
 
 export interface ListStorageData extends CollectionStorageData {}
 
@@ -32,6 +40,7 @@ export interface ListCacheKey extends
       apiName: string,
       whereClause: Canonical<SimpleWhereClause>,
       orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
+      rdpConfig?: Canonical<Rdp> | undefined,
     ]
   >
 {

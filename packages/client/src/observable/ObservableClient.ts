@@ -17,12 +17,15 @@
 import type {
   ActionDefinition,
   ActionValidationResponse,
+  DerivedProperty,
   InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
+  SimplePropertyDef,
   WhereClause,
   WirePropertyTypes,
 } from "@osdk/api";
@@ -64,15 +67,17 @@ export type OrderBy<Q extends ObjectTypeDefinition | InterfaceDefinition> = {
 };
 
 export interface ObserveListOptions<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > extends CommonObserveOptions, ObserveOptions {
   type: Pick<Q, "apiName" | "type">;
-  where?: WhereClause<Q>;
+  where?: WhereClause<Q, RDPs>;
   pageSize?: number;
   orderBy?: OrderBy<Q>;
   invalidationMode?: InvalidationMode;
   expectedLength?: number;
   streamUpdates?: boolean;
+  withProperties?: DerivedProperty.Clause<Q>;
 }
 
 // TODO: Rename this from `ObserveObjectArgs` => `ObserveObjectCallbackArgs`. Not doing it now to reduce churn
@@ -174,8 +179,11 @@ export interface ObservableClient extends ObserveLinks {
    * - Pagination via fetchMore() in the payload
    * - Automatic updates when any matching object changes
    */
-  observeList<T extends ObjectTypeDefinition | InterfaceDefinition>(
-    options: ObserveListOptions<T>,
+  observeList<
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options: ObserveListOptions<T, RDPs>,
     subFn: Observer<ObserveObjectsArgs<T>>,
   ): Unsubscribable;
 
@@ -277,9 +285,10 @@ export interface ObservableClient extends ObserveLinks {
 
   canonicalizeWhereClause: <
     T extends ObjectTypeDefinition | InterfaceDefinition,
+    RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    where: WhereClause<T>,
-  ) => Canonical<WhereClause<T>>;
+    where: WhereClause<T, RDPs>,
+  ) => Canonical<WhereClause<T, RDPs>>;
 }
 
 export function createObservableClient(client: Client): ObservableClient {
