@@ -41,6 +41,14 @@ export const dsClient: Client = createClient(
   loggingFetch,
 );
 
+export const z2vClient: Client = createClient(
+  process.env.FOUNDRY_STACK,
+  "ri.ontology.main.ontology.8fca0141-468f-4910-9949-8d9b6d9939b2",
+  async () => process.env.FOUNDRY_USER_TOKEN!,
+  { logger },
+  loggingFetch,
+);
+
 /**
  * Generally consumers wont need this and will use their createClient() but
  * I want to use this to be sure everything works.

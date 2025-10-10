@@ -49,10 +49,7 @@ export class FauxDataStoreBatch {
     objectType: string,
     primaryKey: string | number | boolean,
   ): BaseServerObject => {
-    return this.#fauxDataStore.getObjectOrThrow(
-      objectType,
-      primaryKey,
-    );
+    return this.#fauxDataStore.getObjectOrThrow(objectType, primaryKey);
   };
 
   getObjects = (objectType: string): Iterable<BaseServerObject> => {
@@ -89,6 +86,8 @@ export class FauxDataStoreBatch {
             objectType,
             primaryKey,
           },
+          errorDescription:
+            "The object the user is attempting to create already exists.",
         } satisfies OntologiesV2.ObjectAlreadyExists,
       );
     }

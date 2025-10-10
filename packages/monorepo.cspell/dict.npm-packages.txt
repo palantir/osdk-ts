@@ -18,3 +18,4 @@ monorepolint
 ngeohash
 npmjs
 tsup
+timecode

@@ -7,6 +7,7 @@ export { Employee } from './objects/Employee.js';
 export { EsongIssues } from './objects/EsongIssues.js';
 export { EsongPds } from './objects/EsongPds.js';
 export { FintrafficAis } from './objects/FintrafficAis.js';
+export { GraphqlFormatting } from './objects/GraphqlFormatting.js';
 export { GtfsTripTrackObject } from './objects/GtfsTripTrackObject.js';
 export { MatthewvsDevOrderEmbedding } from './objects/MatthewvsDevOrderEmbedding.js';
 export { McAirportStruct } from './objects/McAirportStruct.js';

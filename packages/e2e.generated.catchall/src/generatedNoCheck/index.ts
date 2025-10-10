@@ -40,6 +40,7 @@ export {
   EsongIssues,
   EsongPds,
   FintrafficAis,
+  GraphqlFormatting,
   GtfsTripTrackObject,
   MatthewvsDevOrderEmbedding,
   McAirportStruct,
