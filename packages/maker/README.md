@@ -15,6 +15,7 @@ The Maker package provides a type-safe, programmatic way to define ontologies, w
 - [Interface Link Constraints](#interface-link-constraints)
 - [Defining Actions](#defining-actions)
 - [Importing Ontology Entities](#importing-ontology-entities)
+- [Advanced](#advanced)
 
 ## Getting Started
 
@@ -441,7 +442,7 @@ const customerObject = defineObject({
 });
 ```
 
-### Object with Datasource
+### Object with Custom Datasources
 
 ```typescript
 // Stream-backed object with retention period
@@ -456,27 +457,10 @@ const eventObject = defineObject({
     "eventName": { type: "string", displayName: "Event Name" },
     "timestamp": { type: "timestamp" },
   },
-  datasource: {
+  datasources: [{
     type: "stream",
     retentionPeriod: "P90D", // 90 days retention (ISO 8601 duration format)
-  },
-});
-
-// Dataset-backed object
-const productObject = defineObject({
-  apiName: "product",
-  displayName: "Product",
-  pluralDisplayName: "Products",
-  titlePropertyApiName: "name",
-  primaryKeyPropertyApiName: "id",
-  properties: {
-    "id": { type: "string", displayName: "ID" },
-    "name": { type: "string" },
-    "price": { type: "decimal" },
-  },
-  datasource: {
-    type: "dataset",
-  },
+  }],
 });
 ```
 
@@ -663,10 +647,12 @@ const modifyPersonAction = defineModifyInterfaceObjectAction({
 });
 ```
 
-### Custom Action
+## Advanced
+
+### Custom Actions
 
 More customization such as security/submission criteria, constraints on parameter values, parameter overrides, etc.
-can also be added.
+can be added to actions.
 
 ```typescript
 import {
@@ -740,4 +726,80 @@ const modifyObjectActionType = defineModifyObjectAction(
     excludedProperties: ["experience"],
   },
 );
+```
+
+### Derived Properties
+
+Objects can have derived properties, which are computed at runtime from other linked objects. Properties can be mapped directly, or an aggregation function (e.g. `collectList`, `avg`, `max`, etc.) can be used.
+
+```typescript
+const passenger = defineObject({
+  displayName: "Passenger",
+  pluralDisplayName: "Passengers",
+  apiName: "passenger",
+  primaryKeyPropertyApiName: "name",
+  titlePropertyApiName: "name",
+  properties: {
+    name: {
+      type: "string",
+      displayName: "Name",
+    },
+    flight_id: {
+      type: "string",
+      displayName: "Flight ID",
+    },
+  },
+});
+const flightToPassengers = defineLink({
+  apiName: "flightToPassengersLink",
+  one: {
+    object: "com.palantir.flight",
+    metadata: {
+      apiName: "flightFromPassengers",
+    },
+  },
+  toMany: {
+    object: passenger.apiName,
+    metadata: {
+      apiName: "passengersFromFlight",
+    },
+  },
+  manyForeignKeyProperty: "flight_id",
+});
+const flight = defineObject({
+  displayName: "Flight",
+  pluralDisplayName: "Flights",
+  apiName: "flight",
+  primaryKeyPropertyApiName: "id",
+  titlePropertyApiName: "id",
+  properties: {
+    id: {
+      type: "string",
+      displayName: "ID",
+    },
+    passengersList: {
+      type: "string",
+      array: true,
+      displayName: "Passengers",
+    },
+  },
+  datasources: [
+    // the dataset will back all of the properties not specified in other datasources
+    { type: "dataset" }, 
+    {
+      type: "derived",
+      // multi-hop link traversals are also supported, just extend this list!
+      linkDefinition: [{
+        linkType: flightToPassengers,
+      }],
+      propertyMapping: {
+        passengersList: {
+          type: "collectList",
+          property: "name",
+          limit: 100,
+        },
+      },
+    },
+  ],
+});
 ```
