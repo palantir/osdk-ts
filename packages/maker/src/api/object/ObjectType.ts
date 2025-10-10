@@ -35,7 +35,7 @@ export type ObjectType =
     | "titlePropertyApiName"
   >
   & {
-    datasource?: ObjectTypeDatasourceDefinition;
+    datasources?: Array<ObjectTypeDatasourceDefinition>;
     __type: OntologyEntityTypeEnum.OBJECT_TYPE;
   };
 

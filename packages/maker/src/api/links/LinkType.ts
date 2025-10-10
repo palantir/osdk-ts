@@ -71,7 +71,7 @@ export interface OneToManyLinkTypeDefinition {
 }
 
 export interface OneToManyObjectLinkReference {
-  object: ObjectTypeDefinition;
+  object: ObjectTypeDefinition | string;
   metadata: LinkTypeMetadata;
 }
 
@@ -84,7 +84,7 @@ export interface OneToManyLinkTypeUserDefinition {
 }
 
 export interface OneToManyObjectLinkReferenceUserDefinition {
-  object: ObjectTypeDefinition;
+  object: ObjectTypeDefinition | string;
   metadata: LinkTypeMetadataUserDefinition;
 }
 
@@ -98,7 +98,7 @@ export interface ManyToManyLinkTypeDefinition {
 }
 
 export interface ManyToManyObjectLinkReference {
-  object: ObjectTypeDefinition;
+  object: ObjectTypeDefinition | string;
   metadata: LinkTypeMetadata;
 }
 
@@ -109,7 +109,7 @@ export interface ManyToManyLinkTypeUserDefinition {
 }
 
 export interface ManyToManyObjectLinkReferenceUserDefinition {
-  object: ObjectTypeDefinition;
+  object: ObjectTypeDefinition | string;
   metadata: LinkTypeMetadataUserDefinition;
 }
 
@@ -124,7 +124,7 @@ export interface IntermediaryLinkTypeDefinition {
 }
 
 export interface IntermediaryObjectLinkReference {
-  object: ObjectTypeDefinition;
+  object: ObjectTypeDefinition | string;
   metadata: LinkTypeMetadata;
   linkToIntermediary: LinkType;
 }
@@ -133,11 +133,11 @@ export interface IntermediaryLinkTypeUserDefinition {
   apiName: string;
   many: IntermediaryObjectLinkReferenceUserDefinition;
   toMany: IntermediaryObjectLinkReferenceUserDefinition;
-  intermediaryObjectType: ObjectTypeDefinition;
+  intermediaryObjectType: ObjectTypeDefinition | string;
 }
 
 export interface IntermediaryObjectLinkReferenceUserDefinition {
-  object: ObjectTypeDefinition;
+  object: ObjectTypeDefinition | string;
   metadata: LinkTypeMetadataUserDefinition;
   linkToIntermediary: LinkType;
 }
