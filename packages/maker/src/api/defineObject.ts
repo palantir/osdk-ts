@@ -19,7 +19,6 @@ import { getObject } from "../conversion/toMarketplace/convertLink.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
   addNamespaceIfNone,
-  cleanAndValidateLinkTypeId,
   importedTypes,
   namespace,
   ontologyDefinition,
@@ -298,13 +297,13 @@ function validateDerivedDatasource(
 
   // all of the links references should exist
   datasource.linkDefinition.forEach(link => {
-    const linkTypeId = cleanAndValidateLinkTypeId(link.linkType.apiName);
+    const linkApiName = link.linkType.apiName;
     invariant(
-      ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE][linkTypeId]
+      ontologyDefinition[OntologyEntityTypeEnum.LINK_TYPE][linkApiName]
           !== undefined
-        || importedTypes[OntologyEntityTypeEnum.LINK_TYPE][linkTypeId]
+        || importedTypes[OntologyEntityTypeEnum.LINK_TYPE][linkApiName]
           !== undefined,
-      `Link type '${linkTypeId}' used in derived datasource for object '${objectDef.apiName}' is not defined.`,
+      `Link type '${linkApiName}' used in derived datasource for object '${objectDef.apiName}' is not defined.`,
     );
   });
 

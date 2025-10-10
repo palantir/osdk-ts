@@ -21,7 +21,6 @@ import {
   uppercaseFirstLetter,
 } from "./defineObject.js";
 import {
-  cleanAndValidateLinkTypeId,
   updateOntology,
 } from "./defineOntology.js";
 import type {
@@ -72,7 +71,7 @@ export function defineLink(
       ? linkDefinition.cardinality
       : undefined,
     ...fullLinkDefinition,
-    apiName: cleanAndValidateLinkTypeId(linkDefinition.apiName),
+    apiName: linkDefinition.apiName,
     __type: OntologyEntityTypeEnum.LINK_TYPE,
   };
   updateOntology(linkType);
@@ -110,7 +109,7 @@ function convertLinkTypeMetadata(
   metadata: LinkTypeMetadataUserDefinition,
 ): LinkTypeMetadata {
   return {
-    apiName: cleanAndValidateLinkTypeId(metadata.apiName),
+    apiName: metadata.apiName,
     displayMetadata: {
       displayName: metadata.displayName
         ?? uppercaseFirstLetter(metadata.apiName),

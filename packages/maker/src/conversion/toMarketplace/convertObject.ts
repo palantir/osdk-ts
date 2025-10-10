@@ -25,6 +25,7 @@ import type {
 import {
   addNamespaceIfNone,
   buildDatasource,
+  cleanAndValidateLinkTypeId,
   convertObjectStatus,
 } from "../../api/defineOntology.js";
 import type { ObjectPropertyType } from "../../api/object/ObjectPropertyType.js";
@@ -210,7 +211,7 @@ function buildDerivedDatasource(
         searchAround: {
           linkTypeIdentifier: {
             type: "linkType",
-            linkType: step.linkType.apiName,
+            linkType: cleanAndValidateLinkTypeId(step.linkType.apiName),
           },
           linkTypeSide: step.side ?? "SOURCE",
         },
