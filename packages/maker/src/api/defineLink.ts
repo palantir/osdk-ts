@@ -20,9 +20,7 @@ import {
   convertToPluralDisplayName,
   uppercaseFirstLetter,
 } from "./defineObject.js";
-import {
-  updateOntology,
-} from "./defineOntology.js";
+import { updateOntology } from "./defineOntology.js";
 import type {
   IntermediaryObjectLinkReference,
   IntermediaryObjectLinkReferenceUserDefinition,
