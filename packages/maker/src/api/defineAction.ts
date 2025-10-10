@@ -107,6 +107,580 @@ export type InterfaceActionTypeUserDefinition = {
   parameterOrdering?: Array<string>;
 };
 
+export function defineCreateInterfaceObjectAction(
+  def: InterfaceActionTypeUserDefinition,
+): ActionType {
+  const allProperties = Object.entries(
+    getFlattenedInterfaceProperties(def.interfaceType),
+  ).filter(([_, prop]) =>
+    !isStruct(prop.sharedPropertyType.type)
+    && !(def.excludedProperties ?? []).includes(
+      prop.sharedPropertyType.nonNameSpacedApiName,
+    )
+  );
+
+  if (
+    allProperties.length
+      !== Object.entries(getFlattenedInterfaceProperties(def.interfaceType))
+        .length
+  ) {
+    consola.info(
+      `Some properties on ${def.interfaceType.apiName} were skipped in the create action because they are structs`,
+    );
+  }
+  return defineAction({
+    apiName: `create-${
+      kebab(
+        def.interfaceType.apiName.split(".").pop() ?? def.interfaceType.apiName,
+      )
+    }${
+      def.objectType === undefined
+        ? ""
+        : `-${
+          kebab(
+            def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
+          )
+        }`
+    }`,
+    displayName: `Create ${def.interfaceType.displayMetadata.displayName}`,
+    parameters: [
+      {
+        id: "objectTypeParameter",
+        displayName: "Object type to create",
+        type: {
+          type: "objectTypeReference",
+          objectTypeReference: {
+            interfaceTypeRids: [def.interfaceType.apiName],
+          },
+        },
+        validation: {
+          required: true,
+          allowedValues: def.objectType === undefined
+            ? {
+              type: "objectTypeReference",
+              interfaceTypes: [def.interfaceType.apiName],
+            }
+            : {
+              type: "oneOf",
+              oneOf: [{
+                label: def.objectType.displayName,
+                value: {
+                  type: "objectType",
+                  objectType: { objectTypeId: def.objectType.apiName },
+                },
+              }],
+            },
+        },
+      },
+      ...allProperties.map((
+        [id, prop],
+      ) => ({
+        id,
+        displayName: prop.sharedPropertyType.displayName
+          ?? prop.sharedPropertyType.nonNameSpacedApiName,
+        type: extractActionParameterType(prop.sharedPropertyType),
+        typeClasses: prop.sharedPropertyType.typeClasses ?? [],
+        validation: {
+          required: (prop.sharedPropertyType.array ?? false)
+            ? { listLength: {} }
+            : prop.required,
+          allowedValues: extractAllowedValuesFromPropertyType(
+            prop.sharedPropertyType.type,
+          ),
+        },
+      })),
+    ],
+    status: def.interfaceType.status.type !== "deprecated"
+      ? def.interfaceType.status.type
+      : def.interfaceType.status,
+    entities: {
+      affectedInterfaceTypes: [def.interfaceType.apiName],
+      affectedObjectTypes: [],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
+    rules: [
+      {
+        type: "addInterfaceRule",
+        addInterfaceRule: {
+          interfaceApiName: def.interfaceType.apiName,
+          objectTypeParameter: "objectTypeParameter",
+          sharedPropertyValues: Object.fromEntries(
+            allProperties.map((
+              [id, _prop],
+            ) => [id, { type: "parameterId", parameterId: id }]),
+          ),
+        },
+      },
+    ],
+    ...(def.validation
+      ? {
+        validation: convertValidationRule(def.validation),
+      }
+      : {}),
+  });
+}
+
+export function defineCreateObjectAction(
+  def: ActionTypeUserDefinition,
+): ActionType {
+  validateActionParameters(def);
+  const propertyParameters = Object.keys(def.objectType.properties ?? {})
+    .filter(
+      id =>
+        !Object.keys(def.nonParameterMappings ?? {}).includes(id)
+        && !def.excludedProperties?.includes(id)
+        && !isStruct(def.objectType.properties?.[id].type!),
+    );
+  const parameterNames = new Set(propertyParameters);
+  Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
+    parameterNames.add(param)
+  );
+  const actionApiName = def.apiName
+    ?? `create-object-${
+      kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
+    }`;
+  if (def.parameterOrdering) {
+    validateParameterOrdering(
+      def.parameterOrdering,
+      parameterNames,
+      actionApiName,
+    );
+  }
+  const parameters = createParameters(def, parameterNames);
+  const mappings = Object.fromEntries(
+    Object.entries(def.nonParameterMappings ?? {}).map((
+      [id, value],
+    ) => [id, convertMappingValue(value)]),
+  );
+
+  return defineAction({
+    apiName: actionApiName,
+    displayName: def.displayName ?? `Create ${def.objectType.displayName}`,
+    parameters: parameters,
+    status: def.status ?? "active",
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [def.objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
+    rules: [{
+      type: "addObjectRule",
+      addObjectRule: {
+        objectTypeId: def.objectType.apiName,
+        propertyValues: {
+          ...Object.fromEntries(
+            propertyParameters.map(
+              p => [p, { type: "parameterId", parameterId: p }],
+            ),
+          ),
+          ...mappings,
+        },
+        structFieldValues: {},
+      },
+    }],
+    parameterOrdering: def.parameterOrdering
+      ?? createDefaultParameterOrdering(def, parameters),
+    ...(def.actionLevelValidation
+      ? {
+        validation: convertValidationRule(
+          def.actionLevelValidation,
+          parameters,
+        ),
+      }
+      : {}),
+    ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
+    ...(def.enableLayoutSwitch
+      && { enableLayoutSwitch: def.enableLayoutSwitch }),
+    ...(def.displayAndFormat && { displayAndFormat: def.displayAndFormat }),
+    ...(def.sections
+      && {
+        sections: Object.fromEntries(
+          def.sections.map(section => [section.id, section]),
+        ),
+      }),
+    ...(def.submissionMetadata
+      && { submissionMetadata: def.submissionMetadata }),
+  });
+}
+
+export function defineModifyInterfaceObjectAction(
+  def: InterfaceActionTypeUserDefinition,
+): ActionType {
+  const allProperties = Object.entries(
+    getFlattenedInterfaceProperties(def.interfaceType),
+  ).filter(([_, prop]) =>
+    !isStruct(prop.sharedPropertyType.type)
+    && !(def.excludedProperties ?? []).includes(
+      prop.sharedPropertyType.nonNameSpacedApiName,
+    )
+  );
+  if (
+    allProperties.length
+      !== Object.entries(getFlattenedInterfaceProperties(def.interfaceType))
+        .length
+  ) {
+    consola.info(
+      `Some properties on ${def.interfaceType.apiName} were skipped in the modify action because they are structs`,
+    );
+  }
+  return defineAction({
+    apiName: `modify-${
+      kebab(
+        def.interfaceType.apiName.split(".").pop() ?? def.interfaceType.apiName,
+      )
+    }${
+      def.objectType === undefined
+        ? ""
+        : `-${
+          kebab(
+            def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
+          )
+        }`
+    }`,
+    displayName: `Modify ${def.interfaceType.displayMetadata.displayName}`,
+    parameters: [
+      {
+        id: "interfaceObjectToModifyParameter",
+        displayName: "Object type to modify",
+        type: {
+          type: "interfaceReference",
+          interfaceReference: { interfaceTypeRid: def.interfaceType.apiName },
+        },
+        validation: {
+          required: true,
+          allowedValues: def.objectType === undefined
+            ? { type: "interfaceObjectQuery" }
+            : {
+              type: "oneOf",
+              oneOf: [{
+                label: def.objectType.displayName,
+                value: {
+                  type: "objectType",
+                  objectType: { objectTypeId: def.objectType.apiName },
+                },
+              }],
+            },
+        },
+      },
+      ...allProperties.map((
+        [id, prop],
+      ) => ({
+        id,
+        displayName: prop.sharedPropertyType.displayName
+          ?? prop.sharedPropertyType.nonNameSpacedApiName,
+        type: extractActionParameterType(prop.sharedPropertyType),
+        typeClasses: prop.sharedPropertyType.typeClasses ?? [],
+        validation: {
+          required: (prop.sharedPropertyType.array ?? false)
+            ? { listLength: {} }
+            : prop.required,
+          allowedValues: extractAllowedValuesFromPropertyType(
+            prop.sharedPropertyType.type,
+          ),
+        },
+      })),
+    ],
+    status: def.interfaceType.status.type !== "deprecated"
+      ? def.interfaceType.status.type
+      : def.interfaceType.status,
+    entities: {
+      affectedInterfaceTypes: [def.interfaceType.apiName],
+      affectedObjectTypes: [],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
+    rules: [
+      {
+        type: "modifyInterfaceRule",
+        modifyInterfaceRule: {
+          interfaceObjectToModifyParameter: "interfaceObjectToModifyParameter",
+          sharedPropertyValues: Object.fromEntries(
+            allProperties.map((
+              [id, _prop],
+            ) => [id, { type: "parameterId", parameterId: id }]),
+          ),
+        },
+      },
+    ],
+    ...(def.validation
+      ? {
+        validation: convertValidationRule(def.validation),
+      }
+      : {}),
+  });
+}
+
+export function defineModifyObjectAction(
+  def: ActionTypeUserDefinition,
+): ActionType {
+  validateActionParameters(def);
+  const propertyParameters = Object.keys(def.objectType.properties ?? {})
+    .filter(
+      id =>
+        !Object.keys(def.nonParameterMappings ?? {}).includes(id)
+        && !def.excludedProperties?.includes(id)
+        && !isStruct(def.objectType.properties?.[id].type!)
+        && id !== def.objectType.primaryKeyPropertyApiName,
+    );
+  const parameterNames = new Set(propertyParameters);
+  Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
+    parameterNames.add(param)
+  );
+  parameterNames.add(MODIFY_OBJECT_PARAMETER);
+  const actionApiName = def.apiName
+    ?? `modify-object-${
+      kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
+    }`;
+  if (def.parameterOrdering) {
+    if (!def.parameterOrdering.includes(MODIFY_OBJECT_PARAMETER)) {
+      def.parameterOrdering = [
+        MODIFY_OBJECT_PARAMETER,
+        ...def.parameterOrdering,
+      ];
+    }
+    validateParameterOrdering(
+      def.parameterOrdering,
+      parameterNames,
+      actionApiName,
+    );
+  }
+  const parameters = createParameters(def, parameterNames);
+  parameters.forEach(
+    p => {
+      if (p.id !== MODIFY_OBJECT_PARAMETER && p.defaultValue === undefined) {
+        p.defaultValue = {
+          type: "objectParameterPropertyValue",
+          objectParameterPropertyValue: {
+            parameterId: MODIFY_OBJECT_PARAMETER,
+            propertyTypeId: p.id,
+          },
+        };
+      }
+    },
+  );
+
+  const mappings = Object.fromEntries(
+    Object.entries(def.nonParameterMappings ?? {}).map((
+      [id, value],
+    ) => [id, convertMappingValue(value)]),
+  );
+
+  return defineAction({
+    apiName: actionApiName,
+    displayName: def.displayName ?? `Modify ${def.objectType.displayName}`,
+    parameters: parameters,
+    status: def.status ?? "active",
+    rules: [{
+      type: "modifyObjectRule",
+      modifyObjectRule: {
+        objectToModify: MODIFY_OBJECT_PARAMETER,
+        propertyValues: {
+          ...Object.fromEntries(
+            propertyParameters.map(
+              p => [p, { type: "parameterId", parameterId: p }],
+            ),
+          ),
+          ...mappings,
+        },
+        structFieldValues: {},
+      },
+    }],
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [def.objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
+    parameterOrdering: def.parameterOrdering
+      ?? createDefaultParameterOrdering(
+        def,
+        parameters,
+        MODIFY_OBJECT_PARAMETER,
+      ),
+    ...(def.actionLevelValidation
+      ? {
+        validation: convertValidationRule(
+          def.actionLevelValidation,
+          parameters,
+        ),
+      }
+      : {}),
+    ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
+    ...(def.enableLayoutSwitch
+      && { enableLayoutSwitch: def.enableLayoutSwitch }),
+    ...(def.displayAndFormat && { displayAndFormat: def.displayAndFormat }),
+    ...(def.sections
+      && {
+        sections: Object.fromEntries(
+          def.sections.map(section => [section.id, section]),
+        ),
+      }),
+    ...(def.submissionMetadata
+      && { submissionMetadata: def.submissionMetadata }),
+  });
+}
+
+export function defineDeleteObjectAction(
+  def: ActionTypeUserDefinition,
+): ActionType {
+  return defineAction({
+    apiName: def.apiName
+      ?? `delete-object-${
+        kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
+      }`,
+    displayName: def.displayName ?? `Delete ${def.objectType.displayName}`,
+    parameters: [
+      {
+        id: "objectToDeleteParameter",
+        displayName: "Delete object",
+        type: {
+          type: "objectReference",
+          objectReference: { objectTypeId: def.objectType.apiName },
+        },
+        validation: {
+          required: true,
+          allowedValues: { type: "objectQuery" },
+        },
+      },
+    ],
+    status: def.status ?? "active",
+    rules: [{
+      type: "deleteObjectRule",
+      deleteObjectRule: {
+        objectToDelete: "objectToDeleteParameter",
+      },
+    }],
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [def.objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
+    ...(def.actionLevelValidation
+      ? {
+        validation: convertValidationRule(
+          def.actionLevelValidation,
+        ),
+      }
+      : {}),
+  });
+}
+
+export function defineCreateOrModifyObjectAction(
+  def: ActionTypeUserDefinition,
+): ActionType {
+  validateActionParameters(def);
+  const propertyParameters = Object.keys(def.objectType.properties ?? {})
+    .filter(
+      id =>
+        !Object.keys(def.nonParameterMappings ?? {}).includes(id)
+        && !def.excludedProperties?.includes(id)
+        && !isStruct(def.objectType.properties?.[id].type!)
+        && id !== def.objectType.primaryKeyPropertyApiName,
+    );
+  const parameterNames = new Set(propertyParameters);
+  Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
+    parameterNames.add(param)
+  );
+  parameterNames.add(CREATE_OR_MODIFY_OBJECT_PARAMETER);
+  const actionApiName = def.apiName
+    ?? `create-or-modify-${
+      kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
+    }`;
+  if (def.parameterOrdering) {
+    if (!def.parameterOrdering.includes(CREATE_OR_MODIFY_OBJECT_PARAMETER)) {
+      def.parameterOrdering = [
+        CREATE_OR_MODIFY_OBJECT_PARAMETER,
+        ...def.parameterOrdering,
+      ];
+    }
+    validateParameterOrdering(
+      def.parameterOrdering,
+      parameterNames,
+      actionApiName,
+    );
+  }
+  const parameters = createParameters(def, parameterNames);
+  parameters.forEach(
+    p => {
+      if (
+        p.id !== CREATE_OR_MODIFY_OBJECT_PARAMETER
+        && p.defaultValue === undefined
+      ) {
+        p.defaultValue = {
+          type: "objectParameterPropertyValue",
+          objectParameterPropertyValue: {
+            parameterId: CREATE_OR_MODIFY_OBJECT_PARAMETER,
+            propertyTypeId: p.id,
+          },
+        };
+      }
+    },
+  );
+  const mappings = Object.fromEntries(
+    Object.entries(def.nonParameterMappings ?? {}).map((
+      [id, value],
+    ) => [id, convertMappingValue(value)]),
+  );
+
+  return defineAction({
+    apiName: actionApiName,
+    displayName: def.displayName
+      ?? `Create or Modify ${def.objectType.displayName}`,
+    parameters: parameters,
+    status: def.status ?? "active",
+    rules: [{
+      type: "addOrModifyObjectRuleV2",
+      addOrModifyObjectRuleV2: {
+        objectToModify: CREATE_OR_MODIFY_OBJECT_PARAMETER,
+        propertyValues: {
+          ...Object.fromEntries(
+            propertyParameters.map(
+              p => [p, { type: "parameterId", parameterId: p }],
+            ),
+          ),
+          ...mappings,
+        },
+        structFieldValues: {},
+      },
+    }],
+    entities: {
+      affectedInterfaceTypes: [],
+      affectedObjectTypes: [def.objectType.apiName],
+      affectedLinkTypes: [],
+      typeGroups: [],
+    },
+    parameterOrdering: def.parameterOrdering
+      ?? createDefaultParameterOrdering(
+        def,
+        parameters,
+        CREATE_OR_MODIFY_OBJECT_PARAMETER,
+      ),
+    ...(def.actionLevelValidation
+      ? {
+        validation: convertValidationRule(
+          def.actionLevelValidation,
+          parameters,
+        ),
+      }
+      : {}),
+    ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
+    ...(def.enableLayoutSwitch
+      && { enableLayoutSwitch: def.enableLayoutSwitch }),
+    ...(def.displayAndFormat && { displayAndFormat: def.displayAndFormat }),
+    ...(def.sections
+      && {
+        sections: Object.fromEntries(
+          def.sections.map(section => [section.id, section]),
+        ),
+      }),
+    ...(def.submissionMetadata
+      && { submissionMetadata: def.submissionMetadata }),
+  });
+}
+
 export function defineAction(actionDef: ActionTypeDefinition): ActionType {
   const apiName = namespace + actionDef.apiName;
   const parameterIds = (actionDef.parameters ?? []).map(p => p.id);
