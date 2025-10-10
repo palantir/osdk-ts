@@ -1,13 +1,13 @@
 import { useLinks, useOsdkAction } from "@osdk/react/experimental";
 import type { Point } from "geojson";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "../../components/Button.js";
 import { ErrorMessage } from "../../components/ErrorMessage.js";
 import { H2 } from "../../components/headers.js";
 import { LoadingMessage } from "../../components/LoadingMessage.js";
 import { MiniMap } from "../../components/MiniMap.js";
 import type { Office } from "../../generatedNoCheck2/index.js";
-import { deleteOffice } from "../../generatedNoCheck2/index.js";
+import { deleteOffice, editOffice } from "../../generatedNoCheck2/index.js";
 
 interface OfficeDetailsProps {
   office: Office.OsdkInstance | undefined;
@@ -104,9 +104,7 @@ export function OfficeDetails({ office, onOfficeDeleted }: OfficeDetailsProps) {
       )}
 
       <div className="mb-4">
-        <div className="font-medium text-lg">
-          {office.name ?? "Unnamed Office"}
-        </div>
+        <EditableOfficeName key={office.$primaryKey} office={office} />
         <div className="text-sm text-gray-600 mb-2">
           ID: {office.$primaryKey}
         </div>
@@ -128,6 +126,65 @@ export function OfficeDetails({ office, onOfficeDeleted }: OfficeDetailsProps) {
         )}
       </div>
       <Occupants office={office} />
+    </div>
+  );
+}
+
+function EditableOfficeName({ office }: { office: Office.OsdkInstance }) {
+  const [localName, setLocalName] = useState(office.name ?? "");
+  const { autoSave } = useOsdkAction(editOffice);
+
+  useEffect(() => {
+    setLocalName(office.name ?? "");
+  }, [office.name]);
+
+  const saver = useMemo(
+    () =>
+      autoSave({
+        object: office,
+        debounceMs: 1000,
+        mapToParams: (obj, changes) => {
+          const name = changes.name ?? obj.name ?? "";
+          return {
+            Office: obj,
+            name: name,
+            location: obj.location!,
+          };
+        },
+      }),
+    [office, autoSave],
+  );
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    setLocalName(newName);
+    saver.apply({ name: newName });
+  };
+
+  return (
+    <div className="mb-2">
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Office Name
+      </label>
+      <input
+        type="text"
+        value={localName}
+        onChange={handleChange}
+        disabled={saver.isSaving}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+        placeholder="Enter office name"
+      />
+      {saver.isDirty && !saver.isSaving && (
+        <span className="text-xs text-gray-500 mt-1">Typing...</span>
+      )}
+      {saver.isSaving && (
+        <span className="text-xs text-blue-600 mt-1">Saving...</span>
+      )}
+      {saver.error && (
+        <span className="text-xs text-red-600 mt-1">
+          Error: {saver.error.message}
+        </span>
+      )}
     </div>
   );
 }
