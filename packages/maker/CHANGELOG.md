@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.14.0-beta.3
+
+### Minor Changes
+
+- 995064b: Make tests run synchronously
+
 ## 0.14.0-beta.2
 
 ### Minor Changes
