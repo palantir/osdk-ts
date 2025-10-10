@@ -28,7 +28,6 @@ import type {
   SelectArg,
 } from "../object/FetchPageArgs.js";
 import type { Result } from "../object/Result.js";
-import type { InterfaceDefinition } from "../ontology/InterfaceDefinition.js";
 import type {
   DerivedObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinition,
@@ -553,39 +552,6 @@ interface Subscribe<
   ) => { unsubscribe: () => void };
 }
 
-interface AsType<Q extends ObjectOrInterfaceDefinition> {
-  /**
-   * Casts the object set to the specified object type or interface type.
-   * Any downstream object set operations (e.g. where, fetchPage, aggregate) will be
-   * performed on the specified type. Objects from the original object set that do not
-   * implement the specified interface or match the specified object set will be filtered out.
-   * @param type - The object type you want to cast to.
-   * @returns an object set of the specified type.
-   */
-  readonly asType: <CONVERT_TO extends RestrictToImplementingObjectTypes<Q>>(
-    type: CONVERT_TO,
-  ) => ObjectSet<CONVERT_TO>;
-}
-
-type RestrictToImplementingObjectTypes<T extends ObjectOrInterfaceDefinition> =
-  T extends ObjectTypeDefinition ? ExtractImplementedInterfaces<T>
-    : T extends InterfaceDefinition ? ExtractImplementingTypes<T>
-    : never;
-
-type ExtractImplementedInterfaces<T extends ObjectTypeDefinition> =
-  CompileTimeMetadata<T> extends { implements: ReadonlyArray<infer API_NAME> }
-    ? API_NAME extends string ? InterfaceDefinition & { apiName: API_NAME }
-    : never
-    : never;
-
-type ExtractImplementingTypes<T extends InterfaceDefinition> =
-  CompileTimeMetadata<T> extends
-    { implementedBy: ReadonlyArray<infer API_NAME> }
-    ? API_NAME extends string
-      ? (ObjectTypeDefinition & { apiName: API_NAME }) | InterfaceDefinition
-    : never
-    : never;
-
 interface ObjectSetCleanedTypes<
   Q extends ObjectOrInterfaceDefinition,
   D extends Record<string, SimplePropertyDef>,
@@ -599,7 +565,6 @@ interface ObjectSetCleanedTypes<
   PivotTo<Q>,
   FetchOne<Q, D>,
   Subscribe<MERGED>,
-  NearestNeighbors<Q>,
-  AsType<Q>
+  NearestNeighbors<Q>
 {
 }

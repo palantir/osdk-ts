@@ -22,11 +22,7 @@ export {
   CollateralConcernList,
   EsongInterfaceA,
   FooInterface,
-  TestAsTypeIltInterface,
   InterfaceNoProps,
-  NihalbCastingInterfaceB,
-  NihalbCastingInterfaceTypeA,
-  NihalbCastingLinkedInterfaceTypeA,
   OsdkTestInterface,
 } from './ontology/interfaces.js';
 export * as $Interfaces from './ontology/interfaces.js';
@@ -46,10 +42,6 @@ export {
   MnayanOsdkMediaObject,
   MtaBus,
   NbaPlayer,
-  NihalbCastingLinkedObjectTypeA,
-  NihalbCastingObjectTypeA,
-  NihalbCastingObjectTypeB,
-  NihalbCastingObjectTypeC,
   ObjectTypeWithAllPropertyTypes,
   OsdkTestObject,
   Person,

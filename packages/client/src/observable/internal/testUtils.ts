@@ -220,7 +220,6 @@ export function createClientMockHelper(): MockClientHelper {
     clientCacheKey: {} as any,
     requestContext: {},
     logger,
-    asTypeInterfaceOrObjectMapping: {},
   };
   client.fetchMetadata = vitest.fn();
 

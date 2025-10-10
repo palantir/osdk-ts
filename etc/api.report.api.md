@@ -119,8 +119,6 @@ export namespace ActionParam {
         		$primaryKey: string | number
         	};
     	// (undocumented)
-    export type NullValueType = typeof NULL_VALUE;
-    	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
     	// Warning: (ae-forgotten-export) The symbol "OsdkObjectPrimaryKeyType" needs to be exported by the entry point index.d.ts
     //
@@ -227,6 +225,7 @@ export type ApplyBatchActionOptions = {
     	$returnEdits?: boolean
 };
 
+// Warning: (ae-forgotten-export) The symbol "ObjectSetArgs" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "OrderByArg" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -333,7 +332,7 @@ export interface DataValueClientToWire {
     	// (undocumented)
     marking: string;
     	// (undocumented)
-    mediaReference: MediaReference | MediaUpload;
+    mediaReference: MediaReference;
     	// (undocumented)
     null: null;
     	// (undocumented)
@@ -440,13 +439,12 @@ export namespace DerivedProperty {
     		CONSTRAINED extends boolean
     	> extends Filterable<Q, CONSTRAINED>, Pivotable<Q, CONSTRAINED> {}
     	// Warning: (ae-forgotten-export) The symbol "Selectable" needs to be exported by the entry point index.d.ts
-    // Warning: (ae-forgotten-export) The symbol "Constant" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export interface Builder<
     		Q extends ObjectOrInterfaceDefinition,
     		CONSTRAINED extends boolean
-    	> extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q>, Constant<Q> {}
+    	> extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q> {}
     	// (undocumented)
     export type Clause<Q extends ObjectOrInterfaceDefinition> = {
         		[key: string]: Creator<Q, SimplePropertyDef>
@@ -557,6 +555,7 @@ export interface FetchPageArgs<
     $pageSize?: number;
 }
 
+// Warning: (ae-forgotten-export) The symbol "MaybeScore" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractOptions" needs to be exported by the entry point index.d.ts
 //
 // @public
@@ -756,14 +755,6 @@ export namespace Logger {
 }
 
 // @public (undocumented)
-export type MaybeScore<
-	T extends Osdk.Instance<any>,
-	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<any>
-> = ORDER_BY_OPTIONS extends "relevance" ? T & {
-    	$score: number
-} : T;
-
-// @public (undocumented)
 export interface Media {
     	fetchContents(): Promise<Response>;
     	fetchMetadata(): Promise<MediaMetadata_2>;
@@ -796,19 +787,6 @@ export interface MediaReference {
             		}
         	};
 }
-
-// @public
-export interface MediaUpload {
-    	// (undocumented)
-    readonly data: Blob;
-    	// (undocumented)
-    readonly path: string;
-}
-
-// @public (undocumented)
-export const NULL_VALUE: symbol & {
-    	__type: "NULL_VALUE"
-};
 
 // @public (undocumented)
 export type NullabilityAdherence = false | "throw" | "drop";
@@ -908,56 +886,6 @@ export interface ObjectSet<
 	Q extends ObjectOrInterfaceDefinition = any,
 	UNUSED_OR_RDP extends BaseObjectSet<Q> | Record<string, SimplePropertyDef> = never
 > extends ObjectSetCleanedTypes<Q, ExtractRdp<UNUSED_OR_RDP>, MergeObjectSet<Q, ExtractRdp<UNUSED_OR_RDP>>> {}
-
-// @public (undocumented)
-export namespace ObjectSetArgs {
-    	// (undocumented)
-    export interface AsyncIter<
-    		Q extends ObjectOrInterfaceDefinition,
-    		K extends PropertyKeys<Q> = never,
-    		T extends boolean = false,
-    		RDP_KEYS extends string = never,
-    		ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never
-    	> extends Select<K, RDP_KEYS>, OrderBy<ORDER_BY_OPTIONS, K> {
-        		// (undocumented)
-        $__UNSTABLE_useOldInterfaceApis?: boolean;
-        		// (undocumented)
-        $includeAllBaseObjectProperties?: PropertyKeys<Q> extends K ? T : never;
-        	}
-    	// (undocumented)
-    export interface FetchPage<
-    		Q extends ObjectOrInterfaceDefinition,
-    		K extends PropertyKeys<Q> = never,
-    		T extends boolean = false,
-    		RDP_KEYS extends string = never,
-    		ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never
-    	> extends AsyncIter<Q, K, T, RDP_KEYS, ORDER_BY_OPTIONS> {
-        		// (undocumented)
-        $nextPageToken?: string;
-        		// (undocumented)
-        $pageSize?: number;
-        	}
-    	// (undocumented)
-    export interface OrderBy<
-    		ORDER_BY_OPTIONS extends OrderByOptions<L>,
-    		L extends string = never
-    	> {
-        		// (undocumented)
-        $orderBy?: ORDER_BY_OPTIONS;
-        	}
-    	// (undocumented)
-    export type OrderByOptions<L extends string> = { [K in L]? : "asc" | "desc" } | "relevance";
-    	// (undocumented)
-    export interface Select<
-    		OBJECT_KEYS extends string = never,
-    		RDP_KEYS extends string = never
-    	> {
-        		// (undocumented)
-        $includeRid?: boolean;
-        		// (undocumented)
-        $select?: readonly (OBJECT_KEYS | RDP_KEYS)[];
-        	}
-}
 
 // @public (undocumented)
 export interface ObjectSetQueryDataType<T_Target extends ObjectOrInterfaceDefinition = never> extends BaseQueryDataTypeDefinition<"objectSet"> {
