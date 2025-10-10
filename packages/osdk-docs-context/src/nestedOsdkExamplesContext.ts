@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import semver from "semver";
 import {
   type NestedExampleEntry,
   type NestedExampleMetadata,
   TYPESCRIPT_OSDK_CONTEXT,
-} from "@osdk/typescript-sdk-docs-examples";
-import semver from "semver";
+} from "./generated/inlinedExamples.js";
 
 // Type alias for compatibility
 type ExampleMetadata = NestedExampleMetadata;

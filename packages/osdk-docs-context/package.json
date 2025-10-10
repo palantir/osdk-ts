@@ -31,6 +31,7 @@
     "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "codegen": "generate-osdk-context --output-dir .",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
@@ -47,7 +48,7 @@
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@osdk/typescript-sdk-docs-examples": "workspace:~",
+    "@osdk/osdk-docs-context-generator": "workspace:~",
     "@types/semver": "^7.7.1",
     "tsx": "^4.19.1",
     "typescript": "~5.5.4",
