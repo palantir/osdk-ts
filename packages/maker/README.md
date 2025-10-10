@@ -785,7 +785,7 @@ const flight = defineObject({
   },
   datasources: [
     // the dataset will back all of the properties not specified in other datasources
-    { type: "dataset" }, 
+    { type: "dataset" },
     {
       type: "derived",
       // multi-hop link traversals are also supported, just extend this list!
