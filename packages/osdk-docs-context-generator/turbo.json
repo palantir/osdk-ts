@@ -11,6 +11,5 @@
         "@osdk/typescript-sdk-docs-examples#transpileTypes"
       ]
     }
-
   }
 }
