@@ -110,7 +110,9 @@ export class CacheKeys<TCacheKey extends CacheKey> {
       // eslint-disable-next-line no-console
       console.debug(
         `CacheKeys.get([${type},
-        ${normalizedArgs.map(x => JSON.stringify(x)).join(", ")}]) - already exists? `,
+        ${
+          normalizedArgs.map(x => JSON.stringify(x)).join(", ")
+        }]) - already exists? `,
         this.#cacheKeys.peekArray(cacheKeyArgs) != null,
       );
     }

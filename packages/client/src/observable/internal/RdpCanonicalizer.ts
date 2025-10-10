@@ -32,7 +32,10 @@ export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
   protected lookupOrCreate(rdp: Rdp): Canonical<Rdp> {
     // Map from builder result symbols to their definitions
     const definitionMap = new Map<
-      DerivedProperty.Definition<SimplePropertyDef, ObjectOrInterfaceDefinition>,
+      DerivedProperty.Definition<
+        SimplePropertyDef,
+        ObjectOrInterfaceDefinition
+      >,
       DerivedPropertyDefinition
     >();
     const computedProperties: Record<string, DerivedPropertyDefinition> = {};
@@ -48,7 +51,7 @@ export class RdpCanonicalizer extends CachingCanonicalizer<Rdp, Rdp> {
         objectTypeHolder,
         { type: "methodInput" },
         definitionMap,
-        /* fromBaseObjectSet */ true, 
+        /* fromBaseObjectSet */ true,
       );
 
       const result = rdpFunction(builder);

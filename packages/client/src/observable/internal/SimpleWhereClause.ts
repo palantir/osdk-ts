@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 import type {
   ObjectOrInterfaceDefinition,
   SimplePropertyDef,
