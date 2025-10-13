@@ -1251,6 +1251,10 @@ export namespace Osdk {
             			ObjectMetadata: ObjectMetadata
             			InterfaceMetadata: InterfaceMetadata
             		}
+        		readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValues: (options?: {
+            			locale?: string
+            			timezoneId?: string
+            		}) => Record<string, string>
         	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         		readonly $rid: string
         	} : {});

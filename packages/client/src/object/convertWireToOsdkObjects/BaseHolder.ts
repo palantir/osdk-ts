@@ -19,6 +19,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectSpecifier,
 } from "@osdk/api";
+import type { FormatPropertyOptions } from "../formatting/applyPropertyFormatters.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
 import type { UnderlyingOsdkObject } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
@@ -45,6 +46,10 @@ export interface BaseHolder {
   readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata": {
     readonly ObjectMetadata: ObjectMetadata;
   };
+
+  readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValues": (
+    options?: FormatPropertyOptions,
+  ) => Record<string, string>;
 
   // [key: `$$${string}`]: any;
   // Unlike SimpleOsdkProperties, all of our remaining types are unknown as the full

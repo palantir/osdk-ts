@@ -247,6 +247,10 @@ export namespace Osdk {
           ObjectMetadata: ObjectMetadata;
           InterfaceMetadata: InterfaceMetadata;
         };
+
+      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValues: (
+        options?: { locale?: string; timezoneId?: string },
+      ) => Record<string, string>;
     }
     // We are hiding the $rid field if it wasn't requested as we want to discourage its use
     & (IsNever<OPTIONS> extends true ? {}
