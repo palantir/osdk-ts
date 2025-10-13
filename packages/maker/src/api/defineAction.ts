@@ -20,7 +20,6 @@ import type {
   OntologyIrParameterPrefill,
   ParameterId,
 } from "@osdk/client.unstable";
-import { consola } from "consola";
 import invariant from "tiny-invariant";
 import { convertConditionDefinition } from "../conversion/toMarketplace/convertConditionDefinition.js";
 import { convertMappingValue } from "../conversion/toMarketplace/convertMappingValue.js";
@@ -90,6 +89,9 @@ export type ActionTypeUserDefinition = {
 export type InterfaceActionTypeUserDefinition = {
   interfaceType: InterfaceType;
   objectType?: ObjectTypeDefinition;
+  apiName?: string;
+  displayName?: string;
+  status?: ActionStatus;
   validation?: ActionLevelValidationDefinition;
   excludedProperties?: Array<string>;
 };
@@ -105,31 +107,23 @@ export function defineCreateInterfaceObjectAction(
       prop.sharedPropertyType.nonNameSpacedApiName,
     )
   );
-
-  if (
-    allProperties.length
-      !== Object.entries(getFlattenedInterfaceProperties(def.interfaceType))
-        .length
-  ) {
-    consola.info(
-      `Some properties on ${def.interfaceType.apiName} were skipped in the create action because they are structs`,
-    );
-  }
+  const actionApiName = def.apiName ?? `create-${
+    kebab(
+      def.interfaceType.apiName.split(".").pop() ?? def.interfaceType.apiName,
+    )
+  }${
+    def.objectType === undefined
+      ? ""
+      : `-${
+        kebab(
+          def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
+        )
+      }`
+  }`;
   return defineAction({
-    apiName: `create-${
-      kebab(
-        def.interfaceType.apiName.split(".").pop() ?? def.interfaceType.apiName,
-      )
-    }${
-      def.objectType === undefined
-        ? ""
-        : `-${
-          kebab(
-            def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
-          )
-        }`
-    }`,
-    displayName: `Create ${def.interfaceType.displayMetadata.displayName}`,
+    apiName: actionApiName,
+    displayName: def.displayName
+      ?? `Create ${def.interfaceType.displayMetadata.displayName}`,
     parameters: [
       {
         id: "objectTypeParameter",
@@ -177,9 +171,9 @@ export function defineCreateInterfaceObjectAction(
         },
       })),
     ],
-    status: def.interfaceType.status.type !== "deprecated"
+    status: def.status ?? (def.interfaceType.status.type !== "deprecated"
       ? def.interfaceType.status.type
-      : def.interfaceType.status,
+      : def.interfaceType.status),
     entities: {
       affectedInterfaceTypes: [def.interfaceType.apiName],
       affectedObjectTypes: [],
@@ -303,30 +297,23 @@ export function defineModifyInterfaceObjectAction(
       prop.sharedPropertyType.nonNameSpacedApiName,
     )
   );
-  if (
-    allProperties.length
-      !== Object.entries(getFlattenedInterfaceProperties(def.interfaceType))
-        .length
-  ) {
-    consola.info(
-      `Some properties on ${def.interfaceType.apiName} were skipped in the modify action because they are structs`,
-    );
-  }
+  const actionApiName = def.apiName ?? `modify-${
+    kebab(
+      def.interfaceType.apiName.split(".").pop() ?? def.interfaceType.apiName,
+    )
+  }${
+    def.objectType === undefined
+      ? ""
+      : `-${
+        kebab(
+          def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
+        )
+      }`
+  }`;
   return defineAction({
-    apiName: `modify-${
-      kebab(
-        def.interfaceType.apiName.split(".").pop() ?? def.interfaceType.apiName,
-      )
-    }${
-      def.objectType === undefined
-        ? ""
-        : `-${
-          kebab(
-            def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
-          )
-        }`
-    }`,
-    displayName: `Modify ${def.interfaceType.displayMetadata.displayName}`,
+    apiName: actionApiName,
+    displayName: def.displayName
+      ?? `Modify ${def.interfaceType.displayMetadata.displayName}`,
     parameters: [
       {
         id: "interfaceObjectToModifyParameter",
@@ -369,9 +356,9 @@ export function defineModifyInterfaceObjectAction(
         },
       })),
     ],
-    status: def.interfaceType.status.type !== "deprecated"
+    status: def.status ?? (def.interfaceType.status.type !== "deprecated"
       ? def.interfaceType.status.type
-      : def.interfaceType.status,
+      : def.interfaceType.status),
     entities: {
       affectedInterfaceTypes: [def.interfaceType.apiName],
       affectedObjectTypes: [],

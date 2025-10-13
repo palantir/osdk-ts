@@ -7566,7 +7566,7 @@ describe("Ontology Defining", () => {
       `);
     });
 
-    it("Customizations on CRUD actions are properly defined", () => {
+    it("Customizations on CRUD object type actions are properly defined", () => {
       const exampleObjectType = defineObject({
         titlePropertyApiName: "bar",
         displayName: "exampleObjectType",
@@ -11793,10 +11793,16 @@ describe("Ontology Defining", () => {
       });
       const createAction = defineCreateInterfaceObjectAction({
         interfaceType: exampleInterface,
+        apiName: "custom-api-name-1",
+        displayName: "Custom Create Action",
+        status: "experimental",
         excludedProperties: ["property2"],
       });
       const modifyAction = defineModifyInterfaceObjectAction({
         interfaceType: exampleInterface,
+        apiName: "custom-api-name-2",
+        displayName: "Custom Modify Action",
+        status: "experimental",
         excludedProperties: ["property2"],
       });
 
@@ -11819,7 +11825,7 @@ describe("Ontology Defining", () => {
           },
           "ontology": {
             "actionTypes": {
-              "com.palantir.create-example-interface": {
+              "com.palantir.custom-api-name-1": {
                 "actionType": {
                   "actionTypeLogic": {
                     "logic": {
@@ -11920,7 +11926,7 @@ describe("Ontology Defining", () => {
                     },
                   },
                   "metadata": {
-                    "apiName": "com.palantir.create-example-interface",
+                    "apiName": "com.palantir.custom-api-name-1",
                     "displayMetadata": {
                       "configuration": {
                         "defaultLayout": "FORM",
@@ -11936,7 +11942,7 @@ describe("Ontology Defining", () => {
                         "enableLayoutUserSwitch": false,
                       },
                       "description": "",
-                      "displayName": "Create exampleInterface",
+                      "displayName": "Custom Create Action",
                       "icon": {
                         "blueprint": {
                           "color": "#000000",
@@ -11992,13 +11998,13 @@ describe("Ontology Defining", () => {
                     },
                     "sections": {},
                     "status": {
-                      "active": {},
-                      "type": "active",
+                      "experimental": {},
+                      "type": "experimental",
                     },
                   },
                 },
               },
-              "com.palantir.modify-example-interface": {
+              "com.palantir.custom-api-name-2": {
                 "actionType": {
                   "actionTypeLogic": {
                     "logic": {
@@ -12094,7 +12100,7 @@ describe("Ontology Defining", () => {
                     },
                   },
                   "metadata": {
-                    "apiName": "com.palantir.modify-example-interface",
+                    "apiName": "com.palantir.custom-api-name-2",
                     "displayMetadata": {
                       "configuration": {
                         "defaultLayout": "FORM",
@@ -12110,7 +12116,7 @@ describe("Ontology Defining", () => {
                         "enableLayoutUserSwitch": false,
                       },
                       "description": "",
-                      "displayName": "Modify exampleInterface",
+                      "displayName": "Custom Modify Action",
                       "icon": {
                         "blueprint": {
                           "color": "#000000",
@@ -12164,8 +12170,8 @@ describe("Ontology Defining", () => {
                     },
                     "sections": {},
                     "status": {
-                      "active": {},
-                      "type": "active",
+                      "experimental": {},
+                      "type": "experimental",
                     },
                   },
                 },
