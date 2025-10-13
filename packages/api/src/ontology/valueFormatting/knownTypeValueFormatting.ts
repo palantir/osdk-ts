@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export * from "./valueFormatting/index.js";
+export interface PropertyKnownTypeFormattingRule {
+  type: "knownType";
+  knownType: KnownType;
+}
+
+/**
+ * Known Foundry types with specialized formatting.
+ */
+export type KnownType = "USER_OR_GROUP_ID" | "RESOURCE_RID" | "ARTIFACT_GID";

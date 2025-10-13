@@ -777,7 +777,7 @@ export interface InterfaceQueryDataType<T_Target extends ObjectOrInterfaceDefini
 export function isOk<X>(a: Result<X>): a is OkResult<X>;
 
 // @public
-export type KnownType = "userOrGroupRid" | "resourceRid" | "artifactGid";
+export type KnownType = "USER_OR_GROUP_ID" | "RESOURCE_RID" | "ARTIFACT_GID";
 
 // @public (undocumented)
 export type LinkedType<

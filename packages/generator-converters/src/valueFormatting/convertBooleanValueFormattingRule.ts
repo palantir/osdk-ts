@@ -14,4 +14,15 @@
  * limitations under the License.
  */
 
-export * from "./valueFormatting/index.js";
+import type { PropertyBooleanFormattingRule } from "@osdk/api";
+import type * as Ontologies from "@osdk/foundry.ontologies";
+
+export function convertBooleanFormattingRule(
+  wireFormatting: Ontologies.PropertyBooleanFormattingRule,
+): PropertyBooleanFormattingRule {
+  return {
+    type: "boolean",
+    valueIfTrue: wireFormatting.valueIfTrue,
+    valueIfFalse: wireFormatting.valueIfFalse,
+  };
+}

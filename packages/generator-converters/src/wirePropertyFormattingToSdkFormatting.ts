@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import type {
-  DatetimeFormat,
-  DatetimeTimezone,
-  DurationFormatStyle,
-  NumberFormatOptions,
-  PropertyNumberFormattingRuleType,
-  PropertyTypeReferenceOrStringConstant,
-  PropertyValueFormattingRule,
-} from "@osdk/api";
+import type { PropertyValueFormattingRule } from "@osdk/api";
 import type * as Ontologies from "@osdk/foundry.ontologies";
+import { convertBooleanFormattingRule } from "./valueFormatting/convertBooleanValueFormattingRule.js";
+import {
+  convertDateFormattingRule,
+  convertTimestampFormattingRule,
+} from "./valueFormatting/convertDateAndTimestampValueFormattingRule.js";
+import { convertKnownTypeFormattingRule } from "./valueFormatting/convertKnownTypeValueFormattingRule.js";
+import { convertNumberFormattingRule } from "./valueFormatting/convertNumberValueFormattingRule.js";
 
 /**
  * Converts a PropertyValueFormattingRule from the ontologies format to the SDK format
@@ -45,265 +44,24 @@ function convertPropertyFormattingInternal(
 ): PropertyValueFormattingRule | undefined {
   switch (wireFormatting.type) {
     case "date":
-      return {
-        type: "date",
-        format: convertDatetimeFormat(wireFormatting.format),
-      };
+      return convertDateFormattingRule(wireFormatting);
 
     case "timestamp":
-      return {
-        type: "timestamp",
-        format: convertDatetimeFormat(wireFormatting.format),
-        displayTimezone: convertDatetimeTimezone(
-          wireFormatting.displayTimezone,
-        ),
-      };
+      return convertTimestampFormattingRule(wireFormatting);
 
     case "boolean":
-      return {
-        type: "boolean",
-        valueIfTrue: wireFormatting.valueIfTrue,
-        valueIfFalse: wireFormatting.valueIfFalse,
-      };
+      return convertBooleanFormattingRule(wireFormatting);
 
-    case "knownType": {
-      switch (wireFormatting.knownType) {
-        case "artifactGid":
-        case "resourceRid":
-        case "userOrGroupRid":
-          return {
-            type: "knownType",
-            knownType: wireFormatting.knownType,
-          };
-        default:
-          wireFormatting.knownType satisfies never;
-          return undefined;
-      }
-    }
+    case "knownType":
+      return convertKnownTypeFormattingRule(wireFormatting);
 
     case "number":
-      const numberType = convertNumberFormattingType(wireFormatting.numberType);
-      if (!numberType) {
-        return undefined;
-      }
-      return {
-        type: "number",
-        numberType,
-      };
+      return convertNumberFormattingRule(wireFormatting);
 
     default:
       wireFormatting satisfies never;
       throw new Error(
         `Unknown formatting type: ${(wireFormatting as any).type}`,
-      );
-  }
-}
-
-function convertDatetimeFormat(
-  wireFormat: Ontologies.DatetimeFormat,
-): DatetimeFormat {
-  switch (wireFormat.type) {
-    case "stringFormat":
-      return {
-        type: "stringFormat",
-        pattern: wireFormat.pattern,
-      };
-    case "localizedFormat":
-      return {
-        type: "localizedFormat",
-        format: wireFormat.format,
-      };
-    default:
-      wireFormat satisfies never;
-      throw new Error(
-        `Unknown datetime format type: ${(wireFormat as any).type}`,
-      );
-  }
-}
-
-function convertDatetimeTimezone(
-  wireTimezone: Ontologies.DatetimeTimezone,
-): DatetimeTimezone {
-  switch (wireTimezone.type) {
-    case "static":
-      return {
-        type: "static",
-        zoneId: convertPropertyTypeReferenceOrStringConstant(
-          wireTimezone.zoneId,
-        ),
-      };
-    case "user":
-      return { type: "user" };
-    default:
-      wireTimezone satisfies never;
-      throw new Error(`Unknown timezone type: ${(wireTimezone as any).type}`);
-  }
-}
-
-function convertPropertyTypeReferenceOrStringConstant(
-  value: Ontologies.PropertyTypeReferenceOrStringConstant,
-): PropertyTypeReferenceOrStringConstant {
-  switch (value.type) {
-    case "constant":
-      return {
-        type: "constant",
-        value: value.value,
-      };
-    case "propertyType":
-      return {
-        type: "propertyType",
-        propertyApiName: value.propertyApiName,
-      };
-    default:
-      value satisfies never;
-      throw new Error(
-        `Unknown property reference type: ${(value as any).type}`,
-      );
-  }
-}
-
-function convertNumberFormatOptions(
-  wireOptions: Ontologies.NumberFormatOptions,
-): NumberFormatOptions {
-  return {
-    useGrouping: wireOptions.useGrouping,
-    convertNegativeToParenthesis: wireOptions.convertNegativeToParenthesis,
-    minimumIntegerDigits: wireOptions.minimumIntegerDigits,
-    minimumFractionDigits: wireOptions.minimumFractionDigits,
-    maximumFractionDigits: wireOptions.maximumFractionDigits,
-    minimumSignificantDigits: wireOptions.minimumSignificantDigits,
-    maximumSignificantDigits: wireOptions.maximumSignificantDigits,
-    notation: wireOptions.notation,
-    roundingMode: wireOptions.roundingMode,
-  };
-}
-
-function convertDurationFormatStyle(
-  formatStyle: Ontologies.DurationFormatStyle,
-): DurationFormatStyle {
-  switch (formatStyle.type) {
-    case "humanReadable":
-      return {
-        type: "humanReadable",
-        showFullUnits: formatStyle.showFullUnits,
-      };
-    case "timecode":
-      return {
-        type: "timecode",
-      };
-    default:
-      formatStyle satisfies never;
-      throw new Error(
-        `Unknown duration format style: ${(formatStyle as any).type}`,
-      );
-  }
-}
-
-function convertNumberFormattingType(
-  wireNumberType: Ontologies.PropertyNumberFormattingRuleType,
-): PropertyNumberFormattingRuleType | undefined {
-  switch (wireNumberType.type) {
-    case "standard":
-      return {
-        type: "standard",
-        baseFormatOptions: convertNumberFormatOptions(
-          wireNumberType.baseFormatOptions,
-        ),
-      };
-
-    case "fixedValues":
-      return {
-        type: "fixedValues",
-        values: wireNumberType.values,
-      };
-
-    case "currency": {
-      return {
-        type: "currency",
-        baseFormatOptions: convertNumberFormatOptions(
-          wireNumberType.baseFormatOptions,
-        ),
-        style: wireNumberType.style,
-        currencyCode: convertPropertyTypeReferenceOrStringConstant(
-          wireNumberType.currencyCode,
-        ),
-      };
-    }
-
-    case "standardUnit": {
-      return {
-        type: "standardUnit",
-        baseFormatOptions: convertNumberFormatOptions(
-          wireNumberType.baseFormatOptions,
-        ),
-        unit: convertPropertyTypeReferenceOrStringConstant(wireNumberType.unit),
-      };
-    }
-
-    case "customUnit": {
-      return {
-        type: "customUnit",
-        baseFormatOptions: convertNumberFormatOptions(
-          wireNumberType.baseFormatOptions,
-        ),
-        unit: convertPropertyTypeReferenceOrStringConstant(wireNumberType.unit),
-      };
-    }
-
-    case "affix": {
-      return {
-        type: "affix",
-        baseFormatOptions: convertNumberFormatOptions(
-          wireNumberType.baseFormatOptions,
-        ),
-        affix: {
-          prefix: wireNumberType.affix?.prefix != null
-            ? convertPropertyTypeReferenceOrStringConstant(
-              wireNumberType.affix.prefix,
-            )
-            : undefined,
-          postfix: wireNumberType.affix?.postfix != null
-            ? convertPropertyTypeReferenceOrStringConstant(
-              wireNumberType.affix.postfix,
-            )
-            : undefined,
-        },
-      };
-    }
-
-    case "duration": {
-      return {
-        type: "duration",
-        formatStyle: convertDurationFormatStyle(wireNumberType.formatStyle),
-        precision: wireNumberType.precision,
-        baseValue: wireNumberType.baseValue,
-      };
-    }
-
-    case "scale": {
-      return {
-        type: "scale",
-        scaleType: wireNumberType.scaleType,
-        baseFormatOptions: convertNumberFormatOptions(
-          wireNumberType.baseFormatOptions,
-        ),
-      };
-    }
-
-    case "ratio": {
-      return {
-        type: "ratio",
-        ratioType: wireNumberType.ratioType,
-        baseFormatOptions: convertNumberFormatOptions(
-          wireNumberType.baseFormatOptions,
-        ),
-      };
-    }
-
-    default:
-      wireNumberType satisfies never;
-      throw new Error(
-        `Unknown number format type: ${(wireNumberType as any).type}`,
       );
   }
 }

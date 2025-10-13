@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-export * from "./valueFormatting/index.js";
+export interface PropertyBooleanFormattingRule {
+  type: "boolean";
+  valueIfTrue: string;
+  valueIfFalse: string;
+}

@@ -249,23 +249,26 @@ describe(wirePropertyFormattingToSdkFormatting, () => {
 
   describe("known type formatting", () => {
     it("converts valid known types", () => {
-      const validTypes: KnownType[] = [
-        "userOrGroupRid",
-        "resourceRid",
-        "artifactGid",
+      const testCases: Array<{
+        input: Ontologies.KnownType;
+        expected: KnownType;
+      }> = [
+        { input: "USER_OR_GROUP_ID", expected: "USER_OR_GROUP_ID" },
+        { input: "RESOURCE_RID", expected: "RESOURCE_RID" },
+        { input: "ARTIFACT_GID", expected: "ARTIFACT_GID" },
       ];
 
-      for (const knownType of validTypes) {
+      for (const { input, expected } of testCases) {
         const wireFormat: Ontologies.PropertyValueFormattingRule = {
           type: "knownType",
-          knownType,
+          knownType: input,
         };
 
         const result = wirePropertyFormattingToSdkFormatting(wireFormat);
 
         expect(result).toEqual({
           type: "knownType",
-          knownType,
+          knownType: expected,
         });
       }
     });

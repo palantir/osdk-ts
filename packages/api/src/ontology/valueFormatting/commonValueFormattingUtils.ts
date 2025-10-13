@@ -14,4 +14,19 @@
  * limitations under the License.
  */
 
-export * from "./valueFormatting/index.js";
+/**
+ * Reference to another property value or a string constant.
+ */
+export type PropertyTypeReferenceOrStringConstant =
+  | StringConstant
+  | PropertyTypeReference;
+
+export interface StringConstant {
+  type: "constant";
+  value: string;
+}
+
+export interface PropertyTypeReference {
+  type: "propertyType";
+  propertyApiName: string;
+}
