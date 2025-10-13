@@ -24,7 +24,13 @@ import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/I
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { Changes } from "../Changes.js";
 import type { Store } from "../Store.js";
-import { API_NAME_IDX, ListQuery, RDP_IDX } from "./ListQuery.js";
+import {
+  API_NAME_IDX,
+  INTERSECT_IDX,
+  ListQuery,
+  PIVOT_IDX,
+  RDP_IDX,
+} from "./ListQuery.js";
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   all: (ObjectHolder | InterfaceHolder)[];
@@ -35,23 +41,87 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
 export class ObjectListQuery extends ListQuery {
   protected createObjectSet(store: Store): ObjectSet<ObjectTypeDefinition> {
     const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
-    if (rdpConfig != null) {
-      return store.client({
+    const intersectWith = this.cacheKey.otherKeys[INTERSECT_IDX];
+    const pivotInfo = this.cacheKey.otherKeys[PIVOT_IDX];
+
+    // If pivoting, start with the source type and pivot
+    if (pivotInfo != null) {
+      // Start with the source object type - we only have apiName, so we create a minimal definition
+      const sourceSet = store.client({
         type: "object",
-        apiName: this.apiName,
-      } as ObjectTypeDefinition)
-        // Note: order matters here, we need to apply withProperties before the where clause
-        .withProperties(
+        apiName: pivotInfo.sourceType,
+      } as ObjectTypeDefinition);
+
+      // Pivot to the target type through the link
+      let objectSet = sourceSet.pivotTo(pivotInfo.linkName) as ObjectSet<
+        ObjectTypeDefinition
+      >;
+
+      // RDPs must be applied before where clauses
+      if (rdpConfig != null) {
+        objectSet = objectSet.withProperties(
           rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
-        )
-        .where(this.canonicalWhere);
+        );
+      }
+
+      objectSet = objectSet.where(this.canonicalWhere);
+
+      if (intersectWith != null && intersectWith.length > 0) {
+        const intersectSets = intersectWith.map(whereClause => {
+          let intersectSet = store.client({
+            type: "object",
+            apiName: pivotInfo.targetType,
+          } as ObjectTypeDefinition);
+
+          if (rdpConfig != null) {
+            intersectSet = intersectSet.withProperties(
+              rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+            );
+          }
+
+          return intersectSet.where(whereClause);
+        });
+
+        objectSet = objectSet.intersect(...intersectSets);
+      }
+
+      return objectSet;
     }
 
-    return store.client({
+    // Normal flow without pivoting
+    let objectSet = store.client({
       type: "object",
       apiName: this.apiName,
-    } as ObjectTypeDefinition)
-      .where(this.canonicalWhere);
+    } as ObjectTypeDefinition);
+
+    if (rdpConfig != null) {
+      objectSet = objectSet.withProperties(
+        rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+      );
+    }
+
+    objectSet = objectSet.where(this.canonicalWhere);
+
+    if (intersectWith != null && intersectWith.length > 0) {
+      const intersectSets = intersectWith.map(whereClause => {
+        let intersectSet = store.client({
+          type: "object",
+          apiName: this.apiName,
+        } as ObjectTypeDefinition);
+
+        if (rdpConfig != null) {
+          intersectSet = intersectSet.withProperties(
+            rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+          );
+        }
+
+        return intersectSet.where(whereClause);
+      });
+
+      objectSet = objectSet.intersect(...intersectSets);
+    }
+
+    return objectSet;
   }
 
   async revalidateObjectType(apiName: string): Promise<void> {

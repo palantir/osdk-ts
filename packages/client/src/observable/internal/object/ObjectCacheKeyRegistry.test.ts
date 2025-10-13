@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import type {
+  DerivedProperty,
+  ObjectOrInterfaceDefinition,
+  SimplePropertyDef,
+} from "@osdk/api";
 import { describe, expect, it } from "vitest";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { Canonical } from "../Canonical.js";
@@ -21,6 +26,22 @@ import type { Rdp } from "../RdpCanonicalizer.js";
 import type { ObjectCacheKey } from "./ObjectCacheKey.js";
 import { ObjectCacheKeyRegistry } from "./ObjectCacheKeyRegistry.js";
 import type { ObjectQuery } from "./ObjectQuery.js";
+
+/**
+ * Helper function to create mock RDP objects for testing.
+ * Creates an RDP config with the specified field names, where each field
+ * is a mock Creator function.
+ */
+function createMockRdp(...fields: string[]): Canonical<Rdp> {
+  const rdp: Rdp = {};
+  for (const field of fields) {
+    rdp[field] = () => ({} as DerivedProperty.Definition<
+      SimplePropertyDef,
+      ObjectOrInterfaceDefinition
+    >);
+  }
+  return rdp as Canonical<Rdp>;
+}
 
 /**
  * Helper function to create a properly typed mock ObjectCacheKey for testing
@@ -42,11 +63,11 @@ function createMockObjectCacheKey(
 }
 
 describe("ObjectCacheKeyRegistry", () => {
-  it("registers and retrieves related cache keys", () => {
+  it("registers and retrieves variant cache keys", () => {
     const registry = new ObjectCacheKeyRegistry();
 
-    const mockRdpAddress = { mockType: "address" } as unknown as Canonical<Rdp>;
-    const mockRdpPhone = { mockType: "phone" } as unknown as Canonical<Rdp>;
+    const mockRdpAddress = createMockRdp("address", "mockType");
+    const mockRdpPhone = createMockRdp("phone", "mockType");
 
     const key1 = createMockObjectCacheKey("Employee", "emp1", undefined);
     const key2 = createMockObjectCacheKey("Employee", "emp1", mockRdpAddress);
@@ -62,19 +83,15 @@ describe("ObjectCacheKeyRegistry", () => {
     registry.register(key3, "Employee", "emp1", mockRdpPhone);
     registry.register(unrelatedKey, "Employee", "emp2", undefined);
 
-    const related1 = registry.getRelated(key1);
-    expect(related1.size).toBe(3);
-    expect(related1.has(key1)).toBe(true);
-    expect(related1.has(key2)).toBe(true);
-    expect(related1.has(key3)).toBe(true);
-    expect(related1.has(unrelatedKey)).toBe(false);
-
-    // All related keys should return the same set
-    const related2 = registry.getRelated(key2);
-    expect(related2).toEqual(related1);
+    const variants = registry.getVariants("Employee", "emp1");
+    expect(variants.size).toBe(3);
+    expect(variants.has(key1)).toBe(true);
+    expect(variants.has(key2)).toBe(true);
+    expect(variants.has(key3)).toBe(true);
+    expect(variants.has(unrelatedKey)).toBe(false);
 
     // Unrelated key should have its own set
-    const unrelated = registry.getRelated(unrelatedKey);
+    const unrelated = registry.getVariants("Employee", "emp2");
     expect(unrelated.size).toBe(1);
     expect(unrelated.has(unrelatedKey)).toBe(true);
   });
@@ -82,7 +99,7 @@ describe("ObjectCacheKeyRegistry", () => {
   it("handles un-registration correctly", () => {
     const registry = new ObjectCacheKeyRegistry();
 
-    const mockRdp = { mockType: "address" } as unknown as Canonical<Rdp>;
+    const mockRdp = createMockRdp("address", "mockType");
     const key1 = createMockObjectCacheKey("Employee", "emp1", undefined);
     const key2 = createMockObjectCacheKey("Employee", "emp1", mockRdp);
 
@@ -90,20 +107,15 @@ describe("ObjectCacheKeyRegistry", () => {
     registry.register(key2, "Employee", "emp1", mockRdp);
 
     // Both keys should be related
-    expect(registry.getRelated(key1).size).toBe(2);
+    expect(registry.getVariants("Employee", "emp1").size).toBe(2);
 
     registry.unregister(key1);
 
     // key2 should now be alone
-    const related = registry.getRelated(key2);
+    const related = registry.getVariants("Employee", "emp1");
     expect(related.size).toBe(1);
     expect(related.has(key2)).toBe(true);
     expect(related.has(key1)).toBe(false);
-
-    // key1 should return just itself (not registered)
-    const unregistered = registry.getRelated(key1);
-    expect(unregistered.size).toBe(1);
-    expect(unregistered.has(key1)).toBe(true);
   });
 
   it("getVariants returns all variants for an object", () => {
@@ -113,7 +125,7 @@ describe("ObjectCacheKeyRegistry", () => {
     const key2 = createMockObjectCacheKey(
       "Employee",
       "emp1",
-      { address: {} } as unknown as Canonical<Rdp>,
+      createMockRdp("address"),
     );
 
     registry.register(key1, "Employee", "emp1", undefined);
@@ -121,7 +133,7 @@ describe("ObjectCacheKeyRegistry", () => {
       key2,
       "Employee",
       "emp1",
-      { address: {} } as unknown as Canonical<Rdp>,
+      createMockRdp("address"),
     );
 
     const variants = registry.getVariants("Employee", "emp1");
@@ -145,7 +157,7 @@ describe("ObjectCacheKeyRegistry", () => {
     const keyWithRdp = createMockObjectCacheKey(
       "Employee",
       "emp1",
-      { address: {} } as unknown as Canonical<Rdp>,
+      createMockRdp("address"),
     );
 
     registry.register(keyWithoutRdp, "Employee", "emp1", undefined);
@@ -153,13 +165,118 @@ describe("ObjectCacheKeyRegistry", () => {
       keyWithRdp,
       "Employee",
       "emp1",
-      { address: {} } as unknown as Canonical<Rdp>,
+      createMockRdp("address"),
     );
 
     expect(registry.hasRdpConfig(keyWithoutRdp)).toBe(false);
     expect(registry.hasRdpConfig(keyWithRdp)).toBe(true);
 
     expect(registry.getRdpConfig(keyWithoutRdp)).toBeUndefined();
-    expect(registry.getRdpConfig(keyWithRdp)).toEqual({ address: {} });
+
+    const rdpConfig = registry.getRdpConfig(keyWithRdp);
+    expect(rdpConfig).toBeDefined();
+    expect(Object.keys(rdpConfig!)).toEqual(["address"]);
+    expect(typeof rdpConfig!.address).toBe("function");
+  });
+
+  it("getVariantCount returns correct count of variants", () => {
+    const registry = new ObjectCacheKeyRegistry();
+
+    const key1 = createMockObjectCacheKey("Employee", "emp1", undefined);
+    const key2 = createMockObjectCacheKey(
+      "Employee",
+      "emp1",
+      createMockRdp("address"),
+    );
+    const key3 = createMockObjectCacheKey(
+      "Employee",
+      "emp1",
+      createMockRdp("phone"),
+    );
+
+    expect(registry.getVariantCount("Employee", "emp1")).toBe(0);
+
+    registry.register(key1, "Employee", "emp1", undefined);
+    expect(registry.getVariantCount("Employee", "emp1")).toBe(1);
+
+    registry.register(
+      key2,
+      "Employee",
+      "emp1",
+      createMockRdp("address"),
+    );
+    expect(registry.getVariantCount("Employee", "emp1")).toBe(2);
+
+    registry.register(
+      key3,
+      "Employee",
+      "emp1",
+      createMockRdp("phone"),
+    );
+    expect(registry.getVariantCount("Employee", "emp1")).toBe(3);
+
+    registry.unregister(key1);
+    expect(registry.getVariantCount("Employee", "emp1")).toBe(2);
+
+    expect(registry.getVariantCount("Employee", "emp999")).toBe(0);
+  });
+
+  it("handles registering same key multiple times", () => {
+    const registry = new ObjectCacheKeyRegistry();
+
+    const key1 = createMockObjectCacheKey("Employee", "emp1", undefined);
+
+    registry.register(key1, "Employee", "emp1", undefined);
+    registry.register(key1, "Employee", "emp1", undefined);
+    registry.register(key1, "Employee", "emp1", undefined);
+
+    // Should still have only one variant despite multiple registrations
+    expect(registry.getVariantCount("Employee", "emp1")).toBe(1);
+
+    registry.unregister(key1);
+    expect(registry.getVariantCount("Employee", "emp1")).toBe(0);
+  });
+
+  it("handles unregistering non-existent keys gracefully", () => {
+    const registry = new ObjectCacheKeyRegistry();
+
+    const key1 = createMockObjectCacheKey("Employee", "emp1", undefined);
+    const key2 = createMockObjectCacheKey("Employee", "emp2", undefined);
+
+    registry.register(key1, "Employee", "emp1", undefined);
+
+    // Unregistering non-existent key should not throw
+    registry.unregister(key2);
+
+    // key1 should still be registered
+    expect(registry.getVariantCount("Employee", "emp1")).toBe(1);
+  });
+
+  it("properly cleans up memory when all variants are unregistered", () => {
+    const registry = new ObjectCacheKeyRegistry();
+
+    const key1 = createMockObjectCacheKey("Employee", "emp1", undefined);
+    const key2 = createMockObjectCacheKey(
+      "Employee",
+      "emp1",
+      createMockRdp("address"),
+    );
+
+    registry.register(key1, "Employee", "emp1", undefined);
+    registry.register(
+      key2,
+      "Employee",
+      "emp1",
+      createMockRdp("address"),
+    );
+
+    expect(registry.getVariantCount("Employee", "emp1")).toBe(2);
+
+    registry.unregister(key1);
+    registry.unregister(key2);
+
+    // Should return 0 as the entire entry should be cleaned up
+    expect(registry.getVariantCount("Employee", "emp1")).toBe(0);
+    expect(registry.getVariants("Employee", "emp1").size).toBe(0);
   });
 });

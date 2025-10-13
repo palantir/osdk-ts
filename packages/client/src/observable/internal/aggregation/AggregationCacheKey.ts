@@ -14,40 +14,39 @@
  * limitations under the License.
  */
 
-import type { CollectionStorageData } from "../base-list/BaseCollectionQuery.js";
+import type {
+  AggregateOpts,
+  AggregationsResults,
+  ObjectOrInterfaceDefinition,
+} from "@osdk/api";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
-import type { PivotInfo } from "../PivotCanonicalizer.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
-import type { ListQuery } from "./ListQuery.js";
+import type { AggregationQuery } from "./AggregationQuery.js";
 
-// Index constants for accessing otherKeys array elements
 export const TYPE_IDX = 0;
 export const API_NAME_IDX = 1;
 export const WHERE_IDX = 2;
-export const ORDER_BY_IDX = 3;
-export const RDP_IDX = 4;
-export const INTERSECT_IDX = 5;
-export const PIVOT_IDX = 6;
+export const RDP_IDX = 3;
+export const INTERSECT_IDX = 4;
+export const AGGREGATE_IDX = 5;
 
-export interface ListStorageData extends CollectionStorageData {}
-
-export interface ListCacheKey extends
+export interface AggregationCacheKey extends
   CacheKey<
-    "list",
-    ListStorageData,
-    ListQuery,
+    "aggregation",
+    AggregationsResults<
+      ObjectOrInterfaceDefinition,
+      AggregateOpts<ObjectOrInterfaceDefinition>
+    >,
+    AggregationQuery<any, any>,
     [
       type: "object" | "interface",
       apiName: string,
       whereClause: Canonical<SimpleWhereClause>,
-      orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
-      rdpConfig?: Canonical<Rdp> | undefined,
-      intersectWith?:
-        | Canonical<Array<Canonical<SimpleWhereClause>>>
-        | undefined,
-      pivotInfo?: Canonical<PivotInfo> | undefined,
+      rdpConfig: Canonical<Rdp> | undefined,
+      intersectWith: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined,
+      aggregateOpts: Canonical<AggregateOpts<ObjectOrInterfaceDefinition>>,
     ]
   >
 {

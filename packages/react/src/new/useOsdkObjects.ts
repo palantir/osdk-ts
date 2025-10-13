@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import type { SimplePropertyDef, WhereClause } from "@osdk/api";
 import type {
   DerivedProperty,
+  LinkedType,
+  LinkNames,
+  WhereClause,
+} from "@osdk/api";
+import type {
   InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
@@ -26,15 +30,16 @@ import type { ObserveObjectsArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
+import type { InferRdpTypes } from "./types.js";
 
 export interface UseOsdkObjectsOptions<
   T extends ObjectTypeDefinition | InterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = {},
+  WithProps extends DerivedProperty.Clause<T> | undefined = undefined,
 > {
   /**
-   * Standard OSDK Where
+   * Standard OSDK Where with RDP support
    */
-  where?: WhereClause<T, RDPs>;
+  where?: WhereClause<T, InferRdpTypes<T, WithProps>>;
 
   /**
    *  The preferred page size for the list.
@@ -50,7 +55,22 @@ export interface UseOsdkObjectsOptions<
    * Define derived properties (RDPs) to be computed server-side and attached to each object.
    * These properties will be available on the returned objects alongside their regular properties.
    */
-  withProperties?: DerivedProperty.Clause<T>;
+  withProperties?: WithProps;
+
+  /**
+   * Intersect the results with additional object sets.
+   * Each element defines a where clause for an object set to intersect with.
+   * The final result will only include objects that match ALL conditions.
+   */
+  intersectWith?: Array<{
+    where: WhereClause<T, InferRdpTypes<T, WithProps>>;
+  }>;
+
+  /**
+   * Pivot to related objects through a link.
+   * This changes the return type from T to the linked object type.
+   */
+  pivotTo?: LinkNames<T>;
 
   /**
    * Causes the list to automatically fetch more as soon as the previous page
@@ -88,21 +108,13 @@ export interface UseOsdkObjectsOptions<
    */
   dedupeIntervalMs?: number;
 
-  /**
-   * If provided, the list will be considered this length for the purposes of
-   * `invalidationMode` when using the `wait` option. If not provided,
-   * the internal expectedLength will be determined by the number of times
-   * `fetchMore` has been called.
-   */
-  // expectedLength?: number | undefined;
-
   streamUpdates?: boolean;
 }
 
 export interface UseOsdkListResult<
   T extends ObjectTypeDefinition | InterfaceDefinition,
 > {
-  fetchMore: (() => Promise<unknown>) | undefined;
+  fetchMore: (() => Promise<void>) | undefined;
   data: Osdk.Instance<T>[] | undefined;
   isLoading: boolean;
 
@@ -124,31 +136,60 @@ declare const process: {
   };
 };
 
+// Overload for pivotTo - returns LinkedType
 export function useOsdkObjects<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  Q extends ObjectTypeDefinition,
+  L extends LinkNames<Q>,
 >(
   type: Q,
-  {
+  options: UseOsdkObjectsOptions<Q> & { pivotTo: L },
+): UseOsdkListResult<LinkedType<Q, L>>;
+
+// Default overload - returns Q
+export function useOsdkObjects<
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  WP extends DerivedProperty.Clause<Q> | undefined = undefined,
+>(
+  type: Q,
+  options?: UseOsdkObjectsOptions<Q, WP>,
+): UseOsdkListResult<Q>;
+
+// Implementation
+export function useOsdkObjects<
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  WP extends DerivedProperty.Clause<Q> | undefined = undefined,
+>(
+  type: Q,
+  options?: UseOsdkObjectsOptions<Q, WP>,
+): UseOsdkListResult<Q> | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>> {
+  const {
     pageSize,
     orderBy,
     dedupeIntervalMs,
     where = {},
     streamUpdates,
     withProperties,
-  }: UseOsdkObjectsOptions<Q> = {},
-): UseOsdkListResult<Q> {
+    intersectWith,
+    pivotTo,
+  } = options ?? {};
   const { observableClient } = React.useContext(OsdkContext2);
 
   /*  We want the canonical where clause so that the use of `React.useMemo`
       is stable. No real added cost as we canonicalize internal to
       the ObservableClient anyway.
    */
-  const canonWhere = observableClient.canonicalizeWhereClause(where ?? {});
+  const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
 
   // TODO: replace with improved stabilization
   const stableWithProperties = React.useMemo(
     () => withProperties,
     [JSON.stringify(withProperties)],
+  );
+
+  // Memoize intersectWith for stability
+  const stableIntersectWith = React.useMemo(
+    () => intersectWith,
+    [JSON.stringify(intersectWith)],
   );
 
   const { subscribe, getSnapShot } = React.useMemo(
@@ -163,6 +204,10 @@ export function useOsdkObjects<
             orderBy,
             streamUpdates,
             withProperties: stableWithProperties,
+            ...(stableIntersectWith
+              ? { intersectWith: stableIntersectWith }
+              : {}),
+            ...(pivotTo ? { pivotTo: pivotTo as string } : {}),
           }, observer),
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
@@ -173,7 +218,12 @@ export function useOsdkObjects<
       type,
       canonWhere,
       dedupeIntervalMs,
+      pageSize,
+      orderBy,
+      streamUpdates,
       stableWithProperties,
+      stableIntersectWith,
+      pivotTo,
     ],
   );
 
@@ -189,7 +239,7 @@ export function useOsdkObjects<
   return {
     fetchMore: listPayload?.fetchMore,
     error,
-    data: listPayload?.resolvedList as Osdk.Instance<Q>[],
+    data: listPayload?.resolvedList,
     isLoading: listPayload?.status === "loading",
     isOptimistic: listPayload?.isOptimistic ?? false,
   };

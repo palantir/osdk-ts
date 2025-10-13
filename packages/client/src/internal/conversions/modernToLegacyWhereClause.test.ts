@@ -945,13 +945,39 @@ describe(modernToLegacyWhereClause, () => {
   });
 
   describe("RDP properties", () => {
-    const mockObjectType: ObjectOrInterfaceDefinition = {
-      type: "object",
+    type TestRDPs = {
+      reportCount: "integer";
+      managerName: "string";
+    };
+
+    const mockObjectType = {
+      type: "object" as const,
       apiName: "TestObject",
-    } as ObjectOrInterfaceDefinition;
+      __DefinitionMetadata: {
+        type: "object" as const,
+        apiName: "TestObject",
+        displayName: "Test Object",
+        description: undefined,
+        properties: {
+          department: { type: "string" as const },
+          status: { type: "string" as const },
+        },
+        rid: "test-rid",
+        primaryKeyApiName: "id",
+        titleProperty: "department",
+        links: {},
+        primaryKeyType: "string" as const,
+        icon: undefined,
+        visibility: undefined,
+        pluralDisplayName: "Test Objects",
+        status: undefined,
+        interfaceMap: {},
+        inverseInterfaceMap: {},
+      },
+    };
 
     it("should handle RDP properties at top level", () => {
-      const whereClause = {
+      const whereClause: WhereClause<typeof mockObjectType, TestRDPs> = {
         department: "Engineering",
         reportCount: { $gte: 5 },
         managerName: "John",
@@ -994,7 +1020,7 @@ describe(modernToLegacyWhereClause, () => {
     });
 
     it("should handle RDP properties in $and clauses", () => {
-      const whereClause = {
+      const whereClause: WhereClause<typeof mockObjectType, TestRDPs> = {
         $and: [
           { department: "Engineering" },
           { reportCount: { $gte: 5 } },
@@ -1030,7 +1056,7 @@ describe(modernToLegacyWhereClause, () => {
     });
 
     it("should handle complex nested structures with RDP", () => {
-      const whereClause = {
+      const whereClause: WhereClause<typeof mockObjectType, TestRDPs> = {
         department: "Engineering",
         $and: [
           {

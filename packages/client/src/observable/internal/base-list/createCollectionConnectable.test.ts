@@ -102,12 +102,14 @@ describe("createCollectionConnectable", () => {
       const objectKey1: ObjectCacheKey = {
         type: "object",
         otherKeys: ["Employee", 1, undefined],
-      } as ObjectCacheKey;
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
 
       const objectKey2: ObjectCacheKey = {
         type: "object",
         otherKeys: ["Employee", 2, undefined],
-      } as ObjectCacheKey;
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
 
       // Create subject payload with mock data
       const subjectPayload: SubjectPayload<typeof mockListCacheKey> = {
@@ -255,7 +257,8 @@ describe("createCollectionConnectable", () => {
       const objectKey1: ObjectCacheKey = {
         type: "object",
         otherKeys: ["Employee", 1, undefined],
-      } as ObjectCacheKey;
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
 
       const subjectPayload: SubjectPayload<typeof mockListCacheKey> = {
         cacheKey: mockListCacheKey,
@@ -310,7 +313,8 @@ describe("createCollectionConnectable", () => {
       const objectKey1: ObjectCacheKey = {
         type: "object",
         otherKeys: ["Employee", 1, undefined],
-      } as ObjectCacheKey;
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
 
       const basePayload: SubjectPayload<typeof mockListCacheKey> = {
         cacheKey: mockListCacheKey,
@@ -386,17 +390,20 @@ describe("createCollectionConnectable", () => {
       const objectKey1: ObjectCacheKey = {
         type: "object",
         otherKeys: ["Employee", 1, undefined],
-      } as ObjectCacheKey;
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
 
       const objectKey2: ObjectCacheKey = {
         type: "object",
         otherKeys: ["Employee", 2, undefined],
-      } as ObjectCacheKey;
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
 
       const objectKey3: ObjectCacheKey = {
         type: "object",
         otherKeys: ["Employee", 3, undefined],
-      } as ObjectCacheKey;
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
 
       const subjectPayload: SubjectPayload<typeof mockListCacheKey> = {
         cacheKey: mockListCacheKey,
@@ -471,12 +478,14 @@ describe("createCollectionConnectable", () => {
       const objectKey1: ObjectCacheKey = {
         type: "object",
         otherKeys: ["Employee", 1, undefined],
-      } as ObjectCacheKey;
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
 
       const objectKey2: ObjectCacheKey = {
         type: "object",
         otherKeys: ["Employee", 2, undefined],
-      } as ObjectCacheKey;
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
 
       // Start with one object
       const initialPayload: SubjectPayload<typeof mockListCacheKey> = {
@@ -564,7 +573,8 @@ describe("createCollectionConnectable", () => {
       const objectKey1: ObjectCacheKey = {
         type: "object",
         otherKeys: ["Employee", 1, undefined],
-      } as ObjectCacheKey;
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
 
       const subjectPayload: SubjectPayload<typeof mockListCacheKey> = {
         cacheKey: mockListCacheKey,
@@ -626,7 +636,8 @@ describe("createCollectionConnectable", () => {
       const objectKey1: ObjectCacheKey = {
         type: "object",
         otherKeys: ["Employee", 1, undefined],
-      } as ObjectCacheKey;
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
 
       const subjectPayload: SubjectPayload<typeof mockListCacheKey> = {
         cacheKey: mockListCacheKey,
@@ -692,7 +703,8 @@ describe("createCollectionConnectable", () => {
       const objectKey1: ObjectCacheKey = {
         type: "object",
         otherKeys: ["Employee", 1, undefined],
-      } as ObjectCacheKey;
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
 
       const subjectPayload: SubjectPayload<typeof mockListCacheKey> = {
         cacheKey: mockListCacheKey,
@@ -746,7 +758,8 @@ describe("createCollectionConnectable", () => {
       const objectKey1: ObjectCacheKey = {
         type: "object",
         otherKeys: ["Employee", 1, undefined],
-      } as ObjectCacheKey;
+        __cacheKey: {} as ObjectCacheKey["__cacheKey"],
+      };
 
       const subjectPayload: SubjectPayload<typeof mockListCacheKey> = {
         cacheKey: mockListCacheKey,

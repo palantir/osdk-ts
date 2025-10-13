@@ -15,7 +15,10 @@
  */
 
 import type {
+  AndWhereClause,
+  NotWhereClause,
   ObjectOrInterfaceDefinition,
+  OrWhereClause,
   PossibleWhereClauseFilters,
   SimplePropertyDef,
   WhereClause,
@@ -27,12 +30,38 @@ import type {
 } from "@osdk/foundry.ontologies";
 import invariant from "tiny-invariant";
 import { fullyQualifyPropName } from "./fullyQualifyPropName.js";
-import { handleRdpFilter } from "./handleRdpFilter.js";
 import { makeGeoFilterIntersects } from "./makeGeoFilterIntersects.js";
 import { makeGeoFilterWithin } from "./makeGeoFilterWithin.js";
 
 type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
   : never;
+
+function isAndClause<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  whereClause: WhereClause<T, RDPs>,
+): whereClause is AndWhereClause<T, RDPs> {
+  return "$and" in whereClause && whereClause.$and !== undefined;
+}
+
+function isOrClause<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  whereClause: WhereClause<T, RDPs>,
+): whereClause is OrWhereClause<T, RDPs> {
+  return "$or" in whereClause && whereClause.$or !== undefined;
+}
+
+function isNotClause<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  whereClause: WhereClause<T, RDPs>,
+): whereClause is NotWhereClause<T, RDPs> {
+  return "$not" in whereClause && whereClause.$not !== undefined;
+}
 
 /** @internal */
 export function modernToLegacyWhereClause<
@@ -43,27 +72,27 @@ export function modernToLegacyWhereClause<
   objectOrInterface: T,
   rdpNames?: Set<string>,
 ): SearchJsonQueryV2 {
-  if ("$and" in whereClause) {
+  if (isAndClause(whereClause)) {
     return {
       type: "and",
-      value: whereClause.$and.map(
+      value: (whereClause.$and as WhereClause<T, RDPs>[]).map(
         (clause) =>
           modernToLegacyWhereClause(clause, objectOrInterface, rdpNames),
       ),
     };
-  } else if ("$or" in whereClause) {
+  } else if (isOrClause(whereClause)) {
     return {
       type: "or",
-      value: whereClause.$or.map(
+      value: (whereClause.$or as WhereClause<T, RDPs>[]).map(
         (clause) =>
           modernToLegacyWhereClause(clause, objectOrInterface, rdpNames),
       ),
     };
-  } else if ("$not" in whereClause) {
+  } else if (isNotClause(whereClause)) {
     return {
       type: "not",
       value: modernToLegacyWhereClause(
-        whereClause.$not,
+        whereClause.$not as WhereClause<T, RDPs>,
         objectOrInterface,
         rdpNames,
       ),
@@ -95,22 +124,26 @@ function handleWherePair(
     "Defined key values are only allowed when they are not undefined.",
   );
 
-  if (rdpNames?.has(fieldName) && !structFieldSelector) {
-    return handleRdpFilter(fieldName, filter);
-  }
+  // Check if this is an RDP
+  const isRdp = !structFieldSelector && rdpNames?.has(fieldName);
 
-  const propertyIdentifier: PropertyIdentifier | undefined =
-    structFieldSelector != null
-      ? {
-        type: "structField",
-        ...structFieldSelector,
-        propertyApiName: fullyQualifyPropName(
-          structFieldSelector.propertyApiName,
-          objectOrInterface,
-        ),
-      }
-      : undefined;
-  const field = structFieldSelector == null
+  const propertyIdentifier: PropertyIdentifier | undefined = isRdp
+    ? {
+      type: "property",
+      apiName: fieldName,
+    }
+    : structFieldSelector != null
+    ? {
+      type: "structField",
+      ...structFieldSelector,
+      propertyApiName: fullyQualifyPropName(
+        structFieldSelector.propertyApiName,
+        objectOrInterface,
+      ),
+    }
+    : undefined;
+
+  const field = !isRdp && structFieldSelector == null
     ? fullyQualifyPropName(fieldName, objectOrInterface)
     : undefined;
 

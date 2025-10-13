@@ -141,7 +141,9 @@ async function reloadDataAsFullObjects(
 
         const result = await client(
           objectDef as ObjectTypeDefinition,
-        ).where(where).fetchPage();
+        ).where(
+          where as Parameters<ObjectSet<ObjectTypeDefinition>["where"]>[0],
+        ).fetchPage();
         return [
           apiName,
           Object.fromEntries(result.data.map(

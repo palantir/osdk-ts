@@ -20,8 +20,10 @@ import type { ObserveListOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
 import type { CacheKeys } from "../CacheKeys.js";
+import type { IntersectCanonicalizer } from "../IntersectCanonicalizer.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
+import type { PivotCanonicalizer } from "../PivotCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
 import type { Store } from "../Store.js";
@@ -38,6 +40,8 @@ export class ListsHelper extends AbstractHelper<
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
   rdpCanonicalizer: RdpCanonicalizer;
+  intersectCanonicalizer: IntersectCanonicalizer;
+  pivotCanonicalizer: PivotCanonicalizer;
 
   constructor(
     store: Store,
@@ -45,12 +49,16 @@ export class ListsHelper extends AbstractHelper<
     whereCanonicalizer: WhereClauseCanonicalizer,
     orderByCanonicalizer: OrderByCanonicalizer,
     rdpCanonicalizer: RdpCanonicalizer,
+    intersectCanonicalizer: IntersectCanonicalizer,
+    pivotCanonicalizer: PivotCanonicalizer,
   ) {
     super(store, cacheKeys);
 
     this.whereCanonicalizer = whereCanonicalizer;
     this.orderByCanonicalizer = orderByCanonicalizer;
     this.rdpCanonicalizer = rdpCanonicalizer;
+    this.intersectCanonicalizer = intersectCanonicalizer;
+    this.pivotCanonicalizer = pivotCanonicalizer;
   }
 
   observe<T extends ObjectTypeDefinition | InterfaceDefinition>(
@@ -68,13 +76,28 @@ export class ListsHelper extends AbstractHelper<
   getQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
   ): ListQuery {
-    const { type: typeDefinition, where, orderBy, withProperties } = options;
+    const {
+      type: typeDefinition,
+      where,
+      orderBy,
+      withProperties,
+      intersectWith,
+      pivotTo,
+    } = options;
     const { apiName, type } = typeDefinition;
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
     const canonRdp = withProperties
       ? this.rdpCanonicalizer.canonicalize(withProperties)
+      : undefined;
+
+    const canonIntersect = intersectWith && intersectWith.length > 0
+      ? this.intersectCanonicalizer.canonicalize(intersectWith)
+      : undefined;
+
+    const canonPivot = pivotTo
+      ? this.pivotCanonicalizer.canonicalize(apiName, pivotTo)
       : undefined;
 
     const listCacheKey = this.cacheKeys.get<ListCacheKey>(
@@ -84,6 +107,8 @@ export class ListsHelper extends AbstractHelper<
       canonWhere,
       canonOrderBy,
       canonRdp,
+      canonIntersect,
+      canonPivot,
     );
 
     return this.store.queries.get(listCacheKey, () => {

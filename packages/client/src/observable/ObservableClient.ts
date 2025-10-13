@@ -17,8 +17,11 @@
 import type {
   ActionDefinition,
   ActionValidationResponse,
+  AggregateOpts,
+  AggregationsResults,
   DerivedProperty,
   InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
@@ -66,7 +69,7 @@ export type OrderBy<Q extends ObjectTypeDefinition | InterfaceDefinition> = {
 };
 
 export interface ObserveListOptions<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > extends CommonObserveOptions, ObserveOptions {
   type: Pick<Q, "apiName" | "type">;
@@ -77,6 +80,10 @@ export interface ObserveListOptions<
   expectedLength?: number;
   streamUpdates?: boolean;
   withProperties?: DerivedProperty.Clause<Q>;
+  intersectWith?: Array<{
+    where: WhereClause<Q, RDPs>;
+  }>;
+  pivotTo?: string;
 }
 
 // TODO: Rename this from `ObserveObjectArgs` => `ObserveObjectCallbackArgs`. Not doing it now to reduce churn
@@ -116,6 +123,30 @@ export interface ObserveObjectSetArgs<
   hasMore: boolean;
   status: Status;
   objectSet: ObjectSet<T, RDPs>;
+}
+
+export interface ObserveAggregationOptions<
+  T extends ObjectOrInterfaceDefinition,
+  A extends AggregateOpts<T>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> extends CommonObserveOptions, ObserveOptions {
+  type: Pick<T, "apiName" | "type">;
+  where?: WhereClause<T, RDPs>;
+  withProperties?: DerivedProperty.Clause<T>;
+  intersectWith?: Array<{
+    where: WhereClause<T, RDPs>;
+  }>;
+  aggregate: A;
+}
+
+export interface ObserveAggregationArgs<
+  T extends ObjectOrInterfaceDefinition,
+  A extends AggregateOpts<T>,
+> {
+  result: AggregationsResults<T, A> | undefined;
+  status: Status;
+  lastUpdated: number;
+  error?: Error;
 }
 
 /**
@@ -211,6 +242,29 @@ export interface ObservableClient extends ObserveLinks {
     baseObjectSet: ObjectSet<T>,
     options: ObserveObjectSetOptions<T, RDPs>,
     subFn: Observer<ObserveObjectSetArgs<T, RDPs>>,
+  ): Unsubscribable;
+
+  /**
+   * Observe an aggregation query with automatic updates when underlying data changes.
+   *
+   * @param options - Aggregation configuration including where, aggregate spec, and derived properties
+   * @param subFn - Observer that receives aggregation result updates
+   * @returns Subscription that can be unsubscribed to stop updates
+   *
+   * Supports:
+   * - Filtering with where clauses
+   * - Derived properties (RDPs) via withProperties
+   * - Set intersections
+   * - GroupBy and metric aggregations
+   * - Automatic updates when source data changes
+   */
+  observeAggregation<
+    T extends ObjectOrInterfaceDefinition,
+    A extends AggregateOpts<T>,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options: ObserveAggregationOptions<T, A, RDPs>,
+    subFn: Observer<ObserveAggregationArgs<T, A>>,
   ): Unsubscribable;
 
   /**

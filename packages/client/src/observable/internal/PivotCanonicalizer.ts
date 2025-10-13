@@ -14,23 +14,31 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinition,
-  SimplePropertyDef,
-  WhereClause,
-} from "@osdk/api";
-import type { CommonObserveOptions } from "../../ObservableClient/common.js";
+import type { Canonical } from "./Canonical.js";
 
-export interface ListQueryOptions<
-  Q extends ObjectOrInterfaceDefinition = ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    SimplePropertyDef
-  >,
-> extends CommonObserveOptions {
-  pageSize?: number;
-  intersectWith?: Array<{
-    where: WhereClause<Q, RDPs>;
-  }>;
-  pivotTo?: string;
+export interface PivotInfo {
+  sourceType: string;
+  linkName: string;
+  targetType: string;
+}
+
+export class PivotCanonicalizer {
+  #cache = new Map<string, Canonical<PivotInfo>>();
+
+  canonicalize(sourceType: string, linkName: string): Canonical<PivotInfo> {
+    const key = `${sourceType}::${linkName}`;
+
+    let canonical = this.#cache.get(key);
+
+    if (!canonical) {
+      canonical = {
+        sourceType,
+        linkName,
+        targetType: "<targetType>",
+      } as Canonical<PivotInfo>;
+      this.#cache.set(key, canonical);
+    }
+
+    return canonical;
+  }
 }

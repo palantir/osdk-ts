@@ -29,6 +29,11 @@ import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./actions/ActionApplication.js";
+import {
+  API_NAME_IDX as AGGREGATION_API_NAME_IDX,
+  RDP_IDX as AGGREGATION_RDP_IDX,
+} from "./aggregation/AggregationCacheKey.js";
+import { AggregationsHelper } from "./aggregation/AggregationsHelper.js";
 import type { BatchContext } from "./BatchContext.js";
 import { DEBUG_ONLY__cacheKeyToString } from "./CacheKey.js";
 import { CacheKeys } from "./CacheKeys.js";
@@ -38,6 +43,7 @@ import {
   createChangedObjects,
   DEBUG_ONLY__changesToString,
 } from "./Changes.js";
+import { IntersectCanonicalizer } from "./IntersectCanonicalizer.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Entry } from "./Layer.js";
 import { Layers } from "./Layers.js";
@@ -56,6 +62,7 @@ import { ObjectsHelper } from "./object/ObjectsHelper.js";
 import { ObjectSetHelper } from "./objectset/ObjectSetHelper.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
+import { PivotCanonicalizer } from "./PivotCanonicalizer.js";
 import { Queries } from "./Queries.js";
 import { type Rdp, RdpCanonicalizer } from "./RdpCanonicalizer.js";
 import type { Subjects } from "./Subjects.js";
@@ -85,6 +92,9 @@ export class Store {
   readonly orderByCanonicalizer: OrderByCanonicalizer =
     new OrderByCanonicalizer();
   readonly rdpCanonicalizer: RdpCanonicalizer = new RdpCanonicalizer();
+  readonly intersectCanonicalizer: IntersectCanonicalizer =
+    new IntersectCanonicalizer(this.whereCanonicalizer);
+  readonly pivotCanonicalizer: PivotCanonicalizer = new PivotCanonicalizer();
 
   readonly client: Client;
 
@@ -103,6 +113,7 @@ export class Store {
   readonly subjects: Subjects = this.layers.subjects;
 
   // these are hopefully temporary
+  readonly aggregations: AggregationsHelper;
   readonly lists: ListsHelper;
   readonly objects: ObjectsHelper;
   readonly links: LinksHelper;
@@ -118,12 +129,21 @@ export class Store {
       onDestroy: this.#cleanupCacheKey,
     });
 
+    this.aggregations = new AggregationsHelper(
+      this,
+      this.cacheKeys,
+      this.whereCanonicalizer,
+      this.rdpCanonicalizer,
+      this.intersectCanonicalizer,
+    );
     this.lists = new ListsHelper(
       this,
       this.cacheKeys,
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
       this.rdpCanonicalizer,
+      this.intersectCanonicalizer,
+      this.pivotCanonicalizer,
     );
     this.objects = new ObjectsHelper(this, this.cacheKeys);
     this.links = new LinksHelper(
@@ -388,6 +408,8 @@ export class Store {
         return cacheKey.otherKeys[OBJECT_RDP_CONFIG_IDX];
       } else if (cacheKey.type === "list") {
         return cacheKey.otherKeys[LIST_RDP_IDX];
+      } else if (cacheKey.type === "aggregation") {
+        return cacheKey.otherKeys[AGGREGATION_RDP_IDX];
       }
       // Links and other types would also be at LIST_RDP_IDX
     }
@@ -406,6 +428,8 @@ export class Store {
         return cacheKey.otherKeys[OBJECT_API_NAME_IDX];
       } else if (cacheKey.type === "list") {
         return cacheKey.otherKeys[LIST_API_NAME_IDX];
+      } else if (cacheKey.type === "aggregation") {
+        return cacheKey.otherKeys[AGGREGATION_API_NAME_IDX];
       }
       // Links would have apiName at a different position
     }

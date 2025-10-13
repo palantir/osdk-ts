@@ -172,26 +172,26 @@ type StructFilter<ST extends Record<string, BaseWirePropertyTypes>> = {
   [K in keyof ST]: Just<K, StructFilterOpts<ST>>;
 }[keyof ST];
 
-export interface AndWhereClause<
+export type AndWhereClause<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-> {
+> = {
   $and: WhereClause<T, RDPs>[];
-}
+};
 
-export interface OrWhereClause<
+export type OrWhereClause<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-> {
+> = {
   $or: WhereClause<T, RDPs>[];
-}
+};
 
-export interface NotWhereClause<
+export type NotWhereClause<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
-> {
+> = {
   $not: WhereClause<T, RDPs>;
-}
+};
 
 export type PropertyWhereClause<T extends ObjectOrInterfaceDefinition> = {
   [P in keyof CompileTimeMetadata<T>["properties"]]?: FilterFor<
