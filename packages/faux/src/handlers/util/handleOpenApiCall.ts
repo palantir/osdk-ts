@@ -31,23 +31,28 @@ export class OpenApiCallError extends Error {
       errorCode: string;
       errorName: string;
       errorInstanceId: string;
+      errorDescription?: string;
       parameters: Record<string, unknown>;
     },
   ) {
     super(
       `${json.errorCode} ${json.errorName ?? "Unknown error"} ${
-        JSON.stringify(json.parameters)
+        JSON.stringify(
+          json.parameters,
+        )
       }`,
     );
   }
 }
 
 type ExtractStringParams<T extends any[]> = T extends [infer A, ...infer B]
-  ? A extends string ? [A, ...ExtractStringParams<B>] : []
+  ? A extends string ? [A, ...ExtractStringParams<B>]
+  : []
   : [];
 
 export type SkipStringParams<T extends any[]> = T extends [infer A, ...infer B]
-  ? A extends string ? SkipStringParams<B> : T
+  ? A extends string ? SkipStringParams<B>
+  : T
   : T;
 
 /**
@@ -59,13 +64,12 @@ export type SkipStringParams<T extends any[]> = T extends [infer A, ...infer B]
  * If this happens, you cannot use the helper. Sorry
  */
 export type ExtractBody<
-  X extends ((reqCall: any, ...args: any[]) => Promise<any>),
+  X extends (reqCall: any, ...args: any[]) => Promise<any>,
 > = undefined extends SkipStringParams<ParamsAfterReqCall<X>>[0] ? never
   : SkipStringParams<ParamsAfterReqCall<X>>[0];
 
-export type ExtractResponse<
-  X extends ((...args: any[]) => Promise<any>),
-> = Awaited<ReturnType<X>>;
+export type ExtractResponse<X extends (...args: any[]) => Promise<any>> =
+  Awaited<ReturnType<X>>;
 
 export type ParamsAfterReqCall<
   T extends (reqCall: any, ...args: any[]) => Promise<any>,
@@ -97,7 +101,7 @@ export type OpenApiCallFactory<
 
 export type CallFactory<
   URL_PARAMS extends string,
-  X extends ((...args: any[]) => Promise<any>),
+  X extends (...args: any[]) => Promise<any>,
 > = (
   baseUrl: string,
   restImpl: RestImpl<URL_PARAMS, ExtractBody<X>, ExtractResponse<X>>,
@@ -106,11 +110,8 @@ export type CallFactory<
 
 export function handleOpenApiCall<
   const N extends ExtractStringParams<ParamsAfterReqCall<X>>,
-  const X extends ((...args: any[]) => Promise<any>),
->(
-  openApiCall: X,
-  names: N,
-): CallFactory<N[number], X> {
+  const X extends (...args: any[]) => Promise<any>,
+>(openApiCall: X, names: N): CallFactory<N[number], X> {
   return (
     baseUrl: string,
     restImpl: RestImpl<N[number], ExtractBody<X>, ExtractResponse<X>>,
@@ -148,39 +149,39 @@ export function handleOpenApiCall<
     // we don't care about the promise here, we are just building the url
     void openApiCall(
       capture as any,
-      ...(names.map(n => `:${n}`) as any),
+      ...(names.map((n) => `:${n}`) as any),
       // add a simulated blob in here in case of an upload
       { type: "", size: 5 },
     );
 
-    return http
-      [captured.method.toLowerCase() as Lowercase<typeof captured.method>](
-        captured.endPoint,
-        authHandlerMiddleware(async (info) => {
-          try {
-            const result: any = await restImpl(
-              info as any,
-            );
+    return http[
+      captured.method.toLowerCase() as Lowercase<typeof captured.method>
+    ](
+      captured.endPoint,
+      authHandlerMiddleware(async (info) => {
+        try {
+          const result: any = await restImpl(info as any);
 
-            if (result instanceof Response) {
-              return new HttpResponse(result.body) as HttpResponse<
-                DefaultBodyType
-              >;
-            }
+          if (result instanceof Response) {
+            return new HttpResponse(
+              result.body,
+            ) as HttpResponse<DefaultBodyType>;
+          }
+          return HttpResponse.json(result);
+        } catch (e) {
+          if (e instanceof OpenApiCallError) {
             return HttpResponse.json(
-              result,
-            );
-          } catch (e) {
-            if (e instanceof OpenApiCallError) {
-              return HttpResponse.json({ ...e.json, stack: e.stack }, {
+              { ...e.json, stack: e.stack },
+              {
                 status: e.status,
                 statusText: e.message,
-              });
-            }
-            throw e;
+              },
+            );
           }
-        }),
-        options,
-      );
+          throw e;
+        }
+      }),
+      options,
+    );
   };
 }

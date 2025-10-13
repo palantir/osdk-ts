@@ -122,6 +122,53 @@ export type {
   ThreeDimensionalQueryAggregationDefinition,
   TwoDimensionalQueryAggregationDefinition,
 } from "./ontology/QueryDefinition.js";
+export type { PropertyBooleanFormattingRule } from "./ontology/valueFormatting/PropertyBooleanFormattingRule.js";
+export type {
+  DatetimeFormat,
+  DatetimeLocalizedFormat,
+  DatetimeLocalizedFormatType,
+  DatetimeStringFormat,
+  DatetimeTimezone,
+  DatetimeTimezoneStatic,
+  DatetimeTimezoneUser,
+  PropertyDateFormattingRule,
+  PropertyTimestampFormattingRule,
+} from "./ontology/valueFormatting/PropertyDateAndTimestampFormattingRule.js";
+export type {
+  KnownType,
+  PropertyKnownTypeFormattingRule,
+} from "./ontology/valueFormatting/PropertyKnownTypeFormattingRule.js";
+export type {
+  Affix,
+  DurationBaseValue,
+  DurationFormatStyle,
+  DurationPrecision,
+  HumanReadableFormat,
+  NumberFormatAffix,
+  NumberFormatCurrency,
+  NumberFormatCurrencyStyle,
+  NumberFormatCustomUnit,
+  NumberFormatDuration,
+  NumberFormatFixedValues,
+  NumberFormatNotation,
+  NumberFormatOptions,
+  NumberFormatRatio,
+  NumberFormatScale,
+  NumberFormatStandard,
+  NumberFormatStandardUnit,
+  NumberRatioType,
+  NumberRoundingMode,
+  NumberScaleType,
+  PropertyNumberFormattingRule,
+  PropertyNumberFormattingRuleType,
+  TimeCodeFormat,
+} from "./ontology/valueFormatting/PropertyNumberFormattingRule.js";
+export type { PropertyValueFormattingRule } from "./ontology/valueFormatting/PropertyValueFormattingRule.js";
+export type {
+  PropertyTypeReference,
+  PropertyTypeReferenceOrStringConstant,
+  StringConstant,
+} from "./ontology/valueFormatting/PropertyValueFormattingUtils.js";
 export type {
   BaseWirePropertyTypes,
   WirePropertyTypes,
