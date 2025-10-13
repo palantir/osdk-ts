@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectMetadata,
-  PropertyValueFormattingRule,
-} from "@osdk/api";
+import type { ObjectMetadata, PropertyValueFormattingRule } from "@osdk/api";
 import type { KnownType } from "@osdk/foundry.ontologies";
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { formatBoolean } from "./formatBoolean.js";
@@ -30,7 +27,7 @@ export interface FormatPropertyOptions {
   timezoneId?: string;
 }
 
-type PropertyValue = 
+type PropertyValue =
   | string
   | Array<string>
   | number
@@ -39,7 +36,7 @@ type PropertyValue =
   | Array<boolean>
   | undefined;
 
-type DefinedPropertyValue = NonNullable<PropertyValue>
+type DefinedPropertyValue = NonNullable<PropertyValue>;
 
 /**
  * Applies formatting rules to a property value and returns the formatted string value.
@@ -61,9 +58,13 @@ export function applyPropertyFormatter(
   }
 
   try {
-    return formatPropertyValue(propertyValue, propertyDefinition.valueFormatting, objectData, options);
-  }
-  catch (error) {
+    return formatPropertyValue(
+      propertyValue,
+      propertyDefinition.valueFormatting,
+      objectData,
+      options,
+    );
+  } catch (error) {
     // There was a rule we was unable to parse, so we return undefined
     return undefined;
   }
@@ -86,7 +87,12 @@ function formatPropertyValue(
       if (typeof value !== "number") {
         return undefined;
       }
-      return formatNumber(value, rule.numberType, objectData, options.locale ?? getBrowserLocale());
+      return formatNumber(
+        value,
+        rule.numberType,
+        objectData,
+        options.locale ?? getBrowserLocale(),
+      );
 
     case "date":
       if (!(value instanceof Date) && typeof value !== "string") {
@@ -126,9 +132,9 @@ function formatKnownType(value: any, knownType: KnownType): string | undefined {
   }
 
   switch (knownType) {
-    case "userOrGroupRid":
-    case "resourceRid":
-    case "artifactGid":
+    case "ARTIFACT_GID":
+    case "RESOURCE_RID":
+    case "USER_OR_GROUP_ID":
       // These would typically be rendered as special components (user, resource etc)
       // For now, we'll just return the raw value
       return value;
@@ -136,5 +142,3 @@ function formatKnownType(value: any, knownType: KnownType): string | undefined {
       return undefined;
   }
 }
-
-

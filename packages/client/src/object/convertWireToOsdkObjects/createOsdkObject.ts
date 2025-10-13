@@ -121,7 +121,12 @@ const basePropDefs = {
       const def = this[ObjectDefRef];
       const propertyValue = rawObj[propertyApiName];
 
-      return applyPropertyFormatter(propertyValue, def.properties[propertyApiName], rawObj, options);
+      return applyPropertyFormatter(
+        propertyValue,
+        def.properties[propertyApiName],
+        rawObj,
+        options,
+      );
     },
     enumerable: false,
   },

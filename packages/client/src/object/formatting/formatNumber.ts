@@ -23,6 +23,8 @@ import type {
   NumberFormatRatio,
   NumberFormatScale,
   NumberFormatStandardUnit,
+  NumberRatioType,
+  NumberScaleType,
   PropertyNumberFormattingRuleType,
 } from "@osdk/api";
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
@@ -30,19 +32,45 @@ import { resolvePropertyReference } from "./propertyFormattingUtils.js";
 
 /**
  * Extended NumberFormatOptions that includes rounding mode support
- * which is available in modern browsers but not yet in TypeScript types
+ * which is available in modern browsers but not yet in TypeScript types.
+ * Only includes modes that are actually supported by Intl.NumberFormat and used in our API.
  */
 export interface ExtendedNumberFormatOptions extends Intl.NumberFormatOptions {
-  roundingMode?:
-    | "ceil"
-    | "floor"
-    | "expand"
-    | "trunc"
-    | "halfCeil"
-    | "halfFloor"
-    | "halfExpand"
-    | "halfTrunc"
-    | "halfEven";
+  roundingMode?: "ceil" | "floor" | "halfExpand";
+}
+
+/**
+ * Type declarations for Intl.DurationFormat (not yet in TypeScript standard types)
+ * These are based on the TC39 proposal and current browser implementations
+ */
+interface DurationFormatInput {
+  years?: number;
+  months?: number;
+  weeks?: number;
+  days?: number;
+  hours?: number;
+  minutes?: number;
+  seconds?: number;
+  milliseconds?: number;
+  microseconds?: number;
+  nanoseconds?: number;
+}
+
+interface DurationFormatOptions {
+  style?: "long" | "short" | "narrow" | "digital";
+  localeMatcher?: "best fit" | "lookup";
+}
+
+interface DurationFormatConstructor {
+  new(locales?: string | string[], options?: DurationFormatOptions): {
+    format(duration: DurationFormatInput): string;
+  };
+}
+
+declare global {
+  namespace Intl {
+    const DurationFormat: DurationFormatConstructor | undefined;
+  }
 }
 
 /**
@@ -88,12 +116,61 @@ export function formatNumber(
         return formatRatio(value, numberType, locale);
 
       default:
-        return value.toString();
+        throw new Error(
+          `Unknown number format type: ${
+            (numberType satisfies never as any).type
+          }`,
+        );
     }
   } catch (error) {
-    // Fallback to basic string representation if formatting fails
     return value.toString();
   }
+}
+
+/**
+ * Applies negative-to-parenthesis conversion if requested
+ */
+function applyNegativeToParenthesis(
+  formatted: string,
+  value: number,
+  shouldConvert: boolean,
+): string {
+  if (shouldConvert && value < 0) {
+    return formatted.replace(/^-/, "(") + ")";
+  }
+  return formatted;
+}
+
+/**
+ * Formats a number using Intl.NumberFormat with the given options
+ */
+function formatWithIntl(
+  value: number,
+  options: ExtendedNumberFormatOptions,
+  locale: string,
+): string {
+  const formatter = new Intl.NumberFormat(locale, options);
+  return formatter.format(value);
+}
+
+/**
+ * Formats a number and optionally adds prefix/suffix
+ */
+function formatNumberWithAffixes(
+  value: number,
+  baseOptions: NumberFormatOptions,
+  locale: string,
+  prefix?: string,
+  suffix?: string,
+): string {
+  const intlOptions = convertToIntlOptions(baseOptions);
+  const formatted = formatWithIntl(value, intlOptions, locale);
+  const withAffixes = `${prefix || ""}${formatted}${suffix || ""}`;
+  return applyNegativeToParenthesis(
+    withAffixes,
+    value,
+    baseOptions.convertNegativeToParenthesis ?? false,
+  );
 }
 
 function formatStandardNumber(
@@ -101,16 +178,7 @@ function formatStandardNumber(
   options: NumberFormatOptions,
   locale: string,
 ): string {
-  const formatter = new Intl.NumberFormat(
-    locale,
-    convertToIntlOptions(options) as Intl.NumberFormatOptions,
-  );
-  const formattedValue = formatter.format(value);
-
-  // Apply negative to parenthesis conversion if requested
-  return options.convertNegativeToParenthesis && value < 0
-    ? formattedValue.replace("-", "(") + ")"
-    : formattedValue;
+  return formatNumberWithAffixes(value, options, locale);
 }
 
 function formatCurrency(
@@ -131,16 +199,12 @@ function formatCurrency(
     currencyDisplay: rule.style === "COMPACT" ? "narrowSymbol" : "symbol",
   };
 
-  const formatter = new Intl.NumberFormat(
-    locale,
-    options as Intl.NumberFormatOptions,
+  const formatted = formatWithIntl(value, options, locale);
+  return applyNegativeToParenthesis(
+    formatted,
+    value,
+    rule.baseFormatOptions.convertNegativeToParenthesis ?? false,
   );
-  const formattedValue = formatter.format(value);
-
-  // Apply negative to parenthesis conversion if requested
-  return rule.baseFormatOptions.convertNegativeToParenthesis && value < 0
-    ? formattedValue.replace(/^-/, "(") + ")"
-    : formattedValue;
 }
 
 function formatStandardUnit(
@@ -161,24 +225,21 @@ function formatStandardUnit(
   };
 
   try {
-    const formatter = new Intl.NumberFormat(
-      locale,
-      options as Intl.NumberFormatOptions,
+    const formatted = formatWithIntl(value, options, locale);
+    return applyNegativeToParenthesis(
+      formatted,
+      value,
+      rule.baseFormatOptions.convertNegativeToParenthesis ?? false,
     );
-    const formattedValue = formatter.format(value);
-
-    // Apply negative to parenthesis conversion if requested
-    return rule.baseFormatOptions.convertNegativeToParenthesis && value < 0
-      ? formattedValue.replace("-", "(") + ")"
-      : formattedValue;
-  } catch {
-    // Fallback if unit is not supported
-    const formattedNumber = formatStandardNumber(
+  } catch (error) {
+    const suffix = ` ${unit}`;
+    return formatNumberWithAffixes(
       value,
       rule.baseFormatOptions,
       locale,
+      "",
+      suffix,
     );
-    return `${formattedNumber} ${unit}`;
   }
 }
 
@@ -189,17 +250,14 @@ function formatCustomUnit(
   locale: string,
 ): string {
   const unit = resolvePropertyReference(rule.unit, objectData);
-  const formattedNumber = formatStandardNumber(
+  const suffix = unit ? ` ${unit}` : "";
+  return formatNumberWithAffixes(
     value,
     rule.baseFormatOptions,
     locale,
+    "",
+    suffix,
   );
-
-  if (!unit) {
-    return formattedNumber;
-  }
-
-  return `${formattedNumber} ${unit}`;
 }
 
 function formatAffix(
@@ -209,18 +267,18 @@ function formatAffix(
   locale: string,
 ): string {
   const prefix = rule.affix.prefix
-    ? resolvePropertyReference(rule.affix.prefix, objectData)
+    ? resolvePropertyReference(rule.affix.prefix, objectData) ?? ""
     : "";
-  const postfix = rule.affix.postfix
-    ? resolvePropertyReference(rule.affix.postfix, objectData)
+  const suffix = rule.affix.postfix
+    ? resolvePropertyReference(rule.affix.postfix, objectData) ?? ""
     : "";
-  const formattedNumber = formatStandardNumber(
+  return formatNumberWithAffixes(
     value,
     rule.baseFormatOptions,
     locale,
+    prefix,
+    suffix,
   );
-
-  return `${prefix ?? ""}${formattedNumber}${postfix ?? ""}`;
 }
 
 function formatDuration(value: number, rule: NumberFormatDuration): string {
@@ -246,53 +304,77 @@ function formatAsTimecode(totalSeconds: number): string {
   }:${seconds.toString().padStart(2, "0")}`;
 }
 
+/**
+ * Formats a duration in human-readable format.
+ * Uses Intl.DurationFormat for proper i18n support.
+ *
+ * @throws Error if Intl.DurationFormat is not available
+ */
 function formatAsHumanReadable(
   totalSeconds: number,
   showFullUnits = false,
   precision: string = "AUTO",
 ): string {
+  if (Intl.DurationFormat == null) {
+    throw new Error(
+      "Intl.DurationFormat is not available in this environment. Consider using a polyfill.",
+    );
+  }
+
   const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = Math.floor(totalSeconds % 60);
 
-  const parts: string[] = [];
+  // Build duration object based on precision
+  const duration: DurationFormatInput = {};
 
   if (days > 0 && (precision === "AUTO" || precision === "DAYS")) {
-    parts.push(
-      `${days} ${showFullUnits ? (days === 1 ? "day" : "days") : "d"}`,
-    );
+    duration.days = days;
   }
   if (
     hours > 0 && precision !== "DAYS"
     && (precision === "AUTO" || precision === "HOURS")
   ) {
-    parts.push(
-      `${hours} ${showFullUnits ? (hours === 1 ? "hour" : "hours") : "h"}`,
-    );
+    duration.hours = hours;
   }
   if (
     minutes > 0 && precision !== "DAYS" && precision !== "HOURS"
     && (precision === "AUTO" || precision === "MINUTES")
   ) {
-    parts.push(
-      `${minutes} ${
-        showFullUnits ? (minutes === 1 ? "minute" : "minutes") : "m"
-      }`,
-    );
+    duration.minutes = minutes;
   }
   if (
-    (seconds > 0 || parts.length === 0) && precision !== "DAYS"
+    (seconds > 0 || Object.keys(duration).length === 0) && precision !== "DAYS"
     && precision !== "HOURS" && precision !== "MINUTES"
   ) {
-    parts.push(
-      `${seconds} ${
-        showFullUnits ? (seconds === 1 ? "second" : "seconds") : "s"
-      }`,
-    );
+    duration.seconds = seconds;
   }
 
-  return parts.join(" ");
+  // Determine style based on showFullUnits
+  const style = showFullUnits ? "long" : "narrow";
+
+  // TypeScript doesn't know DurationFormat exists, but we checked it at runtime
+  const DurationFormatConstructor = Intl
+    .DurationFormat as DurationFormatConstructor;
+  const formatter = new DurationFormatConstructor(undefined, { style });
+  return formatter.format(duration);
+}
+
+function getScaledValueAndSuffix(
+  value: number,
+  scaleType: NumberScaleType,
+): { scaledValue: number; suffix: string } {
+  switch (scaleType) {
+    case "THOUSANDS":
+      return { scaledValue: value / 1000, suffix: "K" };
+    case "MILLIONS":
+      return { scaledValue: value / 1000000, suffix: "M" };
+    case "BILLIONS":
+      return { scaledValue: value / 1000000000, suffix: "B" };
+    default:
+      throw new Error(`Unknown scale type: ${scaleType satisfies never}`);
+  }
 }
 
 function formatScale(
@@ -300,30 +382,33 @@ function formatScale(
   rule: NumberFormatScale,
   locale: string,
 ): string {
-  let scaledValue = value;
-  let suffix = "";
-
-  switch (rule.scaleType) {
-    case "THOUSANDS":
-      scaledValue = value / 1000;
-      suffix = "K";
-      break;
-    case "MILLIONS":
-      scaledValue = value / 1000000;
-      suffix = "M";
-      break;
-    case "BILLIONS":
-      scaledValue = value / 1000000000;
-      suffix = "B";
-      break;
-  }
-
-  const formattedNumber = formatStandardNumber(
+  const { scaledValue, suffix } = getScaledValueAndSuffix(
+    value,
+    rule.scaleType,
+  );
+  return formatNumberWithAffixes(
     scaledValue,
     rule.baseFormatOptions,
     locale,
+    "",
+    suffix,
   );
-  return `${formattedNumber}${suffix}`;
+}
+
+function getRatioScaledValue(
+  value: number,
+  ratioType: NumberRatioType,
+): number {
+  switch (ratioType) {
+    case "PERCENTAGE":
+      return value * 100;
+    case "PER_MILLE":
+      return value * 1000;
+    case "BASIS_POINTS":
+      return value * 10000;
+    default:
+      throw new Error(`Unknown ratio type: ${ratioType satisfies never}`);
+  }
 }
 
 function formatRatio(
@@ -331,117 +416,97 @@ function formatRatio(
   rule: NumberFormatRatio,
   locale: string,
 ): string {
-  let scaledValue = value;
+  // Special case: PERCENTAGE uses Intl's native percent style
+  if (rule.ratioType === "PERCENTAGE") {
+    const options: ExtendedNumberFormatOptions = {
+      ...convertToIntlOptions(rule.baseFormatOptions),
+      style: "percent",
+    };
+    const formatted = formatWithIntl(value, options, locale);
+    return applyNegativeToParenthesis(
+      formatted,
+      value,
+      rule.baseFormatOptions.convertNegativeToParenthesis ?? false,
+    );
+  }
 
+  // Other ratio types: scale and add suffix
+  const scaledValue = getRatioScaledValue(value, rule.ratioType);
+
+  let suffix: string;
+  // TypeScript knows rule.ratioType can only be "PER_MILLE" | "BASIS_POINTS" here
+  // because we checked for PERCENTAGE above
   switch (rule.ratioType) {
-    case "PERCENTAGE":
-      scaledValue = value * 100;
-      break;
     case "PER_MILLE":
-      scaledValue = value * 1000;
+      suffix = "‰";
       break;
     case "BASIS_POINTS":
-      scaledValue = value * 10000;
+      suffix = " bps";
       break;
+    default:
+      throw new Error(`Unknown ratio type: ${rule.ratioType satisfies never}`);
   }
 
-  const options: ExtendedNumberFormatOptions = convertToIntlOptions(
-    rule.baseFormatOptions,
-  );
-
-  if (rule.ratioType === "PERCENTAGE") {
-    options.style = "percent";
-    // Use original value for percent style
-    const formatter = new Intl.NumberFormat(
-      locale,
-      options as Intl.NumberFormatOptions,
-    );
-    const formattedValue = formatter.format(value);
-
-    // Apply negative to parenthesis conversion if requested
-    return rule.baseFormatOptions.convertNegativeToParenthesis && value < 0
-      ? formattedValue.replace("-", "(") + ")"
-      : formattedValue;
-  }
-
-  const formattedNumber = formatStandardNumber(
+  return formatNumberWithAffixes(
     scaledValue,
     rule.baseFormatOptions,
     locale,
+    "",
+    suffix,
   );
+}
 
-  switch (rule.ratioType) {
-    case "PER_MILLE":
-      return `${formattedNumber}‰`;
-    case "BASIS_POINTS":
-      return `${formattedNumber} bps`;
+/**
+ * Maps notation from OSDK format to Intl format
+ */
+function mapNotation(
+  notation: "STANDARD" | "SCIENTIFIC" | "ENGINEERING" | "COMPACT",
+): Intl.NumberFormatOptions["notation"] {
+  switch (notation) {
+    case "STANDARD":
+      return "standard";
+    case "SCIENTIFIC":
+      return "scientific";
+    case "ENGINEERING":
+      return "engineering";
+    case "COMPACT":
+      return "compact";
     default:
-      return formattedNumber;
+      throw new Error(`Unknown notation type: ${notation satisfies never}`);
+  }
+}
+
+/**
+ * Maps rounding mode from OSDK format to Intl format
+ */
+function mapRoundingMode(
+  mode: "CEIL" | "FLOOR" | "ROUND_CLOSEST",
+): ExtendedNumberFormatOptions["roundingMode"] {
+  switch (mode) {
+    case "CEIL":
+      return "ceil";
+    case "FLOOR":
+      return "floor";
+    case "ROUND_CLOSEST":
+      return "halfExpand";
+    default:
+      throw new Error(`Unknown rounding mode: ${mode satisfies never}`);
   }
 }
 
 function convertToIntlOptions(
   options: NumberFormatOptions,
 ): ExtendedNumberFormatOptions {
-  const intlOptions: ExtendedNumberFormatOptions = {};
-
-  if (options.useGrouping !== undefined) {
-    intlOptions.useGrouping = options.useGrouping;
-  }
-
-  if (options.minimumIntegerDigits !== undefined) {
-    intlOptions.minimumIntegerDigits = options.minimumIntegerDigits;
-  }
-
-  if (options.minimumFractionDigits !== undefined) {
-    intlOptions.minimumFractionDigits = options.minimumFractionDigits;
-  }
-
-  if (options.maximumFractionDigits !== undefined) {
-    intlOptions.maximumFractionDigits = options.maximumFractionDigits;
-  }
-
-  if (options.minimumSignificantDigits !== undefined) {
-    intlOptions.minimumSignificantDigits = options.minimumSignificantDigits;
-  }
-
-  if (options.maximumSignificantDigits !== undefined) {
-    intlOptions.maximumSignificantDigits = options.maximumSignificantDigits;
-  }
-
-  if (options.notation !== undefined) {
-    switch (options.notation) {
-      case "STANDARD":
-        intlOptions.notation = "standard";
-        break;
-      case "SCIENTIFIC":
-        intlOptions.notation = "scientific";
-        break;
-      case "ENGINEERING":
-        intlOptions.notation = "engineering";
-        break;
-      case "COMPACT":
-        intlOptions.notation = "compact";
-        break;
-    }
-  }
-
-  // Map rounding modes from OSDK to Intl format
-  if (options.roundingMode !== undefined) {
-    switch (options.roundingMode) {
-      case "CEIL":
-        intlOptions.roundingMode = "ceil";
-        break;
-      case "FLOOR":
-        intlOptions.roundingMode = "floor";
-        break;
-      case "ROUND_CLOSEST":
-        intlOptions.roundingMode = "halfExpand";
-        break;
-    }
-  }
-
-  // Note: convertNegativeToParenthesis is handled separately after formatting
-
-  return intlOptions;
+  return {
+    useGrouping: options.useGrouping,
+    minimumIntegerDigits: options.minimumIntegerDigits,
+    minimumFractionDigits: options.minimumFractionDigits,
+    maximumFractionDigits: options.maximumFractionDigits,
+    minimumSignificantDigits: options.minimumSignificantDigits,
+    maximumSignificantDigits: options.maximumSignificantDigits,
+    notation: options.notation ? mapNotation(options.notation) : undefined,
+    roundingMode: options.roundingMode
+      ? mapRoundingMode(options.roundingMode)
+      : undefined,
+  };
 }

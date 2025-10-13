@@ -21,6 +21,8 @@ import type {
   DatetimeTimezone,
 } from "@osdk/api";
 import type { DatetimeLocalizedFormatType } from "@osdk/foundry.ontologies";
+import { format as formatDate } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { resolvePropertyReference } from "./propertyFormattingUtils.js";
 
@@ -37,36 +39,9 @@ const FORMAT_YEAR_AND_MONTH: Intl.DateTimeFormatOptions = {
   year: "numeric",
 };
 
-const FORMAT_MONTH_AND_DAY: Intl.DateTimeFormatOptions = {
-  month: "short",
-  day: "numeric",
-};
-
-const FORMAT_MONTH: Intl.DateTimeFormatOptions = {
-  month: "long",
-};
-
-const FORMAT_MONTH_SHORT: Intl.DateTimeFormatOptions = {
-  month: "short",
-};
-
-const FORMAT_WEEKDAY: Intl.DateTimeFormatOptions = {
-  weekday: "long",
-};
-
-const FORMAT_WEEKDAY_SHORT: Intl.DateTimeFormatOptions = {
-  weekday: "short",
-};
-
 const FORMAT_DATE_SHORT: Intl.DateTimeFormatOptions = {
   day: "numeric",
   month: "short",
-  year: "numeric",
-};
-
-const FORMAT_DATE_LONG_MONTH: Intl.DateTimeFormatOptions = {
-  day: "numeric",
-  month: "long",
   year: "numeric",
 };
 
@@ -80,23 +55,6 @@ const FORMAT_DATE_TIME: Intl.DateTimeFormatOptions = {
   second: "numeric",
 };
 
-const FORMAT_DATE_TIME_WITHOUT_SECONDS: Intl.DateTimeFormatOptions = {
-  day: "numeric",
-  month: "short",
-  weekday: "short",
-  year: "numeric",
-  hour: "numeric",
-  minute: "numeric",
-};
-
-const FORMAT_DATE_TIME_WITHOUT_MINUTES: Intl.DateTimeFormatOptions = {
-  day: "numeric",
-  month: "short",
-  weekday: "short",
-  year: "numeric",
-  hour: "numeric",
-};
-
 const FORMAT_DATE_TIME_SHORT: Intl.DateTimeFormatOptions = {
   day: "numeric",
   month: "short",
@@ -105,32 +63,10 @@ const FORMAT_DATE_TIME_SHORT: Intl.DateTimeFormatOptions = {
   minute: "numeric",
 };
 
-const FORMAT_DATE_TIME_SHORT_24_HR: Intl.DateTimeFormatOptions = {
-  day: "numeric",
-  hour: "numeric",
-  hour12: false,
-  minute: "numeric",
-  month: "short",
-  year: "numeric",
-};
-
 const FORMAT_TIME: Intl.DateTimeFormatOptions = {
   hour: "numeric",
   minute: "numeric",
   second: "numeric",
-};
-
-const FORMAT_MEDIUM_DATE_LONG_TIME: Intl.DateTimeFormatOptions = {
-  dateStyle: "medium",
-  timeStyle: "long",
-};
-
-const FORMAT_DATE_DEFAULT: Intl.DateTimeFormatOptions = {};
-
-const FORMAT_DAY_TIME: Intl.DateTimeFormatOptions = {
-  weekday: "short",
-  hour: "numeric",
-  minute: "numeric",
 };
 
 const FORMAT_FULL_DATE_TIME_SHORT: Intl.DateTimeFormatOptions = {
@@ -140,57 +76,6 @@ const FORMAT_FULL_DATE_TIME_SHORT: Intl.DateTimeFormatOptions = {
   hour: "numeric",
   minute: "numeric",
 };
-
-const FORMAT_SHORT_TIME: Intl.DateTimeFormatOptions = {
-  timeStyle: "short",
-};
-
-const FORMAT_LONG_DATE_NO_YEAR: Intl.DateTimeFormatOptions = {
-  weekday: "long",
-  month: "long",
-  day: "numeric",
-};
-
-const FORMAT_DATE_TIME_SHORT_WITH_WEEKDAY: Intl.DateTimeFormatOptions = {
-  day: "numeric",
-  month: "short",
-  weekday: "short",
-  year: "numeric",
-  hour: "numeric",
-  minute: "numeric",
-};
-
-const FORMAT_TIME_SHORT: Intl.DateTimeFormatOptions = {
-  hour: "numeric",
-  minute: "numeric",
-};
-
-const FORMAT_DATE_TIME_WITHOUT_YEAR_OR_DAY_OF_WEEK: Intl.DateTimeFormatOptions =
-  {
-    day: "numeric",
-    month: "short",
-    hour: "numeric",
-    minute: "numeric",
-  };
-
-const FORMAT_DATE_TIME_WITHOUT_DAY_OF_WEEK_WITH_SECONDS:
-  Intl.DateTimeFormatOptions = {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-  };
-
-const FORMAT_DATE_TIME_WITHOUT_YEAR_OR_DAY_OF_WEEK_WITH_SECONDS:
-  Intl.DateTimeFormatOptions = {
-    day: "numeric",
-    month: "short",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-  };
 
 // Time constants for relative formatting
 const SECOND_MS = 1_000;
@@ -214,7 +99,7 @@ export function formatDateTime(
   const date = value instanceof Date ? value : new Date(value);
 
   if (isNaN(date.getTime())) {
-    return String(value);
+    throw new Error(`Invalid date value: ${String(value)}`);
   }
 
   const resolvedTimezone = resolveTimezone(
@@ -223,13 +108,21 @@ export function formatDateTime(
     userTimezoneOverride,
   );
 
-  switch (format.type) {
-    case "localizedFormat":
-      return formatLocalized(date, format, resolvedTimezone);
-    case "stringFormat":
-      return formatWithPattern(date, format, resolvedTimezone);
-    default:
-      return date.toISOString();
+  try {
+    switch (format.type) {
+      case "localizedFormat":
+        return formatLocalized(date, format, resolvedTimezone);
+      case "stringFormat":
+        return formatWithPattern(date, format, resolvedTimezone);
+      default:
+        throw new Error(
+          `Unknown datetime format type: ${
+            (format satisfies never as any).type
+          }`,
+        );
+    }
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -251,8 +144,10 @@ function formatLocalized(
 
   const options = getLocalizedFormatOptions(format.format);
   if (!options) {
-    // Fallback for unrecognized formats
-    return date.toISOString();
+    // Throw error for unrecognized formats - will be caught by outer handler
+    throw new Error(
+      `Unrecognized localized format: ${format.format}`,
+    );
   }
 
   // Add timezone if provided
@@ -261,9 +156,51 @@ function formatLocalized(
   try {
     return new Intl.DateTimeFormat(locale, finalOptions).format(date);
   } catch (error) {
-    // Fallback to ISO string if formatting fails
-    return date.toISOString();
+    // Re-throw with more context
+    throw new Error(
+      `Failed to format date with locale "${locale}" and timezone "${timezone}": ${error}`,
+    );
   }
+}
+/**
+ * Conversion map from Java DateTimeFormatter patterns to date-fns patterns
+ * Only includes patterns that differ between the two libraries
+ */
+const JAVA_TO_DATE_FNS_MAP: Record<string, string> = {
+  // Day of week (your usage - short and long text, not numeric)
+  e: "eee", // Short day name (Mon, Tue, Wed)
+  ee: "eeee", // Long day name (Monday, Tuesday, Wednesday)
+
+  // Week-based year
+  Y: "YYYY", // Week-based year (requires useAdditionalWeekYearTokens in date-fns)
+
+  // Timezone offset
+  Z: "XX", // Timezone offset without colon (+0200, -0800)
+
+  // Literal characters
+  "'Z'": "[Z]", // Literal 'Z' character (Zulu time indicator)
+};
+
+// Sort by length (longest first) to avoid partial matches
+const SORTED_JAVA_PATTERNS = Object.keys(JAVA_TO_DATE_FNS_MAP).sort(
+  (a, b) => b.length - a.length,
+);
+const JAVA_PATTERN_REGEX = new RegExp(
+  SORTED_JAVA_PATTERNS.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join(
+    "|",
+  ),
+  "g",
+);
+
+/**
+ * Converts a Java DateTimeFormatter pattern to date-fns pattern
+ * Warns about unsupported patterns but doesn't throw
+ */
+function convertJavaPattern(javaPattern: string): string {
+  return javaPattern.replace(
+    JAVA_PATTERN_REGEX,
+    (match) => JAVA_TO_DATE_FNS_MAP[match] ?? match,
+  );
 }
 
 function formatWithPattern(
@@ -271,21 +208,24 @@ function formatWithPattern(
   format: DatetimeStringFormat,
   timezone?: string,
 ): string {
-  // For custom patterns, we'll use the built-in toLocaleString with custom options
-  // In a production system, you might want to use a library like date-fns or dayjs
-  // to handle complex patterns
-  const locale = getBrowserLocale();
-  const options: Intl.DateTimeFormatOptions = parsePattern(format.pattern);
-
-  if (timezone) {
-    options.timeZone = timezone;
-  }
+  const convertedPattern = convertJavaPattern(format.pattern);
 
   try {
-    return new Intl.DateTimeFormat(locale, options).format(date);
+    // Check if pattern includes 'Z' which means always display UTC
+    const shouldAlwaysDisplayUtc = format.pattern.includes("'Z'");
+    const targetTimezone = shouldAlwaysDisplayUtc ? "UTC" : (timezone ?? "UTC");
+
+    // If we have a timezone to format in, use date-fns-tz
+    if (timezone || shouldAlwaysDisplayUtc) {
+      return formatInTimeZone(date, targetTimezone, convertedPattern);
+    }
+
+    // Otherwise use regular date-fns in browser's local timezone
+    return formatDate(date, convertedPattern);
   } catch (error) {
-    // Fallback to ISO string if pattern formatting fails
-    return date.toISOString();
+    throw new Error(
+      `Failed to format date with pattern "${format.pattern}": ${error}`,
+    );
   }
 }
 
@@ -317,180 +257,73 @@ function getLocalizedFormatOptions(
       return {};
 
     default:
-      // Fallback to a reasonable default
-      return FORMAT_DATE_TIME_SHORT;
+      throw new Error(
+        `Unknown localized datetime format: ${format satisfies never}`,
+      );
   }
 }
 
 /**
- * Formats a date relative to now (e.g., "2 hours ago", "Tomorrow", etc.)
- * This is a simplified version - a full implementation would include i18n support
+ * Formats a date relative to now (e.g., "2 hours ago", "in 5 minutes", etc.)
+ * Uses Intl.RelativeTimeFormat for proper i18n support.
+ *
+ * @throws Error if Intl.RelativeTimeFormat is not available
  */
-function formatRelativeToNow(date: Date, locale: string): string {
+function formatRelativeToNow(
+  date: Date,
+  locale: string,
+): string {
+  if (Intl.RelativeTimeFormat == null) {
+    throw new Error(
+      "Intl.RelativeTimeFormat is not available in this environment. Consider using a polyfill.",
+    );
+  }
+
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
   const now = Date.now();
   const dateTime = date.valueOf();
   const diff = dateTime - now;
   const absDiff = Math.abs(diff);
-  const isPast = diff < 0;
 
   // Less than a minute
   if (absDiff < MINUTE_MS) {
-    const seconds = Math.floor(absDiff / SECOND_MS);
-    if (seconds < 5) {
-      return "now";
-    }
-    return isPast ? `${seconds} seconds ago` : `in ${seconds} seconds`;
+    const seconds = Math.floor(diff / SECOND_MS);
+    return rtf.format(seconds, "second");
   }
 
   // Less than an hour
   if (absDiff < HOUR_MS) {
-    const minutes = Math.floor(absDiff / MINUTE_MS);
-    return isPast
-      ? `${minutes} minute${minutes !== 1 ? "s" : ""} ago`
-      : `in ${minutes} minute${minutes !== 1 ? "s" : ""}`;
+    const minutes = Math.floor(diff / MINUTE_MS);
+    return rtf.format(minutes, "minute");
   }
 
   // Less than a day
   if (absDiff < DAY_MS) {
-    const hours = Math.floor(absDiff / HOUR_MS);
-    return isPast
-      ? `${hours} hour${hours !== 1 ? "s" : ""} ago`
-      : `in ${hours} hour${hours !== 1 ? "s" : ""}`;
-  }
-
-  // Check if it's yesterday, today, or tomorrow
-  if (isToday(date)) {
-    const timeFormatter = new Intl.DateTimeFormat(locale, FORMAT_TIME_SHORT);
-    return `today at ${timeFormatter.format(date)}`;
-  }
-
-  if (isYesterday(date)) {
-    const timeFormatter = new Intl.DateTimeFormat(locale, FORMAT_TIME_SHORT);
-    return `yesterday at ${timeFormatter.format(date)}`;
-  }
-
-  if (isTomorrow(date)) {
-    const timeFormatter = new Intl.DateTimeFormat(locale, FORMAT_TIME_SHORT);
-    return `tomorrow at ${timeFormatter.format(date)}`;
+    const hours = Math.floor(diff / HOUR_MS);
+    return rtf.format(hours, "hour");
   }
 
   // Less than a week
   if (absDiff < WEEK_MS) {
-    const days = Math.floor(absDiff / DAY_MS);
-    return isPast
-      ? `${days} day${days !== 1 ? "s" : ""} ago`
-      : `in ${days} day${days !== 1 ? "s" : ""}`;
+    const days = Math.floor(diff / DAY_MS);
+    return rtf.format(days, "day");
   }
 
   // Less than a month
   if (absDiff < MONTH_MS) {
-    const weeks = Math.floor(absDiff / WEEK_MS);
-    return isPast
-      ? `${weeks} week${weeks !== 1 ? "s" : ""} ago`
-      : `in ${weeks} week${weeks !== 1 ? "s" : ""}`;
+    const weeks = Math.floor(diff / WEEK_MS);
+    return rtf.format(weeks, "week");
   }
 
   // Less than a year
   if (absDiff < YEAR_MS) {
-    const months = Math.floor(absDiff / MONTH_MS);
-    return isPast
-      ? `${months} month${months !== 1 ? "s" : ""} ago`
-      : `in ${months} month${months !== 1 ? "s" : ""}`;
+    const months = Math.floor(diff / MONTH_MS);
+    return rtf.format(months, "month");
   }
 
-  // More than a year - just show the date
-  const formatter = new Intl.DateTimeFormat(locale, FORMAT_DATE_SHORT);
-  return formatter.format(date);
-}
-
-function getMidnightTonight(): Date {
-  const date = new Date();
-  date.setMilliseconds(999);
-  date.setSeconds(59);
-  date.setMinutes(59);
-  date.setHours(23);
-  return date;
-}
-
-function isToday(date: Date): boolean {
-  const midnightTonight = getMidnightTonight();
-  const endYesterday = new Date(midnightTonight.getTime() - DAY_MS);
-  return date > endYesterday && date <= midnightTonight;
-}
-
-function isYesterday(date: Date): boolean {
-  const midnightTonight = getMidnightTonight();
-  const endYesterday = new Date(midnightTonight.getTime() - DAY_MS);
-  const startYesterday = new Date(midnightTonight.getTime() - 2 * DAY_MS);
-  return date > startYesterday && date <= endYesterday;
-}
-
-function isTomorrow(date: Date): boolean {
-  const midnightTonight = getMidnightTonight();
-  const midnightTomorrow = new Date(midnightTonight.getTime() + DAY_MS);
-  return date > midnightTonight && date <= midnightTomorrow;
-}
-
-function parsePattern(pattern: string): Intl.DateTimeFormatOptions {
-  // This is a simplified pattern parser
-  // In production, you'd want to support more complex patterns
-  const options: Intl.DateTimeFormatOptions = {};
-
-  // Common patterns
-  if (pattern.includes("yyyy") || pattern.includes("YYYY")) {
-    options.year = "numeric";
-  } else if (pattern.includes("yy") || pattern.includes("YY")) {
-    options.year = "2-digit";
-  }
-
-  if (pattern.includes("MMMM")) {
-    options.month = "long";
-  } else if (pattern.includes("MMM")) {
-    options.month = "short";
-  } else if (pattern.includes("MM")) {
-    options.month = "2-digit";
-  } else if (pattern.includes("M")) {
-    options.month = "numeric";
-  }
-
-  if (pattern.includes("dd") || pattern.includes("DD")) {
-    options.day = "2-digit";
-  } else if (pattern.includes("d") || pattern.includes("D")) {
-    options.day = "numeric";
-  }
-
-  if (pattern.includes("HH") || pattern.includes("hh")) {
-    options.hour = "2-digit";
-  } else if (pattern.includes("H") || pattern.includes("h")) {
-    options.hour = "numeric";
-  }
-
-  if (pattern.includes("mm")) {
-    options.minute = "2-digit";
-  } else if (pattern.includes("m")) {
-    options.minute = "numeric";
-  }
-
-  if (pattern.includes("ss")) {
-    options.second = "2-digit";
-  } else if (pattern.includes("s")) {
-    options.second = "numeric";
-  }
-
-  if (pattern.includes("EEEE")) {
-    options.weekday = "long";
-  } else if (pattern.includes("EEE") || pattern.includes("E")) {
-    options.weekday = "short";
-  }
-
-  // Handle 12/24 hour format
-  if (pattern.includes("a") || pattern.includes("A")) {
-    options.hour12 = true;
-  } else if (pattern.includes("H")) {
-    options.hour12 = false;
-  }
-
-  return options;
+  // More than a year
+  const years = Math.floor(diff / YEAR_MS);
+  return rtf.format(years, "year");
 }
 
 function resolveTimezone(
@@ -502,17 +335,16 @@ function resolveTimezone(
     return userTimezoneOverride;
   }
 
-  if (timezone.type === "user") {
-    return userTimezoneOverride
-      ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+  switch (timezone.type) {
+    case "user":
+      return userTimezoneOverride
+        ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+    case "static":
+      return resolvePropertyReference(timezone.zoneId, objectData)
+        ?? userTimezoneOverride;
+    default:
+      throw new Error(`Unknown timezone type: ${timezone satisfies never}`);
   }
-
-  if (timezone.type === "static") {
-    return resolvePropertyReference(timezone.zoneId, objectData)
-      ?? userTimezoneOverride;
-  }
-
-  return userTimezoneOverride;
 }
 
 function getBrowserLocale(): string {

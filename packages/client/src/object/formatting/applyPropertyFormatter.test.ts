@@ -24,339 +24,310 @@ import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 describe("getFormattedValue", () => {
   const mockClient = {} as MinimalClient;
 
-  function createMockObjectDef(
-    overrides: Partial<FetchedObjectTypeDefinition>,
-  ): FetchedObjectTypeDefinition {
-    return {
-      apiName: "TestObject",
-      type: "object",
-      primaryKeyApiName: "id",
-      titleProperty: "name",
-      rid: "ri.test.object",
-      displayName: "Test Object",
-      description: "A test object",
-      properties: {},
-      primaryKeyType: "string",
-      icon: undefined,
-      visibility: "NORMAL",
-      pluralDisplayName: "Test Objects",
-      status: "ACTIVE",
-      interfaceMap: {},
-      inverseInterfaceMap: {},
-      links: {},
-      implements: [],
-      [InterfaceDefinitions]: {},
-      ...overrides,
-    };
+  // Single object definition with all properties needed for testing
+  const OBJECT_DEF: FetchedObjectTypeDefinition = {
+    apiName: "TestObject",
+    type: "object",
+    primaryKeyApiName: "id",
+    titleProperty: "id",
+    rid: "ri.test.object",
+    displayName: "Test Object",
+    description: "A test object",
+    primaryKeyType: "string",
+    icon: undefined,
+    visibility: "NORMAL",
+    pluralDisplayName: "Test Objects",
+    status: "ACTIVE",
+    interfaceMap: {},
+    inverseInterfaceMap: {},
+    links: {},
+    implements: [],
+    [InterfaceDefinitions]: {},
+    properties: {
+      id: {
+        type: "string",
+        nullable: false,
+        multiplicity: false,
+      },
+      stringPropertyNoFormatting: {
+        type: "string",
+        nullable: true,
+        multiplicity: false,
+      },
+      currencyPropertyUsingCurrencyCodeProperty: {
+        type: "double",
+        nullable: true,
+        multiplicity: false,
+        valueFormatting: {
+          type: "number",
+          numberType: {
+            type: "currency",
+            baseFormatOptions: {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            },
+            style: "STANDARD",
+            currencyCode: {
+              type: "propertyType",
+              propertyApiName: "currencyCode",
+            },
+          },
+        },
+      },
+      currencyCode: {
+        type: "string",
+        nullable: true,
+        multiplicity: false,
+      },
+      percentagePropertyOneDecimal: {
+        type: "double",
+        nullable: true,
+        multiplicity: false,
+        valueFormatting: {
+          type: "number",
+          numberType: {
+            type: "ratio",
+            ratioType: "PERCENTAGE",
+            baseFormatOptions: {
+              minimumFractionDigits: 1,
+              maximumFractionDigits: 1,
+            },
+          },
+        },
+      },
+      booleanPropertyCustomLabels: {
+        type: "boolean",
+        nullable: true,
+        multiplicity: false,
+        valueFormatting: {
+          type: "boolean",
+          valueIfTrue: "Active",
+          valueIfFalse: "Inactive",
+        },
+      },
+      datePropertyLocalizedDate: {
+        type: "datetime",
+        nullable: true,
+        multiplicity: false,
+        valueFormatting: {
+          type: "date",
+          format: {
+            type: "localizedFormat",
+            format: "DATE_FORMAT_DATE",
+          },
+        },
+      },
+      timestampPropertyLocalizedTime: {
+        type: "timestamp",
+        nullable: true,
+        multiplicity: false,
+        valueFormatting: {
+          type: "timestamp",
+          format: {
+            type: "localizedFormat",
+            format: "DATE_FORMAT_TIME",
+          },
+          displayTimezone: {
+            type: "user",
+          },
+        },
+      },
+      numberPropertyTwoDecimals: {
+        type: "double",
+        nullable: true,
+        multiplicity: false,
+        valueFormatting: {
+          type: "number",
+          numberType: {
+            type: "standard",
+            baseFormatOptions: {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            },
+          },
+        },
+      },
+      currencyPropertyMissingReferencedProperty: {
+        type: "double",
+        nullable: true,
+        multiplicity: false,
+        valueFormatting: {
+          type: "number",
+          numberType: {
+            type: "currency",
+            baseFormatOptions: {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            },
+            style: "STANDARD",
+            currencyCode: {
+              type: "propertyType",
+              propertyApiName: "nonExistentCurrency",
+            },
+          },
+        },
+      },
+      nullableNumberProperty: {
+        type: "double",
+        nullable: true,
+        multiplicity: false,
+        valueFormatting: {
+          type: "number",
+          numberType: {
+            type: "standard",
+            baseFormatOptions: {},
+          },
+        },
+      },
+    },
+  };
+
+  // Default object data with all properties populated
+  const DEFAULT_OBJECT_DATA: SimpleOsdkProperties = {
+    $apiName: "TestObject",
+    $primaryKey: "test-123",
+    $title: "Test Object",
+    $objectType: "TestObject",
+    id: "test-123",
+    stringPropertyNoFormatting: "Plain text",
+    currencyPropertyUsingCurrencyCodeProperty: 12345.67,
+    currencyCode: "USD",
+    percentagePropertyOneDecimal: 0.875,
+    booleanPropertyCustomLabels: true,
+    datePropertyLocalizedDate: "2024-03-15T00:00:00Z",
+    timestampPropertyLocalizedTime: "2024-03-15T14:30:00Z",
+    numberPropertyTwoDecimals: 1234.56,
+    currencyPropertyMissingReferencedProperty: 1000,
+    nullableNumberProperty: 42,
+  };
+
+  // Helper to create an OSDK object with optional data overrides
+  function getObject(dataOverrides?: Partial<SimpleOsdkProperties>) {
+    const objectData = { ...DEFAULT_OBJECT_DATA, ...dataOverrides };
+    return createOsdkObject(mockClient, OBJECT_DEF, objectData);
   }
 
-  it("returns formatted values for properties with formatting rules", () => {
-    const objectDef = createMockObjectDef({
-      properties: {
-        id: {
-          type: "string",
-          nullable: false,
-          multiplicity: false,
-        },
-        name: {
-          type: "string",
-          nullable: true,
-          multiplicity: false,
-        },
-        revenue: {
-          type: "double",
-          nullable: true,
-          multiplicity: false,
-          valueFormatting: {
-            type: "number",
-            numberType: {
-              type: "currency",
-              baseFormatOptions: {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              },
-              style: "STANDARD",
-              currencyCode: {
-                type: "propertyType",
-                propertyApiName: "currency",
-              },
-            },
-          },
-        },
-        successRate: {
-          type: "double",
-          nullable: true,
-          multiplicity: false,
-          valueFormatting: {
-            type: "number",
-            numberType: {
-              type: "ratio",
-              ratioType: "PERCENTAGE",
-              baseFormatOptions: {
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 1,
-              },
-            },
-          },
-        },
-        isActive: {
-          type: "boolean",
-          nullable: true,
-          multiplicity: false,
-          valueFormatting: {
-            type: "boolean",
-            valueIfTrue: "Active",
-            valueIfFalse: "Inactive",
-          },
-        },
-        currency: {
-          type: "string",
-          nullable: true,
-          multiplicity: false,
-        },
-        createdDate: {
-          type: "datetime",
-          nullable: true,
-          multiplicity: false,
-          valueFormatting: {
-            type: "date",
-            format: {
-              type: "localizedFormat",
-              format: "DATE_FORMAT_DATE",
-            },
-          },
-        },
-      },
-    });
+  it("formats currency with property reference for currency code", () => {
+    const obj = getObject();
+    const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      "currencyPropertyUsingCurrencyCodeProperty",
+      { locale: "en-US" },
+    );
 
-    const objectData: SimpleOsdkProperties = {
-      $apiName: "TestObject",
-      $primaryKey: "123",
-      $title: "Test Item",
-      $objectType: "TestObject",
-      id: "123",
-      name: "Test Item",
-      revenue: 12345.67,
-      successRate: 0.875,
-      isActive: true,
-      currency: "USD",
-      createdDate: "2024-03-15T00:00:00Z",
-    };
-
-    const obj = createOsdkObject(mockClient, objectDef, objectData);
-    const options = { locale: "en-US" };
-
-    // Check that formatted values are present for properties with formatting rules
-    const formattedRevenue = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue("revenue", options);
-    expect(formattedRevenue).toBeDefined();
-    expect(formattedRevenue).toContain("12,345.67");
-
-    const formattedSuccessRate = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue("successRate", options);
-    expect(formattedSuccessRate).toBe("87.5%");
-
-    const formattedIsActive = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue("isActive", options);
-    expect(formattedIsActive).toBe("Active");
-
-    const formattedCreatedDate = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue("createdDate", options);
-    expect(formattedCreatedDate).toContain("Mar");
-    expect(formattedCreatedDate).toContain("15");
-    expect(formattedCreatedDate).toContain("2024");
-
-    // Check that properties without formatting rules return undefined
-    expect(obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue("name", options)).toBeUndefined();
-    expect(obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue("id", options)).toBeUndefined();
-    expect(obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue("currency", options)).toBeUndefined();
+    expect(formatted).toBeDefined();
+    expect(formatted).toContain("12,345.67");
   });
 
-  it("handles missing property references gracefully", () => {
-    const objectDef = createMockObjectDef({
-      properties: {
-        id: {
-          type: "string",
-          nullable: false,
-          multiplicity: false,
-        },
-        amount: {
-          type: "double",
-          nullable: true,
-          multiplicity: false,
-          valueFormatting: {
-            type: "number",
-            numberType: {
-              type: "currency",
-              baseFormatOptions: {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              },
-              style: "STANDARD",
-              currencyCode: {
-                type: "propertyType",
-                propertyApiName: "missingCurrency",
-              },
-            },
-          },
-        },
-      },
-    });
+  it("formats percentage with one decimal place", () => {
+    const obj = getObject();
+    const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      "percentagePropertyOneDecimal",
+      { locale: "en-US" },
+    );
 
-    const objectData: SimpleOsdkProperties = {
-      $apiName: "TestObject",
-      $primaryKey: "123",
-      $title: "Test",
-      id: "123",
-      amount: 1000,
-      $objectType: "TestObject",
-    };
-
-    const obj = createOsdkObject(mockClient, objectDef, objectData);
-<<<<<<< HEAD:packages/client/src/object/formatting/applyPropertyFormatter.test.ts
-=======
-    const formattedValues = obj
-      .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValues();
->>>>>>> 3850dcbe3 (With testing and complete):packages/client/src/object/formatting/getFormattedValues.test.ts
-
-    // Should still format the number even without currency
-    const formattedAmount = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue("amount");
-    expect(formattedAmount).toBeDefined();
-    expect(formattedAmount).toContain("1,000");
+    expect(formatted).toBe("87.5%");
   });
 
-  it("skips null and undefined values", () => {
-    const objectDef = createMockObjectDef({
-      properties: {
-        id: {
-          type: "string",
-          nullable: false,
-          multiplicity: false,
-        },
-        nullValue: {
-          type: "double",
-          nullable: true,
-          multiplicity: false,
-          valueFormatting: {
-            type: "number",
-            numberType: {
-              type: "standard",
-              baseFormatOptions: {},
-            },
-          },
-        },
-        undefinedValue: {
-          type: "double",
-          nullable: true,
-          multiplicity: false,
-          valueFormatting: {
-            type: "number",
-            numberType: {
-              type: "standard",
-              baseFormatOptions: {},
-            },
-          },
-        },
-      },
-    });
+  it("formats boolean with custom labels", () => {
+    const obj = getObject();
+    const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      "booleanPropertyCustomLabels",
+      { locale: "en-US" },
+    );
 
-    const objectData: SimpleOsdkProperties = {
-      $apiName: "TestObject",
-      $primaryKey: "123",
-      $title: "Test",
-      id: "123",
-      nullValue: undefined,
-      $objectType: "TestObject",
-      // undefinedValue is not present
-    };
-
-    const obj = createOsdkObject(mockClient, objectDef, objectData);
-<<<<<<< HEAD:packages/client/src/object/formatting/applyPropertyFormatter.test.ts
-=======
-    const formattedValues = obj
-      .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValues();
->>>>>>> 3850dcbe3 (With testing and complete):packages/client/src/object/formatting/getFormattedValues.test.ts
-
-    expect(obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue("nullValue")).toBeUndefined();
-    expect(obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue("undefinedValue")).toBeUndefined();
+    expect(formatted).toBe("Active");
   });
 
-  it("allows custom locale and timezone options", () => {
-    const objectDef = createMockObjectDef({
-      properties: {
-        id: {
-          type: "string",
-          nullable: false,
-          multiplicity: false,
-        },
-        amount: {
-          type: "double",
-          nullable: true,
-          multiplicity: false,
-          valueFormatting: {
-            type: "number",
-            numberType: {
-              type: "standard",
-              baseFormatOptions: {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              },
-            },
-          },
-        },
-        timestamp: {
-          type: "timestamp",
-          nullable: true,
-          multiplicity: false,
-          valueFormatting: {
-            type: "timestamp",
-            format: {
-              type: "localizedFormat",
-              format: "DATE_FORMAT_TIME",
-            },
-            displayTimezone: {
-              type: "user",
-            },
-          },
-        },
-      },
-    });
+  it("formats boolean false with custom label", () => {
+    const obj = getObject({ booleanPropertyCustomLabels: false });
+    const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      "booleanPropertyCustomLabels",
+      { locale: "en-US" },
+    );
 
-    const objectData: SimpleOsdkProperties = {
-      $apiName: "TestObject",
-      $primaryKey: "123",
-      $title: "Test",
-      id: "123",
-      amount: 1234.56,
-      timestamp: "2024-03-15T14:30:00Z",
-      $objectType: "TestObject",
-    };
+    expect(formatted).toBe("Inactive");
+  });
 
-    const obj = createOsdkObject(mockClient, objectDef, objectData);
+  it("formats date with localized format", () => {
+    const obj = getObject();
+    const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      "datePropertyLocalizedDate",
+      { locale: "en-US" },
+    );
 
-<<<<<<< HEAD:packages/client/src/object/formatting/applyPropertyFormatter.test.ts
-    // Test with German locale
-    const formattedAmountDE = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue("amount", {
-      locale: "de-DE",
-    });
-    expect(formattedAmountDE).toBe("1.234,56");
+    expect(formatted).toContain("Mar");
+    expect(formatted).toContain("15");
+    expect(formatted).toContain("2024");
+  });
 
-    // Test with custom timezone
-    const formattedTimestamp = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue("timestamp", {
-      locale: "en-US",
-      timezoneId: "America/New_York",
-    });
-    expect(formattedTimestamp).toBeDefined();
-=======
-    const formattedValuesDE = obj
-      .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValues({
-        locale: "de-DE",
-      });
-    expect(formattedValuesDE.amount).toBe("1.234,56");
+  it("formats timestamp with localized time format", () => {
+    const obj = getObject();
+    const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      "timestampPropertyLocalizedTime",
+      { locale: "en-US", timezoneId: "America/New_York" },
+    );
 
-    // Test with custom timezone
-    const formattedValuesWithTZ = obj
-      .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValues({
-        locale: "en-US",
-        timezoneId: "America/New_York",
-      });
-    expect(formattedValuesWithTZ.timestamp).toBeDefined();
->>>>>>> 3850dcbe3 (With testing and complete):packages/client/src/object/formatting/getFormattedValues.test.ts
+    expect(formatted).toBeDefined();
+  });
+
+  it("formats number with two decimal places", () => {
+    const obj = getObject();
+    const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      "numberPropertyTwoDecimals",
+      { locale: "en-US" },
+    );
+
+    expect(formatted).toBe("1,234.56");
+  });
+
+  it("returns undefined for property without formatting rules", () => {
+    const obj = getObject();
+    const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      "stringPropertyNoFormatting",
+      { locale: "en-US" },
+    );
+
+    expect(formatted).toBeUndefined();
+  });
+
+  it("handles missing currency code reference gracefully", () => {
+    const obj = getObject();
+    const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      "currencyPropertyMissingReferencedProperty",
+      { locale: "en-US" },
+    );
+
+    expect(formatted).toBeDefined();
+    expect(formatted).toContain("1,000");
+  });
+
+  it("returns undefined for null values", () => {
+    const obj = getObject({ nullableNumberProperty: undefined });
+    const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      "nullableNumberProperty",
+    );
+
+    expect(formatted).toBeUndefined();
+  });
+
+  it("returns undefined for undefined values", () => {
+    const obj = getObject();
+    // Remove the property from the object data
+    delete (obj as Record<string, unknown>).undefinedProperty;
+    const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      "undefinedProperty" as "nullableNumberProperty",
+    );
+
+    expect(formatted).toBeUndefined();
+  });
+
+  it("respects custom locale for number formatting", () => {
+    const obj = getObject();
+    const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+      "numberPropertyTwoDecimals",
+      { locale: "de-DE" },
+    );
+
+    expect(formatted).toBe("1.234,56");
   });
 });
