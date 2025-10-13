@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-export * from "./booleanValueFormatting.js";
-export * from "./commonValueFormattingUtils.js";
-export * from "./dateAndTimestampValueFormatting.js";
-export * from "./knownTypeValueFormatting.js";
-export * from "./numberValueFormatting.js";
-
-import type { PropertyBooleanFormattingRule } from "./booleanValueFormatting.js";
+import type { PropertyBooleanFormattingRule } from "./PropertyBooleanFormattingRule.js";
 import type {
   PropertyDateFormattingRule,
   PropertyTimestampFormattingRule,
-} from "./dateAndTimestampValueFormatting.js";
-import type { PropertyKnownTypeFormattingRule } from "./knownTypeValueFormatting.js";
-import type { PropertyNumberFormattingRule } from "./numberValueFormatting.js";
+} from "./PropertyDateAndTimestampFormattingRule.js";
+import type { PropertyKnownTypeFormattingRule } from "./PropertyKnownTypeFormattingRule.js";
+import type { PropertyNumberFormattingRule } from "./PropertyNumberFormattingRule.js";
 
 /**
  * Formatting configuration for property values.

@@ -20,7 +20,7 @@ import type {
   PropertyKeys,
 } from "./ObjectOrInterface.js";
 import type { PrimaryKeyTypes } from "./PrimaryKeyTypes.js";
-import type { PropertyValueFormattingRule } from "./PropertyValueFormattingRule.js";
+import type { PropertyValueFormattingRule } from "./valueFormatting/PropertyValueFormattingRule.js";
 import type { VersionString } from "./VersionString.js";
 import type { WirePropertyTypes } from "./WirePropertyTypes.js";
 

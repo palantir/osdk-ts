@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PropertyTypeReferenceOrStringConstant } from "./commonValueFormattingUtils.js";
+import type { PropertyTypeReferenceOrStringConstant } from "./PropertyValueFormattingUtils.js";
 
 export interface PropertyNumberFormattingRule {
   type: "number";

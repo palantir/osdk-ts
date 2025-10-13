@@ -112,7 +112,18 @@ export type {
 export type { OntologyMetadata } from "./ontology/OntologyMetadata.js";
 export type { PrimaryKeyTypes } from "./ontology/PrimaryKeyTypes.js";
 export type {
-  Affix,
+  InterfaceQueryDataType,
+  ObjectQueryDataType,
+  ObjectSetQueryDataType,
+  QueryDataTypeDefinition,
+  QueryDefinition,
+  QueryMetadata,
+  QueryParameterDefinition,
+  ThreeDimensionalQueryAggregationDefinition,
+  TwoDimensionalQueryAggregationDefinition,
+} from "./ontology/QueryDefinition.js";
+export type { PropertyBooleanFormattingRule } from "./ontology/valueFormatting/PropertyBooleanFormattingRule.js";
+export type {
   DatetimeFormat,
   DatetimeLocalizedFormat,
   DatetimeLocalizedFormatType,
@@ -120,11 +131,19 @@ export type {
   DatetimeTimezone,
   DatetimeTimezoneStatic,
   DatetimeTimezoneUser,
+  PropertyDateFormattingRule,
+  PropertyTimestampFormattingRule,
+} from "./ontology/valueFormatting/PropertyDateAndTimestampFormattingRule.js";
+export type {
+  KnownType,
+  PropertyKnownTypeFormattingRule,
+} from "./ontology/valueFormatting/PropertyKnownTypeFormattingRule.js";
+export type {
+  Affix,
   DurationBaseValue,
   DurationFormatStyle,
   DurationPrecision,
   HumanReadableFormat,
-  KnownType,
   NumberFormatAffix,
   NumberFormatCurrency,
   NumberFormatCurrencyStyle,
@@ -140,29 +159,16 @@ export type {
   NumberRatioType,
   NumberRoundingMode,
   NumberScaleType,
-  PropertyBooleanFormattingRule,
-  PropertyDateFormattingRule,
-  PropertyKnownTypeFormattingRule,
   PropertyNumberFormattingRule,
   PropertyNumberFormattingRuleType,
-  PropertyTimestampFormattingRule,
+  TimeCodeFormat,
+} from "./ontology/valueFormatting/PropertyNumberFormattingRule.js";
+export type { PropertyValueFormattingRule } from "./ontology/valueFormatting/PropertyValueFormattingRule.js";
+export type {
   PropertyTypeReference,
   PropertyTypeReferenceOrStringConstant,
-  PropertyValueFormattingRule,
   StringConstant,
-  TimeCodeFormat,
-} from "./ontology/PropertyValueFormattingRule.js";
-export type {
-  InterfaceQueryDataType,
-  ObjectQueryDataType,
-  ObjectSetQueryDataType,
-  QueryDataTypeDefinition,
-  QueryDefinition,
-  QueryMetadata,
-  QueryParameterDefinition,
-  ThreeDimensionalQueryAggregationDefinition,
-  TwoDimensionalQueryAggregationDefinition,
-} from "./ontology/QueryDefinition.js";
+} from "./ontology/valueFormatting/PropertyValueFormattingUtils.js";
 export type {
   BaseWirePropertyTypes,
   WirePropertyTypes,
