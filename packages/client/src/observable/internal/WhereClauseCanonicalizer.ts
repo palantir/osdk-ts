@@ -35,7 +35,11 @@ export class WhereClauseCanonicalizer {
    * object multiple times and we can skip unnecessary work.
    */
   #cache = new WeakMap<
-    WhereClause<any> | SimpleWhereClause,
+    | WhereClause<
+      ObjectOrInterfaceDefinition,
+      Record<string, SimplePropertyDef>
+    >
+    | SimpleWhereClause,
     Canonical<SimpleWhereClause>
   >();
 

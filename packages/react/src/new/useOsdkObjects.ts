@@ -27,9 +27,6 @@ import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
-/**
- * Infer RDP types from withProperties in a simpler way
- */
 type InferRdpTypes<
   Q extends ObjectTypeDefinition | InterfaceDefinition,
   WP extends DerivedProperty.Clause<Q> | undefined,
