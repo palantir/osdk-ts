@@ -206,12 +206,17 @@ export function defineCreateObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
   validateActionParameters(def);
+  const propertiesWithDerivedDatasources = (def.objectType.datasources ?? [])
+    .filter(ds => ds.type === "derived").flatMap(ds =>
+      Object.keys(ds.propertyMapping)
+    );
   const propertyParameters = Object.keys(def.objectType.properties ?? {})
     .filter(
       id =>
         !Object.keys(def.nonParameterMappings ?? {}).includes(id)
         && !def.excludedProperties?.includes(id)
-        && !isStruct(def.objectType.properties?.[id].type!),
+        && !isStruct(def.objectType.properties?.[id].type!)
+        && !propertiesWithDerivedDatasources.includes(id),
     );
   const parameterNames = new Set(propertyParameters);
   Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
@@ -546,13 +551,18 @@ export function defineCreateOrModifyObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
   validateActionParameters(def);
+  const propertiesWithDerivedDatasources = (def.objectType.datasources ?? [])
+    .filter(ds => ds.type === "derived").flatMap(ds =>
+      Object.keys(ds.propertyMapping)
+    );
   const propertyParameters = Object.keys(def.objectType.properties ?? {})
     .filter(
       id =>
         !Object.keys(def.nonParameterMappings ?? {}).includes(id)
         && !def.excludedProperties?.includes(id)
         && !isStruct(def.objectType.properties?.[id].type!)
-        && id !== def.objectType.primaryKeyPropertyApiName,
+        && id !== def.objectType.primaryKeyPropertyApiName
+        && !propertiesWithDerivedDatasources.includes(id),
     );
   const parameterNames = new Set(propertyParameters);
   Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
