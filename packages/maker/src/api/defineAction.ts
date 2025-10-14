@@ -42,6 +42,7 @@ import type { SubmissionMetadata } from "./action/SubmissionMetadata.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import { uppercaseFirstLetter } from "./defineObject.js";
 import {
+  addNamespaceIfNone,
   importedTypes,
   namespace,
   ontologyDefinition,
@@ -107,6 +108,7 @@ export type InterfaceActionTypeUserDefinition = {
 export function defineCreateInterfaceObjectAction(
   def: InterfaceActionTypeUserDefinition,
 ): ActionType {
+  addNamespaceToActionDefinition(def);
   const allProperties = getFlattenedInterfaceProperties(def.interfaceType);
   validateActionParameters(
     def,
@@ -122,7 +124,9 @@ export function defineCreateInterfaceObjectAction(
   );
   const parameterNames = new Set(propertyParameters);
   Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
-    parameterNames.add(param)
+    parameterNames.add(
+      !isTargetParameter(param) ? addNamespaceIfNone(param) : param,
+    )
   );
   parameterNames.add(CREATE_INTERFACE_OBJECT_PARAMETER);
   const actionApiName = def.apiName ?? `create-${
@@ -308,6 +312,7 @@ export function defineCreateObjectAction(
 export function defineModifyInterfaceObjectAction(
   def: InterfaceActionTypeUserDefinition,
 ): ActionType {
+  addNamespaceToActionDefinition(def);
   const allProperties = getFlattenedInterfaceProperties(def.interfaceType);
   validateActionParameters(
     def,
@@ -323,7 +328,9 @@ export function defineModifyInterfaceObjectAction(
   );
   const parameterNames = new Set(propertyParameters);
   Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
-    parameterNames.add(param)
+    parameterNames.add(
+      !isTargetParameter(param) ? addNamespaceIfNone(param) : param,
+    )
   );
   parameterNames.add(MODIFY_INTERFACE_OBJECT_PARAMETER);
   const actionApiName = def.apiName ?? `modify-${
@@ -1311,7 +1318,6 @@ function validateActionConfiguration(action: ActionType): void {
     }, {} as Record<string, ActionParameter>) ?? {};
   const orderedParameters =
     action.parameterOrdering?.map(id => parameterMap[id]) ?? action.parameters;
-
   orderedParameters?.forEach(param => {
     param.validation.conditionalOverrides?.forEach(override => {
       validateParameterCondition(
@@ -1447,11 +1453,9 @@ function validateActionParameters(
   ].forEach(id => {
     invariant(
       properties.includes(id)
+        || properties.includes(addNamespaceIfNone(id))
         || (def.parameterConfiguration?.[id].customParameterType !== undefined)
-        || id === MODIFY_OBJECT_PARAMETER
-        || id === CREATE_OR_MODIFY_OBJECT_PARAMETER
-        || id === CREATE_INTERFACE_OBJECT_PARAMETER
-        || id === MODIFY_INTERFACE_OBJECT_PARAMETER,
+        || isTargetParameter(id),
       `Parameter ${id} does not exist as a property on ${name} and its type is not explicitly defined`,
     );
   });
@@ -1460,7 +1464,8 @@ function validateActionParameters(
     ...def.excludedProperties ?? [],
   ].forEach(id => {
     invariant(
-      properties.includes(id),
+      properties.includes(id)
+        || properties.includes(addNamespaceIfNone(id)),
       `Property ${id} does not exist as a property on ${name}`,
     );
   });
@@ -1502,4 +1507,28 @@ function validateParameterOrdering(
       && missingParameters.length === 0,
     `Action parameter ordering for ${actionApiName} does not match expected parameters. Extraneous parameters in ordering: {${extraneousParameters}}, Missing parameters in ordering: {${missingParameters}}`,
   );
+}
+
+function isTargetParameter(parameterId: string): boolean {
+  return parameterId === MODIFY_OBJECT_PARAMETER
+    || parameterId === CREATE_OR_MODIFY_OBJECT_PARAMETER
+    || parameterId === CREATE_INTERFACE_OBJECT_PARAMETER
+    || parameterId === MODIFY_INTERFACE_OBJECT_PARAMETER;
+}
+
+function addNamespaceToActionDefinition(
+  def: InterfaceActionTypeUserDefinition,
+): void {
+  def.parameterConfiguration = Object.fromEntries(
+    Object.entries(def.parameterConfiguration ?? {})
+      .map((
+        [id, config],
+      ) => [!isTargetParameter(id) ? addNamespaceIfNone(id) : id, config]),
+  );
+  def.nonParameterMappings = Object.fromEntries(
+    Object.entries(def.nonParameterMappings ?? {})
+      .map(([id, value]) => [addNamespaceIfNone(id), value]),
+  );
+  def.excludedProperties = def.excludedProperties
+    ?? [].map(id => addNamespaceIfNone(id));
 }

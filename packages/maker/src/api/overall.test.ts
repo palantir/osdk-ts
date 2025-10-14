@@ -10471,13 +10471,25 @@ describe("Ontology Defining", () => {
         const createAction = defineCreateInterfaceObjectAction({
           interfaceType: sampleInterface,
           parameterConfiguration: {
-            "property1": {
+            "property": {
               displayName: "My Custom Param",
             },
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Parameter property1 does not exist as a property on com.palantir.sampleInterface and its type is not explicitly defined]`,
+        `[Error: Invariant failed: Parameter com.palantir.property does not exist as a property on com.palantir.sampleInterface and its type is not explicitly defined]`,
+      );
+      expect(() => {
+        const createAction = defineModifyInterfaceObjectAction({
+          interfaceType: sampleInterface,
+          parameterConfiguration: {
+            "property": {
+              displayName: "My Custom Param",
+            },
+          },
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Parameter com.palantir.property does not exist as a property on com.palantir.sampleInterface and its type is not explicitly defined]`,
       );
     });
 
