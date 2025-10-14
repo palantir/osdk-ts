@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.5.0-rc.15
+
+### Patch Changes
+
+- 37eb75b: remove features not supported for RC
+
 ## 2.5.0-beta.14
 
 ### Minor Changes

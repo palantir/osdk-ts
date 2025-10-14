@@ -1,5 +1,15 @@
 # @osdk/client
 
+## 2.5.0-rc.15
+
+### Patch Changes
+
+- 37eb75b: remove features not supported for RC
+- Updated dependencies [37eb75b]
+  - @osdk/api@2.5.0-rc.15
+  - @osdk/client.unstable@2.5.0-rc.15
+  - @osdk/generator-converters@2.5.0-rc.15
+
 ## 2.5.0-beta.14
 
 ### Minor Changes
