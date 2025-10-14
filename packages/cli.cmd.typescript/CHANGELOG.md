@@ -1,5 +1,13 @@
 # @osdk/cli.cmd.typescript
 
+## 0.29.0-rc.6
+
+### Patch Changes
+
+- 37eb75b: remove features not supported for RC
+  - @osdk/generator@2.5.0-rc.15
+  - @osdk/cli.common@0.29.0-rc.6
+
 ## 0.29.0-beta.5
 
 ### Minor Changes
