@@ -248,9 +248,12 @@ export namespace Osdk {
           InterfaceMetadata: InterfaceMetadata;
         };
 
-      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValues: (
+      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
+        PropertyApiName extends PropertyKeys<Q>,
+      >(
+        propertyApiName: PropertyApiName,
         options?: { locale?: string; timezoneId?: string },
-      ) => Record<string, string>;
+      ) => string | undefined;
     }
     // We are hiding the $rid field if it wasn't requested as we want to discourage its use
     & (IsNever<OPTIONS> extends true ? {}

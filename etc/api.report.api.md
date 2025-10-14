@@ -1251,10 +1251,10 @@ export namespace Osdk {
             			ObjectMetadata: ObjectMetadata
             			InterfaceMetadata: InterfaceMetadata
             		}
-        		readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValues: (options?: {
+        		readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <PropertyApiName extends PropertyKeys<Q>>(propertyApiName: PropertyApiName, options?: {
             			locale?: string
             			timezoneId?: string
-            		}) => Record<string, string>
+            		}) => string | undefined
         	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         		readonly $rid: string
         	} : {});

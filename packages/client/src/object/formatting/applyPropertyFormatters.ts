@@ -15,7 +15,6 @@
  */
 
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
-import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 
 export interface FormatPropertyOptions {
   locale?: string;
@@ -23,21 +22,27 @@ export interface FormatPropertyOptions {
 }
 
 /**
- * Applies formatting rules to object properties and returns a record
- * of property names to their formatted string values.
+ * Applies formatting rules to a property value and returns the formatted string value.
  *
- * Only properties with formatting rules will be included in the result.
- * Properties that cannot be formatted due to missing references will be undefined.
+ * @param propertyValue - The value of the property to format
+ * @returns The formatted string value, or undefined if the property cannot be formatted
  *
- * @experimental This is a stub implementation that returns an empty record.
+ * @experimental This is a stub implementation that returns undefined.
  * The actual formatting logic will be implemented later.
  */
-export function applyPropertyFormatters(
+export function applyPropertyFormatter(
   _objectDef: FetchedObjectTypeDefinition,
-  _objectData: SimpleOsdkProperties,
+  _propertyValue:
+    | string
+    | Array<string>
+    | number
+    | Array<number>
+    | boolean
+    | Array<boolean>
+    | undefined,
   _options: FormatPropertyOptions = {},
-): Record<string, string> {
-  // Stub implementation - return empty record
+): string | undefined {
+  // Stub implementation - return undefined
   // The actual formatting logic will be added later
-  return {};
+  return undefined;
 }

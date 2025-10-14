@@ -30,7 +30,10 @@ export interface InterfaceHolder<
     readonly InterfaceMetadata: InterfaceMetadata;
   };
 
-  readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValues": (
+  readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue": <
+    PropertyApiName extends string,
+  >(
+    propertyApiName: PropertyApiName,
     options?: FormatPropertyOptions,
-  ) => Record<string, string>;
+  ) => string | undefined;
 }

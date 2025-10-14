@@ -3,4 +3,4 @@
 "@osdk/api": minor
 ---
 
-Add stub for getFormattedValues in experimental mode
+Add stub for getFormattedValue in experimental mode

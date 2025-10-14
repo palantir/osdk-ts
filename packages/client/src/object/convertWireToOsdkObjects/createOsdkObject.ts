@@ -26,7 +26,7 @@ import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvide
 import { hydrateAttachmentFromRidInternal } from "../../public-utils/hydrateAttachmentFromRid.js";
 import { createObjectSpecifierFromPrimaryKey } from "../../util/objectSpecifierUtils.js";
 import {
-  applyPropertyFormatters,
+  applyPropertyFormatter,
   type FormatPropertyOptions,
 } from "../formatting/applyPropertyFormatters.js";
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
@@ -111,15 +111,17 @@ const basePropDefs = {
     },
     enumerable: false,
   },
-  "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValues": {
+  "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue": {
     value: function(
       this: ObjectHolder,
+      propertyApiName: string,
       options?: FormatPropertyOptions,
-    ): Record<string, string> {
+    ): string | undefined {
       const rawObj = this[UnderlyingOsdkObject] as SimpleOsdkProperties;
       const def = this[ObjectDefRef];
+      const propertyValue = rawObj[propertyApiName];
 
-      return applyPropertyFormatters(def, rawObj, options);
+      return applyPropertyFormatter(def, propertyValue, options);
     },
     enumerable: false,
   },

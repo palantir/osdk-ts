@@ -47,9 +47,12 @@ export interface BaseHolder {
     readonly ObjectMetadata: ObjectMetadata;
   };
 
-  readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValues": (
+  readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue": <
+    PropertyApiName extends string,
+  >(
+    propertyApiName: PropertyApiName,
     options?: FormatPropertyOptions,
-  ) => Record<string, string>;
+  ) => string | undefined;
 
   // [key: `$$${string}`]: any;
   // Unlike SimpleOsdkProperties, all of our remaining types are unknown as the full
