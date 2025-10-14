@@ -15,6 +15,7 @@
  */
 
 import type { InterfaceMetadata, ObjectMetadata, Osdk } from "@osdk/api";
+import type { FormatPropertyOptions } from "../formatting/applyPropertyFormatters.js";
 import type { BaseHolder } from "./BaseHolder.js";
 import type { InterfaceDefRef } from "./InternalSymbols.js";
 
@@ -28,4 +29,11 @@ export interface InterfaceHolder<
     readonly ObjectMetadata: ObjectMetadata;
     readonly InterfaceMetadata: InterfaceMetadata;
   };
+
+  readonly "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue": <
+    PropertyApiName extends string,
+  >(
+    propertyApiName: PropertyApiName,
+    options?: FormatPropertyOptions,
+  ) => string | undefined;
 }
