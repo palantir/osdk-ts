@@ -437,10 +437,7 @@ export function defineModifyObjectAction(
     }`;
   if (def.parameterOrdering) {
     if (!def.parameterOrdering.includes(MODIFY_OBJECT_PARAMETER)) {
-      def.parameterOrdering = [
-        MODIFY_OBJECT_PARAMETER,
-        ...def.parameterOrdering,
-      ];
+      def.parameterOrdering.unshift(MODIFY_OBJECT_PARAMETER);
     }
     validateParameterOrdering(
       def.parameterOrdering,
@@ -602,10 +599,7 @@ export function defineCreateOrModifyObjectAction(
     }`;
   if (def.parameterOrdering) {
     if (!def.parameterOrdering.includes(CREATE_OR_MODIFY_OBJECT_PARAMETER)) {
-      def.parameterOrdering = [
-        CREATE_OR_MODIFY_OBJECT_PARAMETER,
-        ...def.parameterOrdering,
-      ];
+      def.parameterOrdering.unshift(CREATE_OR_MODIFY_OBJECT_PARAMETER);
     }
     validateParameterOrdering(
       def.parameterOrdering,
