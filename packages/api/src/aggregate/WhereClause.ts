@@ -148,8 +148,7 @@ type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
   true
   ? (PD["type"] extends Record<string, BaseWirePropertyTypes>
     ? ArrayFilter<StructArrayFilterOpts<PD["type"]>>
-    : PD["type"] extends
-      "string" | "geopoint" | "geoshape" | "datetime" | "timestamp"
+    : PD["type"] extends PropertyTypesRepresentedAsStringsForArrayWhereClause
       ? ArrayFilter<string>
     : (PD["type"] extends boolean ? ArrayFilter<boolean>
       : ArrayFilter<number>))
@@ -160,18 +159,14 @@ type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
     : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
     : PD["type"] extends "datetime" | "timestamp" ? DatetimeFilter
     : PD["type"] extends "boolean" ? BooleanFilter
-    : PD["type"] extends
-      "double" | "integer" | "long" | "float" | "decimal" | "byte"
-      ? NumberFilter
+    : PD["type"] extends WhereClauseNumberPropertyTypes ? NumberFilter
     : BaseFilter<string>); // FIXME we need to represent all types
 
 type StructArrayFilterOpts<ST extends Record<string, BaseWirePropertyTypes>> = {
   [K in keyof ST]?: ST[K] extends
-    "string" | "geopoint" | "geoshape" | "datetime" | "timestamp"
-    ? EqFilter.$eq<string>
+    PropertyTypesRepresentedAsStringsForArrayWhereClause ? EqFilter.$eq<string>
     : ST[K] extends boolean ? EqFilter.$eq<boolean>
-    : ST[K] extends "double" | "integer" | "long" | "float" | "decimal" | "byte"
-      ? EqFilter.$eq<number>
+    : ST[K] extends WhereClauseNumberPropertyTypes ? EqFilter.$eq<number>
     : never;
 };
 
@@ -181,6 +176,20 @@ type StructFilterOpts<ST extends Record<string, BaseWirePropertyTypes>> = {
 type StructFilter<ST extends Record<string, BaseWirePropertyTypes>> = {
   [K in keyof ST]: Just<K, StructFilterOpts<ST>>;
 }[keyof ST];
+
+type PropertyTypesRepresentedAsStringsForArrayWhereClause =
+  | "string"
+  | "geopoint"
+  | "geoshape"
+  | "datetime"
+  | "timestamp";
+type WhereClauseNumberPropertyTypes =
+  | "double"
+  | "integer"
+  | "long"
+  | "float"
+  | "decimal"
+  | "byte";
 
 export interface AndWhereClause<
   T extends ObjectOrInterfaceDefinition,
