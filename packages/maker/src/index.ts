@@ -37,19 +37,21 @@ export type { SubmissionMetadata } from "./api/action/SubmissionMetadata.js";
 export { addDependency } from "./api/addDependency.js";
 export { OntologyEntityTypeEnum } from "./api/common/OntologyEntityTypeEnum.js";
 export {
+  CREATE_INTERFACE_OBJECT_PARAMETER,
   CREATE_OR_MODIFY_OBJECT_PARAMETER,
   defineAction,
-  defineCreateInterfaceObjectAction,
-  defineCreateObjectAction,
-  defineCreateOrModifyObjectAction,
-  defineDeleteObjectAction,
-  defineModifyInterfaceObjectAction,
-  defineModifyObjectAction,
+  MODIFY_INTERFACE_OBJECT_PARAMETER,
   MODIFY_OBJECT_PARAMETER,
 } from "./api/defineAction.js";
+export { defineCreateInterfaceObjectAction } from "./api/defineCreateInterfaceObjectAction.js";
+export { defineCreateObjectAction } from "./api/defineCreateObjectAction.js";
+export { defineCreateOrModifyObjectAction } from "./api/defineCreateOrModifyObjectAction.js";
+export { defineDeleteObjectAction } from "./api/defineDeleteObjectAction.js";
 export { defineInterface } from "./api/defineInterface.js";
 export { defineInterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
 export { defineLink } from "./api/defineLink.js";
+export { defineModifyInterfaceObjectAction } from "./api/defineModifyInterfaceObjectAction.js";
+export { defineModifyObjectAction } from "./api/defineModifyObjectAction.js";
 export {
   convertToPluralDisplayName,
   defineObject,
