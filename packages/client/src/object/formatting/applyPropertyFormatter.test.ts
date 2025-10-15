@@ -122,7 +122,7 @@ describe("getFormattedValue", () => {
     expect(formatted).toBeUndefined();
   });
 
-  it("returns undefined for null values", () => {
+  it("returns undefined for undefined values", () => {
     const obj = getObject();
     const formatted = obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
       "nullableBooleanProperty",
