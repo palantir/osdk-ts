@@ -22,7 +22,6 @@ import type {
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { convertConditionDefinition } from "../conversion/toMarketplace/convertConditionDefinition.js";
-import { convertMappingValue } from "../conversion/toMarketplace/convertMappingValue.js";
 import type { ActionLevelValidationDefinition } from "./action/ActionLevelValidationDefinition.js";
 import { type ActionParameter } from "./action/ActionParameter.js";
 import type { ActionParameterAllowedValues } from "./action/ActionParameterAllowedValues.js";
@@ -104,599 +103,6 @@ export type InterfaceActionTypeUserDefinition = {
   excludedProperties?: Array<string>;
   parameterOrdering?: Array<string>;
 };
-
-export function defineCreateInterfaceObjectAction(
-  def: InterfaceActionTypeUserDefinition,
-): ActionType {
-  addNamespaceToActionDefinition(def);
-  const allProperties = getFlattenedInterfaceProperties(def.interfaceType);
-  validateActionParameters(
-    def,
-    Object.keys(allProperties),
-    def.interfaceType.apiName,
-  );
-  const propertyParameters = Object.keys(allProperties).filter(apiName =>
-    isPropertyParameter(
-      def,
-      apiName,
-      allProperties[apiName].sharedPropertyType.type,
-    )
-  );
-  const parameterNames = new Set(propertyParameters);
-  Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
-    parameterNames.add(
-      !isTargetParameter(param) ? addNamespaceIfNone(param) : param,
-    )
-  );
-  parameterNames.add(CREATE_INTERFACE_OBJECT_PARAMETER);
-  const actionApiName = def.apiName ?? `create-${
-    kebab(
-      def.interfaceType.apiName.split(".").pop() ?? def.interfaceType.apiName,
-    )
-  }${
-    def.objectType === undefined
-      ? ""
-      : `-${
-        kebab(
-          def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
-        )
-      }`
-  }`;
-  if (def.parameterOrdering) {
-    if (!def.parameterOrdering.includes(CREATE_INTERFACE_OBJECT_PARAMETER)) {
-      def.parameterOrdering.unshift(CREATE_INTERFACE_OBJECT_PARAMETER);
-    }
-    validateParameterOrdering(
-      def.parameterOrdering,
-      parameterNames,
-      actionApiName,
-    );
-  }
-  const parameters = createParameters(
-    def,
-    new Map(
-      Object.entries(allProperties).map((
-        [id, prop],
-      ) => [id, prop.sharedPropertyType]),
-    ),
-    parameterNames,
-    new Map(
-      Object.entries(allProperties).map(([id, prop]) => [id, prop.required]),
-    ),
-  );
-  const mappings = Object.fromEntries(
-    Object.entries(def.nonParameterMappings ?? {}).map((
-      [id, value],
-    ) => [id, convertMappingValue(value)]),
-  );
-
-  return defineAction({
-    apiName: actionApiName,
-    displayName: def.displayName
-      ?? `Create ${def.interfaceType.displayMetadata.displayName}`,
-    parameters: parameters,
-    status: def.status ?? (def.interfaceType.status.type !== "deprecated"
-      ? def.interfaceType.status.type
-      : def.interfaceType.status),
-    entities: {
-      affectedInterfaceTypes: [def.interfaceType.apiName],
-      affectedObjectTypes: [],
-      affectedLinkTypes: [],
-      typeGroups: [],
-    },
-    rules: [
-      {
-        type: "addInterfaceRule",
-        addInterfaceRule: {
-          interfaceApiName: def.interfaceType.apiName,
-          objectTypeParameter: CREATE_INTERFACE_OBJECT_PARAMETER,
-          sharedPropertyValues: {
-            ...Object.fromEntries(
-              propertyParameters.map(
-                id => [id, { type: "parameterId", parameterId: id }],
-              ),
-            ),
-            ...mappings,
-          },
-        },
-      },
-    ],
-    parameterOrdering: def.parameterOrdering
-      ?? createDefaultParameterOrdering(
-        def,
-        Object.keys(allProperties),
-        parameters,
-        CREATE_INTERFACE_OBJECT_PARAMETER,
-      ),
-    ...(def.validation
-      ? {
-        validation: convertValidationRule(def.validation),
-      }
-      : {}),
-  });
-}
-
-export function defineCreateObjectAction(
-  def: ActionTypeUserDefinition,
-): ActionType {
-  validateActionParameters(
-    def,
-    Object.keys(def.objectType.properties ?? {}),
-    def.objectType.apiName,
-  );
-  const propertyParameters = Object.keys(def.objectType.properties ?? {})
-    .filter(
-      id => isPropertyParameter(def, id, def.objectType.properties?.[id].type!),
-    );
-  const parameterNames = new Set(propertyParameters);
-  Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
-    parameterNames.add(param)
-  );
-  const actionApiName = def.apiName
-    ?? `create-object-${
-      kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
-    }`;
-  if (def.parameterOrdering) {
-    validateParameterOrdering(
-      def.parameterOrdering,
-      parameterNames,
-      actionApiName,
-    );
-  }
-  const parameters = createParameters(
-    def,
-    new Map(Object.entries(def.objectType.properties ?? {})),
-    parameterNames,
-  );
-  const mappings = Object.fromEntries(
-    Object.entries(def.nonParameterMappings ?? {}).map((
-      [id, value],
-    ) => [id, convertMappingValue(value)]),
-  );
-
-  return defineAction({
-    apiName: actionApiName,
-    displayName: def.displayName ?? `Create ${def.objectType.displayName}`,
-    parameters: parameters,
-    status: def.status ?? "active",
-    entities: {
-      affectedInterfaceTypes: [],
-      affectedObjectTypes: [def.objectType.apiName],
-      affectedLinkTypes: [],
-      typeGroups: [],
-    },
-    rules: [{
-      type: "addObjectRule",
-      addObjectRule: {
-        objectTypeId: def.objectType.apiName,
-        propertyValues: {
-          ...Object.fromEntries(
-            propertyParameters.map(
-              p => [p, { type: "parameterId", parameterId: p }],
-            ),
-          ),
-          ...mappings,
-        },
-        structFieldValues: {},
-      },
-    }],
-    parameterOrdering: def.parameterOrdering
-      ?? createDefaultParameterOrdering(
-        def,
-        Object.keys(def.objectType.properties ?? {}),
-        parameters,
-      ),
-    ...(def.actionLevelValidation
-      ? {
-        validation: convertValidationRule(
-          def.actionLevelValidation,
-          parameters,
-        ),
-      }
-      : {}),
-    ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
-    ...(def.enableLayoutSwitch
-      && { enableLayoutSwitch: def.enableLayoutSwitch }),
-    ...(def.displayAndFormat && { displayAndFormat: def.displayAndFormat }),
-    ...(def.sections
-      && {
-        sections: Object.fromEntries(
-          def.sections.map(section => [section.id, section]),
-        ),
-      }),
-    ...(def.submissionMetadata
-      && { submissionMetadata: def.submissionMetadata }),
-  });
-}
-
-export function defineModifyInterfaceObjectAction(
-  def: InterfaceActionTypeUserDefinition,
-): ActionType {
-  addNamespaceToActionDefinition(def);
-  const allProperties = getFlattenedInterfaceProperties(def.interfaceType);
-  validateActionParameters(
-    def,
-    Object.keys(allProperties),
-    def.interfaceType.apiName,
-  );
-  const propertyParameters = Object.keys(allProperties).filter(apiName =>
-    isPropertyParameter(
-      def,
-      apiName,
-      allProperties[apiName].sharedPropertyType.type,
-    )
-  );
-  const parameterNames = new Set(propertyParameters);
-  Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
-    parameterNames.add(
-      !isTargetParameter(param) ? addNamespaceIfNone(param) : param,
-    )
-  );
-  parameterNames.add(MODIFY_INTERFACE_OBJECT_PARAMETER);
-  const actionApiName = def.apiName ?? `modify-${
-    kebab(
-      def.interfaceType.apiName.split(".").pop() ?? def.interfaceType.apiName,
-    )
-  }${
-    def.objectType === undefined
-      ? ""
-      : `-${
-        kebab(
-          def.objectType.apiName.split(".").pop() ?? def.objectType.apiName,
-        )
-      }`
-  }`;
-  if (def.parameterOrdering) {
-    if (!def.parameterOrdering.includes(MODIFY_INTERFACE_OBJECT_PARAMETER)) {
-      def.parameterOrdering.unshift(MODIFY_INTERFACE_OBJECT_PARAMETER);
-    }
-    validateParameterOrdering(
-      def.parameterOrdering,
-      parameterNames,
-      actionApiName,
-    );
-  }
-  const parameters = createParameters(
-    def,
-    new Map(
-      Object.entries(allProperties).map((
-        [id, prop],
-      ) => [id, prop.sharedPropertyType]),
-    ),
-    parameterNames,
-    new Map(
-      Object.entries(allProperties).map(([id, prop]) => [id, prop.required]),
-    ),
-  );
-  const mappings = Object.fromEntries(
-    Object.entries(def.nonParameterMappings ?? {}).map((
-      [id, value],
-    ) => [id, convertMappingValue(value)]),
-  );
-
-  return defineAction({
-    apiName: actionApiName,
-    displayName: def.displayName
-      ?? `Modify ${def.interfaceType.displayMetadata.displayName}`,
-    parameters: parameters,
-    status: def.status ?? (def.interfaceType.status.type !== "deprecated"
-      ? def.interfaceType.status.type
-      : def.interfaceType.status),
-    entities: {
-      affectedInterfaceTypes: [def.interfaceType.apiName],
-      affectedObjectTypes: [],
-      affectedLinkTypes: [],
-      typeGroups: [],
-    },
-    rules: [
-      {
-        type: "modifyInterfaceRule",
-        modifyInterfaceRule: {
-          interfaceObjectToModifyParameter: "interfaceObjectToModifyParameter",
-          sharedPropertyValues: {
-            ...Object.fromEntries(
-              propertyParameters.map(
-                id => [id, { type: "parameterId", parameterId: id }],
-              ),
-            ),
-            ...mappings,
-          },
-        },
-      },
-    ],
-    parameterOrdering: def.parameterOrdering
-      ?? createDefaultParameterOrdering(
-        def,
-        Object.keys(allProperties),
-        parameters,
-        MODIFY_INTERFACE_OBJECT_PARAMETER,
-      ),
-    ...(def.validation
-      ? {
-        validation: convertValidationRule(def.validation),
-      }
-      : {}),
-  });
-}
-
-export function defineModifyObjectAction(
-  def: ActionTypeUserDefinition,
-): ActionType {
-  validateActionParameters(
-    def,
-    Object.keys(def.objectType.properties ?? {}),
-    def.objectType.apiName,
-  );
-  const propertyParameters = Object.keys(def.objectType.properties ?? {})
-    .filter(
-      id =>
-        isPropertyParameter(def, id, def.objectType.properties?.[id].type!)
-        && id !== def.objectType.primaryKeyPropertyApiName,
-    );
-  const parameterNames = new Set(propertyParameters);
-  Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
-    parameterNames.add(param)
-  );
-  parameterNames.add(MODIFY_OBJECT_PARAMETER);
-  const actionApiName = def.apiName
-    ?? `modify-object-${
-      kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
-    }`;
-  if (def.parameterOrdering) {
-    if (!def.parameterOrdering.includes(MODIFY_OBJECT_PARAMETER)) {
-      def.parameterOrdering.unshift(MODIFY_OBJECT_PARAMETER);
-    }
-    validateParameterOrdering(
-      def.parameterOrdering,
-      parameterNames,
-      actionApiName,
-    );
-  }
-  const parameters = createParameters(
-    def,
-    new Map(Object.entries(def.objectType.properties ?? {})),
-    parameterNames,
-  );
-  parameters.forEach(
-    p => {
-      if (p.id !== MODIFY_OBJECT_PARAMETER && p.defaultValue === undefined) {
-        p.defaultValue = {
-          type: "objectParameterPropertyValue",
-          objectParameterPropertyValue: {
-            parameterId: MODIFY_OBJECT_PARAMETER,
-            propertyTypeId: p.id,
-          },
-        };
-      }
-    },
-  );
-
-  const mappings = Object.fromEntries(
-    Object.entries(def.nonParameterMappings ?? {}).map((
-      [id, value],
-    ) => [id, convertMappingValue(value)]),
-  );
-
-  return defineAction({
-    apiName: actionApiName,
-    displayName: def.displayName ?? `Modify ${def.objectType.displayName}`,
-    parameters: parameters,
-    status: def.status ?? "active",
-    rules: [{
-      type: "modifyObjectRule",
-      modifyObjectRule: {
-        objectToModify: MODIFY_OBJECT_PARAMETER,
-        propertyValues: {
-          ...Object.fromEntries(
-            propertyParameters.map(
-              p => [p, { type: "parameterId", parameterId: p }],
-            ),
-          ),
-          ...mappings,
-        },
-        structFieldValues: {},
-      },
-    }],
-    entities: {
-      affectedInterfaceTypes: [],
-      affectedObjectTypes: [def.objectType.apiName],
-      affectedLinkTypes: [],
-      typeGroups: [],
-    },
-    parameterOrdering: def.parameterOrdering
-      ?? createDefaultParameterOrdering(
-        def,
-        Object.keys(def.objectType.properties ?? {}),
-        parameters,
-        MODIFY_OBJECT_PARAMETER,
-      ),
-    ...(def.actionLevelValidation
-      ? {
-        validation: convertValidationRule(
-          def.actionLevelValidation,
-          parameters,
-        ),
-      }
-      : {}),
-    ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
-    ...(def.enableLayoutSwitch
-      && { enableLayoutSwitch: def.enableLayoutSwitch }),
-    ...(def.displayAndFormat && { displayAndFormat: def.displayAndFormat }),
-    ...(def.sections
-      && {
-        sections: Object.fromEntries(
-          def.sections.map(section => [section.id, section]),
-        ),
-      }),
-    ...(def.submissionMetadata
-      && { submissionMetadata: def.submissionMetadata }),
-  });
-}
-
-export function defineDeleteObjectAction(
-  def: ActionTypeUserDefinition,
-): ActionType {
-  return defineAction({
-    apiName: def.apiName
-      ?? `delete-object-${
-        kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
-      }`,
-    displayName: def.displayName ?? `Delete ${def.objectType.displayName}`,
-    parameters: [
-      {
-        id: "objectToDeleteParameter",
-        displayName: "Delete object",
-        type: {
-          type: "objectReference",
-          objectReference: { objectTypeId: def.objectType.apiName },
-        },
-        validation: {
-          required: true,
-          allowedValues: { type: "objectQuery" },
-        },
-      },
-    ],
-    status: def.status ?? "active",
-    rules: [{
-      type: "deleteObjectRule",
-      deleteObjectRule: {
-        objectToDelete: "objectToDeleteParameter",
-      },
-    }],
-    entities: {
-      affectedInterfaceTypes: [],
-      affectedObjectTypes: [def.objectType.apiName],
-      affectedLinkTypes: [],
-      typeGroups: [],
-    },
-    ...(def.actionLevelValidation
-      ? {
-        validation: convertValidationRule(
-          def.actionLevelValidation,
-        ),
-      }
-      : {}),
-  });
-}
-
-export function defineCreateOrModifyObjectAction(
-  def: ActionTypeUserDefinition,
-): ActionType {
-  validateActionParameters(
-    def,
-    Object.keys(def.objectType.properties ?? {}),
-    def.objectType.apiName,
-  );
-  const propertyParameters = Object.keys(def.objectType.properties ?? {})
-    .filter(
-      id =>
-        !Object.keys(def.nonParameterMappings ?? {}).includes(id)
-        && !def.excludedProperties?.includes(id)
-        && !isStruct(def.objectType.properties?.[id].type!)
-        && id !== def.objectType.primaryKeyPropertyApiName,
-    );
-  const parameterNames = new Set(propertyParameters);
-  Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
-    parameterNames.add(param)
-  );
-  parameterNames.add(CREATE_OR_MODIFY_OBJECT_PARAMETER);
-  const actionApiName = def.apiName
-    ?? `create-or-modify-${
-      kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
-    }`;
-  if (def.parameterOrdering) {
-    if (!def.parameterOrdering.includes(CREATE_OR_MODIFY_OBJECT_PARAMETER)) {
-      def.parameterOrdering.unshift(CREATE_OR_MODIFY_OBJECT_PARAMETER);
-    }
-    validateParameterOrdering(
-      def.parameterOrdering,
-      parameterNames,
-      actionApiName,
-    );
-  }
-  const parameters = createParameters(
-    def,
-    new Map(Object.entries(def.objectType.properties ?? {})),
-    parameterNames,
-  );
-  parameters.forEach(
-    p => {
-      if (
-        p.id !== CREATE_OR_MODIFY_OBJECT_PARAMETER
-        && p.defaultValue === undefined
-      ) {
-        p.defaultValue = {
-          type: "objectParameterPropertyValue",
-          objectParameterPropertyValue: {
-            parameterId: CREATE_OR_MODIFY_OBJECT_PARAMETER,
-            propertyTypeId: p.id,
-          },
-        };
-      }
-    },
-  );
-  const mappings = Object.fromEntries(
-    Object.entries(def.nonParameterMappings ?? {}).map((
-      [id, value],
-    ) => [id, convertMappingValue(value)]),
-  );
-
-  return defineAction({
-    apiName: actionApiName,
-    displayName: def.displayName
-      ?? `Create or Modify ${def.objectType.displayName}`,
-    parameters: parameters,
-    status: def.status ?? "active",
-    rules: [{
-      type: "addOrModifyObjectRuleV2",
-      addOrModifyObjectRuleV2: {
-        objectToModify: CREATE_OR_MODIFY_OBJECT_PARAMETER,
-        propertyValues: {
-          ...Object.fromEntries(
-            propertyParameters.map(
-              p => [p, { type: "parameterId", parameterId: p }],
-            ),
-          ),
-          ...mappings,
-        },
-        structFieldValues: {},
-      },
-    }],
-    entities: {
-      affectedInterfaceTypes: [],
-      affectedObjectTypes: [def.objectType.apiName],
-      affectedLinkTypes: [],
-      typeGroups: [],
-    },
-    parameterOrdering: def.parameterOrdering
-      ?? createDefaultParameterOrdering(
-        def,
-        Object.keys(def.objectType.properties ?? {}),
-        parameters,
-        CREATE_OR_MODIFY_OBJECT_PARAMETER,
-      ),
-    ...(def.actionLevelValidation
-      ? {
-        validation: convertValidationRule(
-          def.actionLevelValidation,
-          parameters,
-        ),
-      }
-      : {}),
-    ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
-    ...(def.enableLayoutSwitch
-      && { enableLayoutSwitch: def.enableLayoutSwitch }),
-    ...(def.displayAndFormat && { displayAndFormat: def.displayAndFormat }),
-    ...(def.sections
-      && {
-        sections: Object.fromEntries(
-          def.sections.map(section => [section.id, section]),
-        ),
-      }),
-    ...(def.submissionMetadata
-      && { submissionMetadata: def.submissionMetadata }),
-  });
-}
 
 export function defineAction(actionDef: ActionTypeDefinition): ActionType {
   const apiName = namespace + actionDef.apiName;
@@ -829,7 +235,7 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
   return fullAction;
 }
 
-function isPropertyParameter(
+export function isPropertyParameter(
   def: ActionTypeUserDefinition | InterfaceActionTypeUserDefinition,
   name: string,
   type: PropertyTypeType,
@@ -841,13 +247,13 @@ function isPropertyParameter(
   );
 }
 
-function createParameters(
+export function createParameters(
   def: ActionTypeUserDefinition | InterfaceActionTypeUserDefinition,
   propertyMap:
-    | Map<string, ObjectPropertyTypeUserDefinition>
-    | Map<string, SharedPropertyType>,
+    | Record<string, ObjectPropertyTypeUserDefinition>
+    | Record<string, SharedPropertyType>,
   parameterSet: Set<string>,
-  requiredMap?: Map<string, boolean>,
+  requiredMap?: Record<string, boolean>,
 ): Array<ActionParameter> {
   const targetParams = getTargetParameters(def, parameterSet);
   return [
@@ -857,10 +263,10 @@ function createParameters(
         {
           id,
           displayName: def.parameterConfiguration?.[id]?.displayName
-            ?? propertyMap.get(id)?.displayName
+            ?? propertyMap[id]?.displayName
             ?? uppercaseFirstLetter(id),
           type: def.parameterConfiguration?.[id]?.customParameterType
-            ?? extractActionParameterType(propertyMap.get(id)!),
+            ?? extractActionParameterType(propertyMap[id]!),
           validation: (def.parameterConfiguration?.[id] !== undefined)
             ? {
               ...def.parameterConfiguration?.[id],
@@ -870,25 +276,25 @@ function createParameters(
                     def.parameterConfiguration?.[id].customParameterType,
                   )
                   : extractAllowedValuesFromPropertyType(
-                    propertyMap.get(id)?.type!,
+                    propertyMap[id]?.type!,
                   )),
               required: def.parameterConfiguration?.[id].required
-                ?? (propertyMap.get(id)?.nullability?.noNulls
+                ?? (propertyMap[id]?.nullability?.noNulls
                   ?? false),
             }
             : {
-              required: (propertyMap.get(id)?.array ?? false)
+              required: (propertyMap[id]?.array ?? false)
                 ? {
-                  listLength: propertyMap.get(id)?.nullability
+                  listLength: propertyMap[id]?.nullability
                       ?.noEmptyCollections
                     ? { min: 1 }
                     : {},
                 }
-                : requiredMap?.get(id)
-                  ?? propertyMap.get(id)?.nullability?.noNulls
+                : requiredMap?.[id]
+                  ?? propertyMap[id]?.nullability?.noNulls
                   ?? false,
               allowedValues: extractAllowedValuesFromPropertyType(
-                propertyMap.get(id)?.type!,
+                propertyMap[id]?.type!,
               ),
             },
           defaultValue: def.parameterConfiguration?.[id]?.defaultValue,
@@ -1282,7 +688,7 @@ function maybeAddList(
   return ((pt.array ?? false) ? type + "List" : type) as ActionParameterType;
 }
 
-function kebab(s: string): string {
+export function kebab(s: string): string {
   return s
     .replace(/([a-z])([A-Z])/g, "$1-$2")
     .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
@@ -1294,7 +700,7 @@ function sanitize(s: string): string {
   return s.includes(".") ? s : namespace + s;
 }
 
-function convertValidationRule(
+export function convertValidationRule(
   actionValidation: ActionLevelValidationDefinition,
   actionParameters?: ActionParameter[],
 ): Array<ActionValidationRule> {
@@ -1442,7 +848,7 @@ function validateParameterPrefill(
   }
 }
 
-function validateActionParameters(
+export function validateActionParameters(
   def: ActionTypeUserDefinition | InterfaceActionTypeUserDefinition,
   properties: Array<string>,
   name: string,
@@ -1473,7 +879,7 @@ function validateActionParameters(
 
 // Parameters with configurations will be ordered first in the order they were defined
 // followed by the rest of the parameters in the order they were defined on the object type.
-function createDefaultParameterOrdering(
+export function createDefaultParameterOrdering(
   def: ActionTypeUserDefinition | InterfaceActionTypeUserDefinition,
   properties: Array<string>,
   parameters: ActionParameter[],
@@ -1490,7 +896,7 @@ function createDefaultParameterOrdering(
   ];
 }
 
-function validateParameterOrdering(
+export function validateParameterOrdering(
   parameterOrdering: string[],
   parameterSet: Set<string>,
   actionApiName: string,
@@ -1509,21 +915,21 @@ function validateParameterOrdering(
   );
 }
 
-function isTargetParameter(parameterId: string): boolean {
+export function isTargetParameter(parameterId: string): boolean {
   return parameterId === MODIFY_OBJECT_PARAMETER
     || parameterId === CREATE_OR_MODIFY_OBJECT_PARAMETER
     || parameterId === CREATE_INTERFACE_OBJECT_PARAMETER
     || parameterId === MODIFY_INTERFACE_OBJECT_PARAMETER;
 }
 
-function addNamespaceToActionDefinition(
+export function addNamespaceToActionDefinition(
   def: InterfaceActionTypeUserDefinition,
 ): void {
   def.parameterConfiguration = Object.fromEntries(
     Object.entries(def.parameterConfiguration ?? {})
       .map((
         [id, config],
-      ) => [!isTargetParameter(id) ? addNamespaceIfNone(id) : id, config]),
+      ) => [isTargetParameter(id) ? id : addNamespaceIfNone(id), config]),
   );
   def.nonParameterMappings = Object.fromEntries(
     Object.entries(def.nonParameterMappings ?? {})

@@ -24,18 +24,18 @@ import {
   CREATE_INTERFACE_OBJECT_PARAMETER,
   CREATE_OR_MODIFY_OBJECT_PARAMETER,
   defineAction,
-  defineCreateInterfaceObjectAction,
-  defineCreateObjectAction,
-  defineCreateOrModifyObjectAction,
-  defineDeleteObjectAction,
-  defineModifyInterfaceObjectAction,
-  defineModifyObjectAction,
   MODIFY_INTERFACE_OBJECT_PARAMETER,
   MODIFY_OBJECT_PARAMETER,
 } from "./defineAction.js";
+import { defineCreateInterfaceObjectAction } from "./defineCreateInterfaceObjectAction.js";
+import { defineCreateObjectAction } from "./defineCreateObjectAction.js";
+import { defineCreateOrModifyObjectAction } from "./defineCreateOrModifyObjectAction.js";
+import { defineDeleteObjectAction } from "./defineDeleteObjectAction.js";
 import { defineInterface } from "./defineInterface.js";
 import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
 import { defineLink } from "./defineLink.js";
+import { defineModifyInterfaceObjectAction } from "./defineModifyInterfaceObjectAction.js";
+import { defineModifyObjectAction } from "./defineModifyObjectAction.js";
 import { defineObject } from "./defineObject.js";
 import {
   defineOntology,
