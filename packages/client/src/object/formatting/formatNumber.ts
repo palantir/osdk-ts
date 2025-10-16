@@ -57,7 +57,7 @@ export function formatNumber(
       );
 
     case "fixedValues":
-      return numberType.values[value] ?? value.toString();
+      return numberType.values[value];
 
     case "currency":
       return formatCurrency(value, numberType, objectData, locale);
