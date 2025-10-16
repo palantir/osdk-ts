@@ -296,30 +296,28 @@ function handleWherePair(
     };
   }
 
-  if (firstKey === "$contains") {
-    if (filter[firstKey] instanceof Object) {
-      const structFilter: [string, any][] = Object.entries(filter[firstKey]);
-      invariant(
-        structFilter.length === 1,
-        "Cannot filter on more than one struct field in the same clause, need to use an and clause",
-      );
-      const structFieldApiName = structFilter[0][0];
-      invariant(
-        structFilter[0][1] != null
-          && Object.keys(structFilter[0][1]).length === 1
-          && "$eq" in structFilter[0][1],
-        "Cannot filter on a struct field in an array with anything other than a single $eq",
-      );
-      return {
-        type: "contains",
-        propertyIdentifier: {
-          type: "structField",
-          propertyApiName: fieldName,
-          structFieldApiName,
-        },
-        value: structFilter[0][1]["$eq"],
-      };
-    }
+  if (firstKey === "$contains" && filter[firstKey] instanceof Object) {
+    const structFilter: [string, any][] = Object.entries(filter[firstKey]);
+    invariant(
+      structFilter.length === 1,
+      "Cannot filter on more than one struct field in the same clause, need to use an and clause",
+    );
+    const structFieldApiName = structFilter[0][0];
+    invariant(
+      structFilter[0][1] != null
+        && Object.keys(structFilter[0][1]).length === 1
+        && "$eq" in structFilter[0][1],
+      "Cannot filter on a struct field in an array with anything other than a single $eq",
+    );
+    return {
+      type: "contains",
+      propertyIdentifier: {
+        type: "structField",
+        propertyApiName: fieldName,
+        structFieldApiName,
+      },
+      value: structFilter[0][1]["$eq"],
+    };
   }
 
   return {
