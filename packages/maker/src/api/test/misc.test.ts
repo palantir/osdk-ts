@@ -28,7 +28,7 @@ import { importOntologyEntity } from "../importOntologyEntity.js";
 import { importSharedPropertyType } from "../importSharedPropertyType.js";
 import { type SharedPropertyType } from "../properties/SharedPropertyType.js";
 
-describe("Overall Tests", () => {
+describe("Miscellaneous Tests", () => {
   beforeEach(async () => {
     await defineOntology("com.palantir.", () => {}, "/tmp/");
   });
