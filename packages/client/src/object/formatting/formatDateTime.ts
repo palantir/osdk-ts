@@ -57,6 +57,8 @@ export function formatDateTime(
   }
 }
 
+const INVALID_DATE_STRING = "Invalid date or timezone";
+
 function formatLocalized(
   date: Date,
   format: DatetimeLocalizedFormat,
@@ -72,11 +74,15 @@ function formatLocalized(
   }
 
   const options = getLocalizedFormatOptions(format.format);
-
-  return new Intl.DateTimeFormat(
-    locale,
-    timezone ? { ...options, timeZone: timezone } : options,
-  ).format(date);
+  try {
+    return new Intl.DateTimeFormat(
+      locale,
+      timezone ? { ...options, timeZone: timezone } : options,
+    ).format(date);
+  } catch (_e) {
+    // If a property reference is an invalid timezone we specifically say that it's invalid instead of returning undefined;
+    return INVALID_DATE_STRING;
+  }
 }
 
 function getLocalizedFormatOptions(
