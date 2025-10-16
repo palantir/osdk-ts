@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ActionDefinition,
-  ActionValidationResponse,
-  ObjectTypeDefinition,
-  Osdk,
-} from "@osdk/client";
+import type { ActionDefinition, ActionValidationResponse } from "@osdk/client";
 import { ActionValidationError } from "@osdk/client";
 import type {
   ActionSignatureFromDef,
@@ -34,31 +29,6 @@ type ApplyActionParams<Q extends ActionDefinition<any>> =
     [K in keyof ObservableClient.ApplyActionOptions as `$${K}`]:
       ObservableClient.ApplyActionOptions[K];
   };
-
-export interface AutoSaveConfig<
-  T extends ObjectTypeDefinition,
-  Q extends ActionDefinition<any>,
-> {
-  object: Osdk.Instance<T>;
-  debounceMs?: number;
-  /**
-   * Maps property changes to action parameters.
-   * The return type is validated against the action's parameter type.
-   */
-  mapToParams?: (
-    object: Osdk.Instance<T>,
-    changes: Partial<Osdk.Instance<T>>,
-  ) => Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0];
-}
-
-export interface AutoSaver<T extends ObjectTypeDefinition> {
-  apply: (changes: Partial<Osdk.Instance<T>>) => void;
-  flush: () => Promise<void>;
-  cancel: () => void;
-  readonly isSaving: boolean;
-  readonly isDirty: boolean;
-  readonly error: Error | undefined;
-}
 
 export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
   applyAction: (
@@ -88,15 +58,6 @@ export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
   ) => Promise<ActionValidationResponse | undefined>;
 
   validationResult?: ActionValidationResponse;
-
-  /**
-   * Creates an auto-saver for debounced, optimistic property updates.
-   * @param config Configuration for auto-save behavior
-   * @returns AutoSaver with apply, flush, cancel methods and state getters
-   */
-  autoSave: <T extends ObjectTypeDefinition>(
-    config: AutoSaveConfig<T, Q>,
-  ) => AutoSaver<T>;
 }
 
 export function useOsdkAction<Q extends ActionDefinition<any>>(
@@ -217,148 +178,12 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
     }
   }, [observableClient, actionDef, isPending]);
 
-  // Auto-save state management
-  interface AutoSaveState<T extends ObjectTypeDefinition> {
-    isSaving: boolean;
-    isDirty: boolean;
-    error: Error | undefined;
-    pendingChanges: Partial<Osdk.Instance<T>> | undefined;
-    timeoutId: ReturnType<typeof setTimeout> | undefined;
-  }
-
-  const autoSaveStates = React.useRef(
-    new Map<string, AutoSaveState<ObjectTypeDefinition>>(),
-  );
-  const [, forceUpdate] = React.useReducer((x: number) => x + 1, 0);
-
-  const autoSave = React.useCallback(
-    <T extends ObjectTypeDefinition>(
-      config: AutoSaveConfig<T, Q>,
-    ): AutoSaver<T> => {
-      const key = `${config.object.$apiName}:${config.object.$primaryKey}`;
-
-      let state = autoSaveStates.current.get(key) as
-        | AutoSaveState<T>
-        | undefined;
-      if (!state) {
-        state = {
-          isSaving: false,
-          isDirty: false,
-          error: undefined,
-          pendingChanges: undefined,
-          timeoutId: undefined,
-        };
-        autoSaveStates.current.set(key, state);
-      }
-
-      const executeSave = async () => {
-        const pendingChanges = state.pendingChanges;
-        if (!pendingChanges || state.isSaving) return;
-
-        const changesToSave = pendingChanges;
-        state.pendingChanges = undefined;
-        state.isSaving = true;
-        state.isDirty = false;
-        forceUpdate();
-
-        try {
-          const baseParams = config.mapToParams
-            ? config.mapToParams(config.object, changesToSave)
-            : changesToSave;
-
-          const optimisticUpdate:
-            ObservableClient.ApplyActionOptions["optimisticUpdate"] = (ctx) => {
-              ctx.updateObject(config.object.$clone(changesToSave));
-            };
-
-          const paramsWithOptimistic = Object.assign({}, baseParams, {
-            $optimisticUpdate: optimisticUpdate,
-          });
-
-          await applyAction(paramsWithOptimistic);
-
-          state.error = undefined;
-          state.isDirty = false;
-        } catch (e) {
-          state.error = e instanceof Error ? e : new Error(String(e));
-          state.pendingChanges = changesToSave;
-        } finally {
-          state.isSaving = false;
-          forceUpdate();
-        }
-      };
-
-      return {
-        apply: (changes: Partial<Osdk.Instance<T>>) => {
-          state.pendingChanges = { ...state.pendingChanges, ...changes };
-          state.isDirty = true;
-
-          if (state.timeoutId) {
-            clearTimeout(state.timeoutId);
-          }
-
-          const debounceMs = config.debounceMs ?? 1000;
-          state.timeoutId = setTimeout(() => {
-            executeSave().catch((err: unknown) => {
-              if (!state.error) {
-                state.error = err instanceof Error
-                  ? err
-                  : new Error(String(err));
-              }
-              state.isSaving = false;
-              forceUpdate();
-            });
-          }, debounceMs);
-
-          forceUpdate();
-        },
-
-        flush: async () => {
-          if (state.timeoutId) {
-            clearTimeout(state.timeoutId);
-            state.timeoutId = undefined;
-          }
-          await executeSave();
-        },
-
-        cancel: () => {
-          if (state.timeoutId) {
-            clearTimeout(state.timeoutId);
-            state.timeoutId = undefined;
-          }
-          state.pendingChanges = undefined;
-          state.isDirty = false;
-          state.error = undefined;
-          forceUpdate();
-        },
-
-        get isSaving() {
-          return state.isSaving;
-        },
-        get isDirty() {
-          return state.isDirty;
-        },
-        get error() {
-          return state.error;
-        },
-      };
-    },
-    [applyAction, forceUpdate],
-  );
-
   // Cleanup on unmount
   React.useEffect(() => {
     return () => {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
-
-      for (const state of autoSaveStates.current.values()) {
-        if (state.timeoutId) {
-          clearTimeout(state.timeoutId);
-        }
-      }
-      autoSaveStates.current.clear();
     };
   }, []);
 
@@ -370,6 +195,5 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
     isPending,
     isValidating,
     validationResult,
-    autoSave,
   };
 }

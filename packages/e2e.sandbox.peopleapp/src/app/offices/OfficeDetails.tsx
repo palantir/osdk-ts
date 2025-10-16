@@ -1,6 +1,10 @@
-import { useLinks, useOsdkAction } from "@osdk/react/experimental";
+import {
+  useDebouncedCallback,
+  useLinks,
+  useOsdkAction,
+} from "@osdk/react/experimental";
 import type { Point } from "geojson";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../../components/Button.js";
 import { ErrorMessage } from "../../components/ErrorMessage.js";
 import { H2 } from "../../components/headers.js";
@@ -95,9 +99,7 @@ export function OfficeDetails({ office, onOfficeDeleted }: OfficeDetailsProps) {
         <div className="mt-3 p-3 bg-red-100 rounded">
           <ErrorMessage
             message={`Error deleting office: ${
-              deleteError.unknown !== undefined
-                ? String(deleteError.unknown || "Unknown error")
-                : "Failed to delete office"
+              deleteError.actionValidation?.message ?? "Failed to delete office"
             }`}
           />
         </div>
@@ -132,33 +134,30 @@ export function OfficeDetails({ office, onOfficeDeleted }: OfficeDetailsProps) {
 
 function EditableOfficeName({ office }: { office: Office.OsdkInstance }) {
   const [localName, setLocalName] = useState(office.name ?? "");
-  const { autoSave } = useOsdkAction(editOffice);
+  const { applyAction, isPending, error } = useOsdkAction(editOffice);
 
   useEffect(() => {
     setLocalName(office.name ?? "");
   }, [office.name]);
 
-  const saver = useMemo(
-    () =>
-      autoSave({
-        object: office,
-        debounceMs: 1000,
-        mapToParams: (obj, changes) => {
-          const name = changes.name ?? obj.name ?? "";
-          return {
-            Office: obj,
-            name: name,
-            location: obj.location!,
-          };
+  const debouncedSave = useDebouncedCallback(
+    async (newName: string) => {
+      await applyAction({
+        Office: office,
+        name: newName,
+        location: office.location!,
+        $optimisticUpdate: (ctx) => {
+          ctx.updateObject(office.$clone({ name: newName }));
         },
-      }),
-    [office, autoSave],
+      });
+    },
+    1000,
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
     setLocalName(newName);
-    saver.apply({ name: newName });
+    debouncedSave(newName);
   };
 
   return (
@@ -170,19 +169,16 @@ function EditableOfficeName({ office }: { office: Office.OsdkInstance }) {
         type="text"
         value={localName}
         onChange={handleChange}
-        disabled={saver.isSaving}
+        disabled={isPending}
         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
         placeholder="Enter office name"
       />
-      {saver.isDirty && !saver.isSaving && (
-        <span className="text-xs text-gray-500 mt-1">Typing...</span>
-      )}
-      {saver.isSaving && (
+      {isPending && (
         <span className="text-xs text-blue-600 mt-1">Saving...</span>
       )}
-      {saver.error && (
+      {error && (
         <span className="text-xs text-red-600 mt-1">
-          Error: {saver.error.message}
+          Error: {error.actionValidation?.message ?? String(error.unknown)}
         </span>
       )}
     </div>
