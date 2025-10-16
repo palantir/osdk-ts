@@ -1,5 +1,19 @@
 # @osdk/maker
 
+## 0.14.0-beta.4
+
+### Minor Changes
+
+- aca0e5d: Add parameter/property configuration for OAC interface actions
+- 878c2eb: Add display name, api name, status customizations to OAC interface actions
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [f7ae38a]
+  - @osdk/api@2.6.0-beta.2
+
 ## 0.14.0-beta.3
 
 ### Minor Changes
