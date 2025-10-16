@@ -15,8 +15,8 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
-import { defineObject } from "./defineObject.js";
-import { defineOntology, dumpOntologyFullMetadata } from "./defineOntology.js";
+import { defineObject } from "../defineObject.js";
+import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 
 describe("Marking Constraints", () => {
   beforeEach(async () => {
@@ -119,5 +119,37 @@ describe("Marking Constraints", () => {
     const datasource =
       ontology.ontology.objectTypes["com.palantir.document"].datasources[0];
     expect(datasource).not.toHaveProperty("dataSecurity");
+  });
+
+  it("supports marking constraints with CBAC type and markingInputGroupName", () => {
+    const obj = defineObject({
+      titlePropertyApiName: "title",
+      displayName: "Document",
+      pluralDisplayName: "Documents",
+      apiName: "document",
+      primaryKeyPropertyApiName: "title",
+      properties: {
+        "title": {
+          type: "string",
+          displayName: "Title",
+        },
+        "classification": {
+          type: {
+            type: "marking",
+            markingType: "CBAC",
+            markingInputGroupName: "classificationGroup",
+          },
+          displayName: "Classification",
+        },
+      },
+    });
+
+    const ontology = dumpOntologyFullMetadata();
+    const classificationConstraint = ontology.ontology
+      .objectTypes["com.palantir.document"].datasources[0].dataSecurity
+      ?.classificationConstraint!;
+    expect(classificationConstraint.markingGroupName).toEqual(
+      "classificationGroup",
+    );
   });
 });
