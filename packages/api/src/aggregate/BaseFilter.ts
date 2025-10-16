@@ -16,12 +16,19 @@
 
 import type { Just } from "./Just.js";
 
-export type BaseFilterOptions<T> = {
+type EqFilterOption<T> = {
   "$eq": T;
+};
+
+export namespace EqFilter {
+  export interface $eq<T> extends Just<"$eq", EqFilterOption<T>> {}
+}
+
+export interface BaseFilterOptions<T> extends EqFilterOption<T> {
   "$ne": T;
   "$isNull": boolean;
   "$in": ReadonlyArray<T>;
-};
+}
 
 export namespace BaseFilter {
   export interface $eq<T> extends Just<"$eq", BaseFilterOptions<T>> {}

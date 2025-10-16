@@ -834,6 +834,36 @@
         },
         "primaryKey": "primaryKey_",
         "properties": {
+          "structArray": {
+            "displayName": "StructArray",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "string1",
+                    "rid": "ri.ontology.main.struct-field.108c5fd9-ac85-45aa-8b89-0854c40a51b8",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "string2",
+                    "rid": "ri.ontology.main.struct-field.a993c24d-cb2f-4c0b-b013-3a06304da519",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              }
+            },
+            "rid": "ri.ontology.main.property.345b80f5-4901-4f40-9aae-b830d1ed9432",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
           "description": {
             "displayName": "Description",
             "dataType": {

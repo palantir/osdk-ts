@@ -25,7 +25,7 @@ import type {
 import type { BaseWirePropertyTypes } from "../ontology/WirePropertyTypes.js";
 import type { IsNever } from "../OsdkObjectFrom.js";
 import type { ArrayFilter } from "./ArrayFilter.js";
-import type { BaseFilter } from "./BaseFilter.js";
+import type { BaseFilter, EqFilter } from "./BaseFilter.js";
 import type { BooleanFilter } from "./BooleanFilter.js";
 import type { DatetimeFilter } from "./DatetimeFilter.js";
 import type { GeoFilter } from "./GeoFilter.js";
@@ -146,9 +146,10 @@ export type GeoFilter_Intersects = {
 
 type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
   true
-  ? (PD["type"] extends
-    "string" | "geopoint" | "geoshape" | "datetime" | "timestamp"
-    ? ArrayFilter<string>
+  ? (PD["type"] extends Record<string, BaseWirePropertyTypes>
+    ? ArrayFilter<StructArrayFilterOpts<PD["type"]>>
+    : PD["type"] extends PropertyTypesRepresentedAsStringsForArrayWhereClause
+      ? ArrayFilter<string>
     : (PD["type"] extends boolean ? ArrayFilter<boolean>
       : ArrayFilter<number>))
   : PD["type"] extends Record<string, BaseWirePropertyTypes> ?
@@ -158,10 +159,16 @@ type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
     : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
     : PD["type"] extends "datetime" | "timestamp" ? DatetimeFilter
     : PD["type"] extends "boolean" ? BooleanFilter
-    : PD["type"] extends
-      "double" | "integer" | "long" | "float" | "decimal" | "byte"
-      ? NumberFilter
+    : PD["type"] extends WhereClauseNumberPropertyTypes ? NumberFilter
     : BaseFilter<string>); // FIXME we need to represent all types
+
+type StructArrayFilterOpts<ST extends Record<string, BaseWirePropertyTypes>> = {
+  [K in keyof ST]?: ST[K] extends
+    PropertyTypesRepresentedAsStringsForArrayWhereClause ? EqFilter.$eq<string>
+    : ST[K] extends boolean ? EqFilter.$eq<boolean>
+    : ST[K] extends WhereClauseNumberPropertyTypes ? EqFilter.$eq<number>
+    : never;
+};
 
 type StructFilterOpts<ST extends Record<string, BaseWirePropertyTypes>> = {
   [K in keyof ST]?: FilterFor<{ "type": ST[K] }>;
@@ -169,6 +176,20 @@ type StructFilterOpts<ST extends Record<string, BaseWirePropertyTypes>> = {
 type StructFilter<ST extends Record<string, BaseWirePropertyTypes>> = {
   [K in keyof ST]: Just<K, StructFilterOpts<ST>>;
 }[keyof ST];
+
+type PropertyTypesRepresentedAsStringsForArrayWhereClause =
+  | "string"
+  | "geopoint"
+  | "geoshape"
+  | "datetime"
+  | "timestamp";
+type WhereClauseNumberPropertyTypes =
+  | "double"
+  | "integer"
+  | "long"
+  | "float"
+  | "decimal"
+  | "byte";
 
 export interface AndWhereClause<
   T extends ObjectOrInterfaceDefinition,

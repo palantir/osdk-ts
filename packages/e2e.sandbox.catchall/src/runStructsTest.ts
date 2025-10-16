@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-import { BgaoNflPlayer, McAirportStruct } from "@osdk/e2e.generated.catchall";
-import { dsClient } from "./client.js";
+import {
+  BgaoNflPlayer,
+  McAirportStruct,
+  OsdkTestObject,
+} from "@osdk/e2e.generated.catchall";
+import { client, dsClient } from "./client.js";
 
 export async function runStructsTest(): Promise<void> {
   const player = await dsClient(BgaoNflPlayer).fetchOne(
@@ -50,6 +54,24 @@ export async function runStructsTest(): Promise<void> {
   console.log(airportFilteredShouldHaveData.data[0].airportStruct);
   console.log("Full Without Data :", airportFilteredShouldNotHaveData);
   console.log(airportFilteredShouldNotHaveData.data[0]);
+
+  const filteredArrayOfStruct = await client(OsdkTestObject).where({
+    structArray: { $contains: { string1: { $eq: "Nope" } } },
+  }).fetchPage();
+  const filteredArrayOfStructWith2 = await client(OsdkTestObject).where({
+    $or: [{ structArray: { $contains: { string1: { $eq: "Nope" } } } }, {
+      structArray: { $contains: { string1: { $eq: "osdktest" } } },
+    }],
+  }).fetchPage();
+
+  console.log(
+    "Filtered Array of Structs: ",
+    filteredArrayOfStruct.data[0].structArray,
+  );
+  console.log(
+    "Filtered Array of Structs With Or (should have two value): ",
+    filteredArrayOfStructWith2.data,
+  );
 }
 
 // Commented out so we don't keep creating objects by accident
