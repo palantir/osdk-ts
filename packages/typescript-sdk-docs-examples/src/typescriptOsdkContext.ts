@@ -178,7 +178,7 @@ export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = {
       },
       "castInterfaceToObjectReference": {
         "code":
-          "import { Employee, HasAddress } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { isOk, type Osdk } from \"@osdk/client\";\n\nconst page = await client(HasAddress).fetchPageWithErrors();\n\nif (isOk(page)) {\n    const interfaces = page.value.data;\n    const hasAddress: Osdk<HasAddress> = interfaces[0];\n\n    // Cast from interface to object type\n    const employee: Osdk<Employee> = hasAddress.$as(Employee);\n    // Or from object type back to interface\n    const hasAddress2: Osdk<HasAddress> = employee.$as(HasAddress);\n}",
+          "import { Employee, HasAddress } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk } from \"@osdk/client\";\n    try {\n        const page = await client(HasAddress).fetchPage();\n\n        const interfaces = page.data;\n        const hasAddress: Osdk<HasAddress> = interfaces[0];\n\n        // Cast from interface to object type\n        const employee: Osdk<Employee> = hasAddress.$as(Employee);\n        // Or from object type back to interface\n        const hasAddress2: Osdk<HasAddress> = employee.$as(HasAddress);\n    } catch (e) {\n        throw e;\n    }",
       },
       "executeFunction": {
         "#hasAttachmentProperty": {
@@ -346,7 +346,7 @@ export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = {
       },
       "loadInterfacesReference": {
         "code":
-          "import { HasAddress } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk, type PageResult, type Result } from \"@osdk/client\";\n\nconst response:  Result<PageResult<Osdk<HasAddress>>>\n    = await client(HasAddress).fetchPageWithErrors({ $pageSize: 30 });\n\n// To fetch a page without a result wrapper, use fetchPage instead\nconst responseNoErrorWrapper: PageResult<Osdk<HasAddress>>\n    = await client(HasAddress).fetchPage({ $pageSize: 30 });",
+          "import { HasAddress } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk, type PageResult } from \"@osdk/client\";\n\nconst response:  PageResult<Osdk<HasAddress>>\n    = await client(HasAddress).fetchPage({ $pageSize: 30 });",
       },
       "loadAllInterfacesReference": {
         "code":
@@ -357,8 +357,14 @@ export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = {
           "import { HasAddress } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk, type PageResult } from \"@osdk/client\";\n\ntry {\n    const page: PageResult<Osdk<HasAddress>> = await client(HasAddress)\n        .fetchPage({\n            $orderBy: { address: \"asc\"},\n            $pageSize: 30\n        });\n} catch (e) {\n    throw e;\n}",
       },
       "searchInterfacesReference": {
-        "code":
-          "import { HasAddress } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { isOk, type Osdk, type PageResult, type Result } from \"@osdk/client\";\n\nconst page: Result<PageResult<Osdk<HasAddress>>> = await client(HasAddress)\n    .where({\n        $and:[\n            { $not: { address: { $isNull: true }}},\n            { address: { $eq: \"foo\" }}\n        ]\n    })\n    .fetchPageWithErrors({\n        $pageSize: 30\n    });\n\nif (isOk(page)) {\n    const interfaces = page.value.data;\n    const interface1 = interfaces[0];\n}",
+        "#structSubPropertyApiName": {
+          "code":
+            "import { HasAddress } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk, type PageResult } from \"@osdk/client\";\n\ntry {\n    const page: PageResult<Osdk<HasAddress>> = await client(HasAddress)\n        .where({\n            contactInfo: { phone: { $startsWith: \"foo\" }}\n        })\n        .fetchPage({\n            $pageSize: 30\n        });\n\n    const interfaces = page.data;\n    const interface1 = interfaces[0];\n} catch (e) {\n    throw e;\n}",
+        },
+        "^structSubPropertyApiName": {
+          "code":
+            "import { HasAddress } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport { type Osdk, type PageResult } from \"@osdk/client\";\n\ntry {\n    const page: PageResult<Osdk<HasAddress>> = await client(HasAddress)\n        .where({\n            address: { $startsWith: \"foo\" }\n        })\n        .fetchPage({\n            $pageSize: 30\n        });\n\n    const interfaces = page.data;\n    const interface1 = interfaces[0];\n} catch (e) {\n    throw e;\n}",
+        },
       },
       "loadTimeSeriesPointsSnippet": {
         "code":

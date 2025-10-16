@@ -195,8 +195,9 @@
 // loadOrderedInterfacesReference
 // See: ./loadOrderedInterfacesReference.ts
 
-// searchInterfacesReference
-// See: ./searchInterfacesReference.ts
+// searchInterfacesReference (variations only)
+// See: ./searchInterfacesReference_#structSubPropertyApiName.ts (Standard block: structSubPropertyApiName = true)
+// See: ./searchInterfacesReference_^structSubPropertyApiName.ts (Inverted block: structSubPropertyApiName = false)
 
 // loadTimeSeriesPointsSnippet
 // See: ./loadTimeSeriesPointsSnippet.ts

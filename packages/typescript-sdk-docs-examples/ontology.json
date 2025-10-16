@@ -1169,6 +1169,44 @@
             "type": "string"
           },
           "required": false
+        },
+        "contactInfo": {
+          "dataType": {
+            "type": "struct",
+            "structFieldTypes": [
+              {
+                "apiName": "phone",
+                "dataType": {
+                  "type": "string"
+                }
+              },
+              {
+                "apiName": "email",
+                "dataType": {
+                  "type": "string"
+                }
+              },
+              {
+                "apiName": "address",
+                "dataType": {
+                  "type": "string"
+                }
+              },
+              {
+                "apiName": "houseNumber",
+                "dataType": {
+                  "type": "integer"
+                }
+              },
+              {
+                "apiName": "entrance",
+                "dataType": {
+                  "type": "geopoint"
+                }
+              }
+            ]
+          },
+          "description": "Structured contact information"
         }
       }
     }

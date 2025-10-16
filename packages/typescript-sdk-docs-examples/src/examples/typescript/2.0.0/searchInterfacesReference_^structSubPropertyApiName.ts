@@ -17,12 +17,24 @@
  * DO NOT MODIFY this file directly as your changes will be overwritten.
  */
 
-// Example: loadInterfacesReference
+// Example: searchInterfacesReference (Variation: ^structSubPropertyApiName)
 
 import { HasAddress } from "../../../generatedNoCheck/index.js";
 // Edit this import if your client location differs
 import { client } from "./client.js";
 import { type Osdk, type PageResult } from "@osdk/client";
 
-const response:  PageResult<Osdk<HasAddress>>
-    = await client(HasAddress).fetchPage({ $pageSize: 30 });
+try {
+    const page: PageResult<Osdk<HasAddress>> = await client(HasAddress)
+        .where({
+            address: { $startsWith: "foo" }
+        })
+        .fetchPage({
+            $pageSize: 30
+        });
+
+    const interfaces = page.data;
+    const interface1 = interfaces[0];
+} catch (e) {
+    throw e;
+}

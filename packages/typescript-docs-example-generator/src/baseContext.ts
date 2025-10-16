@@ -138,11 +138,6 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
     interfaceApiName: "HasAddress",
     property: "address",
   },
-  "searchInterfacesReference": {
-    interfaceApiName: "HasAddress",
-    property: "address",
-    propertyValueV2: "\"foo\"",
-  },
   "loadInterfaceMetadataSnippet": {
     interfaceApiName: "HasAddress",
     property: "address",
@@ -151,7 +146,6 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
     interfaceApiName: "HasAddress",
     property: "address",
   },
-
   "loadLinkedObjectsReference": {
     sourceObjectType: "Equipment",
     linkedObjectType: "Employee",
@@ -305,6 +299,17 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
 
 const templateHierarchy: Record<string, TemplateHierarchyNode> = {
   // === STRUCT SUB-PROPERTY TEMPLATES
+  "searchInterfacesReference": {
+    "#structSubPropertyApiName": {
+      context: {
+        property: "contactInfo",
+        structSubPropertyApiName: "phone",
+      },
+    },
+    "^structSubPropertyApiName": {
+      context: { structSubPropertyApiName: null, property: "address" },
+    },
+  },
   "stringStartsWithTemplate": {
     "#structSubPropertyApiName": {
       context: {
