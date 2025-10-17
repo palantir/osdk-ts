@@ -1,5 +1,18 @@
 # @osdk/generator-converters
 
+## 2.6.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [f7ae38a]
+  - @osdk/api@2.6.0-beta.2
+
 ## 2.5.0-beta.15
 
 ### Patch Changes

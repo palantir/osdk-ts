@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 2.6.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+- c4f8529: Add stub for getFormattedValue in experimental mode
+- f7ae38a: Allow exact matching for arrays of structs
+
 ## 2.5.0-beta.15
 
 ## 2.5.0-beta.14

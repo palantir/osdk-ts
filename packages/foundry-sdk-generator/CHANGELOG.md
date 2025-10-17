@@ -1,5 +1,22 @@
 # @osdk/foundry-sdk-generator
 
+## 2.6.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [b762231]
+- Updated dependencies [f7ae38a]
+- Updated dependencies [f085283]
+  - @osdk/generator@2.6.0-beta.2
+  - @osdk/client@2.6.0-beta.2
+  - @osdk/api@2.6.0-beta.2
+
 ## 2.5.0-beta.15
 
 ### Patch Changes

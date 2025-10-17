@@ -1,5 +1,15 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.6.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.2
+
 ## 2.5.0-beta.15
 
 ### Patch Changes
