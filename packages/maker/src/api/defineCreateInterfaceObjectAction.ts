@@ -24,13 +24,12 @@ import {
   createDefaultParameterOrdering,
   createParameters,
   defineAction,
+  getInterfaceParameterName,
   isPropertyParameter,
-  isTargetParameter,
   kebab,
   validateActionParameters,
   validateParameterOrdering,
 } from "./defineAction.js";
-import { addNamespaceIfNone } from "./defineOntology.js";
 import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfaceProperties.js";
 
 export function defineCreateInterfaceObjectAction(
@@ -52,9 +51,7 @@ export function defineCreateInterfaceObjectAction(
   );
   const parameterNames = new Set(propertyParameters);
   Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
-    parameterNames.add(
-      isTargetParameter(param) ? param : addNamespaceIfNone(param),
-    )
+    parameterNames.add(getInterfaceParameterName(def, param))
   );
   parameterNames.add(CREATE_INTERFACE_OBJECT_PARAMETER);
   const actionApiName = def.apiName ?? `create-${

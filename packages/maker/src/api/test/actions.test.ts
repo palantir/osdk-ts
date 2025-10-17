@@ -3258,7 +3258,7 @@ describe("Action Types", () => {
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Parameter com.palantir.custom_parameter does not exist as a property on com.palantir.sampleInterface and its type is not explicitly defined]`,
+        `[Error: Invariant failed: Parameter custom_parameter does not exist as a property on com.palantir.sampleInterface and its type is not explicitly defined]`,
       );
       expect(() => {
         const createAction = defineModifyInterfaceObjectAction({
@@ -3270,8 +3270,32 @@ describe("Action Types", () => {
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Parameter com.palantir.custom_parameter does not exist as a property on com.palantir.sampleInterface and its type is not explicitly defined]`,
+        `[Error: Invariant failed: Parameter custom_parameter does not exist as a property on com.palantir.sampleInterface and its type is not explicitly defined]`,
       );
+      expect(() => {
+        const createAction = defineCreateInterfaceObjectAction({
+          interfaceType: sampleInterface,
+          apiName: "test-create-interface0",
+          parameterConfiguration: {
+            "custom_parameter": {
+              displayName: "My Custom Param",
+              customParameterType: "string",
+            },
+          },
+        });
+      }).not.toThrow();
+      expect(() => {
+        const createAction = defineModifyInterfaceObjectAction({
+          interfaceType: sampleInterface,
+          apiName: "test-modify-interface0",
+          parameterConfiguration: {
+            "custom_parameter": {
+              displayName: "My Custom Param",
+              customParameterType: "string",
+            },
+          },
+        });
+      }).not.toThrow();
       expect(() => {
         const createAction = defineCreateInterfaceObjectAction({
           interfaceType: sampleInterface,
@@ -3362,7 +3386,7 @@ describe("Action Types", () => {
           excludedProperties: ["custom_parameter"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleInterface]`,
+        `[Error: Invariant failed: Property com.palantir.custom_parameter does not exist as a property on com.palantir.sampleInterface]`,
       );
       expect(() => {
         const createAction = defineModifyInterfaceObjectAction({
@@ -3370,7 +3394,7 @@ describe("Action Types", () => {
           excludedProperties: ["custom_parameter"],
         });
       }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: Property custom_parameter does not exist as a property on com.palantir.sampleInterface]`,
+        `[Error: Invariant failed: Property com.palantir.custom_parameter does not exist as a property on com.palantir.sampleInterface]`,
       );
       expect(() => {
         const createAction = defineCreateInterfaceObjectAction({
@@ -3425,7 +3449,7 @@ describe("Action Types", () => {
           {
             id: "section1",
             displayName: "Section 1",
-            parameters: [property1.apiName],
+            parameters: ["property1"],
             description: "Description for Section 1",
             conditionalOverrides: [
               {
