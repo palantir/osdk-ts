@@ -131,9 +131,7 @@ export function defineAction(actionDef: ActionTypeDefinition): ActionType {
   );
 
   const parameterIdsNotFound = Array.from(referencedParameterIds(actionDef))
-    .filter(p =>
-      !parameterIdsSet.has(p) && !parameterIdsSet.has(addNamespaceIfNone(p))
-    );
+    .filter(p => !parameterIdsSet.has(p));
   invariant(
     parameterIdsNotFound.length === 0,
     `Parameters ${
