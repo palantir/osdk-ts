@@ -402,6 +402,114 @@ describe("getFormattedValue", () => {
         nullable: true,
         multiplicity: false,
       },
+      durationSeconds: {
+        type: "double",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "number",
+          numberType: {
+            type: "duration",
+            baseValue: "SECONDS",
+            formatStyle: { type: "humanReadable" },
+          },
+        },
+      },
+      durationSecondsFullUnits: {
+        type: "double",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "number",
+          numberType: {
+            type: "duration",
+            baseValue: "SECONDS",
+            formatStyle: { type: "humanReadable", showFullUnits: true },
+          },
+        },
+      },
+      durationTimecode: {
+        type: "double",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "number",
+          numberType: {
+            type: "duration",
+            baseValue: "SECONDS",
+            formatStyle: { type: "timecode" },
+          },
+        },
+      },
+      durationPrecisionDays: {
+        type: "double",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "number",
+          numberType: {
+            type: "duration",
+            baseValue: "SECONDS",
+            formatStyle: { type: "humanReadable" },
+            precision: "DAYS",
+          },
+        },
+      },
+      durationPrecisionHours: {
+        type: "double",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "number",
+          numberType: {
+            type: "duration",
+            baseValue: "SECONDS",
+            formatStyle: { type: "humanReadable" },
+            precision: "HOURS",
+          },
+        },
+      },
+      durationPrecisionMinutes: {
+        type: "double",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "number",
+          numberType: {
+            type: "duration",
+            baseValue: "SECONDS",
+            formatStyle: { type: "humanReadable" },
+            precision: "MINUTES",
+          },
+        },
+      },
+      durationPrecisionSeconds: {
+        type: "double",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "number",
+          numberType: {
+            type: "duration",
+            baseValue: "SECONDS",
+            formatStyle: { type: "humanReadable" },
+            precision: "SECONDS",
+          },
+        },
+      },
+      durationMilliseconds: {
+        type: "double",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "number",
+          numberType: {
+            type: "duration",
+            baseValue: "MILLISECONDS",
+            formatStyle: { type: "humanReadable" },
+          },
+        },
+      },
     },
   };
 
@@ -437,6 +545,14 @@ describe("getFormattedValue", () => {
     timestampWithUserTimezone: "2025-01-15T14:30:00.000Z",
     timestampWithDynamicTimezone: "2025-01-15T14:30:00.000Z",
     timezoneId: "Europe/London",
+    durationSeconds: 0,
+    durationSecondsFullUnits: 0,
+    durationTimecode: 0,
+    durationPrecisionDays: 0,
+    durationPrecisionHours: 0,
+    durationPrecisionMinutes: 0,
+    durationPrecisionSeconds: 0,
+    durationMilliseconds: 0,
   };
 
   // Helper to create an OSDK object with optional data overrides
@@ -777,6 +893,601 @@ describe("getFormattedValue", () => {
         );
 
       expect(formatted).toBeUndefined();
+    });
+  });
+
+  describe("Duration formatting", () => {
+    describe("Human-readable format (compact)", () => {
+      it("formats 0 seconds", () => {
+        const obj = getObject({ durationSeconds: 0 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSeconds",
+            EN_US,
+          ),
+        ).toBe("0s");
+      });
+
+      it("formats 10 seconds", () => {
+        const obj = getObject({ durationSeconds: 10 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSeconds",
+            EN_US,
+          ),
+        ).toBe("10s");
+      });
+
+      it("formats 60 seconds as a minute", () => {
+        const obj = getObject({ durationSeconds: 60 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSeconds",
+            EN_US,
+          ),
+        ).toBe("1m");
+      });
+
+      it("formats 60 minutes as an hour", () => {
+        const obj = getObject({ durationSeconds: 60 * 60 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSeconds",
+            EN_US,
+          ),
+        ).toBe("1h");
+      });
+
+      it("formats 24 hours as a day", () => {
+        const obj = getObject({ durationSeconds: 60 * 60 * 24 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSeconds",
+            EN_US,
+          ),
+        ).toBe("1d");
+      });
+
+      it("formats 2 days and 1 second", () => {
+        const obj = getObject({ durationSeconds: 60 * 60 * 48 + 1 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSeconds",
+            EN_US,
+          ),
+        ).toBe("2d 1s");
+      });
+
+      it("formats 2 days and 1 hour", () => {
+        const obj = getObject({ durationSeconds: 60 * 60 * 48 + 60 * 60 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSeconds",
+            EN_US,
+          ),
+        ).toBe("2d 1h");
+      });
+
+      it("formats 2 days and 1 min", () => {
+        const obj = getObject({ durationSeconds: 60 * 60 * 48 + 60 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSeconds",
+            EN_US,
+          ),
+        ).toBe("2d 1m");
+      });
+
+      it("formats a day, 2 hours, 1 minute and 1 second", () => {
+        const obj = getObject({
+          durationSeconds: 60 * 60 * 24 + 60 * 60 * 2 + 60 + 1,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSeconds",
+            EN_US,
+          ),
+        ).toBe("1d 2h 1m 1s");
+      });
+
+      it("formats 2 hours, 1 minute and 1 second", () => {
+        const obj = getObject({ durationSeconds: 60 * 60 * 2 + 60 + 1 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSeconds",
+            EN_US,
+          ),
+        ).toBe("2h 1m 1s");
+      });
+
+      it("formats 2 hours and 1 second", () => {
+        const obj = getObject({ durationSeconds: 60 * 60 * 2 + 1 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSeconds",
+            EN_US,
+          ),
+        ).toBe("2h 1s");
+      });
+
+      it("formats 1 minute and 1 second", () => {
+        const obj = getObject({ durationSeconds: 61 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSeconds",
+            EN_US,
+          ),
+        ).toBe("1m 1s");
+      });
+    });
+
+    describe("Human-readable format (with showFullUnits)", () => {
+      it("formats 0 seconds as 0 seconds", () => {
+        const obj = getObject({ durationSecondsFullUnits: 0 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("0 seconds");
+      });
+
+      it("formats 10 seconds as 10 seconds", () => {
+        const obj = getObject({ durationSecondsFullUnits: 10 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("10 seconds");
+      });
+
+      it("formats 60 seconds as a minute", () => {
+        const obj = getObject({ durationSecondsFullUnits: 60 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("1 minute");
+      });
+
+      it("formats 60 minutes as an hour", () => {
+        const obj = getObject({ durationSecondsFullUnits: 60 * 60 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("1 hour");
+      });
+
+      it("formats 24 hours as a day", () => {
+        const obj = getObject({ durationSecondsFullUnits: 60 * 60 * 24 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("1 day");
+      });
+
+      it("formats 2 days and 1 second", () => {
+        const obj = getObject({ durationSecondsFullUnits: 60 * 60 * 48 + 1 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("2 days 1 second");
+      });
+
+      it("formats 2 days and 1 hour", () => {
+        const obj = getObject({
+          durationSecondsFullUnits: 60 * 60 * 48 + 60 * 60,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("2 days 1 hour");
+      });
+
+      it("formats 2 days and 1 min", () => {
+        const obj = getObject({ durationSecondsFullUnits: 60 * 60 * 48 + 60 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("2 days 1 minute");
+      });
+
+      it("formats a day, 2 hours, 1 minute and 1 second", () => {
+        const obj = getObject({
+          durationSecondsFullUnits: 60 * 60 * 24 + 60 * 60 * 2 + 60 + 1,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("1 day 2 hours 1 minute 1 second");
+      });
+
+      it("formats 2 hours, 1 minute and 1 second", () => {
+        const obj = getObject({
+          durationSecondsFullUnits: 60 * 60 * 2 + 60 + 1,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("2 hours 1 minute 1 second");
+      });
+
+      it("formats 2 hours and 1 second", () => {
+        const obj = getObject({ durationSecondsFullUnits: 60 * 60 * 2 + 1 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("2 hours 1 second");
+      });
+
+      it("formats 1 minute and 1 second", () => {
+        const obj = getObject({ durationSecondsFullUnits: 61 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("1 minute 1 second");
+      });
+
+      it("formats negative numbers", () => {
+        const obj = getObject({ durationSecondsFullUnits: -1 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("1 second");
+      });
+
+      it("formats decimal numbers", () => {
+        const obj = getObject({ durationSecondsFullUnits: 1.84321 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("1 second");
+      });
+
+      it("formats decimal numbers with minutes", () => {
+        const obj = getObject({ durationSecondsFullUnits: 62.1001 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("1 minute 2 seconds");
+      });
+    });
+
+    describe("Timecode format", () => {
+      it("formats 0 seconds as 0:00", () => {
+        const obj = getObject({ durationTimecode: 0 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("0:00");
+      });
+
+      it("formats 1 second as 0:01", () => {
+        const obj = getObject({ durationTimecode: 1 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("0:01");
+      });
+
+      it("formats 10 seconds as 0:10", () => {
+        const obj = getObject({ durationTimecode: 10 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("0:10");
+      });
+
+      it("formats 60 seconds as 1:00", () => {
+        const obj = getObject({ durationTimecode: 60 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("1:00");
+      });
+
+      it("formats 60 minutes as 1:00:00", () => {
+        const obj = getObject({ durationTimecode: 60 * 60 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("1:00:00");
+      });
+
+      it("formats 24 hours as 24:00:00", () => {
+        const obj = getObject({ durationTimecode: 60 * 60 * 24 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("24:00:00");
+      });
+
+      it("formats 2 days and 1 second", () => {
+        const obj = getObject({ durationTimecode: 60 * 60 * 48 + 1 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("48:00:01");
+      });
+
+      it("formats 2 days and 1 hour", () => {
+        const obj = getObject({ durationTimecode: 60 * 60 * 48 + 60 * 60 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("49:00:00");
+      });
+
+      it("formats 2 days and 1 min", () => {
+        const obj = getObject({ durationTimecode: 60 * 60 * 48 + 60 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("48:01:00");
+      });
+
+      it("formats a day, 2 hours, 1 minute and 1 second", () => {
+        const obj = getObject({
+          durationTimecode: 60 * 60 * 24 + 60 * 60 * 2 + 60 + 1,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("26:01:01");
+      });
+
+      it("formats 2 hours, 1 minute, 1 second and 123 milliseconds", () => {
+        const obj = getObject({
+          durationTimecode: 60 * 60 * 2 + 60 + 1 + 0.1231421,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("2:01:01.123");
+      });
+
+      it("formats 2 hours, 1 minute and 1 second", () => {
+        const obj = getObject({ durationTimecode: 60 * 60 * 2 + 60 + 1 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("2:01:01");
+      });
+
+      it("formats 2 hours and 1 second", () => {
+        const obj = getObject({ durationTimecode: 60 * 60 * 2 + 1 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("2:00:01");
+      });
+
+      it("formats 1 minute and 1 second", () => {
+        const obj = getObject({ durationTimecode: 61 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("1:01");
+      });
+
+      it("formats 1 minute, 1 second and 100 milliseconds", () => {
+        const obj = getObject({ durationTimecode: 61 + 0.1 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("1:01.100");
+      });
+
+      it("formats negative numbers", () => {
+        const obj = getObject({ durationTimecode: -1 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("0:01");
+      });
+
+      it("formats decimal numbers", () => {
+        const obj = getObject({ durationTimecode: 1.84321 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("0:01.843");
+      });
+
+      it("does not display decimals past 3", () => {
+        const obj = getObject({ durationTimecode: 0.000001 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationTimecode",
+            EN_US,
+          ),
+        ).toBe("0:00");
+      });
+    });
+
+    describe("Precision modes", () => {
+      it("formats with DAYS precision", () => {
+        const obj = getObject({ durationPrecisionDays: 0 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationPrecisionDays",
+            EN_US,
+          ),
+        ).toBe("0d");
+      });
+
+      it("formats with HOURS precision", () => {
+        const obj = getObject({ durationPrecisionHours: 60 * 60 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationPrecisionHours",
+            EN_US,
+          ),
+        ).toBe("1h");
+      });
+
+      it("formats with MINUTES precision", () => {
+        const obj = getObject({ durationPrecisionMinutes: 60 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationPrecisionMinutes",
+            EN_US,
+          ),
+        ).toBe("1m");
+      });
+
+      it("formats with SECONDS precision", () => {
+        const obj = getObject({ durationPrecisionSeconds: 1 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationPrecisionSeconds",
+            EN_US,
+          ),
+        ).toBe("1s");
+      });
+
+      it("formats complex duration with HOURS precision", () => {
+        const obj = getObject({
+          durationPrecisionHours: 2 * 24 * 60 * 60 + 5 * 60 * 60 + 45 * 60
+            + 48,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationPrecisionHours",
+            EN_US,
+          ),
+        ).toBe("2d 6h");
+      });
+
+      it("formats complex duration with MINUTES precision", () => {
+        const obj = getObject({
+          durationPrecisionMinutes: 2 * 24 * 60 * 60 + 5 * 60 * 60 + 45 * 60
+            + 48,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationPrecisionMinutes",
+            EN_US,
+          ),
+        ).toBe("2d 5h 46m");
+      });
+
+      it("formats complex duration with SECONDS precision", () => {
+        const obj = getObject({
+          durationPrecisionSeconds: 2 * 24 * 60 * 60 + 5 * 60 * 60 + 45 * 60
+            + 48,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationPrecisionSeconds",
+            EN_US,
+          ),
+        ).toBe("2d 5h 45m 48s");
+      });
+    });
+
+    describe("Milliseconds base value", () => {
+      it("converts milliseconds to seconds", () => {
+        const obj = getObject({ durationMilliseconds: 1000 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationMilliseconds",
+            EN_US,
+          ),
+        ).toBe("1s");
+      });
+
+      it("converts 60000 milliseconds to a minute", () => {
+        const obj = getObject({ durationMilliseconds: 60000 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationMilliseconds",
+            EN_US,
+          ),
+        ).toBe("1m");
+      });
+
+      it("handles fractional milliseconds", () => {
+        const obj = getObject({ durationMilliseconds: 1500 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationMilliseconds",
+            EN_US,
+          ),
+        ).toBe("1s");
+      });
+    });
+
+    describe("Edge cases", () => {
+      it("handles negative durations", () => {
+        const obj = getObject({ durationSeconds: -100 });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSeconds",
+            EN_US,
+          ),
+        ).toBe("1m 40s");
+      });
     });
   });
 });
