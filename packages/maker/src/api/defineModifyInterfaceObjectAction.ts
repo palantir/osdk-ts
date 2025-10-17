@@ -23,14 +23,13 @@ import {
   createDefaultParameterOrdering,
   createParameters,
   defineAction,
+  getInterfaceParameterName,
   isPropertyParameter,
-  isTargetParameter,
   kebab,
   MODIFY_INTERFACE_OBJECT_PARAMETER,
   validateActionParameters,
   validateParameterOrdering,
 } from "./defineAction.js";
-import { addNamespaceIfNone } from "./defineOntology.js";
 import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfaceProperties.js";
 
 export function defineModifyInterfaceObjectAction(
@@ -53,7 +52,7 @@ export function defineModifyInterfaceObjectAction(
   const parameterNames = new Set(propertyParameters);
   Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
     parameterNames.add(
-      isTargetParameter(param) ? param : addNamespaceIfNone(param),
+      getInterfaceParameterName(def, param),
     )
   );
   parameterNames.add(MODIFY_INTERFACE_OBJECT_PARAMETER);
@@ -135,10 +134,23 @@ export function defineModifyInterfaceObjectAction(
         parameters,
         MODIFY_INTERFACE_OBJECT_PARAMETER,
       ),
-    ...(def.validation
+    ...(def.actionLevelValidation
       ? {
-        validation: convertValidationRule(def.validation),
+        validation: convertValidationRule(
+          def.actionLevelValidation,
+          parameters,
+        ),
       }
       : {}),
+    ...(def.enableLayoutSwitch
+      && { enableLayoutSwitch: def.enableLayoutSwitch }),
+    ...(def.sections
+      && {
+        sections: Object.fromEntries(
+          def.sections.map(section => [section.id, section]),
+        ),
+      }),
+    ...(def.submissionMetadata
+      && { submissionMetadata: def.submissionMetadata }),
   });
 }

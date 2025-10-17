@@ -99,8 +99,11 @@ export type InterfaceActionTypeUserDefinition = {
   status?: ActionStatus;
   parameterConfiguration?: Record<string, ActionParameterConfiguration>;
   nonParameterMappings?: Record<string, MappingValue>;
-  validation?: ActionLevelValidationDefinition;
+  actionLevelValidation?: ActionLevelValidationDefinition;
   excludedProperties?: Array<string>;
+  sections?: Array<ActionSection>;
+  enableLayoutSwitch?: boolean;
+  submissionMetadata?: SubmissionMetadata;
   parameterOrdering?: Array<string>;
 };
 
@@ -929,12 +932,29 @@ export function addNamespaceToActionDefinition(
     Object.entries(def.parameterConfiguration ?? {})
       .map((
         [id, config],
-      ) => [isTargetParameter(id) ? id : addNamespaceIfNone(id), config]),
+      ) => [getInterfaceParameterName(def, id), config]),
   );
   def.nonParameterMappings = Object.fromEntries(
     Object.entries(def.nonParameterMappings ?? {})
       .map(([id, value]) => [addNamespaceIfNone(id), value]),
   );
-  def.excludedProperties = def.excludedProperties
-    ?? [].map(id => addNamespaceIfNone(id));
+  def.excludedProperties = (def.excludedProperties
+    ?? []).map(id => addNamespaceIfNone(id));
+  def.sections = def.sections?.map(section => ({
+    ...section,
+    parameters: section.parameters.map(p => getInterfaceParameterName(def, p)),
+  }));
+}
+
+// Adds a namespace to an interface parameter name if it is supposed to be namespaced
+export function getInterfaceParameterName(
+  def: InterfaceActionTypeUserDefinition,
+  parameter: string,
+): string {
+  return (isTargetParameter(parameter)
+      || !Object.keys(def.interfaceType.propertiesV2).includes(
+        addNamespaceIfNone(parameter),
+      ))
+    ? parameter
+    : addNamespaceIfNone(parameter);
 }
