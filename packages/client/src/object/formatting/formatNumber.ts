@@ -15,9 +15,11 @@
  */
 
 import type {
+  DurationPrecision,
   NumberFormatAffix,
   NumberFormatCurrency,
   NumberFormatCustomUnit,
+  NumberFormatDuration,
   NumberFormatOptions,
   NumberFormatRatio,
   NumberFormatScale,
@@ -72,8 +74,7 @@ export function formatNumber(
       return formatAffix(value, numberType, objectData, locale);
 
     case "duration":
-      // TODO (duration is a bit more complex)
-      return undefined;
+      return formatDuration(value, numberType);
 
     case "scale":
       return formatScale(value, numberType, locale);
@@ -395,4 +396,234 @@ function formatNumberWithAffixes(
   const intlOptions = convertToIntlOptions(baseOptions);
   const formatted = formatWithIntl(value, intlOptions, locale);
   return `${prefix || ""}${formatted}${suffix || ""}`;
+}
+
+// Duration formatting constants
+const SECONDS_IN_MINUTE = 60;
+const SECONDS_IN_HOUR = SECONDS_IN_MINUTE * 60;
+const SECONDS_IN_DAY = SECONDS_IN_HOUR * 24;
+const MS_IN_SECOND = 1000;
+
+interface DurationComponents {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  milliseconds: number;
+}
+
+function convertDurationToSeconds(
+  value: number,
+  baseValue: "SECONDS" | "MILLISECONDS",
+): number {
+  return baseValue === "MILLISECONDS" ? value / MS_IN_SECOND : value;
+}
+
+function getDurationComponents(
+  seconds: number,
+  precision: DurationPrecision,
+): DurationComponents {
+  const absSeconds = Math.abs(seconds);
+
+  const days = Math.floor(absSeconds / SECONDS_IN_DAY);
+  const remainingAfterDays = absSeconds % SECONDS_IN_DAY;
+  const hours = Math.floor(remainingAfterDays / SECONDS_IN_HOUR);
+  const remainingAfterHours = absSeconds % SECONDS_IN_HOUR;
+  const minutes = Math.floor(remainingAfterHours / SECONDS_IN_MINUTE);
+  const remainingSeconds = absSeconds % SECONDS_IN_MINUTE;
+
+  switch (precision) {
+    case "DAYS":
+      return {
+        days: Math.round(absSeconds / SECONDS_IN_DAY),
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+        milliseconds: 0,
+      };
+
+    case "HOURS":
+      return {
+        days,
+        hours: Math.round(remainingAfterDays / SECONDS_IN_HOUR),
+        minutes: 0,
+        seconds: 0,
+        milliseconds: 0,
+      };
+
+    case "MINUTES":
+      return {
+        days,
+        hours,
+        minutes: Math.round(remainingAfterHours / SECONDS_IN_MINUTE),
+        seconds: 0,
+        milliseconds: 0,
+      };
+
+    case "SECONDS":
+      return {
+        days,
+        hours,
+        minutes,
+        seconds: Math.round(remainingSeconds),
+        milliseconds: 0,
+      };
+
+    default: // AUTO
+      return {
+        days,
+        hours,
+        minutes,
+        seconds: Math.floor(remainingSeconds),
+        milliseconds: Math.round((remainingSeconds % 1) * MS_IN_SECOND),
+      };
+  }
+}
+
+function formatDurationUnit(
+  value: number,
+  singularUnit: string,
+  pluralUnit: string,
+  shortUnit: string,
+  showFullUnits: boolean,
+): string {
+  if (showFullUnits) {
+    return `${value} ${value === 1 ? singularUnit : pluralUnit}`;
+  }
+  return `${value}${shortUnit}`;
+}
+
+interface ComponentDisplayRules {
+  forceDisplayDays: boolean;
+  forceDisplayHours: boolean;
+  forceDisplayMinutes: boolean;
+  forceDisplaySeconds: boolean;
+}
+
+function getComponentDisplayRules(
+  components: DurationComponents,
+  precision: DurationPrecision,
+): ComponentDisplayRules {
+  const { days, hours, minutes, seconds } = components;
+
+  if (precision === "AUTO") {
+    const isZeroDuration = days === 0 && hours === 0 && minutes === 0
+      && seconds === 0;
+    return {
+      forceDisplayDays: days > 0,
+      forceDisplayHours: hours > 0,
+      forceDisplayMinutes: minutes > 0,
+      forceDisplaySeconds: seconds > 0 || isZeroDuration,
+    };
+  }
+
+  switch (precision) {
+    case "DAYS":
+      return {
+        forceDisplayDays: true,
+        forceDisplayHours: false,
+        forceDisplayMinutes: false,
+        forceDisplaySeconds: false,
+      };
+
+    case "HOURS":
+      return {
+        forceDisplayDays: days > 0,
+        forceDisplayHours: true,
+        forceDisplayMinutes: false,
+        forceDisplaySeconds: false,
+      };
+
+    case "MINUTES":
+      return {
+        forceDisplayDays: days > 0,
+        forceDisplayHours: hours > 0 || days > 0,
+        forceDisplayMinutes: true,
+        forceDisplaySeconds: false,
+      };
+
+    case "SECONDS":
+      return {
+        forceDisplayDays: days > 0,
+        forceDisplayHours: hours > 0 || days > 0,
+        forceDisplayMinutes: minutes > 0 || hours > 0 || days > 0,
+        forceDisplaySeconds: true,
+      };
+
+    default:
+      precision satisfies never;
+      return {
+        forceDisplayDays: false,
+        forceDisplayHours: false,
+        forceDisplayMinutes: false,
+        forceDisplaySeconds: false,
+      };
+  }
+}
+
+function formatHumanReadable(
+  components: DurationComponents,
+  precision: DurationPrecision,
+  showFullUnits: boolean,
+): string {
+  const parts: string[] = [];
+  const { days, hours, minutes, seconds } = components;
+  const displayRules = getComponentDisplayRules(components, precision);
+
+  if (displayRules.forceDisplayDays) {
+    parts.push(formatDurationUnit(days, "day", "days", "d", showFullUnits));
+  }
+  if (displayRules.forceDisplayHours) {
+    parts.push(formatDurationUnit(hours, "hour", "hours", "h", showFullUnits));
+  }
+  if (displayRules.forceDisplayMinutes) {
+    parts.push(
+      formatDurationUnit(minutes, "minute", "minutes", "m", showFullUnits),
+    );
+  }
+  if (displayRules.forceDisplaySeconds) {
+    parts.push(
+      formatDurationUnit(seconds, "second", "seconds", "s", showFullUnits),
+    );
+  }
+
+  return parts.join(" ");
+}
+
+function formatTimecode(components: DurationComponents): string {
+  const { days, hours, minutes, seconds, milliseconds } = components;
+
+  const totalHours = days * 24 + hours;
+  const pad2 = (num: number) => String(num).padStart(2, "0");
+  const pad3 = (num: number) => String(num).padStart(3, "0");
+
+  const hasHours = totalHours > 0;
+  const hasMilliseconds = milliseconds > 0;
+
+  if (hasHours) {
+    const base = `${totalHours}:${pad2(minutes)}:${pad2(seconds)}`;
+    return hasMilliseconds ? `${base}.${pad3(milliseconds)}` : base;
+  }
+
+  const base = `${minutes}:${pad2(seconds)}`;
+  return hasMilliseconds ? `${base}.${pad3(milliseconds)}` : base;
+}
+
+function formatDuration(
+  value: number,
+  rule: NumberFormatDuration,
+): string {
+  const seconds = convertDurationToSeconds(value, rule.baseValue);
+  const precision = rule.precision ?? "AUTO";
+  const components = getDurationComponents(seconds, precision);
+
+  if (rule.formatStyle.type === "timecode") {
+    return formatTimecode(components);
+  }
+
+  return formatHumanReadable(
+    components,
+    precision,
+    rule.formatStyle.showFullUnits ?? false,
+  );
 }
