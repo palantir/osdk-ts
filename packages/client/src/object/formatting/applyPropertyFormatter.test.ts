@@ -26,6 +26,7 @@ describe("getFormattedValue", () => {
   const EN_US = { locale: "en-US" };
   const DE_DE = { locale: "de-DE" };
   const FR_FR = { locale: "fr-FR" };
+  const EN_US_TOKYO = { locale: "en-US", timezoneId: "Asia/Tokyo" };
 
   // Single object definition with properties for testing
   const OBJECT_DEF: FetchedObjectTypeDefinition = {
@@ -282,6 +283,125 @@ describe("getFormattedValue", () => {
         nullable: true,
         multiplicity: false,
       },
+      createdDate: {
+        type: "datetime",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "date",
+          format: {
+            type: "localizedFormat",
+            format: "DATE_FORMAT_DATE",
+          },
+        },
+      },
+      createdDateTime: {
+        type: "datetime",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "timestamp",
+          format: {
+            type: "localizedFormat",
+            format: "DATE_FORMAT_DATE_TIME",
+          },
+          displayTimezone: {
+            type: "static",
+            zoneId: { type: "constant", value: "America/New_York" },
+          },
+        },
+      },
+      createdDateTimeShort: {
+        type: "datetime",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "timestamp",
+          format: {
+            type: "localizedFormat",
+            format: "DATE_FORMAT_DATE_TIME_SHORT",
+          },
+          displayTimezone: {
+            type: "static",
+            zoneId: { type: "constant", value: "America/Los_Angeles" },
+          },
+        },
+      },
+      createdTime: {
+        type: "datetime",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "timestamp",
+          format: {
+            type: "localizedFormat",
+            format: "DATE_FORMAT_TIME",
+          },
+          displayTimezone: {
+            type: "static",
+            zoneId: { type: "constant", value: "UTC" },
+          },
+        },
+      },
+      yearMonth: {
+        type: "datetime",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "date",
+          format: {
+            type: "localizedFormat",
+            format: "DATE_FORMAT_YEAR_AND_MONTH",
+          },
+        },
+      },
+      isoInstant: {
+        type: "datetime",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "timestamp",
+          format: {
+            type: "localizedFormat",
+            format: "DATE_FORMAT_ISO_INSTANT",
+          },
+          displayTimezone: { type: "user" },
+        },
+      },
+      timestampWithUserTimezone: {
+        type: "datetime",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "timestamp",
+          format: {
+            type: "localizedFormat",
+            format: "DATE_FORMAT_DATE_TIME",
+          },
+          displayTimezone: { type: "user" },
+        },
+      },
+      timestampWithDynamicTimezone: {
+        type: "datetime",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "timestamp",
+          format: {
+            type: "localizedFormat",
+            format: "DATE_FORMAT_DATE_TIME",
+          },
+          displayTimezone: {
+            type: "static",
+            zoneId: { type: "propertyType", propertyApiName: "timezoneId" },
+          },
+        },
+      },
+      timezoneId: {
+        type: "string",
+        nullable: true,
+        multiplicity: false,
+      },
     },
   };
 
@@ -308,6 +428,15 @@ describe("getFormattedValue", () => {
     percentage: 0.125,
     basisPoints: 0.125,
     currencyCode: "EUR",
+    createdDate: "2025-01-15T14:30:00.000Z",
+    createdDateTime: "2025-01-15T14:30:00.000Z",
+    createdDateTimeShort: "2025-01-15T14:30:00.000Z",
+    createdTime: "2025-01-15T14:30:00.000Z",
+    yearMonth: "2025-01-15T00:00:00.000Z",
+    isoInstant: "2025-01-15T14:30:00.000Z",
+    timestampWithUserTimezone: "2025-01-15T14:30:00.000Z",
+    timestampWithDynamicTimezone: "2025-01-15T14:30:00.000Z",
+    timezoneId: "Europe/London",
   };
 
   // Helper to create an OSDK object with optional data overrides
@@ -491,6 +620,163 @@ describe("getFormattedValue", () => {
           EN_US,
         ),
       ).toBe("1,250 bps");
+    });
+  });
+
+  describe("Date and time formatting", () => {
+    it("formats date without timezone", () => {
+      const obj = getObject();
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "createdDate",
+          EN_US,
+        );
+
+      expect(formatted).toBe("Wed, Jan 15, 2025");
+    });
+
+    it("formats date in different locale", () => {
+      const obj = getObject();
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "createdDate",
+          DE_DE,
+        );
+
+      expect(formatted).toBe("Mi., 15. Jan. 2025");
+    });
+
+    it("formats timestamp with static timezone (America/New_York)", () => {
+      const obj = getObject();
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "createdDateTime",
+          EN_US,
+        );
+
+      // Should show time in EST (UTC-5), so 14:30 UTC = 9:30 AM EST
+      expect(formatted).toBe("Wed, Jan 15, 2025, 9:30:00 AM");
+    });
+
+    it("formats timestamp short with static timezone (America/Los_Angeles)", () => {
+      const obj = getObject();
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "createdDateTimeShort",
+          EN_US,
+        );
+
+      // Should show time in PST (UTC-8), so 14:30 UTC = 6:30 AM PST
+      expect(formatted).toBe("Jan 15, 2025, 6:30 AM");
+    });
+
+    it("formats time only with UTC timezone", () => {
+      const obj = getObject();
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "createdTime",
+          EN_US,
+        );
+
+      // Should show 14:30:00 in UTC as 2:30:00 PM
+      expect(formatted).toBe("2:30:00 PM");
+    });
+
+    it("formats year and month only", () => {
+      const obj = getObject();
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "yearMonth",
+          EN_US,
+        );
+
+      expect(formatted).toBe("Jan 2025");
+    });
+
+    it("formats ISO instant", () => {
+      const obj = getObject();
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "isoInstant",
+          EN_US,
+        );
+
+      expect(formatted).toBe("2025-01-15T14:30:00.000Z");
+    });
+
+    it("formats timestamp with user timezone (no override)", () => {
+      const obj = getObject();
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "timestampWithUserTimezone",
+          EN_US,
+        );
+
+      // Without an override, should use the browser's default timezone
+      // The exact output depends on the system timezone, so we verify it's a non-empty string
+      expect(formatted).toBeTruthy();
+      expect(typeof formatted).toBe("string");
+    });
+
+    it("formats timestamp with user timezone override", () => {
+      const obj = getObject();
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "timestampWithUserTimezone",
+          EN_US_TOKYO,
+        );
+
+      // With Asia/Tokyo override (UTC+9), 14:30 UTC = 23:30 JST
+      expect(formatted).toBe("Wed, Jan 15, 2025, 11:30:00 PM");
+    });
+
+    it("formats timestamp with dynamic timezone from property", () => {
+      const obj = getObject({ timezoneId: "Europe/London" });
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "timestampWithDynamicTimezone",
+          EN_US,
+        );
+
+      // Europe/London in January is GMT (UTC+0), so same as UTC: 14:30 = 2:30 PM
+      expect(formatted).toBe("Wed, Jan 15, 2025, 2:30:00 PM");
+    });
+
+    it("formats timestamp with dynamic timezone from property (different timezone)", () => {
+      const obj = getObject({ timezoneId: "Australia/Sydney" });
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "timestampWithDynamicTimezone",
+          EN_US,
+        );
+
+      // Australia/Sydney in January is UTC+11, so 14:30 UTC = 1:30 AM next day
+      expect(formatted).toBe("Thu, Jan 16, 2025, 1:30:00 AM");
+    });
+
+    it("formats timestamp when dynamic timezone property is null", () => {
+      const obj = getObject({ timezoneId: undefined });
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "timestampWithDynamicTimezone",
+          EN_US,
+        );
+
+      // Should fall back to no timezone (browser default)
+      // The exact output depends on the system timezone, so we verify it's a non-empty string
+      expect(formatted).toBeTruthy();
+      expect(typeof formatted).toBe("string");
+    });
+
+    it("handles invalid date strings gracefully", () => {
+      const obj = getObject({ createdDate: "invalid-date" });
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "createdDate",
+          EN_US,
+        );
+
+      expect(formatted).toBeUndefined();
     });
   });
 });
