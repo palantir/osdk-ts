@@ -1079,7 +1079,7 @@ describe("getFormattedValue", () => {
             "durationSecondsFullUnits",
             EN_US,
           ),
-        ).toBe("2 days 1 second");
+        ).toBe("2 days, 1 second");
       });
 
       it("formats 2 days and 1 hour", () => {
@@ -1091,7 +1091,7 @@ describe("getFormattedValue", () => {
             "durationSecondsFullUnits",
             EN_US,
           ),
-        ).toBe("2 days 1 hour");
+        ).toBe("2 days, 1 hour");
       });
 
       it("formats 2 days and 1 min", () => {
@@ -1101,7 +1101,7 @@ describe("getFormattedValue", () => {
             "durationSecondsFullUnits",
             EN_US,
           ),
-        ).toBe("2 days 1 minute");
+        ).toBe("2 days, 1 minute");
       });
 
       it("formats a day, 2 hours, 1 minute and 1 second", () => {
@@ -1113,7 +1113,7 @@ describe("getFormattedValue", () => {
             "durationSecondsFullUnits",
             EN_US,
           ),
-        ).toBe("1 day 2 hours 1 minute 1 second");
+        ).toBe("1 day, 2 hours, 1 minute, 1 second");
       });
 
       it("formats 2 hours, 1 minute and 1 second", () => {
@@ -1125,7 +1125,7 @@ describe("getFormattedValue", () => {
             "durationSecondsFullUnits",
             EN_US,
           ),
-        ).toBe("2 hours 1 minute 1 second");
+        ).toBe("2 hours, 1 minute, 1 second");
       });
 
       it("formats 2 hours and 1 second", () => {
@@ -1135,7 +1135,7 @@ describe("getFormattedValue", () => {
             "durationSecondsFullUnits",
             EN_US,
           ),
-        ).toBe("2 hours 1 second");
+        ).toBe("2 hours, 1 second");
       });
 
       it("formats 1 minute and 1 second", () => {
@@ -1145,7 +1145,7 @@ describe("getFormattedValue", () => {
             "durationSecondsFullUnits",
             EN_US,
           ),
-        ).toBe("1 minute 1 second");
+        ).toBe("1 minute, 1 second");
       });
 
       it("formats negative numbers", () => {
@@ -1175,7 +1175,7 @@ describe("getFormattedValue", () => {
             "durationSecondsFullUnits",
             EN_US,
           ),
-        ).toBe("1 minute 2 seconds");
+        ).toBe("1 minute, 2 seconds");
       });
     });
 

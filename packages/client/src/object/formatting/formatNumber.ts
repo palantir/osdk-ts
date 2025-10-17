@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { DurationFormat } from "@formatjs/intl-durationformat";
 import type {
   DurationPrecision,
   NumberFormatAffix,
@@ -74,7 +75,7 @@ export function formatNumber(
       return formatAffix(value, numberType, objectData, locale);
 
     case "duration":
-      return formatDuration(value, numberType);
+      return formatDuration(value, numberType, locale);
 
     case "scale":
       return formatScale(value, numberType, locale);
@@ -399,56 +400,59 @@ function formatNumberWithAffixes(
 }
 
 // Duration formatting constants
+const MS_IN_SECOND = 1000;
 const SECONDS_IN_MINUTE = 60;
 const SECONDS_IN_HOUR = SECONDS_IN_MINUTE * 60;
 const SECONDS_IN_DAY = SECONDS_IN_HOUR * 24;
-const MS_IN_SECOND = 1000;
 
-interface DurationComponents {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-  milliseconds: number;
-}
-
-function convertDurationToSeconds(
-  value: number,
-  baseValue: "SECONDS" | "MILLISECONDS",
-): number {
-  return baseValue === "MILLISECONDS" ? value / MS_IN_SECOND : value;
-}
-
-function getDurationComponents(
-  seconds: number,
-  precision: DurationPrecision,
-): DurationComponents {
-  const absSeconds = Math.abs(seconds);
-
-  const days = Math.floor(absSeconds / SECONDS_IN_DAY);
-  const remainingAfterDays = absSeconds % SECONDS_IN_DAY;
-  const hours = Math.floor(remainingAfterDays / SECONDS_IN_HOUR);
-  const remainingAfterHours = absSeconds % SECONDS_IN_HOUR;
-  const minutes = Math.floor(remainingAfterHours / SECONDS_IN_MINUTE);
-  const remainingSeconds = absSeconds % SECONDS_IN_MINUTE;
-
+/**
+ * Maps our DurationPrecision to Intl.DurationFormat fractionalDigits
+ */
+function getPrecisionDigits(precision: DurationPrecision): number {
   switch (precision) {
     case "DAYS":
-      return {
-        days: Math.round(absSeconds / SECONDS_IN_DAY),
-        hours: 0,
-        minutes: 0,
-        seconds: 0,
-        milliseconds: 0,
-      };
+    case "HOURS":
+    case "MINUTES":
+    case "SECONDS":
+      return 0;
+    case "AUTO":
+      return 3; // Show milliseconds when relevant
+    default:
+      precision satisfies never;
+      return 0;
+  }
+}
+
+/**
+ * Converts the input value to seconds and builds a duration object
+ */
+function buildDurationObject(
+  value: number,
+  baseValue: "SECONDS" | "MILLISECONDS",
+  precision: DurationPrecision,
+): Record<string, number> {
+  const absValue = Math.abs(value);
+  const seconds = baseValue === "MILLISECONDS"
+    ? absValue / MS_IN_SECOND
+    : absValue;
+
+  // Build duration components
+  const days = Math.floor(seconds / SECONDS_IN_DAY);
+  const remainingAfterDays = seconds % SECONDS_IN_DAY;
+  const hours = Math.floor(remainingAfterDays / SECONDS_IN_HOUR);
+  const remainingAfterHours = seconds % SECONDS_IN_HOUR;
+  const minutes = Math.floor(remainingAfterHours / SECONDS_IN_MINUTE);
+  const remainingSeconds = seconds % SECONDS_IN_MINUTE;
+
+  // Apply precision-based rounding
+  switch (precision) {
+    case "DAYS":
+      return { days: Math.round(seconds / SECONDS_IN_DAY) };
 
     case "HOURS":
       return {
         days,
         hours: Math.round(remainingAfterDays / SECONDS_IN_HOUR),
-        minutes: 0,
-        seconds: 0,
-        milliseconds: 0,
       };
 
     case "MINUTES":
@@ -456,142 +460,40 @@ function getDurationComponents(
         days,
         hours,
         minutes: Math.round(remainingAfterHours / SECONDS_IN_MINUTE),
-        seconds: 0,
-        milliseconds: 0,
       };
 
     case "SECONDS":
-      return {
-        days,
-        hours,
-        minutes,
-        seconds: Math.round(remainingSeconds),
-        milliseconds: 0,
-      };
-
-    default: // AUTO
+    case "AUTO":
+    default:
       return {
         days,
         hours,
         minutes,
         seconds: Math.floor(remainingSeconds),
-        milliseconds: Math.round((remainingSeconds % 1) * MS_IN_SECOND),
       };
   }
 }
 
-function formatDurationUnit(
+/**
+ * Formats duration using Intl.DurationFormat for timecode style
+ */
+function formatTimecode(
   value: number,
-  singularUnit: string,
-  pluralUnit: string,
-  shortUnit: string,
-  showFullUnits: boolean,
+  baseValue: "SECONDS" | "MILLISECONDS",
 ): string {
-  if (showFullUnits) {
-    return `${value} ${value === 1 ? singularUnit : pluralUnit}`;
-  }
-  return `${value}${shortUnit}`;
-}
+  const absValue = Math.abs(value);
+  const seconds = baseValue === "MILLISECONDS"
+    ? absValue / MS_IN_SECOND
+    : absValue;
 
-interface ComponentDisplayRules {
-  forceDisplayDays: boolean;
-  forceDisplayHours: boolean;
-  forceDisplayMinutes: boolean;
-  forceDisplaySeconds: boolean;
-}
-
-function getComponentDisplayRules(
-  components: DurationComponents,
-  precision: DurationPrecision,
-): ComponentDisplayRules {
-  const { days, hours, minutes, seconds } = components;
-
-  if (precision === "AUTO") {
-    const isZeroDuration = days === 0 && hours === 0 && minutes === 0
-      && seconds === 0;
-    return {
-      forceDisplayDays: days > 0,
-      forceDisplayHours: hours > 0,
-      forceDisplayMinutes: minutes > 0,
-      forceDisplaySeconds: seconds > 0 || isZeroDuration,
-    };
-  }
-
-  switch (precision) {
-    case "DAYS":
-      return {
-        forceDisplayDays: true,
-        forceDisplayHours: false,
-        forceDisplayMinutes: false,
-        forceDisplaySeconds: false,
-      };
-
-    case "HOURS":
-      return {
-        forceDisplayDays: days > 0,
-        forceDisplayHours: true,
-        forceDisplayMinutes: false,
-        forceDisplaySeconds: false,
-      };
-
-    case "MINUTES":
-      return {
-        forceDisplayDays: days > 0,
-        forceDisplayHours: hours > 0 || days > 0,
-        forceDisplayMinutes: true,
-        forceDisplaySeconds: false,
-      };
-
-    case "SECONDS":
-      return {
-        forceDisplayDays: days > 0,
-        forceDisplayHours: hours > 0 || days > 0,
-        forceDisplayMinutes: minutes > 0 || hours > 0 || days > 0,
-        forceDisplaySeconds: true,
-      };
-
-    default:
-      precision satisfies never;
-      return {
-        forceDisplayDays: false,
-        forceDisplayHours: false,
-        forceDisplayMinutes: false,
-        forceDisplaySeconds: false,
-      };
-  }
-}
-
-function formatHumanReadable(
-  components: DurationComponents,
-  precision: DurationPrecision,
-  showFullUnits: boolean,
-): string {
-  const parts: string[] = [];
-  const { days, hours, minutes, seconds } = components;
-  const displayRules = getComponentDisplayRules(components, precision);
-
-  if (displayRules.forceDisplayDays) {
-    parts.push(formatDurationUnit(days, "day", "days", "d", showFullUnits));
-  }
-  if (displayRules.forceDisplayHours) {
-    parts.push(formatDurationUnit(hours, "hour", "hours", "h", showFullUnits));
-  }
-  if (displayRules.forceDisplayMinutes) {
-    parts.push(
-      formatDurationUnit(minutes, "minute", "minutes", "m", showFullUnits),
-    );
-  }
-  if (displayRules.forceDisplaySeconds) {
-    parts.push(
-      formatDurationUnit(seconds, "second", "seconds", "s", showFullUnits),
-    );
-  }
-
-  return parts.join(" ");
-}
-
-function formatTimecode(components: DurationComponents): string {
-  const { days, hours, minutes, seconds, milliseconds } = components;
+  const days = Math.floor(seconds / SECONDS_IN_DAY);
+  const remainingAfterDays = seconds % SECONDS_IN_DAY;
+  const hours = Math.floor(remainingAfterDays / SECONDS_IN_HOUR);
+  const remainingAfterHours = seconds % SECONDS_IN_HOUR;
+  const minutes = Math.floor(remainingAfterHours / SECONDS_IN_MINUTE);
+  const remainingSeconds = seconds % SECONDS_IN_MINUTE;
+  const wholeSeconds = Math.floor(remainingSeconds);
+  const milliseconds = Math.round((remainingSeconds % 1) * MS_IN_SECOND);
 
   const totalHours = days * 24 + hours;
   const pad2 = (num: number) => String(num).padStart(2, "0");
@@ -601,29 +503,42 @@ function formatTimecode(components: DurationComponents): string {
   const hasMilliseconds = milliseconds > 0;
 
   if (hasHours) {
-    const base = `${totalHours}:${pad2(minutes)}:${pad2(seconds)}`;
+    const base = `${totalHours}:${pad2(minutes)}:${pad2(wholeSeconds)}`;
     return hasMilliseconds ? `${base}.${pad3(milliseconds)}` : base;
   }
 
-  const base = `${minutes}:${pad2(seconds)}`;
+  const base = `${minutes}:${pad2(wholeSeconds)}`;
   return hasMilliseconds ? `${base}.${pad3(milliseconds)}` : base;
 }
 
 function formatDuration(
   value: number,
   rule: NumberFormatDuration,
+  locale: string,
 ): string {
-  const seconds = convertDurationToSeconds(value, rule.baseValue);
   const precision = rule.precision ?? "AUTO";
-  const components = getDurationComponents(seconds, precision);
 
   if (rule.formatStyle.type === "timecode") {
-    return formatTimecode(components);
+    return formatTimecode(value, rule.baseValue);
   }
 
-  return formatHumanReadable(
-    components,
-    precision,
-    rule.formatStyle.showFullUnits ?? false,
-  );
+  const duration = buildDurationObject(value, rule.baseValue, precision);
+
+  const formatter = new DurationFormat(locale, {
+    style: rule.formatStyle.showFullUnits ? "long" : "narrow",
+    fractionalDigits: 0, // Don't show fractional parts in human-readable
+  });
+
+  const formatted = formatter.format(duration);
+
+  // Intl.DurationFormat returns empty string for all-zero durations
+  // Provide a sensible fallback
+  if (formatted === "") {
+    if (precision === "DAYS") {
+      return rule.formatStyle.showFullUnits ? "0 days" : "0d";
+    }
+    return rule.formatStyle.showFullUnits ? "0 seconds" : "0s";
+  }
+
+  return formatted;
 }

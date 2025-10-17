@@ -19,3 +19,5 @@ ngeohash
 npmjs
 tsup
 timecode
+formatjs
+durationformat
