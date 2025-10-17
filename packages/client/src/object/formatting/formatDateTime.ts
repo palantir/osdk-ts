@@ -69,8 +69,7 @@ function formatLocalized(
     return date.toISOString();
   }
   if (format.format === "DATE_FORMAT_RELATIVE_TO_NOW") {
-    // TODO (relative time formatting)
-    return undefined;
+    return formatRelativeToNow(date, locale, timezone);
   }
 
   const options = getLocalizedFormatOptions(format.format);
@@ -149,6 +148,15 @@ const FORMAT_TIME: Intl.DateTimeFormatOptions = {
   second: "numeric",
 };
 
+const DATE_TIME_SHORT_WITH_WEEKDAY: Intl.DateTimeFormatOptions = {
+  day: "numeric",
+  month: "short",
+  weekday: "short",
+  year: "numeric",
+  hour: "numeric",
+  minute: "numeric",
+};
+
 function resolveTimezone(
   timezone: DatetimeTimezone | undefined,
   objectData: SimpleOsdkProperties,
@@ -170,4 +178,44 @@ function resolveTimezone(
       timezone satisfies never;
       return undefined;
   }
+}
+
+const SECOND_MS = 1_000;
+const MINUTE_MS = 60 * SECOND_MS;
+const HOUR_MS = 60 * MINUTE_MS;
+const DAY_MS = 24 * HOUR_MS;
+
+function formatRelativeToNow(
+  date: Date,
+  locale: string,
+  timezone: string | undefined,
+): string {
+  const now = Date.now();
+  const diff = date.valueOf() - now;
+  const absDiff = Math.abs(diff);
+
+  // More than 1 day - fall back to absolute date formatting
+  if (absDiff >= DAY_MS) {
+    const dtf = new Intl.DateTimeFormat(locale, {
+      ...DATE_TIME_SHORT_WITH_WEEKDAY,
+      timeZone: timezone,
+    });
+    return dtf.format(date);
+  }
+
+  // Within 1 day - use relative formatting
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+
+  const units: [Intl.RelativeTimeFormatUnit, number][] = [
+    ["hour", HOUR_MS],
+    ["minute", MINUTE_MS],
+    ["second", SECOND_MS],
+  ];
+
+  for (const [unit, ms] of units) {
+    if (absDiff >= ms) {
+      return rtf.format(Math.floor(diff / ms), unit);
+    }
+  }
+  return rtf.format(0, "second");
 }
