@@ -84,10 +84,7 @@ export function useDebouncedCallback<TArgs extends readonly unknown[]>(
       }, delay);
     },
     [delay, cancel],
-  ) as DebouncedCallback<TArgs>;
-
-  debouncedCallback.cancel = cancel;
-  debouncedCallback.flush = flush;
+  );
 
   React.useEffect(() => {
     return () => {
@@ -95,5 +92,5 @@ export function useDebouncedCallback<TArgs extends readonly unknown[]>(
     };
   }, [cancel]);
 
-  return debouncedCallback;
+  return Object.assign(debouncedCallback, { cancel, flush });
 }
