@@ -42,7 +42,7 @@ async function callAction() {
     const result = await client(documentEquipment).applyAction(
         {
             "equipmentId": "mac-1234",
-            instructionalVideo: mediaReference,
+            "instructionalVideo": mediaReference,
         },
         {
             $returnEdits: true,

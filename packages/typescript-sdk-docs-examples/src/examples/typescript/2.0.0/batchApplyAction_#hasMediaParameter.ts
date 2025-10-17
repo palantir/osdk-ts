@@ -45,13 +45,13 @@ async function callBatchAction() {
     const result = await client(documentEquipment).batchApplyAction([
             {
                 "equipmentId": "mac-1234",
-                documentFile: attachment,
-                instructionalVideo: mediaReference,
+                "documentFile": attachment,
+                "instructionalVideo": mediaReference,
             },
             {
                 "equipmentId": "mac-1234",
-                documentFile: attachment,
-                instructionalVideo: mediaReference,
+                "documentFile": attachment,
+                "instructionalVideo": mediaReference,
             },
         ],
         {

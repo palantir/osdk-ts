@@ -95,7 +95,6 @@ export interface PropertyV2 {
 export interface ActionParameterSampleValue {
   key: string;
   value: string;
-  last: boolean;
 }
 
 export interface HierarchyBlock {

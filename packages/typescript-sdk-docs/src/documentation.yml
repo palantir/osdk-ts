@@ -1239,12 +1239,6 @@ versions:
                         {{#actionParameterSampleValuesV2}}
                         "{{key}}": {{{value}}},
                         {{/actionParameterSampleValuesV2}}
-                        {{#hasAttachmentProperty}}
-                        {{attachmentParameter}}: attachment,  // or attachmentRid
-                        {{/hasAttachmentProperty}}
-                        {{#hasMediaParameter}}
-                        {{mediaParameter}}: mediaReference,
-                        {{/hasMediaParameter}}
                     },
                     {
                         $returnEdits: true,
@@ -1305,23 +1299,11 @@ versions:
                             {{#actionParameterSampleValuesV2}}
                             "{{key}}": {{{value}}},
                             {{/actionParameterSampleValuesV2}}
-                            {{#hasAttachmentProperty}}
-                            {{attachmentParameter}}: attachment,
-                            {{/hasAttachmentProperty}}
-                            {{#hasMediaParameter}}
-                            {{mediaParameter}}: mediaReference,
-                            {{/hasMediaParameter}}
                         },
                         {
                             {{#actionParameterSampleValuesV2}}
                             "{{key}}": {{{value}}},
                             {{/actionParameterSampleValuesV2}}
-                            {{#hasAttachmentProperty}}
-                            {{attachmentParameter}}: attachment,
-                            {{/hasAttachmentProperty}}
-                            {{#hasMediaParameter}}
-                            {{mediaParameter}}: mediaReference,
-                            {{/hasMediaParameter}}
                         },
                     ],
                     {
