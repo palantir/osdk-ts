@@ -62,6 +62,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@formatjs/intl-durationformat": "^0.7.6",
     "@osdk/api": "workspace:*",
     "@osdk/client.unstable": "workspace:*",
     "@osdk/foundry.core": "2.30.0",
