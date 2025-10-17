@@ -15,3 +15,13 @@ containsanyterm
 palantircustom
 Mnayan
 Foos
+Stunden
+Sekunde
+minuto
+Tage
+StundenMinuten
+Sekunden
+Stunde
+Sekunde
+minuto
+Minuten

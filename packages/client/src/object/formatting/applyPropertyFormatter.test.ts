@@ -1489,5 +1489,154 @@ describe("getFormattedValue", () => {
         ).toBe("1m 40s");
       });
     });
+
+    describe("Locale-specific formatting", () => {
+      it("formats duration in English (en-US) with full units", () => {
+        const obj = getObject({
+          durationSecondsFullUnits: 60 * 60 * 24 + 60 * 60 * 2 + 60 + 1,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("1 day, 2 hours, 1 minute, 1 second");
+      });
+
+      it("formats duration in German (de-DE) with full units", () => {
+        const obj = getObject({
+          durationSecondsFullUnits: 60 * 60 * 24 + 60 * 60 * 2 + 60 + 1,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            DE_DE,
+          ),
+        ).toBe("1 Tag, 2 Stunden, 1 Minute und 1 Sekunde");
+      });
+
+      it("formats duration in Spanish (es-ES) with full units", () => {
+        const ES_ES = { locale: "es-ES" };
+        const obj = getObject({
+          durationSecondsFullUnits: 60 * 60 * 24 + 60 * 60 * 2 + 60 + 1,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            ES_ES,
+          ),
+        ).toBe("1 día, 2 horas, 1 minuto y 1 segundo");
+      });
+
+      it("formats duration in Japanese (ja-JP) with full units", () => {
+        const JA_JP = { locale: "ja-JP" };
+        const obj = getObject({
+          durationSecondsFullUnits: 60 * 60 * 24 + 60 * 60 * 2 + 60 + 1,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            JA_JP,
+          ),
+        ).toBe("1 日 2 時間 1 分 1 秒");
+      });
+
+      it("formats compact duration in English (en-US)", () => {
+        const obj = getObject({
+          durationSeconds: 60 * 60 * 24 + 60 * 60 * 2 + 60 + 1,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSeconds",
+            EN_US,
+          ),
+        ).toBe("1d 2h 1m 1s");
+      });
+
+      it("formats compact duration in German (de-DE)", () => {
+        const obj = getObject({
+          durationSeconds: 60 * 60 * 24 + 60 * 60 * 2 + 60 + 1,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSeconds",
+            DE_DE,
+          ),
+        ).toBe("1 T, 2 Std., 1 Min. und 1 Sek.");
+      });
+
+      it("formats plural units correctly in English", () => {
+        const obj = getObject({
+          durationSecondsFullUnits: 60 * 60 * 48 + 60 * 60 * 3 + 120 + 5,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("2 days, 3 hours, 2 minutes, 5 seconds");
+      });
+
+      it("formats plural units correctly in German", () => {
+        const obj = getObject({
+          durationSecondsFullUnits: 60 * 60 * 48 + 60 * 60 * 3 + 120 + 5,
+        });
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            DE_DE,
+          ),
+        ).toBe("2 Tage, 3 Stunden, 2 Minuten und 5 Sekunden");
+      });
+
+      it("formats single unit in English and German", () => {
+        const obj = getObject({ durationSecondsFullUnits: 60 * 60 });
+
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("1 hour");
+
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            DE_DE,
+          ),
+        ).toBe("1 Stunde");
+      });
+
+      it("shows different conjunctions per locale with longer durations", () => {
+        const ES_ES = { locale: "es-ES" };
+        const obj = getObject({
+          durationSecondsFullUnits: 60 * 60 * 2 + 60 + 1,
+        });
+
+        // English formatting with commas and "and"
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            EN_US,
+          ),
+        ).toBe("2 hours, 1 minute, 1 second");
+
+        // German uses "und" as conjunction
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            DE_DE,
+          ),
+        ).toBe("2 Stunden, 1 Minute und 1 Sekunde");
+
+        // Spanish uses "y" as conjunction
+        expect(
+          obj.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+            "durationSecondsFullUnits",
+            ES_ES,
+          ),
+        ).toBe("2 horas, 1 minuto y 1 segundo");
+      });
+    });
   });
 });
