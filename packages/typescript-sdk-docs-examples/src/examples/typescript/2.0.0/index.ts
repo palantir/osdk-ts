@@ -82,8 +82,6 @@
 // See: ./applyAction_^hasAttachmentProperty.ts (Inverted block: hasAttachmentProperty = false)
 // See: ./applyAction_#hasAttachmentProperty.ts (Standard block: hasAttachmentProperty = true)
 // See: ./applyAction_#hasAttachmentProperty.ts (Standard block: hasAttachmentProperty = true)
-// See: ./applyAction_#hasAttachmentProperty.ts (Standard block: hasAttachmentProperty = true)
-// See: ./applyAction_#hasMediaParameter.ts (Standard block: hasMediaParameter = true)
 // See: ./applyAction_#hasMediaParameter.ts (Standard block: hasMediaParameter = true)
 // See: ./applyAction_#hasMediaParameter.ts (Standard block: hasMediaParameter = true)
 // See: ./applyAction_#hasMediaParameter.ts (Standard block: hasMediaParameter = true)
@@ -96,10 +94,6 @@
 // See: ./batchApplyAction_^hasAttachmentProperty.ts (Inverted block: hasAttachmentProperty = false)
 // See: ./batchApplyAction_#hasAttachmentProperty.ts (Standard block: hasAttachmentProperty = true)
 // See: ./batchApplyAction_#hasAttachmentProperty.ts (Standard block: hasAttachmentProperty = true)
-// See: ./batchApplyAction_#hasAttachmentProperty.ts (Standard block: hasAttachmentProperty = true)
-// See: ./batchApplyAction_#hasAttachmentProperty.ts (Standard block: hasAttachmentProperty = true)
-// See: ./batchApplyAction_#hasMediaParameter.ts (Standard block: hasMediaParameter = true)
-// See: ./batchApplyAction_#hasMediaParameter.ts (Standard block: hasMediaParameter = true)
 // See: ./batchApplyAction_#hasMediaParameter.ts (Standard block: hasMediaParameter = true)
 // See: ./batchApplyAction_#hasMediaParameter.ts (Standard block: hasMediaParameter = true)
 // See: ./batchApplyAction_#hasMediaParameter.ts (Standard block: hasMediaParameter = true)
@@ -195,8 +189,9 @@
 // loadOrderedInterfacesReference
 // See: ./loadOrderedInterfacesReference.ts
 
-// searchInterfacesReference
-// See: ./searchInterfacesReference.ts
+// searchInterfacesReference (variations only)
+// See: ./searchInterfacesReference_#structSubPropertyApiName.ts (Standard block: structSubPropertyApiName = true)
+// See: ./searchInterfacesReference_^structSubPropertyApiName.ts (Inverted block: structSubPropertyApiName = false)
 
 // loadTimeSeriesPointsSnippet
 // See: ./loadTimeSeriesPointsSnippet.ts

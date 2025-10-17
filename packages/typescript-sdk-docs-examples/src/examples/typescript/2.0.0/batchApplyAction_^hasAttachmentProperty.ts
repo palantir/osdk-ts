@@ -40,11 +40,11 @@ async function callBatchAction() {
     const result = await client(documentEquipment).batchApplyAction([
             {
                 "equipmentId": "mac-1234",
-                instructionalVideo: mediaReference,
+                "instructionalVideo": mediaReference,
             },
             {
                 "equipmentId": "mac-1234",
-                instructionalVideo: mediaReference,
+                "instructionalVideo": mediaReference,
             },
         ],
         {

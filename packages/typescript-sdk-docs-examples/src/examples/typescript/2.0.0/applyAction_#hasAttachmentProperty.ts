@@ -36,7 +36,7 @@ async function callAction() {
         {
             "equipmentId": "mac-1234",
             "documentType": "invoice",
-            documentFile: attachment,  // or attachmentRid
+            "documentFile": attachment,
         },
         {
             $returnEdits: true,

@@ -34,12 +34,12 @@ async function callBatchAction() {
             {
                 "equipmentId": "mac-1234",
                 "documentType": "invoice",
-                documentFile: attachment,
+                "documentFile": attachment,
             },
             {
                 "equipmentId": "mac-1234",
                 "documentType": "invoice",
-                documentFile: attachment,
+                "documentFile": attachment,
             },
         ],
         {

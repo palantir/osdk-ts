@@ -84,7 +84,7 @@ const baseContext: BaseTemplateContext = {
   hasAttachmentProperty: false,
   hasParameters: false,
   actionParameterSampleValuesV2: [
-    { key: "primaryKey", value: `"some-pk-of-the-object"`, last: true },
+    { key: "primaryKey", value: `"some-pk-of-the-object"` },
   ],
   last: false,
   needsImports: false,
@@ -138,11 +138,6 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
     interfaceApiName: "HasAddress",
     property: "address",
   },
-  "searchInterfacesReference": {
-    interfaceApiName: "HasAddress",
-    property: "address",
-    propertyValueV2: "\"foo\"",
-  },
   "loadInterfaceMetadataSnippet": {
     interfaceApiName: "HasAddress",
     property: "address",
@@ -151,7 +146,6 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
     interfaceApiName: "HasAddress",
     property: "address",
   },
-
   "loadLinkedObjectsReference": {
     sourceObjectType: "Equipment",
     linkedObjectType: "Employee",
@@ -305,6 +299,17 @@ const TEMPLATE_REGISTRY: TemplateRegistry = {
 
 const templateHierarchy: Record<string, TemplateHierarchyNode> = {
   // === STRUCT SUB-PROPERTY TEMPLATES
+  "searchInterfacesReference": {
+    "#structSubPropertyApiName": {
+      context: {
+        property: "contactInfo",
+        structSubPropertyApiName: "phone",
+      },
+    },
+    "^structSubPropertyApiName": {
+      context: { structSubPropertyApiName: null, property: "address" },
+    },
+  },
   "stringStartsWithTemplate": {
     "#structSubPropertyApiName": {
       context: {
@@ -548,11 +553,10 @@ const templateHierarchy: Record<string, TemplateHierarchyNode> = {
         objectType: "Equipment",
         hasAttachmentProperty: true,
         hasMediaParameter: false,
-        attachmentProperty: "invoice",
-        attachmentParameter: "documentFile",
         actionParameterSampleValuesV2: [
-          { key: "equipmentId", value: `"mac-1234"`, last: false },
-          { key: "documentType", value: `"invoice"`, last: true },
+          { key: "equipmentId", value: `"mac-1234"` },
+          { key: "documentType", value: `"invoice"` },
+          { key: "documentFile", value: "attachment" },
         ],
       },
     },
@@ -561,10 +565,11 @@ const templateHierarchy: Record<string, TemplateHierarchyNode> = {
         objectType: "Equipment",
         hasAttachmentProperty: true,
         hasMediaParameter: true,
-        mediaParameter: "instructionalVideo",
         property: "trainingMaterial",
         actionParameterSampleValuesV2: [
-          { key: "equipmentId", value: `"mac-1234"`, last: false },
+          { key: "equipmentId", value: `"mac-1234"` },
+          { key: "documentFile", value: "attachment" },
+          { key: "instructionalVideo", value: "mediaReference" },
         ],
       },
     },
@@ -576,7 +581,8 @@ const templateHierarchy: Record<string, TemplateHierarchyNode> = {
         mediaParameter: "instructionalVideo",
         property: "trainingMaterial",
         actionParameterSampleValuesV2: [
-          { key: "equipmentId", value: `"mac-1234"`, last: false },
+          { key: "equipmentId", value: `"mac-1234"` },
+          { key: "instructionalVideo", value: "mediaReference" },
         ],
       },
     },

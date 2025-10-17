@@ -1239,12 +1239,6 @@ versions:
                         {{#actionParameterSampleValuesV2}}
                         "{{key}}": {{{value}}},
                         {{/actionParameterSampleValuesV2}}
-                        {{#hasAttachmentProperty}}
-                        {{attachmentParameter}}: attachment,  // or attachmentRid
-                        {{/hasAttachmentProperty}}
-                        {{#hasMediaParameter}}
-                        {{mediaParameter}}: mediaReference,
-                        {{/hasMediaParameter}}
                     },
                     {
                         $returnEdits: true,
@@ -1256,6 +1250,8 @@ versions:
                     console.log("Updated object", updatedObject);
                 }
             }
+          computedVariables:
+            - actionParameterSampleValuesV2
       batchApplyAction:
         # Simplified template supporting 4 cases (same as applyAction):
         # - hasAttachmentProperty: Whether action has attachment parameters (true/false)
@@ -1303,23 +1299,11 @@ versions:
                             {{#actionParameterSampleValuesV2}}
                             "{{key}}": {{{value}}},
                             {{/actionParameterSampleValuesV2}}
-                            {{#hasAttachmentProperty}}
-                            {{attachmentParameter}}: attachment,
-                            {{/hasAttachmentProperty}}
-                            {{#hasMediaParameter}}
-                            {{mediaParameter}}: mediaReference,
-                            {{/hasMediaParameter}}
                         },
                         {
                             {{#actionParameterSampleValuesV2}}
                             "{{key}}": {{{value}}},
                             {{/actionParameterSampleValuesV2}}
-                            {{#hasAttachmentProperty}}
-                            {{attachmentParameter}}: attachment,
-                            {{/hasAttachmentProperty}}
-                            {{#hasMediaParameter}}
-                            {{mediaParameter}}: mediaReference,
-                            {{/hasMediaParameter}}
                         },
                     ],
                     {
@@ -1332,6 +1316,8 @@ versions:
                     console.log("Updated object", updatedObject);
                 }
             }
+          computedVariables:
+            - actionParameterSampleValuesV2
       uploadAttachment:
         - template: |-
             // Edit this import if your client location differs
@@ -1360,19 +1346,20 @@ versions:
             import { {{objectTypeApiName}}, {{interfaceApiName}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { isOk, type Osdk } from "@osdk/client";
+            import { type Osdk } from "@osdk/client";
+                try {
+                    const page = await client({{interfaceApiName}}).fetchPage();
 
-            const page = await client({{interfaceApiName}}).fetchPageWithErrors();
+                    const interfaces = page.data;
+                    const {{interfaceApiNameCamelCase}}: Osdk<{{interfaceApiName}}> = interfaces[0];
 
-            if (isOk(page)) {
-                const interfaces = page.value.data;
-                const {{interfaceApiNameCamelCase}}: Osdk<{{interfaceApiName}}> = interfaces[0];
-
-                // Cast from interface to object type
-                const {{objectTypeApiNameCamelCase}}: Osdk<{{objectTypeApiName}}> = {{interfaceApiNameCamelCase}}.$as({{objectTypeApiName}});
-                // Or from object type back to interface
-                const {{interfaceApiNameCamelCase}}2: Osdk<{{interfaceApiName}}> = {{objectTypeApiNameCamelCase}}.$as({{interfaceApiName}});
-            }
+                    // Cast from interface to object type
+                    const {{objectTypeApiNameCamelCase}}: Osdk<{{objectTypeApiName}}> = {{interfaceApiNameCamelCase}}.$as({{objectTypeApiName}});
+                    // Or from object type back to interface
+                    const {{interfaceApiNameCamelCase}}2: Osdk<{{interfaceApiName}}> = {{objectTypeApiNameCamelCase}}.$as({{interfaceApiName}});
+                } catch (e) {
+                    throw e;
+                }
       executeFunction:
         - template: |-
             // Edit this import if your client location differs
@@ -1671,14 +1658,11 @@ versions:
             import { {{interfaceApiName}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { type Osdk, type PageResult, type Result } from "@osdk/client";
+            import { type Osdk, type PageResult } from "@osdk/client";
 
-            const response:  Result<PageResult<Osdk<{{interfaceApiName}}>>>
-                = await client({{interfaceApiName}}).fetchPageWithErrors({ $pageSize: 30 });
-
-            // To fetch a page without a result wrapper, use fetchPage instead
-            const responseNoErrorWrapper: PageResult<Osdk<{{interfaceApiName}}>>
+            const response:  PageResult<Osdk<{{interfaceApiName}}>>
                 = await client({{interfaceApiName}}).fetchPage({ $pageSize: 30 });
+
       loadAllInterfacesReference:
         - template: |-
             import { {{interfaceApiName}} } from "{{{packageName}}}";
@@ -1715,22 +1699,26 @@ versions:
             import { {{interfaceApiName}} } from "{{{packageName}}}";
             // Edit this import if your client location differs
             import { client } from "./client";
-            import { isOk, type Osdk, type PageResult, type Result } from "@osdk/client";
+            import { type Osdk, type PageResult } from "@osdk/client";
 
-            const page: Result<PageResult<Osdk<{{interfaceApiName}}>>> = await client({{interfaceApiName}})
-                .where({
-                    $and:[
-                        { $not: { {{property}}: { $isNull: true }}},
-                        { {{property}}: { $eq: {{{propertyValueV2}}} }}
-                    ]
-                })
-                .fetchPageWithErrors({
-                    $pageSize: 30
-                });
+            try {
+                const page: PageResult<Osdk<{{interfaceApiName}}>> = await client({{interfaceApiName}})
+                    .where({
+                        {{#structSubPropertyApiName}}
+                        {{property}}: { {{structSubPropertyApiName}}: { $startsWith: "foo" }}
+                        {{/structSubPropertyApiName}}
+                        {{^structSubPropertyApiName}}
+                        {{property}}: { $startsWith: "foo" }
+                        {{/structSubPropertyApiName}}
+                    })
+                    .fetchPage({
+                        $pageSize: 30
+                    });
 
-            if (isOk(page)) {
-                const interfaces = page.value.data;
+                const interfaces = page.data;
                 const interface1 = interfaces[0];
+            } catch (e) {
+                throw e;
             }
           computedVariables:
             - propertyValueV2
