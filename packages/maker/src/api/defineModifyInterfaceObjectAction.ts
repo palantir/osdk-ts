@@ -135,10 +135,23 @@ export function defineModifyInterfaceObjectAction(
         parameters,
         MODIFY_INTERFACE_OBJECT_PARAMETER,
       ),
-    ...(def.validation
+    ...(def.actionLevelValidation
       ? {
-        validation: convertValidationRule(def.validation),
+        validation: convertValidationRule(
+          def.actionLevelValidation,
+          parameters,
+        ),
       }
       : {}),
+    ...(def.enableLayoutSwitch
+      && { enableLayoutSwitch: def.enableLayoutSwitch }),
+    ...(def.sections
+      && {
+        sections: Object.fromEntries(
+          def.sections.map(section => [section.id, section]),
+        ),
+      }),
+    ...(def.submissionMetadata
+      && { submissionMetadata: def.submissionMetadata }),
   });
 }

@@ -99,8 +99,11 @@ export type InterfaceActionTypeUserDefinition = {
   status?: ActionStatus;
   parameterConfiguration?: Record<string, ActionParameterConfiguration>;
   nonParameterMappings?: Record<string, MappingValue>;
-  validation?: ActionLevelValidationDefinition;
+  actionLevelValidation?: ActionLevelValidationDefinition;
   excludedProperties?: Array<string>;
+  sections?: Array<ActionSection>;
+  enableLayoutSwitch?: boolean;
+  submissionMetadata?: SubmissionMetadata;
   parameterOrdering?: Array<string>;
 };
 
