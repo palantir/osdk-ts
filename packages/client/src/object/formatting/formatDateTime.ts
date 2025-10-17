@@ -17,9 +17,12 @@
 import type {
   DatetimeFormat,
   DatetimeLocalizedFormat,
+  DatetimeStringFormat,
   DatetimeTimezone,
 } from "@osdk/api";
 import type { DatetimeLocalizedFormatType } from "@osdk/foundry.ontologies";
+import { format as formatDate } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { resolvePropertyReference } from "./propertyFormattingUtils.js";
 
@@ -49,8 +52,7 @@ export function formatDateTime(
     case "localizedFormat":
       return formatLocalized(date, format, locale, resolvedTimezone);
     case "stringFormat":
-      // TODO - pattern formatting
-      return undefined;
+      return formatWithPattern(date, format, resolvedTimezone);
     default:
       format satisfies never;
       return undefined;
@@ -169,5 +171,91 @@ function resolveTimezone(
     default:
       timezone satisfies never;
       return undefined;
+  }
+}
+
+/**
+ * Conversion map from Java DateTimeFormatter patterns to date-fns patterns similar
+ * to how internal implementations does it.
+ * Only includes patterns that differ between the two libraries
+ */
+const JAVA_TO_DATE_FNS_MAP: Record<string, string> = {
+  // Day of week (your usage - short and long text, not numeric)
+  e: "eee", // Short day name (Mon, Tue, Wed)
+  ee: "eeee", // Long day name (Monday, Tuesday, Wednesday)
+
+  // Week-based year
+  Y: "YYYY",
+
+  // Timezone offset
+  Z: "XX", // Timezone offset without colon (+0200, -0800)
+};
+
+// Sort by length (longest first) to avoid partial matches
+const SORTED_JAVA_PATTERNS = Object.keys(JAVA_TO_DATE_FNS_MAP).sort(
+  (a, b) => b.length - a.length,
+);
+
+/**
+ * Converts a Java DateTimeFormatter pattern to date-fns pattern
+ * Handles quoted literals properly (both Java and date-fns use single quotes)
+ */
+function convertJavaPattern(javaPattern: string): string {
+  let result = "";
+  let inQuote = false;
+
+  for (let i = 0; i < javaPattern.length; i++) {
+    const char = javaPattern[i];
+
+    if (char === "'") {
+      inQuote = !inQuote;
+      result += char;
+      continue;
+    }
+
+    if (inQuote) {
+      // Inside quotes, keep everything as-is
+      result += char;
+    } else {
+      // Outside quotes, check for patterns to convert
+      let matched = false;
+      for (const pattern of SORTED_JAVA_PATTERNS) {
+        if (javaPattern.substring(i, i + pattern.length) === pattern) {
+          result += JAVA_TO_DATE_FNS_MAP[pattern];
+          i += pattern.length - 1;
+          matched = true;
+          break;
+        }
+      }
+      if (!matched) {
+        result += char;
+      }
+    }
+  }
+
+  return result;
+}
+
+function formatWithPattern(
+  date: Date,
+  format: DatetimeStringFormat,
+  timezone?: string,
+): string {
+  const convertedPattern = convertJavaPattern(format.pattern);
+
+  try {
+    // Check if pattern includes 'Z' which means always display UTC
+    const shouldAlwaysDisplayUtc = format.pattern.includes("'Z'");
+    const targetTimezone = shouldAlwaysDisplayUtc ? "UTC" : (timezone ?? "UTC");
+
+    // If we have a timezone to format in, use date-fns-tz
+    if (timezone || shouldAlwaysDisplayUtc) {
+      return formatInTimeZone(date, targetTimezone, convertedPattern);
+    }
+
+    // Otherwise use regular date-fns in browser's local timezone
+    return formatDate(date, convertedPattern);
+  } catch (error) {
+    return INVALID_DATE_STRING;
   }
 }

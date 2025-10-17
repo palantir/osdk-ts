@@ -402,6 +402,84 @@ describe("getFormattedValue", () => {
         nullable: true,
         multiplicity: false,
       },
+      patternDateTime: {
+        type: "datetime",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "timestamp",
+          format: {
+            type: "stringFormat",
+            pattern: "yyyy-MM-dd HH:mm:ss",
+          },
+          displayTimezone: {
+            type: "static",
+            zoneId: { type: "constant", value: "America/New_York" },
+          },
+        },
+      },
+      patternDateWithDayOfWeek: {
+        type: "datetime",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "timestamp",
+          format: {
+            type: "stringFormat",
+            pattern: "e, MMM dd, yyyy",
+          },
+          displayTimezone: {
+            type: "static",
+            zoneId: { type: "constant", value: "UTC" },
+          },
+        },
+      },
+      patternTimeWithOffset: {
+        type: "datetime",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "timestamp",
+          format: {
+            type: "stringFormat",
+            pattern: "HH:mm:ss Z",
+          },
+          displayTimezone: {
+            type: "static",
+            zoneId: { type: "constant", value: "Europe/Paris" },
+          },
+        },
+      },
+      patternIsoWithLiteralZ: {
+        type: "datetime",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "timestamp",
+          format: {
+            type: "stringFormat",
+            pattern: "yyyy-MM-dd'T'HH:mm:ss'Z'",
+          },
+          displayTimezone: {
+            type: "user",
+          },
+        },
+      },
+      patternWithUserTimezone: {
+        type: "datetime",
+        nullable: false,
+        multiplicity: false,
+        valueFormatting: {
+          type: "timestamp",
+          format: {
+            type: "stringFormat",
+            pattern: "MMM dd, yyyy hh:mm a",
+          },
+          displayTimezone: {
+            type: "user",
+          },
+        },
+      },
     },
   };
 
@@ -437,6 +515,11 @@ describe("getFormattedValue", () => {
     timestampWithUserTimezone: "2025-01-15T14:30:00.000Z",
     timestampWithDynamicTimezone: "2025-01-15T14:30:00.000Z",
     timezoneId: "Europe/London",
+    patternDateTime: "2025-01-15T14:30:00.000Z",
+    patternDateWithDayOfWeek: "2025-01-15T14:30:00.000Z",
+    patternTimeWithOffset: "2025-01-15T14:30:00.000Z",
+    patternIsoWithLiteralZ: "2025-01-15T14:30:00.000Z",
+    patternWithUserTimezone: "2025-01-15T14:30:00.000Z",
   };
 
   // Helper to create an OSDK object with optional data overrides
@@ -777,6 +860,68 @@ describe("getFormattedValue", () => {
         );
 
       expect(formatted).toBeUndefined();
+    });
+  });
+
+  describe("Pattern formatting", () => {
+    it("formats with custom pattern and static timezone", () => {
+      const obj = getObject();
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "patternDateTime",
+          EN_US,
+        );
+
+      // Should show time in EST (UTC-5), so 14:30 UTC = 09:30:00 EST
+      expect(formatted).toBe("2025-01-15 09:30:00");
+    });
+
+    it("formats with day of week pattern conversion", () => {
+      const obj = getObject();
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "patternDateWithDayOfWeek",
+          EN_US,
+        );
+
+      // Java 'e' converts to date-fns 'eee' for short day name
+      expect(formatted).toBe("Wed, Jan 15, 2025");
+    });
+
+    it("formats with timezone offset in pattern", () => {
+      const obj = getObject();
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "patternTimeWithOffset",
+          EN_US,
+        );
+
+      // Europe/Paris in January is UTC+1, so 14:30 UTC = 15:30:00 +0100
+      expect(formatted).toBe("15:30:00 +0100");
+    });
+
+    it("formats with literal Z character to force UTC display", () => {
+      const obj = getObject();
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "patternIsoWithLiteralZ",
+          EN_US,
+        );
+
+      // Pattern includes 'Z' so should always display in UTC regardless of timezone setting
+      expect(formatted).toBe("2025-01-15T14:30:00Z");
+    });
+
+    it("formats with pattern and user timezone override", () => {
+      const obj = getObject();
+      const formatted = obj
+        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
+          "patternWithUserTimezone",
+          EN_US_TOKYO,
+        );
+
+      // With Asia/Tokyo override (UTC+9), 14:30 UTC = 23:30 JST
+      expect(formatted).toBe("Jan 15, 2025 11:30 PM");
     });
   });
 });
