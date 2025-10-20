@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.6.0-beta.3
+
+### Minor Changes
+
+- 831a285: Added relative time formatting
+- 3fa28d4: Add support for date and time formatting
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.3
+- @osdk/client.unstable@2.6.0-beta.3
+- @osdk/generator-converters@2.6.0-beta.3
+
 ## 2.6.0-beta.2
 
 ### Minor Changes

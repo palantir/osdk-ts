@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.14.0-beta.5
+
+### Minor Changes
+
+- a03ea8d: Sections, submission metadata, layout switching for OAC interface actions
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.3
+
 ## 0.14.0-beta.4
 
 ### Minor Changes
