@@ -15,6 +15,8 @@
  */
 
 import type {
+  OntologyIrDerivedPropertiesDefinition,
+  OntologyIrDerivedPropertyAggregation,
   OntologyIrObjectTypeBlockDataV2,
   OntologyIrObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
@@ -23,10 +25,15 @@ import type {
 import {
   addNamespaceIfNone,
   buildDatasource,
+  cleanAndValidateLinkTypeId,
   convertObjectStatus,
 } from "../../api/defineOntology.js";
 import type { ObjectPropertyType } from "../../api/object/ObjectPropertyType.js";
 import type { ObjectType } from "../../api/object/ObjectType.js";
+import type {
+  DerivedPropertyAggregation,
+  ObjectTypeDatasourceDefinition_derived,
+} from "../../api/object/ObjectTypeDatasourceDefinition.js";
 import { isExotic } from "../../api/properties/PropertyTypeType.js";
 import { convertDatasourceDefinition } from "./convertDatasourceDefinition.js";
 import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
@@ -34,8 +41,12 @@ import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
 export function convertObject(
   objectType: ObjectType,
 ): OntologyIrObjectTypeBlockDataV2 {
+  const { derivedDatasources, derivedPropertyNames } =
+    extractDerivedDatasources(objectType);
+
   const propertyDatasources: OntologyIrObjectTypeDatasource[] =
     (objectType.properties ?? [])
+      .filter(prop => !derivedPropertyNames.includes(prop.apiName))
       .flatMap(prop => extractPropertyDatasource(prop, objectType.apiName));
 
   const classificationGroupMarkingNames = extractMarkingGroups(
@@ -60,7 +71,9 @@ export function convertObject(
     objectType.apiName,
     convertDatasourceDefinition(
       objectType,
-      objectType.properties ?? [],
+      (objectType.properties ?? []).filter(prop =>
+        !derivedPropertyNames.includes(prop.apiName)
+      ),
     ),
     classificationInputGroup,
     mandatoryInputGroup,
@@ -105,7 +118,11 @@ export function convertObject(
       })),
       allImplementsInterfaces: {},
     },
-    datasources: [...propertyDatasources, objectDatasource],
+    datasources: [
+      ...propertyDatasources,
+      ...derivedDatasources,
+      objectDatasource,
+    ],
     entityMetadata: { arePatchesEnabled: objectType.editsEnabled ?? false },
   };
 }
@@ -161,4 +178,110 @@ export function extractPropertyDatasource(
     default:
       return [];
   }
+}
+
+function extractDerivedDatasources(
+  objectType: ObjectType,
+): {
+  derivedDatasources: OntologyIrObjectTypeDatasource[];
+  derivedPropertyNames: string[];
+} {
+  const inputDerivedDatasources = (objectType.datasources ?? []).filter(ds =>
+    ds.type === "derived"
+  );
+  const derivedDatasources = inputDerivedDatasources.map((ds, i) =>
+    buildDerivedDatasource(ds, i, objectType.apiName)
+  );
+  const derivedPropertyNames = inputDerivedDatasources.flatMap(ds =>
+    Object.keys(ds.propertyMapping)
+  );
+  return { derivedDatasources, derivedPropertyNames };
+}
+
+function buildDerivedDatasource(
+  datasource: ObjectTypeDatasourceDefinition_derived,
+  index: number,
+  objectTypeApiName: string,
+): OntologyIrObjectTypeDatasource {
+  const linkDefinition = {
+    type: "multiHopLink",
+    multiHopLink: {
+      steps: datasource.linkDefinition.map(step => ({
+        type: "searchAround",
+        searchAround: {
+          linkTypeIdentifier: {
+            type: "linkType",
+            linkType: cleanAndValidateLinkTypeId(step.linkType.apiName),
+          },
+          linkTypeSide: step.side ?? "SOURCE",
+        },
+      })),
+    },
+  };
+
+  const isLinkedProperties =
+    typeof Object.values(datasource.propertyMapping)[0] === "string";
+  const derivedDefinition = isLinkedProperties
+    ? {
+      type: "linkedProperties",
+      linkedProperties: {
+        linkDefinition,
+        propertyTypeMapping: Object.fromEntries(
+          Object.entries(datasource.propertyMapping).map((
+            [sourceProp, targetProp],
+          ) => [sourceProp, {
+            type: "propertyType",
+            propertyType: targetProp,
+          }]),
+        ),
+      },
+    }
+    : {
+      type: "aggregatedProperties",
+      aggregatedProperties: {
+        linkDefinition,
+        propertyTypeMapping: Object.fromEntries(
+          Object.entries(datasource.propertyMapping).map((
+            [sourceProp, agg],
+          ) => [sourceProp, buildAggregation(agg)]),
+        ),
+      },
+    };
+  const fullDefinition: OntologyIrObjectTypeDatasourceDefinition = {
+    type: "derived",
+    derived: {
+      definition: derivedDefinition as OntologyIrDerivedPropertiesDefinition,
+    },
+  };
+  return buildDatasource(
+    objectTypeApiName + ".derived." + index.toString(),
+    fullDefinition,
+  );
+}
+
+function buildAggregation(
+  agg: DerivedPropertyAggregation,
+): OntologyIrDerivedPropertyAggregation {
+  const type = agg.type;
+  const limit = "limit" in agg ? agg.limit : undefined;
+  const foreignProperty = "property" in agg ? agg.property : undefined;
+  const innerDef: any = {};
+  if (type !== "count") {
+    if (["collectList", "collectSet"].includes(type)) {
+      innerDef["linkedProperty"] = {
+        type: "propertyType",
+        propertyType: foreignProperty,
+      };
+      innerDef["limit"] = limit;
+    } else {
+      innerDef["property"] = {
+        type: "propertyType",
+        propertyType: foreignProperty,
+      };
+    }
+  }
+  return {
+    type,
+    [type]: innerDef,
+  } as unknown as OntologyIrDerivedPropertyAggregation;
 }

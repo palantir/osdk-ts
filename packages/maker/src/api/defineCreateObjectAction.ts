@@ -27,6 +27,7 @@ import {
   validateActionParameters,
   validateParameterOrdering,
 } from "./defineAction.js";
+import { isStruct } from "./properties/PropertyTypeType.js";
 
 export function defineCreateObjectAction(
   def: ActionTypeUserDefinition,
@@ -36,9 +37,16 @@ export function defineCreateObjectAction(
     Object.keys(def.objectType.properties ?? {}),
     def.objectType.apiName,
   );
+  const propertiesWithDerivedDatasources = (def.objectType.datasources ?? [])
+    .filter(ds => ds.type === "derived").flatMap(ds =>
+      Object.keys(ds.propertyMapping)
+    );
   const propertyParameters = Object.keys(def.objectType.properties ?? {})
     .filter(
-      id => isPropertyParameter(def, id, def.objectType.properties?.[id].type!),
+      id =>
+        isPropertyParameter(def, id, def.objectType.properties?.[id].type!)
+        && !isStruct(def.objectType.properties?.[id].type!)
+        && !propertiesWithDerivedDatasources.includes(id),
     );
   const parameterNames = new Set(propertyParameters);
   Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
