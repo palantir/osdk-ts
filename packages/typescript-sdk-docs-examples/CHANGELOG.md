@@ -1,5 +1,17 @@
 # @osdk/typescript-sdk-docs-examples
 
+## 0.3.0-beta.2
+
+### Minor Changes
+
+- 7cac2f8: Upgrade to latest spec and fix attachment template"
+
+### Patch Changes
+
+- Updated dependencies [831a285]
+- Updated dependencies [3fa28d4]
+  - @osdk/client@2.6.0-beta.3
+
 ## 0.2.0-beta.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @osdk/typescript-docs-example-generator
 
+## 0.3.0-beta.2
+
+### Minor Changes
+
+- 7cac2f8: Upgrade to latest spec and fix attachment template"
+
+### Patch Changes
+
+- Updated dependencies [7cac2f8]
+  - @osdk/typescript-sdk-docs@0.5.0-beta.2
+
 ## 0.2.0-beta.0
 
 ### Minor Changes
