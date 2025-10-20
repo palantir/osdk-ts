@@ -22,6 +22,9 @@ import { useWidgetContext } from "./context.js";
 export const App: React.FC = () => {
   const { parameters, hostEventTarget, emitEvent } = useWidgetContext();
   const { headerText, todoItems, showWarning, datasetRid } = parameters.values;
+
+  parameters.valuesV2.objectSet?.objectSet;
+
   const [newTodoItem, setNewTodoItem] = useState("");
   const [dataset, setDataset] = useState<AsyncValue<Dataset>>({
     type: "not-started",

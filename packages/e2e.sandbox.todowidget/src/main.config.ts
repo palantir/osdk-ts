@@ -1,4 +1,15 @@
+import type { ObjectTypeDefinition } from "@osdk/client";
 import { defineConfig } from "@osdk/widget.client";
+
+const MyObjectType = {
+  type: "object",
+  apiName: "my_object_type",
+  internalDoNotUseMetadata: {
+    rid: "ri.object-type.my_object_type",
+  },
+} as const satisfies ObjectTypeDefinition & {
+  internalDoNotUseMetadata: { rid: string };
+};
 
 export default defineConfig({
   id: "widgetOne",
@@ -22,6 +33,11 @@ export default defineConfig({
       displayName: "Todo items",
       type: "array",
       subType: "string",
+    },
+    objectSet: {
+      type: "objectSet",
+      displayName: "My Object Set",
+      objectType: MyObjectType,
     },
   },
   events: {

@@ -41,9 +41,18 @@ export interface FoundryWidgetClientContext<
    */
   parameters: {
     values: Partial<ParameterValueMap<C>>;
+    valuesV2: Partial<ExtendedParameterValueMap<C>>;
     state: AsyncValue<ParameterValueMap<C>>["type"];
   };
 }
+
+type ExtendedParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
+  [K in keyof C["parameters"]]: C["parameters"][K] extends {
+    type: "objectSet";
+    objectType: infer OT;
+  } ? { objectSet: OT[] }
+    : (K extends keyof ParameterValueMap<C> ? ParameterValueMap<C>[K] : never);
+};
 
 export const FoundryWidgetContext: React.Context<
   FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>
@@ -56,6 +65,7 @@ export const FoundryWidgetContext: React.Context<
   parameters: {
     state: "not-started",
     values: {},
+    valuesV2: {},
   },
 });
 

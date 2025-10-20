@@ -158,6 +158,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         asyncParameterValues,
         parameters: {
           values: allParameterValues.value ?? {},
+          valuesV2: {},
           state: allParameterValues.type,
         },
         // Unfortunately the context is statically defined so we can't use the generic type, hence the cast
