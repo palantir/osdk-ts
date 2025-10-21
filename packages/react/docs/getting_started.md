@@ -54,10 +54,10 @@ Below is an example using filenames that align with a typical osdk project.
 
 ## Experimental vs Stable Features
 
-The `@osdk/react` package has two export paths:
+The React Toolkit currently maintains two releases; stable and experimental.
 
-- **`@osdk/react`** - Stable features (currently `OsdkProvider`, `useOsdkClient`)
-- **`@osdk/react/experimental`** - Experimental reactive features (all hooks below, including enhanced `useOsdkMetadata`)
+- **`@osdk/react`** - Stable features, can expect no breaking changes
+- **`@osdk/react/experimental`** - Experimental reactive features which can be removed or made incompatible by future changes
 
 All reactive data management features (OsdkProvider2, useOsdkObject, useOsdkObjects, useOsdkAction, useLinks, useObjectSet) are currently **experimental** and available via `@osdk/react/experimental`. Import from this path to use the features documented below:
 
@@ -92,49 +92,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 ```
 
-## Manual Cache Invalidation
-
-The `ObservableClient` provides methods for manual cache invalidation. You can create a custom hook to access it from the provider:
-
-```tsx
-import { useOsdkClient } from "@osdk/react/experimental";
-import { createObservableClient } from "@osdk/client/unstable-do-not-use";
-import { useMemo } from "react";
-
-// Create a custom hook to access the observable client
-function useObservableClient() {
-  const client = useOsdkClient();
-  return useMemo(() => createObservableClient(client), [client]);
-}
-
-// Use in your component
-function RefreshButton() {
-  const observableClient = useObservableClient();
-
-  const handleRefresh = async () => {
-    // Invalidate specific objects (pass single object or array)
-    await observableClient.invalidateObjects([todo1, todo2]);
-
-    // Invalidate all objects of a type
-    await observableClient.invalidateObjectType(Todo);
-
-    // Invalidate entire cache (use sparingly)
-    await observableClient.invalidateAll();
-  };
-
-  return <button onClick={handleRefresh}>Refresh</button>;
-}
-```
-
-**Important Notes:**
-- The `ObservableClient` used by `OsdkProvider2` is automatically created and managed by the provider. It maintains a cache of all queries and subscriptions.
-- **Lifecycle:** The client is created once when `OsdkProvider2` mounts and lives for the lifetime of your application. All hooks share this single client instance.
-- **Warning:** Creating additional `ObservableClient` instances (via the custom hook above) can lead to cache inconsistencies. If you need manual invalidation in multiple places, create a single custom hook at the app's root level and reuse it.
-- **Automatic Updates:** Most data updates happen automatically after actions complete. The client re-fetches affected objects and lists. Manual invalidation is only needed for:
-  - External data changes (e.g., data updated by another user/system)
-  - Manual refresh buttons
-  - Periodic polling (though consider using `streamUpdates` instead)
-
 ## Retrieve Objects
 
 ```tsx
@@ -142,7 +99,6 @@ import { Todo } from "@my/osdk";
 import { useOsdkObjects, type UseOsdkListResult } from "@osdk/react/experimental";
 
 function App() {
-  // Fully typed hook result
   const {
     data,
     isLoading,
@@ -163,7 +119,7 @@ function App() {
       {isLoading && <div>Refreshing data</div>}
 
       {/* Actually render the todos */}
-      {data?.map(todo => <TodoView key={todo.$primaryKey} todo={todo} />)}
+      {data.map(todo => <TodoView key={todo.$primaryKey} todo={todo} />)}
     </div>
   );
 }
@@ -315,7 +271,7 @@ The `error` object has the following structure:
 ```tsx
 {
   actionValidation?: ActionValidationError; // When action fails validation
-  unknown?: unknown;                         // For other errors
+  unknown?: unknown;                        // For other errors
 }
 ```
 
@@ -519,6 +475,49 @@ function TodoView({ todo }: TodoProps) {
   );
 }
 ```
+
+## Manual Cache Invalidation
+
+The `ObservableClient` provides methods for manual cache invalidation.
+
+```tsx
+import { useOsdkClient } from "@osdk/react/experimental";
+import { createObservableClient } from "@osdk/client/unstable-do-not-use";
+import { useMemo } from "react";
+
+// Create a custom hook to access the observable client
+function useObservableClient() {
+  const client = useOsdkClient();
+  return useMemo(() => createObservableClient(client), [client]);
+}
+
+// Use in your component
+function RefreshButton() {
+  const observableClient = useObservableClient();
+
+  const handleRefresh = async () => {
+    // Invalidate specific objects (pass single object or array)
+    await observableClient.invalidateObjects([todo1, todo2]);
+
+    // Invalidate all objects of a type
+    await observableClient.invalidateObjectType(Todo);
+
+    // Invalidate entire cache (use sparingly)
+    await observableClient.invalidateAll();
+  };
+
+  return <button onClick={handleRefresh}>Refresh</button>;
+}
+```
+
+**Important Notes:**
+- The `ObservableClient` used by `OsdkProvider2` is automatically created and managed by the provider. It maintains a cache of all queries and subscriptions.
+- **Lifecycle:** The client is created once when `OsdkProvider2` mounts and lives for the lifetime of your application. All hooks share this single client instance.
+- **Automatic Updates:** Most data updates happen automatically after actions complete. The client re-fetches affected objects and lists. Manual invalidation is only needed for:
+  - External data changes (e.g., data updated by another user/system)
+  - Manual refresh buttons
+  - Periodic polling (though consider using `streamUpdates` instead)
+
 
 ## Error Handling
 
@@ -753,7 +752,6 @@ Return values:
 - `objectSet` - The transformed ObjectSet after all operations
 
 **Performance Considerations:**
-- Derived properties are computed on every render - keep computations lightweight
 - Set operations (union, intersect, subtract) are performed on the server
 - Each unique combination of options creates a separate cache entry
 - Using `pivotTo` creates a new query for the linked type
@@ -801,72 +799,7 @@ Return values:
 - `loading` - True while fetching metadata
 - `error` - Error message string if fetch failed
 
-This hook is useful for:
-- Building dynamic forms based on object schema
-- Displaying human-readable type information
-- Validating property access at runtime
-- Creating generic object viewers/editors
-
 ## Common Patterns
-
-### Polling for Updates
-
-Automatically refresh data at regular intervals:
-
-```tsx
-import { useEffect } from "react";
-
-function LiveTodoList() {
-  const { data, isLoading } = useOsdkObjects(Todo);
-  const observableClient = useObservableClient();
-
-  useEffect(() => {
-    // Refresh every 30 seconds
-    const interval = setInterval(() => {
-      observableClient.invalidateObjectType(Todo);
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [observableClient]);
-
-  return <div>{data?.map(todo => <TodoView key={todo.$primaryKey} todo={todo} />)}</div>;
-}
-```
-
-### Debounced Search
-
-Prevent excessive queries while user types:
-
-```tsx
-import { useState, useEffect } from "react";
-
-function TodoSearch() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedTerm, setDebouncedTerm] = useState("");
-
-  // Debounce the search term
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedTerm(searchTerm), 300);
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  const { data, isLoading } = useOsdkObjects(Todo, {
-    where: debouncedTerm ? { title: { $contains: debouncedTerm } } : {},
-  });
-
-  return (
-    <div>
-      <input
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search todos..."
-      />
-      {isLoading && <div>Searching...</div>}
-      {data?.map(todo => <TodoView key={todo.$primaryKey} todo={todo} />)}
-    </div>
-  );
-}
-```
 
 ### Combining Multiple Hooks
 
@@ -912,32 +845,51 @@ function TodoWithDetails({ todoId }: { todoId: string }) {
 }
 ```
 
-### Handling Authentication Errors
+## Choosing Between useOsdkObjects and useObjectSet
 
-Redirect to login when authentication fails:
+Both hooks allow you to query collections of objects, but they serve different purposes:
+
+### Use `useOsdkObjects` when:
+- You need **maximum performance** for simple queries
+- You only need basic filtering (`where`), sorting (`orderBy`), and pagination
 
 ```tsx
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-
-function ProtectedTodoList() {
-  const { data, error } = useOsdkObjects(Todo);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Check if error is authentication-related
-    if (error && error.message?.includes("401")) {
-      navigate("/login");
-    }
-  }, [error, navigate]);
-
-  if (error) {
-    return <div>Error loading todos: {error.message}</div>;
-  }
-
-  return <div>{data?.map(todo => <TodoView key={todo.$primaryKey} todo={todo} />)}</div>;
-}
+// Simple, performant queries
+const { data } = useOsdkObjects(Todo, {
+  where: { isComplete: false },
+  orderBy: { createdAt: "desc" },
+  pageSize: 20,
+});
 ```
+
+### Use `useObjectSet` when:
+- You need **advanced query capabilities** like:
+  - Runtime-computed derived properties (`withProperties`)
+  - Set operations (`union`, `intersect`, `subtract`)
+  - Link traversal (`pivotTo`)
+  - Aggregations or transformations on the data
+- You're building dynamic or complex queries
+
+```tsx
+// Advanced queries with derived properties and set operations
+const { data } = useObjectSet(Todo.all(), {
+  withProperties: {
+    displayName: DerivedProperty.string(todo => `${todo.title} (${todo.priority})`),
+  },
+  union: [urgentTodos],
+  subtract: [completedTodos],
+});
+```
+
+### Performance Considerations
+
+`useOsdkObjects` is optimized for straightforward queries and offers the best performance for most use cases. Use it as your default choice unless you specifically need the advanced features of `useObjectSet`.
+
+`useObjectSet` provides powerful capabilities but involves additional overhead:
+- Complex set operations require more processing
+- Each unique configuration creates a separate cache entry
+
+**Recommendation:** Start with `useOsdkObjects` for all standard queries. Only switch to `useObjectSet` when you need its advanced features.
 
 # Debugging Issues
 
