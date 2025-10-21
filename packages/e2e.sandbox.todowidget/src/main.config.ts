@@ -1,4 +1,3 @@
-import type { ObjectTypeDefinition } from "@osdk/client";
 import { defineConfig } from "@osdk/widget.client";
 
 const MyObjectType = {
@@ -7,9 +6,10 @@ const MyObjectType = {
   internalDoNotUseMetadata: {
     rid: "ri.object-type.my_object_type",
   },
-} as const satisfies ObjectTypeDefinition & {
-  internalDoNotUseMetadata: { rid: string };
-};
+  __DefinitionMetadata: {
+    objectSet: { yippee: 3 },
+  } as const,
+} as const;
 
 export default defineConfig({
   id: "widgetOne",
