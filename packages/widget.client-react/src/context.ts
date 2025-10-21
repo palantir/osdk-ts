@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectType } from "@osdk/widget.api";
 import {
   type AsyncParameterValueMap,
   type AsyncValue,
@@ -40,10 +41,26 @@ export interface FoundryWidgetClientContext<
    * Convenience object that aggregates the value of all parameters, accounting for their loading states
    */
   parameters: {
-    values: Partial<ParameterValueMap<C>>;
+    values: Partial<ExtendedParameterValueMap<C>>;
     state: AsyncValue<ParameterValueMap<C>>["type"];
   };
 }
+
+type ExtendedParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
+  [K in keyof C["parameters"]]: (K extends keyof ParameterValueMap<C> ?
+      & ParameterValueMap<C>[K]
+      & (C["parameters"][K] extends {
+        type: "objectSet";
+        objectType: infer T;
+      } ? T extends ObjectType ? {
+            objectSet: NonNullable<
+              NonNullable<T["__DefinitionMetadata"]>["objectSet"]
+            >;
+          }
+        : never
+        : {})
+    : never);
+};
 
 export const FoundryWidgetContext: React.Context<
   FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>

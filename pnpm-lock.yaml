@@ -4247,6 +4247,9 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
+      '@osdk/widget.api':
+        specifier: workspace:~
+        version: link:../widget.api
       '@osdk/widget.client':
         specifier: workspace:~
         version: link:../widget.client
