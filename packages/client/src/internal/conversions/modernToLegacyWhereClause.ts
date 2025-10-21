@@ -124,7 +124,6 @@ function handleWherePair(
     "Defined key values are only allowed when they are not undefined.",
   );
 
-  // Check if this is an RDP
   const isRdp = !structFieldSelector && rdpNames?.has(fieldName);
 
   const propertyIdentifier: PropertyIdentifier | undefined = isRdp

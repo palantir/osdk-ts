@@ -37,7 +37,7 @@ function setField(obj: ObjectHolder, field: string, value: unknown): void {
   mutableObj[field] = value;
 }
 
-export function stripRdpFields(
+function stripRdpFields(
   value: ObjectHolder,
   rdpFields: ReadonlySet<string>,
 ): ObjectHolder {
@@ -52,7 +52,7 @@ export function stripRdpFields(
   return result;
 }
 
-export function isSuperset(
+function isSuperset(
   superset: ReadonlySet<string>,
   subset: ReadonlySet<string>,
 ): boolean {
@@ -64,7 +64,7 @@ export function isSuperset(
   return true;
 }
 
-export function filterToFields(
+function filterToFields(
   value: ObjectHolder,
   allowedFields: ReadonlySet<string>,
 ): ObjectHolder {

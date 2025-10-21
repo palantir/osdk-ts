@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-import type {
-  DerivedProperty,
-  ObjectSet,
-  ObjectTypeDefinition,
-  Osdk,
-} from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { Changes } from "../Changes.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { Store } from "../Store.js";
 import { API_NAME_IDX, ListQuery, RDP_IDX } from "./ListQuery.js";
 
@@ -39,11 +35,9 @@ export class ObjectListQuery extends ListQuery {
       return store.client({
         type: "object",
         apiName: this.apiName,
-      } as ObjectTypeDefinition)
+      })
         // Note: order matters here, we need to apply withProperties before the where clause
-        .withProperties(
-          rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
-        )
+        .withProperties(rdpConfig as Rdp)
         .where(this.canonicalWhere);
     }
 

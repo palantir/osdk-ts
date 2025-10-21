@@ -378,18 +378,17 @@ export class Store {
    * Extracts RDP configuration from a cache key if present.
    *
    * @param cacheKey - The cache key to check
-   * @returns The RDP configuration, null, or undefined
+   * @returns The RDP configuration, or undefined if not present
    */
   #getQueryRdpConfig(
     cacheKey: KnownCacheKey,
-  ): Canonical<Rdp> | null | undefined {
+  ): Canonical<Rdp> | undefined {
     if ("otherKeys" in cacheKey && Array.isArray(cacheKey.otherKeys)) {
       if (cacheKey.type === "object") {
         return cacheKey.otherKeys[OBJECT_RDP_CONFIG_IDX];
       } else if (cacheKey.type === "list") {
         return cacheKey.otherKeys[LIST_RDP_IDX];
       }
-      // Links and other types would also be at LIST_RDP_IDX
     }
     return undefined;
   }
