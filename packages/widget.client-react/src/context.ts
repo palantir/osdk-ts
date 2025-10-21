@@ -35,7 +35,7 @@ export interface FoundryWidgetClientContext<
   /**
    * Object where the individual parameters have their async state represented
    */
-  asyncParameterValues: AsyncParameterValueMap<C>;
+  asyncParameterValues: ExtendedAsyncParameterValueMap<C>;
 
   /**
    * Convenience object that aggregates the value of all parameters, accounting for their loading states
@@ -56,6 +56,24 @@ type ExtendedParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
             objectSet: NonNullable<
               NonNullable<T["__DefinitionMetadata"]>["objectSet"]
             >;
+          }
+        : never
+        : {})
+    : never);
+};
+
+type ExtendedAsyncParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
+  [K in keyof C["parameters"]]: (K extends keyof AsyncParameterValueMap<C> ?
+      & AsyncParameterValueMap<C>[K]
+      & (C["parameters"][K] extends {
+        type: "objectSet";
+        objectType: infer T;
+      } ? T extends ObjectType ? {
+            value: AsyncValue<{
+              objectSet: NonNullable<
+                NonNullable<T["__DefinitionMetadata"]>["objectSet"]
+              >;
+            }>;
           }
         : never
         : {})
