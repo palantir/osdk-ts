@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectType } from "@osdk/widget.api";
 import type {
   AsyncParameterValueMap,
   AsyncValue,
@@ -23,25 +24,51 @@ import type {
 } from "@osdk/widget.client";
 import { createFoundryWidgetClient } from "@osdk/widget.client";
 import React, { useEffect, useMemo } from "react";
-import type { FoundryWidgetClientContext } from "./context.js";
+import type {
+  ExtractObjectSet,
+  FoundryWidgetClientContext,
+} from "./context.js";
 import { FoundryWidgetContext } from "./context.js";
 import { initializeParameters } from "./utils/initializeParameters.js";
 
-interface FoundryWidgetProps<C extends WidgetConfig<C["parameters"]>> {
-  children: React.ReactNode;
+type ExtractObjectTypes<C extends WidgetConfig<C["parameters"]>> =
+  C["parameters"][keyof C["parameters"]] extends infer Param
+    ? Param extends { type: "objectSet"; objectType: infer OT }
+      ? OT extends ObjectType ? OT : never
+    : never
+    : never;
 
-  /**
-   * Parameter configuration for the widget
-   */
-  config: C;
+type HasObjectSetParameters<C extends WidgetConfig<C["parameters"]>> =
+  ExtractObjectTypes<C> extends never ? false : true;
 
+type ObjectSetProps<C extends WidgetConfig<C["parameters"]>> = {
   /**
-   * Customize what the initial value of each parameter should be
-   *
-   * @default Sets all parameters to the "not-started" loading state
+   * Used to hydrate object sets from their RIDs for object set parameters
    */
-  initialValues?: AsyncParameterValueMap<C>;
-}
+  hydrateObjectSet: (
+    objectSetRid: string,
+    definition: ExtractObjectTypes<C>,
+  ) => ExtractObjectSet<ExtractObjectTypes<C>>;
+};
+
+type FoundryWidgetProps<C extends WidgetConfig<C["parameters"]>> =
+  & {
+    children: React.ReactNode;
+
+    /**
+     * Parameter configuration for the widget
+     */
+    config: C;
+
+    /**
+     * Customize what the initial value of each parameter should be
+     *
+     * @default Sets all parameters to the "not-started" loading state
+     */
+    initialValues?: AsyncParameterValueMap<C>;
+  }
+  & Partial<ObjectSetProps<C>>
+  & (HasObjectSetParameters<C> extends true ? ObjectSetProps<C> : {});
 
 /**
  * Handles subscribing to messages from the host Foundry UI and updating the widget's parameter values accordingly via React context

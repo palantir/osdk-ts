@@ -26,6 +26,10 @@ import {
 } from "@osdk/widget.client";
 import React, { useContext } from "react";
 
+export type ExtractObjectSet<OT extends ObjectType> = NonNullable<
+  NonNullable<OT["__DefinitionMetadata"]>["objectSet"]
+>;
+
 export interface FoundryWidgetClientContext<
   C extends WidgetConfig<C["parameters"]>,
 > {
@@ -53,9 +57,7 @@ type ExtendedParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
         type: "objectSet";
         objectType: infer T;
       } ? T extends ObjectType ? {
-            objectSet: NonNullable<
-              NonNullable<T["__DefinitionMetadata"]>["objectSet"]
-            >;
+            objectSet: ExtractObjectSet<T>;
           }
         : never
         : {})
@@ -70,9 +72,7 @@ type ExtendedAsyncParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
         objectType: infer T;
       } ? T extends ObjectType ? {
             value: AsyncValue<{
-              objectSet: NonNullable<
-                NonNullable<T["__DefinitionMetadata"]>["objectSet"]
-              >;
+              objectSet: ExtractObjectSet<T>;
             }>;
           }
         : never
