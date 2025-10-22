@@ -2216,11 +2216,37 @@ describe("Action Types", () => {
                         "rules": {
                           "0": {
                             "condition": {
-                              "true": {},
-                              "type": "true",
+                              "comparison": {
+                                "left": {
+                                  "type": "userProperty",
+                                  "userProperty": {
+                                    "propertyValue": {
+                                      "groupIds": {},
+                                      "type": "groupIds",
+                                    },
+                                    "userId": {
+                                      "currentUser": {},
+                                      "type": "currentUser",
+                                    },
+                                  },
+                                },
+                                "operator": "INTERSECTS",
+                                "right": {
+                                  "staticValue": {
+                                    "stringList": {
+                                      "strings": [
+                                        "actionLevelGroup",
+                                      ],
+                                    },
+                                    "type": "stringList",
+                                  },
+                                  "type": "staticValue",
+                                },
+                              },
+                              "type": "comparison",
                             },
                             "displayMetadata": {
-                              "failureMessage": "",
+                              "failureMessage": "Did not satisfy validation",
                               "typeClasses": [],
                             },
                           },
@@ -2524,11 +2550,37 @@ describe("Action Types", () => {
                         "rules": {
                           "0": {
                             "condition": {
-                              "true": {},
-                              "type": "true",
+                              "comparison": {
+                                "left": {
+                                  "type": "userProperty",
+                                  "userProperty": {
+                                    "propertyValue": {
+                                      "groupIds": {},
+                                      "type": "groupIds",
+                                    },
+                                    "userId": {
+                                      "currentUser": {},
+                                      "type": "currentUser",
+                                    },
+                                  },
+                                },
+                                "operator": "INTERSECTS",
+                                "right": {
+                                  "staticValue": {
+                                    "stringList": {
+                                      "strings": [
+                                        "actionLevelGroup",
+                                      ],
+                                    },
+                                    "type": "stringList",
+                                  },
+                                  "type": "staticValue",
+                                },
+                              },
+                              "type": "comparison",
                             },
                             "displayMetadata": {
-                              "failureMessage": "",
+                              "failureMessage": "Did not satisfy validation",
                               "typeClasses": [],
                             },
                           },
@@ -2800,7 +2852,22 @@ describe("Action Types", () => {
               },
             },
             "blockPermissionInformation": {
-              "actionTypes": {},
+              "actionTypes": {
+                "com.palantir.custom-api-name-1": {
+                  "restrictionStatus": {
+                    "hasRolesApplied": true,
+                    "ontologyPackageRid": null,
+                    "publicProject": false,
+                  },
+                },
+                "com.palantir.custom-api-name-2": {
+                  "restrictionStatus": {
+                    "hasRolesApplied": true,
+                    "ontologyPackageRid": null,
+                    "publicProject": false,
+                  },
+                },
+              },
               "linkTypes": {},
               "objectTypes": {},
             },
