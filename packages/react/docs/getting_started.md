@@ -48,9 +48,63 @@ On the SDK versions page, the table shows you your generated sdk version number 
 }
 ```
 
-# Getting Started
+# Stable Features
 
-Below is an example using filenames that align with a typical osdk project.
+The following features are stable and available via `@osdk/react`:
+
+```ts
+import { OsdkProvider, useOsdkClient } from "@osdk/react";
+```
+
+## Configure `<OsdkProvider/>`
+
+The stable provider gives you access to the OSDK client:
+
+```tsx
+import { OsdkProvider } from "@osdk/react";
+import client from "./client";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <OsdkProvider client={client}>
+    <RouterProvider router={router} />
+  </OsdkProvider>,
+);
+```
+
+## useOsdkClient
+
+Access the OSDK client from any component:
+
+```tsx
+import { useOsdkClient } from "@osdk/react";
+
+function MyComponent() {
+  const client = useOsdkClient();
+
+  // Use client for direct queries
+  const loadTodos = async () => {
+    const todos = await client(Todo).fetchPage();
+    // ...
+  };
+
+  return <button onClick={loadTodos}>Load Todos</button>;
+}
+```
+
+# Experimental Features
+
+All reactive data management features are currently **experimental** and available via `@osdk/react/experimental`. These features provide automatic cache management, real-time updates, and optimistic UI patterns.
+
+```ts
+import {
+  OsdkProvider2,
+  useOsdkObject,
+  useOsdkObjects,
+  useOsdkAction,
+  useLinks,
+  useObjectSet
+} from "@osdk/react/experimental";
+```
 
 ## Experimental vs Stable Features
 
