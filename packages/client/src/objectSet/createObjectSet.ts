@@ -207,8 +207,12 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         );
         $nextPageToken = result.nextPageToken;
 
-        for (const obj of result.data) {
-          yield obj as SingleOsdkResult<Q, L, R, S, {}, T, ORDER_BY_OPTIONS>;
+        for (
+          const obj of result.data as Array<
+            SingleOsdkResult<Q, L, R, S, {}, T, ORDER_BY_OPTIONS>
+          >
+        ) {
+          yield obj;
         }
       } while ($nextPageToken != null);
     },
