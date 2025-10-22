@@ -110,5 +110,8 @@ export const Todo = {
     hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, Todo, rid),
   },
 } satisfies Todo & {
-  internalDoNotUseMetadata: { rid: string; hydrateObjectSetFromRid: (client: $Client, rid: string) => Todo.ObjectSet };
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => Todo.ObjectSet;
+  };
 } as Todo;

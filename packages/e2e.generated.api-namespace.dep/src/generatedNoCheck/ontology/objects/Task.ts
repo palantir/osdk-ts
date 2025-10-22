@@ -98,5 +98,8 @@ export const Task = {
     hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, Task, rid),
   },
 } satisfies Task & {
-  internalDoNotUseMetadata: { rid: string; hydrateObjectSetFromRid: (client: $Client, rid: string) => Task.ObjectSet };
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => Task.ObjectSet;
+  };
 } as Task;
