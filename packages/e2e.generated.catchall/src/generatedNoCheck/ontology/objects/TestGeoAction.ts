@@ -64,6 +64,7 @@ export interface TestGeoAction extends $ObjectTypeDefinition {
     props: TestGeoAction.Props;
     linksType: TestGeoAction.Links;
     strictProps: TestGeoAction.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'TestGeoAction';
     description: 'Test Geo Object';
     displayName: 'Test Geo Object';

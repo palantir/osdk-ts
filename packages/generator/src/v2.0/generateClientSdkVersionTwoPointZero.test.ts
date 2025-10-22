@@ -853,6 +853,7 @@ describe("generator", () => {
             props: Person.Props;
             linksType: Person.Links;
             strictProps: Person.StrictProps;
+            expectedClientType?: $Client;
             apiName: 'Person';
             description: 'A person';
             displayName: 'Person';
@@ -970,6 +971,7 @@ describe("generator", () => {
             props: Todo.Props;
             linksType: Todo.Links;
             strictProps: Todo.StrictProps;
+            expectedClientType?: $Client;
             apiName: 'Todo';
             description: 'Its a todo item.';
             displayName: 'AwesomeTodoDisplayname';
@@ -2338,6 +2340,7 @@ describe("generator", () => {
             props: Person.Props;
             linksType: Person.Links;
             strictProps: Person.StrictProps;
+            expectedClientType?: $Client;
             apiName: 'Person';
             description: 'A person';
             displayName: 'Person';
@@ -2455,6 +2458,7 @@ describe("generator", () => {
             props: Todo.Props;
             linksType: Todo.Links;
             strictProps: Todo.StrictProps;
+            expectedClientType?: $Client;
             apiName: 'Todo';
             description: 'Its a todo item.';
             displayName: 'AwesomeTodoDisplayname';
@@ -2826,6 +2830,7 @@ describe("generator", () => {
             props: Task.Props;
             linksType: Task.Links;
             strictProps: Task.StrictProps;
+            expectedClientType?: $Client;
             apiName: 'com.example.dep.Task';
             description: undefined;
             displayName: 'Task';

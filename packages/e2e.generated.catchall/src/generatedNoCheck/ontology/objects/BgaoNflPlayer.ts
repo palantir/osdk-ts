@@ -80,6 +80,7 @@ export interface BgaoNflPlayer extends $ObjectTypeDefinition {
     props: BgaoNflPlayer.Props;
     linksType: BgaoNflPlayer.Links;
     strictProps: BgaoNflPlayer.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'BgaoNflPlayer';
     description: 'BgaoNflPlayer';
     displayName: 'BgaoNflPlayer';

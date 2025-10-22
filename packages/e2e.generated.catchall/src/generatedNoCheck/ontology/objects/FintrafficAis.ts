@@ -76,6 +76,7 @@ export interface FintrafficAis extends $ObjectTypeDefinition {
     props: FintrafficAis.Props;
     linksType: FintrafficAis.Links;
     strictProps: FintrafficAis.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'FintrafficAis';
     description: 'Fintraffic AIS';
     displayName: 'Fintraffic AIS';

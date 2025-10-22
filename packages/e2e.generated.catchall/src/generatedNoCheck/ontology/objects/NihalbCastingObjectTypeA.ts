@@ -67,6 +67,7 @@ export interface NihalbCastingObjectTypeA extends $ObjectTypeDefinition {
     props: NihalbCastingObjectTypeA.Props;
     linksType: NihalbCastingObjectTypeA.Links;
     strictProps: NihalbCastingObjectTypeA.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'NihalbCastingObjectTypeA';
     description: '';
     displayName: '(nihalb) Casting Object Type A';

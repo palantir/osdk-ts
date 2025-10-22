@@ -68,6 +68,7 @@ export interface NbaPlayer extends $ObjectTypeDefinition {
     props: NbaPlayer.Props;
     linksType: NbaPlayer.Links;
     strictProps: NbaPlayer.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'NbaPlayer';
     description: 'NbaPlayer';
     displayName: 'NbaPlayer';

@@ -69,6 +69,7 @@ export interface RhemmingsObjectWithGtsrProperty2 extends $ObjectTypeDefinition 
     props: RhemmingsObjectWithGtsrProperty2.Props;
     linksType: RhemmingsObjectWithGtsrProperty2.Links;
     strictProps: RhemmingsObjectWithGtsrProperty2.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'RhemmingsObjectWithGtsrProperty2';
     description: '(rhemmings) Object with GTSR property 2';
     displayName: '(rhemmings) Object with GTSR property 2';

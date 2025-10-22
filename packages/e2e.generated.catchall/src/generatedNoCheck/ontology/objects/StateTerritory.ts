@@ -63,6 +63,7 @@ export interface StateTerritory extends $ObjectTypeDefinition {
     props: StateTerritory.Props;
     linksType: StateTerritory.Links;
     strictProps: StateTerritory.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'StateTerritory';
     description: '';
     displayName: 'State/Territory';

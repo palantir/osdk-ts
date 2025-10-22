@@ -56,6 +56,7 @@ export interface Thing extends $ObjectTypeDefinition {
     props: Thing.Props;
     linksType: Thing.Links;
     strictProps: Thing.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'Thing';
     description: undefined;
     displayName: 'Thing';

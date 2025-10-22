@@ -58,6 +58,7 @@ export interface WeatherStation extends $ObjectTypeDefinition {
     props: WeatherStation.Props;
     linksType: WeatherStation.Links;
     strictProps: WeatherStation.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'WeatherStation';
     description: 'Weather Station';
     displayName: 'Weather Station';

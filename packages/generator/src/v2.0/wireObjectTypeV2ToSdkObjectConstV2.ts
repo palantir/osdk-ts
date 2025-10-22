@@ -124,7 +124,15 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
 
 
-    ${createDefinition(object, ontology, object.shortApiName, identifiers)}
+    ${
+      createDefinition(
+        object,
+        ontology,
+        object.shortApiName,
+        forInternalUse,
+        identifiers,
+      )
+    }
     `;
   }
 
@@ -294,6 +302,7 @@ export function createDefinition(
   object: EnhancedObjectType | EnhancedInterfaceType,
   ontology: EnhancedOntologyDefinition,
   identifier: string,
+  forInternalUse: boolean,
   {
     objectDefIdentifier,
     objectSetIdentifier,
@@ -321,7 +330,11 @@ export function createDefinition(
       objectSet: ${objectSetIdentifier};
       props: ${osdkObjectPropsIdentifier};
       linksType: ${osdkObjectLinksIdentifier};
-      strictProps: ${osdkObjectStrictPropsIdentifier};
+      strictProps: ${osdkObjectStrictPropsIdentifier};${
+    !forInternalUse && object instanceof EnhancedObjectType
+      ? `\nexpectedClientType?: $Client;`
+      : ""
+  }
       ${
     stringify(definition, {
       links: (_value) =>

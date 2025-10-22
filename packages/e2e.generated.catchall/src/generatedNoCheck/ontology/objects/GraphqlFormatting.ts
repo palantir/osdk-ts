@@ -769,6 +769,7 @@ export interface GraphqlFormatting extends $ObjectTypeDefinition {
     props: GraphqlFormatting.Props;
     linksType: GraphqlFormatting.Links;
     strictProps: GraphqlFormatting.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'GraphqlFormatting';
     description: '';
     displayName: 'Graphql Formatting';

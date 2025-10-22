@@ -66,6 +66,7 @@ export interface StructPersonOpisTeam extends $ObjectTypeDefinition {
     props: StructPersonOpisTeam.Props;
     linksType: StructPersonOpisTeam.Links;
     strictProps: StructPersonOpisTeam.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'StructPersonOpisTeam';
     description: 'StructPersonOpisTeam';
     displayName: 'StructPersonOpisTeam';

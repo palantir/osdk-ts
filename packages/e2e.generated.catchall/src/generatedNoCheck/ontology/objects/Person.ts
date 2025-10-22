@@ -56,6 +56,7 @@ export interface Person extends $ObjectTypeDefinition {
     props: Person.Props;
     linksType: Person.Links;
     strictProps: Person.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'Person';
     description: 'A person';
     displayName: 'Person';

@@ -78,6 +78,7 @@ export interface Todo extends $ObjectTypeDefinition {
     props: Todo.Props;
     linksType: Todo.Links;
     strictProps: Todo.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'Todo';
     description: '';
     displayName: 'Todo';

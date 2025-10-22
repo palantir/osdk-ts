@@ -68,6 +68,7 @@ export interface SotSensor extends $ObjectTypeDefinition {
     props: SotSensor.Props;
     linksType: SotSensor.Links;
     strictProps: SotSensor.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'SotSensor';
     description: 'SOT-Sensor';
     displayName: 'SOT-Sensor';

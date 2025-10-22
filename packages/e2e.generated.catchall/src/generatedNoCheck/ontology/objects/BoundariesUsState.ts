@@ -66,6 +66,7 @@ export interface BoundariesUsState extends $ObjectTypeDefinition {
     props: BoundariesUsState.Props;
     linksType: BoundariesUsState.Links;
     strictProps: BoundariesUsState.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'BoundariesUsState';
     description: 'Boundaries US State';
     displayName: 'Boundaries US State';

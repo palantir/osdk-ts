@@ -56,6 +56,7 @@ export interface Task extends $ObjectTypeDefinition {
     props: Task.Props;
     linksType: Task.Links;
     strictProps: Task.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'com.example.dep.Task';
     description: 'Task description';
     displayName: 'Task';

@@ -113,6 +113,7 @@ export interface Employee extends $ObjectTypeDefinition {
     props: Employee.Props;
     linksType: Employee.Links;
     strictProps: Employee.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'Employee';
     description: 'An employee';
     displayName: 'Employee';
