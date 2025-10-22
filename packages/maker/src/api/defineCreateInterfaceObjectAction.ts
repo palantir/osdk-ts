@@ -135,7 +135,7 @@ export function defineCreateInterfaceObjectAction(
       ),
     ...(def.actionLevelValidation
       ? {
-        actionLevelValidation: convertValidationRule(
+        validation: convertValidationRule(
           def.actionLevelValidation,
           parameters,
         ),
