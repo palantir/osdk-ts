@@ -16,6 +16,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace NihalbCastingLinkedObjectTypeA {
   export type PropertyKeys = 'foreignKeyProperty' | 'primaryKey_';
@@ -70,6 +72,7 @@ export interface NihalbCastingLinkedObjectTypeA extends $ObjectTypeDefinition {
     props: NihalbCastingLinkedObjectTypeA.Props;
     linksType: NihalbCastingLinkedObjectTypeA.Links;
     strictProps: NihalbCastingLinkedObjectTypeA.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'NihalbCastingLinkedObjectTypeA';
     description: '';
     displayName: '(nihalb) Casting Linked Object Type A';
@@ -129,7 +132,12 @@ export const NihalbCastingLinkedObjectTypeA = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.e257ea9e-8127-471f-9253-d641f5585d26',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) =>
+      $hydrateObjectSetFromRid(client, NihalbCastingLinkedObjectTypeA, rid),
   },
 } satisfies NihalbCastingLinkedObjectTypeA & {
-  internalDoNotUseMetadata: { rid: string };
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => NihalbCastingLinkedObjectTypeA.ObjectSet;
+  };
 } as NihalbCastingLinkedObjectTypeA;

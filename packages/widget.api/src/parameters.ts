@@ -21,6 +21,10 @@ export type ObjectType = {
   apiName: string;
   internalDoNotUseMetadata?: {
     rid: string;
+    hydrateObjectSetFromRid?: (client: any, rid: string) => any;
+  };
+  __DefinitionMetadata?: {
+    objectSet?: any;
   };
 };
 

@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace BgaoNflPlayer {
   export type PropertyKeys = 'id' | 'gamesPlayed' | 'name' | 'number' | 'wikiUrl' | 'address';
@@ -78,6 +80,7 @@ export interface BgaoNflPlayer extends $ObjectTypeDefinition {
     props: BgaoNflPlayer.Props;
     linksType: BgaoNflPlayer.Links;
     strictProps: BgaoNflPlayer.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'BgaoNflPlayer';
     description: 'BgaoNflPlayer';
     displayName: 'BgaoNflPlayer';
@@ -137,5 +140,11 @@ export const BgaoNflPlayer = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, BgaoNflPlayer, rid),
   },
-} satisfies BgaoNflPlayer & { internalDoNotUseMetadata: { rid: string } } as BgaoNflPlayer;
+} satisfies BgaoNflPlayer & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => BgaoNflPlayer.ObjectSet;
+  };
+} as BgaoNflPlayer;

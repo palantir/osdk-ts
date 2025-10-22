@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace MatthewvsDevOrderEmbedding {
   export type PropertyKeys = 'orderId' | 'orderTitle' | 'embedding';
@@ -62,6 +64,7 @@ export interface MatthewvsDevOrderEmbedding extends $ObjectTypeDefinition {
     props: MatthewvsDevOrderEmbedding.Props;
     linksType: MatthewvsDevOrderEmbedding.Links;
     strictProps: MatthewvsDevOrderEmbedding.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'MatthewvsDevOrderEmbedding';
     description: 'A venture';
     displayName: '[matthewvs-dev] Order Embedding';
@@ -109,5 +112,12 @@ export const MatthewvsDevOrderEmbedding = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) =>
+      $hydrateObjectSetFromRid(client, MatthewvsDevOrderEmbedding, rid),
   },
-} satisfies MatthewvsDevOrderEmbedding & { internalDoNotUseMetadata: { rid: string } } as MatthewvsDevOrderEmbedding;
+} satisfies MatthewvsDevOrderEmbedding & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => MatthewvsDevOrderEmbedding.ObjectSet;
+  };
+} as MatthewvsDevOrderEmbedding;

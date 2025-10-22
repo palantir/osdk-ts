@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace UsesForeignSpt {
   export type PropertyKeys = 'id' | 'body';
@@ -54,6 +56,7 @@ export interface UsesForeignSpt extends $ObjectTypeDefinition {
     props: UsesForeignSpt.Props;
     linksType: UsesForeignSpt.Links;
     strictProps: UsesForeignSpt.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'UsesForeignSpt';
     description: undefined;
     displayName: 'Uses Foreign Spt';
@@ -93,5 +96,11 @@ export const UsesForeignSpt = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'theRid',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, UsesForeignSpt, rid),
   },
-} satisfies UsesForeignSpt & { internalDoNotUseMetadata: { rid: string } } as UsesForeignSpt;
+} satisfies UsesForeignSpt & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => UsesForeignSpt.ObjectSet;
+  };
+} as UsesForeignSpt;

@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace ObjectTypeWithAllPropertyTypes {
   export type PropertyKeys =
@@ -202,6 +204,7 @@ export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition {
     props: ObjectTypeWithAllPropertyTypes.Props;
     linksType: ObjectTypeWithAllPropertyTypes.Links;
     strictProps: ObjectTypeWithAllPropertyTypes.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'ObjectTypeWithAllPropertyTypes';
     description: 'A type with all property types';
     displayName: 'ObjectTypeWithAllPropertyTypes';
@@ -357,7 +360,12 @@ export const ObjectTypeWithAllPropertyTypes = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) =>
+      $hydrateObjectSetFromRid(client, ObjectTypeWithAllPropertyTypes, rid),
   },
 } satisfies ObjectTypeWithAllPropertyTypes & {
-  internalDoNotUseMetadata: { rid: string };
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => ObjectTypeWithAllPropertyTypes.ObjectSet;
+  };
 } as ObjectTypeWithAllPropertyTypes;

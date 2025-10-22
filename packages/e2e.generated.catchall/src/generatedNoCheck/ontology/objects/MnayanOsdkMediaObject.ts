@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace MnayanOsdkMediaObject {
   export type PropertyKeys = 'id' | 'path' | 'mediaReference';
@@ -58,6 +60,7 @@ export interface MnayanOsdkMediaObject extends $ObjectTypeDefinition {
     props: MnayanOsdkMediaObject.Props;
     linksType: MnayanOsdkMediaObject.Links;
     strictProps: MnayanOsdkMediaObject.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'MnayanOsdkMediaObject';
     description: 'Media OT for OSDK e2e testing';
     displayName: 'MnayanOSDKMediaObject';
@@ -101,5 +104,12 @@ export const MnayanOsdkMediaObject = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) =>
+      $hydrateObjectSetFromRid(client, MnayanOsdkMediaObject, rid),
   },
-} satisfies MnayanOsdkMediaObject & { internalDoNotUseMetadata: { rid: string } } as MnayanOsdkMediaObject;
+} satisfies MnayanOsdkMediaObject & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => MnayanOsdkMediaObject.ObjectSet;
+  };
+} as MnayanOsdkMediaObject;

@@ -100,7 +100,12 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
       PropertyValueWireToClient as $PropType,
       SingleLinkAccessor  as $SingleLinkAccessor,
     } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
-
+    ${
+      forInternalUse
+        ? ""
+        : `import type { Client as $Client } from "@osdk/client";
+    import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from "@osdk/client/internal";`
+    }
 
     export namespace ${object.shortApiName} {
 
@@ -119,7 +124,15 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
 
 
-    ${createDefinition(object, ontology, object.shortApiName, identifiers)}
+    ${
+      createDefinition(
+        object,
+        ontology,
+        object.shortApiName,
+        forInternalUse,
+        identifiers,
+      )
+    }
     `;
   }
 
@@ -139,8 +152,22 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
       osdkMetadata: $osdkMetadata,
       internalDoNotUseMetadata: {
         rid: "${definition.rid}",
+        ${
+    forInternalUse
+      ? ""
+      : `hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, ${objectDefIdentifier}, rid),`
+  }
       },
-    } satisfies ${objectDefIdentifier} & { internalDoNotUseMetadata: { rid: string } } as ${objectDefIdentifier};`;
+    } satisfies ${objectDefIdentifier} & {
+      internalDoNotUseMetadata: {
+        rid: string;
+        ${
+    forInternalUse
+      ? ""
+      : `hydrateObjectSetFromRid: (client: $Client, rid: string) => ${objectDefIdentifier}.ObjectSet;`
+  }
+      }
+    } as ${objectDefIdentifier};`;
 }
 
 export interface Identifiers extends
@@ -275,6 +302,7 @@ export function createDefinition(
   object: EnhancedObjectType | EnhancedInterfaceType,
   ontology: EnhancedOntologyDefinition,
   identifier: string,
+  forInternalUse: boolean,
   {
     objectDefIdentifier,
     objectSetIdentifier,
@@ -302,7 +330,11 @@ export function createDefinition(
       objectSet: ${objectSetIdentifier};
       props: ${osdkObjectPropsIdentifier};
       linksType: ${osdkObjectLinksIdentifier};
-      strictProps: ${osdkObjectStrictPropsIdentifier};
+      strictProps: ${osdkObjectStrictPropsIdentifier};${
+    !forInternalUse && object instanceof EnhancedObjectType
+      ? `\nexpectedClientType?: $Client;`
+      : ""
+  }
       ${
     stringify(definition, {
       links: (_value) =>

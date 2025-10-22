@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace WeatherStation {
   export type PropertyKeys = 'stationId' | 'geohash';
@@ -56,6 +58,7 @@ export interface WeatherStation extends $ObjectTypeDefinition {
     props: WeatherStation.Props;
     linksType: WeatherStation.Links;
     strictProps: WeatherStation.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'WeatherStation';
     description: 'Weather Station';
     displayName: 'Weather Station';
@@ -97,5 +100,11 @@ export const WeatherStation = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, WeatherStation, rid),
   },
-} satisfies WeatherStation & { internalDoNotUseMetadata: { rid: string } } as WeatherStation;
+} satisfies WeatherStation & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => WeatherStation.ObjectSet;
+  };
+} as WeatherStation;

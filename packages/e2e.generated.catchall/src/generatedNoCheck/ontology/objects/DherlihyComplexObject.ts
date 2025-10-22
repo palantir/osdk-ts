@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace DherlihyComplexObject {
   export type PropertyKeys = 'id' | 'secret' | 'seriesId';
@@ -58,6 +60,7 @@ export interface DherlihyComplexObject extends $ObjectTypeDefinition {
     props: DherlihyComplexObject.Props;
     linksType: DherlihyComplexObject.Links;
     strictProps: DherlihyComplexObject.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'DherlihyComplexObject';
     description: 'Dherlihy Complex Object';
     displayName: 'Dherlihy Complex Object';
@@ -101,5 +104,12 @@ export const DherlihyComplexObject = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) =>
+      $hydrateObjectSetFromRid(client, DherlihyComplexObject, rid),
   },
-} satisfies DherlihyComplexObject & { internalDoNotUseMetadata: { rid: string } } as DherlihyComplexObject;
+} satisfies DherlihyComplexObject & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => DherlihyComplexObject.ObjectSet;
+  };
+} as DherlihyComplexObject;

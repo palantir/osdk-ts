@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace FintrafficAis {
   export type PropertyKeys = 'mmsi' | 'name' | 'centroid' | 'geometry' | 'seriesId' | 'shipType' | 'timestamp';
@@ -74,6 +76,7 @@ export interface FintrafficAis extends $ObjectTypeDefinition {
     props: FintrafficAis.Props;
     linksType: FintrafficAis.Links;
     strictProps: FintrafficAis.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'FintrafficAis';
     description: 'Fintraffic AIS';
     displayName: 'Fintraffic AIS';
@@ -133,5 +136,11 @@ export const FintrafficAis = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, FintrafficAis, rid),
   },
-} satisfies FintrafficAis & { internalDoNotUseMetadata: { rid: string } } as FintrafficAis;
+} satisfies FintrafficAis & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => FintrafficAis.ObjectSet;
+  };
+} as FintrafficAis;

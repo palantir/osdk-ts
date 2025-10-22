@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace MtaBus {
   export type PropertyKeys = 'vehicleId' | 'nextStopId' | 'routeId' | 'positionId';
@@ -62,6 +64,7 @@ export interface MtaBus extends $ObjectTypeDefinition {
     props: MtaBus.Props;
     linksType: MtaBus.Links;
     strictProps: MtaBus.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'MtaBus';
     description: 'MtaBus';
     displayName: 'MtaBus';
@@ -109,5 +112,11 @@ export const MtaBus = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, MtaBus, rid),
   },
-} satisfies MtaBus & { internalDoNotUseMetadata: { rid: string } } as MtaBus;
+} satisfies MtaBus & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => MtaBus.ObjectSet;
+  };
+} as MtaBus;

@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace GraphqlFormatting {
   export type PropertyKeys =
@@ -767,6 +769,7 @@ export interface GraphqlFormatting extends $ObjectTypeDefinition {
     props: GraphqlFormatting.Props;
     linksType: GraphqlFormatting.Links;
     strictProps: GraphqlFormatting.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'GraphqlFormatting';
     description: '';
     displayName: 'Graphql Formatting';
@@ -1442,5 +1445,11 @@ export const GraphqlFormatting = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.353eb83c-df7e-4c97-a362-1e94689869bc',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, GraphqlFormatting, rid),
   },
-} satisfies GraphqlFormatting & { internalDoNotUseMetadata: { rid: string } } as GraphqlFormatting;
+} satisfies GraphqlFormatting & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => GraphqlFormatting.ObjectSet;
+  };
+} as GraphqlFormatting;

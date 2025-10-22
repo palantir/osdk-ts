@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace NbaPlayer {
   export type PropertyKeys = 'id' | 'gamesPlayed' | 'name' | 'jerseyNumber' | 'wikiUrl';
@@ -66,6 +68,7 @@ export interface NbaPlayer extends $ObjectTypeDefinition {
     props: NbaPlayer.Props;
     linksType: NbaPlayer.Links;
     strictProps: NbaPlayer.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'NbaPlayer';
     description: 'NbaPlayer';
     displayName: 'NbaPlayer';
@@ -129,5 +132,11 @@ export const NbaPlayer = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, NbaPlayer, rid),
   },
-} satisfies NbaPlayer & { internalDoNotUseMetadata: { rid: string } } as NbaPlayer;
+} satisfies NbaPlayer & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => NbaPlayer.ObjectSet;
+  };
+} as NbaPlayer;

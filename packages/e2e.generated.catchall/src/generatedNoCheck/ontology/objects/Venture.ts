@@ -14,6 +14,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace Venture {
   export type PropertyKeys = 'ventureId' | 'ventureName' | 'ventureStart';
@@ -61,6 +63,7 @@ export interface Venture extends $ObjectTypeDefinition {
     props: Venture.Props;
     linksType: Venture.Links;
     strictProps: Venture.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'Venture';
     description: 'A venture';
     displayName: 'Venture';
@@ -106,5 +109,11 @@ export const Venture = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, Venture, rid),
   },
-} satisfies Venture & { internalDoNotUseMetadata: { rid: string } } as Venture;
+} satisfies Venture & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => Venture.ObjectSet;
+  };
+} as Venture;

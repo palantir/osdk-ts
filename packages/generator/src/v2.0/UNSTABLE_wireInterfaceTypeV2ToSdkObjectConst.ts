@@ -197,7 +197,15 @@ ${
       
     }    
 
-    ${createDefinition(interfaceDef, ontology, interfaceDef.shortApiName, ids)}
+    ${
+      createDefinition(
+        interfaceDef,
+        ontology,
+        interfaceDef.shortApiName,
+        forInternalUse,
+        ids,
+      )
+    }
 
 `;
   }

@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace TestGeoAction {
   export type PropertyKeys = 'geoPk' | 'geoshapeProp' | 'geoTitle';
@@ -62,6 +64,7 @@ export interface TestGeoAction extends $ObjectTypeDefinition {
     props: TestGeoAction.Props;
     linksType: TestGeoAction.Links;
     strictProps: TestGeoAction.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'TestGeoAction';
     description: 'Test Geo Object';
     displayName: 'Test Geo Object';
@@ -109,5 +112,11 @@ export const TestGeoAction = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, TestGeoAction, rid),
   },
-} satisfies TestGeoAction & { internalDoNotUseMetadata: { rid: string } } as TestGeoAction;
+} satisfies TestGeoAction & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => TestGeoAction.ObjectSet;
+  };
+} as TestGeoAction;

@@ -812,6 +812,8 @@ describe("generator", () => {
           PropertyValueWireToClient as $PropType,
           SingleLinkAccessor as $SingleLinkAccessor,
         } from '@osdk/client';
+        import type { Client as $Client } from '@osdk/client';
+        import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
         export namespace Person {
           export type PropertyKeys = 'email';
@@ -851,6 +853,7 @@ describe("generator", () => {
             props: Person.Props;
             linksType: Person.Links;
             strictProps: Person.StrictProps;
+            expectedClientType?: $Client;
             apiName: 'Person';
             description: 'A person';
             displayName: 'Person';
@@ -888,8 +891,14 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           internalDoNotUseMetadata: {
             rid: 'ridForPerson',
+            hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, Person, rid),
           },
-        } satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;
+        } satisfies Person & {
+          internalDoNotUseMetadata: {
+            rid: string;
+            hydrateObjectSetFromRid: (client: $Client, rid: string) => Person.ObjectSet;
+          };
+        } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -907,6 +916,8 @@ describe("generator", () => {
           PropertyValueWireToClient as $PropType,
           SingleLinkAccessor as $SingleLinkAccessor,
         } from '@osdk/client';
+        import type { Client as $Client } from '@osdk/client';
+        import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
         export namespace Todo {
           export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
@@ -960,6 +971,7 @@ describe("generator", () => {
             props: Todo.Props;
             linksType: Todo.Links;
             strictProps: Todo.StrictProps;
+            expectedClientType?: $Client;
             apiName: 'Todo';
             description: 'Its a todo item.';
             displayName: 'AwesomeTodoDisplayname';
@@ -1019,8 +1031,14 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           internalDoNotUseMetadata: {
             rid: 'ridForTodo',
+            hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, Todo, rid),
           },
-        } satisfies Todo & { internalDoNotUseMetadata: { rid: string } } as Todo;
+        } satisfies Todo & {
+          internalDoNotUseMetadata: {
+            rid: string;
+            hydrateObjectSetFromRid: (client: $Client, rid: string) => Todo.ObjectSet;
+          };
+        } as Todo;
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -1552,7 +1570,11 @@ describe("generator", () => {
           internalDoNotUseMetadata: {
             rid: 'ridForPerson',
           },
-        } satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;
+        } satisfies Person & {
+          internalDoNotUseMetadata: {
+            rid: string;
+          };
+        } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1683,7 +1705,11 @@ describe("generator", () => {
           internalDoNotUseMetadata: {
             rid: 'ridForTodo',
           },
-        } satisfies Todo & { internalDoNotUseMetadata: { rid: string } } as Todo;
+        } satisfies Todo & {
+          internalDoNotUseMetadata: {
+            rid: string;
+          };
+        } as Todo;
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -2088,7 +2114,11 @@ describe("generator", () => {
             internalDoNotUseMetadata: {
               rid: 'theRid',
             },
-          } satisfies UsesForeignSpt & { internalDoNotUseMetadata: { rid: string } } as UsesForeignSpt;
+          } satisfies UsesForeignSpt & {
+            internalDoNotUseMetadata: {
+              rid: string;
+            };
+          } as UsesForeignSpt;
           "
         `);
     });
@@ -2269,6 +2299,8 @@ describe("generator", () => {
           PropertyValueWireToClient as $PropType,
           SingleLinkAccessor as $SingleLinkAccessor,
         } from '@osdk/client';
+        import type { Client as $Client } from '@osdk/client';
+        import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
         export namespace Person {
           export type PropertyKeys = 'email';
@@ -2308,6 +2340,7 @@ describe("generator", () => {
             props: Person.Props;
             linksType: Person.Links;
             strictProps: Person.StrictProps;
+            expectedClientType?: $Client;
             apiName: 'Person';
             description: 'A person';
             displayName: 'Person';
@@ -2345,8 +2378,14 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           internalDoNotUseMetadata: {
             rid: 'ridForPerson',
+            hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, Person, rid),
           },
-        } satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;
+        } satisfies Person & {
+          internalDoNotUseMetadata: {
+            rid: string;
+            hydrateObjectSetFromRid: (client: $Client, rid: string) => Person.ObjectSet;
+          };
+        } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -2364,6 +2403,8 @@ describe("generator", () => {
           PropertyValueWireToClient as $PropType,
           SingleLinkAccessor as $SingleLinkAccessor,
         } from '@osdk/client';
+        import type { Client as $Client } from '@osdk/client';
+        import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
         export namespace Todo {
           export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
@@ -2417,6 +2458,7 @@ describe("generator", () => {
             props: Todo.Props;
             linksType: Todo.Links;
             strictProps: Todo.StrictProps;
+            expectedClientType?: $Client;
             apiName: 'Todo';
             description: 'Its a todo item.';
             displayName: 'AwesomeTodoDisplayname';
@@ -2476,8 +2518,14 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           internalDoNotUseMetadata: {
             rid: 'ridForTodo',
+            hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, Todo, rid),
           },
-        } satisfies Todo & { internalDoNotUseMetadata: { rid: string } } as Todo;
+        } satisfies Todo & {
+          internalDoNotUseMetadata: {
+            rid: string;
+            hydrateObjectSetFromRid: (client: $Client, rid: string) => Todo.ObjectSet;
+          };
+        } as Todo;
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -2739,6 +2787,8 @@ describe("generator", () => {
           PropertyValueWireToClient as $PropType,
           SingleLinkAccessor as $SingleLinkAccessor,
         } from '@osdk/client';
+        import type { Client as $Client } from '@osdk/client';
+        import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
         export namespace Task {
           export type PropertyKeys = 'taskId' | 'body';
@@ -2780,6 +2830,7 @@ describe("generator", () => {
             props: Task.Props;
             linksType: Task.Links;
             strictProps: Task.StrictProps;
+            expectedClientType?: $Client;
             apiName: 'com.example.dep.Task';
             description: undefined;
             displayName: 'Task';
@@ -2819,8 +2870,14 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           internalDoNotUseMetadata: {
             rid: 'ridForTask',
+            hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, Task, rid),
           },
-        } satisfies Task & { internalDoNotUseMetadata: { rid: string } } as Task;
+        } satisfies Task & {
+          internalDoNotUseMetadata: {
+            rid: string;
+            hydrateObjectSetFromRid: (client: $Client, rid: string) => Task.ObjectSet;
+          };
+        } as Task;
         ",
           "/foo/ontology/queries.ts": "export {};
         ",

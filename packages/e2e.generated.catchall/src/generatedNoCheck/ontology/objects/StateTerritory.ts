@@ -14,6 +14,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace StateTerritory {
   export type PropertyKeys = 'airportStateName' | 'airportStateCode' | 'country';
@@ -61,6 +63,7 @@ export interface StateTerritory extends $ObjectTypeDefinition {
     props: StateTerritory.Props;
     linksType: StateTerritory.Links;
     strictProps: StateTerritory.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'StateTerritory';
     description: '';
     displayName: 'State/Territory';
@@ -106,5 +109,11 @@ export const StateTerritory = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.98f324e1-b8f4-42ef-aee7-5c4a1494ce5e',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, StateTerritory, rid),
   },
-} satisfies StateTerritory & { internalDoNotUseMetadata: { rid: string } } as StateTerritory;
+} satisfies StateTerritory & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => StateTerritory.ObjectSet;
+  };
+} as StateTerritory;

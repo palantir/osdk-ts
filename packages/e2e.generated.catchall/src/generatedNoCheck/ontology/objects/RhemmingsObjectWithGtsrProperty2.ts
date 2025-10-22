@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace RhemmingsObjectWithGtsrProperty2 {
   export type PropertyKeys = 'id' | 'type' | 'location' | 'gtsr' | 'timestamp';
@@ -67,6 +69,7 @@ export interface RhemmingsObjectWithGtsrProperty2 extends $ObjectTypeDefinition 
     props: RhemmingsObjectWithGtsrProperty2.Props;
     linksType: RhemmingsObjectWithGtsrProperty2.Links;
     strictProps: RhemmingsObjectWithGtsrProperty2.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'RhemmingsObjectWithGtsrProperty2';
     description: '(rhemmings) Object with GTSR property 2';
     displayName: '(rhemmings) Object with GTSR property 2';
@@ -118,7 +121,12 @@ export const RhemmingsObjectWithGtsrProperty2 = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) =>
+      $hydrateObjectSetFromRid(client, RhemmingsObjectWithGtsrProperty2, rid),
   },
 } satisfies RhemmingsObjectWithGtsrProperty2 & {
-  internalDoNotUseMetadata: { rid: string };
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => RhemmingsObjectWithGtsrProperty2.ObjectSet;
+  };
 } as RhemmingsObjectWithGtsrProperty2;

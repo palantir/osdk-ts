@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace SotSensor {
   export type PropertyKeys = 'isEnum' | 'timeSeriesProperty' | 'sensorName' | 'seriesId' | 'wellId';
@@ -66,6 +68,7 @@ export interface SotSensor extends $ObjectTypeDefinition {
     props: SotSensor.Props;
     linksType: SotSensor.Links;
     strictProps: SotSensor.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'SotSensor';
     description: 'SOT-Sensor';
     displayName: 'SOT-Sensor';
@@ -117,5 +120,11 @@ export const SotSensor = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, SotSensor, rid),
   },
-} satisfies SotSensor & { internalDoNotUseMetadata: { rid: string } } as SotSensor;
+} satisfies SotSensor & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => SotSensor.ObjectSet;
+  };
+} as SotSensor;

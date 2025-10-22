@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace BoundariesUsState {
   export type PropertyKeys = 'usState' | 'latitude' | 'longitude' | 'geometry10M';
@@ -64,6 +66,7 @@ export interface BoundariesUsState extends $ObjectTypeDefinition {
     props: BoundariesUsState.Props;
     linksType: BoundariesUsState.Links;
     strictProps: BoundariesUsState.StrictProps;
+    expectedClientType?: $Client;
     apiName: 'BoundariesUsState';
     description: 'Boundaries US State';
     displayName: 'Boundaries US State';
@@ -113,5 +116,11 @@ export const BoundariesUsState = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, BoundariesUsState, rid),
   },
-} satisfies BoundariesUsState & { internalDoNotUseMetadata: { rid: string } } as BoundariesUsState;
+} satisfies BoundariesUsState & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => BoundariesUsState.ObjectSet;
+  };
+} as BoundariesUsState;
