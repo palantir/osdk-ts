@@ -100,7 +100,8 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
       PropertyValueWireToClient as $PropType,
       SingleLinkAccessor  as $SingleLinkAccessor,
     } from "${forInternalUse ? "@osdk/api" : "@osdk/client"}";
-
+    import type { Client as $Client } from "@osdk/client";
+    import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from "@osdk/client/internal";
 
     export namespace ${object.shortApiName} {
 
@@ -139,8 +140,9 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
       osdkMetadata: $osdkMetadata,
       internalDoNotUseMetadata: {
         rid: "${definition.rid}",
+        hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, ${objectDefIdentifier}, rid),
       },
-    } satisfies ${objectDefIdentifier} & { internalDoNotUseMetadata: { rid: string } } as ${objectDefIdentifier};`;
+    } satisfies ${objectDefIdentifier} & { internalDoNotUseMetadata: { rid: string; hydrateObjectSetFromRid: (client: $Client, rid: string) => ${objectDefIdentifier}.ObjectSet; } } as ${objectDefIdentifier};`;
 }
 
 export interface Identifiers extends

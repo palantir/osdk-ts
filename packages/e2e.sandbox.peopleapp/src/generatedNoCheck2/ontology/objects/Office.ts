@@ -14,6 +14,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace Office {
   export type PropertyKeys = 'location' | 'name' | 'primaryKey_';
@@ -130,5 +132,11 @@ export const Office = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.bbca9c02-5c6a-4d3a-8bf1-e4db0177ab5f',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, Office, rid),
   },
-} satisfies Office & { internalDoNotUseMetadata: { rid: string } } as Office;
+} satisfies Office & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => Office.ObjectSet;
+  };
+} as Office;

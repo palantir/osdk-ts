@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace Todo {
   export type PropertyKeys = 'id' | 'isComplete' | 'location' | 'title';
@@ -137,5 +139,8 @@ export const Todo = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.a3fcfef9-ec11-4f2d-8a4c-dc010de837bf',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, Todo, rid),
   },
-} satisfies Todo & { internalDoNotUseMetadata: { rid: string } } as Todo;
+} satisfies Todo & {
+  internalDoNotUseMetadata: { rid: string; hydrateObjectSetFromRid: (client: $Client, rid: string) => Todo.ObjectSet };
+} as Todo;

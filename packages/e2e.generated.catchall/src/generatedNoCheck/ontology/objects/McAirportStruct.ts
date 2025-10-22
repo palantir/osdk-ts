@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace McAirportStruct {
   export type PropertyKeys = 'airportName' | 'city' | 'airportStruct' | 'state' | 'originDate';
@@ -123,5 +125,11 @@ export const McAirportStruct = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, McAirportStruct, rid),
   },
-} satisfies McAirportStruct & { internalDoNotUseMetadata: { rid: string } } as McAirportStruct;
+} satisfies McAirportStruct & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => McAirportStruct.ObjectSet;
+  };
+} as McAirportStruct;

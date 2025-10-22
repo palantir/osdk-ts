@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace StructPersonOpisTeam {
   export type PropertyKeys = 'id' | 'age' | 'address';
@@ -107,5 +109,12 @@ export const StructPersonOpisTeam = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) =>
+      $hydrateObjectSetFromRid(client, StructPersonOpisTeam, rid),
   },
-} satisfies StructPersonOpisTeam & { internalDoNotUseMetadata: { rid: string } } as StructPersonOpisTeam;
+} satisfies StructPersonOpisTeam & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => StructPersonOpisTeam.ObjectSet;
+  };
+} as StructPersonOpisTeam;

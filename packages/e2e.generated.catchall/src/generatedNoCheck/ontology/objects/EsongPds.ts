@@ -14,6 +14,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace EsongPds {
   export type PropertyKeys = 'assignee' | 'id' | 'priority' | 'status' | 'title' | 'createdAt';
@@ -180,5 +182,11 @@ export const EsongPds = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.afa55844-81e8-4a1f-9b8e-bf51a9938a4d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, EsongPds, rid),
   },
-} satisfies EsongPds & { internalDoNotUseMetadata: { rid: string } } as EsongPds;
+} satisfies EsongPds & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => EsongPds.ObjectSet;
+  };
+} as EsongPds;

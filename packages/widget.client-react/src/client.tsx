@@ -19,12 +19,12 @@ import type {
   AsyncParameterValueMap,
   AsyncValue,
   ParameterConfig,
-  ParameterValueMap,
   WidgetConfig,
 } from "@osdk/widget.client";
 import { createFoundryWidgetClient } from "@osdk/widget.client";
 import React, { useEffect, useMemo } from "react";
 import type {
+  ExtendedParameterValueMap,
   ExtractObjectSet,
   FoundryWidgetClientContext,
 } from "./context.js";
@@ -77,13 +77,14 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
   children,
   config,
   initialValues,
+  hydrateObjectSet,
 }: FoundryWidgetProps<C>): React.ReactElement<FoundryWidgetProps<C>> => {
   const client = useMemo(() => createFoundryWidgetClient<C>(), []);
   const [asyncParameterValues, setAsyncParameterValues] = React.useState<
     AsyncParameterValueMap<C>
   >(initialValues ?? initializeParameters(config, "not-started"));
   const [allParameterValues, setAllParameterValues] = React.useState<
-    AsyncValue<ParameterValueMap<C>>
+    AsyncValue<ExtendedParameterValueMap<C>>
   >({
     type: "not-started",
   });
@@ -100,7 +101,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         setAllParameterValues((currentParameters) => {
           let aggregatedLoadedState: AsyncValue<any>["type"] = "loaded";
           let firstError: Error | undefined;
-          const newParameterValues: ParameterValueMap<
+          const newParameterValues: ExtendedParameterValueMap<
             WidgetConfig<ParameterConfig>
           > = {};
           for (const key in payload.detail.parameters) {
@@ -154,7 +155,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
             const updatedValue = {
               ...currentParameterValue,
               ...newParameterValues,
-            } as ParameterValueMap<C>;
+            } as ExtendedParameterValueMap<C>;
             return aggregatedLoadedState === "failed"
               ? {
                 type: aggregatedLoadedState,

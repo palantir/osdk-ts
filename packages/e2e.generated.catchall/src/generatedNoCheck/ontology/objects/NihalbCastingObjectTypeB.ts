@@ -14,6 +14,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace NihalbCastingObjectTypeB {
   export type PropertyKeys = 'additionalProperty' | 'primaryKey_';
@@ -128,5 +130,12 @@ export const NihalbCastingObjectTypeB = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.66898c81-9a3f-4f8b-937a-6934f6d9f660',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) =>
+      $hydrateObjectSetFromRid(client, NihalbCastingObjectTypeB, rid),
   },
-} satisfies NihalbCastingObjectTypeB & { internalDoNotUseMetadata: { rid: string } } as NihalbCastingObjectTypeB;
+} satisfies NihalbCastingObjectTypeB & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => NihalbCastingObjectTypeB.ObjectSet;
+  };
+} as NihalbCastingObjectTypeB;

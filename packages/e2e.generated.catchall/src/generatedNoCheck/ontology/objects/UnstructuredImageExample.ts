@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace UnstructuredImageExample {
   export type PropertyKeys = 'mediaItemRid' | 'path' | 'mediaReference';
@@ -101,5 +103,12 @@ export const UnstructuredImageExample = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'rid.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) =>
+      $hydrateObjectSetFromRid(client, UnstructuredImageExample, rid),
   },
-} satisfies UnstructuredImageExample & { internalDoNotUseMetadata: { rid: string } } as UnstructuredImageExample;
+} satisfies UnstructuredImageExample & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => UnstructuredImageExample.ObjectSet;
+  };
+} as UnstructuredImageExample;

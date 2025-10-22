@@ -14,6 +14,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace Country_1 {
   export type PropertyKeys = 'airportCountryName' | 'airportCountryIsoCode';
@@ -116,5 +118,11 @@ export const Country_1 = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.0a276176-8d93-489e-93b4-77673de56b9e',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, Country_1, rid),
   },
-} satisfies Country_1 & { internalDoNotUseMetadata: { rid: string } } as Country_1;
+} satisfies Country_1 & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => Country_1.ObjectSet;
+  };
+} as Country_1;

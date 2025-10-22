@@ -14,6 +14,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace EsongIssues {
   export type PropertyKeys =
@@ -240,5 +242,11 @@ export const EsongIssues = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.9e50a0d3-5b89-41f5-a894-b0e9bb388950',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, EsongIssues, rid),
   },
-} satisfies EsongIssues & { internalDoNotUseMetadata: { rid: string } } as EsongIssues;
+} satisfies EsongIssues & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => EsongIssues.ObjectSet;
+  };
+} as EsongIssues;

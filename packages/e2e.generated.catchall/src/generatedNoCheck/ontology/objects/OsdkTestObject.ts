@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace OsdkTestObject {
   export type PropertyKeys = 'structArray' | 'description' | 'osdkObjectName' | 'primaryKey_' | 'stringProperty';
@@ -143,5 +145,11 @@ export const OsdkTestObject = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => $hydrateObjectSetFromRid(client, OsdkTestObject, rid),
   },
-} satisfies OsdkTestObject & { internalDoNotUseMetadata: { rid: string } } as OsdkTestObject;
+} satisfies OsdkTestObject & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => OsdkTestObject.ObjectSet;
+  };
+} as OsdkTestObject;

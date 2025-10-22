@@ -50,21 +50,20 @@ export interface FoundryWidgetClientContext<
   };
 }
 
-type ExtendedParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
-  [K in keyof C["parameters"]]: (K extends keyof ParameterValueMap<C> ?
-      & ParameterValueMap<C>[K]
-      & (C["parameters"][K] extends {
-        type: "objectSet";
-        objectType: infer T;
-      } ? T extends ObjectType ? {
-            objectSet: ExtractObjectSet<T>;
-          }
-        : never
-        : {})
-    : never);
-};
+export type ExtendedParameterValueMap<C extends WidgetConfig<C["parameters"]>> =
+  {
+    [K in keyof C["parameters"]]: K extends keyof ParameterValueMap<C>
+      ? C["parameters"][K] extends { type: "objectSet"; objectType: infer T }
+        ? T extends ObjectType
+          ? ParameterValueMap<C>[K] & { objectSet: ExtractObjectSet<T> }
+        : ParameterValueMap<C>[K]
+      : ParameterValueMap<C>[K]
+      : never;
+  };
 
-type ExtendedAsyncParameterValueMap<C extends WidgetConfig<C["parameters"]>> = {
+export type ExtendedAsyncParameterValueMap<
+  C extends WidgetConfig<C["parameters"]>,
+> = {
   [K in keyof C["parameters"]]: (K extends keyof AsyncParameterValueMap<C> ?
       & AsyncParameterValueMap<C>[K]
       & (C["parameters"][K] extends {

@@ -13,6 +13,8 @@ import type {
   PropertyValueWireToClient as $PropType,
   SingleLinkAccessor as $SingleLinkAccessor,
 } from '@osdk/client';
+import type { Client as $Client } from '@osdk/client';
+import { hydrateObjectSetFromRid as $hydrateObjectSetFromRid } from '@osdk/client/internal';
 
 export namespace GtfsTripTrackObject {
   export type PropertyKeys = 'entityId' | 'geotimeSeriesReferences' | 'timestamp';
@@ -101,5 +103,12 @@ export const GtfsTripTrackObject = {
   osdkMetadata: $osdkMetadata,
   internalDoNotUseMetadata: {
     rid: 'ri.a.b.c.d',
+    hydrateObjectSetFromRid: (client: $Client, rid: string) =>
+      $hydrateObjectSetFromRid(client, GtfsTripTrackObject, rid),
   },
-} satisfies GtfsTripTrackObject & { internalDoNotUseMetadata: { rid: string } } as GtfsTripTrackObject;
+} satisfies GtfsTripTrackObject & {
+  internalDoNotUseMetadata: {
+    rid: string;
+    hydrateObjectSetFromRid: (client: $Client, rid: string) => GtfsTripTrackObject.ObjectSet;
+  };
+} as GtfsTripTrackObject;
