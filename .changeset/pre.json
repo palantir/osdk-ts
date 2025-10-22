@@ -156,6 +156,7 @@
     "@osdk-widget.client-react-simulatedRelease",
     "@osdk-widget.client-simulatedRelease",
     "@osdk-widget.vite-plugin-simulatedRelease",
+    "all-dragons-give",
     "dull-flies-call",
     "flat-dolls-drive",
     "fluffy-webs-return",
@@ -167,9 +168,11 @@
     "rare-wings-jog",
     "short-chefs-pull",
     "shy-lizards-smash",
+    "sour-buckets-happen",
     "stale-pigs-bake",
     "tasty-cases-double",
     "ten-dryers-dress",
+    "tired-peaches-arrive",
     "weak-crabs-hammer"
   ]
 }

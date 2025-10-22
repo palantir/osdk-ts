@@ -1,5 +1,11 @@
 # @osdk/osdk-docs-context
 
+## 0.3.0-beta.3
+
+### Minor Changes
+
+- 8fe0df0: Add generated context to git
+
 ## 0.3.0-beta.2
 
 ### Minor Changes
