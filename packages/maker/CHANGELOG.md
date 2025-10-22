@@ -1,5 +1,12 @@
 # @osdk/maker
 
+## 0.14.0-beta.6
+
+### Minor Changes
+
+- 04bfbfc: Add default format and table config options to OAC interface actions
+- 6ddabf4: Fix bug with action level validation on interface actions
+
 ## 0.14.0-beta.5
 
 ### Minor Changes
