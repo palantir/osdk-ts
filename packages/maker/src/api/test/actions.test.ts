@@ -2032,6 +2032,12 @@ describe("Action Types", () => {
         apiName: "custom-api-name-1",
         displayName: "Custom Create Action",
         status: "experimental",
+        actionLevelValidation: [{
+          condition: {
+            type: "group",
+            name: "actionLevelGroup",
+          },
+        }],
         parameterConfiguration: {
           [property3.apiName]: {
             required: false,
@@ -2096,6 +2102,12 @@ describe("Action Types", () => {
         apiName: "custom-api-name-2",
         displayName: "Custom Modify Action",
         status: "experimental",
+        actionLevelValidation: [{
+          condition: {
+            type: "group",
+            name: "actionLevelGroup",
+          },
+        }],
         parameterConfiguration: {
           [property3.apiName]: {
             required: false,
