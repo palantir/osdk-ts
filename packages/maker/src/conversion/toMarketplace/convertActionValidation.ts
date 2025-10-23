@@ -69,6 +69,7 @@ export function convertActionValidation(
                 convertActionParameterConditionalOverride(
                   override,
                   p.validation,
+                  action.parameters,
                 ),
             ) ?? [],
           },
@@ -100,6 +101,7 @@ export function convertActionValidation(
                 convertSectionConditionalOverride(
                   override,
                   section.defaultVisibility ?? "visible",
+                  action.parameters,
                 ),
             ) ?? [],
           },

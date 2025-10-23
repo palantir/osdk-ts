@@ -1,5 +1,17 @@
 # @osdk/typescript-sdk-docs
 
+## 0.5.0-beta.2
+
+### Minor Changes
+
+- 7cac2f8: Upgrade to latest spec and fix attachment template"
+
+## 0.4.0-beta.6
+
+### Minor Changes
+
+- 81af4c8: A set of compiled examples based on the documentation YAML
+
 ## 0.4.0-beta.5
 
 ### Minor Changes

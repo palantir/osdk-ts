@@ -76,6 +76,10 @@ export function createOsdkInterface<
         },
         enumerable: false,
       },
+      "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue": {
+        value: underlying.$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue,
+        enumerable: false,
+      },
 
       "$link": {
         get: function(this: InterfaceHolder) {

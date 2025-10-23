@@ -1,5 +1,19 @@
 # @osdk/shared.test
 
+## 0.4.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [f7ae38a]
+  - @osdk/generator-converters@2.6.0-beta.2
+  - @osdk/api@2.6.0-beta.2
+
 ## 0.3.0-beta.6
 
 ### Minor Changes

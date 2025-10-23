@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectMetadata } from "@osdk/api";
+import type {
+  ObjectMetadata,
+  ObjectSet,
+  ObjectTypeDefinition,
+  WhereClause,
+} from "@osdk/api";
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Client } from "../../Client.js";
@@ -148,6 +153,72 @@ describe(BulkObjectLoader, () => {
     });
 
     expect(mockThen).toHaveBeenCalled();
+
+    vi.useRealTimers();
+  });
+
+  it("uses $eq for single object and $in for multiple objects", async () => {
+    const loader = new BulkObjectLoader(client, 25, 100);
+
+    vi.useFakeTimers();
+
+    const whereClauses: WhereClause<ObjectTypeDefinition>[] = [];
+
+    const mockObjectSet: ObjectSet<ObjectTypeDefinition> = {
+      where: (clause) => {
+        whereClauses.push(clause);
+        return mockObjectSet;
+      },
+      fetchPage: vi.fn().mockResolvedValue({
+        data: [employees[0]],
+        nextPageToken: undefined,
+        totalCount: "1",
+      }),
+    } as Pick<
+      ObjectSet<ObjectTypeDefinition>,
+      "fetchPage" | "where"
+    > as ObjectSet<ObjectTypeDefinition>;
+
+    client.mockReturnValueOnce(mockObjectSet);
+    const load0 = loader.fetch("Employee", 0);
+
+    vi.advanceTimersByTime(26);
+
+    await load0;
+
+    expect(whereClauses[0]).toEqual({
+      id: { $eq: 0 },
+    });
+
+    whereClauses.length = 0;
+
+    const mockObjectSet2: ObjectSet<ObjectTypeDefinition> = {
+      where: (clause) => {
+        whereClauses.push(clause);
+        return mockObjectSet2;
+      },
+      fetchPage: vi.fn().mockResolvedValue({
+        data: [employees[1], employees[2]],
+        nextPageToken: undefined,
+        totalCount: "2",
+      }),
+    } as Pick<
+      ObjectSet<ObjectTypeDefinition>,
+      "fetchPage" | "where"
+    > as ObjectSet<ObjectTypeDefinition>;
+
+    client.mockReturnValueOnce(mockObjectSet2);
+
+    const load1 = loader.fetch("Employee", 1);
+    const load2 = loader.fetch("Employee", 2);
+
+    vi.advanceTimersByTime(26);
+
+    await Promise.all([load1, load2]);
+
+    expect(whereClauses[0]).toEqual({
+      id: { $in: [1, 2] },
+    });
 
     vi.useRealTimers();
   });

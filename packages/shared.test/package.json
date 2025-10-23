@@ -1,7 +1,7 @@
 {
   "name": "@osdk/shared.test",
   "private": true,
-  "version": "2.5.0-beta.5",
+  "version": "2.6.0-beta.2",
   "description": "",
   "access": "private",
   "license": "Apache-2.0",
@@ -38,7 +38,7 @@
     "@osdk/api": "workspace:~",
     "@osdk/foundry.core": "2.30.0",
     "@osdk/foundry.geo": "2.30.0",
-    "@osdk/foundry.ontologies": "2.30.0",
+    "@osdk/foundry.ontologies": "2.35.0",
     "@osdk/generator-converters": "workspace:~",
     "@osdk/internal.foundry.ontologies": "2.30.0",
     "date-fns": "^4.1.0",

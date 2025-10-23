@@ -137,6 +137,7 @@ const archetypeRules = archetypes(
       "@osdk/widget.client",
       "@osdk/vite-plugin-oac",
       "@osdk/faux",
+      "@osdk/osdk-docs-context",
     ],
     {
       ...LIBRARY_RULES,
@@ -177,7 +178,9 @@ const archetypeRules = archetypes(
       "@osdk/create-app.template-packager",
       "@osdk/example-generator",
       "@osdk/tool.*",
+      "@osdk/typescript-docs-example-generator",
       "@osdk/version-updater",
+      "@osdk/osdk-docs-context-generator",
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
@@ -195,6 +198,18 @@ const archetypeRules = archetypes(
     ],
     {
       ...INTERNAL_LIBRARY_RULES,
+    },
+  )
+  .addArchetype(
+    "internal libraries / templates with modern tooling ES2023",
+    [
+      "@osdk/typescript-sdk-docs-examples",
+    ],
+    {
+      ...INTERNAL_LIBRARY_RULES,
+      extraTsConfigCompilerOptions: {
+        "lib": ["ES2023", "DOM", "ESNEXT.Array"],
+      },
     },
   )
   .addArchetype("publishedSandboxes", [
@@ -912,6 +927,7 @@ function standardPackageRules(shared, options) {
     }),
     fileContents({
       ...shared,
+      excludePackages: ["@osdk/maker"],
       options: {
         file: "vitest.config.mts",
         generator: formattedGeneratorHelper(

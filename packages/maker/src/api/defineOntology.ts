@@ -173,6 +173,7 @@ export function writeStaticObjects(outputDir: string): void {
 import { wrapWithProxy, OntologyEntityTypeEnum } from '@osdk/maker';
 import type { ${entityTypeName} } from '@osdk/maker';
 
+/** @type {import('@osdk/maker').${entityTypeName}} */
 const ${entityFileNameBase}_base: ${entityTypeName} = ${
             ontologyTypeEnumKey === "VALUE_TYPE"
               ? entityJSON.slice(1, -2)

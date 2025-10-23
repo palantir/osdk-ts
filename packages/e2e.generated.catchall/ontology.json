@@ -752,17 +752,18 @@
         "titleProperty": "airportStateName",
         "visibility": "NORMAL"
       },
-      "linkTypes": [{
-        "apiName": "country1",
-        "cardinality": "ONE",
-        "displayName": "State Country",
-        "objectTypeApiName": "Country_1",
-        "status": "ACTIVE",
-        "foreignKeyPropertyApiName": "airportCountryName"
-      }],
+      "linkTypes": [
+        {
+          "apiName": "country1",
+          "cardinality": "ONE",
+          "displayName": "State Country",
+          "objectTypeApiName": "Country_1",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "airportCountryName"
+        }
+      ],
       "implementsInterfaces": [],
-      "implementsInterfaces2": {
-      },
+      "implementsInterfaces2": {},
       "sharedPropertyTypeMapping": {}
     },
     "Country_1": {
@@ -805,17 +806,18 @@
         "titleProperty": "airportCountryName",
         "visibility": "NORMAL"
       },
-      "linkTypes": [{
-        "apiName": "stateTerritory",
-        "cardinality": "MANY",
-        "displayName": "State Country",
-        "objectTypeApiName": "StateTerritory",
-        "status": "ACTIVE",
-        "foreignKeyPropertyApiName": "airportStateName"
-      }],
+      "linkTypes": [
+        {
+          "apiName": "stateTerritory",
+          "cardinality": "MANY",
+          "displayName": "State Country",
+          "objectTypeApiName": "StateTerritory",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "airportStateName"
+        }
+      ],
       "implementsInterfaces": [],
-      "implementsInterfaces2": {
-      },
+      "implementsInterfaces2": {},
       "sharedPropertyTypeMapping": {}
     },
     "OsdkTestObject": {
@@ -832,6 +834,36 @@
         },
         "primaryKey": "primaryKey_",
         "properties": {
+          "structArray": {
+            "displayName": "StructArray",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "string1",
+                    "rid": "ri.ontology.main.struct-field.108c5fd9-ac85-45aa-8b89-0854c40a51b8",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "apiName": "string2",
+                    "rid": "ri.ontology.main.struct-field.a993c24d-cb2f-4c0b-b013-3a06304da519",
+                    "dataType": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              }
+            },
+            "rid": "ri.ontology.main.property.345b80f5-4901-4f40-9aae-b830d1ed9432",
+            "status": {
+              "type": "experimental"
+            },
+            "visibility": "NORMAL"
+          },
           "description": {
             "displayName": "Description",
             "dataType": {
@@ -1303,7 +1335,13 @@
       },
       "implementsInterfaces": ["Athlete"],
       "implementsInterfaces2": {
-        "Athlete": { "properties": { "jerseyNumber": "jerseyNumber", "athleteId": "id", "name22": "name" } }
+        "Athlete": {
+          "properties": {
+            "jerseyNumber": "jerseyNumber",
+            "athleteId": "id",
+            "name22": "name"
+          }
+        }
       },
       "linkTypes": []
     },
@@ -1718,14 +1756,16 @@
         "titleProperty": "body",
         "pluralDisplayName": "AwesomeTodoDisplayname"
       },
-      "linkTypes": [{
-        "apiName": "Assignee",
-        "cardinality": "ONE",
-        "displayName": "Assignee",
-        "objectTypeApiName": "Person",
-        "status": "ACTIVE",
-        "foreignKeyPropertyApiName": "email"
-      }]
+      "linkTypes": [
+        {
+          "apiName": "Assignee",
+          "cardinality": "ONE",
+          "displayName": "Assignee",
+          "objectTypeApiName": "Person",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "email"
+        }
+      ]
     },
     "Person": {
       "objectType": {
@@ -1751,20 +1791,23 @@
         "titleProperty": "email",
         "pluralDisplayName": "People"
       },
-      "linkTypes": [{
-        "apiName": "Todos",
-        "cardinality": "MANY",
-        "displayName": "Todos",
-        "objectTypeApiName": "Todo",
-        "status": "ACTIVE",
-        "foreignKeyPropertyApiName": "id"
-      }, {
-        "apiName": "Friends",
-        "cardinality": "MANY",
-        "displayName": "Friends",
-        "objectTypeApiName": "Person",
-        "status": "ACTIVE"
-      }]
+      "linkTypes": [
+        {
+          "apiName": "Todos",
+          "cardinality": "MANY",
+          "displayName": "Todos",
+          "objectTypeApiName": "Todo",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "id"
+        },
+        {
+          "apiName": "Friends",
+          "cardinality": "MANY",
+          "displayName": "Friends",
+          "objectTypeApiName": "Person",
+          "status": "ACTIVE"
+        }
+      ]
     },
     "Employee": {
       "objectType": {
@@ -2244,7 +2287,11 @@
       "implementsInterfaces2": {
         "NihalbCastingInterfaceTypeA": {
           "properties": { "interfaceProperty": "primaryKey_" },
-          "links": { "nihalbCastingLinkedObjectTypeA": ["nihalbCastingLinkedObjectTypeAs"] }
+          "links": {
+            "nihalbCastingLinkedObjectTypeA": [
+              "nihalbCastingLinkedObjectTypeAs"
+            ]
+          }
         }
       },
       "sharedPropertyTypeMapping": {}
@@ -2288,15 +2335,26 @@
           "linkTypeRid": "ri.ontology.main.relation.07607d04-e331-4302-b3ba-1d1c6e4bac71"
         }
       ],
-      "implementsInterfaces": ["NihalbCastingInterfaceTypeA", "NihalbCastingInterfaceB"],
+      "implementsInterfaces": [
+        "NihalbCastingInterfaceTypeA",
+        "NihalbCastingInterfaceB"
+      ],
       "implementsInterfaces2": {
         "NihalbCastingInterfaceB": {
           "properties": { "interfaceProperty": "primaryKey_" },
-          "links": { "nihalbCastingLinkedObjectTypeA": ["nihalbCastingLinkedObjectTypeAs"] }
+          "links": {
+            "nihalbCastingLinkedObjectTypeA": [
+              "nihalbCastingLinkedObjectTypeAs"
+            ]
+          }
         },
         "NihalbCastingInterfaceTypeA": {
           "properties": { "interfaceProperty": "primaryKey_" },
-          "links": { "nihalbCastingLinkedObjectTypeA": ["nihalbCastingLinkedObjectTypeAs"] }
+          "links": {
+            "nihalbCastingLinkedObjectTypeA": [
+              "nihalbCastingLinkedObjectTypeAs"
+            ]
+          }
         }
       },
       "sharedPropertyTypeMapping": {}
@@ -2344,7 +2402,11 @@
       "implementsInterfaces2": {
         "NihalbCastingInterfaceB": {
           "properties": { "interfaceProperty": "primaryKey_" },
-          "links": { "nihalbCastingLinkedObjectTypeA": ["nihalbCastingLinkedObjectTypeAs"] }
+          "links": {
+            "nihalbCastingLinkedObjectTypeA": [
+              "nihalbCastingLinkedObjectTypeAs"
+            ]
+          }
         }
       },
       "sharedPropertyTypeMapping": {}
@@ -2414,6 +2476,1046 @@
           "links": { "nihalbCastingInterfaceB": ["nihalbCastingObjectTypeC"] }
         }
       },
+      "sharedPropertyTypeMapping": {}
+    },
+    "GraphqlFormatting": {
+      "objectType": {
+        "apiName": "GraphqlFormatting",
+        "displayName": "Graphql Formatting",
+        "status": "EXPERIMENTAL",
+        "description": "",
+        "pluralDisplayName": "Graphql Formatting",
+        "icon": { "type": "blueprint", "color": "#4C90F0", "name": "cube" },
+        "primaryKey": "stringPlain",
+        "properties": {
+          "doubleUnitKilogram": {
+            "displayName": "Double Unit Kilogram",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.ac9c7b85-56cc-4a5b-ab82-ce904796f15e",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standardUnit",
+                "baseFormatOptions": {},
+                "unit": { "type": "constant", "value": "kilogram" }
+              }
+            }
+          },
+          "doubleCurrencyEur": {
+            "displayName": "Double Currency Eur",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.8aae8e24-ea23-4ac6-8203-a32ea6345355",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "currency",
+                "baseFormatOptions": {},
+                "style": "STANDARD",
+                "currencyCode": { "type": "constant", "value": "EUR" }
+              }
+            }
+          },
+          "timestampTimeOnly": {
+            "displayName": "Timestamp Time Only",
+            "dataType": { "type": "timestamp" },
+            "rid": "ri.ontology.main.property.9b8ef264-7fbb-48a0-ad0c-6986a7424554",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_TIME"
+              },
+              "displayTimezone": { "type": "user" }
+            }
+          },
+          "arrayIntegers": {
+            "displayName": "Array Integers",
+            "dataType": { "type": "array", "subType": { "type": "integer" } },
+            "rid": "ri.ontology.main.property.48f0f993-98be-4179-b5e1-1774f1b94731",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "datePatternMdy": {
+            "displayName": "Date Pattern Mdy",
+            "dataType": { "type": "date" },
+            "rid": "ri.ontology.main.property.2accc5d1-20f7-44f7-bf9c-b48f7e71c689",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "date",
+              "format": { "type": "stringFormat", "pattern": "MM-dd-yyyy" }
+            }
+          },
+          "marking": {
+            "displayName": "Marking",
+            "dataType": { "type": "array", "subType": { "type": "marking" } },
+            "rid": "ri.ontology.main.property.71130aa8-15d4-46c3-a320-06ca0af703b9",
+            "status": { "type": "experimental" },
+            "visibility": "HIDDEN"
+          },
+          "dateIso": {
+            "displayName": "Date Iso",
+            "dataType": { "type": "date" },
+            "rid": "ri.ontology.main.property.e8726d33-07e9-4191-93a7-fc7899c351c2",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "date",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_ISO_INSTANT"
+              }
+            }
+          },
+          "longScientific": {
+            "displayName": "Long Scientific",
+            "dataType": { "type": "long" },
+            "rid": "ri.ontology.main.property.82afc5cc-8e19-4eb7-b535-31afa0c3fe5e",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": {
+                  "useGrouping": false,
+                  "notation": "SCIENTIFIC"
+                }
+              }
+            }
+          },
+          "negativePercentage": {
+            "displayName": "Negative Percentage",
+            "dataType": { "type": "float" },
+            "rid": "ri.ontology.main.property.5704ebf5-133a-4614-b6d2-965ad2ccfc4b",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "ratio",
+                "ratioType": "PERCENTAGE",
+                "baseFormatOptions": {}
+              }
+            }
+          },
+          "doublePerMille": {
+            "displayName": "Double Per Mille",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.96ac8fe6-d0ff-4bc4-b95e-f2b41e0d3036",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "ratio",
+                "ratioType": "PER_MILLE",
+                "baseFormatOptions": {}
+              }
+            }
+          },
+          "longCompact": {
+            "displayName": "Long Compact",
+            "dataType": { "type": "long" },
+            "rid": "ri.ontology.main.property.79ad9e72-cb83-4668-b7d4-073751bc1bac",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": { "notation": "COMPACT" }
+              }
+            }
+          },
+          "mediaReference": {
+            "displayName": "Media Reference",
+            "dataType": { "type": "mediaReference" },
+            "rid": "ri.ontology.main.property.759af777-d31e-4f0c-b641-1dd15ff75825",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "dateRelative": {
+            "displayName": "Date Relative",
+            "dataType": { "type": "date" },
+            "rid": "ri.ontology.main.property.fa4ff85f-d30f-4724-893a-f2b445819c85",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "date",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_RELATIVE_TO_NOW"
+              }
+            }
+          },
+          "doublePrecision2": {
+            "displayName": "Double Precision 2",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.56764344-8833-4cca-aede-8eaffecbbb1f",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": { "maximumSignificantDigits": 2 }
+              }
+            }
+          },
+          "timestampUtc": {
+            "displayName": "Timestamp reference",
+            "dataType": { "type": "timestamp" },
+            "rid": "ri.ontology.main.property.1ff56297-df30-482a-b65b-742459b921b1",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME"
+              },
+              "displayTimezone": {
+                "type": "static",
+                "zoneId": {
+                  "type": "propertyType",
+                  "propertyApiName": "timezoneProperty"
+                }
+              }
+            }
+          },
+          "doubleBasisPoints": {
+            "displayName": "Double Basis Points",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.36454a70-193b-4e36-bcb6-d1e8c3f306d4",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "ratio",
+                "ratioType": "BASIS_POINTS",
+                "baseFormatOptions": {}
+              }
+            }
+          },
+          "timestampDatetimeShort": {
+            "displayName": "Timestamp Datetime Short",
+            "dataType": { "type": "timestamp" },
+            "rid": "ri.ontology.main.property.f6286441-40e5-4d27-a04c-1ee38ac8e568",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME_SHORT"
+              },
+              "displayTimezone": { "type": "user" }
+            }
+          },
+          "doublePrecision4": {
+            "displayName": "Double Precision 4",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.9d88d3ed-4d17-44a0-987f-ba7c82317f12",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": { "maximumSignificantDigits": 4 }
+              }
+            }
+          },
+          "longPlain": {
+            "displayName": "Long Plain",
+            "dataType": { "type": "long" },
+            "rid": "ri.ontology.main.property.29015584-f568-47c4-8a9d-11dc335ece73",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "zeroValue": {
+            "displayName": "Zero Value",
+            "dataType": { "type": "integer" },
+            "rid": "ri.ontology.main.property.fcd3cce0-ed7c-4b86-8b3d-540d5f7b6a4e",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "doublePlain": {
+            "displayName": "Double Plain",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.21bdad64-a2c4-4cc3-a816-72037b8a6c11",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "struct": {
+            "displayName": "Struct",
+            "dataType": {
+              "type": "struct",
+              "structFieldTypes": [
+                {
+                  "apiName": "stringValue",
+                  "rid": "ri.ontology.main.struct-field.3139784a-2d62-4253-adb6-41a382b67f38",
+                  "dataType": { "type": "string" }
+                },
+                {
+                  "apiName": "integerValue",
+                  "rid": "ri.ontology.main.struct-field.9d468bb0-d746-4e33-a427-161b52f02106",
+                  "dataType": { "type": "integer" }
+                },
+                {
+                  "apiName": "doubleValue",
+                  "rid": "ri.ontology.main.struct-field.43da6e54-c60d-47c3-afcd-6202f94af125",
+                  "dataType": { "type": "double" }
+                },
+                {
+                  "apiName": "booleanValue",
+                  "rid": "ri.ontology.main.struct-field.2206f35a-7b60-4fa9-9fc2-34f0581da37c",
+                  "dataType": { "type": "boolean" }
+                },
+                {
+                  "apiName": "dateValue",
+                  "rid": "ri.ontology.main.struct-field.278920e4-67b6-4384-8e8e-1225a495c4a2",
+                  "dataType": { "type": "date" }
+                },
+                {
+                  "apiName": "timestampValue",
+                  "rid": "ri.ontology.main.struct-field.81925279-1f5e-48e2-8ca7-8f5a6860ef96",
+                  "dataType": { "type": "timestamp" }
+                },
+                {
+                  "apiName": "nullValue",
+                  "rid": "ri.ontology.main.struct-field.018f4a3f-da21-48d9-b287-7e8d8e010dd7",
+                  "dataType": { "type": "string" }
+                }
+              ]
+            },
+            "rid": "ri.ontology.main.property.807d466f-0b5a-4f53-bfef-83a633cc4708",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "doubleSignificant3": {
+            "displayName": "Double Significant 3",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.5e2cffdf-55e2-40d1-873b-9a5fae8ef85f",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": { "minimumSignificantDigits": 3 }
+              }
+            }
+          },
+          "doubleUnitCelsius": {
+            "displayName": "Double Unit Celsius",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.9fc90260-2bc5-42e2-81a3-7afa4b47a630",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standardUnit",
+                "baseFormatOptions": {},
+                "unit": { "type": "constant", "value": "celsius" }
+              }
+            }
+          },
+          "integerPlain": {
+            "displayName": "Integer Plain",
+            "dataType": { "type": "integer" },
+            "rid": "ri.ontology.main.property.5171cf63-cbc1-479a-a53f-e261972672d3",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "attachmentList": {
+            "displayName": "Attachment list",
+            "dataType": {
+              "type": "array",
+              "subType": { "type": "attachment" }
+            },
+            "rid": "ri.ontology.main.property.6a57c283-a437-47af-87d8-8cc085153c45",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "doubleRoundingCeil": {
+            "displayName": "Double Rounding Ceil",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.bb5446a3-2e77-478a-8a1b-5897ee6ab7eb",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": { "useGrouping": false }
+              }
+            }
+          },
+          "durationMilliseconds": {
+            "displayName": "Duration Milliseconds",
+            "dataType": { "type": "long" },
+            "rid": "ri.ontology.main.property.6f4262dc-e6ac-4d38-82a4-18f496e01da0",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "duration",
+                "formatStyle": { "type": "timecode" },
+                "precision": "AUTO",
+                "baseValue": "MILLISECONDS"
+              }
+            }
+          },
+          "dateLong": {
+            "displayName": "Date Long",
+            "dataType": { "type": "date" },
+            "rid": "ri.ontology.main.property.ffa86138-345c-4df0-969d-5ef9bf6677a7",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "date",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME"
+              }
+            }
+          },
+          "doubleCustomUnit": {
+            "displayName": "Double Custom Unit",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.8bafe298-fac9-44f2-8e80-36636dc81e2d",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "customUnit",
+                "baseFormatOptions": {},
+                "unit": { "type": "constant", "value": "custom unit" }
+              }
+            }
+          },
+          "doubleThousandsK": {
+            "displayName": "Double Thousands K",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.699dabf4-0afd-4510-a769-3033934a4881",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "scale",
+                "scaleType": "THOUSANDS",
+                "baseFormatOptions": {}
+              }
+            }
+          },
+          "arrayFormattedNumbers": {
+            "displayName": "Array Formatted Numbers",
+            "dataType": { "type": "array", "subType": { "type": "double" } },
+            "rid": "ri.ontology.main.property.b37747e1-37a0-4b42-ac63-532208185d96",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "ratio",
+                "ratioType": "PERCENTAGE",
+                "baseFormatOptions": {}
+              }
+            }
+          },
+          "doublePrefixPostfix": {
+            "displayName": "Double Prefix Postfix",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.a3ed561c-a28b-4d01-acf1-ac170fc75cb9",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "affix",
+                "baseFormatOptions": {},
+                "affix": {
+                  "prefix": { "type": "constant", "value": "Prefix" },
+                  "postfix": { "type": "constant", "value": "Postfix" }
+                }
+              }
+            }
+          },
+          "longEngineering": {
+            "displayName": "Long Engineering",
+            "dataType": { "type": "long" },
+            "rid": "ri.ontology.main.property.5ca92318-27a5-4f38-8ec7-eb805de03d7e",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": { "notation": "ENGINEERING" }
+              }
+            }
+          },
+          "doubleUnitMeter": {
+            "displayName": "Double Unit Meter",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.ac58686a-8b05-42cc-822f-c40b6b605cce",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standardUnit",
+                "baseFormatOptions": {},
+                "unit": { "type": "constant", "value": "meter" }
+              }
+            }
+          },
+          "geopoint": {
+            "displayName": "Geopoint",
+            "dataType": { "type": "geopoint" },
+            "rid": "ri.ontology.main.property.d709cd11-9172-415d-90f3-2ab967fe41fd",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "doubleCurrencyJpy": {
+            "displayName": "Double Currency Jpy",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.2ef54e93-df93-450e-b6c3-6dafba41baf3",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "currency",
+                "baseFormatOptions": {},
+                "style": "STANDARD",
+                "currencyCode": { "type": "constant", "value": "JPY" }
+              }
+            }
+          },
+          "integerOrdinal1": {
+            "displayName": "Integer Ordinal 1",
+            "dataType": { "type": "integer" },
+            "rid": "ri.ontology.main.property.f2c3e0ca-995d-4ef6-93cd-417cb7715533",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "fixedValues",
+                "values": { "1": "Second", "2": "Third", "0": "First" }
+              }
+            }
+          },
+          "booleanFormattedFalse": {
+            "displayName": "Boolean Formatted False",
+            "dataType": { "type": "boolean" },
+            "rid": "ri.ontology.main.property.5d14f397-2d49-471c-8cd2-9ca68bc28276",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "datePatternDmy": {
+            "displayName": "Date Pattern Dmy",
+            "dataType": { "type": "date" },
+            "rid": "ri.ontology.main.property.c2a2f9b5-f092-419a-927a-9cfb8e0c9d4c",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "date",
+              "format": { "type": "stringFormat", "pattern": "dd/MM/yyyy" }
+            }
+          },
+          "doubleCurrencyUsd": {
+            "displayName": "Double Currency Usd",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.3a5a0e82-2a0f-471e-a20b-26405a1f6f1f",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "currency",
+                "baseFormatOptions": {},
+                "style": "STANDARD",
+                "currencyCode": { "type": "constant", "value": "USD" }
+              }
+            }
+          },
+          "doublePercentage": {
+            "displayName": "Double Percentage",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.d7fb9de8-ac0c-4325-ad23-230ba1180013",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "ratio",
+                "ratioType": "PERCENTAGE",
+                "baseFormatOptions": {}
+              }
+            }
+          },
+          "booleanFormattedTrue": {
+            "displayName": "Boolean Formatted True",
+            "dataType": { "type": "boolean" },
+            "rid": "ri.ontology.main.property.87b7fc4a-9321-454d-add1-49e05ee918a6",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "boolean",
+              "valueIfTrue": "ITS TRUUUEEEE",
+              "valueIfFalse": "Not true :( "
+            }
+          },
+          "arrayStrings": {
+            "displayName": "Array Strings",
+            "dataType": { "type": "array", "subType": { "type": "string" } },
+            "rid": "ri.ontology.main.property.2cf68168-8e46-4a1f-b05b-532f197a6663",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "doubleBillionsB": {
+            "displayName": "Double Billions B",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.6394b70e-1888-486f-8435-21067f5ef9de",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "scale",
+                "scaleType": "BILLIONS",
+                "baseFormatOptions": {}
+              }
+            }
+          },
+          "integerMinDigits": {
+            "displayName": "Integer Min Digits",
+            "dataType": { "type": "decimal" },
+            "rid": "ri.ontology.main.property.a2046737-6596-4f51-b4e5-e13c5f0decf3",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "doubleCurrencyCompact": {
+            "displayName": "Double Currency Reference Prominent",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.23d3bfae-f43e-4780-ba87-dbd239df5e96",
+            "status": { "type": "experimental" },
+            "visibility": "PROMINENT",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "currency",
+                "baseFormatOptions": { "notation": "COMPACT" },
+                "style": "STANDARD",
+                "currencyCode": {
+                  "type": "propertyType",
+                  "propertyApiName": "currency"
+                }
+              }
+            }
+          },
+          "timezoneProperty": {
+            "displayName": "Timezone Property",
+            "dataType": { "type": "string" },
+            "rid": "ri.ontology.main.property.4c52472a-f27a-46c2-9592-0d0526dbd0ea",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "timestampPattern12h": {
+            "displayName": "Timestamp Pattern 12h",
+            "dataType": { "type": "timestamp" },
+            "rid": "ri.ontology.main.property.ceb9a20c-2314-4bc2-90f2-23c70e41fcd8",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "stringFormat",
+                "pattern": "yyyy/MM/dd h:mm"
+              },
+              "displayTimezone": { "type": "user" }
+            }
+          },
+          "timestampPattern24h": {
+            "displayName": "Timestamp Pattern 24h",
+            "dataType": { "type": "timestamp" },
+            "rid": "ri.ontology.main.property.a7d8da94-cfcd-46a8-abd3-fabde4caca3a",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "stringFormat",
+                "pattern": "yyyy/MM/dd H:mm"
+              },
+              "displayTimezone": { "type": "user" }
+            }
+          },
+          "arrayEmpty": {
+            "displayName": "Array Empty",
+            "dataType": { "type": "array", "subType": { "type": "string" } },
+            "rid": "ri.ontology.main.property.83f6d741-937f-4d4d-8ac3-37c5512ada36",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "negativeNumber": {
+            "displayName": "Negative Number",
+            "dataType": { "type": "integer" },
+            "rid": "ri.ontology.main.property.720f4fec-9329-4dd9-9723-6484e827d46a",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "arrayBooleans": {
+            "displayName": "Array Booleans",
+            "dataType": { "type": "array", "subType": { "type": "boolean" } },
+            "rid": "ri.ontology.main.property.0965b540-1722-49be-8e9e-23a545dc7408",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "boolean",
+              "valueIfTrue": "TRUEEE",
+              "valueIfFalse": "FAAALSE"
+            }
+          },
+          "durationSeconds": {
+            "displayName": "Duration Seconds",
+            "dataType": { "type": "long" },
+            "rid": "ri.ontology.main.property.98f360fe-422d-4889-8fb4-f16ea16aff26",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "duration",
+                "formatStyle": {
+                  "type": "humanReadable",
+                  "showFullUnits": true
+                },
+                "precision": "AUTO",
+                "baseValue": "SECONDS"
+              }
+            }
+          },
+          "stringUser": {
+            "displayName": "String User",
+            "dataType": { "type": "string" },
+            "rid": "ri.ontology.main.property.1fd594a3-8b86-40c8-af3f-1538848ef120",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "knownType",
+              "knownType": "USERORGROUPRID"
+            }
+          },
+          "dateMonthYear": {
+            "displayName": "Date Month Year",
+            "dataType": { "type": "date" },
+            "rid": "ri.ontology.main.property.cc8e9413-0172-4da3-a009-4ce9343eefd8",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "date",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_YEAR_AND_MONTH"
+              }
+            }
+          },
+          "integerNoGrouping": {
+            "displayName": "Integer No Grouping",
+            "dataType": { "type": "integer" },
+            "rid": "ri.ontology.main.property.c76bbdbc-298a-4b48-9f63-96c95354d773",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": { "useGrouping": true }
+              }
+            }
+          },
+          "negativeCurrency": {
+            "displayName": "Negative Currency",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.efe25052-d5bd-4091-815b-fb54256fb46a",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "nullValue": {
+            "displayName": "Null Value",
+            "dataType": { "type": "string" },
+            "rid": "ri.ontology.main.property.e7864713-dca6-4942-aea1-55450d5819d7",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "doubleRoundingFloor": {
+            "displayName": "Double Rounding Floor",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.d369aebb-6a6a-438d-b400-880f46afed37",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "smallDecimal": {
+            "displayName": "Small Decimal",
+            "dataType": { "type": "decimal" },
+            "rid": "ri.ontology.main.property.21a680c6-c166-475c-9442-6e7028f03aec",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "doubleMillionsM": {
+            "displayName": "Double Millions M",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.4be46c9d-4fd0-4c23-9d8f-2e2d34eb261a",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "scale",
+                "scaleType": "MILLIONS",
+                "baseFormatOptions": {}
+              }
+            }
+          },
+          "link_": {
+            "displayName": "Link",
+            "dataType": { "type": "string" },
+            "rid": "ri.ontology.main.property.d62911db-c568-40c8-8f58-d330c7ed4067",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "dateShort": {
+            "displayName": "Date Short",
+            "dataType": { "type": "date" },
+            "rid": "ri.ontology.main.property.10a8aaa1-139a-4955-a54a-9f45df91db5a",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "date",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME_SHORT"
+              }
+            }
+          },
+          "doublePercentageDecimal": {
+            "displayName": "Double Percentage Decimal",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.67657069-bb49-4139-bcaa-2512963c5c33",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "ratio",
+                "ratioType": "PERCENTAGE",
+                "baseFormatOptions": {
+                  "useGrouping": true,
+                  "minimumFractionDigits": 0,
+                  "maximumFractionDigits": 1
+                }
+              }
+            }
+          },
+          "stringResource": {
+            "displayName": "String Resource",
+            "dataType": { "type": "string" },
+            "rid": "ri.ontology.main.property.3bf2c29f-c80c-4c78-bc0c-6ef136909a7a",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "knownType",
+              "knownType": "RESOURCERID"
+            }
+          },
+          "timestampDatetime": {
+            "displayName": "Timestamp Datetime",
+            "dataType": { "type": "timestamp" },
+            "rid": "ri.ontology.main.property.482a218f-f0b8-46a3-952b-32a1d7945f1c",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME"
+              },
+              "displayTimezone": { "type": "user" }
+            }
+          },
+          "timestampNyc": {
+            "displayName": "Timestamp Nyc",
+            "dataType": { "type": "timestamp" },
+            "rid": "ri.ontology.main.property.4c87a2d7-d1d2-4971-8dea-889220c4210c",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME"
+              },
+              "displayTimezone": {
+                "type": "static",
+                "zoneId": { "type": "constant", "value": "America/New_York" }
+              }
+            }
+          },
+          "vector": {
+            "displayName": "Vector",
+            "dataType": {
+              "type": "vector",
+              "dimension": 1536,
+              "supportsSearchWith": [{ "value": "COSINE_SIMILARITY" }],
+              "embeddingModel": {
+                "type": "lms",
+                "value": "OPENAI_TEXT_EMBEDDING_ADA_002"
+              }
+            },
+            "rid": "ri.ontology.main.property.dffa2690-bb18-4700-bb3f-4805629721de",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "geoshape": {
+            "displayName": "Geoshape",
+            "dataType": { "type": "geoshape" },
+            "rid": "ri.ontology.main.property.d0e39c4a-9b5c-4022-815a-c03c9815b35e",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "currency": {
+            "displayName": "Currency",
+            "dataType": { "type": "string" },
+            "rid": "ri.ontology.main.property.51156291-1216-40d8-9778-ef7753fe14a0",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "arrayOfStructs": {
+            "displayName": "Array of structs",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "struct",
+                "structFieldTypes": [
+                  {
+                    "apiName": "stringValue",
+                    "rid": "ri.ontology.main.struct-field.85cd742d-e416-4f3f-8100-b6c034924951",
+                    "dataType": { "type": "string" }
+                  }
+                ]
+              }
+            },
+            "rid": "ri.ontology.main.property.4f39886e-6da4-425c-a055-9b67462f7bf2",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "stringPlain": {
+            "displayName": "String Plain Prominent",
+            "dataType": { "type": "string" },
+            "rid": "ri.ontology.main.property.e0917926-82fa-4006-b540-4f00090a9f9f",
+            "status": { "type": "experimental" },
+            "visibility": "PROMINENT"
+          },
+          "arrayMixed": {
+            "displayName": "Array Mixed",
+            "dataType": { "type": "array", "subType": { "type": "string" } },
+            "rid": "ri.ontology.main.property.5130623d-76d2-4628-ad36-fabdf5bed86e",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "doubleRoundingHalf": {
+            "displayName": "Double Rounding Half",
+            "dataType": { "type": "double" },
+            "rid": "ri.ontology.main.property.505b2f0d-2ad1-4fcc-b961-b43dd8dc5b44",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL"
+          },
+          "timestampIso": {
+            "displayName": "Timestamp Iso",
+            "dataType": { "type": "timestamp" },
+            "rid": "ri.ontology.main.property.225b1499-e96d-4d55-a8c3-052af69db5d8",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_ISO_INSTANT"
+              },
+              "displayTimezone": { "type": "user" }
+            }
+          },
+          "timestampTokyo": {
+            "displayName": "Timestamp Tokyo",
+            "dataType": { "type": "timestamp" },
+            "rid": "ri.ontology.main.property.8e365b10-bf76-451b-859d-312179e9dcfd",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "timestamp",
+              "format": {
+                "type": "localizedFormat",
+                "format": "DATE_FORMAT_DATE_TIME_SHORT"
+              },
+              "displayTimezone": {
+                "type": "static",
+                "zoneId": { "type": "constant", "value": "Asia/Tokyo" }
+              }
+            }
+          },
+          "largeNumber": {
+            "displayName": "Large Number",
+            "dataType": { "type": "decimal" },
+            "rid": "ri.ontology.main.property.1766d88e-ff96-4d53-95e6-c1b0f26d4275",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "standard",
+                "baseFormatOptions": { "notation": "ENGINEERING" }
+              }
+            }
+          },
+          "integerThousands": {
+            "displayName": "Integer Thousands",
+            "dataType": { "type": "integer" },
+            "rid": "ri.ontology.main.property.84486939-273d-4da8-ab38-286b29f21517",
+            "status": { "type": "experimental" },
+            "visibility": "NORMAL",
+            "valueFormatting": {
+              "type": "number",
+              "numberType": {
+                "type": "scale",
+                "scaleType": "THOUSANDS",
+                "baseFormatOptions": {}
+              }
+            }
+          }
+        },
+        "rid": "ri.ontology.main.object-type.353eb83c-df7e-4c97-a362-1e94689869bc",
+        "titleProperty": "stringPlain",
+        "visibility": "NORMAL"
+      },
+      "linkTypes": [],
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
       "sharedPropertyTypeMapping": {}
     }
   },
@@ -2689,9 +3791,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "testIlt2"
-      ],
+      "implementedByObjectTypes": ["testIlt2"],
       "links": {},
       "allLinks": {}
     },
@@ -2720,14 +3820,20 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": ["NihalbCastingObjectTypeB", "NihalbCastingObjectTypeA"],
+      "implementedByObjectTypes": [
+        "NihalbCastingObjectTypeB",
+        "NihalbCastingObjectTypeA"
+      ],
       "links": {
         "nihalbCastingLinkedObjectTypeA": {
           "rid": "ri.ontology.main.interface-link.830df50e-1bad-4dab-b352-dd55b01191ec",
           "apiName": "nihalbCastingLinkedObjectTypeA",
           "displayName": "(nihalb) Casting Linked Object Type A",
           "description": "",
-          "linkedEntityApiName": { "type": "objectTypeApiName", "apiName": "NihalbCastingLinkedObjectTypeA" },
+          "linkedEntityApiName": {
+            "type": "objectTypeApiName",
+            "apiName": "NihalbCastingLinkedObjectTypeA"
+          },
           "cardinality": "MANY",
           "required": true
         }
@@ -2738,7 +3844,10 @@
           "apiName": "nihalbCastingLinkedObjectTypeA",
           "displayName": "(nihalb) Casting Linked Object Type A",
           "description": "",
-          "linkedEntityApiName": { "type": "objectTypeApiName", "apiName": "NihalbCastingLinkedObjectTypeA" },
+          "linkedEntityApiName": {
+            "type": "objectTypeApiName",
+            "apiName": "NihalbCastingLinkedObjectTypeA"
+          },
           "cardinality": "MANY",
           "required": true
         }
@@ -2769,14 +3878,20 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": ["NihalbCastingObjectTypeB", "NihalbCastingObjectTypeC"],
+      "implementedByObjectTypes": [
+        "NihalbCastingObjectTypeB",
+        "NihalbCastingObjectTypeC"
+      ],
       "links": {
         "nihalbCastingLinkedObjectTypeA": {
           "rid": "ri.ontology.main.interface-link.4ea56ae0-c396-45d5-b432-32d321416faa",
           "apiName": "nihalbCastingLinkedObjectTypeA",
           "displayName": "(nihalb) Casting Linked Object Type A",
           "description": "",
-          "linkedEntityApiName": { "type": "objectTypeApiName", "apiName": "NihalbCastingLinkedObjectTypeA" },
+          "linkedEntityApiName": {
+            "type": "objectTypeApiName",
+            "apiName": "NihalbCastingLinkedObjectTypeA"
+          },
           "cardinality": "MANY",
           "required": true
         }
@@ -2787,7 +3902,10 @@
           "apiName": "nihalbCastingLinkedObjectTypeA",
           "displayName": "(nihalb) Casting Linked Object Type A",
           "description": "",
-          "linkedEntityApiName": { "type": "objectTypeApiName", "apiName": "NihalbCastingLinkedObjectTypeA" },
+          "linkedEntityApiName": {
+            "type": "objectTypeApiName",
+            "apiName": "NihalbCastingLinkedObjectTypeA"
+          },
           "cardinality": "MANY",
           "required": true
         }
@@ -2825,7 +3943,10 @@
           "apiName": "nihalbCastingInterfaceB",
           "displayName": "(nihalb) Casting Interface B",
           "description": "",
-          "linkedEntityApiName": { "type": "interfaceTypeApiName", "apiName": "NihalbCastingInterfaceB" },
+          "linkedEntityApiName": {
+            "type": "interfaceTypeApiName",
+            "apiName": "NihalbCastingInterfaceB"
+          },
           "cardinality": "ONE",
           "required": true
         }
@@ -2836,7 +3957,10 @@
           "apiName": "nihalbCastingInterfaceB",
           "displayName": "(nihalb) Casting Interface B",
           "description": "",
-          "linkedEntityApiName": { "type": "interfaceTypeApiName", "apiName": "NihalbCastingInterfaceB" },
+          "linkedEntityApiName": {
+            "type": "interfaceTypeApiName",
+            "apiName": "NihalbCastingInterfaceB"
+          },
           "cardinality": "ONE",
           "required": true
         }
@@ -3136,9 +4260,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "GenericCollateralConcernList"
-      ],
+      "implementedByObjectTypes": ["GenericCollateralConcernList"],
       "links": {
         "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernListToEntity": {
           "rid": "ri.ontology.main.interface-link.a91c9d55-1fc3-43dc-8efd-0f71ebf42e22",
@@ -3219,9 +4341,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "GenericCollateralConcernCandidate"
-      ],
+      "implementedByObjectTypes": ["GenericCollateralConcernCandidate"],
       "links": {
         "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList": {
           "rid": "ri.ontology.main.interface-link.e21d5d03-4772-4740-ba4d-1c7027836421",
@@ -3280,9 +4400,7 @@
       },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
-      "implementedByObjectTypes": [
-        "EsongIssues"
-      ],
+      "implementedByObjectTypes": ["EsongIssues"],
       "links": {
         "esongPds": {
           "rid": "ri.ontology.main.interface-link.753bc7f9-4cf5-4cd6-af49-d92891df84c4",
@@ -3316,8 +4434,7 @@
       "apiName": "InterfaceNoProps",
       "displayName": "FInterfaceNoProps",
       "description": "Its a Foo.",
-      "properties": {
-      },
+      "properties": {},
       "rid": "ri.ontology.main.interface-type.1b1b1b1b-1b1b-1b1b-1b1b-1b1b1b1b1b1b",
       "status": "ACTIVE"
     },
@@ -3371,10 +4488,12 @@
       "fieldType": {
         "type": "string"
       },
-      "constraints": [{
-        "type": "enum",
-        "options": ["brown", "found.com"]
-      }]
+      "constraints": [
+        {
+          "type": "enum",
+          "options": ["brown", "found.com"]
+        }
+      ]
     },
     "booleanValueType": {
       "apiName": "booleanValueType",
@@ -3385,10 +4504,12 @@
       "fieldType": {
         "type": "boolean"
       },
-      "constraints": [{
-        "type": "enum",
-        "options": [true, null]
-      }]
+      "constraints": [
+        {
+          "type": "enum",
+          "options": [true, null]
+        }
+      ]
     }
   }
 }

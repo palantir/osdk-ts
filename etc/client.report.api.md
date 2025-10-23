@@ -146,6 +146,11 @@ export const extractDateInLocalTime: (date: Date) => string;
 // @public
 export const extractDateInUTC: (date: Date) => string;
 
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+//
+// @public
+export function extractPrimaryKeyFromObjectSpecifier(ObjectSpecifier: ObjectSpecifier<any>): string;
+
 export { InterfaceDefinition }
 
 export { InterfaceMetadata }
