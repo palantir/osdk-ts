@@ -27,6 +27,52 @@ import type {
 } from "@osdk/foundry.ontologies";
 import type { FauxDataStore } from "./FauxDataStore.js";
 
+interface Bounds {
+  minimum: number;
+  maximum: number;
+}
+
+const NUMERIC_LITERAL_BOUNDS: Record<
+  Extract<
+    OntologyDataType["type"],
+    "double" | "integer" | "long" | "float" | "byte" | "short"
+  >,
+  Bounds
+> = {
+  byte: {
+    // Java min/max byte bounds
+    minimum: -128,
+    maximum: 127,
+  },
+  double: {
+    // These numbers are smaller than the actual min/max of a java double,
+    // but going higher will require using BigInt in our input fields.
+    minimum: -Number.MAX_VALUE,
+    maximum: Number.MAX_VALUE,
+  },
+  float: {
+    // Java min/max float bounds
+    minimum: -3.4028235e38,
+    maximum: 3.4028235e38,
+  },
+  integer: {
+    // Java min/max integer bounds
+    minimum: -2147483648,
+    maximum: 2147483647,
+  },
+  long: {
+    // These numbers are smaller than the actual min/max of a java long,
+    // but going higher will require using BigInt in our input fields.
+    minimum: Number.MIN_SAFE_INTEGER,
+    maximum: Number.MAX_SAFE_INTEGER,
+  },
+  short: {
+    // Java min/max short bounds
+    minimum: -32768,
+    maximum: 32767,
+  },
+} as const;
+
 export function validateAction(
   payload: ApplyActionRequestV2 | BatchApplyActionRequestItem,
   def: ActionTypeV2,
@@ -236,7 +282,7 @@ function validateActionParameterType(
   }
 }
 
-function matchesOntologyDataType(
+export function matchesOntologyDataType(
   odt: OntologyDataType,
   value: unknown,
 ): boolean {
@@ -251,70 +297,55 @@ function matchesOntologyDataType(
     case "boolean":
       return typeof value === "boolean";
     case "byte":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return typeof value === "number"
+        && isInBounds(value, NUMERIC_LITERAL_BOUNDS.byte);
     case "cipherText":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return isValidCipherText(value);
     case "date":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return isValidDateString(value);
     case "decimal":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return isValidDecimalString(value);
     case "double":
-      return typeof value === "number";
-
+      return typeof value === "number"
+        && isInBounds(value, NUMERIC_LITERAL_BOUNDS.double);
     case "float":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return typeof value === "number"
+        && isInBounds(value, NUMERIC_LITERAL_BOUNDS.float);
     case "integer":
-      return (typeof value === "number" && Number.isInteger(value));
-
+      return (typeof value === "number" && Number.isInteger(value)
+        && isInBounds(value, NUMERIC_LITERAL_BOUNDS.integer));
     case "long":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return (typeof value === "number" && Number.isInteger(value)
+        && isInBounds(value, NUMERIC_LITERAL_BOUNDS.long));
     case "map":
       throw new Error(
         `matchesOntologyDataType: ${odt.type} not implemented yet.`,
       );
     case "marking":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return typeof value === "string";
     case "object":
       return typeof value === "string"
         || (value != null && typeof value === "object"
           && "$primaryKey" in value);
     case "objectSet":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return typeof value === "string" && value.startsWith("ri.")
+        || (value != null && typeof value === "object"
+          && "objectSet" in value);
     case "set":
       throw new Error(
         `matchesOntologyDataType: ${odt.type} not implemented yet.`,
       );
     case "short":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return typeof value === "number"
+        && isInBounds(value, NUMERIC_LITERAL_BOUNDS.short);
     case "string":
       return (typeof value === "string");
-
     case "struct":
       throw new Error(
         `matchesOntologyDataType: ${odt.type} not implemented yet.`,
       );
     case "timestamp":
-      throw new Error(
-        `matchesOntologyDataType: ${odt.type} not implemented yet.`,
-      );
+      return isValidTimestampString(value);
     case "unsupported":
       throw new Error(
         `matchesOntologyDataType: ${odt.type} not implemented yet.`,
@@ -361,4 +392,69 @@ function isPoint(obj: any): obj is GeoJSON.Point {
     && obj.coordinates.length === 2
     && typeof obj.coordinates[0] === "number"
     && typeof obj.coordinates[1] === "number";
+}
+
+function isInBounds(
+  value: number,
+  bounds: { minimum: number; maximum: number },
+) {
+  return bounds.minimum <= value && value <= bounds.maximum;
+}
+
+function isValidDateString(value: unknown): boolean {
+  if (typeof value !== "string") {
+    return false;
+  }
+
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!dateRegex.test(value)) {
+    return false;
+  }
+  const date = new Date(value);
+  return !isNaN(date.getTime()) && date.toISOString().startsWith(value);
+}
+
+function isValidTimestampString(value: unknown): boolean {
+  return typeof value === "string" && !isNaN(new Date(value).getTime());
+}
+
+function isValidCipherText(value: unknown): boolean {
+  if (typeof value !== "string") {
+    return false;
+  }
+
+  const parts = value.split("::");
+
+  if (
+    !(isValidCipherAffix(parts, "CIPHER")
+      || isValidCipherAffix(parts, "BELLASO")
+      || isValidCipherAffix(parts, "BELLASO", true))
+  ) {
+    return false;
+  }
+
+  const channelRid = parts[1];
+  const encryptedValue = parts[2];
+
+  return channelRid.startsWith("ri.") && encryptedValue !== "";
+}
+
+function isValidCipherAffix(
+  parts: string[],
+  affix: "BELLASO" | "CIPHER",
+  prefixOnly: boolean = false,
+): boolean {
+  const totalParts = prefixOnly ? 3 : 4;
+
+  return parts.length === totalParts && parts[0] === affix
+    && (prefixOnly || parts[3] === affix);
+}
+
+function isValidDecimalString(value: unknown): boolean {
+  if (typeof value !== "string") {
+    return false;
+  }
+
+  const decimalRegex = /^[+-]?(\d+\.?\d*|\.\d+)(E[+-]?\d+)?$/;
+  return decimalRegex.test(value) && !isNaN(parseFloat(value));
 }
