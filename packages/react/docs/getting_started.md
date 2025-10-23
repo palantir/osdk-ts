@@ -98,11 +98,11 @@ All reactive data management features are currently **experimental** and availab
 ```ts
 import {
   OsdkProvider2,
+  useLinks,
+  useObjectSet,
+  useOsdkAction,
   useOsdkObject,
   useOsdkObjects,
-  useOsdkAction,
-  useLinks,
-  useObjectSet
 } from "@osdk/react/experimental";
 ```
 
@@ -118,12 +118,12 @@ All reactive data management features (OsdkProvider2, useOsdkObject, useOsdkObje
 ```ts
 import {
   OsdkProvider2,
-  useOsdkObject,
-  useOsdkObjects,
-  useOsdkAction,
   useLinks,
   useObjectSet,
-  useOsdkClient
+  useOsdkAction,
+  useOsdkClient,
+  useOsdkObject,
+  useOsdkObjects,
 } from "@osdk/react/experimental";
 ```
 
@@ -150,7 +150,10 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkObjects, type UseOsdkListResult } from "@osdk/react/experimental";
+import {
+  type UseOsdkListResult,
+  useOsdkObjects,
+} from "@osdk/react/experimental";
 
 function App() {
   const {
@@ -158,7 +161,7 @@ function App() {
     isLoading,
     isOptimistic,
     error,
-    fetchMore
+    fetchMore,
   }: UseOsdkListResult<typeof Todo> = useOsdkObjects(Todo);
 
   // If the cache has no existing copy for this query and
@@ -190,16 +193,20 @@ const { data, isLoading } = useOsdkObjects(Todo, {
 Additional options and return values for `useOsdkObjects`:
 
 ```ts
-const { data, isLoading, isOptimistic, fetchMore, error } = useOsdkObjects(Todo, {
-  where: { isComplete: false },
-  pageSize: 20,
-  orderBy: { createdAt: "desc" },
-  dedupeIntervalMs: 5000,
-  streamUpdates: true, // Enable streaming updates (experimental - requires backend support)
-});
+const { data, isLoading, isOptimistic, fetchMore, error } = useOsdkObjects(
+  Todo,
+  {
+    where: { isComplete: false },
+    pageSize: 20,
+    orderBy: { createdAt: "desc" },
+    dedupeIntervalMs: 5000,
+    streamUpdates: true, // Enable streaming updates (experimental)
+  },
+);
 ```
 
 Return values:
+
 - `data` - Array of objects matching the query
 - `isLoading` - True while fetching data from server
 - `isOptimistic` - True if the list order is affected by optimistic updates
@@ -227,7 +234,6 @@ function TodoView({ todo }: TodoProps) {
 
   return (
     <div>
-      {/* Use object from hook result (may be updated version) */}
       {object?.title || todo.title}
       {isLoading && " (Loading)"}
       {isOptimistic && " (Optimistic)"}
@@ -257,6 +263,7 @@ function TodoLoader({ todoId }: { todoId: string }) {
 ```
 
 Return values:
+
 - `object` - The object instance (may be undefined while loading)
 - `isLoading` - True while fetching from server
 - `isOptimistic` - True if object has optimistic updates applied
@@ -310,6 +317,7 @@ function TodoView({ todo }: TodoProps) {
 ```
 
 Return values:
+
 - `applyAction` - Function to execute the action (accepts single args object or array for batch)
 - `data` - Return value from the last successful action execution
 - `error` - Error object with details (see error handling below)
@@ -333,7 +341,9 @@ Example with detailed error handling:
 
 ```tsx
 function TodoActionWithErrorHandling({ todo }: TodoProps) {
-  const { applyAction, error, isPending } = useOsdkAction($Actions.completeTodo);
+  const { applyAction, error, isPending } = useOsdkAction(
+    $Actions.completeTodo,
+  );
 
   const onClick = async () => {
     try {
@@ -380,7 +390,7 @@ function BulkCompleteButton({ todos }: { todos: Todo.OsdkInstance[] }) {
       todos.map(todo => ({
         todo: todo,
         isComplete: true,
-      }))
+      })),
     );
   }, [applyAction, todos]);
 
@@ -535,8 +545,8 @@ function TodoView({ todo }: TodoProps) {
 The `ObservableClient` provides methods for manual cache invalidation.
 
 ```tsx
-import { useOsdkClient } from "@osdk/react/experimental";
 import { createObservableClient } from "@osdk/client/unstable-do-not-use";
+import { useOsdkClient } from "@osdk/react/experimental";
 import { useMemo } from "react";
 
 // Create a custom hook to access the observable client
@@ -565,13 +575,13 @@ function RefreshButton() {
 ```
 
 **Important Notes:**
+
 - The `ObservableClient` used by `OsdkProvider2` is automatically created and managed by the provider. It maintains a cache of all queries and subscriptions.
 - **Lifecycle:** The client is created once when `OsdkProvider2` mounts and lives for the lifetime of your application. All hooks share this single client instance.
 - **Automatic Updates:** Most data updates happen automatically after actions complete. The client re-fetches affected objects and lists. Manual invalidation is only needed for:
   - External data changes (e.g., data updated by another user/system)
   - Manual refresh buttons
   - Periodic polling (though consider using `streamUpdates` instead)
-
 
 ## Error Handling
 
@@ -623,7 +633,7 @@ function EmployeeReports({ employee }: { employee: Employee.OsdkInstance }) {
       pageSize: 10,
       orderBy: { name: "asc" },
       where: { isActive: true },
-    }
+    },
   );
 
   if (isLoading && !links) {
@@ -633,9 +643,7 @@ function EmployeeReports({ employee }: { employee: Employee.OsdkInstance }) {
   return (
     <div>
       <h3>Reports ({links?.length})</h3>
-      {links?.map(report => (
-        <div key={report.$primaryKey}>{report.name}</div>
-      ))}
+      {links?.map(report => <div key={report.$primaryKey}>{report.name}</div>)}
 
       {hasMore && (
         <button onClick={() => fetchMore?.()} disabled={isLoading}>
@@ -659,21 +667,21 @@ function TeamMembers({ employees }: { employees: Employee.OsdkInstance[] }) {
   return (
     <div>
       <h3>All Team Reports</h3>
-      {links?.map(report => (
-        <div key={report.$primaryKey}>{report.name}</div>
-      ))}
+      {links?.map(report => <div key={report.$primaryKey}>{report.name}</div>)}
     </div>
   );
 }
 ```
 
 Options:
+
 - `where` - Filter linked objects
 - `pageSize` - Number of links per page
 - `orderBy` - Sort order for linked objects
 - `mode` - Fetch mode: `"force"` (always fetch), `"offline"` (cache only), or undefined (default)
 
 Return values:
+
 - `links` - Array of linked objects
 - `isLoading` - True while fetching
 - `isOptimistic` - True if links affected by optimistic updates
@@ -728,7 +736,9 @@ function TodosWithDerivedProps() {
   const { data, isLoading, fetchMore } = useObjectSet(baseObjectSet, {
     withProperties: {
       // Add computed properties
-      displayName: DerivedProperty.string(todo => `${todo.title} (${todo.priority})`),
+      displayName: DerivedProperty.string(todo =>
+        `${todo.title} (${todo.priority})`
+      ),
     },
     where: { isComplete: false },
     orderBy: { createdAt: "desc" },
@@ -771,7 +781,9 @@ function ComplexTodoQuery() {
 ### Link Traversal with pivotTo
 
 ```tsx
-function EmployeeDepartments({ employee }: { employee: Employee.OsdkInstance }) {
+function EmployeeDepartments(
+  { employee }: { employee: Employee.OsdkInstance },
+) {
   const employeeSet = Employee.where({ id: employee.id });
 
   const { data } = useObjectSet(employeeSet, {
@@ -788,6 +800,7 @@ function EmployeeDepartments({ employee }: { employee: Employee.OsdkInstance }) 
 ```
 
 Options:
+
 - `where` - Filter objects
 - `withProperties` - Add derived/computed properties
 - `union` - Combine with other ObjectSets
@@ -799,6 +812,7 @@ Options:
 - `dedupeIntervalMs` - Minimum time between re-fetches (default: 2000ms)
 
 Return values:
+
 - `data` - Array of objects with derived properties
 - `isLoading` - True while fetching
 - `error` - Error object if fetch failed
@@ -806,6 +820,7 @@ Return values:
 - `objectSet` - The transformed ObjectSet after all operations
 
 **Performance Considerations:**
+
 - Set operations (union, intersect, subtract) are performed on the server
 - Each unique combination of options creates a separate cache entry
 - Using `pivotTo` creates a new query for the linked type
@@ -849,6 +864,7 @@ function TodoMetadataViewer() {
 ```
 
 Return values:
+
 - `metadata` - ObjectMetadata or InterfaceMetadata with type information
 - `loading` - True while fetching metadata
 - `error` - Error message string if fetch failed
@@ -868,7 +884,7 @@ function TodoWithDetails({ todoId }: { todoId: string }) {
   const { links: comments, isLoading: commentsLoading } = useLinks(
     todo,
     "comments",
-    { orderBy: { createdAt: "desc" } }
+    { orderBy: { createdAt: "desc" } },
   );
 
   // Setup action for completing
@@ -904,6 +920,7 @@ function TodoWithDetails({ todoId }: { todoId: string }) {
 Both hooks allow you to query collections of objects, but they serve different purposes:
 
 ### Use `useOsdkObjects` when:
+
 - You need **maximum performance** for simple queries
 - You only need basic filtering (`where`), sorting (`orderBy`), and pagination
 
@@ -917,6 +934,7 @@ const { data } = useOsdkObjects(Todo, {
 ```
 
 ### Use `useObjectSet` when:
+
 - You need **advanced query capabilities** like:
   - Runtime-computed derived properties (`withProperties`)
   - Set operations (`union`, `intersect`, `subtract`)
@@ -928,7 +946,9 @@ const { data } = useOsdkObjects(Todo, {
 // Advanced queries with derived properties and set operations
 const { data } = useObjectSet(Todo.all(), {
   withProperties: {
-    displayName: DerivedProperty.string(todo => `${todo.title} (${todo.priority})`),
+    displayName: DerivedProperty.string(todo =>
+      `${todo.title} (${todo.priority})`
+    ),
   },
   union: [urgentTodos],
   subtract: [completedTodos],
@@ -940,6 +960,7 @@ const { data } = useObjectSet(Todo.all(), {
 `useOsdkObjects` is optimized for straightforward queries and offers the best performance for most use cases. Use it as your default choice unless you specifically need the advanced features of `useObjectSet`.
 
 `useObjectSet` provides powerful capabilities but involves additional overhead:
+
 - Complex set operations require more processing
 - Each unique configuration creates a separate cache entry
 
