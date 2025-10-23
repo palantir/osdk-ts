@@ -18,8 +18,9 @@ import type { ObjectSet, ObjectTypeDefinition, Osdk } from "@osdk/api";
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { Changes } from "../Changes.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { Store } from "../Store.js";
-import { API_NAME_IDX, ListQuery } from "./ListQuery.js";
+import { API_NAME_IDX, ListQuery, RDP_IDX } from "./ListQuery.js";
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   all: (ObjectHolder | InterfaceHolder)[];
@@ -29,6 +30,17 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
 
 export class ObjectListQuery extends ListQuery {
   protected createObjectSet(store: Store): ObjectSet<ObjectTypeDefinition> {
+    const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+    if (rdpConfig != null) {
+      return store.client({
+        type: "object",
+        apiName: this.apiName,
+      })
+        // Note: order matters here, we need to apply withProperties before the where clause
+        .withProperties(rdpConfig as Rdp)
+        .where(this.canonicalWhere);
+    }
+
     return store.client({
       type: "object",
       apiName: this.apiName,

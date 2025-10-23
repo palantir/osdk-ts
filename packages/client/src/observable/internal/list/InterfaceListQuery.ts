@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinition,
-  ObjectSet,
-  ObjectTypeDefinition,
-  Osdk,
-} from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition, Osdk } from "@osdk/api";
 import groupBy from "object.groupby";
 import invariant from "tiny-invariant";
 import type { Client } from "../../../Client.js";
@@ -30,9 +25,10 @@ import {
 } from "../../../object/convertWireToOsdkObjects/InternalSymbols.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { Changes } from "../Changes.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { Store } from "../Store.js";
-import { ListQuery } from "./ListQuery.js";
+import { ListQuery, RDP_IDX } from "./ListQuery.js";
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
   all: (ObjectHolder | InterfaceHolder)[];
@@ -42,10 +38,20 @@ type ExtractRelevantObjectsResult = Record<"added" | "modified", {
 
 export class InterfaceListQuery extends ListQuery {
   protected createObjectSet(store: Store): ObjectSet<ObjectTypeDefinition> {
-    return store.client({
-      type: "interface" as const,
+    const rdpConfig = this.cacheKey.otherKeys[RDP_IDX];
+    const type: string = "interface" as const;
+    const objectTypeDef = {
+      type,
       apiName: this.apiName,
-    } as ObjectOrInterfaceDefinition as ObjectTypeDefinition)
+    } as ObjectTypeDefinition;
+
+    if (rdpConfig != null) {
+      return store.client(objectTypeDef)
+        .withProperties(rdpConfig as Rdp)
+        .where(this.canonicalWhere);
+    }
+
+    return store.client(objectTypeDef)
       .where(this.canonicalWhere);
   }
 
@@ -127,7 +133,9 @@ async function reloadDataAsFullObjects(
 
         const result = await client(
           objectDef as ObjectTypeDefinition,
-        ).where(where).fetchPage();
+        ).where(
+          where as Parameters<ObjectSet<ObjectTypeDefinition>["where"]>[0],
+        ).fetchPage();
         return [
           apiName,
           Object.fromEntries(result.data.map(

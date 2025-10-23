@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinition,
-  SimplePropertyDef,
-  WhereClause,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import { extractNamespace } from "./extractNamespace.js";
 
-/**
- * A where clause without specific type information - used for runtime matching logic.
- * This accepts any WhereClause<T, RDPs> by using the base types.
- */
-export type SimpleWhereClause = WhereClause<
-  ObjectOrInterfaceDefinition,
-  Record<string, SimplePropertyDef>
->;
+export function fullyQualifyPropName(
+  fieldName: string,
+  objectOrInterface: ObjectOrInterfaceDefinition,
+): string {
+  if (objectOrInterface.type === "interface") {
+    const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);
+    const [fieldApiNamespace, fieldShortName] = extractNamespace(fieldName);
+    return (fieldApiNamespace == null && objApiNamespace != null)
+      ? `${objApiNamespace}.${fieldShortName}`
+      : fieldName;
+  }
+  return fieldName;
+}

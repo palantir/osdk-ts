@@ -943,4 +943,177 @@ describe(modernToLegacyWhereClause, () => {
       });
     });
   });
+
+  describe("RDP properties", () => {
+    type TestRDPs = {
+      reportCount: "integer";
+      managerName: "string";
+    };
+
+    const mockObjectType = {
+      type: "object" as const,
+      apiName: "TestObject",
+      __DefinitionMetadata: {
+        type: "object" as const,
+        apiName: "TestObject",
+        displayName: "Test Object",
+        description: undefined,
+        properties: {
+          department: { type: "string" as const },
+          status: { type: "string" as const },
+        },
+        rid: "test-rid",
+        primaryKeyApiName: "id",
+        titleProperty: "department",
+        links: {},
+        primaryKeyType: "string" as const,
+        icon: undefined,
+        visibility: undefined,
+        pluralDisplayName: "Test Objects",
+        status: undefined,
+        interfaceMap: {},
+        inverseInterfaceMap: {},
+      },
+    };
+
+    it("should handle RDP properties at top level", () => {
+      const whereClause: WhereClause<typeof mockObjectType, TestRDPs> = {
+        department: "Engineering",
+        reportCount: { $gte: 5 },
+        managerName: "John",
+      };
+
+      const rdpNames = new Set(["reportCount", "managerName"]);
+
+      const result = modernToLegacyWhereClause(
+        whereClause,
+        mockObjectType,
+        rdpNames,
+      );
+
+      expect(result).toEqual({
+        type: "and",
+        value: [
+          {
+            type: "eq",
+            field: "department",
+            value: "Engineering",
+          },
+          {
+            type: "gte",
+            propertyIdentifier: {
+              type: "property",
+              apiName: "reportCount",
+            },
+            value: 5,
+          },
+          {
+            type: "eq",
+            propertyIdentifier: {
+              type: "property",
+              apiName: "managerName",
+            },
+            value: "John",
+          },
+        ],
+      });
+    });
+
+    it("should handle RDP properties in $and clauses", () => {
+      const whereClause: WhereClause<typeof mockObjectType, TestRDPs> = {
+        $and: [
+          { department: "Engineering" },
+          { reportCount: { $gte: 5 } },
+        ],
+      };
+
+      const rdpNames = new Set(["reportCount"]);
+
+      const result = modernToLegacyWhereClause(
+        whereClause,
+        mockObjectType,
+        rdpNames,
+      );
+
+      expect(result).toEqual({
+        type: "and",
+        value: [
+          {
+            type: "eq",
+            field: "department",
+            value: "Engineering",
+          },
+          {
+            type: "gte",
+            propertyIdentifier: {
+              type: "property",
+              apiName: "reportCount",
+            },
+            value: 5,
+          },
+        ],
+      });
+    });
+
+    it("should handle complex nested structures with RDP", () => {
+      const whereClause: WhereClause<typeof mockObjectType, TestRDPs> = {
+        department: "Engineering",
+        $and: [
+          {
+            $or: [
+              { status: "active" },
+              { reportCount: { $gte: 10 } },
+            ],
+          },
+          {
+            managerName: { $ne: "Admin" },
+          },
+        ],
+      };
+
+      const rdpNames = new Set(["reportCount", "managerName"]);
+
+      const result = modernToLegacyWhereClause(
+        whereClause,
+        mockObjectType,
+        rdpNames,
+      );
+
+      // The actual structure flattens the nested $and differently
+      expect(result).toEqual({
+        type: "and",
+        value: [
+          {
+            type: "or",
+            value: [
+              {
+                type: "eq",
+                field: "status",
+                value: "active",
+              },
+              {
+                type: "gte",
+                propertyIdentifier: {
+                  type: "property",
+                  apiName: "reportCount",
+                },
+                value: 10,
+              },
+            ],
+          },
+          {
+            type: "not",
+            value: {
+              type: "eq",
+              propertyIdentifier: {
+                type: "property",
+                apiName: "managerName",
+              },
+              value: "Admin",
+            },
+          },
+        ],
+      });
+    });
+  });
 });
