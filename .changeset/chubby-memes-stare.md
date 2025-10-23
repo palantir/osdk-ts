@@ -1,7 +1,7 @@
 ---
-"@osdk/shared.client.impl": minor
-"@osdk/shared.net.errors": minor
-"@osdk/shared.net.fetch": minor
+"@osdk/shared.client.impl": patch
+"@osdk/shared.net.errors": patch
+"@osdk/shared.net.fetch": patch
 ---
 
 Add errorDescription to PalantirApiError
