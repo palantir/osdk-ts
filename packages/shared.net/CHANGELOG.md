@@ -1,5 +1,18 @@
 # @osdk/shared.net
 
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [badfbc4]
+  - @osdk/shared.client.impl@1.5.0
+  - @osdk/shared.net.errors@2.5.0
+  - @osdk/shared.net.fetch@1.5.0
+
 ## 2.2.0
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @osdk/oauth
 
+## 1.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+
 ## 1.4.0-beta.2
 
 ### Minor Changes
