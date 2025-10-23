@@ -1,5 +1,11 @@
 # @osdk/create-app.template-packager
 
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+
 ## 2.5.0-rc.15
 
 ## 2.5.0-beta.14

@@ -1,5 +1,12 @@
 # @osdk/widget.api
 
+## 3.2.0
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- a6f49e9: Allow specifying object sets in widget configs
+
 ## 3.2.0-beta.5
 
 ### Minor Changes
