@@ -39,7 +39,7 @@ export class ActionApplication {
   ) => Promise<ActionEditResponse> = async (
     action,
     args,
-    { optimisticUpdate } = {},
+    { optimisticUpdate, __debugListeners } = {},
   ) => {
     const logger = process.env.NODE_ENV !== "production"
       ? this.store.logger?.child({ methodName: "applyAction" })
@@ -47,6 +47,7 @@ export class ActionApplication {
     const removeOptimisticResult = runOptimisticJob(
       this.store,
       optimisticUpdate,
+      __debugListeners,
     );
 
     return await (async () => {

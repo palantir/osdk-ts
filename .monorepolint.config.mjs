@@ -278,6 +278,7 @@ const archetypeRules = archetypes(
     "vitePlugin",
     [
       "@osdk/widget.vite-plugin",
+      "@osdk/react-toolkit-monitor",
     ],
     {
       ...LIBRARY_RULES,

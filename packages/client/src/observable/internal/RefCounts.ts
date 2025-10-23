@@ -27,7 +27,9 @@ export class RefCounts<T extends {}> {
   }
 
   register<X extends T>(key: X): X {
-    if (!this.refCounts.has(key)) {
+    if (this.gcMap.has(key)) {
+      this.gcMap.set(key, Date.now() + this.keepAlive);
+    } else if (!this.refCounts.has(key)) {
       this.gcMap.set(key, Date.now() + this.keepAlive);
     }
 

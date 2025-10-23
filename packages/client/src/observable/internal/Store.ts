@@ -29,6 +29,7 @@ import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./actions/ActionApplication.js";
+import type { OptimisticJobDebugListeners } from "./actions/OptimisticJob.js";
 import type { BatchContext } from "./BatchContext.js";
 import { CacheKeys } from "./CacheKeys.js";
 import {
@@ -52,6 +53,7 @@ import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 export namespace Store {
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
+    __debugListeners?: OptimisticJobDebugListeners;
   }
 }
 

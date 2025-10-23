@@ -15,7 +15,18 @@ const auth = createPublicOauthClient(
   // import.meta.env.VITE_FOUNDRY_URL,
   "http://localhost:8080",
   "http://localhost:8080/auth/callback",
-  { useHistory: true },
+  {
+    useHistory: true,
+    scopes: [
+      "api:read-data",
+      "api:write-data",
+      "api:use-ontologies-read",
+      "api:use-ontologies-write",
+      "api:use-datasets-read",
+      "api:use-mediasets-read",
+      "api:use-mediasets-write",
+    ],
+  },
 );
 
 export const $ = createClient(

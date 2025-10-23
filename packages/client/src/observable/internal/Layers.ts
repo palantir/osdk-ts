@@ -177,6 +177,7 @@ export class Layers {
           value,
           lastUpdated: Date.now(),
           status,
+          optimisticId: optimisticId ?? undefined,
         };
 
         writeLayer.set(cacheKey, newValue);

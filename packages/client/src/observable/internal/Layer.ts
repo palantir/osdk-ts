@@ -15,6 +15,7 @@
  */
 
 import type { KnownCacheKey } from "./KnownCacheKey.js";
+import type { OptimisticId } from "./OptimisticId.js";
 import { WeakMapWithEntries } from "./WeakMapWithEntries.js";
 
 /*
@@ -92,4 +93,5 @@ export interface Entry<K extends KnownCacheKey> {
   value: K["__cacheKey"]["value"] | undefined;
   lastUpdated: number;
   status: "init" | "loading" | "loaded" | "error";
+  optimisticId?: OptimisticId;
 }

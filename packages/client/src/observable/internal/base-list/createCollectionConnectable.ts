@@ -28,6 +28,7 @@ import {
   switchMap,
 } from "rxjs";
 import type { Status } from "../../ObservableClient/common.js";
+import type { OptimisticId } from "../OptimisticId.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
@@ -46,6 +47,11 @@ interface CollectionConnectableParams {
    * Whether the data is from an optimistic update
    */
   isOptimistic: boolean;
+
+  /**
+   * Optimistic layer identifier if the emission originates from one
+   */
+  optimisticId?: OptimisticId;
 
   /**
    * Current loading status
@@ -93,6 +99,7 @@ export function createCollectionConnectable<
           combineLatest({
             resolvedData,
             isOptimistic: of(listEntry.isOptimistic),
+            optimisticId: of(listEntry.optimisticId),
             status: of(listEntry.status),
             lastUpdated: of(listEntry.lastUpdated),
           }).pipe(
@@ -102,6 +109,7 @@ export function createCollectionConnectable<
                   ? params.resolvedData
                   : [],
                 isOptimistic: params.isOptimistic,
+                optimisticId: params.optimisticId,
                 status: params.status,
                 lastUpdated: params.lastUpdated,
               })
