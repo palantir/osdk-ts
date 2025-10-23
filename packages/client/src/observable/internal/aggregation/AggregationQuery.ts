@@ -42,7 +42,6 @@ import {
   AGGREGATE_IDX,
   type AggregationCacheKey,
   API_NAME_IDX,
-  INTERSECT_IDX,
   RDP_IDX,
   WHERE_IDX,
 } from "./AggregationCacheKey.js";
@@ -64,9 +63,6 @@ export interface AggregationQueryOptions<
   type: Q;
   where?: WhereClause<Q, Record<string, any>>;
   withProperties?: DerivedProperty.Clause<Q>;
-  intersectWith?: Array<{
-    where: WhereClause<Q, Record<string, any>>;
-  }>;
   aggregate: A;
 }
 
@@ -82,7 +78,6 @@ export class AggregationQuery<
   #apiName: string;
   #where: Canonical<SimpleWhereClause>;
   #rdpConfig: Canonical<Rdp> | undefined;
-  #intersectWith: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined;
   #aggregate: Canonical<A>;
 
   constructor(
@@ -110,7 +105,6 @@ export class AggregationQuery<
     this.#apiName = cacheKey.otherKeys[API_NAME_IDX];
     this.#where = cacheKey.otherKeys[WHERE_IDX];
     this.#rdpConfig = cacheKey.otherKeys[RDP_IDX];
-    this.#intersectWith = cacheKey.otherKeys[INTERSECT_IDX];
     this.#aggregate = cacheKey.otherKeys[AGGREGATE_IDX] as Canonical<A>;
   }
 
@@ -149,12 +143,6 @@ export class AggregationQuery<
     }
 
     try {
-      // Type safety note: We use runtime-stored canonicalized types (this.#type, this.#rdpConfig, etc.)
-      // The Client API has strict compile-time type constraints that cannot be satisfied with
-      // generic runtime types. These type assertions are safe because:
-      // 1. Types are validated when the query is created through AggregationsHelper
-      // 2. All values are canonicalized to ensure consistency
-      // 3. The Observable pattern ensures data integrity through the subscription lifecycle
       let objectSet: ObjectSet = this.store.client(
         this.#type as any,
       ) as ObjectSet<Q>;
@@ -166,21 +154,6 @@ export class AggregationQuery<
       }
 
       objectSet = objectSet.where(this.#where as WhereClause<Q>);
-
-      if (this.#intersectWith && this.#intersectWith.length > 0) {
-        const intersectSets = this.#intersectWith.map((whereClause) => {
-          let intersectSet: ObjectSet = this.store.client(
-            this.#type as any,
-          ) as ObjectSet<Q>;
-          if (this.#rdpConfig) {
-            intersectSet = intersectSet.withProperties(
-              this.#rdpConfig as DerivedProperty.Clause<Q>,
-            );
-          }
-          return intersectSet.where(whereClause as WhereClause<Q>);
-        });
-        objectSet = objectSet.intersect(...intersectSets);
-      }
 
       const result = await objectSet.aggregate(this.#aggregate as any);
 

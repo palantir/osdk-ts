@@ -27,6 +27,23 @@ import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 import type { InferRdpTypes } from "./types.js";
 
+/**
+ * Options for {@link useOsdkAggregation}.
+ *
+ * Note: Unlike {@link useOsdkObjects}, aggregations do not support `intersectWith` or `pivotTo`.
+ * If you need to aggregate an intersection or linked objects, create the ObjectSet with those
+ * operations first, then use the aggregation API directly on that ObjectSet.
+ *
+ * @example
+ * ```tsx
+ * // To aggregate an intersection, use the Client API directly:
+ * const engineeringEmployees = client(Employee).where({ department: "Engineering" });
+ * const highPaidEmployees = client(Employee).where({ salary: { $gt: 100000 } });
+ * const result = await engineeringEmployees.intersect(highPaidEmployees).aggregate({
+ *   select: { count: { $count: {} } }
+ * });
+ * ```
+ */
 export interface UseOsdkAggregationOptions<
   T extends ObjectTypeDefinition,
   A extends AggregateOpts<T>,
@@ -39,6 +56,7 @@ export interface UseOsdkAggregationOptions<
 
   /**
    * Define derived properties (RDPs) to be computed server-side.
+   * The derived properties can be used in the where clause and aggregation groupBy/select.
    */
   withProperties?: WithProps;
 
@@ -46,13 +64,6 @@ export interface UseOsdkAggregationOptions<
    * Aggregation options including groupBy and select
    */
   aggregate: A;
-
-  /**
-   * Intersect the results with additional object sets before aggregation.
-   */
-  intersectWith?: Array<{
-    where: WhereClause<T, InferRdpTypes<T, WithProps>>;
-  }>;
 
   /**
    * The number of milliseconds to wait after the last observed aggregation change.
@@ -73,11 +84,17 @@ export interface UseOsdkAggregationResult<
   refetch: () => void;
 }
 
+declare const process: {
+  env: {
+    NODE_ENV: "development" | "production";
+  };
+};
+
 /**
  * React hook for performing aggregations on OSDK object sets.
  *
  * Executes server-side aggregations with groupBy and metric calculations on filtered object sets.
- * Supports runtime derived properties, where clauses, and intersections.
+ * Supports runtime derived properties and where clauses.
  *
  * @param type - The object or interface type to aggregate
  * @param options - Aggregation configuration including where clause, aggregation spec, and optional derived properties
@@ -107,7 +124,6 @@ export function useOsdkAggregation<
     where = {},
     withProperties,
     aggregate,
-    intersectWith,
     dedupeIntervalMs,
   }: UseOsdkAggregationOptions<Q, A, WP>,
 ): UseOsdkAggregationResult<Q, A> {
@@ -118,11 +134,6 @@ export function useOsdkAggregation<
   const stableWithProperties = React.useMemo(
     () => withProperties,
     [JSON.stringify(withProperties)],
-  );
-
-  const stableIntersectWith = React.useMemo(
-    () => intersectWith,
-    [JSON.stringify(intersectWith)],
   );
 
   const stableAggregate = React.useMemo(
@@ -142,7 +153,6 @@ export function useOsdkAggregation<
               },
               where: canonWhere,
               withProperties: stableWithProperties,
-              intersectWith: stableIntersectWith,
               aggregate: stableAggregate,
               dedupeInterval: dedupeIntervalMs ?? 2_000,
             },
@@ -158,7 +168,6 @@ export function useOsdkAggregation<
       type.type,
       canonWhere,
       stableWithProperties,
-      stableIntersectWith,
       stableAggregate,
       dedupeIntervalMs,
     ],

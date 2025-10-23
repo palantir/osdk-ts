@@ -24,7 +24,7 @@ import type {
 import type { Observer } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
 import type { CacheKeys } from "../CacheKeys.js";
-import type { IntersectCanonicalizer } from "../IntersectCanonicalizer.js";
+import type { Canonical } from "../Canonical.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
@@ -45,9 +45,6 @@ export interface ObserveAggregationOptions<
   type: Pick<T, "apiName" | "type">;
   where?: WhereClause<T, RDPs>;
   withProperties?: DerivedProperty.Clause<T>;
-  intersectWith?: Array<{
-    where: WhereClause<T, RDPs>;
-  }>;
   aggregate: A;
   dedupeInterval?: number;
 }
@@ -58,20 +55,17 @@ export class AggregationsHelper extends AbstractHelper<
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   rdpCanonicalizer: RdpCanonicalizer;
-  intersectCanonicalizer: IntersectCanonicalizer;
 
   constructor(
     store: Store,
     cacheKeys: CacheKeys<KnownCacheKey>,
     whereCanonicalizer: WhereClauseCanonicalizer,
     rdpCanonicalizer: RdpCanonicalizer,
-    intersectCanonicalizer: IntersectCanonicalizer,
   ) {
     super(store, cacheKeys);
 
     this.whereCanonicalizer = whereCanonicalizer;
     this.rdpCanonicalizer = rdpCanonicalizer;
-    this.intersectCanonicalizer = intersectCanonicalizer;
   }
 
   observe<
@@ -92,17 +86,13 @@ export class AggregationsHelper extends AbstractHelper<
   >(
     options: ObserveAggregationOptions<T, A, RDPs>,
   ): AggregationQuery<T, A> {
-    const { type, where, withProperties, intersectWith, aggregate } = options;
+    const { type, where, withProperties, aggregate } = options;
     const { apiName } = type;
     const typeKind = "type" in type ? type.type : "interface";
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonRdp = withProperties
       ? this.rdpCanonicalizer.canonicalize(withProperties)
-      : undefined;
-
-    const canonIntersect = intersectWith && intersectWith.length > 0
-      ? this.intersectCanonicalizer.canonicalize(intersectWith)
       : undefined;
 
     const canonAggregate = this.canonicalizeAggregate(aggregate);
@@ -113,7 +103,6 @@ export class AggregationsHelper extends AbstractHelper<
       apiName,
       canonWhere,
       canonRdp,
-      canonIntersect,
       canonAggregate,
     );
 
@@ -128,7 +117,6 @@ export class AggregationsHelper extends AbstractHelper<
             type,
             where,
             withProperties,
-            intersectWith,
             aggregate,
             dedupeInterval: options.dedupeInterval ?? 2000,
           } as AggregationQueryOptions<T, A>,
@@ -138,7 +126,7 @@ export class AggregationsHelper extends AbstractHelper<
 
   private canonicalizeAggregate<A extends AggregateOpts<any>>(
     aggregate: A,
-  ): any {
-    return JSON.parse(JSON.stringify(aggregate));
+  ): Canonical<A> {
+    return JSON.parse(JSON.stringify(aggregate)) as Canonical<A>;
   }
 }
