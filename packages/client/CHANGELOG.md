@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.6.0-beta.4
+
+### Minor Changes
+
+- e7bf02a: Add RDP support to React toolkit
+
+### Patch Changes
+
+- Updated dependencies [e7bf02a]
+  - @osdk/api@2.6.0-beta.4
+  - @osdk/client.unstable@2.6.0-beta.4
+  - @osdk/generator-converters@2.6.0-beta.4
+
 ## 2.6.0-beta.3
 
 ### Minor Changes
