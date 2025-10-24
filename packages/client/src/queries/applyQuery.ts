@@ -207,11 +207,9 @@ async function remapQueryResponse<
       }
       if (typeof responseValue === "string") {
         return createObjectSet(def, client, {
-          type: "intersect",
-          objectSets: [
-            { type: "base", objectType: responseDataType.objectSet },
-            { type: "reference", reference: responseValue },
-          ],
+          type: "asType",
+          entityType: responseDataType.objectSet,
+          objectSet: { type: "reference", reference: responseValue },
         }) as QueryReturnType<typeof responseDataType>;
       }
 

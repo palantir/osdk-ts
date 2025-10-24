@@ -28,6 +28,7 @@ import {
   queryAcceptsInterfaceObjectSet,
   queryAcceptsObject,
   queryAcceptsObjectSets,
+  queryReturnsObjectSetRid,
   queryTypeReturnsMap,
   returnsDate,
   returnsTimestamp,
@@ -410,6 +411,13 @@ describe("queries", () => {
 
     expectTypeOf<ObjectSet<Employee>>().toMatchTypeOf<typeof result>();
   });
+
+  it("returns objectSet from RID string", async () => {
+    const result = await client(queryReturnsObjectSetRid).executeFunction();
+
+    expectTypeOf<ObjectSet<Employee>>().toMatchTypeOf<typeof result>();
+    expect(result).toBeDefined();
+  });
   it("queries are enumerable", async () => {
     const queries = Object.keys($Queries);
     expect(queries).toStrictEqual([
@@ -423,6 +431,7 @@ describe("queries", () => {
       "queryAcceptsObject",
       "queryAcceptsObjectSets",
       "queryOutputsInterface",
+      "queryReturnsObjectSetRid",
       "queryTypeReturnsArray",
       "queryTypeReturnsMap",
       "returnsDate",
