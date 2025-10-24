@@ -125,7 +125,7 @@ export interface ShapeObjectSet<
     const R extends boolean = false,
     const S extends false | "throw" = NullabilityAdherence.Default,
   >(
-    options?: FetchPageArgs<BASE, SELECT, R, any, S>,
+    options?: FetchPageArgs<BASE, SELECT, R, never, S>,
   ): Promise<
     FetchPageResult<BASE, SELECT, R, S, false> & {
       data: TransformNullability<Osdk.Instance<BASE>, MAKE_REQUIRED>[];
@@ -144,7 +144,7 @@ export interface ShapeObjectSet<
     const R extends boolean = false,
     const S extends false | "throw" = NullabilityAdherence.Default,
   >(
-    options?: FetchPageArgs<BASE, SELECT, R, any, S>,
+    options?: FetchPageArgs<BASE, SELECT, R, never, S>,
   ): Promise<
     Result<
       FetchPageResult<BASE, SELECT, R, S, false> & {

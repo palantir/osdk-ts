@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { describe, expectTypeOf, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 import { defineShape } from "./defineShape.js";
+import type { ShapeObjectTypeDefinition } from "./ShapeObjectTypeDefinition.js";
 
 describe("ShapeObjectTypeDefinition - MAKE_REQUIRED transformations", () => {
   it("transforms properties with requiredOrThrow", () => {
@@ -112,6 +113,72 @@ describe("ShapeObjectTypeDefinition - MAKE_REQUIRED transformations", () => {
     expectTypeOf<Instance["isActive"]>().toEqualTypeOf<boolean | undefined>();
   });
 
+  it("enforces shape's explicit property selection in Osdk.Instance", () => {
+    type SlimEmployeeType = ShapeObjectTypeDefinition<
+      typeof EmployeeApiTest,
+      "fullName" | "employeeId",
+      "fullName" | "employeeId"
+    >;
+
+    type Instance = Osdk.Instance<SlimEmployeeType>;
+
+    expectTypeOf<Instance["fullName"]>().toEqualTypeOf<string>();
+    expectTypeOf<Instance["employeeId"]>().toEqualTypeOf<number>();
+
+    // class should not be accessible
+    type ClassProperty = Instance extends { class: any } ? "HAS_CLASS"
+      : "NO_CLASS";
+    expectTypeOf<ClassProperty>().toEqualTypeOf<"NO_CLASS">();
+  });
+
+  it("allows all properties when shape has no explicit selection", () => {
+    const AllPropsEmployee = defineShape()
+      .requiredOrThrow("fullName")
+      .asType(EmployeeApiTest);
+
+    type Instance = Osdk.Instance<typeof AllPropsEmployee>;
+
+    expectTypeOf<Instance["fullName"]>().toEqualTypeOf<string>();
+    expectTypeOf<Instance["class"]>().toMatchTypeOf<string | undefined>();
+  });
+
+  it("intersects shape selection with P parameter", () => {
+    type SlimEmployeeType = ShapeObjectTypeDefinition<
+      typeof EmployeeApiTest,
+      "fullName" | "employeeId" | "class",
+      never
+    >;
+
+    type Instance = Osdk.Instance<SlimEmployeeType, never, "fullName">;
+
+    expectTypeOf<Instance["fullName"]>().toEqualTypeOf<string | undefined>();
+
+    // @ts-expect-error - employeeId in shape but not in P
+    type ShouldError1 = Instance["employeeId"];
+
+    // @ts-expect-error - department not in shape's selection
+    type ShouldError2 = Instance["department"];
+  });
+
+  it("property selection enforcement works via direct ShapeObjectTypeDefinition", () => {
+    // Use ShapeObjectTypeDefinition directly to avoid builder inference issues
+    type SlimEmployeeType = ShapeObjectTypeDefinition<
+      typeof EmployeeApiTest,
+      "fullName" | "employeeId",
+      "fullName" | "employeeId"
+    >;
+
+    type Instance = Osdk.Instance<SlimEmployeeType>;
+
+    expectTypeOf<Instance["fullName"]>().toEqualTypeOf<string>();
+    expectTypeOf<Instance["employeeId"]>().toEqualTypeOf<number>();
+
+    // class should not be accessible
+    type ClassProperty = Instance extends { class: any } ? "HAS_CLASS"
+      : "NO_CLASS";
+    expectTypeOf<ClassProperty>().toEqualTypeOf<"NO_CLASS">();
+  });
+
   it("preserves primary key type correctly", () => {
     const SlimEmployee = defineShape()
       .requiredOrThrow("employeeId")
@@ -121,5 +188,64 @@ describe("ShapeObjectTypeDefinition - MAKE_REQUIRED transformations", () => {
 
     // Primary key should be non-nullable
     expectTypeOf<Instance["employeeId"]>().toEqualTypeOf<number>();
+  });
+
+  it("runtime: gathers required keys from requiredOrThrow", () => {
+    const SlimEmployee = defineShape()
+      .requiredOrThrow("fullName", "employeeId")
+      .asType(EmployeeApiTest);
+
+    expect(SlimEmployee.shapeMetadata.__requiredOrThrowProps).toEqual([
+      "fullName",
+      "employeeId",
+    ]);
+  });
+
+  it("runtime: gathers required keys from requiredOrDrop", () => {
+    const SlimEmployee = defineShape()
+      .requiredOrDrop("fullName")
+      .asType(EmployeeApiTest);
+
+    expect(SlimEmployee.shapeMetadata.__requiredOrDropProps).toEqual([
+      "fullName",
+    ]);
+  });
+
+  it("runtime: gathers required keys from selectWithDefaults", () => {
+    const SlimEmployee = defineShape()
+      .selectWithDefaults({ fullName: "Unknown", employeeId: 0 })
+      .asType(EmployeeApiTest);
+
+    expect(SlimEmployee.shapeMetadata.__selectWithDefaults).toEqual({
+      fullName: "Unknown",
+      employeeId: 0,
+    });
+  });
+
+  it("runtime: merges required keys from multiple operations", () => {
+    const SlimEmployee = defineShape()
+      .requiredOrThrow("fullName", "class")
+      .requiredOrDrop("employeeId")
+      .asType(EmployeeApiTest);
+
+    expect(SlimEmployee.shapeMetadata.__requiredOrThrowProps).toContain(
+      "fullName",
+    );
+    expect(SlimEmployee.shapeMetadata.__requiredOrThrowProps).toContain(
+      "class",
+    );
+    expect(SlimEmployee.shapeMetadata.__requiredOrDropProps).toContain(
+      "employeeId",
+    );
+  });
+
+  it("runtime: shape type metadata is correctly set", () => {
+    const SlimEmployee = defineShape()
+      .requiredOrThrow("fullName")
+      .asType(EmployeeApiTest);
+
+    expect(SlimEmployee.shapeType).toBe("shape");
+    expect(SlimEmployee.type).toBe("object");
+    expect(SlimEmployee.baseObjectType).toBe(EmployeeApiTest);
   });
 });

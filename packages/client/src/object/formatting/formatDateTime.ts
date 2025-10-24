@@ -49,8 +49,9 @@ export function formatDateTime(
     case "localizedFormat":
       return formatLocalized(date, format, locale, resolvedTimezone);
     case "stringFormat":
-      // TODO - pattern formatting
-      return undefined;
+      throw new Error(
+        "String pattern formatting is not yet implemented for datetime fields",
+      );
     default:
       format satisfies never;
       return undefined;

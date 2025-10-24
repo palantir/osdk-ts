@@ -70,7 +70,6 @@ export interface ShapeDefinition<
   readonly dedupeIntervalMs?: number;
   readonly select?: readonly L[];
   readonly baseObjectType?: T;
-  readonly __shapeId?: string;
   readonly __requiredOrThrowProps?: readonly MAKE_REQUIRED[];
   readonly __requiredOrDropProps?: readonly MAKE_REQUIRED[];
   readonly __selectWithDefaults?: DefaultValueMap<T, L>;
@@ -332,7 +331,6 @@ function createBuilder<
       const next: ShapeDefinition<T, L, R> = {
         ...state,
         name,
-        __shapeId: undefined,
       };
       return withState(next);
     },
@@ -341,7 +339,6 @@ function createBuilder<
       const next: ShapeDefinition<T, L, R> = {
         ...state,
         description,
-        __shapeId: undefined,
       };
       return withState(next);
     },
@@ -350,7 +347,6 @@ function createBuilder<
       const next: ShapeDefinition<T, L, R> = {
         ...state,
         where,
-        __shapeId: undefined,
       };
       return withState(next);
     },
@@ -359,7 +355,6 @@ function createBuilder<
       const next: ShapeDefinition<T, L, R> = {
         ...state,
         where: combineWhereClausesAnd(state.where, where),
-        __shapeId: undefined,
       };
       return withState(next);
     },
@@ -368,7 +363,6 @@ function createBuilder<
       const next: ShapeDefinition<T, L, R> = {
         ...state,
         where: combineWhereClausesOr(state.where, where),
-        __shapeId: undefined,
       };
       return withState(next);
     },
@@ -377,7 +371,6 @@ function createBuilder<
       const next: ShapeDefinition<T, L, R> = {
         ...state,
         orderBy,
-        __shapeId: undefined,
       };
       return withState(next);
     },
@@ -386,7 +379,6 @@ function createBuilder<
       const next: ShapeDefinition<T, L, R> = {
         ...state,
         pageSize: size,
-        __shapeId: undefined,
       };
       return withState(next);
     },
@@ -395,7 +387,6 @@ function createBuilder<
       const next: ShapeDefinition<T, L, R> = {
         ...state,
         streamUpdates: enabled,
-        __shapeId: undefined,
       };
       return withState(next);
     },
@@ -404,7 +395,6 @@ function createBuilder<
       const next: ShapeDefinition<T, L, R> = {
         ...state,
         dedupeIntervalMs: ms,
-        __shapeId: undefined,
       };
       return withState(next);
     },
@@ -413,7 +403,6 @@ function createBuilder<
       const next: ShapeDefinition<T, L, R> = {
         ...state,
         select: properties,
-        __shapeId: undefined,
       };
       return withState(next);
     },
@@ -452,7 +441,6 @@ function createBuilder<
         ...other,
         where: combineWhereClausesAnd(state.where, other.where),
         select: other.select ?? state.select,
-        __shapeId: undefined,
         __requiredOrThrowProps: nextRequiredOrThrow.length > 0
           ? nextRequiredOrThrow
           : undefined,
@@ -477,7 +465,6 @@ function createBuilder<
 
       const next: ShapeDefinition<T, L, NEXT> = {
         ...state,
-        __shapeId: undefined,
         __requiredOrThrowProps: nextRequired,
       };
 
@@ -493,7 +480,6 @@ function createBuilder<
 
       const next: ShapeDefinition<T, L, NEXT> = {
         ...state,
-        __shapeId: undefined,
         __requiredOrDropProps: nextRequired,
       };
 
@@ -509,7 +495,6 @@ function createBuilder<
 
       const next: ShapeDefinition<T, L, NEXT> = {
         ...state,
-        __shapeId: undefined,
         __selectWithDefaults: nextDefaults,
       };
 
@@ -519,7 +504,6 @@ function createBuilder<
     withProperties(clause) {
       const next: ShapeDefinition<T, L, R> = {
         ...state,
-        __shapeId: undefined,
         __withProperties: mergeDerivedProperties(
           state.__withProperties,
           clause,
@@ -532,7 +516,6 @@ function createBuilder<
     helpers(helpers) {
       const next: ShapeDefinition<T, L, R> = {
         ...state,
-        __shapeId: undefined,
         __helpers: mergeHelpersMaps(state.__helpers, helpers),
       };
 
@@ -542,7 +525,6 @@ function createBuilder<
     prefetchInterfaces(...interfaces) {
       const next: ShapeDefinition<T, L, R> = {
         ...state,
-        __shapeId: undefined,
         __prefetchInterfaces: mergePrefetches(
           state.__prefetchInterfaces,
           interfaces,

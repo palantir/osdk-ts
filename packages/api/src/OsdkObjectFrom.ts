@@ -157,6 +157,17 @@ export type ValidToFrom<
 
 export type IsNever<T> = [T] extends [never] ? true : false;
 
+/**
+ * Extracts the union of selected property keys from a shaped type's __shapeMarker.
+ * Returns never if Q is not a shaped type.
+ *
+ * @internal
+ */
+type ExtractShapeSelectProps<Q> = Q extends {
+  __shapeMarker: { selectProps: readonly (infer K)[] };
+} ? K & string
+  : never;
+
 type ExtractPropsKeysFromOldPropsStyle<
   Q extends ObjectOrInterfaceDefinition,
   P extends ValidOsdkPropParams<Q>,
@@ -167,13 +178,33 @@ export type IsAny<T> = unknown extends T
   ? [keyof T] extends [never] ? false : true
   : false;
 
+/**
+ * Applies shape selection constraints to the requested property keys.
+ *
+ * For shaped types with explicit property selection (L ≠ PropertyKeys<BASE>),
+ * constrains P to only include properties within the shape's defined scope.
+ * This ensures the shape's "view" is respected while allowing further narrowing.
+ *
+ * @template Q - The object or shaped type definition
+ * @template P - The requested property keys (from Osdk.Instance's P parameter)
+ * @returns P constrained by shape's selection, or P unchanged if not shaped
+ *
+ * @internal
+ */
+type ApplyShapeSelectionConstraint<
+  Q extends ObjectOrInterfaceDefinition,
+  P extends PropertyKeys<Q>,
+> = IsNever<ExtractShapeSelectProps<Q>> extends true ? P
+  : PropertyKeys<Q> extends ExtractShapeSelectProps<Q> ? P
+  : P & ExtractShapeSelectProps<Q>;
+
 export type GetPropsKeys<
   Q extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<Q>,
   N extends boolean = false,
 > = IsNever<P> extends true ? N extends true ? never : PropertyKeys<Q>
   : IsAny<P> extends true ? PropertyKeys<Q>
-  : P;
+  : ApplyShapeSelectionConstraint<Q, P>;
 
 /**
  * Use `Osdk.Instance` or `YourType.OsdkInstance`
@@ -217,8 +248,7 @@ export namespace Osdk {
           CompileTimeMetadata<Q>["props"],
           GetPropsKeys<Q, P, [R] extends [{}] ? false : true>
         >,
-        REQUIRED extends readonly (infer KEY)[] ? KEY & string
-          : never
+        REQUIRED extends readonly string[] ? REQUIRED[number] : never
       >
       : Pick<
         CompileTimeMetadata<Q>["props"],

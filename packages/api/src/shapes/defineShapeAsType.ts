@@ -21,28 +21,6 @@ import type {
 import type { ShapeDefinition } from "./ShapeDefinition.js";
 import type { ShapeObjectTypeDefinition } from "./ShapeObjectTypeDefinition.js";
 
-type ShapeWithId = { __shapeId?: string };
-
-const shapeIdRegistry = new WeakMap<ShapeWithId, string>();
-
-let shapeIdCounter = 0;
-
-function ensureShapeId(shape: ShapeWithId): string {
-  if (shape.__shapeId) {
-    return shape.__shapeId;
-  }
-
-  const existing = shapeIdRegistry.get(shape);
-  if (existing) {
-    return existing;
-  }
-
-  shapeIdCounter += 1;
-  const identifier = `shape-${shapeIdCounter}`;
-  shapeIdRegistry.set(shape, identifier);
-  return identifier;
-}
-
 function gatherRequiredKeys<
   BASE extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<BASE>,
@@ -68,9 +46,7 @@ function gatherRequiredKeys<
   if (shape.__selectWithDefaults) {
     const defaultKeys = Object.keys(shape.__selectWithDefaults);
     for (const key of defaultKeys) {
-      // Safe: ShapeDefinition type guarantees that keys of __selectWithDefaults
-      // are included in MAKE_REQUIRED via Extract<keyof typeof defaults, L>
-      gathered.push(key as L as MAKE_REQUIRED);
+      gathered.push(key as MAKE_REQUIRED);
     }
   }
 
@@ -89,12 +65,9 @@ export function defineShapeAsType<
   baseType: BASE,
   shape: ShapeDefinition<BASE, L, MAKE_REQUIRED>,
 ): ShapeObjectTypeDefinition<BASE, L, MAKE_REQUIRED> {
-  const shapeId = ensureShapeId(shape);
-
   const shapeMetadata: ShapeDefinition<BASE, L, MAKE_REQUIRED> = {
     ...shape,
     baseObjectType: baseType,
-    __shapeId: shapeId,
   };
 
   const requiredProps = gatherRequiredKeys(shapeMetadata);
@@ -109,7 +82,7 @@ export function defineShapeAsType<
       requiredProps,
       selectProps,
     },
-  } as ShapeObjectTypeDefinition<BASE, L, MAKE_REQUIRED>;
+  };
 }
 
 export function isShapeObjectType<T extends { shapeType?: string }>(

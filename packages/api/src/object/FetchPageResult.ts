@@ -63,7 +63,7 @@ export type FetchPageResult<
     Osdk.Instance<
       Q,
       ExtractOptions<R, S, T>,
-      PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L
+      PropertyKeys<Q> extends L ? PropertyKeys<Q> : L
     >,
     ORDER_BY_OPTIONS
   >
@@ -84,7 +84,7 @@ export type SingleOsdkResult<
   Osdk.Instance<
     Q,
     ExtractOptions<R, S, T>,
-    PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
+    PropertyKeys<Q> extends L ? PropertyKeys<Q> : L,
     { [K in Extract<keyof RDPs, L>]: RDPs[K] }
   >,
   ORDER_BY_OPTIONS

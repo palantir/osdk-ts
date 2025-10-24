@@ -201,4 +201,90 @@ describe("defineShape", () => {
     });
     expect(shapeType.shapeMetadata.pageSize).toBe(50);
   });
+
+  it("adds withProperties", () => {
+    const derivedClause = {};
+    const shape = defineShape()
+      .withProperties(derivedClause);
+
+    expect(shape.__withProperties).toBeDefined();
+  });
+
+  it("adds prefetchInterfaces", () => {
+    const mockInterface = {
+      type: "interface" as const,
+      apiName: "TestInterface",
+      __DefinitionMetadata: undefined,
+    };
+    const shape = defineShape()
+      .prefetchInterfaces(mockInterface);
+
+    expect(shape.__prefetchInterfaces).toEqual([mockInterface]);
+  });
+
+  it("chains withProperties and prefetchInterfaces", () => {
+    const derivedClause = {};
+    const mockInterface = {
+      type: "interface" as const,
+      apiName: "TestInterface",
+      __DefinitionMetadata: undefined,
+    };
+    const shape = defineShape()
+      .withProperties(derivedClause)
+      .prefetchInterfaces(mockInterface)
+      .requiredOrThrow("fullName");
+
+    expect(shape.__withProperties).toBeDefined();
+    expect(shape.__prefetchInterfaces).toEqual([mockInterface]);
+    expect(shape.__requiredOrThrowProps).toEqual(["fullName"]);
+  });
+
+  it("handles multiple required properties with requiredOrThrow", () => {
+    const shape = defineShape()
+      .requiredOrThrow("fullName", "employeeId", "class");
+
+    expect(shape.__requiredOrThrowProps).toEqual([
+      "fullName",
+      "employeeId",
+      "class",
+    ]);
+  });
+
+  it("handles multiple required properties with requiredOrDrop", () => {
+    const shape = defineShape()
+      .requiredOrDrop("fullName", "employeeId");
+
+    expect(shape.__requiredOrDropProps).toEqual(["fullName", "employeeId"]);
+  });
+
+  it("combines requiredOrThrow and requiredOrDrop", () => {
+    const shape = defineShape()
+      .requiredOrThrow("fullName")
+      .requiredOrDrop("employeeId");
+
+    expect(shape.__requiredOrThrowProps).toEqual(["fullName"]);
+    expect(shape.__requiredOrDropProps).toEqual(["employeeId"]);
+  });
+
+  it("handles empty arrays in withSelect", () => {
+    const shape = defineShape()
+      .withSelect();
+
+    expect(shape.select).toEqual([]);
+  });
+
+  it("extends shape merges all properties correctly", () => {
+    const baseShape = defineShape()
+      .requiredOrThrow("fullName")
+      .withPageSize(25);
+
+    const extendedShape = defineShape()
+      .extend(baseShape)
+      .requiredOrDrop("employeeId")
+      .withPageSize(50);
+
+    expect(extendedShape.__requiredOrThrowProps).toEqual(["fullName"]);
+    expect(extendedShape.__requiredOrDropProps).toEqual(["employeeId"]);
+    expect(extendedShape.pageSize).toBe(50);
+  });
 });
