@@ -38,6 +38,7 @@ import type {
 } from "./ontology/ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "./ontology/SimplePropertyDef.js";
 import type { OsdkBase } from "./OsdkBase.js";
+import type { TransformNullability } from "./shapes/ShapeTransforms.js";
 
 type DropDollarOptions<T extends string> = Exclude<
   T,
@@ -209,11 +210,20 @@ export namespace Osdk {
     R extends Record<string, SimplePropertyDef> = {},
   > =
     & OsdkBase<Q>
-    & Pick<
-      CompileTimeMetadata<Q>["props"],
-      // If there aren't any additional properties, then we want GetPropsKeys to default to PropertyKeys<Q>
-      GetPropsKeys<Q, P, [R] extends [{}] ? false : true>
-    >
+    & (Q extends { __shapeMarker: { requiredProps: infer REQUIRED } }
+      // This is a shaped type - Q itself contains the base type via intersection
+      ? TransformNullability<
+        Pick<
+          CompileTimeMetadata<Q>["props"],
+          GetPropsKeys<Q, P, [R] extends [{}] ? false : true>
+        >,
+        REQUIRED extends readonly (infer KEY)[] ? KEY & string
+          : never
+      >
+      : Pick<
+        CompileTimeMetadata<Q>["props"],
+        GetPropsKeys<Q, P, [R] extends [{}] ? false : true>
+      >)
     & ([R] extends [never] ? {}
       : { [A in keyof R]: SimplePropertyDef.ToRuntimeProperty<R[A]> })
     & {
