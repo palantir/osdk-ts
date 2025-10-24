@@ -27,7 +27,7 @@ import type { ShapeObjectTypeDefinition } from "./ShapeObjectTypeDefinition.js";
 
 export type ShapeHelperFunction<
   T extends ObjectOrInterfaceDefinition,
-  R = unknown,
+  R = void,
 > = (this: Osdk.Instance<T>, instance: Osdk.Instance<T>) => R;
 
 export type ShapeHelpers<
@@ -155,7 +155,7 @@ export type ShapeCollection<T extends ObjectOrInterfaceDefinition> = {
  */
 export type ShapeFactory<
   T extends ObjectOrInterfaceDefinition,
-  P extends readonly unknown[] = readonly unknown[],
+  P extends readonly [] = readonly [],
 > = (...params: P) => ShapeDefinition<T>;
 
 /**
@@ -188,7 +188,7 @@ export function defineShape<
 
 export function defineShapeFactory<
   T extends ObjectOrInterfaceDefinition,
-  P extends readonly unknown[] = readonly unknown[],
+  P extends readonly [] = readonly [],
 >(factory: ShapeFactory<T, P>): ShapeFactory<T, P> {
   return factory;
 }

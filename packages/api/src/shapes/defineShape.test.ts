@@ -15,21 +15,8 @@
  */
 
 import { describe, expect, it } from "vitest";
-import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
+import { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 import { defineShape } from "./defineShape.js";
-
-type MockObjectProps = {
-  id: string;
-  name: string | undefined;
-  count: number | undefined;
-  active: boolean | undefined;
-  verified: boolean | undefined;
-};
-
-const MockObjectType: ObjectOrInterfaceDefinition = {
-  type: "object",
-  apiName: "MockObject",
-};
 
 describe("defineShape", () => {
   it("creates an empty shape definition", () => {
@@ -41,23 +28,26 @@ describe("defineShape", () => {
 
   it("adds requiredOrThrow properties", () => {
     const shape = defineShape()
-      .requiredOrThrow("name", "count");
+      .requiredOrThrow("fullName", "employeeId");
 
-    expect(shape.__requiredOrThrowProps).toEqual(["name", "count"]);
+    expect(shape.__requiredOrThrowProps).toEqual(["fullName", "employeeId"]);
   });
 
   it("adds requiredOrDrop properties", () => {
     const shape = defineShape()
-      .requiredOrDrop("name");
+      .requiredOrDrop("fullName");
 
-    expect(shape.__requiredOrDropProps).toEqual(["name"]);
+    expect(shape.__requiredOrDropProps).toEqual(["fullName"]);
   });
 
   it("adds selectWithDefaults", () => {
     const shape = defineShape()
-      .selectWithDefaults({ count: 0 });
+      .selectWithDefaults({ fullName: "Unknown", employeeId: 0 });
 
-    expect(shape.__selectWithDefaults).toEqual({ count: 0 });
+    expect(shape.__selectWithDefaults).toEqual({
+      fullName: "Unknown",
+      employeeId: 0,
+    });
   });
 
   it("adds name and description", () => {
@@ -70,34 +60,34 @@ describe("defineShape", () => {
   });
 
   it("adds where clause", () => {
-    const whereClause = { active: { $eq: true } } as const;
-    const shape = defineShape<typeof MockObjectType>()
-      .withWhere(whereClause as never);
+    const whereClause = { fullName: { $eq: "John Doe" } } as const;
+    const shape = defineShape<typeof EmployeeApiTest>()
+      .withWhere(whereClause);
 
     expect(shape.where).toEqual(whereClause);
   });
 
   it("combines where clauses with and", () => {
-    const shape = defineShape<typeof MockObjectType>()
-      .withWhere({ active: { $eq: true } } as never)
-      .and({ verified: { $eq: true } } as never);
+    const shape = defineShape<typeof EmployeeApiTest>()
+      .withWhere({ fullName: { $eq: "John" } })
+      .and({ class: { $eq: "A" } });
 
     expect(shape.where).toHaveProperty("$and");
   });
 
   it("combines where clauses with or", () => {
-    const shape = defineShape<typeof MockObjectType>()
-      .withWhere({ active: { $eq: true } } as never)
-      .or({ verified: { $eq: true } } as never);
+    const shape = defineShape<typeof EmployeeApiTest>()
+      .withWhere({ fullName: { $eq: "John" } })
+      .or({ class: { $eq: "B" } });
 
     expect(shape.where).toHaveProperty("$or");
   });
 
   it("adds orderBy", () => {
     const shape = defineShape()
-      .withOrderBy({ name: "asc" });
+      .withOrderBy({ fullName: "asc" });
 
-    expect(shape.orderBy).toEqual({ name: "asc" });
+    expect(shape.orderBy).toEqual({ fullName: "asc" });
   });
 
   it("adds pageSize", () => {
@@ -123,9 +113,9 @@ describe("defineShape", () => {
 
   it("adds select properties", () => {
     const shape = defineShape()
-      .withSelect("name", "count");
+      .withSelect("fullName", "employeeId");
 
-    expect(shape.select).toEqual(["name", "count"]);
+    expect(shape.select).toEqual(["fullName", "employeeId"]);
   });
 
   it("adds helpers", () => {
@@ -143,9 +133,9 @@ describe("defineShape", () => {
   it("chains multiple operations", () => {
     const shape = defineShape()
       .withName("ChainedShape")
-      .requiredOrThrow("name")
-      .requiredOrDrop("count")
-      .selectWithDefaults({ count: 0 })
+      .requiredOrThrow("fullName")
+      .requiredOrDrop("employeeId")
+      .selectWithDefaults({ employeeId: 0 })
       .withPageSize(25)
       .helpers({
         test() {
@@ -154,50 +144,61 @@ describe("defineShape", () => {
       });
 
     expect(shape.name).toBe("ChainedShape");
-    expect(shape.__requiredOrThrowProps).toEqual(["name"]);
-    expect(shape.__requiredOrDropProps).toEqual(["count"]);
-    expect(shape.__selectWithDefaults).toEqual({ count: 0 });
+    expect(shape.__requiredOrThrowProps).toEqual(["fullName"]);
+    expect(shape.__requiredOrDropProps).toEqual(["employeeId"]);
+    expect(shape.__selectWithDefaults).toEqual({ employeeId: 0 });
     expect(shape.pageSize).toBe(25);
     expect(shape.__helpers).toBeDefined();
   });
 
   it("extends another shape", () => {
     const baseShape = defineShape()
-      .requiredOrThrow("name");
+      .requiredOrThrow("fullName");
 
     const extendedShape = defineShape()
       .extend(baseShape)
-      .requiredOrThrow("count");
+      .requiredOrThrow("employeeId");
 
-    expect(extendedShape.__requiredOrThrowProps).toEqual(["name", "count"]);
+    expect(extendedShape.__requiredOrThrowProps).toEqual([
+      "fullName",
+      "employeeId",
+    ]);
   });
 
   it("creates a shape type with asType", () => {
     const shapeType = defineShape()
-      .requiredOrThrow("name")
-      .asType(MockObjectType);
+      .requiredOrThrow("fullName")
+      .asType(EmployeeApiTest);
 
     expect(shapeType.shapeType).toBe("shape");
     expect(shapeType.type).toBe("object");
-    expect(shapeType.baseObjectType).toEqual(MockObjectType);
-    expect(shapeType.shapeMetadata.__requiredOrThrowProps).toEqual(["name"]);
+    expect(shapeType.baseObjectType).toEqual(EmployeeApiTest);
+    expect(shapeType.shapeMetadata.__requiredOrThrowProps).toEqual([
+      "fullName",
+    ]);
   });
 
   it("preserves all metadata in asType", () => {
     const shapeType = defineShape()
       .withName("TestShape")
       .withDescription("Test description")
-      .requiredOrThrow("name")
-      .requiredOrDrop("count")
-      .selectWithDefaults({ count: 0 })
+      .requiredOrThrow("fullName")
+      .requiredOrDrop("employeeId")
+      .selectWithDefaults({ employeeId: 0 })
       .withPageSize(50)
-      .asType(MockObjectType);
+      .asType(EmployeeApiTest);
 
     expect(shapeType.shapeMetadata.name).toBe("TestShape");
     expect(shapeType.shapeMetadata.description).toBe("Test description");
-    expect(shapeType.shapeMetadata.__requiredOrThrowProps).toEqual(["name"]);
-    expect(shapeType.shapeMetadata.__requiredOrDropProps).toEqual(["count"]);
-    expect(shapeType.shapeMetadata.__selectWithDefaults).toEqual({ count: 0 });
+    expect(shapeType.shapeMetadata.__requiredOrThrowProps).toEqual([
+      "fullName",
+    ]);
+    expect(shapeType.shapeMetadata.__requiredOrDropProps).toEqual([
+      "employeeId",
+    ]);
+    expect(shapeType.shapeMetadata.__selectWithDefaults).toEqual({
+      employeeId: 0,
+    });
     expect(shapeType.shapeMetadata.pageSize).toBe(50);
   });
 });

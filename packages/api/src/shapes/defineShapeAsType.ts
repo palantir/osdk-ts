@@ -66,9 +66,12 @@ function gatherRequiredKeys<
   }
 
   if (shape.__selectWithDefaults) {
-    gathered.push(
-      ...Object.keys(shape.__selectWithDefaults) as MAKE_REQUIRED[],
-    );
+    const defaultKeys = Object.keys(shape.__selectWithDefaults);
+    for (const key of defaultKeys) {
+      // Safe: ShapeDefinition type guarantees that keys of __selectWithDefaults
+      // are included in MAKE_REQUIRED via Extract<keyof typeof defaults, L>
+      gathered.push(key as L as MAKE_REQUIRED);
+    }
   }
 
   return Array.from(new Set(gathered));
