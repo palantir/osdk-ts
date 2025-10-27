@@ -46,6 +46,11 @@ type AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> = number extends
   : WIRE_TYPE extends "datetime" | "timestamp" ? DatetimeAggregateOption
   : BaseAggregateOptions;
 
+/**
+ * Extracts all valid keys for the object/interface definition and the RDPs.
+ *
+ * Example output: `"age:sum" | "createdAt:min" | "customRDP:exact"`
+ */
 export type ValidAggregationKeysPlus<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
@@ -67,6 +72,11 @@ export type ValidAggregationKeysPlus<
   & { $count?: any }
 );
 
+/**
+ * Legacy type for checking valid aggregation keys for both normal and withProperties aggregations.
+ *
+ * @deprecated Instead use `ValidAggregationKeysPlus` or `ValidAggregationKeysForWithProps` directly.
+ */
 export type ValidAggregationKeys<
   Q extends ObjectOrInterfaceDefinition,
   R extends "aggregate" | "withPropertiesAggregate" = "aggregate",
@@ -74,9 +84,14 @@ export type ValidAggregationKeys<
 > = R extends "aggregate" ? ValidAggregationKeysPlus<Q, RDPs>
   : ValidAggregationKeysForWithProps<Q, RDPs>;
 
+/**
+ * Helper type for getting all base keys that can be aggregated on an object/interface definition.
+ *
+ * Example output: `"age" | "createdAt" | "customRDP"`
+ */
 export type AggregatableKeys<
   Q extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > = keyof {
-  [P in PropertyKeys<Q> | keyof RDPs]: any;
+  [P in PropertyKeys<Q> | (string & keyof RDPs)]: any;
 };

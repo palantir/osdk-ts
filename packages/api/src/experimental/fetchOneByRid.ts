@@ -28,7 +28,7 @@ type fetchOneByRidFn = <
 >(
   objectType: Q,
   rid: string,
-  options?: SelectArg<Q, L, R, never>,
+  options?: SelectArg<Q, L, R, any>,
 ) => Promise<Osdk.Instance<Q, ExtractOptions<R>, L>>;
 
 export const __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid: Experiment<

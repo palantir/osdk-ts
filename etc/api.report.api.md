@@ -153,34 +153,45 @@ export interface Affix {
 }
 
 // @public (undocumented)
-export type AggregateOpts<Q extends ObjectOrInterfaceDefinition> = {
-    	$select: UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>
-    	$groupBy?: GroupByClause<Q>
+export type AggregateOpts<
+	Q extends ObjectOrInterfaceDefinition,
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = {
+    	$select: AggregationClause<Q, RDPs>
+    	$groupBy?: GroupByClause<Q, RDPs>
 };
 
 // Warning: (ae-forgotten-export) The symbol "ContainsExactMatchWithNull" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "AggregateOptsThatErrors" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
 	Q extends ObjectOrInterfaceDefinition,
-	AO extends AggregateOpts<Q>
+	AO extends AggregateOpts<Q, RDPs>,
+	RDPs extends Record<string, SimplePropertyDef> = {}
 > = ContainsExactMatchWithNull<AO["$groupBy"]> extends true ? {
     	$groupBy: AO["$groupBy"]
-    	$select: UnorderedAggregationClause<Q>
-} : SingleKeyObject<AO["$groupBy"]> extends never ? (AO["$select"] extends UnorderedAggregationClause<Q> ? AggregateOptsThatErrors<Q, AO> : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO> : {
+    	$select: UnorderedAggregationClause<Q, RDPs>
+} : SingleKeyObject<AO["$groupBy"]> extends never ? (AO["$select"] extends UnorderedAggregationClause<Q, RDPs> ? AggregateOptsThatErrors<Q, AO, RDPs> : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO, RDPs> : {
     	$groupBy: AO["$groupBy"]
-    	$select: UnorderedAggregationClause<Q>
-}) : AggregateOptsThatErrors<Q, AO>;
+    	$select: UnorderedAggregationClause<Q, RDPs>
+}) : AggregateOptsThatErrors<Q, AO, RDPs>;
 
+// Warning: (ae-forgotten-export) The symbol "ValidAggregationKeysPlus" needs to be exported by the entry point index.d.ts
+//
 // @public (undocumented)
-export type AggregationClause<Q extends ObjectOrInterfaceDefinition> = UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>;
+export type AggregationClause<
+	Q extends ObjectOrInterfaceDefinition,
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = { [AK in ValidAggregationKeysPlus<Q, RDPs>]? : "unordered" | "asc" | "desc" };
 
 // @public (undocumented)
 export type AggregationResultsWithGroups<
 	Q extends ObjectOrInterfaceDefinition,
-	A extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
-	G extends GroupByClause<Q> | undefined
+	A extends AggregationClause<Q, RDPs>,
+	G extends GroupByClause<Q, RDPs> | undefined,
+	RDPs extends Record<string, SimplePropertyDef> = {}
 > = ({
     	$group: { [P in keyof G & PropertyKeys<Q>] : G[P] extends {
             		$ranges: GroupByRange<infer T>[]
@@ -188,7 +199,7 @@ export type AggregationResultsWithGroups<
             		startValue: T
             		endValue: T
             	} : MaybeNullable_2<G[P], OsdkObjectPropertyTypeNotUndefined<CompileTimeMetadata<Q>["properties"][P]>> }
-} & AggregationResultsWithoutGroups<Q, A>)[];
+} & AggregationResultsWithoutGroups<Q, A, RDPs>)[];
 
 // Warning: (ae-forgotten-export) The symbol "ExtractPropName" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractMetricNameForPropName" needs to be exported by the entry point index.d.ts
@@ -196,7 +207,8 @@ export type AggregationResultsWithGroups<
 // @public (undocumented)
 export type AggregationResultsWithoutGroups<
 	Q extends ObjectOrInterfaceDefinition,
-	AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>
+	AC extends AggregationClause<Q, RDPs>,
+	RDPs extends Record<string, SimplePropertyDef> = {}
 > = { [PropName in ExtractPropName<keyof AC & string>] : PropName extends "$count" ? number : { [MetricName in ExtractMetricNameForPropName<keyof AC & string, PropName>] : MetricName extends "approximateDistinct" | "exactDistinct" ? number : OsdkObjectPropertyType<CompileTimeMetadata<Q>["properties"][PropName]> } };
 
 // Warning: (ae-forgotten-export) The symbol "AggregatableKeys" needs to be exported by the entry point index.d.ts
@@ -204,8 +216,9 @@ export type AggregationResultsWithoutGroups<
 // @public (undocumented)
 export type AggregationsResults<
 	Q extends ObjectOrInterfaceDefinition,
-	AO extends AggregateOpts<Q>
-> = Exclude<keyof AO["$select"], ValidAggregationKeys<Q>> extends never ? unknown extends AO["$groupBy"] ? AggregationResultsWithoutGroups<Q, AO["$select"]> : Exclude<AO["$groupBy"], undefined> extends never ? AggregationResultsWithoutGroups<Q, AO["$select"]> : Exclude<keyof AO["$groupBy"], AggregatableKeys<Q>> extends never ? AggregationResultsWithGroups<Q, AO["$select"], AO["$groupBy"]> : `Sorry, the following are not valid groups for an aggregation: ${Exclude<keyof AO["$groupBy"] & string, AggregatableKeys<Q>>}` : `Sorry, the following are not valid selectors for an aggregation: ${Exclude<keyof AO["$select"] & string, ValidAggregationKeys<Q>>}`;
+	AO extends AggregateOpts<Q, RDPs>,
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = Exclude<keyof AO["$select"], ValidAggregationKeysPlus<Q, RDPs>> extends never ? unknown extends AO["$groupBy"] ? AggregationResultsWithoutGroups<Q, AO["$select"], RDPs> : Exclude<AO["$groupBy"], undefined> extends never ? AggregationResultsWithoutGroups<Q, AO["$select"], RDPs> : Exclude<keyof AO["$groupBy"], AggregatableKeys<Q, RDPs>> extends never ? AggregationResultsWithGroups<Q, AO["$select"], AO["$groupBy"], RDPs> : `Sorry, the following are not valid groups for an aggregation: ${Exclude<keyof AO["$groupBy"] & string, AggregatableKeys<Q, RDPs>>}` : `Sorry, the following are not valid selectors for an aggregation: ${Exclude<keyof AO["$select"] & string, ValidAggregationKeysPlus<Q, RDPs>>}`;
 
 // Warning: (ae-forgotten-export) The symbol "GroupByMapper" needs to be exported by the entry point index.d.ts
 //
@@ -255,7 +268,7 @@ export interface AsyncIterArgs<
 	T extends boolean = false,
 	RDP_KEYS extends string = never,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = never
-> extends SelectArg<Q, K, R, S, RDP_KEYS>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
+> extends SelectArg<Q, K, R, any, RDP_KEYS>, OrderByArg<Q, PropertyKeys<Q> | RDP_KEYS, ORDER_BY_OPTIONS> {
     	// (undocumented)
     $__UNSTABLE_useOldInterfaceApis?: boolean;
     	// (undocumented)
@@ -612,7 +625,7 @@ export interface FetchPageArgs<
 	T extends boolean = false,
 	RDP_KEYS extends string = never,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<K> = {}
-> extends AsyncIterArgs<Q, K, R, A, S, T, RDP_KEYS, ORDER_BY_OPTIONS> {
+> extends AsyncIterArgs<Q, K, R, any, any, T, RDP_KEYS, ORDER_BY_OPTIONS> {
     	// (undocumented)
     $nextPageToken?: string;
     	// (undocumented)
@@ -629,7 +642,7 @@ export type FetchPageResult<
 	S extends NullabilityAdherence,
 	T extends boolean = false,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
-> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? never : L>, ORDER_BY_OPTIONS>>;
+> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, T>, PropertyKeys<Q> extends L ? never : L>, ORDER_BY_OPTIONS>>;
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
@@ -710,7 +723,10 @@ export interface GeotimeSeriesProperty<T extends GeoJSON.Point> {
 // Warning: (ae-forgotten-export) The symbol "GroupByEntry" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type GroupByClause<Q extends ObjectOrInterfaceDefinition> = { [P in AggregatableKeys<Q>]? : GroupByEntry<Q, P> };
+export type GroupByClause<
+	Q extends ObjectOrInterfaceDefinition,
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = { [P in AggregatableKeys<Q, RDPs>]? : GroupByEntry<Q, P, RDPs> };
 
 // @public (undocumented)
 export type GroupByRange<T> = [T, T];
@@ -830,7 +846,7 @@ export namespace Logger {
 
 // @public (undocumented)
 export type MaybeScore<
-	T extends Osdk.Instance<any>,
+	T extends Osdk.Instance<any, any, any, any>,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<any>
 > = ORDER_BY_OPTIONS extends "relevance" ? T & {
     	$score: number
@@ -1111,13 +1127,12 @@ export interface ObjectQueryDataType<T_Target extends ObjectOrInterfaceDefinitio
 
 // Warning: (ae-forgotten-export) The symbol "ObjectSetCleanedTypes" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractRdp" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "MergeObjectSet" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export interface ObjectSet<
 	Q extends ObjectOrInterfaceDefinition = any,
 	UNUSED_OR_RDP extends BaseObjectSet<Q> | Record<string, SimplePropertyDef> = never
-> extends ObjectSetCleanedTypes<Q, ExtractRdp<UNUSED_OR_RDP>, MergeObjectSet<Q, ExtractRdp<UNUSED_OR_RDP>>> {}
+> extends ObjectSetCleanedTypes<Q, ExtractRdp<UNUSED_OR_RDP>> {}
 
 // @public (undocumented)
 export namespace ObjectSetArgs {
@@ -1261,33 +1276,49 @@ export namespace Osdk {
     		OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
     		P extends PropertyKeys<Q> = PropertyKeys<Q>,
     		R extends Record<string, SimplePropertyDef> = {}
-    	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
-        		readonly $link: Q extends {
-            			linksType?: any
-            		} ? Q["linksType"] : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q> : never
-        		readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
-        		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>
-        		readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends ObjectTypeDefinition ? {
+    	> = OsdkBase<Q> & InstanceExtras<Q, OPTIONS, P> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
+        		readonly $rid: string
+        	} : {});
+    	// (undocumented)
+    export interface InstanceExtras<
+    		Q extends ObjectOrInterfaceDefinition,
+    		OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
+    		P extends PropertyKeys<Q> = PropertyKeys<Q>
+    	> {
+        		// (undocumented)
+        readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <PropertyApiName extends PropertyKeys<Q>>(propertyApiName: PropertyApiName, options?: {
+            			locale?: string
+            			timezoneId?: string
+            		}) => string | undefined;
+        		// (undocumented)
+        readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends ObjectTypeDefinition ? {
             			ObjectMetadata: ObjectMetadata
             		} : {
             			ObjectMetadata: ObjectMetadata
             			InterfaceMetadata: InterfaceMetadata
-            		}
-        		readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <PropertyApiName extends PropertyKeys<Q>>(propertyApiName: PropertyApiName, options?: {
-            			locale?: string
-            			timezoneId?: string
-            		}) => string | undefined
-        	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
-        		readonly $rid: string
-        	} : {});
+            		};
+        		// (undocumented)
+        readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>;
+        		// (undocumented)
+        readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>;
+        		// (undocumented)
+        readonly $link: Q extends {
+            			linksType?: any
+            		} ? Q["linksType"] : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q> : never;
+        	}
 }
 
 // @public (undocumented)
-export type OsdkBase<Q extends ObjectOrInterfaceDefinition> = ObjectIdentifiers<Q> & {
-    	readonly $objectSpecifier: ObjectSpecifier<Q>
-    	readonly $objectType: string
-    	readonly $title: string | undefined
-};
+export interface OsdkBase<Q extends ObjectOrInterfaceDefinition> extends ObjectIdentifiers<Q> {
+    	// (undocumented)
+    readonly $objectSpecifier: ObjectSpecifier<Q>;
+    	// (undocumented)
+    readonly $objectType: string;
+    	// (undocumented)
+    readonly $rid?: string;
+    	// (undocumented)
+    readonly $title: string | undefined;
+}
 
 // @public @deprecated (undocumented)
 export type OsdkObject<N extends string> = {
@@ -1680,8 +1711,8 @@ export namespace SimplePropertyDef {
 
 // @public (undocumented)
 export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
-    	fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L & PropertyKeys<T>> : Osdk.Instance<T>>;
-    	fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<Result<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L> : Osdk.Instance<T>>>;
+    	fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<A extends FetchPageArgs<T, infer L, infer R, any, any> ? Osdk.Instance<T, ExtractOptions<R>, L & PropertyKeys<T>> : Osdk.Instance<T>>;
+    	fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<Result<A extends FetchPageArgs<T, infer L, infer R, any, any> ? Osdk.Instance<T, ExtractOptions<R>, L> : Osdk.Instance<T>>>;
 }
 
 // @public
@@ -1693,7 +1724,7 @@ export type SingleOsdkResult<
 	RDPs extends Record<string, SimplePropertyDef> = {},
 	T extends boolean = false,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
-> = MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>, ORDER_BY_OPTIONS>;
+> = MaybeScore<Osdk.Instance<Q, ExtractOptions<R, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>, ORDER_BY_OPTIONS>;
 
 // @public (undocumented)
 export interface StringConstant {
@@ -1816,16 +1847,14 @@ export type TwoDimensionalAggregation<
 // @public (undocumented)
 export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<AggregationValueTypes>;
 
-// Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "WITH_PROPERTIES_AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ValidAggregationKeysForWithProps" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type ValidAggregationKeys<
 	Q extends ObjectOrInterfaceDefinition,
-	R extends "aggregate" | "withPropertiesAggregate" = "aggregate"
-> = keyof ({ [KK in AggregatableKeys<Q> as `${KK & string}:${R extends "aggregate" ? AGG_FOR_TYPE<CompileTimeMetadata<Q>["properties"][KK]["type"]> : WITH_PROPERTIES_AGG_FOR_TYPE<CompileTimeMetadata<Q>["properties"][KK]["type"]>}`]? : any } & {
-    	$count?: any
-});
+	R extends "aggregate" | "withPropertiesAggregate" = "aggregate",
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = R extends "aggregate" ? ValidAggregationKeysPlus<Q, RDPs> : ValidAggregationKeysForWithProps<Q, RDPs>;
 
 // Warning: (ae-forgotten-export) The symbol "VersionString" needs to be exported by the entry point index.d.ts
 //
@@ -1852,10 +1881,8 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 // src/Definitions.ts:42:52 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
-// src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
-// src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
-// src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "OsdkObjectPropertyTypeNotUndefined" needs to be exported by the entry point index.d.ts
+// src/aggregate/AggregationResultsWithGroups.ts:35:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
+// src/aggregate/AggregationResultsWithGroups.ts:35:5 - (ae-forgotten-export) The symbol "OsdkObjectPropertyTypeNotUndefined" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
