@@ -287,10 +287,7 @@ export abstract class BaseListQuery<
     }
 
     if (this.pendingFetch) {
-      this.pendingPageFetch = new Promise(async (res) => {
-        await this.pendingFetch;
-        res(this.fetchMore());
-      });
+      this.pendingPageFetch = this.pendingFetch.then(() => void 0);
       return this.pendingPageFetch;
     }
 
