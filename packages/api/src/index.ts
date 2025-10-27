@@ -23,6 +23,7 @@ export type {
   ApplyBatchActionOptions,
 } from "./actions/Actions.js";
 export { NULL_VALUE } from "./actions/NullValue.js";
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 export type { ValidAggregationKeys } from "./aggregate/AggregatableKeys.js";
 export type { AggregateOpts } from "./aggregate/AggregateOpts.js";
 export type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "./aggregate/AggregateOptsThatErrors.js";

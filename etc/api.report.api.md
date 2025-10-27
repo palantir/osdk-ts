@@ -1849,7 +1849,7 @@ export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<Ag
 
 // Warning: (ae-forgotten-export) The symbol "ValidAggregationKeysForWithProps" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public @deprecated
 export type ValidAggregationKeys<
 	Q extends ObjectOrInterfaceDefinition,
 	R extends "aggregate" | "withPropertiesAggregate" = "aggregate",
