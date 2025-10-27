@@ -72,3 +72,9 @@ export type {
   OntologyIrValueTypeBlockData,
   OntologyIrValueTypeBlockDataEntry,
 } from "./blockDataIr.js";
+
+export type {
+  DerivedPropertyLinkTypeSide,
+  OntologyIrDerivedPropertiesDefinition,
+  OntologyIrDerivedPropertyAggregation,
+} from "./generated/ontology-metadata/api/derivedproperties/__components.js";

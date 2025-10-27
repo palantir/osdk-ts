@@ -15,7 +15,10 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+import { defineCreateObjectAction } from "../defineCreateObjectAction.js";
+import { defineDeleteObjectAction } from "../defineDeleteObjectAction.js";
 import { defineInterface } from "../defineInterface.js";
+import { defineLink } from "../defineLink.js";
 import { defineObject } from "../defineObject.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
@@ -514,7 +517,7 @@ describe("Object Types", () => {
       apiName: "foo",
       primaryKeyPropertyApiName: "bar",
       properties: { "bar": { type: "string" } },
-      datasource: { type: "dataset" },
+      datasources: [{ type: "dataset" }],
     });
 
     const streamBackedObjectNoRetention = defineObject({
@@ -524,7 +527,7 @@ describe("Object Types", () => {
       apiName: "fizz",
       primaryKeyPropertyApiName: "fizz",
       properties: { "fizz": { type: "string" }, "bar": { type: "string" } },
-      datasource: { type: "stream" },
+      datasources: [{ type: "stream" }],
     });
 
     const streamBackedObjectWithRetention = defineObject({
@@ -534,7 +537,7 @@ describe("Object Types", () => {
       apiName: "buzz",
       primaryKeyPropertyApiName: "buzz",
       properties: { "buzz": { type: "string" } },
-      datasource: { type: "stream", retentionPeriod: "PT1H" },
+      datasources: [{ type: "stream", retentionPeriod: "PT1H" }],
     });
 
     expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
@@ -899,7 +902,7 @@ describe("Object Types", () => {
       properties: {
         "bar": { type: "string" },
       },
-      datasource: { type: "restrictedView" },
+      datasources: [{ type: "restrictedView" }],
     });
     expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
         {
@@ -1254,10 +1257,10 @@ describe("Object Types", () => {
         apiName: "buzz",
         primaryKeyPropertyApiName: "buzz",
         properties: { "buzz": { type: "string" } },
-        datasource: {
+        datasources: [{
           type: "stream",
           retentionPeriod: "bad retention period string",
-        },
+        }],
       })
     ).toThrowErrorMatchingInlineSnapshot(
       `[Error: Invariant failed: Retention period "bad retention period string" on object "buzz" is not a valid ISO 8601 duration string]`,
@@ -1275,7 +1278,7 @@ describe("Object Types", () => {
         "fizz": { type: "mediaReference" },
         "bar": { type: "string" },
       },
-      datasource: { type: "stream" },
+      datasources: [{ type: "stream" }],
     });
 
     expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -1455,5 +1458,1103 @@ describe("Object Types", () => {
           },
         }
       `);
+  });
+  it("Derived datasources are properly defined", () => {
+    const passenger = defineObject({
+      displayName: "Passenger",
+      pluralDisplayName: "Passengers",
+      apiName: "passenger",
+      primaryKeyPropertyApiName: "name",
+      titlePropertyApiName: "name",
+      editsEnabled: true,
+      properties: {
+        "name": {
+          type: "string",
+          displayName: "Name",
+        },
+        "flight_id": {
+          type: "string",
+          displayName: "Flight ID",
+        },
+      },
+    });
+    const flightToPassengers = defineLink({
+      apiName: "flightToPassengersLink",
+      one: {
+        object: "com.palantir.flight",
+        metadata: {
+          apiName: "flightFromPassengers",
+        },
+      },
+      toMany: {
+        object: passenger.apiName,
+        metadata: {
+          apiName: "passengersFromFlight",
+        },
+      },
+      manyForeignKeyProperty: "flight_id",
+    });
+    expect(() => {
+      defineObject({
+        displayName: "Flight",
+        pluralDisplayName: "Flights",
+        apiName: "flight",
+        primaryKeyPropertyApiName: "id",
+        titlePropertyApiName: "id",
+        properties: {
+          id: {
+            type: "string",
+            displayName: "ID",
+          },
+          numPassengers: {
+            type: "string",
+            displayName: "Passengers",
+          },
+        },
+        datasources: [
+          { type: "dataset" },
+          {
+            type: "derived",
+            linkDefinition: [{
+              linkType: flightToPassengers,
+            }],
+            propertyMapping: {
+              numPassengers: {
+                type: "collectList",
+                property: "name",
+                limit: 100,
+              },
+            },
+          },
+        ],
+      });
+    }).toThrowErrorMatchingInlineSnapshot(
+      `[Error: Invariant failed: Property 'numPassengers' on object 'flight' is not collectible]`,
+    );
+    const flight = defineObject({
+      displayName: "Flight",
+      pluralDisplayName: "Flights",
+      apiName: "flight",
+      primaryKeyPropertyApiName: "id",
+      titlePropertyApiName: "id",
+      editsEnabled: true,
+      properties: {
+        id: {
+          type: "string",
+          displayName: "ID",
+        },
+        passengersList: {
+          type: "string",
+          array: true,
+          displayName: "Passengers",
+        },
+      },
+      datasources: [
+        { type: "dataset" },
+        {
+          type: "derived",
+          linkDefinition: [{
+            linkType: flightToPassengers,
+          }],
+          propertyMapping: {
+            passengersList: {
+              type: "collectList",
+              property: "name",
+              limit: 100,
+            },
+          },
+        },
+      ],
+    });
+    defineCreateObjectAction({
+      displayName: "Create flight",
+      objectType: flight,
+    });
+    defineDeleteObjectAction({
+      displayName: "Delete flight",
+      objectType: flight,
+    });
+    defineCreateObjectAction({
+      displayName: "Create passenger",
+      objectType: passenger,
+    });
+    defineDeleteObjectAction({
+      displayName: "Delete passenger",
+      objectType: passenger,
+    });
+    expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+      {
+        "importedOntology": {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        },
+        "importedValueTypes": {
+          "valueTypes": [],
+        },
+        "ontology": {
+          "actionTypes": {
+            "com.palantir.create-object-flight": {
+              "actionType": {
+                "actionTypeLogic": {
+                  "logic": {
+                    "rules": [
+                      {
+                        "addObjectRule": {
+                          "objectTypeId": "com.palantir.flight",
+                          "propertyValues": {
+                            "id": {
+                              "parameterId": "id",
+                              "type": "parameterId",
+                            },
+                          },
+                          "structFieldValues": {},
+                        },
+                        "type": "addObjectRule",
+                      },
+                    ],
+                  },
+                  "validation": {
+                    "actionTypeLevelValidation": {
+                      "rules": {
+                        "0": {
+                          "condition": {
+                            "true": {},
+                            "type": "true",
+                          },
+                          "displayMetadata": {
+                            "failureMessage": "",
+                            "typeClasses": [],
+                          },
+                        },
+                      },
+                    },
+                    "parameterValidations": {
+                      "id": {
+                        "conditionalOverrides": [],
+                        "defaultValidation": {
+                          "display": {
+                            "renderHint": {
+                              "textInput": {},
+                              "type": "textInput",
+                            },
+                            "visibility": {
+                              "editable": {},
+                              "type": "editable",
+                            },
+                          },
+                          "validation": {
+                            "allowedValues": {
+                              "text": {
+                                "text": {},
+                                "type": "text",
+                              },
+                              "type": "text",
+                            },
+                            "required": {
+                              "notRequired": {},
+                              "type": "notRequired",
+                            },
+                          },
+                        },
+                      },
+                    },
+                    "sectionValidations": {},
+                  },
+                },
+                "metadata": {
+                  "apiName": "com.palantir.create-object-flight",
+                  "displayMetadata": {
+                    "configuration": {
+                      "defaultLayout": "FORM",
+                      "displayAndFormat": {
+                        "table": {
+                          "columnWidthByParameterRid": {},
+                          "enableFileImport": true,
+                          "fitHorizontally": false,
+                          "frozenColumnCount": 0,
+                          "rowHeightInLines": 1,
+                        },
+                      },
+                      "enableLayoutUserSwitch": false,
+                    },
+                    "description": "",
+                    "displayName": "Create flight",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#000000",
+                        "locator": "edit",
+                      },
+                      "type": "blueprint",
+                    },
+                    "successMessage": [],
+                    "typeClasses": [],
+                  },
+                  "entities": {
+                    "affectedInterfaceTypes": [],
+                    "affectedLinkTypes": [],
+                    "affectedObjectTypes": [
+                      "com.palantir.flight",
+                    ],
+                    "typeGroups": [],
+                  },
+                  "formContentOrdering": [],
+                  "parameterOrdering": [
+                    "id",
+                  ],
+                  "parameters": {
+                    "id": {
+                      "displayMetadata": {
+                        "description": "",
+                        "displayName": "ID",
+                        "typeClasses": [],
+                      },
+                      "id": "id",
+                      "type": {
+                        "string": {},
+                        "type": "string",
+                      },
+                    },
+                  },
+                  "sections": {},
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                },
+              },
+            },
+            "com.palantir.create-object-passenger": {
+              "actionType": {
+                "actionTypeLogic": {
+                  "logic": {
+                    "rules": [
+                      {
+                        "addObjectRule": {
+                          "objectTypeId": "com.palantir.passenger",
+                          "propertyValues": {
+                            "flight_id": {
+                              "parameterId": "flight_id",
+                              "type": "parameterId",
+                            },
+                            "name": {
+                              "parameterId": "name",
+                              "type": "parameterId",
+                            },
+                          },
+                          "structFieldValues": {},
+                        },
+                        "type": "addObjectRule",
+                      },
+                    ],
+                  },
+                  "validation": {
+                    "actionTypeLevelValidation": {
+                      "rules": {
+                        "0": {
+                          "condition": {
+                            "true": {},
+                            "type": "true",
+                          },
+                          "displayMetadata": {
+                            "failureMessage": "",
+                            "typeClasses": [],
+                          },
+                        },
+                      },
+                    },
+                    "parameterValidations": {
+                      "flight_id": {
+                        "conditionalOverrides": [],
+                        "defaultValidation": {
+                          "display": {
+                            "renderHint": {
+                              "textInput": {},
+                              "type": "textInput",
+                            },
+                            "visibility": {
+                              "editable": {},
+                              "type": "editable",
+                            },
+                          },
+                          "validation": {
+                            "allowedValues": {
+                              "text": {
+                                "text": {},
+                                "type": "text",
+                              },
+                              "type": "text",
+                            },
+                            "required": {
+                              "notRequired": {},
+                              "type": "notRequired",
+                            },
+                          },
+                        },
+                      },
+                      "name": {
+                        "conditionalOverrides": [],
+                        "defaultValidation": {
+                          "display": {
+                            "renderHint": {
+                              "textInput": {},
+                              "type": "textInput",
+                            },
+                            "visibility": {
+                              "editable": {},
+                              "type": "editable",
+                            },
+                          },
+                          "validation": {
+                            "allowedValues": {
+                              "text": {
+                                "text": {},
+                                "type": "text",
+                              },
+                              "type": "text",
+                            },
+                            "required": {
+                              "notRequired": {},
+                              "type": "notRequired",
+                            },
+                          },
+                        },
+                      },
+                    },
+                    "sectionValidations": {},
+                  },
+                },
+                "metadata": {
+                  "apiName": "com.palantir.create-object-passenger",
+                  "displayMetadata": {
+                    "configuration": {
+                      "defaultLayout": "FORM",
+                      "displayAndFormat": {
+                        "table": {
+                          "columnWidthByParameterRid": {},
+                          "enableFileImport": true,
+                          "fitHorizontally": false,
+                          "frozenColumnCount": 0,
+                          "rowHeightInLines": 1,
+                        },
+                      },
+                      "enableLayoutUserSwitch": false,
+                    },
+                    "description": "",
+                    "displayName": "Create passenger",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#000000",
+                        "locator": "edit",
+                      },
+                      "type": "blueprint",
+                    },
+                    "successMessage": [],
+                    "typeClasses": [],
+                  },
+                  "entities": {
+                    "affectedInterfaceTypes": [],
+                    "affectedLinkTypes": [],
+                    "affectedObjectTypes": [
+                      "com.palantir.passenger",
+                    ],
+                    "typeGroups": [],
+                  },
+                  "formContentOrdering": [],
+                  "parameterOrdering": [
+                    "name",
+                    "flight_id",
+                  ],
+                  "parameters": {
+                    "flight_id": {
+                      "displayMetadata": {
+                        "description": "",
+                        "displayName": "Flight ID",
+                        "typeClasses": [],
+                      },
+                      "id": "flight_id",
+                      "type": {
+                        "string": {},
+                        "type": "string",
+                      },
+                    },
+                    "name": {
+                      "displayMetadata": {
+                        "description": "",
+                        "displayName": "Name",
+                        "typeClasses": [],
+                      },
+                      "id": "name",
+                      "type": {
+                        "string": {},
+                        "type": "string",
+                      },
+                    },
+                  },
+                  "sections": {},
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                },
+              },
+            },
+            "com.palantir.delete-object-flight": {
+              "actionType": {
+                "actionTypeLogic": {
+                  "logic": {
+                    "rules": [
+                      {
+                        "deleteObjectRule": {
+                          "objectToDelete": "objectToDeleteParameter",
+                        },
+                        "type": "deleteObjectRule",
+                      },
+                    ],
+                  },
+                  "validation": {
+                    "actionTypeLevelValidation": {
+                      "rules": {
+                        "0": {
+                          "condition": {
+                            "true": {},
+                            "type": "true",
+                          },
+                          "displayMetadata": {
+                            "failureMessage": "",
+                            "typeClasses": [],
+                          },
+                        },
+                      },
+                    },
+                    "parameterValidations": {
+                      "objectToDeleteParameter": {
+                        "conditionalOverrides": [],
+                        "defaultValidation": {
+                          "display": {
+                            "renderHint": {
+                              "dropdown": {},
+                              "type": "dropdown",
+                            },
+                            "visibility": {
+                              "editable": {},
+                              "type": "editable",
+                            },
+                          },
+                          "validation": {
+                            "allowedValues": {
+                              "objectQuery": {
+                                "objectQuery": {},
+                                "type": "objectQuery",
+                              },
+                              "type": "objectQuery",
+                            },
+                            "required": {
+                              "required": {},
+                              "type": "required",
+                            },
+                          },
+                        },
+                      },
+                    },
+                    "sectionValidations": {},
+                  },
+                },
+                "metadata": {
+                  "apiName": "com.palantir.delete-object-flight",
+                  "displayMetadata": {
+                    "configuration": {
+                      "defaultLayout": "FORM",
+                      "displayAndFormat": {
+                        "table": {
+                          "columnWidthByParameterRid": {},
+                          "enableFileImport": true,
+                          "fitHorizontally": false,
+                          "frozenColumnCount": 0,
+                          "rowHeightInLines": 1,
+                        },
+                      },
+                      "enableLayoutUserSwitch": false,
+                    },
+                    "description": "",
+                    "displayName": "Delete flight",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#000000",
+                        "locator": "edit",
+                      },
+                      "type": "blueprint",
+                    },
+                    "successMessage": [],
+                    "typeClasses": [],
+                  },
+                  "entities": {
+                    "affectedInterfaceTypes": [],
+                    "affectedLinkTypes": [],
+                    "affectedObjectTypes": [
+                      "com.palantir.flight",
+                    ],
+                    "typeGroups": [],
+                  },
+                  "formContentOrdering": [],
+                  "parameterOrdering": [
+                    "objectToDeleteParameter",
+                  ],
+                  "parameters": {
+                    "objectToDeleteParameter": {
+                      "displayMetadata": {
+                        "description": "",
+                        "displayName": "Delete object",
+                        "typeClasses": [],
+                      },
+                      "id": "objectToDeleteParameter",
+                      "type": {
+                        "objectReference": {
+                          "objectTypeId": "com.palantir.flight",
+                        },
+                        "type": "objectReference",
+                      },
+                    },
+                  },
+                  "sections": {},
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                },
+              },
+            },
+            "com.palantir.delete-object-passenger": {
+              "actionType": {
+                "actionTypeLogic": {
+                  "logic": {
+                    "rules": [
+                      {
+                        "deleteObjectRule": {
+                          "objectToDelete": "objectToDeleteParameter",
+                        },
+                        "type": "deleteObjectRule",
+                      },
+                    ],
+                  },
+                  "validation": {
+                    "actionTypeLevelValidation": {
+                      "rules": {
+                        "0": {
+                          "condition": {
+                            "true": {},
+                            "type": "true",
+                          },
+                          "displayMetadata": {
+                            "failureMessage": "",
+                            "typeClasses": [],
+                          },
+                        },
+                      },
+                    },
+                    "parameterValidations": {
+                      "objectToDeleteParameter": {
+                        "conditionalOverrides": [],
+                        "defaultValidation": {
+                          "display": {
+                            "renderHint": {
+                              "dropdown": {},
+                              "type": "dropdown",
+                            },
+                            "visibility": {
+                              "editable": {},
+                              "type": "editable",
+                            },
+                          },
+                          "validation": {
+                            "allowedValues": {
+                              "objectQuery": {
+                                "objectQuery": {},
+                                "type": "objectQuery",
+                              },
+                              "type": "objectQuery",
+                            },
+                            "required": {
+                              "required": {},
+                              "type": "required",
+                            },
+                          },
+                        },
+                      },
+                    },
+                    "sectionValidations": {},
+                  },
+                },
+                "metadata": {
+                  "apiName": "com.palantir.delete-object-passenger",
+                  "displayMetadata": {
+                    "configuration": {
+                      "defaultLayout": "FORM",
+                      "displayAndFormat": {
+                        "table": {
+                          "columnWidthByParameterRid": {},
+                          "enableFileImport": true,
+                          "fitHorizontally": false,
+                          "frozenColumnCount": 0,
+                          "rowHeightInLines": 1,
+                        },
+                      },
+                      "enableLayoutUserSwitch": false,
+                    },
+                    "description": "",
+                    "displayName": "Delete passenger",
+                    "icon": {
+                      "blueprint": {
+                        "color": "#000000",
+                        "locator": "edit",
+                      },
+                      "type": "blueprint",
+                    },
+                    "successMessage": [],
+                    "typeClasses": [],
+                  },
+                  "entities": {
+                    "affectedInterfaceTypes": [],
+                    "affectedLinkTypes": [],
+                    "affectedObjectTypes": [
+                      "com.palantir.passenger",
+                    ],
+                    "typeGroups": [],
+                  },
+                  "formContentOrdering": [],
+                  "parameterOrdering": [
+                    "objectToDeleteParameter",
+                  ],
+                  "parameters": {
+                    "objectToDeleteParameter": {
+                      "displayMetadata": {
+                        "description": "",
+                        "displayName": "Delete object",
+                        "typeClasses": [],
+                      },
+                      "id": "objectToDeleteParameter",
+                      "type": {
+                        "objectReference": {
+                          "objectTypeId": "com.palantir.passenger",
+                        },
+                        "type": "objectReference",
+                      },
+                    },
+                  },
+                  "sections": {},
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                },
+              },
+            },
+          },
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {
+            "flight-to-passengers-link": {
+              "datasources": [],
+              "entityMetadata": {
+                "arePatchesEnabled": false,
+              },
+              "linkType": {
+                "definition": {
+                  "oneToMany": {
+                    "cardinalityHint": "ONE_TO_MANY",
+                    "manyToOneLinkMetadata": {
+                      "apiName": "passengersFromFlight",
+                      "displayMetadata": {
+                        "displayName": "PassengersFromFlight",
+                        "groupDisplayName": "",
+                        "pluralDisplayName": "PassengersFromFlights",
+                        "visibility": "NORMAL",
+                      },
+                      "typeClasses": [],
+                    },
+                    "objectTypeRidManySide": "com.palantir.passenger",
+                    "objectTypeRidOneSide": "com.palantir.flight",
+                    "oneSidePrimaryKeyToManySidePropertyMapping": [
+                      {
+                        "from": {
+                          "apiName": "id",
+                          "object": "com.palantir.flight",
+                        },
+                        "to": {
+                          "apiName": "flight_id",
+                          "object": "com.palantir.passenger",
+                        },
+                      },
+                    ],
+                    "oneToManyLinkMetadata": {
+                      "apiName": "flightFromPassengers",
+                      "displayMetadata": {
+                        "displayName": "FlightFromPassengers",
+                        "groupDisplayName": "",
+                        "pluralDisplayName": "FlightFromPassengers",
+                        "visibility": "NORMAL",
+                      },
+                      "typeClasses": [],
+                    },
+                  },
+                  "type": "oneToMany",
+                },
+                "id": "flight-to-passengers-link",
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+          },
+          "objectTypes": {
+            "com.palantir.flight": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "derived": {
+                      "definition": {
+                        "aggregatedProperties": {
+                          "linkDefinition": {
+                            "multiHopLink": {
+                              "steps": [
+                                {
+                                  "searchAround": {
+                                    "linkTypeIdentifier": {
+                                      "linkType": "flight-to-passengers-link",
+                                      "type": "linkType",
+                                    },
+                                    "linkTypeSide": "SOURCE",
+                                  },
+                                  "type": "searchAround",
+                                },
+                              ],
+                            },
+                            "type": "multiHopLink",
+                          },
+                          "propertyTypeMapping": {
+                            "passengersList": {
+                              "collectList": {
+                                "limit": 100,
+                                "linkedProperty": {
+                                  "propertyType": "name",
+                                  "type": "propertyType",
+                                },
+                              },
+                              "type": "collectList",
+                            },
+                          },
+                        },
+                        "type": "aggregatedProperties",
+                      },
+                    },
+                    "type": "derived",
+                  },
+                  "datasourceName": "com.palantir.flight.derived.0",
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
+                },
+                {
+                  "datasource": {
+                    "datasetV2": {
+                      "datasetRid": "com.palantir.flight",
+                      "propertyMapping": {
+                        "id": {
+                          "column": "id",
+                          "type": "column",
+                        },
+                      },
+                    },
+                    "type": "datasetV2",
+                  },
+                  "datasourceName": "com.palantir.flight",
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
+                },
+              ],
+              "entityMetadata": {
+                "arePatchesEnabled": true,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.flight",
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "Flight",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Flights",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "id",
+                ],
+                "propertyTypes": {
+                  "id": {
+                    "apiName": "id",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "ID",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                  "passengersList": {
+                    "apiName": "passengersList",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Passengers",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "array": {
+                        "subtype": {
+                          "string": {
+                            "analyzerOverride": undefined,
+                            "enableAsciiFolding": undefined,
+                            "isLongText": false,
+                            "supportsEfficientLeadingWildcard": false,
+                            "supportsExactMatching": true,
+                          },
+                          "type": "string",
+                        },
+                      },
+                      "type": "array",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                },
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+                "titlePropertyTypeRid": "id",
+              },
+            },
+            "com.palantir.passenger": {
+              "datasources": [
+                {
+                  "datasource": {
+                    "datasetV2": {
+                      "datasetRid": "com.palantir.passenger",
+                      "propertyMapping": {
+                        "flight_id": {
+                          "column": "flight_id",
+                          "type": "column",
+                        },
+                        "name": {
+                          "column": "name",
+                          "type": "column",
+                        },
+                      },
+                    },
+                    "type": "datasetV2",
+                  },
+                  "datasourceName": "com.palantir.passenger",
+                  "editsConfiguration": {
+                    "onlyAllowPrivilegedEdits": false,
+                  },
+                  "redacted": false,
+                },
+              ],
+              "entityMetadata": {
+                "arePatchesEnabled": true,
+              },
+              "objectType": {
+                "allImplementsInterfaces": {},
+                "apiName": "com.palantir.passenger",
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "Passenger",
+                  "groupDisplayName": undefined,
+                  "icon": {
+                    "blueprint": {
+                      "color": "#2D72D2",
+                      "locator": "cube",
+                    },
+                    "type": "blueprint",
+                  },
+                  "pluralDisplayName": "Passengers",
+                  "visibility": "NORMAL",
+                },
+                "implementsInterfaces2": [],
+                "primaryKeys": [
+                  "name",
+                ],
+                "propertyTypes": {
+                  "flight_id": {
+                    "apiName": "flight_id",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Flight ID",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                  "name": {
+                    "apiName": "name",
+                    "baseFormatter": undefined,
+                    "dataConstraints": undefined,
+                    "displayMetadata": {
+                      "description": undefined,
+                      "displayName": "Name",
+                      "visibility": "NORMAL",
+                    },
+                    "indexedForSearch": true,
+                    "inlineAction": undefined,
+                    "ruleSetBinding": undefined,
+                    "sharedPropertyTypeApiName": undefined,
+                    "sharedPropertyTypeRid": undefined,
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                    "type": {
+                      "string": {
+                        "analyzerOverride": undefined,
+                        "enableAsciiFolding": undefined,
+                        "isLongText": false,
+                        "supportsEfficientLeadingWildcard": false,
+                        "supportsExactMatching": true,
+                      },
+                      "type": "string",
+                    },
+                    "typeClasses": [
+                      {
+                        "kind": "render_hint",
+                        "name": "SELECTABLE",
+                      },
+                      {
+                        "kind": "render_hint",
+                        "name": "SORTABLE",
+                      },
+                    ],
+                    "valueType": undefined,
+                  },
+                },
+                "redacted": false,
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+                "titlePropertyTypeRid": "name",
+              },
+            },
+          },
+          "sharedPropertyTypes": {},
+        },
+        "randomnessKey": undefined,
+        "valueTypes": {
+          "valueTypes": [],
+        },
+      }
+    `);
   });
 });
