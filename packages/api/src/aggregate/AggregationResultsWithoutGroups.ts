@@ -17,10 +17,8 @@
 import type { OsdkObjectPropertyType } from "../Definitions.js";
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
-import type {
-  OrderedAggregationClause,
-  UnorderedAggregationClause,
-} from "./AggregationsClause.js";
+import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
+import type { AggregationClause } from "./AggregationsClause.js";
 
 type ExtractPropName<T extends string> = T extends `${infer PropName}:${string}`
   ? PropName
@@ -32,7 +30,8 @@ type ExtractMetricNameForPropName<T, PropName extends string> = T extends
 
 export type AggregationResultsWithoutGroups<
   Q extends ObjectOrInterfaceDefinition,
-  AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
+  AC extends AggregationClause<Q, RDPs>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > = {
   [PropName in ExtractPropName<keyof AC & string>]: PropName extends "$count"
     ? number

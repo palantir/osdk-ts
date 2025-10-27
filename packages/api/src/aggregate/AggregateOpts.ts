@@ -16,14 +16,13 @@
 
 import type { GroupByClause } from "../groupby/GroupByClause.js";
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
-import type {
-  OrderedAggregationClause,
-  UnorderedAggregationClause,
-} from "./AggregationsClause.js";
+import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
+import type { AggregationClause } from "./AggregationsClause.js";
 
-export type AggregateOpts<Q extends ObjectOrInterfaceDefinition> = {
-  $select:
-    | UnorderedAggregationClause<Q>
-    | OrderedAggregationClause<Q>;
-  $groupBy?: GroupByClause<Q>;
+export type AggregateOpts<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> = {
+  $select: AggregationClause<Q, RDPs>;
+  $groupBy?: GroupByClause<Q, RDPs>;
 };
