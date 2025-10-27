@@ -130,7 +130,7 @@ export interface ObserveAggregationOptions<
   A extends AggregateOpts<T>,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > extends CommonObserveOptions, ObserveOptions {
-  type: Pick<T, "apiName" | "type">;
+  type: T;
   where?: WhereClause<T, RDPs>;
   withProperties?: DerivedProperty.Clause<T>;
   intersectWith?: Array<{

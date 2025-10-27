@@ -15,6 +15,8 @@
  */
 
 import type { Logger } from "@osdk/api";
+import type { TsServer } from "@osdk/client/internal";
+import { startTsServer } from "@osdk/client/internal";
 import { findUpSync } from "find-up";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
@@ -28,8 +30,6 @@ import {
   it,
   vi,
 } from "vitest";
-import type { TsServer } from "../../client/src/tsserver.js";
-import { startTsServer } from "../../client/src/tsserver.js";
 
 // it needs to be hoisted because its referenced from our mocked WebSocket
 // which must be hoisted to work
@@ -81,7 +81,7 @@ describe("intellisense", () => {
     reactPackagePath = path.join(packagesDir, "react");
   });
 
-  let tsServer: TsServer;
+  let tsServer: TsServer | undefined;
   let intellisenseFilePath: string;
 
   beforeEach(async (a) => {
@@ -96,24 +96,44 @@ describe("intellisense", () => {
 
     expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
 
-    tsServer = await startTsServer(rootLogger);
-    await tsServer.sendOpenRequest({ file: intellisenseFilePath });
+    try {
+      tsServer = await startTsServer(rootLogger);
+      await tsServer.sendOpenRequest({ file: intellisenseFilePath });
+    } catch (error) {
+      if (tsServer) {
+        try {
+          tsServer.stop();
+        } catch {
+          // Ignore cleanup errors
+        }
+        tsServer = undefined;
+      }
+      throw error;
+    }
   });
 
   afterEach(async () => {
     if (tsServer) {
       tsServer.stop();
-      tsServer = undefined as any;
+      tsServer = undefined;
     }
   });
 
   it("useOsdkObjectsWithPivot", { timeout: 40_000 }, async () => {
-    // Verify that the test helper file exists and uses pivotTo correctly
     expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
+
+    // TODO: Add actual intellisense validation
+    // - Test pivotTo autocomplete suggestions
+    // - Verify type inference for pivoted properties
+    // - Check error detection for invalid pivot chains
   });
 
   it("useOsdkObjectsWithProperties", { timeout: 40_000 }, async () => {
-    // Verify that the test helper file exists and uses withProperties correctly
     expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
+
+    // TODO: Add actual intellisense validation
+    // - Test withProperties autocomplete suggestions
+    // - Verify type inference for derived properties
+    // - Check error detection for invalid property selections
   });
 });

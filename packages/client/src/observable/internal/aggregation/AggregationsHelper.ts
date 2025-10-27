@@ -31,18 +31,18 @@ import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
 import { type AggregationCacheKey } from "./AggregationCacheKey.js";
-import {
-  type AggregationPayload,
+import type {
   AggregationQuery,
-  type AggregationQueryOptions,
+  type AggregationPayloadBase,
 } from "./AggregationQuery.js";
+import { ObjectAggregationQuery } from "./ObjectAggregationQuery.js";
 
 export interface ObserveAggregationOptions<
   T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
   RDPs extends Record<string, SimplePropertyDef> = {},
 > {
-  type: Pick<T, "apiName" | "type">;
+  type: T;
   where?: WhereClause<T, RDPs>;
   withProperties?: DerivedProperty.Clause<T>;
   aggregate: A;
@@ -50,7 +50,7 @@ export interface ObserveAggregationOptions<
 }
 
 export class AggregationsHelper extends AbstractHelper<
-  AggregationQuery<any, any>,
+  AggregationQuery,
   ObserveAggregationOptions<any, any>
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
@@ -74,8 +74,8 @@ export class AggregationsHelper extends AbstractHelper<
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveAggregationOptions<T, A, RDPs>,
-    subFn: Observer<AggregationPayload<T, A>>,
-  ): QuerySubscription<AggregationQuery<T, A>> {
+    subFn: Observer<AggregationPayloadBase>,
+  ): QuerySubscription<AggregationQuery> {
     return super.observe(options, subFn);
   }
 
@@ -85,7 +85,7 @@ export class AggregationsHelper extends AbstractHelper<
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveAggregationOptions<T, A, RDPs>,
-  ): AggregationQuery<T, A> {
+  ): AggregationQuery {
     const { type, where, withProperties, aggregate } = options;
     const { apiName } = type;
     const typeKind = "type" in type ? type.type : "interface";
@@ -106,22 +106,19 @@ export class AggregationsHelper extends AbstractHelper<
       canonAggregate,
     );
 
-    return this.store.queries.get(
-      aggregationCacheKey,
-      () =>
-        new AggregationQuery<T, A>(
-          this.store,
-          this.store.subjects.get(aggregationCacheKey),
-          aggregationCacheKey,
-          {
-            type,
-            where,
-            withProperties,
-            aggregate,
-            dedupeInterval: options.dedupeInterval ?? 2000,
-          } as AggregationQueryOptions<T, A>,
-        ),
-    );
+    return this.store.queries.get(aggregationCacheKey, () => {
+      if (typeKind !== "object") {
+        throw new Error(
+          "Only ObjectTypeDefinition is currently supported for aggregations",
+        );
+      }
+      return new ObjectAggregationQuery(
+        this.store,
+        this.store.subjects.get(aggregationCacheKey),
+        aggregationCacheKey,
+        options,
+      );
+    });
   }
 
   private canonicalizeAggregate<A extends AggregateOpts<any>>(

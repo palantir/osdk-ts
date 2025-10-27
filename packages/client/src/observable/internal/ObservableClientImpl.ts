@@ -48,6 +48,7 @@ import type {
 } from "../ObservableClient.js";
 import type { Observer } from "../ObservableClient/common.js";
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
+import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
 import type { Canonical } from "./Canonical.js";
 import type { ObserveObjectSetOptions } from "./objectset/ObjectSetQueryOptions.js";
 import type { Store } from "./Store.js";
@@ -119,7 +120,7 @@ export class ObservableClientImpl implements ObservableClient {
   ) => {
     return this.__experimentalStore.aggregations.observe(
       options,
-      subFn,
+      subFn as Observer<AggregationPayloadBase>,
     );
   };
 

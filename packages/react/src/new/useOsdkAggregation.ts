@@ -147,10 +147,7 @@ export function useOsdkAggregation<
         (observer) =>
           observableClient.observeAggregation(
             {
-              type: {
-                apiName: type.apiName,
-                type: type.type ?? "object",
-              },
+              type: type,
               where: canonWhere,
               withProperties: stableWithProperties,
               aggregate: stableAggregate,

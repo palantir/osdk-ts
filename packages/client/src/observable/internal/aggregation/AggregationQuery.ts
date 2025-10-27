@@ -19,7 +19,6 @@ import type {
   AggregationsResults,
   DerivedProperty,
   ObjectOrInterfaceDefinition,
-  ObjectSet,
   WhereClause,
 } from "@osdk/api";
 import type { Connectable, Observable, Subject } from "rxjs";
@@ -66,25 +65,35 @@ export interface AggregationQueryOptions<
   aggregate: A;
 }
 
-export class AggregationQuery<
-  Q extends ObjectOrInterfaceDefinition,
-  A extends AggregateOpts<Q>,
-> extends Query<
+export interface AggregationPayloadBase {
+  result:
+    | AggregationsResults<
+      ObjectOrInterfaceDefinition,
+      AggregateOpts<ObjectOrInterfaceDefinition>
+    >
+    | undefined;
+  status: Status;
+  lastUpdated: number;
+  error?: Error;
+}
+
+export abstract class AggregationQuery extends Query<
   AggregationCacheKey,
-  AggregationPayload<Q, A>,
+  AggregationPayloadBase,
   CommonObserveOptions
 > {
-  #type: Q;
-  #apiName: string;
-  #where: Canonical<SimpleWhereClause>;
-  #rdpConfig: Canonical<Rdp> | undefined;
-  #aggregate: Canonical<A>;
+  protected apiName: string;
+  protected canonicalWhere: Canonical<SimpleWhereClause>;
+  protected canonicalAggregate: Canonical<
+    AggregateOpts<ObjectOrInterfaceDefinition>
+  >;
+  protected rdpConfig: Canonical<Rdp> | undefined;
 
   constructor(
     store: Store,
     subject: Subject<SubjectPayload<AggregationCacheKey>>,
     cacheKey: AggregationCacheKey,
-    opts: AggregationQueryOptions<Q, A>,
+    opts: CommonObserveOptions,
   ) {
     super(
       store,
@@ -101,22 +110,21 @@ export class AggregationQuery<
         )
         : undefined,
     );
-    this.#type = opts.type;
-    this.#apiName = cacheKey.otherKeys[API_NAME_IDX];
-    this.#where = cacheKey.otherKeys[WHERE_IDX];
-    this.#rdpConfig = cacheKey.otherKeys[RDP_IDX];
-    this.#aggregate = cacheKey.otherKeys[AGGREGATE_IDX] as Canonical<A>;
+    this.apiName = cacheKey.otherKeys[API_NAME_IDX];
+    this.canonicalWhere = cacheKey.otherKeys[WHERE_IDX];
+    this.rdpConfig = cacheKey.otherKeys[RDP_IDX];
+    this.canonicalAggregate = cacheKey.otherKeys[AGGREGATE_IDX];
   }
 
   protected _createConnectable(
     subject: Observable<SubjectPayload<AggregationCacheKey>>,
-  ): Connectable<AggregationPayload<Q, A>> {
-    return connectable<AggregationPayload<Q, A>>(
+  ): Connectable<AggregationPayloadBase> {
+    return connectable<AggregationPayloadBase>(
       subject.pipe(
         map((x) => {
           return {
             status: x.status,
-            result: x.value as AggregationsResults<Q, A> | undefined,
+            result: x.value,
             lastUpdated: x.lastUpdated,
             error: x.status === "error"
               ? new Error("Aggregation failed")
@@ -126,7 +134,7 @@ export class AggregationQuery<
       ),
       {
         connector: () =>
-          new BehaviorSubject<AggregationPayload<Q, A>>({
+          new BehaviorSubject<AggregationPayloadBase>({
             status: "init",
             result: undefined,
             lastUpdated: 0,
@@ -143,19 +151,7 @@ export class AggregationQuery<
     }
 
     try {
-      let objectSet: ObjectSet = this.store.client(
-        this.#type as any,
-      ) as ObjectSet<Q>;
-
-      if (this.#rdpConfig) {
-        objectSet = objectSet.withProperties(
-          this.#rdpConfig as DerivedProperty.Clause<Q>,
-        );
-      }
-
-      objectSet = objectSet.where(this.#where as WhereClause<Q>);
-
-      const result = await objectSet.aggregate(this.#aggregate as any);
+      const result = await this._fetchAggregation();
 
       this.store.batch({}, (batch) => {
         this.writeToStore(result, "loaded", batch);
@@ -167,11 +163,12 @@ export class AggregationQuery<
     }
   }
 
-  // Type safety note: The base Query class has a union type for all possible storage types.
-  // We use `any` here to satisfy the interface, but we know at runtime this will only
-  // receive AggregationsResults because this method is only called from _fetchAndStore.
+  protected abstract _fetchAggregation(): Promise<
+    AggregationCacheKey["__cacheKey"]["value"]
+  >;
+
   writeToStore(
-    data: any,
+    data: AggregationCacheKey["__cacheKey"]["value"],
     status: Status,
     batch: BatchContext,
   ): Entry<AggregationCacheKey> {
@@ -184,7 +181,7 @@ export class AggregationQuery<
     objectType: string,
     changes: Changes | undefined,
   ): Promise<void> => {
-    if (this.#apiName === objectType) {
+    if (this.apiName === objectType) {
       changes?.modified.add(this.cacheKey);
       return this.revalidate(true);
     }

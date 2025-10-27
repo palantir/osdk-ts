@@ -19,22 +19,17 @@
 // This file is used for tests that check intellisense. Editing this file by hand will likely
 // break tests that have hard coded line numbers and line offsets.
 
+import type { DerivedProperty } from "@osdk/api";
 import { Employee } from "@osdk/client.test.ontology";
 import { useOsdkObjects } from "@osdk/react/experimental";
 
 function TestComponent() {
+  const withProps: DerivedProperty.Clause<typeof Employee> = {
+    constantValue: (employee) => employee.constant.integer(42),
+  };
+
   const { data } = useOsdkObjects(Employee, {
-    withProperties: {
-      isHighPaid: {
-        $aggregate: {
-          $gt: ["salary", 100000],
-        },
-      },
-    },
-    where: {
-      // Line 36: withProperties should be available in where clause
-      isHighPaid: true,
-    },
+    withProperties: withProps,
   });
 
   return null;

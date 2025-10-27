@@ -59,6 +59,7 @@
   "devDependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
+    "@osdk/client.test.ontology": "workspace:*",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@testing-library/react": "^16.3.0",

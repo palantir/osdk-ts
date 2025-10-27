@@ -21,3 +21,6 @@ export { hydrateObjectSetFromRid } from "../public-utils/hydrateObjectSetFromRid
 
 export { BrowserLogger } from "../logger/BrowserLogger.js";
 export { MinimalLogger } from "../logger/MinimalLogger.js";
+
+export { startTsServer } from "../tsserver.js";
+export type { TsServer } from "../tsserver.js";

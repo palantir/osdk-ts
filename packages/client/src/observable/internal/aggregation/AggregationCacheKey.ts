@@ -34,11 +34,12 @@ export const AGGREGATE_IDX = 4;
 export interface AggregationCacheKey extends
   CacheKey<
     "aggregation",
-    AggregationsResults<
+    | AggregationsResults<
       ObjectOrInterfaceDefinition,
       AggregateOpts<ObjectOrInterfaceDefinition>
-    >,
-    AggregationQuery<any, any>,
+    >
+    | undefined,
+    AggregationQuery,
     [
       type: "object" | "interface",
       apiName: string,
