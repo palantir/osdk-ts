@@ -1,5 +1,17 @@
 # @osdk/shared.test
 
+## 0.4.0-beta.3
+
+### Minor Changes
+
+- 98cdfee: Added more object type validation
+
+### Patch Changes
+
+- Updated dependencies [e7bf02a]
+  - @osdk/api@2.6.0-beta.4
+  - @osdk/generator-converters@2.6.0-beta.4
+
 ## 0.4.0-beta.2
 
 ### Minor Changes

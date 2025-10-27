@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.6.0-beta.4
+
+### Minor Changes
+
+- e7bf02a: Add RDP support to React toolkit
+
 ## 2.6.0-beta.3
 
 ## 2.6.0-beta.2

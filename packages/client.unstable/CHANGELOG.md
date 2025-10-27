@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.6.0-beta.4
+
+### Minor Changes
+
+- 7fd788b: Support derived properties
+
 ## 2.6.0-beta.3
 
 ## 2.6.0-beta.2
