@@ -160,10 +160,8 @@ export type IsNever<T> = [T] extends [never] ? true : false;
 /**
  * Extracts the union of selected property keys from a shaped type's __shapeMarker.
  * Returns never if Q is not a shaped type.
- *
- * @internal
  */
-type ExtractShapeSelectProps<Q> = Q extends {
+export type ExtractShapeSelectProps<Q> = Q extends {
   __shapeMarker: { selectProps: readonly (infer K)[] };
 } ? K & string
   : never;
@@ -188,10 +186,8 @@ export type IsAny<T> = unknown extends T
  * @template Q - The object or shaped type definition
  * @template P - The requested property keys (from Osdk.Instance's P parameter)
  * @returns P constrained by shape's selection, or P unchanged if not shaped
- *
- * @internal
  */
-type ApplyShapeSelectionConstraint<
+export type ApplyShapeSelectionConstraint<
   Q extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<Q>,
 > = IsNever<ExtractShapeSelectProps<Q>> extends true ? P

@@ -623,7 +623,7 @@ export type FetchPageResult<
 	S extends NullabilityAdherence,
 	T extends boolean = false,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
-> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? never : L>, ORDER_BY_OPTIONS>>;
+> = PageResult<MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : L>, ORDER_BY_OPTIONS>>;
 
 // @public (undocumented)
 export type GeoFilter_Intersects = {
@@ -1231,7 +1231,8 @@ export type Osdk<
 
 // @public (undocumented)
 export namespace Osdk {
-    	// Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
+    	// Warning: (ae-forgotten-export) The symbol "TransformNullability" needs to be exported by the entry point index.d.ts
+    // Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
     export type Instance<
@@ -1239,7 +1240,11 @@ export namespace Osdk {
     		OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
     		P extends PropertyKeys<Q> = PropertyKeys<Q>,
     		R extends Record<string, SimplePropertyDef> = {}
-    	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
+    	> = OsdkBase<Q> & (Q extends {
+        		__shapeMarker: {
+            			requiredProps: infer REQUIRED
+            		}
+        	} ? TransformNullability<Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>>, REQUIRED extends readonly string[] ? REQUIRED[number] : never> : Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>>) & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
         		readonly $link: Q extends {
             			linksType?: any
             		} ? Q["linksType"] : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q> : never
@@ -1644,7 +1649,7 @@ export type SingleOsdkResult<
 	RDPs extends Record<string, SimplePropertyDef> = {},
 	T extends boolean = false,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
-> = MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>, ORDER_BY_OPTIONS>;
+> = MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>, ORDER_BY_OPTIONS>;
 
 // @public (undocumented)
 export interface StringConstant {
@@ -1799,10 +1804,14 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 
 // Warnings were encountered during analysis:
 //
+// build/types/shapes/ShapeTransforms.d.ts:6:3 - (tsdoc-undefined-tag) The TSDoc tag "@template" is not defined in this configuration
+// build/types/shapes/ShapeTransforms.d.ts:7:3 - (tsdoc-undefined-tag) The TSDoc tag "@template" is not defined in this configuration
 // src/Definitions.ts:42:52 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
 // src/Definitions.ts:42:52 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
 // src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+// src/OsdkObjectFrom.ts:177:5 - (tsdoc-undefined-tag) The TSDoc tag "@template" is not defined in this configuration
+// src/OsdkObjectFrom.ts:177:5 - (tsdoc-undefined-tag) The TSDoc tag "@template" is not defined in this configuration
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
