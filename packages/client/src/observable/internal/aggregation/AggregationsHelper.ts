@@ -30,10 +30,10 @@ import type { QuerySubscription } from "../QuerySubscription.js";
 import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
-import { type AggregationCacheKey } from "./AggregationCacheKey.js";
+import type { AggregationCacheKey } from "./AggregationCacheKey.js";
 import type {
+  AggregationPayloadBase,
   AggregationQuery,
-  type AggregationPayloadBase,
 } from "./AggregationQuery.js";
 import { ObjectAggregationQuery } from "./ObjectAggregationQuery.js";
 
