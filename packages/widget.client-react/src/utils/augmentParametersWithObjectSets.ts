@@ -19,29 +19,6 @@ import { hydrateObjectSetFromRid } from "@osdk/client/internal";
 import type { AsyncParameterValueMap, WidgetConfig } from "@osdk/widget.api";
 import type { ExtendedAsyncParameterValueMap } from "../context.js";
 
-function getOrHydrateObjectSet<T extends ObjectTypeDefinition>(
-  osdkClient: Client | undefined,
-  cache: Map<string, { objectSetRid: string; objectSet: ObjectSet<T> }>,
-  paramKey: string,
-  objectSetRid: string,
-  definition: T,
-) {
-  if (osdkClient == null) {
-    throw new Error("Not provided an OSDK client");
-  }
-  const cached = cache.get(paramKey);
-  if (cached?.objectSetRid === objectSetRid) {
-    return cached.objectSet;
-  }
-  const objectSet = hydrateObjectSetFromRid(
-    osdkClient,
-    definition,
-    objectSetRid,
-  );
-  cache.set(paramKey, { objectSetRid, objectSet });
-  return objectSet;
-}
-
 export function augmentParametersWithObjectSets<
   C extends WidgetConfig<C["parameters"]>,
 >(
@@ -88,4 +65,27 @@ export function augmentParametersWithObjectSets<
   }
 
   return augmentedParameters;
+}
+
+function getOrHydrateObjectSet<T extends ObjectTypeDefinition>(
+  osdkClient: Client | undefined,
+  cache: Map<string, { objectSetRid: string; objectSet: ObjectSet<T> }>,
+  paramKey: string,
+  objectSetRid: string,
+  definition: T,
+) {
+  if (osdkClient == null) {
+    throw new Error("Not provided an OSDK client");
+  }
+  const cached = cache.get(paramKey);
+  if (cached?.objectSetRid === objectSetRid) {
+    return cached.objectSet;
+  }
+  const objectSet = hydrateObjectSetFromRid(
+    osdkClient,
+    definition,
+    objectSetRid,
+  );
+  cache.set(paramKey, { objectSetRid, objectSet });
+  return objectSet;
 }
