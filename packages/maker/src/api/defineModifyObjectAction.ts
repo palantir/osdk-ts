@@ -131,7 +131,11 @@ export function defineModifyObjectAction(
     ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
     ...(def.enableLayoutSwitch
       && { enableLayoutSwitch: def.enableLayoutSwitch }),
-    ...(def.displayAndFormat && { displayAndFormat: def.displayAndFormat }),
+    ...(def.tableConfiguration && {
+      displayAndFormat: {
+        table: def.tableConfiguration,
+      },
+    }),
     ...(def.sections
       && {
         sections: Object.fromEntries(

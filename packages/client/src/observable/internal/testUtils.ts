@@ -665,9 +665,11 @@ export function updateList<
   });
 
   store.batch({ optimisticId }, (batch) => {
+    const rdpConfig = query.rdpConfig;
     const objectCacheKeys = store.objects.storeOsdkInstances(
       objects,
       batch,
+      rdpConfig,
     );
     query._updateList(objectCacheKeys, "loaded", batch, false);
   });
@@ -691,7 +693,7 @@ export function updateObject<T extends ObjectOrInterfaceDefinition>(
   const query = store.objects.getQuery({
     apiName: value.$apiName,
     pk: value.$primaryKey,
-  });
+  }, undefined);
 
   store.batch({ optimisticId }, (batch) => {
     return query.writeToStore(

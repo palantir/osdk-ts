@@ -16,12 +16,14 @@
 
 import type { BBox, Point, Polygon } from "geojson";
 import type {
+  DerivedObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinition,
 } from "../ontology/ObjectOrInterface.js";
 import type {
   CompileTimeMetadata,
   ObjectMetadata,
 } from "../ontology/ObjectTypeDefinition.js";
+import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { BaseWirePropertyTypes } from "../ontology/WirePropertyTypes.js";
 import type { IsNever } from "../OsdkObjectFrom.js";
 import type { ArrayFilter } from "./ArrayFilter.js";
@@ -191,23 +193,26 @@ type WhereClauseNumberPropertyTypes =
   | "decimal"
   | "byte";
 
-export interface AndWhereClause<
+export type AndWhereClause<
   T extends ObjectOrInterfaceDefinition,
-> {
-  $and: WhereClause<T>[];
-}
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> = {
+  $and: WhereClause<T, RDPs>[];
+};
 
-export interface OrWhereClause<
+export type OrWhereClause<
   T extends ObjectOrInterfaceDefinition,
-> {
-  $or: WhereClause<T>[];
-}
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> = {
+  $or: WhereClause<T, RDPs>[];
+};
 
-export interface NotWhereClause<
+export type NotWhereClause<
   T extends ObjectOrInterfaceDefinition,
-> {
-  $not: WhereClause<T>;
-}
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> = {
+  $not: WhereClause<T, RDPs>;
+};
 
 export type PropertyWhereClause<T extends ObjectOrInterfaceDefinition> = {
   [P in keyof CompileTimeMetadata<T>["properties"]]?: FilterFor<
@@ -215,12 +220,20 @@ export type PropertyWhereClause<T extends ObjectOrInterfaceDefinition> = {
   >;
 };
 
+type MergedPropertyWhereClause<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> = PropertyWhereClause<
+  DerivedObjectOrInterfaceDefinition.WithDerivedProperties<T, RDPs>
+>;
+
 export type WhereClause<
   T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > =
-  | OrWhereClause<T>
-  | AndWhereClause<T>
-  | NotWhereClause<T>
+  | OrWhereClause<T, RDPs>
+  | AndWhereClause<T, RDPs>
+  | NotWhereClause<T, RDPs>
   | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true
     ? Record<string, never>
-    : PropertyWhereClause<T>);
+    : MergedPropertyWhereClause<T, RDPs>);

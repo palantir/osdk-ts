@@ -135,14 +135,20 @@ export function defineCreateInterfaceObjectAction(
       ),
     ...(def.actionLevelValidation
       ? {
-        actionLevelValidation: convertValidationRule(
+        validation: convertValidationRule(
           def.actionLevelValidation,
           parameters,
         ),
       }
       : {}),
+    ...(def.defaultFormat && { defaultFormat: def.defaultFormat }),
     ...(def.enableLayoutSwitch
       && { enableLayoutSwitch: def.enableLayoutSwitch }),
+    ...(def.tableConfiguration && {
+      displayAndFormat: {
+        table: def.tableConfiguration,
+      },
+    }),
     ...(def.sections
       && {
         sections: Object.fromEntries(

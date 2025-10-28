@@ -1,5 +1,20 @@
 # @osdk/client
 
+## 2.6.0-beta.4
+
+### Minor Changes
+
+- 61eb5b0: Add heartbeat to object set subscriptions
+- e7bf02a: Add RDP support to React toolkit
+
+### Patch Changes
+
+- Updated dependencies [7fd788b]
+- Updated dependencies [e7bf02a]
+  - @osdk/client.unstable@2.6.0-beta.4
+  - @osdk/api@2.6.0-beta.4
+  - @osdk/generator-converters@2.6.0-beta.4
+
 ## 2.6.0-beta.3
 
 ### Minor Changes

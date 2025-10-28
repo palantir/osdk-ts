@@ -21,8 +21,8 @@ import type {
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
+  SimplePropertyDef,
   WhereClause,
-  WirePropertyTypes,
 } from "@osdk/api";
 
 import {
@@ -33,11 +33,6 @@ import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
-type SimplePropertyDef =
-  | WirePropertyTypes
-  | undefined
-  | Array<WirePropertyTypes>;
-
 export interface UseObjectSetOptions<
   Q extends ObjectTypeDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
@@ -45,7 +40,7 @@ export interface UseObjectSetOptions<
   /**
    * Where clause for filtering
    */
-  where?: WhereClause<Q>;
+  where?: WhereClause<Q, RDPs>;
 
   /**
    * Derived properties to add to the object set

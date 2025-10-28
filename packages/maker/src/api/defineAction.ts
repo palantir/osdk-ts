@@ -15,8 +15,6 @@
  */
 
 import type {
-  DisplayMetadataConfigurationDefaultLayout,
-  DisplayMetadataConfigurationDisplayAndFormat,
   OntologyIrParameterPrefill,
   ParameterId,
 } from "@osdk/client.unstable";
@@ -36,8 +34,10 @@ import type { ActionStatus } from "./action/ActionStatus.js";
 import { type ActionType } from "./action/ActionType.js";
 import type { ActionValidationRule } from "./action/ActionValidationRule.js";
 import type { ConditionDefinition } from "./action/ConditionDefinition.js";
+import type { DefaultFormat } from "./action/DefaultFormat.js";
 import type { MappingValue } from "./action/MappingValue.js";
 import type { SubmissionMetadata } from "./action/SubmissionMetadata.js";
+import type { TableConfiguration } from "./action/TableConfiguration.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import { uppercaseFirstLetter } from "./defineObject.js";
 import {
@@ -80,11 +80,9 @@ export type ActionTypeUserDefinition = {
   actionLevelValidation?: ActionLevelValidationDefinition;
   excludedProperties?: Array<ParameterId>;
   sections?: Array<ActionSection>;
-  // FIXME: Should not use conjure types
-  defaultFormat?: DisplayMetadataConfigurationDefaultLayout;
+  defaultFormat?: DefaultFormat;
   enableLayoutSwitch?: boolean;
-  // FIXME: Should not use conjure types
-  displayAndFormat?: DisplayMetadataConfigurationDisplayAndFormat;
+  tableConfiguration?: TableConfiguration;
   parameterOrdering?: Array<string>;
   submissionMetadata?: SubmissionMetadata;
   // Used for Create or Modify actions
@@ -102,9 +100,11 @@ export type InterfaceActionTypeUserDefinition = {
   actionLevelValidation?: ActionLevelValidationDefinition;
   excludedProperties?: Array<string>;
   sections?: Array<ActionSection>;
+  defaultFormat?: DefaultFormat;
   enableLayoutSwitch?: boolean;
-  submissionMetadata?: SubmissionMetadata;
+  tableConfiguration?: TableConfiguration;
   parameterOrdering?: Array<string>;
+  submissionMetadata?: SubmissionMetadata;
 };
 
 export function defineAction(actionDef: ActionTypeDefinition): ActionType {

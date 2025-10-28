@@ -100,10 +100,14 @@ export class BulkObjectLoader {
 
     const pks = arr.map(x => x.primaryKey);
 
+    // Use $eq for single object fetches (this is for public app compatibility)
+    // Use $in for batch fetches
+    const whereClause = pks.length === 1
+      ? { [objMetadata.primaryKeyApiName]: { $eq: pks[0] } }
+      : { [objMetadata.primaryKeyApiName]: { $in: pks } };
+
     const { data } = await this.#client(miniDef)
-      .where({
-        [objMetadata.primaryKeyApiName]: { $in: pks },
-      }).fetchPage({
+      .where(whereClause).fetchPage({
         $pageSize: pks.length,
       });
 
