@@ -25,6 +25,10 @@ import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { hydrateAttachmentFromRidInternal } from "../../public-utils/hydrateAttachmentFromRid.js";
 import { createObjectSpecifierFromPrimaryKey } from "../../util/objectSpecifierUtils.js";
+import {
+  applyPropertyFormatter,
+  type FormatPropertyOptions,
+} from "../formatting/applyPropertyFormatter.js";
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { get$as } from "./getDollarAs.js";
 import { get$link } from "./getDollarLink.js";
@@ -104,6 +108,25 @@ const basePropDefs = {
       return {
         ObjectMetadata: this[ObjectDefRef],
       };
+    },
+    enumerable: false,
+  },
+  "$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue": {
+    value: function(
+      this: ObjectHolder,
+      propertyApiName: string,
+      options?: FormatPropertyOptions,
+    ): string | undefined {
+      const rawObj = this[UnderlyingOsdkObject] as SimpleOsdkProperties;
+      const def = this[ObjectDefRef];
+      const propertyValue = rawObj[propertyApiName];
+
+      return applyPropertyFormatter(
+        propertyValue,
+        def.properties[propertyApiName],
+        rawObj,
+        options,
+      );
     },
     enumerable: false,
   },

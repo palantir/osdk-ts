@@ -16,9 +16,9 @@
 
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { BatchContext } from "../BatchContext.js";
 import type { Canonical } from "../Canonical.js";
-import type { ObjectCacheKey } from "../ObjectQuery.js";
-import type { BatchContext } from "../Store.js";
+import type { ObjectCacheKey } from "../object/ObjectCacheKey.js";
 
 /**
  * Strategy interface for collection sorting

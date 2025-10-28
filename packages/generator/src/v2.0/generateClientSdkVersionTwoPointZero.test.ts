@@ -338,9 +338,13 @@ const referencedOntology = {
       rid: "idk",
     },
   },
+  "branch": {
+    rid: "someRidHere",
+  },
+  valueTypes: {},
 } satisfies WireOntologyDefinition;
 
-const referencingOntology = {
+const referencingOntology: WireOntologyDefinition = {
   ontology: TodoWireOntology.ontology,
   "actionTypes": {
     "setTaskBody": {
@@ -382,6 +386,7 @@ const referencingOntology = {
       implementsInterfaces: ["com.example.dep.SomeInterface"],
       implementsInterfaces2: {
         "com.example.dep.SomeInterface": {
+          links: {},
           properties: {
             "com.example.dep.spt": "body",
           },
@@ -469,6 +474,7 @@ const referencingOntology = {
     },
   },
   sharedPropertyTypes: {},
+  valueTypes: {},
 } satisfies WireOntologyDefinition;
 
 const fooBarTodoWireOntology = changeNames(
@@ -583,7 +589,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | ActionParam.NullValueType;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
           }
 
           // Represents a fqn of the action
@@ -659,7 +665,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo> | ActionParam.NullValueType;
+            readonly object?: ActionParam.ObjectType<Todo>;
           }
 
           // Represents a fqn of the action
@@ -818,7 +824,7 @@ describe("generator", () => {
             /**
              * (no ontology metadata)
              */
-            readonly email: $PropType['string'];
+            readonly email: 'osdk@palantir.com' | 'foundry@palantir.com';
           }
           export type StrictProps = Props;
 
@@ -876,11 +882,14 @@ describe("generator", () => {
           };
         }
 
-        export const Person: Person = {
+        export const Person = {
           type: 'object',
           apiName: 'Person',
           osdkMetadata: $osdkMetadata,
-        };
+          internalDoNotUseMetadata: {
+            rid: 'ridForPerson',
+          },
+        } satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -900,13 +909,17 @@ describe("generator", () => {
         } from '@osdk/client';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete';
+          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
           }
 
           export interface Props {
+            /**
+             * (no ontology metadata)
+             */
+            readonly array: ('a' | 'b' | 'c')[] | undefined;
             /**
              *   display name: 'Body',
              *
@@ -974,6 +987,10 @@ describe("generator", () => {
             primaryKeyType: 'integer';
             properties: {
               /**
+               * (no ontology metadata)
+               */
+              array: $PropertyDef<'string', 'nullable', 'array'>;
+              /**
                *   display name: 'Body',
                *
                *   description: The text of the todo
@@ -996,11 +1013,14 @@ describe("generator", () => {
           };
         }
 
-        export const Todo: Todo = {
+        export const Todo = {
           type: 'object',
           apiName: 'Todo',
           osdkMetadata: $osdkMetadata,
-        };
+          internalDoNotUseMetadata: {
+            rid: 'ridForTodo',
+          },
+        } satisfies Todo & { internalDoNotUseMetadata: { rid: string } } as Todo;
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -1232,7 +1252,7 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>> | ActionParam.NullValueType;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
           }
 
           // Represents a fqn of the action
@@ -1308,7 +1328,7 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo> | ActionParam.NullValueType;
+            readonly object?: ActionParam.ObjectType<Todo>;
           }
 
           // Represents a fqn of the action
@@ -1467,7 +1487,7 @@ describe("generator", () => {
             /**
              * (no ontology metadata)
              */
-            readonly email: $PropType['string'];
+            readonly email: 'osdk@palantir.com' | 'foundry@palantir.com';
           }
           export type StrictProps = Props;
 
@@ -1525,11 +1545,14 @@ describe("generator", () => {
           };
         }
 
-        export const Person: Person = {
+        export const Person = {
           type: 'object',
           apiName: 'foo.bar.Person',
           osdkMetadata: $osdkMetadata,
-        };
+          internalDoNotUseMetadata: {
+            rid: 'ridForPerson',
+          },
+        } satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -1549,13 +1572,17 @@ describe("generator", () => {
         } from '@osdk/api';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete';
+          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
           }
 
           export interface Props {
+            /**
+             * (no ontology metadata)
+             */
+            readonly array: ('a' | 'b' | 'c')[] | undefined;
             /**
              *   display name: 'Body',
              *
@@ -1623,6 +1650,10 @@ describe("generator", () => {
             primaryKeyType: 'integer';
             properties: {
               /**
+               * (no ontology metadata)
+               */
+              array: $PropertyDef<'string', 'nullable', 'array'>;
+              /**
                *   display name: 'Body',
                *
                *   description: The text of the todo
@@ -1645,11 +1676,14 @@ describe("generator", () => {
           };
         }
 
-        export const Todo: Todo = {
+        export const Todo = {
           type: 'object',
           apiName: 'foo.bar.Todo',
           osdkMetadata: $osdkMetadata,
-        };
+          internalDoNotUseMetadata: {
+            rid: 'ridForTodo',
+          },
+        } satisfies Todo & { internalDoNotUseMetadata: { rid: string } } as Todo;
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -1783,6 +1817,7 @@ describe("generator", () => {
         objectTypes: {},
         queryTypes: {},
         sharedPropertyTypes: {},
+        valueTypes: {},
       },
       "",
       helper.minimalFiles,
@@ -2046,11 +2081,14 @@ describe("generator", () => {
             };
           }
 
-          export const UsesForeignSpt: UsesForeignSpt = {
+          export const UsesForeignSpt = {
             type: 'object',
             apiName: 'UsesForeignSpt',
             osdkMetadata: $osdkMetadata,
-          };
+            internalDoNotUseMetadata: {
+              rid: 'theRid',
+            },
+          } satisfies UsesForeignSpt & { internalDoNotUseMetadata: { rid: string } } as UsesForeignSpt;
           "
         `);
     });
@@ -2175,6 +2213,7 @@ describe("generator", () => {
             },
           },
           sharedPropertyTypes: {},
+          valueTypes: {},
         },
         "typescript-sdk/0.0.0 osdk-cli/0.0.0",
         helper.minimalFiles,
@@ -2300,11 +2339,14 @@ describe("generator", () => {
           };
         }
 
-        export const Person: Person = {
+        export const Person = {
           type: 'object',
           apiName: 'Person',
           osdkMetadata: $osdkMetadata,
-        };
+          internalDoNotUseMetadata: {
+            rid: 'ridForPerson',
+          },
+        } satisfies Person & { internalDoNotUseMetadata: { rid: string } } as Person;
         ",
           "/foo/ontology/objects/Todo.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/client';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -2324,13 +2366,17 @@ describe("generator", () => {
         } from '@osdk/client';
 
         export namespace Todo {
-          export type PropertyKeys = 'id' | 'body' | 'complete';
+          export type PropertyKeys = 'id' | 'body' | 'complete' | 'array';
 
           export interface Links {
             readonly Assignee: $SingleLinkAccessor<Person>;
           }
 
           export interface Props {
+            /**
+             * (no ontology metadata)
+             */
+            readonly array: $PropType['string'][] | undefined;
             /**
              *   display name: 'Body',
              *
@@ -2398,6 +2444,10 @@ describe("generator", () => {
             primaryKeyType: 'integer';
             properties: {
               /**
+               * (no ontology metadata)
+               */
+              array: $PropertyDef<'string', 'nullable', 'array'>;
+              /**
                *   display name: 'Body',
                *
                *   description: The text of the todo
@@ -2420,11 +2470,14 @@ describe("generator", () => {
           };
         }
 
-        export const Todo: Todo = {
+        export const Todo = {
           type: 'object',
           apiName: 'Todo',
           osdkMetadata: $osdkMetadata,
-        };
+          internalDoNotUseMetadata: {
+            rid: 'ridForTodo',
+          },
+        } satisfies Todo & { internalDoNotUseMetadata: { rid: string } } as Todo;
         ",
           "/foo/ontology/queries.ts": "export { getCount } from './queries/getCount.js';
         export { returnsTodo } from './queries/returnsTodo.js';
@@ -2573,6 +2626,8 @@ describe("generator", () => {
         export const $osdkMetadata = { extraUserAgent: '' };
 
         export const $ontologyRid = 'ri.ontology.main.ontology.dep';
+
+        export const $branch = 'someRidHere';
         ",
           "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
@@ -2758,11 +2813,14 @@ describe("generator", () => {
           };
         }
 
-        export const Task: Task = {
+        export const Task = {
           type: 'object',
           apiName: 'com.example.dep.Task',
           osdkMetadata: $osdkMetadata,
-        };
+          internalDoNotUseMetadata: {
+            rid: 'ridForTask',
+          },
+        } satisfies Task & { internalDoNotUseMetadata: { rid: string } } as Task;
         ",
           "/foo/ontology/queries.ts": "export {};
         ",

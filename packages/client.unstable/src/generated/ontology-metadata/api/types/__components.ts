@@ -189,6 +189,11 @@ export interface BaseParameterType_interfaceReferenceList {
   interfaceReferenceList: InterfaceReferenceListType;
 }
 
+export interface BaseParameterType_interfaceObjectSetRid {
+  type: "interfaceObjectSetRid";
+  interfaceObjectSetRid: InterfaceObjectSetRidType;
+}
+
 export interface BaseParameterType_objectTypeReference {
   type: "objectTypeReference";
   objectTypeReference: ObjectTypeReferenceType;
@@ -273,6 +278,7 @@ export type BaseParameterType =
   | BaseParameterType_objectSetRid
   | BaseParameterType_interfaceReference
   | BaseParameterType_interfaceReferenceList
+  | BaseParameterType_interfaceObjectSetRid
   | BaseParameterType_objectTypeReference
   | BaseParameterType_attachment
   | BaseParameterType_attachmentList
@@ -415,6 +421,11 @@ export interface BaseParameterTypeModification_interfaceReferenceList {
   interfaceReferenceList: InterfaceReferenceListTypeModification;
 }
 
+export interface BaseParameterTypeModification_interfaceObjectSetRid {
+  type: "interfaceObjectSetRid";
+  interfaceObjectSetRid: InterfaceObjectSetRidTypeModification;
+}
+
 export interface BaseParameterTypeModification_objectTypeReference {
   type: "objectTypeReference";
   objectTypeReference: ObjectTypeReferenceType;
@@ -499,6 +510,7 @@ export type BaseParameterTypeModification =
   | BaseParameterTypeModification_objectSetRid
   | BaseParameterTypeModification_interfaceReference
   | BaseParameterTypeModification_interfaceReferenceList
+  | BaseParameterTypeModification_interfaceObjectSetRid
   | BaseParameterTypeModification_objectTypeReference
   | BaseParameterTypeModification_attachment
   | BaseParameterTypeModification_attachmentList
@@ -961,6 +973,17 @@ export type IntegerValue = number;
  * Visual intent color to apply to element.
  */
 export type Intent = "PRIMARY" | "SUCCESS" | "WARNING" | "DANGER";
+
+/**
+ * InterfaceObjectSetRidType specifies that this parameter must be an ObjectSetRid of an object set consisting of
+ * object types which all implement the specified interface type.
+ */
+export interface InterfaceObjectSetRidType {
+  interfaceTypeRid: _api_InterfaceTypeRid;
+}
+export interface InterfaceObjectSetRidTypeModification {
+  interfaceTypeRidOrIdInRequest: _api_InterfaceTypeRidOrIdInRequest;
+}
 export interface InterfaceReferenceListType {
   interfaceTypeRid: _api_InterfaceTypeRid;
 }
@@ -1282,6 +1305,11 @@ export interface OntologyIrBaseParameterType_interfaceReferenceList {
   interfaceReferenceList: OntologyIrInterfaceReferenceListType;
 }
 
+export interface OntologyIrBaseParameterType_interfaceObjectSetRid {
+  type: "interfaceObjectSetRid";
+  interfaceObjectSetRid: OntologyIrInterfaceObjectSetRidType;
+}
+
 export interface OntologyIrBaseParameterType_objectTypeReference {
   type: "objectTypeReference";
   objectTypeReference: ObjectTypeReferenceType;
@@ -1329,12 +1357,12 @@ export interface OntologyIrBaseParameterType_geotimeSeriesReferenceList {
 
 export interface OntologyIrBaseParameterType_struct {
   type: "struct";
-  struct: StructType;
+  struct: OntologyIrStructType;
 }
 
 export interface OntologyIrBaseParameterType_structList {
   type: "structList";
-  structList: StructListType;
+  structList: OntologyIrStructListType;
 }
 /**
  * All of the possible types for Parameters.
@@ -1366,6 +1394,7 @@ export type OntologyIrBaseParameterType =
   | OntologyIrBaseParameterType_objectSetRid
   | OntologyIrBaseParameterType_interfaceReference
   | OntologyIrBaseParameterType_interfaceReferenceList
+  | OntologyIrBaseParameterType_interfaceObjectSetRid
   | OntologyIrBaseParameterType_objectTypeReference
   | OntologyIrBaseParameterType_attachment
   | OntologyIrBaseParameterType_attachmentList
@@ -1545,12 +1574,12 @@ export interface OntologyIrDataValue_geotimeSeriesReferenceList {
 
 export interface OntologyIrDataValue_struct {
   type: "struct";
-  struct: StructValue;
+  struct: OntologyIrStructValue;
 }
 
 export interface OntologyIrDataValue_structList {
   type: "structList";
-  structList: StructListValue;
+  structList: OntologyIrStructListValue;
 }
 export type OntologyIrDataValue =
   | OntologyIrDataValue_boolean
@@ -1589,6 +1618,13 @@ export type OntologyIrDataValue =
   | OntologyIrDataValue_struct
   | OntologyIrDataValue_structList;
 
+/**
+ * InterfaceObjectSetRidType specifies that this parameter must be an ObjectSetRid of an object set consisting of
+ * object types which all implement the specified interface type.
+ */
+export interface OntologyIrInterfaceObjectSetRidType {
+  interfaceTypeRid: _api_InterfaceTypeApiName;
+}
 export interface OntologyIrInterfaceReferenceListType {
   interfaceTypeRid: _api_InterfaceTypeApiName;
 }
@@ -1638,6 +1674,181 @@ export interface OntologyIrObjectSetRidType {
  */
 export interface OntologyIrObjectTypeValue {
   objectTypeId: _api_ObjectTypeApiName;
+}
+export interface OntologyIrStructFieldBaseParameterType_boolean {
+  type: "boolean";
+  boolean: BooleanType;
+}
+
+export interface OntologyIrStructFieldBaseParameterType_integer {
+  type: "integer";
+  integer: IntegerType;
+}
+
+export interface OntologyIrStructFieldBaseParameterType_long {
+  type: "long";
+  long: LongType;
+}
+
+export interface OntologyIrStructFieldBaseParameterType_double {
+  type: "double";
+  double: DoubleType;
+}
+
+export interface OntologyIrStructFieldBaseParameterType_string {
+  type: "string";
+  string: StringType;
+}
+
+export interface OntologyIrStructFieldBaseParameterType_geohash {
+  type: "geohash";
+  geohash: GeohashType;
+}
+
+export interface OntologyIrStructFieldBaseParameterType_geoshape {
+  type: "geoshape";
+  geoshape: GeoshapeType;
+}
+
+export interface OntologyIrStructFieldBaseParameterType_timestamp {
+  type: "timestamp";
+  timestamp: TimestampType;
+}
+
+export interface OntologyIrStructFieldBaseParameterType_date {
+  type: "date";
+  date: DateType;
+}
+
+export interface OntologyIrStructFieldBaseParameterType_objectReference {
+  type: "objectReference";
+  objectReference: OntologyIrObjectReferenceType;
+}
+/**
+ * All of the possible types for fields of a Struct Parameter. This should be the intersection of allowed struct
+ * property field types (https://www.palantir.com/docs/foundry/object-link-types/structs-overview/), and the
+ * inhabitants of the BaseParameterType union.
+ */
+export type OntologyIrStructFieldBaseParameterType =
+  | OntologyIrStructFieldBaseParameterType_boolean
+  | OntologyIrStructFieldBaseParameterType_integer
+  | OntologyIrStructFieldBaseParameterType_long
+  | OntologyIrStructFieldBaseParameterType_double
+  | OntologyIrStructFieldBaseParameterType_string
+  | OntologyIrStructFieldBaseParameterType_geohash
+  | OntologyIrStructFieldBaseParameterType_geoshape
+  | OntologyIrStructFieldBaseParameterType_timestamp
+  | OntologyIrStructFieldBaseParameterType_date
+  | OntologyIrStructFieldBaseParameterType_objectReference;
+
+export interface OntologyIrStructFieldDataValue_boolean {
+  type: "boolean";
+  boolean: BooleanValue;
+}
+
+export interface OntologyIrStructFieldDataValue_integer {
+  type: "integer";
+  integer: IntegerValue;
+}
+
+export interface OntologyIrStructFieldDataValue_long {
+  type: "long";
+  long: LongValue;
+}
+
+export interface OntologyIrStructFieldDataValue_double {
+  type: "double";
+  double: DoubleValue;
+}
+
+export interface OntologyIrStructFieldDataValue_string {
+  type: "string";
+  string: StringValue;
+}
+
+export interface OntologyIrStructFieldDataValue_date {
+  type: "date";
+  date: DateValue;
+}
+
+export interface OntologyIrStructFieldDataValue_geohash {
+  type: "geohash";
+  geohash: GeohashValue;
+}
+
+export interface OntologyIrStructFieldDataValue_geoshape {
+  type: "geoshape";
+  geoshape: GeoshapeValue;
+}
+
+export interface OntologyIrStructFieldDataValue_timestamp {
+  type: "timestamp";
+  timestamp: TimestampValue;
+}
+
+export interface OntologyIrStructFieldDataValue_null {
+  type: "null";
+  null: NullValue;
+}
+
+export interface OntologyIrStructFieldDataValue_objectLocator {
+  type: "objectLocator";
+  objectLocator: OntologyIrObjectLocatorValue;
+}
+/**
+ * DataValue types that are allowed as struct parameter field. Each struct field in a struct parameter is mapped
+ * mapped to a StructFieldDataValue. See StructFieldBaseParameterType for which types are supported for struct
+ * parameter fields.
+ */
+export type OntologyIrStructFieldDataValue =
+  | OntologyIrStructFieldDataValue_boolean
+  | OntologyIrStructFieldDataValue_integer
+  | OntologyIrStructFieldDataValue_long
+  | OntologyIrStructFieldDataValue_double
+  | OntologyIrStructFieldDataValue_string
+  | OntologyIrStructFieldDataValue_date
+  | OntologyIrStructFieldDataValue_geohash
+  | OntologyIrStructFieldDataValue_geoshape
+  | OntologyIrStructFieldDataValue_timestamp
+  | OntologyIrStructFieldDataValue_null
+  | OntologyIrStructFieldDataValue_objectLocator;
+
+/**
+ * StructListType specifies that this parameter must be a list of Structs.
+ */
+export interface OntologyIrStructListType {
+  structFieldTypes: Record<
+    StructParameterFieldApiName,
+    OntologyIrStructFieldBaseParameterType
+  >;
+}
+/**
+ * A parameter type that consists of a list of Structs.
+ */
+export interface OntologyIrStructListValue {
+  structs: Array<OntologyIrStructValue>;
+}
+/**
+ * A struct field of a struct parameter.
+ */
+export interface OntologyIrStructParameterField {
+  structFieldApiName: StructParameterFieldApiName;
+  structFieldDataValue: OntologyIrStructFieldDataValue;
+}
+/**
+ * StructType specifies that this parameter must be a Struct.
+ */
+export interface OntologyIrStructType {
+  structFieldTypes: Record<
+    StructParameterFieldApiName,
+    OntologyIrStructFieldBaseParameterType
+  >;
+}
+/**
+ * A parameter type that consists of a Struct.
+ */
+export interface OntologyIrStructValue {
+  structFields: Array<OntologyIrStructParameterField>;
 }
 export interface OntologyIrTimeDependentPropertyValue_seriesId {
   type: "seriesId";
@@ -1927,6 +2138,11 @@ export interface StructFieldBaseParameterType_geohash {
   geohash: GeohashType;
 }
 
+export interface StructFieldBaseParameterType_geoshape {
+  type: "geoshape";
+  geoshape: GeoshapeType;
+}
+
 export interface StructFieldBaseParameterType_timestamp {
   type: "timestamp";
   timestamp: TimestampType;
@@ -1935,6 +2151,11 @@ export interface StructFieldBaseParameterType_timestamp {
 export interface StructFieldBaseParameterType_date {
   type: "date";
   date: DateType;
+}
+
+export interface StructFieldBaseParameterType_objectReference {
+  type: "objectReference";
+  objectReference: ObjectReferenceType;
 }
 /**
  * All of the possible types for fields of a Struct Parameter. This should be the intersection of allowed struct
@@ -1948,8 +2169,10 @@ export type StructFieldBaseParameterType =
   | StructFieldBaseParameterType_double
   | StructFieldBaseParameterType_string
   | StructFieldBaseParameterType_geohash
+  | StructFieldBaseParameterType_geoshape
   | StructFieldBaseParameterType_timestamp
-  | StructFieldBaseParameterType_date;
+  | StructFieldBaseParameterType_date
+  | StructFieldBaseParameterType_objectReference;
 
 export interface StructFieldDataValue_boolean {
   type: "boolean";
@@ -1986,6 +2209,11 @@ export interface StructFieldDataValue_geohash {
   geohash: GeohashValue;
 }
 
+export interface StructFieldDataValue_geoshape {
+  type: "geoshape";
+  geoshape: GeoshapeValue;
+}
+
 export interface StructFieldDataValue_timestamp {
   type: "timestamp";
   timestamp: TimestampValue;
@@ -1994,6 +2222,11 @@ export interface StructFieldDataValue_timestamp {
 export interface StructFieldDataValue_null {
   type: "null";
   null: NullValue;
+}
+
+export interface StructFieldDataValue_objectLocator {
+  type: "objectLocator";
+  objectLocator: ObjectLocatorValue;
 }
 /**
  * DataValue types that are allowed as struct parameter field. Each struct field in a struct parameter is mapped
@@ -2008,8 +2241,10 @@ export type StructFieldDataValue =
   | StructFieldDataValue_string
   | StructFieldDataValue_date
   | StructFieldDataValue_geohash
+  | StructFieldDataValue_geoshape
   | StructFieldDataValue_timestamp
-  | StructFieldDataValue_null;
+  | StructFieldDataValue_null
+  | StructFieldDataValue_objectLocator;
 
 /**
  * A string identifier used to map struct property fields to their respective constraints.

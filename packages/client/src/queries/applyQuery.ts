@@ -25,6 +25,7 @@ import type {
   PrimaryKeyType,
   QueryDataTypeDefinition,
   QueryDefinition,
+  QueryMetadata,
   QueryParameterDefinition,
 } from "@osdk/api";
 import type { DataValue } from "@osdk/foundry.ontologies";
@@ -52,7 +53,8 @@ export async function applyQuery<
 ): Promise<
   QueryReturnType<CompileTimeMetadata<QD>["output"]>
 > {
-  const qd = await client.ontologyProvider.getQueryDefinition(
+  // We fire and forget so if a function has no parameters we don't unnecessarily load all metadata
+  const qd: Promise<QueryMetadata> = client.ontologyProvider.getQueryDefinition(
     query.apiName,
     query.isFixedVersion ? query.version : undefined,
   );
@@ -69,16 +71,20 @@ export async function applyQuery<
         ? await remapQueryParams(
           params as { [parameterId: string]: any },
           client,
-          qd.parameters,
+          (await qd).parameters,
         )
         : {},
     },
-    { version: qd.version },
+    { version: query.isFixedVersion ? query.version : undefined },
   );
-  const objectOutputDefs = await getRequiredDefinitions(qd.output, client);
+
+  const objectOutputDefs = await getRequiredDefinitions(
+    (await qd).output,
+    client,
+  );
   const remappedResponse = await remapQueryResponse(
     client,
-    qd.output,
+    (await qd).output,
     response.value,
     objectOutputDefs,
   );
@@ -238,8 +244,8 @@ async function remapQueryResponse<
 
       invariant(Array.isArray(responseValue), "Expected array entry");
       for (const entry of responseValue) {
-        invariant(entry.key, "Expected key");
-        invariant(entry.value, "Expected value");
+        invariant(entry.key != null, "Expected key");
+        invariant(entry.value != null, "Expected value");
         const key = responseDataType.keyType.type === "object"
           ? getObjectSpecifier(
             entry.key,

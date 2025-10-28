@@ -150,6 +150,10 @@ export async function runVersion({
     // Disable committing when in snapshot mode
     commit: snapshot || !runGitCommands ? false : config.commit,
     changelog: ["@changesets/changelog-git", null],
+    ___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH: {
+      onlyUpdatePeerDependentsWhenOutOfRange: true,
+      updateInternalDependents: "out-of-range",
+    },
   };
 
   const releasePlan = assembleReleasePlan(
@@ -280,6 +284,7 @@ export async function getExistingPr(
     ReturnType<Octokit["rest"]["search"]["issuesAndPullRequests"]>
   >["data"]["items"][0]
 > {
+   
   const { data } = await octokit.rest.search.issuesAndPullRequests(
     {
       q: `repo:${repo}+state:open+head:${versionBranch}+base:${branch}+is:pull-request`,

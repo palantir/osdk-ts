@@ -252,8 +252,9 @@ describe("ObjectSetListenerWebsocket", async () => {
           beforeEach(async () => {
             [ws] = await Promise.all([
               expectWebSocketConstructed(),
-              // delay for connection reconnect
-              vi.advanceTimersByTimeAsync(MINIMUM_RECONNECT_DELAY),
+              // delay for connection reconnect with exponential backoff
+              // First attempt: MINIMUM_RECONNECT_DELAY * 2^0 = 2000ms +/- jitter
+              vi.advanceTimersByTimeAsync(MINIMUM_RECONNECT_DELAY * (1 + 0.3)),
             ]);
             setWebSocketState(ws, "open");
           });
@@ -399,8 +400,11 @@ describe("ObjectSetListenerWebsocket", async () => {
             beforeEach(async () => {
               [ws] = await Promise.all([
                 expectWebSocketConstructed(),
-                // delay for connection reconnect
-                vi.advanceTimersByTimeAsync(MINIMUM_RECONNECT_DELAY),
+                // delay for connection reconnect with exponential backoff
+                // First attempt: MINIMUM_RECONNECT_DELAY * 2^0 = 2000ms +/- jitter
+                vi.advanceTimersByTimeAsync(
+                  MINIMUM_RECONNECT_DELAY * (1 + 0.3),
+                ),
               ]);
               setWebSocketState(ws, "open");
 
@@ -427,6 +431,78 @@ describe("ObjectSetListenerWebsocket", async () => {
               "wss://stack.palantircustom.com/foo/first/someStuff/api/v2/ontologySubscriptions/ontologies/ontologyRid1/streamSubscriptions",
             );
         });
+      });
+    });
+
+    describe("exponential backoff behavior", () => {
+      let minimalClient: MinimalClient;
+      let client: ObjectSetListenerWebsocket;
+      let listener: MockedListener;
+
+      beforeEach(() => {
+        minimalClient = createMinimalClient(
+          { ontologyRid: $ontologyRid },
+          STACK,
+          async () => "myAccessToken",
+          { logger: rootLogger },
+        );
+        client = new ObjectSetListenerWebsocket({
+          ...minimalClient,
+          logger: rootLogger.child({ oslwInst: "backoff-test" }),
+        }, {
+          minimumReconnectDelayMs: 1000,
+        });
+
+        listener = {
+          onChange: vi.fn(),
+          onError: vi.fn(),
+          onOutOfDate: vi.fn(),
+          onSuccessfulSubscription: vi.fn(),
+        };
+
+        vi.useFakeTimers();
+      });
+
+      afterEach(() => {
+        vi.restoreAllMocks();
+      });
+
+      it("should use exponential backoff for reconnection attempts", async () => {
+        // First connection attempt
+        const [ws1, unsubscribe] = await subscribeAndExpectWebSocket(
+          client,
+          listener,
+        );
+        setWebSocketState(ws1, "close");
+
+        // Second connection (first reconnect) - should wait ~1000ms (+/- jitter)
+        const ws2Promise = expectWebSocketConstructed();
+        await vi.advanceTimersByTimeAsync(1300); // 1000ms + max jitter (30%)
+        const ws2 = await ws2Promise;
+        setWebSocketState(ws2, "close");
+
+        // Third connection (second reconnect) - should wait ~2000ms (+/- jitter)
+        const ws3Promise = expectWebSocketConstructed();
+        await vi.advanceTimersByTimeAsync(2600); // 2000ms + max jitter (30%)
+        const ws3 = await ws3Promise;
+        setWebSocketState(ws3, "close");
+
+        // Fourth connection (third reconnect) - should wait ~4000ms (+/- jitter)
+        const ws4Promise = expectWebSocketConstructed();
+        await vi.advanceTimersByTimeAsync(5200); // 4000ms + max jitter (30%)
+        const ws4 = await ws4Promise;
+
+        // Verify backoff reset on successful connection
+        setWebSocketState(ws4, "open");
+        setWebSocketState(ws4, "close");
+
+        // After successful connection, backoff should reset to initial delay
+        const ws5Promise = expectWebSocketConstructed();
+        await vi.advanceTimersByTimeAsync(1300); // Back to 1000ms + max jitter
+        const ws5 = await ws5Promise;
+
+        unsubscribe();
+        setWebSocketState(ws5, "close");
       });
     });
   });

@@ -50,7 +50,7 @@ import { createMinimalClient } from "./createMinimalClient.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
 import { MinimalLogger } from "./logger/MinimalLogger.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
-import { fetchPage } from "./object/fetchPage.js";
+import { fetchPage, fetchStaticRidPage } from "./object/fetchPage.js";
 import { fetchSingle } from "./object/fetchSingle.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
@@ -105,7 +105,7 @@ export function createClientInternal(
   baseUrl: string,
   ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
-  options: { logger?: Logger } | undefined = undefined,
+  options: { logger?: Logger; branch?: string } | undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client {
   if (typeof ontologyRid === "string") {
@@ -130,6 +130,7 @@ export function createClientInternal(
       ...options,
       logger: options?.logger ?? new MinimalLogger(),
       transactionRid: transactionRid,
+      branch: options?.branch,
     },
     fetchFn,
     objectSetFactory,
@@ -248,6 +249,27 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 createWithRid(rids),
               );
             },
+            fetchPageByRidNoType: async <
+              const R extends boolean,
+              const S extends NullabilityAdherence,
+              const T extends boolean,
+            >(
+              rids: readonly string[],
+              options?: FetchPageArgs<
+                ObjectOrInterfaceDefinition,
+                any,
+                R,
+                any,
+                S,
+                T
+              >,
+            ) => {
+              return await fetchStaticRidPage(
+                clientCtx,
+                rids,
+                options ?? {},
+              );
+            },
           } as any;
       }
 
@@ -291,6 +313,7 @@ export const createClient: (
   tokenProvider: () => Promise<string>,
   options?: {
     logger?: Logger;
+    branch?: string;
   } | undefined,
   fetchFn?: typeof fetch | undefined,
 ) => Client = createClientInternal.bind(

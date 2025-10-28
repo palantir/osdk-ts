@@ -71,13 +71,38 @@ export async function extractObjectOrInterfaceType(
       return { type: "interface", apiName: objectSet.interfaceType };
     case "filter":
     case "asBaseObjectTypes":
-    case "asType":
     case "nearestNeighbors":
       return extractObjectOrInterfaceType(
         clientCtx,
         objectSet.objectSet,
       );
-    case "intersect":
+    case "asType":
+      return {
+        type: clientCtx.asTypeInterfaceOrObjectMapping[objectSet.entityType],
+        apiName: objectSet.entityType,
+      };
+    case "intersect": {
+      const objectSets = objectSet.objectSets;
+      const objectSetTypes = await Promise.all(
+        objectSets.map((os) =>
+          extractObjectOrInterfaceType(
+            clientCtx,
+            os,
+          )
+        ),
+      );
+
+      const filteredObjectTypes = objectSetTypes.filter(Boolean);
+      const firstInterfaceType = filteredObjectTypes.find(val =>
+        val?.type === "interface"
+      );
+
+      invariant(
+        firstInterfaceType,
+        `Missing interface type in intersect objectset scope'`,
+      );
+      return firstInterfaceType;
+    }
     case "subtract":
     case "union":
       const objectSets = objectSet.objectSets;
@@ -97,7 +122,7 @@ export async function extractObjectOrInterfaceType(
           return val?.apiName === firstObjectType?.apiName
             && val?.type === firstObjectType?.type;
         }),
-        "Can only have one object type when doing intersects, subtract, union",
+        "Can only have one object type when doing subtract, union",
       );
 
       return filteredObjectTypes[0];

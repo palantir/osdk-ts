@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+ 
+
+export { isOk, NULL_VALUE } from "@osdk/api";
 export type {
   ActionDefinition,
   ActionEditResponse,
@@ -25,6 +28,7 @@ export type {
   ApplyBatchActionOptions,
   Attachment,
   CompileTimeMetadata,
+  DerivedProperty,
   InterfaceDefinition,
   InterfaceMetadata,
   Logger,
@@ -51,7 +55,6 @@ export type {
   VersionBound,
   WhereClause,
 } from "@osdk/api";
-export { isOk, NULL_VALUE } from "@osdk/api";
 export { PalantirApiError } from "@osdk/shared.net.errors";
 
 export { ActionValidationError } from "./actions/ActionValidationError.js";
@@ -68,4 +71,7 @@ export {
   extractDateInUTC,
 } from "./util/datetimeConverters.js";
 
-export { createObjectSpecifierFromPrimaryKey } from "./util/objectSpecifierUtils.js";
+export {
+  createObjectSpecifierFromPrimaryKey,
+  extractPrimaryKeyFromObjectSpecifier,
+} from "./util/objectSpecifierUtils.js";

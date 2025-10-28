@@ -1,5 +1,60 @@
 # @osdk/shared.test
 
+## 2.6.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [f7ae38a]
+  - @osdk/generator-converters@2.6.0-beta.2
+  - @osdk/api@2.6.0-beta.2
+
+## 2.5.0-beta.5
+
+### Minor Changes
+
+- cbcf2ad: Add branching support
+
+### Patch Changes
+
+- Updated dependencies [cbcf2ad]
+  - @osdk/generator-converters@2.5.0-beta.6
+  - @osdk/api@2.5.0-beta.6
+
+## 2.5.0-beta.4
+
+### Minor Changes
+
+- a00d2ed: Update Platform SDK dependencies
+- a96d89e: Update Platform SDK dependencies
+
+### Patch Changes
+
+- Updated dependencies [a00d2ed]
+- Updated dependencies [a96d89e]
+  - @osdk/generator-converters@2.5.0-beta.4
+  - @osdk/api@2.5.0-beta.4
+
+## 2.5.0-beta.3
+
+### Minor Changes
+
+- 7bdac45: Update Platform SDK dependency
+
+### Patch Changes
+
+- Updated dependencies [7bdac45]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [e48be06]
+  - @osdk/generator-converters@2.5.0-beta.3
+  - @osdk/api@2.5.0-beta.3
+
 ## 2.5.0-beta.2
 
 ### Minor Changes

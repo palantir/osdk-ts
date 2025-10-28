@@ -17,12 +17,17 @@
 import type {
   ActionDefinition,
   ActionValidationResponse,
+  DerivedProperty,
   InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
+  ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
   PropertyKeys,
+  SimplePropertyDef,
   WhereClause,
+  WirePropertyTypes,
 } from "@osdk/api";
 import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
 import type { ActionSignatureFromDef } from "../actions/applyAction.js";
@@ -30,6 +35,7 @@ import { additionalContext, type Client } from "../Client.js";
 import { createClientFromContext } from "../createClient.js";
 import { OBSERVABLE_USER_AGENT } from "../util/UserAgent.js";
 import type { Canonical } from "./internal/Canonical.js";
+import type { ObserveObjectSetOptions } from "./internal/objectset/ObjectSetQueryOptions.js";
 import { ObservableClientImpl } from "./internal/ObservableClientImpl.js";
 import { Store } from "./internal/Store.js";
 import type {
@@ -61,15 +67,17 @@ export type OrderBy<Q extends ObjectTypeDefinition | InterfaceDefinition> = {
 };
 
 export interface ObserveListOptions<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > extends CommonObserveOptions, ObserveOptions {
   type: Pick<Q, "apiName" | "type">;
-  where?: WhereClause<Q>;
+  where?: WhereClause<Q, RDPs>;
   pageSize?: number;
   orderBy?: OrderBy<Q>;
   invalidationMode?: InvalidationMode;
   expectedLength?: number;
   streamUpdates?: boolean;
+  withProperties?: DerivedProperty.Clause<Q>;
 }
 
 // TODO: Rename this from `ObserveObjectArgs` => `ObserveObjectCallbackArgs`. Not doing it now to reduce churn
@@ -91,6 +99,24 @@ export interface ObserveObjectsArgs<
   fetchMore: () => Promise<void>;
   hasMore: boolean;
   status: Status;
+}
+
+export interface ObserveObjectSetArgs<
+  T extends ObjectTypeDefinition | InterfaceDefinition,
+  RDPs extends Record<
+    string,
+    WirePropertyTypes | undefined | Array<WirePropertyTypes>
+  > = {},
+> {
+  resolvedList: Array<
+    Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
+  >;
+  isOptimistic: boolean;
+  lastUpdated: number;
+  fetchMore: () => Promise<void>;
+  hasMore: boolean;
+  status: Status;
+  objectSet: ObjectSet<T, RDPs>;
 }
 
 /**
@@ -153,9 +179,39 @@ export interface ObservableClient extends ObserveLinks {
    * - Pagination via fetchMore() in the payload
    * - Automatic updates when any matching object changes
    */
-  observeList<T extends ObjectTypeDefinition | InterfaceDefinition>(
-    options: ObserveListOptions<T>,
+  observeList<
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options: ObserveListOptions<T, RDPs>,
     subFn: Observer<ObserveObjectsArgs<T>>,
+  ): Unsubscribable;
+
+  /**
+   * Observe an ObjectSet with automatic updates when matching objects change.
+   *
+   * @param baseObjectSet - The base ObjectSet to observe
+   * @param options - Options for transforming and observing the ObjectSet
+   * @param subFn - Observer that receives ObjectSet state updates
+   * @returns Subscription that can be unsubscribed to stop updates
+   *
+   * Supports all ObjectSet operations:
+   * - Filtering with where clauses
+   * - Derived properties with withProperties
+   * - Set operations (union, intersect, subtract)
+   * - Link traversal with pivotTo
+   * - Sorting and pagination
+   */
+  observeObjectSet<
+    T extends ObjectTypeDefinition,
+    RDPs extends Record<
+      string,
+      WirePropertyTypes | undefined | Array<WirePropertyTypes>
+    > = {},
+  >(
+    baseObjectSet: ObjectSet<T>,
+    options: ObserveObjectSetOptions<T, RDPs>,
+    subFn: Observer<ObserveObjectSetArgs<T, RDPs>>,
   ): Unsubscribable;
 
   /**
@@ -197,11 +253,42 @@ export interface ObservableClient extends ObserveLinks {
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
   ) => Promise<ActionValidationResponse>;
 
+  /**
+   * Invalidates the entire cache, forcing all queries to refetch.
+   * Use sparingly as this can cause significant network traffic.
+   */
+  invalidateAll(): Promise<void>;
+
+  /**
+   * Invalidates specific objects in the cache.
+   * @param objects - Single object or array of objects to invalidate
+   */
+  invalidateObjects(
+    objects:
+      | Osdk.Instance<ObjectTypeDefinition>
+      | ReadonlyArray<Osdk.Instance<ObjectTypeDefinition>>,
+  ): Promise<void>;
+
+  /**
+   * Invalidates all cached data for a specific object type.
+   * This includes:
+   * - All objects of the specified type
+   * - All lists containing objects of this type
+   * - All links where the source is of this type
+   *
+   * @param type - Object type definition or API name string
+   * @returns Promise that resolves when invalidation is complete
+   */
+  invalidateObjectType<T extends ObjectTypeDefinition>(
+    type: T | T["apiName"],
+  ): Promise<void>;
+
   canonicalizeWhereClause: <
     T extends ObjectTypeDefinition | InterfaceDefinition,
+    RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    where: WhereClause<T>,
-  ) => Canonical<WhereClause<T>>;
+    where: WhereClause<T, RDPs>,
+  ) => Canonical<WhereClause<T, RDPs>>;
 }
 
 export function createObservableClient(client: Client): ObservableClient {

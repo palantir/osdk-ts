@@ -289,9 +289,14 @@ export interface ActionTypeHasRevertsEnabledForInvalidObjectTypeStorageBackendCa
 export interface ActionTypeInsufficientPermissionsToAddStringCbacPickerTypeclass {
 }
 /**
- * Every Cbac Constraint must contain a valid non-empty set of markings to be used as the max classification. The markingIds must be stored as a markingList DataValue.
+ * Insufficient permissions to modify max classification of non securing cbac parameter.
  */
 export interface ActionTypeInsufficientPermissionsToModifyMaxClassificationOfNonSecuringCbacParameter {
+}
+/**
+ * Interface reference parameter prefill value references non interface reference parameter.
+ */
+export interface ActionTypeInterfaceReferenceParameterPrefillReferencesNonInterfaceReferenceParameter {
 }
 /**
  * The entities' API name prefixes do not match the API Namespace ID stored in Compass and therefore are invalid.
@@ -354,6 +359,16 @@ export interface ActionTypeNonExistentParametersUsedInParameterPrefill {
 export interface ActionTypeObjectMissingPrimaryKey {
 }
 /**
+ * The object type referenced by an object parameter prefill could not be found.
+ */
+export interface ActionTypeObjectParameterPrefillReferencesNonExistentObjectType {
+}
+/**
+ * The property type referenced by an object parameter prefill could not be found.
+ */
+export interface ActionTypeObjectParameterPrefillReferencesNonExistentPropertyType {
+}
+/**
  * ObjectParameterPropertyValue cannot reference a struct property; only ObjectParameterStruct/StructListFieldValue can reference struct properties.
  */
 export interface ActionTypeObjectParameterPropertyValueCannotReferenceStructProperty {
@@ -362,6 +377,11 @@ export interface ActionTypeObjectParameterPropertyValueCannotReferenceStructProp
  * ObjectParameterPropertyValue cannot reference a struct property; only ObjectParameterStruct/StructListFieldValue can reference struct properties.
  */
 export interface ActionTypeObjectParameterPropertyValueInPrefillsCannotReferenceStructProperty {
+}
+/**
+ * Object reference parameter prefill value references non object reference parameter.
+ */
+export interface ActionTypeObjectReferenceParameterPrefillReferencesNonObjectReferenceParameter {
 }
 /**
  * The maybeCreateObjectOption field of ObjectReferenceType fails sanity check. Namely, maybeCreateObjectOption should be empty or non-empty when instead the opposite is observed.
@@ -428,6 +448,11 @@ export interface ActionTypeParameterOrderingNotExactlySameAsParameterSet {
 export interface ActionTypeParameterPrefillCannotReferenceHighCardinalityObjectReferenceParameter {
 }
 /**
+ * Parameter prefill value type does not match base parameter type.
+ */
+export interface ActionTypeParameterPrefillValueTypeDoesNotMatchBaseParameterType {
+}
+/**
  * Some ParameterIds are not matching between ActionType and ParameterOrdering.
  */
 export interface ActionTypeParametersDoNotMatchParameterOrdering {
@@ -436,6 +461,11 @@ export interface ActionTypeParametersDoNotMatchParameterOrdering {
  * The relative ordering of parameters and parameters nested in sections doesn't match the global ParameterOrdering.
  */
 export interface ActionTypeParametersInFormContentOrderingDontMatchParameterOrdering {
+}
+/**
+ * Parameter transform operation is not supported.
+ */
+export interface ActionTypeParameterTransformNotSupported {
 }
 /**
  * Parameter type does not match parameter validation type.
@@ -453,6 +483,11 @@ export interface ActionTypeParameterValidationNotFound {
 export interface ActionTypeParameterValidationReferencesLaterParameters {
 }
 /**
+ * Prefill value type is not supported.
+ */
+export interface ActionTypePrefillValueTypeIsNotSupported {
+}
+/**
  * Cannot create/edit ActionType because the primary key in an AddObjectRule does not use a Parameter or UniqueIdentifier or Webhook output.
  */
 export interface ActionTypePrimaryKeyInAddObjectRuleDoesNotUseValidLogicRuleValue {
@@ -468,6 +503,11 @@ export interface ActionTypePropertyTypeDoesNotMatchMappedLogicRuleValue {
 export interface ActionTypeReferencesNonExistentEntityTypes {
 }
 /**
+ * ActionType updates an interface property that does not exist in the interface.
+ */
+export interface ActionTypeReferencesNonExistentInterfacePropertyTypesInInterfaceTypes {
+}
+/**
  * ActionType references a property type that does not exist on the object type.
  */
 export interface ActionTypeReferencesNonExistentPropertyTypesInObjectTypes {
@@ -476,6 +516,11 @@ export interface ActionTypeReferencesNonExistentPropertyTypesInObjectTypes {
  * ActionType updates a shared property that does not exist in the interface.
  */
 export interface ActionTypeReferencesNonExistentSharedPropertyTypesInInterfaceTypes {
+}
+/**
+ * ActionType updates an interface property that is not guaranteed to exist because it is optional in the interface.
+ */
+export interface ActionTypeReferencesOptionalInterfacePropertyTypesInInterfaceTypes {
 }
 /**
  * ActionType updates a shared property that is not guaranteed to exist because it is optional in the interface.
@@ -503,6 +548,11 @@ export interface ActionTypeStaticValueTooLong {
 export interface ActionTypeStringCbacPickerTypeclassUsedOnNonStringParameter {
 }
 /**
+ * The ActionType containing LogicRuleValue mappings for struct property must have StructFieldLogicRuleValue mappings for exactly all of the struct fields present in the interface struct property but has missing or extraneous structFieldRids mapped.
+ */
+export interface ActionTypeStructFieldLogicMappingDoesNotMatchInterfaceStructPropertyDefinition {
+}
+/**
  * The ActionType containing LogicRuleValue mappings for struct property must have StructFieldLogicRuleValue mappings for exactly all of the struct fields present in the struct property but has missing or extraneous structFieldRids mapped.
  */
 export interface ActionTypeStructFieldLogicMappingDoesNotMatchStructPropertyDefinition {
@@ -513,9 +563,24 @@ export interface ActionTypeStructFieldLogicMappingDoesNotMatchStructPropertyDefi
 export interface ActionTypeStructParameterFieldAllowedValueIsIncompatibleWithFieldType {
 }
 /**
+ * The object reference struct parameter field references an object type that does not exist.
+ */
+export interface ActionTypeStructParameterFieldObjectReferenceReferencesNonExistentObjectType {
+}
+/**
+ * Struct parameter field's prefill references incompatible interface type struct property field.
+ */
+export interface ActionTypeStructParameterFieldPrefillReferencesIncompatibleInterfacePropertyTypeStructField {
+}
+/**
  * Struct parameter field's prefill references incompatible object type struct property field.
  */
 export interface ActionTypeStructParameterFieldPrefillReferencesIncompatibleObjectPropertyTypeStructField {
+}
+/**
+ * Struct parameter field's prefill references nonexistent struct field within the interface type.
+ */
+export interface ActionTypeStructParameterFieldPrefillReferencesNonexistentInterfacePropertyTypeStructField {
 }
 /**
  * Struct parameter field's prefill references nonexistent struct field within the object type.
@@ -548,9 +613,9 @@ export interface ActionTypeStructParameterPrefillReferencesStructPropertyWithInc
 export interface ActionTypeStructParameterPrefillsMustBeDefinedForAllFieldsOrNone {
 }
 /**
- * A struct parameter's field prefill must all reference the same object type property.
+ * A struct parameter's field prefill must all reference the same object or interface type property.
  */
-export interface ActionTypeStructParameterPrefillsNotReferencingSameObjectTypeProperty {
+export interface ActionTypeStructParameterPrefillsNotReferencingSameProperty {
 }
 /**
  * The struct parameter should not have a top-level prefill defined.
@@ -652,7 +717,17 @@ export interface ActionTypeValidationsOrderingNotExactlySameAsValidationRuleSet 
  */
 export interface BranchIndexingConfigCanOnlyBeSetForManyToManyLinkTypes {
 }
+/**
+ * CipherText property types can only have string plainText types.
+ */
+export interface CipherTextPropertyTypetWithNonStringPlainTextType {
+}
 export interface EasedPipelineBuilderError {
+}
+/**
+ * Edits-only object types must have property security groups.
+ */
+export interface EditsOnlyObjectTypeMustHavePropertySecurityGroups {
 }
 export interface ErrorData {
   errorMessage: string;
@@ -1027,6 +1102,12 @@ export interface ErrorType_interfaceTypeDeclaresRequiredParentPropertyAsOptional
     InterfaceTypeDeclaresRequiredParentPropertyAsOptional;
 }
 
+export interface ErrorType_interfaceRedeclaresInheritedInterfaceDefinedProperty {
+  type: "interfaceRedeclaresInheritedInterfaceDefinedProperty";
+  interfaceRedeclaresInheritedInterfaceDefinedProperty:
+    InterfaceRedeclaresInheritedInterfaceDefinedProperty;
+}
+
 export interface ErrorType_interfaceTypeReferencedSharedPropertyTypesDoNotExistOrDeleted {
   type: "interfaceTypeReferencedSharedPropertyTypesDoNotExistOrDeleted";
   interfaceTypeReferencedSharedPropertyTypesDoNotExistOrDeleted:
@@ -1304,6 +1385,12 @@ export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMater
   type: "objectTypePropertySecurityGroupsNotSupportedWithMaterializations";
   objectTypePropertySecurityGroupsNotSupportedWithMaterializations:
     ObjectTypePropertySecurityGroupsNotSupportedWithMaterializations;
+}
+
+export interface ErrorType_editsOnlyObjectTypeMustHavePropertySecurityGroups {
+  type: "editsOnlyObjectTypeMustHavePropertySecurityGroups";
+  editsOnlyObjectTypeMustHavePropertySecurityGroups:
+    EditsOnlyObjectTypeMustHavePropertySecurityGroups;
 }
 
 export interface ErrorType_objectTypePropertySecurityGroupsNotSupportedOnBranches {
@@ -1769,6 +1856,12 @@ export interface ErrorType_objectTypeStructFieldBasePropertyTypeInvalid {
     ObjectTypeStructFieldBasePropertyTypeInvalid;
 }
 
+export interface ErrorType_cipherTextPropertyTypetWithNonStringPlainTextType {
+  type: "cipherTextPropertyTypetWithNonStringPlainTextType";
+  cipherTextPropertyTypetWithNonStringPlainTextType:
+    CipherTextPropertyTypetWithNonStringPlainTextType;
+}
+
 export interface ErrorType_objectTypeStructPropertyTypeIsTitle {
   type: "objectTypeStructPropertyTypeIsTitle";
   objectTypeStructPropertyTypeIsTitle: ObjectTypeStructPropertyTypeIsTitle;
@@ -1970,12 +2063,6 @@ export interface ErrorType_objectTypeRevDbIntegrationHasNoMappedProperties {
     ObjectTypeRevDbIntegrationHasNoMappedProperties;
 }
 
-export interface ErrorType_objectTypeContainsUnmappedSharedPropertyTypes {
-  type: "objectTypeContainsUnmappedSharedPropertyTypes";
-  objectTypeContainsUnmappedSharedPropertyTypes:
-    ObjectTypeContainsUnmappedSharedPropertyTypes;
-}
-
 export interface ErrorType_objectTypeHasModifiedLocalPropertyGothamMapping {
   type: "objectTypeHasModifiedLocalPropertyGothamMapping";
   objectTypeHasModifiedLocalPropertyGothamMapping:
@@ -2115,6 +2202,12 @@ export interface ErrorType_objectTypeEditabilityChangeDuringV1ToV2Migration {
     ObjectTypeEditabilityChangeDuringV1ToV2Migration;
 }
 
+export interface ErrorType_objectTypeEditsHistoryChangeDuringV1ToV2Migration {
+  type: "objectTypeEditsHistoryChangeDuringV1ToV2Migration";
+  objectTypeEditsHistoryChangeDuringV1ToV2Migration:
+    ObjectTypeEditsHistoryChangeDuringV1ToV2Migration;
+}
+
 export interface ErrorType_objectTypeEditsResolutionStrategyModificationTimestampPropertyNotFound {
   type:
     "objectTypeEditsResolutionStrategyModificationTimestampPropertyNotFound";
@@ -2205,12 +2298,6 @@ export interface ErrorType_objectTypeInterfaceImplementationDoesNotImplementAllP
     ObjectTypeInterfaceImplementationDoesNotImplementAllProperties;
 }
 
-export interface ErrorType_objectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct {
-  type: "objectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct";
-  objectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct:
-    ObjectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct;
-}
-
 export interface ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeDoesNotReferenceObjectType {
   type:
     "objectTypeInterfaceImplementationImplementingLinkTypeDoesNotReferenceObjectType";
@@ -2248,6 +2335,18 @@ export interface ErrorType_objectTypeInterfaceImplementationLinkTypeImplementedM
   type: "objectTypeInterfaceImplementationLinkTypeImplementedMoreThanOnce";
   objectTypeInterfaceImplementationLinkTypeImplementedMoreThanOnce:
     ObjectTypeInterfaceImplementationLinkTypeImplementedMoreThanOnce;
+}
+
+export interface ErrorType_objectTypeInterfaceImplementationNotUsingPrimaryKey {
+  type: "objectTypeInterfaceImplementationNotUsingPrimaryKey";
+  objectTypeInterfaceImplementationNotUsingPrimaryKey:
+    ObjectTypeInterfaceImplementationNotUsingPrimaryKey;
+}
+
+export interface ErrorType_objectTypeInterfaceImplementationUsingPrimaryKey {
+  type: "objectTypeInterfaceImplementationUsingPrimaryKey";
+  objectTypeInterfaceImplementationUsingPrimaryKey:
+    ObjectTypeInterfaceImplementationUsingPrimaryKey;
 }
 
 export interface ErrorType_objectTypePropertyImplementationImplicitAndExplicit {
@@ -2427,6 +2526,24 @@ export interface ErrorType_objectTypeTitlePropertyTypeIsDerivedProperty {
   type: "objectTypeTitlePropertyTypeIsDerivedProperty";
   objectTypeTitlePropertyTypeIsDerivedProperty:
     ObjectTypeTitlePropertyTypeIsDerivedProperty;
+}
+
+export interface ErrorType_objectTypePropertyIdClashesWithMainBranch {
+  type: "objectTypePropertyIdClashesWithMainBranch";
+  objectTypePropertyIdClashesWithMainBranch:
+    ObjectTypePropertyIdClashesWithMainBranch;
+}
+
+export interface ErrorType_objectTypePropertyCannotBeDeletedWhenReferencedInActionNotification {
+  type: "objectTypePropertyCannotBeDeletedWhenReferencedInActionNotification";
+  objectTypePropertyCannotBeDeletedWhenReferencedInActionNotification:
+    ObjectTypePropertyCannotBeDeletedWhenReferencedInActionNotification;
+}
+
+export interface ErrorType_objectTypeDatasourceWithInvalidRetentionTargetSize {
+  type: "objectTypeDatasourceWithInvalidRetentionTargetSize";
+  objectTypeDatasourceWithInvalidRetentionTargetSize:
+    ObjectTypeDatasourceWithInvalidRetentionTargetSize;
 }
 
 export interface ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds {
@@ -2864,6 +2981,13 @@ export interface ErrorType_actionTypeStructFieldLogicMappingDoesNotMatchStructPr
     ActionTypeStructFieldLogicMappingDoesNotMatchStructPropertyDefinition;
 }
 
+export interface ErrorType_actionTypeStructFieldLogicMappingDoesNotMatchInterfaceStructPropertyDefinition {
+  type:
+    "actionTypeStructFieldLogicMappingDoesNotMatchInterfaceStructPropertyDefinition";
+  actionTypeStructFieldLogicMappingDoesNotMatchInterfaceStructPropertyDefinition:
+    ActionTypeStructFieldLogicMappingDoesNotMatchInterfaceStructPropertyDefinition;
+}
+
 export interface ErrorType_actionTypeObjectParameterPropertyValueInPrefillsCannotReferenceStructProperty {
   type:
     "actionTypeObjectParameterPropertyValueInPrefillsCannotReferenceStructProperty";
@@ -2891,6 +3015,13 @@ export interface ErrorType_actionTypeStructParameterFieldPrefillReferencesNonexi
     ActionTypeStructParameterFieldPrefillReferencesNonexistentObjectPropertyTypeStructField;
 }
 
+export interface ErrorType_actionTypeStructParameterFieldPrefillReferencesNonexistentInterfacePropertyTypeStructField {
+  type:
+    "actionTypeStructParameterFieldPrefillReferencesNonexistentInterfacePropertyTypeStructField";
+  actionTypeStructParameterFieldPrefillReferencesNonexistentInterfacePropertyTypeStructField:
+    ActionTypeStructParameterFieldPrefillReferencesNonexistentInterfacePropertyTypeStructField;
+}
+
 export interface ErrorType_actionTypeNonExistentParametersUsedInConditionValue {
   type: "actionTypeNonExistentParametersUsedInConditionValue";
   actionTypeNonExistentParametersUsedInConditionValue:
@@ -2915,6 +3046,13 @@ export interface ErrorType_actionTypeStructParameterFieldPrefillReferencesIncomp
     "actionTypeStructParameterFieldPrefillReferencesIncompatibleObjectPropertyTypeStructField";
   actionTypeStructParameterFieldPrefillReferencesIncompatibleObjectPropertyTypeStructField:
     ActionTypeStructParameterFieldPrefillReferencesIncompatibleObjectPropertyTypeStructField;
+}
+
+export interface ErrorType_actionTypeStructParameterFieldPrefillReferencesIncompatibleInterfacePropertyTypeStructField {
+  type:
+    "actionTypeStructParameterFieldPrefillReferencesIncompatibleInterfacePropertyTypeStructField";
+  actionTypeStructParameterFieldPrefillReferencesIncompatibleInterfacePropertyTypeStructField:
+    ActionTypeStructParameterFieldPrefillReferencesIncompatibleInterfacePropertyTypeStructField;
 }
 
 export interface ErrorType_actionTypeCannotUseTimeSeriesReferenceForObjectOrInterfaceParameterProperty {
@@ -3015,10 +3153,10 @@ export interface ErrorType_actionTypeStructParameterPrefillReferencesStructPrope
     ActionTypeStructParameterPrefillReferencesStructPropertyWithIncompatibleCardinality;
 }
 
-export interface ErrorType_actionTypeStructParameterPrefillsNotReferencingSameObjectTypeProperty {
-  type: "actionTypeStructParameterPrefillsNotReferencingSameObjectTypeProperty";
-  actionTypeStructParameterPrefillsNotReferencingSameObjectTypeProperty:
-    ActionTypeStructParameterPrefillsNotReferencingSameObjectTypeProperty;
+export interface ErrorType_actionTypeStructParameterPrefillsNotReferencingSameProperty {
+  type: "actionTypeStructParameterPrefillsNotReferencingSameProperty";
+  actionTypeStructParameterPrefillsNotReferencingSameProperty:
+    ActionTypeStructParameterPrefillsNotReferencingSameProperty;
 }
 
 export interface ErrorType_actionTypeInvalidLogicRuleForObjectType {
@@ -3080,6 +3218,12 @@ export interface ErrorType_actionTypeReferencesNonExistentSharedPropertyTypesInI
     ActionTypeReferencesNonExistentSharedPropertyTypesInInterfaceTypes;
 }
 
+export interface ErrorType_actionTypeReferencesNonExistentInterfacePropertyTypesInInterfaceTypes {
+  type: "actionTypeReferencesNonExistentInterfacePropertyTypesInInterfaceTypes";
+  actionTypeReferencesNonExistentInterfacePropertyTypesInInterfaceTypes:
+    ActionTypeReferencesNonExistentInterfacePropertyTypesInInterfaceTypes;
+}
+
 export interface ErrorType_actionTypeReferencesNonExistentPropertyTypesInObjectTypes {
   type: "actionTypeReferencesNonExistentPropertyTypesInObjectTypes";
   actionTypeReferencesNonExistentPropertyTypesInObjectTypes:
@@ -3096,6 +3240,12 @@ export interface ErrorType_actionTypeReferencesOptionalSharedPropertyTypesInInte
   type: "actionTypeReferencesOptionalSharedPropertyTypesInInterfaceTypes";
   actionTypeReferencesOptionalSharedPropertyTypesInInterfaceTypes:
     ActionTypeReferencesOptionalSharedPropertyTypesInInterfaceTypes;
+}
+
+export interface ErrorType_actionTypeReferencesOptionalInterfacePropertyTypesInInterfaceTypes {
+  type: "actionTypeReferencesOptionalInterfacePropertyTypesInInterfaceTypes";
+  actionTypeReferencesOptionalInterfacePropertyTypesInInterfaceTypes:
+    ActionTypeReferencesOptionalInterfacePropertyTypesInInterfaceTypes;
 }
 
 export interface ErrorType_actionTypeActionLogConfiguredForFunctionButFunctionProvenanceIsNotSet {
@@ -3306,6 +3456,13 @@ export interface ErrorType_actionTypeStructParameterHasInvalidTopLevelAllowedVal
     ActionTypeStructParameterHasInvalidTopLevelAllowedValues;
 }
 
+export interface ErrorType_actionTypeStructParameterFieldObjectReferenceReferencesNonExistentObjectType {
+  type:
+    "actionTypeStructParameterFieldObjectReferenceReferencesNonExistentObjectType";
+  actionTypeStructParameterFieldObjectReferenceReferencesNonExistentObjectType:
+    ActionTypeStructParameterFieldObjectReferenceReferencesNonExistentObjectType;
+}
+
 export interface ErrorType_actionTypeParameterCbacConstraintContainsInvalidMaxClassification {
   type: "actionTypeParameterCbacConstraintContainsInvalidMaxClassification";
   actionTypeParameterCbacConstraintContainsInvalidMaxClassification:
@@ -3356,6 +3513,50 @@ export interface ErrorType_actionTypeTypeClassValueTooLong {
 export interface ErrorType_actionTypeInvalidApiNamePrefixes {
   type: "actionTypeInvalidApiNamePrefixes";
   actionTypeInvalidApiNamePrefixes: ActionTypeInvalidApiNamePrefixes;
+}
+
+export interface ErrorType_actionTypeParameterPrefillValueTypeDoesNotMatchBaseParameterType {
+  type: "actionTypeParameterPrefillValueTypeDoesNotMatchBaseParameterType";
+  actionTypeParameterPrefillValueTypeDoesNotMatchBaseParameterType:
+    ActionTypeParameterPrefillValueTypeDoesNotMatchBaseParameterType;
+}
+
+export interface ErrorType_actionTypeInterfaceReferenceParameterPrefillReferencesNonInterfaceReferenceParameter {
+  type:
+    "actionTypeInterfaceReferenceParameterPrefillReferencesNonInterfaceReferenceParameter";
+  actionTypeInterfaceReferenceParameterPrefillReferencesNonInterfaceReferenceParameter:
+    ActionTypeInterfaceReferenceParameterPrefillReferencesNonInterfaceReferenceParameter;
+}
+
+export interface ErrorType_actionTypeObjectReferenceParameterPrefillReferencesNonObjectReferenceParameter {
+  type:
+    "actionTypeObjectReferenceParameterPrefillReferencesNonObjectReferenceParameter";
+  actionTypeObjectReferenceParameterPrefillReferencesNonObjectReferenceParameter:
+    ActionTypeObjectReferenceParameterPrefillReferencesNonObjectReferenceParameter;
+}
+
+export interface ErrorType_actionTypePrefillValueTypeIsNotSupported {
+  type: "actionTypePrefillValueTypeIsNotSupported";
+  actionTypePrefillValueTypeIsNotSupported:
+    ActionTypePrefillValueTypeIsNotSupported;
+}
+
+export interface ErrorType_actionTypeParameterTransformNotSupported {
+  type: "actionTypeParameterTransformNotSupported";
+  actionTypeParameterTransformNotSupported:
+    ActionTypeParameterTransformNotSupported;
+}
+
+export interface ErrorType_actionTypeObjectParameterPrefillReferencesNonExistentPropertyType {
+  type: "actionTypeObjectParameterPrefillReferencesNonExistentPropertyType";
+  actionTypeObjectParameterPrefillReferencesNonExistentPropertyType:
+    ActionTypeObjectParameterPrefillReferencesNonExistentPropertyType;
+}
+
+export interface ErrorType_actionTypeObjectParameterPrefillReferencesNonExistentObjectType {
+  type: "actionTypeObjectParameterPrefillReferencesNonExistentObjectType";
+  actionTypeObjectParameterPrefillReferencesNonExistentObjectType:
+    ActionTypeObjectParameterPrefillReferencesNonExistentObjectType;
 }
 
 export interface ErrorType_typeGroupCountExceeded {
@@ -3517,6 +3718,7 @@ export type ErrorType =
   | ErrorType_interfaceTypeWithActiveStatusRemovingInterfacePropertyTypes
   | ErrorType_interfaceTypeInvalidApiName
   | ErrorType_interfaceTypeDeclaresRequiredParentPropertyAsOptional
+  | ErrorType_interfaceRedeclaresInheritedInterfaceDefinedProperty
   | ErrorType_interfaceTypeReferencedSharedPropertyTypesDoNotExistOrDeleted
   | ErrorType_interfaceTypeExtendsTooManyInterfaces
   | ErrorType_interfaceTypeLinkedEntityTypeNotFound
@@ -3565,6 +3767,7 @@ export type ErrorType =
   | ErrorType_objectTypeInvalidNumberOfPropertyReferencesInPropertySecurityGroup
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMultipleDatasources
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedWithMaterializations
+  | ErrorType_editsOnlyObjectTypeMustHavePropertySecurityGroups
   | ErrorType_objectTypePropertySecurityGroupsNotSupportedOnBranches
   | ErrorType_objectTypePropertyIncompatibleBackingColumnType
   | ErrorType_objectTypePropertyIncompatibleDecimalColumnType
@@ -3643,6 +3846,7 @@ export type ErrorType =
   | ErrorType_objectTypeStructPropertyTypeFieldHasTooManyAliases
   | ErrorType_objectTypeStructPropertyTypeFieldTypeClassNameTooLong
   | ErrorType_objectTypeStructFieldBasePropertyTypeInvalid
+  | ErrorType_cipherTextPropertyTypetWithNonStringPlainTextType
   | ErrorType_objectTypeStructPropertyTypeIsTitle
   | ErrorType_objectTypeStructPropertyTypeFieldDescriptionTooLong
   | ErrorType_objectTypeStructPropertyTypeShouldNotHaveRenderHintsError
@@ -3677,7 +3881,6 @@ export type ErrorType =
   | ErrorType_objectTypeMissingPermissionToEnableTypeMapping
   | ErrorType_objectTypeObjectStorageV1MappedToGotham
   | ErrorType_objectTypeRevDbIntegrationHasNoMappedProperties
-  | ErrorType_objectTypeContainsUnmappedSharedPropertyTypes
   | ErrorType_objectTypeHasModifiedLocalPropertyGothamMapping
   | ErrorType_objectTypeViewRestrictedContainsGothamMapping
   | ErrorType_objectTypeInPrivatePackageContainsGothamMapping
@@ -3702,6 +3905,7 @@ export type ErrorType =
   | ErrorType_objectTypeDatasetDatasourceV2SupportedOnlyWithObjectStorageV2
   | ErrorType_objectTypeEntityMetadataModifyRequestWithInvalidObjectDbRid
   | ErrorType_objectTypeEditabilityChangeDuringV1ToV2Migration
+  | ErrorType_objectTypeEditsHistoryChangeDuringV1ToV2Migration
   | ErrorType_objectTypeEditsResolutionStrategyModificationTimestampPropertyNotFound
   | ErrorType_objectTypeStreamDatasourceWithPatchesEnabled
   | ErrorType_objectTypeEntityMetadataModifyRequestWithInvalidObjectDbConfigValue
@@ -3717,13 +3921,14 @@ export type ErrorType =
   | ErrorType_objectTypeInterfaceImplementationValueTypeDoesNotMatch
   | ErrorType_objectTypeInterfaceImplementationImplementsPropertyThatDoesNotExist
   | ErrorType_objectTypeInterfaceImplementationDoesNotImplementAllProperties
-  | ErrorType_objectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct
   | ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeDoesNotReferenceObjectType
   | ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeSideIsAmbiguous
   | ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeSideDoesNotMatchLinkDefinitionType
   | ErrorType_objectTypeInterfaceImplementationImplementingLinkTypeSideIsIncorrect
   | ErrorType_objectTypeInterfaceImplementationInvalidLinkedEntityImplementingLinkType
   | ErrorType_objectTypeInterfaceImplementationLinkTypeImplementedMoreThanOnce
+  | ErrorType_objectTypeInterfaceImplementationNotUsingPrimaryKey
+  | ErrorType_objectTypeInterfaceImplementationUsingPrimaryKey
   | ErrorType_objectTypePropertyImplementationImplicitAndExplicit
   | ErrorType_objectTypeInterfaceLinkNotFound
   | ErrorType_objectTypeInterfaceLinkTypeImplementedTooOften
@@ -3756,6 +3961,9 @@ export type ErrorType =
   | ErrorType_objectTypeReferencedTypeGroupsDoNotExist
   | ErrorType_objectTypeForbiddenTitleProperty
   | ErrorType_objectTypeTitlePropertyTypeIsDerivedProperty
+  | ErrorType_objectTypePropertyIdClashesWithMainBranch
+  | ErrorType_objectTypePropertyCannotBeDeletedWhenReferencedInActionNotification
+  | ErrorType_objectTypeDatasourceWithInvalidRetentionTargetSize
   | ErrorType_ruleSetBindingReferencingMissingPropertyTypeIds
   | ErrorType_ruleSetCountExceeded
   | ErrorType_ruleSetNameTooLong
@@ -3833,14 +4041,17 @@ export type ErrorType =
   | ErrorType_actionTypePropertyTypeDoesNotMatchMappedLogicRuleValue
   | ErrorType_actionTypeStructPropertyTypesNotAllowedInPropertyTypeLogicRuleValueMappings
   | ErrorType_actionTypeStructFieldLogicMappingDoesNotMatchStructPropertyDefinition
+  | ErrorType_actionTypeStructFieldLogicMappingDoesNotMatchInterfaceStructPropertyDefinition
   | ErrorType_actionTypeObjectParameterPropertyValueInPrefillsCannotReferenceStructProperty
   | ErrorType_actionTypeParameterTypeDoesNotMatchParameterValidationType
   | ErrorType_actionTypeConditionValueCannotReferenceHighCardinalityObjectReferenceParameter
   | ErrorType_actionTypeStructParameterFieldPrefillReferencesNonexistentObjectPropertyTypeStructField
+  | ErrorType_actionTypeStructParameterFieldPrefillReferencesNonexistentInterfacePropertyTypeStructField
   | ErrorType_actionTypeNonExistentParametersUsedInConditionValue
   | ErrorType_actionTypeModifyObjectRuleDoesNotReferenceObjectTypeParameter
   | ErrorType_actionTypeCannotUseMediaReferenceForObjectOrInterfaceParameterProperty
   | ErrorType_actionTypeStructParameterFieldPrefillReferencesIncompatibleObjectPropertyTypeStructField
+  | ErrorType_actionTypeStructParameterFieldPrefillReferencesIncompatibleInterfacePropertyTypeStructField
   | ErrorType_actionTypeCannotUseTimeSeriesReferenceForObjectOrInterfaceParameterProperty
   | ErrorType_actionTypeParameterValidationNotFound
   | ErrorType_actionTypeInvalidObjectDropdownStartingParameter
@@ -3857,7 +4068,7 @@ export type ErrorType =
   | ErrorType_actionTypeNonExistentParametersUsedInParameterPrefill
   | ErrorType_actionTypeObjectReferenceTypeCreateObjectOptionValue
   | ErrorType_actionTypeStructParameterPrefillReferencesStructPropertyWithIncompatibleCardinality
-  | ErrorType_actionTypeStructParameterPrefillsNotReferencingSameObjectTypeProperty
+  | ErrorType_actionTypeStructParameterPrefillsNotReferencingSameProperty
   | ErrorType_actionTypeInvalidLogicRuleForObjectType
   | ErrorType_actionTypeConditionsAreNotIndexedCorrectly
   | ErrorType_actionTypeApiNameConflict
@@ -3868,9 +4079,11 @@ export type ErrorType =
   | ErrorType_actionTypeHasRevertsEnabledForInvalidObjectTypeStorageBackendCategory
   | ErrorType_actionTypeHasRevertsEnabledForInvalidLinkTypeStorageBackendCategory
   | ErrorType_actionTypeReferencesNonExistentSharedPropertyTypesInInterfaceTypes
+  | ErrorType_actionTypeReferencesNonExistentInterfacePropertyTypesInInterfaceTypes
   | ErrorType_actionTypeReferencesNonExistentPropertyTypesInObjectTypes
   | ErrorType_actionTypeReferencesNonExistentEntityTypes
   | ErrorType_actionTypeReferencesOptionalSharedPropertyTypesInInterfaceTypes
+  | ErrorType_actionTypeReferencesOptionalInterfacePropertyTypesInInterfaceTypes
   | ErrorType_actionTypeActionLogConfiguredForFunctionButFunctionProvenanceIsNotSet
   | ErrorType_actionTypeActionLogReferencesPropertiesOfNonSingletonObject
   | ErrorType_actionTypeActionTypeParametersReferencedInActionLogRuleDoNotExist
@@ -3908,6 +4121,7 @@ export type ErrorType =
   | ErrorType_actionTypeStructParameterFieldAllowedValueIsIncompatibleWithFieldType
   | ErrorType_actionTypeStructParameterFieldRenderHintIsIncompatibleWithFieldTypeAndAllowedValue
   | ErrorType_actionTypeStructParameterHasInvalidTopLevelAllowedValues
+  | ErrorType_actionTypeStructParameterFieldObjectReferenceReferencesNonExistentObjectType
   | ErrorType_actionTypeParameterCbacConstraintContainsInvalidMaxClassification
   | ErrorType_actionTypeCbacConstraintOnNonSecuringCbacParameterMissingMaxClassification
   | ErrorType_actionTypeStringCbacPickerTypeclassUsedOnNonStringParameter
@@ -3917,6 +4131,13 @@ export type ErrorType =
   | ErrorType_actionTypeTypeClassKindTooLong
   | ErrorType_actionTypeTypeClassValueTooLong
   | ErrorType_actionTypeInvalidApiNamePrefixes
+  | ErrorType_actionTypeParameterPrefillValueTypeDoesNotMatchBaseParameterType
+  | ErrorType_actionTypeInterfaceReferenceParameterPrefillReferencesNonInterfaceReferenceParameter
+  | ErrorType_actionTypeObjectReferenceParameterPrefillReferencesNonObjectReferenceParameter
+  | ErrorType_actionTypePrefillValueTypeIsNotSupported
+  | ErrorType_actionTypeParameterTransformNotSupported
+  | ErrorType_actionTypeObjectParameterPrefillReferencesNonExistentPropertyType
+  | ErrorType_actionTypeObjectParameterPrefillReferencesNonExistentObjectType
   | ErrorType_typeGroupCountExceeded
   | ErrorType_typeGroupDisplayNameTooLong
   | ErrorType_typeGroupDescriptionTooLong
@@ -3955,6 +4176,11 @@ export interface InterfaceLinkTypeDisplayNameTooLong {
  * The locator of the interface property type rid and the backing shared property type rid do not match.
  */
 export interface InterfacePropertyTypeRidNotMatchingSharedPropertyTypeRidLocator {
+}
+/**
+ * The interface declares an interface defined property that it already inherits from a parent interface.
+ */
+export interface InterfaceRedeclaresInheritedInterfaceDefinedProperty {
 }
 /**
  * The interface contains duplicate properties. This may be due to declaring a property as both required and optional.
@@ -4705,11 +4931,6 @@ export interface ObjectTypeColumnMissingFromBackingDatasource {
 export interface ObjectTypeCompositePrimaryKeysNotAllowed {
 }
 /**
- * An ObjectType cannot be mapped to Gotham if it contains unmapped SharedPropertyType(s).
- */
-export interface ObjectTypeContainsUnmappedSharedPropertyTypes {
-}
-/**
  * The count of object types exceeds the allowed limit.
  */
 export interface ObjectTypeCountExceeded {
@@ -4765,6 +4986,12 @@ export interface ObjectTypeDatasourceSchemaNotFound {
  * Object type datasources cannot have their assumed markings updated. Datasource needs to recreated with new rid, when the set of assumed marking changes.
  */
 export interface ObjectTypeDatasourceUpdateModificationCannotChangeAssumedMarkings {
+}
+/**
+ * A datasource is using an invalid retention target size. If retention is desired the selected target size must
+ * be less than or equal to the retention trigger size. Only applicable for direct datasources.
+ */
+export interface ObjectTypeDatasourceWithInvalidRetentionTargetSize {
 }
 /**
  * An error representing when an object type datasource does not include the primary key property of the corresponding object type.
@@ -4845,6 +5072,11 @@ export interface ObjectTypeDisplayNameTooLong {
  * Attempted to change editability of an ObjectType during the migration to ObjectStorageV2. Wait until the migration has completed before changing value of `arePatchesEnabled`.
  */
 export interface ObjectTypeEditabilityChangeDuringV1ToV2Migration {
+}
+/**
+ * Attempted to change edits history of an ObjectType during the migration to ObjectStorageV2. Wait until the migration has completed before changing value of `editsHistory`.
+ */
+export interface ObjectTypeEditsHistoryChangeDuringV1ToV2Migration {
 }
 /**
  * The requested edits resolution strategy modification only allowed for V2 objects.
@@ -5077,9 +5309,9 @@ export interface ObjectTypeInterfaceImplementationInvalidLinkedEntityImplementin
 export interface ObjectTypeInterfaceImplementationLinkTypeImplementedMoreThanOnce {
 }
 /**
- * The object type attempts to use a local property to implement a struct shared property on the interface.
+ * An object type is not using a primary key property to implement an interface property that must be implemented with a primary key property.
  */
-export interface ObjectTypeInterfaceImplementationLocalPropertyUsedToImplementStruct {
+export interface ObjectTypeInterfaceImplementationNotUsingPrimaryKey {
 }
 /**
  * Expected local property implementing interface property to have the same type, but it did not.
@@ -5100,6 +5332,11 @@ export interface ObjectTypeInterfaceImplementationPropertyTypesHaveConflictingAp
  * The object type implements the interface but the property type classes do not match.
  */
 export interface ObjectTypeInterfaceImplementationTypeClassesDoNotMatch {
+}
+/**
+ * An object type is using a primary key property to implement an interface property that cannot be implemented with a primary key property.
+ */
+export interface ObjectTypeInterfaceImplementationUsingPrimaryKey {
 }
 /**
  * The object type implements the interface but the value type of the property does not match the value type of the interface property.
@@ -5392,9 +5629,21 @@ export interface ObjectTypePrimaryKeyUsesEditOnlyPropertyTypeInDataBackedDatasou
 export interface ObjectTypePropertiesReferenceSameColumnName {
 }
 /**
+ * Object type property ID that is being deleted is used in an action notification.
+ * Please delete the reference to the property type in the action notification.
+ */
+export interface ObjectTypePropertyCannotBeDeletedWhenReferencedInActionNotification {
+}
+/**
  * There is a change to the Type of a PropertyType (such as changing from an Integer to a String) that does not have a required schema migration associated with it.
  */
 export interface ObjectTypePropertyDataTypeChangeMissingSchemaMigration {
+}
+/**
+ * The object type in the parent branch has a property type with the same ID but a different RID.
+ * Possible solutions are to change the ID of one of the property types or delete one of them.
+ */
+export interface ObjectTypePropertyIdClashesWithMainBranch {
 }
 /**
  * An object type implements multiple interfaces and explicitly provides some property mappings for some interfaces but not for others. It is required to explicitly provide property mappings for all interfaces or for none.

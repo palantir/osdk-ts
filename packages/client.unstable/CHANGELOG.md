@@ -1,5 +1,50 @@
 # @osdk/client.unstable
 
+## 2.6.0-beta.4
+
+### Minor Changes
+
+- 7fd788b: Support derived properties
+
+## 2.6.0-beta.3
+
+## 2.6.0-beta.2
+
+## 2.5.0-beta.15
+
+## 2.5.0-beta.14
+
+### Minor Changes
+
+- 9dd5a63: Intermediary links in oac
+- e62408b: Fix Maker Rid Generation
+
+## 2.5.0-beta.13
+
+## 2.5.0-beta.12
+
+## 2.5.0-beta.11
+
+## 2.5.0-beta.10
+
+## 2.5.0-beta.9
+
+## 2.5.0-beta.8
+
+## 2.5.0-beta.7
+
+## 2.5.0-beta.6
+
+### Minor Changes
+
+- 04fe946: Use block data type for imports
+
+## 2.5.0-beta.5
+
+## 2.5.0-beta.4
+
+## 2.5.0-beta.3
+
 ## 2.5.0-beta.2
 
 ## 2.4.0-beta.17

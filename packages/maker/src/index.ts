@@ -16,24 +16,47 @@
 
 export { default as default } from "./cli/main.js";
 
+export type { ActionParameterValidation } from "./api/action/ActionParameter.js";
+export type {
+  ActionParameterAllowedValues,
+} from "./api/action/ActionParameterAllowedValues.js";
+export type { ActionParameterConditionalOverride } from "./api/action/ActionParameterConditionalOverride.js";
+export type { ActionParameterConfiguration } from "./api/action/ActionParameterConfiguration.js";
+export type { ActionSection } from "./api/action/ActionSection.js";
+export type { ActionType } from "./api/action/ActionType.js";
+export type { ConditionDefinition } from "./api/action/ConditionDefinition.js";
+export type {
+  CurrentTimeMappingValue,
+  CurrentUserMappingValue,
+  CustomMapping,
+  MappingValue,
+  UuidMappingValue,
+} from "./api/action/MappingValue.js";
+export type { SectionConditionalOverride } from "./api/action/SectionConditionalOverride.js";
+export type { SubmissionMetadata } from "./api/action/SubmissionMetadata.js";
 export { addDependency } from "./api/addDependency.js";
+export { OntologyEntityTypeEnum } from "./api/common/OntologyEntityTypeEnum.js";
 export {
+  CREATE_INTERFACE_OBJECT_PARAMETER,
+  CREATE_OR_MODIFY_OBJECT_PARAMETER,
   defineAction,
-  defineCreateInterfaceObjectAction,
-  defineCreateObjectAction,
-  defineCreateOrModifyObjectAction,
-  defineDeleteObjectAction,
-  defineModifyInterfaceObjectAction,
-  defineModifyObjectAction,
+  MODIFY_INTERFACE_OBJECT_PARAMETER,
+  MODIFY_OBJECT_PARAMETER,
 } from "./api/defineAction.js";
-export { importSharedPropertyType } from "./api/defineImportSpt.js";
+export { defineCreateInterfaceObjectAction } from "./api/defineCreateInterfaceObjectAction.js";
+export { defineCreateObjectAction } from "./api/defineCreateObjectAction.js";
+export { defineCreateOrModifyObjectAction } from "./api/defineCreateOrModifyObjectAction.js";
+export { defineDeleteInterfaceObjectAction } from "./api/defineDeleteInterfaceObjectAction.js";
+export { defineDeleteObjectAction } from "./api/defineDeleteObjectAction.js";
 export { defineInterface } from "./api/defineInterface.js";
 export { defineInterfaceLinkConstraint } from "./api/defineInterfaceLinkConstraint.js";
 export { defineLink } from "./api/defineLink.js";
+export { defineModifyInterfaceObjectAction } from "./api/defineModifyInterfaceObjectAction.js";
+export { defineModifyObjectAction } from "./api/defineModifyObjectAction.js";
 export {
-  convertToDisplayName,
   convertToPluralDisplayName,
   defineObject,
+  uppercaseFirstLetter as convertToDisplayName,
 } from "./api/defineObject.js";
 export {
   addNamespaceIfNone,
@@ -43,33 +66,13 @@ export {
 export { defineSharedPropertyType } from "./api/defineSpt.js";
 export { defineValueType } from "./api/defineValueType.js";
 export { importOntologyEntity } from "./api/importOntologyEntity.js";
-export { convertType } from "./api/propertyConversionUtils.js";
-export type {
-  ActionParameterAllowedValues,
-  ActionParameterConditionalOverride,
-  ActionParameterConfiguration,
-  ActionParameterValidation,
-  ActionSection,
-  ActionType,
-  ConditionDefinition,
-  CurrentTimeMappingValue,
-  CurrentUserMappingValue,
-  CustomMapping,
-  InterfaceType,
-  LinkType,
-  MappingValue,
-  ObjectPropertyType,
-  ObjectType,
-  PropertyTypeType,
-  SectionConditionalOverride,
-  SharedPropertyType,
-  SubmissionMetadata,
-  UuidMappingValue,
-  ValueTypeDefinitionVersion,
-} from "./api/types.js";
-export {
-  CREATE_OR_MODIFY_OBJECT_PARAMETER,
-  MODIFY_OBJECT_PARAMETER,
-  OntologyEntityTypeEnum,
-} from "./api/types.js";
+export { importSharedPropertyType } from "./api/importSharedPropertyType.js";
+export type { InterfaceType } from "./api/interface/InterfaceType.js";
+export type { LinkType } from "./api/links/LinkType.js";
+export type { ObjectPropertyType } from "./api/object/ObjectPropertyType.js";
+export type { ObjectType } from "./api/object/ObjectType.js";
+export type { PropertyTypeType } from "./api/properties/PropertyTypeType.js";
+export type { SharedPropertyType } from "./api/properties/SharedPropertyType.js";
+export type { ValueTypeDefinitionVersion } from "./api/values/ValueTypeDefinitionVersion.js";
 export { wrapWithProxy } from "./api/wrapWithProxy.js";
+export { propertyTypeTypeToOntologyIrType as convertType } from "./conversion/toMarketplace/propertyTypeTypeToOntologyIrType.js";

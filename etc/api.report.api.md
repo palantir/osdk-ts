@@ -145,6 +145,14 @@ export type ActionReturnTypeForOptions<Op extends ApplyActionOptions | ApplyBatc
 export type ActionValidationResponse = ValidateActionResponseV2;
 
 // @public (undocumented)
+export interface Affix {
+    	// (undocumented)
+    postfix?: PropertyTypeReferenceOrStringConstant;
+    	// (undocumented)
+    prefix?: PropertyTypeReferenceOrStringConstant;
+}
+
+// @public (undocumented)
 export type AggregateOpts<Q extends ObjectOrInterfaceDefinition> = {
     	$select: UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>
     	$groupBy?: GroupByClause<Q>
@@ -212,6 +220,14 @@ export type AllowedBucketKeyTypes = AllowedBucketTypes | {
 
 // @public (undocumented)
 export type AllowedBucketTypes = string | number | boolean;
+
+// @public (undocumented)
+export type AndWhereClause<
+	T extends ObjectOrInterfaceDefinition,
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = {
+    	$and: WhereClause<T, RDPs>[]
+};
 
 // @public (undocumented)
 export type ApplyActionOptions = {
@@ -423,6 +439,45 @@ export interface DataValueWireToClient {
 }
 
 // @public (undocumented)
+export type DatetimeFormat = DatetimeStringFormat | DatetimeLocalizedFormat;
+
+// @public
+export interface DatetimeLocalizedFormat {
+    	// (undocumented)
+    format: DatetimeLocalizedFormatType;
+    	// (undocumented)
+    type: "localizedFormat";
+}
+
+// @public (undocumented)
+export type DatetimeLocalizedFormatType = "DATE_FORMAT_RELATIVE_TO_NOW" | "DATE_FORMAT_DATE" | "DATE_FORMAT_YEAR_AND_MONTH" | "DATE_FORMAT_DATE_TIME" | "DATE_FORMAT_DATE_TIME_SHORT" | "DATE_FORMAT_TIME" | "DATE_FORMAT_ISO_INSTANT";
+
+// @public
+export interface DatetimeStringFormat {
+    	// (undocumented)
+    pattern: string;
+    	// (undocumented)
+    type: "stringFormat";
+}
+
+// @public (undocumented)
+export type DatetimeTimezone = DatetimeTimezoneStatic | DatetimeTimezoneUser;
+
+// @public (undocumented)
+export interface DatetimeTimezoneStatic {
+    	// (undocumented)
+    type: "static";
+    	// (undocumented)
+    zoneId: PropertyTypeReferenceOrStringConstant;
+}
+
+// @public
+export interface DatetimeTimezoneUser {
+    	// (undocumented)
+    type: "user";
+}
+
+// @public (undocumented)
 export namespace DerivedProperty {
     	// Warning: (ae-forgotten-export) The symbol "Aggregatable" needs to be exported by the entry point index.d.ts
     //
@@ -449,8 +504,13 @@ export namespace DerivedProperty {
     	> extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q>, Constant<Q> {}
     	// (undocumented)
     export type Clause<Q extends ObjectOrInterfaceDefinition> = {
-        		[key: string]: DerivedPropertyCreator<Q, SimplePropertyDef>
+        		[key: string]: Creator<Q, SimplePropertyDef>
         	};
+    	// (undocumented)
+    export type Creator<
+    		Q extends ObjectOrInterfaceDefinition,
+    		T extends SimplePropertyDef
+    	> = (baseObjectSet: Builder<Q, false>) => Definition<T, Q> | NumericPropertyDefinition<T, Q> | DatetimePropertyDefinition<T, Q>;
     	// Warning: (ae-forgotten-export) The symbol "DatetimeExpressions" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
@@ -458,9 +518,7 @@ export namespace DerivedProperty {
     		T extends SimplePropertyDef,
     		Q extends ObjectOrInterfaceDefinition
     	> extends Definition<T, Q>, DatetimeExpressions<Q, T> {}
-    	// Warning: (ae-forgotten-export) The symbol "SimplePropertyDef" needs to be exported by the entry point index.d.ts
-    //
-    // (undocumented)
+    	// (undocumented)
     export interface Definition<
     		T extends SimplePropertyDef,
     		Q extends ObjectOrInterfaceDefinition
@@ -510,6 +568,12 @@ export const DistanceUnitMapping: {
 };
 
 // @public (undocumented)
+export type DurationBaseValue = "SECONDS" | "MILLISECONDS";
+
+// @public (undocumented)
+export type DurationFormatStyle = HumanReadableFormat | TimeCodeFormat;
+
+// @public (undocumented)
 export const DurationMapping: {
     	quarter: "QUARTERS"
     	quarters: "QUARTERS"
@@ -534,6 +598,9 @@ export const DurationMapping: {
     	year: "YEARS"
     	years: "YEARS"
 };
+
+// @public (undocumented)
+export type DurationPrecision = "DAYS" | "HOURS" | "MINUTES" | "SECONDS" | "AUTO";
 
 // @public (undocumented)
 export interface FetchPageArgs<
@@ -649,6 +716,14 @@ export type GroupByClause<Q extends ObjectOrInterfaceDefinition> = { [P in Aggre
 export type GroupByRange<T> = [T, T];
 
 // @public (undocumented)
+export interface HumanReadableFormat {
+    	// (undocumented)
+    showFullUnits?: boolean;
+    	// (undocumented)
+    type: "humanReadable";
+}
+
+// @public (undocumented)
 export interface InterfaceDefinition {
     	// Warning: (ae-forgotten-export) The symbol "ObjectInterfaceCompileDefinition" needs to be exported by the entry point index.d.ts
     //
@@ -706,6 +781,9 @@ export interface InterfaceQueryDataType<T_Target extends ObjectOrInterfaceDefini
 //
 // @public
 export function isOk<X>(a: Result<X>): a is OkResult<X>;
+
+// @public
+export type KnownType = "USER_OR_GROUP_ID" | "RESOURCE_RID" | "ARTIFACT_GID";
 
 // @public (undocumented)
 export type LinkedType<
@@ -801,6 +879,14 @@ export interface MediaUpload {
 }
 
 // @public (undocumented)
+export type NotWhereClause<
+	T extends ObjectOrInterfaceDefinition,
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = {
+    	$not: WhereClause<T, RDPs>
+};
+
+// @public (undocumented)
 export const NULL_VALUE: symbol & {
     	__type: "NULL_VALUE"
 };
@@ -813,6 +899,133 @@ export namespace NullabilityAdherence {
     	// (undocumented)
     export type Default = "throw";
 }
+
+// @public
+export interface NumberFormatAffix {
+    	// (undocumented)
+    affix: Affix;
+    	// (undocumented)
+    baseFormatOptions: NumberFormatOptions;
+    	// (undocumented)
+    type: "affix";
+}
+
+// @public
+export interface NumberFormatCurrency {
+    	// (undocumented)
+    baseFormatOptions: NumberFormatOptions;
+    	// (undocumented)
+    currencyCode: PropertyTypeReferenceOrStringConstant;
+    	// (undocumented)
+    style: NumberFormatCurrencyStyle;
+    	// (undocumented)
+    type: "currency";
+}
+
+// @public (undocumented)
+export type NumberFormatCurrencyStyle = "STANDARD" | "COMPACT";
+
+// @public
+export interface NumberFormatCustomUnit {
+    	// (undocumented)
+    baseFormatOptions: NumberFormatOptions;
+    	// (undocumented)
+    type: "customUnit";
+    	// (undocumented)
+    unit: PropertyTypeReferenceOrStringConstant;
+}
+
+// @public
+export interface NumberFormatDuration {
+    	// (undocumented)
+    baseValue: DurationBaseValue;
+    	// (undocumented)
+    formatStyle: DurationFormatStyle;
+    	// (undocumented)
+    precision?: DurationPrecision;
+    	// (undocumented)
+    type: "duration";
+}
+
+// @public
+export interface NumberFormatFixedValues {
+    	// (undocumented)
+    type: "fixedValues";
+    	// (undocumented)
+    values: Record<number, string>;
+}
+
+// @public
+export type NumberFormatNotation = "STANDARD" | "SCIENTIFIC" | "ENGINEERING" | "COMPACT";
+
+// @public
+export interface NumberFormatOptions {
+    	// (undocumented)
+    convertNegativeToParenthesis?: boolean;
+    	// (undocumented)
+    maximumFractionDigits?: number;
+    	// (undocumented)
+    maximumSignificantDigits?: number;
+    	// (undocumented)
+    minimumFractionDigits?: number;
+    	// (undocumented)
+    minimumIntegerDigits?: number;
+    	// (undocumented)
+    minimumSignificantDigits?: number;
+    	// (undocumented)
+    notation?: NumberFormatNotation;
+    	// (undocumented)
+    roundingMode?: NumberRoundingMode;
+    	// (undocumented)
+    useGrouping?: boolean;
+}
+
+// @public
+export interface NumberFormatRatio {
+    	// (undocumented)
+    baseFormatOptions: NumberFormatOptions;
+    	// (undocumented)
+    ratioType: NumberRatioType;
+    	// (undocumented)
+    type: "ratio";
+}
+
+// @public
+export interface NumberFormatScale {
+    	// (undocumented)
+    baseFormatOptions: NumberFormatOptions;
+    	// (undocumented)
+    scaleType: NumberScaleType;
+    	// (undocumented)
+    type: "scale";
+}
+
+// @public
+export interface NumberFormatStandard {
+    	// (undocumented)
+    baseFormatOptions: NumberFormatOptions;
+    	// (undocumented)
+    type: "standard";
+}
+
+// @public
+export interface NumberFormatStandardUnit {
+    	// (undocumented)
+    baseFormatOptions: NumberFormatOptions;
+    	// (undocumented)
+    type: "standardUnit";
+    	// (undocumented)
+    unit: PropertyTypeReferenceOrStringConstant;
+}
+
+// @public (undocumented)
+export type NumberRatioType = "PERCENTAGE" | "PER_MILLE" | "BASIS_POINTS";
+
+// @public
+export type NumberRoundingMode = "CEIL" | "FLOOR" | "ROUND_CLOSEST";
+
+// @public (undocumented)
+export type NumberScaleType = "THOUSANDS" | "MILLIONS" | "BILLIONS";
 
 // @public (undocumented)
 export type ObjectIdentifiers<Q extends ObjectOrInterfaceDefinition> = {
@@ -878,6 +1091,10 @@ export namespace ObjectMetadata {
         readonly?: boolean;
         		// (undocumented)
         type: WirePropertyTypes;
+        		// (undocumented)
+        valueFormatting?: PropertyValueFormattingRule;
+        		// (undocumented)
+        valueTypeApiName?: string;
         	}
 }
 
@@ -1015,6 +1232,14 @@ export interface OntologyMetadata<_NEVER_USED_KEPT_FOR_BACKCOMPAT = any> {
     userAgent: string;
 }
 
+// @public (undocumented)
+export type OrWhereClause<
+	T extends ObjectOrInterfaceDefinition,
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = {
+    	$or: WhereClause<T, RDPs>[]
+};
+
 // Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "IsAny" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "ExtractPropsKeysFromOldPropsStyle" needs to be exported by the entry point index.d.ts
@@ -1039,15 +1264,19 @@ export namespace Osdk {
     	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
         		readonly $link: Q extends {
             			linksType?: any
-            		} ? Q["linksType"] : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q> : never
+            		} ? Q["linksType"] : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q> : never
         		readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk.Instance<NEW_Q, OPTIONS, ConvertProps<Q, NEW_Q, P, OPTIONS>>
         		readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(updatedObject?: Osdk.Instance<Q, any, NEW_PROPS> | { [K in NEW_PROPS]? : CompileTimeMetadata<Q>["props"][K] }) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>
         		readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends ObjectTypeDefinition ? {
-            			ObjectMetadata: Q
+            			ObjectMetadata: ObjectMetadata
             		} : {
             			ObjectMetadata: ObjectMetadata
             			InterfaceMetadata: InterfaceMetadata
             		}
+        		readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <PropertyApiName extends PropertyKeys<Q>>(propertyApiName: PropertyApiName, options?: {
+            			locale?: string
+            			timezoneId?: string
+            		}) => string | undefined
         	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         		readonly $rid: string
         	} : {});
@@ -1074,7 +1303,6 @@ export type OsdkObject<N extends string> = {
 // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (ae-forgotten-export) The symbol "MaybeArray" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "Converted" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "GetCreatePropertyValueFromWire" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MaybeNullable" needs to be exported by the entry point index.d.ts
 //
@@ -1082,19 +1310,19 @@ export type OsdkObject<N extends string> = {
 export type OsdkObjectCreatePropertyType<
 	T extends ObjectMetadata.Property,
 	STRICTLY_ENFORCE_NULLABLE extends boolean = true
-> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, Converted<GetCreatePropertyValueFromWire<T["type"]>>> | undefined : MaybeNullable<T, MaybeArray<T, Converted<GetCreatePropertyValueFromWire<T["type"]>>>>;
+> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, GetCreatePropertyValueFromWire<T["type"]>> | undefined : MaybeNullable<T, MaybeArray<T, GetCreatePropertyValueFromWire<T["type"]>>>;
 
 // Warning: (ae-forgotten-export) The symbol "ObjectTypeLinkKeysFrom2" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "OsdkObjectLinksEntry" needs to be exported by the entry point index.d.ts
 //
 // @public
-export type OsdkObjectLinksObject<O extends ObjectTypeDefinition> = ObjectTypeLinkKeysFrom2<O> extends never ? never : { readonly [L in ObjectTypeLinkKeysFrom2<O>] : OsdkObjectLinksEntry<O, L> };
+export type OsdkObjectLinksObject<O extends ObjectOrInterfaceDefinition> = ObjectTypeLinkKeysFrom2<O> extends never ? never : { readonly [L in ObjectTypeLinkKeysFrom2<O>] : OsdkObjectLinksEntry<O, L> };
 
 // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
 // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
-// Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (ae-forgotten-export) The symbol "GetClientPropertyValueFromWire" needs to be exported by the entry point index.d.ts
 //
@@ -1102,7 +1330,7 @@ export type OsdkObjectLinksObject<O extends ObjectTypeDefinition> = ObjectTypeLi
 export type OsdkObjectPropertyType<
 	T extends ObjectMetadata.Property,
 	STRICTLY_ENFORCE_NULLABLE extends boolean = true
-> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, Converted<GetClientPropertyValueFromWire<T["type"]>>> | undefined : MaybeNullable<T, MaybeArray<T, Converted<GetClientPropertyValueFromWire<T["type"]>>>>;
+> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, GetClientPropertyValueFromWire<T["type"]>> | undefined : MaybeNullable<T, MaybeArray<T, GetClientPropertyValueFromWire<T["type"]>>>;
 
 // @public (undocumented)
 export interface PageResult<T> {
@@ -1122,6 +1350,24 @@ export type PrimaryKeyType<Q extends ObjectOrInterfaceDefinition> = (Q extends O
 
 // @public (undocumented)
 export type PrimaryKeyTypes = "string" | "datetime" | "double" | "integer" | "timestamp" | "short" | "long" | "byte";
+
+// @public (undocumented)
+export interface PropertyBooleanFormattingRule {
+    	// (undocumented)
+    type: "boolean";
+    	// (undocumented)
+    valueIfFalse: string;
+    	// (undocumented)
+    valueIfTrue: string;
+}
+
+// @public (undocumented)
+export interface PropertyDateFormattingRule {
+    	// (undocumented)
+    format: DatetimeFormat;
+    	// (undocumented)
+    type: "date";
+}
 
 // @public (undocumented)
 export interface PropertyDef<
@@ -1152,6 +1398,49 @@ export namespace PropertyKeys {
         		type: T
         	}>;
 }
+
+// @public (undocumented)
+export interface PropertyKnownTypeFormattingRule {
+    	// (undocumented)
+    knownType: KnownType;
+    	// (undocumented)
+    type: "knownType";
+}
+
+// @public (undocumented)
+export interface PropertyNumberFormattingRule {
+    	// (undocumented)
+    numberType: PropertyNumberFormattingRuleType;
+    	// (undocumented)
+    type: "number";
+}
+
+// @public (undocumented)
+export type PropertyNumberFormattingRuleType = NumberFormatStandard | NumberFormatFixedValues | NumberFormatCurrency | NumberFormatStandardUnit | NumberFormatCustomUnit | NumberFormatAffix | NumberFormatDuration | NumberFormatScale | NumberFormatRatio;
+
+// @public (undocumented)
+export interface PropertyTimestampFormattingRule {
+    	// (undocumented)
+    displayTimezone: DatetimeTimezone;
+    	// (undocumented)
+    format: DatetimeFormat;
+    	// (undocumented)
+    type: "timestamp";
+}
+
+// @public (undocumented)
+export interface PropertyTypeReference {
+    	// (undocumented)
+    propertyApiName: string;
+    	// (undocumented)
+    type: "propertyType";
+}
+
+// @public
+export type PropertyTypeReferenceOrStringConstant = StringConstant | PropertyTypeReference;
+
+// @public
+export type PropertyValueFormattingRule = PropertyNumberFormattingRule | PropertyTimestampFormattingRule | PropertyDateFormattingRule | PropertyBooleanFormattingRule | PropertyKnownTypeFormattingRule;
 
 // @public
 export interface PropertyValueWireToClient {
@@ -1363,6 +1652,33 @@ export type SelectArgToKeys<
 > = A extends SelectArg<Q, never> ? PropertyKeys<Q> : A["$select"] extends readonly string[] ? A["$select"][number] : PropertyKeys<Q>;
 
 // @public (undocumented)
+export type SimplePropertyDef = WirePropertyTypes | undefined | Array<WirePropertyTypes>;
+
+// @public (undocumented)
+export namespace SimplePropertyDef {
+    	// (undocumented)
+    export type ExtractMultiplicity<T extends WirePropertyTypes | undefined | Array<WirePropertyTypes>> = NonNullable<T> extends Array<any> ? "array" : "single";
+    	// (undocumented)
+    export type ExtractNullable<T extends SimplePropertyDef> = [undefined] extends [T] ? "nullable" : [[undefined]] extends [T] ? "nullable" : "non-nullable";
+    	// (undocumented)
+    export type ExtractRuntimeBaseType<S extends SimplePropertyDef> = GetClientPropertyValueFromWire<SimplePropertyDef.ExtractWirePropertyType<S>>;
+    	// (undocumented)
+    export type ExtractWirePropertyType<T extends SimplePropertyDef> = T extends Array<infer Z> ? NonNullable<Z> : NonNullable<T>;
+    	// (undocumented)
+    export type FromPropertyMetadata<P extends ObjectMetadata.Property> = Make<P["type"], P["nullable"] extends true ? "nullable" : "non-nullable", P["multiplicity"] extends true ? "array" : "single">;
+    	// (undocumented)
+    export type Make<
+    		T extends WirePropertyTypes,
+    		N extends "nullable" | "non-nullable",
+    		M extends "array" | "single"
+    	> = M extends "array" ? N extends "nullable" ? Array<T> | undefined : Array<T> : N extends "nullable" ? T | undefined : T;
+    	// (undocumented)
+    export type ToPropertyDef<S extends SimplePropertyDef> = PropertyDef<SimplePropertyDef.ExtractWirePropertyType<S>, SimplePropertyDef.ExtractNullable<S>, SimplePropertyDef.ExtractMultiplicity<S>>;
+    	// (undocumented)
+    export type ToRuntimeProperty<S extends SimplePropertyDef> = ExtractMultiplicity<S> extends "array" ? ExtractNullable<S> extends "nullable" ? Array<ExtractRuntimeBaseType<S>> | undefined : Array<ExtractRuntimeBaseType<S>> : ExtractNullable<S> extends "nullable" ? ExtractRuntimeBaseType<S> | undefined : ExtractRuntimeBaseType<S>;
+}
+
+// @public (undocumented)
 export interface SingleLinkAccessor<T extends ObjectTypeDefinition> {
     	fetchOne: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L & PropertyKeys<T>> : Osdk.Instance<T>>;
     	fetchOneWithErrors: <const A extends SelectArg<T, PropertyKeys<T>, boolean>>(options?: A) => Promise<Result<A extends FetchPageArgs<T, infer L, infer R, any, infer S> ? Osdk.Instance<T, ExtractOptions<R, S>, L> : Osdk.Instance<T>>>;
@@ -1378,6 +1694,14 @@ export type SingleOsdkResult<
 	T extends boolean = false,
 	ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {}
 > = MaybeScore<Osdk.Instance<Q, ExtractOptions<R, S, T>, PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L, { [K in Extract<keyof RDPs, L>] : RDPs[K] }>, ORDER_BY_OPTIONS>;
+
+// @public (undocumented)
+export interface StringConstant {
+    	// (undocumented)
+    type: "constant";
+    	// (undocumented)
+    value: string;
+}
 
 // Warning: (ae-forgotten-export) The symbol "AllowedBucketKeyTypes_2" needs to be exported by the entry point index.d.ts
 //
@@ -1398,6 +1722,12 @@ export type ThreeDimensionalAggregation<
 //
 // @public (undocumented)
 export type ThreeDimensionalQueryAggregationDefinition = AggregationKeyDataType<TwoDimensionalQueryAggregationDefinition>;
+
+// @public (undocumented)
+export interface TimeCodeFormat {
+    	// (undocumented)
+    type: "timecode";
+}
 
 // @public (undocumented)
 export const TimeseriesDurationMapping: {
@@ -1505,28 +1835,27 @@ export interface VersionBound<V extends VersionString<any, any, any>> {
     __expectedClientVersion?: V;
 }
 
-// Warning: (ae-forgotten-export) The symbol "OrWhereClause" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "AndWhereClause" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "NotWhereClause" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "PropertyWhereClause" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "MergedPropertyWhereClause" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type WhereClause<T extends ObjectOrInterfaceDefinition> = OrWhereClause<T> | AndWhereClause<T> | NotWhereClause<T> | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true ? Record<string, never> : PropertyWhereClause<T>);
+export type WhereClause<
+	T extends ObjectOrInterfaceDefinition,
+	RDPs extends Record<string, SimplePropertyDef> = {}
+> = OrWhereClause<T, RDPs> | AndWhereClause<T, RDPs> | NotWhereClause<T, RDPs> | (IsNever<keyof CompileTimeMetadata<T>["properties"]> extends true ? Record<string, never> : MergedPropertyWhereClause<T, RDPs>);
 
 // @public (undocumented)
 export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWirePropertyTypes>;
 
 // Warnings were encountered during analysis:
 //
-// src/Definitions.ts:45:62 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/Definitions.ts:45:62 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-// src/Definitions.ts:45:62 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
-// src/Definitions.ts:45:62 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+// src/Definitions.ts:42:52 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+// src/Definitions.ts:42:52 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+// src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-name) The @param block should be followed by a valid parameter name: The identifier cannot non-word characters
+// src/Definitions.ts:42:52 - (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "UnorderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "OsdkObjectPropertyTypeNotUndefined" needs to be exported by the entry point index.d.ts
-// src/derivedProperties/DerivedProperty.ts:58:7 - (ae-forgotten-export) The symbol "DerivedPropertyCreator" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

@@ -1,5 +1,191 @@
 # @osdk/foundry-sdk-generator
 
+## 2.6.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [61eb5b0]
+- Updated dependencies [e7bf02a]
+  - @osdk/client@2.6.0-beta.4
+  - @osdk/api@2.6.0-beta.4
+  - @osdk/generator@2.6.0-beta.4
+
+## 2.6.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [831a285]
+- Updated dependencies [3fa28d4]
+  - @osdk/client@2.6.0-beta.3
+  - @osdk/api@2.6.0-beta.3
+  - @osdk/generator@2.6.0-beta.3
+
+## 2.6.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [b762231]
+- Updated dependencies [f7ae38a]
+- Updated dependencies [f085283]
+  - @osdk/generator@2.6.0-beta.2
+  - @osdk/client@2.6.0-beta.2
+  - @osdk/api@2.6.0-beta.2
+
+## 2.5.0-beta.15
+
+### Patch Changes
+
+- Updated dependencies [b01375c]
+- Updated dependencies [6e60727]
+  - @osdk/client@2.5.0-beta.15
+  - @osdk/api@2.5.0-beta.15
+  - @osdk/generator@2.5.0-beta.15
+
+## 2.5.0-beta.14
+
+### Patch Changes
+
+- Updated dependencies [b7edfb5]
+- Updated dependencies [6ddb3ed]
+  - @osdk/client@2.5.0-beta.14
+  - @osdk/api@2.5.0-beta.14
+  - @osdk/generator@2.5.0-beta.14
+
+## 2.5.0-beta.13
+
+### Minor Changes
+
+- 774dc06: Throw an error when trying to generate nested arrays for queries and actions
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.13
+- @osdk/client@2.5.0-beta.13
+- @osdk/generator@2.5.0-beta.13
+
+## 2.5.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [4b4a458]
+- Updated dependencies [85e8edb]
+  - @osdk/generator@2.5.0-beta.12
+  - @osdk/client@2.5.0-beta.12
+  - @osdk/api@2.5.0-beta.12
+
+## 2.5.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [7b97128]
+  - @osdk/client@2.5.0-beta.11
+  - @osdk/api@2.5.0-beta.11
+  - @osdk/generator@2.5.0-beta.11
+
+## 2.5.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [48040a8]
+  - @osdk/client@2.5.0-beta.10
+  - @osdk/api@2.5.0-beta.10
+  - @osdk/generator@2.5.0-beta.10
+
+## 2.5.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [d29cdfb]
+- Updated dependencies [eeaf8eb]
+- Updated dependencies [f49171a]
+  - @osdk/generator@2.5.0-beta.9
+  - @osdk/client@2.5.0-beta.9
+  - @osdk/api@2.5.0-beta.9
+
+## 2.5.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [78be29f]
+- Updated dependencies [ca1fabe]
+  - @osdk/generator@2.5.0-beta.8
+  - @osdk/api@2.5.0-beta.8
+  - @osdk/client@2.5.0-beta.8
+
+## 2.5.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [ab29baa]
+  - @osdk/client@2.5.0-beta.7
+  - @osdk/api@2.5.0-beta.7
+  - @osdk/generator@2.5.0-beta.7
+
+## 2.5.0-beta.6
+
+### Minor Changes
+
+- cbcf2ad: Add branching support
+
+### Patch Changes
+
+- Updated dependencies [badfbc4]
+- Updated dependencies [d797f0c]
+- Updated dependencies [cbcf2ad]
+  - @osdk/shared.client.impl@1.5.0-beta.2
+  - @osdk/client@2.5.0-beta.6
+  - @osdk/generator@2.5.0-beta.6
+  - @osdk/api@2.5.0-beta.6
+
+## 2.5.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [3d7461d]
+- Updated dependencies [052a96b]
+- Updated dependencies [4248b80]
+  - @osdk/client@2.5.0-beta.5
+  - @osdk/api@2.5.0-beta.5
+  - @osdk/generator@2.5.0-beta.5
+
+## 2.5.0-beta.4
+
+### Minor Changes
+
+- a00d2ed: Update Platform SDK dependencies
+- a96d89e: Update Platform SDK dependencies
+
+### Patch Changes
+
+- Updated dependencies [a00d2ed]
+- Updated dependencies [a96d89e]
+  - @osdk/generator@2.5.0-beta.4
+  - @osdk/client@2.5.0-beta.4
+  - @osdk/api@2.5.0-beta.4
+
+## 2.5.0-beta.3
+
+### Minor Changes
+
+- 7bdac45: Update Platform SDK dependency
+- 7bdac45: Support value type enum generation for strings and booleans
+
+### Patch Changes
+
+- Updated dependencies [7bdac45]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [e48be06]
+  - @osdk/generator@2.5.0-beta.3
+  - @osdk/client@2.5.0-beta.3
+  - @osdk/api@2.5.0-beta.3
+
 ## 2.5.0-beta.2
 
 ### Minor Changes

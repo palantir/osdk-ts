@@ -29,7 +29,7 @@ export namespace modifyEmployee {
   export interface Params {
     readonly employee: ActionParam.ObjectType<Employee>;
 
-    readonly primary_office_id?: ActionParam.PrimitiveType<'string'> | ActionParam.NullValueType;
+    readonly primary_office_id?: ActionParam.PrimitiveType<'string'>;
   }
 
   // Represents a fqn of the action

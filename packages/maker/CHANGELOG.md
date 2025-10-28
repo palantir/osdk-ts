@@ -1,5 +1,217 @@
 # @osdk/maker
 
+## 0.14.0-beta.7
+
+### Minor Changes
+
+- 7fd788b: Support derived properties
+
+### Patch Changes
+
+- Updated dependencies [e7bf02a]
+  - @osdk/api@2.6.0-beta.4
+
+## 0.14.0-beta.6
+
+### Minor Changes
+
+- 04bfbfc: Add default format and table config options to OAC interface actions
+- 6ddabf4: Fix bug with action level validation on interface actions
+
+## 0.14.0-beta.5
+
+### Minor Changes
+
+- a03ea8d: Sections, submission metadata, layout switching for OAC interface actions
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.3
+
+## 0.14.0-beta.4
+
+### Minor Changes
+
+- aca0e5d: Add parameter/property configuration for OAC interface actions
+- 878c2eb: Add display name, api name, status customizations to OAC interface actions
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [f7ae38a]
+  - @osdk/api@2.6.0-beta.2
+
+## 0.14.0-beta.3
+
+### Minor Changes
+
+- 995064b: Make tests run synchronously
+
+## 0.14.0-beta.2
+
+### Minor Changes
+
+- 7601f9f: Fix condition validation
+
+## 0.13.0-beta.18
+
+### Minor Changes
+
+- 6dee3cc: Typechecks improvement
+- 242cdb7: Remove uuid import from maker
+
+## 0.13.0-beta.17
+
+### Minor Changes
+
+- 58e9f56: Add condition validations for oac actions
+
+## 0.13.0-beta.16
+
+### Minor Changes
+
+- 7f22c27: Finish wiring up randomness key
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.15
+
+## 0.13.0-beta.15
+
+### Minor Changes
+
+- 04e664e: readme update and missing changeset for wiring up randomness key
+
+## 0.13.0-beta.14
+
+### Minor Changes
+
+- 9dd5a63: Intermediary links in oac
+- e62408b: Fix Maker Rid Generation
+
+### Patch Changes
+
+- Updated dependencies [b7edfb5]
+  - @osdk/api@2.5.0-beta.14
+
+## 0.13.0-beta.13
+
+### Minor Changes
+
+- d815339: Allow interface props to be excluded from actions
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.13
+
+## 0.13.0-beta.12
+
+### Minor Changes
+
+- f025f30: Fix semantic merge conflict
+- 7f0ad5c: Check extended interfaces when verifying interface actions
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.12
+
+## 0.13.0-beta.11
+
+### Minor Changes
+
+- 5fd12eb: Fix interface display metadata to include icon
+- f2dbc3d: Fix test from semantic merge conflict
+- 712dfbe: Improve interface action validation
+
+### Patch Changes
+
+- Updated dependencies [7b97128]
+  - @osdk/api@2.5.0-beta.11
+
+## 0.13.0-beta.10
+
+### Minor Changes
+
+- 11fd3fb: Add api name validation for object types
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.10
+
+## 0.13.0-beta.9
+
+### Minor Changes
+
+- 1b60527: Remove foundry.ontologies dependency
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.9
+
+## 0.13.0-beta.8
+
+### Minor Changes
+
+- f9b6dc4: Write value types to ontology IR file
+- b1c99bf: Revert .js -> .ts extension for codegen
+
+### Patch Changes
+
+- Updated dependencies [ca1fabe]
+  - @osdk/api@2.5.0-beta.8
+
+## 0.13.0-beta.7
+
+### Minor Changes
+
+- 6da8fd2: Write value type IR correctly
+
+## 0.13.0-beta.6
+
+### Minor Changes
+
+- 07083e1: Action submission conditions can have custom metadata
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.7
+
+## 0.13.0-beta.5
+
+### Minor Changes
+
+- cbcf2ad: Add branching support
+- 04fe946: Use block data type for imports
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.6
+
+## 0.13.0-beta.4
+
+### Minor Changes
+
+- a00d2ed: Update Platform SDK dependencies
+- a96d89e: Update Platform SDK dependencies
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.4
+
+## 0.13.0-beta.3
+
+### Minor Changes
+
+- 7bdac45: Update Platform SDK dependency
+
+### Patch Changes
+
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [e48be06]
+  - @osdk/api@2.5.0-beta.3
+
 ## 0.13.0-beta.2
 
 ### Minor Changes

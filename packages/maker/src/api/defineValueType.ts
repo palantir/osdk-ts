@@ -22,12 +22,10 @@ import type {
   ValueTypeDataConstraint,
 } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
-import { updateOntology } from "./defineOntology.js";
-import {
-  OntologyEntityTypeEnum,
-  type ValueTypeDefinitionVersion,
-  type ValueTypeType,
-} from "./types.js";
+import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
+import { namespace, updateOntology } from "./defineOntology.js";
+import { type ValueTypeDefinitionVersion } from "./values/ValueTypeDefinitionVersion.js";
+import { type ValueTypeType } from "./values/ValueTypeType.js";
 
 type ZipBaseAndConstraint<Base, Constraint> = {
   [PropertyType in (BaseType["type"] & DataConstraint["type"])]: Base extends
@@ -150,6 +148,7 @@ export function defineValueType(
 
   const vt: ValueTypeDefinitionVersion = {
     apiName,
+    packageNamespace: namespace.substring(0, namespace.length - 1),
     displayMetadata: {
       displayName: displayName,
       description: description ?? "",

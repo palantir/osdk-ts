@@ -1,6 +1,6 @@
 {
   "name": "@osdk/foundry-config-json",
-  "version": "1.4.0-beta.1",
+  "version": "1.5.0-beta.1",
   "access": "public",
   "license": "Apache-2.0",
   "repository": {
@@ -42,15 +42,15 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "ajv": "^8.13.0",
+    "ajv": "^8.17.1",
     "find-up": "^7.0.0",
-    "semver": "^7.6.3"
+    "semver": "^7.7.2"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
-    "@types/node": "^18.0.0",
-    "@types/semver": "^7.5.8",
+    "@types/node": "^18.19.124",
+    "@types/semver": "^7.7.1",
     "typescript": "~5.5.4"
   },
   "publishConfig": {

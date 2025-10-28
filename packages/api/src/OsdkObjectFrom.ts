@@ -90,6 +90,16 @@ export type MapPropNamesToObjectType<
     TO
   >[JustProps<FROM, P> & keyof PropMapToObject<FROM, TO>];
 
+type NamespaceOf<S extends string> = S extends `${infer Before}.${infer After}`
+  ? After extends `${string}.${string}` ? `${Before}.${NamespaceOf<After>}`
+  : Before
+  : never;
+
+type MaybeStripNamespaces<S extends string, TO extends InterfaceDefinition> =
+  S extends `${NamespaceOf<S>}.${infer Rest}`
+    ? NamespaceOf<S> extends NamespaceOf<ApiNameAsString<TO>> ? Rest : S
+    : S;
+
 export type PropMapToInterface<
   FROM extends ObjectTypeDefinition,
   TO extends InterfaceDefinition,
@@ -101,10 +111,13 @@ export type MapPropNamesToInterface<
   FROM extends ObjectTypeDefinition,
   TO extends InterfaceDefinition,
   P extends ValidOsdkPropParams<FROM>,
-> = PropMapToInterface<
-  FROM,
+> = MaybeStripNamespaces<
+  PropMapToInterface<
+    FROM,
+    TO
+  >[JustProps<FROM, P> & keyof PropMapToInterface<FROM, TO>],
   TO
->[JustProps<FROM, P> & keyof PropMapToInterface<FROM, TO>];
+>;
 /**
  * Older version of this helper that allows for `$rid` and co in
  * the properties field.
@@ -205,7 +218,7 @@ export namespace Osdk {
       : { [A in keyof R]: SimplePropertyDef.ToRuntimeProperty<R[A]> })
     & {
       readonly $link: Q extends { linksType?: any } ? Q["linksType"]
-        : Q extends ObjectTypeDefinition ? OsdkObjectLinksObject<Q>
+        : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q>
         : never;
 
       readonly $as: <NEW_Q extends ValidToFrom<Q>>(
@@ -228,12 +241,19 @@ export namespace Osdk {
 
       readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends
         ObjectTypeDefinition ? {
-          ObjectMetadata: Q;
+          ObjectMetadata: ObjectMetadata;
         }
         : {
           ObjectMetadata: ObjectMetadata;
           InterfaceMetadata: InterfaceMetadata;
         };
+
+      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
+        PropertyApiName extends PropertyKeys<Q>,
+      >(
+        propertyApiName: PropertyApiName,
+        options?: { locale?: string; timezoneId?: string },
+      ) => string | undefined;
     }
     // We are hiding the $rid field if it wasn't requested as we want to discourage its use
     & (IsNever<OPTIONS> extends true ? {}

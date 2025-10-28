@@ -29,6 +29,7 @@ export async function loadActionMetadata(
     client,
     await client.ontologyRid,
     actionType,
+    { branch: client.branch },
   );
 
   return wireActionTypeV2ToSdkActionMetadata(r);

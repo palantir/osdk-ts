@@ -234,8 +234,11 @@ export interface EsongIssues extends $ObjectTypeDefinition {
   };
 }
 
-export const EsongIssues: EsongIssues = {
+export const EsongIssues = {
   type: 'object',
   apiName: 'EsongIssues',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.ontology.main.object-type.9e50a0d3-5b89-41f5-a894-b0e9bb388950',
+  },
+} satisfies EsongIssues & { internalDoNotUseMetadata: { rid: string } } as EsongIssues;

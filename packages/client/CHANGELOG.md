@@ -1,5 +1,224 @@
 # @osdk/client
 
+## 2.6.0-beta.4
+
+### Minor Changes
+
+- 61eb5b0: Add heartbeat to object set subscriptions
+- e7bf02a: Add RDP support to React toolkit
+
+### Patch Changes
+
+- Updated dependencies [7fd788b]
+- Updated dependencies [e7bf02a]
+  - @osdk/client.unstable@2.6.0-beta.4
+  - @osdk/api@2.6.0-beta.4
+  - @osdk/generator-converters@2.6.0-beta.4
+
+## 2.6.0-beta.3
+
+### Minor Changes
+
+- 831a285: Added relative time formatting
+- 3fa28d4: Add support for date and time formatting
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.3
+- @osdk/client.unstable@2.6.0-beta.3
+- @osdk/generator-converters@2.6.0-beta.3
+
+## 2.6.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+- c4f8529: Add stub for getFormattedValue in experimental mode
+- b762231: Add boolean formatting
+- f7ae38a: Allow exact matching for arrays of structs
+- f085283: Add support for numeric formatting
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [f7ae38a]
+  - @osdk/generator-converters@2.6.0-beta.2
+  - @osdk/api@2.6.0-beta.2
+  - @osdk/client.unstable@2.6.0-beta.2
+
+## 2.5.0-beta.15
+
+### Minor Changes
+
+- b01375c: Fire and forget query metadata loads if no parameters
+- 6e60727: Export extractPrimaryKetFromObjectSpecifier from client
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.15
+- @osdk/client.unstable@2.5.0-beta.15
+- @osdk/generator-converters@2.5.0-beta.15
+
+## 2.5.0-beta.14
+
+### Minor Changes
+
+- b7edfb5: Add support for object type casts
+
+### Patch Changes
+
+- Updated dependencies [9dd5a63]
+- Updated dependencies [e62408b]
+- Updated dependencies [b7edfb5]
+  - @osdk/client.unstable@2.5.0-beta.14
+  - @osdk/api@2.5.0-beta.14
+  - @osdk/generator-converters@2.5.0-beta.14
+
+## 2.5.0-beta.13
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.13
+- @osdk/client.unstable@2.5.0-beta.13
+- @osdk/generator-converters@2.5.0-beta.13
+
+## 2.5.0-beta.12
+
+### Minor Changes
+
+- 85e8edb: Fix unhandled promise rejection error.
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.12
+- @osdk/client.unstable@2.5.0-beta.12
+- @osdk/generator-converters@2.5.0-beta.12
+
+## 2.5.0-beta.11
+
+### Minor Changes
+
+- 7b97128: add useObjectSet hook
+
+### Patch Changes
+
+- Updated dependencies [7b97128]
+  - @osdk/api@2.5.0-beta.11
+  - @osdk/client.unstable@2.5.0-beta.11
+  - @osdk/generator-converters@2.5.0-beta.11
+
+## 2.5.0-beta.10
+
+### Minor Changes
+
+- 48040a8: add exponential backoff behavior for ObjectSetListener websocket nextConnectTime
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.10
+- @osdk/client.unstable@2.5.0-beta.10
+- @osdk/generator-converters@2.5.0-beta.10
+
+## 2.5.0-beta.9
+
+### Minor Changes
+
+- eeaf8eb: refactor ListQuery into InterfaceListQuery and ObjectListQuery
+- f49171a: Remaps simple API names for orderby and select arguments to match expected fully qualified API names
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.9
+- @osdk/client.unstable@2.5.0-beta.9
+- @osdk/generator-converters@2.5.0-beta.9
+
+## 2.5.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [ca1fabe]
+  - @osdk/api@2.5.0-beta.8
+  - @osdk/client.unstable@2.5.0-beta.8
+  - @osdk/generator-converters@2.5.0-beta.8
+
+## 2.5.0-beta.7
+
+### Minor Changes
+
+- ab29baa: make dedupeIntervals dynamic
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.7
+- @osdk/client.unstable@2.5.0-beta.7
+- @osdk/generator-converters@2.5.0-beta.7
+
+## 2.5.0-beta.6
+
+### Minor Changes
+
+- d797f0c: Falsy values other than undefined or null do not throw for query map responses
+- cbcf2ad: Add branching support
+
+### Patch Changes
+
+- Updated dependencies [badfbc4]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [04fe946]
+  - @osdk/shared.client.impl@1.5.0-beta.2
+  - @osdk/shared.net.errors@2.5.0-beta.2
+  - @osdk/shared.net.fetch@1.5.0-beta.2
+  - @osdk/generator-converters@2.5.0-beta.6
+  - @osdk/client.unstable@2.5.0-beta.6
+  - @osdk/api@2.5.0-beta.6
+
+## 2.5.0-beta.5
+
+### Minor Changes
+
+- 3d7461d: Fix applyQuery for marketplace installations
+- 052a96b: Add $link support.
+
+### Patch Changes
+
+- Updated dependencies [052a96b]
+  - @osdk/api@2.5.0-beta.5
+  - @osdk/client.unstable@2.5.0-beta.5
+  - @osdk/generator-converters@2.5.0-beta.5
+
+## 2.5.0-beta.4
+
+### Minor Changes
+
+- a00d2ed: Update Platform SDK dependencies
+- a96d89e: Update Platform SDK dependencies
+
+### Patch Changes
+
+- Updated dependencies [a00d2ed]
+- Updated dependencies [a96d89e]
+  - @osdk/generator-converters@2.5.0-beta.4
+  - @osdk/api@2.5.0-beta.4
+  - @osdk/client.unstable@2.5.0-beta.4
+
+## 2.5.0-beta.3
+
+### Minor Changes
+
+- 7bdac45: Update Platform SDK dependency
+- 20962bc: Add a new experimental fetchPageByRidNoType method
+
+### Patch Changes
+
+- Updated dependencies [7bdac45]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [e48be06]
+  - @osdk/generator-converters@2.5.0-beta.3
+  - @osdk/api@2.5.0-beta.3
+  - @osdk/client.unstable@2.5.0-beta.3
+
 ## 2.5.0-beta.2
 
 ### Minor Changes
@@ -8,7 +227,6 @@
 - 7160276: Add order by relevance support to nearest neighbors
 - 7cdab1d: Update platform sdk dependencies
 - b9e9a88: Refactor Observable Client with enhanced observer architecture
-
   - Restructure observable implementation with dedicated observer classes (LinkObservers, ListObservers, ObjectObservers)
   - Improve type safety for link observation operations with enhanced generic constraints
   - Add QuerySubscription and UnsubscribableWrapper for better encapsulation
@@ -197,7 +415,6 @@
   The `useOsdkAction` hook in `@osdk/react` now provides a `validateAction` function that allows you to check if an action is valid without executing it. This is useful for providing real-time validation feedback to users before they commit to performing an action.
 
   ### New features:
-
   - **validateAction**: A new async function that validates action parameters without executing the action
   - **isValidating**: A boolean state that indicates when validation is in progress
   - **validationResult**: Contains the validation response from the server, including whether the action is valid and any validation errors
@@ -220,7 +437,6 @@
   ```
 
   ### Implementation details:
-
   - Multiple validation calls can be made - new calls automatically cancel previous pending validations
   - Validation and action execution are mutually exclusive - you cannot validate while an action is being applied and vice versa
   - The underlying `ObservableClient` in `@osdk/client` has been extended with a `validateAction` method to support this functionality
@@ -2118,7 +2334,6 @@
 - 97f627e: Supports more than one concurrent subscription
 
   Also:
-
   - Introduced an optional pino logger to the client
   - Fixes issues with where clauses for equality in subscriptions
   - Fixes issues with inconsistent id name and apiName's in the mapping data

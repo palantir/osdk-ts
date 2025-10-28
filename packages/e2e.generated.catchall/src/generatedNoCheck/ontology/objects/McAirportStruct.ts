@@ -117,8 +117,11 @@ export interface McAirportStruct extends $ObjectTypeDefinition {
   };
 }
 
-export const McAirportStruct: McAirportStruct = {
+export const McAirportStruct = {
   type: 'object',
   apiName: 'McAirportStruct',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies McAirportStruct & { internalDoNotUseMetadata: { rid: string } } as McAirportStruct;

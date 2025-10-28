@@ -34,6 +34,7 @@ type TestEditScope =
   | Edits.Link<Task, "RP">
   | Edits.Link<Task, "Todos">
   | Edits.Link<Office, "occupants">
+  | Edits.Link<Employee, "visitedOffices">
   | Edits.Interface<FooInterface>;
 
 describe(createEditBatch, () => {
@@ -77,6 +78,7 @@ describe(createEditBatch, () => {
       id: 0,
       attachment: "ri.foo",
       attachment2: { rid: "ri.bar" } as Attachment,
+      vector: [1, 2, 3],
     });
     editBatch.create(Task, { id: 0, name: "My Task Name" });
     editBatch.create(Task, { id: 1, name: "My Other Task Name" });
@@ -103,19 +105,23 @@ describe(createEditBatch, () => {
     }, { fooSpt: "fooSpt2" });
     editBatch.delete(fooInterfaceInstance);
 
-    editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
-      $apiName: "Person",
-      $primaryKey: 0,
+    editBatch.link({ $apiName: "Employee", $primaryKey: 0 }, "visitedOffices", {
+      $apiName: "Office",
+      $primaryKey: "Seattle",
     });
-    editBatch.link({ $apiName: "Task", $primaryKey: 0 }, "RP", {
-      $apiName: "Person",
-      $primaryKey: 1,
+    editBatch.link({ $apiName: "Employee", $primaryKey: 0 }, "visitedOffices", {
+      $apiName: "Office",
+      $primaryKey: "Palo Alto",
     });
-    editBatch.link(taskInstance, "RP", personInstance);
-    editBatch.unlink({ $apiName: "Task", $primaryKey: 0 }, "RP", {
-      $apiName: "Person",
-      $primaryKey: 1,
-    });
+    editBatch.link(employeeInstance, "visitedOffices", officeInstance);
+    editBatch.unlink(
+      { $apiName: "Employee", $primaryKey: 0 },
+      "visitedOffices",
+      {
+        $apiName: "Office",
+        $primaryKey: "New York",
+      },
+    );
     editBatch.link(taskInstance, "Todos", { $apiName: "Todo", $primaryKey: 0 });
     editBatch.link(taskInstance, "Todos", [
       { $apiName: "Todo", $primaryKey: 1 },
@@ -127,7 +133,7 @@ describe(createEditBatch, () => {
     });
     editBatch.link(officeInstance, "occupants", employeeInstance);
     editBatch.unlink(
-      { $apiName: "Office", $primaryKey: "2" },
+      { $apiName: "Office", $primaryKey: "Denver" },
       "occupants",
       [employeeInstance, { $apiName: "Employee", $primaryKey: 3 }],
     );
@@ -140,6 +146,7 @@ describe(createEditBatch, () => {
           id: 0,
           attachment: "ri.foo",
           attachment2: { rid: "ri.bar" },
+          vector: [1, 2, 3],
         },
       },
       {
@@ -222,27 +229,27 @@ describe(createEditBatch, () => {
       },
       {
         type: "addLink",
-        apiName: "RP",
-        source: { $apiName: "Task", $primaryKey: 0 },
-        target: { $apiName: "Person", $primaryKey: 0 },
+        apiName: "visitedOffices",
+        source: { $apiName: "Employee", $primaryKey: 0 },
+        target: { $apiName: "Office", $primaryKey: "Seattle" },
       },
       {
         type: "addLink",
-        apiName: "RP",
-        source: { $apiName: "Task", $primaryKey: 0 },
-        target: { $apiName: "Person", $primaryKey: 1 },
+        apiName: "visitedOffices",
+        source: { $apiName: "Employee", $primaryKey: 0 },
+        target: { $apiName: "Office", $primaryKey: "Palo Alto" },
       },
       {
         type: "addLink",
-        apiName: "RP",
-        source: { $apiName: "Task", $primaryKey: 2 },
-        target: { $apiName: "Person", $primaryKey: 2 },
+        apiName: "visitedOffices",
+        source: { $apiName: "Employee", $primaryKey: 2 },
+        target: { $apiName: "Office", $primaryKey: "2" },
       },
       {
         type: "removeLink",
-        apiName: "RP",
-        source: { $apiName: "Task", $primaryKey: 0 },
-        target: { $apiName: "Person", $primaryKey: 1 },
+        apiName: "visitedOffices",
+        source: { $apiName: "Employee", $primaryKey: 0 },
+        target: { $apiName: "Office", $primaryKey: "New York" },
       },
       {
         type: "addLink",
@@ -277,13 +284,13 @@ describe(createEditBatch, () => {
       {
         type: "removeLink",
         apiName: "occupants",
-        source: { $apiName: "Office", $primaryKey: "2" },
+        source: { $apiName: "Office", $primaryKey: "Denver" },
         target: { $apiName: "Employee", $primaryKey: 2 },
       },
       {
         type: "removeLink",
         apiName: "occupants",
-        source: { $apiName: "Office", $primaryKey: "2" },
+        source: { $apiName: "Office", $primaryKey: "Denver" },
         target: { $apiName: "Employee", $primaryKey: 3 },
       },
     ]);
@@ -297,8 +304,9 @@ describe(createEditBatch, () => {
       taskInstance,
       "RP",
       // @ts-expect-error
-      [personInstance],
-    ); // Using list for non-multiplicity link
+      personInstance,
+    );
+    // Trying to traverse ONE direction
 
     editBatch.link(
       { $apiName: "Task", $primaryKey: 2 },

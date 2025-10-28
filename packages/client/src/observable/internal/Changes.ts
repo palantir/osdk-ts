@@ -19,18 +19,23 @@ import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectH
 import type { CacheKey } from "./CacheKey.js";
 import { DEBUG_ONLY__cacheKeyToString } from "./CacheKey.js";
 import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
-import type { ListCacheKey } from "./ListCacheKey.js";
-import type { ObjectCacheKey } from "./ObjectQuery.js";
+import type { ListCacheKey } from "./list/ListCacheKey.js";
+import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
+import type { ObjectSetCacheKey } from "./objectset/ObjectSetCacheKey.js";
 
 export class Changes {
   modifiedObjects: MultiMap<string, ObjectHolder> = new MultiMap();
   addedObjects: MultiMap<string, ObjectHolder> = new MultiMap();
 
-  added: Set<ListCacheKey | ObjectCacheKey | SpecificLinkCacheKey> = new Set();
-  modified: Set<ListCacheKey | ObjectCacheKey | SpecificLinkCacheKey> =
-    new Set();
-  deleted: Set<ListCacheKey | ObjectCacheKey | SpecificLinkCacheKey> =
-    new Set();
+  added: Set<
+    ListCacheKey | ObjectCacheKey | SpecificLinkCacheKey | ObjectSetCacheKey
+  > = new Set();
+  modified: Set<
+    ListCacheKey | ObjectCacheKey | SpecificLinkCacheKey | ObjectSetCacheKey
+  > = new Set();
+  deleted: Set<
+    ListCacheKey | ObjectCacheKey | SpecificLinkCacheKey | ObjectSetCacheKey
+  > = new Set();
 
   registerObject = (
     cacheKey: ObjectCacheKey,
@@ -55,6 +60,10 @@ export class Changes {
 
   deleteLink = (cacheKey: SpecificLinkCacheKey): void => {
     this.deleted.add(cacheKey);
+  };
+
+  registerObjectSet = (key: ObjectSetCacheKey): void => {
+    this.modified.add(key);
   };
 
   isEmpty(): boolean {

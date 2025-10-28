@@ -33,8 +33,11 @@ export type { AggregationsResults } from "./aggregate/AggregationsResults.js";
 export type { GeoFilterOptions } from "./aggregate/GeoFilter.js";
 export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
 export type {
+  AndWhereClause,
   GeoFilter_Intersects,
   GeoFilter_Within,
+  NotWhereClause,
+  OrWhereClause,
   PossibleWhereClauseFilters,
   WhereClause,
 } from "./aggregate/WhereClause.js";
@@ -46,13 +49,14 @@ export type {
   OsdkObjectLinksObject,
   SingleLinkAccessor,
 } from "./definitions/LinkDefinitions.js";
-export type { DerivedProperty } from "./derivedProperties/DerivedProperty.js";
+export { type DerivedProperty } from "./derivedProperties/DerivedProperty.js";
 export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
   AllGroupByValues,
   GroupByClause,
   GroupByRange,
 } from "./groupby/GroupByClause.js";
+export type { Logger } from "./Logger.js";
 export type {
   AllowedBucketKeyTypes,
   AllowedBucketTypes,
@@ -121,6 +125,54 @@ export type {
   ThreeDimensionalQueryAggregationDefinition,
   TwoDimensionalQueryAggregationDefinition,
 } from "./ontology/QueryDefinition.js";
+export type { SimplePropertyDef } from "./ontology/SimplePropertyDef.js";
+export type { PropertyBooleanFormattingRule } from "./ontology/valueFormatting/PropertyBooleanFormattingRule.js";
+export type {
+  DatetimeFormat,
+  DatetimeLocalizedFormat,
+  DatetimeLocalizedFormatType,
+  DatetimeStringFormat,
+  DatetimeTimezone,
+  DatetimeTimezoneStatic,
+  DatetimeTimezoneUser,
+  PropertyDateFormattingRule,
+  PropertyTimestampFormattingRule,
+} from "./ontology/valueFormatting/PropertyDateAndTimestampFormattingRule.js";
+export type {
+  KnownType,
+  PropertyKnownTypeFormattingRule,
+} from "./ontology/valueFormatting/PropertyKnownTypeFormattingRule.js";
+export type {
+  Affix,
+  DurationBaseValue,
+  DurationFormatStyle,
+  DurationPrecision,
+  HumanReadableFormat,
+  NumberFormatAffix,
+  NumberFormatCurrency,
+  NumberFormatCurrencyStyle,
+  NumberFormatCustomUnit,
+  NumberFormatDuration,
+  NumberFormatFixedValues,
+  NumberFormatNotation,
+  NumberFormatOptions,
+  NumberFormatRatio,
+  NumberFormatScale,
+  NumberFormatStandard,
+  NumberFormatStandardUnit,
+  NumberRatioType,
+  NumberRoundingMode,
+  NumberScaleType,
+  PropertyNumberFormattingRule,
+  PropertyNumberFormattingRuleType,
+  TimeCodeFormat,
+} from "./ontology/valueFormatting/PropertyNumberFormattingRule.js";
+export type { PropertyValueFormattingRule } from "./ontology/valueFormatting/PropertyValueFormattingRule.js";
+export type {
+  PropertyTypeReference,
+  PropertyTypeReferenceOrStringConstant,
+  StringConstant,
+} from "./ontology/valueFormatting/PropertyValueFormattingUtils.js";
 export type {
   BaseWirePropertyTypes,
   WirePropertyTypes,
@@ -130,6 +182,7 @@ export type {
   OsdkBase,
   PrimaryKeyType,
 } from "./OsdkBase.js";
+ 
 export type { OsdkObject } from "./OsdkObject.js";
 export type { ConvertProps, MaybeScore, Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";
@@ -148,4 +201,3 @@ export type {
 } from "./timeseries/timeseries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export {};
-export type { Logger } from "./Logger.js";

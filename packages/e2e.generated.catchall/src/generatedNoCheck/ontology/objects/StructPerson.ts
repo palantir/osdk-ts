@@ -87,8 +87,11 @@ export interface StructPerson extends $ObjectTypeDefinition {
   };
 }
 
-export const StructPerson: StructPerson = {
+export const StructPerson = {
   type: 'object',
   apiName: 'StructPerson',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
+} satisfies StructPerson & { internalDoNotUseMetadata: { rid: string } } as StructPerson;

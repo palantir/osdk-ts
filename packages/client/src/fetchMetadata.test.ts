@@ -87,6 +87,10 @@ describe("FetchMetadata", () => {
             "multiplicity": true,
             "targetType": "Employee",
           },
+          "visitedOffices": {
+            "multiplicity": true,
+            "targetType": "Office",
+          },
         },
         "pluralDisplayName": "Employees",
         "primaryKeyApiName": "employeeId",
@@ -98,6 +102,8 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
           },
           "employeeId": {
             "description": undefined,
@@ -105,6 +111,8 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": false,
             "type": "integer",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
           },
           "employeeLocation": {
             "description": "Geotime series reference of the location of the employee",
@@ -112,6 +120,8 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "geotimeSeriesReference",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
           },
           "employeeSensor": {
             "description": "TimeSeries sensor of the status of the employee",
@@ -119,6 +129,8 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "sensorTimeseries",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
           },
           "employeeStatus": {
             "description": "TimeSeries of the status of the employee",
@@ -126,6 +138,8 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "stringTimeseries",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
           },
           "fullName": {
             "description": undefined,
@@ -133,6 +147,8 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
           },
           "office": {
             "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
@@ -141,6 +157,8 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
           },
           "skillSet": {
             "description": "The skills of the employee",
@@ -148,6 +166,8 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
           },
           "skillSetEmbedding": {
             "description": "Vectorized skill set",
@@ -155,6 +175,8 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "vector",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
           },
           "startDate": {
             "description": "The date the employee was hired (most recently, if they were re-hired)",
@@ -162,6 +184,8 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "datetime",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
           },
         },
         "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
@@ -206,6 +230,8 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
           },
         },
         "rid": "ri.interface.main.interface.1",

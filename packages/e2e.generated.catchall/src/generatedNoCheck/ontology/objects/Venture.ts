@@ -100,8 +100,11 @@ export interface Venture extends $ObjectTypeDefinition {
   };
 }
 
-export const Venture: Venture = {
+export const Venture = {
   type: 'object',
   apiName: 'Venture',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies Venture & { internalDoNotUseMetadata: { rid: string } } as Venture;

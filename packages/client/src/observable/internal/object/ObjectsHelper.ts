@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
+import type {
+  InterfaceDefinition,
+  ObjectTypeDefinition,
+  Osdk,
+} from "@osdk/api";
+import deepEqual from "fast-deep-equal";
+import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { ObjectPayload } from "../../ObjectPayload.js";
 import type { ObserveObjectOptions } from "../../ObservableClient.js";
-import type { Observer } from "../../ObservableClient/common.js";
+import type { Observer, Status } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
-import { type ObjectCacheKey, ObjectQuery } from "../ObjectQuery.js";
+import type { BatchContext } from "../BatchContext.js";
+import type { Canonical } from "../Canonical.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
+import type { Rdp } from "../RdpCanonicalizer.js";
+import { tombstone } from "../tombstone.js";
+import { mergeObjectFields } from "../utils/rdpFieldOperations.js";
+import { type ObjectCacheKey } from "./ObjectCacheKey.js";
+import { ObjectQuery } from "./ObjectQuery.js";
 
 export class ObjectsHelper extends AbstractHelper<
   ObjectQuery,
@@ -35,26 +47,160 @@ export class ObjectsHelper extends AbstractHelper<
 
   getQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveObjectOptions<T>,
+    rdpConfig?: Canonical<Rdp> | null,
   ): ObjectQuery {
     const apiName = typeof options.apiName === "string"
       ? options.apiName
       : options.apiName.apiName;
     const { pk } = options;
 
-    const objectCacheKey = this.store.getCacheKey<ObjectCacheKey>(
+    const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
       "object",
       apiName,
       pk,
+      rdpConfig ?? undefined,
     );
 
-    return this.store.getQuery(objectCacheKey, () =>
+    return this.store.queries.get(objectCacheKey, () =>
       new ObjectQuery(
         this.store,
-        this.store.getSubject(objectCacheKey),
+        this.store.subjects.get(objectCacheKey),
         apiName,
         pk,
         objectCacheKey,
         { dedupeInterval: 0 },
       ));
+  }
+
+  /**
+   * Internal helper method for writing objects to the store and returning their
+   * object keys. For list queries with RDPs, the rdpConfig is included in the
+   * cache key to ensure proper data isolation.
+   * @internal
+   */
+  public storeOsdkInstances(
+    values: Array<ObjectHolder> | Array<Osdk.Instance<any, any, any>>,
+    batch: BatchContext,
+    rdpConfig?: Canonical<Rdp> | null,
+  ): ObjectCacheKey[] {
+    // update the cache for any object that has changed
+    // and save the mapped values to return
+    return values.map(v =>
+      this.getQuery({
+        apiName: v.$apiName,
+        pk: v.$primaryKey as string | number,
+      }, rdpConfig).writeToStore(
+        v as ObjectHolder,
+        "loaded",
+        batch,
+      ).cacheKey
+    );
+  }
+
+  /**
+   * Write an object to cache and propagate to all related cache keys
+   * @internal
+   */
+  public propagateWrite(
+    sourceCacheKey: ObjectCacheKey,
+    value: ObjectHolder | typeof tombstone,
+    status: Status,
+    batch: BatchContext,
+  ): void {
+    const existing = batch.read(sourceCacheKey);
+    const dataChanged = !existing
+      || existing.value === undefined
+      || value === tombstone
+      || !deepEqual(existing.value, value);
+    const statusChanged = !existing || existing.status !== status;
+
+    if (!dataChanged && !statusChanged) {
+      return;
+    }
+
+    const valueToWrite = !dataChanged && existing ? existing.value : value;
+    batch.write(sourceCacheKey, valueToWrite, status);
+
+    if (value !== tombstone) {
+      batch.changes.registerObject(sourceCacheKey, value, !existing);
+    }
+
+    const metadata = this.store.objectCacheKeyRegistry.getMetadata(
+      sourceCacheKey,
+    );
+
+    const relatedKeys = metadata
+      ? this.store.objectCacheKeyRegistry.getVariants(
+        metadata.apiName,
+        metadata.primaryKey,
+      )
+      : new Set([sourceCacheKey]);
+
+    for (const targetKey of relatedKeys) {
+      if (targetKey === sourceCacheKey || !this.isKeyActive(targetKey)) {
+        continue;
+      }
+
+      if (value === tombstone) {
+        batch.write(targetKey, tombstone, status);
+        continue;
+      }
+
+      const targetCurrentValue = batch.read(targetKey)?.value;
+      const merged = this.mergeForTarget(
+        value,
+        targetCurrentValue && this.isObjectHolder(targetCurrentValue)
+          ? targetCurrentValue
+          : undefined,
+        sourceCacheKey,
+        targetKey,
+      );
+
+      batch.write(targetKey, merged, status);
+    }
+  }
+
+  /**
+   * Check if a cache key is actively observed
+   */
+  private isKeyActive(key: ObjectCacheKey): boolean {
+    const subject = this.store.subjects.peek(key);
+    return subject?.observed === true;
+  }
+
+  /**
+   * Type guard to check if a value is an ObjectHolder
+   */
+  private isObjectHolder(
+    value: ObjectHolder | undefined,
+  ): value is ObjectHolder {
+    return value != null
+      && typeof value === "object"
+      && "$apiName" in value
+      && "$primaryKey" in value;
+  }
+
+  /**
+   * Merge object data for a specific target cache key, preserving RDP fields
+   */
+  private mergeForTarget(
+    sourceValue: ObjectHolder,
+    targetCurrentValue: ObjectHolder | undefined,
+    sourceCacheKey: ObjectCacheKey,
+    targetCacheKey: ObjectCacheKey,
+  ): ObjectHolder {
+    const sourceRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
+      sourceCacheKey,
+    );
+    const targetRdpFields = this.store.objectCacheKeyRegistry.getRdpFieldSet(
+      targetCacheKey,
+    );
+
+    return mergeObjectFields(
+      sourceValue,
+      sourceRdpFields,
+      targetRdpFields,
+      targetCurrentValue,
+    );
   }
 }

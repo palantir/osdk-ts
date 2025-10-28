@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-import type { WhereClause } from "@osdk/api";
+import type {
+  ObjectOrInterfaceDefinition,
+  SimplePropertyDef,
+  WhereClause,
+} from "@osdk/api";
 
+/**
+ * A where clause without specific type information - used for runtime matching logic.
+ * This accepts any WhereClause<T, RDPs> by using the base types.
+ */
 export type SimpleWhereClause = WhereClause<
-  any
+  ObjectOrInterfaceDefinition,
+  Record<string, SimplePropertyDef>
 >;

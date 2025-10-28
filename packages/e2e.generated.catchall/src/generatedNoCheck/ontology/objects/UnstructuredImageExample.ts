@@ -95,8 +95,11 @@ export interface UnstructuredImageExample extends $ObjectTypeDefinition {
   };
 }
 
-export const UnstructuredImageExample: UnstructuredImageExample = {
+export const UnstructuredImageExample = {
   type: 'object',
   apiName: 'UnstructuredImageExample',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies UnstructuredImageExample & { internalDoNotUseMetadata: { rid: string } } as UnstructuredImageExample;

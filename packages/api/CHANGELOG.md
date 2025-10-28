@@ -1,5 +1,69 @@
 # @osdk/api
 
+## 2.6.0-beta.4
+
+### Minor Changes
+
+- e7bf02a: Add RDP support to React toolkit
+
+## 2.6.0-beta.3
+
+## 2.6.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+- c4f8529: Add stub for getFormattedValue in experimental mode
+- f7ae38a: Allow exact matching for arrays of structs
+
+## 2.5.0-beta.15
+
+## 2.5.0-beta.14
+
+### Minor Changes
+
+- b7edfb5: Add support for object type casts
+
+## 2.5.0-beta.13
+
+## 2.5.0-beta.12
+
+## 2.5.0-beta.11
+
+### Minor Changes
+
+- 7b97128: add useObjectSet hook
+
+## 2.5.0-beta.10
+
+## 2.5.0-beta.9
+
+## 2.5.0-beta.8
+
+### Minor Changes
+
+- ca1fabe: Fix experimental metadata types for objects
+
+## 2.5.0-beta.7
+
+## 2.5.0-beta.6
+
+## 2.5.0-beta.5
+
+### Minor Changes
+
+- 052a96b: Add $link support.
+
+## 2.5.0-beta.4
+
+## 2.5.0-beta.3
+
+### Minor Changes
+
+- 7bdac45: Update Platform SDK dependency
+- 20962bc: Add a new experimental fetchPageByRidNoType method
+- e48be06: Fix casting types with fully qualified property names.
+
 ## 2.5.0-beta.2
 
 ### Minor Changes

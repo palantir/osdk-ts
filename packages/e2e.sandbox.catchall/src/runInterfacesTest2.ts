@@ -16,22 +16,24 @@
 
 import type { Osdk } from "@osdk/api";
 import {
+  $Objects,
   Athlete,
   CollateralConcernCandidate,
   EsongInterfaceA,
   NbaPlayer,
+  NihalbCastingInterfaceB,
+  NihalbCastingInterfaceTypeA,
+  NihalbCastingLinkedInterfaceTypeA,
 } from "@osdk/e2e.generated.catchall";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
-import { dsClient } from "./client.js";
+import { client, dsClient } from "./client.js";
 
 export async function runInterfacesTest2(): Promise<void> {
-  console.log("here");
   const athletes = await dsClient(Athlete).where({
-    name22: { $eq: "Michael Jordan" },
+    athleteId: { $eq: "E0DD36D0-D6B9-487B-B643-4CED57A26890" },
   }).fetchPage({ $includeAllBaseObjectProperties: true });
-  console.log("here2");
 
   invariant(athletes.data.length > 0);
 
@@ -49,7 +51,7 @@ export async function runInterfacesTest2(): Promise<void> {
   >(true);
 
   const athletesSelected = await dsClient(Athlete).where({
-    name22: { $eq: "Michael Jordan" },
+    athleteId: { $eq: "E0DD36D0-D6B9-487B-B643-4CED57A26890" },
   }).fetchPage({
     $select: ["athleteId", "jerseyNumber", "name22"],
     $includeAllBaseObjectProperties: true,
@@ -71,7 +73,7 @@ export async function runInterfacesTest2(): Promise<void> {
 
   // You cannot specify both $select and $includeAllBaseObjectProperties
   const athletesNotAllSelected = await dsClient(Athlete).where({
-    name22: { $eq: "Michael Jordan" },
+    athleteId: { $eq: "E0DD36D0-D6B9-487B-B643-4CED57A26890" },
   }).fetchPage({
     $select: ["athleteId", "name22"],
     // @ts-expect-error
@@ -83,10 +85,14 @@ export async function runInterfacesTest2(): Promise<void> {
     .fetchPage();
   const concernList2 = await dsClient(CollateralConcernCandidate).pivotTo(
     "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList",
-  ).fetchPage();
-
+  ).fetchPage({ $includeAllBaseObjectProperties: true });
+  const singleLink = await concernCandidates2.data[0]
+    .$link[
+      "com.palantir.pcl.civpro.collateral-concern-core.collateralConcernEntityToList"
+    ].fetchPage();
   console.log("concern candidates", concernCandidates2.data);
   console.log("linked list entities", concernList2.data);
+  console.log("tried link instance impl", singleLink);
 
   // interface to object
   const pds = await dsClient(EsongInterfaceA).pivotTo("esongPds").fetchPage();
@@ -95,6 +101,63 @@ export async function runInterfacesTest2(): Promise<void> {
 
   const interfaceA = await dsClient(EsongInterfaceA).fetchPage();
   console.log("interfaceA instances: ", interfaceA);
+
+  const huh3 = await interfaceA.data[0].$link.esongPds.fetchPage();
+
+  const implementObjectTypeAAndB = await client(
+    NihalbCastingInterfaceTypeA,
+  ).asType(NihalbCastingInterfaceB).fetchPage();
+
+  const linkedToObjectTypeAAndB = await client(
+    NihalbCastingInterfaceTypeA,
+  ).pivotTo(
+    "nihalbCastingLinkedObjectTypeA",
+  ).fetchPage();
+
+  const linkedToObjectTypeBAndC = await client(
+    NihalbCastingInterfaceB,
+  )
+    .pivotTo(
+      "nihalbCastingLinkedObjectTypeA",
+    ).fetchPage();
+
+  const linkedToObjectTypeB = await client(NihalbCastingInterfaceB)
+    .asType(NihalbCastingInterfaceTypeA)
+    .pivotTo(
+      "nihalbCastingLinkedObjectTypeA",
+    ).fetchPage();
+
+  const linkedToObjectTypeBAsInterface = await client(
+    NihalbCastingInterfaceB,
+  )
+    .asType(NihalbCastingInterfaceTypeA)
+    .pivotTo(
+      "nihalbCastingLinkedObjectTypeA",
+    ).asType(NihalbCastingLinkedInterfaceTypeA).fetchPage({
+      $includeAllBaseObjectProperties: true,
+    });
+  console.log(
+    "All objects that implement both interface A and interface B",
+    implementObjectTypeAAndB,
+  );
+  console.log(
+    "All objects linked to object type a and b (implemented by interface A)",
+    linkedToObjectTypeAAndB,
+  );
+  console.log(
+    "All objects linked to object type b and c (implemented by interface B)",
+    linkedToObjectTypeBAndC,
+  );
+  console.log(
+    "All objects linked to objects that are instances of both interface A and interface B",
+    linkedToObjectTypeB,
+  );
+  console.log(
+    "All objects linked to objects that are instances of both interface A and interface B, as interface",
+    linkedToObjectTypeBAsInterface.data[0].$as(
+      $Objects.NihalbCastingLinkedObjectTypeA,
+    ),
+  );
 }
 
 void runInterfacesTest2();

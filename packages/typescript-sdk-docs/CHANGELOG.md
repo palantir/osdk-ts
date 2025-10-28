@@ -1,5 +1,41 @@
 # @osdk/typescript-sdk-docs
 
+## 0.5.0-beta.2
+
+### Minor Changes
+
+- 7cac2f8: Upgrade to latest spec and fix attachment template"
+
+## 0.4.0-beta.6
+
+### Minor Changes
+
+- 81af4c8: A set of compiled examples based on the documentation YAML
+
+## 0.4.0-beta.5
+
+### Minor Changes
+
+- 1796b98: Update load all objects snippet
+
+## 0.4.0-beta.4
+
+### Minor Changes
+
+- 2bb698d: Fix knn doc snippet
+
+## 0.4.0-beta.3
+
+### Minor Changes
+
+- f38abb0: Nearest neighbor docs
+
+## 0.4.0-beta.2
+
+### Minor Changes
+
+- e9239a1: Add pivot docs.
+
 ## 0.3.0-beta.4
 
 ### Minor Changes

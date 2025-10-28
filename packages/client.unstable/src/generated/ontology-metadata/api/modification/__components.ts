@@ -30,6 +30,8 @@ import type {
   ActionSubmissionConfiguration as _api_ActionSubmissionConfiguration,
   ActionType as _api_ActionType,
   ActionTypeApiName as _api_ActionTypeApiName,
+  ActionTypeBranchSettingsModification
+    as _api_ActionTypeBranchSettingsModification,
   ActionTypeCreate as _api_ActionTypeCreate,
   ActionTypeDisplayMetadataModification
     as _api_ActionTypeDisplayMetadataModification,
@@ -46,9 +48,8 @@ import type {
   BaseFormatter as _api_BaseFormatter,
   BooleanPropertyType as _api_BooleanPropertyType,
   BytePropertyType as _api_BytePropertyType,
-  CipherTextPropertyType as _api_CipherTextPropertyType,
   ColumnName as _api_ColumnName,
-  CompassProjectRid as _api_CompassProjectRid,
+  CompassFolderRid as _api_CompassFolderRid,
   DataNullability as _api_DataNullability,
   DataNullabilityV2 as _api_DataNullabilityV2,
   DataSecurity as _api_DataSecurity,
@@ -77,6 +78,9 @@ import type {
   InterfaceLinkTypeCardinality as _api_InterfaceLinkTypeCardinality,
   InterfaceLinkTypeMetadata as _api_InterfaceLinkTypeMetadata,
   InterfaceLinkTypeRidOrIdInRequest as _api_InterfaceLinkTypeRidOrIdInRequest,
+  InterfacePropertyTypeApiName as _api_InterfacePropertyTypeApiName,
+  InterfacePropertyTypeDisplayMetadata
+    as _api_InterfacePropertyTypeDisplayMetadata,
   InterfacePropertyTypeRidOrIdInRequest
     as _api_InterfacePropertyTypeRidOrIdInRequest,
   InterfaceTypeApiName as _api_InterfaceTypeApiName,
@@ -115,6 +119,7 @@ import type {
   ParameterId as _api_ParameterId,
   ParameterRid as _api_ParameterRid,
   PolicyVersion as _api_PolicyVersion,
+  PrimaryKeyConstraint as _api_PrimaryKeyConstraint,
   PropertySecurityGroupsModification as _api_PropertySecurityGroupsModification,
   PropertyTypeDisplayMetadata as _api_PropertyTypeDisplayMetadata,
   PropertyTypeId as _api_PropertyTypeId,
@@ -124,6 +129,7 @@ import type {
   PutParameterRequestModification as _api_PutParameterRequestModification,
   PutSectionRequest as _api_PutSectionRequest,
   RestrictedViewRid as _api_RestrictedViewRid,
+  RetentionConfig as _api_RetentionConfig,
   RetentionPolicy as _api_RetentionPolicy,
   RuleSetRid as _api_RuleSetRid,
   SectionId as _api_SectionId,
@@ -193,7 +199,6 @@ import type {
   SchemaMigrationModification
     as _api_schemamigrations_SchemaMigrationModification,
 } from "../schemamigrations/__components.js";
-import type { OntologyObjectTypeSemanticSearchStatus as _api_search_semantic_OntologyObjectTypeSemanticSearchStatus } from "../search/semantic/__components.js";
 import type {
   ExternalMappingConfiguration as _api_typemapping_ExternalMappingConfiguration,
   ExternalMappingConfigurationFilter
@@ -252,6 +257,7 @@ export interface ActionTypeModification {
     | undefined;
   actionLogConfiguration?: _api_ActionLogConfiguration | null | undefined;
   apiName: _api_ActionTypeApiName;
+  branchSettings?: _api_ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: _api_ActionTypeDisplayMetadataModification;
   entities?: _api_ActionTypeEntities | null | undefined;
   formContentOrdering?: Array<_api_FormContent> | null | undefined;
@@ -328,10 +334,13 @@ export interface CheckExistingUniqueIdentifiersResponse {
   existingPerOntologyUniqueIdentifiers: Array<PerOntologyUniqueIdentifier>;
 }
 /**
- * A rid identifying a Compass folder. This rid is generated randomly and is safe for logging purposes.
+ * Duplicate of CipherTextPropertyType in ontology-metadata-api, with the exception that the plainTextType is a
+ * TypeForModification.
  */
-export type CompassFolderRid = string;
-
+export interface CipherTextPropertyTypeModification {
+  defaultCipherChannelRid?: string | null | undefined;
+  plainTextType: TypeForModification;
+}
 /**
  * An rid identifying a Compass namespace. This rid is generated randomly and is safe for logging purposes.
  */
@@ -565,6 +574,27 @@ export interface InlineActionTypeModification {
   displayOptions: _api_InlineActionDisplayOptions;
   parameterId?: _api_ParameterId | null | undefined;
 }
+export interface InterfaceArrayPropertyTypeModification {
+  subtype: InterfacePropertyTypeTypeForModification;
+}
+export interface InterfaceCipherTextPropertyTypeModification {
+  defaultCipherChannelRid?: string | null | undefined;
+  plainTextType: InterfacePropertyTypeTypeForModification;
+}
+export interface InterfaceDefinedPropertyTypeConstraintsModification {
+  dataConstraints?: DataConstraintsModification | null | undefined;
+  indexedForSearch: boolean;
+  primaryKeyConstraint: _api_PrimaryKeyConstraint;
+  requireImplementation: boolean;
+  typeClasses: Array<_api_TypeClass>;
+  valueType?: ValueTypeReferenceModification | null | undefined;
+}
+export interface InterfaceDefinedPropertyTypeModification {
+  apiName: _api_InterfacePropertyTypeApiName;
+  constraints: InterfaceDefinedPropertyTypeConstraintsModification;
+  displayMetadata: _api_InterfacePropertyTypeDisplayMetadata;
+  type: InterfacePropertyTypeTypeForModification;
+}
 export interface InterfaceLinkTypeImplementationModification {
   interfaceLinkTypeRidOrIdInRequest: _api_InterfaceLinkTypeRidOrIdInRequest;
   linkTypeIds: Array<_api_LinkTypeId>;
@@ -600,17 +630,173 @@ export interface InterfacePropertyTypeModification_sharedPropertyBasedPropertyTy
   type: "sharedPropertyBasedPropertyType";
   sharedPropertyBasedPropertyType: SharedPropertyBasedPropertyTypeModification;
 }
+
+export interface InterfacePropertyTypeModification_interfaceDefinedPropertyType {
+  type: "interfaceDefinedPropertyType";
+  interfaceDefinedPropertyType: InterfaceDefinedPropertyTypeModification;
+}
 export type InterfacePropertyTypeModification =
-  InterfacePropertyTypeModification_sharedPropertyBasedPropertyType;
+  | InterfacePropertyTypeModification_sharedPropertyBasedPropertyType
+  | InterfacePropertyTypeModification_interfaceDefinedPropertyType;
 
 export interface InterfacePropertyTypeModificationWithRidOrIdInRequest {
   interfacePropertyTypeModification: InterfacePropertyTypeModification;
   interfacePropertyTypeRidOrIdInRequest:
     _api_InterfacePropertyTypeRidOrIdInRequest;
 }
+export interface InterfacePropertyTypeTypeForModification_array {
+  type: "array";
+  array: InterfaceArrayPropertyTypeModification;
+}
+
+export interface InterfacePropertyTypeTypeForModification_boolean {
+  type: "boolean";
+  boolean: _api_BooleanPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_byte {
+  type: "byte";
+  byte: _api_BytePropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_date {
+  type: "date";
+  date: _api_DatePropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_decimal {
+  type: "decimal";
+  decimal: _api_DecimalPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_double {
+  type: "double";
+  double: _api_DoublePropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_float {
+  type: "float";
+  float: _api_FloatPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_geohash {
+  type: "geohash";
+  geohash: _api_GeohashPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_geoshape {
+  type: "geoshape";
+  geoshape: _api_GeoshapePropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_integer {
+  type: "integer";
+  integer: _api_IntegerPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_long {
+  type: "long";
+  long: _api_LongPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_short {
+  type: "short";
+  short: _api_ShortPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_string {
+  type: "string";
+  string: _api_StringPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_experimentalTimeDependentV1 {
+  type: "experimentalTimeDependentV1";
+  experimentalTimeDependentV1: _api_ExperimentalTimeDependentPropertyTypeV1;
+}
+
+export interface InterfacePropertyTypeTypeForModification_timestamp {
+  type: "timestamp";
+  timestamp: _api_TimestampPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_attachment {
+  type: "attachment";
+  attachment: _api_AttachmentPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_marking {
+  type: "marking";
+  marking: _api_MarkingPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_cipherText {
+  type: "cipherText";
+  cipherText: InterfaceCipherTextPropertyTypeModification;
+}
+
+export interface InterfacePropertyTypeTypeForModification_mediaReference {
+  type: "mediaReference";
+  mediaReference: _api_MediaReferencePropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_vector {
+  type: "vector";
+  vector: _api_VectorPropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_geotimeSeriesReference {
+  type: "geotimeSeriesReference";
+  geotimeSeriesReference: _api_GeotimeSeriesReferencePropertyType;
+}
+
+export interface InterfacePropertyTypeTypeForModification_struct {
+  type: "struct";
+  struct: InterfaceStructPropertyTypeModification;
+}
+/**
+ * Duplicate of TypeForModification, with the exception of InterfaceStructPropertyTypeModification and
+ * InterfaceArrayPropertyTypeModification. InterfaceStructPropertyTypeModification has an added
+ * requireImplementation field to allow for optional struct fields on interface property types.
+ */
+export type InterfacePropertyTypeTypeForModification =
+  | InterfacePropertyTypeTypeForModification_array
+  | InterfacePropertyTypeTypeForModification_boolean
+  | InterfacePropertyTypeTypeForModification_byte
+  | InterfacePropertyTypeTypeForModification_date
+  | InterfacePropertyTypeTypeForModification_decimal
+  | InterfacePropertyTypeTypeForModification_double
+  | InterfacePropertyTypeTypeForModification_float
+  | InterfacePropertyTypeTypeForModification_geohash
+  | InterfacePropertyTypeTypeForModification_geoshape
+  | InterfacePropertyTypeTypeForModification_integer
+  | InterfacePropertyTypeTypeForModification_long
+  | InterfacePropertyTypeTypeForModification_short
+  | InterfacePropertyTypeTypeForModification_string
+  | InterfacePropertyTypeTypeForModification_experimentalTimeDependentV1
+  | InterfacePropertyTypeTypeForModification_timestamp
+  | InterfacePropertyTypeTypeForModification_attachment
+  | InterfacePropertyTypeTypeForModification_marking
+  | InterfacePropertyTypeTypeForModification_cipherText
+  | InterfacePropertyTypeTypeForModification_mediaReference
+  | InterfacePropertyTypeTypeForModification_vector
+  | InterfacePropertyTypeTypeForModification_geotimeSeriesReference
+  | InterfacePropertyTypeTypeForModification_struct;
+
 export interface InterfaceSharedPropertyTypeModification {
   required: boolean;
   sharedPropertyTypeRidOrIdInRequest: _api_SharedPropertyTypeRidOrIdInRequest;
+}
+export interface InterfaceStructFieldTypeModification {
+  aliases: Array<_api_StructFieldAlias>;
+  apiName: _api_ObjectTypeFieldApiName;
+  displayMetadata: _api_StructFieldDisplayMetadata;
+  fieldType: InterfacePropertyTypeTypeForModification;
+  requireImplementation: boolean;
+  rid?: _api_StructFieldRid | null | undefined;
+  typeClasses: Array<_api_TypeClass>;
+}
+export interface InterfaceStructPropertyTypeModification {
+  structFields: Array<InterfaceStructFieldTypeModification>;
 }
 /**
  * This includes metadata which can be used by front-ends when displaying an interface.
@@ -628,6 +814,7 @@ export interface InterfaceTypeModification {
   properties: Array<_api_SharedPropertyTypeRidOrIdInRequest>;
   propertiesV2: Array<InterfaceSharedPropertyTypeModification>;
   propertiesV3: Array<InterfacePropertyTypeModificationWithRidOrIdInRequest>;
+  provenance?: EntityProvenanceModification | null | undefined;
   searchable?: boolean | null | undefined;
   status: _api_InterfaceTypeStatus;
 }
@@ -668,7 +855,7 @@ export type LinkDefinitionModification =
 export interface LinkTypeCreate {
   linkType: LinkTypeModification;
   packageRid?: _api_OntologyPackageRid | null | undefined;
-  projectRid?: _api_CompassProjectRid | null | undefined;
+  projectRid?: _api_CompassFolderRid | null | undefined;
 }
 export interface LinkTypeDelete {
 }
@@ -894,7 +1081,7 @@ export interface ObjectTypeBranchIndexingConfiguration {
 export interface ObjectTypeCreate {
   objectType: ObjectTypeModification;
   packageRid?: _api_OntologyPackageRid | null | undefined;
-  projectRid?: _api_CompassProjectRid | null | undefined;
+  projectRid?: _api_CompassFolderRid | null | undefined;
 }
 /**
  * Deprecated in favor of ObjectTypeDatasetDatasourceV2Modification
@@ -1064,6 +1251,8 @@ export interface ObjectTypeDirectDatasourceModification {
   directSourceRid: _api_DirectSourceRid;
   propertyMapping: Record<_api_PropertyTypeId, _api_PropertyTypeMappingInfo>;
   propertySecurityGroups: _api_PropertySecurityGroupsModification;
+  retentionConfig?: _api_RetentionConfig | null | undefined;
+  retentionConfigV2?: RetentionConfigModification | null | undefined;
 }
 export interface ObjectTypeEditsOnlyDatasourceModification {
   editsOnlyRid?: _api_EditsOnlyRid | null | undefined;
@@ -1095,6 +1284,7 @@ export interface ObjectTypeEntityMetadataModifyRequest {
     | undefined;
   provenance?: EntityProvenanceModification | null | undefined;
   targetStorageBackend?: StorageBackendModification | null | undefined;
+  usesOnlyOsv2ObjectRids?: boolean | null | undefined;
 }
 /**
  * Object type datasource that is backed by Geotime, uniquely identified by its rid.
@@ -1252,6 +1442,7 @@ export interface ObjectTypeTraitsModification {
 }
 export interface ObjectTypeUpdate {
   objectType: ObjectTypeModification;
+  propertyTypeIdMappings?: PropertyTypeIdMappings | null | undefined;
 }
 export interface OneToManyLinkDefinitionModification {
   cardinalityHint: _api_OneToManyLinkCardinalityHint;
@@ -1360,8 +1551,7 @@ export interface OntologyInformationInternal {
   permissionModel: _api_permissions_PermissionModel;
   restrictedRoleGrants: Array<_api_permissions_RoleGrant>;
   roleGrants: Array<_api_permissions_RoleGrant>;
-  semanticSearchIndexingStatus:
-    _api_search_semantic_OntologyObjectTypeSemanticSearchStatus;
+  semanticSearchIndexingStatus: OntologyObjectTypeSemanticSearchStatus;
 }
 /**
  * A short summary of the changes made, and the reason for those changes. Currently this is only used for modifications
@@ -1413,7 +1603,7 @@ export interface OntologyModificationRequest {
   >;
   interfaceTypesToCreateInProject: Record<
     _api_InterfaceTypeIdInRequest,
-    _api_CompassProjectRid
+    _api_CompassFolderRid
   >;
   interfaceTypesToDelete: Array<_api_InterfaceTypeRid>;
   interfaceTypesToUpdate: Record<
@@ -1464,7 +1654,7 @@ export interface OntologyModificationRequest {
   >;
   sharedPropertyTypesToCreateInProject: Record<
     _api_SharedPropertyTypeIdInRequest,
-    _api_CompassProjectRid
+    _api_CompassFolderRid
   >;
   sharedPropertyTypesToDelete: Array<_api_SharedPropertyTypeRid>;
   sharedPropertyTypesToUpdate: Record<
@@ -1475,7 +1665,7 @@ export interface OntologyModificationRequest {
   typeGroupsToCreate: Record<_api_TypeGroupIdInRequest, TypeGroupModification>;
   typeGroupsToCreateInProject: Record<
     _api_TypeGroupIdInRequest,
-    _api_CompassProjectRid
+    _api_CompassFolderRid
   >;
   typeGroupsToDelete: Array<_api_TypeGroupRid>;
   typeGroupsToUpdate: Record<_api_TypeGroupRid, TypeGroupModification>;
@@ -1519,6 +1709,11 @@ export interface OntologyModificationResponse {
  * in the corresponding Ontology.
  */
 export type OntologyNamespace = string;
+export type OntologyObjectTypeSemanticSearchStatus =
+  | "AVAILABLE"
+  | "INDEXING"
+  | "AIP_DISABLED"
+  | "NOT_READY";
 
 /**
  * The rid for an Ontology project. This rid is generated randomly and is safe for logging purposes.
@@ -1585,6 +1780,15 @@ export type PerOntologyUniqueIdentifier =
   | PerOntologyUniqueIdentifier_objectTypeApiName
   | PerOntologyUniqueIdentifier_linkTypeId;
 
+/**
+ * Request to change the ids of the given PropertyTypeRid(s) to the given PropertyTypeId(s).
+ */
+export interface PropertyTypeIdMappings {
+  existingPropertyTypeRenames: Record<
+    _api_PropertyTypeRid,
+    _api_PropertyTypeId
+  >;
+}
 export interface PropertyTypeModification {
   apiName?: _api_ObjectTypeFieldApiName | null | undefined;
   baseFormatter?: _api_BaseFormatter | null | undefined;
@@ -1661,6 +1865,10 @@ export interface PutSectionRequestWithId {
  * remap to an `ObjectStorageV2Modification` instead.
  */
 export interface ReadOnlyV1V2Modification {
+}
+export interface RetentionConfigModification {
+  targetSize: number;
+  triggerSize: number;
 }
 export interface SensorTraitModification {
   readingPropertyTypeId: _api_PropertyTypeId;
@@ -1816,7 +2024,7 @@ export interface TypeForModification_marking {
 
 export interface TypeForModification_cipherText {
   type: "cipherText";
-  cipherText: _api_CipherTextPropertyType;
+  cipherText: CipherTextPropertyTypeModification;
 }
 
 export interface TypeForModification_mediaReference {

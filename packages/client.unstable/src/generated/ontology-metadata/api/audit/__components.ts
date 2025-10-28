@@ -44,6 +44,8 @@ import type {
     as _api_GetActionTypesForObjectTypeResponse,
   GetEntityDelegateDatasetRequest as _api_GetEntityDelegateDatasetRequest,
   GetEntityDelegateDatasetResponse as _api_GetEntityDelegateDatasetResponse,
+  GetEntityQueryableSourceRequest as _api_GetEntityQueryableSourceRequest,
+  GetEntityQueryableSourceResponse as _api_GetEntityQueryableSourceResponse,
   GetFeatureConfigurationsResponse as _api_GetFeatureConfigurationsResponse,
   GetLinkTypesForObjectTypesRequest as _api_GetLinkTypesForObjectTypesRequest,
   GetObjectTypesForInterfaceTypesRequest
@@ -209,6 +211,10 @@ import type {
     as _api_permissions_GetBulkObjectTypePermissionsRequest,
   GetBulkObjectTypePermissionsResponse
     as _api_permissions_GetBulkObjectTypePermissionsResponse,
+  GetBulkOntologyPermissionsRequest
+    as _api_permissions_GetBulkOntologyPermissionsRequest,
+  GetBulkOntologyPermissionsResponse
+    as _api_permissions_GetBulkOntologyPermissionsResponse,
   GetBulkSharedPropertyTypePermissionsRequest
     as _api_permissions_GetBulkSharedPropertyTypePermissionsRequest,
   GetBulkSharedPropertyTypePermissionsResponse
@@ -627,6 +633,7 @@ export type OntologyMetadataAuditEvent =
   | "ACTION_TYPES_SERVICE_LOAD_ALL_ACTION_TYPES_FROM_ONTOLOGY"
   | "ACTION_TYPES_SERVICE_PAGE_LOAD_ALL_ACTION_TYPES_FROM_ONTOLOGY"
   | "ACTION_TYPES_SERVICE_LOAD_ACTION_TYPES_FROM_ONTOLOGY"
+  | "ACTION_TYPES_SERVICE_BATCH_GET_ENRICHED_ACTION_TYPE_METADATA"
   | "ONTOLOGY_METADATA_SERVICE_BULK_LOAD_ONTOLOGY_ENTITIES"
   | "ONTOLOGY_METADATA_SERVICE_BULK_LOAD_ONTOLOGY_ENTITIES_BY_DATASOURCES"
   | "ONTOLOGY_METADATA_SERVICE_GET_FEATURE_CONFIGURATIONS"
@@ -654,6 +661,7 @@ export type OntologyMetadataAuditEvent =
   | "ONTOLOGY_METADATA_SERVICE_LOAD_ALL_TYPE_GROUPS_FROM_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_LOAD_ONTOLOGY_DATASOURCES"
   | "ONTOLOGY_METADATA_SERVICE_GET_ENTITY_DELEGATE_DATASET"
+  | "ONTOLOGY_METADATA_SERVICE_GET_ENTITY_QUERYABLE_SOURCE"
   | "ONTOLOGY_METADATA_SERVICE_MODIFY_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_DRY_RUN_MODIFY_ONTOLOGY"
   | "ONTOLOGY_METADATA_SERVICE_MODIFICATION"
@@ -684,6 +692,7 @@ export type OntologyMetadataAuditEvent =
   | "ONTOLOGY_METADATA_SERVICE_GET_ONTOLOGY_SUMMARY"
   | "ONTOLOGY_PERMISSION_SERVICE_GET_ONTOLOGY_CREATE_PERMISSIONS"
   | "ONTOLOGY_PERMISSION_SERVICE_GET_ONTOLOGY_PERMISSIONS"
+  | "ONTOLOGY_PERMISSION_SERVICE_GET_BULK_ONTOLOGY_PERMISSIONS"
   | "ONTOLOGY_PERMISSION_SERVICE_GET_OBJECT_TYPE_PERMISSIONS"
   | "ONTOLOGY_PERMISSION_SERVICE_GET_BULK_OBJECT_TYPE_PERMISSIONS"
   | "ONTOLOGY_PERMISSION_SERVICE_GET_BULK_OBJECT_TYPE_PERMISSIONS_FOR_USERS"
@@ -831,6 +840,12 @@ export interface OntologyMetadataServiceGetEntityModificationHistoryV2RequestPar
 }
 export interface OntologyMetadataServiceGetEntityModificationHistoryV2ResultParams {
   response: _api_modification_GetEntityModificationHistoryResponse;
+}
+export interface OntologyMetadataServiceGetEntityQueryableSourceRequestParams {
+  request: _api_GetEntityQueryableSourceRequest;
+}
+export interface OntologyMetadataServiceGetEntityQueryableSourceResponseParams {
+  response: _api_GetEntityQueryableSourceResponse;
 }
 export interface OntologyMetadataServiceGetFeatureConfigurationsRequestParams {
 }
@@ -1130,6 +1145,12 @@ export interface OntologyPermissionServiceGetBulkObjectTypePermissionsRequestPar
 }
 export interface OntologyPermissionServiceGetBulkObjectTypePermissionsResultParams {
   request: _api_permissions_GetBulkObjectTypePermissionsResponse;
+}
+export interface OntologyPermissionServiceGetBulkOntologyPermissionsRequestParams {
+  request: _api_permissions_GetBulkOntologyPermissionsRequest;
+}
+export interface OntologyPermissionServiceGetBulkOntologyPermissionsResultParams {
+  response: _api_permissions_GetBulkOntologyPermissionsResponse;
 }
 export interface OntologyPermissionServiceGetBulkSharedPropertyTypePermissionsRequestParams {
   request: _api_permissions_GetBulkSharedPropertyTypePermissionsRequest;

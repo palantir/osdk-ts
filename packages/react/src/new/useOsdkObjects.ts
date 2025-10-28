@@ -14,25 +14,36 @@
  * limitations under the License.
  */
 
+import type { WhereClause } from "@osdk/api";
 import type {
+  DerivedProperty,
   InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
-  WhereClause,
 } from "@osdk/client";
 import type { ObserveObjectsArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
+type InferRdpTypes<
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  WP extends DerivedProperty.Clause<Q> | undefined,
+> = WP extends DerivedProperty.Clause<Q> ? {
+    [K in keyof WP]: WP[K] extends DerivedProperty.Creator<Q, infer T> ? T
+      : never;
+  }
+  : {};
+
 export interface UseOsdkObjectsOptions<
   T extends ObjectTypeDefinition | InterfaceDefinition,
+  WithProps extends DerivedProperty.Clause<T> | undefined = undefined,
 > {
   /**
-   * Standard OSDK Where
+   * Standard OSDK Where with RDP support
    */
-  where?: WhereClause<T>;
+  where?: WhereClause<T, InferRdpTypes<T, WithProps>>;
 
   /**
    *  The preferred page size for the list.
@@ -43,6 +54,12 @@ export interface UseOsdkObjectsOptions<
   orderBy?: {
     [K in PropertyKeys<T>]?: "asc" | "desc";
   };
+
+  /**
+   * Define derived properties (RDPs) to be computed server-side and attached to each object.
+   * These properties will be available on the returned objects alongside their regular properties.
+   */
+  withProperties?: WithProps;
 
   /**
    * Causes the list to automatically fetch more as soon as the previous page
@@ -98,7 +115,6 @@ export interface UseOsdkListResult<
   data: Osdk.Instance<T>[] | undefined;
   isLoading: boolean;
 
-  // FIXME populate error!
   error: Error | undefined;
 
   /**
@@ -119,23 +135,32 @@ declare const process: {
 
 export function useOsdkObjects<
   Q extends ObjectTypeDefinition | InterfaceDefinition,
+  WP extends DerivedProperty.Clause<Q> | undefined = undefined,
 >(
   type: Q,
-  {
+  options?: UseOsdkObjectsOptions<Q, WP>,
+): UseOsdkListResult<Q> {
+  const {
     pageSize,
     orderBy,
     dedupeIntervalMs,
     where = {},
     streamUpdates,
-  }: UseOsdkObjectsOptions<Q> = {},
-): UseOsdkListResult<Q> {
+    withProperties,
+  } = options ?? {};
   const { observableClient } = React.useContext(OsdkContext2);
 
   /*  We want the canonical where clause so that the use of `React.useMemo`
       is stable. No real added cost as we canonicalize internal to
       the ObservableClient anyway.
    */
-  const canonWhere = observableClient.canonicalizeWhereClause(where ?? {});
+  const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
+
+  // TODO: replace with improved stabilization
+  const stableWithProperties = React.useMemo(
+    () => withProperties,
+    [JSON.stringify(withProperties)],
+  );
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
@@ -148,21 +173,33 @@ export function useOsdkObjects<
             pageSize,
             orderBy,
             streamUpdates,
+            withProperties: stableWithProperties,
           }, observer),
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
           : void 0,
       ),
-    [observableClient, type, canonWhere, dedupeIntervalMs],
+    [
+      observableClient,
+      type,
+      canonWhere,
+      dedupeIntervalMs,
+      stableWithProperties,
+    ],
   );
 
   const listPayload = React.useSyncExternalStore(subscribe, getSnapShot);
-  // TODO: we need to expose the error in the result
+
+  let error: Error | undefined;
+  if (listPayload && "error" in listPayload && listPayload.error) {
+    error = listPayload.error;
+  } else if (listPayload?.status === "error") {
+    error = new Error("Failed to load objects");
+  }
+
   return {
     fetchMore: listPayload?.fetchMore,
-    error: listPayload && "error" in listPayload
-      ? listPayload?.error
-      : undefined,
+    error,
     data: listPayload?.resolvedList as Osdk.Instance<Q>[],
     isLoading: listPayload?.status === "loading",
     isOptimistic: listPayload?.isOptimistic ?? false,

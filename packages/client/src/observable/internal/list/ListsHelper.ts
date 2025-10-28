@@ -19,12 +19,17 @@ import type { ListPayload } from "../../ListPayload.js";
 import type { ObserveListOptions } from "../../ObservableClient.js";
 import type { Observer } from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
-import type { ListCacheKey } from "../ListCacheKey.js";
-import { ListQuery } from "../ListQuery.js";
+import type { CacheKeys } from "../CacheKeys.js";
+import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
+import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
 import type { Store } from "../Store.js";
 import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
+import { InterfaceListQuery } from "./InterfaceListQuery.js";
+import type { ListCacheKey } from "./ListCacheKey.js";
+import type { ListQuery } from "./ListQuery.js";
+import { ObjectListQuery } from "./ObjectListQuery.js";
 
 export class ListsHelper extends AbstractHelper<
   ListQuery,
@@ -32,16 +37,20 @@ export class ListsHelper extends AbstractHelper<
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
+  rdpCanonicalizer: RdpCanonicalizer;
 
   constructor(
     store: Store,
+    cacheKeys: CacheKeys<KnownCacheKey>,
     whereCanonicalizer: WhereClauseCanonicalizer,
     orderByCanonicalizer: OrderByCanonicalizer,
+    rdpCanonicalizer: RdpCanonicalizer,
   ) {
-    super(store);
+    super(store, cacheKeys);
 
     this.whereCanonicalizer = whereCanonicalizer;
     this.orderByCanonicalizer = orderByCanonicalizer;
+    this.rdpCanonicalizer = rdpCanonicalizer;
   }
 
   observe<T extends ObjectTypeDefinition | InterfaceDefinition>(
@@ -59,26 +68,32 @@ export class ListsHelper extends AbstractHelper<
   getQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
   ): ListQuery {
-    const { type: { apiName, type }, where, orderBy } = options;
+    const { type: typeDefinition, where, orderBy, withProperties } = options;
+    const { apiName, type } = typeDefinition;
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonOrderBy = this.orderByCanonicalizer.canonicalize(orderBy ?? {});
-    const listCacheKey = this.store.getCacheKey<ListCacheKey>(
+    const canonRdp = withProperties
+      ? this.rdpCanonicalizer.canonicalize(withProperties)
+      : undefined;
+
+    const listCacheKey = this.cacheKeys.get<ListCacheKey>(
       "list",
       type,
       apiName,
       canonWhere,
       canonOrderBy,
+      canonRdp,
     );
 
-    return this.store.getQuery(listCacheKey, () => {
-      return new ListQuery(
+    return this.store.queries.get(listCacheKey, () => {
+      const QueryClass = type === "object"
+        ? ObjectListQuery
+        : InterfaceListQuery;
+      return new QueryClass(
         this.store,
-        this.store.getSubject(listCacheKey),
-        type,
+        this.store.subjects.get(listCacheKey),
         apiName,
-        canonWhere,
-        canonOrderBy,
         listCacheKey,
         options,
       );

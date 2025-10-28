@@ -1,7 +1,7 @@
 {
   "name": "@osdk/e2e.test.foundry-sdk-generator",
   "private": true,
-  "version": "0.6.0-beta.1",
+  "version": "0.7.0-beta.1",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@osdk/foundry-sdk-generator": "workspace:~",
-    "execa": "^9.5.1"
+    "execa": "^9.6.0"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",

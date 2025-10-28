@@ -70,6 +70,7 @@ function customInspect(
     ])
   ) {
     if (typeof k === "symbol") continue;
+     
     ret += `  ${options.stylize(k.toString(), "undefined")}: ${
       localInspect(this[k as any], newOptions)
     }\n`;

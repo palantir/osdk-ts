@@ -1,5 +1,81 @@
 # @osdk/functions
 
+## 1.4.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [b762231]
+- Updated dependencies [f7ae38a]
+- Updated dependencies [f085283]
+  - @osdk/client@2.6.0-beta.2
+
+## 1.3.0-beta.7
+
+### Minor Changes
+
+- 9bbe664: Add compile check to prevent link and unlink edits when traversing a One direction
+
+### Patch Changes
+
+- Updated dependencies [85e8edb]
+  - @osdk/client@2.5.0-beta.12
+
+## 1.3.0-beta.6
+
+### Minor Changes
+
+- 1a647a8: Adding geometry type support
+
+### Patch Changes
+
+- Updated dependencies [ab29baa]
+  - @osdk/client@2.5.0-beta.7
+
+## 1.3.0-beta.5
+
+### Minor Changes
+
+- a41b62a: add markings types to osdk/functions
+
+### Patch Changes
+
+- Updated dependencies [d797f0c]
+- Updated dependencies [cbcf2ad]
+  - @osdk/client@2.5.0-beta.6
+
+## 1.3.0-beta.4
+
+### Minor Changes
+
+- a00d2ed: Update Platform SDK dependencies
+- a96d89e: Update Platform SDK dependencies
+
+### Patch Changes
+
+- Updated dependencies [a00d2ed]
+- Updated dependencies [a96d89e]
+  - @osdk/client@2.5.0-beta.4
+
+## 1.3.0-beta.3
+
+### Minor Changes
+
+- 4b1b399: Update dependencies with @osdk/foundry.core
+- 0a0e560: Reexport user and group id types with branding
+- 3ae01bb: Add UserFacingError to functions package
+
+### Patch Changes
+
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+  - @osdk/client@2.5.0-beta.3
+
 ## 1.3.0-beta.2
 
 ### Minor Changes

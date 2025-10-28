@@ -1,5 +1,55 @@
 # @osdkkit/react
 
+## 0.8.0-beta.2
+
+### Minor Changes
+
+- e7bf02a: Add RDP support to React toolkit
+
+### Patch Changes
+
+- Updated dependencies [61eb5b0]
+- Updated dependencies [e7bf02a]
+  - @osdk/client@2.6.0-beta.4
+  - @osdk/api@2.6.0-beta.4
+
+## 0.7.0-beta.5
+
+### Minor Changes
+
+- 7b97128: add useObjectSet hook
+
+### Patch Changes
+
+- Updated dependencies [7b97128]
+  - @osdk/client@2.5.0-beta.11
+  - @osdk/api@2.5.0-beta.11
+
+## 0.7.0-beta.4
+
+### Minor Changes
+
+- 46ae415: improve useOsdkObject, useOsdkObjects error handling
+
+### Patch Changes
+
+- Updated dependencies [ab29baa]
+  - @osdk/client@2.5.0-beta.7
+  - @osdk/api@2.5.0-beta.7
+
+## 0.7.0-beta.3
+
+### Minor Changes
+
+- ccc85a3: Export useOsdkMetadata hook experimentally
+
+### Patch Changes
+
+- Updated dependencies [3d7461d]
+- Updated dependencies [052a96b]
+  - @osdk/client@2.5.0-beta.5
+  - @osdk/api@2.5.0-beta.5
+
 ## 0.7.0-beta.2
 
 ### Minor Changes
@@ -39,7 +89,6 @@
   The `useOsdkAction` hook in `@osdk/react` now provides a `validateAction` function that allows you to check if an action is valid without executing it. This is useful for providing real-time validation feedback to users before they commit to performing an action.
 
   ### New features:
-
   - **validateAction**: A new async function that validates action parameters without executing the action
   - **isValidating**: A boolean state that indicates when validation is in progress
   - **validationResult**: Contains the validation response from the server, including whether the action is valid and any validation errors
@@ -62,7 +111,6 @@
   ```
 
   ### Implementation details:
-
   - Multiple validation calls can be made - new calls automatically cancel previous pending validations
   - Validation and action execution are mutually exclusive - you cannot validate while an action is being applied and vice versa
   - The underlying `ObservableClient` in `@osdk/client` has been extended with a `validateAction` method to support this functionality

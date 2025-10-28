@@ -20,6 +20,7 @@ import type {
   PropertyKeys,
 } from "./ObjectOrInterface.js";
 import type { PrimaryKeyTypes } from "./PrimaryKeyTypes.js";
+import type { PropertyValueFormattingRule } from "./valueFormatting/PropertyValueFormattingRule.js";
 import type { VersionString } from "./VersionString.js";
 import type { WirePropertyTypes } from "./WirePropertyTypes.js";
 
@@ -97,6 +98,8 @@ export namespace ObjectMetadata {
     type: WirePropertyTypes;
     multiplicity?: boolean;
     nullable?: boolean;
+    valueTypeApiName?: string;
+    valueFormatting?: PropertyValueFormattingRule;
   }
 
   export interface Link<
@@ -119,7 +122,7 @@ export interface ObjectTypeDefinition {
 }
 
 export type ObjectTypeLinkKeysFrom2<
-  Q extends ObjectTypeDefinition,
+  Q extends ObjectOrInterfaceDefinition,
 > =
   & keyof CompileTimeMetadata<Q>["links"]
   & string;

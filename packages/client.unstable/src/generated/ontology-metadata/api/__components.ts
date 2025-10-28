@@ -17,6 +17,7 @@
 import type { WorkflowRid as _workflow_api_WorkflowRid } from "../workflow/api/__components.js";
 import type {
   DataSetName as _api_blockdata_DataSetName,
+  DatasourceName as _api_blockdata_DatasourceName,
   GeotimeSeriesIntegrationName as _api_blockdata_GeotimeSeriesIntegrationName,
   MarkingGroupName as _api_blockdata_MarkingGroupName,
   MediaSetViewName as _api_blockdata_MediaSetViewName,
@@ -24,6 +25,8 @@ import type {
     as _api_blockdata_OntologyIrPropertyToColumnMapping,
   OntologyIrPropertyToPropertyMapping
     as _api_blockdata_OntologyIrPropertyToPropertyMapping,
+  OntologyIrValueTypeReferenceWithMetadata
+    as _api_blockdata_OntologyIrValueTypeReferenceWithMetadata,
   RestrictedViewName as _api_blockdata_RestrictedViewName,
   StreamName as _api_blockdata_StreamName,
   TimeSeriesSyncName as _api_blockdata_TimeSeriesSyncName,
@@ -60,8 +63,10 @@ import type {
   Intent as _api_types_Intent,
   LinkTypeSide as _api_types_LinkTypeSide,
   NowValue as _api_types_NowValue,
+  ObjectLocator as _api_types_ObjectLocator,
   OntologyIrBaseParameterType as _api_types_OntologyIrBaseParameterType,
   OntologyIrDataValue as _api_types_OntologyIrDataValue,
+  OntologyIrObjectLocator as _api_types_OntologyIrObjectLocator,
   ParameterRenderHint as _api_types_ParameterRenderHint,
   ParameterRequiredConfiguration as _api_types_ParameterRequiredConfiguration,
   ParameterVisibility as _api_types_ParameterVisibility,
@@ -609,6 +614,60 @@ export interface ActionType {
  * API names must be unique - requests that attempt to re-use an existing API name will be rejected.
  */
 export type ActionTypeApiName = string;
+export interface ActionTypeBranchFunctionsWithExternalCallsMode_allowFunctionsWithExternalCallsOnBranches {
+  type: "allowFunctionsWithExternalCallsOnBranches";
+  allowFunctionsWithExternalCallsOnBranches:
+    AllowFunctionsWithExternalCallsOnBranches;
+}
+
+export interface ActionTypeBranchFunctionsWithExternalCallsMode_disableFunctionsWithExternalCallsOnBranches {
+  type: "disableFunctionsWithExternalCallsOnBranches";
+  disableFunctionsWithExternalCallsOnBranches:
+    DisableFunctionsWithExternalCallsOnBranches;
+}
+export type ActionTypeBranchFunctionsWithExternalCallsMode =
+  | ActionTypeBranchFunctionsWithExternalCallsMode_allowFunctionsWithExternalCallsOnBranches
+  | ActionTypeBranchFunctionsWithExternalCallsMode_disableFunctionsWithExternalCallsOnBranches;
+
+export interface ActionTypeBranchNotificationsMode_allowNotificationsOnBranches {
+  type: "allowNotificationsOnBranches";
+  allowNotificationsOnBranches: AllowNotificationsOnBranches;
+}
+
+export interface ActionTypeBranchNotificationsMode_disableNotificationsOnBranches {
+  type: "disableNotificationsOnBranches";
+  disableNotificationsOnBranches: DisableNotificationsOnBranches;
+}
+export type ActionTypeBranchNotificationsMode =
+  | ActionTypeBranchNotificationsMode_allowNotificationsOnBranches
+  | ActionTypeBranchNotificationsMode_disableNotificationsOnBranches;
+
+export interface ActionTypeBranchSettings {
+  functionsWithExternalCallsMode:
+    ActionTypeBranchFunctionsWithExternalCallsMode;
+  notificationsMode: ActionTypeBranchNotificationsMode;
+  webhooksMode: ActionTypeBranchWebhooksMode;
+}
+export interface ActionTypeBranchSettingsModification {
+  functionsWithExternalCallsMode?:
+    | ActionTypeBranchFunctionsWithExternalCallsMode
+    | null
+    | undefined;
+  notificationsMode?: ActionTypeBranchNotificationsMode | null | undefined;
+  webhooksMode?: ActionTypeBranchWebhooksMode | null | undefined;
+}
+export interface ActionTypeBranchWebhooksMode_allowWebhooksOnBranches {
+  type: "allowWebhooksOnBranches";
+  allowWebhooksOnBranches: AllowWebhooksOnBranches;
+}
+
+export interface ActionTypeBranchWebhooksMode_disableWebhooksOnBranches {
+  type: "disableWebhooksOnBranches";
+  disableWebhooksOnBranches: DisableWebhooksOnBranches;
+}
+export type ActionTypeBranchWebhooksMode =
+  | ActionTypeBranchWebhooksMode_allowWebhooksOnBranches
+  | ActionTypeBranchWebhooksMode_disableWebhooksOnBranches;
 
 /**
  * A ActionTypeCreate is used to create ActionTypes.
@@ -617,6 +676,7 @@ export interface ActionTypeCreate {
   actionApplyClientSettings?: ActionApplyClientPreferences | null | undefined;
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
+  branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
   formContentOrdering: Array<FormContent>;
   logic: ActionLogicModification;
@@ -625,7 +685,7 @@ export interface ActionTypeCreate {
   packageRid?: OntologyPackageRid | null | undefined;
   parameterOrdering: Array<ParameterId>;
   parameters: Record<ParameterId, PutParameterRequestModification>;
-  projectRid?: CompassProjectRid | null | undefined;
+  projectRid?: CompassFolderRid | null | undefined;
   provenance?: ActionTypeProvenanceModification | null | undefined;
   revert?: ActionRevert | null | undefined;
   sections: Record<SectionId, PutSectionRequestModification>;
@@ -890,6 +950,7 @@ export interface ActionTypeMetadata {
   actionApplyClientSettings?: ActionApplyClientPreferences | null | undefined;
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
+  branchSettings: ActionTypeBranchSettings;
   displayMetadata: ActionTypeDisplayMetadata;
   entities?: ActionTypeEntities | null | undefined;
   formContentOrdering: Array<FormContent>;
@@ -914,6 +975,7 @@ export interface ActionTypeMetadataModification {
   actionApplyClientSettings?: ActionApplyClientPreferences | null | undefined;
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
+  branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
   entities?: ActionTypeEntities | null | undefined;
   formContentOrdering: Array<FormContent>;
@@ -1092,6 +1154,7 @@ export interface ActionTypeUpdate {
   actionApplyClientSettings?: ActionApplyClientPreferences | null | undefined;
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
+  branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
   formContentOrdering?: Array<FormContent> | null | undefined;
   logic: ActionLogicModification;
@@ -1225,6 +1288,10 @@ export interface AddInterfaceRuleModification {
   sharedPropertyTypeStructFieldLogicRuleValueModifications: Array<
     SharedPropertyTypeStructFieldLogicRuleValueModification
   >;
+}
+export interface AdditionOperation {
+  leftOperand: ParameterTransformPrefillValue;
+  rightOperand: ParameterTransformPrefillValue;
 }
 export interface AddLinkRule {
   linkTypeId: LinkTypeId;
@@ -1809,13 +1876,25 @@ export interface AllowedStructFieldValues_geohash {
   type: "geohash";
   geohash: ParameterGeohashOrEmpty;
 }
+
+export interface AllowedStructFieldValues_geoshape {
+  type: "geoshape";
+  geoshape: ParameterGeoshapeOrEmpty;
+}
+
+export interface AllowedStructFieldValues_objectQuery {
+  type: "objectQuery";
+  objectQuery: ParameterObjectQueryOrEmpty;
+}
 export type AllowedStructFieldValues =
   | AllowedStructFieldValues_oneOf
   | AllowedStructFieldValues_range
   | AllowedStructFieldValues_text
   | AllowedStructFieldValues_datetime
   | AllowedStructFieldValues_boolean
-  | AllowedStructFieldValues_geohash;
+  | AllowedStructFieldValues_geohash
+  | AllowedStructFieldValues_geoshape
+  | AllowedStructFieldValues_objectQuery;
 
 export interface AllowedStructFieldValuesModification_oneOf {
   type: "oneOf";
@@ -1846,13 +1925,25 @@ export interface AllowedStructFieldValuesModification_geohash {
   type: "geohash";
   geohash: ParameterGeohashOrEmpty;
 }
+
+export interface AllowedStructFieldValuesModification_geoshape {
+  type: "geoshape";
+  geoshape: ParameterGeoshapeOrEmpty;
+}
+
+export interface AllowedStructFieldValuesModification_objectQuery {
+  type: "objectQuery";
+  objectQuery: ParameterObjectQueryOrEmptyModification;
+}
 export type AllowedStructFieldValuesModification =
   | AllowedStructFieldValuesModification_oneOf
   | AllowedStructFieldValuesModification_range
   | AllowedStructFieldValuesModification_text
   | AllowedStructFieldValuesModification_datetime
   | AllowedStructFieldValuesModification_boolean
-  | AllowedStructFieldValuesModification_geohash;
+  | AllowedStructFieldValuesModification_geohash
+  | AllowedStructFieldValuesModification_geoshape
+  | AllowedStructFieldValuesModification_objectQuery;
 
 export interface AllowedStructFieldValuesOverride {
   allowedValues: AllowedStructFieldValues;
@@ -1868,6 +1959,26 @@ export interface AllowedValuesOverrideModification {
 }
 export interface AllowedValuesOverrideRequest {
   allowedValues: AllowedParameterValuesRequest;
+}
+export interface AllowFunctionsWithExternalCallsOnBranches {
+}
+export interface AllowNotificationsOnBranches {
+  branchRecipients: AllowNotificationsOnBranchesBranchRecipients;
+}
+export interface AllowNotificationsOnBranchesBranchRecipients_branchRecipientsBranchOwner {
+  type: "branchRecipientsBranchOwner";
+  branchRecipientsBranchOwner: BranchRecipientsBranchOwner;
+}
+
+export interface AllowNotificationsOnBranchesBranchRecipients_branchRecipientsSameAsMain {
+  type: "branchRecipientsSameAsMain";
+  branchRecipientsSameAsMain: BranchRecipientsSameAsMain;
+}
+export type AllowNotificationsOnBranchesBranchRecipients =
+  | AllowNotificationsOnBranchesBranchRecipients_branchRecipientsBranchOwner
+  | AllowNotificationsOnBranchesBranchRecipients_branchRecipientsSameAsMain;
+
+export interface AllowWebhooksOnBranches {
 }
 export interface Analyzer_notAnalyzed {
   type: "notAnalyzed";
@@ -2080,6 +2191,13 @@ export interface BatchedFunctionRuleModification {
   functionDetails: FunctionRuleModification;
   objectSetRidInputName: FunctionInputName;
 }
+export interface BatchGetEnrichedActionTypeMetadataRequest {
+  actionTypes: Array<ActionTypeRid>;
+  ontologyBranchRid?: OntologyBranchRid | null | undefined;
+}
+export interface BatchGetEnrichedActionTypeMetadataResponse {
+  enrichedMetadata: Record<ActionTypeRid, EnrichedActionTypeMetadata>;
+}
 export interface BidirectionalRelation {
   cardinality: RelationCardinality;
   definition: JoinDefinition;
@@ -2180,6 +2298,10 @@ export interface BranchMergedEvent {
   ontologyBranch: OntologyBranch;
   ontologyRid: OntologyRid;
 }
+export interface BranchRecipientsBranchOwner {
+}
+export interface BranchRecipientsSameAsMain {
+}
 export type BuilderPipelineRid = string;
 export interface BulkExecutionModeConfig {
   bulkFunctionInputName: FunctionInputName;
@@ -2272,6 +2394,11 @@ export type ComparisonOperator =
   | "GREATER_THAN"
   | "INTERSECTS"
   | "IS_OF_OBJECT_TYPE";
+
+/**
+ * A rid identifying a Compass folder. This rid is generated randomly and is safe for logging purposes.
+ */
+export type CompassFolderRid = string;
 
 /**
  * ResourceIdentifier for a Compass Project.
@@ -2737,6 +2864,13 @@ export interface DataType_baseType {
  */
 export type DataType = DataType_baseType;
 
+export interface DateBetweenOperation {
+  leftDate: ParameterTransformPrefillValue;
+  rightDate: ParameterTransformPrefillValue;
+  unit: DateUnit;
+}
+export interface DateCurrentOperation {
+}
 export interface DateFormatter {
   format: DatetimeFormat;
 }
@@ -2845,6 +2979,63 @@ export interface DatetimeTimezoneDefinition_zoneId {
 }
 export type DatetimeTimezoneDefinition = DatetimeTimezoneDefinition_zoneId;
 
+export interface DateTimeUnit_seconds {
+  type: "seconds";
+  seconds: DateTimeUnitSeconds;
+}
+
+export interface DateTimeUnit_minutes {
+  type: "minutes";
+  minutes: DateTimeUnitMinutes;
+}
+
+export interface DateTimeUnit_hours {
+  type: "hours";
+  hours: DateTimeUnitHours;
+}
+
+export interface DateTimeUnit_days {
+  type: "days";
+  days: DateTimeUnitDays;
+}
+
+export interface DateTimeUnit_weeks {
+  type: "weeks";
+  weeks: DateTimeUnitWeeks;
+}
+
+export interface DateTimeUnit_months {
+  type: "months";
+  months: DateTimeUnitMonths;
+}
+
+export interface DateTimeUnit_years {
+  type: "years";
+  years: DateTimeUnitYears;
+}
+export type DateTimeUnit =
+  | DateTimeUnit_seconds
+  | DateTimeUnit_minutes
+  | DateTimeUnit_hours
+  | DateTimeUnit_days
+  | DateTimeUnit_weeks
+  | DateTimeUnit_months
+  | DateTimeUnit_years;
+
+export interface DateTimeUnitDays {
+}
+export interface DateTimeUnitHours {
+}
+export interface DateTimeUnitMinutes {
+}
+export interface DateTimeUnitMonths {
+}
+export interface DateTimeUnitSeconds {
+}
+export interface DateTimeUnitWeeks {
+}
+export interface DateTimeUnitYears {
+}
 export interface DateTypeDataConstraints {
   range: DateTypeRangeConstraint;
 }
@@ -2856,6 +3047,31 @@ export interface DateTypeRangeConstraint {
   max?: DateTypeDataValue | null | undefined;
   min?: DateTypeDataValue | null | undefined;
 }
+export interface DateUnit_days {
+  type: "days";
+  days: DateTimeUnitDays;
+}
+
+export interface DateUnit_weeks {
+  type: "weeks";
+  weeks: DateTimeUnitWeeks;
+}
+
+export interface DateUnit_months {
+  type: "months";
+  months: DateTimeUnitMonths;
+}
+
+export interface DateUnit_years {
+  type: "years";
+  years: DateTimeUnitYears;
+}
+export type DateUnit =
+  | DateUnit_days
+  | DateUnit_weeks
+  | DateUnit_months
+  | DateUnit_years;
+
 export interface DecimalPropertyType {
   precision?: number | null | undefined;
   scale?: number | null | undefined;
@@ -3003,7 +3219,12 @@ export type DerivedPropertiesSourceRid = string;
  * A rid specifying a direct write datasource, such as an edge pipeline.
  */
 export type DirectSourceRid = string;
-
+export interface DisableFunctionsWithExternalCallsOnBranches {
+}
+export interface DisableNotificationsOnBranches {
+}
+export interface DisableWebhooksOnBranches {
+}
 /**
  * Default layout that should be shown when interacting with action inline widget
  */
@@ -3014,6 +3235,10 @@ export type DisplayMetadataConfigurationDefaultLayout = "FORM" | "TABLE";
  */
 export interface DisplayMetadataConfigurationDisplayAndFormat {
   table: TableDisplayAndFormat;
+}
+export interface DivisionOperation {
+  leftOperand: ParameterTransformPrefillValue;
+  rightOperand: ParameterTransformPrefillValue;
 }
 export interface DoublePropertyType {
 }
@@ -3124,6 +3349,7 @@ export interface DynamicObjectSetInputUnioned {
 export interface EditActionTypeRequest {
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
+  branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
   logic: ActionLogic;
   notifications: Array<ActionNotification>;
@@ -3238,6 +3464,13 @@ export interface Empty {
  * This status indicates that the ObjectType is endorsed as a part of "core" ontology by ontology-level owners and provides even better guarantees than the Active status.
  */
 export interface EndorsedObjectTypeStatus {
+}
+export interface EnrichedActionTypeEntities {
+  linkTypes: Record<LinkTypeId, LinkTypeRid>;
+  objectTypes: Record<ObjectTypeId, ObjectTypeRid>;
+}
+export interface EnrichedActionTypeMetadata {
+  actionTypeEntities: EnrichedActionTypeEntities;
 }
 /**
  * The rid for a Multipass Enrollment.
@@ -3638,6 +3871,12 @@ export interface GetEntityDelegateDatasetRequest {
 export interface GetEntityDelegateDatasetResponse {
   delegateDataset: OntologySparkDelegateDataset;
 }
+export interface GetEntityQueryableSourceRequest {
+  ontologyEntityRid: ObjectOrLinkTypeRid;
+}
+export interface GetEntityQueryableSourceResponse {
+  queryableSource: OntologySparkQueryableSource;
+}
 /**
  * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
  */
@@ -3844,6 +4083,28 @@ export interface IntegerTypeRangeConstraint {
   max?: IntegerTypeDataValue | null | undefined;
   min?: IntegerTypeDataValue | null | undefined;
 }
+export interface InterfaceArrayPropertyType {
+  subtype: InterfacePropertyTypeType;
+}
+export interface InterfaceCipherTextPropertyType {
+  defaultCipherChannelRid?: string | null | undefined;
+  plainTextType: InterfacePropertyTypeType;
+}
+export interface InterfaceDefinedPropertyType {
+  apiName: InterfacePropertyTypeApiName;
+  constraints: InterfaceDefinedPropertyTypeConstraints;
+  displayMetadata: InterfacePropertyTypeDisplayMetadata;
+  rid: InterfacePropertyTypeRid;
+  type: InterfacePropertyTypeType;
+}
+export interface InterfaceDefinedPropertyTypeConstraints {
+  dataConstraints?: DataConstraints | null | undefined;
+  indexedForSearch: boolean;
+  primaryKeyConstraint: PrimaryKeyConstraint;
+  requireImplementation: boolean;
+  typeClasses: Array<TypeClass>;
+  valueType?: ValueTypeReference | null | undefined;
+}
 export interface InterfaceLinkType {
   cardinality: InterfaceLinkTypeCardinality;
   linkedEntityTypeId: LinkedEntityTypeId;
@@ -3956,8 +4217,14 @@ export interface InterfacePropertyType_sharedPropertyBasedPropertyType {
   type: "sharedPropertyBasedPropertyType";
   sharedPropertyBasedPropertyType: SharedPropertyBasedPropertyType;
 }
+
+export interface InterfacePropertyType_interfaceDefinedPropertyType {
+  type: "interfaceDefinedPropertyType";
+  interfaceDefinedPropertyType: InterfaceDefinedPropertyType;
+}
 export type InterfacePropertyType =
-  InterfacePropertyType_sharedPropertyBasedPropertyType;
+  | InterfacePropertyType_sharedPropertyBasedPropertyType
+  | InterfacePropertyType_interfaceDefinedPropertyType;
 
 export type InterfacePropertyTypeApiName = string;
 export interface InterfacePropertyTypeDisplayMetadata {
@@ -4000,12 +4267,165 @@ export type InterfacePropertyTypeRidOrIdInRequest =
   | InterfacePropertyTypeRidOrIdInRequest_rid
   | InterfacePropertyTypeRidOrIdInRequest_idInRequest;
 
+export interface InterfacePropertyTypeType_array {
+  type: "array";
+  array: InterfaceArrayPropertyType;
+}
+
+export interface InterfacePropertyTypeType_boolean {
+  type: "boolean";
+  boolean: BooleanPropertyType;
+}
+
+export interface InterfacePropertyTypeType_byte {
+  type: "byte";
+  byte: BytePropertyType;
+}
+
+export interface InterfacePropertyTypeType_date {
+  type: "date";
+  date: DatePropertyType;
+}
+
+export interface InterfacePropertyTypeType_decimal {
+  type: "decimal";
+  decimal: DecimalPropertyType;
+}
+
+export interface InterfacePropertyTypeType_double {
+  type: "double";
+  double: DoublePropertyType;
+}
+
+export interface InterfacePropertyTypeType_float {
+  type: "float";
+  float: FloatPropertyType;
+}
+
+export interface InterfacePropertyTypeType_geohash {
+  type: "geohash";
+  geohash: GeohashPropertyType;
+}
+
+export interface InterfacePropertyTypeType_geoshape {
+  type: "geoshape";
+  geoshape: GeoshapePropertyType;
+}
+
+export interface InterfacePropertyTypeType_integer {
+  type: "integer";
+  integer: IntegerPropertyType;
+}
+
+export interface InterfacePropertyTypeType_long {
+  type: "long";
+  long: LongPropertyType;
+}
+
+export interface InterfacePropertyTypeType_short {
+  type: "short";
+  short: ShortPropertyType;
+}
+
+export interface InterfacePropertyTypeType_string {
+  type: "string";
+  string: StringPropertyType;
+}
+
+export interface InterfacePropertyTypeType_experimentalTimeDependentV1 {
+  type: "experimentalTimeDependentV1";
+  experimentalTimeDependentV1: ExperimentalTimeDependentPropertyTypeV1;
+}
+
+export interface InterfacePropertyTypeType_timestamp {
+  type: "timestamp";
+  timestamp: TimestampPropertyType;
+}
+
+export interface InterfacePropertyTypeType_attachment {
+  type: "attachment";
+  attachment: AttachmentPropertyType;
+}
+
+export interface InterfacePropertyTypeType_marking {
+  type: "marking";
+  marking: MarkingPropertyType;
+}
+
+export interface InterfacePropertyTypeType_cipherText {
+  type: "cipherText";
+  cipherText: InterfaceCipherTextPropertyType;
+}
+
+export interface InterfacePropertyTypeType_mediaReference {
+  type: "mediaReference";
+  mediaReference: MediaReferencePropertyType;
+}
+
+export interface InterfacePropertyTypeType_vector {
+  type: "vector";
+  vector: VectorPropertyType;
+}
+
+export interface InterfacePropertyTypeType_geotimeSeriesReference {
+  type: "geotimeSeriesReference";
+  geotimeSeriesReference: GeotimeSeriesReferencePropertyType;
+}
+
+export interface InterfacePropertyTypeType_struct {
+  type: "struct";
+  struct: InterfaceStructPropertyType;
+}
+/**
+ * Duplicate of Type, with the exception of InterfaceStructPropertyType and InterfaceArrayPropertyType.
+ * InterfaceStructPropertyType has an added requireImplementation field to allow for optional struct fields on
+ * interface property types.
+ */
+export type InterfacePropertyTypeType =
+  | InterfacePropertyTypeType_array
+  | InterfacePropertyTypeType_boolean
+  | InterfacePropertyTypeType_byte
+  | InterfacePropertyTypeType_date
+  | InterfacePropertyTypeType_decimal
+  | InterfacePropertyTypeType_double
+  | InterfacePropertyTypeType_float
+  | InterfacePropertyTypeType_geohash
+  | InterfacePropertyTypeType_geoshape
+  | InterfacePropertyTypeType_integer
+  | InterfacePropertyTypeType_long
+  | InterfacePropertyTypeType_short
+  | InterfacePropertyTypeType_string
+  | InterfacePropertyTypeType_experimentalTimeDependentV1
+  | InterfacePropertyTypeType_timestamp
+  | InterfacePropertyTypeType_attachment
+  | InterfacePropertyTypeType_marking
+  | InterfacePropertyTypeType_cipherText
+  | InterfacePropertyTypeType_mediaReference
+  | InterfacePropertyTypeType_vector
+  | InterfacePropertyTypeType_geotimeSeriesReference
+  | InterfacePropertyTypeType_struct;
+
 export interface InterfaceSharedPropertyType {
   required: boolean;
   sharedPropertyType: SharedPropertyType;
 }
 export interface InterfacesSummary {
   visibleEntities: number;
+}
+/**
+ * Represents an ordered set of fields and values.
+ */
+export interface InterfaceStructFieldType {
+  aliases: Array<StructFieldAlias>;
+  apiName: ObjectTypeFieldApiName;
+  displayMetadata: StructFieldDisplayMetadata;
+  fieldType: InterfacePropertyTypeType;
+  requireImplementation: boolean;
+  structFieldRid: StructFieldRid;
+  typeClasses: Array<TypeClass>;
+}
+export interface InterfaceStructPropertyType {
+  structFields: Array<InterfaceStructFieldType>;
 }
 /**
  * Represents a collection of properties that object types can implement. If an object type implements an
@@ -4027,6 +4447,10 @@ export interface InterfaceType {
   properties: Array<SharedPropertyType>;
   propertiesV2: Record<SharedPropertyTypeRid, InterfaceSharedPropertyType>;
   propertiesV3: Record<InterfacePropertyTypeRid, InterfacePropertyType>;
+  provenance?:
+    | _api_entitymetadata_provenance_EntityProvenance
+    | null
+    | undefined;
   rid: InterfaceTypeRid;
   searchable?: boolean | null | undefined;
   status: InterfaceTypeStatus;
@@ -4163,6 +4587,11 @@ export interface IntermediaryLinkDefinition {
   objectTypeRidA: ObjectTypeRid;
   objectTypeRidB: ObjectTypeRid;
 }
+export type InvalidCompassNameReason =
+  | "ILLEGAL_VALUES"
+  | "ILLEGAL_SUBSTRINGS"
+  | "TOO_LONG"
+  | "EMPTY";
 export interface JoinDefinition_singleKey {
   type: "singleKey";
   singleKey: SingleKeyJoinDefinition;
@@ -4211,6 +4640,7 @@ export interface LabelledValue {
  */
 export type LanguageAnalyzer =
   | "FRENCH"
+  | "GERMAN"
   | "JAPANESE"
   | "KOREAN"
   | "ARABIC"
@@ -4473,6 +4903,7 @@ export interface LinkTypeRidsNotFoundError {
  */
 export interface LinkTypesAlreadyExistError {
   linkTypeIds: Array<LinkTypeId>;
+  linkTypeIdsToOntologyBranchRids: Record<LinkTypeId, OntologyBranchRid>;
 }
 /**
  * The LinkTypes were not found.
@@ -4523,6 +4954,7 @@ export type LiveDeploymentRid = string;
 export type LmsEmbeddingModel =
   | "OPENAI_TEXT_EMBEDDING_ADA_002"
   | "TEXT_EMBEDDING_3_SMALL"
+  | "TEXT_EMBEDDING_3_LARGE"
   | "SNOWFLAKE_ARCTIC_EMBED_M"
   | "INSTRUCTOR_LARGE"
   | "BGE_BASE_EN_V1_5";
@@ -5265,6 +5697,10 @@ export interface MultipassUserInGroupFilter {
 export interface MultipassUserInGroupFilterModification {
   groupId: ConditionValueModification;
 }
+export interface MultiplicationOperation {
+  leftOperand: ParameterTransformPrefillValue;
+  rightOperand: ParameterTransformPrefillValue;
+}
 export interface MustBeEmpty {
 }
 export interface NestedStructFieldApiNameMapping {
@@ -5999,6 +6435,7 @@ export interface ObjectTypeDirectDatasource {
   directSourceRid: DirectSourceRid;
   propertyMapping: Record<PropertyTypeRid, PropertyTypeMappingInfo>;
   propertySecurityGroups: PropertySecurityGroups;
+  retentionConfig?: RetentionConfig | null | undefined;
 }
 /**
  * This includes metadata which can be used by front-ends when displaying the ObjectType.
@@ -6254,6 +6691,7 @@ export interface ObjectTypeRidsNotFoundError {
  */
 export interface ObjectTypesAlreadyExistError {
   objectTypeIds: Array<ObjectTypeId>;
+  objectTypeIdsToOntologyBranchRids: Record<ObjectTypeId, OntologyBranchRid>;
 }
 /**
  * The ObjectTypes were not found.
@@ -6722,23 +7160,6 @@ export interface OntologyIrActionsObjectSet {
   >;
   objectSet: OntologyIrDynamicObjectSet;
 }
-export interface OntologyIrActionType {
-  actionTypeLogic: OntologyIrActionTypeLogic;
-  metadata: OntologyIrActionTypeMetadata;
-}
-/**
- * DisplayMetadata shape used in responses
- */
-export interface OntologyIrActionTypeDisplayMetadata {
-  configuration: ActionTypeDisplayMetadataConfiguration;
-  description: string;
-  displayName: string;
-  icon?: Icon | null | undefined;
-  submitButtonDisplayMetadata?: ButtonDisplayMetadata | null | undefined;
-  successMessage: Array<OntologyIrActionTypeRichTextComponent>;
-  typeClasses: Array<TypeClass>;
-  undoButtonConfiguration?: boolean | null | undefined;
-}
 export interface OntologyIrActionTypeEntities {
   affectedInterfaceTypes: Array<InterfaceTypeApiName>;
   affectedLinkTypes: Array<LinkTypeId>;
@@ -6751,20 +7172,6 @@ export interface OntologyIrActionTypeLevelValidation {
 export interface OntologyIrActionTypeLogic {
   logic: OntologyIrActionLogic;
   validation: OntologyIrActionValidation;
-}
-/**
- * An ActionType defines the schema of the edits that can be made to Phonograph.
- */
-export interface OntologyIrActionTypeMetadata {
-  apiName: ActionTypeApiName;
-  displayMetadata: OntologyIrActionTypeDisplayMetadata;
-  entities?: OntologyIrActionTypeEntities | null | undefined;
-  formContentOrdering: Array<OntologyIrFormContent>;
-  parameterOrdering: Array<ParameterId>;
-  parameters: Record<ParameterId, OntologyIrParameter>;
-  sections: Record<SectionId, OntologyIrSection>;
-  stagingMediaSetRid?: MediaSetRid | null | undefined;
-  status: OntologyIrActionTypeStatus;
 }
 export interface OntologyIrActionTypeRichTextComponent_message {
   type: "message";
@@ -6856,6 +7263,10 @@ export interface OntologyIrAddInterfaceRule {
     ObjectTypeFieldApiName,
     OntologyIrLogicRuleValue
   >;
+}
+export interface OntologyIrAdditionOperation {
+  leftOperand: OntologyIrParameterTransformPrefillValue;
+  rightOperand: OntologyIrParameterTransformPrefillValue;
 }
 export interface OntologyIrAddObjectRule {
   objectTypeId: ObjectTypeApiName;
@@ -7063,13 +7474,25 @@ export interface OntologyIrAllowedStructFieldValues_geohash {
   type: "geohash";
   geohash: ParameterGeohashOrEmpty;
 }
+
+export interface OntologyIrAllowedStructFieldValues_geoshape {
+  type: "geoshape";
+  geoshape: ParameterGeoshapeOrEmpty;
+}
+
+export interface OntologyIrAllowedStructFieldValues_objectQuery {
+  type: "objectQuery";
+  objectQuery: OntologyIrParameterObjectQueryOrEmpty;
+}
 export type OntologyIrAllowedStructFieldValues =
   | OntologyIrAllowedStructFieldValues_oneOf
   | OntologyIrAllowedStructFieldValues_range
   | OntologyIrAllowedStructFieldValues_text
   | OntologyIrAllowedStructFieldValues_datetime
   | OntologyIrAllowedStructFieldValues_boolean
-  | OntologyIrAllowedStructFieldValues_geohash;
+  | OntologyIrAllowedStructFieldValues_geohash
+  | OntologyIrAllowedStructFieldValues_geoshape
+  | OntologyIrAllowedStructFieldValues_objectQuery;
 
 export interface OntologyIrAllowedStructFieldValuesOverride {
   allowedValues: OntologyIrAllowedStructFieldValues;
@@ -7297,6 +7720,11 @@ export interface OntologyIrDataSecurity {
     | undefined;
   markingConstraint?: OntologyIrMandatoryMarkingConstraint | null | undefined;
 }
+export interface OntologyIrDateBetweenOperation {
+  leftDate: OntologyIrParameterTransformPrefillValue;
+  rightDate: OntologyIrParameterTransformPrefillValue;
+  unit: DateUnit;
+}
 export interface OntologyIrDateRangeValue_fixed {
   type: "fixed";
   fixed: OntologyIrConditionValue;
@@ -7373,6 +7801,10 @@ export interface OntologyIrDeprecatedPropertyTypeStatus {
   deadline: string;
   message: string;
   replacedBy?: ObjectTypeFieldApiName | null | undefined;
+}
+export interface OntologyIrDivisionOperation {
+  leftOperand: OntologyIrParameterTransformPrefillValue;
+  rightOperand: OntologyIrParameterTransformPrefillValue;
 }
 /**
  * An ObjectSet gotten as a result of performing a sequence of Transforms on a base ObjectSet.
@@ -7509,6 +7941,13 @@ export interface OntologyIrInlineActionType {
   parameterId?: ParameterId | null | undefined;
   rid: ActionTypeApiName;
 }
+export interface OntologyIrInterfaceArrayPropertyType {
+  subtype: OntologyIrInterfacePropertyTypeType;
+}
+export interface OntologyIrInterfaceCipherTextPropertyType {
+  defaultCipherChannelRid?: string | null | undefined;
+  plainTextType: OntologyIrInterfacePropertyTypeType;
+}
 /**
  * Reference to a struct field of a struct property.
  */
@@ -7556,9 +7995,162 @@ export interface OntologyIrInterfacePropertyTypeImplementation_propertyTypeRid {
 export type OntologyIrInterfacePropertyTypeImplementation =
   OntologyIrInterfacePropertyTypeImplementation_propertyTypeRid;
 
+export interface OntologyIrInterfacePropertyTypeType_array {
+  type: "array";
+  array: OntologyIrInterfaceArrayPropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_boolean {
+  type: "boolean";
+  boolean: BooleanPropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_byte {
+  type: "byte";
+  byte: BytePropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_date {
+  type: "date";
+  date: DatePropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_decimal {
+  type: "decimal";
+  decimal: DecimalPropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_double {
+  type: "double";
+  double: DoublePropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_float {
+  type: "float";
+  float: FloatPropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_geohash {
+  type: "geohash";
+  geohash: GeohashPropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_geoshape {
+  type: "geoshape";
+  geoshape: GeoshapePropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_integer {
+  type: "integer";
+  integer: IntegerPropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_long {
+  type: "long";
+  long: LongPropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_short {
+  type: "short";
+  short: ShortPropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_string {
+  type: "string";
+  string: StringPropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_experimentalTimeDependentV1 {
+  type: "experimentalTimeDependentV1";
+  experimentalTimeDependentV1:
+    OntologyIrExperimentalTimeDependentPropertyTypeV1;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_timestamp {
+  type: "timestamp";
+  timestamp: TimestampPropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_attachment {
+  type: "attachment";
+  attachment: AttachmentPropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_marking {
+  type: "marking";
+  marking: MarkingPropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_cipherText {
+  type: "cipherText";
+  cipherText: OntologyIrInterfaceCipherTextPropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_mediaReference {
+  type: "mediaReference";
+  mediaReference: MediaReferencePropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_vector {
+  type: "vector";
+  vector: VectorPropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_geotimeSeriesReference {
+  type: "geotimeSeriesReference";
+  geotimeSeriesReference: GeotimeSeriesReferencePropertyType;
+}
+
+export interface OntologyIrInterfacePropertyTypeType_struct {
+  type: "struct";
+  struct: OntologyIrInterfaceStructPropertyType;
+}
+/**
+ * Duplicate of Type, with the exception of InterfaceStructPropertyType and InterfaceArrayPropertyType.
+ * InterfaceStructPropertyType has an added requireImplementation field to allow for optional struct fields on
+ * interface property types.
+ */
+export type OntologyIrInterfacePropertyTypeType =
+  | OntologyIrInterfacePropertyTypeType_array
+  | OntologyIrInterfacePropertyTypeType_boolean
+  | OntologyIrInterfacePropertyTypeType_byte
+  | OntologyIrInterfacePropertyTypeType_date
+  | OntologyIrInterfacePropertyTypeType_decimal
+  | OntologyIrInterfacePropertyTypeType_double
+  | OntologyIrInterfacePropertyTypeType_float
+  | OntologyIrInterfacePropertyTypeType_geohash
+  | OntologyIrInterfacePropertyTypeType_geoshape
+  | OntologyIrInterfacePropertyTypeType_integer
+  | OntologyIrInterfacePropertyTypeType_long
+  | OntologyIrInterfacePropertyTypeType_short
+  | OntologyIrInterfacePropertyTypeType_string
+  | OntologyIrInterfacePropertyTypeType_experimentalTimeDependentV1
+  | OntologyIrInterfacePropertyTypeType_timestamp
+  | OntologyIrInterfacePropertyTypeType_attachment
+  | OntologyIrInterfacePropertyTypeType_marking
+  | OntologyIrInterfacePropertyTypeType_cipherText
+  | OntologyIrInterfacePropertyTypeType_mediaReference
+  | OntologyIrInterfacePropertyTypeType_vector
+  | OntologyIrInterfacePropertyTypeType_geotimeSeriesReference
+  | OntologyIrInterfacePropertyTypeType_struct;
+
 export interface OntologyIrInterfaceSharedPropertyType {
   required: boolean;
   sharedPropertyType: OntologyIrSharedPropertyType;
+}
+/**
+ * Represents an ordered set of fields and values.
+ */
+export interface OntologyIrInterfaceStructFieldType {
+  aliases: Array<StructFieldAlias>;
+  apiName: ObjectTypeFieldApiName;
+  displayMetadata: StructFieldDisplayMetadata;
+  fieldType: OntologyIrInterfacePropertyTypeType;
+  requireImplementation: boolean;
+  typeClasses: Array<TypeClass>;
+}
+export interface OntologyIrInterfaceStructPropertyType {
+  structFields: Array<OntologyIrInterfaceStructFieldType>;
 }
 /**
  * Represents a link between two ObjectTypes with an intermediary ObjectType acting as a bridge.
@@ -7591,9 +8183,15 @@ export interface OntologyIrLinkDefinition_oneToMany {
   type: "oneToMany";
   oneToMany: OntologyIrOneToManyLinkDefinition;
 }
+
+export interface OntologyIrLinkDefinition_intermediary {
+  type: "intermediary";
+  intermediary: OntologyIrIntermediaryLinkDefinition;
+}
 export type OntologyIrLinkDefinition =
   | OntologyIrLinkDefinition_manyToMany
-  | OntologyIrLinkDefinition_oneToMany;
+  | OntologyIrLinkDefinition_oneToMany
+  | OntologyIrLinkDefinition_intermediary;
 
 export interface OntologyIrLinkedEntityTypeId_objectType {
   type: "objectType";
@@ -7787,9 +8385,9 @@ export interface OntologyIrManyToManyLinkTypeDatasetDatasource {
 }
 export interface OntologyIrManyToManyLinkTypeDatasource {
   datasource: OntologyIrManyToManyLinkTypeDatasourceDefinition;
+  datasourceName: _api_blockdata_DatasourceName;
   editsConfiguration?: EditsConfiguration | null | undefined;
   redacted?: boolean | null | undefined;
-  rid: DatasourceRid;
 }
 export interface OntologyIrManyToManyLinkTypeDatasourceDefinition_dataset {
   type: "dataset";
@@ -7859,6 +8457,10 @@ export type OntologyIrMultipassUserFilter =
 
 export interface OntologyIrMultipassUserInGroupFilter {
   groupId: OntologyIrConditionValue;
+}
+export interface OntologyIrMultiplicationOperation {
+  leftOperand: OntologyIrParameterTransformPrefillValue;
+  rightOperand: OntologyIrParameterTransformPrefillValue;
 }
 /**
  * A URL target for a newly created object.
@@ -8173,9 +8775,9 @@ export interface OntologyIrObjectTypeDatasetDatasourceV3 {
 export interface OntologyIrObjectTypeDatasource {
   dataSecurity?: OntologyIrDataSecurity | null | undefined;
   datasource: OntologyIrObjectTypeDatasourceDefinition;
+  datasourceName: _api_blockdata_DatasourceName;
   editsConfiguration?: EditsConfiguration | null | undefined;
   redacted?: boolean | null | undefined;
-  rid: DatasourceRid;
 }
 export interface OntologyIrObjectTypeDatasourceDefinition_streamV2 {
   type: "streamV2";
@@ -8282,6 +8884,7 @@ export interface OntologyIrObjectTypeDirectDatasource {
   directSourceRid: DirectSourceRid;
   propertyMapping: Record<ObjectTypeFieldApiName, PropertyTypeMappingInfo>;
   propertySecurityGroups: OntologyIrPropertySecurityGroups;
+  retentionConfig?: RetentionConfig | null | undefined;
 }
 /**
  * Object type datasource which is not backed by any dataset or restricted view. This type of a "datasource"
@@ -8634,6 +9237,11 @@ export interface OntologyIrParameterPrefill_staticObject {
   staticObject: StaticObjectPrefill;
 }
 
+export interface OntologyIrParameterPrefill_staticObjectV2 {
+  type: "staticObjectV2";
+  staticObjectV2: OntologyIrStaticObjectPrefillV2;
+}
+
 export interface OntologyIrParameterPrefill_objectParameterPropertyValue {
   type: "objectParameterPropertyValue";
   objectParameterPropertyValue: OntologyIrObjectParameterPropertyValue;
@@ -8659,6 +9267,11 @@ export interface OntologyIrParameterPrefill_objectSetRidPrefill {
   objectSetRidPrefill: OntologyIrObjectSetRidPrefill;
 }
 
+export interface OntologyIrParameterPrefill_parameterTransformPrefill {
+  type: "parameterTransformPrefill";
+  parameterTransformPrefill: OntologyIrParameterTransformPrefill;
+}
+
 export interface OntologyIrParameterPrefill_redacted {
   type: "redacted";
   redacted: Redacted;
@@ -8669,11 +9282,13 @@ export interface OntologyIrParameterPrefill_redacted {
 export type OntologyIrParameterPrefill =
   | OntologyIrParameterPrefill_staticValue
   | OntologyIrParameterPrefill_staticObject
+  | OntologyIrParameterPrefill_staticObjectV2
   | OntologyIrParameterPrefill_objectParameterPropertyValue
   | OntologyIrParameterPrefill_interfaceParameterPropertyValue
   | OntologyIrParameterPrefill_objectQueryPrefill
   | OntologyIrParameterPrefill_objectQueryPropertyValue
   | OntologyIrParameterPrefill_objectSetRidPrefill
+  | OntologyIrParameterPrefill_parameterTransformPrefill
   | OntologyIrParameterPrefill_redacted;
 
 export interface OntologyIrParameterPrefillOverride {
@@ -8700,6 +9315,80 @@ export interface OntologyIrParameterRangeValue {
   inclusive: boolean;
   value: OntologyIrConditionValue;
 }
+export interface OntologyIrParameterTransformPrefill_stringConcat {
+  type: "stringConcat";
+  stringConcat: OntologyIrStringConcatOperation;
+}
+
+export interface OntologyIrParameterTransformPrefill_addition {
+  type: "addition";
+  addition: OntologyIrAdditionOperation;
+}
+
+export interface OntologyIrParameterTransformPrefill_subtraction {
+  type: "subtraction";
+  subtraction: OntologyIrSubtractionOperation;
+}
+
+export interface OntologyIrParameterTransformPrefill_multiplication {
+  type: "multiplication";
+  multiplication: OntologyIrMultiplicationOperation;
+}
+
+export interface OntologyIrParameterTransformPrefill_division {
+  type: "division";
+  division: OntologyIrDivisionOperation;
+}
+
+export interface OntologyIrParameterTransformPrefill_dateBetween {
+  type: "dateBetween";
+  dateBetween: OntologyIrDateBetweenOperation;
+}
+
+export interface OntologyIrParameterTransformPrefill_dateCurrent {
+  type: "dateCurrent";
+  dateCurrent: DateCurrentOperation;
+}
+
+export interface OntologyIrParameterTransformPrefill_timeBetween {
+  type: "timeBetween";
+  timeBetween: OntologyIrTimeBetweenOperation;
+}
+
+export interface OntologyIrParameterTransformPrefill_timeCurrent {
+  type: "timeCurrent";
+  timeCurrent: TimeCurrentOperation;
+}
+export type OntologyIrParameterTransformPrefill =
+  | OntologyIrParameterTransformPrefill_stringConcat
+  | OntologyIrParameterTransformPrefill_addition
+  | OntologyIrParameterTransformPrefill_subtraction
+  | OntologyIrParameterTransformPrefill_multiplication
+  | OntologyIrParameterTransformPrefill_division
+  | OntologyIrParameterTransformPrefill_dateBetween
+  | OntologyIrParameterTransformPrefill_dateCurrent
+  | OntologyIrParameterTransformPrefill_timeBetween
+  | OntologyIrParameterTransformPrefill_timeCurrent;
+
+export interface OntologyIrParameterTransformPrefillValue_parameterValue {
+  type: "parameterValue";
+  parameterValue: ParameterId;
+}
+
+export interface OntologyIrParameterTransformPrefillValue_staticValue {
+  type: "staticValue";
+  staticValue: OntologyIrStaticValue;
+}
+
+export interface OntologyIrParameterTransformPrefillValue_objectParameterPropertyValue {
+  type: "objectParameterPropertyValue";
+  objectParameterPropertyValue: OntologyIrObjectParameterPropertyValue;
+}
+export type OntologyIrParameterTransformPrefillValue =
+  | OntologyIrParameterTransformPrefillValue_parameterValue
+  | OntologyIrParameterTransformPrefillValue_staticValue
+  | OntologyIrParameterTransformPrefillValue_objectParameterPropertyValue;
+
 export interface OntologyIrParameterValidation {
   allowedValues: OntologyIrAllowedParameterValues;
   required: _api_types_ParameterRequiredConfiguration;
@@ -8801,7 +9490,10 @@ export interface OntologyIrPropertyType {
   status: OntologyIrPropertyTypeStatus;
   type: OntologyIrType;
   typeClasses: Array<TypeClass>;
-  valueType?: ValueTypeApiNameReference | null | undefined;
+  valueType?:
+    | _api_blockdata_OntologyIrValueTypeReferenceWithMetadata
+    | null
+    | undefined;
 }
 export interface OntologyIrPropertyTypeReferenceOrNonNumericInternalInterpolation_propertyType {
   type: "propertyType";
@@ -9094,7 +9786,10 @@ export interface OntologyIrSharedPropertyType {
   indexedForSearch: boolean;
   type: OntologyIrType;
   typeClasses: Array<TypeClass>;
-  valueType?: ValueTypeApiNameReference | null | undefined;
+  valueType?:
+    | _api_blockdata_OntologyIrValueTypeReferenceWithMetadata
+    | null
+    | undefined;
 }
 export interface OntologyIrShortBody_basic {
   type: "basic";
@@ -9106,6 +9801,15 @@ export interface OntologyIrShortBody_basic {
  */
 export type OntologyIrShortBody = OntologyIrShortBody_basic;
 
+/**
+ * This type enables the packaging of Static Object Prefill in Marketplace. The existing
+ * StaticObjectPrefill type uses ObjectRid, which cannot be installed across different stacks
+ * since Marketplace cannot translate object RIDs into meaningful values. StaticObjectPrefillV2 uses
+ * ObjectLocator instead which can be remapped across stacks.
+ */
+export interface OntologyIrStaticObjectPrefillV2 {
+  objectLocator: _api_types_OntologyIrObjectLocator;
+}
 export type OntologyIrStaticValue = _api_types_OntologyIrDataValue;
 
 /**
@@ -9145,6 +9849,9 @@ export interface OntologyIrStaticWebhookWithFunctionResultInput {
   functionVersion: FunctionVersion;
   webhookRid: WebhookRid;
   webhookVersion: WebhookVersion;
+}
+export interface OntologyIrStringConcatOperation {
+  components: Array<OntologyIrParameterTransformPrefillValue>;
 }
 export interface OntologyIrStructFieldConditionalOverride {
   condition: OntologyIrCondition;
@@ -9252,6 +9959,10 @@ export interface OntologyIrStructuredShortBody {
   heading: string;
   links: Array<OntologyIrNotificationResultTypeLink>;
 }
+export interface OntologyIrSubtractionOperation {
+  leftOperand: OntologyIrParameterTransformPrefillValue;
+  rightOperand: OntologyIrParameterTransformPrefillValue;
+}
 export interface OntologyIrSynchronousPreWritebackWebhook_staticDirectInput {
   type: "staticDirectInput";
   staticDirectInput: OntologyIrStaticWebhookWithDirectInput;
@@ -9277,6 +9988,11 @@ export interface OntologyIrTemplateNotificationBody {
   emailBody: OntologyIrEmailBody;
   inputs: Record<HandlebarsInputName, OntologyIrNotificationTemplateInputValue>;
   shortBody: OntologyIrShortBody;
+}
+export interface OntologyIrTimeBetweenOperation {
+  leftTime: OntologyIrParameterTransformPrefillValue;
+  rightTime: OntologyIrParameterTransformPrefillValue;
+  unit: DateTimeUnit;
 }
 /**
  * Formatter applied to TIME DEPENDENT properties.
@@ -9836,6 +10552,8 @@ export interface OntologyRidsForEntitiesRequest {
 export interface OntologyRidsForEntitiesResponse {
   ontologyRids: Record<string, OntologyRid>;
 }
+export type OntologySourceType = "DATASOURCE" | "MATERIALIZATION";
+
 /**
  * Delegate dataset for an ontology entity, including dataset, branch, type, and ontology version.
  */
@@ -9856,10 +10574,19 @@ export type OntologySparkInputManagerRid = string;
 export interface OntologySparkInputProperties {
   datasetRid: DatasetRid;
   endTransactionRid: string;
-  ontologyDatasetType: OntologyDatasetType;
+  ontologySourceType: OntologySourceType;
   ontologyVersion: OntologyVersion;
   schemaBranchId: string;
   schemaVersionId: string;
+}
+/**
+ * Delegate source for an ontology entity, including source rid, branch, type, and ontology version.
+ */
+export interface OntologySparkQueryableSource {
+  branchId: BranchId;
+  ontologySourceType: OntologySourceType;
+  ontologyVersion: OntologyVersion;
+  sourceRid: string;
 }
 /**
  * The version of an Ontology.
@@ -10495,6 +11222,11 @@ export interface ParameterPrefill_staticObject {
   staticObject: StaticObjectPrefill;
 }
 
+export interface ParameterPrefill_staticObjectV2 {
+  type: "staticObjectV2";
+  staticObjectV2: StaticObjectPrefillV2;
+}
+
 export interface ParameterPrefill_objectParameterPropertyValue {
   type: "objectParameterPropertyValue";
   objectParameterPropertyValue: ObjectParameterPropertyValue;
@@ -10525,6 +11257,11 @@ export interface ParameterPrefill_objectSetRidPrefill {
   objectSetRidPrefill: ObjectSetRidPrefill;
 }
 
+export interface ParameterPrefill_parameterTransformPrefill {
+  type: "parameterTransformPrefill";
+  parameterTransformPrefill: ParameterTransformPrefill;
+}
+
 export interface ParameterPrefill_redacted {
   type: "redacted";
   redacted: Redacted;
@@ -10535,12 +11272,14 @@ export interface ParameterPrefill_redacted {
 export type ParameterPrefill =
   | ParameterPrefill_staticValue
   | ParameterPrefill_staticObject
+  | ParameterPrefill_staticObjectV2
   | ParameterPrefill_objectParameterPropertyValue
   | ParameterPrefill_interfaceParameterPropertyValue
   | ParameterPrefill_interfaceParameterPropertyValueV2
   | ParameterPrefill_objectQueryPrefill
   | ParameterPrefill_objectQueryPropertyValue
   | ParameterPrefill_objectSetRidPrefill
+  | ParameterPrefill_parameterTransformPrefill
   | ParameterPrefill_redacted;
 
 export interface ParameterPrefillModification_staticValue {
@@ -10551,6 +11290,11 @@ export interface ParameterPrefillModification_staticValue {
 export interface ParameterPrefillModification_staticObject {
   type: "staticObject";
   staticObject: StaticObjectPrefill;
+}
+
+export interface ParameterPrefillModification_staticObjectV2 {
+  type: "staticObjectV2";
+  staticObjectV2: StaticObjectPrefillV2;
 }
 
 export interface ParameterPrefillModification_objectParameterPropertyValue {
@@ -10584,6 +11328,11 @@ export interface ParameterPrefillModification_objectSetRidPrefill {
   objectSetRidPrefill: ObjectSetRidPrefillModification;
 }
 
+export interface ParameterPrefillModification_parameterTransformPrefill {
+  type: "parameterTransformPrefill";
+  parameterTransformPrefill: ParameterTransformPrefill;
+}
+
 export interface ParameterPrefillModification_redacted {
   type: "redacted";
   redacted: Redacted;
@@ -10594,12 +11343,14 @@ export interface ParameterPrefillModification_redacted {
 export type ParameterPrefillModification =
   | ParameterPrefillModification_staticValue
   | ParameterPrefillModification_staticObject
+  | ParameterPrefillModification_staticObjectV2
   | ParameterPrefillModification_objectParameterPropertyValue
   | ParameterPrefillModification_interfaceParameterPropertyValue
   | ParameterPrefillModification_interfaceParameterPropertyValueV2
   | ParameterPrefillModification_objectQueryPrefill
   | ParameterPrefillModification_objectQueryPropertyValue
   | ParameterPrefillModification_objectSetRidPrefill
+  | ParameterPrefillModification_parameterTransformPrefill
   | ParameterPrefillModification_redacted;
 
 export interface ParameterPrefillOverride {
@@ -10700,6 +11451,80 @@ export interface ParameterTimeSeriesReferenceOrEmpty_timeSeriesReference {
 export type ParameterTimeSeriesReferenceOrEmpty =
   | ParameterTimeSeriesReferenceOrEmpty_empty
   | ParameterTimeSeriesReferenceOrEmpty_timeSeriesReference;
+
+export interface ParameterTransformPrefill_stringConcat {
+  type: "stringConcat";
+  stringConcat: StringConcatOperation;
+}
+
+export interface ParameterTransformPrefill_addition {
+  type: "addition";
+  addition: AdditionOperation;
+}
+
+export interface ParameterTransformPrefill_subtraction {
+  type: "subtraction";
+  subtraction: SubtractionOperation;
+}
+
+export interface ParameterTransformPrefill_multiplication {
+  type: "multiplication";
+  multiplication: MultiplicationOperation;
+}
+
+export interface ParameterTransformPrefill_division {
+  type: "division";
+  division: DivisionOperation;
+}
+
+export interface ParameterTransformPrefill_dateBetween {
+  type: "dateBetween";
+  dateBetween: DateBetweenOperation;
+}
+
+export interface ParameterTransformPrefill_dateCurrent {
+  type: "dateCurrent";
+  dateCurrent: DateCurrentOperation;
+}
+
+export interface ParameterTransformPrefill_timeBetween {
+  type: "timeBetween";
+  timeBetween: TimeBetweenOperation;
+}
+
+export interface ParameterTransformPrefill_timeCurrent {
+  type: "timeCurrent";
+  timeCurrent: TimeCurrentOperation;
+}
+export type ParameterTransformPrefill =
+  | ParameterTransformPrefill_stringConcat
+  | ParameterTransformPrefill_addition
+  | ParameterTransformPrefill_subtraction
+  | ParameterTransformPrefill_multiplication
+  | ParameterTransformPrefill_division
+  | ParameterTransformPrefill_dateBetween
+  | ParameterTransformPrefill_dateCurrent
+  | ParameterTransformPrefill_timeBetween
+  | ParameterTransformPrefill_timeCurrent;
+
+export interface ParameterTransformPrefillValue_parameterValue {
+  type: "parameterValue";
+  parameterValue: ParameterId;
+}
+
+export interface ParameterTransformPrefillValue_staticValue {
+  type: "staticValue";
+  staticValue: StaticValue;
+}
+
+export interface ParameterTransformPrefillValue_objectParameterPropertyValue {
+  type: "objectParameterPropertyValue";
+  objectParameterPropertyValue: ObjectParameterPropertyValue;
+}
+export type ParameterTransformPrefillValue =
+  | ParameterTransformPrefillValue_parameterValue
+  | ParameterTransformPrefillValue_staticValue
+  | ParameterTransformPrefillValue_objectParameterPropertyValue;
 
 export interface ParameterValidation {
   allowedValues: AllowedParameterValues;
@@ -10847,7 +11672,7 @@ export type ParameterValueOneOfOrEmpty =
   | ParameterValueOneOfOrEmpty_oneOf;
 
 export interface ParameterValueType {
-  valueType: ValueType;
+  valueType: ParameterValueTypeReference;
 }
 export interface ParameterValueTypeOrEmpty_valueType {
   type: "valueType";
@@ -10868,8 +11693,24 @@ export type ParameterValueTypeOrEmpty =
   | ParameterValueTypeOrEmpty_valueType
   | ParameterValueTypeOrEmpty_missingParameterValueType;
 
+/**
+ * Used in requests. When a user adds a value type to a parameter, the version id may be empty, and the backend
+ * will default to the latest version. When the user then updates the action type again, the backend expects that
+ * the frontend will provide the current version of the value type that's in use by the parameter.
+ */
+export interface ParameterValueTypeReference {
+  valueTypeRid: ValueTypeRid;
+  valueTypeVersionId?: ValueTypeVersionId | null | undefined;
+}
+/**
+ * Used in responses. The version id of a value type always included.
+ */
+export interface ParameterValueTypeReferenceWithVersionId {
+  valueTypeRid: ValueTypeRid;
+  valueTypeVersionId: ValueTypeVersionId;
+}
 export interface ParameterValueTypeWithVersionId {
-  valueType: ValueTypeWithVersionId;
+  valueType: ParameterValueTypeReferenceWithVersionId;
 }
 export interface ParameterValueTypeWithVersionIdOrEmpty_valueType {
   type: "valueType";
@@ -10954,6 +11795,10 @@ export interface PrePostFix {
   postfix?: PropertyTypeReferenceOrStringConstant | null | undefined;
   prefix?: PropertyTypeReferenceOrStringConstant | null | undefined;
 }
+export type PrimaryKeyConstraint =
+  | "MUST_BE_PK"
+  | "CANNOT_BE_PK"
+  | "NO_RESTRICTION";
 export interface PrimaryKeyPropertySecurityGroupType {
 }
 export interface PrimitiveOrStructLogicRuleModification_logicRuleValueModification {
@@ -11441,6 +12286,7 @@ export interface PropertyWithoutRid {
 export interface PutActionTypeRequest {
   actionLogConfiguration?: ActionLogConfiguration | null | undefined;
   apiName: ActionTypeApiName;
+  branchSettings?: ActionTypeBranchSettingsModification | null | undefined;
   displayMetadata: ActionTypeDisplayMetadataModification;
   logic: ActionLogic;
   notifications: Array<ActionNotification>;
@@ -11636,11 +12482,12 @@ export interface ResolvedInterfacePropertyType {
   constraints: ResolvedInterfacePropertyTypeConstraints;
   displayMetadata: InterfacePropertyTypeDisplayMetadata;
   rid: InterfacePropertyTypeRid;
-  type: Type;
+  type: InterfacePropertyTypeType;
 }
 export interface ResolvedInterfacePropertyTypeConstraints {
   dataConstraints?: DataConstraints | null | undefined;
   indexedForSearch: boolean;
+  primaryKeyConstraint: PrimaryKeyConstraint;
   requireImplementation: boolean;
   typeClasses: Array<TypeClass>;
   valueType?: ValueTypeReference | null | undefined;
@@ -11658,6 +12505,10 @@ export type RestrictedViewRid = string;
  * log.
  */
 export type RestrictedViewTransactionRid = string;
+export interface RetentionConfig {
+  targetSize: any;
+  triggerSize: any;
+}
 export interface RetentionPolicy_time {
   type: "time";
   time: TimeBasedRetentionPolicy;
@@ -12529,6 +13380,16 @@ export interface StandardAnalyzer {
  * StaticObjectPrefill specifies the Object that should be suggested to the user for a parameter.
  */
 export type StaticObjectPrefill = ObjectRid;
+
+/**
+ * This type enables the packaging of Static Object Prefill in Marketplace. The existing
+ * StaticObjectPrefill type uses ObjectRid, which cannot be installed across different stacks
+ * since Marketplace cannot translate object RIDs into meaningful values. StaticObjectPrefillV2 uses
+ * ObjectLocator instead which can be remapped across stacks.
+ */
+export interface StaticObjectPrefillV2 {
+  objectLocator: _api_types_ObjectLocator;
+}
 export type StaticValue = _api_types_DataValue;
 
 /**
@@ -12603,7 +13464,9 @@ export type StreamLocatorRid = string;
  * An rid identifying a stream view. This rid is a randomly generated identifier and is safe to log.
  */
 export type StreamViewRid = string;
-
+export interface StringConcatOperation {
+  components: Array<ParameterTransformPrefillValue>;
+}
 /**
  * Formatter applied to STRING properties. Currently only used for labeling, e.g. on chart axes —
  * does not change the displayed string.
@@ -13027,6 +13890,10 @@ export interface SubmitAllValidOrNothingThrowingMode {
  */
 export interface SubmitValidEntriesInOrderUntilFirstFailureMode {
 }
+export interface SubtractionOperation {
+  leftOperand: ParameterTransformPrefillValue;
+  rightOperand: ParameterTransformPrefillValue;
+}
 export interface SynchronousPreWritebackWebhook_staticDirectInput {
   type: "staticDirectInput";
   staticDirectInput: StaticWebhookWithDirectInput;
@@ -13132,7 +13999,14 @@ export interface TextModality {
 export interface TimeBasedRetentionPolicy {
   window: string;
 }
+export interface TimeBetweenOperation {
+  leftTime: ParameterTransformPrefillValue;
+  rightTime: ParameterTransformPrefillValue;
+  unit: DateTimeUnit;
+}
 export interface TimeCodeFormat {
+}
+export interface TimeCurrentOperation {
 }
 /**
  * Formatter applied to TIME DEPENDENT properties.
@@ -13727,16 +14601,6 @@ export interface ValueReferenceSource_propertyTypeRid {
 }
 export type ValueReferenceSource = ValueReferenceSource_propertyTypeRid;
 
-/**
- * When a user adds a value type to a parameter, the versionId will be empty, and the backend
- * will default to the latest version. When the user then updates the action type again, the
- * backend expects that the frontend will provide the current version of the value type that's in
- * use by the parameter.
- */
-export interface ValueType {
-  valueTypeRid: ValueTypeRid;
-  valueTypeVersionId?: ValueTypeVersionId | null | undefined;
-}
 export interface ValueTypeApiNameReference {
   apiName: string;
   version: string;
@@ -13764,13 +14628,6 @@ export interface ValueTypeReference {
 export type ValueTypeRid = string;
 export type ValueTypeVersionId = string;
 
-/**
- * Used in response with versionId of a value type always included.
- */
-export interface ValueTypeWithVersionId {
-  valueTypeRid: ValueTypeRid;
-  valueTypeVersionId: ValueTypeVersionId;
-}
 /**
  * Represents a fixed size vector of floats. These can be used for vector similarity searches.
  */

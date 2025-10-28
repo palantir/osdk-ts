@@ -1,5 +1,198 @@
 # @osdk/vite-plugin-oac
 
+## 0.4.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [98cdfee]
+- Updated dependencies [7fd788b]
+- Updated dependencies [e7bf02a]
+  - @osdk/faux@0.4.0-beta.3
+  - @osdk/client.unstable@2.6.0-beta.4
+  - @osdk/maker@0.14.0-beta.7
+  - @osdk/api@2.6.0-beta.4
+  - @osdk/generator-converters.ontologyir@2.6.0-beta.4
+
+## 0.4.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [a03ea8d]
+  - @osdk/maker@0.14.0-beta.5
+  - @osdk/api@2.6.0-beta.3
+  - @osdk/client.unstable@2.6.0-beta.3
+  - @osdk/generator-converters.ontologyir@2.6.0-beta.3
+
+## 0.4.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [f7ae38a]
+- Updated dependencies [aca0e5d]
+- Updated dependencies [878c2eb]
+  - @osdk/generator-converters.ontologyir@2.6.0-beta.2
+  - @osdk/faux@0.4.0-beta.2
+  - @osdk/api@2.6.0-beta.2
+  - @osdk/maker@0.14.0-beta.4
+  - @osdk/client.unstable@2.6.0-beta.2
+  - @osdk/cli@0.30.0-beta.2
+
+## 0.3.0-beta.15
+
+### Patch Changes
+
+- Updated dependencies [7f22c27]
+  - @osdk/maker@0.13.0-beta.16
+  - @osdk/api@2.5.0-beta.15
+  - @osdk/client.unstable@2.5.0-beta.15
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.15
+
+## 0.3.0-beta.14
+
+### Patch Changes
+
+- Updated dependencies [9dd5a63]
+- Updated dependencies [e62408b]
+- Updated dependencies [b7edfb5]
+  - @osdk/client.unstable@2.5.0-beta.14
+  - @osdk/maker@0.13.0-beta.14
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.14
+  - @osdk/api@2.5.0-beta.14
+
+## 0.3.0-beta.13
+
+### Patch Changes
+
+- Updated dependencies [d815339]
+  - @osdk/maker@0.13.0-beta.13
+  - @osdk/api@2.5.0-beta.13
+  - @osdk/client.unstable@2.5.0-beta.13
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.13
+
+## 0.3.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [f025f30]
+- Updated dependencies [7f0ad5c]
+  - @osdk/maker@0.13.0-beta.12
+  - @osdk/api@2.5.0-beta.12
+  - @osdk/client.unstable@2.5.0-beta.12
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.12
+
+## 0.3.0-beta.11
+
+### Patch Changes
+
+- Updated dependencies [5fd12eb]
+- Updated dependencies [7b97128]
+- Updated dependencies [f2dbc3d]
+- Updated dependencies [712dfbe]
+  - @osdk/maker@0.13.0-beta.11
+  - @osdk/api@2.5.0-beta.11
+  - @osdk/client.unstable@2.5.0-beta.11
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.11
+
+## 0.3.0-beta.10
+
+### Patch Changes
+
+- Updated dependencies [11fd3fb]
+  - @osdk/maker@0.13.0-beta.10
+  - @osdk/api@2.5.0-beta.10
+  - @osdk/client.unstable@2.5.0-beta.10
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.10
+
+## 0.3.0-beta.9
+
+### Patch Changes
+
+- Updated dependencies [1b60527]
+  - @osdk/maker@0.13.0-beta.9
+  - @osdk/api@2.5.0-beta.9
+  - @osdk/client.unstable@2.5.0-beta.9
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.9
+
+## 0.3.0-beta.8
+
+### Patch Changes
+
+- Updated dependencies [f9b6dc4]
+- Updated dependencies [b1c99bf]
+- Updated dependencies [ca1fabe]
+  - @osdk/maker@0.13.0-beta.8
+  - @osdk/api@2.5.0-beta.8
+  - @osdk/client.unstable@2.5.0-beta.8
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.8
+
+## 0.3.0-beta.7
+
+### Patch Changes
+
+- Updated dependencies [07083e1]
+  - @osdk/maker@0.13.0-beta.6
+  - @osdk/api@2.5.0-beta.7
+  - @osdk/client.unstable@2.5.0-beta.7
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.7
+
+## 0.3.0-beta.6
+
+### Patch Changes
+
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [04fe946]
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.6
+  - @osdk/maker@0.13.0-beta.5
+  - @osdk/faux@0.3.0-beta.6
+  - @osdk/client.unstable@2.5.0-beta.6
+  - @osdk/api@2.5.0-beta.6
+  - @osdk/cli@0.29.0-beta.5
+
+## 0.3.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [3d7461d]
+- Updated dependencies [052a96b]
+  - @osdk/faux@0.3.0-beta.5
+  - @osdk/api@2.5.0-beta.5
+  - @osdk/client.unstable@2.5.0-beta.5
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.5
+
+## 0.3.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [a00d2ed]
+- Updated dependencies [a96d89e]
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.4
+  - @osdk/maker@0.13.0-beta.4
+  - @osdk/faux@0.3.0-beta.4
+  - @osdk/cli@0.29.0-beta.4
+  - @osdk/api@2.5.0-beta.4
+  - @osdk/client.unstable@2.5.0-beta.4
+
+## 0.3.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [7bdac45]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [e48be06]
+  - @osdk/generator-converters.ontologyir@2.5.0-beta.3
+  - @osdk/maker@0.13.0-beta.3
+  - @osdk/faux@0.3.0-beta.3
+  - @osdk/api@2.5.0-beta.3
+  - @osdk/cli@0.29.0-beta.3
+  - @osdk/client.unstable@2.5.0-beta.3
+
 ## 0.3.0-beta.2
 
 ### Patch Changes

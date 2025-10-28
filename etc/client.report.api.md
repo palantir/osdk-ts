@@ -17,6 +17,7 @@ import type { AttachmentUpload } from '@osdk/api';
 import { CompileTimeMetadata } from '@osdk/api';
 import type { DataValueClientToWire } from '@osdk/api';
 import type { DataValueWireToClient } from '@osdk/api';
+import { DerivedProperty } from '@osdk/api';
 import type { Experiment } from '@osdk/api/unstable';
 import type { ExperimentFns } from '@osdk/api/unstable';
 import { InterfaceDefinition } from '@osdk/api';
@@ -114,6 +115,7 @@ export function createAttachmentUpload(data: Blob, name: string): AttachmentUplo
 // @public (undocumented)
 export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
     	logger?: Logger
+    	branch?: string
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
 
 // @public
@@ -126,6 +128,8 @@ export function createObjectSpecifierFromPrimaryKey<Q extends ObjectTypeDefiniti
 //
 // @public
 export function createPlatformClient(baseUrl: string, tokenProvider: () => Promise<string>, options?: undefined, fetchFn?: typeof globalThis.fetch): PlatformClient;
+
+export { DerivedProperty }
 
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 //
@@ -141,6 +145,11 @@ export const extractDateInLocalTime: (date: Date) => string;
 //
 // @public
 export const extractDateInUTC: (date: Date) => string;
+
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+//
+// @public
+export function extractPrimaryKeyFromObjectSpecifier(ObjectSpecifier: ObjectSpecifier<any>): string;
 
 export { InterfaceDefinition }
 

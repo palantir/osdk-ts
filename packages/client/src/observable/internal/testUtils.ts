@@ -46,9 +46,8 @@ import type { ObjectPayload } from "../ObjectPayload.js";
 import type { OrderBy, Status } from "../ObservableClient/common.js";
 import type { Unsubscribable } from "../Unsubscribable.js";
 import type { Entry } from "./Layer.js";
-import type { ListQueryOptions } from "./ListQuery.js";
-import type { ObjectCacheKey } from "./ObjectQuery.js";
-import { storeOsdkInstances } from "./ObjectQuery.js";
+import type { ListQueryOptions } from "./list/ListQueryOptions.js";
+import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import type { OptimisticId } from "./OptimisticId.js";
 import type { Store } from "./Store.js";
 
@@ -221,6 +220,7 @@ export function createClientMockHelper(): MockClientHelper {
     clientCacheKey: {} as any,
     requestContext: {},
     logger,
+    asTypeInterfaceOrObjectMapping: {},
   };
   client.fetchMetadata = vitest.fn();
 
@@ -665,7 +665,12 @@ export function updateList<
   });
 
   store.batch({ optimisticId }, (batch) => {
-    const objectCacheKeys = storeOsdkInstances(store, objects, batch);
+    const rdpConfig = query.rdpConfig;
+    const objectCacheKeys = store.objects.storeOsdkInstances(
+      objects,
+      batch,
+      rdpConfig,
+    );
     query._updateList(objectCacheKeys, "loaded", batch, false);
   });
 }
@@ -675,8 +680,9 @@ export function getObject(
   type: string,
   pk: number,
 ): ObjectHolder | undefined {
-  return store.getValue(store.getCacheKey<ObjectCacheKey>("object", type, pk))
-    ?.value;
+  return store.getValue(
+    store.cacheKeys.get<ObjectCacheKey>("object", type, pk),
+  )?.value;
 }
 
 export function updateObject<T extends ObjectOrInterfaceDefinition>(
@@ -687,7 +693,7 @@ export function updateObject<T extends ObjectOrInterfaceDefinition>(
   const query = store.objects.getQuery({
     apiName: value.$apiName,
     pk: value.$primaryKey,
-  });
+  }, undefined);
 
   store.batch({ optimisticId }, (batch) => {
     return query.writeToStore(

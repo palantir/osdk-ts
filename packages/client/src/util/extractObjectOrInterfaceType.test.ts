@@ -20,7 +20,7 @@ import { describe, expect, it } from "vitest";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { extractObjectOrInterfaceType } from "./extractObjectOrInterfaceType.js";
 
-describe("extractRdpDefinition", () => {
+describe("extractObjectOrInterfaceType", () => {
   const mockClientCtx = {
     ontologyProvider: {
       getObjectDefinition: (objectType: string) => {
@@ -125,9 +125,9 @@ describe("extractRdpDefinition", () => {
     expect(result).toEqual({ apiName: "interface2", type: "interface" });
   });
 
-  it("throes with intersect, subtract, or union having different child object types", async () => {
+  it("throws with intersect, subtract, or union having different child object types", async () => {
     const intersectionObjectSet: ObjectSet = {
-      type: "intersect",
+      type: "union",
       objectSets: [
         {
           type: "interfaceLinkSearchAround",
@@ -144,7 +144,28 @@ describe("extractRdpDefinition", () => {
     await expect(
       extractObjectOrInterfaceType(mockClientCtx, intersectionObjectSet),
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `[Error: Invariant failed: Can only have one object type when doing intersects, subtract, union]`,
+      `[Error: Invariant failed: Can only have one object type when doing subtract, union]`,
     );
+  });
+
+  it("correctly gets the type of the object from asType", async () => {
+    const asTypeObjectSet: ObjectSet = {
+      type: "asType",
+      entityType: "BaseType",
+      objectSet: {
+        type: "static",
+        objects: ["object1", "object2"],
+      },
+    };
+
+    const result = await extractObjectOrInterfaceType(
+      {
+        ...mockClientCtx,
+        asTypeInterfaceOrObjectMapping: { BaseType: "object" },
+      },
+      asTypeObjectSet,
+    );
+
+    expect(result).toEqual({ apiName: "BaseType", type: "object" });
   });
 });

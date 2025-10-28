@@ -29,7 +29,6 @@ import type {
 } from "@osdk/api";
 import type { PageSize, PageToken } from "@osdk/foundry.core";
 import type {
-  LoadObjectSetRequestV2,
   LoadObjectSetV2MultipleObjectTypesRequest,
   ObjectSet,
   OntologyObjectV2,
@@ -38,6 +37,7 @@ import type {
   SearchOrderByV2,
 } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import { extractNamespace } from "../internal/conversions/extractNamespace.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { extractObjectOrInterfaceType } from "../util/extractObjectOrInterfaceType.js";
@@ -110,6 +110,78 @@ export function resolveInterfaceObjectSet(
     : objectSet;
 }
 
+/** @internal */
+export async function fetchStaticRidPage<
+  R extends boolean,
+  S extends NullabilityAdherence,
+  T extends boolean,
+>(
+  client: MinimalClient,
+  rids: readonly string[],
+  args: FetchPageArgs<
+    ObjectOrInterfaceDefinition,
+    PropertyKeys<ObjectOrInterfaceDefinition>,
+    R,
+    any,
+    S,
+    T
+  >,
+  useSnapshot: boolean = false,
+): Promise<
+  FetchPageResult<
+    ObjectOrInterfaceDefinition,
+    PropertyKeys<ObjectOrInterfaceDefinition>,
+    R,
+    S,
+    T
+  >
+> {
+  const requestBody = await applyFetchArgs(
+    args,
+    {
+      objectSet: {
+        type: "static",
+        objects: rids as string[],
+      },
+      select: ((args?.$select as string[] | undefined) ?? []),
+      excludeRid: !args?.$includeRid,
+      snapshot: useSnapshot,
+    } as LoadObjectSetV2MultipleObjectTypesRequest,
+    client,
+    { type: "object", apiName: "" },
+  );
+
+  const result = await OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
+    addUserAgentAndRequestContextHeaders(client, { osdkMetadata: undefined }),
+    await client.ontologyRid,
+    requestBody,
+    { preview: true },
+  );
+
+  return Promise.resolve({
+    data: await client.objectFactory2(
+      client,
+      result.data,
+      undefined,
+      {},
+      !args.$includeRid,
+      args.$select,
+      false,
+      result.interfaceToObjectTypeMappings,
+    ),
+    nextPageToken: result.nextPageToken,
+    totalCount: result.totalCount,
+  }) as unknown as Promise<
+    FetchPageResult<
+      ObjectOrInterfaceDefinition,
+      PropertyKeys<ObjectOrInterfaceDefinition>,
+      R,
+      S,
+      T
+    >
+  >;
+}
+
 async function fetchInterfacePage<
   Q extends InterfaceDefinition,
   L extends PropertyKeys<Q>,
@@ -124,20 +196,36 @@ async function fetchInterfacePage<
   useSnapshot: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S, T>> {
   if (args.$__UNSTABLE_useOldInterfaceApis) {
+    const baseRequestBody: SearchObjectsForInterfaceRequest = {
+      augmentedProperties: {},
+      augmentedSharedPropertyTypes: {},
+      otherInterfaceTypes: [],
+      selectedObjectTypes: [],
+      selectedSharedPropertyTypes: args.$select ? [...args.$select] : [],
+      where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
+    };
+
+    const requestBody = await applyFetchArgs(
+      args,
+      baseRequestBody,
+      client,
+      interfaceType,
+    );
+
+    if (requestBody.selectedSharedPropertyTypes.length > 0) {
+      const remapped = remapPropertyNames(
+        interfaceType,
+        requestBody.selectedSharedPropertyTypes,
+      );
+      requestBody.selectedSharedPropertyTypes = Array.from(remapped);
+    }
+
     const result = await OntologiesV2.OntologyInterfaces
       .search(
         addUserAgentAndRequestContextHeaders(client, interfaceType),
         await client.ontologyRid,
         interfaceType.apiName,
-        applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
-          augmentedProperties: {},
-          augmentedSharedPropertyTypes: {},
-          otherInterfaceTypes: [],
-          selectedObjectTypes: [],
-          selectedSharedPropertyTypes: args.$select as undefined | string[]
-            ?? [],
-          where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
-        }),
+        requestBody,
         { preview: true },
       );
 
@@ -150,30 +238,40 @@ async function fetchInterfacePage<
     );
     return result as any;
   }
+
+  const extractedInterfaceTypeApiName = (await extractObjectOrInterfaceType(
+    client,
+    objectSet,
+  ))?.apiName ?? interfaceType.apiName;
   const resolvedInterfaceObjectSet = resolveInterfaceObjectSet(
     objectSet,
-    interfaceType.apiName,
+    extractedInterfaceTypeApiName,
     args,
   );
+  const requestBody = await buildAndRemapRequestBody(
+    args,
+    {
+      objectSet: resolvedInterfaceObjectSet,
+      select: args?.$select ? [...args.$select] : [],
+      excludeRid: !args?.$includeRid,
+      snapshot: useSnapshot,
+    },
+    client,
+    interfaceType,
+  );
+
   const result = await OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
     addUserAgentAndRequestContextHeaders(client, interfaceType),
     await client.ontologyRid,
-    applyFetchArgs<LoadObjectSetV2MultipleObjectTypesRequest>(args, {
-      objectSet: resolvedInterfaceObjectSet,
-      select: ((args?.$select as string[] | undefined) ?? []),
-      excludeRid: !args?.$includeRid,
-      snapshot: useSnapshot,
-    }),
-    { preview: true },
+    requestBody,
+    { preview: true, branch: client.branch },
   );
 
   return Promise.resolve({
     data: await client.objectFactory2(
       client,
       result.data,
-      (await extractObjectOrInterfaceType(client, resolvedInterfaceObjectSet))
-        ?.apiName
-        ?? interfaceType.apiName,
+      extractedInterfaceTypeApiName,
       {},
       !args.$includeRid,
       args.$select,
@@ -302,7 +400,74 @@ export async function fetchPageWithErrors<
   return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
 }
 
-function applyFetchArgs<
+/** @internal */
+async function buildAndRemapRequestBody<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends PropertyKeys<Q>,
+  R extends boolean,
+  A extends Augments,
+  S extends NullabilityAdherence,
+  T extends boolean,
+  RequestBody extends {
+    orderBy?: SearchOrderByV2;
+    pageToken?: PageToken;
+    pageSize?: PageSize;
+    select?: readonly string[];
+    selectedSharedPropertyTypes?: readonly string[];
+  },
+>(
+  args: FetchPageArgs<Q, L, R, A, S, T>,
+  baseBody: RequestBody,
+  client: MinimalClient,
+  objectType: Q,
+): Promise<RequestBody> {
+  const requestBody = await applyFetchArgs(
+    args,
+    baseBody,
+    client,
+    objectType,
+  );
+
+  if (requestBody.select != null && requestBody.select.length > 0) {
+    const remapped = remapPropertyNames(
+      objectType,
+      requestBody.select,
+    );
+    return { ...requestBody, select: remapped };
+  }
+
+  return requestBody;
+}
+
+/** @internal */
+export function remapPropertyNames(
+  objectOrInterface: ObjectOrInterfaceDefinition | undefined,
+  propertyNames: readonly string[],
+): readonly string[] {
+  if (objectOrInterface == null) {
+    return propertyNames;
+  }
+
+  if (objectOrInterface.type === "interface") {
+    const [objApiNamespace] = extractNamespace(objectOrInterface.apiName);
+    return propertyNames.map(name => {
+      const [fieldApiNamespace, fieldShortName] = extractNamespace(name);
+      return (fieldApiNamespace == null && objApiNamespace != null)
+        ? `${objApiNamespace}.${fieldShortName}`
+        : name;
+    });
+  }
+
+  return propertyNames;
+}
+
+async function applyFetchArgs<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends PropertyKeys<Q>,
+  R extends boolean,
+  A extends Augments,
+  S extends NullabilityAdherence,
+  T extends boolean,
   X extends {
     orderBy?: SearchOrderByV2;
     pageToken?: PageToken;
@@ -320,7 +485,9 @@ function applyFetchArgs<
     ObjectSetArgs.OrderByOptions<any>
   >,
   body: X,
-): X {
+  _client: MinimalClient,
+  objectType: Q,
+): Promise<X> {
   if (args?.$nextPageToken) {
     body.pageToken = args.$nextPageToken;
   }
@@ -331,14 +498,23 @@ function applyFetchArgs<
 
   const orderBy = args?.$orderBy;
   if (orderBy) {
-    body.orderBy = orderBy === "relevance"
-      ? { orderType: "relevance", fields: [] }
-      : {
-        fields: Object.entries(orderBy).map(([field, direction]) => ({
-          field,
+    if (orderBy === "relevance") {
+      body.orderBy = { orderType: "relevance", fields: [] };
+    } else {
+      const orderByEntries = Object.entries(orderBy);
+      const fieldNames = orderByEntries.map(([field]) => field);
+      const remappedFields = remapPropertyNames(
+        objectType,
+        fieldNames,
+      );
+
+      body.orderBy = {
+        fields: orderByEntries.map(([, direction], index) => ({
+          field: remappedFields[index],
           direction,
         })),
       };
+    }
   }
 
   return body;
@@ -362,19 +538,29 @@ export async function fetchObjectPage<
   // For simple object fetches, since we know the object type up front
   // we can parallelize network requests for loading metadata and loading the actual objects
   // In our object factory we await and block on loading the metadata, which if this call finishes, should already be cached on the client
+  // We have an empty catch here so that if this call errors before we await later, we won't have an unhandled promise rejection that would crash the process
+  // Swallowing the error is ok because we await the metadata load in the objectFactory later anyways which eventually bubbles up the error to the user
+  void client.ontologyProvider.getObjectDefinition(objectType.apiName).catch(
+    () => {},
+  );
 
-  void client.ontologyProvider.getObjectDefinition(objectType.apiName);
+  const requestBody = await buildAndRemapRequestBody(
+    args,
+    {
+      objectSet,
+      select: args?.$select ? [...args.$select] : [],
+      excludeRid: !args?.$includeRid,
+      snapshot: useSnapshot,
+    },
+    client,
+    objectType,
+  );
 
   const r = await OntologiesV2.OntologyObjectSets.load(
     addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,
-    applyFetchArgs<LoadObjectSetRequestV2>(args, {
-      objectSet,
-      // We have to do the following case because LoadObjectSetRequestV2 isn't readonly
-      select: ((args?.$select as string[] | undefined) ?? []), // FIXME?
-      excludeRid: !args?.$includeRid,
-      snapshot: useSnapshot,
-    }),
+    requestBody,
+    { branch: client.branch },
   );
 
   return Promise.resolve({

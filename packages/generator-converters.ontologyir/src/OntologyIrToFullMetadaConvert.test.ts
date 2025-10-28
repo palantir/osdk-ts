@@ -168,8 +168,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
               },
               "datasources": [
                 {
-                  "rid":
-                    "ri.ontology.main.datasource.Dc3DistributionCenterProposal",
+                  "datasourceName": "Dc3DistributionCenterProposal",
                   "datasource": {
                     "type": "datasetV2",
                     "datasetV2": {
@@ -347,7 +346,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
               },
               "datasources": [
                 {
-                  "rid": "ri.ontology.main.datasource.Dc3Restaurant",
+                  "datasourceName": "Dc3Restaurant",
                   "datasource": {
                     "type": "datasetV2",
                     "datasetV2": {
@@ -533,8 +532,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
               },
               "datasources": [
                 {
-                  "rid":
-                    "ri.ontology.main.datasource.Dc3DistributionRouteAnalysis",
+                  "datasourceName": "Dc3DistributionRouteAnalysis",
                   "datasource": {
                     "type": "datasetV2",
                     "datasetV2": {
@@ -712,6 +710,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -840,7 +839,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -969,6 +967,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -1125,7 +1124,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -1250,6 +1248,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -1294,7 +1293,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -1386,6 +1384,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -1514,7 +1513,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -1643,6 +1641,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -1799,7 +1798,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -1924,6 +1922,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -1968,7 +1967,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -2060,6 +2058,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -2188,7 +2187,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -2317,6 +2315,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -2473,7 +2472,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -2598,6 +2596,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
                     ],
                   },
                   "validation": {
+                    "sectionValidations": {},
                     "actionTypeLevelValidation": {
                       "rules": {
                         "0": {
@@ -2642,7 +2641,6 @@ describe(OntologyIrToFullMetadataConverter, () => {
                         },
                       },
                     },
-                    sectionValidations: {},
                   },
                 },
                 "metadata": {
@@ -3362,6 +3360,7 @@ describe(OntologyIrToFullMetadataConverter, () => {
         },
         "queryTypes": {},
         "sharedPropertyTypes": {},
+        "valueTypes": {},
       }
     `);
   });

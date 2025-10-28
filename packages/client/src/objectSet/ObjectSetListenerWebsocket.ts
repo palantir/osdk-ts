@@ -35,8 +35,15 @@ import type {
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
 import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
+import { ExponentialBackoff } from "../util/exponentialBackoff.js";
 
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
+const EXPONENTIAL_BACKOFF_INITIAL_DELAY_MS = 1000;
+const EXPONENTIAL_BACKOFF_MAX_DELAY_MS = 60000;
+const EXPONENTIAL_BACKOFF_MULTIPLIER = 2;
+const EXPONENTIAL_BACKOFF_JITTER_FACTOR = 0.3;
+const WEBSOCKET_IDLE_DISCONNECT_DELAY_MS = 15000;
+const WEBSOCKET_HEARTBEAT_INTERVAL_MS = 45 * 1000;
 
 /** Noop function to reduce conditional checks */
 function doNothing() {}
@@ -120,6 +127,8 @@ export class ObjectSetListenerWebsocket {
   #ws: WebSocket | undefined;
   #lastWsConnect = 0;
   #client: MinimalClient;
+  #backoff: ExponentialBackoff;
+  #isFirstConnection = true;
 
   #logger?: Logger;
 
@@ -145,6 +154,7 @@ export class ObjectSetListenerWebsocket {
   >();
 
   #maybeDisconnectTimeout: ReturnType<typeof setTimeout> | undefined;
+  #heartbeatInterval: ReturnType<typeof setInterval> | undefined;
 
   // DO NOT CONSTRUCT DIRECTLY. ONLY EXPOSED AS A TESTING SEAM
   constructor(
@@ -155,6 +165,12 @@ export class ObjectSetListenerWebsocket {
   ) {
     this.MINIMUM_RECONNECT_DELAY_MS = minimumReconnectDelayMs;
     this.#client = client;
+    this.#backoff = new ExponentialBackoff({
+      initialDelayMs: EXPONENTIAL_BACKOFF_INITIAL_DELAY_MS,
+      maxDelayMs: EXPONENTIAL_BACKOFF_MAX_DELAY_MS,
+      multiplier: EXPONENTIAL_BACKOFF_MULTIPLIER,
+      jitterFactor: EXPONENTIAL_BACKOFF_JITTER_FACTOR,
+    });
     this.#logger = client.logger?.child({}, {
       msgPrefix: "<OSW> ",
     });
@@ -339,7 +355,7 @@ export class ObjectSetListenerWebsocket {
       if (this.#subscriptions.size === 0) {
         this.#cycleWebsocket();
       }
-    }, 15_000 /* ms */);
+    }, WEBSOCKET_IDLE_DISCONNECT_DELAY_MS);
   }
 
   async #ensureWebsocket() {
@@ -355,13 +371,17 @@ export class ObjectSetListenerWebsocket {
       // tokenProvider is async, there could potentially be a race to create the websocket.
       // Only the first call to reach here will find a null this.#ws, the rest will bail out
       if (this.#ws == null) {
-        // TODO this can probably be exponential backoff with jitter
-        // don't reconnect more quickly than MINIMUM_RECONNECT_DELAY
-        const nextConnectTime = (this.#lastWsConnect ?? 0)
-          + this.MINIMUM_RECONNECT_DELAY_MS;
-        if (nextConnectTime > Date.now()) {
+        // Only apply exponential backoff delay on reconnection attempts, not the first connection
+        if (!this.#isFirstConnection) {
+          const delay = this.#backoff.calculateDelay();
+          if (process.env.NODE_ENV !== "production") {
+            this.#logger?.debug(
+              { delay, attempt: this.#backoff.getAttempt() },
+              "Waiting before reconnect",
+            );
+          }
           await new Promise((resolve) => {
-            setTimeout(resolve, nextConnectTime - Date.now());
+            setTimeout(resolve, delay);
           });
         }
 
@@ -394,7 +414,7 @@ export class ObjectSetListenerWebsocket {
           }
           function error(evt: unknown) {
             cleanup();
-            reject(evt);
+            reject(new Error(String(evt)));
           }
           ws.addEventListener("open", open);
           ws.addEventListener("error", error);
@@ -405,12 +425,26 @@ export class ObjectSetListenerWebsocket {
   }
 
   #onOpen = () => {
+    // Mark that we've successfully connected at least once
+    this.#isFirstConnection = false;
+    // Reset backoff on successful connection
+    this.#backoff.reset();
     // resubscribe all of the listeners
     this.#sendSubscribeMessage();
+
+    // Start heartbeat to keep connection alive
+    if (this.#heartbeatInterval) {
+      clearInterval(this.#heartbeatInterval);
+    }
+    this.#heartbeatInterval = setInterval(() => {
+      if (this.#ws?.readyState === WebSocket.OPEN) {
+        this.#sendSubscribeMessage();
+      }
+    }, WEBSOCKET_HEARTBEAT_INTERVAL_MS);
   };
 
   #onMessage = async (message: WebSocket.MessageEvent): Promise<void> => {
-    const data = JSON.parse(message.data.toString()) as StreamMessage;
+    const data = JSON.parse(String(message.data)) as StreamMessage;
     if (process.env.NODE_ENV !== "production") {
       this.#logger?.debug({ payload: data }, "received message from ws");
     }
@@ -628,11 +662,16 @@ export class ObjectSetListenerWebsocket {
     if (process.env.NODE_ENV !== "production") {
       this.#logger?.debug({ event }, "Received close event from ws", event);
     }
-    // TODO we should probably throttle this so we don't abuse the backend
     this.#cycleWebsocket();
   };
 
   #cycleWebsocket = () => {
+    // Clear heartbeat interval
+    if (this.#heartbeatInterval) {
+      clearInterval(this.#heartbeatInterval);
+      this.#heartbeatInterval = undefined;
+    }
+
     if (this.#ws) {
       this.#ws.removeEventListener("open", this.#onOpen);
       this.#ws.removeEventListener("message", this.#onMessage);

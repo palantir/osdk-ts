@@ -127,8 +127,11 @@ export interface FintrafficAis extends $ObjectTypeDefinition {
   };
 }
 
-export const FintrafficAis: FintrafficAis = {
+export const FintrafficAis = {
   type: 'object',
   apiName: 'FintrafficAis',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'ri.a.b.c.d',
+  },
+} satisfies FintrafficAis & { internalDoNotUseMetadata: { rid: string } } as FintrafficAis;

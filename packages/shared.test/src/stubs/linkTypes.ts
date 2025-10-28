@@ -40,6 +40,15 @@ export const leadLinkType: LinkTypeSideV2 = {
   foreignKeyPropertyApiName: "leadId",
 };
 
+export const visitedOffices: LinkTypeSideV2 = {
+  apiName: "visitedOffices",
+  status: "EXPERIMENTAL",
+  objectTypeApiName: officeObjectType.apiName,
+  cardinality: "MANY",
+  displayName: "Visited Offices",
+  linkTypeRid: "ri.a.b.c.visitedOffices",
+};
+
 export const officeLinkType: LinkTypeSideV2 = {
   apiName: "officeLink",
   status: "EXPERIMENTAL",

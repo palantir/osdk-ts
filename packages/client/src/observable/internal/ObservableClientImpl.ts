@@ -19,27 +19,33 @@ import type {
   ActionValidationResponse,
   CompileTimeMetadata,
   InterfaceDefinition,
+  ObjectSet,
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
+  SimplePropertyDef,
   WhereClause,
+  WirePropertyTypes,
 } from "@osdk/api";
 import { Subscription } from "rxjs";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import type { SpecificLinkPayload } from "../LinkPayload.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
+import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import type {
   ObservableClient,
   ObserveListOptions,
   ObserveObjectArgs,
   ObserveObjectOptions,
   ObserveObjectsArgs,
+  ObserveObjectSetArgs,
   Unsubscribable,
 } from "../ObservableClient.js";
 import type { Observer } from "../ObservableClient/common.js";
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
 import type { Canonical } from "./Canonical.js";
+import type { ObserveObjectSetOptions } from "./objectset/ObjectSetQueryOptions.js";
 import type { Store } from "./Store.js";
 import { UnsubscribableWrapper } from "./UnsubscribableWrapper.js";
 
@@ -59,9 +65,6 @@ export class ObservableClientImpl implements ObservableClient {
 
     this.applyAction = store.applyAction.bind(store);
     this.validateAction = store.validateAction.bind(store);
-    this.canonicalizeWhereClause = store.canonicalizeWhereClause.bind(
-      store,
-    ) as typeof this.canonicalizeWhereClause;
   }
 
   public observeObject: <T extends ObjectTypeDefinition>(
@@ -81,8 +84,11 @@ export class ObservableClientImpl implements ObservableClient {
     );
   };
 
-  public observeList: <T extends ObjectTypeDefinition | InterfaceDefinition>(
-    options: ObserveListOptions<T>,
+  public observeList: <
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options: ObserveListOptions<T, RDPs>,
     subFn: Observer<ObserveObjectsArgs<T>>,
   ) => Unsubscribable = (options, subFn) => {
     return this.__experimentalStore.lists.observe(
@@ -143,9 +149,47 @@ export class ObservableClientImpl implements ObservableClient {
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
   ) => Promise<ActionValidationResponse>;
 
-  public canonicalizeWhereClause: <
-    T extends ObjectTypeDefinition | InterfaceDefinition,
+  public observeObjectSet<
+    T extends ObjectTypeDefinition,
+    RDPs extends Record<
+      string,
+      WirePropertyTypes | undefined | Array<WirePropertyTypes>
+    > = {},
   >(
-    where: WhereClause<T>,
-  ) => Canonical<WhereClause<T>>;
+    baseObjectSet: ObjectSet<T>,
+    options: ObserveObjectSetOptions<T, RDPs>,
+    subFn: Observer<ObserveObjectSetArgs<T, RDPs>>,
+  ): Unsubscribable {
+    return this.__experimentalStore.objectSets.observe(
+      { baseObjectSet, ...options },
+      // cast to cross typed to untyped barrier
+      subFn as unknown as Observer<ObjectSetPayload>,
+    );
+  }
+
+  public invalidateAll(): Promise<void> {
+    return this.__experimentalStore.invalidateAll();
+  }
+
+  public invalidateObjects(
+    objects:
+      | Osdk.Instance<ObjectTypeDefinition>
+      | ReadonlyArray<Osdk.Instance<ObjectTypeDefinition>>,
+  ): Promise<void> {
+    return this.__experimentalStore.invalidateObjects(objects);
+  }
+
+  public invalidateObjectType<T extends ObjectTypeDefinition>(
+    type: T | T["apiName"],
+  ): Promise<void> {
+    return this.__experimentalStore.invalidateObjectType(type, undefined);
+  }
+
+  public canonicalizeWhereClause<
+    T extends ObjectTypeDefinition | InterfaceDefinition,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(where: WhereClause<T, RDPs>): Canonical<WhereClause<T, RDPs>> {
+    return this.__experimentalStore.whereCanonicalizer
+      .canonicalize(where) as Canonical<WhereClause<T, RDPs>>;
+  }
 }

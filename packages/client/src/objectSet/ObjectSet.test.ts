@@ -246,6 +246,26 @@ describe("ObjectSet", () => {
     expect(employees.data[1].$primaryKey).toBe(stubData.employee2.employeeId);
   });
 
+  it("allows fetching a page of rids without a type specifier", async () => {
+    const employees = await client(
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+    ).fetchPageByRidNoType(
+      [stubData.employee1.__rid, stubData.employee2.__rid],
+      {},
+    );
+    expectTypeOf<typeof employees>().toMatchTypeOf<
+      FetchPageResult<
+        ObjectOrInterfaceDefinition,
+        PropertyKeys<ObjectOrInterfaceDefinition>,
+        boolean,
+        any,
+        any
+      >
+    >;
+    expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
+    expect(employees.data[1].$primaryKey).toBe(stubData.employee2.employeeId);
+  });
+
   it("allows fetching by rid with experimental function, with select", async () => {
     const employee = await client(
       __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid,

@@ -49,7 +49,7 @@ export type {
   PropertyTypeRidWithObjectTypeRid,
   ProvenanceDependentOntologyEntities,
   ProvenanceOntologyEntityIdentifier,
-  ProvenanceOntologyEntityRid,
+  ProvenanceOntologyEntityRidOrReference,
   ProvenanceOntologyEntityRidType,
   RegisterDependencyRequest,
   RegisterDependencyResponse,

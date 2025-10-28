@@ -95,8 +95,11 @@ export interface MnayanOsdkMediaObject extends $ObjectTypeDefinition {
   };
 }
 
-export const MnayanOsdkMediaObject: MnayanOsdkMediaObject = {
+export const MnayanOsdkMediaObject = {
   type: 'object',
   apiName: 'MnayanOsdkMediaObject',
   osdkMetadata: $osdkMetadata,
-};
+  internalDoNotUseMetadata: {
+    rid: 'rid.a.b.c.d',
+  },
+} satisfies MnayanOsdkMediaObject & { internalDoNotUseMetadata: { rid: string } } as MnayanOsdkMediaObject;

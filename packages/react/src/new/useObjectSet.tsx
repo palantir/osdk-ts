@@ -1,0 +1,205 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type {
+  DerivedProperty,
+  LinkNames,
+  ObjectSet,
+  ObjectTypeDefinition,
+  Osdk,
+  PropertyKeys,
+  SimplePropertyDef,
+  WhereClause,
+} from "@osdk/api";
+
+import {
+  computeObjectSetCacheKey,
+  type ObserveObjectSetArgs,
+} from "@osdk/client/unstable-do-not-use";
+import React from "react";
+import { makeExternalStore } from "./makeExternalStore.js";
+import { OsdkContext2 } from "./OsdkContext2.js";
+
+export interface UseObjectSetOptions<
+  Q extends ObjectTypeDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> {
+  /**
+   * Where clause for filtering
+   */
+  where?: WhereClause<Q, RDPs>;
+
+  /**
+   * Derived properties to add to the object set
+   */
+  withProperties?: { [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]> };
+
+  /**
+   * Object sets to union with
+   */
+  union?: ObjectSet<Q>[];
+
+  /**
+   * Object sets to intersect with
+   */
+  intersect?: ObjectSet<Q>[];
+
+  /**
+   * Object sets to subtract from
+   */
+  subtract?: ObjectSet<Q>[];
+
+  /**
+   * Link to pivot to (changes the type)
+   */
+  pivotTo?: LinkNames<Q>;
+
+  /**
+   * The preferred page size for the list
+   */
+  pageSize?: number;
+
+  /**
+   * Sort order for the results
+   */
+  orderBy?: {
+    [K in PropertyKeys<Q>]?: "asc" | "desc";
+  };
+
+  /**
+   * Minimum time between fetch requests in milliseconds (defaults to 2000ms)
+   */
+  dedupeIntervalMs?: number;
+}
+
+export interface UseObjectSetResult<
+  Q extends ObjectTypeDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> {
+  /**
+   * The fetched data with derived properties
+   */
+  data:
+    | Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[]
+    | undefined;
+
+  /**
+   * Whether data is currently being loaded
+   */
+  isLoading: boolean;
+
+  /**
+   * Any error that occurred during fetching
+   */
+  error: Error | undefined;
+
+  /**
+   * Function to fetch more pages (undefined if no more pages)
+   */
+  fetchMore: (() => Promise<void>) | undefined;
+
+  /**
+   * The final ObjectSet after all transformations
+   */
+  objectSet: ObjectSet<Q, RDPs>;
+}
+
+declare const process: {
+  env: {
+    NODE_ENV: "development" | "production";
+  };
+};
+
+/**
+ * React hook for observing and interacting with OSDK object sets.
+ *
+ * @typeParam Q - The object type definition
+ * @typeParam BaseRDPs - Derived properties that already exist on the input ObjectSet
+ * @typeParam RDPs - New derived properties to be added via options.withProperties
+ *
+ * @param baseObjectSet - The ObjectSet to observe (may already have derived properties)
+ * @param options - Options for filtering, sorting, and adding new derived properties
+ * @returns Object set data with both existing and new derived properties
+ */
+export function useObjectSet<
+  Q extends ObjectTypeDefinition,
+  BaseRDPs extends Record<string, SimplePropertyDef> = never,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  baseObjectSet: ObjectSet<Q, BaseRDPs>,
+  options: UseObjectSetOptions<Q, RDPs> = {},
+): UseObjectSetResult<Q, RDPs> {
+  const { observableClient } = React.useContext(OsdkContext2);
+
+  // Compute a stable cache key for the ObjectSet and options
+  // dedupeIntervalMs is excluded as it doesn't affect the data, only the refresh rate
+  const stableKey = computeObjectSetCacheKey(baseObjectSet, {
+    where: options.where,
+    withProperties: options.withProperties,
+    union: options.union,
+    intersect: options.intersect,
+    subtract: options.subtract,
+    pivotTo: options.pivotTo,
+    pageSize: options.pageSize,
+    orderBy: options.orderBy,
+  });
+
+  const { subscribe, getSnapShot } = React.useMemo(
+    () => {
+      return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
+        (observer) => {
+          const subscription = observableClient.observeObjectSet(
+            baseObjectSet as ObjectSet<Q>,
+            {
+              where: options.where,
+              withProperties: options.withProperties,
+              union: options.union,
+              intersect: options.intersect,
+              subtract: options.subtract,
+              pivotTo: options.pivotTo,
+              pageSize: options.pageSize,
+              orderBy: options.orderBy,
+              dedupeInterval: options.dedupeIntervalMs ?? 2_000,
+            },
+            observer,
+          );
+          return subscription;
+        },
+        process.env.NODE_ENV !== "production"
+          ? `objectSet ${stableKey}`
+          : void 0,
+      );
+    },
+    [observableClient, stableKey],
+  );
+
+  const payload = React.useSyncExternalStore(subscribe, getSnapShot);
+
+  return {
+    data: payload?.resolvedList as Osdk.Instance<
+      Q,
+      "$allBaseProperties",
+      PropertyKeys<Q>,
+      RDPs
+    >[],
+    isLoading: payload?.status === "loading" || (!payload && true) || false,
+    error: payload && "error" in payload
+      ? payload.error
+      : undefined,
+    fetchMore: payload?.fetchMore,
+    objectSet: payload?.objectSet as ObjectSet<Q, RDPs> || baseObjectSet,
+  };
+}

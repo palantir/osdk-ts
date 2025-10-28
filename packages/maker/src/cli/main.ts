@@ -23,6 +23,8 @@ import { hideBin } from "yargs/helpers";
 import { defineOntology } from "../api/defineOntology.js";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
+const uuidRegex =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 export default async function main(
   args: string[] = process.argv,
@@ -38,6 +40,7 @@ export default async function main(
     codeSnippetFiles?: boolean;
     codeSnippetPackageName?: string;
     snippetFileOutputDir?: string;
+    randomnessKey?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -104,6 +107,11 @@ export default async function main(
         type: "string",
         coerce: path.resolve,
       },
+      randomnessKey: {
+        describe: "Value used to assure uniqueness of entities",
+        type: "string",
+        coerce: path.resolve,
+      },
     })
     .parseAsync();
   let apiNamespace = "";
@@ -119,7 +127,14 @@ export default async function main(
   }
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
 
-  const ontology = await loadOntology(
+  if (commandLineOpts.randomnessKey !== undefined) {
+    invariant(
+      uuidRegex.test(commandLineOpts.randomnessKey),
+      "Supplied randomness key is not a uuid and shouldn't be used as a uniqueness guarantee",
+    );
+  }
+
+  const ontologyIr = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
     commandLineOpts.outputDir,
@@ -127,18 +142,30 @@ export default async function main(
     commandLineOpts.codeSnippetFiles,
     commandLineOpts.codeSnippetPackageName,
     commandLineOpts.snippetFileOutputDir,
+    commandLineOpts.randomnessKey,
   );
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
   await fs.writeFile(
     commandLineOpts.output,
-    JSON.stringify(ontology.ontology, null, 2),
+    JSON.stringify(
+      ontologyIr,
+      null,
+      2,
+    ),
   );
   // No point in generating block if there aren't any value types
-  if (ontology.valueType.valueTypes.length > 0) {
+  if (
+    ontologyIr.valueTypes.valueTypes.length > 0
+    || ontologyIr.importedValueTypes.valueTypes.length > 0
+  ) {
     await fs.writeFile(
       commandLineOpts.valueTypesOutput,
-      JSON.stringify(ontology.valueType, null, 2),
+      JSON.stringify(
+        ontologyIr.valueTypes,
+        null,
+        2,
+      ),
     );
   }
 }
@@ -151,6 +178,7 @@ async function loadOntology(
   codeSnippetFiles: boolean | undefined,
   snippetPackageName: string | undefined,
   snippetFileOutputDir: string | undefined,
+  randomnessKey?: string,
 ) {
   const q = await defineOntology(
     apiNamespace,
@@ -160,6 +188,7 @@ async function loadOntology(
     codeSnippetFiles,
     snippetPackageName,
     snippetFileOutputDir,
+    randomnessKey,
   );
   return q;
 }

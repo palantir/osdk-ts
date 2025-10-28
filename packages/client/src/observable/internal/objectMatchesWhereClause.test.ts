@@ -55,6 +55,7 @@ const fauxObject: Osdk.Instance<objectTypeWithAllPropertyTypes> = {
   shortArray: [],
   string: "Hi there",
   stringArray: [],
+  vector: [],
 } satisfies objectTypeWithAllPropertyTypes.Props as unknown as Osdk.Instance<
   objectTypeWithAllPropertyTypes
 >;

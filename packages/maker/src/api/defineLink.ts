@@ -15,13 +15,15 @@
  */
 
 import type { LinkTypeMetadata } from "@osdk/client.unstable";
-import invariant from "tiny-invariant";
+import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import {
-  convertToDisplayName,
   convertToPluralDisplayName,
+  uppercaseFirstLetter,
 } from "./defineObject.js";
 import { updateOntology } from "./defineOntology.js";
 import type {
+  IntermediaryObjectLinkReference,
+  IntermediaryObjectLinkReferenceUserDefinition,
   LinkType,
   LinkTypeDefinition,
   LinkTypeMetadataUserDefinition,
@@ -29,51 +31,45 @@ import type {
   ManyToManyObjectLinkReferenceUserDefinition,
   OneToManyObjectLinkReference,
   OneToManyObjectLinkReferenceUserDefinition,
-} from "./types.js";
-import { OntologyEntityTypeEnum } from "./types.js";
-
-const typeIdPattern = /([a-z][a-z0-9\\-]*)/;
+} from "./links/LinkType.js";
 
 export function defineLink(
   linkDefinition: LinkTypeDefinition,
 ): LinkType {
+  // NOTE: we would normally do validation here, but because of circular dependencies
+  // we have to wait to validate until everything has been defined. The code for validation
+  // was moved to convertLink.ts.
+
+  let fullLinkDefinition;
   if ("one" in linkDefinition) {
-    const foreignKey = linkDefinition.toMany.object.properties
-      ?.[linkDefinition.manyForeignKeyProperty];
-    invariant(
-      foreignKey !== undefined,
-      `Foreign key ${linkDefinition.manyForeignKeyProperty} on link ${linkDefinition.apiName} does not exist on object ${linkDefinition.toMany.object.apiName}}`,
-    );
-
-    invariant(
-      typeIdPattern.test(linkDefinition.apiName),
-      `Top level link api names are expected to match the regex pattern ([a-z][a-z0-9\\-]*) ${linkDefinition.apiName} does not match`,
-    );
-
-    const typesMatch = foreignKey.type
-      === linkDefinition.one.object.properties
-        ?.[linkDefinition.one.object.primaryKeyPropertyApiName].type;
-    invariant(
-      typesMatch,
-      `Link ${linkDefinition.apiName} has type mismatch between the one side's primary key and the foreign key on the many side`,
-    );
-  }
-  const fullLinkDefinition = "one" in linkDefinition
-    ? {
+    fullLinkDefinition = {
       ...linkDefinition,
       one: convertUserOneToManyLinkDefinition(linkDefinition.one),
       toMany: convertUserOneToManyLinkDefinition(linkDefinition.toMany),
-    }
-    : {
+    };
+  } else if ("intermediaryObjectType" in linkDefinition) {
+    fullLinkDefinition = {
+      ...linkDefinition,
+      many: convertUserIntermediaryLinkDefinition(
+        linkDefinition.many,
+      ),
+      toMany: convertUserIntermediaryLinkDefinition(
+        linkDefinition.toMany,
+      ),
+    };
+  } else {
+    fullLinkDefinition = {
       ...linkDefinition,
       many: convertUserManyToManyLinkDefinition(linkDefinition.many),
       toMany: convertUserManyToManyLinkDefinition(linkDefinition.toMany),
     };
+  }
   const linkType: LinkType = {
     cardinality: "one" in linkDefinition
       ? linkDefinition.cardinality
       : undefined,
     ...fullLinkDefinition,
+    apiName: linkDefinition.apiName,
     __type: OntologyEntityTypeEnum.LINK_TYPE,
   };
   updateOntology(linkType);
@@ -98,6 +94,15 @@ function convertUserManyToManyLinkDefinition(
   };
 }
 
+function convertUserIntermediaryLinkDefinition(
+  intermediary: IntermediaryObjectLinkReferenceUserDefinition,
+): IntermediaryObjectLinkReference {
+  return {
+    ...intermediary,
+    metadata: convertLinkTypeMetadata(intermediary.metadata),
+  };
+}
+
 function convertLinkTypeMetadata(
   metadata: LinkTypeMetadataUserDefinition,
 ): LinkTypeMetadata {
@@ -105,7 +110,7 @@ function convertLinkTypeMetadata(
     apiName: metadata.apiName,
     displayMetadata: {
       displayName: metadata.displayName
-        ?? convertToDisplayName(metadata.apiName),
+        ?? uppercaseFirstLetter(metadata.apiName),
       pluralDisplayName: metadata.pluralDisplayName
         ?? convertToPluralDisplayName(metadata.apiName),
       visibility: metadata.visibility ?? "NORMAL",

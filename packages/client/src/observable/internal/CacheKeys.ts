@@ -15,137 +15,137 @@
  */
 
 import { Trie } from "@wry/trie";
-import invariant from "tiny-invariant";
-import { DEBUG_CACHE_KEYS } from "../DebugFlags.js";
+import { DEBUG_CACHE_KEYS, DEBUG_REFCOUNTS } from "../DebugFlags.js";
 import type { CacheKey } from "./CacheKey.js";
-import type { KnownCacheKey } from "./KnownCacheKey.js";
-import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
-import type { ListCacheKey } from "./ListCacheKey.js";
-import type { ObjectCacheKey } from "./ObjectQuery.js";
-import type { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
-import type { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
-
-type CacheKeyArgs<K extends CacheKey> = [K["type"], ...K["otherKeys"]];
+import { RefCounts } from "./RefCounts.js";
 
 /**
  * Cache key management with canonicalization.
- * - Formats: {type}:{pk} | {type}:list:{where} | {source}:{pk}:{link}:{where}
  * - Uses Trie structure for efficient storage and lookup
- * - Ensures consistent keys through canonicalization
  */
-export class CacheKeys {
-  #cacheKeys = new Trie<KnownCacheKey>(false, (keys) => {
-    const ret = {
+export class CacheKeys<TCacheKey extends CacheKey> {
+  #cacheKeys = new Trie<TCacheKey>(false, (keys) => {
+    const cacheKey = {
       type: keys[0],
       otherKeys: keys.slice(1),
-    } as unknown as KnownCacheKey;
-    this.#onCreate(ret);
-    return ret;
+    } as unknown as TCacheKey;
+    this.#onCreate?.(cacheKey);
+
+    if (DEBUG_REFCOUNTS) {
+      // eslint-disable-next-line no-console
+      console.log(
+        `CacheKeys.onCreate(${cacheKey.type}, ${
+          JSON.stringify(cacheKey.otherKeys)
+        })`,
+      );
+
+      this.#finalizationRegistry.register(cacheKey, () => {
+        // eslint-disable-next-line no-console
+        console.log(
+          `CacheKey Finalization(${cacheKey.type}, ${
+            JSON.stringify(cacheKey.otherKeys)
+          })`,
+        );
+      });
+    }
+    return cacheKey;
   });
-  #cacheKeyFactories = new Map<string, (...args: any[]) => KnownCacheKey>();
-  #onCreate: (cacheKey: KnownCacheKey) => void;
+
+  #refCounts = new RefCounts<TCacheKey>(
+    DEBUG_REFCOUNTS ? 15_000 : 60_000,
+    (k) => this.#cleanupCacheKey(k),
+  );
+
+  // we are currently only using this for debug logging and should just remove it in the future if that
+  // continues to be true
+  #finalizationRegistry: FinalizationRegistry<() => void>;
+
+  #onCreate?: (cacheKey: TCacheKey) => void;
+  #onDestroy?: (cacheKey: TCacheKey) => void;
 
   constructor(
-    whereCanonicalizer: WhereClauseCanonicalizer,
-    orderByCanonicalizer: OrderByCanonicalizer,
-    onCreate: (cacheKey: KnownCacheKey) => void,
+    { onCreate, onDestroy }: {
+      onCreate?: (cacheKey: TCacheKey) => void;
+      onDestroy?: (cacheKey: TCacheKey) => void;
+    },
   ) {
     this.#onCreate = onCreate;
-    this.#registerCacheKeyFactory<ObjectCacheKey>(
-      "object",
-      (apiName, pk) => {
-        if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
+    this.#onDestroy = onDestroy;
+
+    setInterval(() => {
+      this.#refCounts.gc();
+    }, 1000);
+
+    this.#finalizationRegistry = new FinalizationRegistry<() => void>(
+      (cleanupCallback) => {
+        try {
+          cleanupCallback();
+        } catch (e) {
           // eslint-disable-next-line no-console
-          console.debug(
-            `CacheKeys.get([object, ${apiName}, ${pk}]) -- already exists? `,
-            this.#cacheKeys.peekArray([
-              "object",
-              apiName,
-              pk,
-            ]) != null,
+          console.error(
+            "Caught an error while running a finalization callback",
+            e,
           );
         }
-        return this.#cacheKeys.lookupArray([
-          "object",
-          apiName,
-          pk,
-        ]) as ObjectCacheKey;
-      },
-    );
-    this.#registerCacheKeyFactory<ListCacheKey>(
-      "list",
-      (type, apiName, where, orderBy) => {
-        const cacheKeyArgs: CacheKeyArgs<ListCacheKey> = [
-          "list",
-          type,
-          apiName,
-          whereCanonicalizer.canonicalize(where),
-          orderByCanonicalizer.canonicalize(orderBy),
-        ];
-
-        if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
-          // eslint-disable-next-line no-console
-          console.debug(
-            `CacheKeys.get([list, ${apiName}, ${JSON.stringify(where)}, ${
-              JSON.stringify(orderBy)
-            }]) -- already exists? `,
-            this.#cacheKeys.peekArray(cacheKeyArgs) != null,
-          );
-        }
-
-        return this.#cacheKeys.lookupArray<
-          CacheKeyArgs<ListCacheKey>
-        >(cacheKeyArgs) as ListCacheKey;
-      },
-    );
-    this.#registerCacheKeyFactory<SpecificLinkCacheKey>(
-      "specificLink",
-      (sourceObjectType, sourcePk, linkName, where, orderBy) => {
-        const cacheKeyArgs: CacheKeyArgs<SpecificLinkCacheKey> = [
-          "specificLink",
-          sourceObjectType,
-          sourcePk,
-          linkName,
-          whereCanonicalizer.canonicalize(where),
-          orderByCanonicalizer.canonicalize(orderBy),
-        ];
-
-        if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
-          // eslint-disable-next-line no-console
-          console.debug(
-            `CacheKeys.get([specificLink, ${sourceObjectType}, ${sourcePk}, ${linkName}, ${
-              JSON.stringify(where)
-            }, ${JSON.stringify(orderBy)}]) -- already exists? `,
-            this.#cacheKeys.peekArray(cacheKeyArgs) != null,
-          );
-        }
-
-        return this.#cacheKeys.lookupArray(
-          cacheKeyArgs,
-        ) as SpecificLinkCacheKey;
       },
     );
   }
 
-  #registerCacheKeyFactory<K extends KnownCacheKey>(
-    type: K["type"],
-    factory: (...args: K["__cacheKey"]["args"]) => K,
-  ): void {
-    this.#cacheKeyFactories.set(type, factory);
-  }
-
-  get<K extends KnownCacheKey>(
+  get<K extends TCacheKey>(
     type: K["type"],
     ...args: K["__cacheKey"]["args"]
   ): K {
-    const factory = this.#cacheKeyFactories.get(type);
-    invariant(factory, `no cache key factory for type "${type}"`);
-    return factory(...args) as K;
+    // Normalize trailing undefined values to ensure consistent cache key creation
+    // This makes get("object", "Foo", 1, undefined) === get("object", "Foo", 1)
+    const normalizedArgs = [...args];
+    while (
+      normalizedArgs.length > 0
+      && normalizedArgs[normalizedArgs.length - 1] === undefined
+    ) {
+      normalizedArgs.pop();
+    }
+
+    const cacheKeyArgs = [type, ...normalizedArgs];
+    if (process.env.NODE_ENV !== "production" && DEBUG_CACHE_KEYS) {
+      // eslint-disable-next-line no-console
+      console.debug(
+        `CacheKeys.get([${type},
+        ${
+          normalizedArgs.map(x => JSON.stringify(x)).join(", ")
+        }]) - already exists? `,
+        this.#cacheKeys.peekArray(cacheKeyArgs) != null,
+      );
+    }
+
+    const cacheKey = this.#cacheKeys.lookupArray(
+      cacheKeyArgs,
+    ) as K;
+
+    // This is an idempotent call that ensures the cache key is registered for
+    // cleanup. If already registered, this does nothing.
+    this.#refCounts.register(cacheKey);
+
+    return cacheKey;
   }
 
-  remove<K extends KnownCacheKey>(
-    cacheKey: K,
-  ): void {
+  retain(cacheKey: TCacheKey): void {
+    this.#refCounts.retain(cacheKey);
+  }
+
+  release(cacheKey: TCacheKey): void {
+    this.#refCounts.release(cacheKey);
+  }
+
+  #remove<K extends TCacheKey>(cacheKey: K): void {
     this.#cacheKeys.remove(cacheKey.type, ...cacheKey.otherKeys);
   }
+
+  /**
+   * Called after a key is no longer retained and the timeout has elapsed
+   * @param key
+   */
+  #cleanupCacheKey = (key: TCacheKey) => {
+    this.#onDestroy?.(key);
+    this.#remove(key);
+  };
 }

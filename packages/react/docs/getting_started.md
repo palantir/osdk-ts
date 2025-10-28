@@ -48,9 +48,84 @@ On the SDK versions page, the table shows you your generated sdk version number 
 }
 ```
 
-# Getting Started
+# Stable Features
 
-Below is an example using filenames that align with a typical osdk project.
+The following features are stable and available via `@osdk/react`:
+
+```ts
+import { OsdkProvider, useOsdkClient } from "@osdk/react";
+```
+
+## Configure `<OsdkProvider/>`
+
+The stable provider gives you access to the OSDK client:
+
+```tsx
+import { OsdkProvider } from "@osdk/react";
+import client from "./client";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <OsdkProvider client={client}>
+    <RouterProvider router={router} />
+  </OsdkProvider>,
+);
+```
+
+## useOsdkClient
+
+Access the OSDK client from any component:
+
+```tsx
+import { useOsdkClient } from "@osdk/react";
+
+function MyComponent() {
+  const client = useOsdkClient();
+
+  // Use client for direct queries
+  const loadTodos = async () => {
+    const todos = await client(Todo).fetchPage();
+    // ...
+  };
+
+  return <button onClick={loadTodos}>Load Todos</button>;
+}
+```
+
+# Experimental Features
+
+All reactive data management features are currently **experimental** and available via `@osdk/react/experimental`. These features provide automatic cache management, real-time updates, and optimistic UI patterns.
+
+```ts
+import {
+  OsdkProvider2,
+  useLinks,
+  useObjectSet,
+  useOsdkAction,
+  useOsdkObject,
+  useOsdkObjects,
+} from "@osdk/react/experimental";
+```
+
+## Experimental vs Stable Features
+
+The React Toolkit currently maintains two releases; stable and experimental.
+
+- **`@osdk/react`** - Stable features, can expect no breaking changes
+- **`@osdk/react/experimental`** - Experimental reactive features which can be removed or made incompatible by future changes
+
+All reactive data management features (OsdkProvider2, useOsdkObject, useOsdkObjects, useOsdkAction, useLinks, useObjectSet) are currently **experimental** and available via `@osdk/react/experimental`. Import from this path to use the features documented below:
+
+```ts
+import {
+  OsdkProvider2,
+  useLinks,
+  useObjectSet,
+  useOsdkAction,
+  useOsdkClient,
+  useOsdkObject,
+  useOsdkObjects,
+} from "@osdk/react/experimental";
+```
 
 ## Configure `<OsdkProvider2/>`
 
@@ -75,10 +150,19 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 ```tsx
 import { Todo } from "@my/osdk";
-import { useOsdkObjects } from "@osdk/react/experimental";
+import {
+  type UseOsdkListResult,
+  useOsdkObjects,
+} from "@osdk/react/experimental";
 
 function App() {
-  const { data, isLoading } = useOsdkObjects(Todo);
+  const {
+    data,
+    isLoading,
+    isOptimistic,
+    error,
+    fetchMore,
+  }: UseOsdkListResult<typeof Todo> = useOsdkObjects(Todo);
 
   // If the cache has no existing copy for this query and
   // we are in a loading state then we can just tell the
@@ -106,20 +190,35 @@ const { data, isLoading } = useOsdkObjects(Todo, {
 });
 ```
 
-Additional options for `useOsdkObjects`:
+Additional options and return values for `useOsdkObjects`:
 
 ```ts
-const { data, isLoading, fetchMore, error } = useOsdkObjects(Todo, {
-  where: { isComplete: false },
-  pageSize: 20,
-  orderBy: { createdAt: "desc" },
-  dedupeIntervalMs: 5000,
-});
+const { data, isLoading, isOptimistic, fetchMore, error } = useOsdkObjects(
+  Todo,
+  {
+    where: { isComplete: false },
+    pageSize: 20,
+    orderBy: { createdAt: "desc" },
+    dedupeIntervalMs: 5000,
+    streamUpdates: true, // Enable streaming updates (experimental)
+  },
+);
 ```
+
+Return values:
+
+- `data` - Array of objects matching the query
+- `isLoading` - True while fetching data from server
+- `isOptimistic` - True if the list order is affected by optimistic updates
+- `fetchMore` - Function to load next page (undefined when no more pages)
+- `error` - Error object if fetch failed
 
 ## Render a Single Object
 
-We can either load an object by type and primary key or we can pass an `Osdk.Instance` object we have already loaded to get information like its `isLoading` status.
+The `useOsdkObject` hook has two signatures:
+
+1. **Pass an existing object instance** to get loading/optimistic status
+2. **Load by type and primary key** to fetch a specific object
 
 ```tsx
 import { Todo } from "@my/osdk";
@@ -130,17 +229,45 @@ interface TodoProps {
 }
 
 function TodoView({ todo }: TodoProps) {
-  const { isLoading } = useOsdkObject(todo);
-  // or const { data, isLoading } = useOsdkObject(Todo, "somePrimaryKey");
+  // Option 1: Track an existing object instance
+  const { object, isLoading, isOptimistic, error } = useOsdkObject(todo);
 
   return (
     <div>
-      {todo.title}
-      {isLoading && "(Loading)"}
+      {object?.title || todo.title}
+      {isLoading && " (Loading)"}
+      {isOptimistic && " (Optimistic)"}
+      {error && <div>Error: {error.message}</div>}
     </div>
   );
 }
+
+function TodoLoader({ todoId }: { todoId: string }) {
+  // Option 2: Load object by type and primary key
+  const { object, isLoading, error } = useOsdkObject(Todo, todoId);
+
+  if (isLoading && !object) {
+    return <div>Loading todo...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading todo: {error.message}</div>;
+  }
+
+  if (!object) {
+    return <div>Todo not found</div>;
+  }
+
+  return <TodoView todo={object} />;
+}
 ```
+
+Return values:
+
+- `object` - The object instance (may be undefined while loading)
+- `isLoading` - True while fetching from server
+- `isOptimistic` - True if object has optimistic updates applied
+- `error` - Error object if fetch failed
 
 ## Call an Action
 
@@ -153,7 +280,7 @@ import React from "react";
 
 function TodoView({ todo }: TodoProps) {
   const { isLoading } = useOsdkObject(todo);
-  const { applyAction, error, isPending } = useOsdkAction(
+  const { applyAction, data, error, isPending } = useOsdkAction(
     $Actions.completeTodo,
   );
 
@@ -168,7 +295,7 @@ function TodoView({ todo }: TodoProps) {
     <div>
       <div>
         {todo.title}
-        {todo.isComplete == false && (
+        {todo.isComplete === false && (
           <span>
             <button onClick={onClick} disabled={isPending}>
               Mark Complete
@@ -176,6 +303,7 @@ function TodoView({ todo }: TodoProps) {
           </span>
         )}
         {isPending && "(Applying)"}
+        {data && "(Action completed successfully)"}
       </div>
       {error && (
         <div>
@@ -184,6 +312,92 @@ function TodoView({ todo }: TodoProps) {
         </div>
       )}
     </div>
+  );
+}
+```
+
+Return values:
+
+- `applyAction` - Function to execute the action (accepts single args object or array for batch)
+- `data` - Return value from the last successful action execution
+- `error` - Error object with details (see error handling below)
+- `isPending` - True while action is executing
+- `isValidating` - True while validation is in progress
+- `validateAction` - Function to validate without executing
+- `validationResult` - Result of last validation
+
+### Error Handling
+
+The `error` object has the following structure:
+
+```tsx
+{
+  actionValidation?: ActionValidationError; // When action fails validation
+  unknown?: unknown;                        // For other errors
+}
+```
+
+Example with detailed error handling:
+
+```tsx
+function TodoActionWithErrorHandling({ todo }: TodoProps) {
+  const { applyAction, error, isPending } = useOsdkAction(
+    $Actions.completeTodo,
+  );
+
+  const onClick = async () => {
+    try {
+      await applyAction({ todo, isComplete: true });
+    } catch (e) {
+      // Error is also available in the error state
+      console.error("Action failed", e);
+    }
+  };
+
+  return (
+    <div>
+      <button onClick={onClick} disabled={isPending}>
+        Complete Todo
+      </button>
+
+      {error?.actionValidation && (
+        <div style={{ color: "red" }}>
+          Validation failed: {error.actionValidation.message}
+        </div>
+      )}
+
+      {error?.unknown && (
+        <div style={{ color: "red" }}>
+          An unexpected error occurred: {String(error.unknown)}
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+### Batch Actions
+
+You can apply the same action multiple times in a single call:
+
+```tsx
+function BulkCompleteButton({ todos }: { todos: Todo.OsdkInstance[] }) {
+  const { applyAction, isPending } = useOsdkAction($Actions.completeTodo);
+
+  const onClick = React.useCallback(() => {
+    // Pass array of action arguments
+    applyAction(
+      todos.map(todo => ({
+        todo: todo,
+        isComplete: true,
+      })),
+    );
+  }, [applyAction, todos]);
+
+  return (
+    <button onClick={onClick} disabled={isPending}>
+      Complete All ({todos.length})
+    </button>
   );
 }
 ```
@@ -310,7 +524,7 @@ function TodoView({ todo }: TodoProps) {
   return (
     <div>
       {todo.title}
-      {todo.isComplete == false && !isOptimistic && (
+      {todo.isComplete === false && !isOptimistic && (
         <button onClick={onClick} disabled={isPending}>Mark Complete</button>
       )}
       {isPending && "(Saving)"}
@@ -325,6 +539,49 @@ function TodoView({ todo }: TodoProps) {
   );
 }
 ```
+
+## Manual Cache Invalidation
+
+The `ObservableClient` provides methods for manual cache invalidation.
+
+```tsx
+import { createObservableClient } from "@osdk/client/unstable-do-not-use";
+import { useOsdkClient } from "@osdk/react/experimental";
+import { useMemo } from "react";
+
+// Create a custom hook to access the observable client
+function useObservableClient() {
+  const client = useOsdkClient();
+  return useMemo(() => createObservableClient(client), [client]);
+}
+
+// Use in your component
+function RefreshButton() {
+  const observableClient = useObservableClient();
+
+  const handleRefresh = async () => {
+    // Invalidate specific objects (pass single object or array)
+    await observableClient.invalidateObjects([todo1, todo2]);
+
+    // Invalidate all objects of a type
+    await observableClient.invalidateObjectType(Todo);
+
+    // Invalidate entire cache (use sparingly)
+    await observableClient.invalidateAll();
+  };
+
+  return <button onClick={handleRefresh}>Refresh</button>;
+}
+```
+
+**Important Notes:**
+
+- The `ObservableClient` used by `OsdkProvider2` is automatically created and managed by the provider. It maintains a cache of all queries and subscriptions.
+- **Lifecycle:** The client is created once when `OsdkProvider2` mounts and lives for the lifetime of your application. All hooks share this single client instance.
+- **Automatic Updates:** Most data updates happen automatically after actions complete. The client re-fetches affected objects and lists. Manual invalidation is only needed for:
+  - External data changes (e.g., data updated by another user/system)
+  - Manual refresh buttons
+  - Periodic polling (though consider using `streamUpdates` instead)
 
 ## Error Handling
 
@@ -360,6 +617,78 @@ function TodoList() {
 }
 ```
 
+## Working with Links
+
+The `useLinks` hook allows you to observe and navigate relationships between objects.
+
+```tsx
+import { Employee } from "@my/osdk";
+import { useLinks } from "@osdk/react/experimental";
+
+function EmployeeReports({ employee }: { employee: Employee.OsdkInstance }) {
+  const { links, isLoading, fetchMore, hasMore } = useLinks(
+    employee,
+    "reports", // Link name
+    {
+      pageSize: 10,
+      orderBy: { name: "asc" },
+      where: { isActive: true },
+    },
+  );
+
+  if (isLoading && !links) {
+    return <div>Loading reports...</div>;
+  }
+
+  return (
+    <div>
+      <h3>Reports ({links?.length})</h3>
+      {links?.map(report => <div key={report.$primaryKey}>{report.name}</div>)}
+
+      {hasMore && (
+        <button onClick={() => fetchMore?.()} disabled={isLoading}>
+          Load More
+        </button>
+      )}
+    </div>
+  );
+}
+```
+
+### Multiple Source Objects
+
+You can also load links from multiple objects at once:
+
+```tsx
+function TeamMembers({ employees }: { employees: Employee.OsdkInstance[] }) {
+  // Load all reports for multiple employees
+  const { links, isLoading } = useLinks(employees, "reports");
+
+  return (
+    <div>
+      <h3>All Team Reports</h3>
+      {links?.map(report => <div key={report.$primaryKey}>{report.name}</div>)}
+    </div>
+  );
+}
+```
+
+Options:
+
+- `where` - Filter linked objects
+- `pageSize` - Number of links per page
+- `orderBy` - Sort order for linked objects
+- `mode` - Fetch mode: `"force"` (always fetch), `"offline"` (cache only), or undefined (default)
+
+Return values:
+
+- `links` - Array of linked objects
+- `isLoading` - True while fetching
+- `isOptimistic` - True if links affected by optimistic updates
+- `fetchMore` - Function to load next page
+- `hasMore` - True if more pages available
+- `error` - Error object if fetch failed
+
 ## Pagination with fetchMore
 
 The `useOsdkObjects` hook provides a `fetchMore` function for loading additional pages:
@@ -389,6 +718,253 @@ function TodoList() {
   );
 }
 ```
+
+## Working with ObjectSets
+
+The `useObjectSet` hook provides advanced querying capabilities with derived properties, set operations, and link traversal.
+
+### Basic Usage
+
+```tsx
+import { Todo } from "@my/osdk";
+import { DerivedProperty } from "@osdk/client";
+import { useObjectSet } from "@osdk/react/experimental";
+
+function TodosWithDerivedProps() {
+  const baseObjectSet = Todo.all();
+
+  const { data, isLoading, fetchMore } = useObjectSet(baseObjectSet, {
+    withProperties: {
+      // Add computed properties
+      displayName: DerivedProperty.string(todo =>
+        `${todo.title} (${todo.priority})`
+      ),
+    },
+    where: { isComplete: false },
+    orderBy: { createdAt: "desc" },
+    pageSize: 20,
+  });
+
+  return (
+    <div>
+      {data?.map(todo => (
+        <div key={todo.$primaryKey}>
+          {/* Access derived property */}
+          {todo.displayName}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Set Operations
+
+```tsx
+function ComplexTodoQuery() {
+  const highPriorityTodos = Todo.where({ priority: "high" });
+  const urgentTodos = Todo.where({ isUrgent: true });
+  const completedTodos = Todo.where({ isComplete: true });
+
+  const { data } = useObjectSet(highPriorityTodos, {
+    // Union: combine with urgent todos
+    union: [urgentTodos],
+
+    // Subtract: remove completed todos
+    subtract: [completedTodos],
+  });
+
+  return <div>High priority or urgent (but not completed): {data?.length}</div>;
+}
+```
+
+### Link Traversal with pivotTo
+
+```tsx
+function EmployeeDepartments(
+  { employee }: { employee: Employee.OsdkInstance },
+) {
+  const employeeSet = Employee.where({ id: employee.id });
+
+  const { data } = useObjectSet(employeeSet, {
+    // Traverse to linked departments
+    pivotTo: "department",
+  });
+
+  return (
+    <div>
+      Departments: {data?.map(dept => dept.name).join(", ")}
+    </div>
+  );
+}
+```
+
+Options:
+
+- `where` - Filter objects
+- `withProperties` - Add derived/computed properties
+- `union` - Combine with other ObjectSets
+- `intersect` - Find common objects with other ObjectSets
+- `subtract` - Remove objects that exist in other ObjectSets
+- `pivotTo` - Traverse to linked objects (changes result type)
+- `pageSize` - Number of objects per page
+- `orderBy` - Sort order
+- `dedupeIntervalMs` - Minimum time between re-fetches (default: 2000ms)
+
+Return values:
+
+- `data` - Array of objects with derived properties
+- `isLoading` - True while fetching
+- `error` - Error object if fetch failed
+- `fetchMore` - Function to load next page
+- `objectSet` - The transformed ObjectSet after all operations
+
+**Performance Considerations:**
+
+- Set operations (union, intersect, subtract) are performed on the server
+- Each unique combination of options creates a separate cache entry
+- Using `pivotTo` creates a new query for the linked type
+- Consider using `pageSize` to limit initial data load for large result sets
+
+## Fetching Metadata
+
+The `useOsdkMetadata` hook fetches metadata about object types or interfaces, such as display names, property definitions, and type information.
+
+```tsx
+import { Todo } from "@my/osdk";
+import { useOsdkMetadata } from "@osdk/react/experimental";
+
+function TodoMetadataViewer() {
+  const { metadata, loading, error } = useOsdkMetadata(Todo);
+
+  if (loading) {
+    return <div>Loading metadata...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  return (
+    <div>
+      <h2>{metadata?.displayName}</h2>
+      <p>Description: {metadata?.description}</p>
+      <h3>Properties:</h3>
+      <ul>
+        {Object.entries(metadata?.properties || {}).map(([key, prop]) => (
+          <li key={key}>
+            {key}: {prop.dataType.type}
+            {prop.displayName && ` (${prop.displayName})`}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+Return values:
+
+- `metadata` - ObjectMetadata or InterfaceMetadata with type information
+- `loading` - True while fetching metadata
+- `error` - Error message string if fetch failed
+
+## Common Patterns
+
+### Combining Multiple Hooks
+
+Use object data with its links and actions:
+
+```tsx
+function TodoWithDetails({ todoId }: { todoId: string }) {
+  // Load the todo
+  const { object: todo, isLoading: todoLoading } = useOsdkObject(Todo, todoId);
+
+  // Load related comments
+  const { links: comments, isLoading: commentsLoading } = useLinks(
+    todo,
+    "comments",
+    { orderBy: { createdAt: "desc" } },
+  );
+
+  // Setup action for completing
+  const { applyAction, isPending } = useOsdkAction($Actions.completeTodo);
+
+  if (todoLoading) return <div>Loading...</div>;
+  if (!todo) return <div>Todo not found</div>;
+
+  return (
+    <div>
+      <h2>{todo.title}</h2>
+      <p>{todo.description}</p>
+
+      <button
+        onClick={() => applyAction({ todo, isComplete: true })}
+        disabled={isPending || todo.isComplete === true}
+      >
+        {isPending ? "Completing..." : "Mark Complete"}
+      </button>
+
+      <h3>Comments ({comments?.length || 0})</h3>
+      {commentsLoading && <div>Loading comments...</div>}
+      {comments?.map(comment => (
+        <div key={comment.$primaryKey}>{comment.text}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Choosing Between useOsdkObjects and useObjectSet
+
+Both hooks allow you to query collections of objects, but they serve different purposes:
+
+### Use `useOsdkObjects` when:
+
+- You need **maximum performance** for simple queries
+- You only need basic filtering (`where`), sorting (`orderBy`), and pagination
+
+```tsx
+// Simple, performant queries
+const { data } = useOsdkObjects(Todo, {
+  where: { isComplete: false },
+  orderBy: { createdAt: "desc" },
+  pageSize: 20,
+});
+```
+
+### Use `useObjectSet` when:
+
+- You need **advanced query capabilities** like:
+  - Runtime-computed derived properties (`withProperties`)
+  - Set operations (`union`, `intersect`, `subtract`)
+  - Link traversal (`pivotTo`)
+  - Aggregations or transformations on the data
+- You're building dynamic or complex queries
+
+```tsx
+// Advanced queries with derived properties and set operations
+const { data } = useObjectSet(Todo.all(), {
+  withProperties: {
+    displayName: DerivedProperty.string(todo =>
+      `${todo.title} (${todo.priority})`
+    ),
+  },
+  union: [urgentTodos],
+  subtract: [completedTodos],
+});
+```
+
+### Performance Considerations
+
+`useOsdkObjects` is optimized for straightforward queries and offers the best performance for most use cases. Use it as your default choice unless you specifically need the advanced features of `useObjectSet`.
+
+`useObjectSet` provides powerful capabilities but involves additional overhead:
+
+- Complex set operations require more processing
+- Each unique configuration creates a separate cache entry
+
+**Recommendation:** Start with `useOsdkObjects` for all standard queries. Only switch to `useObjectSet` when you need its advanced features.
 
 # Debugging Issues
 
