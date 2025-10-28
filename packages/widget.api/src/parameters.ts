@@ -22,6 +22,9 @@ export type ObjectType = {
   internalDoNotUseMetadata?: {
     rid: string;
   };
+  __DefinitionMetadata?: {
+    objectSet?: any;
+  };
 };
 
 /**

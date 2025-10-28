@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectType } from "@osdk/widget.api";
 import {
   type AsyncParameterValueMap,
   type AsyncValue,
@@ -25,6 +26,10 @@ import {
 } from "@osdk/widget.client";
 import React, { useContext } from "react";
 
+export type ExtractObjectSet<OT extends ObjectType> = NonNullable<
+  NonNullable<OT["__DefinitionMetadata"]>["objectSet"]
+>;
+
 export interface FoundryWidgetClientContext<
   C extends WidgetConfig<C["parameters"]>,
 > {
@@ -34,16 +39,42 @@ export interface FoundryWidgetClientContext<
   /**
    * Object where the individual parameters have their async state represented
    */
-  asyncParameterValues: AsyncParameterValueMap<C>;
+  asyncParameterValues: ExtendedAsyncParameterValueMap<C>;
 
   /**
    * Convenience object that aggregates the value of all parameters, accounting for their loading states
    */
   parameters: {
-    values: Partial<ParameterValueMap<C>>;
+    values: Partial<ExtendedParameterValueMap<C>>;
     state: AsyncValue<ParameterValueMap<C>>["type"];
   };
 }
+
+export type ExtendedParameterValueMap<C extends WidgetConfig<C["parameters"]>> =
+  {
+    [K in keyof C["parameters"]]: K extends keyof ParameterValueMap<C>
+      ? C["parameters"][K] extends { type: "objectSet"; objectType: infer T }
+        ? T extends ObjectType
+          ? ParameterValueMap<C>[K] & { objectSet: ExtractObjectSet<T> }
+        : ParameterValueMap<C>[K]
+      : ParameterValueMap<C>[K]
+      : never;
+  };
+
+export type ExtendedAsyncParameterValueMap<
+  C extends WidgetConfig<C["parameters"]>,
+> = {
+  [K in keyof C["parameters"]]: K extends keyof AsyncParameterValueMap<C>
+    ? C["parameters"][K] extends { type: "objectSet"; objectType: infer T }
+      ? T extends ObjectType ? AsyncParameterValueMap<C>[K] & {
+          value: AsyncValue<
+            ParameterValueMap<C>[K] & { objectSet: ExtractObjectSet<T> }
+          >;
+        }
+      : AsyncParameterValueMap<C>[K]
+    : AsyncParameterValueMap<C>[K]
+    : never;
+};
 
 export const FoundryWidgetContext: React.Context<
   FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>
