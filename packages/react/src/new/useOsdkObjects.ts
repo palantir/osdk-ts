@@ -134,7 +134,6 @@ declare const process: {
   };
 };
 
-// Overload for pivotTo - returns LinkedType
 export function useOsdkObjects<
   Q extends ObjectTypeDefinition,
   L extends LinkNames<Q>,
@@ -143,7 +142,6 @@ export function useOsdkObjects<
   options: UseOsdkObjectsOptions<Q> & { pivotTo: L },
 ): UseOsdkListResult<LinkedType<Q, L>>;
 
-// Default overload - returns Q
 export function useOsdkObjects<
   Q extends ObjectTypeDefinition | InterfaceDefinition,
   WP extends DerivedProperty.Clause<Q> | undefined = undefined,
@@ -152,7 +150,6 @@ export function useOsdkObjects<
   options?: UseOsdkObjectsOptions<Q, WP>,
 ): UseOsdkListResult<Q>;
 
-// Implementation
 export function useOsdkObjects<
   Q extends ObjectTypeDefinition | InterfaceDefinition,
   WP extends DerivedProperty.Clause<Q> | undefined = undefined,
@@ -178,13 +175,11 @@ export function useOsdkObjects<
    */
   const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
 
-  // TODO: replace with improved stabilization
   const stableWithProperties = React.useMemo(
     () => withProperties,
     [JSON.stringify(withProperties)],
   );
 
-  // Memoize intersectWith for stability
   const stableIntersectWith = React.useMemo(
     () => intersectWith,
     [JSON.stringify(intersectWith)],

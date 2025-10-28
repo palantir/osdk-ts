@@ -121,19 +121,47 @@ describe("intellisense", () => {
 
   it("useOsdkObjectsWithPivot", { timeout: 40_000 }, async () => {
     expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
+    invariant(tsServer);
 
-    // TODO: Add actual intellisense validation
-    // - Test pivotTo autocomplete suggestions
-    // - Verify type inference for pivoted properties
-    // - Check error detection for invalid pivot chains
+    const { resp } = await tsServer.sendCompletionsRequest({
+      file: intellisenseFilePath,
+      line: 29,
+      offset: 15,
+      triggerKind: ts.CompletionTriggerKind.Invoked,
+    });
+
+    const completions = resp.body?.entries.map(e => e.name) ?? [];
+    expect(completions).toContain("lead");
+
+    const { resp: typeResp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 33,
+      offset: 10,
+    });
+
+    expect(typeResp.body?.displayString).toBeDefined();
+    expect(typeResp.body?.displayString).toContain("Employee");
   });
 
   it("useOsdkObjectsWithProperties", { timeout: 40_000 }, async () => {
     expect(ts.sys.fileExists(intellisenseFilePath)).toBeTruthy();
+    invariant(tsServer);
 
-    // TODO: Add actual intellisense validation
-    // - Test withProperties autocomplete suggestions
-    // - Verify type inference for derived properties
-    // - Check error detection for invalid property selections
+    const { resp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 27,
+      offset: 10,
+    });
+
+    expect(resp.body?.displayString).toContain("DerivedProperty.Clause");
+
+    const { resp: dataResp } = await tsServer.sendQuickInfoRequest({
+      file: intellisenseFilePath,
+      line: 31,
+      offset: 11,
+    });
+
+    expect(dataResp.body?.displayString).toBeDefined();
+    expect(dataResp.body?.displayString).toContain("Osdk.Instance<Employee");
   });
 });

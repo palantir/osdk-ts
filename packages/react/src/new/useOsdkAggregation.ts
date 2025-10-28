@@ -27,23 +27,6 @@ import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 import type { InferRdpTypes } from "./types.js";
 
-/**
- * Options for {@link useOsdkAggregation}.
- *
- * Note: Unlike {@link useOsdkObjects}, aggregations do not support `intersectWith` or `pivotTo`.
- * If you need to aggregate an intersection or linked objects, create the ObjectSet with those
- * operations first, then use the aggregation API directly on that ObjectSet.
- *
- * @example
- * ```tsx
- * // To aggregate an intersection, use the Client API directly:
- * const engineeringEmployees = client(Employee).where({ department: "Engineering" });
- * const highPaidEmployees = client(Employee).where({ salary: { $gt: 100000 } });
- * const result = await engineeringEmployees.intersect(highPaidEmployees).aggregate({
- *   select: { count: { $count: {} } }
- * });
- * ```
- */
 export interface UseOsdkAggregationOptions<
   T extends ObjectTypeDefinition,
   A extends AggregateOpts<T>,

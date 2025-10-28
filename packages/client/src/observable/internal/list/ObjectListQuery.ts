@@ -44,9 +44,7 @@ export class ObjectListQuery extends ListQuery {
     const intersectWith = this.cacheKey.otherKeys[INTERSECT_IDX];
     const pivotInfo = this.cacheKey.otherKeys[PIVOT_IDX];
 
-    // If pivoting, start with the source type and pivot
     if (pivotInfo != null) {
-      // Start with the source object type - we only have apiName, so we create a minimal definition
       const sourceSet = store.client({
         type: "object",
         apiName: pivotInfo.sourceType,
@@ -88,7 +86,6 @@ export class ObjectListQuery extends ListQuery {
       return objectSet;
     }
 
-    // Normal flow without pivoting
     let objectSet = store.client({
       type: "object",
       apiName: this.apiName,

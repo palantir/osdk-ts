@@ -51,7 +51,10 @@ export interface ObserveAggregationOptions<
 
 export class AggregationsHelper extends AbstractHelper<
   AggregationQuery,
-  ObserveAggregationOptions<any, any>
+  ObserveAggregationOptions<
+    ObjectOrInterfaceDefinition,
+    AggregateOpts<ObjectOrInterfaceDefinition>
+  >
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   rdpCanonicalizer: RdpCanonicalizer;
