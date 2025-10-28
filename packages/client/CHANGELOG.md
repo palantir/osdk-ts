@@ -1,5 +1,67 @@
 # @osdk/client
 
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- b05075d: Add fix for interface links.
+- d797f0c: Falsy values other than undefined or null do not throw for query map responses
+- 7160276: Add order by relevance support to nearest neighbors
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- ab29baa: make dedupeIntervals dynamic
+- 85e8edb: Fix unhandled promise rejection error.
+- eeaf8eb: refactor ListQuery into InterfaceListQuery and ObjectListQuery
+- 3d7461d: Fix applyQuery for marketplace installations
+- 7bdac45: Update Platform SDK dependency
+- 37eb75b: remove features not supported for RC
+- 7b97128: add useObjectSet hook
+- b9e9a88: Refactor Observable Client with enhanced observer architecture
+  - Restructure observable implementation with dedicated observer classes (LinkObservers, ListObservers, ObjectObservers)
+  - Improve type safety for link observation operations with enhanced generic constraints
+  - Add QuerySubscription and UnsubscribableWrapper for better encapsulation
+  - Maintain API compatibility while improving internal architecture
+
+- 76905f5: Remove undefined type from aggregation $group value
+- 48d52b7: Parallelize network request for getting object metadata when doing simple object fetches.
+- a96d89e: Update Platform SDK dependencies
+- 48040a8: add exponential backoff behavior for ObjectSetListener websocket nextConnectTime
+- 20962bc: Add a new experimental fetchPageByRidNoType method
+- cbcf2ad: Add branching support
+- 052a96b: Add $link support.
+- f49171a: Remaps simple API names for orderby and select arguments to match expected fully qualified API names
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [badfbc4]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [7160276]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [a00d2ed]
+- Updated dependencies [7bdac45]
+- Updated dependencies [37eb75b]
+- Updated dependencies [7b97128]
+- Updated dependencies [76905f5]
+- Updated dependencies [a96d89e]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [04fe946]
+- Updated dependencies [052a96b]
+- Updated dependencies [ca1fabe]
+- Updated dependencies [e48be06]
+  - @osdk/api@2.5.0
+  - @osdk/client.unstable@2.5.0
+  - @osdk/generator-converters@2.5.0
+  - @osdk/shared.client.impl@1.5.0
+  - @osdk/shared.net.errors@2.5.0
+  - @osdk/shared.net.fetch@1.5.0
+
 ## 2.5.0-rc.15
 
 ### Patch Changes

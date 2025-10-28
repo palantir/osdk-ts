@@ -1,5 +1,45 @@
 # @osdk/functions
 
+## 1.3.0
+
+### Patch Changes
+
+- 776ae8a: Simulated release
+- a41b62a: add markings types to osdk/functions
+- 4b1b399: Update dependencies with @osdk/foundry.core
+- 0a0e560: Reexport user and group id types with branding
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- 9bbe664: Add compile check to prevent link and unlink edits when traversing a One direction
+- 1a647a8: Adding geometry type support
+- a96d89e: Update Platform SDK dependencies
+- 3ae01bb: Add UserFacingError to functions package
+- ba5f116: Add Principal Type
+- 7cdab1d: Add implementation for transaction edits
+- Updated dependencies [322c5bc]
+- Updated dependencies [b05075d]
+- Updated dependencies [d797f0c]
+- Updated dependencies [7160276]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [a00d2ed]
+- Updated dependencies [ab29baa]
+- Updated dependencies [85e8edb]
+- Updated dependencies [eeaf8eb]
+- Updated dependencies [3d7461d]
+- Updated dependencies [7bdac45]
+- Updated dependencies [37eb75b]
+- Updated dependencies [7b97128]
+- Updated dependencies [b9e9a88]
+- Updated dependencies [76905f5]
+- Updated dependencies [48d52b7]
+- Updated dependencies [a96d89e]
+- Updated dependencies [48040a8]
+- Updated dependencies [20962bc]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [052a96b]
+- Updated dependencies [f49171a]
+  - @osdk/client@2.5.0
+
 ## 1.3.0-beta.7
 
 ### Minor Changes

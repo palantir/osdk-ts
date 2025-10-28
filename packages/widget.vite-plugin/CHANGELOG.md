@@ -1,5 +1,19 @@
 # @osdk/widget.vite-plugin
 
+## 3.2.0
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- 2b73c3c: Fix @osdk/widget.vite-plugin dependency on resolve-package-path in devDependencies rather than dependencies
+- 71fc408: Validate camelCase for widget/parameter IDs
+- 34df269: Fix widgets dev mode on Windows
+- Updated dependencies [322c5bc]
+- Updated dependencies [7901ae0]
+- Updated dependencies [a6f49e9]
+  - @osdk/foundry-config-json@1.4.0
+  - @osdk/widget.api@3.2.0
+
 ## 3.2.0-beta.5
 
 ### Patch Changes

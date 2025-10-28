@@ -1,5 +1,23 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.5.0
+
+### Patch Changes
+
+- 150da1a: Simulated release
+- a6f49e9: Fix Maker Rid Generation
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- 7bdac45: Update Platform SDK dependency
+- a96d89e: Update Platform SDK dependencies
+- 7bdac45: Support value type enum generation for strings and booleans
+- cbcf2ad: Add branching support
+- Updated dependencies [322c5bc]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [04fe946]
+  - @osdk/client.unstable@2.5.0
+
 ## 2.5.0-rc.15
 
 ### Patch Changes
