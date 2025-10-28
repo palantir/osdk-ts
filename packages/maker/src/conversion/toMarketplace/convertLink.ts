@@ -19,45 +19,65 @@ import type {
   OntologyIrLinkTypeBlockDataV2,
   OntologyIrManyToManyLinkTypeDatasource,
 } from "@osdk/client.unstable";
-import { cleanAndValidateLinkTypeId } from "../../api/defineOntology.js";
+import invariant from "tiny-invariant";
+import { OntologyEntityTypeEnum } from "../../api/common/OntologyEntityTypeEnum.js";
+import {
+  cleanAndValidateLinkTypeId,
+  ontologyDefinition,
+} from "../../api/defineOntology.js";
 import type { LinkType } from "../../api/links/LinkType.js";
+import type { ObjectType } from "../../api/object/ObjectType.js";
+import type { ObjectTypeDefinition } from "../../api/object/ObjectTypeDefinition.js";
 import { convertCardinality } from "./convertCardinality.js";
 
 export function convertLink(
   linkType: LinkType,
 ): OntologyIrLinkTypeBlockDataV2 {
+  validateLink(linkType);
   let definition: OntologyIrLinkDefinition;
   let datasource: OntologyIrManyToManyLinkTypeDatasource | undefined =
     undefined;
   if ("one" in linkType) {
+    const { apiName: oneObjectApiName, object: oneObject } = getObject(
+      linkType.one.object,
+    );
+    const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
+      linkType.toMany.object,
+    );
     definition = {
       type: "oneToMany",
       oneToMany: {
         cardinalityHint: convertCardinality(linkType.cardinality),
         manyToOneLinkMetadata: linkType.toMany.metadata,
-        objectTypeRidManySide: linkType.toMany.object.apiName,
-        objectTypeRidOneSide: linkType.one.object.apiName,
+        objectTypeRidManySide: toManyObjectApiName,
+        objectTypeRidOneSide: oneObjectApiName,
         oneToManyLinkMetadata: linkType.one.metadata,
         oneSidePrimaryKeyToManySidePropertyMapping: [{
           from: {
-            apiName: linkType.one.object.primaryKeyPropertyApiName,
-            object: linkType.one.object.apiName,
+            apiName: oneObject.primaryKeyPropertyApiName,
+            object: oneObjectApiName,
           },
           to: {
             apiName: linkType.manyForeignKeyProperty,
-            object: linkType.toMany.object.apiName,
+            object: toManyObjectApiName,
           },
         }],
       },
     };
   } else if ("intermediaryObjectType" in linkType) {
+    const { apiName: manyObjectApiName, object: manyObject } = getObject(
+      linkType.many.object,
+    );
+    const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
+      linkType.toMany.object,
+    );
     definition = {
       type: "intermediary",
       intermediary: {
         objectTypeAToBLinkMetadata: linkType.many.metadata,
         objectTypeBToALinkMetadata: linkType.toMany.metadata,
-        objectTypeRidA: linkType.many.object.apiName,
-        objectTypeRidB: linkType.toMany.object.apiName,
+        objectTypeRidA: manyObjectApiName,
+        objectTypeRidB: toManyObjectApiName,
         intermediaryObjectTypeRid: linkType.intermediaryObjectType.apiName,
         aToIntermediaryLinkTypeRid: cleanAndValidateLinkTypeId(
           linkType.many.linkToIntermediary.apiName,
@@ -68,32 +88,38 @@ export function convertLink(
       },
     };
   } else {
+    const { apiName: manyObjectApiName, object: manyObject } = getObject(
+      linkType.many.object,
+    );
+    const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
+      linkType.toMany.object,
+    );
     definition = {
       type: "manyToMany",
       manyToMany: {
         objectTypeAToBLinkMetadata: linkType.many.metadata,
         objectTypeBToALinkMetadata: linkType.toMany.metadata,
-        objectTypeRidA: linkType.many.object.apiName,
-        objectTypeRidB: linkType.toMany.object.apiName,
+        objectTypeRidA: manyObjectApiName,
+        objectTypeRidB: toManyObjectApiName,
         peeringMetadata: undefined,
         objectTypeAPrimaryKeyPropertyMapping: [{
           from: {
-            apiName: linkType.many.object.primaryKeyPropertyApiName,
-            object: linkType.many.object.apiName,
+            apiName: manyObject.primaryKeyPropertyApiName,
+            object: manyObjectApiName,
           },
           to: {
-            apiName: linkType.many.object.primaryKeyPropertyApiName,
-            object: linkType.many.object.apiName,
+            apiName: manyObject.primaryKeyPropertyApiName,
+            object: manyObjectApiName,
           },
         }],
         objectTypeBPrimaryKeyPropertyMapping: [{
           from: {
-            apiName: linkType.toMany.object.primaryKeyPropertyApiName,
-            object: linkType.toMany.object.apiName,
+            apiName: toManyObject.primaryKeyPropertyApiName,
+            object: toManyObjectApiName,
           },
           to: {
-            apiName: linkType.toMany.object.primaryKeyPropertyApiName,
-            object: linkType.toMany.object.apiName,
+            apiName: toManyObject.primaryKeyPropertyApiName,
+            object: toManyObjectApiName,
           },
         }],
       },
@@ -108,17 +134,17 @@ export function convertLink(
           writebackDatasetRid: undefined,
           objectTypeAPrimaryKeyMapping: [{
             property: {
-              apiName: linkType.many.object.primaryKeyPropertyApiName,
-              object: linkType.many.object.apiName,
+              apiName: manyObject.primaryKeyPropertyApiName,
+              object: manyObjectApiName,
             },
-            column: linkType.many.object.primaryKeyPropertyApiName,
+            column: manyObject.primaryKeyPropertyApiName,
           }],
           objectTypeBPrimaryKeyMapping: [{
             property: {
-              apiName: linkType.toMany.object.primaryKeyPropertyApiName,
-              object: linkType.toMany.object.apiName,
+              apiName: toManyObject.primaryKeyPropertyApiName,
+              object: toManyObjectApiName,
             },
-            column: linkType.toMany.object.primaryKeyPropertyApiName,
+            column: toManyObject.primaryKeyPropertyApiName,
           }],
         },
       },
@@ -141,4 +167,94 @@ export function convertLink(
       arePatchesEnabled: linkType.editsEnabled ?? false,
     },
   };
+}
+function validateLink(linkDefinition: LinkType) {
+  if ("one" in linkDefinition) {
+    const { apiName: oneObjectApiName, object: oneObject } = getObject(
+      linkDefinition.one.object,
+    );
+    const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
+      linkDefinition.toMany.object,
+    );
+    const foreignKey = toManyObject.properties?.find(p =>
+      p.apiName === linkDefinition.manyForeignKeyProperty
+    );
+    invariant(
+      foreignKey !== undefined,
+      `Foreign key ${linkDefinition.manyForeignKeyProperty} on link ${linkDefinition.apiName} does not exist on object ${toManyObjectApiName}`,
+    );
+
+    invariant(
+      /([a-z][a-z0-9\\-]*)/.test(linkDefinition.apiName),
+      `Top level link api names are expected to match the regex pattern ([a-z][a-z0-9\\-]*) ${linkDefinition.apiName} does not match`,
+    );
+
+    const typesMatch = foreignKey.type
+      === oneObject.properties?.find(p =>
+        p.apiName === oneObject.primaryKeyPropertyApiName
+      )?.type;
+    invariant(
+      typesMatch,
+      `Link ${linkDefinition.apiName} has type mismatch between the one side's primary key and the foreign key on the many side`,
+    );
+  }
+  if ("intermediaryObjectType" in linkDefinition) {
+    const {
+      apiName: intermediaryObjectTypeApiName,
+      object: intermediaryObjectType,
+    } = getObject(linkDefinition.intermediaryObjectType);
+    const { apiName: manyObjectApiName, object: manyObject } = getObject(
+      linkDefinition.many.object,
+    );
+    const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
+      linkDefinition.toMany.object,
+    );
+
+    const {
+      apiName: manyIntermediaryOneObjectApiName,
+      object: manyIntermediaryOneObject,
+    } = getObject((linkDefinition.many.linkToIntermediary as any).one.object);
+    const {
+      apiName: manyIntermediaryToManyObjectApiName,
+      object: manyIntermediaryToManyObject,
+    } = getObject(linkDefinition.many.linkToIntermediary.toMany.object);
+    invariant(
+      "one" in linkDefinition.many.linkToIntermediary
+        && manyIntermediaryOneObjectApiName
+          === manyObject.apiName
+        && manyIntermediaryToManyObjectApiName
+          === intermediaryObjectTypeApiName,
+      `LinkTypeA ${linkDefinition.many.linkToIntermediary.apiName} must be a many to one link from intermediary object ${intermediaryObjectTypeApiName} to objectA ${manyObjectApiName}`,
+    );
+
+    const {
+      apiName: toManyIntermediaryOneObjectApiName,
+      object: toManyIntermediaryOneObject,
+    } = getObject((linkDefinition.toMany.linkToIntermediary as any).one.object);
+    const {
+      apiName: toManyIntermediaryToManyObjectApiName,
+      object: toManyIntermediaryToManyObject,
+    } = getObject(linkDefinition.toMany.linkToIntermediary.toMany.object);
+    invariant(
+      "one" in linkDefinition.toMany.linkToIntermediary
+        && toManyIntermediaryOneObjectApiName
+          === toManyObjectApiName
+        && toManyIntermediaryToManyObjectApiName
+          === intermediaryObjectTypeApiName,
+      `LinkTypeB ${linkDefinition.toMany.linkToIntermediary.apiName} must be a many to one link from intermediary object ${intermediaryObjectTypeApiName} to objectB ${toManyObjectApiName}`,
+    );
+  }
+}
+
+export function getObject(
+  object: string | ObjectTypeDefinition,
+): { apiName: string; object: ObjectType } {
+  const objectApiName = typeof object === "string" ? object : object.apiName;
+  const fullObject =
+    ontologyDefinition[OntologyEntityTypeEnum.OBJECT_TYPE][objectApiName];
+  invariant(
+    fullObject !== undefined,
+    `Object ${objectApiName} is not defined`,
+  );
+  return { apiName: objectApiName, object: fullObject };
 }

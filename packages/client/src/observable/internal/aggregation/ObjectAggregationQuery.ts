@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  DerivedProperty,
-  ObjectTypeDefinition,
-} from "@osdk/api";
+import type { DerivedProperty, ObjectTypeDefinition } from "@osdk/api";
 import {
   type AggregationCacheKey,
   API_NAME_IDX,
@@ -32,7 +29,7 @@ export class ObjectAggregationQuery extends AggregationQuery {
     let objectSet = this.store.client({
       type: "object",
       apiName: type,
-    } as ObjectTypeDefinition);
+    });
 
     if (this.rdpConfig) {
       objectSet = objectSet.withProperties(

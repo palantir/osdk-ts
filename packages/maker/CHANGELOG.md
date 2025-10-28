@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.14.0-beta.7
+
+### Minor Changes
+
+- 7fd788b: Support derived properties
+
+### Patch Changes
+
+- Updated dependencies [e7bf02a]
+  - @osdk/api@2.6.0-beta.4
+
 ## 0.14.0-beta.6
 
 ### Minor Changes

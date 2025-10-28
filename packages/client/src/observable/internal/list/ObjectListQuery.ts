@@ -50,10 +50,7 @@ export class ObjectListQuery extends ListQuery {
         apiName: pivotInfo.sourceType,
       } as ObjectTypeDefinition);
 
-      // Pivot to the target type through the link
-      let objectSet = sourceSet.pivotTo(pivotInfo.linkName) as ObjectSet<
-        ObjectTypeDefinition
-      >;
+      let objectSet = sourceSet.pivotTo(pivotInfo.linkName);
 
       // RDPs must be applied before where clauses
       if (rdpConfig != null) {

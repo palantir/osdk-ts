@@ -26,9 +26,12 @@ export function convertDatasourceDefinition(
   objectType: ObjectType,
   properties: ObjectPropertyType[],
 ): OntologyIrObjectTypeDatasourceDefinition {
-  switch (objectType.datasource?.type) {
+  const baseDatasource = objectType.datasources?.find(ds =>
+    ["dataset", "stream", "restrictedView"].includes(ds.type)
+  );
+  switch (baseDatasource?.type) {
     case "stream":
-      const window = objectType.datasource.retentionPeriod;
+      const window = baseDatasource.retentionPeriod;
       const retentionPolicy: RetentionPolicy = window
         ? { type: "time", time: { window } }
         : { type: "none", none: {} };
