@@ -250,6 +250,59 @@ export function combineWhereClausesOr<T extends ObjectOrInterfaceDefinition>(
   return { $or: filtered };
 }
 
+type MergeStrategy =
+  | "union-array"
+  | "freeze-object"
+  | "merge-object"
+  | "set-dedupe";
+
+function mergeValues<T>(
+  first: T | undefined,
+  second: T | undefined,
+  strategy: MergeStrategy,
+): T | undefined {
+  if (!first && !second) {
+    return undefined;
+  }
+  if (!first) {
+    return second;
+  }
+  if (!second) {
+    return first;
+  }
+
+  switch (strategy) {
+    case "union-array": {
+      const firstArray = first as readonly unknown[] | unknown[];
+      const secondArray = second as readonly unknown[] | unknown[];
+      return Array.from(
+        new Set([...firstArray, ...secondArray]),
+      ) as T;
+    }
+
+    case "freeze-object":
+      return Object.freeze({
+        ...(first as object),
+        ...(second as object),
+      }) as T;
+
+    case "merge-object":
+      return {
+        ...(first as object),
+        ...(second as object),
+      } as T;
+
+    case "set-dedupe": {
+      const merged = new Set<unknown>();
+      const firstArray = first as readonly unknown[] | unknown[];
+      const secondArray = second as readonly unknown[] | unknown[];
+      firstArray.forEach((value) => merged.add(value));
+      secondArray.forEach((value) => merged.add(value));
+      return (merged.size > 0 ? Array.from(merged) : undefined) as T;
+    }
+  }
+}
+
 function createBuilder<
   T extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<T>,
@@ -260,69 +313,6 @@ function createBuilder<
   const withState = <NEXT extends L>(
     next: ShapeDefinition<T, L, NEXT>,
   ) => createBuilder<T, L, NEXT>(next);
-
-  const mergeRequiredSets = <A extends L, B extends L>(
-    first: readonly A[] | undefined,
-    second: readonly B[] | undefined,
-  ): ReadonlyArray<A | B> => {
-    const merged: (A | B)[] = [];
-    if (first) {
-      merged.push(...first);
-    }
-    if (second) {
-      merged.push(...second);
-    }
-    return Array.from(new Set(merged));
-  };
-
-  const mergeDefaultMaps = (
-    first: DefaultValueMap<T, L> | undefined,
-    second: Partial<DefaultValueMap<T, L>> | undefined,
-  ): DefaultValueMap<T, L> | undefined => {
-    if (!first && !second) {
-      return undefined;
-    }
-    return Object.freeze({
-      ...(first ?? {}),
-      ...(second ?? {}),
-    });
-  };
-
-  const mergeHelpersMaps = (
-    first: ShapeHelpers<T> | undefined,
-    second: ShapeHelpers<T> | undefined,
-  ): ShapeHelpers<T> | undefined => {
-    if (!first && !second) {
-      return undefined;
-    }
-    return {
-      ...(first ?? {}),
-      ...(second ?? {}),
-    };
-  };
-
-  const mergeDerivedProperties = (
-    first: Readonly<DerivedProperty.Clause<T>> | undefined,
-    second: Readonly<DerivedProperty.Clause<T>> | undefined,
-  ): Readonly<DerivedProperty.Clause<T>> | undefined => {
-    if (!first && !second) {
-      return undefined;
-    }
-    return {
-      ...(first ?? {}),
-      ...(second ?? {}),
-    };
-  };
-
-  const mergePrefetches = (
-    first: readonly InterfaceDefinition[] | undefined,
-    second: readonly InterfaceDefinition[] | undefined,
-  ): readonly InterfaceDefinition[] | undefined => {
-    const merged = new Set<InterfaceDefinition>();
-    (first ?? []).forEach(value => merged.add(value));
-    (second ?? []).forEach(value => merged.add(value));
-    return merged.size > 0 ? Array.from(merged) : undefined;
-  };
 
   const builder: ShapeDefinitionBuilder<T, L, R> = {
     ...state,
@@ -414,26 +404,35 @@ function createBuilder<
     ) {
       type NEXT = R | OTHER;
 
-      const nextRequiredOrThrow = mergeRequiredSets<R, OTHER>(
-        state.__requiredOrThrowProps,
-        other.__requiredOrThrowProps,
+      const nextRequiredOrThrow = mergeValues(
+        state.__requiredOrThrowProps as readonly NEXT[] | undefined,
+        other.__requiredOrThrowProps as readonly NEXT[] | undefined,
+        "union-array",
       );
-      const nextRequiredOrDrop = mergeRequiredSets<R, OTHER>(
-        state.__requiredOrDropProps,
-        other.__requiredOrDropProps,
+      const nextRequiredOrDrop = mergeValues(
+        state.__requiredOrDropProps as readonly NEXT[] | undefined,
+        other.__requiredOrDropProps as readonly NEXT[] | undefined,
+        "union-array",
       );
-      const nextDefaults = mergeDefaultMaps(
+      const nextDefaults = mergeValues(
         state.__selectWithDefaults,
         other.__selectWithDefaults,
+        "freeze-object",
       );
-      const nextDerivedProps = mergeDerivedProperties(
+      const nextDerivedProps = mergeValues(
         state.__withProperties,
         other.__withProperties,
+        "merge-object",
       );
-      const nextHelpers = mergeHelpersMaps(state.__helpers, other.__helpers);
-      const nextPrefetch = mergePrefetches(
+      const nextHelpers = mergeValues(
+        state.__helpers,
+        other.__helpers,
+        "merge-object",
+      );
+      const nextPrefetch = mergeValues(
         state.__prefetchInterfaces,
         other.__prefetchInterfaces,
+        "set-dedupe",
       );
 
       const next: ShapeDefinition<T, L, NEXT> = {
@@ -441,12 +440,14 @@ function createBuilder<
         ...other,
         where: combineWhereClausesAnd(state.where, other.where),
         select: other.select ?? state.select,
-        __requiredOrThrowProps: nextRequiredOrThrow.length > 0
-          ? nextRequiredOrThrow
-          : undefined,
-        __requiredOrDropProps: nextRequiredOrDrop.length > 0
-          ? nextRequiredOrDrop
-          : undefined,
+        __requiredOrThrowProps:
+          nextRequiredOrThrow && nextRequiredOrThrow.length > 0
+            ? nextRequiredOrThrow
+            : undefined,
+        __requiredOrDropProps:
+          nextRequiredOrDrop && nextRequiredOrDrop.length > 0
+            ? nextRequiredOrDrop
+            : undefined,
         __selectWithDefaults: nextDefaults,
         __withProperties: nextDerivedProps,
         __helpers: nextHelpers,
@@ -458,9 +459,10 @@ function createBuilder<
 
     requiredOrThrow<K extends L>(...props: K[]) {
       type NEXT = R | K;
-      const nextRequired = mergeRequiredSets<R, K>(
-        state.__requiredOrThrowProps,
-        props,
+      const nextRequired = mergeValues(
+        state.__requiredOrThrowProps as readonly NEXT[] | undefined,
+        props as readonly NEXT[],
+        "union-array",
       );
 
       const next: ShapeDefinition<T, L, NEXT> = {
@@ -473,9 +475,10 @@ function createBuilder<
 
     requiredOrDrop<K extends L>(...props: K[]) {
       type NEXT = R | K;
-      const nextRequired = mergeRequiredSets<R, K>(
-        state.__requiredOrDropProps,
-        props,
+      const nextRequired = mergeValues(
+        state.__requiredOrDropProps as readonly NEXT[] | undefined,
+        props as readonly NEXT[],
+        "union-array",
       );
 
       const next: ShapeDefinition<T, L, NEXT> = {
@@ -488,9 +491,10 @@ function createBuilder<
 
     selectWithDefaults(defaults) {
       type NEXT = R | Extract<keyof typeof defaults, L>;
-      const nextDefaults = mergeDefaultMaps(
+      const nextDefaults = mergeValues(
         state.__selectWithDefaults,
         defaults,
+        "freeze-object",
       );
 
       const next: ShapeDefinition<T, L, NEXT> = {
@@ -504,9 +508,10 @@ function createBuilder<
     withProperties(clause) {
       const next: ShapeDefinition<T, L, R> = {
         ...state,
-        __withProperties: mergeDerivedProperties(
+        __withProperties: mergeValues(
           state.__withProperties,
           clause,
+          "merge-object",
         ),
       };
 
@@ -516,7 +521,7 @@ function createBuilder<
     helpers(helpers) {
       const next: ShapeDefinition<T, L, R> = {
         ...state,
-        __helpers: mergeHelpersMaps(state.__helpers, helpers),
+        __helpers: mergeValues(state.__helpers, helpers, "merge-object"),
       };
 
       return withState(next);
@@ -525,9 +530,10 @@ function createBuilder<
     prefetchInterfaces(...interfaces) {
       const next: ShapeDefinition<T, L, R> = {
         ...state,
-        __prefetchInterfaces: mergePrefetches(
+        __prefetchInterfaces: mergeValues(
           state.__prefetchInterfaces,
           interfaces,
+          "set-dedupe",
         ),
       };
 

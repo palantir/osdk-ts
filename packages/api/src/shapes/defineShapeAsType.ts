@@ -73,16 +73,39 @@ export function defineShapeAsType<
   const requiredProps = gatherRequiredKeys(shapeMetadata);
   const selectProps: ReadonlyArray<L> = shapeMetadata.select ?? [];
 
-  return {
-    ...baseType,
-    shapeType: "shape" as const,
-    baseObjectType: baseType,
-    shapeMetadata,
-    __shapeMarker: {
-      requiredProps,
-      selectProps,
+  const shaped = Object.create(baseType);
+
+  Object.defineProperties(shaped, {
+    shapeType: {
+      value: "shape" as const,
+      writable: false,
+      enumerable: true,
+      configurable: false,
     },
-  };
+    baseObjectType: {
+      value: baseType,
+      writable: false,
+      enumerable: true,
+      configurable: false,
+    },
+    shapeMetadata: {
+      value: shapeMetadata,
+      writable: false,
+      enumerable: true,
+      configurable: false,
+    },
+    __shapeMarker: {
+      value: {
+        requiredProps,
+        selectProps,
+      },
+      writable: false,
+      enumerable: true,
+      configurable: false,
+    },
+  });
+
+  return shaped;
 }
 
 export function isShapeObjectType<T extends { shapeType?: string }>(

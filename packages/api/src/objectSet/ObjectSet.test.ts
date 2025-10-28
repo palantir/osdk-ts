@@ -449,7 +449,6 @@ describe("ObjectSet", () => {
             >
           >();
 
-        // Type inference is validated by the expectTypeOf tests above
         await where.fetchPage();
         await withFamily.fetchOne(1);
       });
