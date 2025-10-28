@@ -19,6 +19,12 @@ import { hydrateObjectSetFromRid } from "@osdk/client/internal";
 import type { AsyncParameterValueMap, WidgetConfig } from "@osdk/widget.api";
 import type { ExtendedAsyncParameterValueMap } from "../context.js";
 
+/**
+ * Patches parameter values with hydrated object sets for object set parameters.
+ *
+ * The cache is used to avoid redundant hydration of the same object set RID, which
+ * can cause unnecessary re-renders in React components consuming the parameters.
+ */
 export function augmentParametersWithObjectSets<
   C extends WidgetConfig<C["parameters"]>,
 >(
