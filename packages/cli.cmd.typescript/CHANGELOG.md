@@ -1,5 +1,17 @@
 # @osdk/cli.cmd.typescript
 
+## 0.30.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+  - @osdk/generator@2.6.0-beta.2
+  - @osdk/cli.common@0.30.0-beta.2
+
 ## 0.29.0-beta.5
 
 ### Minor Changes

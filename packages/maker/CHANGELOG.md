@@ -1,5 +1,71 @@
 # @osdk/maker
 
+## 0.14.0-beta.6
+
+### Minor Changes
+
+- 04bfbfc: Add default format and table config options to OAC interface actions
+- 6ddabf4: Fix bug with action level validation on interface actions
+
+## 0.14.0-beta.5
+
+### Minor Changes
+
+- a03ea8d: Sections, submission metadata, layout switching for OAC interface actions
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.3
+
+## 0.14.0-beta.4
+
+### Minor Changes
+
+- aca0e5d: Add parameter/property configuration for OAC interface actions
+- 878c2eb: Add display name, api name, status customizations to OAC interface actions
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [f7ae38a]
+  - @osdk/api@2.6.0-beta.2
+
+## 0.14.0-beta.3
+
+### Minor Changes
+
+- 995064b: Make tests run synchronously
+
+## 0.14.0-beta.2
+
+### Minor Changes
+
+- 7601f9f: Fix condition validation
+
+## 0.13.0-beta.18
+
+### Minor Changes
+
+- 6dee3cc: Typechecks improvement
+- 242cdb7: Remove uuid import from maker
+
+## 0.13.0-beta.17
+
+### Minor Changes
+
+- 58e9f56: Add condition validations for oac actions
+
+## 0.13.0-beta.16
+
+### Minor Changes
+
+- 7f22c27: Finish wiring up randomness key
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.15
+
 ## 0.13.0-beta.15
 
 ### Minor Changes

@@ -1,5 +1,20 @@
 # @osdk/functions
 
+## 1.4.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [b762231]
+- Updated dependencies [f7ae38a]
+- Updated dependencies [f085283]
+  - @osdk/client@2.6.0-beta.2
+
 ## 1.3.0-beta.7
 
 ### Minor Changes

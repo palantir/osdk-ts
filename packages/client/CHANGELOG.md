@@ -1,5 +1,50 @@
 # @osdk/client
 
+## 2.6.0-beta.3
+
+### Minor Changes
+
+- 831a285: Added relative time formatting
+- 3fa28d4: Add support for date and time formatting
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.3
+- @osdk/client.unstable@2.6.0-beta.3
+- @osdk/generator-converters@2.6.0-beta.3
+
+## 2.6.0-beta.2
+
+### Minor Changes
+
+- 84e61fc: Add propertyValueFormatting type to property metadata
+- c4f8529: Add stub for getFormattedValue in experimental mode
+- b762231: Add boolean formatting
+- f7ae38a: Allow exact matching for arrays of structs
+- f085283: Add support for numeric formatting
+
+### Patch Changes
+
+- Updated dependencies [84e61fc]
+- Updated dependencies [c4f8529]
+- Updated dependencies [f7ae38a]
+  - @osdk/generator-converters@2.6.0-beta.2
+  - @osdk/api@2.6.0-beta.2
+  - @osdk/client.unstable@2.6.0-beta.2
+
+## 2.5.0-beta.15
+
+### Minor Changes
+
+- b01375c: Fire and forget query metadata loads if no parameters
+- 6e60727: Export extractPrimaryKetFromObjectSpecifier from client
+
+### Patch Changes
+
+- @osdk/api@2.5.0-beta.15
+- @osdk/client.unstable@2.5.0-beta.15
+- @osdk/generator-converters@2.5.0-beta.15
+
 ## 2.5.0-beta.14
 
 ### Minor Changes

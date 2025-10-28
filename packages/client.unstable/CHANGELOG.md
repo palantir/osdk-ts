@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.6.0-beta.3
+
+## 2.6.0-beta.2
+
+## 2.5.0-beta.15
+
 ## 2.5.0-beta.14
 
 ### Minor Changes

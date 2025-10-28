@@ -16,16 +16,14 @@
 
 import type {
   DerivedProperty,
+  InterfaceDefinition,
   LinkedType,
   LinkNames,
-  WhereClause,
-} from "@osdk/api";
-import type {
-  InterfaceDefinition,
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
-} from "@osdk/client";
+  WhereClause,
+} from "@osdk/api";
 import type { ObserveObjectsArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";

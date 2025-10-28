@@ -100,7 +100,7 @@ export function objectSortaMatchesWhereClause(
     if (typeof filter === "object" && filter != null) {
       const realValue: any = o[key as keyof typeof o];
       const [f] = Object.keys(filter) as Array<PossibleWhereClauseFilters>;
-      const expected = filter[f as keyof typeof filter];
+      const expected = (filter as any)[f];
       return evaluateFilter(f, realValue, expected, strict);
     }
 
