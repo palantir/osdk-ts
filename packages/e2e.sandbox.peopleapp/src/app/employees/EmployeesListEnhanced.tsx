@@ -90,9 +90,7 @@ export function EmployeesListEnhanced(props: EmployeesListEnhancedProps) {
     },
     where: {
       department: "Media Team",
-      $rdp: {
-        reportCount: { $gt: 0 },
-      },
+      reportCount: { $gt: 0 },
     },
     orderBy: {
       fullName: "asc",

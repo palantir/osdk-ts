@@ -144,7 +144,7 @@ export function useOsdkObjects<
 
 export function useOsdkObjects<
   Q extends ObjectTypeDefinition | InterfaceDefinition,
-  WP extends DerivedProperty.Clause<Q> | undefined = undefined,
+  WP extends DerivedProperty.Clause<Q> | undefined,
 >(
   type: Q,
   options?: UseOsdkObjectsOptions<Q, WP>,
@@ -152,7 +152,7 @@ export function useOsdkObjects<
 
 export function useOsdkObjects<
   Q extends ObjectTypeDefinition | InterfaceDefinition,
-  WP extends DerivedProperty.Clause<Q> | undefined = undefined,
+  WP extends DerivedProperty.Clause<Q> | undefined,
 >(
   type: Q,
   options?: UseOsdkObjectsOptions<Q, WP>,
