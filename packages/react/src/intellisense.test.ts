@@ -15,8 +15,8 @@
  */
 
 import type { Logger } from "@osdk/api";
-import type { TsServer } from "@osdk/client/internal";
-import { startTsServer } from "@osdk/client/internal";
+import type { TsServer } from "@osdk/client/internal-node";
+import { startTsServer } from "@osdk/client/internal-node";
 import { findUpSync } from "find-up";
 import * as path from "node:path";
 import invariant from "tiny-invariant";

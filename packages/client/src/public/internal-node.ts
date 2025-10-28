@@ -14,10 +14,5 @@
  * limitations under the License.
  */
 
-export { createAndFetchTempObjectSetRid } from "../public-utils/createAndFetchTempObjectSetRid.js";
-export { hydrateAttachmentFromRid } from "../public-utils/hydrateAttachmentFromRid.js";
-export { hydrateObjectSetFromObjectRids } from "../public-utils/hydrateObjectSetFromObjectRids.js";
-export { hydrateObjectSetFromRid } from "../public-utils/hydrateObjectSetFromRid.js";
-
-export { BrowserLogger } from "../logger/BrowserLogger.js";
-export { MinimalLogger } from "../logger/MinimalLogger.js";
+export { startTsServer } from "../tsserver.js";
+export type { TsServer } from "../tsserver.js";

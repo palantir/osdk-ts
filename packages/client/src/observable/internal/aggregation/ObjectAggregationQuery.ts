@@ -29,7 +29,7 @@ export class ObjectAggregationQuery extends AggregationQuery {
     let objectSet = this.store.client({
       type: "object",
       apiName: type,
-    });
+    } as ObjectTypeDefinition);
 
     if (this.rdpConfig) {
       objectSet = objectSet.withProperties(

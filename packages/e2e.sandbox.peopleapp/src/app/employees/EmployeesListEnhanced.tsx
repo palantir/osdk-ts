@@ -90,9 +90,7 @@ export function EmployeesListEnhanced(props: EmployeesListEnhancedProps) {
     },
     where: {
       department: "Media Team",
-      $rdp: {
-        reportCount: { $gt: 0 },
-      },
+      reportCount: { $gt: 0 },
     },
     orderBy: {
       fullName: "asc",
@@ -138,14 +136,12 @@ export function EmployeesListEnhanced(props: EmployeesListEnhancedProps) {
     },
   });
 
-  const employeesThroughManager = showPivotedData
-    ? useOsdkObjects(Employee, {
-      where: {
-        fullName: "John Smith",
-      },
-      pivotTo: "peeps" as const,
-    })
-    : null;
+  const employeesThroughManager = useOsdkObjects(Employee, {
+    where: {
+      fullName: "John Smith",
+    },
+    pivotTo: "peeps" as const,
+  });
 
   let displayData;
   let headerText;
