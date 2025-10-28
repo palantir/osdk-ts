@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-
-
 import type { FetchPageResult } from "../object/FetchPageResult.js";
 import type { Result } from "../object/Result.js";
 import type {
