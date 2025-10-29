@@ -25,7 +25,7 @@ import type { ExtendedAsyncParameterValueMap } from "../context.js";
  * The cache is used to avoid redundant hydration of the same object set RID, which
  * can cause unnecessary re-renders in React components consuming the parameters.
  */
-export function augmentParametersWithObjectSets<
+export function extendParametersWithObjectSets<
   C extends WidgetConfig<C["parameters"]>,
 >(
   osdkClient: Client | undefined,
@@ -33,17 +33,17 @@ export function augmentParametersWithObjectSets<
   parameters: AsyncParameterValueMap<C>,
   cache: Map<string, { objectSetRid: string; objectSet: ObjectSet }>,
 ): ExtendedAsyncParameterValueMap<C> {
-  const augmentedParameters = {
+  const extendedParameters = {
     ...parameters,
   } as ExtendedAsyncParameterValueMap<C>;
 
-  for (const parameterId of Object.keys(augmentedParameters)) {
+  for (const parameterId of Object.keys(extendedParameters)) {
     const param = config.parameters[parameterId];
     if (
       param.type === "objectSet"
-      && augmentedParameters[parameterId].type === "objectSet"
+      && extendedParameters[parameterId].type === "objectSet"
     ) {
-      const parameterValue = augmentedParameters[parameterId].value.value;
+      const parameterValue = extendedParameters[parameterId].value.value;
       if (parameterValue != null) {
         if (
           typeof parameterValue === "object"
@@ -70,7 +70,7 @@ export function augmentParametersWithObjectSets<
     }
   }
 
-  return augmentedParameters;
+  return extendedParameters;
 }
 
 function getOrHydrateObjectSet<T extends ObjectTypeDefinition>(

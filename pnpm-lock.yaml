@@ -4197,10 +4197,11 @@ importers:
         version: 5.5.4
 
   packages/widget.api:
-    devDependencies:
+    dependencies:
       '@osdk/api':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../api
+    devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor

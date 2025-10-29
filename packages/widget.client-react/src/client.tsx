@@ -29,7 +29,7 @@ import type {
   FoundryWidgetClientContext,
 } from "./context.js";
 import { FoundryWidgetContext } from "./context.js";
-import { augmentParametersWithObjectSets } from "./utils/augmentParametersWithObjectSets.js";
+import { extendParametersWithObjectSets } from "./utils/extendParametersWithObjectSets.js";
 import { initializeParameters } from "./utils/initializeParameters.js";
 
 type ExtractObjectTypes<C extends WidgetConfig<C["parameters"]>> =
@@ -96,7 +96,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
     client.hostEventTarget.addEventListener(
       "host.update-parameters",
       (payload) => {
-        const processedParameters = augmentParametersWithObjectSets(
+        const processedParameters = extendParametersWithObjectSets(
           osdkClient,
           config,
           payload.detail.parameters,

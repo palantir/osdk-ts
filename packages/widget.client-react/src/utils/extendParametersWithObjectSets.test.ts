@@ -20,13 +20,13 @@ import type { AsyncParameterValueMap, ObjectType } from "@osdk/widget.api";
 import { defineConfig } from "@osdk/widget.client";
 import type { Mock } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { augmentParametersWithObjectSets } from "./augmentParametersWithObjectSets.js";
+import { extendParametersWithObjectSets } from "./extendParametersWithObjectSets.js";
 
 vi.mock("@osdk/client/internal", () => ({
   hydrateObjectSetFromRid: vi.fn(),
 }));
 
-describe("augmentParametersWithObjectSets", () => {
+describe("extendParametersWithObjectSets", () => {
   const client = vi.fn() as Mock<Client> & Client;
   const cache = new Map<
     string,
@@ -37,7 +37,6 @@ describe("augmentParametersWithObjectSets", () => {
   const createMockObjectType = (rid = "ri.object-type.123"): ObjectType => ({
     apiName: "MyObjectType",
     type: "object",
-    __DefinitionMetadata: { objectSet: {} },
     internalDoNotUseMetadata: { rid },
   });
 
@@ -96,7 +95,7 @@ describe("augmentParametersWithObjectSets", () => {
     const mockObjectSet = createMockObjectSet();
     vi.mocked(hydrateObjectSetFromRid).mockReturnValue(mockObjectSet);
 
-    const result = augmentParametersWithObjectSets(
+    const result = extendParametersWithObjectSets(
       client,
       config,
       parameters,
@@ -141,7 +140,7 @@ describe("augmentParametersWithObjectSets", () => {
       myNumber: createNumberParam(123),
     };
 
-    const result = augmentParametersWithObjectSets(
+    const result = extendParametersWithObjectSets(
       undefined,
       config,
       parameters,
@@ -186,7 +185,7 @@ describe("augmentParametersWithObjectSets", () => {
       objectsB: createObjectSetParam("ri.object-set.456"),
     };
 
-    const result = augmentParametersWithObjectSets(
+    const result = extendParametersWithObjectSets(
       client,
       config,
       parameters,
@@ -216,7 +215,7 @@ describe("augmentParametersWithObjectSets", () => {
       objectsB: createObjectSetParam("ri.object-set.789"),
     };
 
-    const result2 = augmentParametersWithObjectSets(
+    const result2 = extendParametersWithObjectSets(
       client,
       config,
       parameters,
@@ -263,7 +262,7 @@ describe("augmentParametersWithObjectSets", () => {
       myObjectSet: createObjectSetParam("ri.object-set.123"),
     };
 
-    const initialResult = augmentParametersWithObjectSets(
+    const initialResult = extendParametersWithObjectSets(
       client,
       config,
       initialParameters,
@@ -293,7 +292,7 @@ describe("augmentParametersWithObjectSets", () => {
       },
     };
 
-    const failedResult = augmentParametersWithObjectSets(
+    const failedResult = extendParametersWithObjectSets(
       client,
       config,
       failedParameters,
@@ -328,7 +327,7 @@ describe("augmentParametersWithObjectSets", () => {
     };
 
     expect(() =>
-      augmentParametersWithObjectSets(
+      extendParametersWithObjectSets(
         undefined,
         config,
         parameters,
@@ -362,7 +361,7 @@ describe("augmentParametersWithObjectSets", () => {
       },
     };
 
-    const result = augmentParametersWithObjectSets(
+    const result = extendParametersWithObjectSets(
       client,
       config,
       parameters,
@@ -396,7 +395,7 @@ describe("augmentParametersWithObjectSets", () => {
       myObjectSet: createObjectSetParam("ri.object-set.123"),
     };
 
-    const initialResult = augmentParametersWithObjectSets(
+    const initialResult = extendParametersWithObjectSets(
       client,
       config,
       initialParameters,
@@ -432,7 +431,7 @@ describe("augmentParametersWithObjectSets", () => {
       },
     };
 
-    const reloadingResult = augmentParametersWithObjectSets(
+    const reloadingResult = extendParametersWithObjectSets(
       client,
       config,
       reloadingParameters,
@@ -458,7 +457,7 @@ describe("augmentParametersWithObjectSets", () => {
       myObjectSet: createObjectSetParam("ri.object-set.456"),
     };
 
-    const newLoadedResult = augmentParametersWithObjectSets(
+    const newLoadedResult = extendParametersWithObjectSets(
       client,
       config,
       newLoadedParameters,

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectSet } from "@osdk/client";
 import type { ObjectType } from "@osdk/widget.api";
 import {
   type AsyncParameterValueMap,
@@ -25,10 +26,6 @@ import {
   type WidgetConfig,
 } from "@osdk/widget.client";
 import React, { useContext } from "react";
-
-export type ExtractObjectSet<OT extends ObjectType> = NonNullable<
-  NonNullable<OT["__DefinitionMetadata"]>["objectSet"]
->;
 
 export interface FoundryWidgetClientContext<
   C extends WidgetConfig<C["parameters"]>,
@@ -55,7 +52,7 @@ export type ExtendedParameterValueMap<C extends WidgetConfig<C["parameters"]>> =
     [K in keyof C["parameters"]]: K extends keyof ParameterValueMap<C>
       ? C["parameters"][K] extends { type: "objectSet"; objectType: infer T }
         ? T extends ObjectType
-          ? ParameterValueMap<C>[K] & { objectSet: ExtractObjectSet<T> }
+          ? ParameterValueMap<C>[K] & { objectSet: ObjectSet<T> }
         : ParameterValueMap<C>[K]
       : ParameterValueMap<C>[K]
       : never;
@@ -68,7 +65,7 @@ export type ExtendedAsyncParameterValueMap<
     ? C["parameters"][K] extends { type: "objectSet"; objectType: infer T }
       ? T extends ObjectType ? AsyncParameterValueMap<C>[K] & {
           value: AsyncValue<
-            ParameterValueMap<C>[K] & { objectSet: ExtractObjectSet<T> }
+            ParameterValueMap<C>[K] & { objectSet: ObjectSet<T> }
           >;
         }
       : AsyncParameterValueMap<C>[K]
