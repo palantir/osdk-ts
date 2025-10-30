@@ -17,6 +17,7 @@
 import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/InterfaceHolder.js";
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { Status } from "../../ObservableClient/common.js";
+import type { OptimisticId } from "../OptimisticId.js";
 import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 
 /**
@@ -78,6 +79,11 @@ export interface CollectionConnectableParams {
    * Whether the data is from an optimistic update
    */
   isOptimistic: boolean;
+
+  /**
+   * Optimistic layer identifier if the emission originates from one
+   */
+  optimisticId?: OptimisticId;
 
   /**
    * Current loading status

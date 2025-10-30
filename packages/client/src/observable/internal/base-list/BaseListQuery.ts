@@ -55,6 +55,8 @@ export abstract class BaseListQuery<
    */
   protected sortingStrategy: SortingStrategy = new NoOpSortingStrategy();
 
+  protected lastFetchWasFromCache = true;
+
   /**
    * Get RDP configuration from the cache key
    */
@@ -242,6 +244,9 @@ export abstract class BaseListQuery<
   protected createPayload(
     params: CollectionConnectableParams,
   ): PAYLOAD {
+    const servedFromCache = this.lastFetchWasFromCache
+      && params.status === "loaded";
+
     return {
       resolvedList: params.resolvedData,
       isOptimistic: params.isOptimistic,
@@ -249,6 +254,10 @@ export abstract class BaseListQuery<
       hasMore: this.nextPageToken != null,
       status: params.status,
       lastUpdated: params.lastUpdated,
+      __debugMetadata: {
+        servedFromCache,
+        optimisticId: params.optimisticId,
+      },
     } as unknown as PAYLOAD; // Type assertion needed since we don't know exact subtype
   }
 
@@ -330,6 +339,14 @@ export abstract class BaseListQuery<
       );
     }
 
+    const existingEntry = this.store.getValue(this.cacheKey);
+    const hasCachedData = existingEntry?.value?.data != null
+      && existingEntry.value.data.length > 0;
+
+    if (!hasCachedData) {
+      this.lastFetchWasFromCache = false;
+    }
+
     // Keep fetching pages until we have the minimum number of results or no more pages
     while (true) {
       const entry = await this.fetchPageAndUpdate(
@@ -352,6 +369,8 @@ export abstract class BaseListQuery<
     this.store.batch({}, (batch) => {
       this.setStatus("loaded", batch);
     });
+
+    this.lastFetchWasFromCache = true;
 
     return Promise.resolve();
   }
