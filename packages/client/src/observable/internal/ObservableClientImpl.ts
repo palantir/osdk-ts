@@ -17,8 +17,10 @@
 import type {
   ActionDefinition,
   ActionValidationResponse,
+  AggregateOpts,
   CompileTimeMetadata,
   InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
@@ -35,6 +37,8 @@ import type { ObjectPayload } from "../ObjectPayload.js";
 import type { ObjectSetPayload } from "../ObjectSetPayload.js";
 import type {
   ObservableClient,
+  ObserveAggregationArgs,
+  ObserveAggregationOptions,
   ObserveListOptions,
   ObserveObjectArgs,
   ObserveObjectOptions,
@@ -44,6 +48,7 @@ import type {
 } from "../ObservableClient.js";
 import type { Observer } from "../ObservableClient/common.js";
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
+import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
 import type { Canonical } from "./Canonical.js";
 import type { ObserveObjectSetOptions } from "./objectset/ObjectSetQueryOptions.js";
 import type { Store } from "./Store.js";
@@ -95,6 +100,27 @@ export class ObservableClientImpl implements ObservableClient {
       options,
       // cast to cross typed to untyped barrier
       subFn as unknown as Observer<ListPayload>,
+    );
+  };
+
+  public observeAggregation: <
+    T extends ObjectOrInterfaceDefinition,
+    A extends AggregateOpts<T>,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options: ObserveAggregationOptions<T, A, RDPs>,
+    subFn: Observer<ObserveAggregationArgs<T, A>>,
+  ) => Unsubscribable = <
+    T extends ObjectOrInterfaceDefinition,
+    A extends AggregateOpts<T>,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options: ObserveAggregationOptions<T, A, RDPs>,
+    subFn: Observer<ObserveAggregationArgs<T, A>>,
+  ) => {
+    return this.__experimentalStore.aggregations.observe(
+      options,
+      subFn as Observer<AggregationPayloadBase>,
     );
   };
 

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import type { AggregationCacheKey } from "./aggregation/AggregationCacheKey.js";
 import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
 import type { ListCacheKey } from "./list/ListCacheKey.js";
 import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import type { ObjectSetCacheKey } from "./objectset/ObjectSetCacheKey.js";
 
 export type KnownCacheKey =
+  | AggregationCacheKey
   | ObjectCacheKey
   | SpecificLinkCacheKey
   | ListCacheKey

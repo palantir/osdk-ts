@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-import type { WhereClause } from "@osdk/api";
 import type {
   DerivedProperty,
   InterfaceDefinition,
+  LinkedType,
+  LinkNames,
   ObjectTypeDefinition,
   Osdk,
   PropertyKeys,
-} from "@osdk/client";
+  WhereClause,
+} from "@osdk/api";
 import type { ObserveObjectsArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
-
-type InferRdpTypes<
-  Q extends ObjectTypeDefinition | InterfaceDefinition,
-  WP extends DerivedProperty.Clause<Q> | undefined,
-> = WP extends DerivedProperty.Clause<Q> ? {
-    [K in keyof WP]: WP[K] extends DerivedProperty.Creator<Q, infer T> ? T
-      : never;
-  }
-  : {};
+import type { InferRdpTypes } from "./types.js";
 
 export interface UseOsdkObjectsOptions<
   T extends ObjectTypeDefinition | InterfaceDefinition,
@@ -60,6 +54,21 @@ export interface UseOsdkObjectsOptions<
    * These properties will be available on the returned objects alongside their regular properties.
    */
   withProperties?: WithProps;
+
+  /**
+   * Intersect the results with additional object sets.
+   * Each element defines a where clause for an object set to intersect with.
+   * The final result will only include objects that match ALL conditions.
+   */
+  intersectWith?: Array<{
+    where: WhereClause<T, InferRdpTypes<T, WithProps>>;
+  }>;
+
+  /**
+   * Pivot to related objects through a link.
+   * This changes the return type from T to the linked object type.
+   */
+  pivotTo?: LinkNames<T>;
 
   /**
    * Causes the list to automatically fetch more as soon as the previous page
@@ -97,21 +106,13 @@ export interface UseOsdkObjectsOptions<
    */
   dedupeIntervalMs?: number;
 
-  /**
-   * If provided, the list will be considered this length for the purposes of
-   * `invalidationMode` when using the `wait` option. If not provided,
-   * the internal expectedLength will be determined by the number of times
-   * `fetchMore` has been called.
-   */
-  // expectedLength?: number | undefined;
-
   streamUpdates?: boolean;
 }
 
 export interface UseOsdkListResult<
   T extends ObjectTypeDefinition | InterfaceDefinition,
 > {
-  fetchMore: (() => Promise<unknown>) | undefined;
+  fetchMore: (() => Promise<void>) | undefined;
   data: Osdk.Instance<T>[] | undefined;
   isLoading: boolean;
 
@@ -134,12 +135,28 @@ declare const process: {
 };
 
 export function useOsdkObjects<
+  Q extends ObjectTypeDefinition,
+  L extends LinkNames<Q>,
+>(
+  type: Q,
+  options: UseOsdkObjectsOptions<Q> & { pivotTo: L },
+): UseOsdkListResult<LinkedType<Q, L>>;
+
+export function useOsdkObjects<
   Q extends ObjectTypeDefinition | InterfaceDefinition,
-  WP extends DerivedProperty.Clause<Q> | undefined = undefined,
+  WP extends DerivedProperty.Clause<Q> | undefined,
 >(
   type: Q,
   options?: UseOsdkObjectsOptions<Q, WP>,
-): UseOsdkListResult<Q> {
+): UseOsdkListResult<Q>;
+
+export function useOsdkObjects<
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  WP extends DerivedProperty.Clause<Q> | undefined,
+>(
+  type: Q,
+  options?: UseOsdkObjectsOptions<Q, WP>,
+): UseOsdkListResult<Q> | UseOsdkListResult<LinkedType<Q, LinkNames<Q>>> {
   const {
     pageSize,
     orderBy,
@@ -147,6 +164,8 @@ export function useOsdkObjects<
     where = {},
     streamUpdates,
     withProperties,
+    intersectWith,
+    pivotTo,
   } = options ?? {};
   const { observableClient } = React.useContext(OsdkContext2);
 
@@ -156,10 +175,14 @@ export function useOsdkObjects<
    */
   const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
 
-  // TODO: replace with improved stabilization
   const stableWithProperties = React.useMemo(
     () => withProperties,
     [JSON.stringify(withProperties)],
+  );
+
+  const stableIntersectWith = React.useMemo(
+    () => intersectWith,
+    [JSON.stringify(intersectWith)],
   );
 
   const { subscribe, getSnapShot } = React.useMemo(
@@ -174,6 +197,10 @@ export function useOsdkObjects<
             orderBy,
             streamUpdates,
             withProperties: stableWithProperties,
+            ...(stableIntersectWith
+              ? { intersectWith: stableIntersectWith }
+              : {}),
+            ...(pivotTo ? { pivotTo: pivotTo as string } : {}),
           }, observer),
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
@@ -184,7 +211,12 @@ export function useOsdkObjects<
       type,
       canonWhere,
       dedupeIntervalMs,
+      pageSize,
+      orderBy,
+      streamUpdates,
       stableWithProperties,
+      stableIntersectWith,
+      pivotTo,
     ],
   );
 
@@ -200,7 +232,7 @@ export function useOsdkObjects<
   return {
     fetchMore: listPayload?.fetchMore,
     error,
-    data: listPayload?.resolvedList as Osdk.Instance<Q>[],
+    data: listPayload?.resolvedList,
     isLoading: listPayload?.status === "loading",
     isOptimistic: listPayload?.isOptimistic ?? false,
   };

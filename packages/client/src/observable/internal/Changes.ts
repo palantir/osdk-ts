@@ -16,6 +16,7 @@
 
 import { MultiMap } from "mnemonist";
 import type { ObjectHolder } from "../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import type { AggregationCacheKey } from "./aggregation/AggregationCacheKey.js";
 import type { CacheKey } from "./CacheKey.js";
 import { DEBUG_ONLY__cacheKeyToString } from "./CacheKey.js";
 import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
@@ -28,13 +29,25 @@ export class Changes {
   addedObjects: MultiMap<string, ObjectHolder> = new MultiMap();
 
   added: Set<
-    ListCacheKey | ObjectCacheKey | SpecificLinkCacheKey | ObjectSetCacheKey
+    | AggregationCacheKey
+    | ListCacheKey
+    | ObjectCacheKey
+    | SpecificLinkCacheKey
+    | ObjectSetCacheKey
   > = new Set();
   modified: Set<
-    ListCacheKey | ObjectCacheKey | SpecificLinkCacheKey | ObjectSetCacheKey
+    | AggregationCacheKey
+    | ListCacheKey
+    | ObjectCacheKey
+    | SpecificLinkCacheKey
+    | ObjectSetCacheKey
   > = new Set();
   deleted: Set<
-    ListCacheKey | ObjectCacheKey | SpecificLinkCacheKey | ObjectSetCacheKey
+    | AggregationCacheKey
+    | ListCacheKey
+    | ObjectCacheKey
+    | SpecificLinkCacheKey
+    | ObjectSetCacheKey
   > = new Set();
 
   registerObject = (
