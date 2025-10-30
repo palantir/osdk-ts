@@ -233,9 +233,7 @@ function AllTodos() {
   return (
     <div>
       <h2>All Todos ({data?.length})</h2>
-      {data?.map(todo => (
-        <TodoItem key={todo.$primaryKey} todo={todo} />
-      ))}
+      {data?.map(todo => <TodoItem key={todo.$primaryKey} todo={todo} />)}
     </div>
   );
 }
@@ -246,7 +244,7 @@ You can also specify a minimum number of items to fetch:
 ```tsx
 const { data, isLoading, fetchMore } = useOsdkObjects(Todo, {
   autoFetchMore: 100, // Fetch at least 100 items
-  pageSize: 25,       // Fetch 25 per page (will load 4 pages)
+  pageSize: 25, // Fetch 25 per page (will load 4 pages)
 });
 
 // fetchMore() is still available if more data exists
@@ -255,11 +253,13 @@ const { data, isLoading, fetchMore } = useOsdkObjects(Todo, {
 **Performance Considerations**
 
 Using `autoFetchMore: true` on large datasets may cause:
+
 - Long initial load times
 - High memory usage
 - Degraded user experience
 
 **Best Practices:**
+
 1. Use `autoFetchMore: N` with a specific number for predictable performance
 2. Implement loading indicators during auto-fetch
 3. Consider virtual scrolling for large lists
