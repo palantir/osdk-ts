@@ -65,8 +65,27 @@ export interface UseOsdkObjectsOptions<
    * Causes the list to automatically fetch more as soon as the previous page
    * has been loaded. If a number is provided, it will continue to automatically
    * fetch more until the list is at least that long.
+   *
+   * - `true`: Fetch all available pages automatically
+   * - `number`: Fetch pages until at least this many items are loaded
+   * - `undefined` (default): Only fetch the first page, user must call fetchMore()
+   *
+   * Note: When using `autoFetchMore: true` with large datasets, the initial
+   * load may take significant time. Consider using a specific number instead
+   * or implementing virtual scrolling.
+   *
+   * @example
+   * // Fetch all todos at once
+   * const { data } = useOsdkObjects(Todo, { autoFetchMore: true })
+   *
+   * @example
+   * // Fetch at least 100 todos (with 25 per page, fetches 4 pages)
+   * const { data } = useOsdkObjects(Todo, {
+   *   autoFetchMore: 100,
+   *   pageSize: 25
+   * })
    */
-  // autoFetchMore?: boolean | number;
+  autoFetchMore?: boolean | number;
 
   /**
    * Upon a list being revalidated, this option determines how the component
@@ -147,6 +166,7 @@ export function useOsdkObjects<
     where = {},
     streamUpdates,
     withProperties,
+    autoFetchMore,
   } = options ?? {};
   const { observableClient } = React.useContext(OsdkContext2);
 
@@ -174,6 +194,7 @@ export function useOsdkObjects<
             orderBy,
             streamUpdates,
             withProperties: stableWithProperties,
+            autoFetchMore,
           }, observer),
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
@@ -185,6 +206,7 @@ export function useOsdkObjects<
       canonWhere,
       dedupeIntervalMs,
       stableWithProperties,
+      autoFetchMore,
     ],
   );
 

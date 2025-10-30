@@ -83,6 +83,15 @@ export interface UseObjectSetOptions<
    * Minimum time between fetch requests in milliseconds (defaults to 2000ms)
    */
   dedupeIntervalMs?: number;
+
+  /**
+   * Automatically fetch additional pages on initial load.
+   *
+   * - `true`: Fetch all available pages automatically
+   * - `number`: Fetch pages until at least this many items are loaded
+   * - `undefined` (default): Only fetch the first page, user must call fetchMore()
+   */
+  autoFetchMore?: boolean | number;
 }
 
 export interface UseObjectSetResult<
@@ -173,6 +182,7 @@ export function useObjectSet<
               pageSize: options.pageSize,
               orderBy: options.orderBy,
               dedupeInterval: options.dedupeIntervalMs ?? 2_000,
+              autoFetchMore: options.autoFetchMore,
             },
             observer,
           );

@@ -213,6 +213,71 @@ Return values:
 - `fetchMore` - Function to load next page (undefined when no more pages)
 - `error` - Error object if fetch failed
 
+### Auto-Fetching All Pages
+
+By default, `useOsdkObjects` only fetches the first page of results. You can automatically fetch additional pages using the `autoFetchMore` option:
+
+```tsx
+import { Todo } from "@my/osdk";
+import { useOsdkObjects } from "@osdk/react/experimental";
+
+function AllTodos() {
+  const { data, isLoading } = useOsdkObjects(Todo, {
+    autoFetchMore: true, // Fetch all pages automatically
+  });
+
+  if (isLoading && !data) {
+    return <div>Loading all todos...</div>;
+  }
+
+  return (
+    <div>
+      <h2>All Todos ({data?.length})</h2>
+      {data?.map(todo => (
+        <TodoItem key={todo.$primaryKey} todo={todo} />
+      ))}
+    </div>
+  );
+}
+```
+
+You can also specify a minimum number of items to fetch:
+
+```tsx
+const { data, isLoading, fetchMore } = useOsdkObjects(Todo, {
+  autoFetchMore: 100, // Fetch at least 100 items
+  pageSize: 25,       // Fetch 25 per page (will load 4 pages)
+});
+
+// fetchMore() is still available if more data exists
+```
+
+**Performance Considerations**
+
+Using `autoFetchMore: true` on large datasets may cause:
+- Long initial load times
+- High memory usage
+- Degraded user experience
+
+**Best Practices:**
+1. Use `autoFetchMore: N` with a specific number for predictable performance
+2. Implement loading indicators during auto-fetch
+3. Consider virtual scrolling for large lists
+4. Use `where` clauses to filter data server-side
+
+```tsx
+// Good: Fetch a reasonable number
+const { data } = useOsdkObjects(Todo, {
+  where: { isComplete: false },
+  autoFetchMore: 500,
+});
+
+// Caution: May load thousands of items
+const { data } = useOsdkObjects(Todo, {
+  autoFetchMore: true,
+});
+```
+
 ## Render a Single Object
 
 The `useOsdkObject` hook has two signatures:

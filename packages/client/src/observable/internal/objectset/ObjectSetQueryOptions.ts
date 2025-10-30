@@ -40,6 +40,15 @@ export interface ObserveObjectSetOptions<
   pivotTo?: LinkNames<Q>;
   pageSize?: number;
   orderBy?: { [K in PropertyKeys<Q>]?: "asc" | "desc" };
+
+  /**
+   * Automatically fetch additional pages on initial load.
+   *
+   * - `true`: Fetch all available pages automatically
+   * - `number`: Fetch pages until at least this many items are loaded
+   * - `undefined` (default): Only fetch the first page, user must call fetchMore()
+   */
+  autoFetchMore?: boolean | number;
 }
 
 export interface ObjectSetQueryOptions

@@ -81,7 +81,13 @@ export class ObjectSetQuery extends BaseListQuery<
       );
     }
 
-    this.minResultsToLoad = opts.pageSize || 0;
+    if (opts.autoFetchMore === true) {
+      this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
+    } else if (typeof opts.autoFetchMore === "number") {
+      this.minResultsToLoad = Math.max(0, opts.autoFetchMore);
+    } else {
+      this.minResultsToLoad = opts.pageSize || 0;
+    }
   }
 
   #composeObjectSet(opts: ObjectSetQueryOptions): ObjectSet<any, any> {
