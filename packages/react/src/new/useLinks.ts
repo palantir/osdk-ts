@@ -52,6 +52,27 @@ export interface UseLinksOptions<
    * - "offline": Only use cached data, don't make network requests
    */
   mode?: "force" | "offline";
+
+  /**
+   * Enable or disable the query.
+   *
+   * When `false`, the query will not automatically execute. It will still
+   * return any cached data, but will not fetch from the server.
+   *
+   * This is useful for:
+   * - Lazy/on-demand queries that should wait for user interaction
+   * - Dependent queries that need data from another query first
+   * - Conditional queries based on component state
+   *
+   * @default true
+   * @example
+   * // Dependent query - wait for employee data
+   * const { object: employee } = useOsdkObject(Employee, employeeId);
+   * const { links: reports } = useLinks(employee, "reports", {
+   *   enabled: !!employee
+   * });
+   */
+  enabled?: boolean;
 }
 
 export interface UseLinksResult<
@@ -97,6 +118,8 @@ export function useLinks<
 ): UseLinksResult<LinkedType<T, L>> {
   const { observableClient } = React.useContext(OsdkContext2);
 
+  const { enabled = true, ...otherOptions } = options;
+
   // Convert single object to array for consistent handling
   const objectsArray: ReadonlyArray<Osdk.Instance<T>> = React.useMemo(() => {
     return objects === undefined
@@ -108,6 +131,16 @@ export function useLinks<
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
+      if (!enabled) {
+        return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
+          () => ({ unsubscribe: () => {} }),
+          `links ${linkName} for ${
+            objectsArray.map(obj => `${obj.$apiName}:${obj.$primaryKey}`).join(
+              ",",
+            )
+          } [DISABLED]`,
+        );
+      }
       return makeExternalStore<ObserveLinks.CallbackArgs<T>>(
         (observer) =>
           observableClient.observeLinks(
@@ -115,10 +148,10 @@ export function useLinks<
             linkName,
             {
               linkName,
-              where: options.where,
-              pageSize: options.pageSize,
-              orderBy: options.orderBy,
-              mode: options.mode,
+              where: otherOptions.where,
+              pageSize: otherOptions.pageSize,
+              orderBy: otherOptions.orderBy,
+              mode: otherOptions.mode,
             },
             observer,
           ),
@@ -130,13 +163,14 @@ export function useLinks<
       );
     },
     [
+      enabled,
       observableClient,
       objectsArray,
       linkName,
-      options.where,
-      options.pageSize,
-      options.orderBy,
-      options.mode,
+      otherOptions.where,
+      otherOptions.pageSize,
+      otherOptions.orderBy,
+      otherOptions.mode,
     ],
   );
 
