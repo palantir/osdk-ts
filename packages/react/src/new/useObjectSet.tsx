@@ -92,6 +92,27 @@ export interface UseObjectSetOptions<
    * - `undefined` (default): Only fetch the first page, user must call fetchMore()
    */
   autoFetchMore?: boolean | number;
+
+  /**
+   * Enable or disable the query.
+   *
+   * When `false`, the query will not automatically execute. It will still
+   * return any cached data, but will not fetch from the server.
+   *
+   * This is useful for:
+   * - Lazy/on-demand queries that should wait for user interaction
+   * - Dependent queries that need data from another query first
+   * - Conditional queries based on component state
+   *
+   * @default true
+   * @example
+   * // Dependent query - wait for filter selection
+   * const { data: filteredObjects } = useObjectSet(MyObject.all(), {
+   *   where: { status: selectedStatus },
+   *   enabled: !!selectedStatus
+   * });
+   */
+  enabled?: boolean;
 }
 
 export interface UseObjectSetResult<
@@ -153,36 +174,46 @@ export function useObjectSet<
 ): UseObjectSetResult<Q, RDPs> {
   const { observableClient } = React.useContext(OsdkContext2);
 
+  const { enabled = true, ...otherOptions } = options;
+
   // Compute a stable cache key for the ObjectSet and options
-  // dedupeIntervalMs is excluded as it doesn't affect the data, only the refresh rate
+  // dedupeIntervalMs and enabled are excluded as they don't affect the data
   const stableKey = computeObjectSetCacheKey(baseObjectSet, {
-    where: options.where,
-    withProperties: options.withProperties,
-    union: options.union,
-    intersect: options.intersect,
-    subtract: options.subtract,
-    pivotTo: options.pivotTo,
-    pageSize: options.pageSize,
-    orderBy: options.orderBy,
+    where: otherOptions.where,
+    withProperties: otherOptions.withProperties,
+    union: otherOptions.union,
+    intersect: otherOptions.intersect,
+    subtract: otherOptions.subtract,
+    pivotTo: otherOptions.pivotTo,
+    pageSize: otherOptions.pageSize,
+    orderBy: otherOptions.orderBy,
   });
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
+      if (!enabled) {
+        return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
+          () => ({ unsubscribe: () => {} }),
+          process.env.NODE_ENV !== "production"
+            ? `objectSet ${stableKey} [DISABLED]`
+            : void 0,
+        );
+      }
       return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
         (observer) => {
           const subscription = observableClient.observeObjectSet(
             baseObjectSet as ObjectSet<Q>,
             {
-              where: options.where,
-              withProperties: options.withProperties,
-              union: options.union,
-              intersect: options.intersect,
-              subtract: options.subtract,
-              pivotTo: options.pivotTo,
-              pageSize: options.pageSize,
-              orderBy: options.orderBy,
-              dedupeInterval: options.dedupeIntervalMs ?? 2_000,
-              autoFetchMore: options.autoFetchMore,
+              where: otherOptions.where,
+              withProperties: otherOptions.withProperties,
+              union: otherOptions.union,
+              intersect: otherOptions.intersect,
+              subtract: otherOptions.subtract,
+              pivotTo: otherOptions.pivotTo,
+              pageSize: otherOptions.pageSize,
+              orderBy: otherOptions.orderBy,
+              dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
+              autoFetchMore: otherOptions.autoFetchMore,
             },
             observer,
           );
@@ -193,7 +224,7 @@ export function useObjectSet<
           : void 0,
       );
     },
-    [observableClient, stableKey],
+    [enabled, observableClient, stableKey],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);

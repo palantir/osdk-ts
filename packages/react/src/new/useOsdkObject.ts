@@ -35,36 +35,62 @@ export interface UseOsdkObjectResult<Q extends ObjectTypeDefinition> {
 
 /**
  * @param obj an existing `Osdk.Instance` object to get metadata for.
+ * @param enabled Enable or disable the query (defaults to true)
  */
 export function useOsdkObject<Q extends ObjectTypeDefinition>(
   obj: Osdk.Instance<Q>,
+  enabled?: boolean,
 ): UseOsdkObjectResult<Q>;
 /**
  * Loads an object by type and primary key.
  *
  * @param type
  * @param primaryKey
+ * @param enabled Enable or disable the query (defaults to true)
  */
 export function useOsdkObject<Q extends ObjectTypeDefinition>(
   type: Q,
   primaryKey: PrimaryKeyType<Q>,
+  enabled?: boolean,
 ): UseOsdkObjectResult<Q>;
 /*
     Implementation of useOsdkObject
  */
 export function useOsdkObject<Q extends ObjectTypeDefinition>(
-  ...args: [obj: Osdk.Instance<Q>] | [type: Q, primaryKey: PrimaryKeyType<Q>]
+  ...args:
+    | [obj: Osdk.Instance<Q>, enabled?: boolean]
+    | [type: Q, primaryKey: PrimaryKeyType<Q>, enabled?: boolean]
 ): UseOsdkObjectResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
 
+  // Check if first arg is an instance to discriminate signatures
+  // TypeScript cannot narrow rest parameter unions with optional parameters,
+  // so we must use type assertions after runtime discrimination
+  const isInstanceSignature = "$objectType" in args[0];
+
+  // Extract enabled flag - 2nd param for instance signature, 3rd for type signature
+  const enabled = isInstanceSignature
+    ? (typeof args[1] === "boolean" ? args[1] : true)
+    : (typeof args[2] === "boolean" ? args[2] : true);
+
   // TODO: Figure out what the correct default behavior is for the various scenarios
-  const mode = args.length === 1 ? "offline" : undefined;
-  const objectType = args.length === 1 ? args[0].$objectType : args[0].apiName;
-  const primaryKey = args.length === 1 ? args[0].$primaryKey : args[1];
+  const mode = isInstanceSignature ? "offline" : undefined;
+  const objectType = isInstanceSignature
+    ? (args[0] as Osdk.Instance<Q>).$objectType
+    : (args[0] as Q).apiName;
+  const primaryKey = isInstanceSignature
+    ? (args[0] as Osdk.Instance<Q>).$primaryKey
+    : (args[1] as PrimaryKeyType<Q>);
 
   const { subscribe, getSnapShot } = React.useMemo(
-    () =>
-      makeExternalStore<ObserveObjectArgs<Q>>(
+    () => {
+      if (!enabled) {
+        return makeExternalStore<ObserveObjectArgs<Q>>(
+          () => ({ unsubscribe: () => {} }),
+          `object ${objectType} ${primaryKey} [DISABLED]`,
+        );
+      }
+      return makeExternalStore<ObserveObjectArgs<Q>>(
         (observer) =>
           observableClient.observeObject(
             objectType,
@@ -75,8 +101,9 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
             observer,
           ),
         `object ${objectType} ${primaryKey}`,
-      ),
-    [observableClient, objectType, primaryKey, mode],
+      );
+    },
+    [enabled, observableClient, objectType, primaryKey, mode],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
