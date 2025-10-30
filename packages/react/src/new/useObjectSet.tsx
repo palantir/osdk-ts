@@ -85,6 +85,15 @@ export interface UseObjectSetOptions<
   dedupeIntervalMs?: number;
 
   /**
+   * Automatically fetch additional pages on initial load.
+   *
+   * - `true`: Fetch all available pages automatically
+   * - `number`: Fetch pages until at least this many items are loaded
+   * - `undefined` (default): Only fetch the first page, user must call fetchMore()
+   */
+  autoFetchMore?: boolean | number;
+
+  /**
    * Enable or disable the query.
    *
    * When `false`, the query will not automatically execute. It will still
@@ -204,6 +213,7 @@ export function useObjectSet<
               pageSize: otherOptions.pageSize,
               orderBy: otherOptions.orderBy,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
+              autoFetchMore: otherOptions.autoFetchMore,
             },
             observer,
           );
