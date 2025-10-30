@@ -21,6 +21,7 @@ import type {
   OntologyIrAllowedParameterValues,
   OntologyIrObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
+  OntologyIrOneToManyLinkDefinition,
   OntologyIrParameter,
   OntologyIrSection,
   OntologyIrValueTypeBlockData,
@@ -46,6 +47,9 @@ import type { OntologyEntityType } from "./common/OntologyEntityTypeMapping.js";
 // Added
 import { TYPESCRIPT_OSDK_SNIPPETS } from "@osdk/typescript-sdk-docs";
 import Mustache from "mustache";
+import type { InterfaceType } from "./interface/InterfaceType.js";
+import type { OneToManyLinkTypeDefinition } from "./links/LinkType.js";
+import type { ObjectType } from "./object/ObjectType.js";
 import { interfaceSnippets, objectSnippets } from "./snippetTypes.js";
 // import { curlYml, javaYml, pythonYml, unityYml } from "@foundry/documentation-snippets" // this package does not exist
 
@@ -89,10 +93,10 @@ export async function defineOntology(
   body: () => void | Promise<void>,
   outputDir: string | undefined,
   dependencyFile?: string,
-  randomnessKey?: string,
   codeSnippetFiles?: boolean,
   snippetPackageName?: string,
   snippetFileOutputDir?: string,
+  randomnessKey?: string,
 ): Promise<OntologyIr> {
   namespace = ns;
   dependencies = {};
@@ -122,7 +126,6 @@ export async function defineOntology(
     );
     throw e;
   }
-
   if (outputDir) {
     writeStaticObjects(outputDir);
   }
@@ -682,12 +685,6 @@ function generateObjectSnippet(objectType: ObjectType, packageName: string) {
   };
   const allSnippets = getSnippets(objectSnippets, objectContext);
   return allSnippets;
-}
-
-function generateSPTSnippet(spt: SharedPropertyType) {
-}
-
-function generateLinkSnippet(link: LinkType) {
 }
 
 function generateActionSnippet(actionType: ActionType, packageName: string) {
