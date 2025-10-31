@@ -52,6 +52,7 @@
     "@osdk/client.unstable": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/typescript-sdk-docs": "^0.2.0",
     "@types/node": "^20.19.13",
     "@types/yargs": "^17.0.33",
     "typescript": "~5.5.4",

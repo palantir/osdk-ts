@@ -37,6 +37,9 @@ export default async function main(
     valueTypesOutput: string;
     outputDir?: string;
     dependencies?: string;
+    codeSnippetFiles?: boolean;
+    codeSnippetPackageName?: string;
+    snippetFileOutputDir?: string;
     randomnessKey?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
@@ -87,6 +90,23 @@ export default async function main(
         type: "string",
         coerce: path.resolve,
       },
+      codeSnippetFiles: {
+        alias: "c",
+        describe: "Enable code snippet files creation",
+        type: "boolean",
+      },
+      codeSnippetPackageName: {
+        alias: "p",
+        describe:
+          "The package name that will be displayed in the code snippets",
+        type: "string",
+      },
+      snippetFileOutputDir: { // what should the default be?
+        alias: "f",
+        describe: "Directory for generated code snippet files",
+        type: "string",
+        coerce: path.resolve,
+      },
       randomnessKey: {
         describe: "Value used to assure uniqueness of entities",
         type: "string",
@@ -119,6 +139,9 @@ export default async function main(
     apiNamespace,
     commandLineOpts.outputDir,
     commandLineOpts.dependencies,
+    commandLineOpts.codeSnippetFiles,
+    commandLineOpts.codeSnippetPackageName,
+    commandLineOpts.snippetFileOutputDir,
     commandLineOpts.randomnessKey,
   );
 
@@ -152,6 +175,9 @@ async function loadOntology(
   apiNamespace: string,
   outputDir: string | undefined,
   dependencyFile: string | undefined,
+  codeSnippetFiles: boolean | undefined,
+  snippetPackageName: string | undefined,
+  snippetFileOutputDir: string | undefined,
   randomnessKey?: string,
 ) {
   const q = await defineOntology(
@@ -159,6 +185,9 @@ async function loadOntology(
     async () => await import(input),
     outputDir,
     dependencyFile,
+    codeSnippetFiles,
+    snippetPackageName,
+    snippetFileOutputDir,
     randomnessKey,
   );
   return q;
