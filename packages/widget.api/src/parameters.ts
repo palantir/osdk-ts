@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeDefinition } from "@osdk/api";
 import type { AsyncValue } from "./utils/asyncValue.js";
 
-export type ObjectType = {
-  type: "object";
-  apiName: string;
+export interface ObjectType extends ObjectTypeDefinition {
   internalDoNotUseMetadata?: {
     rid: string;
   };
-};
+}
 
 /**
  * Map of the name of the type to the corresponding JavaScript type.
