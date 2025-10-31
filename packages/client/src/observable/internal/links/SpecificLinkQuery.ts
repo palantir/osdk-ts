@@ -39,7 +39,6 @@ import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import { tombstone } from "../tombstone.js";
-import type { ObjectUpdate } from "../types/ObjectUpdate.js";
 import type { SpecificLinkCacheKey } from "./SpecificLinkCacheKey.js";
 
 /**
@@ -233,7 +232,6 @@ export class SpecificLinkQuery extends BaseListQuery<
       );
     }
 
-    // Create the same pivot query structure used in fetchPageData
     void (async () => {
       try {
         const client = this.store.client;
@@ -250,29 +248,13 @@ export class SpecificLinkQuery extends BaseListQuery<
         } as WhereClause<typeof sourceObjectDef>);
 
         const linkQuery = sourceQuery.pivotTo(this.#linkName);
-
-        // Add where clause if present
         const finalQuery =
           this.#whereClause && Object.keys(this.#whereClause).length > 0
             ? linkQuery.where(this.#whereClause)
             : linkQuery;
 
-        const websocketSubscription = finalQuery.subscribe({
-          onChange: this.onOswChange.bind(this),
-          onError: this.onOswError.bind(this),
-          onOutOfDate: this.onOswOutOfDate.bind(this),
-          onSuccessfulSubscription: this.onOswSuccessfulSubscription.bind(this),
-        });
-
-        sub.add(() => {
-          if (process.env.NODE_ENV !== "production") {
-            logger?.child({ methodName: "observeLinks" }).info(
-              "Unsubscribing from websocket",
-            );
-          }
-
-          websocketSubscription.unsubscribe();
-        });
+        // Use base class method for subscription
+        this.createWebsocketSubscription(finalQuery, sub, "observeLinks");
       } catch (error) {
         if (this.logger) {
           this.logger.child({ methodName: "registerStreamUpdates" })
@@ -286,80 +268,8 @@ export class SpecificLinkQuery extends BaseListQuery<
     })();
   }
 
-  protected onOswSuccessfulSubscription(): void {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child(
-        { methodName: "onSuccessfulSubscription" },
-      ).debug("");
-    }
-  }
-
-  protected onOswOutOfDate(): void {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child(
-        { methodName: "onOutOfDate" },
-      ).debug("");
-    }
-  }
-
-  protected onOswError(errors: {
-    subscriptionClosed: boolean;
-    error: unknown;
-  }): void {
-    if (this.logger) {
-      this.logger?.child({ methodName: "onError" }).error(
-        "subscription errors",
-        errors,
-      );
-    }
-  }
-
-  protected onOswChange(
-    { object, state }: ObjectUpdate<ObjectTypeDefinition, string>,
-  ): void {
-    const logger = process.env.NODE_ENV !== "production"
-      ? this.logger?.child({ methodName: "registerStreamUpdates" })
-      : this.logger;
-
-    if (process.env.NODE_ENV !== "production") {
-      logger?.child({ methodName: "onChange" }).debug(
-        `Got an update of type: ${state}`,
-        object,
-      );
-    }
-
-    if (state === "ADDED_OR_UPDATED") {
-      this.store.batch({}, (batch) => {
-        this.store.objects.storeOsdkInstances(
-          [object as Osdk.Instance<ObjectTypeDefinition>],
-          batch,
-        );
-      });
-    } else if (state === "REMOVED") {
-      this.onOswRemoved(object);
-    }
-  }
-
-  protected onOswRemoved(
-    object: Osdk.Instance<ObjectTypeDefinition, never, string, {}>,
-  ): void {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "onRemoved" }).debug(
-        "Removing object",
-        object,
-      );
-    }
-
-    // Mark object as removed by storing with tombstone
-    this.store.batch({}, (batch) => {
-      const objectCacheKey = this.store.cacheKeys.get(
-        "object",
-        object.$apiName,
-        object.$primaryKey,
-      );
-      batch.delete(objectCacheKey, "loaded");
-    });
-  }
+  // All onOsw* handlers (onOswSuccessfulSubscription, onOswOutOfDate, onOswError,
+  // onOswChange, onOswRemoved) are inherited from BaseListQuery
 
   invalidateObjectType = (
     objectType: string,
