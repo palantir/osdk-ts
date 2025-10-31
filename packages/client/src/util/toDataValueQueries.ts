@@ -46,7 +46,7 @@ export async function toDataValueQueries(
     return value;
   }
 
-  if (Array.isArray(value) && desiredType.multiplicity) {
+  if (Array.isArray(value) && desiredType.type === "array") {
     const values = Array.from(value);
     if (
       values.some((dataValue) =>
@@ -62,7 +62,7 @@ export async function toDataValueQueries(
     const promiseArray = Array.from(
       value,
       async (innerValue) =>
-        await toDataValueQueries(innerValue, client, desiredType),
+        await toDataValueQueries(innerValue, client, desiredType.array),
     );
     return Promise.all(promiseArray);
   }

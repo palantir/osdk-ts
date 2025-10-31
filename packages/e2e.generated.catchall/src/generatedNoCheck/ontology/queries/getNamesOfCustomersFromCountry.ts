@@ -36,9 +36,12 @@ export interface getNamesOfCustomersFromCountry
       };
     };
     output: {
-      multiplicity: true;
+      array: {
+        type: 'string';
+        nullable: false;
+      };
       nullable: false;
-      type: 'string';
+      type: 'array';
     };
     signature: getNamesOfCustomersFromCountry.Signature;
   };
