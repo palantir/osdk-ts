@@ -54,6 +54,15 @@ export interface UseLinksOptions<
   mode?: "force" | "offline";
 
   /**
+   * Enable streaming updates via websocket subscription.
+   * When true, the links will automatically update when linked objects are
+   * added, updated, or removed.
+   *
+   * @default false
+   */
+  streamUpdates?: boolean;
+
+  /**
    * Enable or disable the query.
    *
    * When `false`, the query will not automatically execute. It will still
@@ -118,7 +127,7 @@ export function useLinks<
 ): UseLinksResult<LinkedType<T, L>> {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const { enabled = true, ...otherOptions } = options;
+  const { enabled = true, streamUpdates, ...otherOptions } = options;
 
   // Convert single object to array for consistent handling
   const objectsArray: ReadonlyArray<Osdk.Instance<T>> = React.useMemo(() => {
@@ -152,6 +161,7 @@ export function useLinks<
               pageSize: otherOptions.pageSize,
               orderBy: otherOptions.orderBy,
               mode: otherOptions.mode,
+              streamUpdates,
             },
             observer,
           ),
@@ -171,6 +181,7 @@ export function useLinks<
       otherOptions.pageSize,
       otherOptions.orderBy,
       otherOptions.mode,
+      streamUpdates,
     ],
   );
 

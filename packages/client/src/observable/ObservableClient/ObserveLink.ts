@@ -45,6 +45,7 @@ export namespace ObserveLinks {
     orderBy?: OrderBy<CompileTimeMetadata<Q>["links"][L]["targetType"]>;
     invalidationMode?: InvalidationMode;
     expectedLength?: number;
+    streamUpdates?: boolean;
   }
 
   export interface CallbackArgs<
