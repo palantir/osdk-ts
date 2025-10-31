@@ -18,7 +18,6 @@ import type { ObjectTypeDefinition, Osdk, PropertyKeys } from "@osdk/api";
 
 /**
  * Represents an update to an object in a websocket subscription.
- * Copied from @osdk/api ObjectSetSubscription types.
  */
 export type ObjectUpdate<
   O extends ObjectTypeDefinition,

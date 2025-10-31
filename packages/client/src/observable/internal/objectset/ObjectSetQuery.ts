@@ -201,9 +201,6 @@ export class ObjectSetQuery extends BaseListQuery<
     );
   }
 
-  // All onOsw* handlers (onOswSuccessfulSubscription, onOswOutOfDate, onOswError,
-  // onOswChange, onOswRemoved) are inherited from BaseListQuery
-
   invalidateObjectType = async (
     objectType: string,
     changes: Changes | undefined,

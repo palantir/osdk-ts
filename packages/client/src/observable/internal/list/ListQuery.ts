@@ -357,12 +357,8 @@ export abstract class ListQuery extends BaseListQuery<
   ): ExtractRelevantObjectsResult;
 
   registerStreamUpdates(sub: Subscription): void {
-    // FIXME: We should only do this once. If we already have one we should probably
-    // just reuse it.
     this.createWebsocketSubscription(this.#objectSet, sub, "observeList");
   }
-
-  // onOswSuccessfulSubscription, onOswOutOfDate, onOswError are inherited from BaseListQuery
 
   protected onOswChange(
     { object: objOrIface, state }: ObjectUpdate<ObjectTypeDefinition, string>,

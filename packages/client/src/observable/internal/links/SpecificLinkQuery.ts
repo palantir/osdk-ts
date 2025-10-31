@@ -253,7 +253,6 @@ export class SpecificLinkQuery extends BaseListQuery<
             ? linkQuery.where(this.#whereClause)
             : linkQuery;
 
-        // Use base class method for subscription
         this.createWebsocketSubscription(finalQuery, sub, "observeLinks");
       } catch (error) {
         if (this.logger) {
@@ -267,9 +266,6 @@ export class SpecificLinkQuery extends BaseListQuery<
       }
     })();
   }
-
-  // All onOsw* handlers (onOswSuccessfulSubscription, onOswOutOfDate, onOswError,
-  // onOswChange, onOswRemoved) are inherited from BaseListQuery
 
   invalidateObjectType = (
     objectType: string,
