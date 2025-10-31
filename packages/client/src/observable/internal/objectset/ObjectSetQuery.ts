@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, Osdk, PageResult } from "@osdk/api";
-import type { Observable } from "rxjs";
+import type {
+  ObjectSet,
+  ObjectTypeDefinition,
+  Osdk,
+  PageResult,
+} from "@osdk/api";
+import type { Observable, Subscription } from "rxjs";
 import { additionalContext } from "../../../Client.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
@@ -28,6 +33,7 @@ import type { Entry } from "../Layer.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
+import type { ObjectUpdate } from "../types/ObjectUpdate.js";
 import type {
   ObjectSetCacheKey,
   ObjectSetOperations,
@@ -191,6 +197,121 @@ export class ObjectSetQuery extends BaseListQuery<
     this.store.subjects.get(this.cacheKey).error(error);
 
     return this.writeToStore({ data: [] }, "error", batch);
+  }
+
+  registerStreamUpdates(sub: Subscription): void {
+    const logger = process.env.NODE_ENV !== "production"
+      ? this.logger?.child({ methodName: "registerStreamUpdates" })
+      : this.logger;
+
+    if (process.env.NODE_ENV !== "production") {
+      logger?.child({ methodName: "observeObjectSet" }).info(
+        "Subscribing from websocket",
+      );
+    }
+
+    try {
+      const websocketSubscription = this.#composedObjectSet.subscribe({
+        onChange: this.onOswChange.bind(this),
+        onError: this.onOswError.bind(this),
+        onOutOfDate: this.onOswOutOfDate.bind(this),
+        onSuccessfulSubscription: this.onOswSuccessfulSubscription.bind(this),
+      });
+
+      sub.add(() => {
+        if (process.env.NODE_ENV !== "production") {
+          logger?.child({ methodName: "observeObjectSet" }).info(
+            "Unsubscribing from websocket",
+          );
+        }
+
+        websocketSubscription.unsubscribe();
+      });
+    } catch (error) {
+      if (this.logger) {
+        this.logger.child({ methodName: "registerStreamUpdates" })
+          .error("Failed to register stream updates", error);
+      }
+      this.onOswError({
+        subscriptionClosed: true,
+        error,
+      });
+    }
+  }
+
+  protected onOswSuccessfulSubscription(): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child(
+        { methodName: "onSuccessfulSubscription" },
+      ).debug("");
+    }
+  }
+
+  protected onOswOutOfDate(): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child(
+        { methodName: "onOutOfDate" },
+      ).debug("");
+    }
+  }
+
+  protected onOswError(errors: {
+    subscriptionClosed: boolean;
+    error: unknown;
+  }): void {
+    if (this.logger) {
+      this.logger?.child({ methodName: "onError" }).error(
+        "subscription errors",
+        errors,
+      );
+    }
+  }
+
+  protected onOswChange(
+    { object, state }: ObjectUpdate<ObjectTypeDefinition, string>,
+  ): void {
+    const logger = process.env.NODE_ENV !== "production"
+      ? this.logger?.child({ methodName: "registerStreamUpdates" })
+      : this.logger;
+
+    if (process.env.NODE_ENV !== "production") {
+      logger?.child({ methodName: "onChange" }).debug(
+        `Got an update of type: ${state}`,
+        object,
+      );
+    }
+
+    if (state === "ADDED_OR_UPDATED") {
+      this.store.batch({}, (batch) => {
+        this.store.objects.storeOsdkInstances(
+          [object as Osdk.Instance<ObjectTypeDefinition>],
+          batch,
+        );
+      });
+    } else if (state === "REMOVED") {
+      this.onOswRemoved(object);
+    }
+  }
+
+  protected onOswRemoved(
+    object: Osdk.Instance<ObjectTypeDefinition, never, string, {}>,
+  ): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "onRemoved" }).debug(
+        "Removing object",
+        object,
+      );
+    }
+
+    // Mark object as removed by storing with tombstone
+    this.store.batch({}, (batch) => {
+      const objectCacheKey = this.store.cacheKeys.get(
+        "object",
+        object.$apiName,
+        object.$primaryKey,
+      );
+      batch.delete(objectCacheKey, "loaded");
+    });
   }
 
   invalidateObjectType = async (

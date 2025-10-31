@@ -40,6 +40,7 @@ export interface ObserveObjectSetOptions<
   pivotTo?: LinkNames<Q>;
   pageSize?: number;
   orderBy?: { [K in PropertyKeys<Q>]?: "asc" | "desc" };
+  streamUpdates?: boolean;
 }
 
 export interface ObjectSetQueryOptions
