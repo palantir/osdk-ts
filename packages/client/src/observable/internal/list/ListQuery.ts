@@ -41,6 +41,7 @@ import type { Entry } from "../Layer.js";
 import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
+import { RefCounts } from "../RefCounts.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
@@ -75,6 +76,16 @@ export abstract class ListQuery extends BaseListQuery<
   // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
+  #websocketSubscription: { unsubscribe: () => void } | null = null;
+  #subscriptionRefCounts = new RefCounts<"websocket">(
+    process.env.NODE_ENV !== "production" ? 2000 : 5000,
+    () => {
+      if (this.#websocketSubscription) {
+        this.#websocketSubscription.unsubscribe();
+        this.#websocketSubscription = null;
+      }
+    },
+  );
 
   /**
    * Register changes to the cache specific to ListQuery
@@ -368,15 +379,17 @@ export abstract class ListQuery extends BaseListQuery<
       );
     }
 
-    // FIXME: We should only do this once. If we already have one we should probably
-    // just reuse it.
+    if (!this.#websocketSubscription) {
+      this.#websocketSubscription = this.#objectSet.subscribe({
+        onChange: this.onOswChange.bind(this),
+        onError: this.onOswError.bind(this),
+        onOutOfDate: this.onOswOutOfDate.bind(this),
+        onSuccessfulSubscription: this.onOswSuccessfulSubscription.bind(this),
+      });
+      this.#subscriptionRefCounts.register("websocket");
+    }
 
-    const websocketSubscription = this.#objectSet.subscribe({
-      onChange: this.onOswChange.bind(this),
-      onError: this.onOswError.bind(this),
-      onOutOfDate: this.onOswOutOfDate.bind(this),
-      onSuccessfulSubscription: this.onOswSuccessfulSubscription.bind(this),
-    });
+    this.#subscriptionRefCounts.retain("websocket");
 
     sub.add(() => {
       if (process.env.NODE_ENV !== "production") {
@@ -385,7 +398,8 @@ export abstract class ListQuery extends BaseListQuery<
         );
       }
 
-      websocketSubscription.unsubscribe();
+      this.#subscriptionRefCounts.release("websocket");
+      this.#subscriptionRefCounts.gc();
     });
   }
 
