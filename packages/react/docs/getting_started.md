@@ -678,7 +678,9 @@ function TeamMembers({ employees }: { employees: Employee.OsdkInstance[] }) {
 Enable real-time updates for linked objects with `streamUpdates`:
 
 ```tsx
-function LiveEmployeeReports({ employee }: { employee: Employee.OsdkInstance }) {
+function LiveEmployeeReports(
+  { employee }: { employee: Employee.OsdkInstance },
+) {
   const { links, isLoading } = useLinks(
     employee,
     "reports",
