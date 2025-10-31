@@ -21,16 +21,15 @@ import type {
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
+import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups.js";
-import type {
-  OrderedAggregationClause,
-  UnorderedAggregationClause,
-} from "./AggregationsClause.js";
+import type { AggregationClause } from "./AggregationsClause.js";
 
 export type AggregationResultsWithGroups<
   Q extends ObjectOrInterfaceDefinition,
-  A extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
-  G extends GroupByClause<Q> | undefined,
+  A extends AggregationClause<Q, RDPs>,
+  G extends GroupByClause<Q, RDPs> | undefined,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > = (
   & {
     $group: {
@@ -44,7 +43,7 @@ export type AggregationResultsWithGroups<
         >;
     };
   }
-  & AggregationResultsWithoutGroups<Q, A>
+  & AggregationResultsWithoutGroups<Q, A, RDPs>
 )[];
 
 type MaybeNullable<GROUP, VALUE> = GROUP extends {
