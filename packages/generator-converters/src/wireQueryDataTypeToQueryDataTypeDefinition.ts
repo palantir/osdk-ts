@@ -74,8 +74,9 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
       };
     case "array":
       return {
-        ...wireQueryDataTypeToQueryDataTypeDefinition(input.subType),
-        multiplicity: true,
+        array: wireQueryDataTypeToQueryDataTypeDefinition(input.subType),
+        type: "array",
+        nullable: false,
       };
 
     case "set":

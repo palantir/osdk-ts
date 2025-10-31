@@ -288,11 +288,16 @@ export function getQueryParamType(
   type: "Param" | "Result",
   isMapKey = false,
 ): string {
-  let inner = `unknown /* ${input.type} */`;
+  let paramType = `unknown /* ${input.type} */`;
 
   switch (input.type) {
+    case "array":
+      paramType = `${type === "Param" ? "Readonly" : ""}Array<${
+        getQueryParamType(enhancedOntology, input.array, type)
+      }>`;
+      break;
     case "date":
-      inner = `Query${type}.PrimitiveType<${JSON.stringify("datetime")}>`;
+      paramType = `Query${type}.PrimitiveType<${JSON.stringify("datetime")}>`;
       break;
 
     case "attachment":
@@ -303,10 +308,10 @@ export function getQueryParamType(
     case "long":
     case "string":
     case "timestamp":
-      inner = `Query${type}.PrimitiveType<${JSON.stringify(input.type)}>`;
+      paramType = `Query${type}.PrimitiveType<${JSON.stringify(input.type)}>`;
       break;
     case "struct":
-      inner = `{
+      paramType = `{
             ${
         stringify(input.struct, {
           "*": (p, formatter, apiName) => {
@@ -323,7 +328,7 @@ export function getQueryParamType(
             }`;
       break;
     case "twoDimensionalAggregation":
-      inner = `Query${type}.TwoDimensionalAggregationType<${
+      paramType = `Query${type}.TwoDimensionalAggregationType<${
         input.twoDimensionalAggregation.keyType === "range"
           ? `Query${type}.RangeKey<"${input.twoDimensionalAggregation.keySubtype}">`
           : `"${input.twoDimensionalAggregation.keyType}"`
@@ -331,7 +336,7 @@ export function getQueryParamType(
       break;
 
     case "threeDimensionalAggregation":
-      inner = `Query${type}.ThreeDimensionalAggregationType<${
+      paramType = `Query${type}.ThreeDimensionalAggregationType<${
         input.threeDimensionalAggregation.keyType === "range"
           ? `Query${type}.RangeKey<"${input.threeDimensionalAggregation.keySubtype}">`
           : `"${input.threeDimensionalAggregation.keyType}"`
@@ -344,60 +349,55 @@ export function getQueryParamType(
       break;
     case "object":
       if (isMapKey) {
-        inner = `ObjectSpecifier<${
+        paramType = `ObjectSpecifier<${
           enhancedOntology.requireObjectType(input.object)
             .getImportedDefinitionIdentifier(true)
         }>`;
         break;
       }
-      inner = `Query${type}.ObjectType<${
+      paramType = `Query${type}.ObjectType<${
         enhancedOntology.requireObjectType(input.object)
           .getImportedDefinitionIdentifier(true)
       }>`;
       break;
     case "interface":
-      inner = `Query${type}.InterfaceType<${
+      paramType = `Query${type}.InterfaceType<${
         enhancedOntology.requireInterfaceType(input.interface)
           .getImportedDefinitionIdentifier(true)
       }>`;
       break;
 
     case "objectSet":
-      inner = `Query${type}.ObjectSetType<${
+      paramType = `Query${type}.ObjectSetType<${
         enhancedOntology.requireObjectType(input.objectSet)
           .getImportedDefinitionIdentifier(true)
       }>`;
       break;
 
     case "interfaceObjectSet":
-      inner = `Query${type}.ObjectSetType<${
+      paramType = `Query${type}.ObjectSetType<${
         enhancedOntology.requireInterfaceType(input.objectSet)
           .getImportedDefinitionIdentifier(true)
       }>`;
       break;
 
     case "set":
-      inner = `${type === "Param" ? "Readonly" : ""}Set<${
+      paramType = `${type === "Param" ? "Readonly" : ""}Set<${
         getQueryParamType(enhancedOntology, input.set, type)
       }>`;
       break;
 
     case "union":
-      inner = input.union.map((u) =>
+      paramType = input.union.map((u) =>
         getQueryParamType(enhancedOntology, u, type)
       ).join(" | ");
       break;
 
     case "map":
-      inner = `Partial<Record<${
+      paramType = `Partial<Record<${
         getQueryParamType(enhancedOntology, input.keyType, type, true)
       }, ${getQueryParamType(enhancedOntology, input.valueType, type)}>>`;
   }
 
-  if (input.multiplicity && type === "Param") {
-    return `ReadonlyArray<${inner}>`;
-  } else if (input.multiplicity) {
-    return `Array<${inner}>`;
-  }
-  return inner;
+  return paramType;
 }
