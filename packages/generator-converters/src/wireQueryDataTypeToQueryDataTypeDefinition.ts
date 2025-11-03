@@ -147,7 +147,7 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
         );
       }
 
-      if (keyType.multiplicity === true) {
+      if (keyType.type === "array") {
         throw new Error(
           "Map types cannot have keys as arrays",
         );

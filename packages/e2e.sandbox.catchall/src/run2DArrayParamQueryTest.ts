@@ -31,4 +31,4 @@ console.log(
   await client(getFirstSecondElementOf2DArray).executeFunction({
     "array": [[0, 1], [2, 3]],
   }),
-);
+); // should be 1
