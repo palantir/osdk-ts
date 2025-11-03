@@ -126,8 +126,8 @@ async function remapQueryResponse<
   }
 
   if (
-    responseDataType.multiplicity != null
-    && responseDataType.multiplicity
+    responseDataType.type === "array" || (responseDataType.multiplicity != null
+      && responseDataType.multiplicity)
   ) {
     const withoutMultiplicity = { ...responseDataType, multiplicity: false };
     for (let i = 0; i < responseValue.length; i++) {
