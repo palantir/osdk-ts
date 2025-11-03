@@ -40,6 +40,7 @@ export interface getNamesOfCustomersFromCountry
         type: 'string';
         nullable: false;
       };
+      multiplicity: true;
       nullable: false;
       type: 'array';
     };

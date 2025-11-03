@@ -123,6 +123,7 @@ export interface ArrayQueryDataType
   extends BaseQueryDataTypeDefinition<"array">
 {
   array: QueryDataTypeDefinition;
+  multiplicity: true;
 }
 export interface UnionQueryDataType
   extends BaseQueryDataTypeDefinition<"union">

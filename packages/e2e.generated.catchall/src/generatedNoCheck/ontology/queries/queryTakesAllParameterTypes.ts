@@ -150,6 +150,7 @@ export interface queryTakesAllParameterTypes
           nullable: false;
         };
         description: 'an array of strings';
+        multiplicity: true;
         nullable: false;
         type: 'array';
       };

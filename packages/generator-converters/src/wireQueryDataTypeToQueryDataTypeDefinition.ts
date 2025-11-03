@@ -76,7 +76,8 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
       return {
         array: wireQueryDataTypeToQueryDataTypeDefinition(input.subType),
         type: "array",
-        nullable: false,
+        nullable: isNullableQueryDataType(input.subType),
+        multiplicity: true,
       };
 
     case "set":
