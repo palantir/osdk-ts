@@ -129,6 +129,7 @@ async function remapQueryResponse<
     responseDataType.type === "array" || (responseDataType.multiplicity != null
       && responseDataType.multiplicity)
   ) {
+    // TODO(bryantp) fix logic to not use multiplicity and unwrap inner type
     const withoutMultiplicity = { ...responseDataType, multiplicity: false };
     for (let i = 0; i < responseValue.length; i++) {
       responseValue[i] = await remapQueryResponse(
