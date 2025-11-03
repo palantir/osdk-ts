@@ -1,5 +1,12 @@
 # @osdk/widget.client
 
+## 3.2.1
+
+### Patch Changes
+
+- Updated dependencies [77475e6]
+  - @osdk/widget.api@3.2.1
+
 ## 3.2.0
 
 ### Patch Changes
