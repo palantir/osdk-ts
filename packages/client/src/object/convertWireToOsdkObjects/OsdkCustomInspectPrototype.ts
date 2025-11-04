@@ -70,7 +70,7 @@ function customInspect(
     ])
   ) {
     if (typeof k === "symbol") continue;
-     
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-conversion
     ret += `  ${options.stylize(k.toString(), "undefined")}: ${
       localInspect(this[k as any], newOptions)
     }\n`;
