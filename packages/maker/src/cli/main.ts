@@ -37,9 +37,9 @@ export default async function main(
     valueTypesOutput: string;
     outputDir?: string;
     dependencies?: string;
-    codeSnippetFiles?: boolean;
+    generateCodeSnippets?: boolean;
     codeSnippetPackageName?: string;
-    snippetFileOutputDir?: string;
+    codeSnippetDir?: string;
     randomnessKey?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
@@ -90,21 +90,20 @@ export default async function main(
         type: "string",
         coerce: path.resolve,
       },
-      codeSnippetFiles: {
-        alias: "c",
+      generateCodeSnippets: {
         describe: "Enable code snippet files creation",
         type: "boolean",
       },
       codeSnippetPackageName: {
-        alias: "p",
         describe:
           "The package name that will be displayed in the code snippets",
+        default: "",
         type: "string",
       },
-      snippetFileOutputDir: { // what should the default be?
-        alias: "f",
+      codeSnippetDir: {
         describe: "Directory for generated code snippet files",
         type: "string",
+        default: "./",
         coerce: path.resolve,
       },
       randomnessKey: {
@@ -127,6 +126,16 @@ export default async function main(
   }
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
 
+  if (
+    !commandLineOpts.generateCodeSnippets
+    && (commandLineOpts.codeSnippetPackageName !== ""
+      || commandLineOpts.codeSnippetDir !== "./")
+  ) {
+    consola.info(
+      "Package name and/or directory supplied for code snippets, but code snippet generation is false.",
+    );
+  }
+
   if (commandLineOpts.randomnessKey !== undefined) {
     invariant(
       uuidRegex.test(commandLineOpts.randomnessKey),
@@ -139,9 +148,9 @@ export default async function main(
     apiNamespace,
     commandLineOpts.outputDir,
     commandLineOpts.dependencies,
-    commandLineOpts.codeSnippetFiles,
+    commandLineOpts.generateCodeSnippets,
     commandLineOpts.codeSnippetPackageName,
-    commandLineOpts.snippetFileOutputDir,
+    commandLineOpts.codeSnippetDir,
     commandLineOpts.randomnessKey,
   );
 
@@ -175,9 +184,9 @@ async function loadOntology(
   apiNamespace: string,
   outputDir: string | undefined,
   dependencyFile: string | undefined,
-  codeSnippetFiles: boolean | undefined,
+  generateCodeSnippets: boolean | undefined,
   snippetPackageName: string | undefined,
-  snippetFileOutputDir: string | undefined,
+  codeSnippetDir: string | undefined,
   randomnessKey?: string,
 ) {
   const q = await defineOntology(
@@ -185,9 +194,9 @@ async function loadOntology(
     async () => await import(input),
     outputDir,
     dependencyFile,
-    codeSnippetFiles,
+    generateCodeSnippets,
     snippetPackageName,
-    snippetFileOutputDir,
+    codeSnippetDir,
     randomnessKey,
   );
   return q;
