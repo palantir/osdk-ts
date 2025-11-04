@@ -37,9 +37,9 @@ export default async function main(
     valueTypesOutput: string;
     outputDir?: string;
     dependencies?: string;
-    generateCodeSnippets?: boolean;
-    codeSnippetPackageName?: string;
-    codeSnippetDir?: string;
+    generateCodeSnippets: boolean;
+    codeSnippetPackageName: string;
+    codeSnippetDir: string;
     randomnessKey?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
@@ -93,6 +93,7 @@ export default async function main(
       generateCodeSnippets: {
         describe: "Enable code snippet files creation",
         type: "boolean",
+        default: false,
       },
       codeSnippetPackageName: {
         describe:
@@ -129,7 +130,7 @@ export default async function main(
   if (
     !commandLineOpts.generateCodeSnippets
     && (commandLineOpts.codeSnippetPackageName !== ""
-      || commandLineOpts.codeSnippetDir !== "./")
+      || commandLineOpts.codeSnippetDir !== path.resolve("./"))
   ) {
     consola.info(
       "Package name and/or directory supplied for code snippets, but code snippet generation is false.",
@@ -184,9 +185,9 @@ async function loadOntology(
   apiNamespace: string,
   outputDir: string | undefined,
   dependencyFile: string | undefined,
-  generateCodeSnippets: boolean | undefined,
-  snippetPackageName: string | undefined,
-  codeSnippetDir: string | undefined,
+  generateCodeSnippets: boolean,
+  snippetPackageName: string,
+  codeSnippetDir: string,
   randomnessKey?: string,
 ) {
   const q = await defineOntology(
