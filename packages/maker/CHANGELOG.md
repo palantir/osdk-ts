@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.14.0-beta.8
+
+### Minor Changes
+
+- 296b34d: Add support for interface deletes
+
 ## 0.14.0-beta.7
 
 ### Minor Changes

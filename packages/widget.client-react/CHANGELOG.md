@@ -1,5 +1,15 @@
 # @osdk/widget.client-react
 
+## 3.3.0-beta.2
+
+### Minor Changes
+
+- 4d37e98: Improved support for object set parameters in widget.client-react
+
+### Patch Changes
+
+- @osdk/widget.client@3.3.0-beta.2
+
 ## 3.2.0-beta.5
 
 ### Patch Changes

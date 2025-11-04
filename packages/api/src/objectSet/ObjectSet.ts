@@ -580,11 +580,9 @@ type ExtractImplementedInterfaces<T extends ObjectTypeDefinition> =
 
 type ExtractImplementingTypes<T extends InterfaceDefinition> =
   CompileTimeMetadata<T> extends
-    { implementedBy: ReadonlyArray<infer API_NAME> }
-    ? API_NAME extends string
-      ? (ObjectTypeDefinition & { apiName: API_NAME }) | InterfaceDefinition
-    : never
-    : never;
+    { implementedBy: ReadonlyArray<infer API_NAME extends string> }
+    ? (ObjectTypeDefinition & { apiName: API_NAME }) | InterfaceDefinition
+    : InterfaceDefinition;
 
 interface ObjectSetCleanedTypes<
   Q extends ObjectOrInterfaceDefinition,

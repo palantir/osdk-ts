@@ -1,6 +1,6 @@
 {
   "name": "@osdk/widget.api",
-  "version": "3.3.0-beta.1",
+  "version": "3.3.0-beta.2",
   "description": "API contract between Foundry UIs that can embed custom widgets and the custom widgets themselves",
   "access": "public",
   "license": "Apache-2.0",
@@ -41,8 +41,10 @@
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
+  "dependencies": {
+    "@osdk/api": "workspace:*"
+  },
   "devDependencies": {
-    "@osdk/api": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "ts-expect": "^1.3.0",
