@@ -125,11 +125,8 @@ async function remapQueryResponse<
     }
   }
 
-  if (
-    responseDataType.type === "array" || (responseDataType.multiplicity != null
-      && responseDataType.multiplicity)
-  ) {
-    // TODO(bryantp) fix logic to not use multiplicity and unwrap inner type
+  // TODO(bryantp) fix logic to not use multiplicity and unwrap inner type
+  if (responseDataType.multiplicity != null && responseDataType.multiplicity) {
     const withoutMultiplicity = { ...responseDataType, multiplicity: false };
     for (let i = 0; i < responseValue.length; i++) {
       responseValue[i] = await remapQueryResponse(
