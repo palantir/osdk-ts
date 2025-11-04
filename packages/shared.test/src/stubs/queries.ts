@@ -36,6 +36,7 @@ import {
   queryTypeReturnsDate,
   queryTypeReturnsMap,
   queryTypeReturnsObject,
+  queryTypeReturnsObjectSetRid,
   queryTypeReturnsStruct,
   queryTypeReturnsTimestamp,
   queryTypeThreeDimensionalAggregation,
@@ -182,6 +183,10 @@ export const queryTypeAcceptsObjectSetResponse: ExecuteQueryResponse = {
   value: {
     objectSet: { type: "base", objectType: "Employee" },
   },
+};
+
+export const queryTypeReturnsObjectSetRidResponse: ExecuteQueryResponse = {
+  value: "ri.objectset.main.objectset.mock-employee-set-rid",
 };
 
 export const queryTypeThreeDimensionalAggregationResponse:
@@ -404,6 +409,11 @@ const queryRequestHandlers: {
         queryTypeAcceptsObjectSetResponse,
     },
   },
+  [queryTypeReturnsObjectSetRid.apiName]: {
+    [queryTypeReturnsObjectSetRid.version]: {
+      [emptyBody]: queryTypeReturnsObjectSetRidResponse,
+    },
+  },
   [queryTypeAcceptsTwoDimensionalAggregation.apiName]: {
     [queryTypeAcceptsTwoDimensionalAggregation.version]: {
       [JSON.stringify(queryTypeAcceptsTwoDimensionalAggregationRequest)]:
@@ -453,6 +463,7 @@ export function registerLazyQueries(fauxOntology: FauxOntology): void {
     queryTypeThreeDimensionalAggregation,
     queryTypeAcceptsObjects,
     queryTypeAcceptsObjectSets,
+    queryTypeReturnsObjectSetRid,
     queryTypeAcceptsTwoDimensionalAggregation,
     queryTypeAcceptsThreeDimensionalAggregation,
     queryTypeReturnsArray,

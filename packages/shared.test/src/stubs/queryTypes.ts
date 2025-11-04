@@ -479,6 +479,21 @@ export const queryTypeAcceptsObjectSets: QueryTypeV2 = {
   version: "0.11.0",
 };
 
+export const queryTypeReturnsObjectSetRid: QueryTypeV2 = {
+  apiName: "queryReturnsObjectSetRid",
+  description: "query that returns an objectSet as a RID string",
+  displayName: "QueryReturnsObjectSetRid",
+  parameters: {},
+  output: {
+    type: "objectSet",
+    objectApiName: "Employee",
+    objectTypeApiName: "Employee",
+  },
+  rid:
+    "ri.function-registry.main.function.8a44870a-63c7-4d48-8f06-9627c0805969",
+  version: "0.11.0",
+};
+
 export const queryTypeReturnsArray: QueryTypeV2 = {
   "apiName": "queryTypeReturnsArray",
   "output": {
