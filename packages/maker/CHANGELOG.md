@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.14.0-beta.9
+
+### Minor Changes
+
+- 55e104e: Add code snippet generation into osdk/maker
+- 949646b: Fix delete interface bug
+
+### Patch Changes
+
+- Updated dependencies [2556c64]
+  - @osdk/api@2.6.0-beta.5
+
 ## 0.14.0-beta.8
 
 ### Minor Changes

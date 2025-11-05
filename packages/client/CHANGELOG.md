@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.6.0-beta.5
+
+### Minor Changes
+
+- b48526f: fix ListQuery websocket subscription management
+
+### Patch Changes
+
+- Updated dependencies [2556c64]
+  - @osdk/api@2.6.0-beta.5
+  - @osdk/client.unstable@2.6.0-beta.5
+  - @osdk/generator-converters@2.6.0-beta.5
+
 ## 2.6.0-beta.4
 
 ### Minor Changes

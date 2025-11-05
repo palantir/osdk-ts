@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.6.0-beta.5
+
+### Minor Changes
+
+- 2556c64: Fix asType types to accept any interface when casting from an interface with no implementing object types
+
 ## 2.6.0-beta.4
 
 ### Minor Changes
