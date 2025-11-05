@@ -115,9 +115,11 @@ export async function publishDevModeSettings(
     res.statusCode = 500;
     res.end(
       JSON.stringify(
-        error instanceof ResponseError
-          ? { status: "error", error: inspect(error), response: error.response }
-          : { status: "error", error: inspect(error) },
+        {
+          status: "error",
+          error: inspect(error),
+          response: error instanceof ResponseError ? error.response : undefined,
+        },
       ),
     );
   }
