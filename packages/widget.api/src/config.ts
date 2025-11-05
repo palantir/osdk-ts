@@ -47,19 +47,28 @@ export type ManifestParameterDefinition =
   | ArrayParameterDefinition<ParameterValue.PrimitiveType>
   | ManifestObjectSetParameterDefinition<ObjectType>;
 
-export interface EventDefinition<P extends ParameterConfig> {
+export interface EventDefinitionBase<P extends ParameterConfig> {
   displayName: string;
+}
+
+export interface WorkshopEventDefinition<P extends ParameterConfig>
+  extends EventDefinitionBase<P>
+{
   parameterUpdateIds: Array<ParameterId<P>>;
 }
 
+export type EventDefinition<P extends ParameterConfig> =
+  WorkshopEventDefinition<P>;
+
 export type ParameterConfig = Record<string, ParameterDefinition>;
+
+export type WidgetType = "workshop";
 
 export interface WidgetConfig<P extends ParameterConfig> {
   id: string;
   name: string;
   description?: string;
-  // TODO: Add specific config for each type of widget. For now, all the config is generic and can be used by any widget.
-  type: "workshop";
+  type: WidgetType;
   parameters: ParameterConfig;
   events: { [eventId: string]: EventDefinition<NoInfer<P>> };
 }
@@ -134,22 +143,22 @@ export type EventId<C extends WidgetConfig<C["parameters"]>> =
  * Extracts a list of strongly-typed parameter IDs from the given WidgetConfig for a given event ID.
  * If a parameter ID is referenced by an event but does not exist, its type will be never
  */
-export type EventParameterIdList<
+export type EventParameterUpdateIdList<
   C extends WidgetConfig<C["parameters"]>,
   K extends EventId<C>,
-> = C["events"][K]["parameterUpdateIds"] extends
-  Array<ParameterId<C["parameters"]>> ? C["events"][K]["parameterUpdateIds"]
+> = C["events"][K] extends WorkshopEventDefinition<C["parameters"]>
+  ? C["events"][K]["parameterUpdateIds"]
   : never;
 
 /**
  * Extracts a map of event IDs to their raw parameter value types from the given WidgetConfig.
  */
-export type EventParameterValueMap<
+export type EventIdToParameterValueMap<
   C extends WidgetConfig<C["parameters"]>,
   K extends EventId<C>,
 > = NotEmptyObject<
   {
-    [P in EventParameterIdList<C, K>[number]]: ParameterValueMap<C>[P];
+    [P in EventParameterUpdateIdList<C, K>[number]]: ParameterValueMap<C>[P];
   }
 >;
 

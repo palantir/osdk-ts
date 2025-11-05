@@ -16,7 +16,7 @@
 
 import type {
   EventId,
-  EventParameterValueMap,
+  EventIdToParameterValueMap,
   WidgetConfig,
 } from "../config.js";
 import type { HostMessage } from "./hostMessages.js";
@@ -31,7 +31,7 @@ interface WidgetBaseMessage<T extends string, P = unknown> {
 type EmitEventIdMap<C extends WidgetConfig<C["parameters"]>> = {
   [K in EventId<C>]: {
     eventId: K;
-    parameterUpdates: EventParameterValueMap<C, K>;
+    parameterUpdates: EventIdToParameterValueMap<C, K>;
   };
 };
 
@@ -41,8 +41,16 @@ export namespace WidgetMessage {
       apiVersion: HostMessage.Version;
     }
 
+    export interface EventPayloadBase<C extends WidgetConfig<C["parameters"]>> {
+      eventId: EventId<C>;
+    }
+
+    export type WorkshopEventPayload<
+      C extends WidgetConfig<C["parameters"]>,
+    > = EmitEventIdMap<C>[EventId<C>];
+
     export type EmitEvent<C extends WidgetConfig<C["parameters"]>> =
-      EmitEventIdMap<C>[EventId<C>];
+      WorkshopEventPayload<C>;
   }
 
   export type Payload<C extends WidgetConfig<C["parameters"]>> =

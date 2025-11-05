@@ -20,8 +20,8 @@ import {
   type AsyncParameterValueMap,
   defineConfig,
   type EventId,
-  type EventParameterIdList,
-  type EventParameterValueMap,
+  type EventIdToParameterValueMap,
+  type EventParameterUpdateIdList,
   type ParameterId,
   type ParameterValueMap,
 } from "./config.js";
@@ -169,7 +169,7 @@ describe("WidgetConfig", () => {
         },
       });
       expectTypeOf<
-        EventParameterIdList<typeof test, "myEvent">
+        EventParameterUpdateIdList<typeof test, "myEvent">
       >().toMatchTypeOf<["test"]>();
     });
 
@@ -204,7 +204,7 @@ describe("WidgetConfig", () => {
       });
       expectTypeOf<
         // @ts-expect-error
-        EventParameterIdList<typeof test, "myEvent">
+        EventParameterUpdateIdList<typeof test, "myEvent">
       >().toMatchTypeOf<never>();
     });
 
@@ -276,7 +276,7 @@ describe("WidgetConfig", () => {
         },
       });
       expectTypeOf<
-        EventParameterValueMap<typeof test, "myEvent">
+        EventIdToParameterValueMap<typeof test, "myEvent">
       >().toMatchTypeOf<{
         test: boolean[];
         test2: string[];
