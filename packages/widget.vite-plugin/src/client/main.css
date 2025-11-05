@@ -18,3 +18,14 @@ iframe {
     align-items: center;
     gap: 5px;
 }
+
+.response-block {
+    text-align: left;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.bp5-non-ideal-state > * {
+    max-width: min(100%, 800px);
+}

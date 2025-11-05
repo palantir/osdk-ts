@@ -24,6 +24,25 @@ import {
 } from "./codeWorkspacesMode.js";
 import { enableDevMode, setWidgetSetSettings } from "./network.js";
 
+class ResponseError extends Error {
+  #response: string;
+
+  constructor(message: string, response: string) {
+    super(message);
+    this.name = "ResponseError";
+
+    try {
+      this.#response = JSON.stringify(JSON.parse(response), null, 4);
+    } catch {
+      this.#response = response;
+    }
+  }
+
+  get response(): string {
+    return this.#response;
+  }
+}
+
 /**
  * Finish the setup process by setting the widget overrides in Foundry and enabling dev mode.
  */
@@ -58,8 +77,9 @@ export async function publishDevModeSettings(
       );
       const responseContent = await settingsResponse.text();
       server.config.logger.warn(responseContent);
-      throw new Error(
+      throw new ResponseError(
         `Unable to set widget settings in Foundry: ${settingsResponse.statusText}`,
+        responseContent,
       );
     }
 
@@ -73,8 +93,9 @@ export async function publishDevModeSettings(
       );
       const responseContent = await enableResponse.text();
       server.config.logger.warn(responseContent);
-      throw new Error(
+      throw new ResponseError(
         `Unable to enable dev mode in Foundry: ${enableResponse.statusText}`,
+        responseContent,
       );
     }
 
@@ -93,7 +114,11 @@ export async function publishDevModeSettings(
     res.setHeader("Content-Type", "application/json");
     res.statusCode = 500;
     res.end(
-      JSON.stringify({ status: "error", error: inspect(error) }),
+      JSON.stringify(
+        error instanceof ResponseError
+          ? { status: "error", error: inspect(error), response: error.response }
+          : { status: "error", error: inspect(error) },
+      ),
     );
   }
 }
