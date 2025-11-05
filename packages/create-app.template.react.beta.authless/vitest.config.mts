@@ -14,39 +14,14 @@
  * limitations under the License.
  */
 
-export type SdkVersion = "1.x" | "2.x";
+import { configDefaults, defineConfig } from "vitest/config";
 
-export type ModuleImportFiles = Map<
-  string,
-  {
-    type: "base64";
-    body: string;
-  } | {
-    type: "raw";
-    body: string;
-  }
->;
-
-export interface Template {
-  id: string;
-  label: string;
-  envPrefix: string;
-  buildDirectory: string;
-  hidden?: boolean;
-  isBeta?: boolean;
-  files: {
-    [K in SdkVersion]?: () => Promise<
-      ModuleImportFiles
-    >;
-  };
-}
-
-export interface TemplateContext {
-  project: string;
-  foundryUrl: string;
-  osdkPackage: string;
-  clientVersion: string;
-  corsProxy: boolean;
-  scopes: string[] | undefined;
-  isAuthless: boolean;
-}
+export default defineConfig({
+  test: {
+    pool: "forks",
+    exclude: [...configDefaults.exclude, "**/build/**/*"],
+    fakeTimers: {
+      toFake: ["setTimeout", "clearTimeout", "Date"],
+    },
+  },
+});

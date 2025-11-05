@@ -92,6 +92,7 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
         "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
       corsProxy: false,
       scopes: ["api:ontologies-read", "api:ontologies-write"],
+      isAuthless: false,
     });
 
     await mutateFiles(tmpDir, exampleId, template, sdkVersion);

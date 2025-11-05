@@ -29,6 +29,13 @@ export const TEMPLATES = [
     buildDirectory: "./dist",
   },
   {
+    id: "react-authless",
+    label: "React (Authless)",
+    envPrefix: "VITE_",
+    buildDirectory: "./dist",
+    isBeta: true,
+  },
+  {
     id: "expo",
     label: "Expo",
     envPrefix: "EXPO_PUBLIC_",
@@ -77,11 +84,19 @@ fs.writeFileSync(
         `@osdk/create-app.template.${template.id}.v1`,
         `@osdk/create-app.template.${template.id}`,
       ]);
-      const v2Name = findPackageName([
-        `@osdk/create-app.template.${template.id}.v2`,
-        `@osdk/create-app.template.${template.id}.beta`,
-        `@osdk/create-app.template.${template.id}`,
-      ]);
+      // For authless templates, we need special handling since the package name is different
+      let v2Name;
+      if (template.id === "react-authless") {
+        v2Name = findPackageName([
+          `@osdk/create-app.template.react.beta.authless`,
+        ]);
+      } else {
+        v2Name = findPackageName([
+          `@osdk/create-app.template.${template.id}.v2`,
+          `@osdk/create-app.template.${template.id}.beta`,
+          `@osdk/create-app.template.${template.id}`,
+        ]);
+      }
       return dedent`
           // ${template.label}
           {
@@ -90,6 +105,7 @@ fs.writeFileSync(
             envPrefix: "${template.envPrefix}",
             buildDirectory: "${template.buildDirectory}",
             hidden: ${template.hidden || false},
+            ${template.isBeta ? 'isBeta: true,' : ''}
             files: {
               ${v1Name ? `"1.x": getPackageFiles(import("${v1Name}")),` : ""}
               ${v2Name ? `"2.x": getPackageFiles(import("${v2Name}")),` : ""}

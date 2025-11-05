@@ -38,6 +38,7 @@ interface CliArgs {
   project?: string;
   overwrite?: boolean;
   beta?: boolean;
+  authless?: boolean;
   template?: string;
   sdkVersion?: string;
   foundryUrl?: string;
@@ -75,6 +76,11 @@ export async function cli(args: string[] = process.argv): Promise<void> {
             type: "boolean",
             describe:
               "Use templates compatible with the Beta version of the SDK",
+          })
+          .option("authless", {
+            type: "boolean",
+            describe:
+              "Create an authless public application (no authentication required)",
           })
           .option("template", {
             type: "string",
@@ -134,20 +140,21 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   const parsed: CliArgs = base.parseSync();
   const project: string = await promptProject(parsed);
   const overwrite: boolean = await promptOverwrite({ ...parsed, project });
+  const isAuthless: boolean = parsed.authless ?? false;
   const template: Template = await promptTemplate(parsed);
   const sdkVersion: SdkVersion = await promptSdkVersion({
     ...parsed,
     template,
   });
   const foundryUrl: string = await promptFoundryUrl(parsed);
-  const applicationUrl: string | undefined = await promptApplicationUrl(parsed);
+  const applicationUrl: string | undefined = isAuthless ? undefined : await promptApplicationUrl(parsed);
   const application: string = await promptApplicationRid(parsed);
   const ontology: string = await promptOntologyRid(parsed);
-  const clientId: string = await promptClientId(parsed);
+  const clientId: string = isAuthless ? "" : await promptClientId(parsed);
   const osdkPackage: string = await promptOsdkPackage(parsed);
   const osdkRegistryUrl: string = await promptOsdkRegistryUrl(parsed);
   const corsProxy: boolean = await promptCorsProxy(parsed);
-  const scopes: string[] | undefined = await promptScopes(parsed);
+  const scopes: string[] | undefined = isAuthless ? undefined : await promptScopes(parsed);
 
   await run({
     project,
@@ -163,5 +170,6 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     corsProxy,
     scopes,
     ontology,
+    isAuthless,
   });
 }
