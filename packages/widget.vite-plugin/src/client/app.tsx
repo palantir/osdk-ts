@@ -40,7 +40,6 @@ class ResponseError extends Error {
 
   constructor(message: string, response: string) {
     super(message);
-    this.name = "ResponseError";
     this.response = response;
   }
 }
@@ -127,7 +126,6 @@ export const App: React.FC = () => {
         <NonIdealState
           title="Failed to start dev mode"
           icon="error"
-          className=""
           description={
             <>
               {pageState.response != null && (

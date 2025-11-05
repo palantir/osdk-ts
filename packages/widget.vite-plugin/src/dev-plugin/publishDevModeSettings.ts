@@ -25,12 +25,11 @@ import {
 import { enableDevMode, setWidgetSetSettings } from "./network.js";
 
 class ResponseError extends Error {
+  // To avoid inspect() from logging the error response since it's already logged
   #response: string;
 
   constructor(message: string, response: string) {
     super(message);
-    this.name = "ResponseError";
-
     try {
       this.#response = JSON.stringify(JSON.parse(response), null, 4);
     } catch {
