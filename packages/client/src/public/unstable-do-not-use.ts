@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { additionalContext } from "../Client.js";
 export { augment } from "../object/fetchPage.js";
 
 // THIS IS NOT THE FINAL NAME DO NOT SHIP LIKE THIS

@@ -34,6 +34,10 @@ export { createEditBatch } from "./edits/createEditBatch.js";
 export type { EditBatch } from "./edits/EditBatch.js";
 export type { Edits } from "./edits/types.js";
 export { UserFacingError } from "./errors/UserFacingError.js";
+export {
+  getFoundryBaseUrl,
+  getFoundryHostname,
+} from "./utils/getFoundryHostname.js";
 
 export type {
   EmailNotification,
