@@ -2127,11 +2127,11 @@ describe("Action Types", () => {
                       "typeClasses": [],
                     },
                     "entities": {
-                      "affectedInterfaceTypes": [],
-                      "affectedLinkTypes": [],
-                      "affectedObjectTypes": [
+                      "affectedInterfaceTypes": [
                         "com.palantir.exampleInterface",
                       ],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
                       "typeGroups": [],
                     },
                     "formContentOrdering": [],
@@ -2406,11 +2406,11 @@ describe("Action Types", () => {
                       "typeClasses": [],
                     },
                     "entities": {
-                      "affectedInterfaceTypes": [],
-                      "affectedLinkTypes": [],
-                      "affectedObjectTypes": [
+                      "affectedInterfaceTypes": [
                         "com.palantir.exampleInterface",
                       ],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
                       "typeGroups": [],
                     },
                     "formContentOrdering": [],
@@ -2688,11 +2688,11 @@ describe("Action Types", () => {
                       "typeClasses": [],
                     },
                     "entities": {
-                      "affectedInterfaceTypes": [],
-                      "affectedLinkTypes": [],
-                      "affectedObjectTypes": [
+                      "affectedInterfaceTypes": [
                         "com.palantir.exampleInterface",
                       ],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [],
                       "typeGroups": [],
                     },
                     "formContentOrdering": [],
