@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { NonIdealState, Spinner, SpinnerSize } from "@blueprintjs/core";
+import { NonIdealState, Pre, Spinner, SpinnerSize } from "@blueprintjs/core";
 import React, { useEffect } from "react";
 import { EntrypointIframe } from "./entrypointIframe.js";
 
@@ -25,6 +25,7 @@ type PageState =
   | {
     state: "failed";
     error?: string;
+    response?: string;
   }
   | {
     state: "success";
@@ -33,6 +34,15 @@ type PageState =
 
 const POLLING_INTERVAL = 250;
 const REDIRECT_DELAY = 500;
+
+class ResponseError extends Error {
+  public readonly response: string;
+
+  constructor(message: string, response: string) {
+    super(message);
+    this.response = response;
+  }
+}
 
 export const App: React.FC = () => {
   const [entrypointPaths, setEntrypointPaths] = React.useState<string[]>([]);
@@ -54,6 +64,9 @@ export const App: React.FC = () => {
             return;
           }
           if (result.status === "error") {
+            if (result.response != null) {
+              throw new ResponseError(result.error, result.response);
+            }
             throw new Error(result.error);
           }
 
@@ -78,6 +91,9 @@ export const App: React.FC = () => {
           setPageState({
             state: "failed",
             error: error instanceof Error ? error.message : undefined,
+            response: error instanceof ResponseError
+              ? error.response
+              : undefined,
           });
         });
     }, POLLING_INTERVAL);
@@ -110,7 +126,14 @@ export const App: React.FC = () => {
         <NonIdealState
           title="Failed to start dev mode"
           icon="error"
-          description={pageState.error}
+          description={
+            <>
+              {pageState.response != null && (
+                <Pre className="response-block">{pageState.response}</Pre>
+              )}
+              <Pre className="response-block">{pageState.error}</Pre>
+            </>
+          }
         />
       )}
       {/* To load the entrypoint info, we have to actually load it in the browser to get vite to follow the module graph. Since we know these files will fail, we just load them in iframes set to display: none to trigger the load hook in vite */}
@@ -133,6 +156,7 @@ function finish(): Promise<
   | {
     status: "error";
     error: string;
+    response?: string;
   }
   | {
     status: "pending";
