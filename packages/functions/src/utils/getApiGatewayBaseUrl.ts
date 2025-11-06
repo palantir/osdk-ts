@@ -42,16 +42,13 @@ function extractUris(config: ServiceConfig): string[] {
 }
 
 /**
- * Retrieves the API Gateway base URL from the Foundry service discovery file.
+ * Retrieves the API Gateway base URL from the Function's environment.
  *
- * This function reads the FOUNDRY_SERVICE_DISCOVERY_V2 environment variable to locate
- * the service discovery YAML file, parses it, and extracts the API_GATEWAY base URL.
+ * This function is intended to be used only from within a function. Usage of this utility elsewhere may result
+ * in errors since the environment may not be properly configured.
  *
  * @returns The API Gateway base URL (e.g., "https://example.palantirfoundry.com")
- * @throws Error if the FOUNDRY_SERVICE_DISCOVERY_V2 environment variable is not set
- * @throws Error if the service discovery file cannot be read or parsed
- * @throws Error if the API_GATEWAY service is not configured
- * @throws Error if no URIs are found for the API_GATEWAY service
+ * @throws Error if the API Gateway base URL has not been properly configured in the function's environment.
  *
  * @example
  * ```typescript
