@@ -3484,6 +3484,9 @@ importers:
       '@osdk/api':
         specifier: workspace:~
         version: link:../api
+      '@osdk/typescript-sdk-docs':
+        specifier: ^0.2.0
+        version: 0.2.0
       consola:
         specifier: ^3.4.2
         version: 3.4.2
@@ -3512,9 +3515,6 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
-      '@osdk/typescript-sdk-docs':
-        specifier: ^0.2.0
-        version: 0.2.0
       '@types/node':
         specifier: ^20.19.13
         version: 20.19.13
