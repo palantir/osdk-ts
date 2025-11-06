@@ -14,39 +14,79 @@
  * limitations under the License.
  */
 
-import type { Client } from "@osdk/client";
-import { additionalContext } from "@osdk/client/unstable-do-not-use";
+import { readFileSync } from "fs";
+import { parse as parseYaml } from "yaml";
 
-/**
- * Extracts the Foundry hostname from an OSDK client.
- *
- * @param client - An OSDK client instance
- * @returns The hostname (e.g., "example.palantirfoundry.com")
- *
- * @example
- * ```typescript
- * const hostname = getFoundryHostname(client);
- * // Returns: "example.palantirfoundry.com"
- * ```
- */
-export function getFoundryHostname(client: Client): string {
-  const baseUrl = client[additionalContext].baseUrl;
-  const url = new URL(baseUrl);
-  return url.hostname;
+const FOUNDRY_SERVICE_DISCOVERY_V2_ENV_VAR = "FOUNDRY_SERVICE_DISCOVERY_V2";
+const API_GATEWAY_SERVICE = "API_GATEWAY";
+
+interface ServiceDiscoveryConfig {
+  [serviceName: string]: string[] | { uris: string[] };
 }
 
 /**
- * Extracts the full Foundry base URL from an OSDK client.
+ * Retrieves the API Gateway base URL from the Foundry service discovery file.
  *
- * @param client - An OSDK client instance
- * @returns The full base URL (e.g., "https://example.palantirfoundry.com/")
+ * This function reads the FOUNDRY_SERVICE_DISCOVERY_V2 environment variable to locate
+ * the service discovery YAML file, parses it, and extracts the API_GATEWAY base URL.
+ *
+ * @returns The API Gateway base URL (e.g., "https://example.palantirfoundry.com")
+ * @throws Error if the FOUNDRY_SERVICE_DISCOVERY_V2 environment variable is not set
+ * @throws Error if the service discovery file cannot be read or parsed
+ * @throws Error if the API_GATEWAY service is not configured
+ * @throws Error if no URIs are found for the API_GATEWAY service
  *
  * @example
  * ```typescript
- * const url = getFoundryBaseUrl(client);
- * // Returns: "https://example.palantirfoundry.com/"
+ * const baseUrl = getApiGatewayBaseUrl();
+ * // Returns: "https://example.palantirfoundry.com"
  * ```
  */
-export function getFoundryBaseUrl(client: Client): string {
-  return client[additionalContext].baseUrl;
+export function getApiGatewayBaseUrl(): string {
+  const filePath = process.env[FOUNDRY_SERVICE_DISCOVERY_V2_ENV_VAR];
+
+  if (!filePath) {
+    throw new Error(
+      `${FOUNDRY_SERVICE_DISCOVERY_V2_ENV_VAR} environment variable is not set`,
+    );
+  }
+
+  let fileContent: string;
+  try {
+    fileContent = readFileSync(filePath, "utf-8");
+  } catch (error) {
+    throw new Error(
+      `Failed to read service discovery file at ${filePath}: ${error}`,
+    );
+  }
+
+  let discovery: ServiceDiscoveryConfig;
+  try {
+    discovery = parseYaml(fileContent) as ServiceDiscoveryConfig;
+  } catch (error) {
+    throw new Error(
+      `Failed to parse service discovery YAML file at ${filePath}: ${error}`,
+    );
+  }
+
+  const apiGatewayConfig = discovery[API_GATEWAY_SERVICE];
+
+  if (!apiGatewayConfig) {
+    throw new Error(
+      `${API_GATEWAY_SERVICE} service not found in service discovery file`,
+    );
+  }
+
+  // Handle both formats: string[] or { uris: string[] }
+  const uris = Array.isArray(apiGatewayConfig)
+    ? apiGatewayConfig
+    : apiGatewayConfig.uris;
+
+  if (!uris || uris.length === 0) {
+    throw new Error(
+      `No URIs found for ${API_GATEWAY_SERVICE} service in service discovery file`,
+    );
+  }
+
+  return uris[0];
 }
