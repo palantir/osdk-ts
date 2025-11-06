@@ -17,11 +17,28 @@
 import { readFileSync } from "fs";
 import { parse as parseYaml } from "yaml";
 
-const FOUNDRY_SERVICE_DISCOVERY_V2_ENV_VAR = "FOUNDRY_SERVICE_DISCOVERY_V2";
-const API_GATEWAY_SERVICE = "API_GATEWAY";
+const FOUNDRY_SERVICE_DISCOVERY_V2_ENV_VAR =
+  "FOUNDRY_SERVICE_DISCOVERY_V2" as const;
+const API_GATEWAY_SERVICE = "API_GATEWAY" as const;
+
+type ServiceConfig = string[] | { uris: string[] };
 
 interface ServiceDiscoveryConfig {
-  [serviceName: string]: string[] | { uris: string[] };
+  [serviceName: string]: ServiceConfig;
+}
+
+/**
+ * Type guard to check if config is an object with uris property
+ */
+function hasUrisProperty(config: ServiceConfig): config is { uris: string[] } {
+  return !Array.isArray(config) && "uris" in config;
+}
+
+/**
+ * Extracts URIs from either array or object format
+ */
+function extractUris(config: ServiceConfig): string[] {
+  return hasUrisProperty(config) ? config.uris : config;
 }
 
 /**
@@ -55,8 +72,9 @@ export function getApiGatewayBaseUrl(): string {
   try {
     fileContent = readFileSync(filePath, "utf-8");
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(
-      `Failed to read service discovery file at ${filePath}: ${error}`,
+      `Failed to read service discovery file at ${filePath}: ${errorMessage}`,
     );
   }
 
@@ -64,8 +82,9 @@ export function getApiGatewayBaseUrl(): string {
   try {
     discovery = parseYaml(fileContent) as ServiceDiscoveryConfig;
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
     throw new Error(
-      `Failed to parse service discovery YAML file at ${filePath}: ${error}`,
+      `Failed to parse service discovery YAML file at ${filePath}: ${errorMessage}`,
     );
   }
 
@@ -77,12 +96,9 @@ export function getApiGatewayBaseUrl(): string {
     );
   }
 
-  // Handle both formats: string[] or { uris: string[] }
-  const uris = Array.isArray(apiGatewayConfig)
-    ? apiGatewayConfig
-    : apiGatewayConfig.uris;
+  const uris = extractUris(apiGatewayConfig);
 
-  if (!uris || uris.length === 0) {
+  if (uris.length === 0) {
     throw new Error(
       `No URIs found for ${API_GATEWAY_SERVICE} service in service discovery file`,
     );
