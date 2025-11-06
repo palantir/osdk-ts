@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.6.0-beta.6
+
+### Minor Changes
+
+- b959085: Fix nested array query param type handling
+
 ## 2.6.0-beta.5
 
 ### Minor Changes
