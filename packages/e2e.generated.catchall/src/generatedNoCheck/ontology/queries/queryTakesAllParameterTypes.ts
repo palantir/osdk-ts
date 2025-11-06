@@ -145,10 +145,14 @@ export interface queryTakesAllParameterTypes
        *   description: an array of strings
        */
       array: {
+        array: {
+          type: 'string';
+          nullable: false;
+        };
         description: 'an array of strings';
         multiplicity: true;
         nullable: false;
-        type: 'string';
+        type: 'array';
       };
       /**
        * (no ontology metadata)
