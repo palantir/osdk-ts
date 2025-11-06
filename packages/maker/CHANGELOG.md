@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.14.0-beta.11
+
+### Minor Changes
+
+- 09242c5: Move mustache dependency
+
 ## 0.14.0-beta.10
 
 ### Minor Changes
