@@ -2440,6 +2440,28 @@
       },
       "rid": "ri.function-registry.main.function.93aa9d56-fcb5-4c48-a40f-7d631d6b5800",
       "version": "0.14.0"
+    },
+    "getFirstSecondElementOf2DArray": {
+      "apiName": "getFirstSecondElementOf2DArray",
+      "displayName": "getFirstSecondElementOf2DArray",
+      "parameters": {
+        "array": {
+          "dataType": {
+            "type": "array",
+            "subType": {
+              "type": "array",
+              "subType": {
+                "type": "double"
+              }
+            }
+          }
+        }
+      },
+      "output": {
+        "type": "double"
+      },
+      "rid": "ri.function-registry.main.function.0d736075-0c52-409f-93e1-b7cc05963913",
+      "version": "1.0.0"
     }
   },
   "interfaceTypes": {
