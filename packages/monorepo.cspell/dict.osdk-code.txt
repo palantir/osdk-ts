@@ -1,6 +1,8 @@
 asyncIter
 backcompat
 bbox
+bryantp
+Bgao
 blockdata
 Bucketable
 CBAC
