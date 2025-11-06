@@ -21,6 +21,7 @@ import {
   defineConfig,
   type EventId,
   type EventIdToParameterValueMap,
+  type EventParameterList,
   type EventParameterUpdateIdList,
   type ParameterId,
   type ParameterValueMap,
@@ -325,6 +326,55 @@ describe("WidgetConfig", () => {
           }>;
         };
       }>();
+    });
+  });
+  describe("Slate configs", () => {
+    it("should support slate config type with eventParameters", () => {
+      const config = defineConfig({
+        id: "slateWidget",
+        name: "Slate Widget",
+        type: "slate",
+        parameters: {
+          param1: {
+            displayName: "Parameter 1",
+            type: "string",
+          },
+        },
+        events: {
+          slateEvent: {
+            displayName: "Slate Event",
+            eventParameters: [
+              {
+                id: "eventParam1",
+                displayName: "Event Param 1",
+                type: "number",
+              },
+              {
+                id: "eventParam2",
+                displayName: "Event Param 2",
+                type: "boolean",
+              },
+            ],
+          },
+        },
+      });
+
+      expectTypeOf(config.type).toEqualTypeOf<"slate">();
+      expectTypeOf<EventParameterList<typeof config, "slateEvent">>()
+        .toEqualTypeOf<
+          [
+            {
+              readonly id: "eventParam1";
+              readonly displayName: "Event Param 1";
+              readonly type: "number";
+            },
+            {
+              readonly id: "eventParam2";
+              readonly displayName: "Event Param 2";
+              readonly type: "boolean";
+            },
+          ]
+        >();
     });
   });
 });

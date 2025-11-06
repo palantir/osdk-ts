@@ -23,10 +23,12 @@ export type {
   ParameterDefinition,
   ParameterValueMap,
   WidgetConfig,
+  WidgetType,
 } from "./config.js";
 export { defineConfig } from "./config.js";
 export type {
   OntologySdkInputSpecV1 as OntologySdkInputSpec,
+  WidgetManifestConfigType,
   WidgetManifestConfigV1 as WidgetManifestConfig,
   WidgetSetDiscoveredInputSpecV1 as WidgetSetDiscoveredInputSpec,
   WidgetSetInputSpecV1 as WidgetSetInputSpec,
@@ -40,6 +42,7 @@ export {
 } from "./messages/hostMessages.js";
 export {
   isWidgetEmitEventMessage,
+  isWidgetEmitSlateEventMessage,
   isWidgetReadyMessage,
   visitWidgetMessage,
 } from "./messages/widgetMessages.js";

@@ -16,7 +16,9 @@
 
 import type {
   ManifestParameterDefinition,
+  ParameterConfig,
   ParameterDefinition,
+  WidgetConfig,
   WidgetManifestConfig,
   WidgetSetInputSpec,
   WidgetSetManifest,
@@ -52,7 +54,6 @@ function buildWidgetManifest(
     id: widgetConfig.id,
     name: widgetConfig.name,
     description: widgetConfig.description,
-    type: "workshopWidgetV1",
     entrypointJs: widgetBuild.scripts.map((script) => ({
       path: trimLeadingSlash(script.src),
       type: script.scriptType,
@@ -61,7 +62,7 @@ function buildWidgetManifest(
       path: trimLeadingSlash(path),
     })),
     parameters: convertParameters(widgetConfig.parameters),
-    events: widgetConfig.events,
+    ...getWidgetTypeSpecificConfig(widgetConfig),
   };
 }
 
@@ -95,4 +96,19 @@ function convertParameter(
 
 function trimLeadingSlash(path: string): string {
   return path.startsWith("/") ? path.slice(1) : path;
+}
+
+function getWidgetTypeSpecificConfig(config: WidgetConfig<ParameterConfig>) {
+  const { type, events } = config;
+  if (type === "workshop") {
+    return {
+      type: "workshopWidgetV1" as const,
+      events,
+    };
+  } else {
+    return {
+      type: "slateWidgetV1" as const,
+      events,
+    };
+  }
 }

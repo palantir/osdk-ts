@@ -47,6 +47,15 @@ export type ManifestParameterDefinition =
   | ArrayParameterDefinition<ParameterValue.PrimitiveType>
   | ManifestObjectSetParameterDefinition<ObjectType>;
 
+export type EventParameterDefinition = ParameterDefinition & {
+  /**
+   * The unique identifier for this event parameter
+   */
+  id: string;
+};
+
+export type ManifestEventParameterDefinition = ManifestParameterDefinition;
+
 export interface EventDefinitionBase<P extends ParameterConfig> {
   displayName: string;
 }
@@ -57,21 +66,45 @@ export interface WorkshopEventDefinition<P extends ParameterConfig>
   parameterUpdateIds: Array<ParameterId<P>>;
 }
 
-export type EventDefinition<P extends ParameterConfig> =
-  WorkshopEventDefinition<P>;
+export interface SlateEventDefinition<P extends ParameterConfig>
+  extends EventDefinitionBase<P>
+{
+  eventParameters: Array<EventParameterDefinition>;
+}
 
 export type ParameterConfig = Record<string, ParameterDefinition>;
 
-export type WidgetType = "workshop";
+export type WidgetType = "workshop" | "slate";
 
-export interface WidgetConfig<P extends ParameterConfig> {
+interface BaseWidgetConfig<P extends ParameterConfig> {
   id: string;
   name: string;
-  description?: string;
   type: WidgetType;
+  description?: string;
   parameters: ParameterConfig;
-  events: { [eventId: string]: EventDefinition<NoInfer<P>> };
 }
+
+interface WorkshopWidgetConfig<P extends ParameterConfig>
+  extends BaseWidgetConfig<P>
+{
+  type: "workshop";
+  events: {
+    [eventId: string]: WorkshopEventDefinition<P>;
+  };
+}
+
+interface SlateWidgetConfig<P extends ParameterConfig>
+  extends BaseWidgetConfig<P>
+{
+  type: "slate";
+  events: {
+    [eventId: string]: SlateEventDefinition<P>;
+  };
+}
+
+export type WidgetConfig<P extends ParameterConfig> =
+  | WorkshopWidgetConfig<P>
+  | SlateWidgetConfig<P>;
 
 /**
  * Extracts the parameter ID strings as types from the given ParameterConfig.
@@ -151,6 +184,16 @@ export type EventParameterUpdateIdList<
   : never;
 
 /**
+ * Extracts a list of strongly-typed event parameters from the given WidgetConfig for a given event ID.
+ */
+export type EventParameterList<
+  C extends WidgetConfig<C["parameters"]>,
+  K extends EventId<C>,
+> = C["events"][K] extends SlateEventDefinition<C["parameters"]>
+  ? C["events"][K]["eventParameters"]
+  : never;
+
+/**
  * Extracts a map of event IDs to their raw parameter value types from the given WidgetConfig.
  */
 export type EventIdToParameterValueMap<
@@ -159,6 +202,39 @@ export type EventIdToParameterValueMap<
 > = NotEmptyObject<
   {
     [P in EventParameterUpdateIdList<C, K>[number]]: ParameterValueMap<C>[P];
+  }
+>;
+
+/**
+ * TODO clean up this type - specifically how we extract the ID as non-async values
+ * Extracts a map of event parameter IDs to their eventParameter value types for that given event
+ */
+export type SlateEventIdToParameterValueMap<
+  C extends WidgetConfig<C["parameters"]>,
+  K extends EventId<C>,
+> = NotEmptyObject<
+  {
+    [
+      P in EventParameterList<C, K>[number]["id"]
+    ]: Extract<
+      C["parameters"][P],
+      ParameterDefinition
+    > extends ArrayParameterDefinition<infer S> ? Extract<
+        ParameterValue.Array,
+        { type: C["parameters"][P]["type"]; subType: S }
+      >["value"] extends AsyncValue<infer AV> ? AV
+      : never
+      : Extract<
+        C["parameters"][P],
+        ParameterDefinition
+      > extends ObjectSetParameterDefinition<infer T>
+        ? ParameterValue.ObjectSet<T>["value"] extends AsyncValue<infer AV> ? AV
+        : never
+      : Extract<
+        ParameterValue,
+        { type: C["parameters"][P]["type"] }
+      >["value"] extends AsyncValue<infer AV> ? AV
+      : never;
   }
 >;
 

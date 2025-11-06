@@ -19,113 +19,248 @@ import { describe, it } from "vitest";
 import type { FoundryWidgetClient } from "./client.js";
 
 describe("FoundryWidgetClient", () => {
-  const config = defineConfig({
-    id: "widgetId",
-    name: "Widget Name",
-    description: "Widget Description",
-    type: "workshop",
-    parameters: {
-      myString: {
-        displayName: "My string",
-        type: "string",
+  describe("Workshop widget config", () => {
+    const config = defineConfig({
+      id: "widgetId",
+      name: "Widget Name",
+      description: "Widget Description",
+      type: "workshop",
+      parameters: {
+        myString: {
+          displayName: "My string",
+          type: "string",
+        },
+        myNumber: {
+          displayName: "My number",
+          type: "number",
+        },
+        myBoolean: {
+          displayName: "My boolean",
+          type: "boolean",
+        },
       },
-      myNumber: {
-        displayName: "My number",
-        type: "number",
+      events: {
+        noParameters: {
+          displayName: "No parameters",
+          parameterUpdateIds: [],
+        },
+        oneParameter: {
+          displayName: "One parameter",
+          parameterUpdateIds: ["myString"],
+        },
+        twoParameters: {
+          displayName: "Two parameters",
+          parameterUpdateIds: ["myNumber", "myBoolean"],
+        },
       },
-      myBoolean: {
-        displayName: "My boolean",
-        type: "boolean",
-      },
-    },
-    events: {
-      noParameters: {
-        displayName: "No parameters",
-        parameterUpdateIds: [],
-      },
-      oneParameter: {
-        displayName: "One parameter",
-        parameterUpdateIds: ["myString"],
-      },
-      twoParameters: {
-        displayName: "Two parameters",
-        parameterUpdateIds: ["myNumber", "myBoolean"],
-      },
-    },
+    });
+
+    const emitEvent: FoundryWidgetClient<typeof config>["emitEvent"] = (
+      _eventId,
+      _payload,
+    ) => {};
+
+    it("should narrow the emit event type when no parameters", () => {
+      emitEvent("noParameters", {
+        // @ts-expect-error
+        parameterUpdates: [],
+      });
+      emitEvent("noParameters", {
+        // @ts-expect-error
+        parameterUpdates: { myString: "string" },
+      });
+
+      emitEvent("noParameters", {
+        parameterUpdates: {},
+      });
+    });
+
+    it("should narrow the emit event type with one parameter", () => {
+      emitEvent("oneParameter", {
+        // @ts-expect-error
+        parameterUpdates: [],
+      });
+      emitEvent("oneParameter", {
+        // @ts-expect-error
+        parameterUpdates: {},
+      });
+      emitEvent("oneParameter", {
+        // @ts-expect-error
+        parameterUpdates: { myNumber: 123 },
+      });
+      emitEvent("twoParameters", {
+        // @ts-expect-error
+        parameterUpdates: { myString: "string", myNumber: 123 },
+      });
+
+      emitEvent("oneParameter", {
+        parameterUpdates: { myString: "string" },
+      });
+    });
+
+    it("should narrow the emit event type with two parameters", () => {
+      emitEvent("twoParameters", {
+        // @ts-expect-error
+        parameterUpdates: [],
+      });
+      emitEvent("twoParameters", {
+        // @ts-expect-error
+        parameterUpdates: {},
+      });
+      emitEvent("twoParameters", {
+        // @ts-expect-error
+        parameterUpdates: { myString: "string" },
+      });
+      emitEvent("twoParameters", {
+        // @ts-expect-error
+        parameterUpdates: { myNumber: 123 },
+      });
+      emitEvent("twoParameters", {
+        parameterUpdates: {
+          myNumber: 123,
+          myBoolean: true,
+          // @ts-expect-error
+          myString: "string",
+        },
+      });
+
+      emitEvent("twoParameters", {
+        parameterUpdates: { myNumber: 123, myBoolean: true },
+      });
+    });
+
+    it("should not allow emit event type with an unknown event id", () => {
+      // @ts-expect-error
+      emitEvent("someOtherEventId", {});
+    });
   });
 
-  const emitEvent: FoundryWidgetClient<typeof config>["emitEvent"] = (
-    _eventId,
-    _payload,
-  ) => {};
-
-  it("should narrow the emit event type when no parameters", () => {
-    emitEvent("noParameters", {
-      // @ts-expect-error
-      parameterUpdates: [],
-    });
-    emitEvent("noParameters", {
-      // @ts-expect-error
-      parameterUpdates: { myString: "string" },
-    });
-
-    emitEvent("noParameters", {
-      parameterUpdates: {},
-    });
-  });
-
-  it("should narrow the emit event type with one parameter", () => {
-    emitEvent("oneParameter", {
-      // @ts-expect-error
-      parameterUpdates: [],
-    });
-    emitEvent("oneParameter", {
-      // @ts-expect-error
-      parameterUpdates: {},
-    });
-    emitEvent("oneParameter", {
-      // @ts-expect-error
-      parameterUpdates: { myNumber: 123 },
-    });
-    emitEvent("twoParameters", {
-      // @ts-expect-error
-      parameterUpdates: { myString: "string", myNumber: 123 },
-    });
-
-    emitEvent("oneParameter", {
-      parameterUpdates: { myString: "string" },
-    });
-  });
-
-  it("should narrow the emit event type with two parameters", () => {
-    emitEvent("twoParameters", {
-      // @ts-expect-error
-      parameterUpdates: [],
-    });
-    emitEvent("twoParameters", {
-      // @ts-expect-error
-      parameterUpdates: {},
-    });
-    emitEvent("twoParameters", {
-      // @ts-expect-error
-      parameterUpdates: { myString: "string" },
-    });
-    emitEvent("twoParameters", {
-      // @ts-expect-error
-      parameterUpdates: { myNumber: 123 },
-    });
-    emitEvent("twoParameters", {
-      // @ts-expect-error
-      parameterUpdates: { myNumber: 123, myBoolean: true, myString: "string" },
+  describe("Slate widget config", () => {
+    const config = defineConfig({
+      id: "widgetId",
+      name: "Widget Name",
+      description: "Widget Description",
+      type: "slate",
+      parameters: {
+        myString: {
+          displayName: "My string",
+          type: "string",
+        },
+        myNumber: {
+          displayName: "My number",
+          type: "number",
+        },
+        myBoolean: {
+          displayName: "My boolean",
+          type: "boolean",
+        },
+      },
+      events: {
+        noParameters: {
+          displayName: "No parameters",
+          eventParameters: [],
+        },
+        oneParameter: {
+          displayName: "One parameter",
+          eventParameters: [{
+            id: "myString",
+            displayName: "My string",
+            type: "string",
+          }],
+        },
+        twoParameters: {
+          displayName: "Two parameters",
+          eventParameters: [{
+            id: "myNumber",
+            displayName: "My number",
+            type: "number",
+          }, {
+            id: "myBoolean",
+            displayName: "My boolean",
+            type: "boolean",
+          }],
+        },
+      },
     });
 
-    emitEvent("twoParameters", {
-      parameterUpdates: { myNumber: 123, myBoolean: true },
-    });
-  });
+    const emitSlateEvent: FoundryWidgetClient<typeof config>["emitSlateEvent"] =
+      (
+        _eventId,
+        _payload,
+      ) => {};
 
-  it("should not allow emit event type with an unknown event id", () => {
-    // @ts-expect-error
-    emitEvent("someOtherEventId", {});
+    it("should narrow the emit event type when no parameters", () => {
+      emitSlateEvent("noParameters", {
+        // @ts-expect-error
+        eventArguments: [],
+      });
+      emitSlateEvent("noParameters", {
+        // @ts-expect-error
+        eventArguments: { myString: "string" },
+      });
+
+      emitSlateEvent("noParameters", {
+        eventArguments: {},
+      });
+    });
+
+    it("should narrow the emit event type with one parameter", () => {
+      emitSlateEvent("oneParameter", {
+        // @ts-expect-error
+        eventArguments: [],
+      });
+      emitSlateEvent("oneParameter", {
+        // @ts-expect-error
+        eventArguments: {},
+      });
+      emitSlateEvent("oneParameter", {
+        // @ts-expect-error
+        eventArguments: { myNumber: 123 },
+      });
+      emitSlateEvent("twoParameters", {
+        // @ts-expect-error
+        eventArguments: { myString: "string", myNumber: 123 },
+      });
+
+      emitSlateEvent("oneParameter", {
+        eventArguments: { myString: "string" },
+      });
+    });
+
+    it("should narrow the emit event type with two parameters", () => {
+      emitSlateEvent("twoParameters", {
+        // @ts-expect-error
+        eventArguments: [],
+      });
+      emitSlateEvent("twoParameters", {
+        // @ts-expect-error
+        eventArguments: {},
+      });
+      emitSlateEvent("twoParameters", {
+        // @ts-expect-error
+        eventArguments: { myString: "string" },
+      });
+      emitSlateEvent("twoParameters", {
+        // @ts-expect-error
+        eventArguments: { myNumber: 123 },
+      });
+      emitSlateEvent("twoParameters", {
+        eventArguments: {
+          myNumber: 123,
+          myBoolean: true,
+          // @ts-expect-error
+          myString: "string",
+        },
+      });
+
+      emitSlateEvent("twoParameters", {
+        eventArguments: { myNumber: 123, myBoolean: true },
+      });
+    });
+
+    it("should not allow emit event type with an unknown event id", () => {
+      // @ts-expect-error
+      emitSlateEvent("someOtherEventId", {});
+    });
   });
 });
