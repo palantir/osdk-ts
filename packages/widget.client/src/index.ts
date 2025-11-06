@@ -23,7 +23,7 @@ export type {
   AsyncReloadingValue,
   AsyncValue,
   EventId,
-  EventParameterValueMap,
+  EventIdToParameterValueMap,
   ParameterConfig,
   ParameterValue,
   ParameterValueMap,

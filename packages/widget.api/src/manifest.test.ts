@@ -23,7 +23,7 @@ const EXAMPLE_WIDGET_SET_MANIFEST: WidgetSetManifestV1 = {
     "rid": "ri.widgetregistry..widget-set.placeholder",
     "version": "0.1.0",
     "widgets": {
-      "widget1": {
+      "workshopWidget": {
         "id": "widget1",
         "name": "My name",
         "description": "My description",
@@ -50,6 +50,41 @@ const EXAMPLE_WIDGET_SET_MANIFEST: WidgetSetManifestV1 = {
             "displayName": "Event 1",
             "parameterUpdateIds": [
               "myString",
+            ],
+          },
+        },
+      },
+      "slateWidget": {
+        "id": "widget2",
+        "name": "Slate Widget",
+        "description": "A slate widget",
+        "type": "slateWidgetV1",
+        "entrypointJs": [
+          {
+            "path": "slateApp.js",
+            "type": "module",
+          },
+        ],
+        "parameters": {
+          "myNumber": {
+            "displayName": "My Number",
+            "type": "number",
+          },
+        },
+        "events": {
+          "slateEvent": {
+            "displayName": "Slate Event",
+            "eventParameters": [
+              {
+                "id": "eventParam1",
+                "displayName": "Event Param 1",
+                "type": "number",
+              },
+              {
+                "id": "eventParam2",
+                "displayName": "Event Param 2",
+                "type": "boolean",
+              },
             ],
           },
         },

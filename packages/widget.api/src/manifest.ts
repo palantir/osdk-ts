@@ -15,9 +15,10 @@
  */
 
 import type {
-  EventDefinition,
   ManifestParameterDefinition,
   ParameterConfig,
+  SlateEventDefinition,
+  WorkshopEventDefinition,
 } from "./config.js";
 
 export interface WidgetSetManifestV1 {
@@ -49,7 +50,9 @@ export interface WidgetSetManifestContentV1 {
   inputSpec?: WidgetSetInputSpecV1;
 }
 
-export interface WidgetManifestConfigV1 {
+export type WidgetManifestConfigType = "workshopWidgetV1" | "slateWidgetV1";
+
+interface BaseWidgetManifestConfigV1 {
   /**
    * The ID of this widget. Must be unique within the widget set
    */
@@ -61,14 +64,14 @@ export interface WidgetManifestConfigV1 {
   name: string;
 
   /**
+   * The target Foundry UI that this widget is intended to be used in
+   */
+  type: WidgetManifestConfigType;
+
+  /**
    * A user friendly description of this widget
    */
   description?: string;
-
-  /**
-   * The target Foundry UI that this widget is intended to be used in
-   */
-  type: "workshopWidgetV1";
 
   /**
    * List of entrypoint JS files to be loaded, in order. These will be placed on the page in script tags
@@ -94,12 +97,35 @@ export interface WidgetManifestConfigV1 {
    * The map of parameter IDs to their definition
    */
   parameters: Record<string, ManifestParameterDefinition>;
+}
+
+interface WorkshopWidgetManifestConfigV1 extends BaseWidgetManifestConfigV1 {
+  /**
+   * The target Foundry UI that this widget is intended to be used in
+   */
+  type: "workshopWidgetV1";
 
   /**
    * The map of events to their definition. Any parameter IDs referenced must be defined in the `parameters` field
    */
-  events: Record<string, EventDefinition<ParameterConfig>>;
+  events: Record<string, WorkshopEventDefinition<ParameterConfig>>;
 }
+
+interface SlateWidgetManifestConfigV1 extends BaseWidgetManifestConfigV1 {
+  /**
+   * The target Foundry UI that this widget is intended to be used in
+   */
+  type: "slateWidgetV1";
+
+  /**
+   * The map of events to their definition. Any parameter IDs referenced must be defined in the `parameters` field
+   */
+  events: Record<string, SlateEventDefinition<ParameterConfig>>;
+}
+
+export type WidgetManifestConfigV1 =
+  | WorkshopWidgetManifestConfigV1
+  | SlateWidgetManifestConfigV1;
 
 export interface WidgetSetInputSpecV1 {
   /**

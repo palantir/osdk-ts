@@ -44,6 +44,20 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
   ) => void;
 
   /**
+   * Emits a slate event with the given ID and payload
+   */
+  emitSlateEvent: <
+    M extends WidgetMessage.EmitSlateEvent<C>,
+    ID extends M["payload"]["eventId"],
+  >(
+    eventId: ID,
+    payload: Omit<
+      ExtractEmitSlateEventPayload<M, ID>,
+      "eventId"
+    >,
+  ) => void;
+
+  /**
    * Sends a message to the parent frame.
    * It is recommended to use the convenience methods for individual messages (e.g. ready or emitEvent) instead
    */
@@ -67,6 +81,14 @@ export interface FoundryWidgetClient<C extends WidgetConfig<C["parameters"]>> {
 
 type ExtractEmitEventPayload<
   M extends WidgetMessage.EmitEvent<any>,
+  ID extends M["payload"]["eventId"],
+> = Extract<
+  M["payload"],
+  { eventId: ID }
+>;
+
+type ExtractEmitSlateEventPayload<
+  M extends WidgetMessage.EmitSlateEvent<any>,
   ID extends M["payload"]["eventId"],
 > = Extract<
   M["payload"],
@@ -128,6 +150,15 @@ export function createFoundryWidgetClient<
     emitEvent: (eventId, payload) => {
       sendMessageToHost({
         type: "widget.emit-event",
+        payload: {
+          eventId,
+          ...payload,
+        },
+      });
+    },
+    emitSlateEvent: (eventId, payload) => {
+      sendMessageToHost({
+        type: "widget.emit-slate-event",
         payload: {
           eventId,
           ...payload,

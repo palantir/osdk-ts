@@ -16,7 +16,8 @@
 
 import type {
   EventId,
-  EventParameterValueMap,
+  EventIdToParameterValueMap,
+  SlateEventIdToParameterValueMap,
   WidgetConfig,
 } from "../config.js";
 import type { HostMessage } from "./hostMessages.js";
@@ -31,7 +32,14 @@ interface WidgetBaseMessage<T extends string, P = unknown> {
 type EmitEventIdMap<C extends WidgetConfig<C["parameters"]>> = {
   [K in EventId<C>]: {
     eventId: K;
-    parameterUpdates: EventParameterValueMap<C, K>;
+    parameterUpdates: EventIdToParameterValueMap<C, K>;
+  };
+};
+
+type EmitSlateEventIdMap<C extends WidgetConfig<C["parameters"]>> = {
+  [K in EventId<C>]: {
+    eventId: K;
+    eventArguments: SlateEventIdToParameterValueMap<C, K>;
   };
 };
 
@@ -41,13 +49,25 @@ export namespace WidgetMessage {
       apiVersion: HostMessage.Version;
     }
 
+    export type WorkshopEventPayload<
+      C extends WidgetConfig<C["parameters"]>,
+    > = EmitEventIdMap<C>[EventId<C>];
+
     export type EmitEvent<C extends WidgetConfig<C["parameters"]>> =
-      EmitEventIdMap<C>[EventId<C>];
+      WorkshopEventPayload<C>;
+
+    export type SlateEventPayload<
+      C extends WidgetConfig<C["parameters"]>,
+    > = EmitSlateEventIdMap<C>[EventId<C>];
+
+    export type EmitSlateEvent<C extends WidgetConfig<C["parameters"]>> =
+      SlateEventPayload<C>;
   }
 
   export type Payload<C extends WidgetConfig<C["parameters"]>> =
     | Payload.Ready
-    | Payload.EmitEvent<C>;
+    | Payload.EmitEvent<C>
+    | Payload.EmitSlateEvent<C>;
 
   /**
    * Emit when the widget is ready to start receiving messages from the host Foundry UI
@@ -62,11 +82,20 @@ export namespace WidgetMessage {
   export interface EmitEvent<C extends WidgetConfig<C["parameters"]>>
     extends WidgetBaseMessage<"widget.emit-event", Payload.EmitEvent<C>>
   {}
+
+  /**
+   * Slate event payload that the widget sends to the host Foundry UI
+   */
+  export interface EmitSlateEvent<C extends WidgetConfig<C["parameters"]>>
+    extends
+      WidgetBaseMessage<"widget.emit-slate-event", Payload.EmitSlateEvent<C>>
+  {}
 }
 
 export type WidgetMessage<C extends WidgetConfig<C["parameters"]>> =
   | WidgetMessage.Ready
-  | WidgetMessage.EmitEvent<C>;
+  | WidgetMessage.EmitEvent<C>
+  | WidgetMessage.EmitSlateEvent<C>;
 
 export function isWidgetReadyMessage<C extends WidgetConfig<C["parameters"]>>(
   event: WidgetMessage<C>,
@@ -78,6 +107,12 @@ export function isWidgetEmitEventMessage<
   C extends WidgetConfig<C["parameters"]>,
 >(event: WidgetMessage<C>): event is WidgetMessage.EmitEvent<C> {
   return event.type === "widget.emit-event";
+}
+
+export function isWidgetEmitSlateEventMessage<
+  C extends WidgetConfig<C["parameters"]>,
+>(event: WidgetMessage<C>): event is WidgetMessage.EmitSlateEvent<C> {
+  return event.type === "widget.emit-slate-event";
 }
 
 type WidgetMessageVisitor<C extends WidgetConfig<C["parameters"]>> =
