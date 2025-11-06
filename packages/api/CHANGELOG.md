@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.5.1
+
+### Patch Changes
+
+- 099b4d8: Fix nested array query param type handling
+
 ## 2.5.0
 
 ### Patch Changes

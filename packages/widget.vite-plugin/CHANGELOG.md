@@ -1,5 +1,12 @@
 # @osdk/widget.vite-plugin
 
+## 3.2.2
+
+### Patch Changes
+
+- f372662: improve dev mode error surfacing
+  - @osdk/widget.api@3.2.2
+
 ## 3.2.1
 
 ### Patch Changes
