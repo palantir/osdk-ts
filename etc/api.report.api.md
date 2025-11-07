@@ -875,7 +875,7 @@ export interface MediaUpload {
     	// (undocumented)
     readonly data: Blob;
     	// (undocumented)
-    readonly path: string;
+    readonly fileName: string;
 }
 
 // @public (undocumented)
