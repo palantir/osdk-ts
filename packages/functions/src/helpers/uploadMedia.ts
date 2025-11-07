@@ -22,7 +22,7 @@ export function uploadMedia(
   mediaUpload: MediaUpload,
 ): Promise<MediaReference> {
   return MediaSets.uploadMedia(_client, mediaUpload.data, {
-    filename: mediaUpload.path,
+    filename: mediaUpload.fileName,
     preview: true,
   });
 }

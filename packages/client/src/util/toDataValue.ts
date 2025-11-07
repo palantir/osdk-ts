@@ -106,7 +106,7 @@ export async function toDataValue(
       client,
       value.data,
       {
-        filename: value.path,
+        filename: value.fileName,
         preview: true,
       },
     );
