@@ -3779,6 +3779,34 @@
       },
       "rid": "ri.function-registry.main.function.0d736075-0c52-409f-93e1-b7cc05963913",
       "version": "1.0.0"
+    },
+    "identity2DArray": {
+      "apiName": "identity2DArray",
+      "displayName": "identity2DArray",
+      "parameters": {
+        "array": {
+          "dataType": {
+            "type": "array",
+            "subType": {
+              "type": "array",
+              "subType": {
+                "type": "double"
+              }
+            }
+          }
+        }
+      },
+      "output": {
+        "type": "array",
+        "subType": {
+          "type": "array",
+          "subType": {
+            "type": "double"
+          }
+        }
+      },
+      "rid": "ri.function-registry.main.function.3c154359-8f43-4684-b108-ddb947949349",
+      "version": "1.1.0"
     }
   },
   "interfaceTypes": {
