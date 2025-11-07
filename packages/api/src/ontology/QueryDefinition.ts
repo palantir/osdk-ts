@@ -125,7 +125,7 @@ export interface ArrayQueryDataType
 {
   array: QueryDataTypeDefinition;
   /** @deprecated use T["type"] extends "array" instead */
-  multiplicity: true;
+  multiplicity?: true;
 }
 export interface UnionQueryDataType
   extends BaseQueryDataTypeDefinition<"union">
