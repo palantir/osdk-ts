@@ -63,8 +63,34 @@ function isNotClause<
   return "$not" in whereClause && whereClause.$not !== undefined;
 }
 
-/** @internal */
 export function modernToLegacyWhereClause<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  whereClause: WhereClause<T, RDPs>,
+  objectOrInterface: T,
+  rdpNames?: Set<string>,
+): SearchJsonQueryV2 {
+  const parts = Object.entries(whereClause).map(([key, value]) => ({
+    [key]: value,
+  })) as WhereClause<T, RDPs>[];
+  if (parts.length === 1) {
+    return modernToLegacyWhereClauseInner(
+      whereClause,
+      objectOrInterface,
+      rdpNames,
+    );
+  }
+  return {
+    type: "and",
+    value: parts.map<SearchJsonQueryV2>(
+      v => modernToLegacyWhereClauseInner(v, objectOrInterface, rdpNames),
+    ),
+  };
+}
+
+/** @internal */
+export function modernToLegacyWhereClauseInner<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
 >(
@@ -101,16 +127,12 @@ export function modernToLegacyWhereClause<
 
   const parts = Object.entries(whereClause);
 
-  if (parts.length === 1) {
-    return handleWherePair(parts[0], objectOrInterface, undefined, rdpNames);
+  if (parts.length !== 1) {
+    throw new Error(
+      "A filter with with multiple clauses is not allowed. Instead, use an 'or'/'and' clause to combine multiple filters.",
+    );
   }
-
-  return {
-    type: "and",
-    value: parts.map<SearchJsonQueryV2>(
-      v => handleWherePair(v, objectOrInterface, undefined, rdpNames),
-    ),
-  };
+  return handleWherePair(parts[0], objectOrInterface, undefined, rdpNames);
 }
 
 function handleWherePair(
@@ -146,11 +168,16 @@ function handleWherePair(
     ? fullyQualifyPropName(fieldName, objectOrInterface)
     : undefined;
 
+  invariant(
+    field == null
+      || propertyIdentifier == null && (field != null || isRdp != null),
+    "Encountered error constructing where clause: field and propertyIdentifier cannot both be defined",
+  );
+
   if (
     typeof filter === "string" || typeof filter === "number"
     || typeof filter === "boolean"
   ) {
-    propertyIdentifier;
     return {
       type: "eq",
       ...(propertyIdentifier != null
