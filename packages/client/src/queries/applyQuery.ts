@@ -125,36 +125,22 @@ async function remapQueryResponse<
     }
   }
 
-  if (responseDataType.type === "array") {
-    for (let i = 0; i < responseValue.length; i++) {
-      responseValue[i] = await remapQueryResponse(
-        client,
-        responseDataType.array,
-        responseValue[i],
-        definitions,
-      );
-    }
-
-    return responseValue as QueryReturnType<typeof responseDataType>;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
-  if (responseDataType.multiplicity) {
-    const withoutMultiplicity = { ...responseDataType, multiplicity: false };
-    for (let i = 0; i < responseValue.length; i++) {
-      responseValue[i] = await remapQueryResponse(
-        client,
-        withoutMultiplicity,
-        responseValue[i],
-        definitions,
-      );
-    }
-    return responseValue as QueryReturnType<typeof responseDataType>;
-  }
-
   switch (responseDataType.type) {
     case "union": {
       throw new Error("Union return types are not yet supported");
+    }
+
+    case "array": {
+      for (let i = 0; i < responseValue.length; i++) {
+        responseValue[i] = await remapQueryResponse(
+          client,
+          responseDataType.array,
+          responseValue[i],
+          definitions,
+        );
+      }
+
+      return responseValue as QueryReturnType<typeof responseDataType>;
     }
 
     case "set": {
@@ -178,6 +164,7 @@ async function remapQueryResponse<
         typeof responseDataType
       >;
     }
+
     case "object": {
       const def = definitions.get(responseDataType.object);
       if (!def || def.type !== "object") {
@@ -234,6 +221,7 @@ async function remapQueryResponse<
         typeof responseDataType
       >;
     }
+
     case "struct": {
       // figure out what keys need to be fixed up
       for (const [key, subtype] of Object.entries(responseDataType.struct)) {
