@@ -63,6 +63,7 @@ function isNotClause<
   return "$not" in whereClause && whereClause.$not !== undefined;
 }
 
+/** @internal */
 export function modernToLegacyWhereClause<
   T extends ObjectOrInterfaceDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
