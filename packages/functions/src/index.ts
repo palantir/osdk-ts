@@ -25,6 +25,8 @@ export type {
 
 export type {
   Attachment,
+  MediaReference,
+  MediaUpload,
   Range,
   ThreeDimensionalAggregation,
   TwoDimensionalAggregation,
@@ -34,6 +36,7 @@ export { createEditBatch } from "./edits/createEditBatch.js";
 export type { EditBatch } from "./edits/EditBatch.js";
 export type { Edits } from "./edits/types.js";
 export { UserFacingError } from "./errors/UserFacingError.js";
+export { uploadMedia } from "./helpers/uploadMedia.js";
 
 export type {
   EmailNotification,

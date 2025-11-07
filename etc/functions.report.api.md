@@ -10,6 +10,8 @@ import type { CompileTimeMetadata } from '@osdk/client';
 import { Geometry } from 'geojson';
 import type { GroupId as GroupId_2 } from '@osdk/foundry.core';
 import type { InterfaceDefinition } from '@osdk/client';
+import { MediaReference } from '@osdk/client';
+import { MediaUpload } from '@osdk/client';
 import type { ObjectMetadata } from '@osdk/client';
 import type { ObjectTypeDefinition } from '@osdk/client';
 import type { Osdk } from '@osdk/client';
@@ -142,6 +144,10 @@ export type MandatoryMarking<T extends string = string> = T & {
     	__markingBrand?: "mandatory"
 };
 
+export { MediaReference }
+
+export { MediaUpload }
+
 // @public (undocumented)
 interface Notification_2 {
     	// (undocumented)
@@ -209,6 +215,9 @@ export type TimestampISOString<T extends string = string> = T & {
 };
 
 export { TwoDimensionalAggregation }
+
+// @public (undocumented)
+export function uploadMedia(_client: Client, mediaUpload: MediaUpload): Promise<MediaReference>;
 
 // @public (undocumented)
 export interface UrlLinkTarget {

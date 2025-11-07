@@ -102,15 +102,14 @@ export async function toDataValue(
   // new media item upload interface, very similar to how attachments work above
 
   if (isMediaUpload(value)) {
-    const mediaRef = await MediaSets
-      .uploadMedia(
-        client,
-        value.data,
-        {
-          filename: value.path,
-          preview: true,
-        },
-      );
+    const mediaRef = await MediaSets.uploadMedia(
+      client,
+      value.data,
+      {
+        filename: value.path,
+        preview: true,
+      },
+    );
     return await toDataValue(mediaRef, client, actionMetadata);
   }
 
