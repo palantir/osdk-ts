@@ -99,6 +99,10 @@ export function modernToLegacyWhereClauseInner<
   objectOrInterface: T,
   rdpNames?: Set<string>,
 ): SearchJsonQueryV2 {
+  const parts = Object.entries(whereClause);
+
+  invariant(parts.length === 1, "Invalid where clause provided.");
+
   if (isAndClause(whereClause)) {
     return {
       type: "and",
@@ -126,13 +130,6 @@ export function modernToLegacyWhereClauseInner<
     };
   }
 
-  const parts = Object.entries(whereClause);
-
-  if (parts.length !== 1) {
-    throw new Error(
-      "A filter with with multiple clauses is not allowed. Instead, use an 'or'/'and' clause to combine multiple filters.",
-    );
-  }
   return handleWherePair(parts[0], objectOrInterface, undefined, rdpNames);
 }
 
