@@ -67,6 +67,7 @@ export type QueryDataTypeDefinition<
   | ArrayQueryDataType;
 
 export type BaseQueryDataTypeDefinition<T extends string> = {
+  /** @deprecated use T["type"] extends "array" instead */
   multiplicity?: boolean;
   nullable?: boolean;
   type: T;
@@ -123,6 +124,7 @@ export interface ArrayQueryDataType
   extends BaseQueryDataTypeDefinition<"array">
 {
   array: QueryDataTypeDefinition;
+  /** @deprecated use T["type"] extends "array" instead */
   multiplicity: true;
 }
 export interface UnionQueryDataType

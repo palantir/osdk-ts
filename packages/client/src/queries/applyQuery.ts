@@ -125,8 +125,21 @@ async function remapQueryResponse<
     }
   }
 
-  // TODO(bryantp) fix logic to not use multiplicity and unwrap inner type
-  if (responseDataType.multiplicity != null && responseDataType.multiplicity) {
+  if (responseDataType.type === "array") {
+    for (let i = 0; i < responseValue.length; i++) {
+      responseValue[i] = await remapQueryResponse(
+        client,
+        responseDataType.array,
+        responseValue[i],
+        definitions,
+      );
+    }
+
+    return responseValue as QueryReturnType<typeof responseDataType>;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
+  if (responseDataType.multiplicity) {
     const withoutMultiplicity = { ...responseDataType, multiplicity: false };
     for (let i = 0; i < responseValue.length; i++) {
       responseValue[i] = await remapQueryResponse(
