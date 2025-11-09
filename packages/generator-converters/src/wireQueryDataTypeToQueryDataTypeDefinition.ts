@@ -74,7 +74,9 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
       };
     case "array":
       return {
-        ...wireQueryDataTypeToQueryDataTypeDefinition(input.subType),
+        array: wireQueryDataTypeToQueryDataTypeDefinition(input.subType),
+        type: "array",
+        nullable: isNullableQueryDataType(input.subType),
         multiplicity: true,
       };
 
@@ -145,7 +147,7 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
         );
       }
 
-      if (keyType.multiplicity === true) {
+      if (keyType.type === "array") {
         throw new Error(
           "Map types cannot have keys as arrays",
         );

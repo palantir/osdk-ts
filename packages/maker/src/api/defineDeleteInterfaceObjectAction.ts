@@ -53,8 +53,8 @@ export function defineDeleteInterfaceObjectAction(
       },
     }],
     entities: {
-      affectedInterfaceTypes: [],
-      affectedObjectTypes: [def.interfaceType.apiName],
+      affectedInterfaceTypes: [def.interfaceType.apiName],
+      affectedObjectTypes: [],
       affectedLinkTypes: [],
       typeGroups: [],
     },

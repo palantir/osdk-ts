@@ -107,6 +107,28 @@ export interface UseOsdkObjectsOptions<
   dedupeIntervalMs?: number;
 
   streamUpdates?: boolean;
+
+  /**
+   * Enable or disable the query.
+   *
+   * When `false`, the query will not automatically execute. It will still
+   * return any cached data, but will not fetch from the server.
+   *
+   * This is useful for:
+   * - Lazy/on-demand queries that should wait for user interaction
+   * - Dependent queries that need data from another query first
+   * - Conditional queries based on component state
+   *
+   * @default true
+   * @example
+   * // Dependent query - wait for parent data
+   * const { data: employee } = useOsdkObject(Employee, employeeId);
+   * const { data: reports } = useOsdkObjects(Employee, {
+   *   where: { managerId: employee?.id },
+   *   enabled: !!employee
+   * });
+   */
+  enabled?: boolean;
 }
 
 export interface UseOsdkListResult<
@@ -166,6 +188,7 @@ export function useOsdkObjects<
     withProperties,
     intersectWith,
     pivotTo,
+    enabled = true,
   } = options ?? {};
   const { observableClient } = React.useContext(OsdkContext2);
 
@@ -186,8 +209,16 @@ export function useOsdkObjects<
   );
 
   const { subscribe, getSnapShot } = React.useMemo(
-    () =>
-      makeExternalStore<ObserveObjectsArgs<Q>>(
+    () => {
+      if (!enabled) {
+        return makeExternalStore<ObserveObjectsArgs<Q>>(
+          () => ({ unsubscribe: () => {} }),
+          process.env.NODE_ENV !== "production"
+            ? `list ${type.apiName} ${JSON.stringify(canonWhere)} [DISABLED]`
+            : void 0,
+        );
+      }
+      return makeExternalStore<ObserveObjectsArgs<Q>>(
         (observer) =>
           observableClient.observeList({
             type,
@@ -205,8 +236,10 @@ export function useOsdkObjects<
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
           : void 0,
-      ),
+      );
+    },
     [
+      enabled,
       observableClient,
       type,
       canonWhere,
@@ -217,6 +250,9 @@ export function useOsdkObjects<
       stableWithProperties,
       stableIntersectWith,
       pivotTo,
+      pageSize,
+      orderBy,
+      streamUpdates,
     ],
   );
 

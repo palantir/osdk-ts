@@ -1,6 +1,6 @@
 {
   "name": "@osdk/widget.client-react",
-  "version": "3.3.0-beta.1",
+  "version": "3.3.0-beta.4",
   "description": "Wrapper around @osdk/widget.client",
   "access": "public",
   "license": "Apache-2.0",
@@ -52,6 +52,7 @@
     "@osdk/client": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/widget.api": "workspace:~",
     "@osdk/widget.client": "workspace:~",
     "@types/react": "^18.3.24",
     "@types/react-dom": "^18.3.7",
