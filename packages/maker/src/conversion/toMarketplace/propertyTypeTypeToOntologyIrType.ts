@@ -25,13 +25,13 @@ export function propertyTypeTypeToOntologyIrType(
   type: PropertyTypeType,
 ): OntologyIrType {
   switch (true) {
-    case (typeof type === "object" && "markingType" in type):
+    case (typeof type === "object" && type.type === "marking"):
       return {
         "type": "marking",
         marking: { markingType: type.markingType },
       };
 
-    case (typeof type === "object" && "structDefinition" in type):
+    case (typeof type === "object" && type.type === "struct"):
       const structFields: Array<OntologyIrStructFieldType> = new Array();
       for (const key in type.structDefinition) {
         const fieldTypeDefinition = type.structDefinition[key];
@@ -75,16 +75,26 @@ export function propertyTypeTypeToOntologyIrType(
         struct: { structFields },
       };
 
-    case (typeof type === "object" && "isLongText" in type):
+    case (typeof type === "object" && type.type === "string"):
       return {
         "type": "string",
         "string": {
           analyzerOverride: undefined,
-          enableAsciiFolding: undefined,
-          isLongText: type.isLongText,
+          enableAsciiFolding: type.enableAsciiFolding,
+          isLongText: type.isLongText ?? false,
           supportsEfficientLeadingWildcard:
-            type.supportsEfficientLeadingWildcard,
-          supportsExactMatching: type.supportsExactMatching,
+            type.supportsEfficientLeadingWildcard ?? false,
+          supportsExactMatching: type.supportsExactMatching ?? true,
+          supportsFullTextRegex: type.supportsFullTextRegex,
+        },
+      };
+
+    case (typeof type === "object" && type.type === "decimal"):
+      return {
+        "type": "decimal",
+        "decimal": {
+          precision: type.precision,
+          scale: type.scale,
         },
       };
 
@@ -120,6 +130,9 @@ export function propertyTypeTypeToOntologyIrType(
 
     default:
       // use helper function to distribute `type` properly
+      if (typeof type === "object") {
+        throw new Error(`Unhandled exotic type: ${JSON.stringify(type)}`);
+      }
       return distributeTypeHelper(type);
   }
 }
