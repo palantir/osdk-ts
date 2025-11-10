@@ -18,10 +18,10 @@ import type { Client, MediaReference, MediaUpload } from "@osdk/client";
 import { MediaSets } from "@osdk/foundry.mediasets";
 
 export function uploadMedia(
-  _client: Client,
+  client: Client,
   mediaUpload: MediaUpload,
 ): Promise<MediaReference> {
-  return MediaSets.uploadMedia(_client, mediaUpload.data, {
+  return MediaSets.uploadMedia(client, mediaUpload.data, {
     filename: mediaUpload.fileName,
     preview: true,
   });
