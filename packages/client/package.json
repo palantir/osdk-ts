@@ -24,10 +24,7 @@
         "types": "./build/types/public/internal-node.d.ts",
         "default": "./build/esm/public/internal-node.js"
       },
-      "require": {
-        "types": "./build/cjs/public/internal-node.d.cts",
-        "default": "./build/cjs/public/internal-node.cjs"
-      },
+      "require": "./build/cjs/public/internal-node.cjs",
       "default": "./build/browser/public/internal-node.js"
     },
     "./internal": {
