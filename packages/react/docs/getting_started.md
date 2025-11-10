@@ -673,50 +673,12 @@ function TeamMembers({ employees }: { employees: Employee.OsdkInstance[] }) {
 }
 ```
 
-### Streaming Updates for Links
-
-Enable real-time updates for linked objects with `streamUpdates`:
-
-```tsx
-function LiveEmployeeReports(
-  { employee }: { employee: Employee.OsdkInstance },
-) {
-  const { links, isLoading } = useLinks(
-    employee,
-    "reports",
-    {
-      pageSize: 10,
-      orderBy: { name: "asc" },
-      streamUpdates: true, // Enable real-time updates via websocket
-    },
-  );
-
-  // Links automatically update when:
-  // - New reports are added for this employee
-  // - Existing reports are modified
-  // - Reports are removed/unlinked
-
-  return (
-    <div>
-      <h3>Reports ({links?.length})</h3>
-      {links?.map(report => (
-        <div key={report.$primaryKey}>
-          {report.name}
-          {isLoading && " (Updating...)"}
-        </div>
-      ))}
-    </div>
-  );
-}
-```
-
 Options:
 
 - `where` - Filter linked objects
 - `pageSize` - Number of links per page
 - `orderBy` - Sort order for linked objects
 - `mode` - Fetch mode: `"force"` (always fetch), `"offline"` (cache only), or undefined (default)
-- `streamUpdates` - Enable real-time websocket updates (default: false)
 
 Return values:
 

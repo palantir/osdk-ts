@@ -70,12 +70,7 @@ export class LinksHelper extends AbstractHelper<
     options: ObserveLinks.Options<T, L>,
     subFn: Observer<SpecificLinkPayload>,
   ): QuerySubscription<SpecificLinkQuery> {
-    const ret = super.observe(options, subFn);
-
-    if (options.streamUpdates) {
-      ret.query.registerStreamUpdates(ret.subscription);
-    }
-    return ret;
+    return super.observe(options, subFn);
   }
 
   getQuery<

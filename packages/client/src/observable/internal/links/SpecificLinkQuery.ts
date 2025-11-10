@@ -22,7 +22,7 @@ import type {
   WhereClause,
 } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
-import { type Subject, type Subscription } from "rxjs";
+import { type Subject } from "rxjs";
 import { additionalContext } from "../../../Client.js";
 import type { SpecificLinkPayload } from "../../LinkPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
@@ -220,52 +220,6 @@ export class SpecificLinkQuery extends BaseListQuery<
     // No relevant changes were detected
     return Promise.resolve();
   };
-
-  registerStreamUpdates(sub: Subscription): void {
-    const logger = process.env.NODE_ENV !== "production"
-      ? this.logger?.child({ methodName: "registerStreamUpdates" })
-      : this.logger;
-
-    if (process.env.NODE_ENV !== "production") {
-      logger?.child({ methodName: "observeLinks" }).info(
-        "Subscribing from websocket",
-      );
-    }
-
-    void (async () => {
-      try {
-        const client = this.store.client;
-        const sourceObjectDef = {
-          type: "object",
-          apiName: this.#sourceApiName,
-        } as ObjectTypeDefinition;
-
-        const sourceMetadata = await client[additionalContext].ontologyProvider
-          .getObjectDefinition(this.#sourceApiName);
-
-        const sourceQuery = client(sourceObjectDef).where({
-          [sourceMetadata.primaryKeyApiName]: this.#sourcePk,
-        } as WhereClause<typeof sourceObjectDef>);
-
-        const linkQuery = sourceQuery.pivotTo(this.#linkName);
-        const finalQuery =
-          this.#whereClause && Object.keys(this.#whereClause).length > 0
-            ? linkQuery.where(this.#whereClause)
-            : linkQuery;
-
-        this.createWebsocketSubscription(finalQuery, sub, "observeLinks");
-      } catch (error) {
-        if (this.logger) {
-          this.logger.child({ methodName: "registerStreamUpdates" })
-            .error("Failed to register stream updates", error);
-        }
-        this.onOswError({
-          subscriptionClosed: true,
-          error,
-        });
-      }
-    })();
-  }
 
   invalidateObjectType = (
     objectType: string,
