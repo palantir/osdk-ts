@@ -116,12 +116,14 @@ export class OptimisticJob {
 export function runOptimisticJob(
   store: Store,
   optimisticUpdate: undefined | ((ctx: OptimisticBuilder) => void),
+  debugListeners?: OptimisticJobDebugListeners,
 ): () => Promise<void> {
   if (!optimisticUpdate) {
     return () => Promise.resolve();
   }
 
   const optimisticId = createOptimisticId();
+  debugListeners?.onLayerCreated?.(optimisticId);
   const job = new OptimisticJob(store, optimisticId);
   optimisticUpdate(job.context);
   const optimisticApplicationDone = job.getResult();
@@ -131,7 +133,13 @@ export function runOptimisticJob(
       // we don't want to leak the result
       () => undefined,
     ).finally(() => {
+      debugListeners?.onLayerCleared?.(optimisticId);
       store.layers.remove(optimisticId);
     });
   };
+}
+
+export interface OptimisticJobDebugListeners {
+  onLayerCreated?(id: OptimisticId): void;
+  onLayerCleared?(id: OptimisticId): void;
 }

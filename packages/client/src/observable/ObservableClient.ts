@@ -51,6 +51,15 @@ import type { OptimisticBuilder } from "./OptimisticBuilder.js";
 export namespace ObservableClient {
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
+    /**
+     * Internal hook used by developer tooling for lifecycle instrumentation.
+     * Not part of the public API surface.
+     * @internal
+     */
+    __debugListeners?: {
+      onLayerCreated?(id: unknown): void;
+      onLayerCleared?(id: unknown): void;
+    };
   }
 }
 
@@ -87,6 +96,9 @@ export interface ObserveObjectArgs<T extends ObjectTypeDefinition> {
   isOptimistic: boolean;
   status: Status;
   lastUpdated: number;
+  __debugMetadata?: {
+    servedFromCache: boolean;
+  };
 }
 
 // TODO: Rename this from `ObserveObjectsArgs` => `ObserveObjectsCallbackArgs`. Not doing it now to reduce churn
@@ -99,6 +111,9 @@ export interface ObserveObjectsArgs<
   fetchMore: () => Promise<void>;
   hasMore: boolean;
   status: Status;
+  __debugMetadata?: {
+    servedFromCache: boolean;
+  };
 }
 
 export interface ObserveObjectSetArgs<

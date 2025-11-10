@@ -41,6 +41,7 @@ export class ObjectQuery extends Query<
 > {
   #apiName: string;
   #pk: string | number | boolean;
+  #lastFetchWasFromCache = true;
 
   constructor(
     store: Store,
@@ -80,6 +81,11 @@ export class ObjectQuery extends Query<
             object: x.value,
             lastUpdated: x.lastUpdated,
             isOptimistic: x.isOptimistic,
+            __debugMetadata: {
+              servedFromCache: this.#lastFetchWasFromCache
+                && x.status === "loaded",
+              optimisticId: x.optimisticId,
+            },
           };
         }),
       ),
@@ -105,6 +111,12 @@ export class ObjectQuery extends Query<
     // TODO: In the future, implement tracking of network requests to ensure
     // we're not making unnecessary network calls. This would need dedicated
     // tests separate from subscription notification tests.
+    const existingEntry = this.store.getValue(this.cacheKey);
+    const hasCachedData = existingEntry?.value != null;
+
+    if (!hasCachedData) {
+      this.#lastFetchWasFromCache = false;
+    }
 
     const obj = await getBulkObjectLoader(this.store.client)
       .fetch(this.#apiName, this.#pk);
@@ -112,6 +124,8 @@ export class ObjectQuery extends Query<
     this.store.batch({}, (batch) => {
       this.writeToStore(obj, "loaded", batch);
     });
+
+    this.#lastFetchWasFromCache = true;
   }
 
   writeToStore(
