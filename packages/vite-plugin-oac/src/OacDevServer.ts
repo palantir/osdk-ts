@@ -103,8 +103,7 @@ export class OacDevServer extends OacServerContext {
   #handleOacFileChanged = async (filePath: string | undefined) => {
     if (
       filePath
-      && (!filePath.startsWith(`${this.ontologyDir}/`)
-        || !isTypescriptFile(filePath))
+      && (!filePath.startsWith(`${this.ontologyDir}/`))
     ) {
       return;
     }

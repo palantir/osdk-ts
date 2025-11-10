@@ -15,17 +15,12 @@
  */
 
 import type {
-  OntologyIrLogicRuleValue,
-  OntologyIrOntologyBlockDataV2,
-} from "@osdk/client.unstable";
-import type {
   BaseServerObject,
   FauxActionImpl,
   FauxDataStoreBatch,
   FauxFoundry,
 } from "@osdk/faux";
 import type * as Ontologies from "@osdk/foundry.ontologies";
-import { randomUUID } from "node:crypto";
 import { inspect } from "node:util";
 import invariant from "tiny-invariant";
 
@@ -37,7 +32,6 @@ inspect.defaultOptions = {
 export function registerOntologyFullMetadata(
   ontology: ReturnType<FauxFoundry["getOntology"]>,
   ontologyFullMetadata: Ontologies.OntologyFullMetadata,
-  ontologyIrBlockData: OntologyIrOntologyBlockDataV2,
 ): void {
   // Register object types
   Object.values(ontologyFullMetadata.objectTypes).forEach((objectType) => {
@@ -48,7 +42,6 @@ export function registerOntologyFullMetadata(
     const implementation = createActionImplementation(
       actionType,
       ontologyFullMetadata,
-      ontologyIrBlockData,
     );
     const actionTypeWithCamelCaseApiName = {
       ...actionType,
@@ -77,7 +70,6 @@ export function registerOntologyFullMetadata(
 function createActionImplementation(
   actionType: Ontologies.ActionTypeV2,
   fullMetadata: Ontologies.OntologyFullMetadata,
-  ontologyIrBlockData: OntologyIrOntologyBlockDataV2,
 ): FauxActionImpl {
   return (
     batch,
@@ -94,40 +86,19 @@ function createActionImplementation(
       switch (operation.type) {
         case "createObject": {
           // Handle create object operation
-          const { objectType } = getObjectTypeForOperation(
+          const objectType = getObjectTypeForOperation(
             operation,
             fullMetadata,
           );
 
           // we don't store the PK with the other properties
-          const primaryKeyProp = objectType.primaryKey;
-          let primaryKey = extractAndDelete(params, primaryKeyProp);
+          const primaryKeyProp = objectType.objectType.primaryKey;
+          const primaryKey = extractAndDelete(params, primaryKeyProp);
 
           // Create object data from parameters
-          const objectData = paramsToDataValues(params, actionType, objectType);
-
-          // Apply non-parameter property values
-          const index = actionType.operations.indexOf(operation);
-          const ruleIr =
-            ontologyIrBlockData.actionTypes[actionType.apiName].actionType
-              .actionTypeLogic.logic.rules[index];
-          invariant(
-            ruleIr.type === "addObjectRule",
-            `Could not find object ${objectType.apiName} with PK ${primaryKey}`,
-          );
-          Object.entries(ruleIr.addObjectRule.propertyValues).forEach(
-            ([key, propertyValue]) => {
-              const value = getServerProvidedValue(propertyValue);
-              if (value != null) {
-                objectData[key] = value;
-                if (key === primaryKeyProp) {
-                  primaryKey = value;
-                }
-              }
-            },
-          );
+          const objectData = paramsToDataValues(params, actionType);
           batch.addObject(
-            objectType.apiName,
+            objectType.objectType.apiName,
             primaryKey,
             objectData,
           );
@@ -136,7 +107,7 @@ function createActionImplementation(
           handleObjectLinks(
             batch,
             fullMetadata,
-            objectType.apiName,
+            objectType.objectType.apiName,
             primaryKey,
             params,
           );
@@ -174,27 +145,7 @@ function createActionImplementation(
             delete params[objectType.primaryKey];
           }
 
-          const objectData = paramsToDataValues(params, actionType, objectType);
-          // Apply non-parameter property values
-          const index = actionType.operations.indexOf(operation);
-          const ruleIr =
-            ontologyIrBlockData.actionTypes[actionType.apiName].actionType
-              .actionTypeLogic.logic.rules[index];
-          invariant(
-            ruleIr.type === "modifyObjectRule",
-            `Could not find object ${objectType.apiName} with PK ${primaryKey}`,
-          );
-          Object.entries(ruleIr.modifyObjectRule.propertyValues).forEach(
-            ([key, propertyValue]) => {
-              if (key === objectType.primaryKey) {
-                return;
-              }
-              const value = getServerProvidedValue(propertyValue);
-              if (value != null) {
-                objectData[key] = value;
-              }
-            },
-          );
+          const objectData = paramsToDataValues(params, actionType);
           batch.modifyObject(objectType.apiName, primaryKey, objectData);
 
           // TODO: this shouldn't send params but the actual object!
@@ -288,25 +239,6 @@ function createActionImplementation(
   };
 }
 
-function getServerProvidedValue(value: OntologyIrLogicRuleValue) {
-  switch (value.type) {
-    case "currentTime":
-      return new Date().toISOString();
-    case "currentUser":
-      return "current-user-id";
-    case "uniqueIdentifier":
-      return randomUUID();
-    case "staticValue":
-    case "interfaceParameterPropertyValue":
-    case "objectParameterPropertyValue":
-    case "parameterId":
-    case "synchronousWebhookOutput":
-      return;
-    default:
-      value satisfies never;
-  }
-}
-
 function extractAndDelete<K extends string, O extends Record<K, any>>(
   obj: O,
   key: K,
@@ -332,14 +264,10 @@ function getObjectTypeForOperation(
 function paramsToDataValues(
   params: Record<string, any>,
   actionType: Ontologies.ActionTypeV2,
-  objectType: Ontologies.ObjectTypeV2,
 ) {
   const objectData: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(params)) {
-    objectData[key] = toDataValue(
-      value,
-      actionType.parameters[key] ?? objectType.properties[key],
-    );
+    objectData[key] = toDataValue(value, actionType.parameters[key]);
   }
   return objectData;
 }

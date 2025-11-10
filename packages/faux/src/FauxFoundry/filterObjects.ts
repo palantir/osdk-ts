@@ -263,7 +263,8 @@ export function filterObjects(
         return false;
       });
     }
-
+    case "regex":
+      throw new Error("regex not implemented");
     case "wildcard":
       throw new Error("wildcard not implemented");
     // TODO: Implement geospatial filter clauses (require specialized geospatial libraries):

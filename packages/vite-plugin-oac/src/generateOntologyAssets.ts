@@ -41,7 +41,7 @@ export async function generateOntologyAssets(
     logger.info("Created .ontology directory");
   }
 
-  await generateAssets(opts);
+  await fullMetadataToOsdk(opts);
 }
 
 let isGenerating = false;
@@ -56,9 +56,8 @@ async function generateAssets(opts: OacContext) {
   needsRerun = false;
   try {
     // Generate the assets in sequence
-    await ontologyJsToIr(opts);
-    await ontologyIrToFullMetadata(opts);
-    await fullMetadataToOsdk(opts);
+    // await ontologyJsToIr(opts);
+    // await ontologyIrToFullMetadata(opts);
   } finally {
     isGenerating = false;
     if (needsRerun) {
@@ -71,8 +70,8 @@ export function ontologyIrPath(workDir: string): string {
   return path.join(workDir, ".ontology.ir.json");
 }
 
-export function ontologyFullMetadataPath(workDir: string): string {
-  return path.join(workDir, ".ontology.json");
+export function ontologyFullMetadataPath(): string {
+  return "/Volumes/git/pilot/packages/template.local/.pilot/local-ontology.json";
 }
 
 /**
@@ -125,7 +124,7 @@ async function ontologyIrToFullMetadata(
     );
 
     await fs.promises.writeFile(
-      ontologyFullMetadataPath(workDir),
+      ontologyFullMetadataPath(),
       JSON.stringify(fullMeta, null, 2),
     );
 
@@ -166,6 +165,7 @@ async function fullMetadataToOsdk(
   try {
     // Then generate the source code for the osdk
     const tempSrcDir = path.join(tempDir, "src");
+    console.log("HELLO!");
     const { stdout, stderr, exitCode } = await execa("pnpm", [
       "exec",
       "osdk",
@@ -175,7 +175,7 @@ async function fullMetadataToOsdk(
       "--outDir",
       tempSrcDir,
       "--ontologyPath",
-      ontologyFullMetadataPath(workDir),
+      ontologyFullMetadataPath(),
       "--beta",
       "true",
       "--packageType",
