@@ -1,5 +1,14 @@
 # @osdk/foundry-sdk-generator
 
+## 2.5.2
+
+### Patch Changes
+
+- 41274c7: Don't throw for nested array query params
+  - @osdk/api@2.5.2
+  - @osdk/client@2.5.2
+  - @osdk/generator@2.5.2
+
 ## 2.5.1
 
 ### Patch Changes
