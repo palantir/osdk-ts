@@ -380,6 +380,8 @@ export abstract class BaseListQuery<
     }
 
     try {
+      const hadPreviousPage = this.nextPageToken != null;
+
       // Call the subclass-specific implementation to fetch data
       const result = await this.fetchPageData(signal);
 
@@ -390,7 +392,7 @@ export abstract class BaseListQuery<
 
       // Store the fetched data using batch operations
       const { retVal } = this.store.batch({}, (batch) => {
-        const append = this.nextPageToken != null;
+        const append = hadPreviousPage;
         const finalStatus = result.nextPageToken ? status : "loaded";
 
         const objectKeys = this.store.objects.storeOsdkInstances(
