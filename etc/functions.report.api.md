@@ -217,7 +217,7 @@ export type TimestampISOString<T extends string = string> = T & {
 export { TwoDimensionalAggregation }
 
 // @public (undocumented)
-export function uploadMedia(_client: Client, mediaUpload: MediaUpload): Promise<MediaReference>;
+export function uploadMedia(client: Client, mediaUpload: MediaUpload): Promise<MediaReference>;
 
 // @public (undocumented)
 export interface UrlLinkTarget {
