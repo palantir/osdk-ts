@@ -22,6 +22,7 @@ import type {
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
 import { OsdkContext2 } from "./OsdkContext2.js";
+import { useAbortController } from "./useAbortController.js";
 
 type ApplyActionParams<Q extends ActionDefinition<any>> =
   & Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
@@ -71,7 +72,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
   const [validationResult, setValidationResult] = React.useState<
     ActionValidationResponse | undefined
   >();
-  const abortControllerRef = React.useRef<AbortController | null>(null);
+  const { getNewController, abortControllerRef } = useAbortController();
 
   const applyAction = React.useCallback(async function applyAction(
     hookArgs: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>,
@@ -138,14 +139,8 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
         return undefined;
       }
 
-      // Abort any existing validation
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-
-      // Create new AbortController
-      const abortController = new AbortController();
-      abortControllerRef.current = abortController;
+      // Get new controller (automatically aborts any existing one)
+      const abortController = getNewController();
 
       setValidating(true);
       setError(undefined);
@@ -176,16 +171,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
     } finally {
       setValidating(false);
     }
-  }, [observableClient, actionDef, isPending]);
-
-  // Cleanup on unmount
-  React.useEffect(() => {
-    return () => {
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, []);
+  }, [observableClient, actionDef, isPending, getNewController]);
 
   return {
     applyAction,
