@@ -1,5 +1,14 @@
 # @osdk/widget.vite-plugin
 
+## 3.2.4
+
+### Patch Changes
+
+- 3b43586: Support extension-less widget config import and improve reporting when config files not found
+- 66896c7: Fix widget dev mode with tailwind causing project imports
+- 3d7cb29: Propagate validation error cause in message for widget config validation
+  - @osdk/widget.api@3.2.4
+
 ## 3.2.3
 
 ### Patch Changes
