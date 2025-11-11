@@ -238,8 +238,11 @@ export function FoundryWidgetDevPlugin(): Plugin {
       }
 
       // Look for config files that are imported from an entrypoint file
+      // Also check the config file being imported is in src to avoid picking up imports for other
+      // project files like foundry.config.json / eslint.config.mjs when tailwind is used.
       if (
         standardizedSource.replace(/\.[^/.]+$/, "").endsWith(CONFIG_FILE_SUFFIX)
+        && standardizedSource.includes("/src/")
         && codeEntrypoints[standardizedImporter] != null
       ) {
         const fullSourcePath = standardizeFileExtension(
