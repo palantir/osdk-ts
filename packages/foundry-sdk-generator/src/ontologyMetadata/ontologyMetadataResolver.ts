@@ -623,13 +623,6 @@ export class OntologyMetadataResolver {
     switch (baseType.type) {
       case "array":
       case "set":
-        if (
-          baseType.subType.type === "array" || baseType.subType.type === "set"
-        ) {
-          return Result.err([
-            `Unable to load query ${queryApiName} because it takes a nested array or set in parameter ${propertyName}`,
-          ]);
-        }
         return this.visitSupportedQueryTypes(
           queryApiName,
           propertyName,

@@ -15,7 +15,6 @@
  */
 
 import type {
-  Logger,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -90,16 +89,6 @@ export abstract class ListQuery extends BaseListQuery<
   #intersectWith: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined;
   #pivotInfo: Canonical<PivotInfo> | undefined;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
-  #websocketSubscription: { unsubscribe: () => void } | null = null;
-  #subscriptionRefCounts = new RefCounts<"websocket">(
-    process.env.NODE_ENV !== "production" ? 2000 : 5000,
-    () => {
-      if (this.#websocketSubscription) {
-        this.#websocketSubscription.unsubscribe();
-        this.#websocketSubscription = null;
-      }
-    },
-  );
 
   /**
    * Register changes to the cache specific to ListQuery
@@ -396,66 +385,7 @@ export abstract class ListQuery extends BaseListQuery<
   ): ExtractRelevantObjectsResult;
 
   registerStreamUpdates(sub: Subscription): void {
-    const logger = process.env.NODE_ENV !== "production"
-      ? this.logger?.child({ methodName: "registerStreamUpdates" })
-      : this.logger;
-
-    if (process.env.NODE_ENV !== "production") {
-      logger?.child({ methodName: "observeList" }).info(
-        "Subscribing from websocket",
-      );
-    }
-
-    if (!this.#websocketSubscription) {
-      this.#websocketSubscription = this.#objectSet.subscribe({
-        onChange: this.onOswChange.bind(this),
-        onError: this.onOswError.bind(this),
-        onOutOfDate: this.onOswOutOfDate.bind(this),
-        onSuccessfulSubscription: this.onOswSuccessfulSubscription.bind(this),
-      });
-      this.#subscriptionRefCounts.register("websocket");
-    }
-
-    this.#subscriptionRefCounts.retain("websocket");
-
-    sub.add(() => {
-      if (process.env.NODE_ENV !== "production") {
-        logger?.child({ methodName: "observeList" }).info(
-          "Unsubscribing from websocket",
-        );
-      }
-
-      this.#subscriptionRefCounts.release("websocket");
-      this.#subscriptionRefCounts.gc();
-    });
-  }
-
-  protected onOswSuccessfulSubscription(): void {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child(
-        { methodName: "onSuccessfulSubscription" },
-      ).debug("");
-    }
-  }
-
-  protected onOswOutOfDate(): void {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child(
-        { methodName: "onOutOfDate" },
-      ).debug("");
-    }
-  }
-
-  protected onOswError(errors: {
-    subscriptionClosed: boolean;
-    error: any;
-  }): void {
-    if (this.logger) {
-      this.logger?.child({ methodName: "onError" }).error(
-        "subscription errors",
-        errors,
-      );
-    }
+    this.createWebsocketSubscription(this.#objectSet, sub, "observeList");
   }
 
   protected onOswChange(
@@ -486,14 +416,16 @@ export abstract class ListQuery extends BaseListQuery<
         );
       });
     } else if (state === "REMOVED") {
-      this.onOswRemoved(objOrIface, logger);
+      this.onOswRemoved(objOrIface);
     }
   }
 
   protected onOswRemoved(
     objOrIface: Osdk.Instance<ObjectTypeDefinition, never, string, {}>,
-    logger: Logger | undefined,
   ): void {
+    const logger = process.env.NODE_ENV !== "production"
+      ? this.logger?.child({ methodName: "onOswRemoved" })
+      : this.logger;
     this.store.batch({}, (batch) => {
       // Read the truth layer (since not optimistic)
       const existing = batch.read(this.cacheKey);
