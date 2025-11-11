@@ -49,6 +49,7 @@ export const App: React.FC = () => {
   const [pageState, setPageState] = React.useState<PageState>({
     state: "loading",
   });
+  const numAttempts = React.useRef(0);
 
   // Load entrypoints values on mount
   useEffect(() => {
@@ -58,9 +59,10 @@ export const App: React.FC = () => {
   // Poll the finish endpoint until it returns a success or error
   useEffect(() => {
     const poll = window.setInterval(() => {
-      void finish()
+      void finish(numAttempts.current)
         .then((result) => {
           if (result.status === "pending") {
+            numAttempts.current++;
             return;
           }
           if (result.status === "error") {
@@ -148,7 +150,7 @@ function loadEntrypoints(): Promise<string[]> {
   return fetch("../entrypoints").then((res) => res.json());
 }
 
-function finish(): Promise<
+function finish(attempt: number): Promise<
   | {
     status: "success";
     redirectUrl: string | null;
@@ -162,5 +164,5 @@ function finish(): Promise<
     status: "pending";
   }
 > {
-  return fetch("../finish").then((res) => res.json());
+  return fetch(`../finish?attempt=${attempt}`).then((res) => res.json());
 }
