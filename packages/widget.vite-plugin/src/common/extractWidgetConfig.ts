@@ -30,6 +30,17 @@ export async function extractWidgetConfig(
       throw new Error(`No default export found in ${moduleId}`);
     }
 
+    if (
+      typeof config !== "object"
+      || (config["id"] == null && config["name"] == null)
+    ) {
+      server.config.logger.warn(
+        `Config object does not look like a widget config: ${
+          JSON.stringify(config)
+        }`,
+      );
+    }
+
     validateWidgetConfig(config);
     return config as WidgetConfig<ParameterConfig>;
   } catch (error) {
