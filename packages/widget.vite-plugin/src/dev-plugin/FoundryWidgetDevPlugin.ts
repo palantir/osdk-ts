@@ -150,6 +150,7 @@ export function FoundryWidgetDevPlugin(): Plugin {
               "Timed out waiting for widget config files to be parsed. Are you sure a widget config is imported?";
             server.config.logger.error(errorMessage);
             res.setHeader("Content-Type", "application/json");
+            res.statusCode = 500;
             res.end(
               JSON.stringify({
                 status: "error",
