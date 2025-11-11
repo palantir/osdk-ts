@@ -944,6 +944,84 @@ describe(modernToLegacyWhereClause, () => {
     });
   });
 
+  describe("mixed $ operators and regular properties", () => {
+    it("should handle $not operator with regular properties at top level", () => {
+      const whereClause: WhereClause<ObjAllProps> = {
+        integer: { $eq: 5 },
+        $not: { string: { $in: ["a", "b", "c"] } },
+      };
+
+      const result = modernToLegacyWhereClause(
+        whereClause,
+        objectTypeWithAllPropertyTypes,
+      );
+
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "type": "and",
+          "value": [
+            {
+              "field": "integer",
+              "type": "eq",
+              "value": 5,
+            },
+            {
+              "type": "not",
+              "value": {
+                "field": "string",
+                "type": "in",
+                "value": [
+                  "a",
+                  "b",
+                  "c",
+                ],
+              },
+            },
+          ],
+        }
+      `);
+    });
+
+    it("should handle multiple regular properties with $not at top level", () => {
+      const whereClause: WhereClause<ObjAllProps> = {
+        integer: 5,
+        boolean: true,
+        $not: { string: { $eq: "excluded" } },
+      };
+
+      const result = modernToLegacyWhereClause(
+        whereClause,
+        objectTypeWithAllPropertyTypes,
+      );
+
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "type": "and",
+          "value": [
+            {
+              "field": "integer",
+              "type": "eq",
+              "value": 5,
+            },
+            {
+              "field": "boolean",
+              "type": "eq",
+              "value": true,
+            },
+            {
+              "type": "not",
+              "value": {
+                "field": "string",
+                "type": "eq",
+                "value": "excluded",
+              },
+            },
+          ],
+        }
+      `);
+    });
+  });
+
   describe("RDP properties", () => {
     type TestRDPs = {
       reportCount: "integer";
@@ -991,32 +1069,36 @@ describe(modernToLegacyWhereClause, () => {
         rdpNames,
       );
 
-      expect(result).toEqual({
-        type: "and",
-        value: [
-          {
-            type: "eq",
-            field: "department",
-            value: "Engineering",
-          },
-          {
-            type: "gte",
-            propertyIdentifier: {
-              type: "property",
-              apiName: "reportCount",
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "type": "and",
+          "value": [
+            {
+              "field": "department",
+              "type": "eq",
+              "value": "Engineering",
             },
-            value: 5,
-          },
-          {
-            type: "eq",
-            propertyIdentifier: {
-              type: "property",
-              apiName: "managerName",
+            {
+              "field": undefined,
+              "propertyIdentifier": {
+                "apiName": "reportCount",
+                "type": "property",
+              },
+              "type": "gte",
+              "value": 5,
             },
-            value: "John",
-          },
-        ],
-      });
+            {
+              "field": undefined,
+              "propertyIdentifier": {
+                "apiName": "managerName",
+                "type": "property",
+              },
+              "type": "eq",
+              "value": "John",
+            },
+          ],
+        }
+      `);
     });
 
     it("should handle RDP properties in $and clauses", () => {
@@ -1035,24 +1117,27 @@ describe(modernToLegacyWhereClause, () => {
         rdpNames,
       );
 
-      expect(result).toEqual({
-        type: "and",
-        value: [
-          {
-            type: "eq",
-            field: "department",
-            value: "Engineering",
-          },
-          {
-            type: "gte",
-            propertyIdentifier: {
-              type: "property",
-              apiName: "reportCount",
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "type": "and",
+          "value": [
+            {
+              "field": "department",
+              "type": "eq",
+              "value": "Engineering",
             },
-            value: 5,
-          },
-        ],
-      });
+            {
+              "field": undefined,
+              "propertyIdentifier": {
+                "apiName": "reportCount",
+                "type": "property",
+              },
+              "type": "gte",
+              "value": 5,
+            },
+          ],
+        }
+      `);
     });
 
     it("should handle complex nested structures with RDP", () => {
@@ -1080,40 +1165,54 @@ describe(modernToLegacyWhereClause, () => {
       );
 
       // The actual structure flattens the nested $and differently
-      expect(result).toEqual({
-        type: "and",
-        value: [
-          {
-            type: "or",
-            value: [
-              {
-                type: "eq",
-                field: "status",
-                value: "active",
-              },
-              {
-                type: "gte",
-                propertyIdentifier: {
-                  type: "property",
-                  apiName: "reportCount",
-                },
-                value: 10,
-              },
-            ],
-          },
-          {
-            type: "not",
-            value: {
-              type: "eq",
-              propertyIdentifier: {
-                type: "property",
-                apiName: "managerName",
-              },
-              value: "Admin",
+      expect(result).toMatchInlineSnapshot(`
+        {
+          "type": "and",
+          "value": [
+            {
+              "field": "department",
+              "type": "eq",
+              "value": "Engineering",
             },
-          },
-        ],
-      });
+            {
+              "type": "and",
+              "value": [
+                {
+                  "type": "or",
+                  "value": [
+                    {
+                      "field": "status",
+                      "type": "eq",
+                      "value": "active",
+                    },
+                    {
+                      "field": undefined,
+                      "propertyIdentifier": {
+                        "apiName": "reportCount",
+                        "type": "property",
+                      },
+                      "type": "gte",
+                      "value": 10,
+                    },
+                  ],
+                },
+                {
+                  "type": "not",
+                  "value": {
+                    "field": undefined,
+                    "propertyIdentifier": {
+                      "apiName": "managerName",
+                      "type": "property",
+                    },
+                    "type": "eq",
+                    "value": "Admin",
+                  },
+                },
+              ],
+            },
+          ],
+        }
+      `);
     });
   });
 });

@@ -293,9 +293,11 @@ export abstract class BaseListQuery<
     }
 
     if (this.pendingFetch) {
-      this.pendingPageFetch = new Promise(async (res) => {
+      this.pendingPageFetch = (async () => {
         await this.pendingFetch;
-        res(this.fetchMore());
+        await this.fetchMore();
+      })().finally(() => {
+        this.pendingPageFetch = undefined;
       });
       return this.pendingPageFetch;
     }
