@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.6.0-beta.7
+
+### Minor Changes
+
+- 507ec7f: Allows top level filters with an implied and clause to support a combination of a not and and clause
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.7
+- @osdk/client.unstable@2.6.0-beta.7
+- @osdk/generator-converters@2.6.0-beta.7
+
 ## 2.6.0-beta.6
 
 ### Minor Changes

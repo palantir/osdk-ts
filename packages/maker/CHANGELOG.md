@@ -1,5 +1,15 @@
 # @osdk/maker
 
+## 0.14.0-beta.12
+
+### Minor Changes
+
+- 5e4aabd: Add decimal property type customizations
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.7
+
 ## 0.14.0-beta.11
 
 ### Minor Changes
