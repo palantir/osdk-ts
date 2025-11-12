@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import type { Osdk, PageResult } from "@osdk/api";
+import type {
+  ObjectSet,
+  ObjectTypeDefinition,
+  Osdk,
+  PageResult,
+} from "@osdk/api";
 import deepEqual from "fast-deep-equal";
-import type { Connectable, Observable } from "rxjs";
+import type { Connectable, Observable, Subscription } from "rxjs";
 import type {
   CommonObserveOptions,
   Status,
@@ -33,6 +38,7 @@ import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SortingStrategy } from "../sorting/SortingStrategy.js";
 import { NoOpSortingStrategy } from "../sorting/SortingStrategy.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
+import type { ObjectUpdate } from "../types/ObjectUpdate.js";
 import type {
   CollectionConnectableParams,
   CollectionStorageData,
@@ -287,9 +293,11 @@ export abstract class BaseListQuery<
     }
 
     if (this.pendingFetch) {
-      this.pendingPageFetch = new Promise(async (res) => {
+      this.pendingPageFetch = (async () => {
         await this.pendingFetch;
-        res(this.fetchMore());
+        await this.fetchMore();
+      })().finally(() => {
+        this.pendingPageFetch = undefined;
       });
       return this.pendingPageFetch;
     }
@@ -534,5 +542,146 @@ export abstract class BaseListQuery<
 
     // Step 5: Write to store
     return this.writeToStore({ data: objectCacheKeys }, options.status, batch);
+  }
+
+  //
+  // Shared Websocket Subscription Methods
+  //
+
+  /**
+   * Create standard websocket subscription handlers for an ObjectSet.
+   * Subclasses can override individual handlers for custom behavior.
+   *
+   * @param objectSet The ObjectSet to subscribe to
+   * @param sub The parent subscription to add cleanup to
+   * @param methodName The method name for logging purposes
+   */
+  protected createWebsocketSubscription(
+    objectSet: ObjectSet<any>,
+    sub: Subscription,
+    methodName: string = "registerStreamUpdates",
+  ): void {
+    const logger = process.env.NODE_ENV !== "production"
+      ? this.logger?.child({ methodName })
+      : this.logger;
+
+    if (process.env.NODE_ENV !== "production") {
+      logger?.child({ methodName }).info("Subscribing from websocket");
+    }
+
+    try {
+      const websocketSubscription = objectSet.subscribe({
+        onChange: this.onOswChange.bind(this),
+        onError: this.onOswError.bind(this),
+        onOutOfDate: this.onOswOutOfDate.bind(this),
+        onSuccessfulSubscription: this.onOswSuccessfulSubscription.bind(this),
+      });
+
+      sub.add(() => {
+        if (process.env.NODE_ENV !== "production") {
+          logger?.child({ methodName }).info("Unsubscribing from websocket");
+        }
+        websocketSubscription.unsubscribe();
+      });
+    } catch (error) {
+      if (this.logger) {
+        this.logger.child({ methodName })
+          .error("Failed to register stream updates", error);
+      }
+      this.onOswError({ subscriptionClosed: true, error });
+    }
+  }
+
+  /**
+   * Handler called when websocket subscription is successfully established.
+   */
+  protected onOswSuccessfulSubscription(): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "onSuccessfulSubscription" }).debug("");
+    }
+  }
+
+  /**
+   * Handler called when subscribed data becomes out of date.
+   */
+  protected onOswOutOfDate(): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "onOutOfDate" }).debug("");
+    }
+  }
+
+  /**
+   * Handler called when websocket subscription encounters an error.
+   */
+  protected onOswError(errors: {
+    subscriptionClosed: boolean;
+    error: unknown;
+  }): void {
+    if (this.logger) {
+      this.logger?.child({ methodName: "onError" }).error(
+        "subscription errors",
+        errors,
+      );
+    }
+  }
+
+  /**
+   * Handler called when an object in the subscribed set is added or updated.
+   * Default implementation stores the object with RDP config if available.
+   *
+   * @param update The object update notification
+   */
+  protected onOswChange(
+    { object, state }: ObjectUpdate<ObjectTypeDefinition, string>,
+  ): void {
+    const logger = process.env.NODE_ENV !== "production"
+      ? this.logger?.child({ methodName: "registerStreamUpdates" })
+      : this.logger;
+
+    if (process.env.NODE_ENV !== "production") {
+      logger?.child({ methodName: "onChange" }).debug(
+        `Got an update of type: ${state}`,
+        object,
+      );
+    }
+
+    if (state === "ADDED_OR_UPDATED") {
+      this.store.batch({}, (batch) => {
+        this.store.objects.storeOsdkInstances(
+          [object as Osdk.Instance<ObjectTypeDefinition>],
+          batch,
+          this.rdpConfig, // Safe - null for queries without RDPs
+        );
+      });
+    } else if (state === "REMOVED") {
+      this.onOswRemoved(object);
+    }
+  }
+
+  /**
+   * Handler called when an object is removed from the subscribed set.
+   * Default implementation deletes the object from cache.
+   * ListQuery overrides this for list-specific removal logic.
+   *
+   * @param object The removed object
+   */
+  protected onOswRemoved(
+    object: Osdk.Instance<ObjectTypeDefinition, never, string, {}>,
+  ): void {
+    if (process.env.NODE_ENV !== "production") {
+      this.logger?.child({ methodName: "onRemoved" }).debug(
+        "Removing object",
+        object,
+      );
+    }
+
+    this.store.batch({}, (batch) => {
+      const objectCacheKey = this.store.cacheKeys.get(
+        "object",
+        object.$apiName,
+        object.$primaryKey,
+      );
+      batch.delete(objectCacheKey, "loaded");
+    });
   }
 }

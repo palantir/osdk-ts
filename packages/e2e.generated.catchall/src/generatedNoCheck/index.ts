@@ -71,6 +71,7 @@ export {
   getBusId,
   getBusInterface,
   getBusInterfaceSet,
+  getFirstSecondElementOf2DArray,
   getNamesOfCustomersFromCountry,
   getTodoCount,
   queryTakesAllParameterTypes,

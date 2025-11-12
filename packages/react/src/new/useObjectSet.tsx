@@ -94,6 +94,15 @@ export interface UseObjectSetOptions<
   autoFetchMore?: boolean | number;
 
   /**
+   * Enable streaming updates via websocket subscription.
+   * When true, the object set will automatically update when matching objects are
+   * added, updated, or removed.
+   *
+   * @default false
+   */
+  streamUpdates?: boolean;
+
+  /**
    * Enable or disable the query.
    *
    * When `false`, the query will not automatically execute. It will still
@@ -174,7 +183,7 @@ export function useObjectSet<
 ): UseObjectSetResult<Q, RDPs> {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const { enabled = true, ...otherOptions } = options;
+  const { enabled = true, streamUpdates, ...otherOptions } = options;
 
   // Compute a stable cache key for the ObjectSet and options
   // dedupeIntervalMs and enabled are excluded as they don't affect the data
@@ -214,6 +223,7 @@ export function useObjectSet<
               orderBy: otherOptions.orderBy,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
               autoFetchMore: otherOptions.autoFetchMore,
+              streamUpdates,
             },
             observer,
           );
@@ -224,7 +234,7 @@ export function useObjectSet<
           : void 0,
       );
     },
-    [enabled, observableClient, stableKey],
+    [enabled, observableClient, stableKey, streamUpdates],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);

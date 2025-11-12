@@ -40,7 +40,8 @@ export type PropertyTypeTypeExotic =
   | "geotimeSeries"
   | PropertyTypeTypeMarking
   | PropertyTypeTypeStruct
-  | PropertyTypeTypeString;
+  | PropertyTypeTypeString
+  | PropertyTypeTypeDecimal;
 
 type PropertyTypeTypeMarking = {
   type: "marking";
@@ -59,9 +60,17 @@ export type PropertyTypeTypeStruct = {
 
 type PropertyTypeTypeString = {
   type: "string";
-  isLongText: boolean;
-  supportsEfficientLeadingWildcard: boolean;
-  supportsExactMatching: boolean;
+  isLongText?: boolean;
+  supportsEfficientLeadingWildcard?: boolean;
+  supportsExactMatching?: boolean;
+  supportsFullTextRegex?: boolean;
+  enableAsciiFolding?: boolean;
+};
+
+type PropertyTypeTypeDecimal = {
+  type: "decimal";
+  precision?: number;
+  scale?: number;
 };
 
 export type PropertyTypeTypesWithoutStruct = Exclude<

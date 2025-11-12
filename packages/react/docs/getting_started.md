@@ -864,6 +864,37 @@ function EmployeeDepartments(
 }
 ```
 
+### Streaming Updates for ObjectSets
+
+Enable real-time updates for ObjectSet queries with `streamUpdates`:
+
+```tsx
+function LiveTodoList() {
+  const { data, isLoading } = useObjectSet(Todo.all(), {
+    where: { isComplete: false },
+    orderBy: { createdAt: "desc" },
+    streamUpdates: true, // Enable real-time updates via websocket
+  });
+
+  // Data automatically updates when:
+  // - New todos matching the where clause are created
+  // - Existing todos are modified
+  // - Todos are deleted or no longer match the where clause
+
+  return (
+    <div>
+      <h3>Live Todo List ({data?.length})</h3>
+      {data?.map(todo => (
+        <div key={todo.$primaryKey}>
+          {todo.title}
+          {isLoading && " (Updating...)"}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
 Options:
 
 - `where` - Filter objects
@@ -875,6 +906,7 @@ Options:
 - `pageSize` - Number of objects per page
 - `orderBy` - Sort order
 - `dedupeIntervalMs` - Minimum time between re-fetches (default: 2000ms)
+- `streamUpdates` - Enable real-time websocket updates (default: false)
 
 Return values:
 

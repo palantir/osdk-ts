@@ -15,7 +15,7 @@
  */
 
 import type { ObjectSet, Osdk, PageResult } from "@osdk/api";
-import type { Observable } from "rxjs";
+import type { Observable, Subscription } from "rxjs";
 import { additionalContext } from "../../../Client.js";
 import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import type { ObjectSetPayload } from "../../ObjectSetPayload.js";
@@ -197,6 +197,14 @@ export class ObjectSetQuery extends BaseListQuery<
     this.store.subjects.get(this.cacheKey).error(error);
 
     return this.writeToStore({ data: [] }, "error", batch);
+  }
+
+  registerStreamUpdates(sub: Subscription): void {
+    this.createWebsocketSubscription(
+      this.#composedObjectSet,
+      sub,
+      "observeObjectSet",
+    );
   }
 
   invalidateObjectType = async (

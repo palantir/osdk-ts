@@ -1,5 +1,34 @@
 # @osdk/maker
 
+## 0.14.0-beta.11
+
+### Minor Changes
+
+- 09242c5: Move mustache dependency
+
+## 0.14.0-beta.10
+
+### Minor Changes
+
+- 6532b54: Move osdk/typescript-sdk-docs from dev dependencies to normal dep
+
+### Patch Changes
+
+- Updated dependencies [b959085]
+  - @osdk/api@2.6.0-beta.6
+
+## 0.14.0-beta.9
+
+### Minor Changes
+
+- 55e104e: Add code snippet generation into osdk/maker
+- 949646b: Fix delete interface bug
+
+### Patch Changes
+
+- Updated dependencies [2556c64]
+  - @osdk/api@2.6.0-beta.5
+
 ## 0.14.0-beta.8
 
 ### Minor Changes

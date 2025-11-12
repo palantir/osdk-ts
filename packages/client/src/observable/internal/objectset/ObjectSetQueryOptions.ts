@@ -49,6 +49,15 @@ export interface ObserveObjectSetOptions<
    * - `undefined` (default): Only fetch the first page, user must call fetchMore()
    */
   autoFetchMore?: boolean | number;
+
+  /**
+   * Enable streaming updates via websocket subscription.
+   * When true, the object set will automatically update when matching objects are
+   * added, updated, or removed.
+   *
+   * @default false
+   */
+  streamUpdates?: boolean;
 }
 
 export interface ObjectSetQueryOptions

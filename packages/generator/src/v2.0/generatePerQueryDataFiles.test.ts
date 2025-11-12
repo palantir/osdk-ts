@@ -253,6 +253,18 @@ describe("generatePerQueryDataFiles", () => {
                   foo: {
                     dataType: { type: "string" },
                   },
+                  listField: {
+                    dataType: { type: "array", "subType": { "type": "float" } },
+                  },
+                  nestedListField: {
+                    dataType: {
+                      type: "array",
+                      "subType": {
+                        "type": "array",
+                        "subType": { "type": "float" },
+                      },
+                    },
+                  },
                   paramStruct: {
                     dataType: {
                       type: "struct",
@@ -355,6 +367,16 @@ describe("generatePerQueryDataFiles", () => {
             /**
              * (no ontology metadata)
              */
+            readonly listField: ReadonlyArray<QueryParam.PrimitiveType<'float'>>;
+
+            /**
+             * (no ontology metadata)
+             */
+            readonly nestedListField: ReadonlyArray<ReadonlyArray<QueryParam.PrimitiveType<'float'>>>;
+
+            /**
+             * (no ontology metadata)
+             */
             readonly paramStruct: {
               readonly aDate: QueryParam.PrimitiveType<'datetime'>;
 
@@ -397,6 +419,35 @@ describe("generatePerQueryDataFiles", () => {
               foo: {
                 nullable: false;
                 type: 'string';
+              };
+              /**
+               * (no ontology metadata)
+               */
+              listField: {
+                array: {
+                  type: 'float';
+                  nullable: false;
+                };
+                multiplicity: true;
+                nullable: false;
+                type: 'array';
+              };
+              /**
+               * (no ontology metadata)
+               */
+              nestedListField: {
+                array: {
+                  array: {
+                    type: 'float';
+                    nullable: false;
+                  };
+                  type: 'array';
+                  nullable: false;
+                  multiplicity: true;
+                };
+                multiplicity: true;
+                nullable: false;
+                type: 'array';
               };
               /**
                * (no ontology metadata)
