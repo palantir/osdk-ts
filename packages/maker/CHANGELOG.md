@@ -1,5 +1,32 @@
 # @osdk/maker
 
+## 0.14.0-beta.12
+
+### Minor Changes
+
+- 5e4aabd: Add decimal property type customizations
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.7
+
+## 0.14.0-beta.11
+
+### Minor Changes
+
+- 09242c5: Move mustache dependency
+
+## 0.14.0-beta.10
+
+### Minor Changes
+
+- 6532b54: Move osdk/typescript-sdk-docs from dev dependencies to normal dep
+
+### Patch Changes
+
+- Updated dependencies [b959085]
+  - @osdk/api@2.6.0-beta.6
+
 ## 0.14.0-beta.9
 
 ### Minor Changes

@@ -16,6 +16,7 @@
 
 import { NULL_VALUE } from "@osdk/api";
 import type { ActionMetadata } from "@osdk/api";
+import { MediaSets } from "@osdk/foundry.mediasets";
 import { type DataValue } from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -101,17 +102,14 @@ export async function toDataValue(
   // new media item upload interface, very similar to how attachments work above
 
   if (isMediaUpload(value)) {
-    const mediaRef = await OntologiesV2.MediaReferenceProperties
-      .uploadMedia(
-        client,
-        await client.ontologyRid,
-        actionMetadata.apiName,
-        value.data,
-        {
-          mediaItemPath: value.path,
-          preview: true,
-        },
-      );
+    const mediaRef = await MediaSets.uploadMedia(
+      client,
+      value.data,
+      {
+        filename: value.fileName,
+        preview: true,
+      },
+    );
     return await toDataValue(mediaRef, client, actionMetadata);
   }
 

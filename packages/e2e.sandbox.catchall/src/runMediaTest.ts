@@ -17,6 +17,7 @@
 import type { Media, MediaReference, MediaUpload } from "@osdk/api";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
 import { $Actions, MnayanOsdkMediaObject } from "@osdk/e2e.generated.catchall";
+import { uploadMedia } from "@osdk/functions";
 import { client } from "./client.js";
 
 async function runReadMediaTest(ref: Media): Promise<Blob> {
@@ -70,6 +71,10 @@ async function runCreateMediaReferenceTest(
       console.log("Request failed as expected");
     });
 
+  console.log("Now trying to upload directly to ephemeral ");
+  await uploadMedia(client, { fileName: "test15.png", data });
+  console.log("ephemeral upload success!");
+
   // should work
   return client(__EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference)
     .createMediaReference({
@@ -81,7 +86,7 @@ async function runCreateMediaReferenceTest(
 }
 
 async function runUploadMediaTest(data: Blob): Promise<void> {
-  const payload: MediaUpload = { data, path: "test15.png" };
+  const payload: MediaUpload = { data, fileName: "test15.png" };
 
   const result = await client($Actions.createUnstructuredImageExample)
     .applyAction({

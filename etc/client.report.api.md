@@ -25,6 +25,8 @@ import { InterfaceMetadata } from '@osdk/api';
 import type { InterfaceQueryDataType } from '@osdk/api';
 import { isOk } from '@osdk/api';
 import { Logger } from '@osdk/api';
+import { MediaReference } from '@osdk/api';
+import { MediaUpload } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
 import { NULL_VALUE } from '@osdk/api';
 import { ObjectMetadata } from '@osdk/api';
@@ -158,6 +160,10 @@ export { InterfaceMetadata }
 export { isOk }
 
 export { Logger }
+
+export { MediaReference }
+
+export { MediaUpload }
 
 export { NULL_VALUE }
 

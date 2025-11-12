@@ -63,6 +63,16 @@ export class LinksHelper extends AbstractHelper<
     this.orderByCanonicalizer = orderByCanonicalizer;
   }
 
+  observe<
+    T extends ObjectTypeDefinition,
+    L extends keyof CompileTimeMetadata<T>["links"] & string,
+  >(
+    options: ObserveLinks.Options<T, L>,
+    subFn: Observer<SpecificLinkPayload>,
+  ): QuerySubscription<SpecificLinkQuery> {
+    return super.observe(options, subFn);
+  }
+
   getQuery<
     T extends ObjectTypeDefinition,
     L extends keyof CompileTimeMetadata<T>["links"] & string,

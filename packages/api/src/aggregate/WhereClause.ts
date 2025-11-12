@@ -27,7 +27,7 @@ import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { BaseWirePropertyTypes } from "../ontology/WirePropertyTypes.js";
 import type { IsNever } from "../OsdkObjectFrom.js";
 import type { ArrayFilter } from "./ArrayFilter.js";
-import type { BaseFilter, EqFilter } from "./BaseFilter.js";
+import type { BaseFilter } from "./BaseFilter.js";
 import type { BooleanFilter } from "./BooleanFilter.js";
 import type { DatetimeFilter } from "./DatetimeFilter.js";
 import type { GeoFilter } from "./GeoFilter.js";
@@ -165,11 +165,7 @@ type FilterFor<PD extends ObjectMetadata.Property> = PD["multiplicity"] extends
     : BaseFilter<string>); // FIXME we need to represent all types
 
 type StructArrayFilterOpts<ST extends Record<string, BaseWirePropertyTypes>> = {
-  [K in keyof ST]?: ST[K] extends
-    PropertyTypesRepresentedAsStringsForArrayWhereClause ? EqFilter.$eq<string>
-    : ST[K] extends boolean ? EqFilter.$eq<boolean>
-    : ST[K] extends WhereClauseNumberPropertyTypes ? EqFilter.$eq<number>
-    : never;
+  [K in keyof ST]?: FilterFor<{ "type": ST[K] }>;
 };
 
 type StructFilterOpts<ST extends Record<string, BaseWirePropertyTypes>> = {

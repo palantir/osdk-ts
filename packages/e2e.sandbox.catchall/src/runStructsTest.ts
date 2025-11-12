@@ -56,11 +56,12 @@ export async function runStructsTest(): Promise<void> {
   console.log(airportFilteredShouldNotHaveData.data[0]);
 
   const filteredArrayOfStruct = await client(OsdkTestObject).where({
-    structArray: { $contains: { string1: { $eq: "Nope" } } },
+    structArray: { $contains: { string1: { $containsAnyTerm: "Nope" } } },
   }).fetchPage();
+
   const filteredArrayOfStructWith2 = await client(OsdkTestObject).where({
     $or: [{ structArray: { $contains: { string1: { $eq: "Nope" } } } }, {
-      structArray: { $contains: { string1: { $eq: "osdktest" } } },
+      structArray: { $contains: { number: { $gt: 5 } } },
     }],
   }).fetchPage();
 

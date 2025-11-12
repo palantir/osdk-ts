@@ -31,8 +31,8 @@ export function isMediaReference(o: any): o is MediaReference {
 
 export function isMediaUpload(o: any): o is MediaUpload {
   return typeof o === "object"
-    && "path" in o
-    && typeof o.path === "string"
+    && "fileName" in o
+    && typeof o.fileName === "string"
     && "data" in o
     && typeof o.data === "object"
     && o.data instanceof Blob;

@@ -55,7 +55,12 @@ export class ObjectSetHelper extends AbstractHelper<
     options: ObjectSetQueryOptions,
     subFn: Observer<ObjectSetPayload>,
   ): QuerySubscription<ObjectSetQuery> {
-    return super.observe(options, subFn);
+    const ret = super.observe(options, subFn);
+
+    if (options.streamUpdates) {
+      ret.query.registerStreamUpdates(ret.subscription);
+    }
+    return ret;
   }
 
   getQuery(options: ObjectSetQueryOptions): ObjectSetQuery {

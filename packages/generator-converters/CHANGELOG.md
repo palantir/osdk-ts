@@ -1,5 +1,22 @@
 # @osdk/generator-converters
 
+## 2.6.0-beta.7
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.7
+
+## 2.6.0-beta.6
+
+### Minor Changes
+
+- b959085: Fix nested array query param type handling
+
+### Patch Changes
+
+- Updated dependencies [b959085]
+  - @osdk/api@2.6.0-beta.6
+
 ## 2.6.0-beta.5
 
 ### Patch Changes

@@ -63,7 +63,8 @@ export type QueryDataTypeDefinition<
   | StructQueryDataType
   | TwoDimensionalAggregationDataType
   | ThreeDimensionalAggregationDataType
-  | MapDataType;
+  | MapDataType
+  | ArrayQueryDataType;
 
 export type BaseQueryDataTypeDefinition<T extends string> = {
   multiplicity?: boolean;
@@ -118,6 +119,12 @@ export interface SetQueryDataType extends BaseQueryDataTypeDefinition<"set"> {
   set: QueryDataTypeDefinition;
 }
 
+export interface ArrayQueryDataType
+  extends BaseQueryDataTypeDefinition<"array">
+{
+  array: QueryDataTypeDefinition;
+  multiplicity: true;
+}
 export interface UnionQueryDataType
   extends BaseQueryDataTypeDefinition<"union">
 {

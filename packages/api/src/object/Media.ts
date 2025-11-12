@@ -49,7 +49,7 @@ export interface MediaReference {
  * Object for uploading Media
  */
 export interface MediaUpload {
-  readonly path: string;
+  readonly fileName: string;
   readonly data: Blob;
 }
 

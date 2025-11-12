@@ -177,6 +177,7 @@ async function transpileWithTsup(format, target) {
     noExternal: format === "cjs"
       ? [
         "@osdk/foundry.ontologies",
+        "@osdk/foundry.mediasets",
         "@osdk/shared.client",
         "@osdk/shared.client2",
         "delay",

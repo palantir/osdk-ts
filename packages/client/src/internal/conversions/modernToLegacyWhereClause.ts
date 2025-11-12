@@ -72,6 +72,37 @@ export function modernToLegacyWhereClause<
   objectOrInterface: T,
   rdpNames?: Set<string>,
 ): SearchJsonQueryV2 {
+  const parts = Object.entries(whereClause).map(([key, value]) => ({
+    [key]: value,
+  })) as WhereClause<T, RDPs>[];
+  if (parts.length === 1) {
+    return modernToLegacyWhereClauseInner(
+      whereClause,
+      objectOrInterface,
+      rdpNames,
+    );
+  }
+  return {
+    type: "and",
+    value: parts.map<SearchJsonQueryV2>(
+      v => modernToLegacyWhereClauseInner(v, objectOrInterface, rdpNames),
+    ),
+  };
+}
+
+/** @internal */
+export function modernToLegacyWhereClauseInner<
+  T extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+>(
+  whereClause: WhereClause<T, RDPs>,
+  objectOrInterface: T,
+  rdpNames?: Set<string>,
+): SearchJsonQueryV2 {
+  const parts = Object.entries(whereClause);
+
+  invariant(parts.length === 1, "Invalid where clause provided.");
+
   if (isAndClause(whereClause)) {
     return {
       type: "and",
@@ -99,18 +130,7 @@ export function modernToLegacyWhereClause<
     };
   }
 
-  const parts = Object.entries(whereClause);
-
-  if (parts.length === 1) {
-    return handleWherePair(parts[0], objectOrInterface, undefined, rdpNames);
-  }
-
-  return {
-    type: "and",
-    value: parts.map<SearchJsonQueryV2>(
-      v => handleWherePair(v, objectOrInterface, undefined, rdpNames),
-    ),
-  };
+  return handleWherePair(parts[0], objectOrInterface, undefined, rdpNames);
 }
 
 function handleWherePair(
@@ -146,11 +166,16 @@ function handleWherePair(
     ? fullyQualifyPropName(fieldName, objectOrInterface)
     : undefined;
 
+  invariant(
+    field == null
+      || propertyIdentifier == null && (field != null || isRdp != null),
+    "Encountered error constructing where clause: field and propertyIdentifier cannot both be defined",
+  );
+
   if (
     typeof filter === "string" || typeof filter === "number"
     || typeof filter === "boolean"
   ) {
-    propertyIdentifier;
     return {
       type: "eq",
       ...(propertyIdentifier != null
@@ -171,6 +196,7 @@ function handleWherePair(
     "A WhereClause Filter with multiple clauses/fields is not allowed. Instead, use an 'or'/'and' clause to combine multiple filters.",
   );
 
+  // Struct
   if (!hasDollarSign) {
     const structFilter = Object.entries(filter);
     invariant(
@@ -186,6 +212,21 @@ function handleWherePair(
 
   const firstKey = keysOfFilter[0] as PossibleWhereClauseFilters;
   invariant(filter[firstKey] != null);
+
+  // Struct array
+  if (firstKey === "$contains" && filter[firstKey] instanceof Object) {
+    const structFilter: [string, any][] = Object.entries(filter[firstKey]);
+    invariant(
+      structFilter.length === 1,
+      "Cannot filter on more than one struct field in the same clause, need to use an and clause",
+    );
+    const structFieldApiName = structFilter[0][0];
+
+    return handleWherePair(structFilter[0], objectOrInterface, {
+      propertyApiName: fieldName,
+      structFieldApiName,
+    });
+  }
 
   if (firstKey === "$ne") {
     return {
@@ -217,30 +258,6 @@ function handleWherePair(
       fuzzy: typeof filter[firstKey] === "string"
         ? false
         : filter[firstKey]["fuzzySearch"] ?? false,
-    };
-  }
-
-  if (firstKey === "$contains" && filter[firstKey] instanceof Object) {
-    const structFilter: [string, any][] = Object.entries(filter[firstKey]);
-    invariant(
-      structFilter.length === 1,
-      "Cannot filter on more than one struct field in the same clause, need to use an and clause",
-    );
-    const structFieldApiName = structFilter[0][0];
-    invariant(
-      structFilter[0][1] != null
-        && Object.keys(structFilter[0][1]).length === 1
-        && "$eq" in structFilter[0][1],
-      "Cannot filter on a struct field in an array with anything other than a single $eq",
-    );
-    return {
-      type: "contains",
-      propertyIdentifier: {
-        type: "structField",
-        propertyApiName: fieldName,
-        structFieldApiName,
-      },
-      value: structFilter[0][1]["$eq"],
     };
   }
 
