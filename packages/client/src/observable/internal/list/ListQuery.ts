@@ -41,7 +41,6 @@ import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
 import type { PivotInfo } from "../PivotCanonicalizer.js";
-import { RefCounts } from "../RefCounts.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
