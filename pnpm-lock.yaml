@@ -3309,13 +3309,10 @@ importers:
         specifier: workspace:^
         version: link:../client
       '@osdk/foundry.core':
-        specifier: ^2.38.0
-        version: 2.38.0
-      '@osdk/foundry.mediasets':
-        specifier: ^2.38.0
+        specifier: ^2.30.0
         version: 2.38.0
       '@osdk/foundry.ontologies':
-        specifier: ^2.38.0
+        specifier: ^2.35.0
         version: 2.38.0
       '@types/geojson':
         specifier: ^7946.0.16
