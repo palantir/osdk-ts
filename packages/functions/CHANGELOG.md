@@ -1,5 +1,11 @@
 # @osdk/functions
 
+## 1.4.0-beta.4
+
+### Minor Changes
+
+- 7f9f123: Add foundry hostname util
+
 ## 1.4.0-beta.3
 
 ### Minor Changes
