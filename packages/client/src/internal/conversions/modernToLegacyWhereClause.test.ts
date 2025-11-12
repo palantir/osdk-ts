@@ -855,6 +855,65 @@ describe(modernToLegacyWhereClause, () => {
       }
     `);
       });
+      it("converts struct arrays correctly", () => {
+        expect(
+          modernToLegacyWhereClause<structObj>({
+            $and: [{
+              addressArray: { $contains: { zipCode: { $gte: 10001 } } },
+            }, {
+              addressArray: {
+                $contains: {
+                  location: {
+                    $within: [1, 2, 3, 4],
+                  },
+                },
+              },
+            }],
+          }, BgaoNflPlayer),
+        )
+          .toMatchInlineSnapshot(`
+            {
+              "type": "and",
+              "value": [
+                {
+                  "field": undefined,
+                  "propertyIdentifier": {
+                    "propertyApiName": "addressArray",
+                    "structFieldApiName": "zipCode",
+                    "type": "structField",
+                  },
+                  "type": "gte",
+                  "value": 10001,
+                },
+                {
+                  "field": undefined,
+                  "propertyIdentifier": {
+                    "propertyApiName": "addressArray",
+                    "structFieldApiName": "location",
+                    "type": "structField",
+                  },
+                  "type": "withinBoundingBox",
+                  "value": {
+                    "bottomRight": {
+                      "coordinates": [
+                        3,
+                        2,
+                      ],
+                      "type": "Point",
+                    },
+                    "topLeft": {
+                      "coordinates": [
+                        1,
+                        4,
+                      ],
+                      "type": "Point",
+                    },
+                  },
+                },
+              ],
+            }
+          `);
+      });
     });
 
     describe("multiple checks", () => {
