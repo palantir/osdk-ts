@@ -1,5 +1,17 @@
 # @osdk/functions
 
+## 1.4.0-beta.3
+
+### Minor Changes
+
+- a1ffb20: Use new ephemeral media upload endpoint.
+
+### Patch Changes
+
+- Updated dependencies [a1ffb20]
+- Updated dependencies [e62c692]
+  - @osdk/client@2.6.0-beta.8
+
 ## 1.4.0-beta.2
 
 ### Minor Changes
