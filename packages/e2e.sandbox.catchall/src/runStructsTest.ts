@@ -14,42 +14,46 @@
  * limitations under the License.
  */
 
-import { OsdkTestObject } from "@osdk/e2e.generated.catchall";
-import { client } from "./client.js";
+import {
+  BgaoNflPlayer,
+  McAirportStruct,
+  OsdkTestObject,
+} from "@osdk/e2e.generated.catchall";
+import { client, dsClient } from "./client.js";
 
 export async function runStructsTest(): Promise<void> {
-  // const player = await dsClient(BgaoNflPlayer).fetchOne(
-  //   "50A409AB-C909-453A-A61A-31B51324C8E3",
-  // );
+  const player = await dsClient(BgaoNflPlayer).fetchOne(
+    "50A409AB-C909-453A-A61A-31B51324C8E3",
+  );
 
-  // // Making sure things work when struct values are not set, like with this object
-  // console.log(player);
-  // console.log(player.address);
-  // console.log(player.address?.addressLine1);
+  // Making sure things work when struct values are not set, like with this object
+  console.log(player);
+  console.log(player.address);
+  console.log(player.address?.addressLine1);
 
-  // const airport = await dsClient(McAirportStruct).fetchOne(
-  //   "Ronald Reagan Washington National Airport",
-  // );
+  const airport = await dsClient(McAirportStruct).fetchOne(
+    "Ronald Reagan Washington National Airport",
+  );
 
-  // console.log(airport.airportStruct);
-  // console.log(airport.airportStruct?.geoHash);
+  console.log(airport.airportStruct);
+  console.log(airport.airportStruct?.geoHash);
 
-  // const airportFilteredShouldHaveData = await dsClient(McAirportStruct)
-  //   .where({
-  //     $and: [{ airportStruct: { code: { $startsWith: "D" } } }, {
-  //       airportStruct: { timestamp: { $startsWith: "173" } },
-  //     }, { airportName: { $containsAnyTerm: "Reagan" } }],
-  //   }).fetchPage();
-  // const airportFilteredShouldNotHaveData = await dsClient(McAirportStruct)
-  //   .where({
-  //     $and: [{ airportStruct: { code: { $startsWith: "B" } } }, {
-  //       airportStruct: { timestamp: { $startsWith: "173" } },
-  //     }],
-  //   }).fetchPage();
-  // console.log("Full With Data :", airportFilteredShouldHaveData);
-  // console.log(airportFilteredShouldHaveData.data[0].airportStruct);
-  // console.log("Full Without Data :", airportFilteredShouldNotHaveData);
-  // console.log(airportFilteredShouldNotHaveData.data[0]);
+  const airportFilteredShouldHaveData = await dsClient(McAirportStruct)
+    .where({
+      $and: [{ airportStruct: { code: { $startsWith: "D" } } }, {
+        airportStruct: { timestamp: { $startsWith: "173" } },
+      }, { airportName: { $containsAnyTerm: "Reagan" } }],
+    }).fetchPage();
+  const airportFilteredShouldNotHaveData = await dsClient(McAirportStruct)
+    .where({
+      $and: [{ airportStruct: { code: { $startsWith: "B" } } }, {
+        airportStruct: { timestamp: { $startsWith: "173" } },
+      }],
+    }).fetchPage();
+  console.log("Full With Data :", airportFilteredShouldHaveData);
+  console.log(airportFilteredShouldHaveData.data[0].airportStruct);
+  console.log("Full Without Data :", airportFilteredShouldNotHaveData);
+  console.log(airportFilteredShouldNotHaveData.data[0]);
 
   const filteredArrayOfStruct = await client(OsdkTestObject).where({
     structArray: { $contains: { string1: { $containsAnyTerm: "Nope" } } },
