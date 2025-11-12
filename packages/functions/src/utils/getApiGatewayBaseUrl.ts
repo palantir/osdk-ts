@@ -19,7 +19,7 @@ import { parse as parseYaml } from "yaml";
 
 const FOUNDRY_SERVICE_DISCOVERY_V2_ENV_VAR =
   "FOUNDRY_SERVICE_DISCOVERY_V2" as const;
-const API_GATEWAY_SERVICE = "API_GATEWAY" as const;
+const API_GATEWAY_SERVICE = "api-gateway" as const;
 
 type ServiceConfig = string[] | { uris: string[] };
 
