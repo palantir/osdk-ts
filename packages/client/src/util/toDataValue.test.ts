@@ -219,7 +219,7 @@ describe(toDataValue, () => {
       ], {
         type: "application/json",
       }),
-      path: "file.txt",
+      fileName: "file.txt",
     };
 
     // TODO: Mock MediaUpload properly in FauxFoundry
