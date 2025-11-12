@@ -31,7 +31,10 @@ interface ServiceDiscoveryConfig {
  * Type guard to check if config is an object with uris property
  */
 function hasUrisProperty(config: ServiceConfig): config is { uris: string[] } {
-  return !Array.isArray(config) && "uris" in config;
+  return !Array.isArray(config)
+    && "uris" in config
+    && Array.isArray(config.uris)
+    && config.uris.every((uri) => typeof uri === "string");
 }
 
 /**

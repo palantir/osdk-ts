@@ -34,7 +34,6 @@ export { createEditBatch } from "./edits/createEditBatch.js";
 export type { EditBatch } from "./edits/EditBatch.js";
 export type { Edits } from "./edits/types.js";
 export { UserFacingError } from "./errors/UserFacingError.js";
-export { getApiGatewayBaseUrl } from "./utils/getApiGatewayBaseUrl.js";
 
 export type {
   EmailNotification,
