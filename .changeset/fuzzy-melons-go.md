@@ -1,5 +1,5 @@
 ---
-"@osdk/functions": minor
+"@osdk/functions": patch
 ---
 
 Add foundry hostname util
