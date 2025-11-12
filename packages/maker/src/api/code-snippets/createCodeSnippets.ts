@@ -114,10 +114,13 @@ function getSnippets(
       isNaN(Number(key))
     )
   ) {
-    const latestTemplate =
-      Object.values(TYPESCRIPT_OSDK_SNIPPETS.versions).find(v =>
-        v.snippets[templateName]
-      )?.snippets[templateName][0].template ?? "";
+    const versions = Object.values(TYPESCRIPT_OSDK_SNIPPETS.versions);
+    const latestTemplate = versions
+      .slice()
+      .reverse()
+      .find(v => v.snippets[templateName])
+      ?.snippets[templateName]
+      .at(-1)?.template ?? "";
     const renderedTemplate = Mustache.render(latestTemplate, context);
     (allSnippets as any)[templateName] = renderedTemplate;
   }
