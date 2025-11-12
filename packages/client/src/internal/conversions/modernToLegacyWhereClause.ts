@@ -196,6 +196,7 @@ function handleWherePair(
     "A WhereClause Filter with multiple clauses/fields is not allowed. Instead, use an 'or'/'and' clause to combine multiple filters.",
   );
 
+  // Struct
   if (!hasDollarSign) {
     const structFilter = Object.entries(filter);
     invariant(
@@ -211,6 +212,21 @@ function handleWherePair(
 
   const firstKey = keysOfFilter[0] as PossibleWhereClauseFilters;
   invariant(filter[firstKey] != null);
+
+  // Struct array
+  if (firstKey === "$contains" && filter[firstKey] instanceof Object) {
+    const structFilter: [string, any][] = Object.entries(filter[firstKey]);
+    invariant(
+      structFilter.length === 1,
+      "Cannot filter on more than one struct field in the same clause, need to use an and clause",
+    );
+    const structFieldApiName = structFilter[0][0];
+
+    return handleWherePair(structFilter[0], objectOrInterface, {
+      propertyApiName: fieldName,
+      structFieldApiName,
+    });
+  }
 
   if (firstKey === "$ne") {
     return {
@@ -242,30 +258,6 @@ function handleWherePair(
       fuzzy: typeof filter[firstKey] === "string"
         ? false
         : filter[firstKey]["fuzzySearch"] ?? false,
-    };
-  }
-
-  if (firstKey === "$contains" && filter[firstKey] instanceof Object) {
-    const structFilter: [string, any][] = Object.entries(filter[firstKey]);
-    invariant(
-      structFilter.length === 1,
-      "Cannot filter on more than one struct field in the same clause, need to use an and clause",
-    );
-    const structFieldApiName = structFilter[0][0];
-    invariant(
-      structFilter[0][1] != null
-        && Object.keys(structFilter[0][1]).length === 1
-        && "$eq" in structFilter[0][1],
-      "Cannot filter on a struct field in an array with anything other than a single $eq",
-    );
-    return {
-      type: "contains",
-      propertyIdentifier: {
-        type: "structField",
-        propertyApiName: fieldName,
-        structFieldApiName,
-      },
-      value: structFilter[0][1]["$eq"],
     };
   }
 

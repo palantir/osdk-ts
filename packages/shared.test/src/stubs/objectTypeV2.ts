@@ -671,6 +671,52 @@ export const BGaoNflPlayerObjectType: ObjectTypeV2 = {
       },
       rid: "rid",
     },
+    addressArray: {
+      dataType: {
+        type: "array",
+        subType: {
+          type: "struct",
+          structFieldTypes: [
+            {
+              apiName: "addressLine1",
+              dataType: {
+                type: "string",
+              },
+              rid: "ri.a.b.c.d",
+            },
+            {
+              apiName: "addressLine2",
+              dataType: {
+                type: "string",
+              },
+              rid: "ri.a.b.c.d",
+            },
+            {
+              apiName: "city",
+              dataType: {
+                type: "geoshape",
+              },
+              rid: "ri.a.b.c.d",
+            },
+            {
+              apiName: "location",
+              dataType: {
+                type: "geopoint",
+              },
+              rid: "ri.a.b.c.d",
+            },
+            {
+              apiName: "zipCode",
+              dataType: {
+                type: "integer",
+              },
+              rid: "ri.a.b.c.d",
+            },
+          ],
+        },
+      },
+      rid: "ri.a.b.c.structArray",
+    },
   },
   rid: "ri.nflplayer",
   status: "ACTIVE",

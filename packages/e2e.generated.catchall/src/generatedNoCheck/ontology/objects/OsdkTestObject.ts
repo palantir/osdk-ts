@@ -44,7 +44,11 @@ export namespace OsdkTestObject {
      *   display name: 'StructArray'
      */
     readonly structArray:
-      | { string1: $PropType['string'] | undefined; string2: $PropType['string'] | undefined }[]
+      | {
+          string1: $PropType['string'] | undefined;
+          string2: $PropType['string'] | undefined;
+          number: $PropType['integer'] | undefined;
+        }[]
       | undefined;
   }
   export type StrictProps = Props;
@@ -127,7 +131,7 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
        *
        *   display name: 'StructArray'
        */
-      structArray: $PropertyDef<{ string1: 'string'; string2: 'string' }, 'nullable', 'array'>;
+      structArray: $PropertyDef<{ string1: 'string'; string2: 'string'; number: 'integer' }, 'nullable', 'array'>;
     };
     rid: 'ri.ontology.main.object-type.ba4a949c-547a-45de-9c78-b772bb55acfb';
     status: 'EXPERIMENTAL';
