@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 0.4.0-beta.4
+
+### Minor Changes
+
+- a1ffb20: Use new ephemeral media upload endpoint.
+
+### Patch Changes
+
+- Updated dependencies [a1ffb20]
+- Updated dependencies [e62c692]
+  - @osdk/generator-converters@2.6.0-beta.8
+  - @osdk/api@2.6.0-beta.8
+
 ## 0.4.0-beta.3
 
 ### Minor Changes
