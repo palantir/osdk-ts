@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.6.0-beta.9
+
+### Minor Changes
+
+- b307201: Add edits support for media reference.
+
 ## 2.6.0-beta.8
 
 ### Minor Changes
