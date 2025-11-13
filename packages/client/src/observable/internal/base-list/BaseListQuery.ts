@@ -355,6 +355,8 @@ export abstract class BaseListQuery<
       if (count >= this.minResultsToLoad || this.nextPageToken == null) {
         break;
       }
+
+      await Promise.resolve();
     }
 
     this.store.batch({}, (batch) => {
