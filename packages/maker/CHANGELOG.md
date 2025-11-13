@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.14.0-beta.13
+
+### Minor Changes
+
+- 9ddb3b4: Update snippet names and get latest template
+
+### Patch Changes
+
+- Updated dependencies [b307201]
+  - @osdk/api@2.6.0-beta.9
+
 ## 0.14.0-beta.12
 
 ### Minor Changes

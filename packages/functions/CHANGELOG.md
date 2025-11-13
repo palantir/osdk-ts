@@ -1,5 +1,15 @@
 # @osdk/functions
 
+## 1.4.0-beta.5
+
+### Minor Changes
+
+- b307201: Add edits support for media reference.
+
+### Patch Changes
+
+- @osdk/client@2.6.0-beta.9
+
 ## 1.4.0-beta.4
 
 ### Minor Changes
