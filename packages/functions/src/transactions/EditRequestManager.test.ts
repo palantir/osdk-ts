@@ -85,7 +85,6 @@ describe("EditRequestManager", () => {
 
   const addObjectEdit: TransactionEdit = {
     type: "addObject",
-    primaryKey: "test-primary-key",
     objectType: "test-object-type",
     properties: {},
   };
@@ -121,7 +120,6 @@ describe("EditRequestManager", () => {
           "edits": [
             {
               "objectType": "test-object-type",
-              "primaryKey": "test-primary-key",
               "properties": {},
               "type": "addObject",
             },
@@ -151,13 +149,11 @@ describe("EditRequestManager", () => {
             },
             {
               "objectType": "test-object-type",
-              "primaryKey": "test-primary-key",
               "properties": {},
               "type": "addObject",
             },
             {
               "objectType": "test-object-type",
-              "primaryKey": "test-primary-key",
               "properties": {},
               "type": "addObject",
             },
@@ -221,13 +217,11 @@ describe("EditRequestManager", () => {
           "edits": [
             {
               "objectType": "test-object-type",
-              "primaryKey": "test-primary-key",
               "properties": {},
               "type": "addObject",
             },
             {
               "objectType": "test-object-type",
-              "primaryKey": "test-primary-key",
               "properties": {},
               "type": "addObject",
             },
