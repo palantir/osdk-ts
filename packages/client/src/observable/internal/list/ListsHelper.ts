@@ -68,7 +68,8 @@ export class ListsHelper extends AbstractHelper<
   getQuery<T extends ObjectTypeDefinition | InterfaceDefinition>(
     options: ObserveListOptions<T>,
   ): ListQuery {
-    const { type: typeDefinition, where, orderBy, withProperties } = options;
+    const { type: typeDefinition, where, orderBy, withProperties, includeRid } =
+      options;
     const { apiName, type } = typeDefinition;
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
@@ -84,6 +85,7 @@ export class ListsHelper extends AbstractHelper<
       canonWhere,
       canonOrderBy,
       canonRdp,
+      includeRid,
     );
 
     return this.store.queries.get(listCacheKey, () => {

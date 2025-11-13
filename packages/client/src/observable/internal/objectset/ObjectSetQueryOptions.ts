@@ -41,6 +41,7 @@ export interface ObserveObjectSetOptions<
   pageSize?: number;
   orderBy?: { [K in PropertyKeys<Q>]?: "asc" | "desc" };
   streamUpdates?: boolean;
+  includeRid?: boolean;
 }
 
 export interface ObjectSetQueryOptions

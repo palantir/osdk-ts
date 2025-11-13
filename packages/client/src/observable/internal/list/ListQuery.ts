@@ -145,6 +145,9 @@ export abstract class ListQuery extends BaseListQuery<
       ...(Object.keys(this.#orderBy).length > 0
         ? { $orderBy: this.#orderBy }
         : {}),
+      ...(this.options.includeRid !== undefined
+        ? { $includeRid: this.options.includeRid }
+        : {}),
     });
 
     if (signal?.aborted) {

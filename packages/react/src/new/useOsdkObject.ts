@@ -33,33 +33,40 @@ export interface UseOsdkObjectResult<Q extends ObjectTypeDefinition> {
   forceUpdate: () => void;
 }
 
-/**
- * @param obj an existing `Osdk.Instance` object to get metadata for.
- * @param enabled Enable or disable the query (defaults to true)
- */
+export interface UseOsdkObjectOptions {
+  enabled?: boolean;
+  includeRid?: boolean;
+}
+
 export function useOsdkObject<Q extends ObjectTypeDefinition>(
   obj: Osdk.Instance<Q>,
   enabled?: boolean,
 ): UseOsdkObjectResult<Q>;
-/**
- * Loads an object by type and primary key.
- *
- * @param type
- * @param primaryKey
- * @param enabled Enable or disable the query (defaults to true)
- */
+export function useOsdkObject<Q extends ObjectTypeDefinition>(
+  obj: Osdk.Instance<Q>,
+  options?: UseOsdkObjectOptions,
+): UseOsdkObjectResult<Q>;
 export function useOsdkObject<Q extends ObjectTypeDefinition>(
   type: Q,
   primaryKey: PrimaryKeyType<Q>,
   enabled?: boolean,
+): UseOsdkObjectResult<Q>;
+export function useOsdkObject<Q extends ObjectTypeDefinition>(
+  type: Q,
+  primaryKey: PrimaryKeyType<Q>,
+  options?: UseOsdkObjectOptions,
 ): UseOsdkObjectResult<Q>;
 /*
     Implementation of useOsdkObject
  */
 export function useOsdkObject<Q extends ObjectTypeDefinition>(
   ...args:
-    | [obj: Osdk.Instance<Q>, enabled?: boolean]
-    | [type: Q, primaryKey: PrimaryKeyType<Q>, enabled?: boolean]
+    | [obj: Osdk.Instance<Q>, enabledOrOptions?: boolean | UseOsdkObjectOptions]
+    | [
+      type: Q,
+      primaryKey: PrimaryKeyType<Q>,
+      enabledOrOptions?: boolean | UseOsdkObjectOptions,
+    ]
 ): UseOsdkObjectResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
 
@@ -68,10 +75,17 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
   // so we must use type assertions after runtime discrimination
   const isInstanceSignature = "$objectType" in args[0];
 
-  // Extract enabled flag - 2nd param for instance signature, 3rd for type signature
-  const enabled = isInstanceSignature
-    ? (typeof args[1] === "boolean" ? args[1] : true)
-    : (typeof args[2] === "boolean" ? args[2] : true);
+  const rawOptions = isInstanceSignature
+    ? (args[1] as boolean | UseOsdkObjectOptions | undefined)
+    : (args[2] as boolean | UseOsdkObjectOptions | undefined);
+
+  const options: UseOsdkObjectOptions | undefined = typeof rawOptions
+      === "boolean"
+    ? { enabled: rawOptions }
+    : rawOptions;
+
+  const enabled = options?.enabled ?? true;
+  const includeRid = options?.includeRid;
 
   // TODO: Figure out what the correct default behavior is for the various scenarios
   const mode = isInstanceSignature ? "offline" : undefined;
@@ -97,13 +111,14 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
             primaryKey,
             {
               mode,
+              includeRid,
             },
             observer,
           ),
         `object ${objectType} ${primaryKey}`,
       );
     },
-    [enabled, observableClient, objectType, primaryKey, mode],
+    [enabled, observableClient, objectType, primaryKey, mode, includeRid],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);

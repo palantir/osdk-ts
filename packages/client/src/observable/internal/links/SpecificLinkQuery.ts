@@ -158,6 +158,10 @@ export class SpecificLinkQuery extends BaseListQuery<
       queryParams.$where = this.#whereClause;
     }
 
+    if (this.options.includeRid !== undefined) {
+      queryParams.$includeRid = this.options.includeRid;
+    }
+
     const response = await linkQuery.fetchPage(queryParams);
 
     // Store the next page token for pagination

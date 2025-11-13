@@ -32,7 +32,11 @@ import { Query } from "../Query.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
 import { tombstone } from "../tombstone.js";
-import { type ObjectCacheKey, RDP_CONFIG_IDX } from "./ObjectCacheKey.js";
+import {
+  INCLUDE_RID_IDX,
+  type ObjectCacheKey,
+  RDP_CONFIG_IDX,
+} from "./ObjectCacheKey.js";
 
 export class ObjectQuery extends Query<
   ObjectCacheKey,
@@ -106,8 +110,9 @@ export class ObjectQuery extends Query<
     // we're not making unnecessary network calls. This would need dedicated
     // tests separate from subscription notification tests.
 
+    const includeRid = this.cacheKey.otherKeys[INCLUDE_RID_IDX];
     const obj = await getBulkObjectLoader(this.store.client)
-      .fetch(this.#apiName, this.#pk);
+      .fetch(this.#apiName, this.#pk, includeRid);
 
     this.store.batch({}, (batch) => {
       this.writeToStore(obj, "loaded", batch);

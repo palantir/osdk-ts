@@ -171,6 +171,9 @@ export class ObjectSetQuery extends BaseListQuery<
           && Object.keys(this.#operations.orderBy).length > 0
         ? { $orderBy: this.#operations.orderBy }
         : {}),
+      ...(this.#operations.includeRid !== undefined
+        ? { $includeRid: this.#operations.includeRid }
+        : {}),
     });
 
     if (signal?.aborted) {

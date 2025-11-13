@@ -25,6 +25,7 @@ import type { ObjectQuery } from "./ObjectQuery.js";
 export const API_NAME_IDX = 0;
 export const PK_IDX = 1;
 export const RDP_CONFIG_IDX = 2;
+export const INCLUDE_RID_IDX = 3;
 
 export interface ObjectCacheKey extends
   CacheKey<
@@ -34,7 +35,8 @@ export interface ObjectCacheKey extends
     [
       apiName: string,
       pk: PrimaryKeyType<ObjectTypeDefinition>,
-      rdpConfig?: Canonical<Rdp> | undefined,
+      rdpConfig?: Canonical<Rdp>,
+      includeRid?: boolean,
     ]
   >
 {

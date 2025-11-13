@@ -27,6 +27,7 @@ export const SOURCE_PK_IDX = 1;
 export const LINK_NAME_IDX = 2;
 export const WHERE_CLAUSE_IDX = 3;
 export const ORDER_BY_CLAUSE_IDX = 4;
+export const INCLUDE_RID_IDX = 5;
 
 /**
  * Storage data format for link query cache entries, similar to ListStorageData
@@ -51,6 +52,7 @@ export interface SpecificLinkCacheKey extends
       linkName: string,
       whereClause: Canonical<SimpleWhereClause>,
       orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
+      includeRid?: boolean,
     ]
   >
 {

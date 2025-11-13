@@ -27,6 +27,7 @@ export const API_NAME_IDX = 1;
 export const WHERE_IDX = 2;
 export const ORDER_BY_IDX = 3;
 export const RDP_IDX = 4;
+export const INCLUDE_RID_IDX = 5;
 
 export interface ListStorageData extends CollectionStorageData {}
 
@@ -40,7 +41,8 @@ export interface ListCacheKey extends
       apiName: string,
       whereClause: Canonical<SimpleWhereClause>,
       orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
-      rdpConfig?: Canonical<Rdp> | undefined,
+      rdpConfig?: Canonical<Rdp>,
+      includeRid?: boolean,
     ]
   >
 {

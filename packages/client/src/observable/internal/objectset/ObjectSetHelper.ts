@@ -131,6 +131,10 @@ export class ObjectSetHelper extends AbstractHelper<
       operations.pageSize = options.pageSize;
     }
 
+    if (options.includeRid !== undefined) {
+      operations.includeRid = options.includeRid;
+    }
+
     return operations as Canonical<ObjectSetOperations>;
   }
 }

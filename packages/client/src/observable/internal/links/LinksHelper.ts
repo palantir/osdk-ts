@@ -92,6 +92,7 @@ export class LinksHelper extends AbstractHelper<
       options.linkName,
       canonWhere,
       canonOrderBy,
+      options.includeRid,
     );
 
     return this.store.queries.get(linkCacheKey, () => {

@@ -107,6 +107,8 @@ export interface UseOsdkObjectsOptions<
 
   streamUpdates?: boolean;
 
+  includeRid?: boolean;
+
   /**
    * Enable or disable the query.
    *
@@ -169,6 +171,7 @@ export function useOsdkObjects<
     where = {},
     streamUpdates,
     withProperties,
+    includeRid,
     enabled = true,
   } = options ?? {};
   const { observableClient } = React.useContext(OsdkContext2);
@@ -205,6 +208,7 @@ export function useOsdkObjects<
             orderBy,
             streamUpdates,
             withProperties: stableWithProperties,
+            includeRid,
           }, observer),
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
@@ -221,6 +225,7 @@ export function useOsdkObjects<
       pageSize,
       orderBy,
       streamUpdates,
+      includeRid,
     ],
   );
 

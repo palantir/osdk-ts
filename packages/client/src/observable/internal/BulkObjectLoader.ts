@@ -27,6 +27,7 @@ import type {
 interface InternalValue {
   primaryKey: string;
   deferred: DeferredPromise<ObjectHolder>;
+  includeRid?: boolean;
 }
 
 interface Accumulator {
@@ -63,6 +64,7 @@ export class BulkObjectLoader {
   public async fetch(
     apiName: string,
     primaryKey: string | number | boolean,
+    includeRid?: boolean,
   ): Promise<ObjectHolder> {
     const deferred = pDefer<ObjectHolder>();
 
@@ -70,6 +72,7 @@ export class BulkObjectLoader {
     entry.data.push({
       primaryKey: primaryKey as string,
       deferred,
+      includeRid,
     });
 
     if (!entry.timer) {
@@ -98,29 +101,43 @@ export class BulkObjectLoader {
     const miniDef = { type: "object", apiName } as ObjectTypeDefinition;
     const objMetadata = await this.#client.fetchMetadata(miniDef);
 
-    const pks = arr.map(x => x.primaryKey);
-
-    // Use $eq for single object fetches (this is for public app compatibility)
-    // Use $in for batch fetches
-    const whereClause = pks.length === 1
-      ? { [objMetadata.primaryKeyApiName]: { $eq: pks[0] } }
-      : { [objMetadata.primaryKeyApiName]: { $in: pks } };
-
-    const { data } = await this.#client(miniDef)
-      .where(whereClause).fetchPage({
-        $pageSize: pks.length,
-      });
-
-    for (const { primaryKey, deferred } of arr) {
-      const object = data.find(x => x.$primaryKey === primaryKey) as
-        | ObjectHolder
-        | undefined;
-      if (object) {
-        deferred.resolve(object);
+    const groups = arr.reduce((acc, item) => {
+      const key = item.includeRid;
+      const existing = acc.get(key);
+      if (existing) {
+        existing.push(item);
       } else {
-        deferred.reject(
-          new PalantirApiError(`Object not found: ${primaryKey}`),
-        );
+        acc.set(key, [item]);
+      }
+      return acc;
+    }, new Map<boolean | undefined, InternalValue[]>());
+
+    for (const [includeRid, groupArr] of groups) {
+      const pks = groupArr.map(x => x.primaryKey);
+
+      // Use $eq for single object fetches (this is for public app compatibility)
+      // Use $in for batch fetches
+      const whereClause = pks.length === 1
+        ? { [objMetadata.primaryKeyApiName]: { $eq: pks[0] } }
+        : { [objMetadata.primaryKeyApiName]: { $in: pks } };
+
+      const { data } = await this.#client(miniDef)
+        .where(whereClause).fetchPage({
+          $pageSize: pks.length,
+          ...(includeRid !== undefined ? { $includeRid: includeRid } : {}),
+        });
+
+      for (const { primaryKey, deferred } of groupArr) {
+        const object = data.find(x => x.$primaryKey === primaryKey) as
+          | ObjectHolder
+          | undefined;
+        if (object) {
+          deferred.resolve(object);
+        } else {
+          deferred.reject(
+            new PalantirApiError(`Object not found: ${primaryKey}`),
+          );
+        }
       }
     }
   }

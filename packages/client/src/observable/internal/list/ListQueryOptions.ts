@@ -18,4 +18,5 @@ import type { CommonObserveOptions } from "../../ObservableClient/common.js";
 
 export interface ListQueryOptions extends CommonObserveOptions {
   pageSize?: number;
+  includeRid?: boolean;
 }
