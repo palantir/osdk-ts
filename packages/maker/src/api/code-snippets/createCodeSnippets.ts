@@ -28,6 +28,7 @@ import {
   actionSnippets,
   interfaceSnippets,
   objectSnippets,
+  snippetNameMapping,
 } from "./snippetTypes.js";
 
 export function createCodeSnippets(
@@ -79,6 +80,7 @@ function generateInterfaceSnippet(
     "packageName": packageName,
     "objectOrInterfaceApiName": interfaceType.apiName,
     "propertyNames": Object.keys(interfaceType.propertiesV2),
+    "interfaceName": interfaceType.displayMetadata.displayName,
   };
 
   return getSnippets(interfaceSnippets, interfaceContext);
@@ -122,7 +124,11 @@ function getSnippets(
       ?.snippets[templateName]
       .at(-1)?.template ?? "";
     const renderedTemplate = Mustache.render(latestTemplate, context);
-    (allSnippets as any)[templateName] = renderedTemplate;
+    const snippetName = snippetNameMapping.get(templateName);
+    if (snippetName) {
+      (allSnippets as any)[Mustache.render(snippetName, context)] =
+        renderedTemplate;
+    }
   }
   return allSnippets;
 }
