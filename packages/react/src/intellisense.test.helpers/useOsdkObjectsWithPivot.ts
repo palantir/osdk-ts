@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinition,
-  SimplePropertyDef,
-  WhereClause,
-} from "@osdk/api";
-import type { CommonObserveOptions } from "../../ObservableClient/common.js";
+// WARNING!
+// WARNING!
+// This file is used for tests that check intellisense. Editing this file by hand will likely
+// break tests that have hard coded line numbers and line offsets.
 
-export interface ListQueryOptions<
-  Q extends ObjectOrInterfaceDefinition = ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    SimplePropertyDef
-  >,
-> extends CommonObserveOptions {
-  pageSize?: number;
-  intersectWith?: Array<{
-    where: WhereClause<Q, RDPs>;
-  }>;
-  pivotTo?: string;
+import { Employee } from "@osdk/client.test.ontology";
+import { useOsdkObjects } from "@osdk/react/experimental";
+
+declare const MyComponent: () => void;
+
+function TestComponent() {
+  const { data } = useOsdkObjects(Employee, {
+    pivotTo: "lead",
+  });
+
+  // Line 31: Check that data has the correct pivoted type
+  const firstItem = data?.[0];
+
+  return null;
 }

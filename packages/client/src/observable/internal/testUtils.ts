@@ -648,7 +648,7 @@ export function updateList<
   },
   objects: ObjectHolder[] | Osdk.Instance<T>[],
   { optimisticId }: { optimisticId?: OptimisticId } = {},
-  opts: ListQueryOptions = { dedupeInterval: 0 },
+  opts: ListQueryOptions<T> = { dedupeInterval: 0 },
 ): void {
   if (process.env.NODE_ENV !== "production") {
     store.logger?.child({ methodName: "updateList" }).info(

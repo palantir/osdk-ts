@@ -22,6 +22,7 @@ export { computeObjectSetCacheKey } from "../observable/computeObjectSetCacheKey
 export { createObservableClient } from "../observable/ObservableClient.js";
 export type {
   ObservableClient,
+  ObserveAggregationArgs,
   ObserveObjectArgs,
   ObserveObjectsArgs,
   ObserveObjectSetArgs,

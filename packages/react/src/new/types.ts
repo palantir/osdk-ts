@@ -15,22 +15,16 @@
  */
 
 import type {
-  ObjectOrInterfaceDefinition,
-  SimplePropertyDef,
-  WhereClause,
+  DerivedProperty,
+  InterfaceDefinition,
+  ObjectTypeDefinition,
 } from "@osdk/api";
-import type { CommonObserveOptions } from "../../ObservableClient/common.js";
 
-export interface ListQueryOptions<
-  Q extends ObjectOrInterfaceDefinition = ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    SimplePropertyDef
-  >,
-> extends CommonObserveOptions {
-  pageSize?: number;
-  intersectWith?: Array<{
-    where: WhereClause<Q, RDPs>;
-  }>;
-  pivotTo?: string;
-}
+export type InferRdpTypes<
+  Q extends ObjectTypeDefinition | InterfaceDefinition,
+  WP extends DerivedProperty.Clause<Q> | undefined,
+> = WP extends DerivedProperty.Clause<Q> ? {
+    [K in keyof WP]: WP[K] extends DerivedProperty.Creator<Q, infer T> ? T
+      : never;
+  }
+  : {};

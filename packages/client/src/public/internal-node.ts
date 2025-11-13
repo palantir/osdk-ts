@@ -14,23 +14,5 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinition,
-  SimplePropertyDef,
-  WhereClause,
-} from "@osdk/api";
-import type { CommonObserveOptions } from "../../ObservableClient/common.js";
-
-export interface ListQueryOptions<
-  Q extends ObjectOrInterfaceDefinition = ObjectOrInterfaceDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    SimplePropertyDef
-  >,
-> extends CommonObserveOptions {
-  pageSize?: number;
-  intersectWith?: Array<{
-    where: WhereClause<Q, RDPs>;
-  }>;
-  pivotTo?: string;
-}
+export { startTsServer } from "../tsserver.js";
+export type { TsServer } from "../tsserver.js";
