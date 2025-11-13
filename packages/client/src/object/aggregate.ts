@@ -67,7 +67,7 @@ export async function aggregate<
       groupBy: body.groupBy,
       aggregation: body.aggregation,
     },
-    { branch: clientCtx.branch },
+    { branch: clientCtx.branch, transactionId: clientCtx.transactionId },
   );
 
   if (!req.$groupBy) {

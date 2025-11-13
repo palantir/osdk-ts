@@ -129,7 +129,7 @@ export function createClientInternal(
     {
       ...options,
       logger: options?.logger ?? new MinimalLogger(),
-      transactionRid: transactionRid,
+      transactionId: transactionRid,
       branch: options?.branch,
     },
     fetchFn,
