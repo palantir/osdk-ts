@@ -157,6 +157,17 @@ describe(createEditBatch, () => {
           id: 0,
           attachment: "ri.foo",
           attachment2: { rid: "ri.bar" },
+          mediaReference: {
+            mimeType: "myTime",
+            reference: {
+              type: "mediaSetViewItem",
+              mediaSetViewItem: {
+                mediaItemRid: "rid.something",
+                mediaSetRid: "rid.something2",
+                mediaSetViewRid: "rid.something3",
+              },
+            },
+          },
           vector: [1, 2, 3],
         },
       },
