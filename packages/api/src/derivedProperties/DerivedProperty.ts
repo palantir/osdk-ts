@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import type { ValidAggregationKeys } from "../aggregate/AggregatableKeys.js";
 import type { WhereClause } from "../aggregate/WhereClause.js";
+import type { GetWirePropertyValueFromClient } from "../mapping/PropertyValueMapping.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
 import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
+import type { WirePropertyTypes } from "../ontology/WirePropertyTypes.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type {
   DatetimeExpressions,
@@ -29,8 +30,13 @@ import type {
   NumericExpressions,
 } from "./Expressions.js";
 import type {
+  BaseWithPropAggregations,
   CollectWithPropAggregations,
+  DatetimeWithPropAggregateOption,
+  DistinctWithPropAggregateOption,
   MinMaxWithPropAggregateOption,
+  NumericWithPropAggregateOption,
+  ValidCollectPropertyKeysForSpecialTypes,
 } from "./WithPropertiesAggregationOptions.js";
 
 declare const DerivedPropertyDefinitionBrand: unique symbol;
@@ -161,13 +167,48 @@ type Constant<Q extends ObjectOrInterfaceDefinition> = {
   };
 };
 
+type WITH_PROPERTIES_AGG_FOR_TYPE<WIRE_TYPE extends WirePropertyTypes> =
+  number extends GetWirePropertyValueFromClient<WIRE_TYPE>
+    ? NumericWithPropAggregateOption
+    : WIRE_TYPE extends "datetime" | "timestamp"
+      ? DatetimeWithPropAggregateOption
+    : WIRE_TYPE extends "string" ? BaseWithPropAggregations
+    : WITH_PROPERTIES_AGG_FOR_SPECIAL_WIRE_TYPE<WIRE_TYPE>;
+
+type WITH_PROPERTIES_AGG_FOR_SPECIAL_WIRE_TYPE<
+  WIRE_TYPE extends WirePropertyTypes,
+> = WIRE_TYPE extends ValidCollectPropertyKeysForSpecialTypes
+  ? BaseWithPropAggregations
+  : DistinctWithPropAggregateOption;
+
+export type ValidAggregationKeysForWithProps<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef>,
+> = keyof (
+  & {
+    [
+      KK in PropertyKeys<Q> as `${KK}:${WITH_PROPERTIES_AGG_FOR_TYPE<
+        CompileTimeMetadata<Q>["properties"][KK]["type"]
+      >}`
+    ]?: any;
+  }
+  & {
+    [
+      KK in keyof RDPs as `${KK & string}:${WITH_PROPERTIES_AGG_FOR_TYPE<
+        SimplePropertyDef.ToPropertyDef<RDPs[KK]>["type"]
+      >}`
+    ]?: any;
+  }
+  & { $count?: any }
+);
+
 type Aggregatable<
   Q extends ObjectOrInterfaceDefinition,
 > = {
   readonly aggregate: <
-    V extends ValidAggregationKeys<
+    V extends ValidAggregationKeysForWithProps<
       Q,
-      "withPropertiesAggregate"
+      {}
     >,
   >(
     aggregationSpecifier: V,
