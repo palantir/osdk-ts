@@ -125,10 +125,12 @@ function getSnippets(
       .at(-1)?.template ?? "";
     const renderedTemplate = Mustache.render(latestTemplate, context);
     const snippetName = snippetNameMapping.get(templateName);
-    if (snippetName) {
-      (allSnippets as any)[Mustache.render(snippetName, context)] =
-        renderedTemplate;
-    }
+
+    (allSnippets as any)[
+      snippetName !== undefined
+        ? Mustache.render(snippetName, context)
+        : templateName
+    ] = renderedTemplate;
   }
   return allSnippets;
 }
