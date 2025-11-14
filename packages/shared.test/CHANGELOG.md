@@ -1,5 +1,17 @@
 # @osdk/shared.test
 
+## 2.6.0-beta.4
+
+### Minor Changes
+
+- 3fbb596: Pipe through transactionId to endpoints that load data via object sets
+
+### Patch Changes
+
+- Updated dependencies [3fbb596]
+  - @osdk/generator-converters@2.6.0-beta.10
+  - @osdk/api@2.6.0-beta.10
+
 ## 2.6.0-beta.3
 
 ### Minor Changes

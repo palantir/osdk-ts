@@ -1,5 +1,15 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.6.0-beta.10
+
+### Minor Changes
+
+- 3fbb596: Pipe through transactionId to endpoints that load data via object sets
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.10
+
 ## 2.6.0-beta.9
 
 ### Patch Changes
