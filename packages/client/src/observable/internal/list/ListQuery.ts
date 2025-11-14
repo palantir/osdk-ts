@@ -40,12 +40,24 @@ import type { Entry } from "../Layer.js";
 import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
 import type { OptimisticId } from "../OptimisticId.js";
+import type { PivotInfo } from "../PivotCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import { OrderBySortingStrategy } from "../sorting/SortingStrategy.js";
 import type { Store } from "../Store.js";
 import type { SubjectPayload } from "../SubjectPayload.js";
-import { type ListCacheKey, ORDER_BY_IDX, WHERE_IDX } from "./ListCacheKey.js";
-export { API_NAME_IDX, RDP_IDX } from "./ListCacheKey.js";
+import {
+  INTERSECT_IDX,
+  type ListCacheKey,
+  ORDER_BY_IDX,
+  PIVOT_IDX,
+  WHERE_IDX,
+} from "./ListCacheKey.js";
+export {
+  API_NAME_IDX,
+  INTERSECT_IDX,
+  PIVOT_IDX,
+  RDP_IDX,
+} from "./ListCacheKey.js";
 import type { ListQueryOptions } from "./ListQueryOptions.js";
 
 type ExtractRelevantObjectsResult = Record<"added" | "modified", {
@@ -73,6 +85,8 @@ export abstract class ListQuery extends BaseListQuery<
 
   // Using base class minResultsToLoad instead of a private property
   #orderBy: Canonical<Record<string, "asc" | "desc" | undefined>>;
+  #intersectWith: Canonical<Array<Canonical<SimpleWhereClause>>> | undefined;
+  #pivotInfo: Canonical<PivotInfo> | undefined;
   #objectSet: ObjectSet<ObjectTypeDefinition>;
 
   /**
@@ -108,6 +122,8 @@ export abstract class ListQuery extends BaseListQuery<
     this.apiName = apiName;
     this.#whereClause = cacheKey.otherKeys[WHERE_IDX];
     this.#orderBy = cacheKey.otherKeys[ORDER_BY_IDX];
+    this.#intersectWith = cacheKey.otherKeys[INTERSECT_IDX];
+    this.#pivotInfo = cacheKey.otherKeys[PIVOT_IDX];
     this.#objectSet = this.createObjectSet(store);
     // Initialize the sorting strategy
     this.sortingStrategy = new OrderBySortingStrategy(
@@ -126,6 +142,17 @@ export abstract class ListQuery extends BaseListQuery<
 
   get canonicalWhere(): Canonical<SimpleWhereClause> {
     return this.#whereClause;
+  }
+
+  get canonicalIntersectWith():
+    | Canonical<Array<Canonical<SimpleWhereClause>>>
+    | undefined
+  {
+    return this.#intersectWith;
+  }
+
+  get canonicalPivotInfo(): Canonical<PivotInfo> | undefined {
+    return this.#pivotInfo;
   }
 
   /**

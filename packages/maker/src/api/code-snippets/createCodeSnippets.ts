@@ -28,6 +28,7 @@ import {
   actionSnippets,
   interfaceSnippets,
   objectSnippets,
+  snippetNameMapping,
 } from "./snippetTypes.js";
 
 export function createCodeSnippets(
@@ -79,6 +80,7 @@ function generateInterfaceSnippet(
     "packageName": packageName,
     "objectOrInterfaceApiName": interfaceType.apiName,
     "propertyNames": Object.keys(interfaceType.propertiesV2),
+    "interfaceName": interfaceType.displayMetadata.displayName,
   };
 
   return getSnippets(interfaceSnippets, interfaceContext);
@@ -114,12 +116,21 @@ function getSnippets(
       isNaN(Number(key))
     )
   ) {
-    const latestTemplate =
-      Object.values(TYPESCRIPT_OSDK_SNIPPETS.versions).find(v =>
-        v.snippets[templateName]
-      )?.snippets[templateName][0].template ?? "";
+    const versions = Object.values(TYPESCRIPT_OSDK_SNIPPETS.versions);
+    const latestTemplate = versions
+      .slice()
+      .reverse()
+      .find(v => v.snippets[templateName])
+      ?.snippets[templateName]
+      .at(-1)?.template ?? "";
     const renderedTemplate = Mustache.render(latestTemplate, context);
-    (allSnippets as any)[templateName] = renderedTemplate;
+    const snippetName = snippetNameMapping.get(templateName);
+
+    (allSnippets as any)[
+      snippetName !== undefined
+        ? Mustache.render(snippetName, context)
+        : templateName
+    ] = renderedTemplate;
   }
   return allSnippets;
 }

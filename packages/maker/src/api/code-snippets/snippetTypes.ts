@@ -54,3 +54,12 @@ export enum objectSnippets {
   loadObjectMetadataSnippet,
   subscribeToObjectSetInstructions,
 }
+
+export const snippetNameMapping: Map<string, string> = new Map<string, string>([
+  ["loadInterfaceMetadataSnippet", "Load {{interfaceName}} metadata"],
+  ["loadInterfacesReference", "Load pages of {{interfaceName}}"],
+  ["loadAllInterfacesReference", "Load all {{interfaceName}}"],
+  ["loadOrderedInterfacesReference", "Load ordered {{interfaceName}}"],
+  ["searchInterfacesReference", "Filtering"],
+  ["subscribeToObjectSetInstructions", "Subscribe to object sets"],
+]);

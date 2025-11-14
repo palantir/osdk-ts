@@ -854,6 +854,13 @@
                     "dataType": {
                       "type": "string"
                     }
+                  },
+                  {
+                    "apiName": "number",
+                    "rid": "ri.ontology.main.struct-field.5febfe99-dae4-4467-8a83-918d8e36a24e",
+                    "dataType": {
+                      "type": "integer"
+                    }
                   }
                 ]
               }

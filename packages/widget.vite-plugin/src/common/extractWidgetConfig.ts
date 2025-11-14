@@ -30,11 +30,25 @@ export async function extractWidgetConfig(
       throw new Error(`No default export found in ${moduleId}`);
     }
 
+    if (
+      typeof config !== "object"
+      || (config["id"] == null && config["name"] == null)
+    ) {
+      server.config.logger.warn(
+        `Config object does not look like a widget config: ${
+          JSON.stringify(config)
+        }`,
+      );
+    }
+
     validateWidgetConfig(config);
     return config as WidgetConfig<ParameterConfig>;
   } catch (error) {
-    throw new Error(`Failed to load widget config from ${moduleId}`, {
-      cause: error,
-    });
+    throw new Error(
+      `Encountered error: '${(error instanceof Error
+        ? error.message
+        : error)}' while loading widget config from ${moduleId}`,
+      { cause: error },
+    );
   }
 }

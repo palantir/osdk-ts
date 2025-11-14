@@ -1,5 +1,17 @@
 # @osdk/cli.cmd.typescript
 
+## 0.30.0-beta.3
+
+### Minor Changes
+
+- a1ffb20: Use new ephemeral media upload endpoint.
+
+### Patch Changes
+
+- Updated dependencies [a1ffb20]
+  - @osdk/generator@2.6.0-beta.8
+  - @osdk/cli.common@0.30.0-beta.3
+
 ## 0.30.0-beta.2
 
 ### Minor Changes

@@ -1,5 +1,21 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.6.0-beta.8
+
+### Minor Changes
+
+- a1ffb20: Use new ephemeral media upload endpoint.
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.8
+
+## 2.6.0-beta.7
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.7
+
 ## 2.6.0-beta.6
 
 ### Patch Changes

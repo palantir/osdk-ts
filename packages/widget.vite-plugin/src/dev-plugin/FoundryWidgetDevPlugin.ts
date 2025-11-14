@@ -138,11 +138,36 @@ export function FoundryWidgetDevPlugin(): Plugin {
        */
       server.middlewares.use(
         serverPath(server, FINISH_PATH),
-        async (_, res) => {
+        async (req, res) => {
+          // Check for too many attempts
+          if (req.url == null) {
+            throw new Error("Request URL is undefined");
+          }
+          const url = new URL(req.url, `http://${req.headers.host}`);
+          const numAttempts = parseInt(url.searchParams.get("attempt") ?? "0");
+          if (numAttempts >= 10) {
+            const errorMessage =
+              "Timed out waiting for widget config files to be parsed. Are you sure a widget config is imported?";
+            server.config.logger.error(errorMessage);
+            res.setHeader("Content-Type", "application/json");
+            res.statusCode = 500;
+            res.end(
+              JSON.stringify({
+                status: "error",
+                error: errorMessage,
+              }),
+            );
+            return;
+          }
+
           // Wait for the setup page to trigger the parsing of the config files
           const numEntrypoints = htmlEntrypoints.length;
           const numConfigFiles = Object.keys(configFileToEntrypoint).length;
           if (numConfigFiles < numEntrypoints) {
+            server.config.logger.info(
+              `Waiting for widget config files to be parsed, found ${numConfigFiles} config files out of`
+                + ` ${numEntrypoints} HTML entrypoints.`,
+            );
             res.setHeader("Content-Type", "application/json");
             res.end(JSON.stringify({ status: "pending" }));
             return;
@@ -213,8 +238,11 @@ export function FoundryWidgetDevPlugin(): Plugin {
       }
 
       // Look for config files that are imported from an entrypoint file
+      // Also check the config file being imported is in src to avoid picking up imports for other
+      // project files like foundry.config.json / eslint.config.mjs when tailwind is used.
       if (
         standardizedSource.replace(/\.[^/.]+$/, "").endsWith(CONFIG_FILE_SUFFIX)
+        && standardizedSource.includes("/src/")
         && codeEntrypoints[standardizedImporter] != null
       ) {
         const fullSourcePath = standardizeFileExtension(
