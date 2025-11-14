@@ -1,5 +1,16 @@
 # @osdk/functions
 
+## 1.4.0-beta.8
+
+### Minor Changes
+
+- 3fbb596: Pipe through transactionId to endpoints that load data via object sets
+
+### Patch Changes
+
+- Updated dependencies [3fbb596]
+  - @osdk/client@2.6.0-beta.10
+
 ## 1.4.0-beta.7
 
 ### Minor Changes

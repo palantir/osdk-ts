@@ -1,5 +1,17 @@
 # @osdk/cli.cmd.typescript
 
+## 0.30.0-beta.4
+
+### Minor Changes
+
+- 3fbb596: Pipe through transactionId to endpoints that load data via object sets
+
+### Patch Changes
+
+- Updated dependencies [3fbb596]
+  - @osdk/generator@2.6.0-beta.10
+  - @osdk/cli.common@0.30.0-beta.4
+
 ## 0.30.0-beta.3
 
 ### Minor Changes
