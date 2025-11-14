@@ -1,5 +1,11 @@
 # @osdk/functions
 
+## 1.4.0-beta.7
+
+### Minor Changes
+
+- f318daf: Use correct API gateway service name
+
 ## 1.4.0-beta.6
 
 ### Minor Changes
