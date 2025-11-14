@@ -1813,6 +1813,8 @@ describe("Action Types", () => {
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "objectTypeParameter",
+                      "spt1",
+                      "spt2",
                     ],
                     "parameters": {
                       "objectTypeParameter": {
@@ -2329,6 +2331,8 @@ describe("Action Types", () => {
                     "formContentOrdering": [],
                     "parameterOrdering": [
                       "interfaceObjectToModifyParameter",
+                      "spt1",
+                      "spt2",
                     ],
                     "parameters": {
                       "interfaceObjectToModifyParameter": {

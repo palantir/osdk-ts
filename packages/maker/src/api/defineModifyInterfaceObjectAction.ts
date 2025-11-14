@@ -140,7 +140,7 @@ export function defineModifyInterfaceObjectAction(
     parameterOrdering: def.parameterOrdering
       ?? createDefaultParameterOrdering(
         def,
-        Object.keys(allProperties),
+        Array.from(parameterNames),
         parameters,
         MODIFY_INTERFACE_OBJECT_PARAMETER,
       ),

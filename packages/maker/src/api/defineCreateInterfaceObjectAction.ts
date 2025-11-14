@@ -139,7 +139,7 @@ export function defineCreateInterfaceObjectAction(
     parameterOrdering: def.parameterOrdering
       ?? createDefaultParameterOrdering(
         def,
-        Object.keys(allProperties),
+        Array.from(parameterNames),
         parameters,
         CREATE_INTERFACE_OBJECT_PARAMETER,
       ),
