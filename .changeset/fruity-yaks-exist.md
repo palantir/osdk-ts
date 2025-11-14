@@ -10,4 +10,4 @@
 "@osdk/faux": patch
 ---
 
-Pipe through transactionId to OSS endpoints when present
+Pipe through transactionId to endpoints that load data via object sets
