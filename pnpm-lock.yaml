@@ -3320,13 +3320,16 @@ importers:
       '@types/geojson':
         specifier: ^7946.0.16
         version: 7946.0.16
+      yaml:
+        specifier: ^2.8.1
+        version: 2.8.1
     devDependencies:
       '@microsoft/api-documenter':
         specifier: ^7.26.32
-        version: 7.26.32(@types/node@24.3.1)
+        version: 7.26.32(@types/node@18.19.124)
       '@microsoft/api-extractor':
         specifier: ^7.52.11
-        version: 7.52.11(@types/node@24.3.1)
+        version: 7.52.11(@types/node@18.19.124)
       '@osdk/client.test.ontology':
         specifier: workspace:~
         version: link:../client.test.ontology
@@ -3339,6 +3342,9 @@ importers:
       '@osdk/shared.test':
         specifier: workspace:~
         version: link:../shared.test
+      '@types/node':
+        specifier: ^18.19.0
+        version: 18.19.124
       p-defer:
         specifier: ^4.0.1
         version: 4.0.1
@@ -3702,6 +3708,9 @@ importers:
       '@osdk/client':
         specifier: workspace:*
         version: link:../client
+      '@osdk/client.test.ontology':
+        specifier: workspace:*
+        version: link:../client.test.ontology
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -3714,12 +3723,27 @@ importers:
       '@types/react':
         specifier: ^18.3.24
         version: 18.3.24
+      find-up:
+        specifier: ^8.0.0
+        version: 8.0.0
       happy-dom:
         specifier: ^16.8.1
         version: 16.8.1
       p-defer:
         specifier: ^4.0.1
         version: 4.0.1
+      p-locate:
+        specifier: ^6.0.0
+        version: 6.0.0
+      p-map:
+        specifier: ^7.0.3
+        version: 7.0.3
+      pino:
+        specifier: ^9.9.4
+        version: 9.9.4
+      pino-pretty:
+        specifier: ^11.3.0
+        version: 11.3.0
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -10596,6 +10620,10 @@ packages:
     resolution: {integrity: sha512-YyZM99iHrqLKjmt4LJDj58KI+fYyufRLBSYcqycxf//KpBk9FoewoGX0450m9nB44qrZnovzC2oeP5hUibxc/g==}
     engines: {node: '>=18'}
 
+  find-up@8.0.0:
+    resolution: {integrity: sha512-JGG8pvDi2C+JxidYdIwQDyS/CgcrIdh18cvgxcBge3wSHRQOrooMD3GlFBcmMJAN9M42SAZjDp5zv1dglJjwww==}
+    engines: {node: '>=20'}
+
   fix-dts-default-cjs-exports@1.0.1:
     resolution: {integrity: sha512-pVIECanWFC61Hzl2+oOCtoJ3F17kglZC/6N94eRWycFgBH35hHx0Li604ZIzhseh97mf2p0cv7vVrOZGoqhlEg==}
 
@@ -11891,6 +11919,10 @@ packages:
   locate-path@7.2.0:
     resolution: {integrity: sha512-gvVijfZvn7R+2qyPX8mAuKcFGDf6Nc61GdvGafQsHL0sBIxfKzA+usWn4GFC/bk+QdwPUD4kWFJLhElipq+0VA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
+  locate-path@8.0.0:
+    resolution: {integrity: sha512-XT9ewWAC43tiAV7xDAPflMkG0qOPn2QjHqlgX8FOqmWa/rxnyYDulF9T0F7tRy1u+TVTmK/M//6VIOye+2zDXg==}
+    engines: {node: '>=20'}
 
   lodash.debounce@4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
@@ -17211,7 +17243,7 @@ snapshots:
   '@jest/console@29.7.0':
     dependencies:
       '@jest/types': 29.6.3
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       chalk: 4.1.2
       jest-message-util: 29.7.0
       jest-util: 29.7.0
@@ -17224,14 +17256,14 @@ snapshots:
       '@jest/test-result': 29.7.0
       '@jest/transform': 29.7.0
       '@jest/types': 29.6.3
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       ci-info: 3.9.0
       exit: 0.1.2
       graceful-fs: 4.2.11
       jest-changed-files: 29.7.0
-      jest-config: 29.7.0(@types/node@20.19.13)(ts-node@10.9.2(@swc/core@1.7.39)(@types/node@18.19.124)(typescript@5.5.4))
+      jest-config: 29.7.0(@types/node@18.19.124)(ts-node@10.9.2(@swc/core@1.7.39)(@types/node@18.19.124)(typescript@5.5.4))
       jest-haste-map: 29.7.0
       jest-message-util: 29.7.0
       jest-regex-util: 29.6.3
@@ -17260,7 +17292,7 @@ snapshots:
     dependencies:
       '@jest/fake-timers': 29.7.0
       '@jest/types': 29.6.3
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       jest-mock: 29.7.0
 
   '@jest/expect-utils@29.7.0':
@@ -17278,7 +17310,7 @@ snapshots:
     dependencies:
       '@jest/types': 29.6.3
       '@sinonjs/fake-timers': 10.3.0
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       jest-message-util: 29.7.0
       jest-mock: 29.7.0
       jest-util: 29.7.0
@@ -17300,7 +17332,7 @@ snapshots:
       '@jest/transform': 29.7.0
       '@jest/types': 29.6.3
       '@jridgewell/trace-mapping': 0.3.30
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       chalk: 4.1.2
       collect-v8-coverage: 1.0.2
       exit: 0.1.2
@@ -17370,7 +17402,7 @@ snapshots:
       '@jest/schemas': 29.6.3
       '@types/istanbul-lib-coverage': 2.0.6
       '@types/istanbul-reports': 3.0.4
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       '@types/yargs': 17.0.33
       chalk: 4.1.2
 
@@ -17491,6 +17523,18 @@ snapshots:
 
   '@material/material-color-utilities@0.3.0': {}
 
+  '@microsoft/api-documenter@7.26.32(@types/node@18.19.124)':
+    dependencies:
+      '@microsoft/api-extractor-model': 7.30.7(@types/node@18.19.124)
+      '@microsoft/tsdoc': 0.15.1
+      '@rushstack/node-core-library': 5.14.0(@types/node@18.19.124)
+      '@rushstack/terminal': 0.15.4(@types/node@18.19.124)
+      '@rushstack/ts-command-line': 5.0.2(@types/node@18.19.124)
+      js-yaml: 3.13.1
+      resolve: 1.22.10
+    transitivePeerDependencies:
+      - '@types/node'
+
   '@microsoft/api-documenter@7.26.32(@types/node@24.3.1)':
     dependencies:
       '@microsoft/api-extractor-model': 7.30.7(@types/node@24.3.1)
@@ -17510,7 +17554,6 @@ snapshots:
       '@rushstack/node-core-library': 5.14.0(@types/node@18.19.124)
     transitivePeerDependencies:
       - '@types/node'
-    optional: true
 
   '@microsoft/api-extractor-model@7.30.7(@types/node@24.3.1)':
     dependencies:
@@ -17537,7 +17580,6 @@ snapshots:
       typescript: 5.8.2
     transitivePeerDependencies:
       - '@types/node'
-    optional: true
 
   '@microsoft/api-extractor@7.52.11(@types/node@24.3.1)':
     dependencies:
@@ -19516,7 +19558,6 @@ snapshots:
       semver: 7.5.4
     optionalDependencies:
       '@types/node': 18.19.124
-    optional: true
 
   '@rushstack/node-core-library@5.14.0(@types/node@24.3.1)':
     dependencies:
@@ -19542,7 +19583,6 @@ snapshots:
       supports-color: 8.1.1
     optionalDependencies:
       '@types/node': 18.19.124
-    optional: true
 
   '@rushstack/terminal@0.15.4(@types/node@24.3.1)':
     dependencies:
@@ -19559,7 +19599,6 @@ snapshots:
       string-argv: 0.3.2
     transitivePeerDependencies:
       - '@types/node'
-    optional: true
 
   '@rushstack/ts-command-line@5.0.2(@types/node@24.3.1)':
     dependencies:
@@ -19857,7 +19896,7 @@ snapshots:
 
   '@types/adm-zip@0.5.7':
     dependencies:
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
 
   '@types/archiver@6.0.3':
     dependencies:
@@ -19921,7 +19960,7 @@ snapshots:
   '@types/fs-extra@11.0.4':
     dependencies:
       '@types/jsonfile': 6.1.4
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
 
   '@types/geojson-vt@3.2.5':
     dependencies:
@@ -19931,7 +19970,7 @@ snapshots:
 
   '@types/graceful-fs@4.1.9':
     dependencies:
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
 
   '@types/hammerjs@2.0.46': {}
 
@@ -19956,7 +19995,7 @@ snapshots:
 
   '@types/jsdom@20.0.1':
     dependencies:
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       '@types/tough-cookie': 4.0.5
       parse5: 7.3.0
 
@@ -19970,7 +20009,7 @@ snapshots:
 
   '@types/jsonfile@6.1.4':
     dependencies:
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
 
   '@types/lint-staged@13.3.0': {}
 
@@ -19984,7 +20023,7 @@ snapshots:
 
   '@types/node-forge@1.3.11':
     dependencies:
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
 
   '@types/node@12.20.55': {}
 
@@ -20032,7 +20071,7 @@ snapshots:
 
   '@types/readdir-glob@1.1.3':
     dependencies:
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
 
   '@types/resolve@1.20.2': {}
 
@@ -21370,7 +21409,7 @@ snapshots:
 
   chrome-launcher@0.15.2:
     dependencies:
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       escape-string-regexp: 4.0.0
       is-wsl: 2.2.0
       lighthouse-logger: 1.4.2
@@ -21381,7 +21420,7 @@ snapshots:
 
   chromium-edge-launcher@0.2.0:
     dependencies:
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       escape-string-regexp: 4.0.0
       is-wsl: 2.2.0
       lighthouse-logger: 1.4.2
@@ -23084,6 +23123,11 @@ snapshots:
       path-exists: 5.0.0
       unicorn-magic: 0.1.0
 
+  find-up@8.0.0:
+    dependencies:
+      locate-path: 8.0.0
+      unicorn-magic: 0.3.0
+
   fix-dts-default-cjs-exports@1.0.1:
     dependencies:
       magic-string: 0.30.19
@@ -23874,7 +23918,7 @@ snapshots:
       '@jest/expect': 29.7.0
       '@jest/test-result': 29.7.0
       '@jest/types': 29.6.3
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       chalk: 4.1.2
       co: 4.6.0
       dedent: 1.5.3
@@ -23944,37 +23988,6 @@ snapshots:
       - babel-plugin-macros
       - supports-color
 
-  jest-config@29.7.0(@types/node@20.19.13)(ts-node@10.9.2(@swc/core@1.7.39)(@types/node@18.19.124)(typescript@5.5.4)):
-    dependencies:
-      '@babel/core': 7.28.4
-      '@jest/test-sequencer': 29.7.0
-      '@jest/types': 29.6.3
-      babel-jest: 29.7.0(@babel/core@7.28.4)
-      chalk: 4.1.2
-      ci-info: 3.9.0
-      deepmerge: 4.3.1
-      glob: 7.2.3
-      graceful-fs: 4.2.11
-      jest-circus: 29.7.0
-      jest-environment-node: 29.7.0
-      jest-get-type: 29.6.3
-      jest-regex-util: 29.6.3
-      jest-resolve: 29.7.0
-      jest-runner: 29.7.0
-      jest-util: 29.7.0
-      jest-validate: 29.7.0
-      micromatch: 4.0.8
-      parse-json: 5.2.0
-      pretty-format: 29.7.0
-      slash: 3.0.0
-      strip-json-comments: 3.1.1
-    optionalDependencies:
-      '@types/node': 20.19.13
-      ts-node: 10.9.2(@swc/core@1.7.39)(@types/node@18.19.124)(typescript@5.5.4)
-    transitivePeerDependencies:
-      - babel-plugin-macros
-      - supports-color
-
   jest-diff@29.7.0:
     dependencies:
       chalk: 4.1.2
@@ -24000,7 +24013,7 @@ snapshots:
       '@jest/fake-timers': 29.7.0
       '@jest/types': 29.6.3
       '@types/jsdom': 20.0.1
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       jest-mock: 29.7.0
       jest-util: 29.7.0
       jsdom: 20.0.3(canvas@2.11.2)
@@ -24016,7 +24029,7 @@ snapshots:
       '@jest/environment': 29.7.0
       '@jest/fake-timers': 29.7.0
       '@jest/types': 29.6.3
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       jest-mock: 29.7.0
       jest-util: 29.7.0
 
@@ -24059,7 +24072,7 @@ snapshots:
     dependencies:
       '@jest/types': 29.6.3
       '@types/graceful-fs': 4.1.9
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       anymatch: 3.1.3
       fb-watchman: 2.0.2
       graceful-fs: 4.2.11
@@ -24098,7 +24111,7 @@ snapshots:
   jest-mock@29.7.0:
     dependencies:
       '@jest/types': 29.6.3
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       jest-util: 29.7.0
 
   jest-pnp-resolver@1.2.3(jest-resolve@29.7.0):
@@ -24133,7 +24146,7 @@ snapshots:
       '@jest/test-result': 29.7.0
       '@jest/transform': 29.7.0
       '@jest/types': 29.6.3
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       chalk: 4.1.2
       emittery: 0.13.1
       graceful-fs: 4.2.11
@@ -24161,7 +24174,7 @@ snapshots:
       '@jest/test-result': 29.7.0
       '@jest/transform': 29.7.0
       '@jest/types': 29.6.3
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       chalk: 4.1.2
       cjs-module-lexer: 1.4.3
       collect-v8-coverage: 1.0.2
@@ -24207,7 +24220,7 @@ snapshots:
   jest-util@29.7.0:
     dependencies:
       '@jest/types': 29.6.3
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       chalk: 4.1.2
       ci-info: 3.9.0
       graceful-fs: 4.2.11
@@ -24243,7 +24256,7 @@ snapshots:
     dependencies:
       '@jest/test-result': 29.7.0
       '@jest/types': 29.6.3
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       ansi-escapes: 4.3.2
       chalk: 4.1.2
       emittery: 0.13.1
@@ -24252,13 +24265,13 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
   jest-worker@29.7.0:
     dependencies:
-      '@types/node': 20.19.13
+      '@types/node': 18.19.124
       jest-util: 29.7.0
       merge-stream: 2.0.0
       supports-color: 8.1.1
@@ -24600,6 +24613,10 @@ snapshots:
       p-locate: 5.0.0
 
   locate-path@7.2.0:
+    dependencies:
+      p-locate: 6.0.0
+
+  locate-path@8.0.0:
     dependencies:
       p-locate: 6.0.0
 

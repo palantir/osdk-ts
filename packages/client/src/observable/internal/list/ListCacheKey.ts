@@ -17,6 +17,7 @@
 import type { CollectionStorageData } from "../base-list/BaseCollectionQuery.js";
 import type { CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
+import type { PivotInfo } from "../PivotCanonicalizer.js";
 import type { Rdp } from "../RdpCanonicalizer.js";
 import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import type { ListQuery } from "./ListQuery.js";
@@ -28,6 +29,8 @@ export const WHERE_IDX = 2;
 export const ORDER_BY_IDX = 3;
 export const RDP_IDX = 4;
 export const INCLUDE_RID_IDX = 5;
+export const INTERSECT_IDX = 6;
+export const PIVOT_IDX = 7;
 
 export interface ListStorageData extends CollectionStorageData {}
 
@@ -41,8 +44,12 @@ export interface ListCacheKey extends
       apiName: string,
       whereClause: Canonical<SimpleWhereClause>,
       orderByClause: Canonical<Record<string, "asc" | "desc" | undefined>>,
-      rdpConfig?: Canonical<Rdp>,
-      includeRid?: boolean,
+      rdpConfig?: Canonical<Rdp> | undefined,
+      includeRid?: boolean | undefined,
+      intersectWith?:
+        | Canonical<Array<Canonical<SimpleWhereClause>>>
+        | undefined,
+      pivotInfo?: Canonical<PivotInfo> | undefined,
     ]
   >
 {

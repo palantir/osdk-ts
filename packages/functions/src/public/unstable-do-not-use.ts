@@ -16,3 +16,4 @@
 
 export { createWriteableClient } from "../transactions/createWriteableClient.js";
 export type { WriteableClient } from "../transactions/WriteableClient.js";
+export { getApiGatewayBaseUrl } from "../utils/getApiGatewayBaseUrl.js";

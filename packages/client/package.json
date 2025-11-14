@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "2.6.0-beta.7",
+  "version": "2.6.0-beta.8",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -17,6 +17,15 @@
       },
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
+    },
+    "./internal-node": {
+      "browser": "./build/browser/public/internal-node.js",
+      "import": {
+        "types": "./build/types/public/internal-node.d.ts",
+        "default": "./build/esm/public/internal-node.js"
+      },
+      "require": "./build/cjs/public/internal-node.cjs",
+      "default": "./build/browser/public/internal-node.js"
     },
     "./internal": {
       "browser": "./build/browser/public/internal.js",

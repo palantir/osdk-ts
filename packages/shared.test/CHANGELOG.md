@@ -1,5 +1,19 @@
 # @osdk/shared.test
 
+## 2.6.0-beta.3
+
+### Minor Changes
+
+- a1ffb20: Use new ephemeral media upload endpoint.
+- e62c692: Allow all applicable filters for struct sub properties to be applied on struct arrays
+
+### Patch Changes
+
+- Updated dependencies [a1ffb20]
+- Updated dependencies [e62c692]
+  - @osdk/generator-converters@2.6.0-beta.8
+  - @osdk/api@2.6.0-beta.8
+
 ## 2.6.0-beta.2
 
 ### Minor Changes

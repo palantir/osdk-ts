@@ -1,0 +1,132 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type {
+  AggregateOpts,
+  DerivedProperty,
+  ObjectOrInterfaceDefinition,
+  SimplePropertyDef,
+  WhereClause,
+} from "@osdk/api";
+import type { Observer } from "../../ObservableClient/common.js";
+import { AbstractHelper } from "../AbstractHelper.js";
+import type { CacheKeys } from "../CacheKeys.js";
+import type { Canonical } from "../Canonical.js";
+import type { KnownCacheKey } from "../KnownCacheKey.js";
+import type { QuerySubscription } from "../QuerySubscription.js";
+import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
+import type { Store } from "../Store.js";
+import type { WhereClauseCanonicalizer } from "../WhereClauseCanonicalizer.js";
+import type { AggregationCacheKey } from "./AggregationCacheKey.js";
+import type {
+  AggregationPayloadBase,
+  AggregationQuery,
+} from "./AggregationQuery.js";
+import { ObjectAggregationQuery } from "./ObjectAggregationQuery.js";
+
+export interface ObserveAggregationOptions<
+  T extends ObjectOrInterfaceDefinition,
+  A extends AggregateOpts<T>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> {
+  type: T;
+  where?: WhereClause<T, RDPs>;
+  withProperties?: DerivedProperty.Clause<T>;
+  aggregate: A;
+  dedupeInterval?: number;
+}
+
+export class AggregationsHelper extends AbstractHelper<
+  AggregationQuery,
+  ObserveAggregationOptions<
+    ObjectOrInterfaceDefinition,
+    AggregateOpts<ObjectOrInterfaceDefinition>
+  >
+> {
+  whereCanonicalizer: WhereClauseCanonicalizer;
+  rdpCanonicalizer: RdpCanonicalizer;
+
+  constructor(
+    store: Store,
+    cacheKeys: CacheKeys<KnownCacheKey>,
+    whereCanonicalizer: WhereClauseCanonicalizer,
+    rdpCanonicalizer: RdpCanonicalizer,
+  ) {
+    super(store, cacheKeys);
+
+    this.whereCanonicalizer = whereCanonicalizer;
+    this.rdpCanonicalizer = rdpCanonicalizer;
+  }
+
+  observe<
+    T extends ObjectOrInterfaceDefinition,
+    A extends AggregateOpts<T>,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options: ObserveAggregationOptions<T, A, RDPs>,
+    subFn: Observer<AggregationPayloadBase>,
+  ): QuerySubscription<AggregationQuery> {
+    return super.observe(options, subFn);
+  }
+
+  getQuery<
+    T extends ObjectOrInterfaceDefinition,
+    A extends AggregateOpts<T>,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options: ObserveAggregationOptions<T, A, RDPs>,
+  ): AggregationQuery {
+    const { type, where, withProperties, aggregate } = options;
+    const { apiName } = type;
+    const typeKind = "type" in type ? type.type : "interface";
+
+    const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
+    const canonRdp = withProperties
+      ? this.rdpCanonicalizer.canonicalize(withProperties)
+      : undefined;
+
+    const canonAggregate = this.canonicalizeAggregate(aggregate);
+
+    const aggregationCacheKey = this.cacheKeys.get<AggregationCacheKey>(
+      "aggregation",
+      typeKind,
+      apiName,
+      canonWhere,
+      canonRdp,
+      canonAggregate,
+    );
+
+    return this.store.queries.get(aggregationCacheKey, () => {
+      if (typeKind !== "object") {
+        throw new Error(
+          "Only ObjectTypeDefinition is currently supported for aggregations",
+        );
+      }
+      return new ObjectAggregationQuery(
+        this.store,
+        this.store.subjects.get(aggregationCacheKey),
+        aggregationCacheKey,
+        options,
+      );
+    });
+  }
+
+  private canonicalizeAggregate<A extends AggregateOpts<any>>(
+    aggregate: A,
+  ): Canonical<A> {
+    return JSON.parse(JSON.stringify(aggregate)) as Canonical<A>;
+  }
+}

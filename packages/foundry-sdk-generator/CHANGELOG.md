@@ -1,5 +1,19 @@
 # @osdk/foundry-sdk-generator
 
+## 2.6.0-beta.8
+
+### Minor Changes
+
+- a1ffb20: Use new ephemeral media upload endpoint.
+
+### Patch Changes
+
+- Updated dependencies [a1ffb20]
+- Updated dependencies [e62c692]
+  - @osdk/generator@2.6.0-beta.8
+  - @osdk/client@2.6.0-beta.8
+  - @osdk/api@2.6.0-beta.8
+
 ## 2.6.0-beta.7
 
 ### Minor Changes
