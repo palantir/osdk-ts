@@ -374,10 +374,9 @@ function renderType(
         ? "\"primaryKeyValue\""
         : "primaryKeyValue";
       if (context === "actionParameter") {
-        const apiNameProperty = type.apiName ? ` $apiName: "${type.apiName}",` : "";
         return majorVersion >= SdkMajorVersion.V2
-          ? `{ $primaryKey: ${primaryKeyValue},${apiNameProperty} /* other properties */ }`
-          : `{ __primaryKey: ${primaryKeyValue},${apiNameProperty} /* other properties */ }`;
+          ? `"primaryKeyValue" // or myObjectInstance`
+          : `{ __primaryKey: ${primaryKeyValue} /* other properties */ }`;
       }
       return primaryKeyValue;
     case "anonymousCustomType":
