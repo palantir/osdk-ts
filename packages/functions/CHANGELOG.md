@@ -1,5 +1,11 @@
 # @osdk/functions
 
+## 1.4.0-beta.6
+
+### Minor Changes
+
+- a2e9c62: Fix upload function.
+
 ## 1.4.0-beta.5
 
 ### Minor Changes
