@@ -105,6 +105,9 @@ export type InterfaceActionTypeUserDefinition = {
   tableConfiguration?: TableConfiguration;
   parameterOrdering?: Array<string>;
   submissionMetadata?: SubmissionMetadata;
+  // Use the below options for Java OSDK compatibility
+  useNonNamespacedParameters?: boolean;
+  conflictingParameterOverrides?: Record<string, string>;
 };
 
 export function defineAction(actionDef: ActionTypeDefinition): ActionType {
@@ -951,10 +954,21 @@ export function getInterfaceParameterName(
   def: InterfaceActionTypeUserDefinition,
   parameter: string,
 ): string {
+  if (def.useNonNamespacedParameters) {
+    return getNonNamespacedParameterName(def, parameter);
+  }
   return (isTargetParameter(parameter)
       || !Object.keys(def.interfaceType.propertiesV2).includes(
         addNamespaceIfNone(parameter),
       ))
     ? parameter
     : addNamespaceIfNone(parameter);
+}
+
+export function getNonNamespacedParameterName(
+  def: InterfaceActionTypeUserDefinition,
+  parameter: string,
+): string {
+  return def.conflictingParameterOverrides?.[parameter]
+    ?? (parameter.split(".").pop() || parameter);
 }
