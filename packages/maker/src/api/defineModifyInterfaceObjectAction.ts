@@ -24,6 +24,7 @@ import {
   createParameters,
   defineAction,
   getInterfaceParameterName,
+  getNonNamespacedParameterName,
   isPropertyParameter,
   kebab,
   MODIFY_INTERFACE_OBJECT_PARAMETER,
@@ -42,14 +43,22 @@ export function defineModifyInterfaceObjectAction(
     Object.keys(allProperties),
     def.interfaceType.apiName,
   );
-  const propertyParameters = Object.keys(allProperties).filter(apiName =>
+  const sptNames = Object.keys(allProperties).filter(apiName =>
     isPropertyParameter(
       def,
       apiName,
       allProperties[apiName].sharedPropertyType.type,
     )
   );
-  const parameterNames = new Set(propertyParameters);
+  const parameterNames = new Set(
+    sptNames.map(apiName => getInterfaceParameterName(def, apiName)),
+  );
+  const propertyMap = Object.fromEntries(
+    Object.entries(allProperties).map((
+      [id, prop],
+    ) => [getInterfaceParameterName(def, id), prop.sharedPropertyType]),
+  );
+
   Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
     parameterNames.add(
       getInterfaceParameterName(def, param),
@@ -81,11 +90,7 @@ export function defineModifyInterfaceObjectAction(
   }
   const parameters = createParameters(
     def,
-    Object.fromEntries(
-      Object.entries(allProperties).map((
-        [id, prop],
-      ) => [id, prop.sharedPropertyType]),
-    ),
+    propertyMap,
     parameterNames,
     Object.fromEntries(
       Object.entries(allProperties).map(([id, prop]) => [id, prop.required]),
@@ -118,8 +123,13 @@ export function defineModifyInterfaceObjectAction(
           interfaceObjectToModifyParameter: "interfaceObjectToModifyParameter",
           sharedPropertyValues: {
             ...Object.fromEntries(
-              propertyParameters.map(
-                id => [id, { type: "parameterId", parameterId: id }],
+              sptNames.map(
+                id => [id, {
+                  type: "parameterId",
+                  parameterId: def.useNonNamespacedParameters
+                    ? getNonNamespacedParameterName(def, id)
+                    : id,
+                }],
               ),
             ),
             ...mappings,
