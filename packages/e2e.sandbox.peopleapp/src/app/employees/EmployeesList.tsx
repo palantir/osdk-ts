@@ -45,7 +45,7 @@ export function EmployeesList(props: EmployeesListProps) {
       base.pivotTo("lead").selectProperty("fullName"),
     reportCount: (base: DerivedProperty.Builder<Employee, false>) =>
       base.pivotTo("peeps").aggregate("$count"),
-  } satisfies DerivedProperty.Clause<Employee>;
+  };
 
   const employees = useOsdkObjects(Employee, {
     withProperties,

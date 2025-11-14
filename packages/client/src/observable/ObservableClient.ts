@@ -80,6 +80,23 @@ export interface ObserveListOptions<
   expectedLength?: number;
   streamUpdates?: boolean;
   withProperties?: DerivedProperty.Clause<Q>;
+
+  /**
+   * Automatically fetch additional pages on initial load.
+   *
+   * - `true`: Fetch all available pages automatically
+   * - `number`: Fetch pages until at least this many items are loaded
+   * - `undefined` (default): Only fetch the first page, user must call fetchMore()
+   *
+   * @example
+   * // Fetch all todos at once
+   * observeList({ type: Todo, autoFetchMore: true }, observer)
+   *
+   * @example
+   * // Fetch at least 100 todos
+   * observeList({ type: Todo, autoFetchMore: 100, pageSize: 25 }, observer)
+   */
+  autoFetchMore?: boolean | number;
   intersectWith?: Array<{
     where: WhereClause<Q, RDPs>;
   }>;
