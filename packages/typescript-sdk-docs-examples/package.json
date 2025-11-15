@@ -38,7 +38,8 @@
   },
   "dependencies": {},
   "peerDependencies": {
-    "@osdk/client": "workspace:~"
+    "@osdk/client": "workspace:~",
+    "@osdk/functions": "workspace:~"
   },
   "devDependencies": {
     "@osdk/api": "workspace:~",
