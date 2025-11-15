@@ -550,7 +550,7 @@ export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = {
       },
       "uploadMediaOntologyEdits": {
         "code":
-          "import type { Client } from \"@osdk/client\";\nimport { Employee } from \"../../../generatedNoCheck/index.js\";\nimport type { Edits } from \"@osdk/functions\";\nimport { createEditBatch, uploadMedia } from \"@osdk/functions\";\n\nasync function createObject(client: Client): Promise<Edits.Object<Employee>[]> {\n    const batch = createEditBatch<Edits.Object<Employee>>(client);\n    \n    const blob = new Blob([\"Hello, world\"], { type: \"text/plain\" });\n    const mediaReference = await uploadMedia(client, { data: blob, fileName: \"foundryFile.txt\" });\n\n    // @ts-ignore\n    batch.create(Employee, {\n        // \"media_prop_here\": mediaReference,\n    });\n\n    return batch.getEdits();\n}\n\nexport default createObject;",
+          "import type { Client } from \"@osdk/client\";\nimport { Employee } from \"../../../generatedNoCheck/index.js\";\nimport type { Edits } from \"@osdk/functions\";\nimport { createEditBatch, uploadMedia } from \"@osdk/functions\";\n\nasync function createObject(client: Client): Promise<Edits.Object<Employee>[]> {\n    const batch = createEditBatch<Edits.Object<Employee>>(client);\n    \n    const blob = new Blob([\"Hello, world\"], { type: \"text/plain\" });\n    const mediaReference = await uploadMedia(client, { data: blob, fileName: \"foundryFile.txt\" });\n\n    // @ts-ignore\n    batch.create(Employee, {\n        // \"<mediaProperty>\": mediaReference,\n    });\n\n    return batch.getEdits();\n}\n\nexport default createObject;",
       },
     },
   },

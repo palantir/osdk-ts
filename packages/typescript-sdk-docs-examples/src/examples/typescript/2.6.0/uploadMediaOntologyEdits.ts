@@ -32,7 +32,7 @@ async function createObject(client: Client): Promise<Edits.Object<Employee>[]> {
 
     // @ts-ignore
     batch.create(Employee, {
-        // "media_prop_here": mediaReference,
+        // "<mediaProperty>": mediaReference,
     });
 
     return batch.getEdits();
