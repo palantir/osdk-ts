@@ -2,9 +2,9 @@ import type { ObjectSpecifier, QueryDefinition, QueryParam, QueryResult, Version
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-export namespace getFirstSecondElementOf2DArray {
+export namespace identity2DArray {
   export interface Signature {
-    (query: getFirstSecondElementOf2DArray.Parameters): Promise<getFirstSecondElementOf2DArray.ReturnType>;
+    (query: identity2DArray.Parameters): Promise<identity2DArray.ReturnType>;
   }
 
   export interface Parameters {
@@ -14,18 +14,18 @@ export namespace getFirstSecondElementOf2DArray {
     readonly array: ReadonlyArray<ReadonlyArray<QueryParam.PrimitiveType<'double'>>>;
   }
 
-  export type ReturnType = QueryResult.PrimitiveType<'double'>;
+  export type ReturnType = Array<Array<QueryResult.PrimitiveType<'double'>>>;
 }
 
-export interface getFirstSecondElementOf2DArray
-  extends QueryDefinition<getFirstSecondElementOf2DArray.Signature>,
+export interface identity2DArray
+  extends QueryDefinition<identity2DArray.Signature>,
     VersionBound<$ExpectedClientVersion> {
   __DefinitionMetadata?: {
-    apiName: 'getFirstSecondElementOf2DArray';
-    displayName: 'getFirstSecondElementOf2DArray';
-    rid: 'ri.function-registry.main.function.0d736075-0c52-409f-93e1-b7cc05963913';
+    apiName: 'identity2DArray';
+    displayName: 'identity2DArray';
+    rid: 'ri.function-registry.main.function.3c154359-8f43-4684-b108-ddb947949349';
     type: 'query';
-    version: '1.0.0';
+    version: '1.1.0';
     isFixedVersion: false;
     parameters: {
       /**
@@ -45,21 +45,29 @@ export interface getFirstSecondElementOf2DArray
       };
     };
     output: {
+      array: {
+        array: {
+          type: 'double';
+          nullable: false;
+        };
+        type: 'array';
+        nullable: false;
+      };
       nullable: false;
-      type: 'double';
+      type: 'array';
     };
-    signature: getFirstSecondElementOf2DArray.Signature;
+    signature: identity2DArray.Signature;
   };
-  apiName: 'getFirstSecondElementOf2DArray';
+  apiName: 'identity2DArray';
   type: 'query';
-  version: '1.0.0';
+  version: '1.1.0';
   osdkMetadata: typeof $osdkMetadata;
 }
 
-export const getFirstSecondElementOf2DArray: getFirstSecondElementOf2DArray = {
-  apiName: 'getFirstSecondElementOf2DArray',
+export const identity2DArray: identity2DArray = {
+  apiName: 'identity2DArray',
   type: 'query',
-  version: '1.0.0',
+  version: '1.1.0',
   isFixedVersion: false,
   osdkMetadata: $osdkMetadata,
 };

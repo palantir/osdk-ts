@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import { createClient } from "@osdk/client";
-import { getFirstSecondElementOf2DArray } from "@osdk/e2e.generated.catchall";
+import {
+  getFirstSecondElementOf2DArray,
+  identity2DArray,
+} from "@osdk/e2e.generated.catchall";
 import { logger } from "./logger.js";
 import { loggingFetch } from "./loggingFetch.js";
 
@@ -32,3 +35,7 @@ console.log(
     "array": [[0, 1], [2, 3]],
   }),
 ); // should be 1
+
+console.log(
+  await client(identity2DArray).executeFunction({ "array": [[0, 1], [2, 3]] }),
+); // should return the same array
