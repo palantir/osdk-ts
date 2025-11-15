@@ -1,5 +1,11 @@
 # @osdk/osdk-docs-context
 
+## 0.3.0-beta.4
+
+### Minor Changes
+
+- a035fdc: Add draft of media upload docs
+
 ## 0.3.0-beta.3
 
 ### Minor Changes

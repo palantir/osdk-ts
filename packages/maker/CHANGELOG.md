@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.14.0-beta.14
+
+### Minor Changes
+
+- 9e2d70a: Interface actions have the option to not include namespaces on parameters for Java OSDK generation
+
+### Patch Changes
+
+- Updated dependencies [a035fdc]
+  - @osdk/typescript-sdk-docs@0.5.0-beta.3
+
 ## 0.14.0-beta.13
 
 ### Minor Changes

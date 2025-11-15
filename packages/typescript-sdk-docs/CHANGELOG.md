@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.5.0-beta.3
+
+### Minor Changes
+
+- a035fdc: Add draft of media upload docs
+
 ## 0.5.0-beta.2
 
 ### Minor Changes
