@@ -2184,3 +2184,149 @@ versions:
               const result = await client({{objectType}})
                 .nearestNeighbors(vector_query, 5, "{{property}}")
                 .fetchPage();
+  "2.6.0": 
+    snippets:
+      applyAction:
+        # Simplified template supporting 4 cases:
+        # - hasAttachmentProperty: Whether action has attachment parameters (true/false)
+        # - hasMediaParameter: Whether action has media parameters (true/false)
+        # This creates 4 combinations: none, attachment only, media only, both
+        - template: |-
+            // Edit this import if your client location differs
+            import { client } from "./client";
+            {{#hasAttachmentProperty}}
+            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference, MediaUpload {{/hasMediaParameter}} } from "@osdk/api";
+            {{/hasAttachmentProperty}}
+            {{^hasAttachmentProperty}}{{#hasMediaParameter}}
+            import type { MediaReference, MediaUpload } from "@osdk/api";
+            {{/hasMediaParameter}}{{/hasAttachmentProperty}}
+            {{#hasAttachmentProperty}}
+            import { createAttachmentUpload } from "@osdk/client";
+            {{/hasAttachmentProperty}}
+            import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
+
+            async function callAction() {
+            {{#hasAttachmentProperty}}
+                // Create attachment upload
+                const attachmentFile = await fetch("file.json");
+                const attachmentBlob = await attachmentFile.blob();
+                const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
+                // alternatively, you can get the Rid from the attachment property on the object type you are modifying 
+                // const attachmentRid = objectTypeWithAttachment.{attachmentProperty}?.rid;
+            {{/hasAttachmentProperty}}
+            {{#hasMediaParameter}}
+                // Use existing media reference
+                const objectPage = await client({{objectType}}).fetchPage();
+                const mediaReference: MediaReference = objectPage.data[0].{{property}}!.getMediaReference();
+
+                // Upload media data
+                const mediaFile = await fetch("media.mp4");
+                const mediaBlob = await mediaFile.blob();
+                const mediaUpload: MediaUpload = { data: mediaBlob, fileName: "myMedia" };
+
+                const mediaReferenceOrUpload = Math.random() < 0.5 ? mediaReference : mediaUpload;
+
+            {{/hasMediaParameter}}
+                const result = await client({{actionApiName}}).applyAction(
+                    {
+                        {{#actionParameterSampleValuesV2}}
+                        "{{key}}": {{{value}}},
+                        {{/actionParameterSampleValuesV2}}
+                    },
+                    {
+                        $returnEdits: true,
+                    }
+                );
+                if (result.type === "edits") {
+                    // use the result object to report back on action results
+                    const updatedObject = result.editedObjectTypes[0];
+                    console.log("Updated object", updatedObject);
+                }
+            }
+          computedVariables:
+            - actionParameterSampleValuesV2
+      batchApplyAction:
+        # Simplified template supporting 4 cases (same as applyAction):
+        # - hasAttachmentProperty: Whether action has attachment parameters (true/false)
+        # - hasMediaParameter: Whether action has media parameters (true/false)
+        # This creates 4 combinations: none, attachment only, media only, both
+        - template: |-
+            // Edit this import if your client location differs
+            import { client } from "./client";
+            {{#hasAttachmentProperty}}
+            import type { AttachmentUpload {{#hasMediaParameter}}, MediaReference, MediaUpload {{/hasMediaParameter}} } from "@osdk/api";
+            {{/hasAttachmentProperty}}
+            {{^hasAttachmentProperty}}{{#hasMediaParameter}}
+            import type { MediaReference, MediaUpload } from "@osdk/api";
+            {{/hasMediaParameter}}{{/hasAttachmentProperty}}
+            {{#hasAttachmentProperty}}
+            import { createAttachmentUpload } from "@osdk/client";
+            {{/hasAttachmentProperty}}
+            import { {{actionApiName}} {{#hasMediaParameter}}, {{objectType}} {{/hasMediaParameter}} } from "{{{packageName}}}";
+
+            async function callBatchAction() {
+            {{#hasAttachmentProperty}}
+                // Create attachment upload
+                const attachmentFile = await fetch("file.json");
+                const attachmentBlob = await attachmentFile.blob();
+                const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
+            {{/hasAttachmentProperty}}
+            {{#hasMediaParameter}}
+                // Use existing media reference
+                const objectPage = await client({{objectType}}).fetchPage();
+                const mediaReference: MediaReference = objectPage.data[0].{{property}}!.getMediaReference();
+
+                // Upload media data
+                const mediaFile = await fetch("media.mp4");
+                const mediaBlob = await mediaFile.blob();
+                const mediaUpload: MediaUpload = { data: mediaBlob, fileName: "myMedia" };
+
+                const mediaReferenceOrUpload = Math.random() < 0.5 ? mediaReference : mediaUpload;
+                
+            {{/hasMediaParameter}}
+                const result = await client({{actionApiName}}).batchApplyAction([
+                        {
+                            {{#actionParameterSampleValuesV2}}
+                            "{{key}}": {{{value}}},
+                            {{/actionParameterSampleValuesV2}}
+                        },
+                        {
+                            {{#actionParameterSampleValuesV2}}
+                            "{{key}}": {{{value}}},
+                            {{/actionParameterSampleValuesV2}}
+                        },
+                    ],
+                    {
+                        $returnEdits: true,
+                    }
+                );
+                if (result.type === "edits") {
+                    // use the result object to report back on action results
+                    const updatedObject = result.editedObjectTypes[0];
+                    console.log("Updated object", updatedObject);
+                }
+            }
+          computedVariables:
+            - actionParameterSampleValuesV2
+      uploadMediaOntologyEdits:
+        - template: |-
+            import type { Client } from "@osdk/client";
+            import { {{objectType}} } from "{{{packageName}}}";
+            import type { Edits } from "@osdk/functions";
+            import { createEditBatch, uploadMedia } from "@osdk/functions";
+
+            async function createObject(client: Client): Promise<Edits.Object<{{objectType}}>[]> {
+                const batch = createEditBatch<Edits.Object<{{objectType}}>>(client);
+                
+                const blob = new Blob(["Hello, world"], { type: "text/plain" });
+                const mediaReference = await uploadMedia(client, { data: blob, fileName: "foundryFile.txt" });
+
+                // @ts-ignore
+                batch.create({{objectType}}, {
+                    // "<mediaProperty>": mediaReference,
+                });
+
+                return batch.getEdits();
+            }
+
+            export default createObject;
