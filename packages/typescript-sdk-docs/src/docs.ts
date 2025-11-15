@@ -375,7 +375,7 @@ function renderType(
         : "primaryKeyValue";
       if (context === "actionParameter") {
         return majorVersion >= SdkMajorVersion.V2
-          ? `{ $primaryKey: ${primaryKeyValue}, /* other properties */ }`
+          ? `"primaryKeyValue" // or myObjectInstance`
           : `{ __primaryKey: ${primaryKeyValue}, /* other properties */ }`;
       }
       return primaryKeyValue;
