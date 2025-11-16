@@ -2323,7 +2323,8 @@ versions:
 
                 // @ts-ignore
                 batch.create({{objectType}}, {
-                    // "<mediaProperty>": mediaReference,
+                    // Set required properties here...
+                    // Media properties can be set to `mediaReference`
                 });
 
                 return batch.getEdits();
