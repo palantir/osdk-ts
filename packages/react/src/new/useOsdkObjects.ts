@@ -108,6 +108,8 @@ export interface UseOsdkObjectsOptions<
 
   streamUpdates?: boolean;
 
+  includeRid?: boolean;
+
   /**
    * Enable or disable the query.
    *
@@ -186,6 +188,7 @@ export function useOsdkObjects<
     where = {},
     streamUpdates,
     withProperties,
+    includeRid,
     intersectWith,
     pivotTo,
     enabled = true,
@@ -228,6 +231,7 @@ export function useOsdkObjects<
             orderBy,
             streamUpdates,
             withProperties: stableWithProperties,
+            includeRid,
             ...(stableIntersectWith
               ? { intersectWith: stableIntersectWith }
               : {}),
@@ -248,11 +252,9 @@ export function useOsdkObjects<
       orderBy,
       streamUpdates,
       stableWithProperties,
+      includeRid,
       stableIntersectWith,
       pivotTo,
-      pageSize,
-      orderBy,
-      streamUpdates,
     ],
   );
 

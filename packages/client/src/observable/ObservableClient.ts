@@ -62,6 +62,7 @@ export interface ObserveObjectOptions<
   apiName: T["apiName"] | T;
   pk: PrimaryKeyType<T>;
   select?: PropertyKeys<T>[];
+  includeRid?: boolean;
 }
 
 export type OrderBy<Q extends ObjectTypeDefinition | InterfaceDefinition> = {
@@ -80,6 +81,7 @@ export interface ObserveListOptions<
   expectedLength?: number;
   streamUpdates?: boolean;
   withProperties?: DerivedProperty.Clause<Q>;
+  includeRid?: boolean;
   intersectWith?: Array<{
     where: WhereClause<Q, RDPs>;
   }>;
@@ -192,7 +194,7 @@ export interface ObservableClient extends ObserveLinks {
   observeObject<T extends ObjectTypeDefinition>(
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
-    options: ObserveOptions,
+    options: Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
     subFn: Observer<ObserveObjectArgs<T>>,
   ): Unsubscribable;
 
