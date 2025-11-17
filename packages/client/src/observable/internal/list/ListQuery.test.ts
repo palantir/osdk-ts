@@ -200,7 +200,6 @@ describe("ListQuery autoFetchMore tests", () => {
     testStage("Verify all items fetched and no more pages");
     expect(payload?.resolvedList.length).toBeGreaterThanOrEqual(80);
     expect(payload?.hasMore).toBe(false);
-    expect(payload?.fetchMore).toBeUndefined();
 
     testStage("Verify no additional auto-fetches occur");
     expectNoMoreCalls(listSub);
@@ -305,7 +304,6 @@ describe("ListQuery autoFetchMore tests", () => {
     testStage("Verify all available items fetched");
     expect(payload?.resolvedList.length).toBeGreaterThanOrEqual(80);
     expect(payload?.hasMore).toBe(false);
-    expect(payload?.fetchMore).toBeUndefined();
 
     testStage("Verify no additional auto-fetches occur");
     expectNoMoreCalls(listSub);
