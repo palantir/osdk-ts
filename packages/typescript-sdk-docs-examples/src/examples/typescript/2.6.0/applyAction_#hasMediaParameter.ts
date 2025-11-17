@@ -32,6 +32,7 @@ async function callAction() {
     const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
     // alternatively, you can get the Rid from the attachment property on the object type you are modifying 
     // const attachmentRid = objectTypeWithAttachment.{attachmentProperty}?.rid;
+
     // You can upload media data via your Action
     const mediaFile = await fetch("media.mp4");
     const mediaBlob = await mediaFile.blob();

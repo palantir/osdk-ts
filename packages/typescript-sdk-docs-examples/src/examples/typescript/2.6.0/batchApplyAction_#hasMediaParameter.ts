@@ -30,6 +30,7 @@ async function callBatchAction() {
     const attachmentFile = await fetch("file.json");
     const attachmentBlob = await attachmentFile.blob();
     const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
+
     // You can upload media data via your Action
     const mediaFile = await fetch("media.mp4");
     const mediaBlob = await mediaFile.blob();
