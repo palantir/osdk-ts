@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.5.0-beta.4
+
+### Minor Changes
+
+- dd8c385: Update upload media ontology edits docs
+
 ## 0.5.0-beta.3
 
 ### Minor Changes
