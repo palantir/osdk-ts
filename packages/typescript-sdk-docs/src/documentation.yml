@@ -2218,16 +2218,14 @@ versions:
                 // const attachmentRid = objectTypeWithAttachment.{attachmentProperty}?.rid;
             {{/hasAttachmentProperty}}
             {{#hasMediaParameter}}
-                // Use existing media reference
-                const objectPage = await client({{objectType}}).fetchPage();
-                const mediaReference: MediaReference = objectPage.data[0].{{property}}!.getMediaReference();
-
-                // Upload media data
+                // You can upload media data via your Action
                 const mediaFile = await fetch("media.mp4");
                 const mediaBlob = await mediaFile.blob();
                 const mediaUpload: MediaUpload = { data: mediaBlob, fileName: "myMedia" };
-
-                const mediaReferenceOrUpload = Math.random() < 0.5 ? mediaReference : mediaUpload;
+                
+                // You can also pass an existing media reference into your Action
+                const objectPage = await client({{objectType}}).fetchPage();
+                const mediaReference: MediaReference = objectPage.data[0].{{property}}!.getMediaReference();
 
             {{/hasMediaParameter}}
                 const result = await client({{actionApiName}}).applyAction(
@@ -2275,16 +2273,14 @@ versions:
                 const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
             {{/hasAttachmentProperty}}
             {{#hasMediaParameter}}
-                // Use existing media reference
-                const objectPage = await client({{objectType}}).fetchPage();
-                const mediaReference: MediaReference = objectPage.data[0].{{property}}!.getMediaReference();
-
-                // Upload media data
+                // You can upload media data via your Action
                 const mediaFile = await fetch("media.mp4");
                 const mediaBlob = await mediaFile.blob();
                 const mediaUpload: MediaUpload = { data: mediaBlob, fileName: "myMedia" };
-
-                const mediaReferenceOrUpload = Math.random() < 0.5 ? mediaReference : mediaUpload;
+                
+                // You can also pass an existing media reference into your Action
+                const objectPage = await client({{objectType}}).fetchPage();
+                const mediaReference: MediaReference = objectPage.data[0].{{property}}!.getMediaReference();
                 
             {{/hasMediaParameter}}
                 const result = await client({{actionApiName}}).batchApplyAction([

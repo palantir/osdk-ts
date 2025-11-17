@@ -389,7 +389,7 @@ function renderType(
       return "{}";
     case "mediaReference":
       return context === "actionParameter"
-        ? "mediaReferenceOrUpload"
+        ? "mediaUpload"
         : "mediaReferenceRid";
     case "objectType":
       return `"${type.objectTypeApiName}"`;
