@@ -2074,6 +2074,9 @@ versions:
 
             // To stop receiving updates, call unsubscribe
             subscription.unsubscribe();
+      uploadMediaOntologyEdits:
+        - template: |-
+            // Upgrade to 2.6 for official support
       uploadMedia:
         - template: |-
             import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
@@ -2323,7 +2326,8 @@ versions:
 
                 // @ts-ignore
                 batch.create({{objectType}}, {
-                    // "<mediaProperty>": mediaReference,
+                    // Set required properties here...
+                    // Media properties can be set to `mediaReference`
                 });
 
                 return batch.getEdits();
