@@ -410,8 +410,8 @@ describe("Miscellaneous Tests", () => {
           "properties": [
             {
               "type": "string",
-              "apiName": "bar",
-              "displayName": "Bar"
+              "displayName": "Bar",
+              "apiName": "bar"
             }
           ],
           "implementsInterfaces": [

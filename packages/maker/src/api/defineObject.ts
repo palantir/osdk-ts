@@ -207,7 +207,7 @@ export function defineObject(
   const flattenedProperties: Array<ObjectPropertyType> = Object.entries(
     objectDef.properties ?? {},
   ).map(([apiName, property]) =>
-    convertUserObjectPropertyType(property.apiName ?? apiName, property)
+    convertUserObjectPropertyType(apiName, property)
   );
 
   const finalObject: ObjectType = {
@@ -276,7 +276,6 @@ function convertUserObjectPropertyType(
   property: ObjectPropertyTypeUserDefinition,
 ): ObjectPropertyType {
   // fill in missing fields to be used by actions
-  property.apiName = apiName;
   property.displayName = property.displayName ?? uppercaseFirstLetter(apiName);
   return {
     ...property,
