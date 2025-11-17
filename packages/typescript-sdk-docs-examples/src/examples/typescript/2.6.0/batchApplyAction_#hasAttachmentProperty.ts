@@ -30,6 +30,7 @@ async function callBatchAction() {
     const attachmentFile = await fetch("file.json");
     const attachmentBlob = await attachmentFile.blob();
     const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
+
     const result = await client(documentEquipment).batchApplyAction([
             {
                 "equipmentId": "mac-1234",

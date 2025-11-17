@@ -32,16 +32,15 @@ async function callAction() {
     const attachment: AttachmentUpload = createAttachmentUpload(attachmentBlob, "myFile");
     // alternatively, you can get the Rid from the attachment property on the object type you are modifying 
     // const attachmentRid = objectTypeWithAttachment.{attachmentProperty}?.rid;
-    // Use existing media reference
-    const objectPage = await client(Equipment).fetchPage();
-    const mediaReference: MediaReference = objectPage.data[0].trainingMaterial!.getMediaReference();
 
-    // Upload media data
+    // You can upload media data via your Action
     const mediaFile = await fetch("media.mp4");
     const mediaBlob = await mediaFile.blob();
     const mediaUpload: MediaUpload = { data: mediaBlob, fileName: "myMedia" };
-
-    const mediaReferenceOrUpload = Math.random() < 0.5 ? mediaReference : mediaUpload;
+    
+    // You can also pass an existing media reference into your Action
+    const objectPage = await client(Equipment).fetchPage();
+    const mediaReference: MediaReference = objectPage.data[0].trainingMaterial!.getMediaReference();
 
     const result = await client(documentEquipment).applyAction(
         {

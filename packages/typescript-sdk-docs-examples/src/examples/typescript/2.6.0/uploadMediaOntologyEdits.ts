@@ -30,11 +30,8 @@ async function createObject(client: Client): Promise<Edits.Object<Employee>[]> {
     const blob = new Blob(["Hello, world"], { type: "text/plain" });
     const mediaReference = await uploadMedia(client, { data: blob, fileName: "foundryFile.txt" });
 
-    // @ts-ignore
-    batch.create(Employee, {
-        // Set required properties here...
-        // Media properties can be set to `mediaReference`
-    });
+    // @ts-ignore 
+    batch.create(Employee, { myMediaProperty: mediaReference, /* Other properties... */ });
 
     return batch.getEdits();
 }
