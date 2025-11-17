@@ -1,5 +1,11 @@
 # @osdk/osdk-docs-context
 
+## 0.3.0-beta.5
+
+### Minor Changes
+
+- dd8c385: Update upload media ontology edits docs
+
 ## 0.3.0-beta.4
 
 ### Minor Changes
