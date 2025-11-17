@@ -105,7 +105,7 @@ fs.writeFileSync(
             envPrefix: "${template.envPrefix}",
             buildDirectory: "${template.buildDirectory}",
             hidden: ${template.hidden || false},
-            ${template.isBeta ? 'isBeta: true,' : ''}
+            ${template.isBeta ? "isBeta: true," : ""}
             files: {
               ${v1Name ? `"1.x": getPackageFiles(import("${v1Name}")),` : ""}
               ${v2Name ? `"2.x": getPackageFiles(import("${v2Name}")),` : ""}

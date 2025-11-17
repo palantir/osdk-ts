@@ -147,14 +147,18 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     template,
   });
   const foundryUrl: string = await promptFoundryUrl(parsed);
-  const applicationUrl: string | undefined = isAuthless ? undefined : await promptApplicationUrl(parsed);
+  const applicationUrl: string | undefined = isAuthless
+    ? undefined
+    : await promptApplicationUrl(parsed);
   const application: string = await promptApplicationRid(parsed);
   const ontology: string = await promptOntologyRid(parsed);
   const clientId: string = isAuthless ? "" : await promptClientId(parsed);
   const osdkPackage: string = await promptOsdkPackage(parsed);
   const osdkRegistryUrl: string = await promptOsdkRegistryUrl(parsed);
   const corsProxy: boolean = await promptCorsProxy(parsed);
-  const scopes: string[] | undefined = isAuthless ? undefined : await promptScopes(parsed);
+  const scopes: string[] | undefined = isAuthless
+    ? undefined
+    : await promptScopes(parsed);
 
   await run({
     project,
