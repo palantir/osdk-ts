@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-export const NULL_VALUE: symbol & { __type: "NULL_VALUE" } = Symbol.for(
+export interface NullValue extends Symbol {
+  __type: "NULL_VALUE";
+}
+
+export const NULL_VALUE: NullValue = Symbol.for(
   "NULL_VALUE",
-) as symbol & { __type: "NULL_VALUE" };
+) as unknown as NullValue;
