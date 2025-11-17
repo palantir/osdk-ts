@@ -1,5 +1,11 @@
 # @osdk/osdk-docs-context
 
+## 0.3.0-beta.6
+
+### Minor Changes
+
+- 0e863aa: Tweak media upload snippet
+
 ## 0.3.0-beta.5
 
 ### Minor Changes

@@ -1,5 +1,17 @@
 # @osdkkit/react
 
+## 0.8.0-beta.3
+
+### Minor Changes
+
+- c5a3815: Add new auto fetch more behavior to useOsdkObjects
+
+### Patch Changes
+
+- Updated dependencies [c5a3815]
+  - @osdk/client@2.6.0-beta.11
+  - @osdk/api@2.6.0-beta.11
+
 ## 0.8.0-beta.2
 
 ### Minor Changes
