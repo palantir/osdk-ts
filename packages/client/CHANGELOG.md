@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.6.0-beta.11
+
+### Minor Changes
+
+- c5a3815: Add new auto fetch more behavior to useOsdkObjects
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.11
+- @osdk/client.unstable@2.6.0-beta.11
+- @osdk/generator-converters@2.6.0-beta.11
+
 ## 2.6.0-beta.10
 
 ### Minor Changes

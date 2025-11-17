@@ -1,5 +1,12 @@
 # @osdk/typescript-sdk-docs
 
+## 0.5.0-beta.5
+
+### Minor Changes
+
+- 823c756: Update object parameter format in TypeScript SDK documentation to directly provide the primary key as a string
+- 0e863aa: Tweak media upload snippet
+
 ## 0.5.0-beta.4
 
 ### Minor Changes

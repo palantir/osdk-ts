@@ -1,5 +1,19 @@
 # @osdk/maker
 
+## 0.14.0-beta.15
+
+### Minor Changes
+
+- a26bfab: Remove import section from readme
+- 88ac696: Remove apiName field from user object property definitions
+
+### Patch Changes
+
+- Updated dependencies [823c756]
+- Updated dependencies [0e863aa]
+  - @osdk/typescript-sdk-docs@0.5.0-beta.5
+  - @osdk/api@2.6.0-beta.11
+
 ## 0.14.0-beta.14
 
 ### Minor Changes
