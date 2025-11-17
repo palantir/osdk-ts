@@ -14,7 +14,6 @@ The Maker package provides a type-safe, programmatic way to define ontologies, w
 - [Defining Links](#defining-links)
 - [Interface Link Constraints](#interface-link-constraints)
 - [Defining Actions](#defining-actions)
-- [Importing Ontology Entities](#importing-ontology-entities)
 - [Advanced](#advanced)
 
 ## Getting Started
