@@ -50,7 +50,7 @@ PUBLIC_FOUNDRY_API_URL=https://example.palantirfoundry.com
 PUBLIC_FOUNDRY_CLIENT_ID=123
 
 # This Ontology RID must match the Ontology RID your Developer Console is associated with.
-# You can check the Ontology on the "Data Resources" page of Developer Console. 
+# You can check the Ontology on the "Data Resources" page of Developer Console.
 # It typically does not need to be changed.
 
 PUBLIC_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.fake
@@ -86,7 +86,7 @@ PUBLIC_FOUNDRY_API_URL=http://localhost:8080
 PUBLIC_FOUNDRY_CLIENT_ID=123
 
 # This Ontology RID must match the Ontology RID your Developer Console is associated with.
-# You can check the Ontology on the "Data Resources" page of Developer Console. 
+# You can check the Ontology on the "Data Resources" page of Developer Console.
 # It typically does not need to be changed.
 
 PUBLIC_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.fake
@@ -122,7 +122,7 @@ PUBLIC_FOUNDRY_API_URL=https://example.palantirfoundry.com
 PUBLIC_FOUNDRY_CLIENT_ID=123
 
 # This Ontology RID must match the Ontology RID your Developer Console is associated with.
-# You can check the Ontology on the "Data Resources" page of Developer Console. 
+# You can check the Ontology on the "Data Resources" page of Developer Console.
 # It typically does not need to be changed.
 
 PUBLIC_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.fake
@@ -158,7 +158,7 @@ PUBLIC_FOUNDRY_API_URL=https://example.palantirfoundry.com
 PUBLIC_FOUNDRY_CLIENT_ID=123
 
 # This Ontology RID must match the Ontology RID your Developer Console is associated with.
-# You can check the Ontology on the "Data Resources" page of Developer Console. 
+# You can check the Ontology on the "Data Resources" page of Developer Console.
 # It typically does not need to be changed.
 
 PUBLIC_FOUNDRY_ONTOLOGY_RID=ri.ontology.main.ontology.fake
