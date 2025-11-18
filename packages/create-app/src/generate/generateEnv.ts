@@ -20,15 +20,39 @@ export function generateEnvDevelopment({
   clientId,
   corsProxy,
   ontology,
+  isAuthless,
 }: {
   envPrefix: string;
   foundryUrl: string;
   clientId: string;
   corsProxy: boolean;
   ontology: string;
+  isAuthless: boolean;
 }): string {
   const foundryApiUrl = corsProxy ? "http://localhost:8080" : foundryUrl;
   const applicationUrl = "http://localhost:8080";
+
+  if (isAuthless) {
+    return `# This env file is intended for developing on your local computer.
+# To set up development in Foundry's Code Workspaces, see .env.code-workspaces.
+# To deploy your application to production, see .env.production.
+# Note that .env.code-workspaces is only present for projects that were set up
+# using the "Bootstrap in Foundry" option in Developer Console.
+
+
+# This URL is the Foundry host that your OSDK will use. It typically does not
+# need to be changed.
+
+${envPrefix}FOUNDRY_API_URL=${applicationUrl}/api-proxy
+
+# This Ontology RID must match the Ontology RID your Developer Console is associated with.
+# You can check the Ontology on the "Data Resources" page of Developer Console.
+# It typically does not need to be changed.
+
+${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontology}
+`;
+  }
+
   return `# This env file is intended for developing on your local computer.
 # To set up development in Foundry's Code Workspaces, see .env.code-workspaces.
 # To deploy your application to production, see .env.production.
@@ -58,7 +82,7 @@ ${envPrefix}FOUNDRY_API_URL=${foundryApiUrl}
 ${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
 
 # This Ontology RID must match the Ontology RID your Developer Console is associated with.
-# You can check the Ontology on the "Data Resources" page of Developer Console. 
+# You can check the Ontology on the "Data Resources" page of Developer Console.
 # It typically does not need to be changed.
 
 ${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontology}
@@ -71,13 +95,38 @@ export function generateEnvProduction({
   applicationUrl,
   clientId,
   ontology,
+  isAuthless,
 }: {
   envPrefix: string;
   foundryUrl: string;
   applicationUrl: string | undefined;
   clientId: string;
   ontology: string;
+  isAuthless: boolean;
 }): string {
+  if (isAuthless) {
+    const applicationUrlOrDefault = applicationUrl
+      ?? "<Fill in the domain at which you deploy your application>";
+    return `# This env file is intended for deploying your application to production.
+# To set up development on your local computer, see .env.development.
+# To set up development in Foundry's Code Workspaces, see .env.code-workspaces.
+# Note that .env.code-workspaces is only present for projects that were set up
+# using the "Bootstrap in Foundry" option in Developer Console.
+
+
+# This URL is the Foundry host that your OSDK will use. It typically does not
+# need to be changed.
+
+${envPrefix}FOUNDRY_API_URL=${applicationUrlOrDefault}/proxy
+
+# This Ontology RID must match the Ontology RID your Developer Console is associated with.
+# You can check the Ontology on the "Data Resources" page of Developer Console.
+# It typically does not need to be changed.
+
+${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontology}
+`;
+  }
+
   const applicationUrlOrDefault = applicationUrl
     ?? "<Fill in the domain at which you deploy your application>";
   return `# This env file is intended for deploying your application to production.
@@ -113,7 +162,7 @@ ${envPrefix}FOUNDRY_API_URL=${foundryUrl}
 ${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
 
 # This Ontology RID must match the Ontology RID your Developer Console is associated with.
-# You can check the Ontology on the "Data Resources" page of Developer Console. 
+# You can check the Ontology on the "Data Resources" page of Developer Console.
 # It typically does not need to be changed.
 
 ${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontology}

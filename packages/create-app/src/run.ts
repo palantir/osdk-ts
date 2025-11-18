@@ -44,6 +44,7 @@ interface RunArgs {
   osdkRegistryUrl: string;
   corsProxy: boolean;
   scopes: string[] | undefined;
+  isAuthless: boolean;
 }
 
 export async function run(
@@ -61,6 +62,7 @@ export async function run(
     osdkRegistryUrl,
     corsProxy,
     scopes,
+    isAuthless,
   }: RunArgs,
 ): Promise<void> {
   consola.log("");
@@ -132,6 +134,7 @@ export async function run(
     corsProxy,
     clientVersion: changeVersionPrefix(clientVersion, "^"),
     scopes,
+    isAuthless,
   };
   const processFiles = function(dir: string) {
     fs.readdirSync(dir).forEach(function(file) {
@@ -167,6 +170,7 @@ export async function run(
     clientId,
     corsProxy,
     ontology,
+    isAuthless,
   });
   fs.writeFileSync(path.join(root, ".env.development"), envDevelopment);
   const envProduction = generateEnvProduction({
@@ -175,6 +179,7 @@ export async function run(
     applicationUrl,
     clientId,
     ontology,
+    isAuthless,
   });
   fs.writeFileSync(path.join(root, ".env.production"), envProduction);
   const foundryConfigJson = generateFoundryConfigJson({

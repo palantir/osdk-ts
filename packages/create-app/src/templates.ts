@@ -48,4 +48,5 @@ export interface TemplateContext {
   clientVersion: string;
   corsProxy: boolean;
   scopes: string[] | undefined;
+  isAuthless: boolean;
 }

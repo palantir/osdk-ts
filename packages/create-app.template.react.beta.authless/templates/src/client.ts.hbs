@@ -1,0 +1,65 @@
+{{#if isAuthless}}
+import { createAuthlessClient } from "@osdk/oauth";
+{{else}}
+import { createPublicOauthClient, type PublicOauthClient } from "@osdk/oauth";
+{{/if}}
+import { createClient, type Client } from "@osdk/client";
+
+function getMetaTagContent(tagName: string): string {
+  const elements = document.querySelectorAll(`meta[name="${tagName}"]`);
+  const element = elements.item(elements.length - 1);
+  const value = element ? element.getAttribute("content") : null;
+  if (value == null || value === "") {
+    throw new Error(`Meta tag ${tagName} not found or empty`);
+  }
+  if (value.match(/%.+%/)) {
+    throw new Error(`Meta tag ${tagName} contains placeholder value. Please add ${value.replace(/%/g, "")} to your .env files`);
+  }
+  return value;
+}
+
+const foundryUrl = getMetaTagContent("osdk-foundryUrl");
+const ontologyRid = getMetaTagContent("osdk-ontologyRid");
+
+{{#unless isAuthless}}
+const clientId = getMetaTagContent("osdk-clientId");
+const redirectUrl = getMetaTagContent("osdk-redirectUrl");
+
+export const auth: PublicOauthClient = createPublicOauthClient(
+  clientId,
+  foundryUrl,
+  redirectUrl,
+  {{#if scopes}}
+  {
+    scopes: [{{#each scopes}}"{{this}}"{{#unless @last}}, {{/unless}}{{/each}}],
+  }
+  {{/if}}
+);
+{{/unless}}
+
+{{#if isAuthless}}
+/**
+ * Initialize the client to interact with the Ontology SDK in authless mode.
+ * This client does not require authentication and is suitable for public applications.
+ *
+ * Note: Authless applications have limitations:
+ * - No user identification for rate limiting or metrics
+ * - All users share the same access permissions
+ * - Only suitable for public data and actions
+ */
+{{else}}
+/**
+ * Initialize the client to interact with the Ontology SDK.
+ */
+{{/if}}
+const client: Client = createClient(
+  foundryUrl,
+  ontologyRid,
+  {{#if isAuthless}}
+  createAuthlessClient(),
+  {{else}}
+  auth,
+  {{/if}}
+);
+
+export default client;
