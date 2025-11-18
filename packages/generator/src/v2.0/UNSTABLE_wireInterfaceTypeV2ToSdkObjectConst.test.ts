@@ -57,10 +57,12 @@ function simpleInterface<T extends string, Q extends SharedPropertyType>(
     extendsInterfaces: parents,
     links: {},
     properties,
+    propertiesV2: {},
     implementedByObjectTypes,
     allExtendsInterfaces: parents,
     allLinks: {},
     allProperties: properties,
+    allPropertiesV2: {},
   } as const satisfies InterfaceType;
 }
 

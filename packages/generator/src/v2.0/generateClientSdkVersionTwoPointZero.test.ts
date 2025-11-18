@@ -302,6 +302,7 @@ const referencedOntology = {
           required: true,
         },
       },
+      propertiesV2: {},
       implementedByObjectTypes: [],
       links: {},
       allExtendsInterfaces: [],
@@ -326,6 +327,7 @@ const referencedOntology = {
           required: true,
         },
       },
+      allPropertiesV2: {},
     },
   },
   "sharedPropertyTypes": {
@@ -390,6 +392,7 @@ const referencingOntology: WireOntologyDefinition = {
           properties: {
             "com.example.dep.spt": "body",
           },
+          propertiesV2: {},
         },
       },
       linkTypes: [],

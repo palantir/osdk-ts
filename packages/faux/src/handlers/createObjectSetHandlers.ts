@@ -60,6 +60,7 @@ export const createObjectSetHandlers = (
         interfaceToObjectTypeMappings: fauxFoundry
           .getOntology(params.ontologyApiName)
           .getInterfaceToObjectTypeMappings(objectApiNames),
+        interfaceToObjectTypeMappingsV2: {},
         ...pagedResponse,
       };
     },
