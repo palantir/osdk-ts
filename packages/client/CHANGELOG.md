@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.6.0-beta.12
+
+### Minor Changes
+
+- 9961f06: fix order by via key stabilization
+
+### Patch Changes
+
+- @osdk/api@2.6.0-beta.12
+- @osdk/client.unstable@2.6.0-beta.12
+- @osdk/generator-converters@2.6.0-beta.12
+
 ## 2.6.0-beta.11
 
 ### Minor Changes
