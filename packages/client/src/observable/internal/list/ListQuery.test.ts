@@ -343,7 +343,7 @@ describe("ListQuery autoFetchMore tests", () => {
     if (payload?.resolvedList && payload.resolvedList.length > 1) {
       const firstItem = payload.resolvedList[0];
       const lastItem = payload.resolvedList[payload.resolvedList.length - 1];
-      expect((firstItem as any).id).toBeGreaterThanOrEqual((lastItem as any).id);
+      expect(firstItem.id).toBeGreaterThanOrEqual((lastItem as any).id);
     }
 
     testStage("Verify no additional unexpected calls");
