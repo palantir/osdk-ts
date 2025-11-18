@@ -228,6 +228,11 @@ export function useOsdkObjects<
     [JSON.stringify(intersectWith)],
   );
 
+  const stableOrderBy = React.useMemo(
+    () => orderBy,
+    [JSON.stringify(orderBy)],
+  );
+
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {
@@ -245,7 +250,7 @@ export function useOsdkObjects<
             where: canonWhere,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
             pageSize,
-            orderBy,
+            orderBy: stableOrderBy,
             streamUpdates,
             withProperties: stableWithProperties,
             autoFetchMore,
@@ -266,7 +271,7 @@ export function useOsdkObjects<
       canonWhere,
       dedupeIntervalMs,
       pageSize,
-      orderBy,
+      stableOrderBy,
       streamUpdates,
       stableWithProperties,
       autoFetchMore,

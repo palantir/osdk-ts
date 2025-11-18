@@ -34,7 +34,7 @@ export function OfficesList(
   props: OfficesListProps,
 ) {
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const offices = useOsdkObjects(Office, {});
+  const offices = useOsdkObjects(Office, {orderBy: {name: "asc"}});
 
   return (
     <>
