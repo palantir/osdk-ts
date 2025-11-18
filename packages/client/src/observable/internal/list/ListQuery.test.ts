@@ -308,4 +308,45 @@ describe("ListQuery autoFetchMore tests", () => {
     testStage("Verify no additional auto-fetches occur");
     expectNoMoreCalls(listSub);
   });
+
+  it("orderBy fetches data correctly with sorting", async () => {
+    setupTodos(fauxFoundry, 50);
+
+    testStage("Setup observation with orderBy descending by id");
+    const listSub = mockListSubCallback();
+    defer(
+      store.lists.observe(
+        {
+          type: Todo,
+          where: {},
+          orderBy: { id: "desc" },
+          pageSize: 20,
+        },
+        listSub,
+      ),
+    );
+
+    testStage("Initial loading state");
+    await waitForCall(listSub.next, 1);
+    expectSingleListCallAndClear(listSub, [], { status: "loading" });
+
+    testStage("First page loads (20 items)");
+    await waitForCall(listSub.next, 1);
+    const payload = expectSingleListCallAndClear(listSub, expect.anything(), {
+      status: "loaded",
+    });
+
+    testStage("Verify data loaded and sorted descending");
+    expect(payload?.resolvedList.length).toBe(20);
+    expect(payload?.resolvedList).toBeTruthy();
+    // Verify items are sorted descending by checking if first item has higher id than last
+    if (payload?.resolvedList && payload.resolvedList.length > 1) {
+      const firstItem = payload.resolvedList[0];
+      const lastItem = payload.resolvedList[payload.resolvedList.length - 1];
+      expect(firstItem.id).toBeGreaterThanOrEqual((lastItem as any).id);
+    }
+
+    testStage("Verify no additional unexpected calls");
+    expectNoMoreCalls(listSub);
+  });
 });
