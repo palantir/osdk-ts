@@ -155,6 +155,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
           },
         },
+        "allPropertiesV2": {},
         "apiName": "FooInterface",
         "description": "Interface for Foo",
         "displayName": "Foo Interface",
@@ -188,6 +189,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
           },
         },
+        "propertiesV2": {},
         "rid": "ri.interface.main.interface.1",
       },
     },
@@ -202,6 +204,7 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             "properties": {
               "fooSpt": "fullName",
             },
+            "propertiesV2": {},
           },
         },
         "linkTypes": [],
@@ -436,6 +439,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
             "properties": {
               "fooSpt": "fullName",
             },
+            "propertiesV2": {},
           },
         },
         "linkTypes": [
@@ -704,6 +708,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
             "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
           },
         },
+        "allPropertiesV2": {},
         "apiName": "FooInterface",
         "description": "Interface for Foo",
         "displayName": "Foo Interface",
@@ -737,6 +742,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
             "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
           },
         },
+        "propertiesV2": {},
         "rid": "ri.interface.main.interface.1",
       },
     },
@@ -751,6 +757,7 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
             "properties": {
               "fooSpt": "fullName",
             },
+            "propertiesV2": {},
           },
         },
         "linkTypes": [],
