@@ -144,13 +144,13 @@ export interface EsongIssues extends $ObjectTypeDefinition {
     };
     inverseInterfaceMap: {
       EsongInterfaceC: {
-        label: 'esongId';
+        label: ['esongId'];
       };
       EsongInterfaceWithIlts: {
-        title: 'esongId';
+        title: ['esongId'];
       };
       EsongInterfaceA: {
-        label: 'esongSptA';
+        label: ['esongSptA'];
       };
     };
     links: {

@@ -84,9 +84,9 @@ export interface NbaPlayer extends $ObjectTypeDefinition {
     };
     inverseInterfaceMap: {
       Athlete: {
-        jerseyNumber: 'jerseyNumber';
-        id: 'athleteId';
-        name: 'name22';
+        jerseyNumber: ['jerseyNumber'];
+        id: ['athleteId'];
+        name: ['name22'];
       };
     };
     links: {};

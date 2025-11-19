@@ -161,6 +161,7 @@ describe("ExtractOptions", () => {
         "com.my.obscure.namespace.FooBarInterface": {
           "com.my.obscure.namespace.fooInterface": "foo";
           "com.my.obscure.namespace.id": "name";
+          "com.my.obscure.namespace.displayName": "name";
           "com.my.even.more.obscure.namespace.originDate": "birthday";
         };
       };
@@ -169,6 +170,16 @@ describe("ExtractOptions", () => {
           "foo": "com.my.obscure.namespace.fooInterface";
           "name": "com.my.obscure.namespace.id";
           "birthday": "com.my.even.more.obscure.namespace.originDate";
+        };
+      };
+      inverseInterfaceMapV2: {
+        "com.my.obscure.namespace.FooBarInterface": {
+          "foo": ["com.my.obscure.namespace.fooInterface"];
+          "name": [
+            "com.my.obscure.namespace.id",
+            "com.my.obscure.namespace.displayName",
+          ];
+          "birthday": ["com.my.even.more.obscure.namespace.originDate"];
         };
       };
       links: {};
@@ -205,11 +216,13 @@ describe("ExtractOptions", () => {
     __DefinitionMetadata: {
       props: {
         id: string;
+        displayName: string;
         "com.my.even.more.obscure.namespace.originDate": string | undefined;
         fooInterface: number;
       };
       strictProps: {
         id: string;
+        displayName: string;
         "com.my.even.more.obscure.namespace.originDate": string;
         fooInterface: number;
       };
@@ -222,6 +235,10 @@ describe("ExtractOptions", () => {
       primaryKeyApiName: "";
       properties: {
         id: {
+          type: "string";
+          description: "";
+        };
+        displayName: {
           type: "string";
           description: "";
         };
@@ -243,6 +260,7 @@ describe("ExtractOptions", () => {
       description: "";
     };
   };
+
   describe("Osdk.Instance", () => {
     it("defaults to second argument never if omitted", () => {
       type toCheck = Osdk.Instance<quickAndDirty>;

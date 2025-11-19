@@ -982,6 +982,11 @@ describe("generator", () => {
                 body: 'SomeProperty';
               };
             };
+            inverseInterfaceMapV2: {
+              SomeInterface: {
+                body: ['SomeProperty'];
+              };
+            };
             links: {
               Assignee: $ObjectMetadata.Link<Person, false>;
             };
@@ -1643,6 +1648,11 @@ describe("generator", () => {
             inverseInterfaceMap: {
               'foo.bar.SomeInterface': {
                 body: 'SomeProperty';
+              };
+            };
+            inverseInterfaceMapV2: {
+              'foo.bar.SomeInterface': {
+                body: ['SomeProperty'];
               };
             };
             links: {
@@ -2437,6 +2447,11 @@ describe("generator", () => {
             inverseInterfaceMap: {
               SomeInterface: {
                 body: 'SomeProperty';
+              };
+            };
+            inverseInterfaceMapV2: {
+              SomeInterface: {
+                body: ['SomeProperty'];
               };
             };
             links: {
