@@ -36,6 +36,8 @@ console.log(
   }),
 ); // should be 1
 
-console.log(
-  await client(identity2DArray).executeFunction({ "array": [[0, 1], [2, 3]] }),
-); // should return the same array
+const res = await client(identity2DArray).executeFunction({
+  "array": [[0, 1], [2, 3]],
+});
+const b = res[0][0];
+console.log(res); // should return the same array
