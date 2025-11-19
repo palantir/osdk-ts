@@ -1,5 +1,17 @@
 # @osdkkit/react
 
+## 0.8.0-beta.4
+
+### Minor Changes
+
+- 9961f06: fix order by via key stabilization
+
+### Patch Changes
+
+- Updated dependencies [9961f06]
+  - @osdk/client@2.6.0-beta.12
+  - @osdk/api@2.6.0-beta.12
+
 ## 0.8.0-beta.3
 
 ### Minor Changes
