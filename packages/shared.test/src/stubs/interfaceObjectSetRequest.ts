@@ -138,6 +138,7 @@ const baseObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
   interfaceToObjectTypeMappings: {
     FooInterface: { Employee: { fooSpt: "fullName" } },
   },
+  interfaceToObjectTypeMappingsV2: {},
   totalCount: "1",
 };
 
@@ -146,6 +147,7 @@ const equalsObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
   interfaceToObjectTypeMappings: {
     FooInterface: { Employee: { fooSpt: "fullName" } },
   },
+  interfaceToObjectTypeMappingsV2: {},
   totalCount: "1",
 };
 
@@ -155,6 +157,7 @@ const baseObjectFullScopeSetResponse:
     interfaceToObjectTypeMappings: {
       FooInterface: { Employee: { fooSpt: "fullName" } },
     },
+    interfaceToObjectTypeMappingsV2: {},
     totalCount: "1",
   };
 
@@ -164,6 +167,7 @@ const equalsFullScopeObjectSetResponse:
     interfaceToObjectTypeMappings: {
       FooInterface: { Employee: { fooSpt: "fullName" } },
     },
+    interfaceToObjectTypeMappingsV2: {},
     totalCount: "1",
   };
 

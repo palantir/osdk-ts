@@ -44,6 +44,7 @@ export const employeeObjectWithLinkTypes: ObjectTypeFullMetadata = {
       properties: {
         fooSpt: "fullName",
       },
+      propertiesV2: {},
       links: {},
     },
   },

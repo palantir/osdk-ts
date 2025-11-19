@@ -25,6 +25,8 @@ export const BarInterface: InterfaceType = {
   extendsInterfaces: [],
   properties: {},
   allProperties: {},
+  propertiesV2: {},
+  allPropertiesV2: {},
   links: {
     "toFoo": {
       rid: "ri.interface.link.main.1",
@@ -67,6 +69,7 @@ export const FooInterface: InterfaceType = {
       required: true,
     },
   },
+  propertiesV2: {},
   links: {
     "toBar": {
       rid: "ri.interface.link.main.2",
@@ -87,6 +90,7 @@ export const FooInterface: InterfaceType = {
       required: true,
     },
   },
+  allPropertiesV2: {},
   allExtendsInterfaces: [],
   allLinks: {
     "toBar": {
