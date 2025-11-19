@@ -96,11 +96,11 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
     };
     inverseInterfaceMap: {
       FooInterface: {
-        osdkObjectName: 'name';
-        description: 'description';
+        osdkObjectName: ['name'];
+        description: ['description'];
       };
       OsdkTestInterface: {
-        description: 'objectDescription';
+        description: ['objectDescription'];
       };
     };
     links: {};

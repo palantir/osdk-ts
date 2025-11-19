@@ -101,6 +101,11 @@ export function wireObjectTypeFullMetadataToSdkObjectMetadata(
         [interfaceApiName, props],
       ) => [interfaceApiName, invertProps(props)]),
     ),
+    inverseInterfaceMapV2: Object.fromEntries(
+      Object.entries(interfaceMap).map((
+        [interfaceApiName, props],
+      ) => [interfaceApiName, invertPropsV2(props)]),
+    ),
     icon: supportedIconTypes.includes(objectTypeWithLink.objectType.icon.type)
       ? objectTypeWithLink.objectType.icon
       : undefined,
@@ -126,6 +131,19 @@ function invertProps(
     ? Object.fromEntries(Object.entries(a).map(([k, v]) => [v, k]))
     : undefined) as typeof a extends undefined ? typeof a
       : Record<string, string>;
+}
+
+function invertPropsV2(
+  a?: Record<string, string>,
+): typeof a extends undefined ? typeof a : Record<string, string[]> {
+  return (a
+    ? Object.entries(a).reduce<Record<string, string[]>>((result, [k, v]) => {
+      if (!result[v]) result[v] = [];
+      result[v].push(k);
+      return result;
+    }, {})
+    : undefined) as typeof a extends undefined ? typeof a
+      : Record<string, string[]>;
 }
 
 export const supportedIconTypes = ["blueprint"] as const;

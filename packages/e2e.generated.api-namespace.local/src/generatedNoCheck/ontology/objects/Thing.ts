@@ -73,6 +73,11 @@ export interface Thing extends $ObjectTypeDefinition {
         body: 'com.example.dep.spt';
       };
     };
+    inverseInterfaceMapV2: {
+      'com.example.dep.SomeInterface': {
+        body: ['com.example.dep.spt'];
+      };
+    };
     links: {};
     pluralDisplayName: 'Things';
     primaryKeyApiName: 'id';
