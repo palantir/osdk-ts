@@ -17,47 +17,50 @@
 import type { SingleKeyObject } from "type-fest";
 import type { GroupByClause } from "../groupby/GroupByClause.js";
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
+import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { AggregateOpts } from "./AggregateOpts.js";
 import type { UnorderedAggregationClause } from "./AggregationsClause.js";
 
 export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
   Q extends ObjectOrInterfaceDefinition,
-  AO extends AggregateOpts<Q>,
+  AO extends AggregateOpts<Q, RDPs>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > = ContainsExactMatchWithNull<AO["$groupBy"]> extends true ? {
     $groupBy: AO["$groupBy"];
-    $select: UnorderedAggregationClause<Q>;
+    $select: UnorderedAggregationClause<Q, RDPs>;
   }
   : SingleKeyObject<AO["$groupBy"]> extends never ? (
-      AO["$select"] extends UnorderedAggregationClause<Q>
-        ? AggregateOptsThatErrors<Q, AO>
-        : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO>
+      AO["$select"] extends UnorderedAggregationClause<Q, RDPs>
+        ? AggregateOptsThatErrors<Q, AO, RDPs>
+        : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO, RDPs>
         : {
           $groupBy: AO["$groupBy"];
-          $select: UnorderedAggregationClause<Q>;
+          $select: UnorderedAggregationClause<Q, RDPs>;
         }
     )
-  : AggregateOptsThatErrors<Q, AO>;
+  : AggregateOptsThatErrors<Q, AO, RDPs>;
 
-type ContainsExactMatchWithNull<GB extends GroupByClause<any> | undefined> =
-  undefined extends GB ? false : {} extends GB ? false : {
-    [P in keyof GB]: GB[P] extends { $exact: { $includeNullValue: true } }
-      ? true
-      : false;
-  }[keyof GB];
+type ContainsExactMatchWithNull<
+  GB extends GroupByClause<any, any> | undefined,
+> = undefined extends GB ? false : {} extends GB ? false : {
+  [P in keyof GB]: GB[P] extends { $exact: { $includeNullValue: true } } ? true
+    : false;
+}[keyof GB];
 
 type AggregateOptsThatErrors<
   Q extends ObjectOrInterfaceDefinition,
-  AO extends AggregateOpts<Q>,
+  AO extends AggregateOpts<Q, RDPs>,
+  RDPs extends Record<string, SimplePropertyDef>,
 > =
   & AO
   & {
     $select:
       & Pick<
         AO["$select"],
-        keyof AggregateOpts<Q>["$select"] & keyof AO["$select"]
+        keyof AggregateOpts<Q, RDPs>["$select"] & keyof AO["$select"]
       >
       & Record<
-        Exclude<keyof AO["$select"], keyof AggregateOpts<Q>["$select"]>,
+        Exclude<keyof AO["$select"], keyof AggregateOpts<Q, RDPs>["$select"]>,
         never
       >;
   }
@@ -67,10 +70,10 @@ type AggregateOptsThatErrors<
       $groupBy:
         & Pick<
           AO["$groupBy"],
-          keyof GroupByClause<Q> & keyof AO["$groupBy"]
+          keyof GroupByClause<Q, RDPs> & keyof AO["$groupBy"]
         >
         & Record<
-          Exclude<keyof AO["$groupBy"], keyof GroupByClause<Q>>,
+          Exclude<keyof AO["$groupBy"], keyof GroupByClause<Q, RDPs>>,
           never
         >;
     });
