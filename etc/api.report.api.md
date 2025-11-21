@@ -1044,6 +1044,8 @@ export interface ObjectMetadata extends ObjectInterfaceBaseMetadata {
     	// (undocumented)
     inverseInterfaceMap: Record<string, Record<string, string>>;
     	// (undocumented)
+    inverseInterfaceMapV2: Record<string, Record<string, string[]>>;
+    	// (undocumented)
     links: Record<string, ObjectMetadata.Link<any, any>>;
     	// (undocumented)
     pluralDisplayName: string;
