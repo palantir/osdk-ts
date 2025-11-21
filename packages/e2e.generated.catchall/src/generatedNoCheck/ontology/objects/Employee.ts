@@ -128,6 +128,12 @@ export interface Employee extends $ObjectTypeDefinition {
     };
     inverseInterfaceMap: {
       FooInterface: {
+        firstName: 'name';
+        email: 'description';
+      };
+    };
+    inverseInterfaceMapV2: {
+      FooInterface: {
         firstName: ['name'];
         email: ['description'];
       };

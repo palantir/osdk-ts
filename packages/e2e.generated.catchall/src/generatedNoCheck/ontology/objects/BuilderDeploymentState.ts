@@ -69,6 +69,7 @@ export interface BuilderDeploymentState extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'Builder Deployment States';
     primaryKeyApiName: 'skuId';

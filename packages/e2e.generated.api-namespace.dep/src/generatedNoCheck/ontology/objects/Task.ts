@@ -65,6 +65,7 @@ export interface Task extends $ObjectTypeDefinition {
     implements: [];
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'Tasks';
     primaryKeyApiName: 'taskId';

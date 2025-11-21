@@ -109,6 +109,7 @@ export interface EsongPds extends $ObjectTypeDefinition {
     implements: [];
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {
       esongIssues: $ObjectMetadata.Link<EsongIssues, false>;
       esongIssuesM2m: $ObjectMetadata.Link<EsongIssues, true>;

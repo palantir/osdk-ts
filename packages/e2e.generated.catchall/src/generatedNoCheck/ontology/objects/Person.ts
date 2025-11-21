@@ -65,6 +65,7 @@ export interface Person extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {
       Friends: $ObjectMetadata.Link<Person, true>;
       Todos: $ObjectMetadata.Link<Todo, true>;

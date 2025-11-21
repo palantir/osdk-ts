@@ -213,6 +213,7 @@ export interface ObjectTypeWithAllPropertyTypes extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'ObjectTypeWithAllPropertyTypes';
     primaryKeyApiName: 'id';

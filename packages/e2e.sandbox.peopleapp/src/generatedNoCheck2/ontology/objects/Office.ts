@@ -84,6 +84,7 @@ export interface Office extends $ObjectTypeDefinition {
     implements: [];
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {
       occupants: $ObjectMetadata.Link<Employee, true>;
     };

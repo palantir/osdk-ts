@@ -86,6 +86,11 @@ export interface NihalbCastingLinkedObjectTypeA extends $ObjectTypeDefinition {
     };
     inverseInterfaceMap: {
       NihalbCastingLinkedInterfaceTypeA: {
+        primaryKey_: 'primaryKeyProp';
+      };
+    };
+    inverseInterfaceMapV2: {
+      NihalbCastingLinkedInterfaceTypeA: {
         primaryKey_: ['primaryKeyProp'];
       };
     };
