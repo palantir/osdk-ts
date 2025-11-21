@@ -1051,17 +1051,27 @@ describe("ObjectSet", () => {
           .toEqualTypeOf<{
             FooInterface: {
               fooSpt: "fullName";
+              fooIdp: "office";
             };
           }>();
 
         expectTypeOf<PropMapToInterface<Employee, FooInterface>>()
-          .toEqualTypeOf<{ fullName: "fooSpt" }>();
+          .toEqualTypeOf<{
+            fullName: "fooSpt";
+            office: "fooIdp";
+          }>();
 
         expectTypeOf<PropMapToObject<FooInterface, Employee>>()
-          .toEqualTypeOf<{ fooSpt: "fullName" }>();
+          .toEqualTypeOf<{
+            fooSpt: "fullName";
+            fooIdp: "office";
+          }>();
 
         expectTypeOf<ConvertProps<Employee, FooInterface, "fullName">>()
           .toEqualTypeOf<"fooSpt">();
+
+        expectTypeOf<ConvertProps<Employee, FooInterface, "office">>()
+          .toEqualTypeOf<"fooIdp">();
 
         expectTypeOf<JustProps<Employee, "$all">>()
           .toEqualTypeOf<
@@ -1080,7 +1090,7 @@ describe("ObjectSet", () => {
         expectTypeOf<
           ConvertProps<Employee, FooInterface, "fullName" | "office">
         >()
-          .toEqualTypeOf<"fooSpt">();
+          .toEqualTypeOf<"fooSpt" | "fooIdp">();
 
         expectTypeOf<
           ConvertProps<FooInterface, Employee, "fooSpt">
@@ -1088,7 +1098,12 @@ describe("ObjectSet", () => {
           .toEqualTypeOf<"fullName">();
 
         expectTypeOf<
-          ConvertProps<FooInterface, Employee, "fooSpt", "$allBaseProperties">
+          ConvertProps<
+            FooInterface,
+            Employee,
+            "fooSpt" | "fooIdp",
+            "$allBaseProperties"
+          >
         >()
           .toEqualTypeOf<
             | "employeeId"
