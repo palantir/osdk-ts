@@ -1110,6 +1110,7 @@ describe(modernToLegacyWhereClause, () => {
         status: undefined,
         interfaceMap: {},
         inverseInterfaceMap: {},
+        inverseInterfaceMapV2: {},
       },
     };
 

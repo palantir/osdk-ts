@@ -73,7 +73,7 @@ type PropMapToInterface<
   FROM extends ObjectTypeDefinition,
   TO extends InterfaceDefinition,
 > = NonNullable<
-  CompileTimeMetadata<FROM>["inverseInterfaceMap"]
+  CompileTimeMetadata<FROM>["inverseInterfaceMapV2"]
 >[ApiNameAsString<TO>];
 
 export type PropMapToObject<
@@ -1055,7 +1055,7 @@ describe("ObjectSet", () => {
           }>();
 
         expectTypeOf<PropMapToInterface<Employee, FooInterface>>()
-          .toEqualTypeOf<{ fullName: "fooSpt" }>();
+          .toEqualTypeOf<{ fullName: ["fooSpt"] }>();
 
         expectTypeOf<PropMapToObject<FooInterface, Employee>>()
           .toEqualTypeOf<{ fooSpt: "fullName" }>();

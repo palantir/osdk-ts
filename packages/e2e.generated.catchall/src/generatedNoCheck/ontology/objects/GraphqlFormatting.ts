@@ -778,6 +778,7 @@ export interface GraphqlFormatting extends $ObjectTypeDefinition {
     implements: [];
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'Graphql Formatting';
     primaryKeyApiName: 'stringPlain';

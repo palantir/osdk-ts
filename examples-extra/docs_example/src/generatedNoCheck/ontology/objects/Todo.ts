@@ -71,6 +71,7 @@ export interface Todo extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'Todo';
     primaryKeyApiName: 'id';

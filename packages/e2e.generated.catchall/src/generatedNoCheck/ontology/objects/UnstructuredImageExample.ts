@@ -69,6 +69,7 @@ export interface UnstructuredImageExample extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'Unstructured Image Examples';
     primaryKeyApiName: 'mediaItemRid';
