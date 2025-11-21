@@ -65,6 +65,7 @@ export interface UsesForeignSpt extends $ObjectTypeDefinition {
     implements: [];
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'Uses Foreign Spts';
     primaryKeyApiName: 'id';

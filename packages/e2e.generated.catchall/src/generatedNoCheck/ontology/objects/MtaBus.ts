@@ -73,6 +73,7 @@ export interface MtaBus extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'Fintraffic AIS';
     primaryKeyApiName: 'vehicleId';
