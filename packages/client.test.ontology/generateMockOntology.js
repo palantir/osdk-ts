@@ -16,10 +16,11 @@
 
 // @ts-check
 
-import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
-import { LegacyFauxFoundry } from "@osdk/shared.test";
+// polyfill localStorage for MSW compatibility with Node.js
+// @ts-ignore - minimal polyfill, MSW only needs getItem/setItem
+globalThis.localStorage = { getItem: () => null };
+
 import { rmSync } from "node:fs";
-import { mkdir, readdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "url";
 
@@ -31,6 +32,13 @@ try {
 } catch (e) {
   // ignored, only needed for regeneration
 }
+
+// use dynamic imports to ensure localStorage polyfill is in place before MSW loads
+const { generateClientSdkVersionTwoPointZero } = await import(
+  "@osdk/generator"
+);
+const { LegacyFauxFoundry } = await import("@osdk/shared.test");
+const { mkdir, readdir, writeFile } = await import("node:fs/promises");
 
 const fauxFoundry = new LegacyFauxFoundry();
 const fullOntology = fauxFoundry
