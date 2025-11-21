@@ -22,6 +22,7 @@ import type {
   WidgetSetManifest,
 } from "@osdk/widget.api";
 import type { WidgetBuildOutputs } from "./getWidgetBuildOutputs.js";
+import { validateWidgetSet } from "./validateWidgetSet.js";
 
 export function buildWidgetSetManifest(
   widgetSetRid: string,
@@ -29,6 +30,7 @@ export function buildWidgetSetManifest(
   widgetBuilds: WidgetBuildOutputs[],
   widgetSetInputSpec: WidgetSetInputSpec,
 ): WidgetSetManifest {
+  validateWidgetSet(widgetBuilds);
   return {
     manifestVersion: "1.0.0",
     widgetSet: {
