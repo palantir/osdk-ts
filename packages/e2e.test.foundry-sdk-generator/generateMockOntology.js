@@ -15,15 +15,27 @@
  */
 
 // @ts-check
-import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
-import { LegacyFauxFoundry, startNodeApiServer } from "@osdk/shared.test";
-import { $ } from "execa";
-import * as fs from "node:fs/promises";
-import { tmpdir } from "node:os";
-import * as path from "node:path";
-import { fileURLToPath } from "node:url";
+
+// polyfill localStorage for MSW compatibility with Node.js
+// @ts-ignore - minimal polyfill, MSW only needs getItem/setItem
+globalThis.localStorage = { getItem: () => null };
 
 async function setup() {
+  const {
+    __testSeamOnly_NotSemverStable__GeneratePackageCommand:
+      GeneratePackageCommand,
+  } = await import(
+    "@osdk/foundry-sdk-generator"
+  );
+  const { LegacyFauxFoundry, startNodeApiServer } = await import(
+    "@osdk/shared.test"
+  );
+  const { $ } = await import("execa");
+  const fs = await import("node:fs/promises");
+  const { tmpdir } = await import("node:os");
+  const path = await import("node:path");
+  const { fileURLToPath } = await import("node:url");
+
   const dir = await fs.mkdtemp(
     path.join(tmpdir(), "osdk-e2e-foundry-sdk-generator-"),
   );
@@ -34,19 +46,19 @@ async function setup() {
   const testApp2Dir = path.join(dir, "@test-app2");
   const testApp2BetaDir = path.join(dir, "@test-app2-beta");
 
-  await rmRf(testAppDir);
-  await rmRf(testApp2Dir);
-  await rmRf(testApp2BetaDir);
+  await rmRf(testAppDir, fs);
+  await rmRf(testApp2Dir, fs);
+  await rmRf(testApp2BetaDir, fs);
 
-  await safeStat(testAppDir, "should not exist");
-  await safeStat(testApp2Dir, "should not exist");
-  await safeStat(testApp2BetaDir, "should not exist");
+  await safeStat(testAppDir, "should not exist", fs);
+  await safeStat(testApp2Dir, "should not exist", fs);
+  await safeStat(testApp2BetaDir, "should not exist", fs);
 
   await fs.mkdir(dir, { recursive: true });
 
   const generatePackageCommand = new GeneratePackageCommand();
 
-  /** @type Parameters<typeof generatePackageCommand["handler"][0]>  */
+  /** @type Parameters<typeof generatePackageCommand["handler"]>[0]  */
   const baseArgs = {
     packageVersion: "0.0.1",
     outputDir: dir,
@@ -99,8 +111,8 @@ async function setup() {
     beta: true,
   });
 
-  await safeStat(testApp2Dir, "should exist");
-  await safeStat(testApp2BetaDir, "should exist");
+  await safeStat(testApp2Dir, "should exist", fs);
+  await safeStat(testApp2BetaDir, "should exist", fs);
 
   await $({
     stdout: "inherit",
@@ -130,8 +142,9 @@ await setup();
 
 /**
  * @param {string} testAppDir
+ * @param {typeof import("node:fs/promises")} fs
  */
-async function rmRf(testAppDir) {
+async function rmRf(testAppDir, fs) {
   try {
     await fs.rm(testAppDir, { recursive: true, force: true });
   } catch (e) {
@@ -143,9 +156,10 @@ async function rmRf(testAppDir) {
 /**
  * @param {string} filePath
  * @param {"should exist" | "should not exist"} type
+ * @param {typeof import("node:fs/promises")} fs
  * @returns
  */
-async function safeStat(filePath, type) {
+async function safeStat(filePath, type, fs) {
   try {
     const ret = await fs.stat(filePath);
     if (type !== "should exist") {
