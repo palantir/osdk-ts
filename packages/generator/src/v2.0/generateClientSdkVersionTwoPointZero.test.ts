@@ -865,6 +865,7 @@ describe("generator", () => {
             implements: [];
             interfaceMap: {};
             inverseInterfaceMap: {};
+            inverseInterfaceMapV2: {};
             links: {
               Todos: $ObjectMetadata.Link<Todo, true>;
             };
@@ -1533,6 +1534,7 @@ describe("generator", () => {
             implements: [];
             interfaceMap: {};
             inverseInterfaceMap: {};
+            inverseInterfaceMapV2: {};
             links: {
               Todos: $ObjectMetadata.Link<Todo, true>;
             };
@@ -2072,6 +2074,7 @@ describe("generator", () => {
               implements: [];
               interfaceMap: {};
               inverseInterfaceMap: {};
+              inverseInterfaceMapV2: {};
               links: {};
               pluralDisplayName: 'Uses Foreign Spts';
               primaryKeyApiName: 'id';
@@ -2332,6 +2335,7 @@ describe("generator", () => {
             implements: [];
             interfaceMap: {};
             inverseInterfaceMap: {};
+            inverseInterfaceMapV2: {};
             links: {
               Todos: $ObjectMetadata.Link<Todo, true>;
             };
@@ -2809,6 +2813,7 @@ describe("generator", () => {
             implements: [];
             interfaceMap: {};
             inverseInterfaceMap: {};
+            inverseInterfaceMapV2: {};
             links: {};
             pluralDisplayName: 'Tasks';
             primaryKeyApiName: 'taskId';
