@@ -101,6 +101,7 @@ All reactive data management features are currently **experimental** and availab
 **All experimental hooks require your entire application to be wrapped in `<OsdkProvider2>`**. This is not optional.
 
 If you forget to add `OsdkProvider2`, you will see errors like:
+
 - `Cannot read property 'observableClient' of undefined`
 - `Cannot read properties of undefined (reading 'canonicalizeWhereClause')`
 
@@ -109,13 +110,13 @@ If you forget to add `OsdkProvider2`, you will see errors like:
 ```ts
 import {
   OsdkProvider2,
+  useDebouncedCallback,
   useLinks,
   useObjectSet,
   useOsdkAction,
   useOsdkAggregation,
   useOsdkObject,
   useOsdkObjects,
-  useDebouncedCallback,
 } from "@osdk/react/experimental";
 ```
 
@@ -131,6 +132,7 @@ All reactive data management features (OsdkProvider2, useOsdkObject, useOsdkObje
 ```ts
 import {
   OsdkProvider2,
+  useDebouncedCallback,
   useLinks,
   useObjectSet,
   useOsdkAction,
@@ -138,7 +140,6 @@ import {
   useOsdkClient,
   useOsdkObject,
   useOsdkObjects,
-  useDebouncedCallback,
 } from "@osdk/react/experimental";
 ```
 
@@ -209,14 +210,17 @@ main.tsx
 If you see these errors, check your OsdkProvider2 setup:
 
 **Error: "Cannot read property 'observableClient' of undefined"**
+
 - The component is outside `<OsdkProvider2>` wrapper
 - Move `<OsdkProvider2>` higher up in your component tree
 
 **Error: "useOsdkContext is not defined"**
+
 - Missing `OsdkProvider2` import or not wrapped at all
 - Ensure `<OsdkProvider2 client={client}>` is at your app root
 
 **Hooks return undefined**
+
 - Double-check that OsdkProvider2 is actually wrapping the component
 - Make sure you're passing the `client` prop to OsdkProvider2
 
@@ -382,7 +386,11 @@ function LiveTodoList() {
       {data?.map(todo => (
         <div key={todo.$primaryKey}>
           <span>{todo.title}</span>
-          {isLoading && <span style={{ fontSize: "0.8em" }}>(Updating...)</span>}
+          {isLoading && (
+            <span style={{ fontSize: "0.8em" }}>
+              (Updating...)
+            </span>
+          )}
         </div>
       ))}
     </div>
@@ -417,9 +425,7 @@ function ConditionalTodoFetch() {
 
       {shouldFetch && isLoading && !data && <div>Loading...</div>}
 
-      {data?.map(todo => (
-        <div key={todo.$primaryKey}>{todo.title}</div>
-      ))}
+      {data?.map(todo => <div key={todo.$primaryKey}>{todo.title}</div>)}
     </div>
   );
 }
@@ -444,11 +450,12 @@ function TodosWithMetadata() {
       displayText: DerivedProperty.string(todo =>
         `[${todo.priority}] ${todo.title}`
       ),
-      daysSinceCreated: DerivedProperty.number(todo =>
-        Math.floor(
-          (Date.now() - new Date(todo.createdAt).getTime()) / (1000 * 60 * 60 * 24)
-        )
-      ),
+      daysSinceCreated: DerivedProperty.number(todo => {
+        const now = Date.now();
+        const createdAt = new Date(todo.createdAt).getTime();
+        const dayMs = 1000 * 60 * 60 * 24;
+        return Math.floor((now - createdAt) / dayMs);
+      }),
     },
   });
 
@@ -544,9 +551,8 @@ function ManagerReports() {
   return (
     <div>
       <h3>John Smith's Direct Reports ({data?.length})</h3>
-      {data?.map(report => (
-        <div key={report.$primaryKey}>{report.fullName}</div>
-      ))}
+      {data?.map(report => <div key={report.$primaryKey}>{report.fullName}
+      </div>)}
     </div>
   );
 }
@@ -605,7 +611,9 @@ function EmployeesWithStats() {
           <p>Manager: {employee.managerName}</p>
           <p>Direct Reports: {employee.reportCount}</p>
           <p>Department Size: {employee.departmentSize}</p>
-          <p>Avg Report Salary: ${employee.avgReportSalary?.toLocaleString()}</p>
+          <p>
+            Avg Report Salary: ${employee.avgReportSalary?.toLocaleString()}
+          </p>
         </div>
       ))}
     </div>
@@ -622,7 +630,7 @@ const { data } = useOsdkObjects(Employee, {
   },
   where: {
     department: "Engineering",
-    reportCount: { $gt: 0 },  // Only managers
+    reportCount: { $gt: 0 }, // Only managers
   },
 });
 ```
@@ -1038,19 +1046,21 @@ function TodoList() {
 **Problem:** You see "Cannot read property 'observableClient' of undefined"
 
 **Wrong:**
+
 ```tsx
 // main.tsx
 function App() {
-  return <TodoList />;  // No OsdkProvider2!
+  return <TodoList />; // No OsdkProvider2!
 }
 
 // TodoList.tsx
 function TodoList() {
-  const { data } = useOsdkObjects(Todo);  // Crashes!
+  const { data } = useOsdkObjects(Todo); // Crashes!
 }
 ```
 
 **Correct:**
+
 ```tsx
 // main.tsx
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -1061,7 +1071,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 // TodoList.tsx
 function TodoList() {
-  const { data } = useOsdkObjects(Todo);  // Works!
+  const { data } = useOsdkObjects(Todo); // Works!
 }
 ```
 
@@ -1070,19 +1080,20 @@ function TodoList() {
 **Problem:** Only some components work with hooks
 
 **Wrong:**
+
 ```tsx
 // main.tsx
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <App />  // OsdkProvider2 is inside App, not at root
+  <App />, // OsdkProvider2 is inside App, not at root
 );
 
 // App.tsx
 function App() {
   return (
     <>
-      <Header />  {/* This component can't use hooks */}
+      <Header /> {/* This component can't use hooks */}
       <OsdkProvider2 client={client}>
-        <Content />  {/* Only this can use hooks */}
+        <Content /> {/* Only this can use hooks */}
       </OsdkProvider2>
     </>
   );
@@ -1090,10 +1101,12 @@ function App() {
 ```
 
 **Correct:**
+
 ```tsx
 // main.tsx
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <OsdkProvider2 client={client}>  {/* Provider at root */}
+  <OsdkProvider2 client={client}>
+    {/* Provider at root */}
     <App />
   </OsdkProvider2>,
 );
@@ -1102,7 +1115,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 function App() {
   return (
     <>
-      <Header />  {/* All components can use hooks now */}
+      <Header /> {/* All components can use hooks now */}
       <Content />
     </>
   );
@@ -1114,21 +1127,25 @@ function App() {
 **Problem:** Hooks work but return no data
 
 **Wrong:**
+
 ```tsx
 // Creating a new client instead of using the configured one
-<OsdkProvider2 client={createNewClient()}>  // Creates new instance each time
+<OsdkProvider2 client={createNewClient()}>
+  // Creates new instance each time
   <App />
-</OsdkProvider2>
+</OsdkProvider2>;
 ```
 
 **Correct:**
+
 ```tsx
 // Import the configured client
-import client from "./client";  // Created once at app startup
+import client from "./client"; // Created once at app startup
 
-<OsdkProvider2 client={client}>  // Reuse same instance
+<OsdkProvider2 client={client}>
+  // Reuse same instance
   <App />
-</OsdkProvider2>
+</OsdkProvider2>;
 ```
 
 ### Mistake 4: Hooks inside conditional rendering
@@ -1136,20 +1153,22 @@ import client from "./client";  // Created once at app startup
 **Problem:** "Hooks cannot be conditionally called"
 
 **Wrong:**
+
 ```tsx
 function TodoList({ shouldLoad }: { shouldLoad: boolean }) {
   if (shouldLoad) {
-    const { data } = useOsdkObjects(Todo);  // Conditional hook!
+    const { data } = useOsdkObjects(Todo); // Conditional hook!
   }
   return null;
 }
 ```
 
 **Correct - Use enabled option:**
+
 ```tsx
 function TodoList({ shouldLoad }: { shouldLoad: boolean }) {
   const { data } = useOsdkObjects(Todo, {
-    enabled: shouldLoad,  // Use enabled instead
+    enabled: shouldLoad, // Use enabled instead
   });
   return null;
 }
@@ -1216,7 +1235,9 @@ function TeamMembers({ employees }: { employees: Employee.OsdkInstance[] }) {
 Load links only when needed using the `enabled` option:
 
 ```tsx
-function OptionalReportsList({ employee }: { employee: Employee.OsdkInstance }) {
+function OptionalReportsList(
+  { employee }: { employee: Employee.OsdkInstance },
+) {
   const [showReports, setShowReports] = useState(false);
 
   const { links, isLoading } = useLinks(
@@ -1235,9 +1256,7 @@ function OptionalReportsList({ employee }: { employee: Employee.OsdkInstance }) 
 
       {showReports && isLoading && !links && <div>Loading...</div>}
 
-      {links?.map(report => (
-        <div key={report.$primaryKey}>{report.name}</div>
-      ))}
+      {links?.map(report => <div key={report.$primaryKey}>{report.name}</div>)}
     </div>
   );
 }
@@ -1375,7 +1394,12 @@ function EmployeeDepartments(
 Find common objects between sets using `intersect`:
 
 ```tsx
-function SharedProjects({ employee1, employee2 }: { employee1: Employee.OsdkInstance; employee2: Employee.OsdkInstance }) {
+function SharedProjects(
+  { employee1, employee2 }: {
+    employee1: Employee.OsdkInstance;
+    employee2: Employee.OsdkInstance;
+  },
+) {
   const set1 = Employee.where({ id: employee1.id });
   const set2 = Employee.where({ id: employee2.id });
 
@@ -1390,9 +1414,8 @@ function SharedProjects({ employee1, employee2 }: { employee1: Employee.OsdkInst
   return (
     <div>
       <h3>Shared Projects</h3>
-      {data?.map(project => (
-        <div key={project.$primaryKey}>{project.name}</div>
-      ))}
+      {data?.map(project => <div key={project.$primaryKey}>{project.name}
+      </div>)}
     </div>
   );
 }
@@ -1421,9 +1444,7 @@ function AllActiveTodos() {
   return (
     <div>
       <h2>All Active Todos ({data?.length})</h2>
-      {data?.map(todo => (
-        <div key={todo.$primaryKey}>{todo.title}</div>
-      ))}
+      {data?.map(todo => <div key={todo.$primaryKey}>{todo.title}</div>)}
     </div>
   );
 }
@@ -1680,7 +1701,13 @@ function SearchableList({ onSearch }: { onSearch: (query: string) => void }) {
     debouncedSearch(value);
   };
 
-  return <input value={query} onChange={handleChange} placeholder="Search..." />;
+  return (
+    <input
+      value={query}
+      onChange={handleChange}
+      placeholder="Search..."
+    />
+  );
 }
 ```
 
@@ -1690,7 +1717,7 @@ Combine with actions for optimistic updates:
 
 ```tsx
 import { $Actions } from "@my/osdk";
-import { useOsdkAction, useDebouncedCallback } from "@osdk/react/experimental";
+import { useDebouncedCallback, useOsdkAction } from "@osdk/react/experimental";
 import React, { useState } from "react";
 
 function AutoSaveTodo({ todo }: { todo: Todo.OsdkInstance }) {
@@ -1843,22 +1870,22 @@ const { data } = useObjectSet(Todo.all(), {
 
 Here's a quick reference for which options are available on which hooks:
 
-| Feature | useOsdkObjects | useOsdkObject | useLinks | useObjectSet | useOsdkAggregation |
-|---------|---|---|---|---|---|
-| `where` (filtering) | Yes | No | Yes | Yes | Yes |
-| `orderBy` (sorting) | Yes | No | Yes | Yes | No |
-| `pageSize` (pagination) | Yes | No | Yes | Yes | No |
-| `autoFetchMore` (auto-pagination) | Yes | No | No | Yes | No |
-| `streamUpdates` (real-time) | Yes | No | No | Yes | No |
-| `enabled` (lazy queries) | Yes | No | Yes | Yes | No |
-| `withProperties` (derived props) | Yes | No | No | Yes | Yes |
-| `intersectWith` (multi-filter) | Yes | No | No | No | No |
-| `intersect` (set intersection) | No | No | No | Yes | No |
-| `union` (combine sets) | No | No | No | Yes | No |
-| `subtract` (set difference) | No | No | No | Yes | No |
-| `pivotTo` (link traversal) | Yes | No | No | Yes | No |
-| `$groupBy` (grouping) | No | No | No | No | Yes |
-| `$select` (aggregation) | No | No | No | No | Yes |
+| Feature                     | useOsdkObjects | useOsdkObject | useLinks | useObjectSet | useOsdkAggregation |
+| --------------------------- | -------------- | ------------- | -------- | ------------ | ------------------ |
+| `where` (filtering)         | Yes            | No            | Yes      | Yes          | Yes                |
+| `orderBy` (sorting)         | Yes            | No            | Yes      | Yes          | No                 |
+| `pageSize` (pagination)     | Yes            | No            | Yes      | Yes          | No                 |
+| `autoFetchMore` (auto-pag)  | Yes            | No            | No       | Yes          | No                 |
+| `streamUpdates` (real-time) | Yes            | No            | No       | Yes          | No                 |
+| `enabled` (lazy queries)    | Yes            | No            | Yes      | Yes          | No                 |
+| `withProperties` (rdps)     | Yes            | No            | No       | Yes          | Yes                |
+| `intersectWith` (multi-fil) | Yes            | No            | No       | No           | No                 |
+| `intersect` (set-intersect) | No             | No            | No       | Yes          | No                 |
+| `union` (combine sets)      | No             | No            | No       | Yes          | No                 |
+| `subtract` (set difference) | No             | No            | No       | Yes          | No                 |
+| `pivotTo` (link traversal)  | Yes            | No            | No       | Yes          | No                 |
+| `$groupBy` (grouping)       | No             | No            | No       | No           | Yes                |
+| `$select` (aggregation)     | No             | No            | No       | No           | Yes                |
 
 # Debugging Issues
 
