@@ -41,10 +41,6 @@ const DIR_DIST: string = typeof __dirname !== "undefined"
   ? __dirname
   : path.dirname(fileURLToPath(import.meta.url));
 
-// In a cold start, Vite may try to resolve files (e.g. a widget.html) before the user even accesses the dev mode server.
-// These files are not valid code entrypoints, so we ignore them here.
-const IGNORED_CODE_ENTRYPOINT_EXTENSIONS = [".html"];
-
 export function FoundryWidgetDevPlugin(): Plugin {
   // The root HTML entrypoints of the build process
   let htmlEntrypoints: string[];
@@ -220,11 +216,7 @@ export function FoundryWidgetDevPlugin(): Plugin {
 
       // Standardize the source file extension and get the full path
       const standardizedSource = standardizeFileExtension(
-        getFullSourcePath(
-          // If the source path is absolute, resolve it against the current working directory
-          source.startsWith("/") ? path.join(process.cwd(), source) : source,
-          importer,
-        ),
+        getFullSourcePath(source, importer),
       );
       // Importers are already full paths, so just standardize the extension
       // Normalize to ensure consistent path separators on Windows
@@ -235,13 +227,17 @@ export function FoundryWidgetDevPlugin(): Plugin {
       // In dev mode all entrypoints have a generic HTML importer value
       if (
         importer.endsWith("index.html") && !standardizedSource.includes("@fs")
-        && !IGNORED_CODE_ENTRYPOINT_EXTENSIONS.includes(
-          path.extname(standardizedSource),
-        )
+        // In a cold start, Vite may try to resolve files (e.g. a widget.html) before the user even accesses the dev mode server.
+        // These files are not valid code entrypoints, so we ignore them here.
+        && path.extname(standardizedSource) !== ".html"
       ) {
         // Store the fully resolved path and the relative path, as we need the former for mapping
         // config files to entrypoints and the latter as a dev mode override script
-        codeEntrypoints[standardizedSource] = source;
+        // If the source starts with /, resolve it to a full path for consistent lookups
+        const entrypointKey = source.startsWith("/")
+          ? standardizeFileExtension(path.join(path.dirname(importer), source))
+          : standardizedSource;
+        codeEntrypoints[entrypointKey] = source;
       }
 
       // Look for config files that are imported from an entrypoint file
