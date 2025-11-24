@@ -216,7 +216,11 @@ export function FoundryWidgetDevPlugin(): Plugin {
 
       // Standardize the source file extension and get the full path
       const standardizedSource = standardizeFileExtension(
-        getFullSourcePath(source, importer),
+        getFullSourcePath(
+          // If the source path is absolute, resolve it against the current working directory
+          source.startsWith("/") ? path.join(process.cwd(), source) : source,
+          importer,
+        ),
       );
       // Importers are already full paths, so just standardize the extension
       // Normalize to ensure consistent path separators on Windows
@@ -233,11 +237,7 @@ export function FoundryWidgetDevPlugin(): Plugin {
       ) {
         // Store the fully resolved path and the relative path, as we need the former for mapping
         // config files to entrypoints and the latter as a dev mode override script
-        // If the source starts with /, resolve it to a full path for consistent lookups
-        const entrypointKey = source.startsWith("/")
-          ? standardizeFileExtension(path.join(path.dirname(importer), source))
-          : standardizedSource;
-        codeEntrypoints[entrypointKey] = source;
+        codeEntrypoints[standardizedSource] = source;
       }
 
       // Look for config files that are imported from an entrypoint file
