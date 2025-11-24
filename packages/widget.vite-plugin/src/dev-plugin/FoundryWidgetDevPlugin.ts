@@ -231,6 +231,9 @@ export function FoundryWidgetDevPlugin(): Plugin {
       // In dev mode all entrypoints have a generic HTML importer value
       if (
         importer.endsWith("index.html") && !standardizedSource.includes("@fs")
+        // In a cold start, Vite may try to resolve files (e.g. a widget.html) before the user even accesses the dev mode server.
+        // These files are not valid code entrypoints, so we ignore them here.
+        && path.extname(standardizedSource) !== ".html"
       ) {
         // Store the fully resolved path and the relative path, as we need the former for mapping
         // config files to entrypoints and the latter as a dev mode override script
