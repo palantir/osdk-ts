@@ -306,12 +306,12 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       objectTypeDef: ObjectTypeDefinition | InterfaceDefinition,
     ) => {
       const existingMapping =
-        clientCtx.asTypeInterfaceOrObjectMapping[objectTypeDef.apiName];
+        clientCtx.narrowTypeInterfaceOrObjectMapping[objectTypeDef.apiName];
       invariant(
         !existingMapping || existingMapping === objectTypeDef.type,
         `${objectTypeDef.apiName} was previously used as an ${existingMapping}, but now used as a ${objectTypeDef.type}.`,
       );
-      clientCtx.asTypeInterfaceOrObjectMapping[objectTypeDef.apiName] =
+      clientCtx.narrowTypeInterfaceOrObjectMapping[objectTypeDef.apiName] =
         objectTypeDef.type;
 
       return clientCtx.objectSetFactory(

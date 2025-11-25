@@ -85,7 +85,7 @@ export function createMinimalClient(
     clientCacheKey: {} as ClientCacheKey,
     requestContext: {},
     branch: options.branch,
-    asTypeInterfaceOrObjectMapping: {},
+    narrowTypeInterfaceOrObjectMapping: {},
   } satisfies Omit<
     MinimalClient,
     "ontologyProvider"

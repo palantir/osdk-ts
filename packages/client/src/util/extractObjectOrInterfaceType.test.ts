@@ -161,7 +161,7 @@ describe("extractObjectOrInterfaceType", () => {
     const result = await extractObjectOrInterfaceType(
       {
         ...mockClientCtx,
-        asTypeInterfaceOrObjectMapping: { BaseType: "object" },
+        narrowTypeInterfaceOrObjectMapping: { BaseType: "object" },
       },
       narrowToTypeObjectSet,
     );
