@@ -302,7 +302,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       );
     },
 
-    asType: (objectTypeDef: ObjectTypeDefinition | InterfaceDefinition) => {
+    narrowToType: (
+      objectTypeDef: ObjectTypeDefinition | InterfaceDefinition,
+    ) => {
       const existingMapping =
         clientCtx.asTypeInterfaceOrObjectMapping[objectTypeDef.apiName];
       invariant(
