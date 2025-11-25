@@ -26,6 +26,7 @@ import type {
 } from "@osdk/api";
 import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import { stabilizeKey } from "../internal/stabilizeKey.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
@@ -229,20 +230,9 @@ export function useOsdkObjects<
     [JSON.stringify(rids)],
   );
 
-  const stableWithProperties = React.useMemo(
-    () => withProperties,
-    [JSON.stringify(withProperties)],
-  );
-
-  const stableIntersectWith = React.useMemo(
-    () => intersectWith,
-    [JSON.stringify(intersectWith)],
-  );
-
-  const stableOrderBy = React.useMemo(
-    () => orderBy,
-    [JSON.stringify(orderBy)],
-  );
+  const stableWithProperties = stabilizeKey(withProperties);
+  const stableIntersectWith = stabilizeKey(intersectWith);
+  const stableOrderBy = stabilizeKey(orderBy);
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
