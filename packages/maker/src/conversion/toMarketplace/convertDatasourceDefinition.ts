@@ -15,20 +15,22 @@
  */
 
 import type {
-  OntologyIrObjectTypeDatasourceDefinition,
+  ObjectTypeDatasourceDefinition,
   PropertyTypeMappingInfo,
   RetentionPolicy,
 } from "@osdk/client.unstable";
 import type { ObjectPropertyType } from "../../api/object/ObjectPropertyType.js";
 import type { ObjectType } from "../../api/object/ObjectType.js";
+import { generateRid } from "../../util/generateRid.js";
 
 export function convertDatasourceDefinition(
   objectType: ObjectType,
   properties: ObjectPropertyType[],
-): OntologyIrObjectTypeDatasourceDefinition {
+): ObjectTypeDatasourceDefinition {
   const baseDatasource = objectType.datasources?.find(ds =>
     ["dataset", "stream", "restrictedView"].includes(ds.type)
   );
+  // TODO: Convert datasource definitions to use RIDs
   switch (baseDatasource?.type) {
     case "stream":
       const window = baseDatasource.retentionPeriod;
@@ -38,12 +40,16 @@ export function convertDatasourceDefinition(
       const propertyMapping = Object.fromEntries(
         properties.map((
           prop,
-        ) => [prop.apiName, prop.apiName]),
+        ) => [generateRid(`property.${objectType.apiName}.${prop.apiName}`), prop.apiName]),
       );
       return {
         type: "streamV2",
         streamV2: {
-          streamLocator: objectType.apiName,
+          // TODO: Add proper streamLocator with branch and stream RID
+          streamLocator: {
+            branchId: "main",
+            streamLocatorRid: generateRid(`stream.${objectType.apiName}`),
+          },
           propertyMapping,
           retentionPolicy,
           propertySecurityGroups: undefined,
@@ -53,8 +59,8 @@ export function convertDatasourceDefinition(
       return {
         type: "restrictedViewV2",
         restrictedViewV2: {
-          restrictedViewRid: objectType.apiName,
-          propertyMapping: buildPropertyMapping(properties),
+          restrictedViewRid: generateRid(`restrictedview.${objectType.apiName}`),
+          propertyMapping: buildPropertyMapping(properties, objectType.apiName),
         },
       };
     case "dataset":
@@ -62,8 +68,10 @@ export function convertDatasourceDefinition(
       return {
         type: "datasetV2",
         datasetV2: {
-          datasetRid: objectType.apiName,
-          propertyMapping: buildPropertyMapping(properties),
+          // TODO: Add proper branchId from dataset configuration
+          branchId: "main",
+          datasetRid: generateRid(`dataset.${objectType.apiName}`),
+          propertyMapping: buildPropertyMapping(properties, objectType.apiName),
         },
       };
   }
@@ -71,12 +79,15 @@ export function convertDatasourceDefinition(
 
 function buildPropertyMapping(
   properties: ObjectPropertyType[],
+  objectTypeApiName: string,
 ): Record<string, PropertyTypeMappingInfo> {
+  // TODO: Convert property mappings to use RIDs as keys
   return Object.fromEntries(
     properties.map((prop) => {
+      const propertyRid = generateRid(`property.${objectTypeApiName}.${prop.apiName}`);
       // editOnly
       if (prop.editOnly) {
-        return [prop.apiName, { type: "editOnly", editOnly: {} }];
+        return [propertyRid, { type: "editOnly", editOnly: {} }];
       }
       // structs
       if (typeof prop.type === "object" && prop.type?.type === "struct") {
@@ -92,10 +103,10 @@ function buildPropertyMapping(
             ),
           },
         };
-        return [prop.apiName, structMapping];
+        return [propertyRid, structMapping];
       }
       // default: column mapping
-      return [prop.apiName, { type: "column", column: prop.apiName }];
+      return [propertyRid, { type: "column", column: prop.apiName }];
     }),
   );
 }

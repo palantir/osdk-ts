@@ -15,17 +15,17 @@
  */
 
 import type {
+  ActionTypeBlockDataV2,
   ActionTypeStatus,
+  ObjectTypeDatasource,
+  ObjectTypeDatasourceDefinition,
   OntologyIr,
-  OntologyIrActionTypeBlockDataV2,
   OntologyIrAllowedParameterValues,
-  OntologyIrObjectTypeDatasource,
-  OntologyIrObjectTypeDatasourceDefinition,
-  OntologyIrParameter,
-  OntologyIrSection,
   OntologyIrValueTypeBlockData,
+  Parameter,
   ParameterId,
   ParameterRenderHint,
+  Section,
   SectionId,
 } from "@osdk/client.unstable";
 import * as fs from "fs";
@@ -36,6 +36,7 @@ import { convertActionValidation } from "../conversion/toMarketplace/convertActi
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
 import { convertOntologyToValueTypeIr } from "../conversion/toMarketplace/convertOntologyToValueTypeIr.js";
 import { getFormContentOrdering } from "../conversion/toMarketplace/getFormContentOrdering.js";
+import { generateRid } from "../util/generateRid.js";
 import type { ActionParameter } from "./action/ActionParameter.js";
 import type { ActionParameterAllowedValues } from "./action/ActionParameterAllowedValues.js";
 import type { ActionType } from "./action/ActionType.js";
@@ -216,10 +217,10 @@ export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFi
 
 export function buildDatasource(
   apiName: string,
-  definition: OntologyIrObjectTypeDatasourceDefinition,
+  definition: ObjectTypeDatasourceDefinition,
   classificationMarkingGroupName?: string,
   mandatoryMarkingGroupName?: string,
-): OntologyIrObjectTypeDatasource {
+): ObjectTypeDatasource {
   const needsSecurity = classificationMarkingGroupName !== undefined
     || mandatoryMarkingGroupName !== undefined;
 
@@ -227,18 +228,19 @@ export function buildDatasource(
     ? {
       classificationConstraint: classificationMarkingGroupName
         ? {
-          markingGroupName: classificationMarkingGroupName,
+          markings: [classificationMarkingGroupName],
         }
         : undefined,
       markingConstraint: mandatoryMarkingGroupName
         ? {
-          markingGroupName: mandatoryMarkingGroupName,
+          markingIds: [mandatoryMarkingGroupName],
         }
         : undefined,
     }
     : undefined;
+  // TODO: Generate proper RID for datasource
   return ({
-    datasourceName: apiName,
+    rid: generateRid(`datasource.${apiName}`),
     datasource: definition,
     editsConfiguration: {
       onlyAllowPrivilegedEdits: false,
@@ -312,23 +314,35 @@ export function convertObjectStatus(status: any): any {
 
 export function convertAction(
   action: ActionType,
-): OntologyIrActionTypeBlockDataV2 {
+): ActionTypeBlockDataV2 {
   const actionValidation = convertActionValidation(action);
-  const actionParameters: Record<ParameterId, OntologyIrParameter> =
+  const actionParameters: Record<ParameterId, Parameter> =
     convertActionParameters(action);
-  const actionSections: Record<SectionId, OntologyIrSection> =
-    convertActionSections(action);
+  const actionSections: Record<SectionId, Section> = convertActionSections(
+    action,
+  );
   const parameterOrdering = action.parameterOrdering
     ?? (action.parameters ?? []).map(p => p.id);
+
+  // TODO: Build parameterIds mapping for ActionTypeBlockDataV2
+  const parameterIds: Record<string, ParameterId> = {};
+  (action.parameters ?? []).forEach(p => {
+    parameterIds[p.id] = p.id;
+  });
+
   return {
     actionType: {
       actionTypeLogic: {
         logic: {
-          rules: action.rules,
+          // TODO: Convert OntologyIrLogicRule[] to LogicRule[] with proper RID mappings
+          rules: action.rules as any,
         },
         validation: actionValidation,
+        notifications: [],
       },
       metadata: {
+        rid: generateRid(`action.${action.apiName}`),
+        version: "0.0.1",
         apiName: action.apiName,
         displayMetadata: {
           configuration: {
@@ -381,6 +395,7 @@ export function convertAction(
         entities: action.entities,
       },
     },
+    parameterIds,
   };
 }
 

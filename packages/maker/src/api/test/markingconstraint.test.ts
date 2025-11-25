@@ -49,7 +49,7 @@ describe("Marking Constraints", () => {
     const classificationConstraint = ontology.ontology
       .objectTypes["com.palantir.document"].datasources[0].dataSecurity
       ?.classificationConstraint!;
-    expect(classificationConstraint.markingGroupName).toEqual(
+    expect(classificationConstraint.markings).toEqual(
       "classificationGroup",
     );
   });
@@ -88,10 +88,10 @@ describe("Marking Constraints", () => {
     const ontology = dumpOntologyFullMetadata();
     const dataSecurity = ontology.ontology.objectTypes["com.palantir.document"]
       .datasources[0].dataSecurity!;
-    expect(dataSecurity.markingConstraint!.markingGroupName).toEqual(
+    expect(dataSecurity.markingConstraint!.markingIds).toEqual(
       "mandatoryMarkingGroup",
     );
-    expect(dataSecurity.classificationConstraint!.markingGroupName).toEqual(
+    expect(dataSecurity.classificationConstraint!.markings).toEqual(
       "classificationGroup",
     );
   });
@@ -148,7 +148,7 @@ describe("Marking Constraints", () => {
     const classificationConstraint = ontology.ontology
       .objectTypes["com.palantir.document"].datasources[0].dataSecurity
       ?.classificationConstraint!;
-    expect(classificationConstraint.markingGroupName).toEqual(
+    expect(classificationConstraint.markings).toEqual(
       "classificationGroup",
     );
   });

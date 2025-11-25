@@ -15,24 +15,29 @@
  */
 
 import type {
-  OntologyIrBaseParameterType,
-  OntologyIrParameter,
+  Parameter,
   ParameterId,
 } from "@osdk/client.unstable";
 import type { ActionType } from "../../api/action/ActionType.js";
+import { generateRid } from "../../util/generateRid.js";
 
 export function convertActionParameters(
   action: ActionType,
-): Record<ParameterId, OntologyIrParameter> {
+): Record<ParameterId, Parameter> {
   return Object.fromEntries((action.parameters ?? []).map(p => [p.id, {
     id: p.id,
+    // TODO: Generate proper RID for parameter
+    rid: generateRid(`parameter.${action.apiName}.${p.id}`),
+    // TODO: Convert OntologyIrBaseParameterType to BaseParameterType properly
     type: (typeof p.type === "string"
       ? { type: p.type, [p.type]: {} }
-      : p.type) as OntologyIrBaseParameterType,
+      : p.type) as any,
     displayMetadata: {
       displayName: p.displayName,
       description: p.description ?? "",
       typeClasses: [],
+      structFields: {},
+      structFieldsV2: [],
     },
   }]));
 }

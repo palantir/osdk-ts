@@ -15,13 +15,13 @@
  */
 
 import type {
+  ActionTypeBlockDataV2,
   ActionTypePermissionInformation,
-  OntologyIrActionTypeBlockDataV2,
-  OntologyIrInterfaceTypeBlockDataV2,
-  OntologyIrLinkTypeBlockDataV2,
-  OntologyIrObjectTypeBlockDataV2,
-  OntologyIrOntologyBlockDataV2,
-  OntologyIrSharedPropertyTypeBlockDataV2,
+  InterfaceTypeBlockDataV2,
+  LinkTypeBlockDataV2,
+  ObjectTypeBlockDataV2,
+  OntologyBlockDataV2,
+  SharedPropertyTypeBlockDataV2,
 } from "@osdk/client.unstable";
 import { type OntologyDefinition } from "../../api/common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "../../api/common/OntologyEntityTypeEnum.js";
@@ -36,11 +36,11 @@ import { convertSpt } from "./convertSpt.js";
 
 export function convertOntologyDefinitionToWireBlockData(
   ontology: OntologyDefinition,
-): OntologyIrOntologyBlockDataV2 {
+): OntologyBlockDataV2 {
   return ({
     objectTypes: Object.fromEntries(
       Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map<
-        [string, OntologyIrObjectTypeBlockDataV2]
+        [string, ObjectTypeBlockDataV2]
       >(([apiName, objectType]) => {
         return [apiName, convertObject(objectType)];
       }),
@@ -49,7 +49,7 @@ export function convertOntologyDefinitionToWireBlockData(
       Object.entries(
         ontology[OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE],
       )
-        .map<[string, OntologyIrSharedPropertyTypeBlockDataV2]>((
+        .map<[string, SharedPropertyTypeBlockDataV2]>((
           [apiName, spt],
         ) => [apiName, { sharedPropertyType: convertSpt(spt) }]),
     ),
@@ -57,7 +57,7 @@ export function convertOntologyDefinitionToWireBlockData(
       Object.entries(
         ontology[OntologyEntityTypeEnum.INTERFACE_TYPE],
       )
-        .map<[string, OntologyIrInterfaceTypeBlockDataV2]>(
+        .map<[string, InterfaceTypeBlockDataV2]>(
           ([apiName, interfaceType]) => {
             return [apiName, {
               interfaceType: convertInterface(interfaceType),
@@ -67,18 +67,47 @@ export function convertOntologyDefinitionToWireBlockData(
     ),
     linkTypes: Object.fromEntries(
       Object.entries(ontology[OntologyEntityTypeEnum.LINK_TYPE]).map<
-        [string, OntologyIrLinkTypeBlockDataV2]
+        [string, LinkTypeBlockDataV2]
       >(([id, link]) => {
         return [cleanAndValidateLinkTypeId(id), convertLink(link)];
       }),
     ),
     actionTypes: Object.fromEntries(
       Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE]).map<
-        [string, OntologyIrActionTypeBlockDataV2]
+        [string, ActionTypeBlockDataV2]
       >(([apiName, action]) => {
         return [apiName, convertAction(action)];
       }),
     ),
+    // TODO: Add proper blockOutputCompassLocations mapping
+    blockOutputCompassLocations: {},
+    // TODO: Add proper knownIdentifiers based on RIDs generated throughout conversion
+    knownIdentifiers: {
+      actionParameterIds: {},
+      actionParameters: {},
+      actionTypes: {},
+      datasourceColumns: {},
+      datasources: {},
+      filesDatasources: {},
+      functions: {},
+      geotimeSeriesSyncs: {},
+      groupIds: {},
+      interfaceLinkTypes: {},
+      interfaceTypes: {},
+      linkTypeIds: {},
+      linkTypes: {},
+      markings: {},
+      objectTypeIds: {},
+      objectTypes: {},
+      propertyTypeIds: {},
+      propertyTypes: {},
+      sharedPropertyTypes: {},
+      timeSeriesSyncs: {},
+      valueTypes: {},
+      webhooks: {},
+      workshopModules: {},
+    },
+    ruleSets: {},
     blockPermissionInformation: {
       actionTypes: Object.fromEntries(
         Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE])

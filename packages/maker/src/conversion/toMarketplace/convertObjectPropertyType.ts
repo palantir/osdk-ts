@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyIrPropertyType } from "@osdk/client.unstable";
+import type { PropertyType } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { convertObjectStatus, namespace } from "../../api/defineOntology.js";
 import type { ObjectPropertyType } from "../../api/object/ObjectPropertyType.js";
@@ -24,6 +24,7 @@ import {
   hasRenderHints,
   shouldNotHaveRenderHints,
 } from "../../api/propertyConversionUtils.js";
+import { generateRid } from "../../util/generateRid.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
 import { convertValueType } from "./convertValueType.js";
 import { convertValueTypeDataConstraints } from "./convertValueTypeDataConstraints.js";
@@ -31,7 +32,8 @@ import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIr
 
 export function convertObjectPropertyType(
   property: ObjectPropertyType,
-): OntologyIrPropertyType {
+  objectTypeApiName: string,
+): PropertyType {
   const apiName = namespace + property.apiName;
   invariant(
     !shouldNotHaveRenderHints(property.type)
@@ -40,8 +42,12 @@ export function convertObjectPropertyType(
       getPropertyTypeName(property.type)
     }' should not have render hints`,
   );
-  const output: OntologyIrPropertyType = {
+  // TODO: Generate proper RID and ID based on object type and property API name
+  const propertyRid = generateRid(`property.${objectTypeApiName}.${property.apiName}`);
+  const output: PropertyType = {
     apiName: property.apiName,
+    id: property.apiName, // TODO: Should this be different from apiName?
+    rid: propertyRid,
     sharedPropertyTypeApiName: property.sharedPropertyType?.apiName,
     displayMetadata: {
       displayName: property.displayName,
@@ -66,7 +72,10 @@ export function convertObjectPropertyType(
     dataConstraints: property.valueType
       ? convertValueTypeDataConstraints(property.valueType.constraints)
       : convertNullabilityToDataConstraint(property),
-    sharedPropertyTypeRid: property.sharedPropertyType?.apiName,
+    // TODO: Convert sharedPropertyTypeRid from API name to RID
+    sharedPropertyTypeRid: property.sharedPropertyType
+      ? generateRid(`spt.${property.sharedPropertyType.apiName}`)
+      : undefined,
     valueType: property.valueType
       ? convertValueType(property.valueType)
       : undefined,

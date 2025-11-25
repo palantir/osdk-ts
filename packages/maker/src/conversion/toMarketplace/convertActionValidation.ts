@@ -15,7 +15,7 @@
  */
 
 import type {
-  OntologyIrActionValidation,
+  ActionValidation,
   ParameterRequiredConfiguration,
 } from "@osdk/client.unstable";
 import type { ActionParameterRequirementConstraint } from "../../api/action/ActionParameterConfiguration.js";
@@ -24,21 +24,30 @@ import {
   extractAllowedValues,
   renderHintFromBaseType,
 } from "../../api/defineOntology.js";
+import { generateRid } from "../../util/generateRid.js";
 import { convertActionParameterConditionalOverride } from "./convertActionParameterConditionalOverride.js";
 import { convertActionVisibility } from "./convertActionVisibility.js";
 import { convertSectionConditionalOverride } from "./convertSectionConditionalOverride.js";
 
 export function convertActionValidation(
   action: ActionType,
-): OntologyIrActionValidation {
+): ActionValidation {
+  const validationRules = action.validation
+    ?? [{
+      condition: { type: "true", true: {} },
+      displayMetadata: { failureMessage: "", typeClasses: [] },
+    }];
+
+  const ruleRids = validationRules.map((_, idx) =>
+    generateRid(`validation.rule.${action.apiName}.${idx}`)
+  );
+
   return {
     actionTypeLevelValidation: {
+      // TODO: Add proper ordering of validation rule RIDs
+      ordering: ruleRids,
       rules: Object.fromEntries(
-        (action.validation
-          ?? [{
-            condition: { type: "true", true: {} },
-            displayMetadata: { failureMessage: "", typeClasses: [] },
-          }]).map((rule, idx) => [idx, rule]),
+        validationRules.map((rule, idx) => [ruleRids[idx], rule]),
       ),
     },
     parameterValidations: Object.fromEntries(
@@ -72,6 +81,7 @@ export function convertActionValidation(
                   action.parameters,
                 ),
             ) ?? [],
+            structFieldValidations: {},
           },
         ];
       }),

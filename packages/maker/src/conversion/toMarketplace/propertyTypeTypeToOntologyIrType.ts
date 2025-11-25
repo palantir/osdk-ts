@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import type {
-  OntologyIrStructFieldType,
-  OntologyIrType,
-} from "@osdk/client.unstable";
+import type { StructFieldType, Type } from "@osdk/client.unstable";
 import type { PropertyTypeType } from "../../api/properties/PropertyTypeType.js";
+import { generateRid } from "../../util/generateRid.js";
 import { distributeTypeHelper } from "../toConjure/distributeTypeHelper.js";
 
 export function propertyTypeTypeToOntologyIrType(
   type: PropertyTypeType,
-): OntologyIrType {
+): Type {
   switch (true) {
     case (typeof type === "object" && type.type === "marking"):
       return {
@@ -32,12 +30,13 @@ export function propertyTypeTypeToOntologyIrType(
       };
 
     case (typeof type === "object" && type.type === "struct"):
-      const structFields: Array<OntologyIrStructFieldType> = new Array();
+      const structFields: Array<StructFieldType> = new Array();
       for (const key in type.structDefinition) {
         const fieldTypeDefinition = type.structDefinition[key];
-        let field: OntologyIrStructFieldType;
+        let field: StructFieldType;
         if (typeof fieldTypeDefinition === "string") {
           field = {
+            structFieldRid: generateRid(`structfield.${key}`),
             apiName: key,
             displayMetadata: { displayName: key, description: undefined },
             typeClasses: [],
@@ -49,6 +48,7 @@ export function propertyTypeTypeToOntologyIrType(
           if ("fieldType" in fieldTypeDefinition) {
             field = {
               ...fieldTypeDefinition,
+              structFieldRid: generateRid(`structfield.${key}`),
               apiName: key,
               fieldType: propertyTypeTypeToOntologyIrType(
                 fieldTypeDefinition.fieldType,
@@ -58,6 +58,7 @@ export function propertyTypeTypeToOntologyIrType(
             };
           } else {
             field = {
+              structFieldRid: generateRid(`structfield.${key}`),
               apiName: key,
               displayMetadata: { displayName: key, description: undefined },
               typeClasses: [],

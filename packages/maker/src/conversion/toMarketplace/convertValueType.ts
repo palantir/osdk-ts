@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import type { OntologyIrValueTypeReferenceWithMetadata } from "@osdk/client.unstable";
+import type { ValueTypeReference } from "@osdk/client.unstable";
 import type { ValueTypeDefinitionVersion } from "../../api/values/ValueTypeDefinitionVersion.js";
+import { generateRid } from "../../util/generateRid.js";
 
 export function convertValueType(
   valueType: ValueTypeDefinitionVersion,
-): OntologyIrValueTypeReferenceWithMetadata {
+): ValueTypeReference {
   return {
-    apiName: valueType.apiName,
-    version: valueType.version,
-    packageNamespace: valueType.packageNamespace,
-    displayMetadata: valueType.displayMetadata,
+    rid: generateRid(`valueType.${valueType.apiName}.${valueType.version}`),
+    versionId: "0.1.0",
   };
 }

@@ -74,6 +74,8 @@ export type {
 } from "./blockDataIr.js";
 
 export type {
+  DerivedPropertiesDefinition,
+  DerivedPropertyAggregation,
   DerivedPropertyLinkTypeSide,
   OntologyIrDerivedPropertiesDefinition,
   OntologyIrDerivedPropertyAggregation,

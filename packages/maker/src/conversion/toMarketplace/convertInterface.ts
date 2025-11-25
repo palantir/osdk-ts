@@ -14,24 +14,30 @@
  * limitations under the License.
  */
 
-import type { OntologyIrMarketplaceInterfaceType } from "@osdk/client.unstable";
+import type { MarketplaceInterfaceType } from "@osdk/client.unstable";
 import type { InterfaceType } from "../../api/interface/InterfaceType.js";
+import { generateRid } from "../../util/generateRid.js";
 import { convertSpt } from "./convertSpt.js";
 
 export function convertInterface(
   interfaceType: InterfaceType,
-): OntologyIrMarketplaceInterfaceType {
+): MarketplaceInterfaceType {
   const { __type, ...other } = interfaceType;
   return {
     ...other,
+    // TODO: Generate proper RID based on apiName
+    rid: generateRid(`interface.${interfaceType.apiName}`),
     propertiesV2: Object.fromEntries(
       Object.values(interfaceType.propertiesV2)
         .map((
           spt,
-        ) => [spt.sharedPropertyType.apiName, {
-          required: spt.required,
-          sharedPropertyType: convertSpt(spt.sharedPropertyType),
-        }]),
+        ) => {
+          const convertedSpt = convertSpt(spt.sharedPropertyType);
+          return [convertedSpt.rid, {
+            required: spt.required,
+            sharedPropertyType: convertedSpt,
+          }];
+        }),
     ),
     displayMetadata: {
       displayName: interfaceType.displayMetadata.displayName,
@@ -41,7 +47,13 @@ export function convertInterface(
         blueprint: { color: "#4C90F0", locator: "layout-hierarchy" },
       },
     },
-    extendsInterfaces: interfaceType.extendsInterfaces.map(i => i.apiName),
+    // TODO: Convert extendsInterfaces from API names to RIDs
+    extendsInterfaces: interfaceType.extendsInterfaces.map(i => generateRid(`interface.${i.apiName}`)),
+    // TODO: Convert links to add RIDs
+    links: interfaceType.links.map(link => ({
+      ...link,
+      rid: generateRid(`interface.link.${interfaceType.apiName}.${link.metadata.apiName}`),
+    })),
     // these are omitted from our internal types but we need to re-add them for the final json
     properties: [],
     // TODO(mwalther): Support propertiesV3
