@@ -29,7 +29,7 @@ import {
   VITE_INJECTIONS_PATH,
 } from "../common/constants.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
-import { standardizeFileExtension } from "../common/standardizeFileExtension.js";
+import { standardizePathAndFileExtension } from "../common/standardizePathAndFileExtension.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
 import { getBaseHref } from "./getBaseHref.js";
 import { getFoundryToken } from "./getFoundryToken.js";
@@ -215,7 +215,7 @@ export function FoundryWidgetDevPlugin(): Plugin {
       }
 
       // Standardize the source file extension and get the full path
-      const standardizedSource = standardizeFileExtension(
+      const standardizedSource = standardizePathAndFileExtension(
         getFullSourcePath(
           // If the source path is absolute, resolve it against the current working directory
           source.startsWith("/") ? path.join(process.cwd(), source) : source,
@@ -223,10 +223,7 @@ export function FoundryWidgetDevPlugin(): Plugin {
         ),
       );
       // Importers are already full paths, so just standardize the extension
-      // Normalize to ensure consistent path separators on Windows
-      const standardizedImporter = standardizeFileExtension(
-        path.normalize(importer),
-      );
+      const standardizedImporter = standardizePathAndFileExtension(importer);
 
       // In dev mode all entrypoints have a generic HTML importer value
       if (
@@ -248,7 +245,7 @@ export function FoundryWidgetDevPlugin(): Plugin {
         && standardizedSource.includes("/src/")
         && codeEntrypoints[standardizedImporter] != null
       ) {
-        const fullSourcePath = standardizeFileExtension(
+        const fullSourcePath = standardizePathAndFileExtension(
           getFullSourcePath(source, standardizedImporter),
         );
         configFileToEntrypoint[fullSourcePath] = standardizedImporter;

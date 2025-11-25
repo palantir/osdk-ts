@@ -21,10 +21,13 @@ import { CONFIG_FILE_SUFFIX } from "./constants.js";
  * `.jsx` file on disk. This standardizes these file extension to `.js` so that we can match imports
  * to source files. Additionally, extension-less imports may be used depending on the module
  * resolution setting so we append `.js` to config file imports to standardize those as well.
+ *
+ * Additionally, replaces Windows-style backslashes with forward slashes for path consistency.
  */
-export function standardizeFileExtension(file: string): string {
-  if (file.endsWith(CONFIG_FILE_SUFFIX)) {
-    return file + ".js";
+export function standardizePathAndFileExtension(file: string): string {
+  const normalizedPath = file.replace(/\\/g, "/");
+  if (normalizedPath.endsWith(CONFIG_FILE_SUFFIX)) {
+    return normalizedPath + ".js";
   }
-  return file.replace(/\.[jt]sx?$/, ".js");
+  return normalizedPath.replace(/\.[jt]sx?$/, ".js");
 }
