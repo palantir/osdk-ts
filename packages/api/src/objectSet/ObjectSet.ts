@@ -50,6 +50,7 @@ import type {
 import type { PageResult } from "../PageResult.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { BaseObjectSet } from "./BaseObjectSet.js";
+import type { LinkTypeApiNamesFor, ObjectLink } from "./ObjectSetLinks.js";
 import type { ObjectSetSubscription } from "./ObjectSetListener.js";
 
 type MergeObjectSet<
@@ -584,6 +585,15 @@ type ExtractImplementingTypes<T extends InterfaceDefinition> =
     ? (ObjectTypeDefinition & { apiName: API_NAME }) | InterfaceDefinition
     : InterfaceDefinition;
 
+interface AsyncIterLinks<Q extends ObjectOrInterfaceDefinition> {
+  /**
+   * Bulk load links.
+   */
+  readonly asyncIterLinks: <LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>>(
+    links: LINK_TYPE_API_NAME[],
+  ) => AsyncIterableIterator<ObjectLink<Q, LINK_TYPE_API_NAME>>;
+}
+
 interface ObjectSetCleanedTypes<
   Q extends ObjectOrInterfaceDefinition,
   D extends Record<string, SimplePropertyDef>,
@@ -598,6 +608,7 @@ interface ObjectSetCleanedTypes<
   FetchOne<Q, D>,
   Subscribe<MERGED>,
   NearestNeighbors<Q>,
-  AsType<Q>
+  AsType<Q>,
+  AsyncIterLinks<Q>
 {
 }
