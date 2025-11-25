@@ -91,6 +91,11 @@ export { isOk } from "./object/Result.js";
 export type { Result } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
 export type { ObjectSet } from "./objectSet/ObjectSet.js";
+export type {
+  FetchLinksPageResult,
+  LinkTypeApiNamesFor,
+  ObjectLink as LinksForObject,
+} from "./objectSet/ObjectSetLinks.js";
 export type { ObjectSetSubscription } from "./objectSet/ObjectSetListener.js";
 export type {
   ActionDefinition,

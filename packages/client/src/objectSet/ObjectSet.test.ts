@@ -1125,4 +1125,16 @@ describe("ObjectSet", () => {
       });
     });
   });
+
+  it("link async iter", async () => {
+    for await (
+      const { source, target, linkType } of client(Employee).asyncIterLinks([
+        "officeLink",
+      ])
+    ) {
+      console.log(
+        `${source.$apiName}:${source.$primaryKey}  <- ${linkType} -> ${target.$apiName}:${target.$apiName}`,
+      );
+    }
+  });
 });
