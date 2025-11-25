@@ -23,6 +23,7 @@ import type {
 import type { ObjectTypeDefinition } from "@osdk/client";
 import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import { stabilizeKey } from "../internal/stabilizeKey.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 import type { InferRdpTypes } from "./types.js";
@@ -114,15 +115,8 @@ export function useOsdkAggregation<
 
   const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
 
-  const stableWithProperties = React.useMemo(
-    () => withProperties,
-    [JSON.stringify(withProperties)],
-  );
-
-  const stableAggregate = React.useMemo(
-    () => aggregate,
-    [JSON.stringify(aggregate)],
-  );
+  const stableWithProperties = stabilizeKey(withProperties);
+  const stableAggregate = stabilizeKey(aggregate);
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>

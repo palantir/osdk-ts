@@ -26,6 +26,7 @@ import type {
 } from "@osdk/api";
 import type { ObserveObjectsArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
+import { stabilizeKey } from "../internal/stabilizeKey.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 import type { InferRdpTypes } from "./types.js";
@@ -218,20 +219,9 @@ export function useOsdkObjects<
    */
   const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
 
-  const stableWithProperties = React.useMemo(
-    () => withProperties,
-    [JSON.stringify(withProperties)],
-  );
-
-  const stableIntersectWith = React.useMemo(
-    () => intersectWith,
-    [JSON.stringify(intersectWith)],
-  );
-
-  const stableOrderBy = React.useMemo(
-    () => orderBy,
-    [JSON.stringify(orderBy)],
-  );
+  const stableWithProperties = stabilizeKey(withProperties);
+  const stableIntersectWith = stabilizeKey(intersectWith);
+  const stableOrderBy = stabilizeKey(orderBy);
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
