@@ -40,7 +40,10 @@ export function convertDatasourceDefinition(
       const propertyMapping = Object.fromEntries(
         properties.map((
           prop,
-        ) => [generateRid(`property.${objectType.apiName}.${prop.apiName}`), prop.apiName]),
+        ) => [
+          generateRid(`property.${objectType.apiName}.${prop.apiName}`),
+          prop.apiName,
+        ]),
       );
       return {
         type: "streamV2",
@@ -59,7 +62,9 @@ export function convertDatasourceDefinition(
       return {
         type: "restrictedViewV2",
         restrictedViewV2: {
-          restrictedViewRid: generateRid(`restrictedview.${objectType.apiName}`),
+          restrictedViewRid: generateRid(
+            `restrictedview.${objectType.apiName}`,
+          ),
           propertyMapping: buildPropertyMapping(properties, objectType.apiName),
         },
       };
@@ -68,7 +73,6 @@ export function convertDatasourceDefinition(
       return {
         type: "datasetV2",
         datasetV2: {
-          // TODO: Add proper branchId from dataset configuration
           branchId: "main",
           datasetRid: generateRid(`dataset.${objectType.apiName}`),
           propertyMapping: buildPropertyMapping(properties, objectType.apiName),
@@ -84,7 +88,9 @@ function buildPropertyMapping(
   // TODO: Convert property mappings to use RIDs as keys
   return Object.fromEntries(
     properties.map((prop) => {
-      const propertyRid = generateRid(`property.${objectTypeApiName}.${prop.apiName}`);
+      const propertyRid = generateRid(
+        `property.${objectTypeApiName}.${prop.apiName}`,
+      );
       // editOnly
       if (prop.editOnly) {
         return [propertyRid, { type: "editOnly", editOnly: {} }];

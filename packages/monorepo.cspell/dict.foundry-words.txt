@@ -17,3 +17,5 @@ mediasets
 mediasetview
 Rdps
 writeback
+restrictedview
+typeclasses
