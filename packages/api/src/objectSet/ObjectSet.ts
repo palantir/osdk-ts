@@ -69,14 +69,14 @@ type ExtractRdp<
 type MaybeSimplifyPropertyKeys<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q>,
-> = PropertyKeys<Q> extends L ? PropertyKeys<Q> : L & PropertyKeys<Q>;
+> = PropertyKeys<Q> extends L ? PropertyKeys<Q> : L;
 
 type SubSelectKeysHelper<
   Q extends ObjectOrInterfaceDefinition,
   L extends string,
 > = [L] extends [never] ? PropertyKeys<Q>
   : PropertyKeys<Q> extends L ? PropertyKeys<Q>
-  : L & PropertyKeys<Q>;
+  : L;
 
 type SubSelectKeys<
   Q extends ObjectOrInterfaceDefinition,
