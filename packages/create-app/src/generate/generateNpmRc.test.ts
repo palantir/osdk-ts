@@ -22,6 +22,11 @@ const expected = `
 @myapp:registry=https://registry.com/
 `.trimStart();
 
+const expectedNoOsdkPackage = `
+//registry.com/:_authToken=\${FOUNDRY_TOKEN}
+<OSDK package name>:registry=https://registry.com/
+`.trimStart();
+
 test("it generates .npmrc for package and registry", () => {
   expect(
     generateNpmRc({
@@ -29,4 +34,13 @@ test("it generates .npmrc for package and registry", () => {
       osdkRegistryUrl: "https://registry.com",
     }),
   ).toEqual(expected);
+});
+
+test("it generates .npmrc for registry without osdk package", () => {
+  expect(
+    generateNpmRc({
+      osdkPackage: "@myapp/sdk",
+      osdkRegistryUrl: "https://registry.com",
+    }),
+  ).toEqual(expectedNoOsdkPackage);
 });

@@ -38,9 +38,9 @@ interface RunArgs {
   foundryUrl: string;
   applicationUrl: string | undefined;
   application: string;
-  ontology: string;
+  ontologyRid: string | undefined;
   clientId: string;
-  osdkPackage: string;
+  osdkPackage: string | undefined;
   osdkRegistryUrl: string;
   corsProxy: boolean;
   scopes: string[] | undefined;
@@ -55,7 +55,7 @@ export async function run(
     foundryUrl,
     applicationUrl,
     application,
-    ontology,
+    ontologyRid,
     clientId,
     osdkPackage,
     osdkRegistryUrl,
@@ -166,7 +166,7 @@ export async function run(
     foundryUrl,
     clientId,
     corsProxy,
-    ontology,
+    ontologyRid,
   });
   fs.writeFileSync(path.join(root, ".env.development"), envDevelopment);
   const envProduction = generateEnvProduction({
@@ -174,7 +174,7 @@ export async function run(
     foundryUrl,
     applicationUrl,
     clientId,
-    ontology,
+    ontologyRid,
   });
   fs.writeFileSync(path.join(root, ".env.production"), envProduction);
   const foundryConfigJson = generateFoundryConfigJson({

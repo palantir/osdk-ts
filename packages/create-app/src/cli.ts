@@ -23,8 +23,7 @@ import { promptApplicationUrl } from "./prompts/promptApplicationUrl.js";
 import { promptClientId } from "./prompts/promptClientId.js";
 import { promptCorsProxy } from "./prompts/promptCorsProxy.js";
 import { promptFoundryUrl } from "./prompts/promptFoundryUrl.js";
-import { promptOntologyRid } from "./prompts/promptOntologyRid.js";
-import { promptOsdkPackage } from "./prompts/promptOsdkPackage.js";
+import { promptOsdkPackageAndOntologyRid } from "./prompts/promptOsdkPackageAndOntologyRid.js";
 import { promptOsdkRegistryUrl } from "./prompts/promptOsdkRegistryUrl.js";
 import { promptOverwrite } from "./prompts/promptOverwrite.js";
 import { promptProject } from "./prompts/promptProject.js";
@@ -105,14 +104,20 @@ export async function cli(args: string[] = process.argv): Promise<void> {
           .option("ontology", {
             type: "string",
             describe: "Ontology resource identifier (rid)",
-          })
-          .option("clientId", {
-            type: "string",
-            describe: "OAuth client ID for application",
+            conflicts: "skipOsdk",
           })
           .option("osdkPackage", {
             type: "string",
             describe: "OSDK package name for application",
+            conflicts: "skipOsdk",
+          })
+          .option("skipOsdk", {
+            type: "boolean",
+            describe: "Skip filling in OSDK options",
+          })
+          .option("clientId", {
+            type: "string",
+            describe: "OAuth client ID for application",
           })
           .option("osdkRegistryUrl", {
             type: "string",
@@ -142,9 +147,10 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   const foundryUrl: string = await promptFoundryUrl(parsed);
   const applicationUrl: string | undefined = await promptApplicationUrl(parsed);
   const application: string = await promptApplicationRid(parsed);
-  const ontology: string = await promptOntologyRid(parsed);
   const clientId: string = await promptClientId(parsed);
-  const osdkPackage: string = await promptOsdkPackage(parsed);
+  const { osdkPackage, ontologyRid } = await promptOsdkPackageAndOntologyRid(
+    parsed,
+  );
   const osdkRegistryUrl: string = await promptOsdkRegistryUrl(parsed);
   const corsProxy: boolean = await promptCorsProxy(parsed);
   const scopes: string[] | undefined = await promptScopes(parsed);
@@ -162,6 +168,6 @@ export async function cli(args: string[] = process.argv): Promise<void> {
     osdkRegistryUrl,
     corsProxy,
     scopes,
-    ontology,
+    ontologyRid,
   });
 }
