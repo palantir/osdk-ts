@@ -11,11 +11,13 @@ Every API mentioned in this document is experimental and may change, be renamed,
 `@osdk/react` is an opinionated library for using OSDK in a react application. It provides a number
 of features over using the `@osdk/client` directly:
 
-- Automatic caching
-- Normalized caching
-- Optimistic Updates
-- Subscriptions (coming soon)
-- and more.
+- **Data Fetching Hooks**: Query objects, links, aggregations, and metadata with automatic caching
+- **Real-time Updates**: Stream live data changes via WebSocket with `streamUpdates`
+- **Normalized Caching**: Automatic cache invalidation and synchronization
+- **Optimistic Updates**: Instant UI feedback with automatic rollback on errors
+- **Advanced Querying**: Set operations, link traversal, derived properties, and server-side aggregations
+- **Action Management**: Execute and validate actions with full loading/error states
+- **Utilities**: Debounce callbacks for efficient event handling
 
 ## Getting Started
 

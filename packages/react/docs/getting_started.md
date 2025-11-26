@@ -11,9 +11,10 @@ Once these features are Generally Available, simply update to the latest version
 Using `latest` in npm/yarn/pnpm does not always install the actual latest version, especially when dealing with beta or release-candidate packages. You must specify them explicitly, for example:
 
 ```json
-"@osdk/client": "^2.3.0-beta.9",
+"@osdk/client": "^2.6.0-beta.11",
 "@osdk/oauth": "^1.3.0-beta.1",
-"@osdk/react": "^0.5.0-beta.4",
+"@osdk/react": "^0.8.0-beta.4",
+"@osdk/api": "^2.6.0-beta.11",
 ```
 
 ## 2. Regenerate Your SDK on Foundry
@@ -30,7 +31,7 @@ On the SDK versions page, in the top right corner is a "Settings" button. Click 
 
 Click the blue "Generate new version" button. In the dialog that shows up, make sure that the checkbox for "npm" is checked and that you are on the latest -beta generator. Then click "Generate" and wait a few seconds.
 
-Note: normally we want the generator version to match the `@osdk/client` version we have in our package.json file. Make sure you're using a compatible generator version that works with `2.3.0-beta.9` `@osdk/client`.
+Note: normally we want the generator version to match the `@osdk/client` version we have in our package.json file. Make sure you're using a compatible generator version that works with `2.6.0-beta.11` `@osdk/client`.
 
 ### Update Your package.json
 
@@ -95,12 +96,25 @@ function MyComponent() {
 
 All reactive data management features are currently **experimental** and available via `@osdk/react/experimental`. These features provide automatic cache management, real-time updates, and optimistic UI patterns.
 
+## REQUIRED: OsdkProvider2 Setup
+
+**All experimental hooks require your entire application to be wrapped in `<OsdkProvider2>`**. This is not optional.
+
+If you forget to add `OsdkProvider2`, you will see errors like:
+
+- `Cannot read property 'observableClient' of undefined`
+- `Cannot read properties of undefined (reading 'canonicalizeWhereClause')`
+
+**Every component using experimental hooks MUST be inside the `<OsdkProvider2>` wrapper.** See [Configuration](#configure-osdkprovider2) below for setup instructions.
+
 ```ts
 import {
   OsdkProvider2,
+  useDebouncedCallback,
   useLinks,
   useObjectSet,
   useOsdkAction,
+  useOsdkAggregation,
   useOsdkObject,
   useOsdkObjects,
 } from "@osdk/react/experimental";
@@ -118,33 +132,97 @@ All reactive data management features (OsdkProvider2, useOsdkObject, useOsdkObje
 ```ts
 import {
   OsdkProvider2,
+  useDebouncedCallback,
   useLinks,
   useObjectSet,
   useOsdkAction,
+  useOsdkAggregation,
   useOsdkClient,
   useOsdkObject,
   useOsdkObjects,
 } from "@osdk/react/experimental";
 ```
 
-## Configure `<OsdkProvider2/>`
+### Quick Start Checklist
 
-In `main.tsx` (or wherever you call `createRoot`), add an `OsdkProvider2`:
+Before using any experimental hooks, verify:
+
+- [ ] **Step 1:** Your app is wrapped in `<OsdkProvider2 client={client}>`
+- [ ] **Step 2:** OsdkProvider2 is at your app root (not nested inside components)
+- [ ] **Step 3:** You're passing your configured OSDK client to OsdkProvider2
+- [ ] **Step 4:** All components using experimental hooks are inside the provider
+
+**If you skip Step 1, none of the experimental hooks will work.**
+
+## Configure `<OsdkProvider2/>` (REQUIRED)
+
+This is mandatory for all experimental features to work. Add it to your application root.
+
+### Step 1: Import OsdkProvider2
+
+In `main.tsx` (or wherever you call `createRoot`):
 
 ```ts
 import { OsdkProvider2 } from "@osdk/react/experimental";
-import client from "./client"; // or wherever you created it
+import client from "./client"; // your OSDK client instance
 ```
 
-Then wrap your existing root components with `<OsdkProvider2 client={client}>`:
+### Step 2: Wrap Your Entire App
 
-```ts
+Wrap your root component and ALL nested components:
+
+```tsx
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <OsdkProvider2 client={client}>
+    {/* All your routes, pages, and components go here */}
     <RouterProvider router={router} />
+    {/* Every hook like useOsdkObjects must be inside this wrapper */}
   </OsdkProvider2>,
 );
 ```
+
+### Correct Structure
+
+```
+main.tsx
+├── OsdkProvider2 (WRAP AT ROOT)
+│   ├── RouterProvider
+│   │   ├── Page1
+│   │   │   └── useOsdkObjects() (Works here)
+│   │   └── Page2
+│   │       └── useOsdkAction() (Works here)
+```
+
+### Incorrect Structure (Will Break)
+
+```
+main.tsx
+├── RouterProvider (Provider not at root)
+│   ├── OsdkProvider2
+│   │   └── Page1
+│   │       └── useOsdkObjects() (Some components outside provider)
+│   └── Page2
+│       └── useOsdkObjects() (Will error - outside provider)
+```
+
+### Troubleshooting
+
+If you see these errors, check your OsdkProvider2 setup:
+
+**Error: "Cannot read property 'observableClient' of undefined"**
+
+- The component is outside `<OsdkProvider2>` wrapper
+- Move `<OsdkProvider2>` higher up in your component tree
+
+**Error: "useOsdkContext is not defined"**
+
+- Missing `OsdkProvider2` import or not wrapped at all
+- Ensure `<OsdkProvider2 client={client}>` is at your app root
+
+**Hooks return undefined**
+
+- Double-check that OsdkProvider2 is actually wrapping the component
+- Make sure you're passing the `client` prop to OsdkProvider2
 
 ## Retrieve Objects
 
@@ -275,6 +353,285 @@ const { data } = useOsdkObjects(Todo, {
 // Caution: May load thousands of items
 const { data } = useOsdkObjects(Todo, {
   autoFetchMore: true,
+});
+```
+
+### Real-time Updates with streamUpdates
+
+Enable real-time updates for your queries using the `streamUpdates` option. When enabled, the list automatically updates as data changes on the server via WebSocket:
+
+```tsx
+import { Todo } from "@my/osdk";
+import { useOsdkObjects } from "@osdk/react/experimental";
+
+function LiveTodoList() {
+  const { data, isLoading } = useOsdkObjects(Todo, {
+    where: { isComplete: false },
+    orderBy: { createdAt: "desc" },
+    streamUpdates: true, // Enable real-time updates via websocket
+  });
+
+  // Data automatically updates when:
+  // - New todos matching the where clause are created
+  // - Existing todos are modified and still match the where clause
+  // - Todos are deleted or no longer match the where clause
+
+  if (isLoading && !data) {
+    return <div>Loading todos...</div>;
+  }
+
+  return (
+    <div>
+      <h2>Live Todo List ({data?.length})</h2>
+      {data?.map(todo => (
+        <div key={todo.$primaryKey}>
+          <span>{todo.title}</span>
+          {isLoading && (
+            <span style={{ fontSize: "0.8em" }}>
+              (Updating...)
+            </span>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+With `streamUpdates: true`, your UI stays synchronized with server changes without manual polling. The `isLoading` state reflects whether new updates are being fetched, while existing data remains visible.
+
+### Lazy/Conditional Queries with enabled
+
+Use the `enabled` option to control when a query should execute. This is useful for dependent queries or queries that should only run based on user interaction:
+
+```tsx
+import { Todo } from "@my/osdk";
+import { useOsdkObjects } from "@osdk/react/experimental";
+import { useState } from "react";
+
+function ConditionalTodoFetch() {
+  const [shouldFetch, setShouldFetch] = useState(false);
+
+  const { data, isLoading } = useOsdkObjects(Todo, {
+    where: { isComplete: false },
+    enabled: shouldFetch, // Only fetch when true
+  });
+
+  return (
+    <div>
+      <button onClick={() => setShouldFetch(!shouldFetch)}>
+        {shouldFetch ? "Hide" : "Show"} Incomplete Todos
+      </button>
+
+      {shouldFetch && isLoading && !data && <div>Loading...</div>}
+
+      {data?.map(todo => <div key={todo.$primaryKey}>{todo.title}</div>)}
+    </div>
+  );
+}
+```
+
+The query will not execute if `enabled` is `false`, saving bandwidth and improving performance.
+
+### Adding Derived Properties with withProperties
+
+Use `withProperties` to add computed/derived properties to your objects. These are calculated server-side:
+
+```tsx
+import { Todo } from "@my/osdk";
+import { DerivedProperty } from "@osdk/client";
+import { useOsdkObjects } from "@osdk/react/experimental";
+
+function TodosWithMetadata() {
+  const { data, isLoading } = useOsdkObjects(Todo, {
+    where: { isComplete: false },
+    withProperties: {
+      // Add derived properties
+      displayText: DerivedProperty.string(todo =>
+        `[${todo.priority}] ${todo.title}`
+      ),
+      daysSinceCreated: DerivedProperty.number(todo => {
+        const now = Date.now();
+        const createdAt = new Date(todo.createdAt).getTime();
+        const dayMs = 1000 * 60 * 60 * 24;
+        return Math.floor((now - createdAt) / dayMs);
+      }),
+    },
+  });
+
+  if (isLoading && !data) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div>
+      {data?.map(todo => (
+        <div key={todo.$primaryKey}>
+          <span>{todo.displayText}</span>
+          <span style={{ fontSize: "0.9em", color: "#666" }}>
+            {todo.daysSinceCreated} days old
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+Derived properties are computed on the server and automatically included in your results.
+
+### Set Intersections with intersectWith
+
+Find objects that match multiple where clauses using `intersectWith`. Each where clause acts as a filter, and only objects matching ALL conditions are returned:
+
+```tsx
+import { Employee } from "@my/osdk";
+import { useOsdkObjects } from "@osdk/react/experimental";
+
+function EmployeesIntersection() {
+  const { data, isLoading } = useOsdkObjects(Employee, {
+    where: {
+      department: "Engineering",
+    },
+    intersectWith: [
+      {
+        where: {
+          salary: { $gte: 100000 },
+        },
+      },
+      {
+        where: {
+          yearsExperience: { $gte: 5 },
+        },
+      },
+    ],
+    orderBy: {
+      fullName: "asc",
+    },
+  });
+
+  if (isLoading && !data) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div>
+      <h3>Senior Engineers with High Salary ({data?.length})</h3>
+      {data?.map(employee => (
+        <div key={employee.$primaryKey}>{employee.fullName}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+The `intersectWith` option is useful for complex filtering where you need objects to match multiple distinct conditions. Unlike nested where clauses, this provides explicit intersection logic at the query level.
+
+### Pivot to Related Objects with pivotTo
+
+Use `pivotTo` to traverse relationships and return linked objects instead of the original type. The return type automatically changes based on the link:
+
+```tsx
+import { Employee } from "@my/osdk";
+import { useOsdkObjects } from "@osdk/react/experimental";
+
+function ManagerReports() {
+  // Find employees and pivot to their direct reports
+  const { data, isLoading } = useOsdkObjects(Employee, {
+    where: {
+      fullName: "John Smith",
+    },
+    pivotTo: "reports", // Changes return type from Employee[] to Report[]
+  });
+
+  if (isLoading && !data) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div>
+      <h3>John Smith's Direct Reports ({data?.length})</h3>
+      {data?.map(report => <div key={report.$primaryKey}>{report.fullName}
+      </div>)}
+    </div>
+  );
+}
+```
+
+The return type is inferred from the link definition, providing full type safety. You can use TypeScript's `as const` assertion for link names if needed.
+
+### Advanced Derived Properties with Pivoting and Aggregation
+
+Use `withProperties` to compute derived properties that traverse links and perform aggregations server-side:
+
+```tsx
+import { Employee } from "@my/osdk";
+import { useOsdkObjects } from "@osdk/react/experimental";
+
+function EmployeesWithStats() {
+  const { data, isLoading } = useOsdkObjects(Employee, {
+    where: {
+      department: "Engineering",
+    },
+    withProperties: {
+      // Simple link traversal - get manager's name
+      managerName: (employee) =>
+        employee.pivotTo("manager").selectProperty("fullName"),
+
+      // Aggregate across linked objects - count direct reports
+      reportCount: (employee) =>
+        employee.pivotTo("reports").aggregate("$count"),
+
+      // Chained link traversal and aggregation
+      departmentSize: (employee) =>
+        employee.pivotTo("manager")
+          .pivotTo("reports")
+          .aggregate("$count"),
+
+      // Complex aggregation - average salary of reports
+      avgReportSalary: (employee) =>
+        employee.pivotTo("reports")
+          .selectProperty("salary")
+          .aggregate("$avg"),
+    },
+    orderBy: {
+      fullName: "asc",
+    },
+  });
+
+  if (isLoading && !data) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div>
+      {data?.map(employee => (
+        <div key={employee.$primaryKey}>
+          <h4>{employee.fullName}</h4>
+          <p>Manager: {employee.managerName}</p>
+          <p>Direct Reports: {employee.reportCount}</p>
+          <p>Department Size: {employee.departmentSize}</p>
+          <p>
+            Avg Report Salary: ${employee.avgReportSalary?.toLocaleString()}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+You can also filter on these derived properties in the where clause:
+
+```tsx
+const { data } = useOsdkObjects(Employee, {
+  withProperties: {
+    reportCount: (e) => e.pivotTo("reports").aggregate("$count"),
+  },
+  where: {
+    department: "Engineering",
+    reportCount: { $gt: 0 }, // Only managers
+  },
 });
 ```
 
@@ -682,6 +1039,141 @@ function TodoList() {
 }
 ```
 
+## Common Mistakes & Troubleshooting
+
+### Mistake 1: Forgetting OsdkProvider2
+
+**Problem:** You see "Cannot read property 'observableClient' of undefined"
+
+**Wrong:**
+
+```tsx
+// main.tsx
+function App() {
+  return <TodoList />; // No OsdkProvider2!
+}
+
+// TodoList.tsx
+function TodoList() {
+  const { data } = useOsdkObjects(Todo); // Crashes!
+}
+```
+
+**Correct:**
+
+```tsx
+// main.tsx
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <OsdkProvider2 client={client}>
+    <TodoList />
+  </OsdkProvider2>,
+);
+
+// TodoList.tsx
+function TodoList() {
+  const { data } = useOsdkObjects(Todo); // Works!
+}
+```
+
+### Mistake 2: Provider not at app root
+
+**Problem:** Only some components work with hooks
+
+**Wrong:**
+
+```tsx
+// main.tsx
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <App />, // OsdkProvider2 is inside App, not at root
+);
+
+// App.tsx
+function App() {
+  return (
+    <>
+      <Header /> {/* This component can't use hooks */}
+      <OsdkProvider2 client={client}>
+        <Content /> {/* Only this can use hooks */}
+      </OsdkProvider2>
+    </>
+  );
+}
+```
+
+**Correct:**
+
+```tsx
+// main.tsx
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <OsdkProvider2 client={client}>
+    {/* Provider at root */}
+    <App />
+  </OsdkProvider2>,
+);
+
+// App.tsx
+function App() {
+  return (
+    <>
+      <Header /> {/* All components can use hooks now */}
+      <Content />
+    </>
+  );
+}
+```
+
+### Mistake 3: Passing wrong client
+
+**Problem:** Hooks work but return no data
+
+**Wrong:**
+
+```tsx
+// Creating a new client instead of using the configured one
+<OsdkProvider2 client={createNewClient()}>
+  // Creates new instance each time
+  <App />
+</OsdkProvider2>;
+```
+
+**Correct:**
+
+```tsx
+// Import the configured client
+import client from "./client"; // Created once at app startup
+
+<OsdkProvider2 client={client}>
+  // Reuse same instance
+  <App />
+</OsdkProvider2>;
+```
+
+### Mistake 4: Hooks inside conditional rendering
+
+**Problem:** "Hooks cannot be conditionally called"
+
+**Wrong:**
+
+```tsx
+function TodoList({ shouldLoad }: { shouldLoad: boolean }) {
+  if (shouldLoad) {
+    const { data } = useOsdkObjects(Todo); // Conditional hook!
+  }
+  return null;
+}
+```
+
+**Correct - Use enabled option:**
+
+```tsx
+function TodoList({ shouldLoad }: { shouldLoad: boolean }) {
+  const { data } = useOsdkObjects(Todo, {
+    enabled: shouldLoad, // Use enabled instead
+  });
+  return null;
+}
+```
+
 ## Working with Links
 
 The `useLinks` hook allows you to observe and navigate relationships between objects.
@@ -738,12 +1230,45 @@ function TeamMembers({ employees }: { employees: Employee.OsdkInstance[] }) {
 }
 ```
 
+### Lazy Loading Links
+
+Load links only when needed using the `enabled` option:
+
+```tsx
+function OptionalReportsList(
+  { employee }: { employee: Employee.OsdkInstance },
+) {
+  const [showReports, setShowReports] = useState(false);
+
+  const { links, isLoading } = useLinks(
+    employee,
+    "reports",
+    {
+      enabled: showReports, // Only fetch when true
+    },
+  );
+
+  return (
+    <div>
+      <button onClick={() => setShowReports(!showReports)}>
+        {showReports ? "Hide" : "Show"} Reports
+      </button>
+
+      {showReports && isLoading && !links && <div>Loading...</div>}
+
+      {links?.map(report => <div key={report.$primaryKey}>{report.name}</div>)}
+    </div>
+  );
+}
+```
+
 Options:
 
 - `where` - Filter linked objects
 - `pageSize` - Number of links per page
 - `orderBy` - Sort order for linked objects
 - `mode` - Fetch mode: `"force"` (always fetch), `"offline"` (cache only), or undefined (default)
+- `enabled` - Enable/disable the query (default: true)
 
 Return values:
 
@@ -864,6 +1389,79 @@ function EmployeeDepartments(
 }
 ```
 
+### Set Intersections with intersect
+
+Find common objects between sets using `intersect`:
+
+```tsx
+function SharedProjects(
+  { employee1, employee2 }: {
+    employee1: Employee.OsdkInstance;
+    employee2: Employee.OsdkInstance;
+  },
+) {
+  const set1 = Employee.where({ id: employee1.id });
+  const set2 = Employee.where({ id: employee2.id });
+
+  const { data } = useObjectSet(set1, {
+    pivotTo: "projects", // Get projects for employee1
+    intersect: [
+      // Find intersection with employee2's projects
+      set2.$pivotTo("projects"),
+    ],
+  });
+
+  return (
+    <div>
+      <h3>Shared Projects</h3>
+      {data?.map(project => <div key={project.$primaryKey}>{project.name}
+      </div>)}
+    </div>
+  );
+}
+```
+
+The `intersect` option finds only objects that exist in all specified sets.
+
+### Auto-Fetching All Pages in ObjectSets
+
+Use `autoFetchMore` to automatically load all pages of results:
+
+```tsx
+import { Todo } from "@my/osdk";
+import { useObjectSet } from "@osdk/react/experimental";
+
+function AllActiveTodos() {
+  const { data, isLoading } = useObjectSet(Todo.all(), {
+    where: { isComplete: false },
+    autoFetchMore: true, // Fetch all pages automatically
+  });
+
+  if (isLoading && !data) {
+    return <div>Loading all todos...</div>;
+  }
+
+  return (
+    <div>
+      <h2>All Active Todos ({data?.length})</h2>
+      {data?.map(todo => <div key={todo.$primaryKey}>{todo.title}</div>)}
+    </div>
+  );
+}
+```
+
+You can also specify a minimum number of items to fetch:
+
+```tsx
+const { data, isLoading } = useObjectSet(Todo.all(), {
+  where: { isComplete: false },
+  autoFetchMore: 200, // Fetch at least 200 items
+  pageSize: 50, // 50 per page (will load 4 pages)
+});
+```
+
+**Performance Note:** Use `autoFetchMore: N` with a specific number rather than `true` for better control over performance and memory usage.
+
 ### Streaming Updates for ObjectSets
 
 Enable real-time updates for ObjectSet queries with `streamUpdates`:
@@ -966,6 +1564,211 @@ Return values:
 - `loading` - True while fetching metadata
 - `error` - Error message string if fetch failed
 
+## Server-Side Aggregations
+
+The `useOsdkAggregation` hook enables server-side grouping and aggregation of data with metrics like count, sum, min, max, and average.
+
+```tsx
+import { Todo } from "@my/osdk";
+import { useOsdkAggregation } from "@osdk/react/experimental";
+
+function TodoStats() {
+  const { data, isLoading, error } = useOsdkAggregation(Todo, {
+    aggregate: {
+      $select: {
+        totalCount: { $count: {} },
+        avgPriority: { $avg: "priority" },
+        maxDueDate: { $max: "dueDate" },
+      },
+    },
+  });
+
+  if (isLoading) {
+    return <div>Calculating stats...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {JSON.stringify(error)}</div>;
+  }
+
+  return (
+    <div>
+      <p>Total Todos: {data?.totalCount}</p>
+      <p>Average Priority: {data?.avgPriority}</p>
+      <p>Latest Due Date: {data?.maxDueDate}</p>
+    </div>
+  );
+}
+```
+
+### Grouped Aggregations
+
+Group results and compute metrics per group:
+
+```tsx
+function TodosByStatus() {
+  const { data, isLoading } = useOsdkAggregation(Todo, {
+    aggregate: {
+      $groupBy: ["status"],
+      $select: {
+        count: { $count: {} },
+        avgPriority: { $avg: "priority" },
+      },
+    },
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div>
+      {data?.map((group, idx) => (
+        <div key={idx}>
+          <h3>Status: {group.status}</h3>
+          <p>Count: {group.count}</p>
+          <p>Avg Priority: {group.avgPriority}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Filtered Aggregations
+
+Filter data before aggregation:
+
+```tsx
+function HighPriorityStats() {
+  const { data, isLoading } = useOsdkAggregation(Todo, {
+    where: { priority: "high", isComplete: false },
+    aggregate: {
+      $select: {
+        count: { $count: {} },
+        earliestDue: { $min: "dueDate" },
+      },
+    },
+  });
+
+  if (isLoading || !data) return <div>Loading...</div>;
+
+  return (
+    <div>
+      <p>High Priority Incomplete: {data.count}</p>
+      <p>Earliest Due: {data.earliestDue}</p>
+    </div>
+  );
+}
+```
+
+Options:
+
+- `where` - Filter objects before aggregation
+- `withProperties` - Add derived properties for computed values
+- `aggregate` - Aggregation configuration with structure:
+  - `$select` (required) - Object mapping metric names to aggregation operators (`$count`, `$sum`, `$avg`, `$min`, `$max`)
+  - `$groupBy` (optional) - Array of property names to group by
+- `dedupeIntervalMs` - Minimum time between re-fetches (default: 2000ms)
+
+Return values:
+
+- `data` - Aggregation result (single object for non-grouped, array for grouped)
+- `isLoading` - True while fetching
+- `error` - Error object if fetch failed
+- `refetch` - Manual refetch function
+
+## Debounced Callbacks
+
+The `useDebouncedCallback` utility helps debounce callback functions, useful for optimistic updates or expensive operations:
+
+```tsx
+import { useOsdkAction } from "@osdk/react/experimental";
+import { useDebouncedCallback } from "@osdk/react/experimental";
+import React from "react";
+
+function SearchableList({ onSearch }: { onSearch: (query: string) => void }) {
+  const [query, setQuery] = React.useState("");
+
+  // Debounce the search for 500ms
+  const debouncedSearch = useDebouncedCallback((q: string) => {
+    onSearch(q);
+  }, 500);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value);
+    debouncedSearch(value);
+  };
+
+  return (
+    <input
+      value={query}
+      onChange={handleChange}
+      placeholder="Search..."
+    />
+  );
+}
+```
+
+### Debounced Actions
+
+Combine with actions for optimistic updates:
+
+```tsx
+import { $Actions } from "@my/osdk";
+import { useDebouncedCallback, useOsdkAction } from "@osdk/react/experimental";
+import React, { useState } from "react";
+
+function AutoSaveTodo({ todo }: { todo: Todo.OsdkInstance }) {
+  const [title, setTitle] = useState(todo.title);
+  const { applyAction } = useOsdkAction($Actions.updateTodo);
+
+  const debouncedSave = useDebouncedCallback((newTitle: string) => {
+    applyAction({
+      todo,
+      title: newTitle,
+      $optimisticUpdate: (ou) => {
+        ou.updateObject(todo.$clone({ title: newTitle }));
+      },
+    });
+  }, 1000);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value;
+    setTitle(newTitle);
+    debouncedSave(newTitle);
+  };
+
+  return (
+    <input
+      value={title}
+      onChange={handleChange}
+      placeholder="Click to edit title..."
+    />
+  );
+}
+```
+
+### Debounced Callback Methods
+
+The returned debounced function has two utility methods:
+
+```tsx
+const debouncedFn = useDebouncedCallback((value: string) => {
+  console.log("Called with:", value);
+}, 500);
+
+// Cancel any pending execution
+debouncedFn.cancel();
+
+// Execute immediately and cancel pending calls
+debouncedFn.flush();
+
+// Call the function (debounced)
+debouncedFn("hello");
+```
+
 ## Common Patterns
 
 ### Combining Multiple Hooks
@@ -1062,6 +1865,27 @@ const { data } = useObjectSet(Todo.all(), {
 - Each unique configuration creates a separate cache entry
 
 **Recommendation:** Start with `useOsdkObjects` for all standard queries. Only switch to `useObjectSet` when you need its advanced features.
+
+## Feature Comparison
+
+Here's a quick reference for which options are available on which hooks:
+
+| Feature                     | useOsdkObjects | useOsdkObject | useLinks | useObjectSet | useOsdkAggregation |
+| --------------------------- | -------------- | ------------- | -------- | ------------ | ------------------ |
+| `where` (filtering)         | Yes            | No            | Yes      | Yes          | Yes                |
+| `orderBy` (sorting)         | Yes            | No            | Yes      | Yes          | No                 |
+| `pageSize` (pagination)     | Yes            | No            | Yes      | Yes          | No                 |
+| `autoFetchMore` (auto-pag)  | Yes            | No            | No       | Yes          | No                 |
+| `streamUpdates` (real-time) | Yes            | No            | No       | Yes          | No                 |
+| `enabled` (lazy queries)    | Yes            | No            | Yes      | Yes          | No                 |
+| `withProperties` (rdps)     | Yes            | No            | No       | Yes          | Yes                |
+| `intersectWith` (multi-fil) | Yes            | No            | No       | No           | No                 |
+| `intersect` (set-intersect) | No             | No            | No       | Yes          | No                 |
+| `union` (combine sets)      | No             | No            | No       | Yes          | No                 |
+| `subtract` (set difference) | No             | No            | No       | Yes          | No                 |
+| `pivotTo` (link traversal)  | Yes            | No            | No       | Yes          | No                 |
+| `$groupBy` (grouping)       | No             | No            | No       | No           | Yes                |
+| `$select` (aggregation)     | No             | No            | No       | No           | Yes                |
 
 # Debugging Issues
 
