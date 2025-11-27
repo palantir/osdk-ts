@@ -75,6 +75,7 @@ export function FoundryWidgetDevPlugin(): Plugin {
      * Check for the required token environment variable in dev mode.
      */
     config(resolvedConfig) {
+      warnIfWrongDevCommand(resolvedConfig.mode);
       getFoundryToken(resolvedConfig.mode);
     },
 
@@ -83,9 +84,6 @@ export function FoundryWidgetDevPlugin(): Plugin {
      * endpoint will set the widget overrides in Foundry and enable dev mode.
      */
     configureServer(server) {
-      // Warn if user is running the wrong dev command for their environment
-      warnIfWrongDevCommand(server.config.mode, server.config.logger);
-
       // Override the printUrls function to print the setup page URL
       server.printUrls = () => printSetupPageUrl(server);
 

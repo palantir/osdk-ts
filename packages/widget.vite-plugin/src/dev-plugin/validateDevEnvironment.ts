@@ -15,21 +15,29 @@
  */
 
 import color from "picocolors";
-import type { Logger } from "vite";
 import { isCodeWorkspacesMode } from "./codeWorkspacesMode.js";
 
 const FOUNDRY_CONTAINER_RUNTIME_TYPE = "FOUNDRY_CONTAINER_RUNTIME_TYPE";
 const CODE_WORKSPACE_RUNTIME = "CODE_WORKSPACE";
 
-export function warnIfWrongDevCommand(
-  mode: string | undefined,
-  logger: Logger,
-): void {
-  if (isCodeWorkspacesEnvironment() && !isCodeWorkspacesMode(mode)) {
-    logger.warn(
+export function warnIfWrongDevCommand(mode: string | undefined): void {
+  const isInCodeWorkspacesEnv = isCodeWorkspacesEnvironment();
+  const isUsingCodeWorkspacesMode = isCodeWorkspacesMode(mode);
+
+  if (isInCodeWorkspacesEnv && !isUsingCodeWorkspacesMode) {
+    // eslint-disable-next-line no-console
+    console.warn(
       color.yellow(
         `\n⚠️  You appear to be running in a Code Workspaces environment but are using "npm run dev".\n`
           + `   You should probably be using "npm run dev:remote" instead.\n`,
+      ),
+    );
+  } else if (!isInCodeWorkspacesEnv && isUsingCodeWorkspacesMode) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      color.yellow(
+        `\n⚠️  You are using "npm run dev:remote" but do not appear to be in a Code Workspaces environment.\n`
+          + `   You should probably be using "npm run dev" instead.\n`,
       ),
     );
   }
