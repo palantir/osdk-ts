@@ -43,9 +43,6 @@ export function warnIfWrongDevCommand(mode: string | undefined): void {
   }
 }
 
-/**
- * @private Exporting for tests
- */
-export function isCodeWorkspacesEnvironment(): boolean {
+function isCodeWorkspacesEnvironment(): boolean {
   return process.env[FOUNDRY_CONTAINER_RUNTIME_TYPE] === CODE_WORKSPACE_RUNTIME;
 }

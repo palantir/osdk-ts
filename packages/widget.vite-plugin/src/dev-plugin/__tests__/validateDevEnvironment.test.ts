@@ -26,23 +26,6 @@ describe("validateDevEnvironment", () => {
     vi.unstubAllEnvs();
   });
 
-  describe("isCodeWorkspacesEnvironment", () => {
-    test("returns true when FOUNDRY_CONTAINER_RUNTIME_TYPE is CODE_WORKSPACE", () => {
-      vi.stubEnv("FOUNDRY_CONTAINER_RUNTIME_TYPE", "CODE_WORKSPACE");
-      expect(validateDevEnvironment.isCodeWorkspacesEnvironment()).toBe(true);
-    });
-
-    test("returns false when FOUNDRY_CONTAINER_RUNTIME_TYPE is not set", () => {
-      vi.stubEnv("FOUNDRY_CONTAINER_RUNTIME_TYPE", undefined);
-      expect(validateDevEnvironment.isCodeWorkspacesEnvironment()).toBe(false);
-    });
-
-    test("returns false when FOUNDRY_CONTAINER_RUNTIME_TYPE has different value", () => {
-      vi.stubEnv("FOUNDRY_CONTAINER_RUNTIME_TYPE", "OTHER_TYPE");
-      expect(validateDevEnvironment.isCodeWorkspacesEnvironment()).toBe(false);
-    });
-  });
-
   describe("warnIfWrongDevCommand", () => {
     test("warns when in Code Workspaces env but not using code-workspaces mode", () => {
       vi.stubEnv("FOUNDRY_CONTAINER_RUNTIME_TYPE", "CODE_WORKSPACE");

@@ -30,6 +30,7 @@ import {
 } from "../common/constants.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
 import { standardizePathAndFileExtension } from "../common/standardizePathAndFileExtension.js";
+import { isCodeWorkspacesMode } from "./codeWorkspacesMode.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
 import { getBaseHref } from "./getBaseHref.js";
 import { getFoundryToken } from "./getFoundryToken.js";
@@ -269,10 +270,20 @@ function serverPath(server: ViteDevServer, subPath: string): string {
 }
 
 function printSetupPageUrl(server: ViteDevServer) {
-  const setupRoute = `${getBaseHref(server)}${SETUP_PATH}/`;
-  server.config.logger.info(
-    `  ${color.green("➜")}  ${
-      color.bold("Click to enter developer mode for your widget set")
-    }: ${color.green(setupRoute)}`,
-  );
+  if (isCodeWorkspacesMode(server.config.mode)) {
+    server.config.logger.info(
+      `  ${color.green("➜")}  ${
+        color.bold(
+          "Select a widget from the preview panel to enter developer mode",
+        )
+      }`,
+    );
+  } else {
+    const setupRoute = `${getBaseHref(server)}${SETUP_PATH}/`;
+    server.config.logger.info(
+      `  ${color.green("➜")}  ${
+        color.bold("Click to enter developer mode for your widget set")
+      }: ${color.green(setupRoute)}`,
+    );
+  }
 }
