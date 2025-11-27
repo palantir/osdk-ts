@@ -35,6 +35,7 @@ import { getBaseHref } from "./getBaseHref.js";
 import { getFoundryToken } from "./getFoundryToken.js";
 import { getWidgetIdOverrideMap } from "./getWidgetIdOverrideMap.js";
 import { publishDevModeSettings } from "./publishDevModeSettings.js";
+import { warnIfWrongDevCommand } from "./validateDevEnvironment.js";
 
 // Location of the setup page assets
 const DIR_DIST: string = typeof __dirname !== "undefined"
@@ -82,6 +83,9 @@ export function FoundryWidgetDevPlugin(): Plugin {
      * endpoint will set the widget overrides in Foundry and enable dev mode.
      */
     configureServer(server) {
+      // Warn if user is running the wrong dev command for their environment
+      warnIfWrongDevCommand(server.config.mode, server.config.logger);
+
       // Override the printUrls function to print the setup page URL
       server.printUrls = () => printSetupPageUrl(server);
 
