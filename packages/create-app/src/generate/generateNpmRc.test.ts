@@ -39,7 +39,7 @@ test("it generates .npmrc for package and registry", () => {
 test("it generates .npmrc for registry without osdk package", () => {
   expect(
     generateNpmRc({
-      osdkPackage: "@myapp/sdk",
+      osdkPackage: undefined,
       osdkRegistryUrl: "https://registry.com",
     }),
   ).toEqual(expectedNoOsdkPackage);

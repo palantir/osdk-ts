@@ -23,7 +23,7 @@ export async function promptApplicationUrl(
     applicationUrl?: string;
   },
 ): Promise<string | undefined> {
-  if (skipApplicationUrl) {
+  if (skipApplicationUrl === true) {
     return undefined;
   }
 

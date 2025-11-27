@@ -18,8 +18,16 @@ import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 
 export async function promptOsdkPackageAndOntologyRid(
-  { osdkPackage, ontology }: { osdkPackage?: string; ontology?: string },
+  { osdkPackage, ontology, skipOsdk }: {
+    osdkPackage?: string;
+    ontology?: string;
+    skipOsdk?: boolean;
+  },
 ): Promise<{ osdkPackage?: string; ontologyRid?: string }> {
+  if (skipOsdk === true) {
+    return {};
+  }
+
   if (osdkPackage == null && ontology == null) {
     const skip = await consola.prompt(
       "Will you be using an OSDK in your application?",
