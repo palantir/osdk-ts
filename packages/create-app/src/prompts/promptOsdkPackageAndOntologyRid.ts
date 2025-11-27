@@ -24,7 +24,7 @@ export async function promptOsdkPackageAndOntologyRid(
     skipOsdk?: boolean;
   },
 ): Promise<{ osdkPackage?: string; ontologyRid?: string }> {
-  if (skipOsdk === true) {
+  if (skipOsdk) {
     return {};
   }
 
