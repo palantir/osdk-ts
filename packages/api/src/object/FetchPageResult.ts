@@ -55,6 +55,7 @@ export type FetchPageResult<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q>,
   R extends boolean,
+  // not used, kept for back compat
   S extends NullabilityAdherence,
   T extends boolean = false,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
@@ -62,7 +63,7 @@ export type FetchPageResult<
   MaybeScore<
     Osdk.Instance<
       Q,
-      ExtractOptions<R, S, T>,
+      ExtractOptions<R, T>,
       PropertyKeys<Q> extends L ? never : L
     >,
     ORDER_BY_OPTIONS
@@ -76,6 +77,7 @@ export type SingleOsdkResult<
   Q extends ObjectOrInterfaceDefinition,
   L extends PropertyKeys<Q> | (keyof RDPs & string),
   R extends boolean,
+  // not used, kept for back compat
   S extends NullabilityAdherence,
   RDPs extends Record<string, SimplePropertyDef> = {},
   T extends boolean = false,
@@ -83,7 +85,7 @@ export type SingleOsdkResult<
 > = MaybeScore<
   Osdk.Instance<
     Q,
-    ExtractOptions<R, S, T>,
+    ExtractOptions<R, T>,
     PropertyKeys<Q> extends L ? PropertyKeys<Q> : PropertyKeys<Q> & L,
     { [K in Extract<keyof RDPs, L>]: RDPs[K] }
   >,

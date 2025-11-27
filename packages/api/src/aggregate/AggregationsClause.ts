@@ -15,15 +15,17 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
-import type { ValidAggregationKeys } from "./AggregatableKeys.js";
+import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
+import type { ValidAggregationKeysPlus } from "./AggregatableKeys.js";
 
-export type UnorderedAggregationClause<Q extends ObjectOrInterfaceDefinition> =
-  { [AK in ValidAggregationKeys<Q>]?: "unordered" };
+export type UnorderedAggregationClause<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> = { [AK in ValidAggregationKeysPlus<Q, RDPs>]?: "unordered" };
 
-export type OrderedAggregationClause<Q extends ObjectOrInterfaceDefinition> = {
-  [AK in ValidAggregationKeys<Q>]?: "unordered" | "asc" | "desc";
+export type AggregationClause<
+  Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> = {
+  [AK in ValidAggregationKeysPlus<Q, RDPs>]?: "unordered" | "asc" | "desc";
 };
-
-export type AggregationClause<Q extends ObjectOrInterfaceDefinition> =
-  | UnorderedAggregationClause<Q>
-  | OrderedAggregationClause<Q>;

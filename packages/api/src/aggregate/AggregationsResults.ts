@@ -15,9 +15,10 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
+import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type {
   AggregatableKeys,
-  ValidAggregationKeys,
+  ValidAggregationKeysPlus,
 } from "./AggregatableKeys.js";
 import type { AggregateOpts } from "./AggregateOpts.js";
 import type { AggregationResultsWithGroups } from "./AggregationResultsWithGroups.js";
@@ -25,19 +26,20 @@ import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithou
 
 export type AggregationsResults<
   Q extends ObjectOrInterfaceDefinition,
-  AO extends AggregateOpts<Q>,
-> = Exclude<keyof AO["$select"], ValidAggregationKeys<Q>> extends never
-  ? unknown extends AO["$groupBy"] // groupBy is missing
-    ? AggregationResultsWithoutGroups<Q, AO["$select"]>
+  AO extends AggregateOpts<Q, RDPs>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> = Exclude<keyof AO["$select"], ValidAggregationKeysPlus<Q, RDPs>> extends
+  never ? unknown extends AO["$groupBy"] // groupBy is missing
+    ? AggregationResultsWithoutGroups<Q, AO["$select"], RDPs>
   : Exclude<AO["$groupBy"], undefined> extends never // groupBy is explicitly undefined
-    ? AggregationResultsWithoutGroups<Q, AO["$select"]>
-  : Exclude<keyof AO["$groupBy"], AggregatableKeys<Q>> extends never
-    ? AggregationResultsWithGroups<Q, AO["$select"], AO["$groupBy"]>
+    ? AggregationResultsWithoutGroups<Q, AO["$select"], RDPs>
+  : Exclude<keyof AO["$groupBy"], AggregatableKeys<Q, RDPs>> extends never
+    ? AggregationResultsWithGroups<Q, AO["$select"], AO["$groupBy"], RDPs>
   : `Sorry, the following are not valid groups for an aggregation: ${Exclude<
     keyof AO["$groupBy"] & string,
-    AggregatableKeys<Q>
+    AggregatableKeys<Q, RDPs>
   >}`
   : `Sorry, the following are not valid selectors for an aggregation: ${Exclude<
     keyof AO["$select"] & string,
-    ValidAggregationKeys<Q>
+    ValidAggregationKeysPlus<Q, RDPs>
   >}`;
