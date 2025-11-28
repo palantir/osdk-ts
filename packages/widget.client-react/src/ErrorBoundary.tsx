@@ -43,18 +43,40 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   render(): React.ReactNode {
     if (this.state.error) {
-      if (this.props.hasEmittedReady && !this.state.caughtBeforeReady) {
-        // eslint-disable-next-line @typescript-eslint/only-throw-error
-        throw this.state.error;
+      if (this.state.caughtBeforeReady) {
+        return (
+          <section>
+            <h3>Widget failed to start</h3>
+            <pre>
+              {this.state.error instanceof Error
+                ? this.state.error.stack
+                : "See browser console for more details."}
+            </pre>
+          </section>
+        );
       }
+
       return (
         <section>
-          <h3>Widget failed to start</h3>
+          <h3>An uncaught error occurred</h3>
           <pre>
             {this.state.error instanceof Error
               ? this.state.error.stack
               : "See browser console for more details."}
           </pre>
+          {import.meta.env?.DEV && (
+            <p>
+              Consider adding your own{" "}
+              <a
+                href="https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                error boundary
+              </a>{" "}
+              to gracefully handle errors in production.
+            </p>
+          )}
         </section>
       );
     }
