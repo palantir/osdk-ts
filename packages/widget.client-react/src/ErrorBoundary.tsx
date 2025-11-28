@@ -43,28 +43,19 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   render(): React.ReactNode {
     if (this.state.error) {
-      if (this.state.caughtBeforeReady) {
-        return (
-          <section>
-            <h3>Widget failed to start</h3>
-            <pre>
-              {this.state.error instanceof Error
-                ? this.state.error.stack
-                : "See browser console for more details."}
-            </pre>
-          </section>
-        );
-      }
+      const errorDetails = this.state.error instanceof Error
+        ? this.state.error.stack
+        : "See browser console for more details.";
 
       return (
         <section>
-          <h3>An uncaught error occurred</h3>
-          <pre>
-            {this.state.error instanceof Error
-              ? this.state.error.stack
-              : "See browser console for more details."}
-          </pre>
-          {import.meta.env?.DEV && (
+          <h3>
+            {this.state.caughtBeforeReady
+              ? "Widget failed to start"
+              : "An uncaught error occurred"}
+          </h3>
+          <pre>{errorDetails}</pre>
+          {!this.state.caughtBeforeReady && import.meta.env?.DEV && (
             <p>
               Consider adding your own{" "}
               <a
