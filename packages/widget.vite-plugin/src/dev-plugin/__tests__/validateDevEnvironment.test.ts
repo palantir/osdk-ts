@@ -14,8 +14,21 @@
  * limitations under the License.
  */
 
+import type { Logger } from "vite";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import * as validateDevEnvironment from "../validateDevEnvironment.js";
+
+function createMockLogger(): Logger {
+  return {
+    info: vi.fn(),
+    warn: vi.fn(),
+    warnOnce: vi.fn(),
+    error: vi.fn(),
+    clearScreen: vi.fn(),
+    hasErrorLogged: vi.fn(),
+    hasWarned: false,
+  };
+}
 
 describe("validateDevEnvironment", () => {
   beforeEach(() => {
@@ -29,44 +42,50 @@ describe("validateDevEnvironment", () => {
   describe("warnIfWrongDevCommand", () => {
     test("warns when in Code Workspaces env but not using code-workspaces mode", () => {
       vi.stubEnv("FOUNDRY_CONTAINER_RUNTIME_TYPE", "CODE_WORKSPACE");
-      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const mockLogger = createMockLogger();
 
-      validateDevEnvironment.warnIfWrongDevCommand("development");
+      validateDevEnvironment.warnIfWrongDevCommand("development", mockLogger);
 
-      expect(consoleSpy).toHaveBeenCalledTimes(1);
-      expect(consoleSpy).toHaveBeenCalledWith(
+      expect(mockLogger.warn).toHaveBeenCalledTimes(1);
+      expect(mockLogger.warn).toHaveBeenCalledWith(
         expect.stringContaining("npm run dev:remote"),
       );
     });
 
     test("warns when using code-workspaces mode but not in Code Workspaces env", () => {
       vi.stubEnv("FOUNDRY_CONTAINER_RUNTIME_TYPE", undefined);
-      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const mockLogger = createMockLogger();
 
-      validateDevEnvironment.warnIfWrongDevCommand("code-workspaces");
+      validateDevEnvironment.warnIfWrongDevCommand(
+        "code-workspaces",
+        mockLogger,
+      );
 
-      expect(consoleSpy).toHaveBeenCalledTimes(1);
-      expect(consoleSpy).toHaveBeenCalledWith(
+      expect(mockLogger.warn).toHaveBeenCalledTimes(1);
+      expect(mockLogger.warn).toHaveBeenCalledWith(
         expect.stringContaining("npm run dev"),
       );
     });
 
     test("does not warn when in Code Workspaces env and using code-workspaces mode", () => {
       vi.stubEnv("FOUNDRY_CONTAINER_RUNTIME_TYPE", "CODE_WORKSPACE");
-      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const mockLogger = createMockLogger();
 
-      validateDevEnvironment.warnIfWrongDevCommand("code-workspaces");
+      validateDevEnvironment.warnIfWrongDevCommand(
+        "code-workspaces",
+        mockLogger,
+      );
 
-      expect(consoleSpy).not.toHaveBeenCalled();
+      expect(mockLogger.warn).not.toHaveBeenCalled();
     });
 
     test("does not warn when not in Code Workspaces env and not using code-workspaces mode", () => {
       vi.stubEnv("FOUNDRY_CONTAINER_RUNTIME_TYPE", undefined);
-      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const mockLogger = createMockLogger();
 
-      validateDevEnvironment.warnIfWrongDevCommand("development");
+      validateDevEnvironment.warnIfWrongDevCommand("development", mockLogger);
 
-      expect(consoleSpy).not.toHaveBeenCalled();
+      expect(mockLogger.warn).not.toHaveBeenCalled();
     });
   });
 });
