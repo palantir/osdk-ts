@@ -462,6 +462,11 @@ describe.each([
             "fullName": "fooSpt",
           },
         },
+        inverseInterfaceMapV2: {
+          "FooInterface": {
+            "fullName": ["fooSpt"],
+          },
+        },
         [InterfaceDefinitions]: {
           "FooInterface": { def: interfaceDef },
         },

@@ -84,6 +84,7 @@ export interface Employee extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {
       lead: $ObjectMetadata.Link<Employee, false>;
       peeps: $ObjectMetadata.Link<Employee, true>;

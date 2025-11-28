@@ -73,6 +73,7 @@ export interface MatthewvsDevOrderEmbedding extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: '[matthewvs-dev] Order Embeddings';
     primaryKeyApiName: 'orderId';

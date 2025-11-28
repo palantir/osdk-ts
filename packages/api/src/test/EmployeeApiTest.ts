@@ -103,6 +103,11 @@ export interface EmployeeApiTest extends $ObjectTypeDefinition {
         fullName: "fooSpt";
       };
     };
+    inverseInterfaceMapV2: {
+      FooInterface: {
+        fullName: ["fooSpt"];
+      };
+    };
     links: {
       lead: $ObjectMetadata.Link<EmployeeApiTest, false>;
       peeps: $ObjectMetadata.Link<EmployeeApiTest, true>;

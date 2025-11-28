@@ -83,6 +83,7 @@ export interface McAirportStruct extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'McAirportStructs';
     primaryKeyApiName: 'airportName';

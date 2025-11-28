@@ -72,6 +72,7 @@ export interface StateTerritory extends $ObjectTypeDefinition {
     implements: [];
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {
       country1: $ObjectMetadata.Link<Country_1, false>;
     };

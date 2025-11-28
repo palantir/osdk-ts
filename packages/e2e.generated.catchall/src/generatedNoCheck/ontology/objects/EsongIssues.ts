@@ -153,6 +153,17 @@ export interface EsongIssues extends $ObjectTypeDefinition {
         label: 'esongSptA';
       };
     };
+    inverseInterfaceMapV2: {
+      EsongInterfaceC: {
+        label: ['esongId'];
+      };
+      EsongInterfaceWithIlts: {
+        title: ['esongId'];
+      };
+      EsongInterfaceA: {
+        label: ['esongSptA'];
+      };
+    };
     links: {
       esongPds: $ObjectMetadata.Link<EsongPds, false>;
       esongPdsM2m: $ObjectMetadata.Link<EsongPds, true>;
