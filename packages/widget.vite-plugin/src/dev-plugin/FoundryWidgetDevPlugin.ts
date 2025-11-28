@@ -75,8 +75,8 @@ export function FoundryWidgetDevPlugin(): Plugin {
     /**
      * Check for the required token environment variable in dev mode.
      */
-    config(resolvedConfig) {
-      warnIfWrongDevCommand(resolvedConfig.mode);
+    configResolved(resolvedConfig) {
+      warnIfWrongDevCommand(resolvedConfig.mode, resolvedConfig.logger);
       getFoundryToken(resolvedConfig.mode);
     },
 
