@@ -48,29 +48,47 @@ export class ErrorBoundary extends React.Component<Props, State> {
         : "See browser console for more details.";
 
       return (
-        <section>
-          <h3>
+        <section style={{ padding: "16px" }}>
+          <h3 style={{ margin: "0 0 12px 0", color: "#c00" }}>
             {this.state.caughtBeforeReady
               ? "Widget failed to start"
               : "An uncaught error occurred"}
           </h3>
-          <pre>{errorDetails}</pre>
           {import.meta.env?.DEV && (
-            <p>
-              This error was caught by the widget framework's fallback error
-              boundary. Ensure errors are properly handled in your code with
-              try-catch blocks and promise rejection handling. Add your own{" "}
-              <a
-                href="https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                error boundary
-              </a>{" "}
-              to replace this fallback with a custom error message or recovery
-              options for your users.
-            </p>
+            <>
+              <p style={{ margin: "0 0 8px 0" }}>
+                This error was caught by the widget framework's fallback error
+                boundary.
+              </p>
+              <ul style={{ margin: "0 0 16px 0" }}>
+                <li>
+                  Ensure errors are properly handled in your code with try-catch
+                  blocks and promise rejection handling.
+                </li>
+                <li>
+                  Add your own error boundary to replace this fallback with a
+                  custom error message or recovery options for your users.
+                </li>
+                <li>
+                  See:{" "}
+                  <code>
+                    https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary
+                  </code>
+                </li>
+              </ul>
+            </>
           )}
+          <pre
+            style={{
+              backgroundColor: "#f5f5f5",
+              padding: "12px",
+              overflow: "auto",
+              fontSize: "12px",
+              margin: 0,
+            }}
+          >
+            {errorDetails}
+          </pre>
         </section>
       );
     }
