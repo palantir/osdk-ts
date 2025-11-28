@@ -16,29 +16,21 @@
 
 import * as React from "react";
 
-interface Props extends React.PropsWithChildren {
-  hasEmittedReady: boolean;
-}
-
 interface State {
   error: unknown;
-  caughtBeforeReady: boolean;
 }
 
 /**
- * Error boundary to surface errors that occur before a widget is ready to prevent an endless spinner.
+ * Error boundary to catch and display errors in widget code.
  */
-export class ErrorBoundary extends React.Component<Props, State> {
-  state: State = { error: null, caughtBeforeReady: false };
+export class ErrorBoundary extends React.Component<
+  React.PropsWithChildren,
+  State
+> {
+  state: State = { error: null };
 
   static getDerivedStateFromError(error: unknown): Partial<State> {
     return { error };
-  }
-
-  componentDidCatch(error: unknown): void {
-    if (!this.props.hasEmittedReady) {
-      this.setState({ caughtBeforeReady: true });
-    }
   }
 
   render(): React.ReactNode {
@@ -50,11 +42,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
       return (
         <section style={{ padding: "16px" }}>
           <h3 style={{ margin: "0 0 12px 0", color: "#c00" }}>
-            {this.state.caughtBeforeReady
-              ? "Widget failed to start"
-              : "An uncaught error occurred"}
+            An uncaught error occurred
           </h3>
-          {import.meta.env?.DEV && (
+          {process.env.NODE_ENV !== "production" && (
             <>
               <p style={{ margin: "0 0 8px 0" }}>
                 This error was caught by the widget framework's fallback error
