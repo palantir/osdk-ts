@@ -55,9 +55,11 @@ export class ErrorBoundary extends React.Component<Props, State> {
               : "An uncaught error occurred"}
           </h3>
           <pre>{errorDetails}</pre>
-          {!this.state.caughtBeforeReady && import.meta.env?.DEV && (
+          {import.meta.env?.DEV && (
             <p>
-              Consider adding your own{" "}
+              This error was caught by the widget framework's fallback error
+              boundary. Ensure errors are properly handled in your code with
+              try-catch blocks and promise rejection handling. Add your own{" "}
               <a
                 href="https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary"
                 target="_blank"
@@ -65,7 +67,8 @@ export class ErrorBoundary extends React.Component<Props, State> {
               >
                 error boundary
               </a>{" "}
-              to gracefully handle errors in production.
+              to replace this fallback with a custom error message or recovery
+              options for your users.
             </p>
           )}
         </section>
