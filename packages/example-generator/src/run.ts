@@ -85,7 +85,7 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
       foundryUrl: "https://fake.palantirfoundry.com",
       applicationUrl: "https://example.com",
       application: "ri.third-party-applications.main.application.fake",
-      ontology: "ri.ontology.main.ontology.fake",
+      ontologyRid: "ri.ontology.main.ontology.fake",
       clientId: "123",
       osdkPackage,
       osdkRegistryUrl:
