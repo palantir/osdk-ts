@@ -16,44 +16,68 @@
 
 import * as React from "react";
 
-interface Props extends React.PropsWithChildren {
-  hasEmittedReady: boolean;
-}
-
 interface State {
   error: unknown;
-  caughtBeforeReady: boolean;
 }
 
 /**
- * Error boundary to surface errors that occur before a widget is ready to prevent an endless spinner.
+ * Error boundary to catch and display errors in widget code.
  */
-export class ErrorBoundary extends React.Component<Props, State> {
-  state: State = { error: null, caughtBeforeReady: false };
+export class ErrorBoundary extends React.Component<
+  React.PropsWithChildren,
+  State
+> {
+  state: State = { error: null };
 
   static getDerivedStateFromError(error: unknown): Partial<State> {
     return { error };
   }
 
-  componentDidCatch(error: unknown): void {
-    if (!this.props.hasEmittedReady) {
-      this.setState({ caughtBeforeReady: true });
-    }
-  }
-
   render(): React.ReactNode {
     if (this.state.error) {
-      if (this.props.hasEmittedReady && !this.state.caughtBeforeReady) {
-        // eslint-disable-next-line @typescript-eslint/only-throw-error
-        throw this.state.error;
-      }
+      const errorDetails = this.state.error instanceof Error
+        ? this.state.error.stack
+        : "See browser console for more details.";
+
       return (
-        <section>
-          <h3>Widget failed to start</h3>
-          <pre>
-            {this.state.error instanceof Error
-              ? this.state.error.stack
-              : "See browser console for more details."}
+        <section style={{ padding: "16px" }}>
+          <h3 style={{ margin: "0 0 12px 0", color: "#c00" }}>
+            An uncaught error occurred
+          </h3>
+          {process.env.NODE_ENV !== "production" && (
+            <>
+              <p style={{ margin: "0 0 8px 0" }}>
+                This error was caught by the widget framework's fallback error
+                boundary.
+              </p>
+              <ul style={{ margin: "0 0 16px 0" }}>
+                <li>
+                  Ensure errors are properly handled in your code with try-catch
+                  blocks and promise rejection handling.
+                </li>
+                <li>
+                  Add your own error boundary to replace this fallback with a
+                  custom error message or recovery options for your users.
+                </li>
+                <li>
+                  See:{" "}
+                  <code>
+                    https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary
+                  </code>
+                </li>
+              </ul>
+            </>
+          )}
+          <pre
+            style={{
+              backgroundColor: "#f5f5f5",
+              padding: "12px",
+              overflow: "auto",
+              fontSize: "12px",
+              margin: 0,
+            }}
+          >
+            {errorDetails}
           </pre>
         </section>
       );
