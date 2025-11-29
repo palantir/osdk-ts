@@ -79,7 +79,6 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
   client: osdkClient,
 }: FoundryWidgetProps<C>): React.ReactElement<FoundryWidgetProps<C>> => {
   const client = useMemo(() => createFoundryWidgetClient<C>(), []);
-  const [hasEmittedReady, setHasEmittedReady] = React.useState(false);
   const [asyncParameterValues, setAsyncParameterValues] = React.useState<
     ExtendedAsyncParameterValueMap<C>
   >(initialValues ?? initializeParameters(config, "not-started"));
@@ -183,7 +182,6 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
       },
     );
     client.ready();
-    setHasEmittedReady(true);
     return () => {
       client.unsubscribe();
     };
@@ -202,7 +200,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         // Unfortunately the context is statically defined so we can't use the generic type, hence the cast
       } as FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>}
     >
-      <ErrorBoundary hasEmittedReady={hasEmittedReady}>
+      <ErrorBoundary>
         {children}
       </ErrorBoundary>
     </FoundryWidgetContext.Provider>
