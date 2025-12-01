@@ -47,9 +47,14 @@ import type {
   Unsubscribable,
 } from "../ObservableClient.js";
 import type { Observer } from "../ObservableClient/common.js";
+import type { MediaPropertyLocation } from "../ObservableClient/MediaTypes.js";
 import type { ObserveLinks } from "../ObservableClient/ObserveLink.js";
 import type { AggregationPayloadBase } from "./aggregation/AggregationQuery.js";
 import type { Canonical } from "./Canonical.js";
+import type {
+  MediaMetadataObserveOptions,
+  MediaMetadataPayload,
+} from "./media/MediaMetadataQuery.js";
 import type { ObserveObjectSetOptions } from "./objectset/ObjectSetQueryOptions.js";
 import type { Store } from "./Store.js";
 import { UnsubscribableWrapper } from "./UnsubscribableWrapper.js";
@@ -70,6 +75,10 @@ export class ObservableClientImpl implements ObservableClient {
 
     this.applyAction = store.applyAction.bind(store);
     this.validateAction = store.validateAction.bind(store);
+  }
+
+  get media() {
+    return this.__experimentalStore.media;
   }
 
   public observeObject: <T extends ObjectTypeDefinition>(
@@ -217,5 +226,21 @@ export class ObservableClientImpl implements ObservableClient {
   >(where: WhereClause<T, RDPs>): Canonical<WhereClause<T, RDPs>> {
     return this.__experimentalStore.whereCanonicalizer
       .canonicalize(where) as Canonical<WhereClause<T, RDPs>>;
+  }
+
+  public observeMetadata(
+    coords: MediaPropertyLocation,
+    options: MediaMetadataObserveOptions,
+    observer: Observer<MediaMetadataPayload>,
+  ): Unsubscribable {
+    return this.__experimentalStore.media.observeMetadata(
+      coords,
+      options,
+      observer,
+    );
+  }
+
+  public dispose(): void {
+    this.__experimentalStore.dispose();
   }
 }

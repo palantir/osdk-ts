@@ -19,8 +19,12 @@ import type {
   ActionValidationResponse,
   AggregateOpts,
   AggregationsResults,
+  Attachment,
   DerivedProperty,
   InterfaceDefinition,
+  Media,
+  MediaMetadata,
+  MediaReference,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -47,6 +51,11 @@ import type {
   Observer,
   Status,
 } from "./ObservableClient/common.js";
+import type {
+  MediaMetadataObserveOptions,
+  MediaMetadataPayload,
+} from "./ObservableClient/MediaObservableTypes.js";
+import type { MediaPropertyLocation } from "./ObservableClient/MediaTypes.js";
 import type { ObserveLinks } from "./ObservableClient/ObserveLink.js";
 import type { OptimisticBuilder } from "./OptimisticBuilder.js";
 
@@ -353,12 +362,147 @@ export interface ObservableClient extends ObserveLinks {
     type: T | T["apiName"],
   ): Promise<void>;
 
+  /**
+   * Clean up resources and stop background processes.
+   * Call this when the ObservableClient is no longer needed.
+   */
+  dispose(): void;
+
   canonicalizeWhereClause: <
     T extends ObjectTypeDefinition | InterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     where: WhereClause<T, RDPs>,
   ) => Canonical<WhereClause<T, RDPs>>;
+
+  /**
+   * Observe media metadata with automatic updates.
+   *
+   * @param coords - Media property location coordinates
+   * @param options - Observation options including mode and deduplication
+   * @param observer - Observer that receives metadata state updates
+   * @returns Subscription that can be unsubscribed to stop updates
+   */
+  observeMetadata(
+    coords: MediaPropertyLocation,
+    options: MediaMetadataObserveOptions,
+    observer: Observer<MediaMetadataPayload>,
+  ): Unsubscribable;
+
+  /**
+   * Media operations for managing, fetching and uploading media resources.
+   *
+   * These methods provide comprehensive media handling including caching, blob URL
+   * management, and upload tracking. All operations work with Media objects, Attachments,
+   * or direct property coordinates.
+   */
+  media: {
+    /**
+     * Get a cache key for media, useful for identity and deduplication.
+     *
+     * @param mediaOrCoords - Media instance, Attachment, or property location
+     * @returns Unique cache key for this media
+     */
+    getCacheKey(
+      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
+    ): string;
+
+    /**
+     * Fetch media metadata (size, mime type, etc.) from the server.
+     *
+     * @param coords - Property location coordinates
+     * @returns Promise resolving to metadata object
+     */
+    fetchMetadata(
+      coords: MediaPropertyLocation,
+    ): Promise<MediaMetadata>;
+
+    /**
+     * Get cached media metadata without network request.
+     *
+     * @param coords - Property location coordinates
+     * @returns Cached metadata or undefined if not cached
+     */
+    getCachedMetadata(
+      coords: MediaPropertyLocation,
+    ): MediaMetadata | undefined;
+
+    /**
+     * Fetch media content from the server.
+     *
+     * @param mediaOrCoords - Media instance, Attachment, or property location
+     * @param options - Optional { preview?: boolean } for resolution
+     * @returns Promise resolving to Blob content
+     */
+    fetchContent(
+      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
+      options?: { preview?: boolean },
+    ): Promise<Blob>;
+
+    /**
+     * Get cached media content without network request.
+     *
+     * @param mediaOrCoords - Media instance, Attachment, or property location
+     * @returns Cached Blob or undefined if not cached
+     */
+    getCachedContent(
+      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
+    ): Blob | undefined;
+
+    /**
+     * Create a blob URL for embedding in DOM elements.
+     * Must be paired with releaseBlobUrl to prevent memory leaks.
+     *
+     * @param mediaOrCoords - Media instance, Attachment, or property location
+     * @returns URL string for <img>, <video>, <a> elements, or undefined
+     */
+    createBlobUrl(
+      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
+    ): string | undefined;
+
+    /**
+     * Release a blob URL created with createBlobUrl.
+     * Prevents memory leaks when URL is no longer needed.
+     *
+     * @param mediaOrCoords - Media instance, Attachment, or property location
+     */
+    releaseBlobUrl(
+      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
+    ): void;
+
+    /**
+     * Upload media to a property location with optional progress tracking.
+     *
+     * @deprecated Use action-based uploads instead. Create a Foundry action that accepts
+     * a MediaUpload parameter and call it with `useOsdkMediaUpload` (React) or
+     * `applyAction` (direct client). Direct upload to properties is not recommended.
+     *
+     * @param file - Blob or File to upload
+     * @param filename - Filename for the media
+     * @param coords - Target property location
+     * @param options - Optional { preview?: boolean } for resolution
+     * @returns Upload handle with promise, abort, and progress tracking
+     */
+    uploadMedia(
+      file: Blob,
+      filename: string,
+      coords: MediaPropertyLocation,
+      options?: { preview?: boolean },
+    ): {
+      promise: Promise<MediaReference>;
+      abort: () => void;
+      onProgress: (callback: (progress: number) => void) => () => void;
+    };
+
+    /**
+     * Clear cached media (both metadata and content).
+     *
+     * @param mediaOrCoords - Media instance, Attachment, or property location
+     */
+    clearCache(
+      mediaOrCoords: Media | Attachment | MediaPropertyLocation,
+    ): void;
+  };
 }
 
 export function createObservableClient(client: Client): ObservableClient {

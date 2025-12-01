@@ -53,6 +53,7 @@ import {
   RDP_IDX as LIST_RDP_IDX,
 } from "./list/ListCacheKey.js";
 import { ListsHelper } from "./list/ListsHelper.js";
+import { MediaHelper } from "./media/MediaHelper.js";
 import {
   API_NAME_IDX as OBJECT_API_NAME_IDX,
   RDP_CONFIG_IDX as OBJECT_RDP_CONFIG_IDX,
@@ -117,6 +118,7 @@ export class Store {
   readonly lists: ListsHelper;
   readonly objects: ObjectsHelper;
   readonly links: LinksHelper;
+  readonly media: MediaHelper;
   readonly objectSets: ObjectSetHelper;
 
   constructor(client: Client) {
@@ -151,6 +153,7 @@ export class Store {
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
     );
+    this.media = new MediaHelper(this, this.cacheKeys);
     this.objectSets = new ObjectSetHelper(
       this,
       this.cacheKeys,
@@ -409,6 +412,10 @@ export class Store {
         return cacheKey.otherKeys[LIST_RDP_IDX];
       } else if (cacheKey.type === "aggregation") {
         return cacheKey.otherKeys[AGGREGATION_RDP_IDX];
+      } else if (cacheKey.type === "objectSet") {
+        return undefined;
+      } else if (cacheKey.type === "mediaMetadata") {
+        return undefined;
       }
       // Links and other types would also be at LIST_RDP_IDX
     }
@@ -429,6 +436,10 @@ export class Store {
         return cacheKey.otherKeys[LIST_API_NAME_IDX];
       } else if (cacheKey.type === "aggregation") {
         return cacheKey.otherKeys[AGGREGATION_API_NAME_IDX];
+      } else if (cacheKey.type === "objectSet") {
+        return undefined;
+      } else if (cacheKey.type === "mediaMetadata") {
+        return cacheKey.otherKeys[0];
       }
       // Links would have apiName at a different position
     }
@@ -485,7 +496,11 @@ export class Store {
     const promises: Array<Promise<void>> = [];
 
     for (const cacheKey of this.layers.truth.keys()) {
-      if (changes && changes.modified.has(cacheKey)) {
+      if (
+        cacheKey.type !== "mediaMetadata"
+        && changes
+        && changes.modified.has(cacheKey)
+      ) {
         continue;
       }
       const query = this.queries.peek(cacheKey);
@@ -524,5 +539,9 @@ export class Store {
 
     // we use allSettled here because we don't care if it succeeds or fails, just that they all complete.
     return Promise.allSettled(promises).then(() => void 0);
+  }
+
+  public dispose(): void {
+    this.media.dispose();
   }
 }
