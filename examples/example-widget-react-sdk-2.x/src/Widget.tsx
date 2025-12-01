@@ -42,7 +42,7 @@ export const Widget: React.FC = () => {
   const queryApiNames = Object.keys($Queries);
 
   return (
-    <Box>
+    <Box p="2">
       <Container size="1">
         <Flex direction="column" gap="4">
           <Flex p="5" direction="column" gap="2">
