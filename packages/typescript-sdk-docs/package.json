@@ -40,8 +40,8 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/docs-spec-core": "catalog:",
-    "@osdk/docs-spec-sdk": "catalog:",
+    "@osdk/docs-spec-core": "catalog:foundry-platform-typescript",
+    "@osdk/docs-spec-sdk": "catalog:foundry-platform-typescript",
     "outdent": "^0.8.0"
   },
   "devDependencies": {

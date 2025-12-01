@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 catalogs:
-  default:
+  foundry-platform-typescript:
     '@osdk/docs-spec-core':
       specifier: ^0.5.0
       version: 0.5.0
@@ -1309,7 +1309,7 @@ importers:
         specifier: workspace:~
         version: link:../cli.common
       '@osdk/foundry.ontologies':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       '@osdk/generator':
         specifier: workspace:~
@@ -1392,13 +1392,13 @@ importers:
         specifier: workspace:*
         version: link:../client.unstable
       '@osdk/foundry.core':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       '@osdk/foundry.mediasets':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       '@osdk/foundry.ontologies':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       '@osdk/generator-converters':
         specifier: workspace:*
@@ -2740,7 +2740,7 @@ importers:
         specifier: workspace:~
         version: link:../e2e.generated.catchall
       '@osdk/foundry':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       '@osdk/functions':
         specifier: workspace:~
@@ -3036,7 +3036,7 @@ importers:
         specifier: workspace:~
         version: link:../client
       '@osdk/foundry.datasets':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.5.0
       '@osdk/widget.client':
         specifier: workspace:~
@@ -3162,22 +3162,22 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/foundry.core':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       '@osdk/foundry.geo':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       '@osdk/foundry.mediasets':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       '@osdk/foundry.ontologies':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       '@osdk/generator-converters':
         specifier: workspace:~
         version: link:../generator-converters
       '@osdk/internal.foundry.ontologies':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       date-fns:
         specifier: ^4.1.0
@@ -3269,10 +3269,10 @@ importers:
         specifier: workspace:*
         version: link:../client
       '@osdk/foundry.ontologies':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       '@osdk/foundry.thirdpartyapplications':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       '@osdk/generator':
         specifier: workspace:*
@@ -3394,7 +3394,7 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/foundry.ontologies':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       '@osdk/generator-converters':
         specifier: workspace:~
@@ -3468,7 +3468,7 @@ importers:
         specifier: workspace:~
         version: link:../client.unstable
       '@osdk/foundry.ontologies':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       tiny-invariant:
         specifier: ^1.3.3
@@ -3877,19 +3877,19 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/foundry.core':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       '@osdk/foundry.geo':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       '@osdk/foundry.ontologies':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       '@osdk/generator-converters':
         specifier: workspace:~
         version: link:../generator-converters
       '@osdk/internal.foundry.ontologies':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       date-fns:
         specifier: ^4.1.0
@@ -4130,10 +4130,10 @@ importers:
   packages/typescript-sdk-docs:
     dependencies:
       '@osdk/docs-spec-core':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 0.5.0
       '@osdk/docs-spec-sdk':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 0.14.0
       outdent:
         specifier: ^0.8.0
@@ -4231,7 +4231,7 @@ importers:
         specifier: workspace:*
         version: link:../faux
       '@osdk/foundry.ontologies':
-        specifier: 'catalog:'
+        specifier: catalog:foundry-platform-typescript
         version: 2.41.0
       '@osdk/generator-converters.ontologyir':
         specifier: workspace:*

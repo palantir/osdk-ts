@@ -39,8 +39,8 @@
   "dependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
-    "@osdk/foundry.ontologies": "catalog:",
-    "@osdk/foundry.thirdpartyapplications": "catalog:",
+    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
+    "@osdk/foundry.thirdpartyapplications": "catalog:foundry-platform-typescript",
     "@osdk/generator": "workspace:*",
     "@osdk/shared.client.impl": "workspace:*",
     "@rollup/plugin-commonjs": "28.0.0",
