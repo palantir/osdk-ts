@@ -4,7 +4,7 @@
   <div class="osdk">
     <div>
       <span>OSDK: </span>
-      <span class="tag">@template-test-3/sdk</span>
+      <span class="tag">{{osdkPackage}}</span>
     </div>
     <a
       href="{{foundryUrl}}/workspace/developer-console/app/{{application}}/docs/guide/loading-data?language=typescript"
