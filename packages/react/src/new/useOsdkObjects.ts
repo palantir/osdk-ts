@@ -26,7 +26,6 @@ import type {
 } from "@osdk/api";
 import type { ObserveObjectsCallbackArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { stabilizeKey } from "../internal/stabilizeKey.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
@@ -165,8 +164,6 @@ export interface UseOsdkListResult<
   totalCount?: string;
 }
 
-const EMPTY_WHERE = {};
-
 declare const process: {
   env: {
     NODE_ENV: "development" | "production";
@@ -204,10 +201,10 @@ export function useOsdkObjects<
   const {
     pageSize,
     dedupeIntervalMs,
+    where,
     withProperties,
     enabled = true,
     rids,
-    where,
     orderBy,
     streamUpdates,
     autoFetchMore,
@@ -215,24 +212,17 @@ export function useOsdkObjects<
     pivotTo,
   } = options ?? {};
 
-  const canonWhere = observableClient.canonicalizeWhereClause<
-    Q,
-    RDPs
-  >(where ?? EMPTY_WHERE);
-
-  const stableCanonWhere = React.useMemo(
-    () => canonWhere,
-    [JSON.stringify(canonWhere)],
-  );
+  const canonOptions = observableClient.canonicalizeOptions({
+    where,
+    withProperties,
+    orderBy,
+    intersectWith,
+  });
 
   const stableRids = React.useMemo(
     () => rids,
     [JSON.stringify(rids)],
   );
-
-  const stableWithProperties = stabilizeKey(withProperties);
-  const stableIntersectWith = stabilizeKey(intersectWith);
-  const stableOrderBy = stabilizeKey(orderBy);
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
@@ -242,7 +232,9 @@ export function useOsdkObjects<
         >(
           () => ({ unsubscribe: () => {} }),
           process.env.NODE_ENV !== "production"
-            ? `list ${type.apiName} [DISABLED]`
+            ? `list ${type.apiName} ${
+              JSON.stringify(canonOptions.where)
+            } [DISABLED]`
             : void 0,
         );
       }
@@ -254,39 +246,38 @@ export function useOsdkObjects<
           observableClient.observeList({
             type,
             rids: stableRids,
-            where: stableCanonWhere,
+            where: canonOptions.where,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
             pageSize,
-            orderBy: stableOrderBy,
+            orderBy: canonOptions.orderBy,
             streamUpdates,
-            withProperties: stableWithProperties,
+            withProperties: canonOptions.withProperties,
             autoFetchMore,
-            ...(stableIntersectWith
-              ? { intersectWith: stableIntersectWith }
+            ...(canonOptions.intersectWith
+              ? { intersectWith: canonOptions.intersectWith }
               : {}),
             ...(pivotTo ? { pivotTo } : {}),
           }, observer),
         process.env.NODE_ENV !== "production"
           ? `list ${type.apiName} ${
             stableRids ? `[${stableRids.length} rids]` : ""
-          } ${JSON.stringify(stableCanonWhere)}`
+          } ${JSON.stringify(canonOptions.where)}`
           : void 0,
       );
     },
     [
       enabled,
       observableClient,
-      type.apiName,
-      type.type,
+      type,
       stableRids,
-      stableCanonWhere,
+      canonOptions.where,
+      canonOptions.withProperties,
+      canonOptions.orderBy,
+      canonOptions.intersectWith,
       dedupeIntervalMs,
       pageSize,
-      stableOrderBy,
       streamUpdates,
-      stableWithProperties,
       autoFetchMore,
-      stableIntersectWith,
       pivotTo,
     ],
   );
