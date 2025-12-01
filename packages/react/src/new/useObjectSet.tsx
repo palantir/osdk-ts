@@ -195,7 +195,6 @@ export function useObjectSet<
     autoFetchMore,
   } = options;
 
-  // Use the same canonicalization path as other hooks
   const canonOptions = observableClient.canonicalizeOptions({
     where,
     withProperties,

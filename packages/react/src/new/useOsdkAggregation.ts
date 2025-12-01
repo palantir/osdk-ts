@@ -55,16 +55,6 @@ export interface UseOsdkAggregationOptions<
    * network request if the second is within `dedupeIntervalMs`.
    */
   dedupeIntervalMs?: number;
-
-  /**
-   * Enable or disable the query.
-   *
-   * When `false`, the query will not automatically execute. It will still
-   * return any cached data, but will not fetch from the server.
-   *
-   * @default true
-   */
-  enabled?: boolean;
 }
 
 export interface UseOsdkAggregationResult<
@@ -114,11 +104,10 @@ export function useOsdkAggregation<
 >(
   type: Q,
   {
-    where,
+    where = {},
     withProperties,
     aggregate,
     dedupeIntervalMs,
-    enabled = true,
   }: UseOsdkAggregationOptions<Q, A, WP>,
 ): UseOsdkAggregationResult<Q, A> {
   const { observableClient } = React.useContext(OsdkContext2);
@@ -130,16 +119,8 @@ export function useOsdkAggregation<
   });
 
   const { subscribe, getSnapShot } = React.useMemo(
-    () => {
-      if (!enabled) {
-        return makeExternalStore<ObserveAggregationArgs<Q, A>>(
-          () => ({ unsubscribe: () => {} }),
-          process.env.NODE_ENV !== "production"
-            ? `aggregation ${type.apiName} [DISABLED]`
-            : void 0,
-        );
-      }
-      return makeExternalStore<ObserveAggregationArgs<Q, A>>(
+    () =>
+      makeExternalStore<ObserveAggregationArgs<Q, A>>(
         (observer) =>
           observableClient.observeAggregation(
             {
@@ -154,10 +135,8 @@ export function useOsdkAggregation<
         process.env.NODE_ENV !== "production"
           ? `aggregation ${type.apiName} ${JSON.stringify(canonOptions.where)}`
           : void 0,
-      );
-    },
+      ),
     [
-      enabled,
       observableClient,
       type.apiName,
       type.type,
