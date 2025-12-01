@@ -329,7 +329,7 @@ function TodoStats() {
 function TodosByStatus() {
   const { data, isLoading } = useOsdkAggregation(Todo, {
     aggregate: {
-      $groupBy: ["status"],
+      $groupBy: { status: "exact" },
       $select: {
         count: { $count: {} },
         avgPriority: { $avg: "priority" },
@@ -345,7 +345,7 @@ function TodosByStatus() {
     <div>
       {data?.map((group, idx) => (
         <div key={idx}>
-          <h3>Status: {group.status}</h3>
+          <h3>Status: {group.$group.status}</h3>
           <p>Count: {group.count}</p>
           <p>Avg Priority: {group.avgPriority}</p>
         </div>
@@ -394,7 +394,7 @@ function HighPriorityStats() {
 - `withProperties` - Add derived properties for computed values
 - `aggregate` - Aggregation configuration:
   - `$select` (required) - Object mapping metric names to aggregation operators
-  - `$groupBy` (optional) - Array of property names to group by
+  - `$groupBy` (optional) - Object mapping property names to grouping strategy (e.g., `"exact"`, `{ $fixedWidth: 10 }`)
 - `dedupeIntervalMs` - Minimum time between re-fetches (default: 2000ms)
 
 ### Return Values

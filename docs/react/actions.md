@@ -126,7 +126,7 @@ Validate action parameters without executing using `validateAction`.
 ```tsx
 import { $Actions } from "@my/osdk";
 import { useOsdkAction } from "@osdk/react/experimental";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function TodoForm() {
   const [title, setTitle] = useState("");
@@ -141,11 +141,17 @@ function TodoForm() {
     error,
   } = useOsdkAction($Actions.createTodo);
 
-  useEffect(() => {
-    if (title || assignee) {
-      validateAction({ title, assignee });
-    }
-  }, [title, assignee, validateAction]);
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value;
+    setTitle(newTitle);
+    validateAction({ title: newTitle, assignee });
+  };
+
+  const handleAssigneeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newAssignee = e.target.value;
+    setAssignee(newAssignee);
+    validateAction({ title, assignee: newAssignee });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -159,13 +165,13 @@ function TodoForm() {
       <input
         type="text"
         value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        onChange={handleTitleChange}
         placeholder="Todo title"
       />
       <input
         type="text"
         value={assignee}
-        onChange={(e) => setAssignee(e.target.value)}
+        onChange={handleAssigneeChange}
         placeholder="Assignee"
       />
 
@@ -287,7 +293,7 @@ function TodoView({ todo }: { todo: Todo.OsdkInstance }) {
 
 ### Optimistic Update API
 
-The `$optimisticUpdate` callback receives an `ou` object with methods:
+The `$optimisticUpdate` callback receives an object with the following methods:
 
 ```tsx
 $optimisticUpdate: (ou) => {
