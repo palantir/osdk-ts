@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 2.6.0-beta.13
+
+### Minor Changes
+
+- 486ef7e: Deprecate multiplicity in query params/outputs
+- ea077c6: Change asType to narrowToType
+
 ## 2.6.0-beta.12
 
 ## 2.6.0-beta.11

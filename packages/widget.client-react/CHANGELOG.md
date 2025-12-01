@@ -1,5 +1,20 @@
 # @osdk/widget.client-react
 
+## 3.3.0-beta.11
+
+### Minor Changes
+
+- a8802b3: Add error boundary for custom widgets
+- 8d7b8db: Expand ErrorBoundary to catch all errors
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/client@2.6.0-beta.13
+  - @osdk/widget.client@3.3.0-beta.11
+
 ## 3.3.0-beta.10
 
 ### Patch Changes

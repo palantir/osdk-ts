@@ -1,5 +1,12 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.3.0-beta.11
+
+### Minor Changes
+
+- eead244: Remove minimal widget template margin
+- 02fb0ac: Bump widget template dependency versions on widget libraries
+
 ## 3.3.0-beta.10
 
 ## 3.3.0-beta.9
