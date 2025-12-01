@@ -24,6 +24,21 @@ export interface Attachment {
    * Fetches actual content of attachment in Blob form
    */
   fetchContents(): Promise<Response>;
+  /**
+   * Returns the source location of this attachment (object type, primary key, property name).
+   *
+   * Optional because not all attachments have a source location (e.g., transient/uploaded attachments).
+   */
+  getAttachmentSourceLocation?(): AttachmentPropertyLocation;
+}
+
+/**
+ * Location of an attachment property on an object.
+ */
+export interface AttachmentPropertyLocation {
+  objectType: string;
+  primaryKey: string | number;
+  propertyName: string;
 }
 
 export interface AttachmentUpload {

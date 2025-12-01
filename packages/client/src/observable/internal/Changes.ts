@@ -21,6 +21,7 @@ import type { CacheKey } from "./CacheKey.js";
 import { DEBUG_ONLY__cacheKeyToString } from "./CacheKey.js";
 import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
 import type { ListCacheKey } from "./list/ListCacheKey.js";
+import type { MediaMetadataCacheKey } from "./media/MediaMetadataCacheKey.js";
 import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
 import type { ObjectSetCacheKey } from "./objectset/ObjectSetCacheKey.js";
 
@@ -34,6 +35,7 @@ export class Changes {
     | ObjectCacheKey
     | SpecificLinkCacheKey
     | ObjectSetCacheKey
+    | MediaMetadataCacheKey
   > = new Set();
   modified: Set<
     | AggregationCacheKey
@@ -41,6 +43,7 @@ export class Changes {
     | ObjectCacheKey
     | SpecificLinkCacheKey
     | ObjectSetCacheKey
+    | MediaMetadataCacheKey
   > = new Set();
   deleted: Set<
     | AggregationCacheKey
@@ -48,6 +51,7 @@ export class Changes {
     | ObjectCacheKey
     | SpecificLinkCacheKey
     | ObjectSetCacheKey
+    | MediaMetadataCacheKey
   > = new Set();
 
   registerObject = (

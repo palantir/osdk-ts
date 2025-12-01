@@ -27,6 +27,21 @@ export interface Media {
    * Returns the media reference
    */
   getMediaReference(): MediaReference;
+  /**
+   * Returns the source location of this media (object type, primary key, property name).
+   *
+   * Optional because not all media has a source location (e.g., transient/uploaded media).
+   */
+  getMediaSourceLocation?(): MediaPropertyLocation;
+}
+
+/**
+ * Location of a media property on an object.
+ */
+export interface MediaPropertyLocation {
+  objectType: string;
+  primaryKey: string | number;
+  propertyName: string;
 }
 
 /**

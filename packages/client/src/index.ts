@@ -77,3 +77,5 @@ export {
   createObjectSpecifierFromPrimaryKey,
   extractPrimaryKeyFromObjectSpecifier,
 } from "./util/objectSpecifierUtils.js";
+
+export { ensureError } from "./util/ensureError.js";

@@ -255,7 +255,7 @@ export abstract class BaseListQuery<
       hasMore: this.nextPageToken != null,
       status: params.status,
       lastUpdated: params.lastUpdated,
-    } as unknown as PAYLOAD; // Type assertion needed since we don't know exact subtype
+    } as PAYLOAD;
   }
 
   /**

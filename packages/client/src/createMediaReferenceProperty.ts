@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { Media, MediaMetadata, MediaReference } from "@osdk/api";
+import type {
+  Media,
+  MediaMetadata,
+  MediaPropertyLocation,
+  MediaReference,
+} from "@osdk/api";
 import type { MediaReference as CoreMediaReference } from "@osdk/foundry.core";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import type { MinimalClient } from "./MinimalClientContext.js";
@@ -72,5 +77,10 @@ export class MediaReferencePropertyImpl implements Media {
 
   public getMediaReference(): MediaReference {
     return this.#mediaReference;
+  }
+
+  public getMediaSourceLocation(): MediaPropertyLocation {
+    const [objectType, primaryKey, propertyName] = this.#triplet;
+    return { objectType, primaryKey, propertyName };
   }
 }

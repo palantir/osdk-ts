@@ -14,17 +14,27 @@
  * limitations under the License.
  */
 
-import type { AggregationCacheKey } from "./aggregation/AggregationCacheKey.js";
-import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
-import type { ListCacheKey } from "./list/ListCacheKey.js";
-import type { MediaMetadataCacheKey } from "./media/MediaMetadataCacheKey.js";
-import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
-import type { ObjectSetCacheKey } from "./objectset/ObjectSetCacheKey.js";
-
-export type KnownCacheKey =
-  | AggregationCacheKey
-  | ObjectCacheKey
-  | SpecificLinkCacheKey
-  | ListCacheKey
-  | MediaMetadataCacheKey
-  | ObjectSetCacheKey;
+/**
+ * Ensures that a value is an Error instance.
+ * If already an Error, returns it as-is.
+ * If not, converts it to an Error with a string representation.
+ *
+ * @param err - The value to ensure is an Error
+ * @returns An Error instance
+ *
+ * @example
+ * ```typescript
+ * try {
+ *   // ... some operation
+ * } catch (err) {
+ *   const error = ensureError(err);
+ *   console.error(error.message);
+ * }
+ * ```
+ */
+export function ensureError(err: unknown): Error {
+  if (err instanceof Error) {
+    return err;
+  }
+  return new Error(String(err));
+}

@@ -66,7 +66,11 @@ export type {
 export type {
   PropertyValueWireToClient,
 } from "./mapping/PropertyValueMapping.js";
-export type { Attachment, AttachmentUpload } from "./object/Attachment.js";
+export type {
+  Attachment,
+  AttachmentPropertyLocation,
+  AttachmentUpload,
+} from "./object/Attachment.js";
 export type {
   AsyncIterArgs,
   Augment,
@@ -84,6 +88,7 @@ export type {
 export type {
   Media,
   MediaMetadata,
+  MediaPropertyLocation,
   MediaReference,
   MediaUpload,
 } from "./object/Media.js";

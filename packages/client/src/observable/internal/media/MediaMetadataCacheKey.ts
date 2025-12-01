@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-import type { AggregationCacheKey } from "./aggregation/AggregationCacheKey.js";
-import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
-import type { ListCacheKey } from "./list/ListCacheKey.js";
-import type { MediaMetadataCacheKey } from "./media/MediaMetadataCacheKey.js";
-import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
-import type { ObjectSetCacheKey } from "./objectset/ObjectSetCacheKey.js";
+import type {
+  MediaMetadata,
+  ObjectTypeDefinition,
+  PrimaryKeyType,
+} from "@osdk/api";
+import type { CacheKey } from "../CacheKey.js";
+import type { MediaMetadataQuery } from "./MediaMetadataQuery.js";
 
-export type KnownCacheKey =
-  | AggregationCacheKey
-  | ObjectCacheKey
-  | SpecificLinkCacheKey
-  | ListCacheKey
-  | MediaMetadataCacheKey
-  | ObjectSetCacheKey;
+export interface MediaMetadataCacheKey extends
+  CacheKey<
+    "mediaMetadata",
+    MediaMetadata,
+    MediaMetadataQuery,
+    [
+      objectType: string,
+      primaryKey: PrimaryKeyType<ObjectTypeDefinition>,
+      propertyName: string,
+    ]
+  >
+{}

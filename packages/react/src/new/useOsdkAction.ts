@@ -23,25 +23,30 @@ import type {
 import React from "react";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
-type ApplyActionParams<Q extends ActionDefinition<any>> =
+type ApplyActionParams<Q extends ActionDefinition> =
   & Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
   & {
     [K in keyof ObservableClient.ApplyActionOptions as `$${K}`]:
       ObservableClient.ApplyActionOptions[K];
   };
 
-export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
+type ActionResultType<Q extends ActionDefinition> =
+  ReturnType<ActionSignatureFromDef<Q>["applyAction"]> extends Promise<infer R>
+    ? R
+    : never;
+
+type ActionError = Partial<{
+  actionValidation: ActionValidationError;
+  unknown: Error;
+}>;
+
+export interface UseOsdkActionResult<Q extends ActionDefinition> {
   applyAction: (
     args: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>,
-  ) => Promise<unknown>;
+  ) => Promise<ActionResultType<Q>>;
 
-  error:
-    | undefined
-    | Partial<{
-      actionValidation: ActionValidationError;
-      unknown: unknown;
-    }>;
-  data: unknown;
+  error: undefined | ActionError;
+  data: ActionResultType<Q> | undefined;
 
   isPending: boolean;
   isValidating: boolean;
@@ -60,12 +65,12 @@ export interface UseOsdkActionResult<Q extends ActionDefinition<any>> {
   validationResult?: ActionValidationResponse;
 }
 
-export function useOsdkAction<Q extends ActionDefinition<any>>(
+export function useOsdkAction<Q extends ActionDefinition>(
   actionDef: Q,
 ): UseOsdkActionResult<Q> {
   const { observableClient } = React.useContext(OsdkContext2);
-  const [error, setError] = React.useState<UseOsdkActionResult<Q>["error"]>();
-  const [data, setData] = React.useState<unknown>();
+  const [error, setError] = React.useState<ActionError>();
+  const [data, setData] = React.useState<ActionResultType<Q>>();
   const [isPending, setPending] = React.useState(false);
   const [isValidating, setValidating] = React.useState(false);
   const [validationResult, setValidationResult] = React.useState<
@@ -104,7 +109,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
               update?.(ctx);
             }
           },
-        });
+        }) as ActionResultType<Q>;
         setData(r);
         return r;
       } else {
@@ -112,7 +117,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
 
         const r = await observableClient.applyAction(actionDef, args, {
           optimisticUpdate: $optimisticUpdate,
-        });
+        }) as ActionResultType<Q>;
         setData(r);
         return r;
       }
@@ -122,8 +127,9 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
           actionValidation: e,
         });
       } else {
-        setError({ unknown: e });
+        setError({ unknown: e instanceof Error ? e : new Error(String(e)) });
       }
+      throw e;
     } finally {
       setPending(false);
     }
@@ -170,7 +176,7 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
           actionValidation: e,
         });
       } else {
-        setError({ unknown: e });
+        setError({ unknown: e instanceof Error ? e : new Error(String(e)) });
       }
       throw e;
     } finally {
