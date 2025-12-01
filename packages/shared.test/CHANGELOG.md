@@ -1,5 +1,19 @@
 # @osdk/shared.test
 
+## 2.6.0-beta.5
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/generator-converters@2.6.0-beta.13
+  - @osdk/api@2.6.0-beta.13
+
 ## 2.6.0-beta.4
 
 ### Minor Changes

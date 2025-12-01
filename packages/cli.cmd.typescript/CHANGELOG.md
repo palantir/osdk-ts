@@ -1,5 +1,18 @@
 # @osdk/cli.cmd.typescript
 
+## 0.30.0-beta.5
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+  - @osdk/generator@2.6.0-beta.13
+  - @osdk/cli.common@0.30.0-beta.5
+
 ## 0.30.0-beta.4
 
 ### Minor Changes

@@ -1,5 +1,22 @@
 # @osdk/client
 
+## 2.6.0-beta.13
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+- 486ef7e: Deprecate multiplicity in query params/outputs
+- ea077c6: Change asType to narrowToType
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/generator-converters@2.6.0-beta.13
+  - @osdk/api@2.6.0-beta.13
+  - @osdk/client.unstable@2.6.0-beta.13
+
 ## 2.6.0-beta.12
 
 ### Minor Changes

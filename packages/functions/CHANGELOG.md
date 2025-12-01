@@ -1,5 +1,18 @@
 # @osdk/functions
 
+## 1.4.0-beta.9
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/client@2.6.0-beta.13
+
 ## 1.4.0-beta.8
 
 ### Minor Changes
