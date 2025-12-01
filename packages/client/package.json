@@ -73,9 +73,9 @@
   "dependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/client.unstable": "workspace:*",
-    "@osdk/foundry.core": "2.41.0",
-    "@osdk/foundry.mediasets": "2.41.0",
-    "@osdk/foundry.ontologies": "2.41.0",
+    "@osdk/foundry.core": "catalog:",
+    "@osdk/foundry.mediasets": "catalog:",
+    "@osdk/foundry.ontologies": "catalog:",
     "@osdk/generator-converters": "workspace:*",
     "@osdk/shared.client": "^1.0.1",
     "@osdk/shared.client.impl": "workspace:~",
