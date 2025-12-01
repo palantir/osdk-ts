@@ -23,7 +23,6 @@ import type {
 import type { ObjectTypeDefinition } from "@osdk/client";
 import type { ObserveAggregationArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { stabilizeKey } from "../internal/stabilizeKey.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 import type { InferRdpTypes } from "./types.js";
@@ -56,6 +55,16 @@ export interface UseOsdkAggregationOptions<
    * network request if the second is within `dedupeIntervalMs`.
    */
   dedupeIntervalMs?: number;
+
+  /**
+   * Enable or disable the query.
+   *
+   * When `false`, the query will not automatically execute. It will still
+   * return any cached data, but will not fetch from the server.
+   *
+   * @default true
+   */
+  enabled?: boolean;
 }
 
 export interface UseOsdkAggregationResult<
@@ -105,44 +114,56 @@ export function useOsdkAggregation<
 >(
   type: Q,
   {
-    where = {},
+    where,
     withProperties,
     aggregate,
     dedupeIntervalMs,
+    enabled = true,
   }: UseOsdkAggregationOptions<Q, A, WP>,
 ): UseOsdkAggregationResult<Q, A> {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
-
-  const stableWithProperties = stabilizeKey(withProperties);
-  const stableAggregate = stabilizeKey(aggregate);
+  const canonOptions = observableClient.canonicalizeOptions({
+    where,
+    withProperties,
+    aggregate,
+  });
 
   const { subscribe, getSnapShot } = React.useMemo(
-    () =>
-      makeExternalStore<ObserveAggregationArgs<Q, A>>(
+    () => {
+      if (!enabled) {
+        return makeExternalStore<ObserveAggregationArgs<Q, A>>(
+          () => ({ unsubscribe: () => {} }),
+          process.env.NODE_ENV !== "production"
+            ? `aggregation ${type.apiName} [DISABLED]`
+            : void 0,
+        );
+      }
+      return makeExternalStore<ObserveAggregationArgs<Q, A>>(
         (observer) =>
           observableClient.observeAggregation(
             {
               type: type,
-              where: canonWhere,
-              withProperties: stableWithProperties,
-              aggregate: stableAggregate,
+              where: canonOptions.where,
+              withProperties: canonOptions.withProperties,
+              aggregate: canonOptions.aggregate,
               dedupeInterval: dedupeIntervalMs ?? 2_000,
             },
             observer,
           ),
         process.env.NODE_ENV !== "production"
-          ? `aggregation ${type.apiName} ${JSON.stringify(canonWhere)}`
+          ? `aggregation ${type.apiName} ${JSON.stringify(canonOptions.where)}`
           : void 0,
-      ),
+      );
+    },
     [
+      enabled,
       observableClient,
       type.apiName,
       type.type,
-      canonWhere,
-      stableWithProperties,
-      stableAggregate,
+      canonOptions.where,
+      canonOptions.withProperties,
+      canonOptions.aggregate,
       dedupeIntervalMs,
     ],
   );

@@ -26,7 +26,6 @@ import type {
 } from "@osdk/api";
 import type { ObserveObjectsArgs } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { stabilizeKey } from "../internal/stabilizeKey.js";
 import { makeExternalStore } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 import type { InferRdpTypes } from "./types.js";
@@ -203,7 +202,7 @@ export function useOsdkObjects<
     pageSize,
     orderBy,
     dedupeIntervalMs,
-    where = {},
+    where,
     streamUpdates,
     withProperties,
     autoFetchMore,
@@ -213,15 +212,12 @@ export function useOsdkObjects<
   } = options ?? {};
   const { observableClient } = React.useContext(OsdkContext2);
 
-  /*  We want the canonical where clause so that the use of `React.useMemo`
-      is stable. No real added cost as we canonicalize internal to
-      the ObservableClient anyway.
-   */
-  const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
-
-  const stableWithProperties = stabilizeKey(withProperties);
-  const stableIntersectWith = stabilizeKey(intersectWith);
-  const stableOrderBy = stabilizeKey(orderBy);
+  const canonOptions = observableClient.canonicalizeOptions({
+    where,
+    withProperties,
+    orderBy,
+    intersectWith,
+  });
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
@@ -229,7 +225,9 @@ export function useOsdkObjects<
         return makeExternalStore<ObserveObjectsArgs<Q>>(
           () => ({ unsubscribe: () => {} }),
           process.env.NODE_ENV !== "production"
-            ? `list ${type.apiName} ${JSON.stringify(canonWhere)} [DISABLED]`
+            ? `list ${type.apiName} ${
+              JSON.stringify(canonOptions.where)
+            } [DISABLED]`
             : void 0,
         );
       }
@@ -237,20 +235,20 @@ export function useOsdkObjects<
         (observer) =>
           observableClient.observeList({
             type,
-            where: canonWhere,
+            where: canonOptions.where,
             dedupeInterval: dedupeIntervalMs ?? 2_000,
             pageSize,
-            orderBy: stableOrderBy,
+            orderBy: canonOptions.orderBy,
             streamUpdates,
-            withProperties: stableWithProperties,
+            withProperties: canonOptions.withProperties,
             autoFetchMore,
-            ...(stableIntersectWith
-              ? { intersectWith: stableIntersectWith }
+            ...(canonOptions.intersectWith
+              ? { intersectWith: canonOptions.intersectWith }
               : {}),
             ...(pivotTo ? { pivotTo } : {}),
           }, observer),
         process.env.NODE_ENV !== "production"
-          ? `list ${type.apiName} ${JSON.stringify(canonWhere)}`
+          ? `list ${type.apiName} ${JSON.stringify(canonOptions.where)}`
           : void 0,
       );
     },
@@ -258,14 +256,14 @@ export function useOsdkObjects<
       enabled,
       observableClient,
       type,
-      canonWhere,
+      canonOptions.where,
+      canonOptions.withProperties,
+      canonOptions.orderBy,
+      canonOptions.intersectWith,
       dedupeIntervalMs,
       pageSize,
-      stableOrderBy,
       streamUpdates,
-      stableWithProperties,
       autoFetchMore,
-      stableIntersectWith,
       pivotTo,
     ],
   );

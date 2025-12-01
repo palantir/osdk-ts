@@ -15,6 +15,7 @@
  */
 
 import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
+import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
@@ -35,13 +36,18 @@ describe("useObjectSet enabled option", () => {
   const mockObserveObjectSet = vitest.fn();
 
   const createWrapper = () => {
-    const observableClient = {
+    const observableClient: Pick<
+      ObservableClient,
+      "observeObjectSet" | "canonicalizeOptions"
+    > = {
       observeObjectSet: mockObserveObjectSet,
-      canonicalizeWhereClause: vitest.fn((w) => w),
-    } as any;
+      canonicalizeOptions: vitest.fn((opts) => opts),
+    };
 
     return ({ children }: React.PropsWithChildren) => (
-      <OsdkContext2.Provider value={{ observableClient }}>
+      <OsdkContext2.Provider
+        value={{ observableClient } as React.ContextType<typeof OsdkContext2>}
+      >
         {children}
       </OsdkContext2.Provider>
     );

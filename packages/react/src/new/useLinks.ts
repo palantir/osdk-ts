@@ -120,6 +120,11 @@ export function useLinks<
 
   const { enabled = true, ...otherOptions } = options;
 
+  const canonOptions = observableClient.canonicalizeOptions({
+    where: otherOptions.where,
+    orderBy: otherOptions.orderBy,
+  });
+
   // Convert single object to array for consistent handling
   const objectsArray: ReadonlyArray<Osdk.Instance<T>> = React.useMemo(() => {
     return objects === undefined
@@ -148,9 +153,9 @@ export function useLinks<
             linkName,
             {
               linkName,
-              where: otherOptions.where,
+              where: canonOptions.where,
               pageSize: otherOptions.pageSize,
-              orderBy: otherOptions.orderBy,
+              orderBy: canonOptions.orderBy,
               mode: otherOptions.mode,
             },
             observer,
@@ -167,9 +172,9 @@ export function useLinks<
       observableClient,
       objectsArray,
       linkName,
-      otherOptions.where,
+      canonOptions.where,
       otherOptions.pageSize,
-      otherOptions.orderBy,
+      canonOptions.orderBy,
       otherOptions.mode,
     ],
   );
