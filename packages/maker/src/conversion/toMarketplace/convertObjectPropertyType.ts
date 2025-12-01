@@ -24,7 +24,7 @@ import {
   hasRenderHints,
   shouldNotHaveRenderHints,
 } from "../../api/propertyConversionUtils.js";
-import { generateRid } from "../../util/generateRid.js";
+import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertNullabilityToDataConstraint } from "./convertNullabilityToDataConstraint.js";
 import { convertValueType } from "./convertValueType.js";
 import { convertValueTypeDataConstraints } from "./convertValueTypeDataConstraints.js";
@@ -33,6 +33,7 @@ import { propertyTypeTypeToOntologyIrType } from "./propertyTypeTypeToOntologyIr
 export function convertObjectPropertyType(
   property: ObjectPropertyType,
   objectTypeApiName: string,
+  ridGenerator: OntologyRidGenerator,
 ): PropertyType {
   const apiName = namespace + property.apiName;
   invariant(
@@ -43,7 +44,9 @@ export function convertObjectPropertyType(
     }' should not have render hints`,
   );
   // TODO: Generate proper RID and ID based on object type and property API name
-  const propertyRid = generateRid(`property.${objectTypeApiName}.${property.apiName}`);
+  const propertyRid = ridGenerator.generateRid(
+    `property.${objectTypeApiName}.${property.apiName}`,
+  );
   const output: PropertyType = {
     apiName: property.apiName,
     id: property.apiName, // TODO: Should this be different from apiName?
@@ -61,10 +64,13 @@ export function convertObjectPropertyType(
       ? {
         type: "array" as const,
         array: {
-          subtype: propertyTypeTypeToOntologyIrType(property.type),
+          subtype: propertyTypeTypeToOntologyIrType(
+            property.type,
+            ridGenerator,
+          ),
         },
       }
-      : propertyTypeTypeToOntologyIrType(property.type),
+      : propertyTypeTypeToOntologyIrType(property.type, ridGenerator),
     typeClasses: property.typeClasses
       ?? (shouldNotHaveRenderHints(property.type) ? [] : defaultTypeClasses),
     status: convertObjectStatus(property.status),
@@ -74,10 +80,10 @@ export function convertObjectPropertyType(
       : convertNullabilityToDataConstraint(property),
     // TODO: Convert sharedPropertyTypeRid from API name to RID
     sharedPropertyTypeRid: property.sharedPropertyType
-      ? generateRid(`spt.${property.sharedPropertyType.apiName}`)
+      ? ridGenerator.generateRid(`spt.${property.sharedPropertyType.apiName}`)
       : undefined,
     valueType: property.valueType
-      ? convertValueType(property.valueType)
+      ? convertValueType(property.valueType, ridGenerator)
       : undefined,
   };
   return output;

@@ -17,10 +17,11 @@
 import type { Section, SectionId } from "@osdk/client.unstable";
 import type { ActionType } from "../../api/action/ActionType.js";
 import { uppercaseFirstLetter } from "../../api/defineObject.js";
-import { generateRid } from "../../util/generateRid.js";
+import type { OntologyRidGenerator } from "../../util/generateRid.js";
 
 export function convertActionSections(
   action: ActionType,
+  ridGenerator: OntologyRidGenerator,
 ): Record<SectionId, Section> {
   return Object.fromEntries(
     Object.entries(action.sections ?? {}).map((
@@ -28,7 +29,7 @@ export function convertActionSections(
     ) => [sectionId, {
       id: sectionId,
       // TODO: Generate proper RID for section
-      rid: generateRid(`section.${action.apiName}.${sectionId}`),
+      rid: ridGenerator.generateRid(`section.${action.apiName}.${sectionId}`),
       content: section.parameters.map(p => ({
         type: "parameterId",
         parameterId: p,

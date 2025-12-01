@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-import type {
-  Parameter,
-  ParameterId,
-} from "@osdk/client.unstable";
+import type { Parameter, ParameterId } from "@osdk/client.unstable";
 import type { ActionType } from "../../api/action/ActionType.js";
-import { generateRid } from "../../util/generateRid.js";
+import type { OntologyRidGenerator } from "../../util/generateRid.js";
 
 export function convertActionParameters(
   action: ActionType,
+  ridGenerator: OntologyRidGenerator,
 ): Record<ParameterId, Parameter> {
   return Object.fromEntries((action.parameters ?? []).map(p => [p.id, {
     id: p.id,
     // TODO: Generate proper RID for parameter
-    rid: generateRid(`parameter.${action.apiName}.${p.id}`),
+    rid: ridGenerator.generateRid(`parameter.${action.apiName}.${p.id}`),
     // TODO: Convert OntologyIrBaseParameterType to BaseParameterType properly
     type: (typeof p.type === "string"
       ? { type: p.type, [p.type]: {} }

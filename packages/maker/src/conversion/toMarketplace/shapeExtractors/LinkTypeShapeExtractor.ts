@@ -15,8 +15,10 @@
  */
 
 import type {
+  IntermediaryLinkDefinition,
   LinkTypeBlockDataV2,
   LinkTypeRid,
+  ManyToManyLinkDefinition,
   ObjectTypeRid,
 } from "@osdk/client.unstable";
 import type {
@@ -35,7 +37,8 @@ import type {
 import type {
   BlockShapes,
   OntologyRidGenerator,
-} from "./ObjectTypeShapeExtractor.ts";
+  ReadableId,
+} from "../../../util/generateRid.js";
 
 /**
  * Helper to create LocalizedTitleAndDescription with empty localizations
@@ -53,13 +56,6 @@ function createLocalizedAbout(
 }
 
 /**
- * Helper to convert readable ID to block shape ID
- */
-function toBlockShapeId(readableId: string, randomnessKey?: string): string {
-  return randomnessKey ? `${readableId}-${randomnessKey}` : readableId;
-}
-
-/**
  * TypeScript port of Java's LinkTypeShapeExtractor class
  */
 export class LinkTypeShapeExtractor {
@@ -73,7 +69,7 @@ export class LinkTypeShapeExtractor {
    * Extract shapes from a LinkType
    */
   extract(
-    linkReadableId: string,
+    linkReadableId: ReadableId,
     link: LinkTypeBlockDataV2,
     ridGenerator: OntologyRidGenerator,
   ): BlockShapes {
@@ -113,7 +109,7 @@ export class LinkTypeShapeExtractor {
    * Extract one-to-many link shape
    */
   private extractOneToMany(
-    linkReadableId: string,
+    linkReadableId: ReadableId,
     linkDefinition: any,
     ridGenerator: OntologyRidGenerator,
   ): BlockShapes {
@@ -157,8 +153,8 @@ export class LinkTypeShapeExtractor {
    * Extract many-to-many link shape
    */
   private extractManyToMany(
-    linkReadableId: string,
-    linkDefinition: any,
+    linkReadableId: ReadableId,
+    linkDefinition: ManyToManyLinkDefinition,
     ridGenerator: OntologyRidGenerator,
     dataSources: any[],
     editsEnabled: boolean,
@@ -186,7 +182,7 @@ export class LinkTypeShapeExtractor {
       objectsBackendVersion: "V2",
     };
 
-    const datasetShapes = new Map<string, InputShape>();
+    const datasetShapes = new Map<ReadableId, InputShape>();
 
     for (const datasource of dataSources) {
       const datasourceDefinition = datasource.datasource;
@@ -233,7 +229,7 @@ export class LinkTypeShapeExtractor {
       }
 
       // Find datasource readable ID
-      let datasourceReadableId: string | undefined;
+      let datasourceReadableId: ReadableId | undefined;
       for (
         const [id, loc] of ridGenerator.getDatasourceLocators().inverse()
           .entries()
@@ -287,8 +283,8 @@ export class LinkTypeShapeExtractor {
    * Extract intermediary link shape
    */
   private extractIntermediary(
-    linkReadableId: string,
-    linkDefinition: any,
+    linkReadableId: ReadableId,
+    linkDefinition: IntermediaryLinkDefinition,
     ridGenerator: OntologyRidGenerator,
   ): BlockShapes {
     const outputShape: LinkTypeIntermediaryShape = {
@@ -347,7 +343,7 @@ export class LinkTypeShapeExtractor {
       const [id, rid] of ridGenerator.getObjectTypeRids().inverse().entries()
     ) {
       if (rid === objectTypeRid) {
-        return toBlockShapeId(id, this.randomnessKey);
+        return id;
       }
     }
     throw new Error(`Object type RID not found: ${objectTypeRid}`);
@@ -364,7 +360,7 @@ export class LinkTypeShapeExtractor {
       const [id, rid] of ridGenerator.getLinkTypeRids().inverse().entries()
     ) {
       if (rid === linkTypeRid) {
-        return toBlockShapeId(id, this.randomnessKey);
+        return id;
       }
     }
     throw new Error(`Link type RID not found: ${linkTypeRid}`);
@@ -390,7 +386,7 @@ export class LinkTypeShapeExtractor {
           this.datasourceLocatorsMatch(shape.datasource, datasourceLocator)
           && shape.name === column
         ) {
-          columnReferences.push(toBlockShapeId(id, this.randomnessKey));
+          columnReferences.push(id);
           break;
         }
       }
@@ -415,9 +411,9 @@ export class LinkTypeShapeExtractor {
     ridGenerator: OntologyRidGenerator,
     columns: Set<string>,
     datasourceLocator: DatasourceLocator,
-    datasourceReadableId: string,
-  ): Map<string, InputShape> {
-    const columnShapes = new Map<string, InputShape>();
+    datasourceReadableId: ReadableId,
+  ): Map<ReadableId, InputShape> {
+    const columnShapes = new Map<ReadableId, InputShape>();
 
     for (const column of columns) {
       for (
@@ -433,10 +429,7 @@ export class LinkTypeShapeExtractor {
               type: "generic",
               generic: { type: "any", any: {} as Void },
             },
-            datasource: toBlockShapeId(
-              datasourceReadableId,
-              this.randomnessKey,
-            ),
+            datasource: datasourceReadableId,
             typeclasses: [],
           };
 

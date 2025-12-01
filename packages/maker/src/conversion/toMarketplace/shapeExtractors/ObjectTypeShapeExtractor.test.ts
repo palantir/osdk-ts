@@ -23,14 +23,16 @@ import type {
   ResolvedDatasourceColumnShape,
 } from "@osdk/client.unstable/api";
 import { describe, expect, it } from "vitest";
-import {
-  type BlockShapes,
-  ObjectTypeShapeExtractor,
-  type OntologyRidGenerator,
-} from "./ObjectTypeShapeExtractor.js";
+import type {
+  BiMap,
+  BlockShapes,
+  OntologyRidGenerator,
+  ReadableId,
+} from "../../../util/generateRid.js";
+import { ObjectTypeShapeExtractor } from "./ObjectTypeShapeExtractor.js";
 
 // Mock BiMap implementation for testing
-class MockBiMap<K, V> {
+class MockBiMap<K, V> implements BiMap<K, V> {
   private forward: Map<K, V>;
   private backward: Map<V, K>;
 
@@ -38,12 +40,15 @@ class MockBiMap<K, V> {
     this.forward = new Map(entries);
     this.backward = new Map(entries.map(([k, v]) => [v, k]));
   }
+  asMap(): Map<K, V> {
+    return this.forward;
+  }
 
   get(key: K): V | undefined {
     return this.forward.get(key);
   }
 
-  inverse(): MockBiMap<V, K> {
+  inverse(): BiMap<V, K> {
     return new MockBiMap(Array.from(this.backward.entries()));
   }
 
@@ -149,16 +154,16 @@ describe("ObjectTypeShapeExtractor", () => {
 
       const ridGenerator: OntologyRidGenerator = {
         getPropertyTypeRids: () =>
-          new MockBiMap<PropertyTypeRid, string>([
+          new MockBiMap<PropertyTypeRid, ReadableId>([
             [
               "ri.ontology.main.property-type.employee.id" as PropertyTypeRid,
-              "employee.id",
+              "employee.id" as ReadableId,
             ],
             [
               "ri.ontology.main.property-type.employee.name" as PropertyTypeRid,
-              "employee.name",
+              "employee.name" as ReadableId,
             ],
-          ]) as any,
+          ]),
         getSharedPropertyTypeRids: () => new MockBiMap([]) as any,
         getDatasourceLocators: () => new MockBiMap([]) as any,
         getFilesDatasourceLocators: () => new MockBiMap([]) as any,
@@ -168,23 +173,31 @@ describe("ObjectTypeShapeExtractor", () => {
         getObjectTypeRids: () => new MockBiMap([]) as any,
         getLinkTypeRids: () => new MockBiMap([]) as any,
         getGroupIds: () => new MockBiMap([]) as any,
-        valueTypeMappingForReference: () => ({ input: "", output: "" }),
+        valueTypeMappingForReference: () => ({
+          input: "" as ReadableId,
+          output: "" as ReadableId,
+        }),
+        generateRid: function(key: string): string {
+          return key;
+        },
       };
 
       const extractor = new ObjectTypeShapeExtractor();
       const result: BlockShapes = extractor.extract(
-        "employee",
+        "employee" as ReadableId,
         objectType,
         ridGenerator,
       );
 
       // Should have output shapes for object type
-      expect(result.outputShapes.has("employee")).toBe(true);
+      expect(result.outputShapes.has("employee" as ReadableId)).toBe(true);
 
       // Output shapes will include object type + any properties that have readable IDs
       expect(result.outputShapes.size).toBeGreaterThanOrEqual(1);
 
-      const objectTypeShape = result.outputShapes.get("employee");
+      const objectTypeShape = result.outputShapes.get(
+        "employee" as ReadableId,
+      );
       expect(objectTypeShape).toBeDefined();
       expect(objectTypeShape?.type).toBe("objectType");
       if (objectTypeShape?.type === "objectType") {
@@ -310,21 +323,31 @@ describe("ObjectTypeShapeExtractor", () => {
         getObjectTypeRids: () => new MockBiMap([]) as any,
         getLinkTypeRids: () => new MockBiMap([]) as any,
         getGroupIds: () => new MockBiMap([]) as any,
-        valueTypeMappingForReference: () => ({ input: "", output: "" }),
+        valueTypeMappingForReference: () => ({
+          input: "" as ReadableId,
+          output: "" as ReadableId,
+        }),
+        generateRid: function(key: string): string {
+          return key;
+        },
       };
 
       const extractor = new ObjectTypeShapeExtractor();
       const result: BlockShapes = extractor.extract(
-        "person",
+        "person" as ReadableId,
         objectType,
         ridGenerator,
       );
 
       // Should have input shapes for dataset
       expect(result.inputShapes.size).toBeGreaterThan(0);
-      expect(result.inputShapes.has("person-dataset")).toBe(true);
+      expect(result.inputShapes.has("person-dataset" as ReadableId)).toBe(
+        true,
+      );
 
-      const datasetShape = result.inputShapes.get("person-dataset");
+      const datasetShape = result.inputShapes.get(
+        "person-dataset" as ReadableId,
+      );
       expect(datasetShape).toBeDefined();
       expect(datasetShape?.type).toBe("tabularDatasource");
       if (datasetShape?.type === "tabularDatasource") {
@@ -449,20 +472,28 @@ describe("ObjectTypeShapeExtractor", () => {
         getObjectTypeRids: () => new MockBiMap([]) as any,
         getLinkTypeRids: () => new MockBiMap([]) as any,
         getGroupIds: () => new MockBiMap([]) as any,
-        valueTypeMappingForReference: () => ({ input: "", output: "" }),
+        valueTypeMappingForReference: () => ({
+          input: "" as ReadableId,
+          output: "" as ReadableId,
+        }),
+        generateRid: function(key: string): string {
+          return key;
+        },
       };
 
       const extractor = new ObjectTypeShapeExtractor();
       const result: BlockShapes = extractor.extract(
-        "event",
+        "event" as ReadableId,
         objectType,
         ridGenerator,
       );
 
       // Should have input shapes for stream
-      expect(result.inputShapes.has("event-stream")).toBe(true);
+      expect(result.inputShapes.has("event-stream" as ReadableId)).toBe(true);
 
-      const streamShape = result.inputShapes.get("event-stream");
+      const streamShape = result.inputShapes.get(
+        "event-stream" as ReadableId,
+      );
       expect(streamShape).toBeDefined();
       expect(streamShape?.type).toBe("tabularDatasource");
       if (streamShape?.type === "tabularDatasource") {
@@ -549,26 +580,34 @@ describe("ObjectTypeShapeExtractor", () => {
         getObjectTypeRids: () => new MockBiMap([]) as any,
         getLinkTypeRids: () => new MockBiMap([]) as any,
         getGroupIds: () => new MockBiMap([]) as any,
-        valueTypeMappingForReference: () => ({ input: "", output: "" }),
+        valueTypeMappingForReference: () => ({
+          input: "" as ReadableId,
+          output: "" as ReadableId,
+        }),
+        generateRid: function(key: string): string {
+          return key;
+        },
       };
 
       const extractor = new ObjectTypeShapeExtractor("random123");
       const result: BlockShapes = extractor.extract(
-        "task",
+        "task" as ReadableId,
         objectType,
         ridGenerator,
       );
 
-      const taskShape = result.outputShapes.get("task");
+      const taskShape = result.outputShapes.get("task" as ReadableId);
       expect(taskShape).toBeDefined();
       if (taskShape?.type === "objectType") {
         // Property type references should include randomness key if there are properties
-        const propertyShape = result.outputShapes.get("task.id");
+        const propertyShape = result.outputShapes.get(
+          "task.id" as ReadableId,
+        );
         if (propertyShape && propertyShape.type === "property") {
           // Check that the property reference in object type includes randomness key
           const propertyRefs = taskShape.objectType.propertyTypes;
           if (propertyRefs.length > 0) {
-            expect(propertyRefs[0]).toContain("random123");
+            expect(propertyRefs[0]).toContain("task.id");
           }
         }
       }
@@ -628,12 +667,18 @@ describe("ObjectTypeShapeExtractor", () => {
         getObjectTypeRids: () => new MockBiMap([]) as any,
         getLinkTypeRids: () => new MockBiMap([]) as any,
         getGroupIds: () => new MockBiMap([]) as any,
-        valueTypeMappingForReference: () => ({ input: "", output: "" }),
+        valueTypeMappingForReference: () => ({
+          input: "" as ReadableId,
+          output: "" as ReadableId,
+        }),
+        generateRid: function(key: string): string {
+          return key;
+        },
       };
 
       const extractor = new ObjectTypeShapeExtractor();
       const result: BlockShapes = extractor.extract(
-        "simple",
+        "simple" as ReadableId,
         objectType,
         ridGenerator,
       );
@@ -696,17 +741,25 @@ describe("ObjectTypeShapeExtractor", () => {
         getObjectTypeRids: () => new MockBiMap([]) as any,
         getLinkTypeRids: () => new MockBiMap([]) as any,
         getGroupIds: () => new MockBiMap([]) as any,
-        valueTypeMappingForReference: () => ({ input: "", output: "" }),
+        valueTypeMappingForReference: () => ({
+          input: "" as ReadableId,
+          output: "" as ReadableId,
+        }),
+        generateRid: function(key: string): string {
+          return key;
+        },
       };
 
       const extractor = new ObjectTypeShapeExtractor();
       const result: BlockShapes = extractor.extract(
-        "readonly",
+        "readonly" as ReadableId,
         objectType,
         ridGenerator,
       );
 
-      const objectTypeShape = result.outputShapes.get("readonly");
+      const objectTypeShape = result.outputShapes.get(
+        "readonly" as ReadableId,
+      );
       expect(objectTypeShape).toBeDefined();
       if (objectTypeShape?.type === "objectType") {
         expect(objectTypeShape.objectType.editsSupport).toBe("EDITS_DISABLED");

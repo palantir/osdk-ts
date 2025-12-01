@@ -24,13 +24,14 @@ import {
   extractAllowedValues,
   renderHintFromBaseType,
 } from "../../api/defineOntology.js";
-import { generateRid } from "../../util/generateRid.js";
+import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertActionParameterConditionalOverride } from "./convertActionParameterConditionalOverride.js";
 import { convertActionVisibility } from "./convertActionVisibility.js";
 import { convertSectionConditionalOverride } from "./convertSectionConditionalOverride.js";
 
 export function convertActionValidation(
   action: ActionType,
+  ridGenerator: OntologyRidGenerator,
 ): ActionValidation {
   const validationRules = action.validation
     ?? [{
@@ -39,7 +40,7 @@ export function convertActionValidation(
     }];
 
   const ruleRids = validationRules.map((_, idx) =>
-    generateRid(`validation.rule.${action.apiName}.${idx}`)
+    ridGenerator.generateRid(`validation.rule.${action.apiName}.${idx}`)
   );
 
   return {

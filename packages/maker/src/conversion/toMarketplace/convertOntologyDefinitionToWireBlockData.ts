@@ -29,6 +29,7 @@ import {
   cleanAndValidateLinkTypeId,
   convertAction,
 } from "../../api/defineOntology.js";
+import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertInterface } from "./convertInterface.js";
 import { convertLink } from "./convertLink.js";
 import { convertObject } from "./convertObject.js";
@@ -36,13 +37,14 @@ import { convertSpt } from "./convertSpt.js";
 
 export function convertOntologyDefinitionToWireBlockData(
   ontology: OntologyDefinition,
+  ridGenerator: OntologyRidGenerator,
 ): OntologyBlockDataV2 {
   return ({
     objectTypes: Object.fromEntries(
       Object.entries(ontology[OntologyEntityTypeEnum.OBJECT_TYPE]).map<
         [string, ObjectTypeBlockDataV2]
       >(([apiName, objectType]) => {
-        return [apiName, convertObject(objectType)];
+        return [apiName, convertObject(objectType, ridGenerator)];
       }),
     ),
     sharedPropertyTypes: Object.fromEntries(
@@ -51,7 +53,7 @@ export function convertOntologyDefinitionToWireBlockData(
       )
         .map<[string, SharedPropertyTypeBlockDataV2]>((
           [apiName, spt],
-        ) => [apiName, { sharedPropertyType: convertSpt(spt) }]),
+        ) => [apiName, { sharedPropertyType: convertSpt(spt, ridGenerator) }]),
     ),
     interfaceTypes: Object.fromEntries(
       Object.entries(
@@ -60,7 +62,7 @@ export function convertOntologyDefinitionToWireBlockData(
         .map<[string, InterfaceTypeBlockDataV2]>(
           ([apiName, interfaceType]) => {
             return [apiName, {
-              interfaceType: convertInterface(interfaceType),
+              interfaceType: convertInterface(interfaceType, ridGenerator),
             }];
           },
         ),
@@ -69,14 +71,17 @@ export function convertOntologyDefinitionToWireBlockData(
       Object.entries(ontology[OntologyEntityTypeEnum.LINK_TYPE]).map<
         [string, LinkTypeBlockDataV2]
       >(([id, link]) => {
-        return [cleanAndValidateLinkTypeId(id), convertLink(link)];
+        return [
+          cleanAndValidateLinkTypeId(id),
+          convertLink(link, ridGenerator),
+        ];
       }),
     ),
     actionTypes: Object.fromEntries(
       Object.entries(ontology[OntologyEntityTypeEnum.ACTION_TYPE]).map<
         [string, ActionTypeBlockDataV2]
       >(([apiName, action]) => {
-        return [apiName, convertAction(action)];
+        return [apiName, convertAction(action, ridGenerator)];
       }),
     ),
     // TODO: Add proper blockOutputCompassLocations mapping

@@ -36,20 +36,23 @@ import type {
   ObjectTypeDatasourceDefinition_derived,
 } from "../../api/object/ObjectTypeDatasourceDefinition.js";
 import { isExotic } from "../../api/properties/PropertyTypeType.js";
-import { generateRid } from "../../util/generateRid.js";
+import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertDatasourceDefinition } from "./convertDatasourceDefinition.js";
 import { convertObjectPropertyType } from "./convertObjectPropertyType.js";
 
 export function convertObject(
   objectType: ObjectType,
+  ridGenerator: OntologyRidGenerator,
 ): ObjectTypeBlockDataV2 {
   const { derivedDatasources, derivedPropertyNames } =
-    extractDerivedDatasources(objectType);
+    extractDerivedDatasources(objectType, ridGenerator);
 
   const propertyDatasources: ObjectTypeDatasource[] =
     (objectType.properties ?? [])
       .filter(prop => !derivedPropertyNames.includes(prop.apiName))
-      .flatMap(prop => extractPropertyDatasource(prop, objectType.apiName));
+      .flatMap(prop =>
+        extractPropertyDatasource(prop, objectType.apiName, ridGenerator)
+      );
 
   const classificationGroupMarkingNames = extractMarkingGroups(
     objectType.properties ?? [],
@@ -76,14 +79,18 @@ export function convertObject(
       (objectType.properties ?? []).filter(prop =>
         !derivedPropertyNames.includes(prop.apiName)
       ),
+      ridGenerator,
     ),
+    ridGenerator,
     classificationInputGroup,
     mandatoryInputGroup,
   );
 
   const implementations = objectType.implementsInterfaces ?? [];
 
-  const objectTypeRid = generateRid(`object.${objectType.apiName}`);
+  const objectTypeRid = ridGenerator.generateRid(
+    `object.${objectType.apiName}`,
+  );
 
   // Convert propertyTypes to use RIDs as keys
   const propertyTypesWithRids = Object.fromEntries(
@@ -92,13 +99,14 @@ export function convertObject(
         const convertedProp = convertObjectPropertyType(
           val,
           objectType.apiName,
+          ridGenerator,
         );
         return [convertedProp.rid, convertedProp];
       },
     ) ?? [],
   );
 
-  const titlePropertyRid = generateRid(
+  const titlePropertyRid = ridGenerator.generateRid(
     `property.${objectType.apiName}.${objectType.titlePropertyApiName}`,
   );
 
@@ -116,7 +124,7 @@ export function convertObject(
         visibility: objectType.visibility ?? "NORMAL",
       },
       primaryKeys: [
-        generateRid(
+        ridGenerator.generateRid(
           `property.${objectType.apiName}.${objectType.primaryKeyPropertyApiName}`,
         ),
       ],
@@ -128,10 +136,12 @@ export function convertObject(
       status: convertObjectStatus(objectType.status),
       redacted: false,
       implementsInterfaces: implementations.map(impl =>
-        generateRid(`interface.${impl.implements.apiName}`)
+        ridGenerator.generateRid(`interface.${impl.implements.apiName}`)
       ),
       implementsInterfaces2: implementations.map(impl => ({
-        interfaceTypeRid: generateRid(`interface.${impl.implements.apiName}`),
+        interfaceTypeRid: ridGenerator.generateRid(
+          `interface.${impl.implements.apiName}`,
+        ),
         interfaceTypeApiName: impl.implements.apiName,
         links: {},
         linksV2: {},
@@ -139,7 +149,7 @@ export function convertObject(
         properties: Object.fromEntries(
           impl.propertyMapping.map(
             mapping => [addNamespaceIfNone(mapping.interfaceProperty), {
-              propertyTypeRid: generateRid(
+              propertyTypeRid: ridGenerator.generateRid(
                 `property.${objectType.apiName}.${mapping.mapsTo}`,
               ),
             }],
@@ -196,6 +206,7 @@ export function extractMarkingGroups(
 export function extractPropertyDatasource(
   property: ObjectPropertyType,
   objectTypeApiName: string,
+  ridGenerator: OntologyRidGenerator,
 ): ObjectTypeDatasource[] {
   if (!isExotic(property.type)) {
     return [];
@@ -206,29 +217,43 @@ export function extractPropertyDatasource(
       const geotimeDefinition: ObjectTypeDatasourceDefinition = {
         type: "geotimeSeries",
         geotimeSeries: {
-          geotimeSeriesIntegrationRid: generateRid(`geotime.${identifier}`),
+          geotimeSeriesIntegrationRid: ridGenerator.generateRid(
+            `geotime.${identifier}`,
+          ),
           properties: [
-            generateRid(`property.${objectTypeApiName}.${property.apiName}`),
+            ridGenerator.generateRid(
+              `property.${objectTypeApiName}.${property.apiName}`,
+            ),
           ],
         },
       };
-      return [buildDatasource(property.apiName, geotimeDefinition)];
+      return [
+        buildDatasource(property.apiName, geotimeDefinition, ridGenerator),
+      ];
     case "mediaReference":
       const mediaSetDefinition: ObjectTypeDatasourceDefinition = {
         type: "mediaSetView",
         mediaSetView: {
           assumedMarkings: [],
           mediaSetViewLocator: {
-            mediaSetBranchRid: generateRid(`mediaset.branch.${identifier}`),
-            mediaSetRid: generateRid(`mediaset.${identifier}`),
-            mediaSetViewRid: generateRid(`mediaset.view.${identifier}`),
+            mediaSetBranchRid: ridGenerator.generateRid(
+              `mediaset.branch.${identifier}`,
+            ),
+            mediaSetRid: ridGenerator.generateRid(`mediaset.${identifier}`),
+            mediaSetViewRid: ridGenerator.generateRid(
+              `mediaset.view.${identifier}`,
+            ),
           },
           properties: [
-            generateRid(`property.${objectTypeApiName}.${property.apiName}`),
+            ridGenerator.generateRid(
+              `property.${objectTypeApiName}.${property.apiName}`,
+            ),
           ],
         },
       };
-      return [buildDatasource(property.apiName, mediaSetDefinition)];
+      return [
+        buildDatasource(property.apiName, mediaSetDefinition, ridGenerator),
+      ];
     default:
       return [];
   }
@@ -236,6 +261,7 @@ export function extractPropertyDatasource(
 
 function extractDerivedDatasources(
   objectType: ObjectType,
+  ridGenerator: OntologyRidGenerator,
 ): {
   derivedDatasources: ObjectTypeDatasource[];
   derivedPropertyNames: string[];
@@ -244,7 +270,7 @@ function extractDerivedDatasources(
     ds.type === "derived"
   );
   const derivedDatasources = inputDerivedDatasources.map((ds, i) =>
-    buildDerivedDatasource(ds, i, objectType.apiName)
+    buildDerivedDatasource(ds, i, objectType.apiName, ridGenerator)
   );
   const derivedPropertyNames = inputDerivedDatasources.flatMap(ds =>
     Object.keys(ds.propertyMapping)
@@ -256,6 +282,7 @@ function buildDerivedDatasource(
   datasource: ObjectTypeDatasourceDefinition_derived,
   index: number,
   objectTypeApiName: string,
+  ridGenerator: OntologyRidGenerator,
 ): ObjectTypeDatasource {
   // TODO: Convert linkType from API name to RID
   const linkDefinition = {
@@ -266,7 +293,7 @@ function buildDerivedDatasource(
         searchAround: {
           linkTypeIdentifier: {
             type: "linkType" as const,
-            linkType: generateRid(
+            linkType: ridGenerator.generateRid(
               `link.${cleanAndValidateLinkTypeId(step.linkType.apiName)}`,
             ),
           },
@@ -286,12 +313,17 @@ function buildDerivedDatasource(
         propertyTypeMapping: Object.fromEntries(
           Object.entries(datasource.propertyMapping).map((
             [sourceProp, targetProp],
-          ) => [generateRid(`property.${objectTypeApiName}.${sourceProp}`), {
-            type: "propertyType" as const,
-            propertyType: generateRid(
-              `property.${objectTypeApiName}.${targetProp}`,
+          ) => [
+            ridGenerator.generateRid(
+              `property.${objectTypeApiName}.${sourceProp}`,
             ),
-          }]),
+            {
+              type: "propertyType" as const,
+              propertyType: ridGenerator.generateRid(
+                `property.${objectTypeApiName}.${targetProp}`,
+              ),
+            },
+          ]),
         ),
       },
     }
@@ -303,8 +335,10 @@ function buildDerivedDatasource(
           Object.entries(datasource.propertyMapping).map((
             [sourceProp, agg],
           ) => [
-            generateRid(`property.${objectTypeApiName}.${sourceProp}`),
-            buildAggregation(agg),
+            ridGenerator.generateRid(
+              `property.${objectTypeApiName}.${sourceProp}`,
+            ),
+            buildAggregation(agg, ridGenerator),
           ]),
         ),
       },
@@ -318,11 +352,13 @@ function buildDerivedDatasource(
   return buildDatasource(
     objectTypeApiName + ".derived." + index.toString(),
     fullDefinition,
+    ridGenerator,
   );
 }
 
 function buildAggregation(
   agg: DerivedPropertyAggregation,
+  ridGenerator: OntologyRidGenerator,
 ): DerivedPropertyAggregationWire {
   const type = agg.type;
   const limit = "limit" in agg ? agg.limit : undefined;
@@ -334,7 +370,7 @@ function buildAggregation(
       innerDef["linkedProperty"] = {
         type: "propertyType",
         propertyType: foreignProperty
-          ? generateRid(`property.unknown.${foreignProperty}`)
+          ? ridGenerator.generateRid(`property.unknown.${foreignProperty}`)
           : undefined,
       };
       innerDef["limit"] = limit;
@@ -342,7 +378,7 @@ function buildAggregation(
       innerDef["property"] = {
         type: "propertyType",
         propertyType: foreignProperty
-          ? generateRid(`property.unknown.${foreignProperty}`)
+          ? ridGenerator.generateRid(`property.unknown.${foreignProperty}`)
           : undefined,
       };
     }

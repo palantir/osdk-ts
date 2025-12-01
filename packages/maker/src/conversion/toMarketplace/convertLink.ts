@@ -28,11 +28,12 @@ import {
 import type { LinkType } from "../../api/links/LinkType.js";
 import type { ObjectType } from "../../api/object/ObjectType.js";
 import type { ObjectTypeDefinition } from "../../api/object/ObjectTypeDefinition.js";
-import { generateRid } from "../../util/generateRid.js";
+import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertCardinality } from "./convertCardinality.js";
 
 export function convertLink(
   linkType: LinkType,
+  ridGenerator: OntologyRidGenerator,
 ): LinkTypeBlockDataV2 {
   validateLink(linkType);
   let definition: LinkDefinition;
@@ -44,12 +45,14 @@ export function convertLink(
     const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
       linkType.toMany.object,
     );
-    const oneObjectRid = generateRid(`object.${oneObjectApiName}`);
-    const toManyObjectRid = generateRid(`object.${toManyObjectApiName}`);
-    const onePkRid = generateRid(
+    const oneObjectRid = ridGenerator.generateRid(`object.${oneObjectApiName}`);
+    const toManyObjectRid = ridGenerator.generateRid(
+      `object.${toManyObjectApiName}`,
+    );
+    const onePkRid = ridGenerator.generateRid(
       `property.${oneObjectApiName}.${oneObject.primaryKeyPropertyApiName}`,
     );
-    const manyFkRid = generateRid(
+    const manyFkRid = ridGenerator.generateRid(
       `property.${toManyObjectApiName}.${linkType.manyForeignKeyProperty}`,
     );
 
@@ -82,17 +85,19 @@ export function convertLink(
       intermediary: {
         objectTypeAToBLinkMetadata: linkType.many.metadata,
         objectTypeBToALinkMetadata: linkType.toMany.metadata,
-        objectTypeRidA: generateRid(`object.${manyObjectApiName}`),
-        objectTypeRidB: generateRid(`object.${toManyObjectApiName}`),
-        intermediaryObjectTypeRid: generateRid(
+        objectTypeRidA: ridGenerator.generateRid(`object.${manyObjectApiName}`),
+        objectTypeRidB: ridGenerator.generateRid(
+          `object.${toManyObjectApiName}`,
+        ),
+        intermediaryObjectTypeRid: ridGenerator.generateRid(
           `object.${intermediaryObjectApiName}`,
         ),
-        aToIntermediaryLinkTypeRid: generateRid(
+        aToIntermediaryLinkTypeRid: ridGenerator.generateRid(
           `link.${
             cleanAndValidateLinkTypeId(linkType.many.linkToIntermediary.apiName)
           }`,
         ),
-        intermediaryToBLinkTypeRid: generateRid(
+        intermediaryToBLinkTypeRid: ridGenerator.generateRid(
           `link.${
             cleanAndValidateLinkTypeId(
               linkType.toMany.linkToIntermediary.apiName,
@@ -108,12 +113,16 @@ export function convertLink(
     const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
       linkType.toMany.object,
     );
-    const manyObjectRidA = generateRid(`object.${manyObjectApiName}`);
-    const manyObjectRidB = generateRid(`object.${toManyObjectApiName}`);
-    const manyPkRidA = generateRid(
+    const manyObjectRidA = ridGenerator.generateRid(
+      `object.${manyObjectApiName}`,
+    );
+    const manyObjectRidB = ridGenerator.generateRid(
+      `object.${toManyObjectApiName}`,
+    );
+    const manyPkRidA = ridGenerator.generateRid(
       `property.${manyObjectApiName}.${manyObject.primaryKeyPropertyApiName}`,
     );
-    const manyPkRidB = generateRid(
+    const manyPkRidB = ridGenerator.generateRid(
       `property.${toManyObjectApiName}.${toManyObject.primaryKeyPropertyApiName}`,
     );
 
@@ -136,13 +145,15 @@ export function convertLink(
     };
 
     datasource = {
-      rid: generateRid(`datasource.link.${linkType.apiName}`),
+      rid: ridGenerator.generateRid(`datasource.link.${linkType.apiName}`),
       datasource: {
         type: "dataset",
         dataset: {
           // TODO: Add proper branchId from link configuration
           branchId: "main",
-          datasetRid: generateRid(`link.dataset.${linkType.apiName}`),
+          datasetRid: ridGenerator.generateRid(
+            `link.dataset.${linkType.apiName}`,
+          ),
           writebackDatasetRid: undefined,
           // TODO: Convert property mappings to use property RIDs as keys
           objectTypeAPrimaryKeyMapping: {
@@ -166,7 +177,7 @@ export function convertLink(
     linkType: {
       definition: definition,
       id: linkTypeId,
-      rid: generateRid(`link.${linkTypeId}`),
+      rid: ridGenerator.generateRid(`link.${linkTypeId}`),
       status: linkType.status ?? { type: "active", active: {} },
       redacted: linkType.redacted ?? false,
     },

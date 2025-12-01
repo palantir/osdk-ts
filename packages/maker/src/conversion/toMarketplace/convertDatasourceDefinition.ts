@@ -21,11 +21,12 @@ import type {
 } from "@osdk/client.unstable";
 import type { ObjectPropertyType } from "../../api/object/ObjectPropertyType.js";
 import type { ObjectType } from "../../api/object/ObjectType.js";
-import { generateRid } from "../../util/generateRid.js";
+import type { OntologyRidGenerator } from "../../util/generateRid.js";
 
 export function convertDatasourceDefinition(
   objectType: ObjectType,
   properties: ObjectPropertyType[],
+  ridGenerator: OntologyRidGenerator,
 ): ObjectTypeDatasourceDefinition {
   const baseDatasource = objectType.datasources?.find(ds =>
     ["dataset", "stream", "restrictedView"].includes(ds.type)
@@ -41,7 +42,9 @@ export function convertDatasourceDefinition(
         properties.map((
           prop,
         ) => [
-          generateRid(`property.${objectType.apiName}.${prop.apiName}`),
+          ridGenerator.generateRid(
+            `property.${objectType.apiName}.${prop.apiName}`,
+          ),
           prop.apiName,
         ]),
       );
@@ -51,7 +54,9 @@ export function convertDatasourceDefinition(
           // TODO: Add proper streamLocator with branch and stream RID
           streamLocator: {
             branchId: "main",
-            streamLocatorRid: generateRid(`stream.${objectType.apiName}`),
+            streamLocatorRid: ridGenerator.generateRid(
+              `stream.${objectType.apiName}`,
+            ),
           },
           propertyMapping,
           retentionPolicy,
@@ -62,10 +67,14 @@ export function convertDatasourceDefinition(
       return {
         type: "restrictedViewV2",
         restrictedViewV2: {
-          restrictedViewRid: generateRid(
+          restrictedViewRid: ridGenerator.generateRid(
             `restrictedview.${objectType.apiName}`,
           ),
-          propertyMapping: buildPropertyMapping(properties, objectType.apiName),
+          propertyMapping: buildPropertyMapping(
+            properties,
+            objectType.apiName,
+            ridGenerator,
+          ),
         },
       };
     case "dataset":
@@ -74,8 +83,12 @@ export function convertDatasourceDefinition(
         type: "datasetV2",
         datasetV2: {
           branchId: "main",
-          datasetRid: generateRid(`dataset.${objectType.apiName}`),
-          propertyMapping: buildPropertyMapping(properties, objectType.apiName),
+          datasetRid: ridGenerator.generateRid(`dataset.${objectType.apiName}`),
+          propertyMapping: buildPropertyMapping(
+            properties,
+            objectType.apiName,
+            ridGenerator,
+          ),
         },
       };
   }
@@ -84,11 +97,12 @@ export function convertDatasourceDefinition(
 function buildPropertyMapping(
   properties: ObjectPropertyType[],
   objectTypeApiName: string,
+  ridGenerator: OntologyRidGenerator,
 ): Record<string, PropertyTypeMappingInfo> {
   // TODO: Convert property mappings to use RIDs as keys
   return Object.fromEntries(
     properties.map((prop) => {
-      const propertyRid = generateRid(
+      const propertyRid = ridGenerator.generateRid(
         `property.${objectTypeApiName}.${prop.apiName}`,
       );
       // editOnly

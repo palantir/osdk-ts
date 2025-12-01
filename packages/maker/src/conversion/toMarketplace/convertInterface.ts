@@ -16,23 +16,24 @@
 
 import type { MarketplaceInterfaceType } from "@osdk/client.unstable";
 import type { InterfaceType } from "../../api/interface/InterfaceType.js";
-import { generateRid } from "../../util/generateRid.js";
+import type { OntologyRidGenerator } from "../../util/generateRid.js";
 import { convertSpt } from "./convertSpt.js";
 
 export function convertInterface(
   interfaceType: InterfaceType,
+  ridGenerator: OntologyRidGenerator,
 ): MarketplaceInterfaceType {
   const { __type, ...other } = interfaceType;
   return {
     ...other,
     // TODO: Generate proper RID based on apiName
-    rid: generateRid(`interface.${interfaceType.apiName}`),
+    rid: ridGenerator.generateRid(`interface.${interfaceType.apiName}`),
     propertiesV2: Object.fromEntries(
       Object.values(interfaceType.propertiesV2)
         .map((
           spt,
         ) => {
-          const convertedSpt = convertSpt(spt.sharedPropertyType);
+          const convertedSpt = convertSpt(spt.sharedPropertyType, ridGenerator);
           return [convertedSpt.rid, {
             required: spt.required,
             sharedPropertyType: convertedSpt,
@@ -48,11 +49,15 @@ export function convertInterface(
       },
     },
     // TODO: Convert extendsInterfaces from API names to RIDs
-    extendsInterfaces: interfaceType.extendsInterfaces.map(i => generateRid(`interface.${i.apiName}`)),
+    extendsInterfaces: interfaceType.extendsInterfaces.map(i =>
+      ridGenerator.generateRid(`interface.${i.apiName}`)
+    ),
     // TODO: Convert links to add RIDs
     links: interfaceType.links.map(link => ({
       ...link,
-      rid: generateRid(`interface.link.${interfaceType.apiName}.${link.metadata.apiName}`),
+      rid: ridGenerator.generateRid(
+        `interface.link.${interfaceType.apiName}.${link.metadata.apiName}`,
+      ),
     })),
     // these are omitted from our internal types but we need to re-add them for the final json
     properties: [],

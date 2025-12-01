@@ -36,7 +36,7 @@ import { convertActionValidation } from "../conversion/toMarketplace/convertActi
 import { convertOntologyDefinition } from "../conversion/toMarketplace/convertOntologyDefinition.js";
 import { convertOntologyToValueTypeIr } from "../conversion/toMarketplace/convertOntologyToValueTypeIr.js";
 import { getFormContentOrdering } from "../conversion/toMarketplace/getFormContentOrdering.js";
-import { generateRid } from "../util/generateRid.js";
+import type { OntologyRidGenerator } from "../util/generateRid.js";
 import type { ActionParameter } from "./action/ActionParameter.js";
 import type { ActionParameterAllowedValues } from "./action/ActionParameterAllowedValues.js";
 import type { ActionType } from "./action/ActionType.js";
@@ -218,6 +218,7 @@ export const ${entityFileNameBase}: ${entityTypeName} = wrapWithProxy(${entityFi
 export function buildDatasource(
   apiName: string,
   definition: ObjectTypeDatasourceDefinition,
+  ridGenerator: OntologyRidGenerator,
   classificationMarkingGroupName?: string,
   mandatoryMarkingGroupName?: string,
 ): ObjectTypeDatasource {
@@ -240,7 +241,7 @@ export function buildDatasource(
     : undefined;
   // TODO: Generate proper RID for datasource
   return ({
-    rid: generateRid(`datasource.${apiName}`),
+    rid: ridGenerator.generateRid(`datasource.${apiName}`),
     datasource: definition,
     editsConfiguration: {
       onlyAllowPrivilegedEdits: false,
@@ -314,12 +315,14 @@ export function convertObjectStatus(status: any): any {
 
 export function convertAction(
   action: ActionType,
+  ridGenerator: OntologyRidGenerator,
 ): ActionTypeBlockDataV2 {
-  const actionValidation = convertActionValidation(action);
+  const actionValidation = convertActionValidation(action, ridGenerator);
   const actionParameters: Record<ParameterId, Parameter> =
-    convertActionParameters(action);
+    convertActionParameters(action, ridGenerator);
   const actionSections: Record<SectionId, Section> = convertActionSections(
     action,
+    ridGenerator,
   );
   const parameterOrdering = action.parameterOrdering
     ?? (action.parameters ?? []).map(p => p.id);
@@ -341,7 +344,7 @@ export function convertAction(
         notifications: [],
       },
       metadata: {
-        rid: generateRid(`action.${action.apiName}`),
+        rid: ridGenerator.generateRid(`action.${action.apiName}`),
         version: "0.0.1",
         apiName: action.apiName,
         displayMetadata: {

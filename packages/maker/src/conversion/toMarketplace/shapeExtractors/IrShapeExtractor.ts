@@ -16,7 +16,9 @@
 
 import type {
   GroupId,
+  KnownMarketplaceIdentifiers,
   LinkTypeRid,
+  MarketplaceInterfaceType,
   ObjectTypeRid,
   OntologyBlockDataV2,
   SharedPropertyType,
@@ -34,16 +36,17 @@ import type {
   OutputShape,
   SharedPropertyTypeInputShape,
   SharedPropertyTypeOutputShape,
-  ValueTypeShape,
 } from "@osdk/client.unstable/api";
-import { LinkTypeShapeExtractor } from "./LinkTypeShapeExtractor.js";
 import type {
   BlockShapes,
   OntologyRidGenerator,
-} from "./ObjectTypeShapeExtractor.js";
+  ReadableId,
+} from "../../../util/generateRid.js";
+import { LinkTypeShapeExtractor } from "./LinkTypeShapeExtractor.js";
 import { ObjectTypeShapeExtractor } from "./ObjectTypeShapeExtractor.js";
 
-export const MIGRATION_SHAPE_READABLE_ID = "migration-input";
+export const MIGRATION_SHAPE_READABLE_ID: ReadableId =
+  "migration-input" as ReadableId;
 
 /**
  * Helper to create LocalizedTitleAndDescription with empty localizations
@@ -89,7 +92,7 @@ export function getShapes(
       allBlockShapes.inputShapes,
       ontologyBlockDataV2.knownIdentifiers,
       outputSharedPropertyTypeRids,
-      interfaceType,
+      interfaceType.interfaceType,
     );
   }
 
@@ -107,9 +110,7 @@ export function getShapes(
   }
 
   // Objects
-  const objectReadableIds = new Map(
-    Array.from(ridGenerator.getObjectTypeRids().inverse().entries()),
-  );
+  const objectReadableIds = ridGenerator.getObjectTypeRids();
   for (
     const [rid, objectType] of Object.entries(ontologyBlockDataV2.objectTypes)
   ) {
@@ -130,9 +131,7 @@ export function getShapes(
   // consumeBlockShapes(allBlockShapes, markingShapes);
 
   // Links
-  const linkReadableIds = new Map(
-    Array.from(ridGenerator.getLinkTypeRids().inverse().entries()),
-  );
+  const linkReadableIds = ridGenerator.getLinkTypeRids();
   for (const [rid, linkType] of Object.entries(ontologyBlockDataV2.linkTypes)) {
     const readableId = linkReadableIds.get(rid as LinkTypeRid);
     if (readableId) {
@@ -174,11 +173,11 @@ export function getShapes(
  * Extract interface type shapes
  */
 function extractInterfaceType(
-  outputShapeMap: Map<string, OutputShape>,
-  inputShapeMap: Map<string, InputShape>,
-  knownMarketplaceIdentifiers: any,
+  outputShapeMap: Map<ReadableId, OutputShape>,
+  inputShapeMap: Map<ReadableId, InputShape>,
+  knownMarketplaceIdentifiers: KnownMarketplaceIdentifiers,
   outputSharedPropertyTypeRids: Set<string>,
-  interfaceType: any,
+  interfaceType: MarketplaceInterfaceType,
 ): void {
   // Build interface type output shape
   const interfaceTypeOutputShape: InterfaceTypeOutputShape = {
@@ -246,7 +245,7 @@ function getInterfaceLinkTypeOutputShape(
   knownMarketplaceIdentifiers: any,
   interfaceType: any,
   interfaceLinkType: any,
-): { id: string; outputShape: OutputShape } {
+): { id: ReadableId; outputShape: OutputShape } {
   // Build linked entity type reference
   const linkedReference =
     interfaceLinkType.linkedEntityTypeId.type === "interfaceType"
@@ -353,7 +352,7 @@ export function extractValueTypeInputShapeIfPresent(
     valueType: {
       about: createLocalizedAbout(`Value Type Input for ${displayName}`, ""),
       baseType: typeToMarketplaceBaseType(type),
-    } as ValueTypeShape,
+    },
   };
 
   const mappingEntry = ridGenerator.valueTypeMappingForReference(
@@ -379,7 +378,7 @@ function getTitleAndDescriptionForSharedPropertyType(
  */
 function extractMultipassGroup(
   groupId: GroupId,
-  readableId: string,
+  readableId: ReadableId,
 ): BlockShapes {
   const multipassGroup: MultipassGroupShape = {
     about: createLocalizedAbout(`Group ${groupId}`, ""),
@@ -437,19 +436,19 @@ function consumeBlockShapes(target: BlockShapes, source: BlockShapes): void {
 // Placeholder functions for readable ID generation
 // These should match the Java ReadableIdGenerator patterns
 
-function getReadableIdForSpt(apiName: string): string {
-  return `spt.${apiName}`;
+function getReadableIdForSpt(apiName: string): ReadableId {
+  return `spt.${apiName}` as ReadableId;
 }
 
-function getReadableIdForInterface(apiName: string): string {
-  return `interface.${apiName}`;
+function getReadableIdForInterface(apiName: string): ReadableId {
+  return `interface.${apiName}` as ReadableId;
 }
 
 function getReadableIdForInterfaceLink(
   interfaceApiName: string,
   linkApiName: string,
-): string {
-  return `${interfaceApiName}.${linkApiName}`;
+): ReadableId {
+  return `${interfaceApiName}.${linkApiName}` as ReadableId;
 }
 
 // Placeholder type conversion functions
@@ -462,10 +461,13 @@ function convertPropertyTypeToMarketplaceType(
   return {
     type: "objectPropertyType",
     objectPropertyType: {
-      type: "string",
-      string: { isLongText: false, supportsExactMatching: true },
+      type: "primitive",
+      primitive: {
+        type: "stringType",
+        stringType: { isLongText: false, supportsExactMatching: true },
+      },
     },
-  } as any;
+  };
 }
 
 function typeToMarketplaceBaseType(_type: Type): any {
