@@ -17,13 +17,13 @@
 import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 
-export async function promptOsdkPackageAndOntologyRid(
+export async function promptOsdkPackageAndOntology(
   { osdkPackage, ontology, skipOsdk }: {
     osdkPackage?: string;
     ontology?: string;
     skipOsdk?: boolean;
   },
-): Promise<{ osdkPackage?: string; ontologyRid?: string }> {
+): Promise<{ osdkPackage?: string; ontology?: string }> {
   if (skipOsdk) {
     return {};
   }
@@ -79,5 +79,5 @@ export async function promptOsdkPackageAndOntologyRid(
     );
   }
 
-  return { osdkPackage, ontologyRid: ontology };
+  return { osdkPackage, ontology };
 }

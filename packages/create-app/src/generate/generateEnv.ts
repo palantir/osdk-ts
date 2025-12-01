@@ -19,17 +19,17 @@ export function generateEnvDevelopment({
   foundryUrl,
   clientId,
   corsProxy,
-  ontologyRid,
+  ontology,
 }: {
   envPrefix: string;
   foundryUrl: string;
   clientId: string;
   corsProxy: boolean;
-  ontologyRid: string | undefined;
+  ontology: string | undefined;
 }): string {
   const foundryApiUrl = corsProxy ? "http://localhost:8080" : foundryUrl;
   const applicationUrl = "http://localhost:8080";
-  const ontologyRidOrDefault = ontologyRid
+  const ontologyOrDefault = ontology
     ?? "<Fill in the Ontology RID if your application uses an OSDK>";
   return `# This env file is intended for developing on your local computer.
 # To set up development in Foundry's Code Workspaces, see .env.code-workspaces.
@@ -65,7 +65,7 @@ ${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
 # You can check the Ontology on the "Ontology SDK" page of Developer Console.
 # It typically does not need to be changed.
 
-${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontologyRidOrDefault}
+${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontologyOrDefault}
 `;
 }
 
@@ -74,17 +74,17 @@ export function generateEnvProduction({
   foundryUrl,
   applicationUrl,
   clientId,
-  ontologyRid,
+  ontology,
 }: {
   envPrefix: string;
   foundryUrl: string;
   applicationUrl: string | undefined;
   clientId: string;
-  ontologyRid: string | undefined;
+  ontology: string | undefined;
 }): string {
   const applicationUrlOrDefault = applicationUrl
     ?? "<Fill in the domain at which you deploy your application>";
-  const ontologyRidOrDefault = ontologyRid
+  const ontologyOrDefault = ontology
     ?? "<Fill in the Ontology RID if your application uses an OSDK>";
   return `# This env file is intended for deploying your application to production.
 # To set up development on your local computer, see .env.development.
@@ -124,6 +124,6 @@ ${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
 # You can check the Ontology on the "Ontology SDK" page of Developer Console.
 # It typically does not need to be changed.
 
-${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontologyRidOrDefault}
+${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontologyOrDefault}
 `;
 }

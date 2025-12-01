@@ -8,6 +8,7 @@ mwalther
 Nativewind
 nihalb
 osdk
+psdk
 osdktest
 palantirfoundry
 Palo

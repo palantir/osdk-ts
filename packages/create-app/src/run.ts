@@ -38,7 +38,7 @@ interface RunArgs {
   foundryUrl: string;
   applicationUrl: string | undefined;
   application: string;
-  ontologyRid: string | undefined;
+  ontology: string | undefined;
   clientId: string;
   osdkPackage: string | undefined;
   osdkRegistryUrl: string;
@@ -55,7 +55,7 @@ export async function run(
     foundryUrl,
     applicationUrl,
     application,
-    ontologyRid,
+    ontology,
     clientId,
     osdkPackage,
     osdkRegistryUrl,
@@ -147,6 +147,25 @@ export async function run(
         return;
       }
 
+      // Files prefixed with `osdk-` are only kept if the application uses an OSDK
+      if (file.startsWith("osdk-")) {
+        if (osdkPackage == null) {
+          fs.rmSync(file);
+          return;
+        } else {
+          fs.renameSync(file, file.replace(/^osdk-/, ""));
+          file = file.replace(/^osdk-/, "");
+        }
+      } else if (file.startsWith("psdk-")) {
+        if (osdkPackage == null) {
+          fs.renameSync(file, file.replace(/^psdk-/, ""));
+          file = file.replace(/^psdk-/, "");
+        } else {
+          fs.rmSync(file);
+          return;
+        }
+      }
+
       if (!file.endsWith(".hbs")) {
         return;
       }
@@ -166,7 +185,7 @@ export async function run(
     foundryUrl,
     clientId,
     corsProxy,
-    ontologyRid,
+    ontology,
   });
   fs.writeFileSync(path.join(root, ".env.development"), envDevelopment);
   const envProduction = generateEnvProduction({
@@ -174,7 +193,7 @@ export async function run(
     foundryUrl,
     applicationUrl,
     clientId,
-    ontologyRid,
+    ontology,
   });
   fs.writeFileSync(path.join(root, ".env.production"), envProduction);
   const foundryConfigJson = generateFoundryConfigJson({

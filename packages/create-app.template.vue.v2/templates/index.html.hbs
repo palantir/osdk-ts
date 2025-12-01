@@ -7,8 +7,12 @@
     <meta name="osdk-clientId" content="%VITE_FOUNDRY_CLIENT_ID%" />
     <meta name="osdk-redirectUrl" content="%VITE_FOUNDRY_REDIRECT_URL%" />
     <meta name="osdk-foundryUrl" content="%VITE_FOUNDRY_API_URL%" />
-    <meta name="osdk-ontologyRid" content="%VITE_FOUNDRY_ONTOLOGY_RID%" />
+    {{#if osdkPackage}}<meta name="osdk-ontologyRid" content="%VITE_FOUNDRY_ONTOLOGY_RID%" />{{/if}}
+    {{#if osdkPackage}}
     <title>Ontology SDK + Vue</title>
+    {{else}}
+    <title>Platform SDK + Vue</title>
+    {{/if}}
   </head>
   <body>
     <div id="app-container">

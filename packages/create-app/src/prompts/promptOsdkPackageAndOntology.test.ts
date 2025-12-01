@@ -16,7 +16,7 @@
 
 import { afterEach, expect, test, vi } from "vitest";
 import { consola } from "../consola.js";
-import { promptOsdkPackageAndOntologyRid } from "./promptOsdkPackageAndOntologyRid.js";
+import { promptOsdkPackageAndOntology } from "./promptOsdkPackageAndOntology.js";
 
 vi.mock("../consola.js");
 
@@ -29,7 +29,7 @@ const VALID_OSDK_PACKAGE = "@myapp/sdk";
 
 test("it skips prompting osdk package and ontology if told no osdk", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce("no");
-  expect(await promptOsdkPackageAndOntologyRid({})).toEqual({});
+  expect(await promptOsdkPackageAndOntology({})).toEqual({});
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });
 
@@ -37,7 +37,7 @@ test("it accepts valid osdk package and ontology rid from prompt", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce("yes");
   vi.mocked(consola).prompt.mockResolvedValueOnce(VALID_OSDK_PACKAGE);
   vi.mocked(consola).prompt.mockResolvedValueOnce(VALID_ONTOLOGY_RID);
-  expect(await promptOsdkPackageAndOntologyRid({ skipOsdk: false })).toEqual({
+  expect(await promptOsdkPackageAndOntology({ skipOsdk: false })).toEqual({
     osdkPackage: VALID_OSDK_PACKAGE,
     ontologyRid: VALID_ONTOLOGY_RID,
   });
@@ -51,7 +51,7 @@ test("it prompts again if answered value is invalid", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce(VALID_OSDK_PACKAGE);
   vi.mocked(consola).prompt.mockResolvedValueOnce("ri.something.else.and.fake");
   vi.mocked(consola).prompt.mockResolvedValueOnce(VALID_ONTOLOGY_RID);
-  expect(await promptOsdkPackageAndOntologyRid({})).toEqual({
+  expect(await promptOsdkPackageAndOntology({})).toEqual({
     osdkPackage: VALID_OSDK_PACKAGE,
     ontologyRid: VALID_ONTOLOGY_RID,
   });
@@ -60,7 +60,7 @@ test("it prompts again if answered value is invalid", async () => {
 
 test("it accepts valid initial values without prompt", async () => {
   expect(
-    await promptOsdkPackageAndOntologyRid({
+    await promptOsdkPackageAndOntology({
       osdkPackage: VALID_OSDK_PACKAGE,
       ontology: VALID_ONTOLOGY_RID,
     }),
@@ -73,7 +73,7 @@ test("it accepts valid initial values without prompt", async () => {
 test("it accepts osdk package valid initial value without prompt", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce(VALID_ONTOLOGY_RID);
   expect(
-    await promptOsdkPackageAndOntologyRid({ osdkPackage: VALID_OSDK_PACKAGE }),
+    await promptOsdkPackageAndOntology({ osdkPackage: VALID_OSDK_PACKAGE }),
   ).toEqual(
     { osdkPackage: VALID_OSDK_PACKAGE, ontologyRid: VALID_ONTOLOGY_RID },
   );
@@ -83,7 +83,7 @@ test("it accepts osdk package valid initial value without prompt", async () => {
 test("it accepts ontology rid valid initial value without prompt", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce(VALID_OSDK_PACKAGE);
   expect(
-    await promptOsdkPackageAndOntologyRid({ ontology: VALID_ONTOLOGY_RID }),
+    await promptOsdkPackageAndOntology({ ontology: VALID_ONTOLOGY_RID }),
   ).toEqual(
     { osdkPackage: VALID_OSDK_PACKAGE, ontologyRid: VALID_ONTOLOGY_RID },
   );
@@ -93,7 +93,7 @@ test("it accepts ontology rid valid initial value without prompt", async () => {
 test("it prompts ontology rid if initial value is invalid", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce(VALID_ONTOLOGY_RID);
   expect(
-    await promptOsdkPackageAndOntologyRid({
+    await promptOsdkPackageAndOntology({
       osdkPackage: VALID_OSDK_PACKAGE,
       ontology: "ri.something.else.and.fake",
     }),
@@ -107,7 +107,7 @@ test("it prompts ontology rid if initial value is invalid", async () => {
 test("it prompts if initial value is invalid", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce(VALID_OSDK_PACKAGE);
   expect(
-    await promptOsdkPackageAndOntologyRid({
+    await promptOsdkPackageAndOntology({
       osdkPackage: "some-package",
       ontology: VALID_ONTOLOGY_RID,
     }),
@@ -118,6 +118,6 @@ test("it prompts if initial value is invalid", async () => {
 });
 
 test("it skips prompting completely if told to", async () => {
-  expect(await promptOsdkPackageAndOntologyRid({ skipOsdk: true })).toEqual({});
+  expect(await promptOsdkPackageAndOntology({ skipOsdk: true })).toEqual({});
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
 });
