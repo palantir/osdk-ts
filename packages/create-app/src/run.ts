@@ -156,6 +156,7 @@ export async function run(
           fs.renameSync(file, file.replace(/^osdk-/, ""));
           file = file.replace(/^osdk-/, "");
         }
+        // Files prefixed with `psdk-` are only kept if the application does not use an OSDK
       } else if (file.startsWith("psdk-")) {
         if (osdkPackage == null) {
           fs.renameSync(file, file.replace(/^psdk-/, ""));
