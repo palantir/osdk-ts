@@ -29,6 +29,7 @@ import type {
   FoundryWidgetClientContext,
 } from "./context.js";
 import { FoundryWidgetContext } from "./context.js";
+import { ErrorBoundary } from "./ErrorBoundary.js";
 import { extendParametersWithObjectSets } from "./utils/extendParametersWithObjectSets.js";
 import { initializeParameters } from "./utils/initializeParameters.js";
 
@@ -199,7 +200,9 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         // Unfortunately the context is statically defined so we can't use the generic type, hence the cast
       } as FoundryWidgetClientContext<WidgetConfig<ParameterConfig>>}
     >
-      {children}
+      <ErrorBoundary>
+        {children}
+      </ErrorBoundary>
     </FoundryWidgetContext.Provider>
   );
 };
