@@ -45,9 +45,9 @@ export async function run({ outputDirectory, check }: RunArgs): Promise<void> {
   await generateExamples(tmpDir);
   await fixMonorepolint(tmpDir);
   if (check) {
-    await checkExamples(resolvedOutput, tmpDir);
+    checkExamples(resolvedOutput, tmpDir);
   } else {
-    await copyExamples(resolvedOutput, tmpDir);
+    copyExamples(resolvedOutput, tmpDir);
   }
 }
 
@@ -64,6 +64,20 @@ function templatesWithSdkVersions<T extends Pick<Template, "files">>(
     Object.keys(template.files).map((sdkVersion) =>
       [template, sdkVersion as SdkVersion] as const
     )
+  );
+}
+
+function templatesWithSdkVersionsWithoutOsdk<
+  T extends Pick<Template, "files" | "hidden">,
+>(
+  templates: readonly T[],
+) {
+  return templates.flatMap((template) =>
+    Object.keys(template.files).map((sdkVersion) =>
+      [template, sdkVersion as SdkVersion] as const
+    )
+  ).filter(([template, sdkVersion]) =>
+    !template.hidden && sdkVersion === "2.x"
   );
 }
 
@@ -88,6 +102,37 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
       ontology: "ri.ontology.main.ontology.fake",
       clientId: "123",
       osdkPackage,
+      osdkRegistryUrl:
+        "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+      corsProxy: false,
+      scopes: ["api:ontologies-read", "api:ontologies-write"],
+    });
+
+    await mutateFiles(tmpDir, exampleId, template, sdkVersion);
+  }
+
+  for (
+    const [template, sdkVersion] of templatesWithSdkVersionsWithoutOsdk(
+      TEMPLATES,
+    )
+  ) {
+    const exampleId = sdkVersionedTemplateExampleId(
+      template,
+      sdkVersion,
+      false,
+    );
+    consola.info(`Generating example ${exampleId} without OSDK`);
+    await runCreateApp({
+      project: exampleId,
+      overwrite: true,
+      template,
+      sdkVersion,
+      foundryUrl: "https://fake.palantirfoundry.com",
+      applicationUrl: "https://example.com",
+      application: "ri.third-party-applications.main.application.fake",
+      ontology: undefined,
+      clientId: "123",
+      osdkPackage: undefined,
       osdkRegistryUrl:
         "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
       corsProxy: false,
@@ -187,10 +232,10 @@ async function fixMonorepolint(tmpDir: tmp.DirResult): Promise<void> {
   consola.log(mrlStderr);
 }
 
-async function checkExamples(
+function checkExamples(
   resolvedOutput: string,
   tmpDir: tmp.DirResult,
-): Promise<void> {
+): void {
   for (
     const [template, sdkVersion] of [
       ...templatesWithSdkVersions(TEMPLATES),
@@ -259,10 +304,10 @@ function getContents(aPath: string | null) {
     : null;
 }
 
-async function copyExamples(
+function copyExamples(
   resolvedOutput: string,
   tmpDir: tmp.DirResult,
-): Promise<void> {
+): void {
   consola.info("Copying generated packages to output directory");
   for (
     const [template, sdkVersion] of [
@@ -271,6 +316,22 @@ async function copyExamples(
     ]
   ) {
     const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
+    const exampleOutputPath = path.join(resolvedOutput, exampleId);
+    const exampleTmpPath = path.join(tmpDir.name, exampleId);
+    fs.rmSync(exampleOutputPath, { recursive: true, force: true });
+    fs.mkdirSync(exampleOutputPath, { recursive: true });
+    fs.cpSync(exampleTmpPath, exampleOutputPath, { recursive: true });
+  }
+  for (
+    const [template, sdkVersion] of templatesWithSdkVersionsWithoutOsdk(
+      TEMPLATES,
+    )
+  ) {
+    const exampleId = sdkVersionedTemplateExampleId(
+      template,
+      sdkVersion,
+      false,
+    );
     const exampleOutputPath = path.join(resolvedOutput, exampleId);
     const exampleTmpPath = path.join(tmpDir.name, exampleId);
     fs.rmSync(exampleOutputPath, { recursive: true, force: true });
@@ -392,8 +453,11 @@ function templateExampleId(template: Template): string {
 function sdkVersionedTemplateExampleId(
   template: Template,
   sdkVersion: SdkVersion,
+  osdk: boolean = true,
 ): string {
-  return `${templateExampleId(template)}-sdk-${sdkVersion}`;
+  return `${templateExampleId(template)}-sdk-${sdkVersion}${
+    !osdk ? "-no-osdk" : ""
+  }`;
 }
 
 function readme(template: Template, sdkVersion: SdkVersion): string {

@@ -132,6 +132,17 @@ export async function cli(args: string[] = process.argv): Promise<void> {
             array: true,
             describe:
               "List of client-side scopes to be used when creating a client",
+          })
+          .check((argv) => {
+            if (
+              argv.skipOsdk
+              && (argv.sdkVersion == null || argv.sdkVersion.startsWith("1."))
+            ) {
+              throw new Error(
+                "The --skipOsdk flag is only allowed when sdkVersion is 2.x. Please set --sdkVersion to 2.x or remove the --skipOsdk flag.",
+              );
+            }
+            return true;
           }),
     );
 

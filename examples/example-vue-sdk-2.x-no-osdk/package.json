@@ -1,0 +1,26 @@
+{
+  "name": "example-vue-sdk-2.x-no-osdk",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "test": "vitest run",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@osdk/client": "workspace:*",
+    "@osdk/oauth": "workspace:*",
+    "vue": "^3.5.21",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "typescript": "~5.5.4",
+    "vite": "^6.3.6",
+    "vitest": "^3.2.4",
+    "vue-tsc": "^2.2.12"
+  }
+}
