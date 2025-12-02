@@ -11,9 +11,11 @@ import { $Actions, $Objects, $Queries } from "{{osdkPackage}}";
 {{/if}}
 
 export default function TabTwoScreen() {
+  {{#if osdkPackage}}
   const objectApiNames = Object.keys($Objects);
   const actionApiNames = Object.keys($Actions);
   const queryApiNames = Object.keys($Queries);
+  {{/if}}
   const colors = { light: '#D0D0D0', dark: '#353636' };
   return (
     <ParallaxScrollView
