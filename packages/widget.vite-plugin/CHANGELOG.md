@@ -1,5 +1,12 @@
 # @osdk/widget.vite-plugin
 
+## 3.3.0-beta.12
+
+### Patch Changes
+
+- Updated dependencies [baf1e30]
+  - @osdk/widget.api@3.3.0-beta.12
+
 ## 3.3.0-beta.11
 
 ### Minor Changes

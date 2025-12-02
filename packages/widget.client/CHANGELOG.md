@@ -1,5 +1,16 @@
 # @osdk/widget.client
 
+## 3.3.0-beta.12
+
+### Minor Changes
+
+- baf1e30: Introduce widget resize message for automatic heights
+
+### Patch Changes
+
+- Updated dependencies [baf1e30]
+  - @osdk/widget.api@3.3.0-beta.12
+
 ## 3.3.0-beta.11
 
 ### Patch Changes
