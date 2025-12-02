@@ -20,6 +20,11 @@ export { useObjectSet } from "../new/useObjectSet.js";
 export { useOsdkAction } from "../new/useOsdkAction.js";
 export type { UseOsdkAggregationResult } from "../new/useOsdkAggregation.js";
 export { useOsdkAggregation } from "../new/useOsdkAggregation.js";
+export { useOsdkMediaQuery } from "../new/useOsdkMediaQuery.js";
+export type {
+  UseOsdkMediaQueryOptions,
+  UseOsdkMediaQueryResult,
+} from "../new/useOsdkMediaQuery.js";
 export { useOsdkMediaUpload } from "../new/useOsdkMediaUpload.js";
 export type {
   UseOsdkMediaUploadOptions,

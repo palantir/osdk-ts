@@ -73,7 +73,8 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
     ? (typeof args[1] === "boolean" ? args[1] : true)
     : (typeof args[2] === "boolean" ? args[2] : true);
 
-  // TODO: Figure out what the correct default behavior is for the various scenarios
+  // When passed an existing object instance, use offline mode (don't refetch).
+  // When passed type+primaryKey, use default mode (fetch from server if needed).
   const mode = isInstanceSignature ? "offline" : undefined;
   const objectType = isInstanceSignature
     ? (args[0] as Osdk.Instance<Q>).$objectType
