@@ -10,13 +10,13 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-#root-container {
+#app-container {
   align-items: center;
   display: flex;
   flex: 1;
 }
 
-#root {
+#app {
   margin: 0 auto;
   max-width: 1280px;
 }
