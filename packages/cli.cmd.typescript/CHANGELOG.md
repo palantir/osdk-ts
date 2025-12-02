@@ -49,6 +49,45 @@
   - @osdk/generator@2.6.0-beta.2
   - @osdk/cli.common@0.30.0-beta.2
 
+## 0.29.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- 7bdac45: Update Platform SDK dependency
+- 37eb75b: remove features not supported for RC
+- 34129f4: Add a flag to skip updating the package json
+- a96d89e: Update Platform SDK dependencies
+- cbcf2ad: Add branching support
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [4b4a458]
+- Updated dependencies [badfbc4]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [a00d2ed]
+- Updated dependencies [d29cdfb]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [7bdac45]
+- Updated dependencies [a96d89e]
+- Updated dependencies [78be29f]
+- Updated dependencies [7bdac45]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [4248b80]
+  - @osdk/cli.common@0.29.0
+  - @osdk/generator@2.5.0
+  - @osdk/shared.client.impl@1.5.0
+
+## 0.29.0-rc.6
+
+### Patch Changes
+
+- 37eb75b: remove features not supported for RC
+  - @osdk/generator@2.5.0-rc.15
+  - @osdk/cli.common@0.29.0-rc.6
+
 ## 0.29.0-beta.5
 
 ### Minor Changes
