@@ -254,7 +254,7 @@ test("it generates .env.development", () => {
     foundryUrl: "https://example.palantirfoundry.com",
     clientId: "123",
     corsProxy: false,
-    ontologyRid: "ri.ontology.main.ontology.fake",
+    ontology: "ri.ontology.main.ontology.fake",
   })).toEqual(expectedEnvDevelopment);
 });
 
@@ -264,7 +264,7 @@ test("it generates .env.development without ontology rid", () => {
     foundryUrl: "https://example.palantirfoundry.com",
     clientId: "123",
     corsProxy: false,
-    ontologyRid: undefined,
+    ontology: undefined,
   })).toEqual(expectedEnvDevelopmentNoOntologyRid);
 });
 
@@ -274,7 +274,7 @@ test("it generates .env.development assuming CORS proxy", () => {
     foundryUrl: "https://example.palantirfoundry.com",
     clientId: "123",
     corsProxy: true,
-    ontologyRid: "ri.ontology.main.ontology.fake",
+    ontology: "ri.ontology.main.ontology.fake",
   })).toEqual(expectedEnvDevelopmentCorsProxy);
 });
 
@@ -284,7 +284,7 @@ test("it generates .env.production", () => {
     foundryUrl: "https://example.palantirfoundry.com",
     applicationUrl: "https://app.com",
     clientId: "123",
-    ontologyRid: "ri.ontology.main.ontology.fake",
+    ontology: "ri.ontology.main.ontology.fake",
   })).toEqual(expectedEnvProduction);
 });
 
@@ -294,7 +294,7 @@ test("it generates .env.production without app url", () => {
     foundryUrl: "https://example.palantirfoundry.com",
     applicationUrl: undefined,
     clientId: "123",
-    ontologyRid: "ri.ontology.main.ontology.fake",
+    ontology: "ri.ontology.main.ontology.fake",
   })).toEqual(expectedEnvProductionNoAppUrl);
 });
 
@@ -304,6 +304,6 @@ test("it generates .env.production without ontology rid", () => {
     foundryUrl: "https://example.palantirfoundry.com",
     applicationUrl: "https://app.com",
     clientId: "123",
-    ontologyRid: undefined,
+    ontology: undefined,
   })).toEqual(expectedEnvProductionNoOntologyRid);
 });

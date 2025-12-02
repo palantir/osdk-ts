@@ -148,19 +148,19 @@ export async function run(
       }
 
       // Files prefixed with `osdk-` are only kept if the application uses an OSDK
-      if (file.startsWith("osdk-")) {
+      if (file.includes("osdk-")) {
         if (osdkPackage == null) {
           fs.rmSync(file);
           return;
         } else {
-          fs.renameSync(file, file.replace(/^osdk-/, ""));
-          file = file.replace(/^osdk-/, "");
+          fs.renameSync(file, file.replace(/osdk-/, ""));
+          file = file.replace(/osdk-/, "");
         }
         // Files prefixed with `psdk-` are only kept if the application does not use an OSDK
-      } else if (file.startsWith("psdk-")) {
+      } else if (file.includes("psdk-")) {
         if (osdkPackage == null) {
-          fs.renameSync(file, file.replace(/^psdk-/, ""));
-          file = file.replace(/^psdk-/, "");
+          fs.renameSync(file, file.replace(/psdk-/, ""));
+          file = file.replace(/psdk-/, "");
         } else {
           fs.rmSync(file);
           return;
