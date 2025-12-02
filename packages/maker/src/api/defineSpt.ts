@@ -46,7 +46,7 @@ export interface SharedPropertyTypeDefinition {
   visibility?: Visibility;
   typeClasses?: SharedPropertyType["typeClasses"];
   gothamMapping?: SharedPropertyTypeGothamMapping;
-  nullable?: Nullability;
+  nullability?: Nullability;
 }
 
 export function defineSharedPropertyType(
@@ -69,6 +69,7 @@ export function defineSharedPropertyType(
 
   const fullSpt: SharedPropertyType = {
     ...sptDef,
+    apiName,
     nonNameSpacedApiName: sptDef.apiName,
     displayName: sptDef.displayName ?? sptDef.apiName, // This way the non-namespaced api name is the display name (maybe not ideal)
     typeClasses: sptDef.typeClasses
