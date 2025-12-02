@@ -6,7 +6,9 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+{{#if osdkPackage}}
 import { $Actions, $Objects, $Queries } from "{{osdkPackage}}";
+{{/if}}
 
 export default function TabTwoScreen() {
   const objectApiNames = Object.keys($Objects);
@@ -28,6 +30,7 @@ export default function TabTwoScreen() {
         <ThemedText type="title">Explore</ThemedText>
       </ThemedView>
       <ThemedText>This app includes example code to help you get started.</ThemedText>
+      {{#if osdkPackage}}
       <Collapsible title="Ontology SDK" open={true}>
         <ThemedText>
           This app is based on the default Expo template, enriched with the Ontology SDK.
@@ -59,6 +62,7 @@ export default function TabTwoScreen() {
           ))}
         </ThemedView>
       </Collapsible>
+      {{/if}}
       <Collapsible title="Expo default examples">
         <Collapsible title="File-based routing">
           <ThemedText>
