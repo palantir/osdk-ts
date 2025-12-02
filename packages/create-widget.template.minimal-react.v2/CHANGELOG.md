@@ -1,5 +1,13 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.2.5
+
+### Patch Changes
+
+- a2df5ba: Introduce widget resize message for automatic heights
+- 71f33ca: Remove minimal widget template margin
+- 71f33ca: Bump widget template dependency versions on widget libraries
+
 ## 3.2.4
 
 ## 3.2.3

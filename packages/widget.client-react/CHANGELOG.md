@@ -1,5 +1,15 @@
 # @osdk/widget.client-react
 
+## 3.2.5
+
+### Patch Changes
+
+- 71f33ca: Add error boundary for custom widgets
+- a2df5ba: Introduce widget resize message for automatic heights
+- 71f33ca: Expand ErrorBoundary to catch all errors
+- Updated dependencies [a2df5ba]
+  - @osdk/widget.client@3.2.5
+
 ## 3.2.4
 
 ### Patch Changes

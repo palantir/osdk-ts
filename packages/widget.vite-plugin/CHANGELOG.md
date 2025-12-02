@@ -1,5 +1,17 @@
 # @osdk/widget.vite-plugin
 
+## 3.2.5
+
+### Patch Changes
+
+- 71f33ca: Validate widget sets before building their manifest
+- 71f33ca: Fix InvalidDevModeFilePath errors
+- 71f33ca: warn when using wrong dev command
+- 71f33ca: Fix Windows dev mode
+- 71f33ca: Use Vite logger instead of console.warn in validateDevEnvironment
+- Updated dependencies [a2df5ba]
+  - @osdk/widget.api@3.2.5
+
 ## 3.2.4
 
 ### Patch Changes
