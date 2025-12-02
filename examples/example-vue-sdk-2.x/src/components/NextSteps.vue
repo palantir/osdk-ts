@@ -10,7 +10,7 @@ const STEPS: INextStep[] = [
     icon: "tag",
     title: "Deploy your application",
     subtitle:
-      "Generate a new tag version of your repository to deploy a new version of your applicaiton.",
+      "Generate a new tag version of your repository to deploy a new version of your application.",
   },
 ];
 </script>
