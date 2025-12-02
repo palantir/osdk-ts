@@ -69,10 +69,9 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         type: sdkPropDefinition,
         nullable: input.nullable == null ? isNullable : input.nullable,
         valueTypeApiName: input.valueTypeApiName,
-        valueFormatting:
-          "valueFormatting" in input && input.valueFormatting != null
-            ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
-            : undefined,
+        valueFormatting: input.valueFormatting != null
+          ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
+          : undefined,
       };
     case "array": {
       return {
@@ -82,10 +81,9 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         type: sdkPropDefinition,
         nullable: true,
         valueTypeApiName: input.valueTypeApiName,
-        valueFormatting:
-          "valueFormatting" in input && input.valueFormatting != null
-            ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
-            : undefined,
+        valueFormatting: input.valueFormatting != null
+          ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
+          : undefined,
       };
     }
     case "cipherText": {
