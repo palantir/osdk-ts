@@ -41,6 +41,13 @@ export namespace WidgetMessage {
       apiVersion: HostMessage.Version;
     }
 
+    export interface Resize {
+      /** The width of the widget document body element according to border box sizing */
+      width: number;
+      /** The height of the widget document body element according to border box sizing */
+      height: number;
+    }
+
     export type EmitEvent<C extends WidgetConfig<C["parameters"]>> =
       EmitEventIdMap<C>[EventId<C>];
   }
@@ -57,6 +64,13 @@ export namespace WidgetMessage {
   {}
 
   /**
+   * Emit when the widget document body element resizes
+   */
+  export interface Resize
+    extends WidgetBaseMessage<"widget.resize", Payload.Resize>
+  {}
+
+  /**
    * Event payload that the widget sends to the host Foundry UI
    */
   export interface EmitEvent<C extends WidgetConfig<C["parameters"]>>
@@ -66,6 +80,7 @@ export namespace WidgetMessage {
 
 export type WidgetMessage<C extends WidgetConfig<C["parameters"]>> =
   | WidgetMessage.Ready
+  | WidgetMessage.Resize
   | WidgetMessage.EmitEvent<C>;
 
 export function isWidgetReadyMessage<C extends WidgetConfig<C["parameters"]>>(
