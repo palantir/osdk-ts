@@ -88,8 +88,8 @@ export function convertObject(
 
   const implementations = objectType.implementsInterfaces ?? [];
 
-  const objectTypeRid = ridGenerator.generateRid(
-    `object.${objectType.apiName}`,
+  const objectTypeRid = ridGenerator.generateRidForObjectType(
+    objectType.apiName,
   );
 
   // Convert propertyTypes to use RIDs as keys
@@ -106,8 +106,9 @@ export function convertObject(
     ) ?? [],
   );
 
-  const titlePropertyRid = ridGenerator.generateRid(
-    `property.${objectType.apiName}.${objectType.titlePropertyApiName}`,
+  const titlePropertyRid = ridGenerator.generatePropertyRid(
+    objectType.titlePropertyApiName,
+    objectType.apiName,
   );
 
   return {
@@ -124,8 +125,9 @@ export function convertObject(
         visibility: objectType.visibility ?? "NORMAL",
       },
       primaryKeys: [
-        ridGenerator.generateRid(
-          `property.${objectType.apiName}.${objectType.primaryKeyPropertyApiName}`,
+        ridGenerator.generatePropertyRid(
+          objectType.primaryKeyPropertyApiName,
+          objectType.apiName,
         ),
       ],
       propertyTypes: propertyTypesWithRids,
@@ -136,11 +138,11 @@ export function convertObject(
       status: convertObjectStatus(objectType.status),
       redacted: false,
       implementsInterfaces: implementations.map(impl =>
-        ridGenerator.generateRid(`interface.${impl.implements.apiName}`)
+        ridGenerator.generateRidForInterface(impl.implements.apiName)
       ),
       implementsInterfaces2: implementations.map(impl => ({
-        interfaceTypeRid: ridGenerator.generateRid(
-          `interface.${impl.implements.apiName}`,
+        interfaceTypeRid: ridGenerator.generateRidForInterface(
+          impl.implements.apiName,
         ),
         interfaceTypeApiName: impl.implements.apiName,
         links: {},
@@ -149,8 +151,9 @@ export function convertObject(
         properties: Object.fromEntries(
           impl.propertyMapping.map(
             mapping => [addNamespaceIfNone(mapping.interfaceProperty), {
-              propertyTypeRid: ridGenerator.generateRid(
-                `property.${objectType.apiName}.${mapping.mapsTo}`,
+              propertyTypeRid: ridGenerator.generatePropertyRid(
+                mapping.mapsTo,
+                objectType.apiName,
               ),
             }],
           ),
@@ -217,12 +220,14 @@ export function extractPropertyDatasource(
       const geotimeDefinition: ObjectTypeDatasourceDefinition = {
         type: "geotimeSeries",
         geotimeSeries: {
-          geotimeSeriesIntegrationRid: ridGenerator.generateRid(
-            `geotime.${identifier}`,
-          ),
+          geotimeSeriesIntegrationRid: ridGenerator
+            .generateRidForGeotimeSeriesIntegration(
+              identifier,
+            ),
           properties: [
-            ridGenerator.generateRid(
-              `property.${objectTypeApiName}.${property.apiName}`,
+            ridGenerator.generatePropertyRid(
+              property.apiName,
+              objectTypeApiName,
             ),
           ],
         },
@@ -245,8 +250,9 @@ export function extractPropertyDatasource(
             ),
           },
           properties: [
-            ridGenerator.generateRid(
-              `property.${objectTypeApiName}.${property.apiName}`,
+            ridGenerator.generatePropertyRid(
+              property.apiName,
+              objectTypeApiName,
             ),
           ],
         },
@@ -293,8 +299,8 @@ function buildDerivedDatasource(
         searchAround: {
           linkTypeIdentifier: {
             type: "linkType" as const,
-            linkType: ridGenerator.generateRid(
-              `link.${cleanAndValidateLinkTypeId(step.linkType.apiName)}`,
+            linkType: ridGenerator.generateRidForLinkType(
+              cleanAndValidateLinkTypeId(step.linkType.apiName),
             ),
           },
           linkTypeSide: step.side ?? "SOURCE",
@@ -314,13 +320,15 @@ function buildDerivedDatasource(
           Object.entries(datasource.propertyMapping).map((
             [sourceProp, targetProp],
           ) => [
-            ridGenerator.generateRid(
-              `property.${objectTypeApiName}.${sourceProp}`,
+            ridGenerator.generatePropertyRid(
+              sourceProp,
+              objectTypeApiName,
             ),
             {
               type: "propertyType" as const,
-              propertyType: ridGenerator.generateRid(
-                `property.${objectTypeApiName}.${targetProp}`,
+              propertyType: ridGenerator.generatePropertyRid(
+                targetProp,
+                objectTypeApiName,
               ),
             },
           ]),
@@ -335,8 +343,9 @@ function buildDerivedDatasource(
           Object.entries(datasource.propertyMapping).map((
             [sourceProp, agg],
           ) => [
-            ridGenerator.generateRid(
-              `property.${objectTypeApiName}.${sourceProp}`,
+            ridGenerator.generatePropertyRid(
+              sourceProp,
+              objectTypeApiName,
             ),
             buildAggregation(agg, ridGenerator),
           ]),

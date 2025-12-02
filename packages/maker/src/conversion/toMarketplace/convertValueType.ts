@@ -22,10 +22,8 @@ export function convertValueType(
   valueType: ValueTypeDefinitionVersion,
   ridGenerator: OntologyRidGenerator,
 ): ValueTypeReference {
-  return {
-    rid: ridGenerator.generateRid(
-      `valueType.${valueType.apiName}.${valueType.version}`,
-    ),
-    versionId: "0.1.0",
-  };
+  return ridGenerator.generateRidForValueType(
+    valueType.apiName,
+    valueType.version,
+  );
 }

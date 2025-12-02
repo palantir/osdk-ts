@@ -110,7 +110,7 @@ export function getShapes(
   }
 
   // Objects
-  const objectReadableIds = ridGenerator.getObjectTypeRids();
+  const objectReadableIds = ridGenerator.getObjectTypeRids().inverse();
   for (
     const [rid, objectType] of Object.entries(ontologyBlockDataV2.objectTypes)
   ) {
@@ -131,7 +131,7 @@ export function getShapes(
   // consumeBlockShapes(allBlockShapes, markingShapes);
 
   // Links
-  const linkReadableIds = ridGenerator.getLinkTypeRids();
+  const linkReadableIds = ridGenerator.getLinkTypeRids().inverse();
   for (const [rid, linkType] of Object.entries(ontologyBlockDataV2.linkTypes)) {
     const readableId = linkReadableIds.get(rid as LinkTypeRid);
     if (readableId) {
@@ -157,7 +157,7 @@ export function getShapes(
   // }
 
   // Multipass groups
-  for (const [groupId, readableId] of ridGenerator.getGroupIds().entries()) {
+  for (const [readableId, groupId] of ridGenerator.getGroupIds().entries()) {
     const groupShapes = extractMultipassGroup(groupId, readableId);
     consumeBlockShapes(allBlockShapes, groupShapes);
   }

@@ -45,15 +45,19 @@ export function convertLink(
     const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
       linkType.toMany.object,
     );
-    const oneObjectRid = ridGenerator.generateRid(`object.${oneObjectApiName}`);
-    const toManyObjectRid = ridGenerator.generateRid(
-      `object.${toManyObjectApiName}`,
+    const oneObjectRid = ridGenerator.generateRidForObjectType(
+      oneObjectApiName,
     );
-    const onePkRid = ridGenerator.generateRid(
-      `property.${oneObjectApiName}.${oneObject.primaryKeyPropertyApiName}`,
+    const toManyObjectRid = ridGenerator.generateRidForObjectType(
+      toManyObjectApiName,
     );
-    const manyFkRid = ridGenerator.generateRid(
-      `property.${toManyObjectApiName}.${linkType.manyForeignKeyProperty}`,
+    const onePkRid = ridGenerator.generatePropertyRid(
+      oneObject.primaryKeyPropertyApiName,
+      oneObjectApiName,
+    );
+    const manyFkRid = ridGenerator.generatePropertyRid(
+      linkType.manyForeignKeyProperty,
+      toManyObjectApiName,
     );
 
     definition = {
@@ -85,24 +89,22 @@ export function convertLink(
       intermediary: {
         objectTypeAToBLinkMetadata: linkType.many.metadata,
         objectTypeBToALinkMetadata: linkType.toMany.metadata,
-        objectTypeRidA: ridGenerator.generateRid(`object.${manyObjectApiName}`),
-        objectTypeRidB: ridGenerator.generateRid(
-          `object.${toManyObjectApiName}`,
+        objectTypeRidA: ridGenerator.generateRidForObjectType(
+          manyObjectApiName,
         ),
-        intermediaryObjectTypeRid: ridGenerator.generateRid(
-          `object.${intermediaryObjectApiName}`,
+        objectTypeRidB: ridGenerator.generateRidForObjectType(
+          toManyObjectApiName,
         ),
-        aToIntermediaryLinkTypeRid: ridGenerator.generateRid(
-          `link.${
-            cleanAndValidateLinkTypeId(linkType.many.linkToIntermediary.apiName)
-          }`,
+        intermediaryObjectTypeRid: ridGenerator.generateRidForObjectType(
+          intermediaryObjectApiName,
         ),
-        intermediaryToBLinkTypeRid: ridGenerator.generateRid(
-          `link.${
-            cleanAndValidateLinkTypeId(
-              linkType.toMany.linkToIntermediary.apiName,
-            )
-          }`,
+        aToIntermediaryLinkTypeRid: ridGenerator.generateRidForLinkType(
+          cleanAndValidateLinkTypeId(linkType.many.linkToIntermediary.apiName),
+        ),
+        intermediaryToBLinkTypeRid: ridGenerator.generateRidForLinkType(
+          cleanAndValidateLinkTypeId(
+            linkType.toMany.linkToIntermediary.apiName,
+          ),
         ),
       },
     };
@@ -113,17 +115,19 @@ export function convertLink(
     const { apiName: toManyObjectApiName, object: toManyObject } = getObject(
       linkType.toMany.object,
     );
-    const manyObjectRidA = ridGenerator.generateRid(
-      `object.${manyObjectApiName}`,
+    const manyObjectRidA = ridGenerator.generateRidForObjectType(
+      manyObjectApiName,
     );
-    const manyObjectRidB = ridGenerator.generateRid(
-      `object.${toManyObjectApiName}`,
+    const manyObjectRidB = ridGenerator.generateRidForObjectType(
+      toManyObjectApiName,
     );
-    const manyPkRidA = ridGenerator.generateRid(
-      `property.${manyObjectApiName}.${manyObject.primaryKeyPropertyApiName}`,
+    const manyPkRidA = ridGenerator.generatePropertyRid(
+      manyObject.primaryKeyPropertyApiName,
+      manyObjectApiName,
     );
-    const manyPkRidB = ridGenerator.generateRid(
-      `property.${toManyObjectApiName}.${toManyObject.primaryKeyPropertyApiName}`,
+    const manyPkRidB = ridGenerator.generatePropertyRid(
+      toManyObject.primaryKeyPropertyApiName,
+      toManyObjectApiName,
     );
 
     definition = {
@@ -177,7 +181,7 @@ export function convertLink(
     linkType: {
       definition: definition,
       id: linkTypeId,
-      rid: ridGenerator.generateRid(`link.${linkTypeId}`),
+      rid: ridGenerator.generateRidForLinkType(linkTypeId),
       status: linkType.status ?? { type: "active", active: {} },
       redacted: linkType.redacted ?? false,
     },

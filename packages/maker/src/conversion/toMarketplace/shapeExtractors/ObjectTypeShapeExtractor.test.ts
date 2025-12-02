@@ -48,6 +48,11 @@ class MockBiMap<K, V> implements BiMap<K, V> {
     return this.forward.get(key);
   }
 
+  put(key: K, value: V): void {
+    this.forward.set(key, value);
+    this.backward.set(value, key);
+  }
+
   inverse(): BiMap<V, K> {
     return new MockBiMap(Array.from(this.backward.entries()));
   }
@@ -55,6 +60,63 @@ class MockBiMap<K, V> implements BiMap<K, V> {
   entries(): IterableIterator<[K, V]> {
     return this.forward.entries();
   }
+}
+
+// Helper to create a mock OntologyRidGenerator with overrides
+function createMockRidGenerator(
+  overrides: Partial<OntologyRidGenerator> = {},
+): OntologyRidGenerator {
+  return {
+    getActionTypeRids: () => new MockBiMap([]) as any,
+    getParameterRidAndIds: () => new Map() as any,
+    getInterfaceRids: () => new MockBiMap([]) as any,
+    getSharedPropertyTypeRids: () => new MockBiMap([]) as any,
+    getInterfaceLinkTypeRids: () => new MockBiMap([]) as any,
+    getInterfacePropertyTypeRids: () => new MockBiMap([]) as any,
+    getPropertyTypeRids: () => new MockBiMap([]) as any,
+    getDatasourceLocators: () => new MockBiMap([]) as any,
+    getFilesDatasourceLocators: () => new MockBiMap([]) as any,
+    getGeotimeSeriesIntegrationRids: () => new MockBiMap([]) as any,
+    getTimeSeriesSyncs: () => new MockBiMap([]) as any,
+    getColumnShapes: () => new MockBiMap([]) as any,
+    getObjectTypeRids: () => new MockBiMap([]) as any,
+    getLinkTypeRids: () => new MockBiMap([]) as any,
+    getGroupIds: () => new MockBiMap([]) as any,
+    getConsumedValueTypeReferences: () => new MockBiMap([]) as any,
+    getProducedValueTypeReferences: () => new Map() as any,
+    valueTypeMappingForReference: () => ({
+      input: "" as ReadableId,
+      output: "" as ReadableId,
+    }),
+    hashString: (input: string) => input,
+    generateRid: (key: string) => key,
+    generateRidForInterface: (apiName: string) => `interface.${apiName}` as any,
+    generateRidForInterfaceLinkType: (
+      apiName: string,
+      interfaceTypeApiName: string,
+    ) => `interface-link.${interfaceTypeApiName}.${apiName}` as any,
+    generateRidForObjectType: (apiName: string) => `object.${apiName}` as any,
+    generateRidForValueType: (apiName: string, version: string) =>
+      ({
+        rid: `vt.${apiName}.${version}`,
+        versionId: version,
+      }) as any,
+    generateRidForTimeSeriesSync: (name: string) => `ts.${name}` as any,
+    generateRidForLinkType: (linkTypeId: string) => `link.${linkTypeId}` as any,
+    generateRidForGeotimeSeriesIntegration: (name: string) =>
+      `geotime.${name}` as any,
+    generateRidForActionType: (apiName: string) => `action.${apiName}` as any,
+    generateRidForParameter: (actionTypeApiName: string, parameterId: string) =>
+      `param.${actionTypeApiName}.${parameterId}` as any,
+    generateSptRid: (apiName: string) => `spt.${apiName}` as any,
+    generatePropertyRid: (apiName: string, objectTypeApiName: string) =>
+      `prop.${objectTypeApiName}.${apiName}` as any,
+    generateInterfacePropertyTypeRid: (
+      apiName: string,
+      interfaceTypeApiName: string,
+    ) => `interface-prop.${interfaceTypeApiName}.${apiName}` as any,
+    ...overrides,
+  };
 }
 
 describe("ObjectTypeShapeExtractor", () => {
@@ -152,35 +214,19 @@ describe("ObjectTypeShapeExtractor", () => {
         writebackDatasets: [],
       };
 
-      const ridGenerator: OntologyRidGenerator = {
+      const ridGenerator = createMockRidGenerator({
         getPropertyTypeRids: () =>
-          new MockBiMap<PropertyTypeRid, ReadableId>([
+          new MockBiMap<ReadableId, PropertyTypeRid>([
             [
-              "ri.ontology.main.property-type.employee.id" as PropertyTypeRid,
               "employee.id" as ReadableId,
+              "ri.ontology.main.property-type.employee.id" as PropertyTypeRid,
             ],
             [
-              "ri.ontology.main.property-type.employee.name" as PropertyTypeRid,
               "employee.name" as ReadableId,
+              "ri.ontology.main.property-type.employee.name" as PropertyTypeRid,
             ],
           ]),
-        getSharedPropertyTypeRids: () => new MockBiMap([]) as any,
-        getDatasourceLocators: () => new MockBiMap([]) as any,
-        getFilesDatasourceLocators: () => new MockBiMap([]) as any,
-        getGeotimeSeriesIntegrationRids: () => new MockBiMap([]) as any,
-        getTimeSeriesSyncs: () => new MockBiMap([]) as any,
-        getColumnShapes: () => new MockBiMap([]) as any,
-        getObjectTypeRids: () => new MockBiMap([]) as any,
-        getLinkTypeRids: () => new MockBiMap([]) as any,
-        getGroupIds: () => new MockBiMap([]) as any,
-        valueTypeMappingForReference: () => ({
-          input: "" as ReadableId,
-          output: "" as ReadableId,
-        }),
-        generateRid: function(key: string): string {
-          return key;
-        },
-      };
+      });
 
       const extractor = new ObjectTypeShapeExtractor();
       const result: BlockShapes = extractor.extract(
@@ -296,41 +342,27 @@ describe("ObjectTypeShapeExtractor", () => {
         },
       };
 
-      const ridGenerator: OntologyRidGenerator = {
+      const ridGenerator = createMockRidGenerator({
         getPropertyTypeRids: () =>
-          new MockBiMap<PropertyTypeRid, string>([
+          new MockBiMap<ReadableId, PropertyTypeRid>([
             [
+              "person.id" as ReadableId,
               "ri.ontology.main.property-type.person.id" as PropertyTypeRid,
-              "person.id",
             ],
           ]) as any,
-        getSharedPropertyTypeRids: () => new MockBiMap([]) as any,
         getDatasourceLocators: () =>
-          new MockBiMap<DatasourceLocator, string>([[
+          new MockBiMap<ReadableId, DatasourceLocator>([[
+            "person-dataset" as ReadableId,
             datasetLocator,
-            "person-dataset",
           ]]) as any,
-        getFilesDatasourceLocators: () => new MockBiMap([]) as any,
-        getGeotimeSeriesIntegrationRids: () => new MockBiMap([]) as any,
-        getTimeSeriesSyncs: () => new MockBiMap([]) as any,
         getColumnShapes: () =>
-          new MockBiMap<ResolvedDatasourceColumnShape, string>([
-            [{
+          new MockBiMap<ReadableId, ResolvedDatasourceColumnShape>([
+            ["person-dataset.person_id" as ReadableId, {
               datasource: datasetLocator,
               name: "person_id",
-            }, "person-dataset.person_id"],
+            }],
           ]) as any,
-        getObjectTypeRids: () => new MockBiMap([]) as any,
-        getLinkTypeRids: () => new MockBiMap([]) as any,
-        getGroupIds: () => new MockBiMap([]) as any,
-        valueTypeMappingForReference: () => ({
-          input: "" as ReadableId,
-          output: "" as ReadableId,
-        }),
-        generateRid: function(key: string): string {
-          return key;
-        },
-      };
+      });
 
       const extractor = new ObjectTypeShapeExtractor();
       const result: BlockShapes = extractor.extract(
@@ -445,41 +477,27 @@ describe("ObjectTypeShapeExtractor", () => {
         },
       };
 
-      const ridGenerator: OntologyRidGenerator = {
+      const ridGenerator = createMockRidGenerator({
         getPropertyTypeRids: () =>
-          new MockBiMap<PropertyTypeRid, string>([
+          new MockBiMap<ReadableId, PropertyTypeRid>([
             [
+              "event.id" as ReadableId,
               "ri.ontology.main.property-type.event.id" as PropertyTypeRid,
-              "event.id",
             ],
           ]) as any,
-        getSharedPropertyTypeRids: () => new MockBiMap([]) as any,
         getDatasourceLocators: () =>
-          new MockBiMap<DatasourceLocator, string>([[
+          new MockBiMap<ReadableId, DatasourceLocator>([[
+            "event-stream" as ReadableId,
             streamLocator,
-            "event-stream",
           ]]) as any,
-        getFilesDatasourceLocators: () => new MockBiMap([]) as any,
-        getGeotimeSeriesIntegrationRids: () => new MockBiMap([]) as any,
-        getTimeSeriesSyncs: () => new MockBiMap([]) as any,
         getColumnShapes: () =>
-          new MockBiMap<ResolvedDatasourceColumnShape, string>([
-            [{
+          new MockBiMap<ReadableId, ResolvedDatasourceColumnShape>([
+            ["event-stream.event_id" as ReadableId, {
               datasource: streamLocator,
               name: "event_id",
-            }, "event-stream.event_id"],
+            }],
           ]) as any,
-        getObjectTypeRids: () => new MockBiMap([]) as any,
-        getLinkTypeRids: () => new MockBiMap([]) as any,
-        getGroupIds: () => new MockBiMap([]) as any,
-        valueTypeMappingForReference: () => ({
-          input: "" as ReadableId,
-          output: "" as ReadableId,
-        }),
-        generateRid: function(key: string): string {
-          return key;
-        },
-      };
+      });
 
       const extractor = new ObjectTypeShapeExtractor();
       const result: BlockShapes = extractor.extract(
@@ -563,31 +581,15 @@ describe("ObjectTypeShapeExtractor", () => {
         writebackDatasets: [],
       };
 
-      const ridGenerator: OntologyRidGenerator = {
+      const ridGenerator = createMockRidGenerator({
         getPropertyTypeRids: () =>
-          new MockBiMap<PropertyTypeRid, string>([
+          new MockBiMap<ReadableId, PropertyTypeRid>([
             [
+              "task.id" as ReadableId,
               "ri.ontology.main.property-type.task.id" as PropertyTypeRid,
-              "task.id",
             ],
           ]) as any,
-        getSharedPropertyTypeRids: () => new MockBiMap([]) as any,
-        getDatasourceLocators: () => new MockBiMap([]) as any,
-        getFilesDatasourceLocators: () => new MockBiMap([]) as any,
-        getGeotimeSeriesIntegrationRids: () => new MockBiMap([]) as any,
-        getTimeSeriesSyncs: () => new MockBiMap([]) as any,
-        getColumnShapes: () => new MockBiMap([]) as any,
-        getObjectTypeRids: () => new MockBiMap([]) as any,
-        getLinkTypeRids: () => new MockBiMap([]) as any,
-        getGroupIds: () => new MockBiMap([]) as any,
-        valueTypeMappingForReference: () => ({
-          input: "" as ReadableId,
-          output: "" as ReadableId,
-        }),
-        generateRid: function(key: string): string {
-          return key;
-        },
-      };
+      });
 
       const extractor = new ObjectTypeShapeExtractor("random123");
       const result: BlockShapes = extractor.extract(
@@ -656,25 +658,7 @@ describe("ObjectTypeShapeExtractor", () => {
         writebackDatasets: [],
       };
 
-      const ridGenerator: OntologyRidGenerator = {
-        getPropertyTypeRids: () => new MockBiMap([]) as any,
-        getSharedPropertyTypeRids: () => new MockBiMap([]) as any,
-        getDatasourceLocators: () => new MockBiMap([]) as any,
-        getFilesDatasourceLocators: () => new MockBiMap([]) as any,
-        getGeotimeSeriesIntegrationRids: () => new MockBiMap([]) as any,
-        getTimeSeriesSyncs: () => new MockBiMap([]) as any,
-        getColumnShapes: () => new MockBiMap([]) as any,
-        getObjectTypeRids: () => new MockBiMap([]) as any,
-        getLinkTypeRids: () => new MockBiMap([]) as any,
-        getGroupIds: () => new MockBiMap([]) as any,
-        valueTypeMappingForReference: () => ({
-          input: "" as ReadableId,
-          output: "" as ReadableId,
-        }),
-        generateRid: function(key: string): string {
-          return key;
-        },
-      };
+      const ridGenerator = createMockRidGenerator();
 
       const extractor = new ObjectTypeShapeExtractor();
       const result: BlockShapes = extractor.extract(
@@ -730,25 +714,7 @@ describe("ObjectTypeShapeExtractor", () => {
         writebackDatasets: [],
       };
 
-      const ridGenerator: OntologyRidGenerator = {
-        getPropertyTypeRids: () => new MockBiMap([]) as any,
-        getSharedPropertyTypeRids: () => new MockBiMap([]) as any,
-        getDatasourceLocators: () => new MockBiMap([]) as any,
-        getFilesDatasourceLocators: () => new MockBiMap([]) as any,
-        getGeotimeSeriesIntegrationRids: () => new MockBiMap([]) as any,
-        getTimeSeriesSyncs: () => new MockBiMap([]) as any,
-        getColumnShapes: () => new MockBiMap([]) as any,
-        getObjectTypeRids: () => new MockBiMap([]) as any,
-        getLinkTypeRids: () => new MockBiMap([]) as any,
-        getGroupIds: () => new MockBiMap([]) as any,
-        valueTypeMappingForReference: () => ({
-          input: "" as ReadableId,
-          output: "" as ReadableId,
-        }),
-        generateRid: function(key: string): string {
-          return key;
-        },
-      };
+      const ridGenerator = createMockRidGenerator();
 
       const extractor = new ObjectTypeShapeExtractor();
       const result: BlockShapes = extractor.extract(

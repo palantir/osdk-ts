@@ -44,8 +44,9 @@ export function convertObjectPropertyType(
     }' should not have render hints`,
   );
   // TODO: Generate proper RID and ID based on object type and property API name
-  const propertyRid = ridGenerator.generateRid(
-    `property.${objectTypeApiName}.${property.apiName}`,
+  const propertyRid = ridGenerator.generatePropertyRid(
+    property.apiName,
+    objectTypeApiName,
   );
   const output: PropertyType = {
     apiName: property.apiName,
@@ -80,7 +81,7 @@ export function convertObjectPropertyType(
       : convertNullabilityToDataConstraint(property),
     // TODO: Convert sharedPropertyTypeRid from API name to RID
     sharedPropertyTypeRid: property.sharedPropertyType
-      ? ridGenerator.generateRid(`spt.${property.sharedPropertyType.apiName}`)
+      ? ridGenerator.generateSptRid(property.sharedPropertyType.apiName)
       : undefined,
     valueType: property.valueType
       ? convertValueType(property.valueType, ridGenerator)

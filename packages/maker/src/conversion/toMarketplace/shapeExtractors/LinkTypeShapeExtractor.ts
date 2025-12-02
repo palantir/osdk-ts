@@ -231,7 +231,7 @@ export class LinkTypeShapeExtractor {
       // Find datasource readable ID
       let datasourceReadableId: ReadableId | undefined;
       for (
-        const [id, loc] of ridGenerator.getDatasourceLocators().inverse()
+        const [id, loc] of ridGenerator.getDatasourceLocators()
           .entries()
       ) {
         if (this.datasourceLocatorsMatch(loc, datasourceLocator)) {
@@ -380,7 +380,7 @@ export class LinkTypeShapeExtractor {
 
     for (const column of columns) {
       for (
-        const [id, shape] of ridGenerator.getColumnShapes().inverse().entries()
+        const [id, shape] of ridGenerator.getColumnShapes().entries()
       ) {
         if (
           this.datasourceLocatorsMatch(shape.datasource, datasourceLocator)
@@ -417,7 +417,7 @@ export class LinkTypeShapeExtractor {
 
     for (const column of columns) {
       for (
-        const [id, shape] of ridGenerator.getColumnShapes().inverse().entries()
+        const [id, shape] of ridGenerator.getColumnShapes().entries()
       ) {
         if (
           this.datasourceLocatorsMatch(shape.datasource, datasourceLocator)

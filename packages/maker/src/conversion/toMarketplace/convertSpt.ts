@@ -44,7 +44,7 @@ export function convertSpt(
   return {
     apiName,
     // TODO: Generate proper RID based on apiName
-    rid: ridGenerator.generateRid(`spt.${apiName}`),
+    rid: ridGenerator.generateSptRid(apiName),
     displayMetadata: {
       displayName: displayName ?? apiName,
       visibility: visibility ?? "NORMAL",
@@ -64,11 +64,11 @@ export function convertSpt(
     gothamMapping: gothamMapping,
     indexedForSearch: true,
     typeClasses: typeClasses ?? [],
-    valueType: valueType === undefined ? undefined : {
-      rid: ridGenerator.generateRid(
-        `vt.${valueType.apiName}.${valueType.version}`,
+    valueType: valueType === undefined
+      ? undefined
+      : ridGenerator.generateRidForValueType(
+        valueType.apiName,
+        valueType.version,
       ),
-      versionId: valueType.version,
-    },
   };
 }

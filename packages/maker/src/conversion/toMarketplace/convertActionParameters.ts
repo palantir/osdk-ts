@@ -25,7 +25,7 @@ export function convertActionParameters(
   return Object.fromEntries((action.parameters ?? []).map(p => [p.id, {
     id: p.id,
     // TODO: Generate proper RID for parameter
-    rid: ridGenerator.generateRid(`parameter.${action.apiName}.${p.id}`),
+    rid: ridGenerator.generateRidForParameter(action.apiName, p.id),
     // TODO: Convert OntologyIrBaseParameterType to BaseParameterType properly
     type: (typeof p.type === "string"
       ? { type: p.type, [p.type]: {} }

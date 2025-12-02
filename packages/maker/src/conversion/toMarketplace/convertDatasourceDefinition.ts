@@ -42,8 +42,9 @@ export function convertDatasourceDefinition(
         properties.map((
           prop,
         ) => [
-          ridGenerator.generateRid(
-            `property.${objectType.apiName}.${prop.apiName}`,
+          ridGenerator.generatePropertyRid(
+            prop.apiName,
+            objectType.apiName,
           ),
           prop.apiName,
         ]),
@@ -102,8 +103,9 @@ function buildPropertyMapping(
   // TODO: Convert property mappings to use RIDs as keys
   return Object.fromEntries(
     properties.map((prop) => {
-      const propertyRid = ridGenerator.generateRid(
-        `property.${objectTypeApiName}.${prop.apiName}`,
+      const propertyRid = ridGenerator.generatePropertyRid(
+        prop.apiName,
+        objectTypeApiName,
       );
       // editOnly
       if (prop.editOnly) {

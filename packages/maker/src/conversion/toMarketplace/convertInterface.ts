@@ -27,7 +27,7 @@ export function convertInterface(
   return {
     ...other,
     // TODO: Generate proper RID based on apiName
-    rid: ridGenerator.generateRid(`interface.${interfaceType.apiName}`),
+    rid: ridGenerator.generateRidForInterface(interfaceType.apiName),
     propertiesV2: Object.fromEntries(
       Object.values(interfaceType.propertiesV2)
         .map((
@@ -50,13 +50,14 @@ export function convertInterface(
     },
     // TODO: Convert extendsInterfaces from API names to RIDs
     extendsInterfaces: interfaceType.extendsInterfaces.map(i =>
-      ridGenerator.generateRid(`interface.${i.apiName}`)
+      ridGenerator.generateRidForInterface(i.apiName)
     ),
     // TODO: Convert links to add RIDs
     links: interfaceType.links.map(link => ({
       ...link,
-      rid: ridGenerator.generateRid(
-        `interface.link.${interfaceType.apiName}.${link.metadata.apiName}`,
+      rid: ridGenerator.generateRidForInterfaceLinkType(
+        link.metadata.apiName,
+        interfaceType.apiName,
       ),
     })),
     // these are omitted from our internal types but we need to re-add them for the final json

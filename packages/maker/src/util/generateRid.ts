@@ -16,12 +16,16 @@
 
 import type { ValueTypeReference } from "@osdk/client.unstable";
 import type {
+  ActionTypeRid,
   DatasourceLocator,
   FilesDatasourceLocator,
   GeotimeSeriesIntegrationRid,
   GroupId,
   InputShape,
   InputShapeMetadata,
+  InterfaceLinkTypeRid,
+  InterfacePropertyTypeRid,
+  InterfaceTypeRid,
   LinkTypeRid,
   ObjectTypeRid,
   OutputShape,
@@ -30,6 +34,9 @@ import type {
   SharedPropertyTypeRid,
   TimeSeriesSyncRid,
 } from "@osdk/client.unstable/api";
+// ParameterRid is defined in ontology-metadata but may not be re-exported through the main API
+type ParameterRid = string;
+import { createHash } from "crypto";
 
 // Given a unique key generates a rid deterministically (from a lock file eventually)
 export type ReadableId = string & { __brand: "ReadableId" };
@@ -39,25 +46,64 @@ export type ReadableId = string & { __brand: "ReadableId" };
  * This should be filled in with actual implementation
  */
 export interface OntologyRidGenerator {
-  getPropertyTypeRids(): BiMap<PropertyTypeRid, ReadableId>;
-  getSharedPropertyTypeRids(): BiMap<SharedPropertyTypeRid, ReadableId>;
-  getDatasourceLocators(): BiMap<DatasourceLocator, ReadableId>;
-  getFilesDatasourceLocators(): BiMap<FilesDatasourceLocator, ReadableId>;
+  getActionTypeRids(): BiMap<ReadableId, ActionTypeRid>;
+  getParameterRidAndIds(): Map<string, BiMap<ReadableId, ParameterRidAndId>>;
+  getInterfaceRids(): BiMap<ReadableId, InterfaceTypeRid>;
+  getSharedPropertyTypeRids(): BiMap<ReadableId, SharedPropertyTypeRid>;
+  getInterfaceLinkTypeRids(): BiMap<ReadableId, InterfaceLinkTypeRid>;
+  getInterfacePropertyTypeRids(): BiMap<ReadableId, InterfacePropertyTypeRid>;
+  getPropertyTypeRids(): BiMap<ReadableId, PropertyTypeRid>;
+  getDatasourceLocators(): BiMap<ReadableId, DatasourceLocator>;
+  getFilesDatasourceLocators(): BiMap<ReadableId, FilesDatasourceLocator>;
   getGeotimeSeriesIntegrationRids(): BiMap<
-    GeotimeSeriesIntegrationRid,
-    ReadableId
+    ReadableId,
+    GeotimeSeriesIntegrationRid
   >;
-  getTimeSeriesSyncs(): BiMap<TimeSeriesSyncRid, ReadableId>;
-  getColumnShapes(): BiMap<ResolvedDatasourceColumnShape, ReadableId>;
-  getObjectTypeRids(): BiMap<ObjectTypeRid, ReadableId>;
-  getLinkTypeRids(): BiMap<LinkTypeRid, ReadableId>;
-  getGroupIds(): BiMap<GroupId, ReadableId>;
+  getTimeSeriesSyncs(): BiMap<ReadableId, TimeSeriesSyncRid>;
+  getColumnShapes(): BiMap<ReadableId, ResolvedDatasourceColumnShape>;
+  getObjectTypeRids(): BiMap<ReadableId, ObjectTypeRid>;
+  getLinkTypeRids(): BiMap<ReadableId, LinkTypeRid>;
+  getGroupIds(): BiMap<ReadableId, GroupId>;
+  getConsumedValueTypeReferences(): BiMap<ReadableId, ValueTypeReference>;
+  getProducedValueTypeReferences(): Map<ValueTypeReference, ReadableId>;
   valueTypeMappingForReference(valueTypeReference: ValueTypeReference): {
     input: ReadableId;
     output: ReadableId;
   };
-
+  hashString(input: string): string;
+  // Generic RID generation for types without specific generators (datasources, sections, etc.)
   generateRid(key: string): string;
+  generateRidForInterface(apiName: string): InterfaceTypeRid;
+  generateRidForInterfaceLinkType(
+    apiName: string,
+    interfaceTypeApiName: string,
+  ): InterfaceLinkTypeRid;
+  generateRidForObjectType(apiName: string): ObjectTypeRid;
+  generateRidForValueType(apiName: string, version: string): ValueTypeReference;
+  generateRidForTimeSeriesSync(name: string): TimeSeriesSyncRid;
+  generateRidForLinkType(linkTypeId: string): LinkTypeRid;
+  generateRidForGeotimeSeriesIntegration(
+    name: string,
+  ): GeotimeSeriesIntegrationRid;
+  generateRidForActionType(apiName: string): ActionTypeRid;
+  generateRidForParameter(
+    actionTypeApiName: string,
+    parameterId: string,
+  ): ParameterRid;
+  generateSptRid(apiName: string): SharedPropertyTypeRid;
+  generatePropertyRid(
+    apiName: string,
+    objectTypeApiName: string,
+  ): PropertyTypeRid;
+  generateInterfacePropertyTypeRid(
+    apiName: string,
+    interfaceTypeApiName: string,
+  ): InterfacePropertyTypeRid;
+}
+
+export interface ParameterRidAndId {
+  rid: ParameterRid;
+  id: string;
 }
 
 /**
@@ -65,6 +111,7 @@ export interface OntologyRidGenerator {
  */
 export interface BiMap<K, V> {
   get(key: K): V | undefined;
+  put(key: K, value: V): void;
   asMap(): Map<K, V>;
   inverse(): BiMap<V, K>;
   entries(): IterableIterator<[K, V]>;
@@ -87,6 +134,134 @@ function toBlockShapeId(readableId: string, randomnessKey?: string): string {
   return randomnessKey ? `${readableId}-${randomnessKey}` : readableId;
 }
 
+/**
+ * ReadableId generator functions matching Java's ReadableIdGenerator
+ */
+class ReadableIdGenerator {
+  static get(interfaceTypeApiName: string): ReadableId;
+  static get(
+    interfaceApiName: string,
+    interfaceLinkTypeApiName: string,
+  ): ReadableId;
+  static get(arg1: string, arg2?: string): ReadableId {
+    if (arg2 !== undefined) {
+      // Interface link type
+      return `interface-link-type-${arg1}-${arg2}` as ReadableId;
+    }
+    // Single argument - check context to determine type
+    // This will be called from specific methods
+    return arg1 as ReadableId;
+  }
+
+  static getForInterface(interfaceTypeApiName: string): ReadableId {
+    return `interface-${interfaceTypeApiName}` as ReadableId;
+  }
+
+  static getForObjectType(objectTypeApiName: string): ReadableId {
+    return `object-type-${objectTypeApiName}` as ReadableId;
+  }
+
+  static getForStream(streamName: string): ReadableId {
+    return `stream-datasource-${streamName}` as ReadableId;
+  }
+
+  static getForStreamColumn(
+    streamName: string,
+    columnName: string,
+  ): ReadableId {
+    return `stream-datasource-column-${streamName}-${columnName}` as ReadableId;
+  }
+
+  static getForTimeSeriesSync(timeSeriesSyncName: string): ReadableId {
+    return `time-series-sync-${timeSeriesSyncName}` as ReadableId;
+  }
+
+  static getForDataSet(dataSetName: string): ReadableId {
+    return `dataset-datasource-${dataSetName}` as ReadableId;
+  }
+
+  static getForDataSetColumn(
+    dataSetName: string,
+    columnName: string,
+  ): ReadableId {
+    return `dataset-datasource-column-${dataSetName}-${columnName}` as ReadableId;
+  }
+
+  static getForMediaSetView(mediaSetViewName: string): ReadableId {
+    return `media-set-view-${mediaSetViewName}` as ReadableId;
+  }
+
+  static getForRestrictedView(restrictedViewName: string): ReadableId {
+    return `restricted-view-datasource-${restrictedViewName}` as ReadableId;
+  }
+
+  static getForRestrictedViewColumn(
+    restrictedViewName: string,
+    columnName: string,
+  ): ReadableId {
+    return `restricted-view-datasource-column-${restrictedViewName}-${columnName}` as ReadableId;
+  }
+
+  static getForLinkType(linkTypeId: string): ReadableId {
+    return `link-type-${linkTypeId}` as ReadableId;
+  }
+
+  static getForGeotimeSeriesIntegration(name: string): ReadableId {
+    return `geotime-series-integration-${name}` as ReadableId;
+  }
+
+  static getForActionType(actionTypeApiName: string): ReadableId {
+    return `action-type-${actionTypeApiName}` as ReadableId;
+  }
+
+  static getForParameter(actionName: string, parameterId: string): ReadableId {
+    return `action-${actionName}-parameter-${parameterId}` as ReadableId;
+  }
+
+  static getForGroup(groupId: string): ReadableId {
+    return `group-${groupId}` as ReadableId;
+  }
+
+  static getForProducedValueType(
+    valueTypeApiName: string,
+    version: string,
+  ): ReadableId {
+    return `produced-value-type-${valueTypeApiName}-${version}` as ReadableId;
+  }
+
+  static getForConsumedValueType(
+    valueTypeApiName: string,
+    version: string,
+  ): ReadableId {
+    return `consumed-value-type-${valueTypeApiName}-${version}` as ReadableId;
+  }
+
+  static getForSpt(fieldApiName: string): ReadableId {
+    return `shared-property-type-${fieldApiName}` as ReadableId;
+  }
+
+  static getForObjectProperty(
+    objectTypeApiName: string,
+    fieldApiName: string,
+  ): ReadableId {
+    return `${objectTypeApiName}-property-type-${fieldApiName}` as ReadableId;
+  }
+
+  static getForInterfaceProperty(
+    interfaceTypeApiName: string,
+    interfacePropertyTypeApiName: string,
+  ): ReadableId {
+    return `interface-property-type-${interfaceTypeApiName}-${interfacePropertyTypeApiName}` as ReadableId;
+  }
+
+  static getForInterfaceLinkType(
+    interfaceApiName: string,
+    interfaceLinkTypeApiName: string,
+  ): ReadableId {
+    return `interface-link-type-${interfaceApiName}-${interfaceLinkTypeApiName}` as ReadableId;
+  }
+}
+
 export class BiMapImpl<K, V> implements BiMap<K, V> {
   forward: Map<K, V>;
   backward: Map<V, K>;
@@ -105,6 +280,12 @@ export class BiMapImpl<K, V> implements BiMap<K, V> {
   get(key: K): V | undefined {
     return this.forward.get(key);
   }
+
+  put(key: K, value: V): void {
+    this.forward.set(key, value);
+    this.backward.set(value, key);
+  }
+
   inverse(): BiMap<V, K> {
     return new BiMapImpl(this.backward, this.forward);
   }
@@ -114,48 +295,340 @@ export class BiMapImpl<K, V> implements BiMap<K, V> {
 }
 
 export class OntologyRidGeneratorImpl implements OntologyRidGenerator {
-  constructor() {
-  }
-  getPropertyTypeRids(): BiMap<PropertyTypeRid, ReadableId> {
-    throw new Error("Method not implemented.");
-  }
-  getSharedPropertyTypeRids(): BiMap<SharedPropertyTypeRid, ReadableId> {
-    throw new Error("Method not implemented.");
-  }
-  getDatasourceLocators(): BiMap<DatasourceLocator, ReadableId> {
-    throw new Error("Method not implemented.");
-  }
-  getFilesDatasourceLocators(): BiMap<FilesDatasourceLocator, ReadableId> {
-    throw new Error("Method not implemented.");
-  }
-  getGeotimeSeriesIntegrationRids(): BiMap<
-    GeotimeSeriesIntegrationRid,
+  private readonly actionTypeRids: BiMap<ReadableId, ActionTypeRid>;
+  private readonly parameterRids: Map<
+    string,
+    BiMap<ReadableId, ParameterRidAndId>
+  >;
+  private readonly interfaceRids: BiMap<ReadableId, InterfaceTypeRid>;
+  private readonly sharedPropertyTypeRids: BiMap<
+    ReadableId,
+    SharedPropertyTypeRid
+  >;
+  private readonly interfaceLinkTypeRids: BiMap<
+    ReadableId,
+    InterfaceLinkTypeRid
+  >;
+  private readonly interfacePropertyTypeRids: BiMap<
+    ReadableId,
+    InterfacePropertyTypeRid
+  >;
+  private readonly geotimeSeriesIntegrationRids: BiMap<
+    ReadableId,
+    GeotimeSeriesIntegrationRid
+  >;
+  private readonly objectTypeRids: BiMap<ReadableId, ObjectTypeRid>;
+  private readonly propertyTypeRids: BiMap<ReadableId, PropertyTypeRid>;
+  private readonly consumedValueTypeReferences: BiMap<
+    ReadableId,
+    ValueTypeReference
+  >;
+  private readonly producedValueTypeReferences: Map<
+    ValueTypeReference,
     ReadableId
+  >;
+  private readonly datasourceLocators: BiMap<ReadableId, DatasourceLocator>;
+  private readonly filesDatasourceLocators: BiMap<
+    ReadableId,
+    FilesDatasourceLocator
+  >;
+  private readonly timeSeriesSyncs: BiMap<ReadableId, TimeSeriesSyncRid>;
+  private readonly columnShapes: BiMap<
+    ReadableId,
+    ResolvedDatasourceColumnShape
+  >;
+  private readonly linkTypeRids: BiMap<ReadableId, LinkTypeRid>;
+  private readonly groupIds: BiMap<ReadableId, GroupId>;
+  private readonly randomnessUuid?: string;
+
+  constructor(randomnessUuid?: string) {
+    this.randomnessUuid = randomnessUuid;
+    this.geotimeSeriesIntegrationRids = BiMapImpl.create();
+    this.interfaceLinkTypeRids = BiMapImpl.create();
+    this.interfacePropertyTypeRids = BiMapImpl.create();
+    this.interfaceRids = BiMapImpl.create();
+    this.actionTypeRids = BiMapImpl.create();
+    this.parameterRids = new Map();
+    this.sharedPropertyTypeRids = BiMapImpl.create();
+    this.consumedValueTypeReferences = BiMapImpl.create();
+    this.producedValueTypeReferences = new Map();
+    this.objectTypeRids = BiMapImpl.create();
+    this.datasourceLocators = BiMapImpl.create();
+    this.filesDatasourceLocators = BiMapImpl.create();
+    this.columnShapes = BiMapImpl.create();
+    this.propertyTypeRids = BiMapImpl.create();
+    this.timeSeriesSyncs = BiMapImpl.create();
+    this.linkTypeRids = BiMapImpl.create();
+    this.groupIds = BiMapImpl.create();
+  }
+
+  hashString(input: string): string {
+    const stringToHash = this.randomnessUuid
+      ? `${input}-${this.randomnessUuid}`
+      : input;
+    return createHash("sha256").update(stringToHash, "utf8").digest("hex");
+  }
+
+  // Generic RID generation for types without specific generators
+  generateRid(key: string): string {
+    return `ri.ontology-metadata..temp.${this.hashString(key)}`;
+  }
+
+  getActionTypeRids(): BiMap<ReadableId, ActionTypeRid> {
+    return this.actionTypeRids;
+  }
+
+  getParameterRidAndIds(): Map<string, BiMap<ReadableId, ParameterRidAndId>> {
+    return this.parameterRids;
+  }
+
+  getInterfaceRids(): BiMap<ReadableId, InterfaceTypeRid> {
+    return this.interfaceRids;
+  }
+
+  getSharedPropertyTypeRids(): BiMap<ReadableId, SharedPropertyTypeRid> {
+    return this.sharedPropertyTypeRids;
+  }
+
+  getInterfaceLinkTypeRids(): BiMap<ReadableId, InterfaceLinkTypeRid> {
+    return this.interfaceLinkTypeRids;
+  }
+
+  getInterfacePropertyTypeRids(): BiMap<ReadableId, InterfacePropertyTypeRid> {
+    return this.interfacePropertyTypeRids;
+  }
+
+  getPropertyTypeRids(): BiMap<ReadableId, PropertyTypeRid> {
+    return this.propertyTypeRids;
+  }
+
+  getDatasourceLocators(): BiMap<ReadableId, DatasourceLocator> {
+    return this.datasourceLocators;
+  }
+
+  getFilesDatasourceLocators(): BiMap<ReadableId, FilesDatasourceLocator> {
+    return this.filesDatasourceLocators;
+  }
+
+  getGeotimeSeriesIntegrationRids(): BiMap<
+    ReadableId,
+    GeotimeSeriesIntegrationRid
   > {
-    throw new Error("Method not implemented.");
+    return this.geotimeSeriesIntegrationRids;
   }
-  getTimeSeriesSyncs(): BiMap<TimeSeriesSyncRid, ReadableId> {
-    throw new Error("Method not implemented.");
+
+  getTimeSeriesSyncs(): BiMap<ReadableId, TimeSeriesSyncRid> {
+    return this.timeSeriesSyncs;
   }
-  getColumnShapes(): BiMap<ResolvedDatasourceColumnShape, ReadableId> {
-    throw new Error("Method not implemented.");
+
+  getColumnShapes(): BiMap<ReadableId, ResolvedDatasourceColumnShape> {
+    return this.columnShapes;
   }
-  getObjectTypeRids(): BiMap<ObjectTypeRid, ReadableId> {
-    throw new Error("Method not implemented.");
+
+  getObjectTypeRids(): BiMap<ReadableId, ObjectTypeRid> {
+    return this.objectTypeRids;
   }
-  getLinkTypeRids(): BiMap<LinkTypeRid, ReadableId> {
-    throw new Error("Method not implemented.");
+
+  getLinkTypeRids(): BiMap<ReadableId, LinkTypeRid> {
+    return this.linkTypeRids;
   }
-  getGroupIds(): BiMap<GroupId, ReadableId> {
-    throw new Error("Method not implemented.");
+
+  getGroupIds(): BiMap<ReadableId, GroupId> {
+    return this.groupIds;
   }
+
+  getConsumedValueTypeReferences(): BiMap<ReadableId, ValueTypeReference> {
+    return this.consumedValueTypeReferences;
+  }
+
+  getProducedValueTypeReferences(): Map<ValueTypeReference, ReadableId> {
+    return this.producedValueTypeReferences;
+  }
+
   valueTypeMappingForReference(valueTypeReference: ValueTypeReference): {
     input: ReadableId;
     output: ReadableId;
   } {
-    throw new Error("Method not implemented.");
+    const input = this.consumedValueTypeReferences.inverse().get(
+      valueTypeReference,
+    );
+    const output = this.producedValueTypeReferences.get(valueTypeReference);
+
+    if (!input || !output) {
+      throw new Error(`Missing readable ID for value type reference`);
+    }
+
+    return { input, output };
   }
-  generateRid(key: string): string {
-    return key;
+
+  // Interface types
+  generateRidForInterface(apiName: string): InterfaceTypeRid {
+    const rid = `ri.ontology-metadata..temp.interface-type.${
+      this.hashString(apiName)
+    }` as InterfaceTypeRid;
+    this.interfaceRids.put(ReadableIdGenerator.getForInterface(apiName), rid);
+    return rid;
+  }
+
+  // Interface Link Types
+  generateRidForInterfaceLinkType(
+    apiName: string,
+    interfaceTypeApiName: string,
+  ): InterfaceLinkTypeRid {
+    const readableId = ReadableIdGenerator.getForInterfaceLinkType(
+      interfaceTypeApiName,
+      apiName,
+    );
+    const rid = `ri.ontology-metadata..temp.interface-link-type.${
+      this.hashString(readableId)
+    }` as InterfaceLinkTypeRid;
+    this.interfaceLinkTypeRids.put(readableId, rid);
+    return rid;
+  }
+
+  // Object Types
+  generateRidForObjectType(apiName: string): ObjectTypeRid {
+    const rid = `ri.ontology-metadata..temp.object-type.${
+      this.hashString(apiName)
+    }` as ObjectTypeRid;
+    this.objectTypeRids.put(ReadableIdGenerator.getForObjectType(apiName), rid);
+    return rid;
+  }
+
+  // Value Types
+  generateRidForValueType(
+    apiName: string,
+    version: string,
+  ): ValueTypeReference {
+    const rid = `ri.ontology-metadata..temp.value-type.${
+      this.hashString(apiName)
+    }`;
+    // Generate UUID from version string (matching Java's UUID.nameUUIDFromBytes)
+    const versionHash = createHash("md5").update(version, "utf8").digest("hex");
+    const versionAsUuid = `${versionHash.slice(0, 8)}-${
+      versionHash.slice(8, 12)
+    }-${versionHash.slice(12, 16)}-${versionHash.slice(16, 20)}-${
+      versionHash.slice(20, 32)
+    }`;
+
+    const valueTypeReference: ValueTypeReference = {
+      rid,
+      versionId: versionAsUuid,
+    } as ValueTypeReference;
+
+    this.consumedValueTypeReferences.put(
+      ReadableIdGenerator.getForConsumedValueType(apiName, version),
+      valueTypeReference,
+    );
+    this.producedValueTypeReferences.set(
+      valueTypeReference,
+      ReadableIdGenerator.getForProducedValueType(apiName, version),
+    );
+    return valueTypeReference;
+  }
+
+  generateRidForTimeSeriesSync(name: string): TimeSeriesSyncRid {
+    const rid = `ri.ontology-metadata..temp.time-series-sync.${
+      this.hashString(name)
+    }` as TimeSeriesSyncRid;
+    this.timeSeriesSyncs.put(
+      ReadableIdGenerator.getForTimeSeriesSync(name),
+      rid,
+    );
+    return rid;
+  }
+
+  generateRidForLinkType(linkTypeId: string): LinkTypeRid {
+    const rid = `ri.ontology-metadata..temp.link-type.${
+      this.hashString(linkTypeId)
+    }` as LinkTypeRid;
+    this.linkTypeRids.put(ReadableIdGenerator.getForLinkType(linkTypeId), rid);
+    return rid;
+  }
+
+  generateRidForGeotimeSeriesIntegration(
+    name: string,
+  ): GeotimeSeriesIntegrationRid {
+    const rid = `ri.ontology-metadata..temp.geotime-series-integration.${
+      this.hashString(name)
+    }` as GeotimeSeriesIntegrationRid;
+    this.geotimeSeriesIntegrationRids.put(
+      ReadableIdGenerator.getForGeotimeSeriesIntegration(name),
+      rid,
+    );
+    return rid;
+  }
+
+  generateRidForActionType(apiName: string): ActionTypeRid {
+    const rid = `ri.ontology-metadata..temp.action-type.${
+      this.hashString(apiName)
+    }` as ActionTypeRid;
+    this.actionTypeRids.put(ReadableIdGenerator.getForActionType(apiName), rid);
+    return rid;
+  }
+
+  generateRidForParameter(
+    actionTypeApiName: string,
+    parameterId: string,
+  ): ParameterRid {
+    const rid = `ri.ontology-metadata..temp.parameter.${
+      this.hashString(actionTypeApiName + "." + parameterId)
+    }` as ParameterRid;
+
+    let innerMap = this.parameterRids.get(actionTypeApiName);
+    if (!innerMap) {
+      innerMap = BiMapImpl.create();
+      this.parameterRids.set(actionTypeApiName, innerMap);
+    }
+
+    innerMap.put(
+      ReadableIdGenerator.getForParameter(actionTypeApiName, parameterId),
+      { rid, id: parameterId },
+    );
+    return rid;
+  }
+
+  // Shared Property Types
+  generateSptRid(apiName: string): SharedPropertyTypeRid {
+    const rid = `ri.ontology-metadata..temp.shared-property-type.${
+      this.hashString(apiName)
+    }` as SharedPropertyTypeRid;
+    this.sharedPropertyTypeRids.put(
+      ReadableIdGenerator.getForSpt(apiName),
+      rid,
+    );
+    return rid;
+  }
+
+  generatePropertyRid(
+    apiName: string,
+    objectTypeApiName: string,
+  ): PropertyTypeRid {
+    const rid = `ri.ontology-metadata..temp.property-type.${
+      this.hashString(objectTypeApiName + "." + apiName)
+    }` as PropertyTypeRid;
+    this.propertyTypeRids.put(
+      ReadableIdGenerator.getForObjectProperty(objectTypeApiName, apiName),
+      rid,
+    );
+    return rid;
+  }
+
+  // Interface Property Types
+  generateInterfacePropertyTypeRid(
+    apiName: string,
+    interfaceTypeApiName: string,
+  ): InterfacePropertyTypeRid {
+    const rid = `ri.ontology-metadata..temp.interface-property-type.${
+      this.hashString(interfaceTypeApiName + "." + apiName)
+    }` as InterfacePropertyTypeRid;
+    this.interfacePropertyTypeRids.put(
+      ReadableIdGenerator.getForInterfaceProperty(
+        interfaceTypeApiName,
+        apiName,
+      ),
+      rid,
+    );
+    return rid;
   }
 }

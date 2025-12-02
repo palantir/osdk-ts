@@ -91,9 +91,11 @@ export class ObjectTypeShapeExtractor {
     ridGenerator: OntologyRidGenerator,
   ): BlockShapes {
     // BiMap inverse() returns BiMap<V,K> so we convert to Map<K,V>
-    const propertyReadableIdsByRid = ridGenerator.getPropertyTypeRids();
+    const propertyReadableIdsByRid = ridGenerator.getPropertyTypeRids()
+      .inverse();
 
-    const readableIdsForSptRid = ridGenerator.getSharedPropertyTypeRids();
+    const readableIdsForSptRid = ridGenerator.getSharedPropertyTypeRids()
+      .inverse();
 
     // Build property output shapes
     const propertyOutputShapeMap = new Map<ReadableId, PropertyOutputShape>();
@@ -118,19 +120,18 @@ export class ObjectTypeShapeExtractor {
     }
 
     const datasourcesByReadableId = ridGenerator.getDatasourceLocators()
-      .inverse().asMap();
+      .asMap();
     const filesDatasourcesByReadableId = ridGenerator
-      .getFilesDatasourceLocators().inverse();
+      .getFilesDatasourceLocators();
     const geotimeSeriesIntegrationRidByReadableId = new Map<
       ReadableId,
       GeotimeSeriesIntegrationRid
     >(
       Array.from(
-        ridGenerator.getGeotimeSeriesIntegrationRids().inverse().entries(),
+        ridGenerator.getGeotimeSeriesIntegrationRids().entries(),
       ),
     );
-    const timeSeriesSyncRidByReadableId = ridGenerator.getTimeSeriesSyncs()
-      .inverse();
+    const timeSeriesSyncRidByReadableId = ridGenerator.getTimeSeriesSyncs();
 
     const propertyTypes = new Map<PropertyTypeRid, Type>();
     for (
@@ -141,7 +142,7 @@ export class ObjectTypeShapeExtractor {
       propertyTypes.set(rid as PropertyTypeRid, propertyType.type);
     }
 
-    const columnShapes = ridGenerator.getColumnShapes().inverse().asMap();
+    const columnShapes = ridGenerator.getColumnShapes().asMap();
 
     // Build object type output shape
     const objectTypeOutputShape: ObjectTypeOutputShape = {
