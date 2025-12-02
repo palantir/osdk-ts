@@ -19,14 +19,18 @@ export function generateNpmRc({
   osdkRegistryUrl,
 }: {
   osdkPackage: string | undefined;
-  osdkRegistryUrl: string;
+  osdkRegistryUrl: string | undefined;
 }): string {
   // pnpm requires a trailing slash in .npmrc
   // https://github.com/pnpm/pnpm/issues/5941
-  const withTrailingSlash = osdkRegistryUrl.endsWith("/")
-    ? osdkRegistryUrl
-    : osdkRegistryUrl + "/";
+  const osdkRegistryUrlOrDefault = osdkRegistryUrl
+    ?? "https://<OSDK registry URL>";
+
+  const withTrailingSlash = osdkRegistryUrlOrDefault.endsWith("/")
+    ? osdkRegistryUrlOrDefault
+    : osdkRegistryUrlOrDefault + "/";
   const withoutProtocol = withTrailingSlash.replace(/^https:\/\//, "");
+
   const osdkPackageOrDefault = osdkPackage
     ?? "<OSDK package name>";
   const packageScope = osdkPackageOrDefault.split("/")[0];

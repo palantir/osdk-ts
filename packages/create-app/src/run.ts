@@ -41,7 +41,7 @@ interface RunArgs {
   ontology: string | undefined;
   clientId: string;
   osdkPackage: string | undefined;
-  osdkRegistryUrl: string;
+  osdkRegistryUrl: string | undefined;
   corsProxy: boolean;
   scopes: string[] | undefined;
 }

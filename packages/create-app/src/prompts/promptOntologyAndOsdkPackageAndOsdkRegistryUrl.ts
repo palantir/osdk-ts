@@ -17,18 +17,21 @@
 import { consola } from "../consola.js";
 import { italic } from "../highlight.js";
 
-export async function promptOsdkPackageAndOntology(
-  { osdkPackage, ontology, skipOsdk }: {
-    osdkPackage?: string;
+export async function promptOntologyAndOsdkPackageAndOsdkRegistryUrl(
+  { ontology, osdkPackage, osdkRegistryUrl, skipOsdk }: {
     ontology?: string;
+    osdkPackage?: string;
+    osdkRegistryUrl?: string;
     skipOsdk?: boolean;
   },
-): Promise<{ osdkPackage?: string; ontology?: string }> {
+): Promise<
+  { ontology?: string; osdkPackage?: string; osdkRegistryUrl?: string }
+> {
   if (skipOsdk) {
     return {};
   }
 
-  if (osdkPackage == null && ontology == null) {
+  if (osdkPackage == null && ontology == null && osdkRegistryUrl == null) {
     const skip = await consola.prompt(
       "Will you be using an OSDK in your application?",
       {
@@ -48,20 +51,6 @@ export async function promptOsdkPackageAndOntology(
     }
   }
 
-  while (osdkPackage == null || !/^@[a-z0-9-]+\/sdk$/.test(osdkPackage)) {
-    if (osdkPackage != null) {
-      consola.fail("Please enter a valid OSDK package name");
-    }
-    osdkPackage = await consola.prompt(
-      `Enter the OSDK package name for your application from Developer Console:\n${
-        italic(
-          "(Example: @my-app/sdk)",
-        )
-      }`,
-      { type: "text" },
-    );
-  }
-
   while (
     ontology == null
     || !/^ri\.ontology\.[^.]+\.ontology\.[^.]+$/.test(ontology)
@@ -79,5 +68,45 @@ export async function promptOsdkPackageAndOntology(
     );
   }
 
-  return { osdkPackage, ontology };
+  while (osdkPackage == null || !/^@[a-z0-9-]+\/sdk$/.test(osdkPackage)) {
+    if (osdkPackage != null) {
+      consola.fail("Please enter a valid OSDK package name");
+    }
+    osdkPackage = await consola.prompt(
+      `Enter the OSDK package name for your application from Developer Console:\n${
+        italic(
+          "(Example: @my-app/sdk)",
+        )
+      }`,
+      { type: "text" },
+    );
+  }
+
+  while (
+    osdkRegistryUrl == null
+    || !/^https:\/\/[^/]+\/artifacts\/api\/repositories\/ri\.artifacts\.[^/]+\/contents\/release\/npm\/?$/
+      .test(
+        osdkRegistryUrl,
+      )
+  ) {
+    if (osdkRegistryUrl != null) {
+      consola.fail(
+        "Please enter a valid NPM registry URL to install your OSDK package",
+      );
+    }
+    osdkRegistryUrl = await consola.prompt(
+      `Enter the NPM registry URL to install your OSDK package from Developer Console:\n${
+        italic(
+          "(Example: https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm)",
+        )
+      }`,
+      { type: "text" },
+    );
+  }
+
+  return {
+    ontology,
+    osdkPackage,
+    osdkRegistryUrl: osdkRegistryUrl.replace(/\/$/, ""),
+  };
 }

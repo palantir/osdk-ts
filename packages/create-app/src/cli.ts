@@ -23,8 +23,7 @@ import { promptApplicationUrl } from "./prompts/promptApplicationUrl.js";
 import { promptClientId } from "./prompts/promptClientId.js";
 import { promptCorsProxy } from "./prompts/promptCorsProxy.js";
 import { promptFoundryUrl } from "./prompts/promptFoundryUrl.js";
-import { promptOsdkPackageAndOntology } from "./prompts/promptOsdkPackageAndOntology.js";
-import { promptOsdkRegistryUrl } from "./prompts/promptOsdkRegistryUrl.js";
+import { promptOntologyAndOsdkPackageAndOsdkRegistryUrl } from "./prompts/promptOntologyAndOsdkPackageAndOsdkRegistryUrl.js";
 import { promptOverwrite } from "./prompts/promptOverwrite.js";
 import { promptProject } from "./prompts/promptProject.js";
 import { promptScopes } from "./prompts/promptScopes.js";
@@ -148,10 +147,10 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   const applicationUrl: string | undefined = await promptApplicationUrl(parsed);
   const application: string = await promptApplicationRid(parsed);
   const clientId: string = await promptClientId(parsed);
-  const { osdkPackage, ontology } = await promptOsdkPackageAndOntology(
-    parsed,
-  );
-  const osdkRegistryUrl: string = await promptOsdkRegistryUrl(parsed);
+  const { osdkPackage, ontology, osdkRegistryUrl } =
+    await promptOntologyAndOsdkPackageAndOsdkRegistryUrl(
+      parsed,
+    );
   const corsProxy: boolean = await promptCorsProxy(parsed);
   const scopes: string[] | undefined = await promptScopes(parsed);
 
