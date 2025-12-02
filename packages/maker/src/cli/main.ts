@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
+import archiver from "archiver";
 import { consola } from "consola";
-import * as fs from "node:fs/promises";
+import { createJiti } from "jiti";
+import { randomUUID } from "node:crypto";
+import * as fs from "node:fs";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineOntology } from "../api/defineOntology.js";
+import { generateOntologyBlockSpec } from "./marketplaceSerialization/specGenerators.js";
 
 const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
 const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+const MANIFEST_FILE_NAME = "generatedManifest.json";
 
 export default async function main(
   args: string[] = process.argv,
@@ -33,13 +39,7 @@ export default async function main(
     input: string;
     output: string;
     apiNamespace: string;
-    snapshotDir: string;
-    valueTypesOutput: string;
-    outputDir?: string;
-    dependencies?: string;
-    generateCodeSnippets: boolean;
-    codeSnippetPackageName: string;
-    codeSnippetDir: string;
+    buildDir: string;
     randomnessKey?: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
@@ -58,7 +58,7 @@ export default async function main(
         alias: "o",
         describe: "Output file",
         type: "string",
-        default: "ontology.json",
+        default: "ontology.zip",
         coerce: path.resolve,
       },
       apiNamespace: {
@@ -66,20 +66,28 @@ export default async function main(
         type: "string",
         default: "",
       },
-      snapshotDir: {
+      /**snapshotDir: {
         alias: "s",
         describe: "Snapshot directory",
         type: "string",
         default: "snapshots",
         coerce: path.resolve,
-      },
-      outputDir: {
+      },**/
+      /**outputDir: {
         alias: "d",
-        describe: "Directory for generated ontology entities",
+        describe: "Directory for generated marketplace product",
         type: "string",
         coerce: path.resolve,
+      },**/
+
+      buildDir: {
+        alias: "b",
+        describe: "Directory for build files",
+        type: "string",
+        default: "build/",
+        coerce: path.resolve,
       },
-      valueTypesOutput: {
+      /**valueTypesOutput: {
         describe: "Value Type Output File",
         type: "string",
         default: "value-types.json",
@@ -106,7 +114,7 @@ export default async function main(
         type: "string",
         default: "./",
         coerce: path.resolve,
-      },
+      }, **/
       randomnessKey: {
         describe: "Value used to assure uniqueness of entities",
         type: "string",
@@ -127,16 +135,6 @@ export default async function main(
   }
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
 
-  if (
-    !commandLineOpts.generateCodeSnippets
-    && (commandLineOpts.codeSnippetPackageName !== ""
-      || commandLineOpts.codeSnippetDir !== path.resolve("./"))
-  ) {
-    consola.info(
-      "Package name and/or directory supplied for code snippets, but code snippet generation is false.",
-    );
-  }
-
   if (commandLineOpts.randomnessKey !== undefined) {
     invariant(
       uuidRegex.test(commandLineOpts.randomnessKey),
@@ -147,16 +145,49 @@ export default async function main(
   const ontologyIr = await loadOntology(
     commandLineOpts.input,
     apiNamespace,
-    commandLineOpts.outputDir,
-    commandLineOpts.dependencies,
-    commandLineOpts.generateCodeSnippets,
-    commandLineOpts.codeSnippetPackageName,
-    commandLineOpts.codeSnippetDir,
     commandLineOpts.randomnessKey,
   );
 
+  const ontologyBlockSpec = generateOntologyBlockSpec(
+    apiNamespace,
+    ontologyIr,
+    commandLineOpts.randomnessKey,
+  );
+
+  if (!fs.existsSync(commandLineOpts.buildDir)) {
+    await fs.promises.mkdir(commandLineOpts.buildDir);
+  }
+
+  const ontBlockUuid = randomUUID();
+  const output = fs.createWriteStream(
+    commandLineOpts.buildDir + "/" + ontBlockUuid,
+  );
+
+  const archive = archiver("zip");
+
+  archive.pipe(output);
+
+  const blockDataStr = JSON.stringify(
+    ontologyIr.ontology,
+    null,
+    2,
+  );
+
+  const manifestStr = JSON.stringify(
+    ontologyBlockSpec,
+    null,
+    2,
+  );
+
+  const blockManifestStr = archive.append(blockDataStr, {
+    name: "files/ontology.json",
+  });
+  archive.append(manifestStr, { name: MANIFEST_FILE_NAME });
+
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
-  await fs.writeFile(
+
+  await archive.finalize();
+  /**await fs.promises.writeFile(
     commandLineOpts.output,
     JSON.stringify(
       ontologyIr,
@@ -177,28 +208,25 @@ export default async function main(
         2,
       ),
     );
-  }
+  }**/
 }
 
 async function loadOntology(
   input: string,
   apiNamespace: string,
-  outputDir: string | undefined,
-  dependencyFile: string | undefined,
-  generateCodeSnippets: boolean,
-  snippetPackageName: string,
-  codeSnippetDir: string,
   randomnessKey?: string,
 ) {
-  const q = await defineOntology(
+  const ontologyIr = await defineOntology(
     apiNamespace,
-    async () => await import(input),
-    outputDir,
-    dependencyFile,
-    generateCodeSnippets,
-    snippetPackageName,
-    codeSnippetDir,
+    async () => {
+      const jiti = createJiti(import.meta.filename, {
+        moduleCache: true,
+        debug: false,
+        importMeta: import.meta,
+      });
+      const module = await jiti.import(input);
+    },
     randomnessKey,
   );
-  return q;
+  return ontologyIr;
 }

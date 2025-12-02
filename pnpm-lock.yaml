@@ -3496,6 +3496,9 @@ importers:
       '@osdk/typescript-sdk-docs':
         specifier: ^0.2.0
         version: 0.2.0
+      archiver:
+        specifier: ^7.0.1
+        version: 7.0.1
       consola:
         specifier: ^3.4.2
         version: 3.4.2
@@ -3527,6 +3530,9 @@ importers:
       '@osdk/monorepo.tsconfig':
         specifier: workspace:~
         version: link:../monorepo.tsconfig
+      '@types/archiver':
+        specifier: ^7.0.0
+        version: 7.0.0
       '@types/mustache':
         specifier: ^4.2.6
         version: 4.2.6
@@ -5831,7 +5837,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {node: '>=0.10.0'}
+    engines: {'0': node >=0.10.0}
 
   '@expo/cli@0.22.26':
     resolution: {integrity: sha512-I689wc8Fn/AX7aUGiwrh3HnssiORMJtR2fpksX+JIe8Cj/EDleblYMSwRPd0025wrwOV9UN1KM/RuEt/QjCS3Q==}
@@ -8038,6 +8044,9 @@ packages:
 
   '@types/archiver@6.0.3':
     resolution: {integrity: sha512-a6wUll6k3zX6qs5KlxIggs1P1JcYJaTCx2gnlr+f0S1yd2DoaEwoIK10HmBaLnZwWneBz+JBm0dwcZu0zECBcQ==}
+
+  '@types/archiver@7.0.0':
+    resolution: {integrity: sha512-/3vwGwx9n+mCQdYZ2IKGGHEFL30I96UgBlk8EtRDDFQ9uxM1l4O5Ci6r00EMAkiDaTqD9DQ6nVrWRICnBPtzzg==}
 
   '@types/argparse@1.0.38':
     resolution: {integrity: sha512-ebDJ9b0e702Yr7pWgB0jzm+CX4Srzz8RcXtLJDJB+BSccqMa36uyH/zUsSYao5+BD1ytv3k3rPYCq4mAE1hsXA==}
@@ -19874,6 +19883,10 @@ snapshots:
       '@types/node': 18.19.124
 
   '@types/archiver@6.0.3':
+    dependencies:
+      '@types/readdir-glob': 1.1.3
+
+  '@types/archiver@7.0.0':
     dependencies:
       '@types/readdir-glob': 1.1.3
 

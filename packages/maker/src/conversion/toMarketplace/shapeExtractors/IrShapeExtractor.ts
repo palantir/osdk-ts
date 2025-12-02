@@ -37,6 +37,7 @@ import type {
   SharedPropertyTypeInputShape,
   SharedPropertyTypeOutputShape,
 } from "@osdk/client.unstable/api";
+import consola from "consola";
 import type {
   BlockShapes,
   OntologyRidGenerator,
@@ -95,7 +96,6 @@ export function getShapes(
       interfaceType.interfaceType,
     );
   }
-
   // Shared Property Types
   for (
     const [_rid, sharedPropertyTypeBlock] of Object.entries(
@@ -236,6 +236,7 @@ function extractInterfaceType(
     type: "interfaceType",
     interfaceType: interfaceTypeOutputShape,
   });
+  consola.log("Added interface shape", interfaceTypeOutputShape);
 }
 
 /**

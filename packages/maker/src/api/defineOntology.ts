@@ -40,7 +40,6 @@ import type { OntologyRidGenerator } from "../util/generateRid.js";
 import type { ActionParameter } from "./action/ActionParameter.js";
 import type { ActionParameterAllowedValues } from "./action/ActionParameterAllowedValues.js";
 import type { ActionType } from "./action/ActionType.js";
-import { createCodeSnippets } from "./code-snippets/createCodeSnippets.js";
 import type { OntologyDefinition } from "./common/OntologyDefinition.js";
 import { OntologyEntityTypeEnum } from "./common/OntologyEntityTypeEnum.js";
 import type { OntologyEntityType } from "./common/OntologyEntityTypeMapping.js";
@@ -83,11 +82,6 @@ export function updateOntology<
 export async function defineOntology(
   ns: string,
   body: () => void | Promise<void>,
-  outputDir: string | undefined,
-  dependencyFile?: string,
-  codeSnippetFiles?: boolean,
-  snippetPackageName?: string,
-  snippetFileOutputDir?: string,
   randomnessKey?: string,
 ): Promise<OntologyIr> {
   namespace = ns;
@@ -118,20 +112,6 @@ export async function defineOntology(
     );
     throw e;
   }
-  if (outputDir) {
-    writeStaticObjects(outputDir);
-  }
-  if (dependencyFile) {
-    writeDependencyFile(dependencyFile);
-  }
-  if (codeSnippetFiles) {
-    createCodeSnippets(
-      ontologyDefinition,
-      snippetPackageName,
-      snippetFileOutputDir,
-    );
-  }
-
   return convertOntologyDefinition(ontologyDefinition, randomnessKey);
 }
 

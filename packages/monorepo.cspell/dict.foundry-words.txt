@@ -21,3 +21,4 @@ restrictedview
 typeclasses
 structfield
 blockset
+manifest
