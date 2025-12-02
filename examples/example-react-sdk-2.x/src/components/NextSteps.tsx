@@ -3,12 +3,6 @@ import css from "./NextSteps.module.css";
 
 const STEPS: INextStep[] = [
   {
-    icon: "cloud",
-    title: "Request a subdomain to host your application with Foundry",
-    subtitle:
-      "Register a subdomain for your website in the Website hosting tab in Developer Console. Then, add this subdomain to your redirect URLs on the OAuth & scopes tab and update your .env.production file.",
-  },
-  {
     icon: "tag",
     title: "Deploy your application",
     subtitle:
