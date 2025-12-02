@@ -6,22 +6,6 @@ interface INextStep {
 }
 
 const STEPS: INextStep[] = [
-{{^if osdkPackage}}
-  {
-    icon: "cube",
-    title: "Configure your Ontology and Platform SDKs",
-    subtitle:
-      "Use the Ontology SDK to interact with your Ontology and the Platform SDK to access Foundry APIs. Configure your SDKs from the Ontology SDK and Platform SDK tabs in Developer Console.",
-  },
-{{^if applicationUrl}}
-{{/if}}
-  {
-    icon: "cloud",
-    title: "Request a subdomain to host your application with Foundry",
-    subtitle:
-      "Register a subdomain for your website in the Website hosting tab in Developer Console. Then, add this subdomain to your redirect URLs on the OAuth & scopes tab and update your .env.production file.",
-  },
-{{/if}}
   {
     icon: "tag",
     title: "Deploy your application",

@@ -37,8 +37,8 @@ const STEPS: INextStep[] = [
     <div v-for="step in STEPS" :key="step.title" class="next-step">
       <img :src="`/${step.icon}.svg`" class="icon" :alt="step.icon" />
       <div class="next-step-content">
-        <h6 class="title">{{ step.title }}</h6>
-        <div class="subtitle">{{ step.subtitle }}</div>
+        <h6 class="title">\{{ step.title }}</h6>
+        <div class="subtitle">\{{ step.subtitle }}</div>
       </div>
     </div>
   </div>

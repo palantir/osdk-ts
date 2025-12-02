@@ -42,6 +42,7 @@ export interface Template {
 }
 
 export interface TemplateContext {
+  application: string;
   project: string;
   foundryUrl: string;
   osdkPackage: string | undefined;

@@ -4,10 +4,10 @@
   <div class="osdk">
     <div>
       <span>OSDK: </span>
-      <span class="tag">{{osdkPackage}}</span>
+      <span class="tag">@osdk/e2e.generated.catchall</span>
     </div>
     <a
-      href="{{foundryUrl}}/workspace/developer-console/app/{{application}}/docs/guide/loading-data?language=typescript"
+      href="https://fake.palantirfoundry.com/workspace/developer-console/app/ri.third-party-applications.main.application.fake/docs/guide/loading-data?language=typescript"
       class="docs"
       target="_blank"
     >

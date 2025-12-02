@@ -9,7 +9,7 @@ function Osdk(): React.ReactElement {
         <span className={css.tag}>@osdk/e2e.generated.catchall</span>
       </div>
       <a
-        href="https://fake.palantirfoundry.com/workspace/developer-console/app//docs/guide/loading-data?language=typescript"
+        href="https://fake.palantirfoundry.com/workspace/developer-console/app/ri.third-party-applications.main.application.fake/docs/guide/loading-data?language=typescript"
         className={css.docs}
         target="_blank"
       >
