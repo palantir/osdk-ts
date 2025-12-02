@@ -1,5 +1,11 @@
 # @osdk/widget.api
 
+## 3.2.5
+
+### Patch Changes
+
+- a2df5ba: Introduce widget resize message for automatic heights
+
 ## 3.2.4
 
 ## 3.2.3
