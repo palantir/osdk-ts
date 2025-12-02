@@ -66,12 +66,14 @@ describe("FetchMetadata", () => {
         ],
         "interfaceMap": {
           "FooInterface": {
+            "fooIdp": "office",
             "fooSpt": "fullName",
           },
         },
         "inverseInterfaceMap": {
           "FooInterface": {
             "fullName": "fooSpt",
+            "office": "fooIdp",
           },
         },
         "links": {
@@ -224,6 +226,15 @@ describe("FetchMetadata", () => {
           },
         },
         "properties": {
+          "fooIdp": {
+            "description": "A Foo IDP",
+            "displayName": "Foo IDP",
+            "multiplicity": false,
+            "nullable": true,
+            "type": "string",
+            "valueFormatting": undefined,
+            "valueTypeApiName": undefined,
+          },
           "fooSpt": {
             "description": "A foo",
             "displayName": "Foo",
