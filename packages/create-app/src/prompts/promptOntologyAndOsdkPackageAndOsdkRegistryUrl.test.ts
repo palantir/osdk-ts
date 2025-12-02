@@ -31,8 +31,24 @@ const VALID_OSDK_REGISTRY_URL =
 
 test("it skips prompting osdk package and ontology and osdk registry url if told no osdk", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce("no");
-  expect(await promptOntologyAndOsdkPackageAndOsdkRegistryUrl({})).toEqual({});
+  expect(
+    await promptOntologyAndOsdkPackageAndOsdkRegistryUrl({ sdkVersion: "2.x" }),
+  ).toEqual({});
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
+});
+
+test("it does not prompt osdk question if sdk version is 1.x", async () => {
+  vi.mocked(consola).prompt.mockResolvedValueOnce(VALID_ONTOLOGY);
+  vi.mocked(consola).prompt.mockResolvedValueOnce(VALID_OSDK_PACKAGE);
+  vi.mocked(consola).prompt.mockResolvedValueOnce(VALID_OSDK_REGISTRY_URL);
+  expect(
+    await promptOntologyAndOsdkPackageAndOsdkRegistryUrl({ sdkVersion: "1.x" }),
+  ).toEqual({
+    ontology: VALID_ONTOLOGY,
+    osdkPackage: VALID_OSDK_PACKAGE,
+    osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
+  });
+  expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(3);
 });
 
 test("it accepts valid osdk package and ontology and osdk registry url from prompt", async () => {
@@ -41,7 +57,10 @@ test("it accepts valid osdk package and ontology and osdk registry url from prom
   vi.mocked(consola).prompt.mockResolvedValueOnce(VALID_OSDK_PACKAGE);
   vi.mocked(consola).prompt.mockResolvedValueOnce(VALID_OSDK_REGISTRY_URL);
   expect(
-    await promptOntologyAndOsdkPackageAndOsdkRegistryUrl({ skipOsdk: false }),
+    await promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
+      skipOsdk: false,
+      sdkVersion: "2.x",
+    }),
   ).toEqual({
     osdkPackage: VALID_OSDK_PACKAGE,
     ontology: VALID_ONTOLOGY,
@@ -60,7 +79,9 @@ test("it prompts again if answered value is invalid", async () => {
   vi.mocked(consola).prompt.mockResolvedValueOnce("invalid");
   vi.mocked(consola).prompt.mockResolvedValueOnce("https://abc.com/something");
   vi.mocked(consola).prompt.mockResolvedValueOnce(VALID_OSDK_REGISTRY_URL);
-  expect(await promptOntologyAndOsdkPackageAndOsdkRegistryUrl({})).toEqual({
+  expect(
+    await promptOntologyAndOsdkPackageAndOsdkRegistryUrl({ sdkVersion: "2.x" }),
+  ).toEqual({
     ontology: VALID_ONTOLOGY,
     osdkPackage: VALID_OSDK_PACKAGE,
     osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
@@ -74,6 +95,7 @@ test("it accepts valid initial values without prompt", async () => {
       ontology: VALID_ONTOLOGY,
       osdkPackage: VALID_OSDK_PACKAGE,
       osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
+      sdkVersion: "2.x",
     }),
   ).toEqual(
     {
@@ -91,6 +113,7 @@ test("it accepts osdk package valid initial value without prompt", async () => {
   expect(
     await promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
       osdkPackage: VALID_OSDK_PACKAGE,
+      sdkVersion: "2.x",
     }),
   ).toEqual(
     {
@@ -108,6 +131,7 @@ test("it accepts ontology valid initial value without prompt", async () => {
   expect(
     await promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
       ontology: VALID_ONTOLOGY,
+      sdkVersion: "2.x",
     }),
   ).toEqual(
     {
@@ -125,6 +149,7 @@ test("it accepts osdk registry url valid initial value without prompt", async ()
   expect(
     await promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
       osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
+      sdkVersion: "2.x",
     }),
   ).toEqual(
     {
@@ -143,6 +168,7 @@ test("it prompts ontology if initial value is invalid", async () => {
       ontology: "ri.something.else.and.fake",
       osdkPackage: VALID_OSDK_PACKAGE,
       osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
+      sdkVersion: "2.x",
     }),
   ).toEqual({
     ontology: VALID_ONTOLOGY,
@@ -159,6 +185,7 @@ test("it prompts osdk package if initial value is invalid", async () => {
       ontology: VALID_ONTOLOGY,
       osdkPackage: "some-package",
       osdkRegistryUrl: VALID_OSDK_REGISTRY_URL,
+      sdkVersion: "2.x",
     }),
   ).toEqual(
     {
@@ -177,6 +204,7 @@ test("it prompts osdk registry url if initial value is invalid", async () => {
       ontology: VALID_ONTOLOGY,
       osdkPackage: VALID_OSDK_PACKAGE,
       osdkRegistryUrl: "invalid",
+      sdkVersion: "2.x",
     }),
   ).toEqual(
     {
@@ -194,6 +222,7 @@ test("it strips trailing slash from osdk registry url", async () => {
       ontology: VALID_ONTOLOGY,
       osdkPackage: VALID_OSDK_PACKAGE,
       osdkRegistryUrl: VALID_OSDK_REGISTRY_URL + "/",
+      sdkVersion: "2.x",
     }),
   ).toEqual(
     {
@@ -207,7 +236,10 @@ test("it strips trailing slash from osdk registry url", async () => {
 
 test("it skips prompting completely if told to", async () => {
   expect(
-    await promptOntologyAndOsdkPackageAndOsdkRegistryUrl({ skipOsdk: true }),
+    await promptOntologyAndOsdkPackageAndOsdkRegistryUrl({
+      skipOsdk: true,
+      sdkVersion: "2.x",
+    }),
   ).toEqual({});
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
 });
