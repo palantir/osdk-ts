@@ -1,5 +1,20 @@
 # @osdk/widget.client-react
 
+## 3.3.0-beta.11
+
+### Minor Changes
+
+- a8802b3: Add error boundary for custom widgets
+- 8d7b8db: Expand ErrorBoundary to catch all errors
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/client@2.6.0-beta.13
+  - @osdk/widget.client@3.3.0-beta.11
+
 ## 3.3.0-beta.10
 
 ### Patch Changes
@@ -73,6 +88,49 @@
 ### Patch Changes
 
 - @osdk/widget.client@3.3.0-beta.2
+
+## 3.2.5
+
+### Patch Changes
+
+- 71f33ca: Add error boundary for custom widgets
+- a2df5ba: Introduce widget resize message for automatic heights
+- 71f33ca: Expand ErrorBoundary to catch all errors
+- Updated dependencies [a2df5ba]
+  - @osdk/widget.client@3.2.5
+
+## 3.2.4
+
+### Patch Changes
+
+- @osdk/widget.client@3.2.4
+
+## 3.2.3
+
+### Patch Changes
+
+- @osdk/widget.client@3.2.3
+
+## 3.2.2
+
+### Patch Changes
+
+- @osdk/widget.client@3.2.2
+
+## 3.2.1
+
+### Patch Changes
+
+- 77475e6: Improved support for object set parameters in widget.client-react
+  - @osdk/widget.client@3.2.1
+
+## 3.2.0
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- Updated dependencies [7901ae0]
+  - @osdk/widget.client@3.2.0
 
 ## 3.2.0-beta.5
 

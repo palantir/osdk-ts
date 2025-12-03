@@ -30,11 +30,13 @@ import {
 } from "../common/constants.js";
 import { getInputHtmlEntrypoints } from "../common/getInputHtmlEntrypoints.js";
 import { standardizePathAndFileExtension } from "../common/standardizePathAndFileExtension.js";
+import { isCodeWorkspacesMode } from "./codeWorkspacesMode.js";
 import { extractInjectedScripts } from "./extractInjectedScripts.js";
 import { getBaseHref } from "./getBaseHref.js";
 import { getFoundryToken } from "./getFoundryToken.js";
 import { getWidgetIdOverrideMap } from "./getWidgetIdOverrideMap.js";
 import { publishDevModeSettings } from "./publishDevModeSettings.js";
+import { warnIfWrongDevCommand } from "./validateDevEnvironment.js";
 
 // Location of the setup page assets
 const DIR_DIST: string = typeof __dirname !== "undefined"
@@ -73,7 +75,8 @@ export function FoundryWidgetDevPlugin(): Plugin {
     /**
      * Check for the required token environment variable in dev mode.
      */
-    config(resolvedConfig) {
+    configResolved(resolvedConfig) {
+      warnIfWrongDevCommand(resolvedConfig.mode, resolvedConfig.logger);
       getFoundryToken(resolvedConfig.mode);
     },
 
@@ -267,10 +270,20 @@ function serverPath(server: ViteDevServer, subPath: string): string {
 }
 
 function printSetupPageUrl(server: ViteDevServer) {
-  const setupRoute = `${getBaseHref(server)}${SETUP_PATH}/`;
-  server.config.logger.info(
-    `  ${color.green("➜")}  ${
-      color.bold("Click to enter developer mode for your widget set")
-    }: ${color.green(setupRoute)}`,
-  );
+  if (isCodeWorkspacesMode(server.config.mode)) {
+    server.config.logger.info(
+      `  ${color.green("➜")}  ${
+        color.bold(
+          "Select a widget from the preview panel to enter developer mode",
+        )
+      }`,
+    );
+  } else {
+    const setupRoute = `${getBaseHref(server)}${SETUP_PATH}/`;
+    server.config.logger.info(
+      `  ${color.green("➜")}  ${
+        color.bold("Click to enter developer mode for your widget set")
+      }: ${color.green(setupRoute)}`,
+    );
+  }
 }

@@ -1,5 +1,22 @@
 # @osdk/client
 
+## 2.6.0-beta.13
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+- 486ef7e: Deprecate multiplicity in query params/outputs
+- ea077c6: Change asType to narrowToType
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/generator-converters@2.6.0-beta.13
+  - @osdk/api@2.6.0-beta.13
+  - @osdk/client.unstable@2.6.0-beta.13
+
 ## 2.6.0-beta.12
 
 ### Minor Changes
@@ -158,6 +175,96 @@
 - @osdk/api@2.5.0-beta.15
 - @osdk/client.unstable@2.5.0-beta.15
 - @osdk/generator-converters@2.5.0-beta.15
+
+## 2.5.2
+
+### Patch Changes
+
+- @osdk/api@2.5.2
+- @osdk/client.unstable@2.5.2
+- @osdk/generator-converters@2.5.2
+
+## 2.5.1
+
+### Patch Changes
+
+- 099b4d8: Fix nested array query param type handling
+- Updated dependencies [099b4d8]
+  - @osdk/generator-converters@2.5.1
+  - @osdk/api@2.5.1
+  - @osdk/client.unstable@2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- b05075d: Add fix for interface links.
+- d797f0c: Falsy values other than undefined or null do not throw for query map responses
+- 7160276: Add order by relevance support to nearest neighbors
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- ab29baa: make dedupeIntervals dynamic
+- 85e8edb: Fix unhandled promise rejection error.
+- eeaf8eb: refactor ListQuery into InterfaceListQuery and ObjectListQuery
+- 3d7461d: Fix applyQuery for marketplace installations
+- 7bdac45: Update Platform SDK dependency
+- 37eb75b: remove features not supported for RC
+- 7b97128: add useObjectSet hook
+- b9e9a88: Refactor Observable Client with enhanced observer architecture
+  - Restructure observable implementation with dedicated observer classes (LinkObservers, ListObservers, ObjectObservers)
+  - Improve type safety for link observation operations with enhanced generic constraints
+  - Add QuerySubscription and UnsubscribableWrapper for better encapsulation
+  - Maintain API compatibility while improving internal architecture
+
+- 76905f5: Remove undefined type from aggregation $group value
+- 48d52b7: Parallelize network request for getting object metadata when doing simple object fetches.
+- a96d89e: Update Platform SDK dependencies
+- 48040a8: add exponential backoff behavior for ObjectSetListener websocket nextConnectTime
+- 20962bc: Add a new experimental fetchPageByRidNoType method
+- cbcf2ad: Add branching support
+- 052a96b: Add $link support.
+- f49171a: Remaps simple API names for orderby and select arguments to match expected fully qualified API names
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [badfbc4]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [7160276]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [a00d2ed]
+- Updated dependencies [7bdac45]
+- Updated dependencies [37eb75b]
+- Updated dependencies [7b97128]
+- Updated dependencies [76905f5]
+- Updated dependencies [a96d89e]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [04fe946]
+- Updated dependencies [052a96b]
+- Updated dependencies [ca1fabe]
+- Updated dependencies [e48be06]
+  - @osdk/api@2.5.0
+  - @osdk/client.unstable@2.5.0
+  - @osdk/generator-converters@2.5.0
+  - @osdk/shared.client.impl@1.5.0
+  - @osdk/shared.net.errors@2.5.0
+  - @osdk/shared.net.fetch@1.5.0
+
+## 2.5.0-rc.15
+
+### Patch Changes
+
+- 37eb75b: remove features not supported for RC
+- Updated dependencies [37eb75b]
+  - @osdk/api@2.5.0-rc.15
+  - @osdk/client.unstable@2.5.0-rc.15
+  - @osdk/generator-converters@2.5.0-rc.15
 
 ## 2.5.0-beta.14
 

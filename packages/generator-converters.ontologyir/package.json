@@ -1,6 +1,6 @@
 {
   "name": "@osdk/generator-converters.ontologyir",
-  "version": "2.6.0-beta.12",
+  "version": "2.6.0-beta.13",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@osdk/client.unstable": "workspace:~",
-    "@osdk/foundry.ontologies": "2.41.0",
+    "@osdk/foundry.ontologies": "2.42.0",
     "tiny-invariant": "^1.3.3"
   },
   "devDependencies": {

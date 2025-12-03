@@ -1,5 +1,20 @@
 # @osdk/foundry-sdk-generator
 
+## 2.6.0-beta.13
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/generator@2.6.0-beta.13
+  - @osdk/client@2.6.0-beta.13
+  - @osdk/api@2.6.0-beta.13
+
 ## 2.6.0-beta.12
 
 ### Patch Changes
@@ -132,6 +147,84 @@
   - @osdk/client@2.5.0-beta.15
   - @osdk/api@2.5.0-beta.15
   - @osdk/generator@2.5.0-beta.15
+
+## 2.5.2
+
+### Patch Changes
+
+- 41274c7: Don't throw for nested array query params
+  - @osdk/api@2.5.2
+  - @osdk/client@2.5.2
+  - @osdk/generator@2.5.2
+
+## 2.5.1
+
+### Patch Changes
+
+- Updated dependencies [099b4d8]
+  - @osdk/generator@2.5.1
+  - @osdk/client@2.5.1
+  - @osdk/api@2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- 774dc06: Throw an error when trying to generate nested arrays for queries and actions
+- 7bdac45: Update Platform SDK dependency
+- a96d89e: Update Platform SDK dependencies
+- 7bdac45: Support value type enum generation for strings and booleans
+- cbcf2ad: Add branching support
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [b05075d]
+- Updated dependencies [4b4a458]
+- Updated dependencies [badfbc4]
+- Updated dependencies [d797f0c]
+- Updated dependencies [7160276]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [a00d2ed]
+- Updated dependencies [ab29baa]
+- Updated dependencies [85e8edb]
+- Updated dependencies [d29cdfb]
+- Updated dependencies [eeaf8eb]
+- Updated dependencies [3d7461d]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [7bdac45]
+- Updated dependencies [37eb75b]
+- Updated dependencies [7b97128]
+- Updated dependencies [b9e9a88]
+- Updated dependencies [76905f5]
+- Updated dependencies [48d52b7]
+- Updated dependencies [a96d89e]
+- Updated dependencies [48040a8]
+- Updated dependencies [78be29f]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [052a96b]
+- Updated dependencies [f49171a]
+- Updated dependencies [4248b80]
+- Updated dependencies [ca1fabe]
+- Updated dependencies [e48be06]
+  - @osdk/api@2.5.0
+  - @osdk/client@2.5.0
+  - @osdk/generator@2.5.0
+  - @osdk/shared.client.impl@1.5.0
+
+## 2.5.0-rc.15
+
+### Patch Changes
+
+- Updated dependencies [37eb75b]
+  - @osdk/client@2.5.0-rc.15
+  - @osdk/api@2.5.0-rc.15
+  - @osdk/generator@2.5.0-rc.15
 
 ## 2.5.0-beta.14
 

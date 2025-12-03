@@ -1,5 +1,18 @@
 # @osdk/generator-converters
 
+## 2.6.0-beta.13
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+- 486ef7e: Deprecate multiplicity in query params/outputs
+
+### Patch Changes
+
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/api@2.6.0-beta.13
+
 ## 2.6.0-beta.12
 
 ### Patch Changes
@@ -96,6 +109,50 @@
 ### Patch Changes
 
 - @osdk/api@2.5.0-beta.15
+
+## 2.5.2
+
+### Patch Changes
+
+- @osdk/api@2.5.2
+
+## 2.5.1
+
+### Patch Changes
+
+- 099b4d8: Fix nested array query param type handling
+- Updated dependencies [099b4d8]
+  - @osdk/api@2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- 7bdac45: Update Platform SDK dependency
+- a96d89e: Update Platform SDK dependencies
+- 7bdac45: Support value type enum generation for strings and booleans
+- cbcf2ad: Add branching support
+- Updated dependencies [322c5bc]
+- Updated dependencies [7160276]
+- Updated dependencies [7bdac45]
+- Updated dependencies [37eb75b]
+- Updated dependencies [7b97128]
+- Updated dependencies [76905f5]
+- Updated dependencies [20962bc]
+- Updated dependencies [052a96b]
+- Updated dependencies [ca1fabe]
+- Updated dependencies [e48be06]
+  - @osdk/api@2.5.0
+
+## 2.5.0-rc.15
+
+### Patch Changes
+
+- Updated dependencies [37eb75b]
+  - @osdk/api@2.5.0-rc.15
 
 ## 2.5.0-beta.14
 
