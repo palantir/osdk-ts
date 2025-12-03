@@ -58,6 +58,35 @@
 
 ## 2.5.0-beta.15
 
+## 2.5.2
+
+## 2.5.1
+
+### Patch Changes
+
+- 099b4d8: Fix nested array query param type handling
+
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 7160276: Add order by relevance support to nearest neighbors
+- 7bdac45: Update Platform SDK dependency
+- 37eb75b: remove features not supported for RC
+- 7b97128: add useObjectSet hook
+- 76905f5: Remove undefined type from aggregation $group value
+- 20962bc: Add a new experimental fetchPageByRidNoType method
+- 052a96b: Add $link support.
+- ca1fabe: Fix experimental metadata types for objects
+- e48be06: Fix casting types with fully qualified property names.
+
+## 2.5.0-rc.15
+
+### Patch Changes
+
+- 37eb75b: remove features not supported for RC
+
 ## 2.5.0-beta.14
 
 ### Minor Changes

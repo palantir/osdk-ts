@@ -84,7 +84,6 @@ async function setup() {
     _: [],
     $0: "",
     packageRid: "ri.third-party-applications.main.sdk-package.123",
-    branch: "ri.ontologies.main.sdk-ontology.123",
   };
 
   await generatePackageCommand.handler({

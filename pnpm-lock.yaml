@@ -10,6 +10,7 @@ overrides:
   cookie@0.7.1: 0.7.2
   esbuild@^0.23.0: ^0.25.0
   esbuild@^0.24.0: ^0.25.0
+  react-server-dom-webpack: '>=19.2.1'
 
 pnpmfileChecksum: fbzgb6marujyerj542wrbmpzym
 
@@ -6526,8 +6527,8 @@ packages:
   '@osdk/shared.net.errors@1.1.1':
     resolution: {integrity: sha512-gQgSyJbn1USFRN7k9DA507eMR1ToFZKeUsMHhWOqRmyJiSCW+WidqIkhkZlFrEUS3cYUlWAGk+kIO/jn/EqKog==}
 
-  '@osdk/shared.net.errors@2.0.1':
-    resolution: {integrity: sha512-9M2Kfe9+VATKBXQ459Ju6Bo/TDWjZbS1C4XwPdVDslyJfbuveFZGqHP9Cs32eGbhikZ0A8O5pKMMteHST4pUZw==}
+  '@osdk/shared.net.errors@2.4.0':
+    resolution: {integrity: sha512-2g/CLm3VOFdLPvPjmMjhFefXiH9THhoDmPwGDT66DpY4whRa3PI+AqR4ShMWMT52Ri38awG1tcy3ovIyPEkjRw==}
 
   '@osdk/shared.net.errors@2.5.0-beta.2':
     resolution: {integrity: sha512-AlsMiED7KvvBD/z5fITxC9ftbdyZ4xZgVYx0rc3RWbUexDQfFpaa7PBHa1itDesGvG1zWKDZkBhNVzgDowN+Og==}
@@ -13233,12 +13234,12 @@ packages:
     peerDependencies:
       react: '>=16.8'
 
-  react-server-dom-webpack@19.0.0-rc-6230622a1a-20240610:
-    resolution: {integrity: sha512-nr+IsOVD07QdeCr4BLvR5TALfLaZLi9AIaoa6vXymBc051iDPWedJujYYrjRJy5+9jp9oCx3G8Tt/Bs//TckJw==}
+  react-server-dom-webpack@19.2.1:
+    resolution: {integrity: sha512-6z3FuEtZ7wVWyPYRhKKRo4TF7IyQ7XrQZRW1fTjzK2mLVmcv7xJtoANSixaUJ+EFjCh2ekNOaBSoI9spiMSnNA==}
     engines: {node: '>=0.10.0'}
     peerDependencies:
-      react: 19.0.0-rc-6230622a1a-20240610
-      react-dom: 19.0.0-rc-6230622a1a-20240610
+      react: ^19.2.1
+      react-dom: ^19.2.1
       webpack: ^5.59.0
 
   react-shallow-renderer@16.15.0:
@@ -18174,7 +18175,7 @@ snapshots:
 
   '@osdk/shared.net.errors@1.1.1': {}
 
-  '@osdk/shared.net.errors@2.0.1': {}
+  '@osdk/shared.net.errors@2.4.0': {}
 
   '@osdk/shared.net.errors@2.5.0-beta.2': {}
 
@@ -18187,7 +18188,7 @@ snapshots:
     dependencies:
       '@osdk/shared.client': 1.0.1
       '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.errors': 2.0.1
+      '@osdk/shared.net.errors': 2.4.0
 
   '@osdk/shared.net.platformapi@1.5.0':
     dependencies:
@@ -24025,7 +24026,7 @@ snapshots:
       json5: 2.2.3
       lodash: 4.17.21
       react-native: 0.76.3(@babel/core@7.28.4)(@babel/preset-env@7.26.0(@babel/core@7.28.4))(@types/react@18.3.24)(react@18.3.1)
-      react-server-dom-webpack: 19.0.0-rc-6230622a1a-20240610(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(webpack@5.96.1(@swc/core@1.7.39)(esbuild@0.25.9))
+      react-server-dom-webpack: 19.2.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(webpack@5.96.1(@swc/core@1.7.39)(esbuild@0.25.9))
       react-test-renderer: 18.3.1(react@18.3.1)
       server-only: 0.0.1
       stacktrace-js: 2.0.2
@@ -26245,13 +26246,14 @@ snapshots:
       '@remix-run/router': 1.23.0
       react: 19.1.1
 
-  react-server-dom-webpack@19.0.0-rc-6230622a1a-20240610(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(webpack@5.96.1(@swc/core@1.7.39)(esbuild@0.25.9)):
+  react-server-dom-webpack@19.2.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(webpack@5.96.1(@swc/core@1.7.39)(esbuild@0.25.9)):
     dependencies:
       acorn-loose: 8.4.0
       neo-async: 2.6.2
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       webpack: 5.96.1(@swc/core@1.7.39)(esbuild@0.25.9)
+      webpack-sources: 3.3.3
 
   react-shallow-renderer@16.15.0(react@18.3.1):
     dependencies:

@@ -28,7 +28,6 @@ import { Logger } from '@osdk/api';
 import { MediaReference } from '@osdk/api';
 import { MediaUpload } from '@osdk/api';
 import type { MinimalObjectSet } from '@osdk/api/unstable';
-import { NULL_VALUE } from '@osdk/api';
 import { ObjectMetadata } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
 import { ObjectSet } from '@osdk/api';
@@ -117,7 +116,6 @@ export function createAttachmentUpload(data: Blob, name: string): AttachmentUplo
 // @public (undocumented)
 export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
     	logger?: Logger
-    	branch?: string
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
 
 // @public
@@ -164,8 +162,6 @@ export { Logger }
 export { MediaReference }
 
 export { MediaUpload }
-
-export { NULL_VALUE }
 
 export { ObjectMetadata }
 

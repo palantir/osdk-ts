@@ -102,7 +102,6 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
-            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "employeeId": {
@@ -111,7 +110,6 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": false,
             "type": "integer",
-            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "employeeLocation": {
@@ -120,7 +118,6 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "geotimeSeriesReference",
-            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "employeeSensor": {
@@ -129,7 +126,6 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "sensorTimeseries",
-            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "employeeStatus": {
@@ -138,7 +134,6 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "stringTimeseries",
-            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "fullName": {
@@ -147,7 +142,6 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
-            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "office": {
@@ -157,7 +151,6 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
-            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "skillSet": {
@@ -166,7 +159,6 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
-            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "skillSetEmbedding": {
@@ -175,7 +167,6 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "vector",
-            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
           "startDate": {
@@ -184,7 +175,6 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "datetime",
-            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
         },
@@ -230,7 +220,6 @@ describe("FetchMetadata", () => {
             "multiplicity": false,
             "nullable": true,
             "type": "string",
-            "valueFormatting": undefined,
             "valueTypeApiName": undefined,
           },
         },

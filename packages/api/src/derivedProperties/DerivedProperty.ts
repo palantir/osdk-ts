@@ -78,7 +78,7 @@ export namespace DerivedProperty {
   export interface Builder<
     Q extends ObjectOrInterfaceDefinition,
     CONSTRAINED extends boolean,
-  > extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q>, Constant<Q> {
+  > extends BaseBuilder<Q, CONSTRAINED>, Selectable<Q> {
   }
 
   export interface AggregateBuilder<
@@ -122,43 +122,6 @@ type Pivotable<
     : NonNullable<CompileTimeMetadata<Q>["links"][L]["multiplicity"]> extends
       true ? DerivedProperty.AggregateBuilder<LinkedType<Q, L>, true>
     : DerivedProperty.SelectPropertyBuilder<LinkedType<Q, L>, false>;
-};
-
-type Constant<Q extends ObjectOrInterfaceDefinition> = {
-  readonly constant: {
-    readonly double: (
-      value: number,
-    ) => DerivedProperty.NumericPropertyDefinition<
-      SimplePropertyDef.Make<"double", "non-nullable", "single">,
-      Q
-    >;
-
-    readonly integer: (
-      value: number,
-    ) => DerivedProperty.NumericPropertyDefinition<
-      SimplePropertyDef.Make<"integer", "non-nullable", "single">,
-      Q
-    >;
-    readonly long: (
-      value: string,
-    ) => DerivedProperty.NumericPropertyDefinition<
-      SimplePropertyDef.Make<"long", "non-nullable", "single">,
-      Q
-    >;
-
-    readonly datetime: (
-      value: string,
-    ) => DerivedProperty.DatetimePropertyDefinition<
-      SimplePropertyDef.Make<"datetime", "non-nullable", "single">,
-      Q
-    >;
-    readonly timestamp: (
-      value: string,
-    ) => DerivedProperty.DatetimePropertyDefinition<
-      SimplePropertyDef.Make<"timestamp", "non-nullable", "single">,
-      Q
-    >;
-  };
 };
 
 type Aggregatable<

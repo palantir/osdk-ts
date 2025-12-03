@@ -24,7 +24,6 @@ import type {
   PropertyV2,
   SharedPropertyType,
 } from "@osdk/foundry.ontologies";
-import { wirePropertyFormattingToSdkFormatting } from "./wirePropertyFormattingToSdkFormatting.js";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: (PropertyV2 | SharedPropertyType) & { nullable?: boolean },
@@ -66,9 +65,6 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         type: sdkPropDefinition,
         nullable: input.nullable == null ? isNullable : input.nullable,
         valueTypeApiName: input.valueTypeApiName,
-        valueFormatting: input.valueFormatting != null
-          ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
-          : undefined,
       };
     case "array": {
       return {
@@ -78,9 +74,6 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         type: sdkPropDefinition,
         nullable: true,
         valueTypeApiName: input.valueTypeApiName,
-        valueFormatting: input.valueFormatting != null
-          ? wirePropertyFormattingToSdkFormatting(input.valueFormatting, log)
-          : undefined,
       };
     }
     case "cipherText": {

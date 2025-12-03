@@ -340,9 +340,6 @@ const referencedOntology = {
       rid: "idk",
     },
   },
-  "branch": {
-    rid: "someRidHere",
-  },
   valueTypes: {},
 } satisfies WireOntologyDefinition;
 
@@ -2629,8 +2626,6 @@ describe("generator", () => {
         export const $osdkMetadata = { extraUserAgent: '' };
 
         export const $ontologyRid = 'ri.ontology.main.ontology.dep';
-
-        export const $branch = 'someRidHere';
         ",
           "/foo/index.ts": "export {} from './ontology/actions.js';
         export * as $Actions from './ontology/actions.js';
