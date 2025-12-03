@@ -1,5 +1,21 @@
 # @osdk/cli.cmd.typescript
 
+## 0.30.0-rc.6
+
+### Patch Changes
+
+- b313525: bump osdk
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- Updated dependencies [b313525]
+- Updated dependencies [af4f3bf]
+  - @osdk/generator@2.6.0-rc.14
+  - @osdk/shared.client.impl@1.6.0-rc.2
+  - @osdk/cli.common@0.30.0-rc.6
+
 ## 0.30.0-beta.5
 
 ### Minor Changes

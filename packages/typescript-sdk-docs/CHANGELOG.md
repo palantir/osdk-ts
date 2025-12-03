@@ -1,5 +1,14 @@
 # @osdk/typescript-sdk-docs
 
+## 0.5.0-rc.6
+
+### Patch Changes
+
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
 ## 0.5.0-beta.5
 
 ### Minor Changes

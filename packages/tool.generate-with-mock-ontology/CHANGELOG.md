@@ -1,5 +1,20 @@
 # @osdk/tool.generate-with-mock-ontology
 
+## 0.6.0-rc.2
+
+### Patch Changes
+
+- b313525: bump osdk
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- Updated dependencies [b313525]
+- Updated dependencies [af4f3bf]
+  - @osdk/client@2.6.0-rc.14
+  - @osdk/api@2.6.0-rc.14
+
 ## 0.5.0
 
 ### Patch Changes

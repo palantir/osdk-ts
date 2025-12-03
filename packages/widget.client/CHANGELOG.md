@@ -1,5 +1,19 @@
 # @osdk/widget.client
 
+## 3.3.0-rc.12
+
+### Patch Changes
+
+- baf1e30: Introduce widget resize message for automatic heights
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- Updated dependencies [baf1e30]
+- Updated dependencies [af4f3bf]
+  - @osdk/widget.api@3.3.0-rc.12
+
 ## 3.3.0-beta.11
 
 ### Patch Changes

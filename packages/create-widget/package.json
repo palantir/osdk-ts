@@ -1,6 +1,6 @@
 {
   "name": "@osdk/create-widget",
-  "version": "3.3.0-beta.11",
+  "version": "3.3.0-rc.12",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",

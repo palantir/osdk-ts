@@ -1,5 +1,19 @@
 # @osdk/functions
 
+## 1.4.0-rc.10
+
+### Patch Changes
+
+- b313525: bump osdk
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- Updated dependencies [b313525]
+- Updated dependencies [af4f3bf]
+  - @osdk/client@2.6.0-rc.14
+
 ## 1.4.0-beta.9
 
 ### Minor Changes

@@ -1,5 +1,14 @@
 # @osdk/client.unstable.tpsa
 
+## 0.8.0-rc.2
+
+### Patch Changes
+
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
 ## 0.7.0
 
 ### Patch Changes

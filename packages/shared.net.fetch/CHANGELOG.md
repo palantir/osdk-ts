@@ -1,5 +1,17 @@
 # @osdk/shared.net.fetch
 
+## 1.6.0-rc.2
+
+### Patch Changes
+
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- Updated dependencies [af4f3bf]
+  - @osdk/shared.net.errors@2.6.0-rc.2
+
 ## 1.5.0
 
 ### Patch Changes

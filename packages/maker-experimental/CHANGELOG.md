@@ -1,5 +1,17 @@
 # @osdk/maker-experimental
 
+## 0.4.0-rc.2
+
+### Patch Changes
+
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- Updated dependencies [af4f3bf]
+  - @osdk/api@2.6.0-rc.14
+
 ## 0.3.0
 
 ### Patch Changes
