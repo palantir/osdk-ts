@@ -17,8 +17,6 @@
 import type { ObjectMetadata, PropertyValueFormattingRule } from "@osdk/api";
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { formatBoolean } from "./formatBoolean.js";
-import { formatNumber } from "./formatNumber.js";
-import { getBrowserLocale } from "./propertyFormattingUtils.js";
 
 export interface FormatPropertyOptions {
   locale?: string;
@@ -65,8 +63,8 @@ export function applyPropertyFormatter(
 function formatPropertyValue(
   value: DefinedPropertyValue,
   rule: PropertyValueFormattingRule,
-  objectData: SimpleOsdkProperties,
-  options: FormatPropertyOptions,
+  _objectData: SimpleOsdkProperties,
+  _options: FormatPropertyOptions,
 ): string | undefined {
   switch (rule.type) {
     case "boolean":
@@ -74,16 +72,6 @@ function formatPropertyValue(
         return undefined;
       }
       return formatBoolean(value, rule);
-    case "number":
-      if (typeof value !== "number") {
-        return undefined;
-      }
-      return formatNumber(
-        value,
-        rule.numberType,
-        objectData,
-        options.locale ?? getBrowserLocale(),
-      );
     // TODO - implement rest of formatters
     default:
       return undefined;
