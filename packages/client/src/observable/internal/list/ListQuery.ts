@@ -29,6 +29,7 @@ import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/I
 import type {
   ObjectHolder,
 } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
+import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
 import type { ListPayload } from "../../ListPayload.js";
 import type { Status } from "../../ObservableClient/common.js";
 import { BaseListQuery } from "../base-list/BaseListQuery.js";
@@ -36,6 +37,7 @@ import type { BatchContext } from "../BatchContext.js";
 import { type CacheKey } from "../CacheKey.js";
 import type { Canonical } from "../Canonical.js";
 import { type Changes, DEBUG_ONLY__changesToString } from "../Changes.js";
+import { getObjectTypesThatInvalidate } from "../getObjectTypesThatInvalidate.js";
 import type { Entry } from "../Layer.js";
 import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
 import { objectSortaMatchesWhereClause as objectMatchesWhereClause } from "../objectMatchesWhereClause.js";
@@ -125,11 +127,16 @@ export abstract class ListQuery extends BaseListQuery<
     this.#intersectWith = cacheKey.otherKeys[INTERSECT_IDX];
     this.#pivotInfo = cacheKey.otherKeys[PIVOT_IDX];
     this.#objectSet = this.createObjectSet(store);
-    // Initialize the sorting strategy
-    this.sortingStrategy = new OrderBySortingStrategy(
-      this.apiName,
-      this.#orderBy,
-    );
+
+    // Only initialize the sorting strategy here if there's no pivotTo.
+    // When pivotTo is used, the target type differs from apiName, so we
+    // defer initialization to fetchPageData where we can resolve the actual type.
+    if (!this.#pivotInfo) {
+      this.sortingStrategy = new OrderBySortingStrategy(
+        this.apiName,
+        this.#orderBy,
+      );
+    }
 
     if (opts.autoFetchMore === true) {
       this.minResultsToLoad = Number.MAX_SAFE_INTEGER;
@@ -169,6 +176,21 @@ export abstract class ListQuery extends BaseListQuery<
   protected async fetchPageData(
     signal: AbortSignal | undefined,
   ): Promise<PageResult<Osdk.Instance<any>>> {
+    if (
+      Object.keys(this.#orderBy).length > 0
+      && !(this.sortingStrategy instanceof OrderBySortingStrategy)
+    ) {
+      const wireObjectSet = getWireObjectSet(this.#objectSet);
+      const { resultType } = await getObjectTypesThatInvalidate(
+        this.store.client[additionalContext],
+        wireObjectSet,
+      );
+      this.sortingStrategy = new OrderBySortingStrategy(
+        resultType.apiName,
+        this.#orderBy,
+      );
+    }
+
     // Fetch the data with pagination
     const resp = await this.#objectSet.fetchPage({
       $nextPageToken: this.nextPageToken,
