@@ -18,7 +18,6 @@ import { client } from "./client.js";
 import { checkUnstableBulkLinks } from "./public/checkUnstableBulkLinks.js";
 import { runAggregationGroupByDatesTest } from "./runAggregationGroupByDatesTest.js";
 import { runAggregationsTest } from "./runAggregationsTest.js";
-import { runApplyFormatterTest } from "./runApplyFormatterTest.js";
 import { runAssignEmployeeToVentureTest } from "./runAssignEmployeeToVentureTest.js";
 import { runFetchByRidTest } from "./runFetchByRidTest.js";
 import { runFoundrySdkClientVerificationTest } from "./runFoundrySdkClientVerificationTest.js";
@@ -77,8 +76,6 @@ async function runTests() {
 
     await runStructsTest();
     await runFetchByRidTest();
-
-    await runApplyFormatterTest();
   } catch (e) {
     console.error(`Caught an error we did not expect, type: ${typeof e}`);
     console.error(e);
