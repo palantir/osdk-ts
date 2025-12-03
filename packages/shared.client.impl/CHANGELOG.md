@@ -1,5 +1,17 @@
 # @osdk/shared.client.impl
 
+## 1.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- badfbc4: Add errorDescription to PalantirApiError
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [badfbc4]
+  - @osdk/shared.net.errors@2.5.0
+  - @osdk/shared.net.fetch@1.5.0
+
 ## 1.5.0-beta.2
 
 ### Minor Changes
