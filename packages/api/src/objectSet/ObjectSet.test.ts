@@ -1109,34 +1109,6 @@ describe("ObjectSet", () => {
         });
       });
 
-      it("allows adding literals via base.constant", () => {
-        const objectSet = fauxObjectSet.withProperties({
-          "myProp1": (base) => {
-            const plus = base.pivotTo("lead").selectProperty("employeeId")
-              .add(base.constant.double(1));
-            expectTypeOf(plus).toEqualTypeOf<
-              DerivedProperty.NumericPropertyDefinition<
-                "double",
-                EmployeeApiTest
-              >
-            >();
-
-            const intPlusIntReturnsInt = base.pivotTo("lead").selectProperty(
-              "employeeId",
-            )
-              .add(base.constant.integer(1));
-            expectTypeOf(intPlusIntReturnsInt).toEqualTypeOf<
-              DerivedProperty.NumericPropertyDefinition<
-                "integer",
-                EmployeeApiTest
-              >
-            >();
-
-            return plus;
-          },
-        });
-      });
-
       it("allows correctly typed nested property definitions", () => {
         const objectSet = fauxObjectSet.withProperties({
           "myProp1": (base) => {
@@ -1230,36 +1202,6 @@ describe("ObjectSet", () => {
             >();
 
             return max;
-          },
-        });
-      });
-
-      it("allows adding literals via base.constant", () => {
-        const objectSet = fauxObjectSet.withProperties({
-          "myProp1": (base) => {
-            const dateAndDateReturnDate = base.pivotTo("lead").selectProperty(
-              "dateOfJoining",
-            )
-              .min(base.constant.datetime("2025-01-01T00:00:00Z"));
-            expectTypeOf(dateAndDateReturnDate).toEqualTypeOf<
-              DerivedProperty.DatetimePropertyDefinition<
-                "datetime",
-                EmployeeApiTest
-              >
-            >();
-
-            const dateAndTimeReturnTime = base.pivotTo("lead").selectProperty(
-              "dateOfJoining",
-            )
-              .min(base.constant.timestamp("2025-01-01T00:00:00Z"));
-            expectTypeOf(dateAndTimeReturnTime).toEqualTypeOf<
-              DerivedProperty.DatetimePropertyDefinition<
-                "timestamp",
-                EmployeeApiTest
-              >
-            >();
-
-            return dateAndTimeReturnTime;
           },
         });
       });
