@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.14.0-rc.16
+
+### Patch Changes
+
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- Updated dependencies [af4f3bf]
+  - @osdk/typescript-sdk-docs@0.5.0-rc.6
+  - @osdk/api@2.6.0-rc.14
+
 ## 0.14.0-beta.15
 
 ### Minor Changes

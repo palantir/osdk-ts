@@ -1,5 +1,18 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.6.0-rc.14
+
+### Patch Changes
+
+- b313525: bump osdk
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- Updated dependencies [af4f3bf]
+  - @osdk/client.unstable@2.6.0-rc.14
+
 ## 2.6.0-beta.13
 
 ### Minor Changes

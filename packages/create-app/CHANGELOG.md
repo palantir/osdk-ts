@@ -1,5 +1,14 @@
 # @osdk/create-app
 
+## 2.6.0-rc.14
+
+### Patch Changes
+
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
 ## 2.6.0-beta.13
 
 ## 2.6.0-beta.12

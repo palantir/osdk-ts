@@ -1,5 +1,24 @@
 # @osdk/client
 
+## 2.6.0-rc.14
+
+### Patch Changes
+
+- b313525: bump osdk
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- Updated dependencies [b313525]
+- Updated dependencies [af4f3bf]
+  - @osdk/generator-converters@2.6.0-rc.14
+  - @osdk/shared.client.impl@1.6.0-rc.2
+  - @osdk/shared.net.errors@2.6.0-rc.2
+  - @osdk/shared.net.fetch@1.6.0-rc.2
+  - @osdk/client.unstable@2.6.0-rc.14
+  - @osdk/api@2.6.0-rc.14
+
 ## 2.6.0-beta.13
 
 ### Minor Changes

@@ -1,5 +1,15 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.3.0-rc.12
+
+### Patch Changes
+
+- baf1e30: Introduce widget resize message for automatic heights
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
 ## 3.3.0-beta.11
 
 ### Minor Changes

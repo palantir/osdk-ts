@@ -1,5 +1,18 @@
 # @osdk/example-generator
 
+## 0.14.0-rc.2
+
+### Patch Changes
+
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- Updated dependencies [af4f3bf]
+  - @osdk/create-widget@3.3.0-rc.12
+  - @osdk/create-app@2.6.0-rc.14
+
 ## 0.13.0
 
 ### Patch Changes
