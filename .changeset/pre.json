@@ -1,6 +1,6 @@
 {
   "mode": "pre",
-  "tag": "beta",
+  "tag": "rc",
   "initialVersions": {
     "@osdk/benchmarks.primary": "0.1.0-beta.75",
     "@osdk/examples.docs.example": "0.0.1",
