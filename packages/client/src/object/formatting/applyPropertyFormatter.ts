@@ -17,7 +17,6 @@
 import type { ObjectMetadata, PropertyValueFormattingRule } from "@osdk/api";
 import type { SimpleOsdkProperties } from "../SimpleOsdkProperties.js";
 import { formatBoolean } from "./formatBoolean.js";
-import { formatDateTime } from "./formatDateTime.js";
 import { formatNumber } from "./formatNumber.js";
 import { getBrowserLocale } from "./propertyFormattingUtils.js";
 
@@ -85,19 +84,7 @@ function formatPropertyValue(
         objectData,
         options.locale ?? getBrowserLocale(),
       );
-    case "date":
-    case "timestamp":
-      if (typeof value !== "string") {
-        return undefined;
-      }
-      return formatDateTime(
-        new Date(value),
-        rule.format,
-        rule.type === "timestamp" ? rule.displayTimezone : undefined,
-        objectData,
-        options.locale ?? getBrowserLocale(),
-        options.timezoneId,
-      );
+    // TODO - implement rest of formatters
     default:
       return undefined;
   }
