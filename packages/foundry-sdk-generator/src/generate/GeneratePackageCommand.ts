@@ -37,7 +37,6 @@ export interface generatePackageCommandArgs {
   beta?: boolean;
   sdkPackages?: Map<string, string>;
   packageRid?: string;
-  branch?: string;
 }
 
 export class GeneratePackageCommand
@@ -154,15 +153,6 @@ export class GeneratePackageCommand
         description: "The rid of the generated SDK",
         default: undefined,
       })
-      .positional("branch", {
-        type: "string",
-        demandOption: false,
-        description:
-          `The branch rid of the ontology to generate from. Example Usage: --branch ri.branch..branch.0000000-0000-0000-0000-0000000000`,
-        default: undefined,
-        defaultDescription:
-          `By default, no arguments will load data from the main branch of the ontology you selected`,
-      })
       .options("sdkPackages", {
         array: true,
         string: true,
@@ -218,7 +208,6 @@ export class GeneratePackageCommand
           linkTypesApiNamesToLoad: transformArrayArg(args.linkTypes),
         },
         packageInfo,
-        args.branch,
       );
 
     if (wireOntologyDefinition.isErr()) {
