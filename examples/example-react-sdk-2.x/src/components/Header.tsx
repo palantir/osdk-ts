@@ -8,10 +8,11 @@ function Header(): React.ReactElement {
         <a
           href="https://www.palantir.com/docs/foundry/ontology-sdk/overview/"
           target="_blank"
+          rel="noreferrer"
         >
           <img src="/palantir.svg" className={css.logo} alt="Palantir logo" />
         </a>
-        <a href="https://react.dev" target="_blank">
+        <a href="https://react.dev" target="_blank" rel="noreferrer">
           <img src="/react.svg" className={css.logo} alt="React logo" />
         </a>
       </div>

@@ -10,8 +10,9 @@
       href="https://fake.palantirfoundry.com/workspace/developer-console/app/ri.third-party-applications.main.application.fake/docs/guide/loading-data?language=typescript"
       class="docs"
       target="_blank"
+      rel="noreferrer"
     >
-      <img src="/book.svg" width="16" height="16" />
+      <img src="/book.svg" width="16" height="16" alt="Book icon" />
       <span>View documentation</span>
     </a>
   </div>
