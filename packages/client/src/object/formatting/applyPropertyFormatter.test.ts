@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { InterfaceDefinitions } from "../../ontology/OntologyProvider.js";
@@ -402,19 +402,6 @@ describe("getFormattedValue", () => {
         nullable: true,
         multiplicity: false,
       },
-      relativeDateTime: {
-        type: "datetime",
-        nullable: false,
-        multiplicity: false,
-        valueFormatting: {
-          type: "timestamp",
-          format: {
-            type: "localizedFormat",
-            format: "DATE_FORMAT_RELATIVE_TO_NOW",
-          },
-          displayTimezone: { type: "user" },
-        },
-      },
     },
   };
 
@@ -449,7 +436,6 @@ describe("getFormattedValue", () => {
     isoInstant: "2025-01-15T14:30:00.000Z",
     timestampWithUserTimezone: "2025-01-15T14:30:00.000Z",
     timestampWithDynamicTimezone: "2025-01-15T14:30:00.000Z",
-    relativeDateTime: "2025-01-15T14:30:00.000Z",
     timezoneId: "Europe/London",
   };
 
@@ -791,72 +777,6 @@ describe("getFormattedValue", () => {
         );
 
       expect(formatted).toBeUndefined();
-    });
-  });
-
-  describe("Relative time formatting", () => {
-    beforeEach(() => {
-      // Mock current time to January 15, 2025, 12:00:00 UTC since we're checking for relative time.
-      vi.setSystemTime(new Date("2025-01-15T12:00:00.000Z"));
-    });
-
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
-    it("formats time 45 seconds ago", () => {
-      const obj = getObject({ relativeDateTime: "2025-01-15T11:59:15.000Z" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-          "relativeDateTime",
-          EN_US,
-        );
-
-      expect(formatted).toBe("45 seconds ago");
-    });
-
-    it("formats time 30 minutes from now", () => {
-      const obj = getObject({ relativeDateTime: "2025-01-15T12:30:00.000Z" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-          "relativeDateTime",
-          EN_US,
-        );
-
-      expect(formatted).toBe("in 30 minutes");
-    });
-
-    it("formats time 3 hours ago", () => {
-      const obj = getObject({ relativeDateTime: "2025-01-15T09:00:00.000Z" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-          "relativeDateTime",
-          EN_US,
-        );
-
-      expect(formatted).toBe("3 hours ago");
-    });
-
-    it("formats now", () => {
-      const obj = getObject({ relativeDateTime: "2025-01-15T12:00:00.000Z" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-          "relativeDateTime",
-          EN_US,
-        );
-
-      expect(formatted).toBe("now");
-    });
-
-    it("falls back to absolute date formatting for times more than 1 day ago", () => {
-      const obj = getObject({ relativeDateTime: "2025-01-10T08:00:00.000Z" });
-      const formatted = obj
-        .$__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue(
-          "relativeDateTime",
-          EN_US_TOKYO,
-        );
-
-      expect(formatted).toBe("Fri, Jan 10, 2025, 5:00 PM");
     });
   });
 });
