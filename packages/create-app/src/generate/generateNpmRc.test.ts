@@ -22,11 +22,53 @@ const expected = `
 @myapp:registry=https://registry.com/
 `.trimStart();
 
-test("it generates .npmrc for package and registry", () => {
+const expectedNoOsdkPackage = `
+//registry.com/:_authToken=\${FOUNDRY_TOKEN}
+<OSDK package name>:registry=https://registry.com/
+`.trimStart();
+
+const expectedNoOsdkRegistryUrl = `
+//<OSDK registry URL>/:_authToken=\${FOUNDRY_TOKEN}
+@myapp:registry=https://<OSDK registry URL>/
+`.trimStart();
+
+const expectedNoOsdkPackageNoOsdkRegistryUrl = `
+//<OSDK registry URL>/:_authToken=\${FOUNDRY_TOKEN}
+<OSDK package name>:registry=https://<OSDK registry URL>/
+`.trimStart();
+
+test("it generates .npmrc with osdk package and osdk registry url", () => {
   expect(
     generateNpmRc({
       osdkPackage: "@myapp/sdk",
       osdkRegistryUrl: "https://registry.com",
     }),
   ).toEqual(expected);
+});
+
+test("it generates .npmrc without osdk package with osdk registry url", () => {
+  expect(
+    generateNpmRc({
+      osdkPackage: undefined,
+      osdkRegistryUrl: "https://registry.com",
+    }),
+  ).toEqual(expectedNoOsdkPackage);
+});
+
+test("it generates .npmrc with osdk package without osdk registry url", () => {
+  expect(
+    generateNpmRc({
+      osdkPackage: "@myapp/sdk",
+      osdkRegistryUrl: undefined,
+    }),
+  ).toEqual(expectedNoOsdkRegistryUrl);
+});
+
+test("it generates .npmrc without osdk package without osdk registry url", () => {
+  expect(
+    generateNpmRc({
+      osdkPackage: undefined,
+      osdkRegistryUrl: undefined,
+    }),
+  ).toEqual(expectedNoOsdkPackageNoOsdkRegistryUrl);
 });

@@ -1,5 +1,10 @@
+{{#if osdkPackage}}
 import { createClient, type Client } from "@osdk/client";
 import { createPublicOauthClient, type PublicOauthClient } from "@osdk/oauth";
+{{else}}
+import { createPlatformClient, type PlatformClient } from "@osdk/client";
+import { createPublicOauthClient, type PublicOauthClient } from "@osdk/oauth";
+{{/if}}
 
 function getMetaTagContent(tagName: string): string {
   const elements = document.querySelectorAll(`meta[name="${tagName}"]`);
@@ -22,7 +27,9 @@ function getMetaTagContent(tagName: string): string {
 const foundryUrl = getMetaTagContent("osdk-foundryUrl");
 const clientId = getMetaTagContent("osdk-clientId");
 const redirectUrl = getMetaTagContent("osdk-redirectUrl");
+{{#if osdkPackage}}
 const ontologyRid = getMetaTagContent("osdk-ontologyRid");
+{{/if}}
 
 {{#if scopes}}
 const scopes = [
@@ -41,9 +48,16 @@ export const auth: PublicOauthClient = createPublicOauthClient(
   {{/if}}
 );
 
+{{#if osdkPackage}}
 /**
  * Initialize the client to interact with the Ontology and Platform SDKs
  */
 const client: Client = createClient(foundryUrl, ontologyRid, auth);
+{{else}}
+/**
+ * Initialize the client to interact with the Platform SDK
+ */
+const client: PlatformClient = createPlatformClient(foundryUrl, auth);
+{{/if}}
 
 export default client;

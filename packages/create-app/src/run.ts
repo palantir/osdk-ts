@@ -38,10 +38,10 @@ interface RunArgs {
   foundryUrl: string;
   applicationUrl: string | undefined;
   application: string;
-  ontology: string;
+  ontology: string | undefined;
   clientId: string;
-  osdkPackage: string;
-  osdkRegistryUrl: string;
+  osdkPackage: string | undefined;
+  osdkRegistryUrl: string | undefined;
   corsProxy: boolean;
   scopes: string[] | undefined;
 }
@@ -147,6 +147,26 @@ export async function run(
       if (file.endsWith("/_gitignore")) {
         fs.renameSync(file, file.replace(/\/_gitignore$/, "/.gitignore"));
         return;
+      }
+
+      // Files prefixed with `osdk-` are only kept if the application uses an OSDK
+      if (file.includes("osdk-")) {
+        if (osdkPackage == null) {
+          fs.rmSync(file);
+          return;
+        } else {
+          fs.renameSync(file, file.replace(/osdk-/, ""));
+          file = file.replace(/osdk-/, "");
+        }
+        // Files prefixed with `psdk-` are only kept if the application does not use an OSDK
+      } else if (file.includes("psdk-")) {
+        if (osdkPackage == null) {
+          fs.renameSync(file, file.replace(/psdk-/, ""));
+          file = file.replace(/psdk-/, "");
+        } else {
+          fs.rmSync(file);
+          return;
+        }
       }
 
       if (!file.endsWith(".hbs")) {
