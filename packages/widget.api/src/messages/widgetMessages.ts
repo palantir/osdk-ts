@@ -89,6 +89,12 @@ export function isWidgetReadyMessage<C extends WidgetConfig<C["parameters"]>>(
   return event.type === "widget.ready";
 }
 
+export function isWidgetResizeMessage<C extends WidgetConfig<C["parameters"]>>(
+  event: WidgetMessage<C>,
+): event is WidgetMessage.Resize {
+  return event.type === "widget.resize";
+}
+
 export function isWidgetEmitEventMessage<
   C extends WidgetConfig<C["parameters"]>,
 >(event: WidgetMessage<C>): event is WidgetMessage.EmitEvent<C> {
