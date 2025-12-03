@@ -8485,6 +8485,9 @@ packages:
   '@types/react-test-renderer@18.3.1':
     resolution: {integrity: sha512-vAhnk0tG2eGa37lkU9+s5SoroCsRI08xnsWFiAXOuPH2jqzMbcXvKExXViPi1P5fIklDeCvXqyrdmipFaSkZrA==}
 
+  '@types/react-test-renderer@19.1.0':
+    resolution: {integrity: sha512-XD0WZrHqjNrxA/MaR9O22w/RNidWR9YZmBdRGI7wcnWGrv/3dA8wKCJ8m63Sn+tLJhcjmuhOi629N66W6kgWzQ==}
+
   '@types/react@18.3.24':
     resolution: {integrity: sha512-0dLEBsA1kI3OezMBF8nSsb7Nk19ZnsyE1LLhB8r27KbgU5H4pvuqZLdtE+aUkJVoXgTVuA+iLIwmZ0TuK4tx6A==}
 
@@ -13566,6 +13569,11 @@ packages:
     resolution: {integrity: sha512-KkAgygexHUkQqtvvx/otwxtuFu5cVjfzTCtjXLH9boS19/Nbtg84zS7wIQn39G8IlrhThBpQsMKkq5ZHZIYFXA==}
     peerDependencies:
       react: ^18.3.1
+
+  react-test-renderer@19.1.0:
+    resolution: {integrity: sha512-jXkSl3CpvPYEF+p/eGDLB4sPoDX8pKkYvRl9+rR8HxLY0X04vW7hCm1/0zHoUSjPZ3bDa+wXWNTDVIw/R8aDVw==}
+    peerDependencies:
+      react: ^19.1.0
 
   react-transition-group@4.4.5:
     resolution: {integrity: sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g==}
@@ -20336,6 +20344,10 @@ snapshots:
     dependencies:
       '@types/react': 18.3.24
 
+  '@types/react-test-renderer@19.1.0':
+    dependencies:
+      '@types/react': 18.3.24
+
   '@types/react@18.3.24':
     dependencies:
       '@types/prop-types': 15.7.10
@@ -26574,6 +26586,12 @@ snapshots:
       react-is: 18.3.1
       react-shallow-renderer: 16.15.0(react@18.3.1)
       scheduler: 0.23.2
+
+  react-test-renderer@19.1.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-is: 19.1.0
+      scheduler: 0.26.0
 
   react-transition-group@4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
