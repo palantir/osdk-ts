@@ -42,12 +42,23 @@ interface RunArgs {
 export async function run({ outputDirectory, check }: RunArgs): Promise<void> {
   const resolvedOutput = path.resolve(outputDirectory);
   const tmpDir = createTmpDir();
-  await generateExamples(tmpDir);
+  await generateCreateAppExamples(tmpDir);
+  await generateCreateWidgetExamples(tmpDir);
   await fixMonorepolint(tmpDir);
   if (check) {
-    checkExamples(resolvedOutput, tmpDir);
+    checkExamples(resolvedOutput, tmpDir, [
+      ...TEMPLATES,
+      ...WIDGET_TEMPLATES,
+    ], true);
+    checkExamples(resolvedOutput, tmpDir, [...TEMPLATES], false);
   } else {
-    copyExamples(resolvedOutput, tmpDir);
+    copyExamples(
+      resolvedOutput,
+      tmpDir,
+      [...TEMPLATES, ...WIDGET_TEMPLATES],
+      true,
+    );
+    copyExamples(resolvedOutput, tmpDir, [...TEMPLATES], false);
   }
 }
 
@@ -57,34 +68,33 @@ function createTmpDir(): tmp.DirResult {
   return tmpDir;
 }
 
-function templatesWithSdkVersions<T extends Pick<Template, "files">>(
+function templatesWithSdkVersions<T extends Pick<Template, "files" | "hidden">>(
   templates: readonly T[],
+  isUsingOsdk: boolean,
 ) {
-  return templates.flatMap((template) =>
+  let templatesWithSdkVersions = templates.flatMap((template) =>
     Object.keys(template.files).map((sdkVersion) =>
       [template, sdkVersion as SdkVersion] as const
     )
   );
+
+  if (!isUsingOsdk) {
+    templatesWithSdkVersions = templatesWithSdkVersions.filter((
+      [template, sdkVersion],
+    ) => !template.hidden && sdkVersion === "2.x");
+  }
+
+  return templatesWithSdkVersions;
 }
 
-function templatesWithSdkVersionsWithoutOsdk<
-  T extends Pick<Template, "files" | "hidden">,
->(
-  templates: readonly T[],
-) {
-  return templates.flatMap((template) =>
-    Object.keys(template.files).map((sdkVersion) =>
-      [template, sdkVersion as SdkVersion] as const
-    )
-  ).filter(([template, sdkVersion]) =>
-    !template.hidden && sdkVersion === "2.x"
-  );
-}
-
-async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
+async function generateCreateAppExamples(
+  tmpDir: tmp.DirResult,
+): Promise<void> {
   process.chdir(tmpDir.name);
-  for (const [template, sdkVersion] of templatesWithSdkVersions(TEMPLATES)) {
-    const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
+  for (
+    const [template, sdkVersion] of templatesWithSdkVersions(TEMPLATES, true)
+  ) {
+    const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion, true);
     const osdkPackage = sdkVersion === "2.x"
       ? "@osdk/e2e.generated.catchall"
       : "@osdk/e2e.generated.1.1.x";
@@ -112,8 +122,9 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
   }
 
   for (
-    const [template, sdkVersion] of templatesWithSdkVersionsWithoutOsdk(
+    const [template, sdkVersion] of templatesWithSdkVersions(
       TEMPLATES,
+      false,
     )
   ) {
     const exampleId = sdkVersionedTemplateExampleId(
@@ -141,11 +152,18 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
 
     await mutateFiles(tmpDir, exampleId, template, sdkVersion);
   }
+}
 
+async function generateCreateWidgetExamples(
+  tmpDir: tmp.DirResult,
+): Promise<void> {
   for (
-    const [template, sdkVersion] of templatesWithSdkVersions(WIDGET_TEMPLATES)
+    const [template, sdkVersion] of templatesWithSdkVersions(
+      WIDGET_TEMPLATES,
+      true,
+    )
   ) {
-    const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
+    const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion, true);
     const osdkPackage = sdkVersion === "2.x"
       ? "@osdk/e2e.generated.catchall"
       : "@osdk/e2e.generated.1.1.x";
@@ -211,18 +229,29 @@ async function fixMonorepolint(tmpDir: tmp.DirResult): Promise<void> {
     process.exit(1);
   }
   process.chdir(path.dirname(mrlConfig));
-  const mrlPaths = [
-    ...templatesWithSdkVersions(TEMPLATES),
-    ...templatesWithSdkVersions(WIDGET_TEMPLATES),
+  const mrlPathsWithOsdk = [
+    ...templatesWithSdkVersions(TEMPLATES, true),
+    ...templatesWithSdkVersions(WIDGET_TEMPLATES, true),
   ].map((
     [template, sdkVersion],
   ) =>
     path.join(
       tmpDir.name,
-      sdkVersionedTemplateExampleId(template, sdkVersion),
+      sdkVersionedTemplateExampleId(template, sdkVersion, true),
       "package.json",
     )
   );
+  const mrlPathsWithoutOsdk = templatesWithSdkVersions(TEMPLATES, false)
+    .map((
+      [template, sdkVersion],
+    ) =>
+      path.join(
+        tmpDir.name,
+        sdkVersionedTemplateExampleId(template, sdkVersion, false),
+        "package.json",
+      )
+    );
+  const mrlPaths = [...mrlPathsWithOsdk, ...mrlPathsWithoutOsdk];
   const { stdout: mrlStdout, stderr: mrlStderr } = await promisify(exec)(
     `pnpm exec monorepolint check --verbose --fix --paths ${
       mrlPaths.join(" ")
@@ -235,14 +264,20 @@ async function fixMonorepolint(tmpDir: tmp.DirResult): Promise<void> {
 function checkExamples(
   resolvedOutput: string,
   tmpDir: tmp.DirResult,
+  templates: Template[],
+  isUsingOsdk: boolean,
 ): void {
   for (
-    const [template, sdkVersion] of [
-      ...templatesWithSdkVersions(TEMPLATES),
-      ...templatesWithSdkVersions(WIDGET_TEMPLATES),
-    ]
+    const [template, sdkVersion] of templatesWithSdkVersions(
+      templates,
+      isUsingOsdk,
+    )
   ) {
-    const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
+    const exampleId = sdkVersionedTemplateExampleId(
+      template,
+      sdkVersion,
+      isUsingOsdk,
+    );
     consola.info(`Checking contents of ${exampleId}`);
     // realpath because globby in .gitignore filter requires symlinks in tmp directory to be resolved
     const pathLeft = fs.realpathSync(path.join(resolvedOutput, exampleId));
@@ -307,15 +342,21 @@ function getContents(aPath: string | null) {
 function copyExamples(
   resolvedOutput: string,
   tmpDir: tmp.DirResult,
+  templates: Template[],
+  isUsingOsdk: boolean,
 ): void {
   consola.info("Copying generated packages to output directory");
   for (
-    const [template, sdkVersion] of [
-      ...templatesWithSdkVersions(TEMPLATES),
-      ...templatesWithSdkVersions(WIDGET_TEMPLATES),
-    ]
+    const [template, sdkVersion] of templatesWithSdkVersions(
+      templates,
+      isUsingOsdk,
+    )
   ) {
-    const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion);
+    const exampleId = sdkVersionedTemplateExampleId(
+      template,
+      sdkVersion,
+      isUsingOsdk,
+    );
     const exampleOutputPath = path.join(resolvedOutput, exampleId);
     const exampleTmpPath = path.join(tmpDir.name, exampleId);
     fs.rmSync(exampleOutputPath, { recursive: true, force: true });
@@ -323,8 +364,9 @@ function copyExamples(
     fs.cpSync(exampleTmpPath, exampleOutputPath, { recursive: true });
   }
   for (
-    const [template, sdkVersion] of templatesWithSdkVersionsWithoutOsdk(
+    const [template, sdkVersion] of templatesWithSdkVersions(
       TEMPLATES,
+      false,
     )
   ) {
     const exampleId = sdkVersionedTemplateExampleId(
@@ -413,8 +455,19 @@ const UPDATE_PACKAGE_JSON: Mutator = {
       )
       .replace(
         // Follow monorepo package naming convention
-        `"name": "${sdkVersionedTemplateExampleId(template, sdkVersion)}"`,
+        `"name": "${
+          sdkVersionedTemplateExampleId(template, sdkVersion, true)
+        }"`,
         `"name": "@osdk/examples.${
+          sdkVersionedTemplateCanonicalId(template, sdkVersion)
+        }"`,
+      )
+      .replace(
+        // Follow monorepo package naming convention
+        `"name": "${
+          sdkVersionedTemplateExampleId(template, sdkVersion, false)
+        }"`,
+        `"name": "@psdk/examples.${
           sdkVersionedTemplateCanonicalId(template, sdkVersion)
         }"`,
       ),
@@ -453,10 +506,10 @@ function templateExampleId(template: Template): string {
 function sdkVersionedTemplateExampleId(
   template: Template,
   sdkVersion: SdkVersion,
-  osdk: boolean = true,
+  isUsingOsdk: boolean,
 ): string {
   return `${templateExampleId(template)}-sdk-${sdkVersion}${
-    !osdk ? "-no-osdk" : ""
+    !isUsingOsdk ? "-no-osdk" : ""
   }`;
 }
 

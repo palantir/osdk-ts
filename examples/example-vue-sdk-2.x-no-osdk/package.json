@@ -1,13 +1,17 @@
 {
-  "name": "example-vue-sdk-2.x-no-osdk",
+  "name": "@psdk/examples.vue-sdk-2.x",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
   "scripts": {
-    "dev": "vite",
     "build": "vue-tsc && vite build",
-    "test": "vitest run",
-    "preview": "vite preview"
+    "dev": "vite",
+    "preview": "vite preview",
+    "test": "vitest run"
   },
   "dependencies": {
     "@osdk/client": "workspace:*",
@@ -22,5 +26,6 @@
     "vite": "^6.3.6",
     "vitest": "^3.2.4",
     "vue-tsc": "^2.2.12"
-  }
+  },
+  "type": "module"
 }

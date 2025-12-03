@@ -1,26 +1,30 @@
 {
-  "name": "example-expo-sdk-2.x-no-osdk",
+  "name": "@psdk/examples.expo-sdk-2.x",
   "private": true,
-  "main": "expo-router/entry",
   "version": "1.0.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
   "scripts": {
-    "start": "expo start --port 8080",
-    "dev": "expo start --port 8080",
-    "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
+    "build": "expo export -p web",
+    "dev": "expo start --port 8080",
     "ios": "expo start --ios",
-    "web": "expo start --web --port 8080",
+    "reset-project": "node ./scripts/reset-project.js",
+    "start": "expo start --port 8080",
     "test": "vitest run --passWithNoTests",
-    "build": "expo export -p web"
+    "web": "expo start --web --port 8080"
   },
   "dependencies": {
+    "@babel/runtime": "^7.28.4",
+    "@expo/vector-icons": "^14.1.0",
     "@osdk/client": "workspace:*",
     "@osdk/oauth": "workspace:*",
     "@osdk/react": "workspace:*",
-    "@babel/runtime": "^7.28.4",
-    "@react-navigation/elements": "^2.6.4",
-    "@expo/vector-icons": "^14.1.0",
     "@react-navigation/bottom-tabs": "^7.4.7",
+    "@react-navigation/elements": "^2.6.4",
     "@react-navigation/native": "^7.1.17",
     "dotenv": "^16.6.1",
     "expo": "~52.0.47",
@@ -49,12 +53,12 @@
     "react-router-dom": "^6.30.1"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0",
     "@babel/core": "^7.28.4",
     "@eslint/compat": "^1.3.2",
     "@eslint/js": "^9.35.0",
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/jest": "^29.5.14",
+    "@types/node": "^18.0.0",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@types/react-test-renderer": "^19.1.0",
@@ -77,5 +81,6 @@
     "typescript-eslint": "^8.43.0",
     "vite": "^6.3.6",
     "vitest": "^3.2.4"
-  }
+  },
+  "main": "expo-router/entry"
 }
