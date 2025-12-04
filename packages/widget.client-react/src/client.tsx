@@ -36,7 +36,8 @@ import { initializeParameters } from "./utils/initializeParameters.js";
 type ExtractObjectTypes<C extends WidgetConfig<C["parameters"]>> =
   C["parameters"][keyof C["parameters"]] extends infer Param
     ? Param extends { type: "objectSet"; objectType: infer OT }
-      ? OT extends ObjectType ? OT : never
+      ? OT extends ObjectType ? OT
+      : never
     : never
     : never;
 
@@ -182,8 +183,33 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
       },
     );
     client.ready();
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      if (entries.length !== 1) {
+        // eslint-disable-next-line no-console
+        console.error(
+          "Expected exactly one resize observer entry but received:",
+          entries,
+        );
+        return;
+      }
+      const entry = entries[0];
+      if (entry.borderBoxSize.length !== 1) {
+        // eslint-disable-next-line no-console
+        console.error(
+          "Expected exactly one border box size but received:",
+          entry.borderBoxSize,
+        );
+        return;
+      }
+      const { inlineSize: width, blockSize: height } = entry.borderBoxSize[0];
+      client.resize({ width, height });
+    });
+    resizeObserver.observe(document.body, { box: "border-box" });
+
     return () => {
       client.unsubscribe();
+      resizeObserver.disconnect();
     };
   }, []);
 

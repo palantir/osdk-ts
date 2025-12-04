@@ -26,6 +26,18 @@
 
 ## 2.5.0-beta.15
 
+## 2.5.2
+
+## 2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+
+## 2.5.0-rc.15
+
 ## 2.5.0-beta.14
 
 ## 2.5.0-beta.13

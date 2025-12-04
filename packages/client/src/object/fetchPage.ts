@@ -199,9 +199,11 @@ async function fetchInterfacePage<
     const baseRequestBody: SearchObjectsForInterfaceRequest = {
       augmentedProperties: {},
       augmentedSharedPropertyTypes: {},
+      augmentedInterfacePropertyTypes: {},
       otherInterfaceTypes: [],
       selectedObjectTypes: [],
       selectedSharedPropertyTypes: args.$select ? [...args.$select] : [],
+      selectedInterfacePropertyTypes: [],
       where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
     };
 

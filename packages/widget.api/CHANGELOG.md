@@ -67,6 +67,40 @@
 
 - 4d37e98: Improved support for object set parameters in widget.client-react
 
+## 3.2.5
+
+### Patch Changes
+
+- a2df5ba: Introduce widget resize message for automatic heights
+
+## 3.2.4
+
+## 3.2.3
+
+### Patch Changes
+
+- @osdk/api@2.5.2
+
+## 3.2.2
+
+### Patch Changes
+
+- Updated dependencies [099b4d8]
+  - @osdk/api@2.5.1
+
+## 3.2.1
+
+### Patch Changes
+
+- 77475e6: Improved support for object set parameters in widget.client-react
+
+## 3.2.0
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- a6f49e9: Allow specifying object sets in widget configs
+
 ## 3.2.0-beta.5
 
 ### Minor Changes

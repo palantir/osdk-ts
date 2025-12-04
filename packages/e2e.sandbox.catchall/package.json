@@ -41,7 +41,7 @@
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/e2e.generated.catchall": "workspace:~",
-    "@osdk/foundry": "2.41.0",
+    "@osdk/foundry": "2.42.0",
     "@osdk/functions": "workspace:~",
     "chalk": "^5.6.2",
     "pino": "^9.9.4",

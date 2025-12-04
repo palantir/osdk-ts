@@ -24,6 +24,28 @@
 
 ## 3.3.0-beta.2
 
+## 3.2.5
+
+### Patch Changes
+
+- a2df5ba: Introduce widget resize message for automatic heights
+- 71f33ca: Bump widget template dependency versions on widget libraries
+
+## 3.2.4
+
+## 3.2.3
+
+## 3.2.2
+
+## 3.2.1
+
+## 3.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 6e87cd9: Disable initial Radix theme
+
 ## 3.2.0-beta.5
 
 ## 3.2.0-beta.4

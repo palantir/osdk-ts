@@ -61,6 +61,48 @@
 - Updated dependencies [4d37e98]
   - @osdk/widget.api@3.3.0-beta.2
 
+## 3.2.5
+
+### Patch Changes
+
+- a2df5ba: Introduce widget resize message for automatic heights
+- Updated dependencies [a2df5ba]
+  - @osdk/widget.api@3.2.5
+
+## 3.2.4
+
+### Patch Changes
+
+- @osdk/widget.api@3.2.4
+
+## 3.2.3
+
+### Patch Changes
+
+- @osdk/widget.api@3.2.3
+
+## 3.2.2
+
+### Patch Changes
+
+- @osdk/widget.api@3.2.2
+
+## 3.2.1
+
+### Patch Changes
+
+- Updated dependencies [77475e6]
+  - @osdk/widget.api@3.2.1
+
+## 3.2.0
+
+### Patch Changes
+
+- 7901ae0: Simulated release
+- Updated dependencies [7901ae0]
+- Updated dependencies [a6f49e9]
+  - @osdk/widget.api@3.2.0
+
 ## 3.2.0-beta.5
 
 ### Patch Changes

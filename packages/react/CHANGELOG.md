@@ -51,6 +51,16 @@
   - @osdk/client@2.6.0-beta.4
   - @osdk/api@2.6.0-beta.4
 
+## 0.7.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 2348ddc: Make useOsdkAction validate less restrictive
+- 46ae415: improve useOsdkObject, useOsdkObjects error handling
+- 7b97128: add useObjectSet hook
+- ccc85a3: Export useOsdkMetadata hook experimentally
+
 ## 0.7.0-beta.5
 
 ### Minor Changes

@@ -152,6 +152,86 @@
   - @osdk/client.unstable@2.5.0-beta.15
   - @osdk/generator-converters.ontologyir@2.5.0-beta.15
 
+## 0.3.2
+
+### Patch Changes
+
+- @osdk/api@2.5.2
+- @osdk/client.unstable@2.5.2
+- @osdk/generator-converters.ontologyir@2.5.2
+
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [099b4d8]
+  - @osdk/api@2.5.1
+  - @osdk/client.unstable@2.5.1
+  - @osdk/generator-converters.ontologyir@2.5.1
+
+## 0.3.0
+
+### Patch Changes
+
+- 150da1a: Simulated release
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [150da1a]
+- Updated dependencies [150da1a]
+- Updated dependencies [322c5bc]
+- Updated dependencies [6da8fd2]
+- Updated dependencies [37eb75b]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [f025f30]
+- Updated dependencies [1b60527]
+- Updated dependencies [7160276]
+- Updated dependencies [9c9110c]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [a00d2ed]
+- Updated dependencies [40d43c2]
+- Updated dependencies [d815339]
+- Updated dependencies [f9b6dc4]
+- Updated dependencies [07083e1]
+- Updated dependencies [b1c99bf]
+- Updated dependencies [11fd3fb]
+- Updated dependencies [5f72188]
+- Updated dependencies [3d7461d]
+- Updated dependencies [5fd12eb]
+- Updated dependencies [7bdac45]
+- Updated dependencies [37eb75b]
+- Updated dependencies [7b97128]
+- Updated dependencies [f194536]
+- Updated dependencies [76905f5]
+- Updated dependencies [a96d89e]
+- Updated dependencies [f2dbc3d]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [04fe946]
+- Updated dependencies [052a96b]
+- Updated dependencies [ca1fabe]
+- Updated dependencies [e48be06]
+- Updated dependencies [7f0ad5c]
+- Updated dependencies [712dfbe]
+  - @osdk/api@2.5.0
+  - @osdk/cli@0.29.0
+  - @osdk/client.unstable@2.5.0
+  - @osdk/faux@0.3.0
+  - @osdk/generator-converters.ontologyir@2.5.0
+  - @osdk/maker@0.13.0
+
+## 0.3.0-rc.15
+
+### Patch Changes
+
+- Updated dependencies [37eb75b]
+  - @osdk/api@2.5.0-rc.15
+  - @osdk/client.unstable@2.5.0-rc.15
+  - @osdk/generator-converters.ontologyir@2.5.0-rc.15
+  - @osdk/cli@0.29.0-rc.6
+
 ## 0.3.0-beta.14
 
 ### Patch Changes

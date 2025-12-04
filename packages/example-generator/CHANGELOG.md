@@ -1,5 +1,15 @@
 # @osdk/example-generator
 
+## 0.13.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+  - @osdk/create-app@2.5.0
+  - @osdk/create-widget@3.2.0
+
 ## 0.13.0-beta.4
 
 ### Patch Changes

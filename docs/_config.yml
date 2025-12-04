@@ -1,0 +1,14 @@
+title: OSDK TypeScript
+description: Documentation for OSDK TypeScript packages
+theme: jekyll-theme-cayman
+
+# Markdown settings
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Exclude files from build
+exclude:
+  - README.md
+  - CONTRIBUTING.md
