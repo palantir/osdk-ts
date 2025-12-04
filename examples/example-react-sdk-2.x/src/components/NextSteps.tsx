@@ -42,7 +42,7 @@ function NextSteps(): React.ReactElement {
 interface INextStep {
   icon: string;
   title: string;
-  subtitle: React.ReactElement | string;
+  subtitle: React.ReactElement;
 }
 
 function NextStep({
