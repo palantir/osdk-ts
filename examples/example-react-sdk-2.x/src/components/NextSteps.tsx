@@ -5,8 +5,21 @@ const STEPS: INextStep[] = [
   {
     icon: "tag",
     title: "Deploy your application",
-    subtitle:
-      "Generate a new tag version of your repository to deploy a new version of your application.",
+    subtitle: (
+      <span>
+        To deploy a new version of your application, tag a new version of your
+        repository or use the command line to run{" "}
+        <code className={css.code}>npx @osdk/cli@latest site deploy</code>.{" "}
+        <a
+          className={css.learnMore}
+          href="https://www.npmjs.com/package/@osdk/cli"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Learn more.
+        </a>
+      </span>
+    ),
   },
 ];
 
@@ -29,7 +42,7 @@ function NextSteps(): React.ReactElement {
 interface INextStep {
   icon: string;
   title: string;
-  subtitle: string;
+  subtitle: React.ReactElement | string;
 }
 
 function NextStep({

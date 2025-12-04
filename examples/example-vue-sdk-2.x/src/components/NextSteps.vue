@@ -10,7 +10,7 @@ const STEPS: INextStep[] = [
     icon: "tag",
     title: "Deploy your application",
     subtitle:
-      "Generate a new tag version of your repository to deploy a new version of your application.",
+      'To deploy a new version of your application, tag a new version of your repository or use the command line to run <code class="code">npx @osdk/cli@latest site deploy</code>. <a href="https://www.npmjs.com/package/@osdk/cli" class="learn-more" target="_blank" rel="noreferrer">Learn more.</a>',
   },
 ];
 </script>
@@ -22,7 +22,7 @@ const STEPS: INextStep[] = [
       <img :src="`/${step.icon}.svg`" class="icon" :alt="step.icon" />
       <div class="next-step-content">
         <h6 class="title">{{ step.title }}</h6>
-        <div class="subtitle">{{ step.subtitle }}</div>
+        <div class="subtitle" v-html="step.subtitle" />
       </div>
     </div>
   </div>
@@ -56,15 +56,32 @@ const STEPS: INextStep[] = [
   text-align: left;
 }
 
+.icon {
+  height: 34px;
+}
+
 .title {
   font-weight: 600;
 }
 
 .subtitle {
   color: #5f6b7c;
+  line-height: 20px;
 }
 
-.icon {
-  height: 34px;
+.subtitle :deep(.code) {
+  background: #8f99a826;
+  padding: 2px;
+  white-space: nowrap;
+  border-radius: 2px;
+}
+
+.subtitle :deep(.learn-more) {
+  color: #215db0;
+  text-decoration: none;
+}
+
+.subtitle :deep(.learn-more:hover) {
+  text-decoration: underline;
 }
 </style>

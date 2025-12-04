@@ -31,8 +31,25 @@
 
 .subtitle {
   color: #5f6b7c;
+  line-height: 20px;
 }
 
 .icon {
   height: 34px;
+}
+
+.code {
+  background: #8f99a826;
+  padding: 2px;
+  white-space: nowrap;
+  border-radius: 2px;
+}
+
+.learnMore {
+  color: #215db0;
+  text-decoration: none;
+}
+
+.learnMore:hover {
+  text-decoration: underline;
 }
