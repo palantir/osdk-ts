@@ -126,6 +126,8 @@ export async function run(
   }
 
   const templateContext: TemplateContext = {
+    application,
+    applicationUrl,
     project,
     foundryUrl,
     osdkPackage,
