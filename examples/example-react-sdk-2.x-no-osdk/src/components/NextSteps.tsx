@@ -5,14 +5,33 @@ const STEPS: INextStep[] = [
   {
     icon: "cube",
     title: "Configure your Ontology and Platform SDKs",
-    subtitle:
-      "Use the Ontology SDK to interact with your Ontology and the Platform SDK to access Foundry APIs. Configure your SDKs from the Ontology SDK and Platform SDK tabs in Developer Console.",
+    subtitle: (
+      <span>
+        Use the Ontology SDK to interact with your Ontology and the Platform SDK
+        to access Foundry APIs. Configure your SDKs from the{" "}
+        <strong>Ontology SDK</strong> and <strong>Platform SDK</strong> tabs in
+        Developer Console.
+      </span>
+    ),
   },
   {
     icon: "tag",
     title: "Deploy your application",
-    subtitle:
-      "Generate a new tag version of your repository to deploy a new version of your application.",
+    subtitle: (
+      <span>
+        To deploy a new version of your application, tag a new version of your
+        repository or use the command line to run{" "}
+        <code className={css.code}>npx @osdk/cli@latest site deploy</code>.{" "}
+        <a
+          className={css.learnMore}
+          href="https://www.npmjs.com/package/@osdk/cli"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Learn more.
+        </a>
+      </span>
+    ),
   },
 ];
 
@@ -35,14 +54,14 @@ function NextSteps(): React.ReactElement {
 interface INextStep {
   icon: string;
   title: string;
-  subtitle: string;
+  subtitle: React.ReactElement;
 }
 
 function NextStep({
   icon,
   title,
   subtitle,
-}: INextStep): React.ReactElement<INextStep> {
+}: INextStep): React.ReactElement {
   return (
     <div className={css.nextStep}>
       <img src={`/${icon}.svg`} className={css.icon} alt={icon} />

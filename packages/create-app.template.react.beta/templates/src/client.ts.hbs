@@ -1,10 +1,9 @@
 {{#if osdkPackage}}
 import { createClient, type Client } from "@osdk/client";
-import { createPublicOauthClient, type PublicOauthClient } from "@osdk/oauth";
 {{else}}
 import { createPlatformClient, type PlatformClient } from "@osdk/client";
-import { createPublicOauthClient, type PublicOauthClient } from "@osdk/oauth";
 {{/if}}
+import { createPublicOauthClient, type PublicOauthClient } from "@osdk/oauth";
 
 function getMetaTagContent(tagName: string): string {
   const elements = document.querySelectorAll(`meta[name="${tagName}"]`);

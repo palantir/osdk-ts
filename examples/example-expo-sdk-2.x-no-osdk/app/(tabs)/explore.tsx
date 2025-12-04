@@ -24,6 +24,15 @@ export default function TabTwoScreen() {
         <ThemedText type="title">Explore</ThemedText>
       </ThemedView>
       <ThemedText>This app includes example code to help you get started.</ThemedText>
+      <Collapsible title="Ontology and Platform SDKs" open={true}>
+        <ThemedText>
+          Use the Ontology SDK to interact with your Ontology and the Platform
+          SDK to access Foundry APIs. Configure your SDKs from the{" "}
+          <ThemedText type="defaultSemiBold">Ontology SDK</ThemedText> and{" "}
+          <ThemedText type="defaultSemiBold">Platform SDK</ThemedText> tabs in
+          Developer Console.
+        </ThemedText>
+      </Collapsible>
       <Collapsible title="Expo default examples">
         <Collapsible title="File-based routing">
           <ThemedText>

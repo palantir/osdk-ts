@@ -4,11 +4,7 @@ import {
   createPlatformClient,
   PlatformClient,
 } from "@osdk/client";
-{{#if osdkPackage}}
-import { FOUNDRY_URL, ONTOLOGY_RID } from "./osdkConst";
-{{else}}
-import { FOUNDRY_URL } from "./osdkConst";
-{{/if}}
+import { FOUNDRY_URL{{#if osdkPackage}}, ONTOLOGY_RID{{/if}} } from "./osdkConst";
 import { getValidAuthToken } from "./Auth";
 
 {{#if osdkPackage}}
