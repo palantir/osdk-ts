@@ -45,11 +45,7 @@ interface INextStep {
   subtitle: React.ReactElement;
 }
 
-function NextStep({
-  icon,
-  title,
-  subtitle,
-}: INextStep): React.ReactElement {
+function NextStep({ icon, title, subtitle }: INextStep): React.ReactElement {
   return (
     <div className={css.nextStep}>
       <img src={`/${icon}.svg`} className={css.icon} alt={icon} />
