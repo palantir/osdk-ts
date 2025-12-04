@@ -25,11 +25,6 @@ export type {
   UseOsdkMediaQueryOptions,
   UseOsdkMediaQueryResult,
 } from "../new/useOsdkMediaQuery.js";
-export { useOsdkMediaUpload } from "../new/useOsdkMediaUpload.js";
-export type {
-  UseOsdkMediaUploadOptions,
-  UseOsdkMediaUploadResult,
-} from "../new/useOsdkMediaUpload.js";
 export { useOsdkObject } from "../new/useOsdkObject.js";
 export type { UseOsdkListResult } from "../new/useOsdkObjects.js";
 export { useOsdkObjects } from "../new/useOsdkObjects.js";

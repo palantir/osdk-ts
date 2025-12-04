@@ -46,10 +46,13 @@ export class RefCounts<T extends {}> {
     const count = this.refCounts.get(key);
 
     if (count === undefined) {
-      // TODO we should trace here if this happens because it likely means
-      // someone unsubscribed twice and I don't know if we should treat that as
-      // a potential error or not
-      // throw new Error("RefCounts.release() - key not found", key);
+      if (process.env.NODE_ENV !== "production") {
+        // eslint-disable-next-line no-console
+        console.warn(
+          "RefCounts.release() called for untracked key - possible double release:",
+          key,
+        );
+      }
     } else if (count === 1) {
       this.refCounts.delete(key);
       this.gcMap.set(key, Date.now() + this.keepAlive);

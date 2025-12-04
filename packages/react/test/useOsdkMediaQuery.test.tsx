@@ -484,6 +484,133 @@ describe("useOsdkMediaQuery", () => {
     );
   });
 
+  it("handles metadata error from observable", async () => {
+    const mockClient = createMockClient();
+    let capturedObserver: Observer<MediaMetadataPayload> | undefined;
+    const mockObservableClient = createMockObservableClient({
+      observeMetadata: vi.fn().mockImplementation((coords, options, obs) => {
+        capturedObserver = obs;
+        return { unsubscribe: vi.fn() };
+      }),
+    });
+
+    const coords: MediaPropertyLocation = {
+      objectType: "TestObject",
+      primaryKey: 777,
+      propertyName: "media",
+    };
+
+    const wrapper = ({ children }: React.PropsWithChildren) => (
+      <OsdkProvider2
+        client={mockClient}
+        observableClient={mockObservableClient}
+      >
+        {children}
+      </OsdkProvider2>
+    );
+
+    const { result } = renderHook(
+      () => useOsdkMediaQuery(coords),
+      { wrapper },
+    );
+
+    // Simulate error from observable
+    act(() => {
+      capturedObserver?.next({
+        metadata: undefined,
+        status: "error",
+        error: new Error("Metadata fetch failed"),
+        lastUpdated: Date.now(),
+        isOptimistic: false,
+      });
+    });
+
+    await waitFor(() => {
+      expect(result.current.error).toBeDefined();
+      expect(result.current.error?.message).toBe("Metadata fetch failed");
+    });
+  });
+
+  it("uses cached content when available", async () => {
+    const mockBlob = new Blob(["cached content"], { type: "image/jpeg" });
+    const mockClient = createMockClient();
+    const mockObservableClient = createMockObservableClient();
+
+    // Simulate cache hit
+    vi.mocked(mockObservableClient.media.getCachedContent).mockReturnValue(
+      mockBlob,
+    );
+
+    const coords: MediaPropertyLocation = {
+      objectType: "TestObject",
+      primaryKey: 888,
+      propertyName: "media",
+    };
+
+    const mockMedia = createMockMedia(coords, mockBlob);
+
+    const wrapper = ({ children }: React.PropsWithChildren) => (
+      <OsdkProvider2
+        client={mockClient}
+        observableClient={mockObservableClient}
+      >
+        {children}
+      </OsdkProvider2>
+    );
+
+    const { result } = renderHook(
+      () => useOsdkMediaQuery(mockMedia),
+      { wrapper },
+    );
+
+    await waitFor(() => {
+      expect(result.current.content).toBeDefined();
+    });
+
+    // Should not have fetched since cache was hit
+    expect(mockObservableClient.media.fetchContent).not.toHaveBeenCalled();
+  });
+
+  it("fetches full resolution when preview is false", async () => {
+    const mockBlob = new Blob(["full res content"], { type: "image/jpeg" });
+    const mockClient = createMockClient();
+    const mockObservableClient = createMockObservableClient();
+    vi.mocked(mockObservableClient.media.fetchContent).mockResolvedValue(
+      mockBlob,
+    );
+
+    const coords: MediaPropertyLocation = {
+      objectType: "TestObject",
+      primaryKey: 999,
+      propertyName: "media",
+    };
+
+    const mockMedia = createMockMedia(coords, mockBlob);
+
+    const wrapper = ({ children }: React.PropsWithChildren) => (
+      <OsdkProvider2
+        client={mockClient}
+        observableClient={mockObservableClient}
+      >
+        {children}
+      </OsdkProvider2>
+    );
+
+    const { result } = renderHook(
+      () => useOsdkMediaQuery(mockMedia, { preview: false }),
+      { wrapper },
+    );
+
+    await waitFor(() => {
+      expect(result.current.content).toBeDefined();
+    });
+
+    expect(mockObservableClient.media.fetchContent).toHaveBeenCalledWith(
+      mockMedia,
+      { preview: false },
+    );
+  });
+
   describe("race conditions", () => {
     it("should handle rapid mediaOrLocation changes", async () => {
       const mockClient = createMockClient();

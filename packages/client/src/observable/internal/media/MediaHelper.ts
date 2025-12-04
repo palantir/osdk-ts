@@ -32,19 +32,15 @@ import type {
   MediaMetadataPayload,
 } from "./MediaMetadataQuery.js";
 import { MediaMetadataQuery } from "./MediaMetadataQuery.js";
-import type { MediaUploadHelper } from "./MediaUploadHelper.js";
-import { createMediaUploadHelper } from "./MediaUploadHelper.js";
-import type { UploadHandle } from "./MediaUploadManager.js";
 
 /**
- * Facade for media operations: metadata, content, uploads, and caching.
+ * Facade for media operations: metadata, content, and caching.
  * Delegates to specialized helpers for focused responsibilities.
  */
 export class MediaHelper {
   private store: Store;
   private cacheKeys: CacheKeys<KnownCacheKey>;
   private blobManager: BlobMemoryManager;
-  private uploadHelper: MediaUploadHelper;
 
   constructor(
     store: Store,
@@ -53,7 +49,6 @@ export class MediaHelper {
     this.store = store;
     this.cacheKeys = cacheKeys;
     this.blobManager = createBlobMemoryManager();
-    this.uploadHelper = createMediaUploadHelper(store);
   }
 
   /**
@@ -225,19 +220,6 @@ export class MediaHelper {
   }
 
   /**
-   * Upload media directly to an object property.
-   * @deprecated Use action-based uploads instead. This is for legacy compatibility.
-   */
-  uploadMedia(
-    file: Blob,
-    filename: string,
-    coords: MediaPropertyLocation,
-    options?: { preview?: boolean },
-  ): UploadHandle {
-    return this.uploadHelper.uploadMedia(file, filename, coords, options);
-  }
-
-  /**
    * Clear cached media (both metadata and content).
    */
   clearCache(
@@ -271,7 +253,6 @@ export class MediaHelper {
    */
   dispose(): void {
     this.blobManager.dispose();
-    this.uploadHelper.dispose();
 
     for (const cacheKey of this.store.queries.keys()) {
       if (cacheKey.type === "mediaMetadata") {

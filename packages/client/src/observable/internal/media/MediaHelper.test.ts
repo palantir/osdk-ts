@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { Attachment, Media, MediaReference } from "@osdk/api";
-import * as OntologiesV2 from "@osdk/foundry.ontologies";
+import type { Attachment, Media } from "@osdk/api";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { additionalContext } from "../../../Client.js";
 import type { MediaPropertyLocation } from "../../ObservableClient/MediaTypes.js";
@@ -87,61 +86,6 @@ describe("MediaHelper", () => {
     mockStore = createMockStore();
     mockCacheKeys = createMockCacheKeys();
     mediaHelper = new MediaHelper(mockStore, mockCacheKeys);
-  });
-
-  it("uploads media successfully and invalidates cache", async () => {
-    const mockMediaReference = {
-      reference: {
-        type: "media",
-        mediaSetViewItem: {
-          mediaSetRid: "ri.media.rid",
-          mediaSetViewRid: "ri.media-set-view.rid",
-          mediaItemRid: "ri.media-item.rid",
-        },
-      },
-    };
-
-    vi.mocked(OntologiesV2.MediaReferenceProperties.upload).mockResolvedValue(
-      mockMediaReference as MediaReference,
-    );
-
-    const file = new Blob(["test content"], { type: "text/plain" });
-    const coords: MediaPropertyLocation = {
-      objectType: "Employee",
-      primaryKey: "123",
-      propertyName: "photo",
-    };
-
-    const handle = mediaHelper.uploadMedia(file, "test.txt", coords);
-
-    expect(handle).toHaveProperty("promise");
-    expect(handle).toHaveProperty("abort");
-    expect(handle).toHaveProperty("onProgress");
-
-    const result = await handle.promise;
-    expect(result).toEqual(mockMediaReference);
-
-    expect(mockStore.invalidateObject).toHaveBeenCalledWith("Employee", "123");
-    expect(mockStore.queries.delete).toHaveBeenCalled();
-  });
-
-  it("handles upload errors without cache invalidation", async () => {
-    const uploadError = new Error("Upload failed");
-    vi.mocked(OntologiesV2.MediaReferenceProperties.upload).mockRejectedValue(
-      uploadError,
-    );
-
-    const file = new Blob(["test"], { type: "text/plain" });
-    const coords: MediaPropertyLocation = {
-      objectType: "Employee",
-      primaryKey: "456",
-      propertyName: "document",
-    };
-
-    const handle = mediaHelper.uploadMedia(file, "test.txt", coords);
-
-    await expect(handle.promise).rejects.toThrow("Upload failed");
-    expect(mockStore.invalidateObject).not.toHaveBeenCalled();
   });
 
   it("generates cache keys for different media types", () => {
