@@ -2,4 +2,4 @@
 "@osdk/widget.client": patch
 ---
 
-Create foundryWidgetTokenProvider helper
+Create createFoundryWidgetTokenProvider helper

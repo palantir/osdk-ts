@@ -19,6 +19,6 @@
  * runtime environment. It resolves to a placeholder value which is replaced
  * on the actual request.
  */
-export function foundryWidgetTokenProvider(): Promise<string> {
-  return Promise.resolve("widgets-auth");
+export function createFoundryWidgetTokenProvider(): () => Promise<string> {
+  return () => Promise.resolve("widgets-auth");
 }

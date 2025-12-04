@@ -38,4 +38,4 @@ export {
 export { createFoundryWidgetClient } from "./client.js";
 export type { FoundryWidgetClient } from "./client.js";
 export { FoundryHostEventTarget } from "./host.js";
-export { foundryWidgetTokenProvider } from "./tokenProvider.js";
+export { createFoundryWidgetTokenProvider } from "./tokenProvider.js";
