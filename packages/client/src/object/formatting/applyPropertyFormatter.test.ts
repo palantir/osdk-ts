@@ -44,6 +44,7 @@ describe("getFormattedValue", () => {
     status: "ACTIVE",
     interfaceMap: {},
     inverseInterfaceMap: {},
+    inverseInterfaceMapV2: {},
     links: {},
     implements: [],
     [InterfaceDefinitions]: {},

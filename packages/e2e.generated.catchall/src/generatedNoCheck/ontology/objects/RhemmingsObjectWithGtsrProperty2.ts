@@ -78,6 +78,7 @@ export interface RhemmingsObjectWithGtsrProperty2 extends $ObjectTypeDefinition 
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: '(rhemmings) Object with GTSR property 2';
     primaryKeyApiName: 'id';

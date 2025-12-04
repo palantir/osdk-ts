@@ -74,6 +74,13 @@ describe("FetchMetadata", () => {
             "fullName": "fooSpt",
           },
         },
+        "inverseInterfaceMapV2": {
+          "FooInterface": {
+            "fullName": [
+              "fooSpt",
+            ],
+          },
+        },
         "links": {
           "lead": {
             "multiplicity": false,
