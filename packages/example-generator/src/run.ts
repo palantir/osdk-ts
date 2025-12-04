@@ -70,7 +70,7 @@ function createTmpDir(): tmp.DirResult {
 
 function templatesWithSdkVersions<T extends Pick<Template, "files" | "hidden">>(
   templates: readonly T[],
-  isUsingOsdk: boolean,
+  isUsingOsdk: boolean = true,
 ) {
   let templatesWithSdkVersions = templates.flatMap((template) =>
     Object.keys(template.files).map((sdkVersion) =>
@@ -78,6 +78,7 @@ function templatesWithSdkVersions<T extends Pick<Template, "files" | "hidden">>(
     )
   );
 
+  // Bootstrapping without an OSDK is only supported for visible 2.x templates
   if (!isUsingOsdk) {
     templatesWithSdkVersions = templatesWithSdkVersions.filter((
       [template, sdkVersion],
@@ -144,8 +145,7 @@ async function generateCreateAppExamples(
       ontology: undefined,
       clientId: "123",
       osdkPackage: undefined,
-      osdkRegistryUrl:
-        "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+      osdkRegistryUrl: undefined,
       corsProxy: false,
       scopes: ["api:ontologies-read", "api:ontologies-write"],
     });
@@ -160,7 +160,6 @@ async function generateCreateWidgetExamples(
   for (
     const [template, sdkVersion] of templatesWithSdkVersions(
       WIDGET_TEMPLATES,
-      true,
     )
   ) {
     const exampleId = sdkVersionedTemplateExampleId(template, sdkVersion, true);
@@ -231,7 +230,7 @@ async function fixMonorepolint(tmpDir: tmp.DirResult): Promise<void> {
   process.chdir(path.dirname(mrlConfig));
   const mrlPathsWithOsdk = [
     ...templatesWithSdkVersions(TEMPLATES, true),
-    ...templatesWithSdkVersions(WIDGET_TEMPLATES, true),
+    ...templatesWithSdkVersions(WIDGET_TEMPLATES),
   ].map((
     [template, sdkVersion],
   ) =>
@@ -356,23 +355,6 @@ function copyExamples(
       template,
       sdkVersion,
       isUsingOsdk,
-    );
-    const exampleOutputPath = path.join(resolvedOutput, exampleId);
-    const exampleTmpPath = path.join(tmpDir.name, exampleId);
-    fs.rmSync(exampleOutputPath, { recursive: true, force: true });
-    fs.mkdirSync(exampleOutputPath, { recursive: true });
-    fs.cpSync(exampleTmpPath, exampleOutputPath, { recursive: true });
-  }
-  for (
-    const [template, sdkVersion] of templatesWithSdkVersions(
-      TEMPLATES,
-      false,
-    )
-  ) {
-    const exampleId = sdkVersionedTemplateExampleId(
-      template,
-      sdkVersion,
-      false,
     );
     const exampleOutputPath = path.join(resolvedOutput, exampleId);
     const exampleTmpPath = path.join(tmpDir.name, exampleId);

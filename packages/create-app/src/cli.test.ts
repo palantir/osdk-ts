@@ -92,10 +92,12 @@ describe.each(TEMPLATES.filter(template => !template.hidden))(
   },
 );
 
+const VISIBLE_TEMPLATE = TEMPLATES.filter(template => !template.hidden)[0];
+
 test(`CLI rejects no OSDK with 1.x`, async () => {
   await expect(runTest({
-    project: `expected-${TEMPLATES.filter(template => !template.hidden)[0].id}`,
-    template: TEMPLATES.filter(template => !template.hidden)[0],
+    project: `expected-${VISIBLE_TEMPLATE.id}`,
+    template: VISIBLE_TEMPLATE,
     corsProxy: false,
     sdkVersion: "1.x",
     skipOsdk: true,
