@@ -137,52 +137,58 @@ export async function run(
   };
   const processFiles = function(dir: string) {
     fs.readdirSync(dir).forEach(function(file) {
-      file = dir + "/" + file;
-      const stat = fs.statSync(file);
+      let fullPath = dir + "/" + file;
+      const stat = fs.statSync(fullPath);
       if (stat.isDirectory()) {
-        processFiles(file);
+        processFiles(fullPath);
         return;
       }
 
-      if (file.endsWith("/_gitignore")) {
-        fs.renameSync(file, file.replace(/\/_gitignore$/, "/.gitignore"));
+      if (fullPath.endsWith("/_gitignore")) {
+        fs.renameSync(
+          fullPath,
+          fullPath.replace(/\/_gitignore$/, "/.gitignore"),
+        );
         return;
       }
 
-      // Files prefixed with `osdk-` are only kept if the application uses an OSDK
-      if (file.includes("osdk-")) {
+      // Files with the `.osdk` extension are only kept if the application uses an OSDK
+      if (file.includes(".osdk")) {
         if (osdkPackage == null) {
-          fs.rmSync(file);
+          fs.rmSync(fullPath);
           return;
         } else {
-          fs.renameSync(file, file.replace(/osdk-/, ""));
-          file = file.replace(/osdk-/, "");
+          fs.renameSync(fullPath, fullPath.replace(".osdk", ""));
+          fullPath = fullPath.replace(".osdk", "");
         }
-        // Files prefixed with `psdk-` are only kept if the application does not use an OSDK
-      } else if (file.includes("psdk-")) {
+        // Files with the `.psdk` extension are only kept if the application does not use an OSDK
+      } else if (file.includes(".psdk")) {
         if (osdkPackage == null) {
-          fs.renameSync(file, file.replace(/psdk-/, ""));
-          file = file.replace(/psdk-/, "");
+          fs.renameSync(fullPath, fullPath.replace(".psdk", ""));
+          fullPath = fullPath.replace(".psdk", "");
         } else {
-          fs.rmSync(file);
+          fs.rmSync(fullPath);
           return;
         }
       }
 
-      if (!file.endsWith(".hbs")) {
+      if (!fullPath.endsWith(".hbs")) {
         return;
       }
-      const templated = Handlebars.compile(fs.readFileSync(file, "utf-8"))(
+      const templated = Handlebars.compile(fs.readFileSync(fullPath, "utf-8"))(
         templateContext,
       );
-      fs.writeFileSync(file.replace(/.hbs$/, ""), templated);
-      fs.rmSync(file);
+      fs.writeFileSync(fullPath.replace(/.hbs$/, ""), templated);
+      fs.rmSync(fullPath);
     });
   };
   processFiles(root);
 
-  const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl });
-  fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
+  if (osdkPackage != null && osdkRegistryUrl != null) {
+    const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl });
+    fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
+  }
+
   const envDevelopment = generateEnvDevelopment({
     envPrefix: template.envPrefix,
     foundryUrl,

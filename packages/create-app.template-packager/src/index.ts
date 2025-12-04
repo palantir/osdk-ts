@@ -56,8 +56,8 @@ export async function cli(): Promise<void> {
 
       if (
         destPath === "package.json.hbs"
-        || destPath === "osdk-package.json.hbs"
-        || destPath === "psdk-package.json.hbs"
+        || destPath === "package.json.osdk.hbs"
+        || destPath === "package.json.psdk.hbs"
       ) {
         const packageJson = JSON.parse(body.toString("utf-8"));
 

@@ -29,19 +29,16 @@ export function generateEnvDevelopment({
 }): string {
   const foundryApiUrl = corsProxy ? "http://localhost:8080" : foundryUrl;
   const applicationUrl = "http://localhost:8080";
-  const ontologyOrDefault = ontology
-    ?? "<Fill in the Ontology RID if your application uses an OSDK>";
+  const ontologyEnvSection = ontology != null
+    ? `
 
-  const ontologyEnvSection = `${
-    ontology != null
-      ? "# This Ontology RID must match the Ontology RID your Developer Console is associated with."
-      : "# If your application uses an OSDK, this Ontology RID must match the Ontology RID your Developer Console is associated with."
-  }
+# This Ontology RID must match the Ontology RID your Developer Console is associated with.
 # You can check the Ontology on the "Ontology SDK" tab of Developer Console.
 # It typically does not need to be changed.
 
-${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontologyOrDefault}
-`.trim();
+${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontology}
+`
+    : "";
 
   return `# This env file is intended for developing on your local computer.
 # To set up development in Foundry's Code Workspaces, see .env.code-workspaces.
@@ -70,10 +67,7 @@ ${envPrefix}FOUNDRY_API_URL=${foundryApiUrl}
 # Developer Console. It typically does not need to be changed.
 
 ${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
-
-
-${ontologyEnvSection}
-`;
+${ontologyEnvSection}`;
 }
 
 export function generateEnvProduction({
@@ -91,18 +85,16 @@ export function generateEnvProduction({
 }): string {
   const applicationUrlOrDefault = applicationUrl
     ?? "<Fill in the domain at which you deploy your application>";
-  const ontologyOrDefault = ontology
-    ?? "<Fill in the Ontology RID if your application uses an OSDK>";
-  const ontologyEnvSection = `${
-    ontology != null
-      ? "# This Ontology RID must match the Ontology RID your Developer Console is associated with."
-      : "# If your application uses an OSDK, this Ontology RID must match the Ontology RID your Developer Console is associated with."
-  }
+  const ontologyEnvSection = ontology != null
+    ? `
+
+# This Ontology RID must match the Ontology RID your Developer Console is associated with.
 # You can check the Ontology on the "Ontology SDK" tab of Developer Console.
 # It typically does not need to be changed.
 
-${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontologyOrDefault}
-`.trim();
+${envPrefix}FOUNDRY_ONTOLOGY_RID=${ontology}
+`
+    : "";
 
   return `# This env file is intended for deploying your application to production.
 # To set up development on your local computer, see .env.development.
@@ -135,8 +127,5 @@ ${envPrefix}FOUNDRY_API_URL=${foundryUrl}
 # Developer Console. It typically does not need to be changed.
 
 ${envPrefix}FOUNDRY_CLIENT_ID=${clientId}
-
-
-${ontologyEnvSection}
-`;
+${ontologyEnvSection}`;
 }

@@ -196,13 +196,6 @@ PUBLIC_FOUNDRY_API_URL=https://example.palantirfoundry.com
 # Developer Console. It typically does not need to be changed.
 
 PUBLIC_FOUNDRY_CLIENT_ID=123
-
-
-# If your application uses an OSDK, this Ontology RID must match the Ontology RID your Developer Console is associated with.
-# You can check the Ontology on the "Ontology SDK" tab of Developer Console.
-# It typically does not need to be changed.
-
-PUBLIC_FOUNDRY_ONTOLOGY_RID=<Fill in the Ontology RID if your application uses an OSDK>
 `.trimStart();
 
 const expectedEnvProductionNoOntologyRid = `
@@ -233,13 +226,6 @@ PUBLIC_FOUNDRY_API_URL=https://example.palantirfoundry.com
 # Developer Console. It typically does not need to be changed.
 
 PUBLIC_FOUNDRY_CLIENT_ID=123
-
-
-# If your application uses an OSDK, this Ontology RID must match the Ontology RID your Developer Console is associated with.
-# You can check the Ontology on the "Ontology SDK" tab of Developer Console.
-# It typically does not need to be changed.
-
-PUBLIC_FOUNDRY_ONTOLOGY_RID=<Fill in the Ontology RID if your application uses an OSDK>
 `.trimStart();
 
 test("it generates .env.development", () => {
