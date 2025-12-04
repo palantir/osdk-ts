@@ -147,7 +147,7 @@ describe("MediaHelper", () => {
   it("generates cache keys for different media types", () => {
     const mediaWithRef: Media = {
       getMediaReference: () => ({
-        mimeType: "image/png",
+        mimeType: "image/jpeg",
         reference: {
           type: "mediaSetViewItem" as const,
           mediaSetViewItem: {

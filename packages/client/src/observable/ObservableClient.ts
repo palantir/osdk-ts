@@ -24,7 +24,6 @@ import type {
   InterfaceDefinition,
   Media,
   MediaMetadata,
-  MediaReference,
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
@@ -390,11 +389,7 @@ export interface ObservableClient extends ObserveLinks {
   ): Unsubscribable;
 
   /**
-   * Media operations for managing, fetching and uploading media resources.
-   *
-   * These methods provide comprehensive media handling including caching, blob URL
-   * management, and upload tracking. All operations work with Media objects, Attachments,
-   * or direct property coordinates.
+   * Media operations for managing metadata, content, and caching.
    */
   media: {
     /**
@@ -469,30 +464,6 @@ export interface ObservableClient extends ObserveLinks {
     releaseBlobUrl(
       mediaOrCoords: Media | Attachment | MediaPropertyLocation,
     ): void;
-
-    /**
-     * Upload media to a property location with optional progress tracking.
-     *
-     * @deprecated Use action-based uploads instead. Create a Foundry action that accepts
-     * a MediaUpload parameter and call it with `useOsdkMediaUpload` (React) or
-     * `applyAction` (direct client). Direct upload to properties is not recommended.
-     *
-     * @param file - Blob or File to upload
-     * @param filename - Filename for the media
-     * @param coords - Target property location
-     * @param options - Optional { preview?: boolean } for resolution
-     * @returns Upload handle with promise, abort, and progress tracking
-     */
-    uploadMedia(
-      file: Blob,
-      filename: string,
-      coords: MediaPropertyLocation,
-      options?: { preview?: boolean },
-    ): {
-      promise: Promise<MediaReference>;
-      abort: () => void;
-      onProgress: (callback: (progress: number) => void) => () => void;
-    };
 
     /**
      * Clear cached media (both metadata and content).
