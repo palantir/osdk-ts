@@ -1,5 +1,15 @@
 # @osdk/example-generator
 
+## 0.13.1
+
+### Patch Changes
+
+- 9625d98: Allow CLI template bootstrapping without an OSDK
+- Updated dependencies [9625d98]
+- Updated dependencies [9625d98]
+  - @osdk/create-app@2.5.3
+  - @osdk/create-widget@3.2.6
+
 ## 0.13.0
 
 ### Patch Changes

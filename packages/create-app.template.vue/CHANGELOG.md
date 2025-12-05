@@ -1,5 +1,11 @@
 # @osdk/create-app.template.vue
 
+## 2.5.3
+
+### Patch Changes
+
+- 9625d98: Update create-app React, Vue, and Expo templates
+
 ## 2.5.2
 
 ## 2.5.1
