@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-// Example OSDK registry URL:
-//
 export function generateNpmRc({
   osdkPackage,
   osdkRegistryUrl,
