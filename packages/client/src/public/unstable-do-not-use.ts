@@ -18,7 +18,6 @@ export { augment } from "../object/fetchPage.js";
 
 // THIS IS NOT THE FINAL NAME DO NOT SHIP LIKE THIS
 export type { ActionSignatureFromDef } from "../actions/applyAction.js";
-export { computeObjectSetCacheKey } from "../observable/computeObjectSetCacheKey.js";
 export { createObservableClient } from "../observable/ObservableClient.js";
 export type {
   ObservableClient,
@@ -37,3 +36,5 @@ export {
 export type { OsdkConfig } from "../public-utils/osdkConfig.js";
 
 export { createClientWithTransaction } from "../createClient.js";
+
+export { WeakRefTrie } from "../observable/internal/WeakRefTrie.js";

@@ -43,6 +43,7 @@ import {
   createChangedObjects,
   DEBUG_ONLY__changesToString,
 } from "./Changes.js";
+import { GenericCanonicalizer } from "./GenericCanonicalizer.js";
 import { IntersectCanonicalizer } from "./IntersectCanonicalizer.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Entry } from "./Layer.js";
@@ -92,6 +93,8 @@ export class Store {
   readonly orderByCanonicalizer: OrderByCanonicalizer =
     new OrderByCanonicalizer();
   readonly rdpCanonicalizer: RdpCanonicalizer = new RdpCanonicalizer();
+  readonly genericCanonicalizer: GenericCanonicalizer =
+    new GenericCanonicalizer();
   readonly intersectCanonicalizer: IntersectCanonicalizer =
     new IntersectCanonicalizer(this.whereCanonicalizer);
   readonly pivotCanonicalizer: PivotCanonicalizer = new PivotCanonicalizer();
