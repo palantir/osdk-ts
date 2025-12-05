@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// Example OSDK registry URL:
+//
 export function generateNpmRc({
   osdkPackage,
   osdkRegistryUrl,
@@ -23,12 +25,22 @@ export function generateNpmRc({
 }): string {
   // pnpm requires a trailing slash in .npmrc
   // https://github.com/pnpm/pnpm/issues/5941
-  const withTrailingSlash = osdkRegistryUrl.endsWith("/")
+  const osdkRegistryUrlWithTrailingSlash = osdkRegistryUrl.endsWith("/")
     ? osdkRegistryUrl
     : osdkRegistryUrl + "/";
-  const withoutProtocol = withTrailingSlash.replace(/^https:\/\//, "");
+
+  // Safely strip everything after /api/ from registry URL
+  // to send FOUNDRY_TOKEN to all artifacts requests
+  const apiPathIndex = osdkRegistryUrlWithTrailingSlash.indexOf("/api/");
+  const baseUrl = apiPathIndex !== -1
+    ? osdkRegistryUrlWithTrailingSlash.slice(0, apiPathIndex + "/api/".length)
+    : osdkRegistryUrlWithTrailingSlash;
+  const baseUrlWithoutProtocol = baseUrl.replace(
+    /^https:\/\//,
+    "",
+  );
   const packageScope = osdkPackage.split("/")[0];
 
-  return `//${withoutProtocol}:_authToken=\${FOUNDRY_TOKEN}\n`
-    + `${packageScope}:registry=${withTrailingSlash}\n`;
+  return `//${baseUrlWithoutProtocol}:_authToken=\${FOUNDRY_TOKEN}\n`
+    + `${packageScope}:registry=${osdkRegistryUrlWithTrailingSlash}\n`;
 }
