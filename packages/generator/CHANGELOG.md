@@ -125,6 +125,65 @@
 - @osdk/api@2.5.0-beta.15
 - @osdk/generator-converters@2.5.0-beta.15
 
+## 2.5.2
+
+### Patch Changes
+
+- @osdk/api@2.5.2
+- @osdk/generator-converters@2.5.2
+
+## 2.5.1
+
+### Patch Changes
+
+- 099b4d8: Fix nested array query param type handling
+- Updated dependencies [099b4d8]
+  - @osdk/generator-converters@2.5.1
+  - @osdk/api@2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 4b4a458: Allow exporting rid for object types
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- d29cdfb: Fixes query generation with disallowed javascript identifiers.
+- a6f49e9: experimentalDoNotUseMetadata -> internalDoNotUseMetadata
+- 7bdac45: Update Platform SDK dependency
+- a96d89e: Update Platform SDK dependencies
+- 78be29f: mark deprecated properties with JSDoc for interface types
+- 7bdac45: Support value type enum generation for strings and booleans
+- cbcf2ad: Add branching support
+- 4248b80: Temporarily remove NullValue type from codegen
+- Updated dependencies [322c5bc]
+- Updated dependencies [322c5bc]
+- Updated dependencies [7160276]
+- Updated dependencies [7cdab1d]
+- Updated dependencies [a00d2ed]
+- Updated dependencies [7bdac45]
+- Updated dependencies [37eb75b]
+- Updated dependencies [7b97128]
+- Updated dependencies [76905f5]
+- Updated dependencies [a96d89e]
+- Updated dependencies [7bdac45]
+- Updated dependencies [20962bc]
+- Updated dependencies [cbcf2ad]
+- Updated dependencies [052a96b]
+- Updated dependencies [ca1fabe]
+- Updated dependencies [e48be06]
+  - @osdk/api@2.5.0
+  - @osdk/generator-converters@2.5.0
+
+## 2.5.0-rc.15
+
+### Patch Changes
+
+- Updated dependencies [37eb75b]
+  - @osdk/api@2.5.0-rc.15
+  - @osdk/generator-converters@2.5.0-rc.15
+
 ## 2.5.0-beta.14
 
 ### Minor Changes
