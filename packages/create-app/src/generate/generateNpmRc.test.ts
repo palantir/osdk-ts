@@ -17,7 +17,12 @@
 import { expect, test } from "vitest";
 import { generateNpmRc } from "./generateNpmRc.js";
 
-const expected = `
+const expectedNpmRcWithExpectedOsdkRegistryUrl = `
+//example.palantirfoundry.com/artifacts/api/:_authToken=\${FOUNDRY_TOKEN}
+@myapp:registry=https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm/
+`.trimStart();
+
+const expectedNpmRcWithUnexpectedOsdkRegistryUrl = `
 //registry.com/:_authToken=\${FOUNDRY_TOKEN}
 @myapp:registry=https://registry.com/
 `.trimStart();
@@ -26,7 +31,17 @@ test("it generates .npmrc for package and registry", () => {
   expect(
     generateNpmRc({
       osdkPackage: "@myapp/sdk",
+      osdkRegistryUrl:
+        "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm",
+    }),
+  ).toEqual(expectedNpmRcWithExpectedOsdkRegistryUrl);
+});
+
+test("it generates .npmrc for package and unexpected registry", () => {
+  expect(
+    generateNpmRc({
+      osdkPackage: "@myapp/sdk",
       osdkRegistryUrl: "https://registry.com",
     }),
-  ).toEqual(expected);
+  ).toEqual(expectedNpmRcWithUnexpectedOsdkRegistryUrl);
 });
