@@ -49,7 +49,7 @@ function NextStep({
   icon,
   title,
   subtitle,
-}: INextStep): React.ReactElement<INextStep> {
+}: INextStep): React.ReactElement {
   return (
     <div className={css.nextStep}>
       <img src={`/${icon}.svg`} className={css.icon} alt={icon} />

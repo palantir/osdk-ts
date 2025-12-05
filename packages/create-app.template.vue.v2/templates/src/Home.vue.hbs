@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import Header from "./components/Header.vue";
 import NextSteps from "./components/NextSteps.vue";
+{{#if osdkPackage}}
 import Osdk from "./components/Osdk.vue";
+{{/if}}
 </script>
 
 <template>
   <div class="home">
     <Header />
+    {{#if osdkPackage}}
     <Osdk />
+    {{/if}}
     <NextSteps />
   </div>
 </template>
