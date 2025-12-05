@@ -4,9 +4,10 @@ import {
   createPlatformClient,
   PlatformClient,
 } from "@osdk/client";
-import { FOUNDRY_URL, ONTOLOGY_RID } from "./osdkConst";
+import { FOUNDRY_URL{{#if osdkPackage}}, ONTOLOGY_RID{{/if}} } from "./osdkConst";
 import { getValidAuthToken } from "./Auth";
 
+{{#if osdkPackage}}
 /**
  * Initialize the client to interact with the Ontology and Platform SDKs
  */
@@ -15,3 +16,9 @@ export const client: Client = createClient(
     ONTOLOGY_RID, 
     getValidAuthToken,
 );
+{{else}}
+/**
+ * Initialize the client to interact with the Platform SDK
+ */
+export const client: PlatformClient = createPlatformClient(FOUNDRY_URL, getValidAuthToken);
+{{/if}}

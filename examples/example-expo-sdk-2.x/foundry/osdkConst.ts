@@ -9,7 +9,7 @@ checkEnv(ontology_rid, "EXPO_PUBLIC_FOUNDRY_ONTOLOGY_RID");
 
 function checkEnv(
   value: string | undefined,
-  name: string,
+  name: string
 ): asserts value is string {
   if (value == null) {
     throw new Error(`Missing environment variable: ${name}`);

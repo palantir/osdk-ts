@@ -46,7 +46,7 @@ export interface TemplateContext {
   applicationUrl: string | undefined;
   project: string;
   foundryUrl: string;
-  osdkPackage: string;
+  osdkPackage: string | undefined;
   clientVersion: string;
   corsProxy: boolean;
   scopes: string[] | undefined;
