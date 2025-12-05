@@ -1,5 +1,7 @@
 # @osdk/create-app.template.tutorial-todo-app
 
+## 2.6.0-rc.15
+
 ## 2.6.0-rc.14
 
 ### Patch Changes

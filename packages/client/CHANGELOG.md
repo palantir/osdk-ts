@@ -1,5 +1,15 @@
 # @osdk/client
 
+## 2.6.0-rc.15
+
+### Patch Changes
+
+- 5a9cd8f: Remove NULL_VALUE from @osdk/api for RC
+- Updated dependencies [5a9cd8f]
+  - @osdk/api@2.6.0-rc.15
+  - @osdk/client.unstable@2.6.0-rc.15
+  - @osdk/generator-converters@2.6.0-rc.15
+
 ## 2.6.0-rc.14
 
 ### Patch Changes
