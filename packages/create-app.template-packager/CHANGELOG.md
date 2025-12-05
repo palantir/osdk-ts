@@ -1,5 +1,11 @@
 # @osdk/create-app.template-packager
 
+## 2.5.3
+
+### Patch Changes
+
+- 9625d98: Allow CLI template bootstrapping without an OSDK
+
 ## 2.5.2
 
 ## 2.5.1
