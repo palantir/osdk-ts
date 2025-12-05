@@ -1,14 +1,14 @@
 ---
-"@osdk/create-app.template.tutorial-todo-aip-app.beta": minor
-"@osdk/create-app.template.tutorial-todo-app.beta": minor
-"@osdk/create-app.template.tutorial-todo-aip-app": minor
-"@osdk/create-app.template.tutorial-todo-app": minor
-"@osdk/create-app.template.react.beta": minor
-"@osdk/create-app.template.expo.v2": minor
-"@osdk/create-app.template.vue.v2": minor
-"@osdk/create-app.template.react": minor
-"@osdk/create-app.template.vue": minor
-"@osdk/create-app": minor
+"@osdk/create-app.template.tutorial-todo-aip-app.beta": patch
+"@osdk/create-app.template.tutorial-todo-app.beta": patch
+"@osdk/create-app.template.tutorial-todo-aip-app": patch
+"@osdk/create-app.template.tutorial-todo-app": patch
+"@osdk/create-app.template.react.beta": patch
+"@osdk/create-app.template.expo.v2": patch
+"@osdk/create-app.template.vue.v2": patch
+"@osdk/create-app.template.react": patch
+"@osdk/create-app.template.vue": patch
+"@osdk/create-app": patch
 ---
 
 Update create-app React, Vue, and Expo templates
