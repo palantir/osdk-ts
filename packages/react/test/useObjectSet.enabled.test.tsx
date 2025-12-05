@@ -29,6 +29,7 @@ const MockObjectType = {
 const mockObjectSet = {
   $__EXPERIMENTAL_objectSet: true,
   type: MockObjectType,
+  $objectSetInternals: { def: MockObjectType },
 } as unknown as ObjectSet<typeof MockObjectType>;
 
 describe("useObjectSet enabled option", () => {
