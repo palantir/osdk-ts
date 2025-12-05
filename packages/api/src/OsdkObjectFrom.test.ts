@@ -15,7 +15,6 @@
  */
 
 import { describe, expectTypeOf, it } from "vitest";
-import type { NullabilityAdherence } from "./object/FetchPageArgs.js";
 import { createMockObjectSet } from "./objectSet/ObjectSet.test.js";
 import type { PropertyKeys } from "./ontology/ObjectOrInterface.js";
 import type {
@@ -26,57 +25,6 @@ import type {
 } from "./OsdkObjectFrom.js";
 
 describe("ExtractOptions", () => {
-  describe("NullabilityAdherence Generic", () => {
-    it("does not add $notStrict for any", () => {
-      expectTypeOf<ExtractOptions<any, any>>()
-        .toEqualTypeOf<never>();
-    });
-
-    it("does not add $notStrict for never", () => {
-      expectTypeOf<ExtractOptions<any, never>>()
-        .toEqualTypeOf<never>();
-    });
-
-    it("does not add $notStrict for false", () => {
-      expectTypeOf<ExtractOptions<any, false>>()
-        .toEqualTypeOf<never>();
-    });
-
-    it("does not add $notStrict for throw", () => {
-      expectTypeOf<ExtractOptions<any, "throw">>()
-        .toEqualTypeOf<never>();
-    });
-
-    it("does not add $notStrict for drop", () => {
-      expectTypeOf<ExtractOptions<any, "drop">>()
-        .toEqualTypeOf<never>();
-    });
-
-    it("does not add $notStrict for drop | throw", () => {
-      expectTypeOf<ExtractOptions<any, "drop" | "throw">>()
-        .toEqualTypeOf<never>();
-    });
-
-    it("does not add $notStrict for drop | false", () => {
-      expectTypeOf<ExtractOptions<any, "drop" | false>>()
-        .toEqualTypeOf<never>();
-    });
-    it("does not add $notStrict for false | throw", () => {
-      expectTypeOf<ExtractOptions<any, false | "throw">>()
-        .toEqualTypeOf<never>();
-    });
-
-    it("does not add $notStrict for drop | throw | false", () => {
-      expectTypeOf<ExtractOptions<any, "drop" | "throw" | false>>()
-        .toEqualTypeOf<never>();
-    });
-
-    it("does not add $notStrict for NullabilityAdherence", () => {
-      expectTypeOf<ExtractOptions<any, NullabilityAdherence>>()
-        .toEqualTypeOf<never>();
-    });
-  });
-
   describe("Rid Generic", () => {
     it("does not add $rid for false", () => {
       expectTypeOf<ExtractOptions<false, any>>().toEqualTypeOf<never>();
@@ -315,7 +263,22 @@ describe("ExtractOptions", () => {
     it("Is assignable to Record<string, unknown>", () => {
       // We encountered a break where this stopped being assignable. We need to continue to support this assignment.
       const a = {} as Osdk.Instance<quickAndDirty>;
+
+      // This is technically a break!
+      // @ts-expect-error
       a as Record<string, unknown>;
+
+      // But its silly that we support this workflow given the following:
+      class Foo {
+        name: string;
+        constructor(name: string) {
+          this.name = name;
+        }
+      }
+
+      const b = new Foo("hi");
+      // @ts-expect-error
+      b as Record<string, unknown>;
     });
   });
 
@@ -325,9 +288,12 @@ describe("ExtractOptions", () => {
       expectTypeOf<toCheck>().toEqualTypeOf<
         Osdk.Instance<quickAndDirty, never>
       >();
+      type a = keyof toCheck;
 
       // expect no rid
-      expectTypeOf<keyof toCheck & "$rid">().toEqualTypeOf<never>();
+      // $rid might be "present"
+      expectTypeOf<keyof toCheck & "$rid">().toEqualTypeOf<"$rid">();
+      expectTypeOf<toCheck["$rid"]>().toEqualTypeOf<undefined | string>();
 
       // ensure its the normal props
       expectTypeOf<Pick<toCheck, "name" | "foo">>().toEqualTypeOf<
@@ -387,7 +353,7 @@ describe("ExtractOptions", () => {
       >();
 
       // expect no rid
-      expectTypeOf<keyof toCheck & "$rid">().toEqualTypeOf<never>();
+      expectTypeOf<toCheck["$rid"]>().toEqualTypeOf<undefined | string>();
 
       // ensure its the normal props
       expectTypeOf<Pick<toCheck, "name" | "foo">>().toEqualTypeOf<
@@ -406,7 +372,7 @@ describe("ExtractOptions", () => {
       >();
 
       // expect no rid
-      expectTypeOf<keyof toCheck & "$rid">().toEqualTypeOf<never>();
+      expectTypeOf<toCheck["$rid"]>().toEqualTypeOf<undefined | string>();
     });
 
     it("defaults to second argument never if any", () => {
@@ -420,7 +386,7 @@ describe("ExtractOptions", () => {
       >();
 
       // expect no rid
-      expectTypeOf<keyof toCheck & "$rid">().toEqualTypeOf<never>();
+      expectTypeOf<toCheck["$rid"]>().toEqualTypeOf<undefined | string>();
     });
 
     it("Does not use $notStrict if requested with old type", () => {
@@ -433,7 +399,7 @@ describe("ExtractOptions", () => {
       >();
 
       // expect no rid
-      expectTypeOf<keyof toCheck & "$rid">().toEqualTypeOf<never>();
+      expectTypeOf<toCheck["$rid"]>().toEqualTypeOf<undefined | string>();
     });
 
     it("defaults to last argument all props if never", () => {

@@ -67,8 +67,8 @@ export interface SingleLinkAccessor<
   >(
     options?: A,
   ) => Promise<
-    A extends FetchPageArgs<T, infer L, infer R, any, infer S>
-      ? Osdk.Instance<T, ExtractOptions<R, S>, L & PropertyKeys<T>>
+    A extends FetchPageArgs<T, infer L, infer R, any, any>
+      ? Osdk.Instance<T, ExtractOptions<R>, L & PropertyKeys<T>>
       : Osdk.Instance<T>
   >;
 
@@ -84,8 +84,8 @@ export interface SingleLinkAccessor<
     options?: A,
   ) => Promise<
     Result<
-      A extends FetchPageArgs<T, infer L, infer R, any, infer S>
-        ? Osdk.Instance<T, ExtractOptions<R, S>, L>
+      A extends FetchPageArgs<T, infer L, infer R, any, any>
+        ? Osdk.Instance<T, ExtractOptions<R>, L>
         : Osdk.Instance<T>
     >
   >;

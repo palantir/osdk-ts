@@ -197,7 +197,7 @@ export type Osdk<
     >;
 
 export type MaybeScore<
-  T extends Osdk.Instance<any>,
+  T extends Osdk.Instance<any, any, any, any>,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<any>,
 > = ORDER_BY_OPTIONS extends "relevance" ? T & { $score: number } : T;
 
@@ -209,6 +209,7 @@ export namespace Osdk {
     R extends Record<string, SimplePropertyDef> = {},
   > =
     & OsdkBase<Q>
+    & InstanceExtras<Q, OPTIONS, P>
     & Pick<
       CompileTimeMetadata<Q>["props"],
       // If there aren't any additional properties, then we want GetPropsKeys to default to PropertyKeys<Q>
@@ -216,50 +217,55 @@ export namespace Osdk {
     >
     & ([R] extends [never] ? {}
       : { [A in keyof R]: SimplePropertyDef.ToRuntimeProperty<R[A]> })
-    & {
-      readonly $link: Q extends { linksType?: any } ? Q["linksType"]
-        : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q>
-        : never;
-
-      readonly $as: <NEW_Q extends ValidToFrom<Q>>(
-        type: NEW_Q | string,
-      ) => Osdk.Instance<
-        NEW_Q,
-        OPTIONS,
-        ConvertProps<Q, NEW_Q, P, OPTIONS>
-      >;
-
-      readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(
-        updatedObject?:
-          | Osdk.Instance<Q, any, NEW_PROPS>
-          | {
-            [K in NEW_PROPS]?: CompileTimeMetadata<
-              Q
-            >["props"][K];
-          },
-      ) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>;
-
-      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends
-        ObjectTypeDefinition ? {
-          ObjectMetadata: ObjectMetadata;
-        }
-        : {
-          ObjectMetadata: ObjectMetadata;
-          InterfaceMetadata: InterfaceMetadata;
-        };
-
-      readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
-        PropertyApiName extends PropertyKeys<Q>,
-      >(
-        propertyApiName: PropertyApiName,
-        options?: { locale?: string; timezoneId?: string },
-      ) => string | undefined;
-    }
-    // We are hiding the $rid field if it wasn't requested as we want to discourage its use
+    // This corrects the type of the $rid property if needed
     & (IsNever<OPTIONS> extends true ? {}
       : IsAny<OPTIONS> extends true ? {}
       : "$rid" extends OPTIONS ? { readonly $rid: string }
       : {});
+
+  export interface InstanceExtras<
+    Q extends ObjectOrInterfaceDefinition,
+    OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
+    P extends PropertyKeys<Q> = PropertyKeys<Q>,
+  > {
+    readonly $link: Q extends { linksType?: any } ? Q["linksType"]
+      : Q extends ObjectOrInterfaceDefinition ? OsdkObjectLinksObject<Q>
+      : never;
+
+    readonly $as: <NEW_Q extends ValidToFrom<Q>>(
+      type: NEW_Q | string,
+    ) => Osdk.Instance<
+      NEW_Q,
+      OPTIONS,
+      ConvertProps<Q, NEW_Q, P, OPTIONS>
+    >;
+
+    readonly $clone: <NEW_PROPS extends PropertyKeys<Q>>(
+      updatedObject?:
+        | Osdk.Instance<Q, any, NEW_PROPS>
+        | {
+          [K in NEW_PROPS]?: CompileTimeMetadata<
+            Q
+          >["props"][K];
+        },
+    ) => Osdk.Instance<Q, OPTIONS, P | NEW_PROPS>;
+
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__metadata: Q extends
+      ObjectTypeDefinition ? {
+        ObjectMetadata: ObjectMetadata;
+      }
+      : {
+        ObjectMetadata: ObjectMetadata;
+        InterfaceMetadata: InterfaceMetadata;
+      };
+
+    readonly $__EXPERIMENTAL__NOT_SUPPORTED_YET__getFormattedValue: <
+      PropertyApiName extends PropertyKeys<Q>,
+    >(
+      propertyApiName: PropertyApiName,
+      options?: { locale?: string; timezoneId?: string },
+    ) => string | undefined;
+  }
 }
 
 /**
@@ -293,6 +299,5 @@ export type ExtractAllPropertiesOption<T extends boolean> = // comment for reada
 // not exported from package
 export type ExtractOptions<
   R extends boolean,
-  S extends NullabilityAdherence = NullabilityAdherence.Default,
   T extends boolean = false,
 > = ExtractRidOption<R> | ExtractAllPropertiesOption<T>;
