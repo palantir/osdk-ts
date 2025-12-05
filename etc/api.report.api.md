@@ -118,7 +118,9 @@ export namespace ActionParam {
             		} ? (U extends ReadonlyArray<never> ? string : U extends ReadonlyArray<string> ? U[number] : string) : string
         		$primaryKey: string | number
         	};
-    	// (undocumented)
+    	// Warning: (ae-forgotten-export) The symbol "NULL_VALUE" needs to be exported by the entry point index.d.ts
+    //
+    // (undocumented)
     export type NullValueType = typeof NULL_VALUE;
     	// (undocumented)
     export type ObjectSetType<T extends ObjectTypeDefinition> = ObjectSet<T>;
@@ -816,11 +818,6 @@ export type NotWhereClause<
 	RDPs extends Record<string, SimplePropertyDef> = {}
 > = {
     	$not: WhereClause<T, RDPs>
-};
-
-// @public (undocumented)
-export const NULL_VALUE: symbol & {
-    	__type: "NULL_VALUE"
 };
 
 // @public (undocumented)
