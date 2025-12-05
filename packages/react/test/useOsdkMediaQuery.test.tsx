@@ -706,4 +706,65 @@ describe("useOsdkMediaQuery", () => {
       });
     });
   });
+
+  it("clears cache only when preview option changes, not on mount", async () => {
+    const previewBlob = new Blob(["preview content"], { type: "image/jpeg" });
+    const fullResBlob = new Blob(["full res content"], { type: "image/jpeg" });
+    const mockClient = createMockClient();
+    const mockObservableClient = createMockObservableClient();
+
+    let fetchCount = 0;
+    vi.mocked(mockObservableClient.media.fetchContent).mockImplementation(
+      (_media, options) => {
+        fetchCount++;
+        return Promise.resolve(options?.preview !== false ? previewBlob : fullResBlob);
+      },
+    );
+
+    const coords: MediaPropertyLocation = {
+      objectType: "TestObject",
+      primaryKey: 123,
+      propertyName: "media",
+    };
+
+    const mockMedia = createMockMedia(coords);
+
+    const wrapper = ({ children }: React.PropsWithChildren) => (
+      <OsdkProvider2
+        client={mockClient}
+        observableClient={mockObservableClient}
+      >
+        {children}
+      </OsdkProvider2>
+    );
+
+    let preview = true;
+    const { result, rerender } = renderHook(
+      () => useOsdkMediaQuery(mockMedia, { preview }),
+      { wrapper },
+    );
+
+    await waitFor(() => {
+      expect(result.current.content).toBeDefined();
+    });
+
+    expect(fetchCount).toBe(1);
+    expect(result.current.content).toBe(previewBlob);
+    expect(mockObservableClient.media.clearCache).not.toHaveBeenCalled();
+
+    preview = false;
+    rerender();
+
+    expect(mockObservableClient.media.clearCache).toHaveBeenCalledTimes(1);
+
+    await waitFor(() => {
+      expect(result.current.content).toBe(fullResBlob);
+    });
+
+    expect(fetchCount).toBe(2);
+    expect(mockObservableClient.media.fetchContent).toHaveBeenLastCalledWith(
+      mockMedia,
+      { preview: false },
+    );
+  });
 });

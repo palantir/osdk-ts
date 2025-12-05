@@ -105,47 +105,23 @@ export function useOsdkMediaQuery(
   options: UseOsdkMediaQueryOptions = {},
 ): UseOsdkMediaQueryResult {
   const { observableClient } = React.useContext(OsdkContext2);
+  const { enabled = true, preview = true, dedupeIntervalMs } = options;
 
-  const {
-    enabled = true,
-    preview = true,
-    dedupeIntervalMs,
-  } = options;
-
-  // Track mounted state for async cancellation
-  const mountedRef = React.useRef(true);
-  React.useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
-
-  // Counter for race condition prevention in refetch
   const refetchCounterRef = React.useRef(0);
+  const prevPreviewRef = React.useRef(preview);
 
-  // Extract MediaPropertyLocation from input
   const coords = React.useMemo((): MediaPropertyLocation | undefined => {
     if (!mediaOrLocation) return undefined;
-
-    if (isMediaPropertyLocation(mediaOrLocation)) {
-      return mediaOrLocation;
-    }
-
-    if (isMedia(mediaOrLocation)) {
-      return mediaOrLocation.getMediaSourceLocation?.();
-    }
-
+    if (isMediaPropertyLocation(mediaOrLocation)) return mediaOrLocation;
+    if (isMedia(mediaOrLocation)) return mediaOrLocation.getMediaSourceLocation?.();
     return undefined;
   }, [mediaOrLocation]);
 
-  // Stable cache key for dependencies
   const cacheKey = React.useMemo(() => {
     if (!mediaOrLocation) return undefined;
     return observableClient.media.getCacheKey(mediaOrLocation);
   }, [observableClient, mediaOrLocation]);
 
-  // Observe metadata using makeExternalStore (same pattern as useOsdkObject)
   const { subscribe, getSnapShot } = React.useMemo(() => {
     if (!coords || !enabled) {
       return makeExternalStore<MediaMetadataPayload>(
@@ -166,25 +142,25 @@ export function useOsdkMediaQuery(
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  // Content state
   const [content, setContent] = React.useState<Blob>();
   const [isLoadingContent, setIsLoadingContent] = React.useState(false);
   const [contentError, setContentError] = React.useState<Error>();
-
-  // Blob URL state
   const [blobUrl, setBlobUrl] = React.useState<string>();
 
-  // Clear content state when media changes
   React.useEffect(() => {
-    setContent(undefined);
-    setContentError(undefined);
-  }, [cacheKey]);
+    if (!enabled || !mediaOrLocation) {
+      setContent(undefined);
+      setContentError(undefined);
+      return;
+    }
 
-  // Auto-load content on mount if enabled - with cancellation
-  React.useEffect(() => {
-    if (!enabled || !mediaOrLocation) return;
+    if (prevPreviewRef.current !== preview) {
+      observableClient.media.clearCache(mediaOrLocation);
+      setContent(undefined);
+      setContentError(undefined);
+    }
+    prevPreviewRef.current = preview;
 
-    // Check cache first
     const cachedBlob = observableClient.media.getCachedContent(mediaOrLocation);
     if (cachedBlob) {
       setContent(cachedBlob);
@@ -197,20 +173,15 @@ export function useOsdkMediaQuery(
 
     observableClient.media.fetchContent(mediaOrLocation, { preview })
       .then(blob => {
-        if (!cancelled && mountedRef.current) {
-          setContent(blob);
-        }
+        if (!cancelled) setContent(blob);
       })
       .catch(err => {
-        if (!cancelled && mountedRef.current) {
-          const error = err instanceof Error ? err : new Error(String(err));
-          setContentError(error);
+        if (!cancelled) {
+          setContentError(err instanceof Error ? err : new Error(String(err)));
         }
       })
       .finally(() => {
-        if (!cancelled && mountedRef.current) {
-          setIsLoadingContent(false);
-        }
+        if (!cancelled) setIsLoadingContent(false);
       });
 
     return () => {
@@ -218,7 +189,6 @@ export function useOsdkMediaQuery(
     };
   }, [enabled, cacheKey, mediaOrLocation, observableClient, preview]);
 
-  // Create blob URL when content is available, cleanup on unmount or content change
   React.useEffect(() => {
     if (content && mediaOrLocation) {
       const url = observableClient.media.createBlobUrl(mediaOrLocation);
@@ -232,10 +202,8 @@ export function useOsdkMediaQuery(
     setBlobUrl(undefined);
   }, [content, mediaOrLocation, observableClient]);
 
-  // Refetch callback - clears cache and re-fetches (works even when enabled: false)
   const refetch = React.useCallback(() => {
     if (!mediaOrLocation) return;
-
     const currentRefetch = ++refetchCounterRef.current;
 
     observableClient.media.clearCache(mediaOrLocation);
@@ -245,39 +213,26 @@ export function useOsdkMediaQuery(
 
     observableClient.media.fetchContent(mediaOrLocation, { preview })
       .then(blob => {
-        if (
-          mountedRef.current && refetchCounterRef.current === currentRefetch
-        ) {
-          setContent(blob);
-        }
+        if (refetchCounterRef.current === currentRefetch) setContent(blob);
       })
       .catch(err => {
-        if (
-          mountedRef.current && refetchCounterRef.current === currentRefetch
-        ) {
-          const error = err instanceof Error ? err : new Error(String(err));
-          setContentError(error);
+        if (refetchCounterRef.current === currentRefetch) {
+          setContentError(err instanceof Error ? err : new Error(String(err)));
         }
       })
       .finally(() => {
-        if (
-          mountedRef.current && refetchCounterRef.current === currentRefetch
-        ) {
-          setIsLoadingContent(false);
-        }
+        if (refetchCounterRef.current === currentRefetch) setIsLoadingContent(false);
       });
   }, [observableClient, mediaOrLocation, preview]);
 
-  // Invalidate callback - clears cache only
   const invalidate = React.useCallback(() => {
     if (!mediaOrLocation) return;
     observableClient.media.clearCache(mediaOrLocation);
     setContent(undefined);
   }, [observableClient, mediaOrLocation]);
 
-  // Determine error from payload or content error
   let error: Error | undefined;
-  if (payload && "error" in payload && payload.error) {
+  if (payload?.error) {
     error = payload.error;
   } else if (payload?.status === "error") {
     error = new Error("Failed to load media metadata");
@@ -285,7 +240,6 @@ export function useOsdkMediaQuery(
     error = contentError;
   }
 
-  // Memoize actions object to maintain stable reference
   const actions = React.useMemo((): UseOsdkMediaQueryActions => ({
     refetch,
     invalidate,
