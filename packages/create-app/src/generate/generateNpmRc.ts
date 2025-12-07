@@ -28,17 +28,16 @@ export function generateNpmRc({
   const osdkRegistryUrlWithTrailingSlash = osdkRegistryUrl.endsWith("/")
     ? osdkRegistryUrl
     : osdkRegistryUrl + "/";
-  const foundryUrlWithoutProtocol = foundryUrl.replace(
-    /^https:\/\//,
-    "",
-  );
-  const foundryUrlWithoutProtocolWithoutTrailingSlash =
-    foundryUrlWithoutProtocol.replace(
+  const foundryUrlWithoutProtocolAndTrailingSlash = foundryUrl
+    .replace(
+      /^https:\/\//,
+      "",
+    ).replace(
       /\/$/,
       "",
     );
   const packageScope = osdkPackage.split("/")[0];
 
-  return `//${foundryUrlWithoutProtocolWithoutTrailingSlash}/artifacts/api/:_authToken=\${FOUNDRY_TOKEN}\n`
+  return `//${foundryUrlWithoutProtocolAndTrailingSlash}/artifacts/api/:_authToken=\${FOUNDRY_TOKEN}\n`
     + `${packageScope}:registry=${osdkRegistryUrlWithTrailingSlash}\n`;
 }

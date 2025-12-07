@@ -17,27 +17,27 @@
 import { expect, test } from "vitest";
 import { generateNpmRc } from "./generateNpmRc.js";
 
-const expectedNpmRc = `
+const expected = `
 //example.palantirfoundry.com/artifacts/api/:_authToken=\${FOUNDRY_TOKEN}
 @myapp:registry=https://registry.com/
 `.trimStart();
 
 test("it generates .npmrc for package and registry", () => {
-  return void expect(
+  expect(
     generateNpmRc({
       foundryUrl: "https://example.palantirfoundry.com",
       osdkPackage: "@myapp/sdk",
       osdkRegistryUrl: "https://registry.com",
     }),
-  ).toEqual(expectedNpmRc);
+  ).toEqual(expected);
 });
 
 test("it generates .npmrc for package and registry with malformed foundry url", () => {
-  return void expect(
+  expect(
     generateNpmRc({
       foundryUrl: "example.palantirfoundry.com/",
       osdkPackage: "@myapp/sdk",
       osdkRegistryUrl: "https://registry.com",
     }),
-  ).toEqual(expectedNpmRc);
+  ).toEqual(expected);
 });
