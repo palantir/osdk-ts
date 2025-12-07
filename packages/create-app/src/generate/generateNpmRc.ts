@@ -15,9 +15,11 @@
  */
 
 export function generateNpmRc({
+  foundryUrl,
   osdkPackage,
   osdkRegistryUrl,
 }: {
+  foundryUrl: string;
   osdkPackage: string;
   osdkRegistryUrl: string;
 }): string {
@@ -26,19 +28,17 @@ export function generateNpmRc({
   const osdkRegistryUrlWithTrailingSlash = osdkRegistryUrl.endsWith("/")
     ? osdkRegistryUrl
     : osdkRegistryUrl + "/";
-
-  // Safely strip everything after /api/ from registry URL
-  // to send FOUNDRY_TOKEN to all artifacts requests
-  const apiPathIndex = osdkRegistryUrlWithTrailingSlash.indexOf("/api/");
-  const baseUrl = apiPathIndex !== -1
-    ? osdkRegistryUrlWithTrailingSlash.slice(0, apiPathIndex + "/api/".length)
-    : osdkRegistryUrlWithTrailingSlash;
-  const baseUrlWithoutProtocol = baseUrl.replace(
+  const foundryUrlWithoutProtocol = foundryUrl.replace(
     /^https:\/\//,
     "",
   );
+  const foundryUrlWithoutProtocolWithoutTrailingSlash =
+    foundryUrlWithoutProtocol.replace(
+      /\/$/,
+      "",
+    );
   const packageScope = osdkPackage.split("/")[0];
 
-  return `//${baseUrlWithoutProtocol}:_authToken=\${FOUNDRY_TOKEN}\n`
+  return `//${foundryUrlWithoutProtocolWithoutTrailingSlash}/artifacts/api/:_authToken=\${FOUNDRY_TOKEN}\n`
     + `${packageScope}:registry=${osdkRegistryUrlWithTrailingSlash}\n`;
 }

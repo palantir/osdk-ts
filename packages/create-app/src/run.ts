@@ -185,7 +185,7 @@ export async function run(
   processFiles(root);
 
   if (osdkPackage != null && osdkRegistryUrl != null) {
-    const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl });
+    const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl, foundryUrl });
     fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
   }
 
