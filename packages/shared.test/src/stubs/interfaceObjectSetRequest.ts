@@ -138,7 +138,20 @@ const baseObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
   interfaceToObjectTypeMappings: {
     FooInterface: { Employee: { fooSpt: "fullName" } },
   },
-  interfaceToObjectTypeMappingsV2: {},
+  interfaceToObjectTypeMappingsV2: {
+    FooInterface: {
+      Employee: {
+        fooSpt: {
+          type: "localPropertyImplementation",
+          propertyApiName: "fullName",
+        },
+        fooIdp: {
+          type: "localPropertyImplementation",
+          propertyApiName: "office",
+        },
+      },
+    },
+  },
   totalCount: "1",
 };
 
@@ -147,7 +160,20 @@ const equalsObjectSetResponse: LoadObjectSetV2MultipleObjectTypesResponse = {
   interfaceToObjectTypeMappings: {
     FooInterface: { Employee: { fooSpt: "fullName" } },
   },
-  interfaceToObjectTypeMappingsV2: {},
+  interfaceToObjectTypeMappingsV2: {
+    FooInterface: {
+      Employee: {
+        fooSpt: {
+          type: "localPropertyImplementation",
+          propertyApiName: "fullName",
+        },
+        fooIdp: {
+          type: "localPropertyImplementation",
+          propertyApiName: "office",
+        },
+      },
+    },
+  },
   totalCount: "1",
 };
 
@@ -157,7 +183,20 @@ const baseObjectFullScopeSetResponse:
     interfaceToObjectTypeMappings: {
       FooInterface: { Employee: { fooSpt: "fullName" } },
     },
-    interfaceToObjectTypeMappingsV2: {},
+    interfaceToObjectTypeMappingsV2: {
+      FooInterface: {
+        Employee: {
+          fooSpt: {
+            type: "localPropertyImplementation",
+            propertyApiName: "fullName",
+          },
+          fooIdp: {
+            type: "localPropertyImplementation",
+            propertyApiName: "office",
+          },
+        },
+      },
+    },
     totalCount: "1",
   };
 
@@ -167,7 +206,20 @@ const equalsFullScopeObjectSetResponse:
     interfaceToObjectTypeMappings: {
       FooInterface: { Employee: { fooSpt: "fullName" } },
     },
-    interfaceToObjectTypeMappingsV2: {},
+    interfaceToObjectTypeMappingsV2: {
+      FooInterface: {
+        Employee: {
+          fooSpt: {
+            type: "localPropertyImplementation",
+            propertyApiName: "fullName",
+          },
+          fooIdp: {
+            type: "localPropertyImplementation",
+            propertyApiName: "office",
+          },
+        },
+      },
+    },
     totalCount: "1",
   };
 
