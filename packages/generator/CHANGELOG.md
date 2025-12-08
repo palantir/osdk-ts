@@ -1,5 +1,13 @@
 # @osdk/generator
 
+## 2.6.0-rc.15
+
+### Patch Changes
+
+- Updated dependencies [5a9cd8f]
+  - @osdk/api@2.6.0-rc.15
+  - @osdk/generator-converters@2.6.0-rc.15
+
 ## 2.6.0-rc.14
 
 ### Patch Changes

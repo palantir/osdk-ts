@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.6.0-rc.15
+
+### Patch Changes
+
+- 5a9cd8f: Remove NULL_VALUE from @osdk/api for RC
+
 ## 2.6.0-rc.14
 
 ### Patch Changes
