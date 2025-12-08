@@ -1,5 +1,11 @@
 # @osdk/create-app
 
+## 2.5.4
+
+### Patch Changes
+
+- 987fd8c: Update `.npmrc` credentials
+
 ## 2.5.3
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @osdk/create-app.template.vue.v2
 
+## 2.5.4
+
+### Patch Changes
+
+- 987fd8c: Fix icon imports
+
 ## 2.5.3
 
 ### Patch Changes
