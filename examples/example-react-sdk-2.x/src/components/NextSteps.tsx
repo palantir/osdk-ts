@@ -1,9 +1,11 @@
+import tag from "/tag.svg";
+
 import React from "react";
 import css from "./NextSteps.module.css";
 
 const STEPS: INextStep[] = [
   {
-    icon: "tag",
+    icon: tag,
     title: "Deploy your application",
     subtitle: (
       <span>
@@ -52,7 +54,7 @@ function NextStep({
 }: INextStep): React.ReactElement {
   return (
     <div className={css.nextStep}>
-      <img src={`/${icon}.svg`} className={css.icon} alt={icon} />
+      <img src={icon} className={css.icon} alt={icon} />
       <div className={css.nextStepContent}>
         <h6 className={css.title}>{title}</h6>
         <div className={css.subtitle}>{subtitle}</div>
