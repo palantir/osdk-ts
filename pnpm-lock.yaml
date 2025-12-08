@@ -1886,6 +1886,37 @@ importers:
         specifier: ~5.5.4
         version: 5.5.4
 
+  packages/components:
+    dependencies:
+      react-dom:
+        specifier: ^17 || ^18 || ^19
+        version: 18.3.1(react@18.3.1)
+    devDependencies:
+      '@osdk/api':
+        specifier: workspace:*
+        version: link:../api
+      '@osdk/client':
+        specifier: workspace:*
+        version: link:../client
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/react':
+        specifier: workspace:*
+        version: link:../react
+      '@types/react':
+        specifier: ^18.3.24
+        version: 18.3.24
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      typescript:
+        specifier: ~5.5.4
+        version: 5.5.4
+
   packages/create-app:
     dependencies:
       consola:
