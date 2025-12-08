@@ -1,3 +1,5 @@
+import book from "/book.svg";
+
 import React from "react";
 import css from "./Osdk.module.css";
 
@@ -14,7 +16,7 @@ function Osdk(): React.ReactElement {
         target="_blank"
         rel="noreferrer"
       >
-        <img src="/book.svg" width={16} height={16} alt="Book icon"></img>
+        <img src={book} width={16} height={16} alt="Book icon"></img>
         <span>View documentation</span>
       </a>
     </div>
