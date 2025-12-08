@@ -104,7 +104,7 @@ export type PropMapToInterface<
   FROM extends ObjectTypeDefinition,
   TO extends InterfaceDefinition,
 > = NonNullable<
-  CompileTimeMetadata<FROM>["inverseInterfaceMap"]
+  CompileTimeMetadata<FROM>["inverseInterfaceMapV2"]
 >[ApiNameAsString<TO>];
 
 export type MapPropNamesToInterface<
@@ -115,7 +115,7 @@ export type MapPropNamesToInterface<
   PropMapToInterface<
     FROM,
     TO
-  >[JustProps<FROM, P> & keyof PropMapToInterface<FROM, TO>],
+  >[JustProps<FROM, P> & keyof PropMapToInterface<FROM, TO>][number],
   TO
 >;
 /**

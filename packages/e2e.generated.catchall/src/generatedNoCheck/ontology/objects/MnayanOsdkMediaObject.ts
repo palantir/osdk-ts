@@ -69,6 +69,7 @@ export interface MnayanOsdkMediaObject extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'Mnayan OSDKMedia Objects';
     primaryKeyApiName: 'id';

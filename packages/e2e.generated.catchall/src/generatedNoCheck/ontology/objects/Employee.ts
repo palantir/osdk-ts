@@ -132,6 +132,12 @@ export interface Employee extends $ObjectTypeDefinition {
         email: 'description';
       };
     };
+    inverseInterfaceMapV2: {
+      FooInterface: {
+        firstName: ['name'];
+        email: ['description'];
+      };
+    };
     links: {
       lead: $ObjectMetadata.Link<Employee, false>;
       peeps: $ObjectMetadata.Link<Employee, true>;

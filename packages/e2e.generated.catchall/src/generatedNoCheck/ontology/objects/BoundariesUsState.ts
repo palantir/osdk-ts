@@ -75,6 +75,7 @@ export interface BoundariesUsState extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'Boundaries US States';
     primaryKeyApiName: 'usState';

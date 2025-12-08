@@ -72,6 +72,7 @@ export interface Venture extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {
       employees: $ObjectMetadata.Link<Employee, true>;
     };

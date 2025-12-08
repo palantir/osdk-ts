@@ -69,6 +69,7 @@ export interface GtfsTripTrackObject extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'GtfsTripTrackObject';
     primaryKeyApiName: 'entityId';

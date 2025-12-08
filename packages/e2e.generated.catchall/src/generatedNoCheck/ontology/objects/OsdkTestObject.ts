@@ -103,6 +103,15 @@ export interface OsdkTestObject extends $ObjectTypeDefinition {
         description: 'objectDescription';
       };
     };
+    inverseInterfaceMapV2: {
+      FooInterface: {
+        osdkObjectName: ['name'];
+        description: ['description'];
+      };
+      OsdkTestInterface: {
+        description: ['objectDescription'];
+      };
+    };
     links: {};
     pluralDisplayName: 'Osdk Test Objects';
     primaryKeyApiName: 'primaryKey_';

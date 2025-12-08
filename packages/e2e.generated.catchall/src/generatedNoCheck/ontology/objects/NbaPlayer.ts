@@ -89,6 +89,13 @@ export interface NbaPlayer extends $ObjectTypeDefinition {
         name: 'name22';
       };
     };
+    inverseInterfaceMapV2: {
+      Athlete: {
+        jerseyNumber: ['jerseyNumber'];
+        id: ['athleteId'];
+        name: ['name22'];
+      };
+    };
     links: {};
     pluralDisplayName: 'names';
     primaryKeyApiName: 'id';

@@ -85,6 +85,7 @@ export interface FintrafficAis extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'Fintraffic AIS';
     primaryKeyApiName: 'mmsi';

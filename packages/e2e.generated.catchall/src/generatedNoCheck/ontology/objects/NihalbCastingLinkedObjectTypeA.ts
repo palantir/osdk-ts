@@ -89,6 +89,11 @@ export interface NihalbCastingLinkedObjectTypeA extends $ObjectTypeDefinition {
         primaryKey_: 'primaryKeyProp';
       };
     };
+    inverseInterfaceMapV2: {
+      NihalbCastingLinkedInterfaceTypeA: {
+        primaryKey_: ['primaryKeyProp'];
+      };
+    };
     links: {
       nihalbCastingObjectTypeA: $ObjectMetadata.Link<NihalbCastingObjectTypeA, false>;
       nihalbCastingObjectTypeB: $ObjectMetadata.Link<NihalbCastingObjectTypeB, false>;

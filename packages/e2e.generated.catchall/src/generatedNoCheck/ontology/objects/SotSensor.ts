@@ -77,6 +77,7 @@ export interface SotSensor extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'SOT-Sensors';
     primaryKeyApiName: 'seriesId';

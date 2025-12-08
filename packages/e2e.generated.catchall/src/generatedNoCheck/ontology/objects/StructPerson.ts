@@ -65,6 +65,7 @@ export interface StructPerson extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'StructPeople';
     primaryKeyApiName: 'name';

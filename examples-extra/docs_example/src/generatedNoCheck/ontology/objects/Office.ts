@@ -87,6 +87,7 @@ export interface Office extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'Offices';
     primaryKeyApiName: 'officeId';

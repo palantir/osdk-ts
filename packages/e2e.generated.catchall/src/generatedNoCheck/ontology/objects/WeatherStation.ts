@@ -67,6 +67,7 @@ export interface WeatherStation extends $ObjectTypeDefinition {
     implements: undefined;
     interfaceMap: {};
     inverseInterfaceMap: {};
+    inverseInterfaceMapV2: {};
     links: {};
     pluralDisplayName: 'Weather Stations';
     primaryKeyApiName: 'stationId';
