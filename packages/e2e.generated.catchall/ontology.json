@@ -4050,6 +4050,29 @@
           "required": true
         }
       },
+      "propertiesV2": {
+        "vehicleId_1": {
+          "type": "interfaceSharedPropertyType",
+          "rid": "ri.ontology.main.shared-property.43a9b4ad-6e09-454c-8daf-b2951689157f",
+          "apiName": "vehicleId_1",
+          "displayName": "Vehicle Id",
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "allPropertiesV2": {
+        "vehicleId_1": {
+          "rid": "ri.ontology.main.interface-property.43a9b4ad-6e09-454c-8daf-b2951689157f",
+          "apiName": "vehicleId_1",
+          "displayName": "Vehicle Id",
+          "dataType": {
+            "type": "string"
+          },
+          "requireImplementation": true
+        }
+      },
       "extendsInterfaces": [],
       "allExtendsInterfaces": [],
       "implementedByObjectTypes": [
@@ -4511,6 +4534,83 @@
       "rid": "ri.ontology.main.interface.06c534fd-4f68-44d9-b268-72729a47eaab",
       "status": "ACTIVE",
       "implementedByObjectTypes": ["OsdkTestObject"]
+    },
+    "MwaltherTestInterface": {
+      "rid": "ri.ontology.main.interface.2bf99935-b656-4c38-87ff-5970ccb3f2a7",
+      "apiName": "mwaltherPerson",
+      "displayName": "[mwalther] Person (has IDP)",
+      "description": "",
+      "properties": {
+          "mwaltherName": {
+              "rid": "ri.ontology.main.shared-property.893c33d7-5bb4-41fb-8357-2d10095d7c96",
+              "apiName": "mwaltherName",
+              "displayName": "[mwalther] Name",
+              "dataType": {
+                  "type": "string"
+              },
+              "required": true
+          }
+      },
+      "allProperties": {
+          "mwaltherName": {
+              "rid": "ri.ontology.main.shared-property.893c33d7-5bb4-41fb-8357-2d10095d7c96",
+              "apiName": "mwaltherName",
+              "displayName": "[mwalther] Name",
+              "dataType": {
+                  "type": "string"
+              },
+              "required": true
+          }
+      },
+      "propertiesV2": {
+          "age": {
+              "type": "interfaceDefinedPropertyType",
+              "rid": "ri.ontology.main.interface-property.143eff7c-9f90-420b-bb77-0e43d1923ed2",
+              "apiName": "age",
+              "displayName": "Age (IDP)",
+              "dataType": {
+                  "type": "integer"
+              },
+              "requireImplementation": true
+          },
+          "mwaltherName": {
+              "type": "interfaceSharedPropertyType",
+              "rid": "ri.ontology.main.shared-property.893c33d7-5bb4-41fb-8357-2d10095d7c96",
+              "apiName": "mwaltherName",
+              "displayName": "[mwalther] Name",
+              "dataType": {
+                  "type": "string"
+              },
+              "required": true
+          }
+      },
+      "allPropertiesV2": {
+          "age": {
+              "rid": "ri.ontology.main.interface-property.143eff7c-9f90-420b-bb77-0e43d1923ed2",
+              "apiName": "age",
+              "displayName": "Age (IDP)",
+              "dataType": {
+                  "type": "integer"
+              },
+              "requireImplementation": true
+          },
+          "mwaltherName": {
+              "rid": "ri.ontology.main.interface-property.893c33d7-5bb4-41fb-8357-2d10095d7c96",
+              "apiName": "mwaltherName",
+              "displayName": "[mwalther] Name",
+              "dataType": {
+                  "type": "string"
+              },
+              "requireImplementation": true
+          }
+      },
+      "extendsInterfaces": [],
+      "allExtendsInterfaces": [],
+      "implementedByObjectTypes": [
+          "MwaltherPersonOt"
+      ],
+      "links": {},
+      "allLinks": {}
     }
   },
 
