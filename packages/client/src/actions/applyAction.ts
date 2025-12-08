@@ -231,7 +231,9 @@ function preprocessUploadValue<T>(
   }
 
   const paramType = actionMetadata.parameters[paramName]?.type;
-  const fileName = value instanceof File ? value.name : "upload";
+  const fileName = "name" in value && typeof value.name === "string"
+    ? value.name
+    : "upload";
 
   if (paramType === "attachment") {
     return { name: fileName, data: value };
