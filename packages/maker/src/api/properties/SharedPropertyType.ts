@@ -15,6 +15,7 @@
  */
 
 import type {
+  OntologyIrBaseFormatter,
   OntologyIrValueTypeReferenceWithMetadata,
   SharedPropertyTypeGothamMapping,
   Visibility,
@@ -29,6 +30,7 @@ export interface SharedPropertyType extends OntologyEntityBase, PropertyType {
   apiName: string;
   nonNameSpacedApiName: string;
   gothamMapping?: SharedPropertyTypeGothamMapping;
+  baseFormatter?: OntologyIrBaseFormatter;
   __type: OntologyEntityTypeEnum.SHARED_PROPERTY_TYPE;
 }
 export interface PropertyType {

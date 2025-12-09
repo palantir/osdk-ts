@@ -31,6 +31,7 @@ export function convertSpt(
     typeClasses,
     valueType,
     nullability,
+    baseFormatter,
   }: SharedPropertyType,
 ): OntologyIrSharedPropertyType {
   const dataConstraint:
@@ -52,7 +53,7 @@ export function convertSpt(
       }
       : propertyTypeTypeToOntologyIrType(type),
     aliases: [],
-    baseFormatter: undefined,
+    baseFormatter,
     dataConstraints: dataConstraint,
     gothamMapping: gothamMapping,
     indexedForSearch: true,
