@@ -1,5 +1,13 @@
 # @osdk/vite-plugin-oac
 
+## 0.3.5
+
+### Patch Changes
+
+- @osdk/api@2.5.5
+- @osdk/client.unstable@2.5.5
+- @osdk/generator-converters.ontologyir@2.5.5
+
 ## 0.3.4
 
 ### Patch Changes
