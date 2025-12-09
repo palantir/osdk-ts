@@ -1,0 +1,26 @@
+import book from "/book.svg";
+
+import React from "react";
+import css from "./Osdk.module.css";
+
+function Osdk(): React.ReactElement {
+  return (
+    <div className={css.osdk}>
+      <div>
+        <span>OSDK: </span>
+        <span className={css.tag}>{{osdkPackage}}</span>
+      </div>
+      <a
+        href="{{foundryUrl}}/workspace/developer-console/app/{{application}}/docs/guide/loading-data?language=typescript"
+        className={css.docs}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <img src={book} width={16} height={16} alt="Book icon"></img>
+        <span>View documentation</span>
+      </a>
+    </div>
+  );
+}
+
+export default Osdk;
