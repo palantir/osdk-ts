@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 # Getting Started
 
 This guide covers installation, setup, and your first OSDK React application.
@@ -124,7 +128,7 @@ function TodoList() {
 }
 ```
 
-See [Querying Data](./querying-data.md) for filtering, pagination, real-time updates, and more.
+See [Querying Data](./querying-data) for filtering, pagination, real-time updates, and more.
 
 ## First Action
 
@@ -150,7 +154,7 @@ function CompleteTodoButton({ todo }: { todo: Todo.OsdkInstance }) {
 }
 ```
 
-See [Actions](./actions.md) for validation, batch actions, and optimistic updates.
+See [Actions](./actions) for validation, batch actions, and optimistic updates.
 
 ## Troubleshooting
 
@@ -250,7 +254,7 @@ If NPM has trouble resolving peer dependencies with beta packages, add to packag
 
 ## Next Steps
 
-- [Querying Data](./querying-data.md) - useOsdkObjects, useOsdkObject, useLinks, pagination, real-time updates
-- [Actions](./actions.md) - useOsdkAction, validation, optimistic updates, debouncing
-- [Advanced Queries](./advanced-queries.md) - useObjectSet, derived properties, aggregations
-- [Cache Management](./cache-management.md) - Cache behavior and manual invalidation
+- [Querying Data](./querying-data) - useOsdkObjects, useOsdkObject, useLinks, pagination, real-time updates
+- [Actions](./actions) - useOsdkAction, validation, optimistic updates, debouncing
+- [Advanced Queries](./advanced-queries) - useObjectSet, derived properties, aggregations
+- [Cache Management](./cache-management) - Cache behavior and manual invalidation
