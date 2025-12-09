@@ -1,5 +1,11 @@
 # @osdk/create-widget
 
+## 3.2.8
+
+### Patch Changes
+
+- 98e89fc: Update generated `.npmrc` file
+
 ## 3.2.7
 
 ## 3.2.6

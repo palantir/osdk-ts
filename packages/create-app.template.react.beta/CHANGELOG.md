@@ -1,5 +1,11 @@
 # @osdk/create-app.template.react
 
+## 2.5.5
+
+### Patch Changes
+
+- 98e89fc: Update generated `.npmrc` file
+
 ## 2.5.4
 
 ### Patch Changes
