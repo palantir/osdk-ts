@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.6.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
 ## 0.5.0-beta.5
 
 ### Minor Changes

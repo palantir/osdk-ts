@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.15.0-beta.2
+
+### Minor Changes
+
+- 448caa8: Support formatting for SPTs
+
+### Patch Changes
+
+- Updated dependencies [03db734]
+  - @osdk/typescript-sdk-docs@0.6.0-beta.2
+  - @osdk/api@2.7.0-beta.2
+
 ## 0.14.0-beta.15
 
 ### Minor Changes

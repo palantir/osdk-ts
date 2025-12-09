@@ -1,5 +1,18 @@
 # @osdkkit/react
 
+## 0.9.0-beta.2
+
+### Minor Changes
+
+- ddef59f: update docs
+
+### Patch Changes
+
+- Updated dependencies [03db734]
+- Updated dependencies [c8da6b7]
+  - @osdk/client@2.7.0-beta.2
+  - @osdk/api@2.7.0-beta.2
+
 ## 0.8.0-beta.5
 
 ### Minor Changes

@@ -1,5 +1,15 @@
 # @osdk/widget.api
 
+## 3.4.0-beta.2
+
+### Minor Changes
+
+- 31909c1: Include isWidgetResizeMessage type guard
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.2
+
 ## 3.3.0-beta.11
 
 ### Patch Changes

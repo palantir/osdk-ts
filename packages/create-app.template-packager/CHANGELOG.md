@@ -1,5 +1,11 @@
 # @osdk/create-app.template-packager
 
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 935b7ac: Allow CLI template bootstrapping without an OSDK
+
 ## 2.6.0-beta.13
 
 ## 2.6.0-beta.12

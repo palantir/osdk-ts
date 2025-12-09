@@ -1,5 +1,19 @@
 # @osdk/foundry-sdk-generator
 
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
+### Patch Changes
+
+- Updated dependencies [03db734]
+- Updated dependencies [c8da6b7]
+  - @osdk/generator@2.7.0-beta.2
+  - @osdk/client@2.7.0-beta.2
+  - @osdk/api@2.7.0-beta.2
+
 ## 2.6.0-beta.13
 
 ### Minor Changes
