@@ -1,5 +1,13 @@
 # @osdk/create-app
 
+## 2.6.0-rc.16
+
+### Patch Changes
+
+- 5eb7aa0: Allow CLI template bootstrapping without an OSDK
+- 5eb7aa0: Update create-app React, Vue, and Expo templates
+- 5eb7aa0: Update `.npmrc` credentials
+
 ## 2.6.0-rc.15
 
 ## 2.6.0-rc.14

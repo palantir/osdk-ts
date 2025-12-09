@@ -1,5 +1,14 @@
 # @osdk/create-app.template.react
 
+## 2.6.0-rc.16
+
+### Patch Changes
+
+- 5eb7aa0: Update generated `.npmrc` file
+- 5eb7aa0: Fix icon imports
+- 5eb7aa0: Allow CLI template bootstrapping without an OSDK
+- 5eb7aa0: Update create-app React, Vue, and Expo templates
+
 ## 2.6.0-rc.15
 
 ## 2.6.0-rc.14
