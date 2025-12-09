@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # Actions
 
 This guide covers executing actions, validation, optimistic updates, and debouncing patterns.
