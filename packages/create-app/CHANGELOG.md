@@ -1,5 +1,13 @@
 # @osdk/create-app
 
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 935b7ac: Allow CLI template bootstrapping without an OSDK
+- 4e96d14: Update create-app React, Vue, and Expo templates
+- b0d44f0: Update `.npmrc` credentials
+
 ## 2.6.0-beta.13
 
 ## 2.6.0-beta.12

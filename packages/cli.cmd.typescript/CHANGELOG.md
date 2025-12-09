@@ -1,5 +1,17 @@
 # @osdk/cli.cmd.typescript
 
+## 0.31.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
+### Patch Changes
+
+- Updated dependencies [03db734]
+  - @osdk/generator@2.7.0-beta.2
+  - @osdk/cli.common@0.31.0-beta.2
+
 ## 0.30.0-beta.5
 
 ### Minor Changes

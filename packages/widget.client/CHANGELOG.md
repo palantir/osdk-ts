@@ -1,5 +1,16 @@
 # @osdk/widget.client
 
+## 3.4.0-beta.2
+
+### Minor Changes
+
+- 907bc6a: Create createFoundryWidgetTokenProvider helper
+
+### Patch Changes
+
+- Updated dependencies [31909c1]
+  - @osdk/widget.api@3.4.0-beta.2
+
 ## 3.3.0-beta.11
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.2
+
 ## 2.6.0-beta.13
 
 ### Minor Changes

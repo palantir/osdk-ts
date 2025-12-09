@@ -1,5 +1,14 @@
 # @osdk/create-app.template.vue.v2
 
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 265b09b: Update generated `.npmrc` file
+- 1c57da8: Fix icon imports
+- 935b7ac: Allow CLI template bootstrapping without an OSDK
+- 4e96d14: Update create-app React, Vue, and Expo templates
+
 ## 2.6.0-beta.13
 
 ## 2.6.0-beta.12
