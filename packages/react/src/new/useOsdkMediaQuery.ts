@@ -151,6 +151,7 @@ export function useOsdkMediaQuery(
     if (!enabled || !mediaOrLocation) {
       setContent(undefined);
       setContentError(undefined);
+      setIsLoadingContent(false);
       return;
     }
 
@@ -164,6 +165,7 @@ export function useOsdkMediaQuery(
     const cachedBlob = observableClient.media.getCachedContent(mediaOrLocation);
     if (cachedBlob) {
       setContent(cachedBlob);
+      setIsLoadingContent(false);
       return;
     }
 
@@ -232,9 +234,7 @@ export function useOsdkMediaQuery(
   }, [observableClient, mediaOrLocation]);
 
   let error: Error | undefined;
-  if (payload?.error) {
-    error = payload.error;
-  } else if (payload?.status === "error") {
+  if (payload?.status === "error") {
     error = new Error("Failed to load media metadata");
   } else if (contentError) {
     error = contentError;

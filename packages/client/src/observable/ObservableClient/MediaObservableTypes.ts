@@ -22,7 +22,6 @@ export interface MediaMetadataPayload {
   status: Status;
   lastUpdated: number;
   isOptimistic: boolean;
-  error?: Error;
 }
 
 export interface MediaMetadataObserveOptions {

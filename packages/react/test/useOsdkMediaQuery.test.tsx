@@ -519,7 +519,6 @@ describe("useOsdkMediaQuery", () => {
       capturedObserver?.next({
         metadata: undefined,
         status: "error",
-        error: new Error("Metadata fetch failed"),
         lastUpdated: Date.now(),
         isOptimistic: false,
       });
@@ -527,7 +526,7 @@ describe("useOsdkMediaQuery", () => {
 
     await waitFor(() => {
       expect(result.current.error).toBeDefined();
-      expect(result.current.error?.message).toBe("Metadata fetch failed");
+      expect(result.current.error?.message).toBe("Failed to load media metadata");
     });
   });
 
