@@ -15,36 +15,36 @@
  */
 
 import type { ObjectTypeDefinition, Osdk } from "@osdk/api";
+import type { ObservableClient } from "@osdk/client/unstable-do-not-use";
 import { renderHook } from "@testing-library/react";
 import * as React from "react";
 import { beforeEach, describe, expect, it, vitest } from "vitest";
 import { OsdkContext2 } from "../src/new/OsdkContext2.js";
 import { useOsdkObject } from "../src/new/useOsdkObject.js";
 
-// Mock object type definition
 const MockObjectType = {
   apiName: "MockObject",
   primaryKeyType: "string",
 } as unknown as ObjectTypeDefinition;
 
-// Mock OSDK instance
-const mockInstance: Osdk.Instance<typeof MockObjectType> = {
+const mockInstance = {
   $objectType: "MockObject",
   $primaryKey: "instance-123",
   $apiName: "MockObject",
-} as any;
+} as Osdk.Instance<typeof MockObjectType>;
 
 describe("useOsdkObject enabled option", () => {
   const mockObserveObject = vitest.fn();
 
   const createWrapper = () => {
-    const observableClient = {
+    const observableClient: Pick<ObservableClient, "observeObject"> = {
       observeObject: mockObserveObject,
-      canonicalizeWhereClause: vitest.fn((w) => w),
-    } as any;
+    };
 
     return ({ children }: React.PropsWithChildren) => (
-      <OsdkContext2.Provider value={{ observableClient }}>
+      <OsdkContext2.Provider
+        value={{ observableClient } as React.ContextType<typeof OsdkContext2>}
+      >
         {children}
       </OsdkContext2.Provider>
     );

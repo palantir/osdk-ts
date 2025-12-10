@@ -112,17 +112,11 @@ export function useOsdkAggregation<
 ): UseOsdkAggregationResult<Q, A> {
   const { observableClient } = React.useContext(OsdkContext2);
 
-  const canonWhere = observableClient.canonicalizeWhereClause<Q>(where ?? {});
-
-  const stableWithProperties = React.useMemo(
-    () => withProperties,
-    [JSON.stringify(withProperties)],
-  );
-
-  const stableAggregate = React.useMemo(
-    () => aggregate,
-    [JSON.stringify(aggregate)],
-  );
+  const canonOptions = observableClient.canonicalizeOptions({
+    where,
+    withProperties,
+    aggregate,
+  });
 
   const { subscribe, getSnapShot } = React.useMemo(
     () =>
@@ -131,24 +125,24 @@ export function useOsdkAggregation<
           observableClient.observeAggregation(
             {
               type: type,
-              where: canonWhere,
-              withProperties: stableWithProperties,
-              aggregate: stableAggregate,
+              where: canonOptions.where,
+              withProperties: canonOptions.withProperties,
+              aggregate: canonOptions.aggregate,
               dedupeInterval: dedupeIntervalMs ?? 2_000,
             },
             observer,
           ),
         process.env.NODE_ENV !== "production"
-          ? `aggregation ${type.apiName} ${JSON.stringify(canonWhere)}`
+          ? `aggregation ${type.apiName} ${JSON.stringify(canonOptions.where)}`
           : void 0,
       ),
     [
       observableClient,
       type.apiName,
       type.type,
-      canonWhere,
-      stableWithProperties,
-      stableAggregate,
+      canonOptions.where,
+      canonOptions.withProperties,
+      canonOptions.aggregate,
       dedupeIntervalMs,
     ],
   );
