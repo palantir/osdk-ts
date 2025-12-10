@@ -554,7 +554,7 @@ interface Subscribe<
   ) => { unsubscribe: () => void };
 }
 
-interface AsType<Q extends ObjectOrInterfaceDefinition> {
+interface NarrowToType<Q extends ObjectOrInterfaceDefinition> {
   /**
    * Casts the object set to the specified object type or interface type.
    * Any downstream object set operations (e.g. where, fetchPage, aggregate) will be
@@ -563,7 +563,9 @@ interface AsType<Q extends ObjectOrInterfaceDefinition> {
    * @param type - The object type you want to cast to.
    * @returns an object set of the specified type.
    */
-  readonly asType: <CONVERT_TO extends RestrictToImplementingObjectTypes<Q>>(
+  readonly narrowToType: <
+    CONVERT_TO extends RestrictToImplementingObjectTypes<Q>,
+  >(
     type: CONVERT_TO,
   ) => ObjectSet<CONVERT_TO>;
 }
@@ -608,7 +610,7 @@ interface ObjectSetCleanedTypes<
   FetchOne<Q, D>,
   Subscribe<MERGED>,
   NearestNeighbors<Q>,
-  AsType<Q>,
+  NarrowToType<Q>,
   AsyncIterLinks<Q>
 {
 }

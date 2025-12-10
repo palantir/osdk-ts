@@ -1,5 +1,17 @@
 # @osdk/tool.release
 
+## 0.12.0-beta.2
+
+### Minor Changes
+
+- f908b4d: Match refs/heads/release/_ instead of release/_
+
+## 0.10.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+
 ## 0.8.0-beta.2
 
 ### Minor Changes

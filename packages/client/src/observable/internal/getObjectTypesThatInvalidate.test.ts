@@ -310,7 +310,7 @@ describe(getObjectTypesThatInvalidate, () => {
       { type: "reference", objectType: "Employee", id: "123" },
       { type: "static", objects: [] },
       {
-        type: "asType",
+        type: "narrowToType",
         objectSet: { type: "base", objectType: "Employee" },
         targetType: "Office",
       },

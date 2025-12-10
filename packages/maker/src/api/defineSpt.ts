@@ -15,6 +15,7 @@
  */
 
 import type {
+  OntologyIrBaseFormatter,
   OntologyIrValueTypeReferenceWithMetadata,
   SharedPropertyTypeGothamMapping,
   Visibility,
@@ -45,6 +46,7 @@ export interface SharedPropertyTypeDefinition {
   visibility?: Visibility;
   typeClasses?: SharedPropertyType["typeClasses"];
   gothamMapping?: SharedPropertyTypeGothamMapping;
+  baseFormatter?: OntologyIrBaseFormatter;
 }
 
 export function defineSharedPropertyType(

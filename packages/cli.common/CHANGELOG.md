@@ -1,10 +1,22 @@
 # @osdk/cli.common
 
+## 0.31.0-beta.2
+
+## 0.30.0-beta.5
+
 ## 0.30.0-beta.4
 
 ## 0.30.0-beta.3
 
 ## 0.30.0-beta.2
+
+## 0.29.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+
+## 0.29.0-rc.6
 
 ## 0.29.0-beta.5
 

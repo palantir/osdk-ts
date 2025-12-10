@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.6.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
 ## 0.5.0-beta.5
 
 ### Minor Changes
@@ -30,6 +36,16 @@
 ### Minor Changes
 
 - 81af4c8: A set of compiled examples based on the documentation YAML
+
+## 0.4.0
+
+### Patch Changes
+
+- 776ae8a: Simulated release
+- e9239a1: Add pivot docs.
+- f38abb0: Nearest neighbor docs
+- 2bb698d: Fix knn doc snippet
+- 1796b98: Update load all objects snippet
 
 ## 0.4.0-beta.5
 

@@ -168,6 +168,7 @@ export async function fetchStaticRidPage<
       args.$select,
       false,
       result.interfaceToObjectTypeMappings,
+      result.interfaceToObjectTypeMappingsV2,
     ),
     nextPageToken: result.nextPageToken,
     totalCount: result.totalCount,
@@ -199,9 +200,11 @@ async function fetchInterfacePage<
     const baseRequestBody: SearchObjectsForInterfaceRequest = {
       augmentedProperties: {},
       augmentedSharedPropertyTypes: {},
+      augmentedInterfacePropertyTypes: {},
       otherInterfaceTypes: [],
       selectedObjectTypes: [],
       selectedSharedPropertyTypes: args.$select ? [...args.$select] : [],
+      selectedInterfacePropertyTypes: [],
       where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
     };
 
@@ -281,6 +284,7 @@ async function fetchInterfacePage<
       args.$select,
       false,
       result.interfaceToObjectTypeMappings,
+      result.interfaceToObjectTypeMappingsV2,
     ),
     nextPageToken: result.nextPageToken,
     totalCount: result.totalCount,

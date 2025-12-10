@@ -1453,40 +1453,40 @@ describe("ObjectSet", () => {
         .toHaveProperty("$score");
     });
   });
-  describe("asType", () => {
+  describe("narrowToType", () => {
     it("restricts casting from interface to object type", () => {
-      const objectSet = { asType: () => {} } as unknown as $ObjectSet<
+      const objectSet = { narrowToType: () => {} } as unknown as $ObjectSet<
         FooInterfaceApiTest
       >;
 
-      objectSet.asType(EmployeeApiTest);
+      objectSet.narrowToType(EmployeeApiTest);
 
-      objectSet.asType(FooInterfaceApiTest);
+      objectSet.narrowToType(FooInterfaceApiTest);
 
-      objectSet.asType({ type: "interface", apiName: "AnyInterface :)" });
+      objectSet.narrowToType({ type: "interface", apiName: "AnyInterface :)" });
 
       // @ts-expect-error
-      objectSet.asType({ type: "object", apiName: "NotImplemented" });
+      objectSet.narrowToType({ type: "object", apiName: "NotImplemented" });
 
       // Interfaces that don't have any implementedBy fields should still accept any interface
-      const objectSet2 = { asType: () => {} } as unknown as $ObjectSet<
+      const objectSet2 = { narrowToType: () => {} } as unknown as $ObjectSet<
         FooInterfaceApiTest & { __DefinitionMetadata: { implementedBy: [] } }
       >;
 
-      objectSet2.asType({ type: "interface", apiName: "NotImplemented" });
+      objectSet2.narrowToType({ type: "interface", apiName: "NotImplemented" });
     });
     it("restricts casting from object type to interface", () => {
       const objectSet = {} as $ObjectSet<EmployeeApiTest>;
-      type AsTypeAllowedInterfaceTypes = Parameters<
-        typeof objectSet.asType
+      type narrowToTypeAllowedInterfaceTypes = Parameters<
+        typeof objectSet.narrowToType
       >[0]["apiName"];
-      type AsTypeAllowedTypes = Parameters<
-        typeof objectSet.asType
+      type narrowToTypeAllowedTypes = Parameters<
+        typeof objectSet.narrowToType
       >[0]["type"];
 
-      expectTypeOf<AsTypeAllowedTypes>().toEqualTypeOf<"interface">();
+      expectTypeOf<narrowToTypeAllowedTypes>().toEqualTypeOf<"interface">();
 
-      expectTypeOf<AsTypeAllowedInterfaceTypes>().toEqualTypeOf<
+      expectTypeOf<narrowToTypeAllowedInterfaceTypes>().toEqualTypeOf<
         "FooInterface"
       >();
     });

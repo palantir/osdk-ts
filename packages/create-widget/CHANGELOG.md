@@ -1,5 +1,13 @@
 # @osdk/create-widget
 
+## 3.4.0-beta.2
+
+### Minor Changes
+
+- 265b09b: Update generated `.npmrc` file
+
+## 3.3.0-beta.11
+
 ## 3.3.0-beta.10
 
 ## 3.3.0-beta.9
@@ -17,6 +25,22 @@
 ## 3.3.0-beta.3
 
 ## 3.3.0-beta.2
+
+## 3.2.5
+
+## 3.2.4
+
+## 3.2.3
+
+## 3.2.2
+
+## 3.2.1
+
+## 3.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
 
 ## 3.2.0-beta.5
 
