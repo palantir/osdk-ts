@@ -603,6 +603,15 @@ export const DurationMapping: {
 export type DurationPrecision = "DAYS" | "HOURS" | "MINUTES" | "SECONDS" | "AUTO";
 
 // @public (undocumented)
+export type FetchLinksPageResult<
+	Q extends ObjectOrInterfaceDefinition,
+	LINK_TYPE extends LinkTypeApiNamesFor<Q>
+> = {
+    	data: Array<LinksForObject<Q, LINK_TYPE>>
+    	nextPageToken?: string
+};
+
+// @public (undocumented)
 export interface FetchPageArgs<
 	Q extends ObjectOrInterfaceDefinition,
 	K extends string = PropertyKeys<Q>,
@@ -793,6 +802,19 @@ export type LinkedType<
 
 // @public (undocumented)
 export type LinkNames<Q extends ObjectOrInterfaceDefinition> = Q extends InterfaceDefinition ? keyof CompileTimeMetadata<Q>["links"] : keyof CompileTimeMetadata<Q>["links"] & string;
+
+// @public (undocumented)
+export type LinksForObject<
+	Q extends ObjectOrInterfaceDefinition,
+	LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>
+> = {
+    	source: ObjectIdentifiers<Q>
+    	target: ObjectIdentifiers<LinkedObjectType<Q, LINK_TYPE_API_NAME>>
+    	linkType: LINK_TYPE_API_NAME
+};
+
+// @public (undocumented)
+export type LinkTypeApiNamesFor<Q extends ObjectOrInterfaceDefinition> = Extract<keyof CompileTimeMetadata<Q>["links"], string>;
 
 // @public (undocumented)
 export interface Logger {
@@ -1857,6 +1879,7 @@ export type WirePropertyTypes = BaseWirePropertyTypes | Record<string, BaseWireP
 // src/aggregate/AggregateOpts.ts:25:3 - (ae-forgotten-export) The symbol "OrderedAggregationClause" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "MaybeNullable_2" needs to be exported by the entry point index.d.ts
 // src/aggregate/AggregationResultsWithGroups.ts:36:5 - (ae-forgotten-export) The symbol "OsdkObjectPropertyTypeNotUndefined" needs to be exported by the entry point index.d.ts
+// src/objectSet/ObjectSetLinks.ts:34:3 - (ae-forgotten-export) The symbol "LinkedObjectType" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

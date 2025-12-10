@@ -328,31 +328,31 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       );
     },
 
+    asyncIterLinks: async function*<
+      LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
+    >(
+      links: LINK_TYPE_API_NAME[],
+    ): AsyncIterableIterator<LinksForObject<Q, LINK_TYPE_API_NAME>> {
+      let $nextPageToken: string | undefined = undefined;
+      do {
+        const result = await fetchLinksPage(
+          clientCtx,
+          objectType,
+          objectSet,
+          links,
+        );
+        $nextPageToken = result.nextPageToken;
+
+        for (const obj of result.data) {
+          yield obj;
+        }
+      } while ($nextPageToken != null);
+    },
+
     $objectSetInternals: {
       def: objectType,
     },
   };
-
-  async function* asyncIterLinks<
-    LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
-  >(
-    links: LINK_TYPE_API_NAME[],
-  ): AsyncIterableIterator<LinksForObject<Q, LINK_TYPE_API_NAME>> {
-    let $nextPageToken: string | undefined = undefined;
-    do {
-      const result = await fetchLinksPage(
-        clientCtx,
-        objectType,
-        objectSet,
-        links,
-      );
-      $nextPageToken = result.nextPageToken;
-
-      for (const obj of result.data) {
-        yield obj;
-      }
-    } while ($nextPageToken != null);
-  }
 
   function createSearchAround<L extends LinkNames<Q>>(link: L) {
     return () => {
