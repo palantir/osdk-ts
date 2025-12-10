@@ -73,27 +73,21 @@ export function computeObjectSetCacheKey<
   if (options.union && options.union.length > 0) {
     keyParts.push(
       "union",
-      objectSetArrayCanonicalizer.canonicalizeUnion(
-        options.union as unknown as ObjectSet[],
-      ),
+      objectSetArrayCanonicalizer.canonicalizeUnion(options.union),
     );
   }
 
   if (options.intersect && options.intersect.length > 0) {
     keyParts.push(
       "intersect",
-      objectSetArrayCanonicalizer.canonicalizeIntersect(
-        options.intersect as unknown as ObjectSet[],
-      ),
+      objectSetArrayCanonicalizer.canonicalizeIntersect(options.intersect),
     );
   }
 
   if (options.subtract && options.subtract.length > 0) {
     keyParts.push(
       "subtract",
-      objectSetArrayCanonicalizer.canonicalizeSubtract(
-        options.subtract as unknown as ObjectSet[],
-      ),
+      objectSetArrayCanonicalizer.canonicalizeSubtract(options.subtract),
     );
   }
 

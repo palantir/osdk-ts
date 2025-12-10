@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet } from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import { getWireObjectSet } from "../../objectSet/createObjectSet.js";
 import type { Canonical } from "./Canonical.js";
 import { WeakRefTrie } from "./WeakRefTrie.js";
@@ -30,19 +30,25 @@ export class ObjectSetArrayCanonicalizer {
     [...array] as Canonical<string[]>
   );
 
-  canonicalizeUnion(objectSets: ObjectSet[]): Canonical<string[]> {
+  canonicalizeUnion<T extends ObjectTypeDefinition>(
+    objectSets: ObjectSet<T>[],
+  ): Canonical<string[]> {
     const wires = objectSets.map(os => JSON.stringify(getWireObjectSet(os)));
     const sorted = [...wires].sort();
     return this.#unionTrie.lookupArray(sorted);
   }
 
-  canonicalizeIntersect(objectSets: ObjectSet[]): Canonical<string[]> {
+  canonicalizeIntersect<T extends ObjectTypeDefinition>(
+    objectSets: ObjectSet<T>[],
+  ): Canonical<string[]> {
     const wires = objectSets.map(os => JSON.stringify(getWireObjectSet(os)));
     const sorted = [...wires].sort();
     return this.#intersectTrie.lookupArray(sorted);
   }
 
-  canonicalizeSubtract(objectSets: ObjectSet[]): Canonical<string[]> {
+  canonicalizeSubtract<T extends ObjectTypeDefinition>(
+    objectSets: ObjectSet<T>[],
+  ): Canonical<string[]> {
     const wires = objectSets.map(os => JSON.stringify(getWireObjectSet(os)));
     return this.#subtractTrie.lookupArray(wires);
   }
