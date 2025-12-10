@@ -21,6 +21,7 @@ import { AbstractHelper } from "../AbstractHelper.js";
 import type { CacheKeys } from "../CacheKeys.js";
 import type { Canonical } from "../Canonical.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
+import type { ObjectSetArrayCanonicalizer } from "../ObjectSetArrayCanonicalizer.js";
 import type { OrderByCanonicalizer } from "../OrderByCanonicalizer.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { Store } from "../Store.js";
@@ -38,17 +39,20 @@ export class ObjectSetHelper extends AbstractHelper<
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   orderByCanonicalizer: OrderByCanonicalizer;
+  objectSetArrayCanonicalizer: ObjectSetArrayCanonicalizer;
 
   constructor(
     store: Store,
     cacheKeys: CacheKeys<KnownCacheKey>,
     whereCanonicalizer: WhereClauseCanonicalizer,
     orderByCanonicalizer: OrderByCanonicalizer,
+    objectSetArrayCanonicalizer: ObjectSetArrayCanonicalizer,
   ) {
     super(store, cacheKeys);
 
     this.whereCanonicalizer = whereCanonicalizer;
     this.orderByCanonicalizer = orderByCanonicalizer;
+    this.objectSetArrayCanonicalizer = objectSetArrayCanonicalizer;
   }
 
   observe(
@@ -100,21 +104,23 @@ export class ObjectSetHelper extends AbstractHelper<
     }
 
     if (options.union && options.union.length > 0) {
-      operations.union = options.union.map(os =>
-        JSON.stringify(getWireObjectSet(os))
+      operations.union = this.objectSetArrayCanonicalizer.canonicalizeUnion(
+        options.union,
       );
     }
 
     if (options.intersect && options.intersect.length > 0) {
-      operations.intersect = options.intersect.map(os =>
-        JSON.stringify(getWireObjectSet(os))
-      );
+      operations.intersect = this.objectSetArrayCanonicalizer
+        .canonicalizeIntersect(
+          options.intersect,
+        );
     }
 
     if (options.subtract && options.subtract.length > 0) {
-      operations.subtract = options.subtract.map(os =>
-        JSON.stringify(getWireObjectSet(os))
-      );
+      operations.subtract = this.objectSetArrayCanonicalizer
+        .canonicalizeSubtract(
+          options.subtract,
+        );
     }
 
     if (options.pivotTo) {
