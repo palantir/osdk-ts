@@ -133,9 +133,6 @@ export function createPlatformClient(baseUrl: string, tokenProvider: () => Promi
 
 export { DerivedProperty }
 
-// @public
-export function ensureError(err: unknown): Error;
-
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 //
 // @public

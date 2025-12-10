@@ -267,19 +267,8 @@ export interface Attachment {
     	fetchContents(): Promise<Response>;
     	// Warning: (ae-forgotten-export) The symbol "AttachmentMetadata" needs to be exported by the entry point index.d.ts
     fetchMetadata(): Promise<AttachmentMetadata>;
-    	getAttachmentSourceLocation?(): AttachmentPropertyLocation;
     	// (undocumented)
     rid: string;
-}
-
-// @public
-export interface AttachmentPropertyLocation {
-    	// (undocumented)
-    objectType: string;
-    	// (undocumented)
-    primaryKey: string | number;
-    	// (undocumented)
-    propertyName: string;
 }
 
 // @public (undocumented)
@@ -852,7 +841,6 @@ export interface Media {
     	fetchContents(): Promise<Response>;
     	fetchMetadata(): Promise<MediaMetadata_2>;
     	getMediaReference(): MediaReference;
-    	getMediaSourceLocation?(): MediaPropertyLocation;
 }
 
 // @public
@@ -865,16 +853,6 @@ interface MediaMetadata_2 {
     sizeBytes: number;
 }
 export { MediaMetadata_2 as MediaMetadata }
-
-// @public
-export interface MediaPropertyLocation {
-    	// (undocumented)
-    objectType: string;
-    	// (undocumented)
-    primaryKey: string | number;
-    	// (undocumented)
-    propertyName: string;
-}
 
 // @public
 export interface MediaReference {
