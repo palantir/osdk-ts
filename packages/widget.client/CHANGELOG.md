@@ -1,5 +1,12 @@
 # @osdk/widget.client
 
+## 3.3.0-rc.15
+
+### Patch Changes
+
+- ad648f5: Create createFoundryWidgetTokenProvider helper
+  - @osdk/widget.api@3.3.0-rc.15
+
 ## 3.3.0-rc.14
 
 ### Patch Changes

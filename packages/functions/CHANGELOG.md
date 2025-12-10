@@ -1,5 +1,12 @@
 # @osdk/functions
 
+## 1.4.0-rc.11
+
+### Patch Changes
+
+- 3d7dc0a: introduce new token field, note readToken as deprecated
+  - @osdk/client@2.6.0-rc.17
+
 ## 1.4.0-rc.10
 
 ### Patch Changes

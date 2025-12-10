@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.6.0-rc.17
+
+### Patch Changes
+
+- 3d7dc0a: introduce new token field, note readToken as deprecated
+
 ## 2.6.0-rc.16
 
 ## 2.6.0-rc.15
