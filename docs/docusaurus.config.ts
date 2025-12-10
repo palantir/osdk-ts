@@ -4,11 +4,6 @@ import type * as Preset from "@docusaurus/preset-classic";
 const config: Config = {
   title: "OSDK TypeScript",
   tagline: "Documentation for OSDK TypeScript packages",
-  future: {
-    v4: true,
-    experimental_faster: true,
-  },
-
   url: "https://palantir.github.io",
   baseUrl: "/osdk-ts/",
 

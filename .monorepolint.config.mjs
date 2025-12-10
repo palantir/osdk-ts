@@ -297,6 +297,17 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       react: true,
     },
+  )
+  .addArchetype(
+    "docs",
+    [
+      "@osdk/docs",
+    ],
+    {
+      ...LIBRARY_RULES,
+      minimalChangesOnly: true,
+      private: true,
+    },
   );
 
 /**
