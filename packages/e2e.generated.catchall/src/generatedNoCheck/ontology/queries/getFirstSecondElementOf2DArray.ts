@@ -39,9 +39,7 @@ export interface getFirstSecondElementOf2DArray
           };
           type: 'array';
           nullable: false;
-          multiplicity: true;
         };
-        multiplicity: true;
         nullable: false;
         type: 'array';
       };

@@ -99,11 +99,6 @@ export class SpecificLinkQuery extends BaseListQuery<
       this.#whereClause,
       this.#orderBy,
     ] = cacheKey.otherKeys;
-
-    this.sortingStrategy = new OrderBySortingStrategy(
-      this.#linkName,
-      this.#orderBy,
-    );
   }
 
   // _fetchAndStore is now implemented in BaseCollectionQuery
@@ -127,6 +122,20 @@ export class SpecificLinkQuery extends BaseListQuery<
     // Use the client's ontologyProvider to get metadata, which has built-in caching
     const sourceMetadata = await client[additionalContext].ontologyProvider
       .getObjectDefinition(this.#sourceApiName);
+
+    // Initialize sorting strategy with the link's target object type
+    if (this.#orderBy && Object.keys(this.#orderBy).length > 0) {
+      const linkDef = sourceMetadata.links?.[this.#linkName];
+      if (!linkDef?.targetType) {
+        throw new Error(
+          `Missing link definition or targetType for link '${this.#linkName}' on object type '${this.#sourceApiName}'`,
+        );
+      }
+      this.sortingStrategy = new OrderBySortingStrategy(
+        linkDef.targetType,
+        this.#orderBy,
+      );
+    }
 
     // Query for the specific source object
     const sourceQuery = client(sourceObjectDef).where({

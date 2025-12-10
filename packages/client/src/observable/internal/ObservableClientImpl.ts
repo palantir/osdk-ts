@@ -16,6 +16,7 @@
 
 import type {
   ActionDefinition,
+  ActionEditResponse,
   ActionValidationResponse,
   AggregateOpts,
   CompileTimeMetadata,
@@ -168,7 +169,7 @@ export class ObservableClientImpl implements ObservableClient {
     action: Q,
     args: Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0],
     opts?: ObservableClient.ApplyActionOptions,
-  ) => Promise<unknown>;
+  ) => Promise<ActionEditResponse>;
 
   public validateAction: <Q extends ActionDefinition<any>>(
     action: Q,

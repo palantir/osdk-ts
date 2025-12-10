@@ -220,7 +220,7 @@ export function createClientMockHelper(): MockClientHelper {
     clientCacheKey: {} as any,
     requestContext: {},
     logger,
-    asTypeInterfaceOrObjectMapping: {},
+    narrowTypeInterfaceOrObjectMapping: {},
   };
   client.fetchMetadata = vitest.fn();
 
@@ -377,7 +377,7 @@ export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
   subFn: MockedObject<Observer<ListPayload | undefined>>,
   resolvedList: ObjectHolder[] | Osdk.Instance<T>[],
   payloadOptions: Omit<Partial<ListPayload>, "resolvedList"> = {},
-): void {
+): ListPayload | undefined {
   if (vitest.isFakeTimers()) {
     vitest.runOnlyPendingTimers();
   }
@@ -389,7 +389,9 @@ export function expectSingleListCallAndClear<T extends ObjectTypeDefinition>(
       >,
     }),
   );
+  const ret = subFn.next.mock.calls[0][0];
   subFn.next.mockClear();
+  return ret;
 }
 
 /**

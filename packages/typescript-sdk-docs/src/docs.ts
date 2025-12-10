@@ -375,7 +375,7 @@ function renderType(
         : "primaryKeyValue";
       if (context === "actionParameter") {
         return majorVersion >= SdkMajorVersion.V2
-          ? `{ $primaryKey: ${primaryKeyValue}, /* other properties */ }`
+          ? `"primaryKeyValue" // or myObjectInstance`
           : `{ __primaryKey: ${primaryKeyValue}, /* other properties */ }`;
       }
       return primaryKeyValue;
@@ -389,7 +389,7 @@ function renderType(
       return "{}";
     case "mediaReference":
       return context === "actionParameter"
-        ? "mediaReference"
+        ? "mediaUpload"
         : "mediaReferenceRid";
     case "objectType":
       return `"${type.objectTypeApiName}"`;

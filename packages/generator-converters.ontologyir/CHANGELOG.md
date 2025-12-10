@@ -1,5 +1,53 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.2
+
+## 2.6.0-beta.13
+
+### Minor Changes
+
+- 84f0eef: Bumping OSDK apis
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.13
+
+## 2.6.0-beta.12
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.12
+
+## 2.6.0-beta.11
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.11
+
+## 2.6.0-beta.10
+
+### Minor Changes
+
+- 3fbb596: Pipe through transactionId to endpoints that load data via object sets
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.10
+
+## 2.6.0-beta.9
+
+### Patch Changes
+
+- @osdk/client.unstable@2.6.0-beta.9
+
 ## 2.6.0-beta.8
 
 ### Minor Changes
@@ -56,6 +104,42 @@
 ### Patch Changes
 
 - @osdk/client.unstable@2.5.0-beta.15
+
+## 2.5.2
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.2
+
+## 2.5.1
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- 150da1a: Simulated release
+- a6f49e9: Fix Maker Rid Generation
+- 7cdab1d: Update platform sdk dependencies
+- a00d2ed: Update Platform SDK dependencies
+- 7bdac45: Update Platform SDK dependency
+- a96d89e: Update Platform SDK dependencies
+- 7bdac45: Support value type enum generation for strings and booleans
+- cbcf2ad: Add branching support
+- Updated dependencies [322c5bc]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [a6f49e9]
+- Updated dependencies [04fe946]
+  - @osdk/client.unstable@2.5.0
+
+## 2.5.0-rc.15
+
+### Patch Changes
+
+- @osdk/client.unstable@2.5.0-rc.15
 
 ## 2.5.0-beta.14
 

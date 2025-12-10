@@ -428,7 +428,6 @@ describe("generatePerQueryDataFiles", () => {
                   type: 'float';
                   nullable: false;
                 };
-                multiplicity: true;
                 nullable: false;
                 type: 'array';
               };
@@ -443,9 +442,7 @@ describe("generatePerQueryDataFiles", () => {
                   };
                   type: 'array';
                   nullable: false;
-                  multiplicity: true;
                 };
-                multiplicity: true;
                 nullable: false;
                 type: 'array';
               };

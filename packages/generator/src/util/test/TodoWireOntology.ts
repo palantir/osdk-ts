@@ -134,6 +134,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
           properties: {
             "SomeProperty": "body",
           },
+          propertiesV2: {},
           links: {},
         },
       },
@@ -224,6 +225,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
           required: false,
         },
       },
+      propertiesV2: {},
       rid: "idk",
       displayName: "Sum Interface",
       extendsInterfaces: [],
@@ -241,6 +243,7 @@ export const TodoWireOntology: WireOntologyDefinition = {
           required: false,
         },
       },
+      allPropertiesV2: {},
       allExtendsInterfaces: [],
       allLinks: {},
     },

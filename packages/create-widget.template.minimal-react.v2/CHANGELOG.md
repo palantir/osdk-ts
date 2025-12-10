@@ -1,5 +1,26 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.4.0-beta.2
+
+### Minor Changes
+
+- 265b09b: Update generated `.npmrc` file
+
+## 3.3.0-beta.11
+
+### Minor Changes
+
+- eead244: Remove minimal widget template margin
+- 02fb0ac: Bump widget template dependency versions on widget libraries
+
+## 3.3.0-beta.10
+
+## 3.3.0-beta.9
+
+## 3.3.0-beta.8
+
+## 3.3.0-beta.7
+
 ## 3.3.0-beta.6
 
 ## 3.3.0-beta.5
@@ -9,6 +30,28 @@
 ## 3.3.0-beta.3
 
 ## 3.3.0-beta.2
+
+## 3.2.5
+
+### Patch Changes
+
+- a2df5ba: Introduce widget resize message for automatic heights
+- 71f33ca: Remove minimal widget template margin
+- 71f33ca: Bump widget template dependency versions on widget libraries
+
+## 3.2.4
+
+## 3.2.3
+
+## 3.2.2
+
+## 3.2.1
+
+## 3.2.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
 
 ## 3.2.0-beta.5
 

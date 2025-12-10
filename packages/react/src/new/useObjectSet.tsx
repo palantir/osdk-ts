@@ -30,7 +30,7 @@ import {
   type ObserveObjectSetArgs,
 } from "@osdk/client/unstable-do-not-use";
 import React from "react";
-import { makeExternalStore } from "./makeExternalStore.js";
+import { makeExternalStore, type Snapshot } from "./makeExternalStore.js";
 import { OsdkContext2 } from "./OsdkContext2.js";
 
 export interface UseObjectSetOptions<
@@ -83,6 +83,15 @@ export interface UseObjectSetOptions<
    * Minimum time between fetch requests in milliseconds (defaults to 2000ms)
    */
   dedupeIntervalMs?: number;
+
+  /**
+   * Automatically fetch additional pages on initial load.
+   *
+   * - `true`: Fetch all available pages automatically
+   * - `number`: Fetch pages until at least this many items are loaded
+   * - `undefined` (default): Only fetch the first page, user must call fetchMore()
+   */
+  autoFetchMore?: boolean | number;
 
   /**
    * Enable streaming updates via websocket subscription.
@@ -178,6 +187,18 @@ export function useObjectSet<
 
   const { enabled = true, streamUpdates, ...otherOptions } = options;
 
+  // Track object type to detect when we switch to a different object type
+  const objectTypeKey = baseObjectSet.$objectSetInternals.def.apiName;
+  const previousObjectTypeRef = React.useRef<string>(objectTypeKey);
+  const previousPayloadRef = React.useRef<
+    Snapshot<ObserveObjectSetArgs<Q, RDPs>> | undefined
+  >();
+
+  const objectTypeChanged = previousObjectTypeRef.current !== objectTypeKey;
+  if (objectTypeChanged) {
+    previousObjectTypeRef.current = objectTypeKey;
+  }
+
   // Compute a stable cache key for the ObjectSet and options
   // dedupeIntervalMs and enabled are excluded as they don't affect the data
   const stableKey = computeObjectSetCacheKey(baseObjectSet, {
@@ -201,6 +222,11 @@ export function useObjectSet<
             : void 0,
         );
       }
+
+      const initialValue = objectTypeChanged
+        ? undefined
+        : previousPayloadRef.current;
+
       return makeExternalStore<ObserveObjectSetArgs<Q, RDPs>>(
         (observer) => {
           const subscription = observableClient.observeObjectSet(
@@ -215,6 +241,7 @@ export function useObjectSet<
               pageSize: otherOptions.pageSize,
               orderBy: otherOptions.orderBy,
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
+              autoFetchMore: otherOptions.autoFetchMore,
               streamUpdates,
               includeRid: otherOptions.includeRid,
             },
@@ -225,12 +252,18 @@ export function useObjectSet<
         process.env.NODE_ENV !== "production"
           ? `objectSet ${stableKey}`
           : void 0,
+        initialValue,
       );
     },
-    [enabled, observableClient, stableKey, streamUpdates],
+    [enabled, observableClient, stableKey, streamUpdates, objectTypeChanged],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
+  React.useEffect(() => {
+    if (payload) {
+      previousPayloadRef.current = payload;
+    }
+  }, [payload]);
 
   return {
     data: payload?.resolvedList as Osdk.Instance<

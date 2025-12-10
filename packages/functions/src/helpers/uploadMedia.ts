@@ -17,12 +17,31 @@
 import type { Client, MediaReference, MediaUpload } from "@osdk/client";
 import { MediaSets } from "@osdk/foundry.mediasets";
 
-export function uploadMedia(
+export async function uploadMedia(
   client: Client,
   mediaUpload: MediaUpload,
 ): Promise<MediaReference> {
-  return MediaSets.uploadMedia(client, mediaUpload.data, {
-    filename: mediaUpload.fileName,
-    preview: true,
-  });
+  const gatewayMediaRef = await MediaSets.uploadMedia(
+    client,
+    mediaUpload.data,
+    {
+      filename: mediaUpload.fileName,
+      preview: true,
+    },
+  );
+
+  return {
+    mimeType: gatewayMediaRef.mimeType,
+    reference: {
+      type: "mediaSetViewItem",
+      mediaSetViewItem: {
+        mediaItemRid: gatewayMediaRef.reference.mediaSetViewItem.mediaItemRid,
+        mediaSetRid: gatewayMediaRef.reference.mediaSetViewItem.mediaSetRid,
+        mediaSetViewRid:
+          gatewayMediaRef.reference.mediaSetViewItem.mediaSetViewRid,
+        token: gatewayMediaRef.reference.mediaSetViewItem.token,
+        readToken: gatewayMediaRef.reference.mediaSetViewItem.token,
+      },
+    },
+  };
 }

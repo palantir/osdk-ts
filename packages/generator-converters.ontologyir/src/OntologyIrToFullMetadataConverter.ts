@@ -176,6 +176,7 @@ export class OntologyIrToFullMetadataConverter {
 
         implementsInterfaces2[interfaceApiName] = {
           properties: propertyMappings,
+          propertiesV2: {},
           links: {},
         };
       }
@@ -647,6 +648,8 @@ export class OntologyIrToFullMetadataConverter {
         rid: `ri.interface.${interfaceType.apiName}`,
         properties,
         allProperties: properties, // Same as properties for now
+        propertiesV2: {},
+        allPropertiesV2: {},
         extendsInterfaces: interfaceType.extendsInterfaces.map(val => val),
         allExtendsInterfaces: interfaceType.extendsInterfaces.map(val => val), // Same as extendsInterfaces for now
         implementedByObjectTypes: [], // Empty for now

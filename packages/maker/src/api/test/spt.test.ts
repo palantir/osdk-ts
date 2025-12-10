@@ -491,4 +491,93 @@ describe("SPTs", () => {
       }
     `);
   });
+  it("Number formatting works", () => {
+    const spt = defineSharedPropertyType({
+      apiName: "foo",
+      type: "double",
+      baseFormatter: {
+        type: "number",
+        number: {
+          type: "base",
+          base: {
+            maximumFractionDigits: 1,
+          },
+        },
+      },
+    });
+    expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+      {
+        "importedOntology": {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {},
+        },
+        "importedValueTypes": {
+          "valueTypes": [],
+        },
+        "ontology": {
+          "actionTypes": {},
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+          "sharedPropertyTypes": {
+            "com.palantir.foo": {
+              "sharedPropertyType": {
+                "aliases": [],
+                "apiName": "com.palantir.foo",
+                "baseFormatter": {
+                  "number": {
+                    "base": {
+                      "maximumFractionDigits": 1,
+                    },
+                    "type": "base",
+                  },
+                  "type": "number",
+                },
+                "dataConstraints": undefined,
+                "displayMetadata": {
+                  "description": undefined,
+                  "displayName": "foo",
+                  "visibility": "NORMAL",
+                },
+                "gothamMapping": undefined,
+                "indexedForSearch": true,
+                "type": {
+                  "double": {},
+                  "type": "double",
+                },
+                "typeClasses": [
+                  {
+                    "kind": "render_hint",
+                    "name": "SELECTABLE",
+                  },
+                  {
+                    "kind": "render_hint",
+                    "name": "SORTABLE",
+                  },
+                ],
+                "valueType": undefined,
+              },
+            },
+          },
+        },
+        "randomnessKey": undefined,
+        "valueTypes": {
+          "valueTypes": [],
+        },
+      }
+    `);
+  });
 });

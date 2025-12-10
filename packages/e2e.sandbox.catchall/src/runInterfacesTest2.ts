@@ -106,7 +106,7 @@ export async function runInterfacesTest2(): Promise<void> {
 
   const implementObjectTypeAAndB = await client(
     NihalbCastingInterfaceTypeA,
-  ).asType(NihalbCastingInterfaceB).fetchPage();
+  ).narrowToType(NihalbCastingInterfaceB).fetchPage();
 
   const linkedToObjectTypeAAndB = await client(
     NihalbCastingInterfaceTypeA,
@@ -122,7 +122,7 @@ export async function runInterfacesTest2(): Promise<void> {
     ).fetchPage();
 
   const linkedToObjectTypeB = await client(NihalbCastingInterfaceB)
-    .asType(NihalbCastingInterfaceTypeA)
+    .narrowToType(NihalbCastingInterfaceTypeA)
     .pivotTo(
       "nihalbCastingLinkedObjectTypeA",
     ).fetchPage();
@@ -130,10 +130,10 @@ export async function runInterfacesTest2(): Promise<void> {
   const linkedToObjectTypeBAsInterface = await client(
     NihalbCastingInterfaceB,
   )
-    .asType(NihalbCastingInterfaceTypeA)
+    .narrowToType(NihalbCastingInterfaceTypeA)
     .pivotTo(
       "nihalbCastingLinkedObjectTypeA",
-    ).asType(NihalbCastingLinkedInterfaceTypeA).fetchPage({
+    ).narrowToType(NihalbCastingLinkedInterfaceTypeA).fetchPage({
       $includeAllBaseObjectProperties: true,
     });
   console.log(

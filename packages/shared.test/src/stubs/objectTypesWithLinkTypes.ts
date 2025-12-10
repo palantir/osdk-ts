@@ -44,6 +44,16 @@ export const employeeObjectWithLinkTypes: ObjectTypeFullMetadata = {
       properties: {
         fooSpt: "fullName",
       },
+      propertiesV2: {
+        fooSpt: {
+          type: "localPropertyImplementation",
+          propertyApiName: "fullName",
+        },
+        fooIdp: {
+          type: "localPropertyImplementation",
+          propertyApiName: "office",
+        },
+      },
       links: {},
     },
   },

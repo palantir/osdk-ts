@@ -17,7 +17,10 @@
 import type { RequiredFields } from "../../util/RequiredFields.js";
 import type { ObjectPropertyTypeInner } from "./ObjectPropertyType.js";
 
-export type ObjectPropertyTypeUserDefinition = RequiredFields<
-  Partial<ObjectPropertyTypeInner>,
-  "type"
+export type ObjectPropertyTypeUserDefinition = Omit<
+  RequiredFields<
+    Partial<ObjectPropertyTypeInner>,
+    "type"
+  >,
+  "apiName"
 >;

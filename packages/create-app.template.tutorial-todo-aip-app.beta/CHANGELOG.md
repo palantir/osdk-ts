@@ -1,5 +1,21 @@
 # @osdk/create-app.template.tutorial-todo-aip-app.beta
 
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 4e96d14: Update create-app React, Vue, and Expo templates
+
+## 2.6.0-beta.13
+
+## 2.6.0-beta.12
+
+## 2.6.0-beta.11
+
+## 2.6.0-beta.10
+
+## 2.6.0-beta.9
+
 ## 2.6.0-beta.8
 
 ## 2.6.0-beta.7
@@ -15,6 +31,18 @@
 ## 2.6.0-beta.2
 
 ## 2.5.0-beta.15
+
+## 2.5.2
+
+## 2.5.1
+
+## 2.5.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+
+## 2.5.0-rc.15
 
 ## 2.5.0-beta.14
 

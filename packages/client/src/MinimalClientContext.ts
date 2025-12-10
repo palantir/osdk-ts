@@ -35,7 +35,7 @@ export interface MinimalClient extends SharedClientContext {
   ontologyRid: string | Promise<string>;
   ontologyProvider: OntologyProvider;
   logger?: Logger;
-  transactionRid?: string;
+  transactionId?: string;
   branch?: string;
   /** @internal */
   objectSetFactory: ObjectSetFactory<any, any>;
@@ -46,7 +46,7 @@ export interface MinimalClient extends SharedClientContext {
 
   clientCacheKey: ClientCacheKey;
   requestContext: RequestContext;
-  asTypeInterfaceOrObjectMapping: Record<string, "object" | "interface">;
+  narrowTypeInterfaceOrObjectMapping: Record<string, "object" | "interface">;
 }
 
 export type MinimalClientParams = {

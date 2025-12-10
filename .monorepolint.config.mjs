@@ -109,6 +109,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/e2e.generated.1.1.x",
       "@osdk/examples.*",
+      "@psdk/examples.*",
       "@osdk/monorepo.*",
     ],
     {
@@ -296,6 +297,17 @@ const archetypeRules = archetypes(
       ...LIBRARY_RULES,
       react: true,
     },
+  )
+  .addArchetype(
+    "docs",
+    [
+      "@osdk/docs",
+    ],
+    {
+      ...LIBRARY_RULES,
+      minimalChangesOnly: true,
+      private: true,
+    },
   );
 
 /**
@@ -398,6 +410,7 @@ const fixedDepsOnly = createRuleFactory({
 
       for (const [dep, version] of Object.entries(deps)) {
         if (version === "workspace:*") continue;
+        if (version === "catalog:foundry-platform-typescript") continue;
         if (version[0] >= "0" && version[0] <= "9") continue;
         if (dep === "typescript" && version[0] === "~") continue;
 

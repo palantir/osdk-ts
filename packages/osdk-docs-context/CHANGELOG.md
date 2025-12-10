@@ -1,5 +1,23 @@
 # @osdk/osdk-docs-context
 
+## 0.3.0-beta.6
+
+### Minor Changes
+
+- 0e863aa: Tweak media upload snippet
+
+## 0.3.0-beta.5
+
+### Minor Changes
+
+- dd8c385: Update upload media ontology edits docs
+
+## 0.3.0-beta.4
+
+### Minor Changes
+
+- a035fdc: Add draft of media upload docs
+
 ## 0.3.0-beta.3
 
 ### Minor Changes

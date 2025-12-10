@@ -1,5 +1,56 @@
 # @osdkkit/react
 
+## 0.9.0-beta.2
+
+### Minor Changes
+
+- ddef59f: update docs
+
+### Patch Changes
+
+- Updated dependencies [03db734]
+- Updated dependencies [c8da6b7]
+  - @osdk/client@2.7.0-beta.2
+  - @osdk/api@2.7.0-beta.2
+
+## 0.8.0-beta.5
+
+### Minor Changes
+
+- 4b13323: update OSDK toolkit docs
+
+### Patch Changes
+
+- Updated dependencies [84f0eef]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+  - @osdk/client@2.6.0-beta.13
+  - @osdk/api@2.6.0-beta.13
+
+## 0.8.0-beta.4
+
+### Minor Changes
+
+- 9961f06: fix order by via key stabilization
+
+### Patch Changes
+
+- Updated dependencies [9961f06]
+  - @osdk/client@2.6.0-beta.12
+  - @osdk/api@2.6.0-beta.12
+
+## 0.8.0-beta.3
+
+### Minor Changes
+
+- c5a3815: Add new auto fetch more behavior to useOsdkObjects
+
+### Patch Changes
+
+- Updated dependencies [c5a3815]
+  - @osdk/client@2.6.0-beta.11
+  - @osdk/api@2.6.0-beta.11
+
 ## 0.8.0-beta.2
 
 ### Minor Changes
@@ -12,6 +63,16 @@
 - Updated dependencies [e7bf02a]
   - @osdk/client@2.6.0-beta.4
   - @osdk/api@2.6.0-beta.4
+
+## 0.7.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 2348ddc: Make useOsdkAction validate less restrictive
+- 46ae415: improve useOsdkObject, useOsdkObjects error handling
+- 7b97128: add useObjectSet hook
+- ccc85a3: Export useOsdkMetadata hook experimentally
 
 ## 0.7.0-beta.5
 

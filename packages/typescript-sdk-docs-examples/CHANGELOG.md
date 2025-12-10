@@ -1,5 +1,28 @@
 # @osdk/typescript-sdk-docs-examples
 
+## 0.3.0-beta.5
+
+### Minor Changes
+
+- 0e863aa: Tweak media upload snippet
+
+### Patch Changes
+
+- Updated dependencies [c5a3815]
+  - @osdk/client@2.6.0-beta.11
+
+## 0.3.0-beta.4
+
+### Minor Changes
+
+- dd8c385: Update upload media ontology edits docs
+
+## 0.3.0-beta.3
+
+### Minor Changes
+
+- a035fdc: Add draft of media upload docs
+
 ## 0.3.0-beta.2
 
 ### Minor Changes

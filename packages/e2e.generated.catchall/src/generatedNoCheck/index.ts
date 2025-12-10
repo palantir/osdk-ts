@@ -24,6 +24,7 @@ export {
   FooInterface,
   TestAsTypeIltInterface,
   InterfaceNoProps,
+  mwaltherPerson,
   NihalbCastingInterfaceB,
   NihalbCastingInterfaceTypeA,
   NihalbCastingLinkedInterfaceTypeA,
@@ -74,6 +75,7 @@ export {
   getFirstSecondElementOf2DArray,
   getNamesOfCustomersFromCountry,
   getTodoCount,
+  identity2DArray,
   queryTakesAllParameterTypes,
 } from './ontology/queries.js';
 export * as $Queries from './ontology/queries.js';

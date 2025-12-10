@@ -1,0 +1,134 @@
+:root {
+  --ifm-color-primary: #0066cc;
+  --ifm-color-primary-dark: #005cb8;
+  --ifm-color-primary-darker: #0057ad;
+  --ifm-color-primary-darkest: #00478f;
+  --ifm-color-primary-light: #0070e0;
+  --ifm-color-primary-lighter: #0075eb;
+  --ifm-color-primary-lightest: #1a85ff;
+  --ifm-code-font-size: 95%;
+  --ifm-font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  --ifm-heading-font-family: var(--ifm-font-family-base);
+  --ifm-navbar-height: 56px;
+  --ifm-sidebar-width: 280px;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] {
+  --ifm-color-primary: #4da3ff;
+  --ifm-color-primary-dark: #2e93ff;
+  --ifm-color-primary-darker: #1f8aff;
+  --ifm-color-primary-darkest: #0070e0;
+  --ifm-color-primary-light: #6cb3ff;
+  --ifm-color-primary-lighter: #7bbcff;
+  --ifm-color-primary-lightest: #a9d4ff;
+  --ifm-background-color: #1a1a1a;
+  --ifm-navbar-background-color: #1a1a1a;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Navbar styling */
+.navbar {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+.navbar__title {
+  font-weight: 600;
+}
+
+/* Sidebar styling */
+.theme-doc-sidebar-container {
+  border-right: 1px solid var(--ifm-toc-border-color);
+}
+
+.menu__link {
+  font-size: 0.875rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
+}
+
+.menu__link--active:not(.menu__link--sublist) {
+  background-color: rgba(0, 102, 204, 0.1);
+}
+
+[data-theme="dark"] .menu__link--active:not(.menu__link--sublist) {
+  background-color: rgba(77, 163, 255, 0.15);
+}
+
+.menu__list-item-collapsible .menu__link {
+  font-weight: 500;
+}
+
+/* Category labels */
+.menu__list-item-collapsible > .menu__link {
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--ifm-color-emphasis-600);
+  font-weight: 600;
+}
+
+/* Nested items indentation */
+.menu__list .menu__list {
+  padding-left: 0.75rem;
+  margin-left: 0.5rem;
+  border-left: 1px solid var(--ifm-toc-border-color);
+}
+
+/* Main content area */
+.main-wrapper {
+  max-width: 100%;
+}
+
+article {
+  max-width: 800px;
+}
+
+/* Code blocks */
+.prism-code {
+  font-size: 0.875rem;
+}
+
+/* Headings */
+h1 {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 2rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Table of contents */
+.table-of-contents {
+  font-size: 0.8125rem;
+}
+
+.table-of-contents__link {
+  padding: 0.25rem 0;
+}
+
+/* Search */
+.navbar__search-input {
+  border-radius: 6px;
+  background-color: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-toc-border-color);
+}
+
+/* Admonitions */
+.admonition {
+  border-radius: 6px;
+}
+
+/* Pagination */
+.pagination-nav__link {
+  border-radius: 6px;
+}

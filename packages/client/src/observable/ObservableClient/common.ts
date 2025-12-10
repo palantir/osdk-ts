@@ -66,6 +66,7 @@ export interface CommonObserveOptions extends ObserveOptions {
  */
 export interface ObserveOptions {
   mode?: "offline" | "force";
+  includeRid?: boolean;
 }
 
 /**

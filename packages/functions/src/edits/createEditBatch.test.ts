@@ -78,6 +78,17 @@ describe(createEditBatch, () => {
       id: 0,
       attachment: "ri.foo",
       attachment2: { rid: "ri.bar" } as Attachment,
+      mediaReference: {
+        mimeType: "myTime",
+        reference: {
+          type: "mediaSetViewItem",
+          mediaSetViewItem: {
+            mediaItemRid: "rid.something",
+            mediaSetRid: "rid.something2",
+            mediaSetViewRid: "rid.something3",
+          },
+        },
+      },
       vector: [1, 2, 3],
     });
     editBatch.create(Task, { id: 0, name: "My Task Name" });
@@ -146,6 +157,17 @@ describe(createEditBatch, () => {
           id: 0,
           attachment: "ri.foo",
           attachment2: { rid: "ri.bar" },
+          mediaReference: {
+            mimeType: "myTime",
+            reference: {
+              type: "mediaSetViewItem",
+              mediaSetViewItem: {
+                mediaItemRid: "rid.something",
+                mediaSetRid: "rid.something2",
+                mediaSetViewRid: "rid.something3",
+              },
+            },
+          },
           vector: [1, 2, 3],
         },
       },

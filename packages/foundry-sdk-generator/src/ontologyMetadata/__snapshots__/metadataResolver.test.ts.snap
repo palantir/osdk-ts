@@ -155,6 +155,28 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
           },
         },
+        "allPropertiesV2": {
+          "fooIdp": {
+            "apiName": "fooIdp",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A Foo IDP",
+            "displayName": "Foo IDP",
+            "requireImplementation": true,
+            "rid": "ri.interfacePropertyType.main.interfacePropertyType.1",
+          },
+          "fooSpt": {
+            "apiName": "fooSpt",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A foo",
+            "displayName": "Foo",
+            "requireImplementation": true,
+            "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+          },
+        },
         "apiName": "FooInterface",
         "description": "Interface for Foo",
         "displayName": "Foo Interface",
@@ -188,6 +210,30 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
           },
         },
+        "propertiesV2": {
+          "fooIdp": {
+            "apiName": "fooIdp",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A Foo IDP",
+            "displayName": "Foo IDP",
+            "requireImplementation": true,
+            "rid": "ri.interfacePropertyType.main.interfacePropertyType.1",
+            "type": "interfaceDefinedPropertyType",
+          },
+          "fooSpt": {
+            "apiName": "fooSpt",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A foo",
+            "displayName": "Foo",
+            "required": true,
+            "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+            "type": "interfaceSharedPropertyType",
+          },
+        },
         "rid": "ri.interface.main.interface.1",
       },
     },
@@ -201,6 +247,16 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             "links": {},
             "properties": {
               "fooSpt": "fullName",
+            },
+            "propertiesV2": {
+              "fooIdp": {
+                "propertyApiName": "office",
+                "type": "localPropertyImplementation",
+              },
+              "fooSpt": {
+                "propertyApiName": "fullName",
+                "type": "localPropertyImplementation",
+              },
             },
           },
         },
@@ -435,6 +491,16 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
             "links": {},
             "properties": {
               "fooSpt": "fullName",
+            },
+            "propertiesV2": {
+              "fooIdp": {
+                "propertyApiName": "office",
+                "type": "localPropertyImplementation",
+              },
+              "fooSpt": {
+                "propertyApiName": "fullName",
+                "type": "localPropertyImplementation",
+              },
             },
           },
         },
@@ -704,6 +770,28 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
             "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
           },
         },
+        "allPropertiesV2": {
+          "fooIdp": {
+            "apiName": "fooIdp",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A Foo IDP",
+            "displayName": "Foo IDP",
+            "requireImplementation": true,
+            "rid": "ri.interfacePropertyType.main.interfacePropertyType.1",
+          },
+          "fooSpt": {
+            "apiName": "fooSpt",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A foo",
+            "displayName": "Foo",
+            "requireImplementation": true,
+            "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+          },
+        },
         "apiName": "FooInterface",
         "description": "Interface for Foo",
         "displayName": "Foo Interface",
@@ -737,6 +825,30 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
             "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
           },
         },
+        "propertiesV2": {
+          "fooIdp": {
+            "apiName": "fooIdp",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A Foo IDP",
+            "displayName": "Foo IDP",
+            "requireImplementation": true,
+            "rid": "ri.interfacePropertyType.main.interfacePropertyType.1",
+            "type": "interfaceDefinedPropertyType",
+          },
+          "fooSpt": {
+            "apiName": "fooSpt",
+            "dataType": {
+              "type": "string",
+            },
+            "description": "A foo",
+            "displayName": "Foo",
+            "required": true,
+            "rid": "ri.sharedPropertyType.main.sharedPropertyType.1",
+            "type": "interfaceSharedPropertyType",
+          },
+        },
         "rid": "ri.interface.main.interface.1",
       },
     },
@@ -750,6 +862,16 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
             "links": {},
             "properties": {
               "fooSpt": "fullName",
+            },
+            "propertiesV2": {
+              "fooIdp": {
+                "propertyApiName": "office",
+                "type": "localPropertyImplementation",
+              },
+              "fooSpt": {
+                "propertyApiName": "fullName",
+                "type": "localPropertyImplementation",
+              },
             },
           },
         },

@@ -155,7 +155,7 @@ export async function fetchStaticRidPage<
     addUserAgentAndRequestContextHeaders(client, { osdkMetadata: undefined }),
     await client.ontologyRid,
     requestBody,
-    { preview: true },
+    { preview: true, transactionId: client.transactionId },
   );
 
   return Promise.resolve({
@@ -168,6 +168,7 @@ export async function fetchStaticRidPage<
       args.$select,
       false,
       result.interfaceToObjectTypeMappings,
+      result.interfaceToObjectTypeMappingsV2,
     ),
     nextPageToken: result.nextPageToken,
     totalCount: result.totalCount,
@@ -199,9 +200,11 @@ async function fetchInterfacePage<
     const baseRequestBody: SearchObjectsForInterfaceRequest = {
       augmentedProperties: {},
       augmentedSharedPropertyTypes: {},
+      augmentedInterfacePropertyTypes: {},
       otherInterfaceTypes: [],
       selectedObjectTypes: [],
       selectedSharedPropertyTypes: args.$select ? [...args.$select] : [],
+      selectedInterfacePropertyTypes: [],
       where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
     };
 
@@ -264,7 +267,11 @@ async function fetchInterfacePage<
     addUserAgentAndRequestContextHeaders(client, interfaceType),
     await client.ontologyRid,
     requestBody,
-    { preview: true, branch: client.branch },
+    {
+      preview: true,
+      branch: client.branch,
+      transactionId: client.transactionId,
+    },
   );
 
   return Promise.resolve({
@@ -277,6 +284,7 @@ async function fetchInterfacePage<
       args.$select,
       false,
       result.interfaceToObjectTypeMappings,
+      result.interfaceToObjectTypeMappingsV2,
     ),
     nextPageToken: result.nextPageToken,
     totalCount: result.totalCount,
@@ -560,7 +568,7 @@ export async function fetchObjectPage<
     addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,
     requestBody,
-    { branch: client.branch },
+    { branch: client.branch, transactionId: client.transactionId },
   );
 
   return Promise.resolve({

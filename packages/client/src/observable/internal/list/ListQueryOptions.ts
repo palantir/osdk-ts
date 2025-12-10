@@ -30,6 +30,7 @@ export interface ListQueryOptions<
 > extends CommonObserveOptions {
   pageSize?: number;
   includeRid?: boolean;
+  autoFetchMore?: boolean | number;
   intersectWith?: Array<{
     where: WhereClause<Q, RDPs>;
   }>;
