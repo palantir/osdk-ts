@@ -19,6 +19,7 @@ import { describe, expectTypeOf, it, test, vi } from "vitest";
 import type {
   DerivedProperty,
   NullabilityAdherence,
+  ObjectIdentifiers,
   ObjectOrInterfaceDefinition,
   ObjectSet as $ObjectSet,
   Osdk,
@@ -28,6 +29,10 @@ import type {
 import type { DerivedObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 import { FooInterfaceApiTest } from "../test/FooInterfaceApiTest.js";
+
+async function* asyncIterateOnce() {
+  yield Promise.resolve({});
+}
 
 export function createMockObjectSet<
   Q extends ObjectOrInterfaceDefinition,
@@ -73,6 +78,7 @@ export function createMockObjectSet<
     nearestNeighbors: vi.fn(() => {
       return fauxObjectSet;
     }),
+    asyncIterLinks: vi.fn(asyncIterateOnce),
   } as any as $ObjectSet<Q>;
 
   return fauxObjectSet;
@@ -1489,6 +1495,27 @@ describe("ObjectSet", () => {
       expectTypeOf<narrowToTypeAllowedInterfaceTypes>().toEqualTypeOf<
         "FooInterface"
       >();
+    });
+  });
+
+  describe("asyncIterLinks", async () => {
+    it("link async iter", async () => {
+      for await (
+        const { source, target, linkType } of fauxObjectSet.asyncIterLinks([
+          "lead",
+          "peeps",
+        ])
+      ) {
+        expectTypeOf(source).toEqualTypeOf<
+          ObjectIdentifiers<EmployeeApiTest>
+        >();
+
+        expectTypeOf(target).toEqualTypeOf<
+          ObjectIdentifiers<EmployeeApiTest>
+        >();
+
+        expectTypeOf(linkType).toEqualTypeOf<"lead" | "peeps">();
+      }
     });
   });
 });

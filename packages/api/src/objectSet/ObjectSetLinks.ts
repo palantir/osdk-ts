@@ -24,7 +24,9 @@ export type LinkTypeApiNamesFor<Q extends ObjectOrInterfaceDefinition> =
 type LinkedObjectType<
   Q extends ObjectOrInterfaceDefinition,
   LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
-> = CompileTimeMetadata<Q>["links"][LINK_TYPE_API_NAME]["__OsdkLinkTargetType"];
+> = NonNullable<
+  CompileTimeMetadata<Q>["links"][LINK_TYPE_API_NAME]["__OsdkLinkTargetType"]
+>;
 
 export type ObjectLink<
   Q extends ObjectOrInterfaceDefinition,
