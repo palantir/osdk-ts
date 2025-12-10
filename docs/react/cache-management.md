@@ -69,13 +69,66 @@ Automatic updates don't cover:
 
 ## Manual Cache Invalidation
 
-The `ObservableClient` provides methods to invalidate cached data:
+The `ObservableClient` provides methods to manually invalidate cached data.
+
+### Setup
+
+To use invalidation methods, create an `ObservableClient` and pass it to `OsdkProvider2`:
+
+```tsx
+// client.ts
+import { createClient } from "@osdk/client";
+import {
+  createObservableClient,
+  type ObservableClient,
+} from "@osdk/client/unstable-do-not-use";
+
+const client = createClient(
+  "https://your-stack.palantirfoundry.com",
+  "your-ontology-rid",
+  authProvider,
+);
+
+// Create and export the observable client for invalidation
+export const observableClient = createObservableClient(client);
+export { client };
+```
+
+```tsx
+// main.tsx
+import { OsdkProvider2 } from "@osdk/react/experimental";
+import { client, observableClient } from "./client";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <OsdkProvider2 client={client} observableClient={observableClient}>
+    <App />
+  </OsdkProvider2>,
+);
+```
+
+### Invalidation Methods
 
 | Method | Effect | Use Case |
 |--------|--------|----------|
 | `invalidateObjects([obj1, obj2])` | Re-fetches specific objects | You know exactly which objects are stale |
 | `invalidateObjectType(Todo)` | Re-fetches all objects and lists of that type | External bulk update |
 | `invalidateAll()` | Re-fetches everything | Last resort |
+
+### Usage
+
+```tsx
+import { Todo } from "@my/osdk";
+import { observableClient } from "./client";
+
+// Invalidate specific objects
+await observableClient.invalidateObjects([todo1, todo2]);
+
+// Invalidate all data for a type
+await observableClient.invalidateObjectType(Todo);
+
+// Invalidate everything (use sparingly)
+await observableClient.invalidateAll();
+```
 
 ### Type Isolation
 

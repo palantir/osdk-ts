@@ -6,11 +6,15 @@ sidebar_position: 1
 
 This guide covers installation, setup, and your first OSDK React application.
 
+:::info Beta Release
+`@osdk/react` is currently in beta. While the package is suitable for production use, you may encounter minor bugs as we continue development. We welcome bug reports and feedback.
+:::
+
 ## Installation
 
-### 1. Specify Beta Versions
+### 1. Install Beta Packages
 
-Using `latest` doesn't always install actual latest versions for beta packages. Specify explicitly:
+Using `latest` doesn't always install actual latest versions for beta packages. Specify them explicitly:
 
 ```json
 {
@@ -22,6 +26,11 @@ Using `latest` doesn't always install actual latest versions for beta packages. 
   }
 }
 ```
+
+Check for newer versions on npm:
+- [@osdk/react versions](https://www.npmjs.com/package/@osdk/react?activeTab=versions)
+- [@osdk/client versions](https://www.npmjs.com/package/@osdk/client?activeTab=versions)
+- [@osdk/api versions](https://www.npmjs.com/package/@osdk/api?activeTab=versions)
 
 ### 2. Regenerate Your SDK on Foundry
 
@@ -56,14 +65,22 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 ```
 
-Stable exports:
-- `OsdkProvider` - Provider component
-- `useOsdkClient` - Access the OSDK client
+Stable exports (use with `OsdkProvider`):
+- `OsdkProvider` - Provider component for basic client access
+- `useOsdkClient` - Access the OSDK client directly
 - `useOsdkMetadata` - Fetch type metadata
+
+:::note
+`useOsdkClient` and `useOsdkMetadata` are available from both `@osdk/react` (stable) and `@osdk/react/experimental`. When using experimental features with `OsdkProvider2`, import from `@osdk/react/experimental` for consistency.
+:::
 
 ### Experimental Features (`@osdk/react/experimental`)
 
-For reactive data management, cache, and optimistic updates:
+For reactive data management, cache, and optimistic updates.
+
+:::tip About Experimental Hooks
+The hooks in `@osdk/react/experimental` are production-ready and recommended for new projects. They are labeled "experimental" because they represent a newer architecture that is under active development. Once stabilized, these hooks will be promoted to the main `@osdk/react` package.
+:::
 
 ```tsx
 import { OsdkProvider2 } from "@osdk/react/experimental";
@@ -88,6 +105,7 @@ Experimental exports:
 - `useOsdkAggregation` - Server-side aggregations
 - `useDebouncedCallback` - Debounce callbacks
 - `useOsdkClient` - Access the OSDK client
+- `useOsdkMetadata` - Fetch type metadata (also available from stable)
 
 ## Quick Start Checklist
 
@@ -99,6 +117,10 @@ Before using experimental hooks:
 - [ ] All components using experimental hooks inside the provider
 
 ## First Query
+
+:::note About `@my/osdk`
+Throughout this documentation, `@my/osdk` refers to **your generated SDK package**. This is created when you generate an SDK in Foundry Developer Console (step 2 above). Replace `@my/osdk` with your actual package name (e.g., `@your-app/sdk`).
+:::
 
 ```tsx
 import { Todo } from "@my/osdk";
@@ -133,7 +155,7 @@ See [Querying Data](./querying-data) for filtering, pagination, real-time update
 ## First Action
 
 ```tsx
-import { $Actions } from "@my/osdk";
+import { $Actions, Todo } from "@my/osdk";
 import { useOsdkAction } from "@osdk/react/experimental";
 
 function CompleteTodoButton({ todo }: { todo: Todo.OsdkInstance }) {
