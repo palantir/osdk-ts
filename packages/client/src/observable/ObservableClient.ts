@@ -16,6 +16,7 @@
 
 import type {
   ActionDefinition,
+  ActionEditResponse,
   ActionValidationResponse,
   AggregateOpts,
   AggregationsResults,
@@ -304,7 +305,7 @@ export interface ObservableClient extends ObserveLinks {
       | Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]
       | Array<Parameters<ActionSignatureFromDef<Q>["applyAction"]>[0]>,
     opts?: ObservableClient.ApplyActionOptions,
-  ) => Promise<unknown>;
+  ) => Promise<ActionEditResponse>;
 
   /**
    * Validate action parameters without executing the action.
