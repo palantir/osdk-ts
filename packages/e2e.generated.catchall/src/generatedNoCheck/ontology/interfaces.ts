@@ -6,6 +6,7 @@ export { EsongInterfaceA } from './interfaces/EsongInterfaceA.js';
 export { FooInterface } from './interfaces/FooInterface.js';
 export { TestAsTypeIltInterface } from './interfaces/TestAsTypeIltInterface.js';
 export { InterfaceNoProps } from './interfaces/InterfaceNoProps.js';
+export { mwaltherPerson } from './interfaces/mwaltherPerson.js';
 export { NihalbCastingInterfaceB } from './interfaces/NihalbCastingInterfaceB.js';
 export { NihalbCastingInterfaceTypeA } from './interfaces/NihalbCastingInterfaceTypeA.js';
 export { NihalbCastingLinkedInterfaceTypeA } from './interfaces/NihalbCastingLinkedInterfaceTypeA.js';

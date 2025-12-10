@@ -1,3 +1,7 @@
+---
+sidebar_position: 5
+---
+
 # Cache Management
 
 This guide covers how the OSDK React cache system works and how to manually control it.

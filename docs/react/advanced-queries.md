@@ -1,3 +1,7 @@
+---
+sidebar_position: 4
+---
+
 # Advanced Queries
 
 This guide covers advanced querying patterns including useObjectSet, derived properties, aggregations, and metadata.
@@ -19,7 +23,9 @@ Both hooks support where, orderBy, pagination, withProperties, pivotTo, autoFetc
 - Starting from an ObjectSet instance (`$(Todo)`)
 - Need set operations (`union`, `intersect`, `subtract`) with other ObjectSets
 
-> **Note:** `useOsdkObjects` is in active development to reach full OSDK TypeScript client parity as it has more performance enhancements. `useObjectSet` currently supports everything and should be used if a feature you need isn't present in `useOsdkObjects`. Check the JSDoc for current feature support.
+:::note
+`useOsdkObjects` is in active development to reach full OSDK TypeScript client parity as it has more performance enhancements. `useObjectSet` currently supports everything and should be used if a feature you need isn't present in `useOsdkObjects`. Check the JSDoc for current feature support.
+:::
 
 ```tsx
 // Simple query - use useOsdkObjects

@@ -24,6 +24,7 @@ export {
   FooInterface,
   TestAsTypeIltInterface,
   InterfaceNoProps,
+  mwaltherPerson,
   NihalbCastingInterfaceB,
   NihalbCastingInterfaceTypeA,
   NihalbCastingLinkedInterfaceTypeA,
