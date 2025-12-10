@@ -1499,7 +1499,30 @@ describe("ObjectSet", () => {
   });
 
   describe("asyncIterLinks", async () => {
-    it("link async iter", async () => {
+    it("typechecks self-referential one link", async () => {
+      for await (
+        const { source, target, linkType } of fauxObjectSet.asyncIterLinks([
+          "lead",
+        ])
+      ) {
+        expectTypeOf(source).toEqualTypeOf<
+          ObjectIdentifiers<EmployeeApiTest>
+        >();
+
+        expectTypeOf(target).toEqualTypeOf<
+          ObjectIdentifiers<EmployeeApiTest>
+        >();
+
+        expectTypeOf(source.$apiName).toBeString();
+        expectTypeOf(target.$apiName).toBeString();
+        expectTypeOf(source.$primaryKey).toBeNumber();
+        expectTypeOf(target.$primaryKey).toBeNumber();
+
+        expectTypeOf(linkType).toEqualTypeOf<"lead">();
+      }
+    });
+
+    it("typechecks self-referential multiple links", async () => {
       for await (
         const { source, target, linkType } of fauxObjectSet.asyncIterLinks([
           "lead",
@@ -1513,6 +1536,11 @@ describe("ObjectSet", () => {
         expectTypeOf(target).toEqualTypeOf<
           ObjectIdentifiers<EmployeeApiTest>
         >();
+
+        expectTypeOf(source.$apiName).toBeString();
+        expectTypeOf(target.$apiName).toBeString();
+        expectTypeOf(source.$primaryKey).toBeNumber();
+        expectTypeOf(target.$primaryKey).toBeNumber();
 
         expectTypeOf(linkType).toEqualTypeOf<"lead" | "peeps">();
       }
