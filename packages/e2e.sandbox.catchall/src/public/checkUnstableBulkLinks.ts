@@ -19,7 +19,19 @@ import { Employee, WeatherStation } from "@osdk/e2e.generated.catchall";
 import { client } from "../client.js";
 import { logger } from "../logger.js";
 
+const locator = (
+  { $apiName, $primaryKey }: { $apiName: string; $primaryKey: any },
+) => `${$apiName}:${$primaryKey}`;
+
 export async function checkUnstableBulkLinks(): Promise<void> {
+  for await (
+    const { source, target, linkType } of client(Employee).asyncIterLinks([
+      "ventures",
+    ])
+  ) {
+    console.log(`${locator(source)} ---(${linkType})--> ${locator(target)}`);
+  }
+
   // Test one to many
   const stations = await client(WeatherStation).fetchPage();
   for await (
