@@ -1,5 +1,16 @@
 # @osdk/shared.test
 
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.2
+- @osdk/generator-converters@2.7.0-beta.2
+
 ## 2.6.0-beta.5
 
 ### Minor Changes

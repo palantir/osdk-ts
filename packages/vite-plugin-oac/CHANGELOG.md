@@ -1,5 +1,22 @@
 # @osdk/vite-plugin-oac
 
+## 0.5.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+
+### Patch Changes
+
+- Updated dependencies [03db734]
+- Updated dependencies [448caa8]
+  - @osdk/generator-converters.ontologyir@2.7.0-beta.2
+  - @osdk/faux@0.5.0-beta.2
+  - @osdk/maker@0.15.0-beta.2
+  - @osdk/api@2.7.0-beta.2
+  - @osdk/client.unstable@2.7.0-beta.2
+  - @osdk/cli@0.31.0-beta.2
+
 ## 0.4.0-beta.13
 
 ### Patch Changes

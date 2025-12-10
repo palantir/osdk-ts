@@ -1,5 +1,11 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.4.0-beta.2
+
+### Minor Changes
+
+- 265b09b: Update generated `.npmrc` file
+
 ## 3.3.0-beta.11
 
 ### Minor Changes

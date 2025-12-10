@@ -1,5 +1,11 @@
 # @osdk/create-app.template.vue
 
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 4e96d14: Update create-app React, Vue, and Expo templates
+
 ## 2.6.0-beta.13
 
 ## 2.6.0-beta.12

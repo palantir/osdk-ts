@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.7.0-beta.2
+
+### Minor Changes
+
+- 03db734: Move platform SDK deps to pnpm catalog
+- c8da6b7: fix useLinks sorting strategy initialization
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.2
+- @osdk/client.unstable@2.7.0-beta.2
+- @osdk/generator-converters@2.7.0-beta.2
+
 ## 2.6.0-beta.13
 
 ### Minor Changes

@@ -1,3 +1,7 @@
+---
+sidebar_position: 2
+---
+
 # Querying Data
 
 This guide covers all the ways to fetch data from the server using OSDK React hooks.
@@ -104,7 +108,9 @@ const { data, isLoading, fetchMore } = useOsdkObjects(Todo, {
 });
 ```
 
-**Performance Warning:** Using `autoFetchMore: true` on large datasets may cause long load times and high memory usage. Prefer `autoFetchMore: N` with a specific number.
+:::warning Performance Warning
+Using `autoFetchMore: true` on large datasets may cause long load times and high memory usage. Prefer `autoFetchMore: N` with a specific number.
+:::
 
 ### Conditional Queries with `enabled`
 
@@ -251,7 +257,7 @@ const { data, isLoading, isOptimistic, fetchMore, error } = useOsdkObjects(
     enabled: true,
     intersectWith: [{ where: { priority: "high" } }],
     pivotTo: "assignee",
-    withProperties: { /* see advanced-queries.md */ },
+    withProperties: { /* see advanced-queries */ },
   },
 );
 ```

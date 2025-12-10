@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth } from "./client";
 
@@ -6,7 +6,7 @@ import { auth } from "./client";
  * Component to render at `/auth/callback`
  * This calls signIn() again to save the token, and then navigates the user back to the home page.
  */
-function AuthCallback() {
+function AuthCallback(): React.ReactElement {
   const [error, setError] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
 
