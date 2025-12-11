@@ -37,13 +37,31 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        "@osdk/client/internal": resolve(__dirname, "../client/build/esm/public/internal.js"),
-        "@osdk/client/unstable-do-not-use": resolve(__dirname, "../client/build/esm/public/unstable-do-not-use.js"),
+        "@osdk/client/internal": resolve(
+          __dirname,
+          "../client/build/esm/public/internal.js",
+        ),
+        "@osdk/client/unstable-do-not-use": resolve(
+          __dirname,
+          "../client/build/esm/public/unstable-do-not-use.js",
+        ),
         "@osdk/client": resolve(__dirname, "../client/build/esm/index.js"),
-        "@osdk/react/experimental": resolve(__dirname, "../react/build/esm/public/experimental.js"),
-        "@osdk/react/devtools-registry": resolve(__dirname, "../react/build/esm/public/devtools-registry.js"),
-        "@osdk/react-devtools/register": resolve(__dirname, "../react-devtools/build/esm/register.js"),
-        "@osdk/react-devtools/build/esm/index.css": resolve(__dirname, "../react-devtools/build/esm/index.css"),
+        "@osdk/react/experimental": resolve(
+          __dirname,
+          "../react/build/esm/public/experimental.js",
+        ),
+        "@osdk/react/devtools-registry": resolve(
+          __dirname,
+          "../react/build/esm/public/devtools-registry.js",
+        ),
+        "@osdk/react-devtools/register": resolve(
+          __dirname,
+          "../react-devtools/build/esm/register.js",
+        ),
+        "@osdk/react-devtools/build/esm/index.css": resolve(
+          __dirname,
+          "../react-devtools/build/esm/index.css",
+        ),
       },
     },
     optimizeDeps: {
