@@ -89,7 +89,8 @@
     "@osdk/osdk-docs-context-generator": "0.2.0",
     "@psdk/examples.expo-sdk-2.x": "1.0.0",
     "@psdk/examples.react-sdk-2.x": "0.0.0",
-    "@psdk/examples.vue-sdk-2.x": "0.0.0"
+    "@psdk/examples.vue-sdk-2.x": "0.0.0",
+    "@osdk/docs": "0.0.0"
   },
   "changesets": [
     "@osdk-api-simulatedRelease",
@@ -167,6 +168,9 @@
     "evil-garlics-prove",
     "late-heads-melt",
     "lucky-bobcats-bow",
+    "odd-moles-smell",
+    "plenty-goats-lick",
+    "red-plants-sort",
     "six-gifts-punch",
     "small-corners-show",
     "tricky-ants-pay",

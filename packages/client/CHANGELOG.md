@@ -1,5 +1,20 @@
 # @osdk/client
 
+## 2.7.0-beta.3
+
+### Minor Changes
+
+- a23784c: wire action edit response types through for useOsdkAction
+- f0a57a5: Use new interface property fields to include interface property types in codegen
+
+### Patch Changes
+
+- Updated dependencies [448763f]
+- Updated dependencies [f0a57a5]
+  - @osdk/api@2.7.0-beta.3
+  - @osdk/generator-converters@2.7.0-beta.3
+  - @osdk/client.unstable@2.7.0-beta.3
+
 ## 2.7.0-beta.2
 
 ### Minor Changes

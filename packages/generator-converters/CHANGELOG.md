@@ -1,5 +1,16 @@
 # @osdk/generator-converters
 
+## 2.7.0-beta.3
+
+### Minor Changes
+
+- f0a57a5: Use new interface property fields to include interface property types in codegen
+
+### Patch Changes
+
+- Updated dependencies [448763f]
+  - @osdk/api@2.7.0-beta.3
+
 ## 2.7.0-beta.2
 
 ### Patch Changes
