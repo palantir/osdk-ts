@@ -336,7 +336,10 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       let $nextPageToken: string | undefined = undefined;
       do {
         const result = await fetchLinksPage(
-          clientCtx,
+          augmentRequestContext(
+            clientCtx,
+            _ => ({ finalMethodCall: "asyncIterLinks" }),
+          ),
           objectType,
           objectSet,
           links,
