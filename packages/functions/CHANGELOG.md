@@ -1,5 +1,17 @@
 # @osdk/functions
 
+## 1.5.0-beta.2
+
+### Minor Changes
+
+- 448763f: introduce new token field, note readToken as deprecated
+
+### Patch Changes
+
+- Updated dependencies [a23784c]
+- Updated dependencies [f0a57a5]
+  - @osdk/client@2.7.0-beta.3
+
 ## 1.4.0-beta.9
 
 ### Minor Changes

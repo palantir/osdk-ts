@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.7.0-beta.3
+
+### Minor Changes
+
+- 448763f: introduce new token field, note readToken as deprecated
+
 ## 2.7.0-beta.2
 
 ## 2.6.0-beta.13

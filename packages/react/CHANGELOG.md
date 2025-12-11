@@ -1,5 +1,19 @@
 # @osdkkit/react
 
+## 0.9.0-beta.3
+
+### Minor Changes
+
+- a23784c: wire action edit response types through for useOsdkAction
+
+### Patch Changes
+
+- Updated dependencies [448763f]
+- Updated dependencies [a23784c]
+- Updated dependencies [f0a57a5]
+  - @osdk/api@2.7.0-beta.3
+  - @osdk/client@2.7.0-beta.3
+
 ## 0.9.0-beta.2
 
 ### Minor Changes
