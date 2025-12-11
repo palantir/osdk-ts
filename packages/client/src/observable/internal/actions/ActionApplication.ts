@@ -39,7 +39,7 @@ export class ActionApplication {
   ) => Promise<ActionEditResponse> = async (
     action,
     args,
-    { optimisticUpdate } = {},
+    { optimisticUpdate, __debugListeners } = {},
   ) => {
     const logger = process.env.NODE_ENV !== "production"
       ? this.store.logger?.child({ methodName: "applyAction" })
@@ -47,6 +47,7 @@ export class ActionApplication {
     const removeOptimisticResult = runOptimisticJob(
       this.store,
       optimisticUpdate,
+      __debugListeners,
     );
 
     return await (async () => {
@@ -63,7 +64,16 @@ export class ActionApplication {
                 { $returnEdits: true },
               );
 
-          await this.#invalidateActionEditResponse(results);
+          await this.#invalidateActionEditResponse(
+            results,
+            undefined,
+            __debugListeners
+              ? {
+                onServerObjectsModified:
+                  __debugListeners.onServerObjectsModified,
+              }
+              : undefined,
+          );
 
           return results;
         }
@@ -84,7 +94,15 @@ export class ActionApplication {
             logger?.debug("action done, pausing done");
           }
         }
-        await this.#invalidateActionEditResponse(actionResults);
+        await this.#invalidateActionEditResponse(
+          actionResults,
+          undefined,
+          __debugListeners
+            ? {
+              onServerObjectsModified: __debugListeners.onServerObjectsModified,
+            }
+            : undefined,
+        );
         return actionResults;
       } finally {
         if (process.env.NODE_ENV !== "production") {
@@ -101,10 +119,55 @@ export class ActionApplication {
   #invalidateActionEditResponse = async (
     { deletedObjects, modifiedObjects, addedObjects, editedObjectTypes, type }:
       ActionEditResponse,
+    actionId?: string,
+    debugListeners?: {
+      onServerObjectsModified?(
+        objects: Array<{
+          objectType: string;
+          primaryKey: string;
+          operation: "update" | "create" | "delete";
+        }>,
+      ): void;
+    },
   ): Promise<void> => {
     let changes: Changes | undefined;
     if (type === "edits") {
       const promisesToWait: Promise<any>[] = [];
+
+      // Notify about server object modifications
+      if (debugListeners?.onServerObjectsModified) {
+        const serverObjects: Array<{
+          objectType: string;
+          primaryKey: string;
+          operation: "update" | "create" | "delete";
+        }> = [];
+
+        for (const obj of modifiedObjects ?? []) {
+          serverObjects.push({
+            objectType: obj.objectType,
+            primaryKey: String(obj.primaryKey),
+            operation: "update",
+          });
+        }
+        for (const obj of addedObjects ?? []) {
+          serverObjects.push({
+            objectType: obj.objectType,
+            primaryKey: String(obj.primaryKey),
+            operation: "create",
+          });
+        }
+        for (const obj of deletedObjects ?? []) {
+          serverObjects.push({
+            objectType: obj.objectType,
+            primaryKey: String(obj.primaryKey),
+            operation: "delete",
+          });
+        }
+
+        if (serverObjects.length > 0) {
+          debugListeners.onServerObjectsModified(serverObjects);
+        }
+      }
 
       for (const list of [deletedObjects, modifiedObjects, addedObjects]) {
         for (const obj of list ?? []) {

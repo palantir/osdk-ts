@@ -82,6 +82,7 @@ export class ObjectsHelper extends AbstractHelper<
     values: Array<ObjectHolder> | Array<Osdk.Instance<any, any, any>>,
     batch: BatchContext,
     rdpConfig?: Canonical<Rdp> | null,
+    fetchSource?: "network" | "stream",
   ): ObjectCacheKey[] {
     // update the cache for any object that has changed
     // and save the mapped values to return
@@ -93,6 +94,7 @@ export class ObjectsHelper extends AbstractHelper<
         v as ObjectHolder,
         "loaded",
         batch,
+        fetchSource,
       ).cacheKey
     );
   }
@@ -106,6 +108,7 @@ export class ObjectsHelper extends AbstractHelper<
     value: ObjectHolder | typeof tombstone,
     status: Status,
     batch: BatchContext,
+    fetchSource?: "network" | "stream" | "cross-propagation",
   ): void {
     const existing = batch.read(sourceCacheKey);
     const dataChanged = !existing
@@ -119,7 +122,7 @@ export class ObjectsHelper extends AbstractHelper<
     }
 
     const valueToWrite = !dataChanged && existing ? existing.value : value;
-    batch.write(sourceCacheKey, valueToWrite, status);
+    batch.write(sourceCacheKey, valueToWrite, status, fetchSource);
 
     if (value !== tombstone) {
       batch.changes.registerObject(sourceCacheKey, value, !existing);
@@ -136,13 +139,18 @@ export class ObjectsHelper extends AbstractHelper<
       )
       : new Set([sourceCacheKey]);
 
+    // When propagating, mark as cross-propagation if not already specified
+    const propagationSource = fetchSource === "network"
+      ? "network" // Keep original source if direct network fetch
+      : "cross-propagation"; // Otherwise mark as cross-propagation
+
     for (const targetKey of relatedKeys) {
       if (targetKey === sourceCacheKey || !this.isKeyActive(targetKey)) {
         continue;
       }
 
       if (value === tombstone) {
-        batch.write(targetKey, tombstone, status);
+        batch.write(targetKey, tombstone, status, propagationSource);
         continue;
       }
 
@@ -156,7 +164,7 @@ export class ObjectsHelper extends AbstractHelper<
         targetKey,
       );
 
-      batch.write(targetKey, merged, status);
+      batch.write(targetKey, merged, status, propagationSource);
     }
   }
 

@@ -206,7 +206,7 @@ export abstract class ListQuery extends BaseListQuery<
 
     // We don't call super.handleFetchError because ListQuery has special error handling
     // but we still use writeToStore to create a properly structured Entry
-    return this.writeToStore({ data: [] }, "error", batch);
+    return this.writeToStore({ data: [] }, "error", batch, "network");
   }
 
   /**

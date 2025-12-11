@@ -28,6 +28,7 @@ import { tombstone } from "./tombstone.js";
 
 export class Layers {
   #truthLayer: Layer = new Layer(undefined, undefined);
+  #mockLayer?: Layer;
   #topLayer: Layer;
   #onRevalidate: (
     changes: Changes,
@@ -59,6 +60,78 @@ export class Layers {
 
   get truth(): Layer {
     return this.#truthLayer;
+  }
+
+  get mock(): Layer | undefined {
+    return this.#mockLayer;
+  }
+
+  /**
+   * Insert a mock layer between truth and optimistic layers
+   * The mock layer will override truth layer data when mocks are defined
+   */
+  insertMockLayer(mockLayer: Layer): void {
+    this.#mockLayer = mockLayer;
+
+    // If there are optimistic layers, we need to reattach them on top of the mock layer
+    if (this.#topLayer !== this.#truthLayer) {
+      // Collect optimistic layers with their data (top to bottom)
+      const optimisticLayers: Array<{ layer: Layer; layerId: unknown }> = [];
+      let current: Layer | undefined = this.#topLayer;
+
+      while (current && current !== this.#truthLayer) {
+        optimisticLayers.push({ layer: current, layerId: current.layerId });
+        current = current.parentLayer;
+      }
+
+      // Rebuild the layer stack with mock layer in between
+      // Truth -> Mock -> Optimistic layers
+      let newTop: Layer = this.#mockLayer;
+
+      // Reattach optimistic layers in reverse order (bottom to top)
+      // and copy their cached data to preserve optimistic updates
+      for (let i = optimisticLayers.length - 1; i >= 0; i--) {
+        const oldLayer = optimisticLayers[i];
+        newTop = newTop.addLayer(oldLayer.layerId);
+        newTop.copyEntriesFrom(oldLayer.layer);
+      }
+
+      this.#topLayer = newTop;
+    } else {
+      // No optimistic layers, mock layer becomes the top
+      this.#topLayer = this.#mockLayer;
+    }
+  }
+
+  /**
+   * Remove the mock layer and restore normal layer structure
+   */
+  removeMockLayer(): void {
+    if (!this.#mockLayer) {
+      return;
+    }
+
+    // Collect optimistic layers above the mock layer with their data
+    const optimisticLayers: Array<{ layer: Layer; layerId: unknown }> = [];
+    let current: Layer | undefined = this.#topLayer;
+
+    while (current && current !== this.#mockLayer) {
+      optimisticLayers.push({ layer: current, layerId: current.layerId });
+      current = current.parentLayer;
+    }
+
+    // Rebuild without mock layer
+    let newTop: Layer = this.#truthLayer;
+
+    // Reattach optimistic layers and copy their cached data
+    for (let i = optimisticLayers.length - 1; i >= 0; i--) {
+      const oldLayer = optimisticLayers[i];
+      newTop = newTop.addLayer(oldLayer.layerId);
+      newTop.copyEntriesFrom(oldLayer.layer);
+    }
+
+    this.#topLayer = newTop;
+    this.#mockLayer = undefined;
   }
 
   remove(layerId: OptimisticId): void {
@@ -164,7 +237,7 @@ export class Layers {
         }
       },
       optimisticWrite: !!optimisticId,
-      write: (cacheKey, value, status) => {
+      write: (cacheKey, value, status, fetchSource) => {
         const oldTopValue = this.#topLayer.get(cacheKey);
 
         if (optimisticId) batchContext.createLayerIfNeeded();
@@ -177,6 +250,8 @@ export class Layers {
           value,
           lastUpdated: Date.now(),
           status,
+          optimisticId: optimisticId ?? undefined,
+          fetchSource: fetchSource ?? (optimisticId ? "optimistic" : undefined),
         };
 
         writeLayer.set(cacheKey, newValue);

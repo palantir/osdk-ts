@@ -23,5 +23,6 @@ export function createInitEntry(cacheKey: KnownCacheKey): Entry<any> {
     status: "init",
     value: undefined,
     lastUpdated: 0,
+    optimisticId: undefined,
   };
 }

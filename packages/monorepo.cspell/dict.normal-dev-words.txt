@@ -23,6 +23,7 @@ objs
 onwarn
 peopleapp
 pypi
+refetched
 retryable
 rsort
 semver

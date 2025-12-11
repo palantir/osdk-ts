@@ -15,6 +15,7 @@
  */
 
 import type { KnownCacheKey } from "./KnownCacheKey.js";
+import type { OptimisticId } from "./OptimisticId.js";
 import { WeakMapWithEntries } from "./WeakMapWithEntries.js";
 
 /*
@@ -85,6 +86,23 @@ export class Layer {
   ): void {
     this.#cache.set(cacheKey, value);
   }
+
+  /**
+   * Copy all entries from another layer's local cache into this layer.
+   * Used during layer stack reconstruction to preserve optimistic data.
+   */
+  public copyEntriesFrom(source: Layer): void {
+    for (const [key, value] of source.entries()) {
+      this.#cache.set(key, value);
+    }
+  }
+}
+
+export interface EntryDebugMetadata {
+  servedFromCache?: boolean;
+  servedFromMock?: boolean;
+  mockId?: string;
+  [key: string]: unknown;
 }
 
 export interface Entry<K extends KnownCacheKey> {
@@ -92,4 +110,7 @@ export interface Entry<K extends KnownCacheKey> {
   value: K["__cacheKey"]["value"] | undefined;
   lastUpdated: number;
   status: "init" | "loading" | "loaded" | "error";
+  optimisticId?: OptimisticId;
+  fetchSource?: "network" | "stream" | "optimistic" | "cross-propagation";
+  __debugMetadata?: EntryDebugMetadata;
 }

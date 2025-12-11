@@ -129,6 +129,16 @@ export function useLinks<
       : [objects];
   }, [objects]);
 
+  // Register the hook with the observable client for devtools tracking
+  React.useEffect(() => {
+    if (objectsArray.length > 0) {
+      observableClient.registerLinkHook?.(
+        [...objectsArray] as Osdk.Instance<ObjectTypeDefinition>[],
+        linkName,
+      );
+    }
+  }, [observableClient, objectsArray, linkName]);
+
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {

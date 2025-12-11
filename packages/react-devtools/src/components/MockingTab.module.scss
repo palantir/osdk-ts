@@ -1,0 +1,132 @@
+.mockingTab {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.header {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-bottom: 1px solid #394b59;
+}
+
+.info {
+  font-size: 12px;
+}
+
+.activateButton {
+  width: 100%;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.mainContent {
+  padding: 16px;
+}
+
+.section {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f5f8fa;
+  margin-bottom: 12px;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  color: #a7b6c2;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed #394b59;
+  border-radius: 4px;
+}
+
+.emptySubtext {
+  font-size: 12px;
+  color: #738694;
+}
+
+.mockList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mockItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid #394b59;
+  border-radius: 4px;
+  transition: all 0.1s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: #48aff0;
+  }
+}
+
+.mockItemContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.mockItemHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.mockItemTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: #f5f8fa;
+  font-family: monospace;
+}
+
+.mockItemType {
+  font-size: 10px;
+  color: #a7b6c2;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.mockItemDetails {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: #a7b6c2;
+}
+
+.detail {
+  font-family: monospace;
+}
+
+.mockItemActions {
+  display: flex;
+  gap: 4px;
+}

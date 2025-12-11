@@ -1,0 +1,88 @@
+.primitiveInfo {
+  background: #293742;
+  margin-bottom: 20px;
+  padding: 16px;
+}
+
+.primitiveHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.primitiveTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #f5f8fa;
+  font-family: monospace;
+}
+
+.primitiveSubtitle {
+  font-size: 12px;
+  color: #a7b6c2;
+  margin-top: 2px;
+}
+
+.primitiveSignature {
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  border-left: 3px solid #137cbd;
+
+  code {
+    font-size: 12px;
+    color: #48aff0;
+    font-family: monospace;
+  }
+}
+
+.codeEditor {
+  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  background: #1c2127 !important;
+  border: 1px solid #394b59 !important;
+  color: #f5f8fa !important;
+
+  &:focus {
+    border-color: #137cbd !important;
+    box-shadow: 0 0 0 1px #137cbd !important;
+  }
+}
+
+.networkSection {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #394b59;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f5f8fa;
+  margin-bottom: 16px;
+}
+
+// Global styles for the modal portal to ensure it appears above devtools
+:global(.mock-creation-modal-portal) {
+  z-index: 2147483647 !important; // Maximum z-index value
+
+  :global(.bp5-overlay) {
+    z-index: 2147483647 !important;
+  }
+
+  :global(.bp5-dialog-container) {
+    z-index: 2147483647 !important;
+  }
+
+  :global(.bp5-dialog) {
+    z-index: 2147483647 !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(16, 22, 26, 0.4) !important;
+  }
+
+  :global(.bp5-overlay-backdrop) {
+    z-index: 2147483646 !important;
+  }
+}

@@ -37,7 +37,7 @@ import type { ActionSignatureFromDef } from "../actions/applyAction.js";
 import { additionalContext, type Client } from "../Client.js";
 import { createClientFromContext } from "../createClient.js";
 import { OBSERVABLE_USER_AGENT } from "../util/UserAgent.js";
-import type { Canonical } from "./internal/Canonical.js";
+import { type Canonical } from "./internal/Canonical.js";
 import type { ObserveObjectSetOptions } from "./internal/objectset/ObjectSetQueryOptions.js";
 import { ObservableClientImpl } from "./internal/ObservableClientImpl.js";
 import { Store } from "./internal/Store.js";
@@ -54,7 +54,58 @@ import type { OptimisticBuilder } from "./OptimisticBuilder.js";
 export namespace ObservableClient {
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
+    /**
+     * Internal hook used by developer tooling for lifecycle instrumentation.
+     * Not part of the public API surface.
+     * @internal
+     */
+    __debugListeners?: {
+      onLayerCreated?(id: unknown): void;
+      onLayerCleared?(id: unknown): void;
+      onServerObjectsModified?(
+        objects: Array<{
+          objectType: string;
+          primaryKey: string;
+          operation: "update" | "create" | "delete";
+        }>,
+      ): void;
+    };
   }
+}
+
+/**
+ * Snapshot of the cache state for introspection.
+ */
+export interface CacheSnapshot {
+  entries: CacheEntry[];
+  stats: {
+    totalEntries: number;
+    totalSize: number;
+    totalHits: number;
+  };
+}
+
+/**
+ * Individual cache entry with metadata.
+ */
+export interface CacheEntry {
+  key: string;
+  type: "object" | "list" | "link" | "objectSet";
+  objectType: string;
+  queryParams?: {
+    where?: any;
+    orderBy?: any;
+    pageSize?: number;
+    linkName?: string;
+  };
+  metadata: {
+    timestamp: number;
+    status: "init" | "loading" | "loaded" | "error";
+    hitCount: number;
+    size: number;
+    isOptimistic: boolean;
+  };
+  data?: any;
 }
 
 export interface ObserveObjectOptions<
@@ -111,6 +162,9 @@ export interface ObserveObjectArgs<T extends ObjectTypeDefinition> {
   isOptimistic: boolean;
   status: Status;
   lastUpdated: number;
+  __debugMetadata?: {
+    servedFromCache: boolean;
+  };
 }
 
 // TODO: Rename this from `ObserveObjectsArgs` => `ObserveObjectsCallbackArgs`. Not doing it now to reduce churn
@@ -123,6 +177,9 @@ export interface ObserveObjectsArgs<
   fetchMore: () => Promise<void>;
   hasMore: boolean;
   status: Status;
+  __debugMetadata?: {
+    servedFromCache: boolean;
+  };
 }
 
 export interface ObserveObjectSetArgs<
@@ -325,6 +382,69 @@ export interface ObservableClient extends ObserveLinks {
   ) => Promise<ActionValidationResponse>;
 
   /**
+   * Register an action hook for monitoring purposes.
+   * This method is a no-op in the base implementation and is only used
+   * by monitoring/development tools to track action hook usage.
+   *
+   * @param action - Action definition being used by a hook
+   */
+  registerActionHook?: <Q extends ActionDefinition<any>>(action: Q) => void;
+
+  /**
+   * Register an object hook for monitoring purposes.
+   * This method is a no-op in the base implementation and is only used
+   * by monitoring/development tools to track object hook usage.
+   *
+   * @param objectType - Object type being observed by a hook
+   * @param primaryKey - Primary key of the object (optional for list queries)
+   */
+  registerObjectHook?: <Q extends ObjectTypeDefinition>(
+    objectType: Q["apiName"] | Q,
+    primaryKey?: PrimaryKeyType<Q>,
+  ) => void;
+
+  /**
+   * Register a list hook for monitoring purposes.
+   * This method is a no-op in the base implementation and is only used
+   * by monitoring/development tools to track list hook usage.
+   *
+   * @param objectType - Object type being observed by a hook
+   * @param options - List options (where, orderBy, etc.)
+   */
+  registerListHook?: <Q extends ObjectTypeDefinition | InterfaceDefinition>(
+    objectType: Q["apiName"] | Q,
+    options?: {
+      where?: WhereClause<Q>;
+      orderBy?: OrderBy<Q>;
+      pageSize?: number;
+    },
+  ) => void;
+
+  /**
+   * Register a link hook for monitoring purposes.
+   * This method is a no-op in the base implementation and is only used
+   * by monitoring/development tools to track link hook usage.
+   *
+   * @param sourceObject - Source object or objects for the link
+   * @param linkName - Name of the link being traversed
+   */
+  registerLinkHook?: <Q extends ObjectTypeDefinition>(
+    sourceObject: Osdk.Instance<Q> | Osdk.Instance<Q>[],
+    linkName: string,
+  ) => void;
+
+  /**
+   * Register an ObjectSet hook for monitoring purposes.
+   * This method is a no-op in the base implementation and is only used
+   * by monitoring/development tools to track ObjectSet hook usage.
+   *
+   * @param objectSet - ObjectSet being observed by a hook
+   */
+  registerObjectSetHook?: <Q extends ObjectTypeDefinition>(
+    objectSet: ObjectSet<Q>,
+  ) => void;
+
+  /**
    * Invalidates the entire cache, forcing all queries to refetch.
    * Use sparingly as this can cause significant network traffic.
    */
@@ -354,6 +474,15 @@ export interface ObservableClient extends ObserveLinks {
     type: T | T["apiName"],
   ): Promise<void>;
 
+  /**
+   * Get a snapshot of the current cache state for introspection.
+   * Returns all cache entries with metadata including type, timestamps, and status.
+   *
+   * @returns Promise that resolves to a CacheSnapshot with all entries and statistics
+   * @internal - For development/debugging tools only
+   */
+  getCacheSnapshot(): Promise<CacheSnapshot>;
+
   canonicalizeWhereClause: <
     T extends ObjectTypeDefinition | InterfaceDefinition,
     RDPs extends Record<string, SimplePropertyDef> = {},
@@ -362,7 +491,10 @@ export interface ObservableClient extends ObserveLinks {
   ) => Canonical<WhereClause<T, RDPs>>;
 }
 
-export function createObservableClient(client: Client): ObservableClient {
+export function createObservableClient(
+  client: Client,
+  mockManager?: any,
+): ObservableClient {
   // First we need a modified client that adds an extra header so we know its
   // an observable client
   const tweakedClient = createClientFromContext({
@@ -385,7 +517,7 @@ export function createObservableClient(client: Client): ObservableClient {
 
   // Then we use that client instead. Because the `client` does not hold
   // any real state, this whole thing works.
-  return new ObservableClientImpl(new Store(tweakedClient));
+  return new ObservableClientImpl(new Store(tweakedClient, mockManager));
 }
 
 export interface Unsubscribable {

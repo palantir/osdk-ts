@@ -18,6 +18,7 @@ import type { InterfaceHolder } from "../../../object/convertWireToOsdkObjects/I
 import type { ObjectHolder } from "../../../object/convertWireToOsdkObjects/ObjectHolder.js";
 import type { Status } from "../../ObservableClient/common.js";
 import { type ObjectCacheKey } from "../object/ObjectCacheKey.js";
+import type { OptimisticId } from "../OptimisticId.js";
 
 /**
  * Abstract base for ListQuery and SpecificLinkQuery.
@@ -80,6 +81,11 @@ export interface CollectionConnectableParams {
   isOptimistic: boolean;
 
   /**
+   * Optimistic layer identifier if the emission originates from one
+   */
+  optimisticId?: OptimisticId;
+
+  /**
    * Current loading status
    */
   status: Status;
@@ -88,4 +94,9 @@ export interface CollectionConnectableParams {
    * Timestamp of the last update
    */
   lastUpdated: number;
+
+  /**
+   * Source of the fetch
+   */
+  fetchSource?: "network" | "stream" | "optimistic" | "cross-propagation";
 }

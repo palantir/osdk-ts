@@ -210,6 +210,13 @@ export function useObjectSet<
     orderBy: otherOptions.orderBy,
   });
 
+  // Register the hook with the observable client for devtools tracking
+  React.useEffect(() => {
+    observableClient.registerObjectSetHook?.(
+      baseObjectSet as ObjectSet<ObjectTypeDefinition>,
+    );
+  }, [observableClient, baseObjectSet]);
+
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {

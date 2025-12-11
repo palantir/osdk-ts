@@ -1,0 +1,85 @@
+.hookRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+  font-size: 12px;
+  margin-bottom: 4px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+
+.hookBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.hookType {
+  font-size: 11px;
+}
+
+.hookObject {
+  background: rgba(61, 160, 245, 0.2);
+  color: #3da0f5;
+}
+
+.hookObjects {
+  background: rgba(138, 182, 255, 0.2);
+  color: #8ab6ff;
+}
+
+.hookAction {
+  background: rgba(255, 176, 59, 0.2);
+  color: #ffb03b;
+}
+
+.hookLinks {
+  background: rgba(149, 117, 205, 0.2);
+  color: #9575cd;
+}
+
+.hookObjectSet {
+  background: rgba(98, 203, 49, 0.2);
+  color: #62cb31;
+}
+
+.querySignature {
+  flex: 1;
+  color: rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.locationButton {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+
+  &:hover {
+    color: #3da0f5;
+  }
+}
+
+.performance {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.statusBadge {
+  font-size: 10px;
+  padding: 2px 6px;
+  white-space: nowrap;
+}

@@ -77,6 +77,11 @@ export function useOsdkAction<Q extends ActionDefinition<any>>(
   >();
   const abortControllerRef = React.useRef<AbortController | null>(null);
 
+  // Register the hook with the observable client for devtools tracking
+  React.useEffect(() => {
+    observableClient.registerActionHook?.(actionDef);
+  }, [observableClient, actionDef]);
+
   const applyAction = React.useCallback(async function applyAction(
     hookArgs: ApplyActionParams<Q> | Array<ApplyActionParams<Q>>,
   ) {

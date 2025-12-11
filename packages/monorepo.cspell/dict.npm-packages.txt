@@ -6,6 +6,7 @@ Emittery
 execa
 immer
 jiti
+jridgewell
 luxon
 manypkg
 maplibre
@@ -19,3 +20,4 @@ ngeohash
 npmjs
 tsup
 timecode
+visx

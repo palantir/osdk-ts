@@ -26,7 +26,11 @@ export class OptimisticJob {
   getResult: () => Promise<Changes>;
   #result!: Promise<Changes>;
 
-  constructor(store: Store, optimisticId: OptimisticId) {
+  constructor(
+    store: Store,
+    optimisticId: OptimisticId,
+    debugListeners?: OptimisticJobDebugListeners,
+  ) {
     const updatedObjects: Array<
       ObjectHolder
     > = [];
@@ -84,7 +88,13 @@ export class OptimisticJob {
 
     this.context = {
       updateObject(value) {
-        updatedObjects.push(value as unknown as ObjectHolder<typeof value>);
+        const obj = value as unknown as ObjectHolder<typeof value>;
+        updatedObjects.push(obj);
+        debugListeners?.onObjectModified?.(
+          obj.$objectType,
+          String(obj.$primaryKey),
+          "update",
+        );
         return this;
       },
       createObject(type, pk, properties) {
@@ -103,10 +113,21 @@ export class OptimisticJob {
         });
 
         addedObjectPromises.push(create);
+        debugListeners?.onObjectModified?.(
+          type.apiName,
+          String(pk),
+          "create",
+        );
         return this;
       },
       deleteObject(value) {
-        deletedObjects.push(value as unknown as ObjectHolder<typeof value>);
+        const obj = value as unknown as ObjectHolder<typeof value>;
+        deletedObjects.push(obj);
+        debugListeners?.onObjectModified?.(
+          obj.$objectType,
+          String(obj.$primaryKey),
+          "delete",
+        );
         return this;
       },
     };
@@ -116,13 +137,15 @@ export class OptimisticJob {
 export function runOptimisticJob(
   store: Store,
   optimisticUpdate: undefined | ((ctx: OptimisticBuilder) => void),
+  debugListeners?: OptimisticJobDebugListeners,
 ): () => Promise<void> {
   if (!optimisticUpdate) {
     return () => Promise.resolve();
   }
 
   const optimisticId = createOptimisticId();
-  const job = new OptimisticJob(store, optimisticId);
+  debugListeners?.onLayerCreated?.(optimisticId);
+  const job = new OptimisticJob(store, optimisticId, debugListeners);
   optimisticUpdate(job.context);
   const optimisticApplicationDone = job.getResult();
 
@@ -131,7 +154,25 @@ export function runOptimisticJob(
       // we don't want to leak the result
       () => undefined,
     ).finally(() => {
+      debugListeners?.onLayerCleared?.(optimisticId);
       store.layers.remove(optimisticId);
     });
   };
+}
+
+export interface OptimisticJobDebugListeners {
+  onLayerCreated?(id: OptimisticId): void;
+  onLayerCleared?(id: OptimisticId): void;
+  onObjectModified?(
+    objectType: string,
+    primaryKey: string,
+    operation: "update" | "create" | "delete",
+  ): void;
+  onServerObjectsModified?(
+    objects: Array<{
+      objectType: string;
+      primaryKey: string;
+      operation: "update" | "create" | "delete";
+    }>,
+  ): void;
 }
