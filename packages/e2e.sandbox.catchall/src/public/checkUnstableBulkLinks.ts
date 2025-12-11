@@ -15,7 +15,11 @@
  */
 
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "@osdk/api/unstable";
-import { Employee, WeatherStation } from "@osdk/e2e.generated.catchall";
+import {
+  Employee,
+  Venture,
+  WeatherStation,
+} from "@osdk/e2e.generated.catchall";
 import { client } from "../client.js";
 import { logger } from "../logger.js";
 
@@ -23,15 +27,28 @@ const locator = (
   { $apiName, $primaryKey }: { $apiName: string; $primaryKey: any },
 ) => `${$apiName}:${$primaryKey}`;
 
-export async function checkUnstableBulkLinks(): Promise<void> {
+export async function checkAsyncIterLinks(): Promise<void> {
+  // one link
   for await (
-    const { source, target, linkType } of client(Employee).asyncIterLinks([
-      "ventures",
+    const { source, target, linkType } of client(Venture).asyncIterLinks([
+      "employees",
     ])
   ) {
     console.log(`${locator(source)} ---(${linkType})--> ${locator(target)}`);
   }
 
+  // multiple links
+  for await (
+    const { source, target, linkType } of client(Employee).asyncIterLinks([
+      "ventures",
+      "peeps",
+    ])
+  ) {
+    console.log(`${locator(source)} ---(${linkType})--> ${locator(target)}`);
+  }
+}
+
+export async function checkUnstableBulkLinks(): Promise<void> {
   // Test one to many
   const stations = await client(WeatherStation).fetchPage();
   for await (
@@ -80,3 +97,4 @@ export async function checkUnstableBulkLinks(): Promise<void> {
 }
 
 void checkUnstableBulkLinks();
+void checkAsyncIterLinks();
