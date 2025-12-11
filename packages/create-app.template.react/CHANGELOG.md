@@ -1,5 +1,7 @@
 # @osdk/create-app.template.react
 
+## 2.6.0-rc.17
+
 ## 2.6.0-rc.16
 
 ### Patch Changes
