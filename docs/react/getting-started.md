@@ -6,11 +6,15 @@ sidebar_position: 1
 
 This guide covers installation, setup, and your first OSDK React application.
 
+:::info Beta Release
+`@osdk/react` is currently in beta. While the package is suitable for production use, you may encounter minor bugs as we continue development. We welcome bug reports and feedback.
+:::
+
 ## Installation
 
-### 1. Specify Beta Versions
+### 1. Install Beta Packages
 
-Using `latest` doesn't always install actual latest versions for beta packages. Specify explicitly:
+Using `latest` doesn't always install actual latest versions for beta packages. Specify them explicitly:
 
 ```json
 {
@@ -23,13 +27,20 @@ Using `latest` doesn't always install actual latest versions for beta packages. 
 }
 ```
 
-### 2. Regenerate Your SDK on Foundry
+Check for newer versions on npm:
+- [@osdk/react versions](https://www.npmjs.com/package/@osdk/react?activeTab=versions)
+- [@osdk/client versions](https://www.npmjs.com/package/@osdk/client?activeTab=versions)
+- [@osdk/api versions](https://www.npmjs.com/package/@osdk/api?activeTab=versions)
+
+### 2. Generate Your SDK with Beta Features
+
+If you haven't generated an SDK yet:
 
 1. Open Developer Console for your Foundry
 2. Click "SDK versions" tab (tag icon in left navbar)
 3. Click "Settings" → enable beta features for TypeScript
-4. Click "Generate new version" → check "npm" checkbox → select latest -beta generator
-5. Update your package.json with the generated SDK version:
+4. Click "Generate new version" → check "npm" checkbox → select latest `-beta` generator
+5. Add the generated SDK to your package.json:
 
 ```json
 {
@@ -40,6 +51,18 @@ Using `latest` doesn't always install actual latest versions for beta packages. 
 ```
 
 ## Provider Setup
+
+### Stable vs Experimental
+
+`@osdk/react` has two entry points:
+
+| | `@osdk/react` | `@osdk/react/experimental` |
+|---|---|---|
+| **Use when** | You only need client access | You want reactive data hooks (most apps) |
+| **Features** | Client provider, metadata | Queries, actions, caching, optimistic updates |
+| **API stability** | Stable | APIs may change between releases |
+
+**We recommend starting with experimental.** The "experimental" label indicates the API surface may evolve, not that the features are unstable or buggy. Most applications benefit from the reactive hooks, automatic caching, and optimistic update support.
 
 ### Stable Features (`@osdk/react`)
 
@@ -56,14 +79,22 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 );
 ```
 
-Stable exports:
-- `OsdkProvider` - Provider component
-- `useOsdkClient` - Access the OSDK client
+Stable exports (use with `OsdkProvider`):
+- `OsdkProvider` - Provider component for basic client access
+- `useOsdkClient` - Access the OSDK client directly
 - `useOsdkMetadata` - Fetch type metadata
+
+:::note
+`useOsdkClient` and `useOsdkMetadata` are available from both `@osdk/react` (stable) and `@osdk/react/experimental`. When using experimental features with `OsdkProvider2`, import from `@osdk/react/experimental` for consistency.
+:::
 
 ### Experimental Features (`@osdk/react/experimental`)
 
-For reactive data management, cache, and optimistic updates:
+For reactive data management, cache, and optimistic updates.
+
+:::tip About Experimental Hooks
+The hooks in `@osdk/react/experimental` are production-ready and recommended for new projects. They are labeled "experimental" because they represent a newer architecture that is under active development. Once stabilized, these hooks will be promoted to the main `@osdk/react` package.
+:::
 
 ```tsx
 import { OsdkProvider2 } from "@osdk/react/experimental";
@@ -88,6 +119,7 @@ Experimental exports:
 - `useOsdkAggregation` - Server-side aggregations
 - `useDebouncedCallback` - Debounce callbacks
 - `useOsdkClient` - Access the OSDK client
+- `useOsdkMetadata` - Fetch type metadata (also available from stable)
 
 ## Quick Start Checklist
 
@@ -99,6 +131,10 @@ Before using experimental hooks:
 - [ ] All components using experimental hooks inside the provider
 
 ## First Query
+
+:::note About `@my/osdk`
+Throughout this documentation, `@my/osdk` refers to **your generated SDK package**. This is created when you generate an SDK in Foundry Developer Console (step 2 above). Replace `@my/osdk` with your actual package name (e.g., `@your-app/sdk`).
+:::
 
 ```tsx
 import { Todo } from "@my/osdk";
@@ -133,7 +169,7 @@ See [Querying Data](./querying-data) for filtering, pagination, real-time update
 ## First Action
 
 ```tsx
-import { $Actions } from "@my/osdk";
+import { $Actions, Todo } from "@my/osdk";
 import { useOsdkAction } from "@osdk/react/experimental";
 
 function CompleteTodoButton({ todo }: { todo: Todo.OsdkInstance }) {

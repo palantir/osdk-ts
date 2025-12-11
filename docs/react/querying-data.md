@@ -45,11 +45,15 @@ function TodoList() {
 
 ### Return Values
 
-- `data` - Array of objects matching the query
-- `isLoading` - True while fetching data from server
-- `isOptimistic` - True if the list order is affected by optimistic updates
-- `fetchMore` - Function to load next page (undefined when no more pages)
+- `data` - Array of objects matching the query (undefined while initially loading)
+- `isLoading` - True while fetching data from server (can be true while `data` exists during revalidation)
+- `isOptimistic` - True if the list order is affected by optimistic updates (see note below)
+- `fetchMore` - Function to load next page (undefined when no more pages available)
 - `error` - Error object if fetch failed
+
+:::note About isOptimistic
+`isOptimistic` refers to whether the **ordered list of objects** (considering only primary keys) is optimistic. To check if individual object contents are optimistic, use `useOsdkObject` on each object.
+:::
 
 ### Filtering with `where`
 

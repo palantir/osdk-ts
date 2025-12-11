@@ -306,6 +306,21 @@ $optimisticUpdate: (ou) => {
 }
 ```
 
+:::note The `$clone` method
+Every OSDK object instance has a `$clone()` method that creates a new object with modified properties. This is essential for optimistic updates because OSDK objects are immutable.
+
+```tsx
+// Create a modified copy without mutating the original
+const completedTodo = todo.$clone({ isComplete: true });
+
+// Clone with multiple property changes
+const updatedTodo = todo.$clone({
+  title: "New Title",
+  priority: "high",
+});
+```
+:::
+
 ---
 
 ## useDebouncedCallback

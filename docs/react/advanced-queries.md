@@ -28,6 +28,9 @@ Both hooks support where, orderBy, pagination, withProperties, pivotTo, autoFetc
 :::
 
 ```tsx
+import { $, Todo } from "@my/osdk";
+import { useObjectSet, useOsdkObjects } from "@osdk/react/experimental";
+
 // Simple query - use useOsdkObjects
 const { data } = useOsdkObjects(Todo, {
   where: { isComplete: false },
@@ -35,11 +38,18 @@ const { data } = useOsdkObjects(Todo, {
 });
 
 // Set operations - use useObjectSet
+const urgentTodos = $(Todo).where({ isUrgent: true });
+const completedTodos = $(Todo).where({ isComplete: true });
+
 const { data } = useObjectSet($(Todo), {
   union: [urgentTodos],
   subtract: [completedTodos],
 });
 ```
+
+:::note The `$` function
+The `$` function from your generated SDK creates an ObjectSet from an object type. `$(Todo)` creates an ObjectSet containing all Todo objects that you can then filter, union, intersect, or subtract with other ObjectSets.
+:::
 
 ### Basic Usage
 
@@ -77,6 +87,9 @@ function TodosWithSetOperations() {
 Combine multiple object sets:
 
 ```tsx
+import { $, Todo } from "@my/osdk";
+import { useObjectSet } from "@osdk/react/experimental";
+
 function CombinedTodoQuery() {
   const highPriorityTodos = $(Todo).where({ priority: "high" });
   const urgentTodos = $(Todo).where({ isUrgent: true });
@@ -94,6 +107,9 @@ function CombinedTodoQuery() {
 Find objects that exist in all sets:
 
 ```tsx
+import { $, Employee } from "@my/osdk";
+import { useObjectSet } from "@osdk/react/experimental";
+
 function SharedProjects({ employee1, employee2 }: {
   employee1: Employee.OsdkInstance;
   employee2: Employee.OsdkInstance;
@@ -122,6 +138,9 @@ function SharedProjects({ employee1, employee2 }: {
 Remove objects that exist in another set:
 
 ```tsx
+import { $, Todo } from "@my/osdk";
+import { useObjectSet } from "@osdk/react/experimental";
+
 function ActiveTodos() {
   const allTodos = $(Todo);
   const completedTodos = $(Todo).where({ isComplete: true });
@@ -137,6 +156,9 @@ function ActiveTodos() {
 #### Combined Operations
 
 ```tsx
+import { $, Todo } from "@my/osdk";
+import { useObjectSet } from "@osdk/react/experimental";
+
 function ComplexTodoQuery() {
   const highPriorityTodos = $(Todo).where({ priority: "high" });
   const urgentTodos = $(Todo).where({ isUrgent: true });
@@ -156,6 +178,9 @@ function ComplexTodoQuery() {
 Navigate to linked objects:
 
 ```tsx
+import { $, Employee } from "@my/osdk";
+import { useObjectSet } from "@osdk/react/experimental";
+
 function EmployeeDepartments({ employee }: { employee: Employee.OsdkInstance }) {
   const employeeSet = $(Employee).where({ id: employee.id });
 
@@ -174,6 +199,9 @@ function EmployeeDepartments({ employee }: { employee: Employee.OsdkInstance }) 
 ### Auto-Fetching and Streaming
 
 ```tsx
+import { $, Todo } from "@my/osdk";
+import { useObjectSet } from "@osdk/react/experimental";
+
 const { data, isLoading } = useObjectSet($(Todo), {
   where: { isComplete: false },
   autoFetchMore: 200,     // Fetch at least 200 items
@@ -332,6 +360,9 @@ function TodoStats() {
 ### Grouped Aggregations
 
 ```tsx
+import { Todo } from "@my/osdk";
+import { useOsdkAggregation } from "@osdk/react/experimental";
+
 function TodosByStatus() {
   const { data, isLoading } = useOsdkAggregation(Todo, {
     aggregate: {
@@ -364,6 +395,9 @@ function TodosByStatus() {
 ### Filtered Aggregations
 
 ```tsx
+import { Todo } from "@my/osdk";
+import { useOsdkAggregation } from "@osdk/react/experimental";
+
 function HighPriorityStats() {
   const { data, isLoading } = useOsdkAggregation(Todo, {
     where: { priority: "high", isComplete: false },
