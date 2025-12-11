@@ -49,7 +49,8 @@ describe("CanvasOverlaySystem", () => {
     it("should create and append canvas on start", () => {
       overlay.start();
 
-      expect(document.body.appendChild).toHaveBeenCalled();
+      const spy = vi.spyOn(document.body, "appendChild");
+      expect(spy).toHaveBeenCalled();
       expect(overlay.getActiveAnimationCount()).toBe(0);
     });
 
@@ -57,14 +58,16 @@ describe("CanvasOverlaySystem", () => {
       overlay.start();
       overlay.start();
 
-      expect(document.body.appendChild).toHaveBeenCalledTimes(1);
+      const spy = vi.spyOn(document.body, "appendChild");
+      expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it("should remove canvas and stop animations on stop", () => {
       overlay.start();
       overlay.stop();
 
-      expect(document.body.removeChild).toHaveBeenCalled();
+      const spy = vi.spyOn(document.body, "removeChild");
+      expect(spy).toHaveBeenCalled();
       expect(overlay.getActiveAnimationCount()).toBe(0);
     });
 

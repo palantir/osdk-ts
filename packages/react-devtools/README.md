@@ -27,8 +27,8 @@ npm install @osdk/react-devtools --save-dev
 The easiest way to add monitoring is to use the `MonitoredOsdkProvider2` wrapper component:
 
 ```tsx
-import { MonitoredOsdkProvider2 } from "@osdk/react-devtools/provider";
 import { createPublicOauthClient } from "@osdk/oauth";
+import { MonitoredOsdkProvider2 } from "@osdk/react-devtools/provider";
 import "@osdk/react-devtools/build/esm/index.css";
 
 const auth = createPublicOauthClient(
@@ -47,7 +47,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     enabled={true} // Optional: defaults to process.env.NODE_ENV === "development"
   >
     <App />
-  </MonitoredOsdkProvider2>
+  </MonitoredOsdkProvider2>,
 );
 ```
 
@@ -59,34 +59,37 @@ When `enabled={false}`, **no monitoring code is loaded** into your bundle. The m
 
 ```tsx
 // Example: Runtime control
-const enableMonitor =
-  localStorage.getItem("enableMonitor") === "true" ||
-  process.env.NODE_ENV === "development";
+const enableMonitor = localStorage.getItem("enableMonitor") === "true"
+  || process.env.NODE_ENV === "development";
 
 <MonitoredOsdkProvider2 config={config} enabled={enableMonitor}>
   <App />
-</MonitoredOsdkProvider2>
+</MonitoredOsdkProvider2>;
 ```
 
 ## What It Monitors
 
 ### Cache Performance
+
 - **Cache Hit Rate**: Percentage of requests served from cache
 - **Response Times**: Compare cached vs network response times
 - **Data Saved**: Amount of data served from cache without network requests
 
 ### Request Optimization
+
 - **Deduplication**: Identical requests made within 100ms are automatically deduplicated
 - **Request Savings**: Total number of network requests prevented
 - **Optimistic Updates**: Instant UI updates without waiting for server response
 
 ### Action Performance
+
 - **Optimistic Coverage**: Share of actions configured for optimistic updates and those observed in practice
 - **Perceived Speedup**: Average time saved before the server confirmed the action
 - **Rollback Rate**: Percentage of optimistic actions that rolled back due to failures
 - **Validation Time**: Average latency of `validateAction` calls and estimated time saved versus full action execution
 
 ### Component-to-Query Mapping
+
 - **Active Components**: See all React components currently mounted
 - **Hook Usage**: View which OSDK hooks each component uses (useOsdkObject, useOsdkObjects, useOsdkAction, useLinks, useObjectSet)
 - **Query Signatures**: See the exact queries being made by each component
@@ -97,6 +100,7 @@ const enableMonitor =
 - **Real-time Hook Registration**: Hooks register synchronously during render phase for immediate tracking
 
 ### Action Impact Visualization (NEW! 🎯)
+
 - **Complete Action Flow**: Visualize validation → optimistic update → network call → server response → refetch
 - **Phase Breakdown**: See timing for each phase of action execution
 - **Affected Objects**: Track which objects were modified by optimistic updates vs server responses
@@ -105,6 +109,7 @@ const enableMonitor =
 - **Query Invalidation**: Track which queries were invalidated and refetched
 
 ### Action Chain Detection (NEW! 🎯)
+
 - **Cascading Actions**: Detect when one action triggers another (A → B → C)
 - **Trigger Mechanisms**: See how actions are connected (explicit, hook-effect, rollback, refetch)
 - **Circular Loop Detection**: Automatic warnings for actions that trigger themselves
@@ -113,6 +118,7 @@ const enableMonitor =
 - **Debugging Aid**: Identify unintended action loops and complex workflows
 
 ### Mocking & Testing (NEW! 🧪)
+
 - **Interactive Component Selection**: Click-to-inspect mode for discovering OSDK primitives in your UI
 - **Intelligent Primitive Discovery**: Two discovery approaches for comprehensive coverage:
   - **Type-based Discovery**: Automatically finds related components by shared object types (e.g., clicking FilterSelector finds all TodoList components using the same type)
@@ -152,9 +158,12 @@ If you need explicit control over client creation or want to conditionally enabl
 
 ```tsx
 import { createClient } from "@osdk/client";
-import { OsdkProvider2 } from "@osdk/react/experimental";
-import { enableReactToolkitMonitor, MonitoringPanel } from "@osdk/react-devtools";
 import { createObservableClient } from "@osdk/client/unstable-do-not-use";
+import {
+  enableReactToolkitMonitor,
+  MonitoringPanel,
+} from "@osdk/react-devtools";
+import { OsdkProvider2 } from "@osdk/react/experimental";
 
 let client;
 let observableClient;
@@ -187,7 +196,7 @@ function App() {
 ### Programmatic Access to Metrics
 
 ```tsx
-import { useMetrics, useComputeMetrics } from "@osdk/react-devtools";
+import { useComputeMetrics, useMetrics } from "@osdk/react-devtools";
 
 function PerformanceDisplay({ monitorStore }) {
   const metricsStore = monitorStore.getMetricsStore();
@@ -198,9 +207,10 @@ function PerformanceDisplay({ monitorStore }) {
 
   return (
     <div>
-      Cache Hit Rate: {(metrics.rates.cacheHitRate * 100).toFixed(0)}%
-      Requests Saved: {metrics.aggregates.requestsSaved}
-      Total Compute: {computeMetrics.totalUsage} CU
+      Cache Hit Rate:{"    "}
+      {(metrics.rates.cacheHitRate * 100).toFixed(0)}% Requests Saved:{" "}
+      {metrics.aggregates.requestsSaved} Total Compute:{" "}
+      {computeMetrics.totalUsage} CU
     </div>
   );
 }
@@ -240,6 +250,7 @@ Example mock configuration:
 ```
 
 Mocks can be:
+
 - **Static**: Return fixed data every time
 - **Function**: Generate dynamic responses based on request parameters
 - **Pass-through**: Log real responses for mock data generation
@@ -261,28 +272,36 @@ Click the dock icon in the top-right corner to cycle through modes. Your prefere
 The devtools are organized into 4 main tabs:
 
 #### 1. Performance
+
 Combines cache and action performance metrics:
+
 - Cache hit rates, request savings, response times
 - Optimistic update adoption and effectiveness
 - Rollback rates and validation metrics
 - Filterable operations list (All/Cache/Actions)
 
 #### 2. Compute
+
 Track compute usage and quotas:
+
 - Real-time compute usage monitoring
 - Bubble chart visualization of operations
 - Request-level compute breakdowns
 - Recording and playback controls
 
 #### 3. Mocking
+
 Interactive testing and mocking:
+
 - Click-to-inspect mode for component discovery
 - Type-based and tree-based primitive discovery
 - Mock creation and management
 - Network simulation controls
 
 #### 4. Debugging
+
 Advanced debugging tools with 4 sub-tabs:
+
 - **Components** - Component-to-hook mapping and query tracking
 - **Timeline** - Event visualization and timeline
 - **Action Impact** - Action execution flow and affected objects
@@ -293,6 +312,7 @@ Advanced debugging tools with 4 sub-tabs:
 ### v0.0.3 - 2025-11-03
 
 **UI/UX Improvements:**
+
 - 🎯 **Docking Modes** - Chrome DevTools-style docking (float, bottom, right)
   - Click dock icon to cycle through modes
   - Smart resize handles based on dock mode
@@ -308,6 +328,7 @@ Advanced debugging tools with 4 sub-tabs:
 ### v0.0.2 - 2025-11-02
 
 **New Features:**
+
 - 🧪 **Mocking & Testing System** - Complete mocking framework for OSDK primitives
   - Click-to-inspect mode for interactive component selection
   - Intelligent primitive discovery with type-based matching
@@ -325,6 +346,7 @@ Advanced debugging tools with 4 sub-tabs:
   - Real-time component-to-hook binding with proper cleanup
 
 **Bug Fixes:**
+
 - 🐛 Fixed hook registration timing issue
   - Moved from `useEffect` to synchronous render-phase registration
   - Ensures React context is available when hooks register
@@ -337,6 +359,7 @@ Advanced debugging tools with 4 sub-tabs:
   - Better error messaging and recovery options
 
 **Technical Improvements:**
+
 - Enhanced `ComponentPrimitiveDiscovery` with intelligent type-based discovery
   - Detects filter/selector components and finds all related components by object type
   - Added `getBindingsByObjectType` method to ComponentQueryRegistry
@@ -349,6 +372,7 @@ Advanced debugging tools with 4 sub-tabs:
 ### v0.0.1 - 2025-10-29
 
 **New Features:**
+
 - 🎯 **Action Impact Visualization** - New "Action Impact" tab showing complete action execution flow
   - Phase-by-phase breakdown of action lifecycle
   - Track affected objects and component re-renders
@@ -368,11 +392,13 @@ Advanced debugging tools with 4 sub-tabs:
   - Click source locations to open in VSCode
 
 **Bug Fixes:**
+
 - 🐛 Fixed PropertyAccessTracker Proxy breaking `$as()` method on OSDK objects
   - Changed to use `Reflect.get()` for proper symbol property handling
   - Ensures compatibility with OSDK internal mechanisms
 
 **Implementation Details:**
+
 - Added `ActionImpactTracker` and `ActionChainTracker` backend classes
 - Integrated with existing `EventTimeline` for temporal correlation
 - Automatic event subscription and processing
