@@ -32,13 +32,15 @@ Check for newer versions on npm:
 - [@osdk/client versions](https://www.npmjs.com/package/@osdk/client?activeTab=versions)
 - [@osdk/api versions](https://www.npmjs.com/package/@osdk/api?activeTab=versions)
 
-### 2. Regenerate Your SDK on Foundry
+### 2. Generate Your SDK with Beta Features
+
+If you haven't generated an SDK yet:
 
 1. Open Developer Console for your Foundry
 2. Click "SDK versions" tab (tag icon in left navbar)
 3. Click "Settings" → enable beta features for TypeScript
-4. Click "Generate new version" → check "npm" checkbox → select latest -beta generator
-5. Update your package.json with the generated SDK version:
+4. Click "Generate new version" → check "npm" checkbox → select latest `-beta` generator
+5. Add the generated SDK to your package.json:
 
 ```json
 {
@@ -49,6 +51,18 @@ Check for newer versions on npm:
 ```
 
 ## Provider Setup
+
+### Stable vs Experimental
+
+`@osdk/react` has two entry points:
+
+| | `@osdk/react` | `@osdk/react/experimental` |
+|---|---|---|
+| **Use when** | You only need client access | You want reactive data hooks (most apps) |
+| **Features** | Client provider, metadata | Queries, actions, caching, optimistic updates |
+| **API stability** | Stable | APIs may change between releases |
+
+**We recommend starting with experimental.** The "experimental" label indicates the API surface may evolve, not that the features are unstable or buggy. Most applications benefit from the reactive hooks, automatic caching, and optimistic update support.
 
 ### Stable Features (`@osdk/react`)
 
