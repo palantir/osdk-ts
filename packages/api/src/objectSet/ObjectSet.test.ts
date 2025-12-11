@@ -30,8 +30,13 @@ import type { DerivedObjectOrInterfaceDefinition } from "../ontology/ObjectOrInt
 import { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 import { FooInterfaceApiTest } from "../test/FooInterfaceApiTest.js";
 
-async function* asyncIterateOnce() {
-  yield Promise.resolve({});
+async function* asyncIterateLinkOnce() {
+  const obj = { $apiName: undefined, $primaryKey: undefined };
+  yield Promise.resolve({
+    source: obj,
+    target: obj,
+    linkTypeApiName: undefined,
+  });
 }
 
 export function createMockObjectSet<
@@ -78,7 +83,7 @@ export function createMockObjectSet<
     nearestNeighbors: vi.fn(() => {
       return fauxObjectSet;
     }),
-    asyncIterLinks: vi.fn(asyncIterateOnce),
+    asyncIterLinks: vi.fn(asyncIterateLinkOnce),
   } as any as $ObjectSet<Q>;
 
   return fauxObjectSet;
