@@ -61,5 +61,6 @@ export function defineDeleteObjectAction(
         ),
       }
       : {}),
+    ...(def.icon && { icon: def.icon }),
   });
 }

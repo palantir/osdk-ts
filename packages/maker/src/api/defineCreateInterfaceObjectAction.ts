@@ -167,5 +167,6 @@ export function defineCreateInterfaceObjectAction(
       }),
     ...(def.submissionMetadata
       && { submissionMetadata: def.submissionMetadata }),
+    ...(def.icon && { icon: def.icon }),
   });
 }
