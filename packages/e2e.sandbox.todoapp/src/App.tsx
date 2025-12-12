@@ -23,13 +23,6 @@ function App() {
           <Section>
             <TodoList where={whereClause} />
           </Section>
-
-          <Section>
-            <h3 className="text-sm font-semibold mb-2 text-gray-600">
-              Duplicate Query (Deduplication Test)
-            </h3>
-            <TodoList where={whereClause} />
-          </Section>
         </div>
 
         <div className="w-64">

@@ -25,15 +25,9 @@ import { useOsdkObjects } from "@osdk/react/experimental";
 declare const MyComponent: () => void;
 
 function TestComponent() {
-  // Use overload that requires pivotTo by explicitly passing it
-  const result = useOsdkObjects(
-    Employee,
-    {
-      pivotTo: "lead",
-    } as Parameters<typeof useOsdkObjects>[1],
-  );
-
-  const { data } = result;
+  const { data } = useOsdkObjects(Employee, {
+    pivotTo: "lead",
+  });
 
   // Line 31: Check that data has the correct pivoted type
   const firstItem = data?.[0];

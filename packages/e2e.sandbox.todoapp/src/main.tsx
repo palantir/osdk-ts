@@ -42,7 +42,9 @@ const client = createClient(
 );
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <OsdkProvider2 client={client}>
-    <App />
-  </OsdkProvider2>,
+  <React.StrictMode>
+    <OsdkProvider2 client={client}>
+      <App />
+    </OsdkProvider2>
+  </React.StrictMode>,
 );
