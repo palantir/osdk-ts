@@ -68,8 +68,10 @@ export function createCollectionConnectable<
           combineLatest({
             resolvedData,
             isOptimistic: of(listEntry.isOptimistic),
+            optimisticId: of(listEntry.optimisticId),
             status: of(listEntry.status),
             lastUpdated: of(listEntry.lastUpdated),
+            fetchSource: of(listEntry.fetchSource),
           }).pipe(
             map(params =>
               createPayload({
@@ -77,8 +79,10 @@ export function createCollectionConnectable<
                   ? params.resolvedData
                   : [],
                 isOptimistic: params.isOptimistic,
+                optimisticId: params.optimisticId,
                 status: params.status,
                 lastUpdated: params.lastUpdated,
+                fetchSource: params.fetchSource,
               })
             ),
           ),

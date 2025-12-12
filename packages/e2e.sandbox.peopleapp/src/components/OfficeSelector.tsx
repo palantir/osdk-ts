@@ -1,6 +1,5 @@
-import { useOsdkObjects } from "@osdk/react/experimental";
+import { useOsdkClient, useOsdkObjects } from "@osdk/react/experimental";
 import { useState } from "react";
-import { $ } from "../foundryClient.js";
 import type { Employee } from "../generatedNoCheck2/index.js";
 import { modifyEmployee, Office } from "../generatedNoCheck2/index.js";
 import { Button } from "./Button.js";
@@ -18,6 +17,7 @@ export function OfficeSelector({
   currentOfficeId,
   onAssigned,
 }: OfficeSelectorProps) {
+  const client = useOsdkClient();
   const [showSelector, setShowSelector] = useState(false);
   const [selectedOfficeId, setSelectedOfficeId] = useState<string | null>(
     currentOfficeId || null,
@@ -39,7 +39,7 @@ export function OfficeSelector({
         ? undefined // Using undefined for clarity - API will treat as null
         : selectedOfficeId;
 
-      await $(modifyEmployee).applyAction({
+      await client(modifyEmployee).applyAction({
         employee,
         primary_office_id,
       });

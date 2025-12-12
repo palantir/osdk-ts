@@ -41,6 +41,7 @@ export class ObjectQuery extends Query<
 > {
   #apiName: string;
   #pk: string | number | boolean;
+  #lastFetchWasFromCache = true;
 
   constructor(
     store: Store,
@@ -80,6 +81,12 @@ export class ObjectQuery extends Query<
             object: x.value,
             lastUpdated: x.lastUpdated,
             isOptimistic: x.isOptimistic,
+            __debugMetadata: {
+              servedFromCache: this.#lastFetchWasFromCache
+                && x.status === "loaded",
+              optimisticId: x.optimisticId,
+              fetchSource: x.fetchSource,
+            },
           };
         }),
       ),
@@ -96,28 +103,28 @@ export class ObjectQuery extends Query<
   }
 
   async _fetchAndStore(): Promise<void> {
-    if (process.env.NODE_ENV !== "production") {
-      this.logger?.child({ methodName: "_fetchAndStore" }).debug(
-        "calling _fetchAndStore",
-      );
-    }
+    const existingEntry = this.store.getValue(this.cacheKey);
+    const hasCachedData = existingEntry?.value != null;
 
-    // TODO: In the future, implement tracking of network requests to ensure
-    // we're not making unnecessary network calls. This would need dedicated
-    // tests separate from subscription notification tests.
+    if (!hasCachedData) {
+      this.#lastFetchWasFromCache = false;
+    }
 
     const obj = await getBulkObjectLoader(this.store.client)
       .fetch(this.#apiName, this.#pk);
 
     this.store.batch({}, (batch) => {
-      this.writeToStore(obj, "loaded", batch);
+      this.writeToStore(obj, "loaded", batch, "network");
     });
+
+    this.#lastFetchWasFromCache = true;
   }
 
   writeToStore(
     data: ObjectHolder,
     status: Status,
     batch: BatchContext,
+    fetchSource?: "network" | "stream" | "cross-propagation",
   ): Entry<ObjectCacheKey> {
     const entry = batch.read(this.cacheKey);
     const rdpConfig = this.cacheKey.otherKeys[RDP_CONFIG_IDX];
@@ -129,7 +136,13 @@ export class ObjectQuery extends Query<
       rdpConfig,
     );
 
-    this.store.objects.propagateWrite(this.cacheKey, data, status, batch);
+    this.store.objects.propagateWrite(
+      this.cacheKey,
+      data,
+      status,
+      batch,
+      fetchSource,
+    );
 
     return batch.read(this.cacheKey)!;
   }

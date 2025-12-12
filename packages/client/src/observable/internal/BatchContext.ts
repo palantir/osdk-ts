@@ -27,6 +27,7 @@ export interface BatchContext {
     k: K,
     v: Entry<K>["value"],
     status: Entry<K>["status"],
+    fetchSource?: "network" | "stream" | "optimistic" | "cross-propagation",
   ) => Entry<K>;
 
   read: <K extends KnownCacheKey>(

@@ -27,8 +27,10 @@ import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
 import { additionalContext, type Client } from "../../Client.js";
 import { DEBUG_REFCOUNTS } from "../DebugFlags.js";
+import type { CacheEntry, CacheSnapshot } from "../ObservableClient.js";
 import type { OptimisticBuilder } from "../OptimisticBuilder.js";
 import { ActionApplication } from "./actions/ActionApplication.js";
+import type { OptimisticJobDebugListeners } from "./actions/OptimisticJob.js";
 import {
   API_NAME_IDX as AGGREGATION_API_NAME_IDX,
   RDP_IDX as AGGREGATION_RDP_IDX,
@@ -53,6 +55,7 @@ import {
   RDP_IDX as LIST_RDP_IDX,
 } from "./list/ListCacheKey.js";
 import { ListsHelper } from "./list/ListsHelper.js";
+import { MockLayer } from "./MockLayer.js";
 import {
   API_NAME_IDX as OBJECT_API_NAME_IDX,
   RDP_CONFIG_IDX as OBJECT_RDP_CONFIG_IDX,
@@ -71,6 +74,7 @@ import { WhereClauseCanonicalizer } from "./WhereClauseCanonicalizer.js";
 export namespace Store {
   export interface ApplyActionOptions {
     optimisticUpdate?: (ctx: OptimisticBuilder) => void;
+    __debugListeners?: OptimisticJobDebugListeners;
   }
 }
 
@@ -106,11 +110,8 @@ export class Store {
   readonly objectCacheKeyRegistry: ObjectCacheKeyRegistry =
     new ObjectCacheKeyRegistry();
 
-  readonly layers: Layers = new Layers({
-    logger: this.logger,
-    onRevalidate: this.#maybeRevalidateQueries.bind(this),
-  });
-  readonly subjects: Subjects = this.layers.subjects;
+  readonly layers: Layers;
+  readonly subjects: Subjects;
 
   // these are hopefully temporary
   readonly aggregations: AggregationsHelper;
@@ -119,11 +120,18 @@ export class Store {
   readonly links: LinksHelper;
   readonly objectSets: ObjectSetHelper;
 
-  constructor(client: Client) {
+  constructor(client: Client, mockManager?: any) {
     this.logger = client[additionalContext].logger?.child({}, {
       msgPrefix: "Store",
     });
     this.client = client;
+
+    // Initialize layers first
+    this.layers = new Layers({
+      logger: this.logger,
+      onRevalidate: this.#maybeRevalidateQueries.bind(this),
+    });
+    this.subjects = this.layers.subjects;
 
     this.cacheKeys = new CacheKeys<KnownCacheKey>({
       onDestroy: this.#cleanupCacheKey,
@@ -157,6 +165,27 @@ export class Store {
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
     );
+
+    // If mock manager is provided, create and insert mock layer synchronously
+    if (mockManager) {
+      const mockLayer = new MockLayer(
+        this.layers.truth,
+        "mock-layer",
+        mockManager,
+      );
+      this.layers.insertMockLayer(mockLayer);
+
+      // Let the mock layer know about the store for invalidation callbacks
+      mockLayer.setStore(this);
+
+      // Let the mock manager know about the layer and store
+      if (mockManager.setMockLayer) {
+        mockManager.setMockLayer(mockLayer);
+      }
+      if (mockManager.setStore) {
+        mockManager.setStore(this);
+      }
+    }
   }
 
   /**
@@ -212,6 +241,28 @@ export class Store {
     cacheKey: K,
   ): Entry<K> | undefined {
     return this.layers.top.get(cacheKey);
+  }
+
+  /**
+   * Invalidate a specific cache key, forcing re-fetch.
+   * This is used when mocks are added/removed.
+   *
+   * Steps:
+   * 1. Clear from truth layer (and mock layer if exists)
+   * 2. Trigger query refetch to get fresh data
+   * 3. Emit loading state to notify subscribers
+   */
+  public invalidateCacheKey(cacheKey: KnownCacheKey): void {
+    // Step 1: Clear from cache layers using batch context
+    this.batch({}, (batchContext) => {
+      batchContext.write(cacheKey, undefined, "loading");
+    });
+
+    // Step 2: Trigger query refetch if a query exists for this cache key
+    const query = this.queries.peek(cacheKey);
+    if (query) {
+      void query.revalidate(true);
+    }
   }
 
   batch<X>(
@@ -524,5 +575,102 @@ export class Store {
 
     // we use allSettled here because we don't care if it succeeds or fails, just that they all complete.
     return Promise.allSettled(promises).then(() => void 0);
+  }
+
+  /**
+   * Get a snapshot of the current cache state for introspection.
+   * @internal - For development/debugging tools only
+   */
+  public getCacheSnapshot(): CacheSnapshot {
+    const entries: CacheEntry[] = [];
+    let totalSize = 0;
+    const totalHits = 0;
+
+    // Iterate through all queries to build cache snapshot
+    for (const cacheKey of this.queries.keys()) {
+      const entry = this.layers.truth.get(cacheKey);
+      if (!entry) continue;
+
+      // Extract type information based on cache key type
+      let type: "object" | "list" | "link" | "objectSet";
+      let objectType: string;
+      const queryParams: Record<string, any> = {};
+
+      switch (cacheKey.type) {
+        case "object":
+          type = "object";
+          objectType = cacheKey.otherKeys[OBJECT_API_NAME_IDX] as string;
+          break;
+        case "list":
+          type = "list";
+          objectType = cacheKey.otherKeys[LIST_API_NAME_IDX] as string;
+          if (cacheKey.otherKeys[2]) queryParams.where = cacheKey.otherKeys[2];
+          if (cacheKey.otherKeys[3]) {
+            queryParams.orderBy = cacheKey.otherKeys[3];
+          }
+          if (cacheKey.otherKeys[4]) {
+            queryParams.pageSize = cacheKey.otherKeys[4];
+          }
+          break;
+        case "specificLink":
+          type = "link";
+          objectType = cacheKey.otherKeys[0] as string;
+          queryParams.linkName = cacheKey.otherKeys[2] as string;
+          if (cacheKey.otherKeys[3]) queryParams.where = cacheKey.otherKeys[3];
+          if (cacheKey.otherKeys[4]) {
+            queryParams.orderBy = cacheKey.otherKeys[4];
+          }
+          break;
+        case "objectSet":
+          type = "objectSet";
+          objectType = "ObjectSet";
+          break;
+        default:
+          continue;
+      }
+
+      // Calculate size of cached data
+      let size = 0;
+      try {
+        if (entry.value) {
+          size = JSON.stringify(entry.value).length;
+        }
+      } catch {
+        size = 0;
+      }
+
+      // Check if there are any optimistic layers affecting this entry
+      const isOptimistic = entry.optimisticId !== undefined;
+
+      // Create cache entry
+      const cacheEntry: CacheEntry = {
+        key: DEBUG_ONLY__cacheKeyToString(cacheKey),
+        type,
+        objectType,
+        queryParams: Object.keys(queryParams).length > 0
+          ? queryParams
+          : undefined,
+        metadata: {
+          timestamp: entry.lastUpdated,
+          status: entry.status,
+          hitCount: 0, // TODO: Track hits in future enhancement
+          size,
+          isOptimistic,
+        },
+        data: entry.value,
+      };
+
+      entries.push(cacheEntry);
+      totalSize += size;
+    }
+
+    return {
+      entries,
+      stats: {
+        totalEntries: entries.length,
+        totalSize,
+        totalHits,
+      },
+    };
   }
 }

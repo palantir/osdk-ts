@@ -154,11 +154,11 @@ export abstract class AggregationQuery extends Query<
       const result = await this._fetchAggregation();
 
       this.store.batch({}, (batch) => {
-        this.writeToStore(result, "loaded", batch);
+        this.writeToStore(result, "loaded", batch, "network");
       });
     } catch (err) {
       this.store.batch({}, (batch) => {
-        this.writeToStore(undefined, "error", batch);
+        this.writeToStore(undefined, "error", batch, "network");
       });
     }
   }
@@ -171,8 +171,9 @@ export abstract class AggregationQuery extends Query<
     data: AggregationCacheKey["__cacheKey"]["value"],
     status: Status,
     batch: BatchContext,
+    fetchSource?: "network" | "stream" | "optimistic" | "cross-propagation",
   ): Entry<AggregationCacheKey> {
-    batch.write(this.cacheKey, data, status);
+    batch.write(this.cacheKey, data, status, fetchSource);
     batch.changes.modified.add(this.cacheKey);
     return batch.read(this.cacheKey)!;
   }

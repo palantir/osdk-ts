@@ -180,7 +180,7 @@ export function useOsdkObjects<
   L extends LinkNames<Q>,
 >(
   type: Q,
-  options: UseOsdkObjectsOptions<Q> & { pivotTo: L },
+  options: Omit<UseOsdkObjectsOptions<Q>, "pivotTo"> & { pivotTo: L },
 ): UseOsdkListResult<LinkedType<Q, L>>;
 
 export function useOsdkObjects<
@@ -232,6 +232,15 @@ export function useOsdkObjects<
     () => orderBy,
     [JSON.stringify(orderBy)],
   );
+
+  // Register the hook with the observable client for devtools tracking
+  React.useEffect(() => {
+    observableClient.registerListHook?.(type, {
+      where: canonWhere,
+      pageSize,
+      orderBy: stableOrderBy,
+    });
+  }, [observableClient, type, canonWhere, pageSize, stableOrderBy]);
 
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
