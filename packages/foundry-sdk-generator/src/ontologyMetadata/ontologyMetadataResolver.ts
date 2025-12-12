@@ -270,9 +270,12 @@ export class OntologyMetadataResolver {
       const interfaceTypes = new Set(entities.interfaceTypesApiNamesToLoad);
 
       for (const linkType of entities.linkTypesApiNamesToLoad ?? []) {
-        const [objectTypeApiName, linkTypeApiName] = linkType.split(
-          ".",
-        );
+        const lastDotIndex = linkType.lastIndexOf(".");
+        if (lastDotIndex === -1) {
+          continue;
+        }
+        const objectTypeApiName = linkType.substring(0, lastDotIndex);
+        const linkTypeApiName = linkType.substring(lastDotIndex + 1);
         if (!linkTypes.has(objectTypeApiName)) {
           linkTypes.set(objectTypeApiName, new Set());
         }
@@ -324,9 +327,12 @@ export class OntologyMetadataResolver {
       const linkTypes = new Map<string, Set<string>>();
 
       for (const linkType of entities.linkTypesApiNamesToLoad ?? []) {
-        const [objectTypeApiName, linkTypeApiName] = linkType.split(
-          ".",
-        );
+        const lastDotIndex = linkType.lastIndexOf(".");
+        if (lastDotIndex === -1) {
+          continue;
+        }
+        const objectTypeApiName = linkType.substring(0, lastDotIndex);
+        const linkTypeApiName = linkType.substring(lastDotIndex + 1);
         if (!linkTypes.has(objectTypeApiName)) {
           linkTypes.set(objectTypeApiName, new Set());
         }
