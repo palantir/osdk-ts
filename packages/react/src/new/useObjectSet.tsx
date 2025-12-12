@@ -102,6 +102,8 @@ export interface UseObjectSetOptions<
    */
   streamUpdates?: boolean;
 
+  includeRid?: boolean;
+
   /**
    * Enable or disable the query.
    *
@@ -241,6 +243,7 @@ export function useObjectSet<
               dedupeInterval: otherOptions.dedupeIntervalMs ?? 2_000,
               autoFetchMore: otherOptions.autoFetchMore,
               streamUpdates,
+              includeRid: otherOptions.includeRid,
             },
             observer,
           );

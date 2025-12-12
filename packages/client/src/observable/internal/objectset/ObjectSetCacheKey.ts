@@ -30,6 +30,7 @@ export interface ObjectSetOperations {
   pivotTo?: string;
   orderBy?: Canonical<Record<string, "asc" | "desc" | undefined>>;
   pageSize?: number;
+  includeRid?: boolean;
 }
 
 export interface ObjectSetCacheKey extends

@@ -53,6 +53,8 @@ export interface UseLinksOptions<
    */
   mode?: "force" | "offline";
 
+  includeRid?: boolean;
+
   /**
    * Enable or disable the query.
    *
@@ -152,6 +154,7 @@ export function useLinks<
               pageSize: otherOptions.pageSize,
               orderBy: otherOptions.orderBy,
               mode: otherOptions.mode,
+              includeRid: otherOptions.includeRid,
             },
             observer,
           ),
@@ -171,6 +174,7 @@ export function useLinks<
       otherOptions.pageSize,
       otherOptions.orderBy,
       otherOptions.mode,
+      otherOptions.includeRid,
     ],
   );
 
