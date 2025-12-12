@@ -50,6 +50,7 @@ import type {
 import type { PageResult } from "../PageResult.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { BaseObjectSet } from "./BaseObjectSet.js";
+import type { LinkTypeApiNamesFor, ObjectLink } from "./ObjectSetLinks.js";
 import type { ObjectSetSubscription } from "./ObjectSetListener.js";
 
 type MergeObjectSet<
@@ -107,7 +108,8 @@ export interface MinimalObjectSet<
   BaseObjectSet<Q>,
   FetchPage<Q, RDPs>,
   AsyncIter<Q, RDPs, ORDER_BY_OPTIONS>,
-  Where<Q, RDPs>
+  Where<Q, RDPs>,
+  AsyncIterLinks<Q>
 {
 }
 
@@ -585,6 +587,15 @@ type ExtractImplementingTypes<T extends InterfaceDefinition> =
     { implementedBy: ReadonlyArray<infer API_NAME extends string> }
     ? (ObjectTypeDefinition & { apiName: API_NAME }) | InterfaceDefinition
     : InterfaceDefinition;
+
+interface AsyncIterLinks<Q extends ObjectOrInterfaceDefinition> {
+  /**
+   * Bulk load links.
+   */
+  readonly asyncIterLinks: <LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>>(
+    links: LINK_TYPE_API_NAME[],
+  ) => AsyncIterableIterator<ObjectLink<Q, LINK_TYPE_API_NAME>>;
+}
 
 interface ObjectSetCleanedTypes<
   Q extends ObjectOrInterfaceDefinition,
