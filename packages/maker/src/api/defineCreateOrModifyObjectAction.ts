@@ -154,5 +154,6 @@ export function defineCreateOrModifyObjectAction(
       }),
     ...(def.submissionMetadata
       && { submissionMetadata: def.submissionMetadata }),
+    ...(def.icon && { icon: def.icon }),
   });
 }
