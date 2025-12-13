@@ -65,7 +65,7 @@ export interface FilterDefinition<
 
   /**
    * The filter component type to render
-   * Must be compatible with the property type derived from the key
+   * Must be compatible with the property type derived from the key, see ValidComponentsForPropertyType
    */
   filterComponent: C;
 
@@ -166,11 +166,11 @@ export interface ExactMatchFilterState<T = string | boolean>
 export interface DateRangeFilterState extends BaseFilterState {
   type: "DATE_RANGE";
   /**
-   * Minimum date value (inclusive)
+   * The earliest date the user can select
    */
   minValue?: Date;
   /**
-   * Maximum date value (inclusive)
+   * The latest date the user can select
    */
   maxValue?: Date;
 }
