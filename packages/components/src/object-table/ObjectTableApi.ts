@@ -95,18 +95,22 @@ export interface ObjectTableProps<
   filterable?: boolean;
 
   /**
-   * The current where clause to filter the objects in the table.
+   * Controlled filter state for the table.
    *
-   * If not supplied, filtering is managed internally, else `onFilterChanged` is required.
+   * If not supplied, filtering is managed internally.
    */
-  filter?: WhereClause<Q, RDPs>;
-
-  /**
-   * Called when the where clause is changed. If `where` is provided, this must also be provided.
-   *
-   * @param newWhere The new where clause
-   */
-  onFilterChanged?: (newWhere: WhereClause<Q, RDPs>) => void;
+  filterProps?: {
+    /**
+     * The current where clause to filter the objects in the table.
+     */
+    filter: WhereClause<Q, RDPs>;
+    /**
+     * Called when the where clause is changed.
+     *
+     * @param newWhere The new where clause
+     */
+    onFilterChanged: (newWhere: WhereClause<Q, RDPs>) => void;
+  };
 
   /**
    * Whether the table is sortable by the user.
@@ -116,26 +120,30 @@ export interface ObjectTableProps<
   orderable?: boolean;
 
   /**
-   * The current order by clause to sort the objects in the table.
+   * Controlled sorting state for the table.
    *
-   * If not supplied, sorting is managed internally, else `onOrderByChanged` is required.
+   * If not supplied, sorting is managed internally.
    */
-  orderBy?: Array<{
-    property: PropertyKeys<Q>;
-    direction: "asc" | "desc";
-  }>;
-
-  /**
-   * Called when the order by clause is changed. If `orderBy` is provided, this must also be provided.
-   *
-   * @param newOrderBy The new order by clause
-   */
-  onOrderByChanged?: (
-    newOrderBy: Array<{
+  orderByProps?: {
+    /**
+     * The current order by clause to sort the objects in the table.
+     */
+    orderBy: Array<{
       property: PropertyKeys<Q>;
       direction: "asc" | "desc";
-    }>,
-  ) => void;
+    }>;
+    /**
+     * Called when the order by clause is changed.
+     *
+     * @param newOrderBy The new order by clause
+     */
+    onOrderByChanged: (
+      newOrderBy: Array<{
+        property: PropertyKeys<Q>;
+        direction: "asc" | "desc";
+      }>,
+    ) => void;
+  };
   /**
    * Called when the visible columns change.
    *
@@ -201,18 +209,22 @@ export interface ObjectTableProps<
   selectionMode?: "single" | "multiple" | "none";
 
   /**
-   * The currently selected rows in the table
+   * Controlled selection state for the table.
    *
-   * If not provided, selection is managed internally, else `onRowSelection` is required.
+   * If not provided, selection is managed internally.
    */
-  selectedRows?: PrimaryKeyType<Q>[];
-
-  /**
-   * Called when the row selection changes, must be provided if `rowSelection` is provided.
-   *
-   * @param objects The currently selected objects
-   */
-  onRowSelection?: (objects: PrimaryKeyType<Q>[]) => void;
+  selectionProps?: {
+    /**
+     * The currently selected rows in the table
+     */
+    selectedRows: PrimaryKeyType<Q>[];
+    /**
+     * Called when the row selection changes.
+     *
+     * @param objects The currently selected objects
+     */
+    onRowSelection: (objects: PrimaryKeyType<Q>[]) => void;
+  };
 
   /**
    * If provided, will render this context menu when right clicking on a cell
