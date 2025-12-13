@@ -61,7 +61,7 @@ export interface FilterDefinition<
   /**
    * Display label for the filter
    */
-  label: string;
+  label?: string;
 
   /**
    * The filter component type to render

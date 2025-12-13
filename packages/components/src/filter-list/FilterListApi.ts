@@ -31,8 +31,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
 
   /**
    * The current where clause to filter the objectSet
-   *
-   * If not supplied, filtering is managed internally.
+   * If not supplied, the objectSet will be filtered by the internal filterClause
    */
   filterClause?: WhereClause<Q>;
 
