@@ -78,37 +78,43 @@ export interface ObjectTableProps<
   /**
    * The set of objects to show in the table
    */
-  objectSet: ObjectSet;
+  objectSet: ObjectSet<Q>;
+
   /**
    * Ordered list of column definitions to show in the table
    *
    * If not provided, all of the properties of the object type will be shown in default order.
    */
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>;
+
   /**
    * Whether the table is filterable by the user.
    *
    * @default true
    */
   filterable?: boolean;
+
   /**
    * The current where clause to filter the objects in the table.
    *
    * If not supplied, filtering is managed internally, else `onFilterChanged` is required.
    */
   filter?: WhereClause<Q, RDPs>;
+
   /**
    * Called when the where clause is changed. If `where` is provided, this must also be provided.
    *
    * @param newWhere The new where clause
    */
   onFilterChanged?: (newWhere: WhereClause<Q, RDPs>) => void;
+
   /**
    * Whether the table is sortable by the user.
    *
    * @default true
    */
   orderable?: boolean;
+
   /**
    * The current order by clause to sort the objects in the table.
    *
@@ -118,6 +124,7 @@ export interface ObjectTableProps<
     property: PropertyKeys<Q>;
     direction: "asc" | "desc";
   }>;
+
   /**
    * Called when the order by clause is changed. If `orderBy` is provided, this must also be provided.
    *
@@ -142,6 +149,7 @@ export interface ObjectTableProps<
       isVisible: boolean;
     }>,
   ) => void;
+
   /**
    * Called when the pinned columns change.
    *
@@ -155,6 +163,7 @@ export interface ObjectTableProps<
       pinned: "left" | "right" | "none";
     }>,
   ) => void;
+
   /**
    * Called when a column is resized.
    *
@@ -175,11 +184,14 @@ export interface ObjectTableProps<
     object: Osdk.Instance<Q>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
   ) => void;
+
   /**
    * Called when a row is clicked.
+   *
    * @param object The object representing the clicked row
    */
   onRowClick?: (object: Osdk.Instance<Q>) => void;
+
   /**
    * Selection mode for the table rows.
    *
@@ -187,18 +199,21 @@ export interface ObjectTableProps<
    * as well as a top-level checkbox in the header to select all rows.
    */
   selectionMode?: "single" | "multiple" | "none";
+
   /**
    * The currently selected rows in the table
    *
    * If not provided, selection is managed internally, else `onRowSelection` is required.
    */
   selectedRows?: PrimaryKeyType<Q>[];
+
   /**
    * Called when the row selection changes, must be provided if `rowSelection` is provided.
    *
    * @param objects The currently selected objects
    */
   onRowSelection?: (objects: PrimaryKeyType<Q>[]) => void;
+
   /**
    * If provided, will render this context menu when right clicking on a cell
    */
