@@ -27,7 +27,7 @@ import type {
 } from "@osdk/api";
 import type * as React from "react";
 
-type ColumnDefinition<
+export type ColumnDefinition<
   Q extends ObjectTypeDefinition,
   RDPs extends Record<string, SimplePropertyDef>,
   FunctionColumns extends Record<string, QueryDefinition<{}>>,
