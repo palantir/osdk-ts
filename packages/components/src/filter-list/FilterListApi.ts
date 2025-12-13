@@ -38,6 +38,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
 
   /**
    * The logical operator to join multiple filters
+   *
    * @default "and"
    */
   filterOperator?: "and" | "or";
@@ -52,6 +53,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
 
   /**
    * Called when filter state change
+   *
    * @param filterKey The key of the updated filter
    * @param newState The updated filter state
    */
