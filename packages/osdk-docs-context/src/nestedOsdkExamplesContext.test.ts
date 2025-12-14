@@ -24,8 +24,7 @@ describe("NestedOsdkExamplesContext", () => {
       expect(versions).toContain("2.0.0");
       expect(versions).toContain("2.1.0");
       expect(versions).toContain("2.4.0");
-      expect(versions).toContain("2.6.0");
-      expect(versions.length).toBe(4);
+      expect(versions.length).toBe(3);
     });
 
     it("returns versions in consistent order", () => {

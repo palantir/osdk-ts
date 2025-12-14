@@ -472,46 +472,6 @@ export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = {
         "code":
           "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst subscription = client(Employee).subscribe(\n    {\n        onChange(update) {\n            if (update.state === \"ADDED_OR_UPDATED\") {\n                // An object has received an update or an object was added to the object set\n                // Get the object using the $primaryKey from your cache\n                // const currentObject = objects[update.object.$primaryKey];\n                // use the update.object[\"<propertyName>\"] to update your cache \n                //currentObject[\"<propertyName>\"] = update.object[\"<propertyName>\"] ?? currentObject[\"<propertyName>\"];\n            }\n            else if (update.state === \"REMOVED\") {\n                // The object was removed from the object set, which could mean it was deleted or no longer meets the filter criteria\n                // Remove the object from your cache using the $primaryKey\n                // delete objects[update.object.$primaryKey];\n            }\n        },\n        onSuccessfulSubscription() {\n            // The subscription was successful and you can expect to receive updates\n        },\n        onError(err) {\n            // There was an error with the subscription and you will not receive any more updates\n            throw new Error(err.error instanceof Error ? err.error.message : String(err.error));\n        },\n        onOutOfDate() {\n            // We could not keep track of all changes. Please reload the objects in your set.\n        },\n    },\n    { properties: [ \"fullName\",\"salary\" ] }\n);\n\n// To stop receiving updates, call unsubscribe\nsubscription.unsubscribe();",
       },
-      "uploadMedia": {
-        "code":
-          "import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from \"@osdk/api/unstable\";\nimport { Equipment, documentEquipment } from \"../../../generatedNoCheck/index.js\"\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { MediaReference } from \"@osdk/api\";\n// To upload media with 2.x, it has to be linked to an Action call\nasync function createMediaReference() {\n    const file = await fetch(\"file.json\");\n    const data = await file.blob();\n    // Upload media to an object type with a media property. This returns a media reference that can passed to\n    // a media parameter in an Action.\n    return await client(\n        __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,\n    ).createMediaReference({\n        data,\n        fileName: \"myFile\",\n        objectType: Equipment,\n        propertyType: \"trainingMaterial\",\n    });\n}\nconst mediaReference: MediaReference = await createMediaReference();\nconst actionResult = client(documentEquipment).applyAction({ \n    equipmentId: \"mac-1234\",\n    instructionalVideo: mediaReference \n});",
-      },
-      "readMedia": {
-        "code":
-          "import { Equipment } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nconst result = await client(Equipment).fetchOne(\"mac-1234\");\n// Fetch metadata of a media property\nconst mediaMetadata = await result.trainingMaterial?.fetchMetadata();\nconsole.log(mediaMetadata?.mediaType, mediaMetadata?.sizeBytes, mediaMetadata?.path);\n// Fetch contents of a media property\nconst mediaContent = await result.trainingMaterial?.fetchContents();\nif (mediaContent?.ok) {\n    const data = await mediaContent.blob();\n}",
-      },
-    },
-    "2.4.0": {
-      "derivedPropertyNumericExpression": {
-        "#isUnary": {
-          "code":
-            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n      \"abs_salary\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"lead\")\n          .selectProperty(\"salary\").abs()\n    }).fetchPage();",
-        },
-        "^isUnary": {
-          "code":
-            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"assignedEquipment\")\n              .aggregate(\"purchasePrice:avg\").divide(\n                  baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"$count\"))\n      }).fetchPage();",
-        },
-      },
-      "derivedPropertyDatetimeExpression": {
-        "#isExtractPart": {
-          "code":
-            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n          \"YEARS_part_of_birthDate_of_lead\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"lead\")\n              .selectProperty(\"birthDate\").extractPart(\"YEARS\")\n    }).fetchPage();",
-        },
-        "^isExtractPart": {
-          "code":
-            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n          \"derivedPropertyDatetime_min\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"lead\")\n              .selectProperty(\"startDate\")\n              .min(baseObjectSet.pivotTo(\"lead\").selectProperty(\"startDate\"))\n    }).fetchPage();",
-        },
-      },
-      "nearestNeighborsTextQuery": {
-        "code":
-          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst result = await client(Employee)\n  .nearestNeighbors(\"coffee\", 5, \"skillVector\")\n  .fetchPage();",
-      },
-      "nearestNeighborsVectorQuery": {
-        "code":
-          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\n// Note that this vector maps to an arbitrary string\n// It must match the dimension of the \"skillVector\" property: 128\nconst vector_query = Array.from({ length: 128 }, () => 0.3);\nconst result = await client(Employee)\n  .nearestNeighbors(vector_query, 5, \"skillVector\")\n  .fetchPage();",
-      },
-    },
-    "2.6.0": {
       "applyAction": {
         "#hasAttachmentProperty": {
           "code":
@@ -551,6 +511,44 @@ export const TYPESCRIPT_OSDK_CONTEXT: NestedExamplesHierarchy = {
       "uploadMediaOntologyEdits": {
         "code":
           "import type { Client } from \"@osdk/client\";\nimport { Employee } from \"../../../generatedNoCheck/index.js\";\nimport type { Edits } from \"@osdk/functions\";\nimport { createEditBatch, uploadMedia } from \"@osdk/functions\";\n\nasync function createObject(client: Client): Promise<Edits.Object<Employee>[]> {\n    const batch = createEditBatch<Edits.Object<Employee>>(client);\n    \n    const blob = new Blob([\"Hello, world\"], { type: \"text/plain\" });\n    const mediaReference = await uploadMedia(client, { data: blob, fileName: \"foundryFile.txt\" });\n\n    // @ts-ignore \n    batch.create(Employee, { myMediaProperty: mediaReference, /* Other properties... */ });\n\n    return batch.getEdits();\n}\n\nexport default createObject;",
+      },
+      "uploadMedia": {
+        "code":
+          "import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from \"@osdk/api/unstable\";\nimport { Equipment, documentEquipment } from \"../../../generatedNoCheck/index.js\"\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nimport type { MediaReference } from \"@osdk/api\";\n// To upload media with 2.x, it has to be linked to an Action call\nasync function createMediaReference() {\n    const file = await fetch(\"file.json\");\n    const data = await file.blob();\n    // Upload media to an object type with a media property. This returns a media reference that can passed to\n    // a media parameter in an Action.\n    return await client(\n        __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,\n    ).createMediaReference({\n        data,\n        fileName: \"myFile\",\n        objectType: Equipment,\n        propertyType: \"trainingMaterial\",\n    });\n}\nconst mediaReference: MediaReference = await createMediaReference();\nconst actionResult = client(documentEquipment).applyAction({ \n    equipmentId: \"mac-1234\",\n    instructionalVideo: mediaReference \n});",
+      },
+      "readMedia": {
+        "code":
+          "import { Equipment } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\nconst result = await client(Equipment).fetchOne(\"mac-1234\");\n// Fetch metadata of a media property\nconst mediaMetadata = await result.trainingMaterial?.fetchMetadata();\nconsole.log(mediaMetadata?.mediaType, mediaMetadata?.sizeBytes, mediaMetadata?.path);\n// Fetch contents of a media property\nconst mediaContent = await result.trainingMaterial?.fetchContents();\nif (mediaContent?.ok) {\n    const data = await mediaContent.blob();\n}",
+      },
+    },
+    "2.4.0": {
+      "derivedPropertyNumericExpression": {
+        "#isUnary": {
+          "code":
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n      \"abs_salary\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"lead\")\n          .selectProperty(\"salary\").abs()\n    }).fetchPage();",
+        },
+        "^isUnary": {
+          "code":
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n      \"newPropertyName\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"assignedEquipment\")\n              .aggregate(\"purchasePrice:avg\").divide(\n                  baseObjectSet.pivotTo(\"assignedEquipment\").aggregate(\"$count\"))\n      }).fetchPage();",
+        },
+      },
+      "derivedPropertyDatetimeExpression": {
+        "#isExtractPart": {
+          "code":
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n          \"YEARS_part_of_birthDate_of_lead\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"lead\")\n              .selectProperty(\"birthDate\").extractPart(\"YEARS\")\n    }).fetchPage();",
+        },
+        "^isExtractPart": {
+          "code":
+            "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst EmployeeWithExpression = await client(Employee)\n    .withProperties({\n          \"derivedPropertyDatetime_min\": (baseObjectSet) =>\n          baseObjectSet.pivotTo(\"lead\")\n              .selectProperty(\"startDate\")\n              .min(baseObjectSet.pivotTo(\"lead\").selectProperty(\"startDate\"))\n    }).fetchPage();",
+        },
+      },
+      "nearestNeighborsTextQuery": {
+        "code":
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\nconst result = await client(Employee)\n  .nearestNeighbors(\"coffee\", 5, \"skillVector\")\n  .fetchPage();",
+      },
+      "nearestNeighborsVectorQuery": {
+        "code":
+          "import { Employee } from \"../../../generatedNoCheck/index.js\";\n// Edit this import if your client location differs\nimport { client } from \"./client\";\n\n// Note that this vector maps to an arbitrary string\n// It must match the dimension of the \"skillVector\" property: 128\nconst vector_query = Array.from({ length: 128 }, () => 0.3);\nconst result = await client(Employee)\n  .nearestNeighbors(vector_query, 5, \"skillVector\")\n  .fetchPage();",
       },
     },
   },
