@@ -96,13 +96,13 @@ export interface ObjectTableProps<
 
   /**
    * The current where clause to filter the objects in the table.
-   *
-   * If not supplied, filtering is managed internally, else `onFilterChanged` is required.
+   * If provided, the filter is controlled.
    */
   filter?: WhereClause<Q, RDPs>;
 
   /**
-   * Called when the where clause is changed. If `where` is provided, this must also be provided.
+   * Called when the where clause is changed.
+   * Required when filter is controlled.
    *
    * @param newWhere The new where clause
    */
@@ -117,8 +117,7 @@ export interface ObjectTableProps<
 
   /**
    * The current order by clause to sort the objects in the table.
-   *
-   * If not supplied, sorting is managed internally, else `onOrderByChanged` is required.
+   * If provided, the sorting is controlled.
    */
   orderBy?: Array<{
     property: PropertyKeys<Q>;
@@ -126,7 +125,8 @@ export interface ObjectTableProps<
   }>;
 
   /**
-   * Called when the order by clause is changed. If `orderBy` is provided, this must also be provided.
+   * Called when the order by clause is changed.
+   * Required when sorting is controlled.
    *
    * @param newOrderBy The new order by clause
    */
@@ -201,14 +201,14 @@ export interface ObjectTableProps<
   selectionMode?: "single" | "multiple" | "none";
 
   /**
-   * The currently selected rows in the table
-   *
-   * If not provided, selection is managed internally, else `onRowSelection` is required.
+   * The currently selected rows in the table.
+   * If provided, the row selection is controlled.
    */
   selectedRows?: PrimaryKeyType<Q>[];
 
   /**
-   * Called when the row selection changes, must be provided if `rowSelection` is provided.
+   * Called when the row selection changes.
+   * Required when row selection is controlled.
    *
    * @param objects The currently selected objects
    */
