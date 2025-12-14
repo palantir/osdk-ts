@@ -34,6 +34,10 @@ export interface FilterListItemProps<
 > extends FilterDefinition<Q, K, C> {
   objectSet: ObjectSet<Q>;
 
+  /**
+   * Called when the state of the filter changes.
+   * Required in controlled mode.
+   */
   onFilterStateChanged: (state: FilterStateByComponentType[C]) => void;
 
   onFilterRemoved?: (key: PropertyKeys<Q>) => void;
@@ -70,7 +74,8 @@ export interface FilterDefinition<
   filterComponent: C;
 
   /**
-   * The current state of the filter
+   * The current state of the filter.
+   * If provided, the filter is controlled.
    */
   filterState: FilterStateByComponentType[C];
 }

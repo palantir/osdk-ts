@@ -30,10 +30,19 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
   filterDefinitions?: Array<FilterDefinition<Q>>;
 
   /**
-   * The current where clause to filter the objectSet
-   * If not supplied, the objectSet will be filtered by the internal filterClause
+   * The current where clause to filter the objectSet.
+   * If provided, the filter clause is controlled.
    */
   filterClause?: WhereClause<Q>;
+
+  /**
+   * Called when the filter clause changes.
+   * The filters are joined by the selected filterOperator.
+   * Required in controlled mode.
+   *
+   * @param newClause The updated filter clause
+   */
+  onFilterClauseChanged?: (newClause: WhereClause<Q>) => void;
 
   /**
    * The logical operator to join multiple filters
@@ -41,14 +50,6 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    * @default "and"
    */
   filterOperator?: "and" | "or";
-
-  /**
-   * Called when the filter clause changes
-   * The filters are joined by the selected filterOperator
-   *
-   * @param newClause The updated filter clause
-   */
-  onFilterClauseChanged?: (newClause: WhereClause<Q>) => void;
 
   /**
    * Called when filter state change
