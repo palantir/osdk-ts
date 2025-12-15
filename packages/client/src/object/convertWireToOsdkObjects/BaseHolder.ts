@@ -34,6 +34,7 @@ export interface BaseHolder {
   readonly $primaryKey: string | number;
   readonly $title: string | undefined;
   readonly $objectSpecifier: ObjectSpecifier<any>;
+  readonly $rid?: string;
 
   readonly "$as": (
     newDef: string | ObjectOrInterfaceDefinition,

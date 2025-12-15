@@ -184,17 +184,18 @@ interface FetchPageSignature<
     L extends PropertyKeys<Q> | (string & keyof RDPs),
     R extends boolean,
     const A extends Augments,
+    // not used, kept for back compat
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<L> = {},
   >(
-    args?: FetchPageArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
+    args?: FetchPageArgs<Q, L, R, A, any, T, never, ORDER_BY_OPTIONS>,
   ): Promise<
     PageResult<
       MaybeScore<
         Osdk.Instance<
           Q,
-          ExtractOptions<R, S, T>,
+          ExtractOptions<R, T>,
           NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
           SubSelectRDPs<RDPs, NonNullable<typeof args>>
         >,
@@ -258,7 +259,7 @@ interface FetchPageWithErrorsSignature<
         MaybeScore<
           Osdk.Instance<
             Q,
-            ExtractOptions<R, S, T>,
+            ExtractOptions<R, T>,
             NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
             SubSelectRDPs<RDPs, NonNullable<typeof args>>
           >,
@@ -325,16 +326,17 @@ interface AsyncIterSignature<
     L extends PropertyKeys<Q> | (string & keyof RDPs),
     R extends boolean,
     const A extends Augments,
+    // not used, kept for back compat
     S extends NullabilityAdherence = NullabilityAdherence.Default,
     T extends boolean = false,
     ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
   >(
-    args?: AsyncIterArgs<Q, L, R, A, S, T, never, ORDER_BY_OPTIONS>,
+    args?: AsyncIterArgs<Q, L, R, A, any, T, never, ORDER_BY_OPTIONS>,
   ): AsyncIterableIterator<
     MaybeScore<
       Osdk.Instance<
         Q,
-        ExtractOptions<R, S, T>,
+        ExtractOptions<R, T>,
         NoInfer<SubSelectKeys<Q, NonNullable<typeof args>>>,
         SubSelectRDPs<RDPs, NonNullable<typeof args>>
       >,
@@ -379,8 +381,7 @@ export interface ObjectSet<
 > extends
   ObjectSetCleanedTypes<
     Q,
-    ExtractRdp<UNUSED_OR_RDP>,
-    MergeObjectSet<Q, ExtractRdp<UNUSED_OR_RDP>>
+    ExtractRdp<UNUSED_OR_RDP>
   >
 {
 }
@@ -388,6 +389,7 @@ export interface ObjectSet<
 // Q is the merged type here! Not renaming to keep diff small. Rename in follow up
 interface Aggregate<
   Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef>,
 > {
   /**
    * Aggregate on a field in an object type
@@ -412,9 +414,13 @@ interface Aggregate<
 
    * @returns aggregation results, sorted in the groups based on the groupBy clause (if applicable)
    */
-  readonly aggregate: <AO extends AggregateOpts<Q>>(
-    req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
-  ) => Promise<AggregationsResults<Q, AO>>;
+  readonly aggregate: <AO extends AggregateOpts<Q, RDPs>>(
+    req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
+      Q,
+      AO,
+      RDPs
+    >,
+  ) => Promise<AggregationsResults<Q, AO, RDPs>>;
 }
 
 // Q is the merged type here! Not renaming to keep diff small. Rename in follow up
@@ -485,14 +491,15 @@ interface FetchOneSignature<
   <
     const L extends PropertyKeys<Q> | (string & keyof RDPs),
     const R extends boolean,
+    // This is a dead code path but we don't delete it for back compat.
     const S extends false | "throw" = NullabilityAdherence.Default,
   >(
     primaryKey: PrimaryKeyType<Q>,
-    options?: SelectArg<Q, L, R, S>,
+    options?: SelectArg<Q, L, R, any>,
   ): Promise<
     Osdk.Instance<
       Q,
-      ExtractOptions<R, S>,
+      ExtractOptions<R>,
       NoInfer<SubSelectKeys<Q, { $select: Array<L> }>>,
       SubSelectRDPs<RDPs, { $select: Array<L> }>
     >
@@ -509,15 +516,16 @@ interface FetchOneWithErrorsSignature<
   <
     const L extends PropertyKeys<Q> | (string & keyof RDPs),
     const R extends boolean,
+    // not used, kept for back compat
     const S extends false | "throw" = NullabilityAdherence.Default,
   >(
     primaryKey: PrimaryKeyType<Q>,
-    options?: SelectArg<Q, L, R, S>,
+    options?: SelectArg<Q, L, R, any>,
   ): Promise<
     Result<
       Osdk.Instance<
         Q,
-        ExtractOptions<R, S>,
+        ExtractOptions<R>,
         NoInfer<SubSelectKeys<Q, { $select: Array<L> }>>,
         SubSelectRDPs<RDPs, { $select: Array<L> }>
       >
@@ -589,16 +597,15 @@ type ExtractImplementingTypes<T extends InterfaceDefinition> =
 interface ObjectSetCleanedTypes<
   Q extends ObjectOrInterfaceDefinition,
   D extends Record<string, SimplePropertyDef>,
-  MERGED extends ObjectOrInterfaceDefinition & Q,
   ORDER_BY_OPTIONS extends ObjectSetArgs.OrderByOptions<PropertyKeys<Q>> = {},
 > extends
   MinimalObjectSet<Q, D, ORDER_BY_OPTIONS>,
   WithProperties<Q, D>,
-  Aggregate<MERGED>,
-  SetArithmetic<MERGED>,
+  Aggregate<Q, D>,
+  SetArithmetic<Q>,
   PivotTo<Q>,
   FetchOne<Q, D>,
-  Subscribe<MERGED>,
+  Subscribe<Q>,
   NearestNeighbors<Q>,
   NarrowToType<Q>
 {

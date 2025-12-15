@@ -18,12 +18,14 @@ import type { AggregatableKeys } from "../aggregate/AggregatableKeys.js";
 import { TimeDurationMapping } from "../mapping/DurationMapping.js";
 import type { ObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import type { CompileTimeMetadata } from "../ontology/ObjectTypeDefinition.js";
+import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
 import type { GroupByMapper } from "./GroupByMapper.js";
 
 export type GroupByClause<
   Q extends ObjectOrInterfaceDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 > = {
-  [P in AggregatableKeys<Q>]?: GroupByEntry<Q, P>;
+  [P in AggregatableKeys<Q, RDPs>]?: GroupByEntry<Q, P, RDPs>;
 };
 
 type BaseGroupByValue =
@@ -130,7 +132,8 @@ type DatetimeDurationGroupBy = DurationGroupBy<DateTimeUnits>;
 
 type GroupByEntry<
   Q extends ObjectOrInterfaceDefinition,
-  P extends AggregatableKeys<Q>,
+  P extends AggregatableKeys<Q, RDPs>,
+  RDPs extends Record<string, SimplePropertyDef>,
 > = CompileTimeMetadata<Q>["properties"][P]["type"] extends keyof GroupByMapper
   ? GroupByMapper[CompileTimeMetadata<Q>["properties"][P]["type"]]
   : never;
