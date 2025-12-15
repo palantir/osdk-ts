@@ -61,6 +61,8 @@ export abstract class BaseListQuery<
    */
   protected sortingStrategy: SortingStrategy = new NoOpSortingStrategy();
 
+  protected lastFetchWasFromCache = true;
+
   /**
    * Get RDP configuration from the cache key
    */
@@ -100,6 +102,7 @@ export abstract class BaseListQuery<
     status: Status,
     batch: BatchContext,
     append: boolean = false,
+    fetchSource?: "network" | "stream" | "cross-propagation",
   ): Entry<KEY> {
     if (process.env.NODE_ENV !== "production") {
       this.logger
@@ -130,7 +133,12 @@ export abstract class BaseListQuery<
     objectCacheKeys = this._sortCacheKeys(objectCacheKeys, batch);
     objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
 
-    return this.writeToStore({ data: objectCacheKeys }, status, batch);
+    return this.writeToStore(
+      { data: objectCacheKeys },
+      status,
+      batch,
+      fetchSource,
+    );
   }
 
   /**
@@ -138,11 +146,13 @@ export abstract class BaseListQuery<
    * @param data The collection data to write to the store
    * @param status The status to set
    * @param batch The batch context
+   * @param fetchSource The source of the data
    */
   writeToStore(
     data: CollectionStorageData,
     status: Status,
     batch: BatchContext,
+    fetchSource?: "network" | "stream" | "optimistic" | "cross-propagation",
   ): Entry<KEY> {
     const entry = batch.read(this.cacheKey);
 
@@ -164,7 +174,7 @@ export abstract class BaseListQuery<
         );
       }
       // Keep the same value but update status and lastUpdated
-      return batch.write(this.cacheKey, entry.value, status);
+      return batch.write(this.cacheKey, entry.value, status, fetchSource);
     }
 
     if (process.env.NODE_ENV !== "production") {
@@ -174,7 +184,7 @@ export abstract class BaseListQuery<
       );
     }
 
-    const ret = batch.write(this.cacheKey, data, status);
+    const ret = batch.write(this.cacheKey, data, status, fetchSource);
     this.registerCacheChanges(batch);
     return ret;
   }
@@ -248,6 +258,9 @@ export abstract class BaseListQuery<
   protected createPayload(
     params: CollectionConnectableParams,
   ): PAYLOAD {
+    const servedFromCache = this.lastFetchWasFromCache
+      && params.status === "loaded";
+
     return {
       resolvedList: params.resolvedData,
       isOptimistic: params.isOptimistic,
@@ -255,6 +268,11 @@ export abstract class BaseListQuery<
       hasMore: this.nextPageToken != null,
       status: params.status,
       lastUpdated: params.lastUpdated,
+      __debugMetadata: {
+        servedFromCache,
+        optimisticId: params.optimisticId,
+        fetchSource: params.fetchSource,
+      },
     } as unknown as PAYLOAD; // Type assertion needed since we don't know exact subtype
   }
 
@@ -313,7 +331,10 @@ export abstract class BaseListQuery<
     this.pendingFetch = this.fetchPageAndUpdate(
       "loaded",
       this.abortController?.signal,
-    ).then(() => void 0).finally(() => {
+      "network",
+    ).then(() => {
+      return void 0;
+    }).finally(() => {
       this.pendingPageFetch = undefined;
     });
     return this.pendingFetch;
@@ -338,11 +359,20 @@ export abstract class BaseListQuery<
       );
     }
 
+    const existingEntry = this.store.getValue(this.cacheKey);
+    const hasCachedData = existingEntry?.value?.data != null
+      && existingEntry.value.data.length > 0;
+
+    if (!hasCachedData) {
+      this.lastFetchWasFromCache = false;
+    }
+
     // Keep fetching pages until we have the minimum number of results or no more pages
     while (true) {
       const entry = await this.fetchPageAndUpdate(
         "loading",
         this.abortController?.signal,
+        "network",
       );
 
       if (!entry) {
@@ -363,6 +393,8 @@ export abstract class BaseListQuery<
       this.setStatus("loaded", batch);
     });
 
+    this.lastFetchWasFromCache = true;
+
     return Promise.resolve();
   }
 
@@ -372,11 +404,13 @@ export abstract class BaseListQuery<
    *
    * @param status The status to set for the entry
    * @param signal Optional AbortSignal for cancellation
+   * @param fetchSource The source of the fetch
    * @returns A promise that resolves to the updated entry or undefined if aborted
    */
   protected async fetchPageAndUpdate(
     status: Status,
     signal: AbortSignal | undefined,
+    fetchSource?: "network" | "stream",
   ): Promise<Entry<KEY> | undefined> {
     if (process.env.NODE_ENV !== "production") {
       this.logger?.child({ methodName: "fetchPageAndUpdate" }).debug(
@@ -409,6 +443,7 @@ export abstract class BaseListQuery<
           result.data,
           batch,
           this.rdpConfig,
+          fetchSource,
         );
 
         return this._updateList(
@@ -416,6 +451,7 @@ export abstract class BaseListQuery<
           finalStatus,
           batch,
           append,
+          fetchSource,
         );
       });
 
@@ -468,7 +504,7 @@ export abstract class BaseListQuery<
   ): Entry<KEY> {
     // Default implementation writes an empty list with error status
     // Most subclasses should be able to use this
-    return this.writeToStore({ data: [] }, "error", batch);
+    return this.writeToStore({ data: [] }, "error", batch, "network");
   }
 
   /**
@@ -498,6 +534,7 @@ export abstract class BaseListQuery<
     options: {
       append?: boolean;
       status: Status;
+      fetchSource?: "network" | "stream" | "optimistic" | "cross-propagation";
     },
     batch: BatchContext,
   ): Entry<KEY> {
@@ -543,7 +580,12 @@ export abstract class BaseListQuery<
     objectCacheKeys = removeDuplicates(objectCacheKeys, batch);
 
     // Step 5: Write to store
-    return this.writeToStore({ data: objectCacheKeys }, options.status, batch);
+    return this.writeToStore(
+      { data: objectCacheKeys },
+      options.status,
+      batch,
+      options.fetchSource,
+    );
   }
 
   //

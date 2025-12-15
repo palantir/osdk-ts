@@ -196,7 +196,7 @@ export class ObjectSetQuery extends BaseListQuery<
     this.logger?.error("error", error);
     this.store.subjects.get(this.cacheKey).error(error);
 
-    return this.writeToStore({ data: [] }, "error", batch);
+    return this.writeToStore({ data: [] }, "error", batch, "network");
   }
 
   registerStreamUpdates(sub: Subscription): void {

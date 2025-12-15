@@ -1,4 +1,3 @@
-import { createClient } from "@osdk/client";
 import { BrowserLogger } from "@osdk/client/internal";
 import { createPublicOauthClient } from "@osdk/oauth";
 import invariant from "tiny-invariant";
@@ -12,15 +11,11 @@ invariant(import.meta.env.VITE_FOUNDRY_URL, "VITE_FOUNDRY_URL is required");
 
 export const auth = createPublicOauthClient(
   import.meta.env.VITE_FOUNDRY_CLIENT_ID,
-  // import.meta.env.VITE_FOUNDRY_URL,
-  "http://localhost:8080",
-  "http://localhost:8080/auth/callback",
+  import.meta.env.VITE_FOUNDRY_URL,
+  `${import.meta.env.VITE_FOUNDRY_URL}/auth/callback`,
   { useHistory: true },
 );
 
-export const $ = createClient(
-  "http://localhost:8080",
-  $ontologyRid,
-  auth,
-  { logger: new BrowserLogger({}, { level: "debug" }) },
-);
+export const logger = new BrowserLogger({}, { level: "debug" });
+
+export { $ontologyRid };

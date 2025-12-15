@@ -42,6 +42,7 @@ export abstract class Query<
   O extends CommonObserveOptions,
 > implements Subscribable<PAYLOAD> {
   lastFetchStarted?: number;
+
   pendingFetch?: Promise<void>;
   retainCount: number = 0;
   options: O;
@@ -274,11 +275,13 @@ export abstract class Query<
    * @param data
    * @param status
    * @param batch
+   * @param fetchSource
    */
   abstract writeToStore(
     data: KEY["__cacheKey"]["value"],
     status: Status,
     batch: BatchContext,
+    fetchSource?: "network" | "stream" | "optimistic" | "cross-propagation",
   ): Entry<KEY>;
 
   /**

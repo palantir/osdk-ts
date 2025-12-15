@@ -25,7 +25,13 @@ function FilterSelector({ setFilter, heading }: FilterSelectorProps) {
 
     // inform our parent what to use
     setFilter(whereClauses[newIdx]);
-  }, [clauseIdx, setClauseIdx]);
+  }, [clauseIdx, setClauseIdx, setFilter]);
+
+  const onReset = React.useCallback(() => {
+    // Reset to first filter (empty {})
+    setClauseIdx(0);
+    setFilter(whereClauses[0]);
+  }, [setClauseIdx, setFilter]);
 
   return (
     <>
@@ -35,9 +41,12 @@ function FilterSelector({ setFilter, heading }: FilterSelectorProps) {
       <pre className="text-sm">
         {JSON.stringify(whereClauses[clauseIdx], null, 2)}
       </pre>
-      <div className="my-4">
+      <div className="my-4 flex gap-2">
         <Button onClick={onClick}>
           ChangeFilter
+        </Button>
+        <Button onClick={onReset}>
+          Reset Filter
         </Button>
       </div>
     </>

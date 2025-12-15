@@ -570,7 +570,8 @@ export function objectPayloadContaining(
     isOptimistic: expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
-  };
+    __debugMetadata: expect.anything(),
+  } as ObjectPayload;
 }
 
 export function listPayloadContaining(
@@ -583,7 +584,8 @@ export function listPayloadContaining(
     isOptimistic: expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
-  };
+    __debugMetadata: expect.anything(),
+  } as ListPayload;
 }
 
 export function linkPayloadContaining(
@@ -596,7 +598,8 @@ export function linkPayloadContaining(
     isOptimistic: expect.any(Boolean),
     status: x.status ?? expect.anything(),
     lastUpdated: x.lastUpdated ?? expect.anything(),
-  };
+    __debugMetadata: expect.anything(),
+  } as SpecificLinkPayload;
 }
 
 export function applyCustomMatchers(): void {

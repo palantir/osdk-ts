@@ -37,10 +37,13 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
+    "@blueprintjs/core": "^5.16.2",
+    "@blueprintjs/icons": "^5.20.2",
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/oauth": "workspace:~",
     "@osdk/react": "workspace:~",
+    "@osdk/react-devtools": "workspace:~",
     "core-js": "^3.45.1",
     "maplibre-gl": "^5.7.1",
     "react": "^19.1.1",

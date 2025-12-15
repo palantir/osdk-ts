@@ -82,6 +82,11 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
     ? (args[0] as Osdk.Instance<Q>).$primaryKey
     : (args[1] as PrimaryKeyType<Q>);
 
+  // Register the hook with the observable client for devtools tracking
+  React.useEffect(() => {
+    observableClient.registerObjectHook?.(objectType, primaryKey);
+  }, [observableClient, objectType, primaryKey]);
+
   const { subscribe, getSnapShot } = React.useMemo(
     () => {
       if (!enabled) {
@@ -115,13 +120,19 @@ export function useOsdkObject<Q extends ObjectTypeDefinition>(
     error = new Error("Failed to load object");
   }
 
+  // Create a stable forceUpdate callback that invalidates the current object
+  const forceUpdate = React.useCallback(() => {
+    const currentObject = payload?.object as Osdk.Instance<Q> | undefined;
+    if (currentObject) {
+      void observableClient.invalidateObjects(currentObject);
+    }
+  }, [observableClient, payload?.object]);
+
   return {
     object: payload?.object as Osdk.Instance<Q> | undefined,
     isLoading: payload?.status === "loading",
     isOptimistic: !!payload?.isOptimistic,
     error,
-    forceUpdate: () => {
-      throw new Error("not implemented");
-    },
+    forceUpdate,
   };
 }
