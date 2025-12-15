@@ -2074,121 +2074,6 @@ versions:
 
             // To stop receiving updates, call unsubscribe
             subscription.unsubscribe();
-      uploadMediaOntologyEdits:
-        - template: |-
-            // Upgrade to 2.6 for official support
-      uploadMedia:
-        - template: |-
-            import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
-            import { {{objectType}}, {{actionApiName}} } from "{{{packageName}}}"
-            // Edit this import if your client location differs
-            import { client } from "./client";
-            import type { MediaReference } from "@osdk/api";
-            // To upload media with 2.x, it has to be linked to an Action call
-            async function createMediaReference() {
-                const file = await fetch("file.json");
-                const data = await file.blob();
-                // Upload media to an object type with a media property. This returns a media reference that can passed to
-                // a media parameter in an Action.
-                return await client(
-                    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
-                ).createMediaReference({
-                    data,
-                    fileName: "myFile",
-                    objectType: {{objectType}},
-                    propertyType: "{{property}}",
-                });
-            }
-            const mediaReference: MediaReference = await createMediaReference();
-            const actionResult = client({{actionApiName}}).applyAction({ 
-                {{primaryKeyPropertyV2.apiName}}: {{{propertyValueV2}}},
-                {{mediaParameter}}: mediaReference 
-            });
-          computedVariables:
-            - propertyValueV2
-      readMedia:
-        - template: |-
-            import { {{objectType}} } from "{{{packageName}}}";
-            // Edit this import if your client location differs
-            import { client } from "./client";
-            const result = await client({{objectType}}).fetchOne({{{primaryKeyPropertyValueV2}}});
-            // Fetch metadata of a media property
-            const mediaMetadata = await result.{{property}}?.fetchMetadata();
-            console.log(mediaMetadata?.mediaType, mediaMetadata?.sizeBytes, mediaMetadata?.path);
-            // Fetch contents of a media property
-            const mediaContent = await result.{{property}}?.fetchContents();
-            if (mediaContent?.ok) {
-                const data = await mediaContent.blob();
-            }
-          computedVariables:
-            - primaryKeyPropertyValueV2
-  "2.4.0":
-    snippets:
-        derivedPropertyNumericExpression:
-          - template: |-
-              import { {{objectType}} } from "{{{packageName}}}";
-              // Edit this import if your client location differs
-              import { client } from "./client";
-
-              const {{objectType}}WithExpression = await client({{objectType}})
-                  .withProperties({
-                    {{^isUnary}}
-                    "newPropertyName": (baseObjectSet) =>
-                        baseObjectSet.pivotTo("{{linkApiName}}")
-                            .aggregate("{{property}}").{{operation}}(
-                                baseObjectSet.pivotTo("{{linkApiName}}").aggregate("$count"))
-                    }).fetchPage();
-                    {{/isUnary}}
-                    {{#isUnary}}
-                    "{{operation}}_{{property}}": (baseObjectSet) =>
-                        baseObjectSet.pivotTo("{{linkApiName}}")
-                        .selectProperty("{{property}}").{{operation}}()
-                  }).fetchPage();
-                    {{/isUnary}}
-        derivedPropertyDatetimeExpression:
-          - template: |-
-              import { {{objectType}} } from "{{{packageName}}}";
-              // Edit this import if your client location differs
-              import { client } from "./client";
-
-              const {{objectType}}WithExpression = await client({{objectType}})
-                  .withProperties({
-                        {{^isExtractPart}} 
-                        "derivedPropertyDatetime_{{operation}}": (baseObjectSet) =>
-                        baseObjectSet.pivotTo("{{linkApiName}}")
-                            .selectProperty("{{property}}")
-                            .{{operation}}(baseObjectSet.pivotTo("{{linkApiName}}").selectProperty("{{property}}"))
-                        {{/isExtractPart}}
-                        {{#isExtractPart}}
-                        "YEARS_part_of_{{property}}_of_{{linkApiName}}": (baseObjectSet) =>
-                        baseObjectSet.pivotTo("{{linkApiName}}")
-                            .selectProperty("{{property}}").extractPart("YEARS")
-                        {{/isExtractPart}}
-                  }).fetchPage();
-        nearestNeighborsTextQuery:
-          - template: |-
-              import { {{objectType}} } from "{{{packageName}}}";
-              // Edit this import if your client location differs
-              import { client } from "./client";
-
-              const result = await client({{objectType}})
-                .nearestNeighbors("coffee", 5, "{{property}}")
-                .fetchPage();
-
-        nearestNeighborsVectorQuery:
-          - template: |-
-              import { {{objectType}} } from "{{{packageName}}}";
-              // Edit this import if your client location differs
-              import { client } from "./client";
-
-              // Note that this vector maps to an arbitrary string
-              // It must match the dimension of the "{{property}}" property: {{vectorDimensionSize}}
-              const vector_query = Array.from({ length: {{vectorDimensionSize}} }, () => 0.3);
-              const result = await client({{objectType}})
-                .nearestNeighbors(vector_query, 5, "{{property}}")
-                .fetchPage();
-  "2.6.0": 
-    snippets:
       applyAction:
         # Simplified template supporting 4 cases:
         # - hasAttachmentProperty: Whether action has attachment parameters (true/false)
@@ -2329,3 +2214,113 @@ versions:
             }
 
             export default createObject;
+      uploadMedia:
+        - template: |-
+            import { __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference } from "@osdk/api/unstable";
+            import { {{objectType}}, {{actionApiName}} } from "{{{packageName}}}"
+            // Edit this import if your client location differs
+            import { client } from "./client";
+            import type { MediaReference } from "@osdk/api";
+            // To upload media with 2.x, it has to be linked to an Action call
+            async function createMediaReference() {
+                const file = await fetch("file.json");
+                const data = await file.blob();
+                // Upload media to an object type with a media property. This returns a media reference that can passed to
+                // a media parameter in an Action.
+                return await client(
+                    __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference,
+                ).createMediaReference({
+                    data,
+                    fileName: "myFile",
+                    objectType: {{objectType}},
+                    propertyType: "{{property}}",
+                });
+            }
+            const mediaReference: MediaReference = await createMediaReference();
+            const actionResult = client({{actionApiName}}).applyAction({ 
+                {{primaryKeyPropertyV2.apiName}}: {{{propertyValueV2}}},
+                {{mediaParameter}}: mediaReference 
+            });
+          computedVariables:
+            - propertyValueV2
+      readMedia:
+        - template: |-
+            import { {{objectType}} } from "{{{packageName}}}";
+            // Edit this import if your client location differs
+            import { client } from "./client";
+            const result = await client({{objectType}}).fetchOne({{{primaryKeyPropertyValueV2}}});
+            // Fetch metadata of a media property
+            const mediaMetadata = await result.{{property}}?.fetchMetadata();
+            console.log(mediaMetadata?.mediaType, mediaMetadata?.sizeBytes, mediaMetadata?.path);
+            // Fetch contents of a media property
+            const mediaContent = await result.{{property}}?.fetchContents();
+            if (mediaContent?.ok) {
+                const data = await mediaContent.blob();
+            }
+          computedVariables:
+            - primaryKeyPropertyValueV2
+  "2.4.0":
+    snippets:
+        derivedPropertyNumericExpression:
+          - template: |-
+              import { {{objectType}} } from "{{{packageName}}}";
+              // Edit this import if your client location differs
+              import { client } from "./client";
+
+              const {{objectType}}WithExpression = await client({{objectType}})
+                  .withProperties({
+                    {{^isUnary}}
+                    "newPropertyName": (baseObjectSet) =>
+                        baseObjectSet.pivotTo("{{linkApiName}}")
+                            .aggregate("{{property}}").{{operation}}(
+                                baseObjectSet.pivotTo("{{linkApiName}}").aggregate("$count"))
+                    }).fetchPage();
+                    {{/isUnary}}
+                    {{#isUnary}}
+                    "{{operation}}_{{property}}": (baseObjectSet) =>
+                        baseObjectSet.pivotTo("{{linkApiName}}")
+                        .selectProperty("{{property}}").{{operation}}()
+                  }).fetchPage();
+                    {{/isUnary}}
+        derivedPropertyDatetimeExpression:
+          - template: |-
+              import { {{objectType}} } from "{{{packageName}}}";
+              // Edit this import if your client location differs
+              import { client } from "./client";
+
+              const {{objectType}}WithExpression = await client({{objectType}})
+                  .withProperties({
+                        {{^isExtractPart}} 
+                        "derivedPropertyDatetime_{{operation}}": (baseObjectSet) =>
+                        baseObjectSet.pivotTo("{{linkApiName}}")
+                            .selectProperty("{{property}}")
+                            .{{operation}}(baseObjectSet.pivotTo("{{linkApiName}}").selectProperty("{{property}}"))
+                        {{/isExtractPart}}
+                        {{#isExtractPart}}
+                        "YEARS_part_of_{{property}}_of_{{linkApiName}}": (baseObjectSet) =>
+                        baseObjectSet.pivotTo("{{linkApiName}}")
+                            .selectProperty("{{property}}").extractPart("YEARS")
+                        {{/isExtractPart}}
+                  }).fetchPage();
+        nearestNeighborsTextQuery:
+          - template: |-
+              import { {{objectType}} } from "{{{packageName}}}";
+              // Edit this import if your client location differs
+              import { client } from "./client";
+
+              const result = await client({{objectType}})
+                .nearestNeighbors("coffee", 5, "{{property}}")
+                .fetchPage();
+
+        nearestNeighborsVectorQuery:
+          - template: |-
+              import { {{objectType}} } from "{{{packageName}}}";
+              // Edit this import if your client location differs
+              import { client } from "./client";
+
+              // Note that this vector maps to an arbitrary string
+              // It must match the dimension of the "{{property}}" property: {{vectorDimensionSize}}
+              const vector_query = Array.from({ length: {{vectorDimensionSize}} }, () => 0.3);
+              const result = await client({{objectType}})
+                .nearestNeighbors(vector_query, 5, "{{property}}")
+                .fetchPage();
