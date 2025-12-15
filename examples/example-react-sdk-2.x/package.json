@@ -18,6 +18,7 @@
   "dependencies": {
     "@osdk/client": "workspace:*",
     "@osdk/e2e.generated.catchall": "workspace:*",
+    "@osdk/foundry": "latest",
     "@osdk/oauth": "workspace:*",
     "@osdk/react": "workspace:*",
     "react": "^18",
