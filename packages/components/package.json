@@ -43,6 +43,7 @@
     "@osdk/api": "*",
     "@osdk/client": "*",
     "@osdk/react": "*",
+    "@tanstack/react-table": "^8",
     "@types/react": "^17 || ^18 || ^19",
     "react": "^17 || ^18 || ^19",
     "react-dom": "^17 || ^18 || ^19"
@@ -53,6 +54,7 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",
+    "@tanstack/react-table": "^8.20.6",
     "@types/react": "^18.3.24",
     "react": "^18.3.1",
     "typescript": "~5.5.4"

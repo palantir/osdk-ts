@@ -16,3 +16,9 @@
 
 // Export your components here
 // Example: export { MyComponent } from "./MyComponent";
+
+export { ObjectTable } from "./object-table/ObjectTable.js";
+export type {
+  ColumnDefinition,
+  ObjectTableProps,
+} from "./object-table/ObjectTableApi.js";
