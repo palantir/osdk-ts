@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import { configDefaults, defineConfig } from "vitest/config";
+import { describe, expect, it } from "vitest";
 
-export default defineConfig({
-  test: {
-    pool: "forks",
-    exclude: [...configDefaults.exclude, "**/build/**/*"],
-    fakeTimers: {
-      toFake: ["setTimeout", "clearTimeout", "Date"],
-    },
-  },
+describe("anything", () => {
+  it("does", async () => {
+    expect(1).toBe(1);
+  });
 });
