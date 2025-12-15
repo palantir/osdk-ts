@@ -13,6 +13,5 @@ npm install @osdk/components
 This package provides reusable React components built on top of `@osdk/react` for common Ontology SDK use cases.
 
 ```typescript
-import { /* your components */ } from "@osdk/components";
+import {/* your components */} from "@osdk/components";
 ```
-
