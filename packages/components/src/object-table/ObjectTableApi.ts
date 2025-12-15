@@ -136,6 +136,7 @@ export interface ObjectTableProps<
       direction: "asc" | "desc";
     }>,
   ) => void;
+
   /**
    * Called when the visible columns change.
    *
@@ -174,6 +175,7 @@ export interface ObjectTableProps<
     columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns,
     newWidth: number,
   ) => void;
+
   /**
    * Called when a cell is clicked.
    *
