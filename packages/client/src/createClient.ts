@@ -23,7 +23,6 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectSet,
   ObjectTypeDefinition,
-  Osdk,
   PropertyKeys,
   QueryDefinition,
   SelectArg,
@@ -201,7 +200,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
                 createWithRid(
                   [rid],
                 ),
-              ) as Osdk<Q>;
+              );
             },
           } as any;
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__createMediaReference.name:
