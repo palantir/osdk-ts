@@ -148,7 +148,14 @@ export function defineValueType(
 
   const vt: ValueTypeDefinitionVersion = {
     apiName,
-    packageNamespace: namespace.substring(0, namespace.length - 1),
+    // Use getter to defer namespace resolution until it's accessed
+    get packageNamespace() {
+      invariant(
+        namespace !== undefined,
+        `defineValueType called for '${apiName}' before defineOntology has been invoked. The namespace must be set by calling defineOntology before defining value types.`,
+      );
+      return namespace.substring(0, namespace.length - 1);
+    },
     displayMetadata: {
       displayName: displayName,
       description: description ?? "",
