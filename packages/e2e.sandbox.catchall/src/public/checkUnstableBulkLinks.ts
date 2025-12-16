@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+import type {
+  ObjectIdentifiers,
+  ObjectOrInterfaceDefinition,
+  Osdk,
+} from "@osdk/api";
 import { __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks } from "@osdk/api/unstable";
 import {
   Employee,
@@ -23,18 +28,79 @@ import {
 import { client } from "../client.js";
 import { logger } from "../logger.js";
 
-const locator = (
-  { $apiName, $primaryKey }: { $apiName: string; $primaryKey: any },
+const locatorString = <Q extends ObjectOrInterfaceDefinition>(
+  { $apiName, $primaryKey }: ObjectIdentifiers<Q>,
 ) => `${$apiName}:${$primaryKey}`;
 
-export async function checkAsyncIterLinks(): Promise<void> {
+const objectIdentifier = <Q extends ObjectOrInterfaceDefinition>(
+  { $apiName, $primaryKey }: Osdk.Instance<Q>,
+): ObjectIdentifiers<Q> => ({ $apiName, $primaryKey });
+
+const fetchAll = async <T>(
+  objectSet: { asyncIter: () => AsyncIterableIterator<T> },
+) => {
+  const result = [];
+  for await (const obj of objectSet.asyncIter()) result.push(obj);
+  return result;
+};
+
+export const buildGraph = async (): Promise<void> => {
+  const venturesObjectSet = client(Venture);
+
+  // Fetch objects
+  const allVentures = new Map(
+    (await fetchAll(venturesObjectSet)).map(
+      venture => [objectIdentifier(venture), venture],
+    ),
+  );
+  const allLinkedEmployees = new Map((await fetchAll(
+    venturesObjectSet.pivotTo("employees"),
+  )).map(employee => [objectIdentifier(employee), employee]));
+
+  // Fetch links and build graph
+  const ventureToEmployees = new Map<
+    Osdk.Instance<Venture>,
+    Osdk.Instance<Employee>[]
+  >();
+
+  for await (
+    const { source, target, linkType } of venturesObjectSet.asyncIterLinks([
+      "employees",
+    ])
+  ) {
+    const sourceVenture = allVentures.get(source)!;
+    const targetEmployee = allLinkedEmployees.get(target)!;
+    if (!ventureToEmployees.has(sourceVenture)) {
+      ventureToEmployees.set(sourceVenture, []);
+    }
+    ventureToEmployees.get(sourceVenture)!.push(targetEmployee);
+  }
+
+  // Display graph
+  for (const venture of allVentures.values()) {
+    console.log(
+      `Venture ${venture.$title} has `,
+      ventureToEmployees.has(venture)
+        ? `employees ${
+          ventureToEmployees.get(venture)!.map(venture => venture.$title).join(
+            ", ",
+          )
+        }`
+        : "no ventures.",
+    );
+  }
+};
+
+export const checkAsyncIterLinks = async (): Promise<void> => {
   // one link
   for await (
     const { source, target, linkType } of client(Venture).asyncIterLinks([
       "employees",
     ])
   ) {
-    console.log(`${locator(source)} ---(${linkType})--> ${locator(target)}`);
+    console.log(
+      `${locatorString(source)} ---(${linkType})--> ${locatorString(target)}`,
+    );
   }
 
   // multiple links
@@ -44,10 +110,13 @@ export async function checkAsyncIterLinks(): Promise<void> {
       "peeps",
     ])
   ) {
-    console.log(`${locator(source)} ---(${linkType})--> ${locator(target)}`);
+    console.log(
+      `${locatorString(source)} ---(${linkType})--> ${locatorString(target)}`,
+    );
   }
-}
+};
 
+// This is the old experimental bulk links feature.
 export async function checkUnstableBulkLinks(): Promise<void> {
   // Test one to many
   const stations = await client(WeatherStation).fetchPage();
@@ -98,3 +167,4 @@ export async function checkUnstableBulkLinks(): Promise<void> {
 
 void checkUnstableBulkLinks();
 void checkAsyncIterLinks();
+void buildGraph();
