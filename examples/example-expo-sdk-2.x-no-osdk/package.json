@@ -21,6 +21,7 @@
     "@babel/runtime": "^7.28.4",
     "@expo/vector-icons": "^14.1.0",
     "@osdk/client": "workspace:*",
+    "@osdk/foundry": "latest",
     "@osdk/oauth": "workspace:*",
     "@osdk/react": "workspace:*",
     "@react-navigation/bottom-tabs": "^7.4.7",

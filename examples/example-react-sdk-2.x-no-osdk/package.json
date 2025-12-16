@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@osdk/client": "workspace:*",
+    "@osdk/foundry": "latest",
     "@osdk/oauth": "workspace:*",
     "@osdk/react": "workspace:*",
     "react": "^18",
