@@ -31,10 +31,6 @@ import {
 } from "@osdk/widget.client";
 import React, { useContext } from "react";
 
-/**
- * For a given event's parameter updates map, replace any `{ objectSetRid: string }`
- * with `ObjectSet<T>` directly based on the parameter definition in the config.
- */
 export type AugmentedEventParameterValueMap<
   C extends WidgetConfig<C["parameters"]>,
   K extends EventId<C>,

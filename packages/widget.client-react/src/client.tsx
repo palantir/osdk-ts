@@ -50,10 +50,8 @@ type ExtractObjectTypes<C extends WidgetConfig<C["parameters"]>> =
     : never;
 
 /**
- * Transforms an augmented emit event payload by converting any ObjectSet values
- * directly to `{ objectSetRid }` for wire compatibility.
- *
- * Multiple ObjectSet parameters are transformed in parallel for better performance.
+ * Transforms an augmented emit event payload by creating temporary object sets
+ * from ObjectSet instances.
  */
 async function transformEmitEventPayload<
   C extends WidgetConfig<C["parameters"]>,
@@ -153,13 +151,6 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
 
   const emitEventCallIds = useRef<Map<string, number>>(new Map());
 
-  /**
-   * Wrapped emitEvent that transforms ObjectSet values to objectSetRid before sending.
-   * This allows callers to pass ObjectSet<T> directly instead of `{ objectSetRid: string }`.
-   *
-   * If multiple calls are made for the same event before the async transformation completes,
-   * only the last call for that event will actually emit. Different events are independent.
-   */
   const emitEvent: AugmentedEmitEvent<C> = useCallback(
     async (eventId, payload) => {
       const eventKey = String(eventId);
