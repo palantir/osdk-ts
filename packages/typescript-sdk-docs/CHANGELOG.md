@@ -1,5 +1,11 @@
 # @osdk/typescript-sdk-docs
 
+## 0.6.0-beta.3
+
+### Minor Changes
+
+- 579e518: Move new Media upload docs from 2.6 to 2.1
+
 ## 0.6.0-beta.2
 
 ### Minor Changes

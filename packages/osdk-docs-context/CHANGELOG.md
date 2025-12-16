@@ -1,5 +1,11 @@
 # @osdk/osdk-docs-context
 
+## 0.4.0-beta.2
+
+### Minor Changes
+
+- 579e518: Move new Media upload docs from 2.6 to 2.1
+
 ## 0.3.0-beta.6
 
 ### Minor Changes

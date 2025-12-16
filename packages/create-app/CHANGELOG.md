@@ -1,5 +1,11 @@
 # @osdk/create-app
 
+## 2.7.0-beta.4
+
+### Minor Changes
+
+- 5ba2346: Add `osdk/foundry` to `create-app` templates
+
 ## 2.7.0-beta.3
 
 ## 2.7.0-beta.2

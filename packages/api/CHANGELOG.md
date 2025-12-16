@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 2.7.0-beta.4
+
+### Minor Changes
+
+- 1e3c147: Add experimental_asyncIterLinks method on object sets
+
 ## 2.7.0-beta.3
 
 ### Minor Changes
