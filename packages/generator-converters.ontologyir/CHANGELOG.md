@@ -1,5 +1,23 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.6.0
+
+### Patch Changes
+
+- 150da1a: Simulated release
+- b313525: bump osdk
+- 3fbb596: Pipe through transactionId to endpoints that load data via object sets
+- a1ffb20: Use new ephemeral media upload endpoint.
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [7fd788b]
+- Updated dependencies [af4f3bf]
+  - @osdk/client.unstable@2.6.0
+
 ## 2.6.0-rc.18
 
 ### Patch Changes
