@@ -185,7 +185,7 @@ export function createClientFromContext(clientCtx: MinimalClient) {
         case __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchOneByRid.name:
           return {
             fetchOneByRid: async <
-              Q extends ObjectTypeDefinition,
+              Q extends ObjectOrInterfaceDefinition,
               const L extends PropertyKeys<Q>,
               const R extends boolean,
               const S extends false | "throw" = NullabilityAdherence.Default,
