@@ -1,11 +1,11 @@
-# @osdk/components
+# @osdk/react-components
 
 React components library for building applications with the Ontology SDK.
 
 ## Installation
 
 ```sh
-npm install @osdk/components
+npm install @osdk/react-components
 ```
 
 ## Usage

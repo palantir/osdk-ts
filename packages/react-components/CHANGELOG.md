@@ -1,4 +1,4 @@
-# @osdk/components
+# @osdk/react-components
 
 ## 0.0.0
 

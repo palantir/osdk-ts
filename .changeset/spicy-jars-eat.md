@@ -1,4 +1,4 @@
 ---
-"@osdk/components": patch
+"@osdk/react-components": patch
 ---
-Add new @osdk/components package with FilterList and ObjectTable APIs
+Add new @osdk/react-components package with FilterList and ObjectTable APIs
