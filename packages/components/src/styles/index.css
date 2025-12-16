@@ -1,0 +1,11 @@
+/**
+ * OSDK Components - All Styles
+ *
+ * Convenience import for all OSDK component styles.
+ *
+ * Usage:
+ *   import "@osdk/components/styles";
+ */
+
+@import './tokens.css';
+@import './object-table.css';

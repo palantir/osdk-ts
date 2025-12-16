@@ -16,6 +16,9 @@
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
     },
+    "./styles": "./src/styles/index.css",
+    "./styles/tokens": "./src/styles/tokens.css",
+    "./styles/object-table": "./src/styles/object-table.css",
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {
@@ -67,6 +70,7 @@
     "build/esm",
     "build/browser",
     "build/types",
+    "src/styles",
     "CHANGELOG.md",
     "package.json",
     "templates",

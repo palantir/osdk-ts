@@ -47,12 +47,69 @@ The following props are defined in the API but not yet implemented:
 - `selectedRows`: Controlled selection state
 - Event handlers: `onFilterChanged`, `onOrderByChanged`, `onRowClick`, etc.
 
+## Styling
+
+The ObjectTable component comes with default styles using CSS variables for easy theming.
+
+### Importing Styles
+
+Import the styles in your application entry point:
+
+```tsx
+import "@osdk/components/styles";
+```
+
+The component will now render with default styling.
+
+### Customizing the Theme
+
+Override CSS variables to customize the appearance:
+
+```css
+/* Your app's CSS file */
+@import "@osdk/components/styles";
+
+:root {
+  /* Change colors */
+  --osdk-color-accent: #8b5cf6;
+  --osdk-table-header-background: #f3f4f6;
+
+  /* Adjust spacing */
+  --osdk-table-cell-padding-x: 1rem;
+  --osdk-table-cell-padding-y: 0.875rem;
+}
+```
+
+### Component-Specific Customization
+
+Target only the ObjectTable without affecting other components:
+
+```css
+.osdk-object-table-wrapper {
+  --osdk-table-border-radius: 0.5rem;
+  --osdk-table-row-background-hover: #fef3c7;
+}
+```
+
+### Dark Mode Example
+
+```css
+[data-theme="dark"] {
+  --osdk-color-background: #171717;
+  --osdk-color-surface: #262626;
+  --osdk-color-border: #404040;
+  --osdk-color-text: #fafafa;
+}
+```
+
+For complete theming documentation and all available CSS variables, see the [Theming Guide](../styles/README.md).
+
 ## Architecture
 
 The component uses:
 - **TanStack Table v8**: For table state management and rendering
 - **@osdk/react/experimental**: For data fetching via `useObjectSet` hook
-- **Headless UI**: No styling included, allowing full customization
+- **CSS Variables**: For theming and customization
 
 ## Next Steps
 

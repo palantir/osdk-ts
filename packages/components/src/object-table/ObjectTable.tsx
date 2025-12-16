@@ -64,50 +64,77 @@ export function ObjectTable<
   });
 
   if (isLoading || isColumnsLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="osdk-object-table-state" data-state="loading">
+        <div className="osdk-object-table-state-content">Loading...</div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return (
+      <div className="osdk-object-table-state" data-state="error">
+        <div className="osdk-object-table-state-content">
+          Error: {error.message}
+        </div>
+      </div>
+    );
   }
 
   if (columnsError) {
-    return <div>Columns load error: {columnsError}</div>;
+    return (
+      <div className="osdk-object-table-state" data-state="error">
+        <div className="osdk-object-table-state-content">
+          Columns load error: {columnsError}
+        </div>
+      </div>
+    );
   }
 
   if (!data || data.length === 0) {
-    return <div>No data available</div>;
+    return (
+      <div className="osdk-object-table-state" data-state="empty">
+        <div className="osdk-object-table-state-content">
+          No data available
+        </div>
+      </div>
+    );
   }
 
   return (
-    <table>
-      <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <th key={header.id}>
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                    header.column.columnDef.header,
-                    header.getContext(),
-                  )}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody>
-        {table.getRowModel().rows.map((row) => (
-          <tr key={row.id}>
-            {row.getVisibleCells().map((cell) => (
-              <td key={cell.id}>
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="osdk-object-table-wrapper" data-state="loaded">
+      <table className="osdk-object-table">
+        <thead className="osdk-object-table-header">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id} className="osdk-object-table-header-row">
+              {headerGroup.headers.map((header) => (
+                <th
+                  key={header.id}
+                  className="osdk-object-table-header-cell"
+                >
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody className="osdk-object-table-body">
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id} className="osdk-object-table-row">
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id} className="osdk-object-table-cell">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

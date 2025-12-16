@@ -1,0 +1,126 @@
+/**
+ * ObjectTable Component Styles
+ *
+ * Styles for the ObjectTable component using OSDK design tokens.
+ * Override component-specific variables to customize appearance.
+ *
+ * @see https://github.com/palantir/osdk-ts/packages/components/src/object-table/README.md
+ */
+
+/* ===== Component Token Definitions ===== */
+.osdk-object-table-wrapper {
+  /* Layout */
+  --osdk-table-width: 100%;
+  --osdk-table-border-radius: var(--osdk-radius-3);
+  --osdk-table-border: 1px solid var(--osdk-color-border);
+
+  /* Cell dimensions */
+  --osdk-table-cell-padding-x: var(--osdk-space-3);
+  --osdk-table-cell-padding-y: var(--osdk-space-3);
+  --osdk-table-cell-min-height: 2.75rem; /* 44px - accessibility target size */
+
+  /* Header */
+  --osdk-table-header-background: var(--osdk-color-surface);
+  --osdk-table-header-text-color: var(--osdk-color-text);
+  --osdk-table-header-font-size: var(--osdk-font-size-2);
+  --osdk-table-header-font-weight: var(--osdk-font-weight-medium);
+  --osdk-table-header-border-bottom: 2px solid var(--osdk-color-border);
+  --osdk-table-header-text-transform: none;
+
+  /* Body rows */
+  --osdk-table-row-background: var(--osdk-color-background);
+  --osdk-table-row-background-hover: var(--osdk-color-surface-hover);
+  --osdk-table-row-border-bottom: 1px solid var(--osdk-color-border);
+
+  /* Body cells */
+  --osdk-table-cell-text-color: var(--osdk-color-text);
+  --osdk-table-cell-font-size: var(--osdk-font-size-2);
+  --osdk-table-cell-line-height: var(--osdk-line-height-normal);
+
+  /* States */
+  --osdk-table-loading-opacity: 0.6;
+  --osdk-table-state-padding: var(--osdk-space-6);
+  --osdk-table-state-text-color: var(--osdk-color-text-secondary);
+  --osdk-table-error-text-color: var(--osdk-color-error);
+}
+
+/* ===== Component Styles ===== */
+
+/* Wrapper */
+.osdk-object-table-wrapper {
+  width: var(--osdk-table-width);
+  overflow: auto;
+  border-radius: var(--osdk-table-border-radius);
+  border: var(--osdk-table-border);
+}
+
+.osdk-object-table-wrapper[data-state="loading"] {
+  opacity: var(--osdk-table-loading-opacity);
+}
+
+/* Table */
+.osdk-object-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* Header */
+.osdk-object-table-header {
+  background-color: var(--osdk-table-header-background);
+}
+
+.osdk-object-table-header-row {
+  border-bottom: var(--osdk-table-header-border-bottom);
+}
+
+.osdk-object-table-header-cell {
+  padding: var(--osdk-table-cell-padding-y) var(--osdk-table-cell-padding-x);
+  text-align: left;
+  color: var(--osdk-table-header-text-color);
+  font-size: var(--osdk-table-header-font-size);
+  font-weight: var(--osdk-table-header-font-weight);
+  text-transform: var(--osdk-table-header-text-transform);
+  min-height: var(--osdk-table-cell-min-height);
+}
+
+/* Body */
+.osdk-object-table-body {
+  background-color: var(--osdk-table-row-background);
+}
+
+.osdk-object-table-row {
+  border-bottom: var(--osdk-table-row-border-bottom);
+  transition: background-color 0.15s ease;
+}
+
+.osdk-object-table-row:hover {
+  background-color: var(--osdk-table-row-background-hover);
+}
+
+.osdk-object-table-row:last-child {
+  border-bottom: none;
+}
+
+.osdk-object-table-cell {
+  padding: var(--osdk-table-cell-padding-y) var(--osdk-table-cell-padding-x);
+  color: var(--osdk-table-cell-text-color);
+  font-size: var(--osdk-table-cell-font-size);
+  line-height: var(--osdk-table-cell-line-height);
+  min-height: var(--osdk-table-cell-min-height);
+}
+
+/* States (loading, error, empty) */
+.osdk-object-table-state {
+  padding: var(--osdk-table-state-padding);
+  text-align: center;
+}
+
+.osdk-object-table-state-content {
+  color: var(--osdk-table-state-text-color);
+  font-size: var(--osdk-font-size-3);
+}
+
+.osdk-object-table-state[data-state="error"] .osdk-object-table-state-content {
+  color: var(--osdk-table-error-text-color);
+}

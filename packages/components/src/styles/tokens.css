@@ -1,0 +1,76 @@
+/**
+ * OSDK Design Tokens
+ *
+ * Global design tokens used across all OSDK components.
+ * Override these in your application's CSS to customize the theme.
+ *
+ * @see https://github.com/palantir/osdk-ts/packages/components/src/styles/README.md
+ */
+
+:root {
+  /* ===== Spacing ===== */
+  --osdk-space-1: 0.25rem;   /* 4px */
+  --osdk-space-2: 0.5rem;    /* 8px */
+  --osdk-space-3: 0.75rem;   /* 12px */
+  --osdk-space-4: 1rem;      /* 16px */
+  --osdk-space-5: 1.5rem;    /* 24px */
+  --osdk-space-6: 2rem;      /* 32px */
+  --osdk-space-7: 3rem;      /* 48px */
+  --osdk-space-8: 4rem;      /* 64px */
+  --osdk-space-9: 6rem;      /* 96px */
+
+  /* ===== Typography ===== */
+  --osdk-font-size-1: 0.75rem;    /* 12px */
+  --osdk-font-size-2: 0.875rem;   /* 14px */
+  --osdk-font-size-3: 1rem;       /* 16px */
+  --osdk-font-size-4: 1.125rem;   /* 18px */
+  --osdk-font-size-5: 1.25rem;    /* 20px */
+
+  --osdk-font-weight-regular: 400;
+  --osdk-font-weight-medium: 500;
+  --osdk-font-weight-semibold: 600;
+  --osdk-font-weight-bold: 700;
+
+  --osdk-line-height-normal: 1.5;
+  --osdk-line-height-tight: 1.25;
+
+  /* ===== Border Radius ===== */
+  --osdk-radius-1: 0.125rem;  /* 2px */
+  --osdk-radius-2: 0.25rem;   /* 4px */
+  --osdk-radius-3: 0.375rem;  /* 6px */
+  --osdk-radius-4: 0.5rem;    /* 8px */
+  --osdk-radius-5: 0.75rem;   /* 12px */
+  --osdk-radius-6: 1rem;      /* 16px */
+
+  /* ===== Colors - Light Mode ===== */
+  /* Background & Surface */
+  --osdk-color-background: #ffffff;
+  --osdk-color-surface: #fafafa;
+  --osdk-color-surface-hover: #f5f5f5;
+
+  /* Borders */
+  --osdk-color-border: #e5e5e5;
+  --osdk-color-border-hover: #d4d4d4;
+
+  /* Text */
+  --osdk-color-text: #171717;
+  --osdk-color-text-secondary: #737373;
+  --osdk-color-text-tertiary: #a3a3a3;
+
+  /* Accent */
+  --osdk-color-accent: #3b82f6;
+  --osdk-color-accent-hover: #2563eb;
+  --osdk-color-accent-text: #ffffff;
+
+  /* Semantic */
+  --osdk-color-error: #ef4444;
+  --osdk-color-error-hover: #dc2626;
+  --osdk-color-success: #10b981;
+  --osdk-color-warning: #f59e0b;
+  --osdk-color-info: #3b82f6;
+
+  /* ===== Shadows ===== */
+  --osdk-shadow-1: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --osdk-shadow-2: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --osdk-shadow-3: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
