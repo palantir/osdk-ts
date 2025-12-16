@@ -17,4 +17,5 @@
 export type { FilterListProps } from "../filter-list/FilterListApi.js";
 export type { FilterListItemProps } from "../filter-list/FilterListItemApi.js";
 
+export { ObjectTable } from "../object-table/ObjectTable.js";
 export type { ObjectTableProps } from "../object-table/ObjectTableApi.js";

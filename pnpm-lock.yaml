@@ -3243,6 +3243,9 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../client
+      '@osdk/components':
+        specifier: workspace:~
+        version: link:../components
       '@osdk/oauth':
         specifier: workspace:~
         version: link:../oauth
