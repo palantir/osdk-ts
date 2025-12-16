@@ -64,9 +64,10 @@ export const buildGraph = async (): Promise<void> => {
   >();
 
   for await (
-    const { source, target, linkType } of venturesObjectSet.asyncIterLinks([
-      "employees",
-    ])
+    const { source, target, linkType } of venturesObjectSet
+      .experimental_asyncIterLinks([
+        "employees",
+      ])
   ) {
     const sourceVenture = allVentures.get(source)!;
     const targetEmployee = allLinkedEmployees.get(target)!;
@@ -94,9 +95,10 @@ export const buildGraph = async (): Promise<void> => {
 export const checkAsyncIterLinks = async (): Promise<void> => {
   // one link
   for await (
-    const { source, target, linkType } of client(Venture).asyncIterLinks([
-      "employees",
-    ])
+    const { source, target, linkType } of client(Venture)
+      .experimental_asyncIterLinks([
+        "employees",
+      ])
   ) {
     console.log(
       `${locatorString(source)} ---(${linkType})--> ${locatorString(target)}`,
@@ -105,10 +107,11 @@ export const checkAsyncIterLinks = async (): Promise<void> => {
 
   // multiple links
   for await (
-    const { source, target, linkType } of client(Employee).asyncIterLinks([
-      "ventures",
-      "peeps",
-    ])
+    const { source, target, linkType } of client(Employee)
+      .experimental_asyncIterLinks([
+        "ventures",
+        "peeps",
+      ])
   ) {
     console.log(
       `${locatorString(source)} ---(${linkType})--> ${locatorString(target)}`,

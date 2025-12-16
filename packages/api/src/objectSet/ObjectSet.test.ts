@@ -83,7 +83,7 @@ export function createMockObjectSet<
     nearestNeighbors: vi.fn(() => {
       return fauxObjectSet;
     }),
-    asyncIterLinks: vi.fn(asyncIterateLinkOnce),
+    experimental_asyncIterLinks: vi.fn(asyncIterateLinkOnce),
   } as any as $ObjectSet<Q>;
 
   return fauxObjectSet;
@@ -1506,9 +1506,10 @@ describe("ObjectSet", () => {
   describe("asyncIterLinks", async () => {
     it("typechecks self-referential one link", async () => {
       for await (
-        const { source, target, linkType } of fauxObjectSet.asyncIterLinks([
-          "lead",
-        ])
+        const { source, target, linkType } of fauxObjectSet
+          .experimental_asyncIterLinks([
+            "lead",
+          ])
       ) {
         expectTypeOf(source).toEqualTypeOf<
           ObjectIdentifiers<EmployeeApiTest>
@@ -1529,10 +1530,11 @@ describe("ObjectSet", () => {
 
     it("typechecks self-referential multiple links", async () => {
       for await (
-        const { source, target, linkType } of fauxObjectSet.asyncIterLinks([
-          "lead",
-          "peeps",
-        ])
+        const { source, target, linkType } of fauxObjectSet
+          .experimental_asyncIterLinks([
+            "lead",
+            "peeps",
+          ])
       ) {
         expectTypeOf(source).toEqualTypeOf<
           ObjectIdentifiers<EmployeeApiTest>

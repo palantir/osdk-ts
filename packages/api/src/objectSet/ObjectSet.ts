@@ -604,7 +604,9 @@ interface AsyncIterLinks<Q extends ObjectOrInterfaceDefinition> {
    * - This method does not support OSv1 links and will throw an exception if links provided are backed by OSv1.
    * - This method currently does not support interface links, but support will be added in the near future.
    */
-  readonly asyncIterLinks: <LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>>(
+  readonly experimental_asyncIterLinks: <
+    LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
+  >(
     links: LINK_TYPE_API_NAME[],
   ) => AsyncIterableIterator<
     MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>

@@ -328,7 +328,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       );
     },
 
-    asyncIterLinks: async function*<
+    experimental_asyncIterLinks: async function*<
       LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
     >(
       links: LINK_TYPE_API_NAME[],
