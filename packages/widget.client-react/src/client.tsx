@@ -15,15 +15,23 @@
  */
 
 import type { Client, ObjectSet } from "@osdk/client";
-import type { ObjectType } from "@osdk/widget.api";
+import { createAndFetchTempObjectSetRid } from "@osdk/client/internal";
 import type {
-  AsyncValue,
-  ParameterConfig,
-  WidgetConfig,
+  EventId,
+  EventParameterValueMap,
+  ObjectType,
+} from "@osdk/widget.api";
+import {
+  type AsyncValue,
+  createFoundryWidgetClient,
+  type FoundryWidgetClient,
+  type ParameterConfig,
+  type WidgetConfig,
 } from "@osdk/widget.client";
-import { createFoundryWidgetClient } from "@osdk/widget.client";
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import type {
+  AugmentedEmitEvent,
+  AugmentedEventParameterValueMap,
   ExtendedAsyncParameterValueMap,
   ExtendedParameterValueMap,
   FoundryWidgetClientContext,
@@ -40,6 +48,56 @@ type ExtractObjectTypes<C extends WidgetConfig<C["parameters"]>> =
       : never
     : never
     : never;
+
+/**
+ * Transforms an augmented emit event payload by converting any ObjectSet values
+ * directly to `{ objectSetRid }` for wire compatibility.
+ *
+ * Multiple ObjectSet parameters are transformed in parallel for better performance.
+ */
+async function transformEmitEventPayload<
+  C extends WidgetConfig<C["parameters"]>,
+  K extends EventId<C>,
+>(
+  config: C,
+  eventId: K,
+  payload: { parameterUpdates: AugmentedEventParameterValueMap<C, K> },
+  osdkClient?: Client,
+): Promise<{ parameterUpdates: EventParameterValueMap<C, K> }> {
+  const event = config.events[eventId as string];
+  if (event == null) {
+    throw new Error(
+      `Event with ID "${eventId.toString()}" not found in widget config`,
+    );
+  }
+
+  const entries = Object.entries(payload.parameterUpdates);
+
+  const transformedEntries = await Promise.all(
+    entries.map(async ([paramId, paramValue]): Promise<[string, unknown]> => {
+      const paramConfig = config.parameters[paramId];
+      if (paramConfig?.type === "objectSet") {
+        if (osdkClient == null) {
+          throw new Error(
+            `Cannot emit event "${eventId.toString()}" with ObjectSet parameter "${paramId}" without an osdk client`,
+          );
+        }
+        const objectSetRid = await createAndFetchTempObjectSetRid(
+          osdkClient,
+          paramValue as ObjectSet,
+        );
+        return [paramId, { objectSetRid }];
+      }
+      return [paramId, paramValue];
+    }),
+  );
+
+  return {
+    parameterUpdates: Object.fromEntries(
+      transformedEntries,
+    ) as EventParameterValueMap<C, K>,
+  };
+}
 
 type HasObjectSetParameters<C extends WidgetConfig<C["parameters"]>> =
   ExtractObjectTypes<C> extends never ? false : true;
@@ -92,6 +150,40 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
   const objectSetCache = useRef<
     Map<string, { objectSetRid: string; objectSet: ObjectSet }>
   >(new Map());
+
+  const emitEventCallId = useRef(0);
+
+  /**
+   * Wrapped emitEvent that transforms ObjectSet values to objectSetRid before sending.
+   * This allows callers to pass ObjectSet<T> directly instead of `{ objectSetRid: string }`.
+   *
+   * If multiple calls are made before the async transformation completes,
+   * only the last call will actually emit the event.
+   */
+  const emitEvent: AugmentedEmitEvent<C> = useCallback(
+    async (eventId, payload) => {
+      const thisCallId = ++emitEventCallId.current;
+
+      const transformedPayload = await transformEmitEventPayload(
+        config,
+        eventId,
+        payload,
+        osdkClient,
+      );
+
+      if (thisCallId !== emitEventCallId.current) {
+        return;
+      }
+
+      client.emitEvent(
+        eventId as Parameters<FoundryWidgetClient<C>["emitEvent"]>[0],
+        transformedPayload as Parameters<
+          FoundryWidgetClient<C>["emitEvent"]
+        >[1],
+      );
+    },
+    [osdkClient, config, client],
+  );
 
   useEffect(() => {
     client.subscribe();
@@ -216,7 +308,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
   return (
     <FoundryWidgetContext.Provider
       value={{
-        emitEvent: client.emitEvent,
+        emitEvent,
         hostEventTarget: client.hostEventTarget,
         asyncParameterValues,
         parameters: {
