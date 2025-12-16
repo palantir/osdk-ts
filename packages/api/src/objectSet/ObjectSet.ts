@@ -590,7 +590,16 @@ type ExtractImplementingTypes<T extends InterfaceDefinition> =
 
 interface AsyncIterLinks<Q extends ObjectOrInterfaceDefinition> {
   /**
-   * Bulk load links.
+   * Batch load links on an object set. This is an experimental method that may change while in beta.
+   * Use this method in conjunction with `.asyncIter()` and `.pivotTo(...).asyncIter()` to build an
+   * object graph in memory.
+   *
+   * Please keep these limitations in mind:
+   * - Links returned may be stale. For example, primary keys returned by this endpoint may not exist anymore.
+   * - The backend API fetches pages of *n* objects at a time. If, for any page of *n* objects, there are more
+   *   than 100,000 links present, results are limited to 100,000 links and should be considered partial.
+   * - This method does not support OSv1 links and will throw an exception if links provided are backed by OSv1.
+   * - This method currently does not support interface links, but support will be added in the near future.
    */
   readonly asyncIterLinks: <LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>>(
     links: LINK_TYPE_API_NAME[],
