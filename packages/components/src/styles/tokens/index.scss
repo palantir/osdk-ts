@@ -1,0 +1,33 @@
+// Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+// Licensed under the Apache License, Version 2.0.
+
+// ============================================
+// Blueprint Variables Export from Figma
+// ============================================
+// Generated: 2025-12-15
+//
+// Replace Blueprint's variable files with these exports
+// File structure matches Blueprint.js exactly:
+//   - _colors.scss          → Base color palette (replaces @blueprintjs/colors)
+//   - _color-aliases.scss   → Semantic color mappings
+//   - _mixins.scss          → Intent color maps for mixins
+//   - _variables.scss       → Main public variables (light + $pt-dark-* for dark)
+//   - _variables-extended.scss → Extended/internal variables
+//
+// Usage: Import before Blueprint
+//   @import "path/to/this/index";
+//   @import "@blueprintjs/core/lib/scss/blueprint";
+//
+// Note: This package replaces @blueprintjs/colors - no need to install it separately
+// ============================================
+
+// Import Order (fixed for dependencies)
+@import "colors";                    // Color foundation (replaces @blueprintjs/colors)
+@import "flex";                      // Flex container mixins
+@import "variables";                 // Public API (includes light + dark) - MUST come before color-aliases
+@import "color-aliases";             // Semantic intent colors (depends on variables)
+@import "mixins";                    // Intent color maps & utility mixins
+@import "variables-extended";        // Extended variables (if any)
+
+// Optional: Import Blueprint components after this
+// @import "@blueprintjs/core/lib/scss/blueprint";

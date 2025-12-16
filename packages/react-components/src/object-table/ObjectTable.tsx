@@ -80,15 +80,33 @@ export function ObjectTable<
   const isTableLoading = isLoading || isColumnsLoading;
 
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return (
+      <div className="osdk-object-table-state" data-state="error">
+        <div className="osdk-object-table-state-content">
+          Error: {error.message}
+        </div>
+      </div>
+    );
   }
 
   if (columnsError) {
-    return <div>Columns load error: {columnsError}</div>;
+    return (
+      <div className="osdk-object-table-state" data-state="error">
+        <div className="osdk-object-table-state-content">
+          Columns load error: {columnsError}
+        </div>
+      </div>
+    );
   }
 
   if (!data || data.length === 0) {
-    return <div>No data available</div>;
+    return (
+      <div className="osdk-object-table-state" data-state="empty">
+        <div className="osdk-object-table-state-content">
+          No data available
+        </div>
+      </div>
+    );
   }
 
   return (
