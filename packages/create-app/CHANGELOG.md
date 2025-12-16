@@ -1,5 +1,11 @@
 # @osdk/create-app
 
+## 2.6.0-rc.18
+
+### Patch Changes
+
+- 14abc06: Add `osdk/foundry` to `create-app` templates
+
 ## 2.6.0-rc.17
 
 ## 2.6.0-rc.16
