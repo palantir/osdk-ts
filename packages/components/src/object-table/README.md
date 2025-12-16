@@ -20,7 +20,7 @@ import { Employee } from "./ontology";
 function MyComponent() {
   const objectSet = Employee.all();
   
-  return <ObjectTable objectSet={objectSet} />;
+  return <ObjectTable objectSet={objectSet} objectType={Employee} />;
 }
 ```
 
@@ -30,9 +30,10 @@ The component follows the `ObjectTableProps` interface defined in `ObjectTableAp
 
 ### MVP Implementation
 
-Currently, only the `objectSet` prop is required:
+Currently, only the `objectSet` and `objectType` props are required:
 
 - `objectSet`: The OSDK ObjectSet to display in the table
+- `objectType`: The type of the ObjectSet
 
 ### Future Props (Not Yet Implemented)
 
