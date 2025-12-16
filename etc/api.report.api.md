@@ -607,7 +607,7 @@ export type FetchLinksPageResult<
 	Q extends ObjectOrInterfaceDefinition,
 	LINK_TYPE extends LinkTypeApiNamesFor<Q>
 > = {
-    	data: Array<LinksForObject<Q, LINK_TYPE>>
+    	data: Array<MinimalDirectedObjectLinkInstance<Q, LINK_TYPE>>
     	nextPageToken?: string
 };
 
@@ -804,16 +804,6 @@ export type LinkedType<
 export type LinkNames<Q extends ObjectOrInterfaceDefinition> = Q extends InterfaceDefinition ? keyof CompileTimeMetadata<Q>["links"] : keyof CompileTimeMetadata<Q>["links"] & string;
 
 // @public (undocumented)
-export type LinksForObject<
-	Q extends ObjectOrInterfaceDefinition,
-	LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>
-> = {
-    	source: ObjectIdentifiers<Q>
-    	target: ObjectIdentifiers<LinkedObjectType<Q, LINK_TYPE_API_NAME>>
-    	linkType: LINK_TYPE_API_NAME
-};
-
-// @public (undocumented)
 export type LinkTypeApiNamesFor<Q extends ObjectOrInterfaceDefinition> = Extract<keyof CompileTimeMetadata<Q>["links"], string>;
 
 // @public (undocumented)
@@ -899,6 +889,16 @@ export interface MediaUpload {
     	// (undocumented)
     readonly fileName: string;
 }
+
+// @public (undocumented)
+export type MinimalDirectedObjectLinkInstance<
+	Q extends ObjectOrInterfaceDefinition,
+	LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>
+> = {
+    	source: ObjectIdentifiers<Q>
+    	target: ObjectIdentifiers<LinkedObjectType<Q, LINK_TYPE_API_NAME>>
+    	linkType: LINK_TYPE_API_NAME
+};
 
 // @public (undocumented)
 export type NotWhereClause<

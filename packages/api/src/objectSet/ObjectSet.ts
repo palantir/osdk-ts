@@ -50,7 +50,10 @@ import type {
 import type { PageResult } from "../PageResult.js";
 import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
 import type { BaseObjectSet } from "./BaseObjectSet.js";
-import type { LinkTypeApiNamesFor, ObjectLink } from "./ObjectSetLinks.js";
+import type {
+  LinkTypeApiNamesFor,
+  MinimalDirectedObjectLinkInstance,
+} from "./ObjectSetLinks.js";
 import type { ObjectSetSubscription } from "./ObjectSetListener.js";
 
 type MergeObjectSet<
@@ -603,7 +606,9 @@ interface AsyncIterLinks<Q extends ObjectOrInterfaceDefinition> {
    */
   readonly asyncIterLinks: <LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>>(
     links: LINK_TYPE_API_NAME[],
-  ) => AsyncIterableIterator<ObjectLink<Q, LINK_TYPE_API_NAME>>;
+  ) => AsyncIterableIterator<
+    MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>
+  >;
 }
 
 interface ObjectSetCleanedTypes<

@@ -28,7 +28,7 @@ type LinkedObjectType<
   CompileTimeMetadata<Q>["links"][LINK_TYPE_API_NAME]["__OsdkLinkTargetType"]
 >;
 
-export type ObjectLink<
+export type MinimalDirectedObjectLinkInstance<
   Q extends ObjectOrInterfaceDefinition,
   LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
 > = {
@@ -41,6 +41,6 @@ export type FetchLinksPageResult<
   Q extends ObjectOrInterfaceDefinition,
   LINK_TYPE extends LinkTypeApiNamesFor<Q>,
 > = {
-  data: Array<ObjectLink<Q, LINK_TYPE>>;
+  data: Array<MinimalDirectedObjectLinkInstance<Q, LINK_TYPE>>;
   nextPageToken?: string;
 };

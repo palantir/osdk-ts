@@ -94,7 +94,7 @@ export type { ObjectSet } from "./objectSet/ObjectSet.js";
 export type {
   FetchLinksPageResult,
   LinkTypeApiNamesFor,
-  ObjectLink as LinksForObject,
+  MinimalDirectedObjectLinkInstance,
 } from "./objectSet/ObjectSetLinks.js";
 export type { ObjectSetSubscription } from "./objectSet/ObjectSetListener.js";
 export type {

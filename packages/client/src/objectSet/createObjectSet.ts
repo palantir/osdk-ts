@@ -21,8 +21,8 @@ import type {
   InterfaceDefinition,
   LinkedType,
   LinkNames,
-  LinksForObject,
   LinkTypeApiNamesFor,
+  MinimalDirectedObjectLinkInstance,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -332,7 +332,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
     >(
       links: LINK_TYPE_API_NAME[],
-    ): AsyncIterableIterator<LinksForObject<Q, LINK_TYPE_API_NAME>> {
+    ): AsyncIterableIterator<
+      MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>
+    > {
       let $nextPageToken: string | undefined = undefined;
       do {
         const result = await fetchLinksPage(
