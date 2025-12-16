@@ -1,6 +1,6 @@
 ---
-"@osdk/typescript-sdk-docs-examples": minor
-"@osdk/typescript-sdk-docs": minor
+"@osdk/typescript-sdk-docs-examples": patch
+"@osdk/typescript-sdk-docs": patch
 "@osdk/osdk-docs-context": patch
 ---
 
