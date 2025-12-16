@@ -1,5 +1,11 @@
 # @osdk/create-app.template.expo.v2
 
+## 2.5.6
+
+### Patch Changes
+
+- 3296fb7: Add `osdk/foundry` to `create-app` templates
+
 ## 2.5.5
 
 ## 2.5.4
