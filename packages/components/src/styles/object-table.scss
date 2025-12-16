@@ -1,0 +1,144 @@
+// Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+// Licensed under the Apache License, Version 2.0.
+
+@import "tokens/index";
+
+/**
+ * ObjectTable Component Styles
+ *
+ * Styles for the ObjectTable component using design tokens.
+ */
+
+/* ===== Component Styles ===== */
+
+/* Wrapper */
+.osdk-object-table-wrapper {
+  width: 100%;
+  overflow: auto;
+  border-radius: $pt-border-radius;
+  border: 1px solid $pt-divider-black;
+  box-shadow: $pt-elevation-shadow-0;
+
+  &[data-state="loading"] {
+    opacity: 0.6;
+  }
+}
+
+/* Table */
+.osdk-object-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-family: $pt-font-family;
+}
+
+/* Header */
+.osdk-object-table-header {
+  background-color: $light-gray5;
+}
+
+.osdk-object-table-header-row {
+  border-bottom: 2px solid $pt-divider-black;
+}
+
+.osdk-object-table-header-cell {
+  padding: ($pt-spacing * 3) ($pt-spacing * 3);
+  text-align: left;
+  color: $pt-text-color;
+  font-size: $pt-font-size;
+  font-weight: 600;
+  text-transform: none;
+  min-height: 30px;
+}
+
+/* Body */
+.osdk-object-table-body {
+  background-color: $white;
+}
+
+.osdk-object-table-row {
+  border-bottom: 1px solid $pt-divider-black-muted;
+  transition: background-color $pt-transition-duration $pt-transition-ease;
+
+  &:hover {
+    background-color: $light-gray4;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.osdk-object-table-cell {
+  padding: ($pt-spacing * 3) ($pt-spacing * 3);
+  color: $pt-text-color;
+  font-size: $pt-font-size;
+  line-height: $pt-line-height;
+  min-height: 30px;
+}
+
+/* States (loading, error, empty) */
+.osdk-object-table-state {
+  padding: ($pt-spacing * 6);
+  text-align: center;
+
+  &[data-state="error"] {
+    .osdk-object-table-state-content {
+      color: $pt-intent-danger;
+    }
+  }
+}
+
+.osdk-object-table-state-content {
+  color: $pt-text-color-muted;
+  font-size: $pt-font-size-large;
+}
+
+/* Dark Mode Support */
+.bp6-dark,
+[data-theme="dark"] {
+  .osdk-object-table-wrapper {
+    border-color: $pt-dark-divider-white;
+    box-shadow: $pt-dark-elevation-shadow-0;
+  }
+
+  .osdk-object-table-header {
+    background-color: $dark-gray2;
+  }
+
+  .osdk-object-table-header-row {
+    border-bottom-color: $pt-dark-divider-white;
+  }
+
+  .osdk-object-table-header-cell {
+    color: $pt-dark-text-color;
+  }
+
+  .osdk-object-table-body {
+    background-color: $dark-gray1;
+  }
+
+  .osdk-object-table-row {
+    border-bottom-color: $pt-dark-divider-white-muted;
+
+    &:hover {
+      background-color: $dark-gray3;
+    }
+  }
+
+  .osdk-object-table-cell {
+    color: $pt-dark-text-color;
+  }
+
+  .osdk-object-table-state {
+    &[data-state="error"] {
+      .osdk-object-table-state-content {
+        color: $pt-dark-intent-danger;
+      }
+    }
+  }
+
+  .osdk-object-table-state-content {
+    color: $pt-dark-text-color-muted;
+  }
+}

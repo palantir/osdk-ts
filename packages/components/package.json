@@ -16,6 +16,7 @@
       "require": "./build/cjs/index.cjs",
       "default": "./build/browser/index.js"
     },
+    "./styles": "./build/styles/object-table.css",
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {
@@ -27,15 +28,16 @@
     }
   },
   "scripts": {
+    "build:css": "sass src/styles/object-table.scss build/styles/object-table.css --no-source-map",
     "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run",
-    "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
-    "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
-    "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
+    "transpileBrowser": "pnpm build:css && monorepo.tool.transpile -f esm -m normal -t browser",
+    "transpileCjs": "pnpm build:css && monorepo.tool.transpile -f cjs -m bundle -t node",
+    "transpileEsm": "pnpm build:css && monorepo.tool.transpile -f esm -m normal -t node",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
@@ -55,6 +57,7 @@
     "@osdk/react": "workspace:*",
     "@types/react": "^18.3.24",
     "react": "^18.3.1",
+    "sass": "^1.83.0",
     "typescript": "~5.5.4"
   },
   "publishConfig": {
@@ -65,6 +68,7 @@
     "build/esm",
     "build/browser",
     "build/types",
+    "build/styles",
     "CHANGELOG.md",
     "package.json",
     "templates",
