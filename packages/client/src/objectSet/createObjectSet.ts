@@ -21,6 +21,8 @@ import type {
   InterfaceDefinition,
   LinkedType,
   LinkNames,
+  LinkTypeApiNamesFor,
+  MinimalDirectedObjectLinkInstance,
   NullabilityAdherence,
   ObjectOrInterfaceDefinition,
   ObjectSet,
@@ -52,6 +54,7 @@ import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { resolveBaseObjectSetType } from "../util/objectSetUtils.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
+import { fetchLinksPage } from "./fetchLinksPage.js";
 import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 function isObjectTypeDefinition(
@@ -323,6 +326,32 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           entityType: objectTypeDef.apiName,
         },
       );
+    },
+
+    experimental_asyncIterLinks: async function*<
+      LINK_TYPE_API_NAME extends LinkTypeApiNamesFor<Q>,
+    >(
+      links: LINK_TYPE_API_NAME[],
+    ): AsyncIterableIterator<
+      MinimalDirectedObjectLinkInstance<Q, LINK_TYPE_API_NAME>
+    > {
+      let $nextPageToken: string | undefined = undefined;
+      do {
+        const result = await fetchLinksPage(
+          augmentRequestContext(
+            clientCtx,
+            _ => ({ finalMethodCall: "asyncIterLinks" }),
+          ),
+          objectType,
+          objectSet,
+          links,
+        );
+        $nextPageToken = result.nextPageToken;
+
+        for (const obj of result.data) {
+          yield obj;
+        }
+      } while ($nextPageToken != null);
     },
 
     $objectSetInternals: {

@@ -19,6 +19,7 @@ import { describe, expectTypeOf, it, test, vi } from "vitest";
 import type {
   DerivedProperty,
   NullabilityAdherence,
+  ObjectIdentifiers,
   ObjectOrInterfaceDefinition,
   ObjectSet as $ObjectSet,
   Osdk,
@@ -28,6 +29,15 @@ import type {
 import type { DerivedObjectOrInterfaceDefinition } from "../ontology/ObjectOrInterface.js";
 import { EmployeeApiTest } from "../test/EmployeeApiTest.js";
 import { FooInterfaceApiTest } from "../test/FooInterfaceApiTest.js";
+
+async function* asyncIterateLinkOnce() {
+  const obj = { $apiName: undefined, $primaryKey: undefined };
+  yield Promise.resolve({
+    source: obj,
+    target: obj,
+    linkTypeApiName: undefined,
+  });
+}
 
 export function createMockObjectSet<
   Q extends ObjectOrInterfaceDefinition,
@@ -73,6 +83,7 @@ export function createMockObjectSet<
     nearestNeighbors: vi.fn(() => {
       return fauxObjectSet;
     }),
+    experimental_asyncIterLinks: vi.fn(asyncIterateLinkOnce),
   } as any as $ObjectSet<Q>;
 
   return fauxObjectSet;
@@ -1489,6 +1500,57 @@ describe("ObjectSet", () => {
       expectTypeOf<narrowToTypeAllowedInterfaceTypes>().toEqualTypeOf<
         "FooInterface"
       >();
+    });
+  });
+
+  describe("asyncIterLinks", async () => {
+    it("typechecks self-referential one link", async () => {
+      for await (
+        const { source, target, linkType } of fauxObjectSet
+          .experimental_asyncIterLinks([
+            "lead",
+          ])
+      ) {
+        expectTypeOf(source).toEqualTypeOf<
+          ObjectIdentifiers<EmployeeApiTest>
+        >();
+
+        expectTypeOf(target).toEqualTypeOf<
+          ObjectIdentifiers<EmployeeApiTest>
+        >();
+
+        expectTypeOf(source.$apiName).toBeString();
+        expectTypeOf(target.$apiName).toBeString();
+        expectTypeOf(source.$primaryKey).toBeNumber();
+        expectTypeOf(target.$primaryKey).toBeNumber();
+
+        expectTypeOf(linkType).toEqualTypeOf<"lead">();
+      }
+    });
+
+    it("typechecks self-referential multiple links", async () => {
+      for await (
+        const { source, target, linkType } of fauxObjectSet
+          .experimental_asyncIterLinks([
+            "lead",
+            "peeps",
+          ])
+      ) {
+        expectTypeOf(source).toEqualTypeOf<
+          ObjectIdentifiers<EmployeeApiTest>
+        >();
+
+        expectTypeOf(target).toEqualTypeOf<
+          ObjectIdentifiers<EmployeeApiTest>
+        >();
+
+        expectTypeOf(source.$apiName).toBeString();
+        expectTypeOf(target.$apiName).toBeString();
+        expectTypeOf(source.$primaryKey).toBeNumber();
+        expectTypeOf(target.$primaryKey).toBeNumber();
+
+        expectTypeOf(linkType).toEqualTypeOf<"lead" | "peeps">();
+      }
     });
   });
 });
