@@ -20,14 +20,16 @@ export function generateNpmRc({
   osdkRegistryUrl,
 }: {
   foundryUrl: string;
-  osdkPackage: string;
-  osdkRegistryUrl: string;
+  osdkPackage: string | undefined;
+  osdkRegistryUrl: string | undefined;
 }): string {
   // pnpm requires a trailing slash in .npmrc
   // https://github.com/pnpm/pnpm/issues/5941
-  const osdkRegistryUrlWithTrailingSlash = osdkRegistryUrl.endsWith("/")
-    ? osdkRegistryUrl
-    : osdkRegistryUrl + "/";
+  const osdkRegistryUrlWithTrailingSlash = osdkRegistryUrl != null
+    ? (osdkRegistryUrl.endsWith("/")
+      ? osdkRegistryUrl
+      : osdkRegistryUrl + "/")
+    : null;
   const formattedFoundryUrl = foundryUrl
     .replace(
       /^https:\/\//,
@@ -38,8 +40,13 @@ export function generateNpmRc({
     );
   const artifactsApiUrl = formattedFoundryUrl
     + "/artifacts/api/";
-  const packageScope = osdkPackage.split("/")[0];
+  const packageScope = osdkPackage?.split("/")[0];
 
-  return `//${artifactsApiUrl}:_authToken=\${FOUNDRY_TOKEN}\n`
-    + `${packageScope}:registry=${osdkRegistryUrlWithTrailingSlash}\n`;
+  const credentialsLine = `//${artifactsApiUrl}:_authToken=\${FOUNDRY_TOKEN}\n`;
+  const registryLine =
+    packageScope != null && osdkRegistryUrlWithTrailingSlash != null
+      ? `${packageScope}:registry=${osdkRegistryUrlWithTrailingSlash}\n`
+      : "";
+
+  return credentialsLine + registryLine;
 }
