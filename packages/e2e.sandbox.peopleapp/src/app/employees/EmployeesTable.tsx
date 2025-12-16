@@ -8,6 +8,7 @@ export function EmployeesTable() {
   return (
     <ObjectTable<Employee>
       objectSet={employeesObjectSet}
+      objectType={Employee}
     />
   );
 }

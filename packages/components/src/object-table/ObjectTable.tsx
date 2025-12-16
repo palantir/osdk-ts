@@ -46,10 +46,14 @@ export function ObjectTable<
   RDPs extends Record<string, SimplePropertyDef> = {},
 >({
   objectSet,
+  objectType,
 }: ObjectTableProps<Q, RDPs>): React.ReactElement {
   const { data, isLoading, error } = useObjectSet(objectSet);
 
-  const columns = useColumnDefs(objectSet);
+  const { columns, loading: isColumnsLoading, error: columnsError } =
+    useColumnDefs(
+      objectType,
+    );
 
   const table = useReactTable<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, {}>
@@ -59,28 +63,28 @@ export function ObjectTable<
     getCoreRowModel: getCoreRowModel(),
   });
 
-  // Handle loading state
-  if (isLoading) {
+  if (isLoading || isColumnsLoading) {
     return <div>Loading...</div>;
   }
 
-  // Handle error state
   if (error) {
     return <div>Error: {error.message}</div>;
   }
 
-  // Handle empty data
+  if (columnsError) {
+    return <div>Columns load error: {columnsError}</div>;
+  }
+
   if (!data || data.length === 0) {
     return <div>No data available</div>;
   }
 
-  // Render the table
   return (
     <table>
       <thead>
-        {table.getHeaderGroups().map((headerGroup: any) => (
+        {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header: any) => (
+            {headerGroup.headers.map((header) => (
               <th key={header.id}>
                 {header.isPlaceholder
                   ? null
@@ -94,9 +98,9 @@ export function ObjectTable<
         ))}
       </thead>
       <tbody>
-        {table.getRowModel().rows.map((row: any) => (
+        {table.getRowModel().rows.map((row) => (
           <tr key={row.id}>
-            {row.getVisibleCells().map((cell: any) => (
+            {row.getVisibleCells().map((cell) => (
               <td key={cell.id}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>

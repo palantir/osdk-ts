@@ -14,36 +14,35 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectSet,
-  ObjectTypeDefinition,
-  Osdk,
-  PropertyKeys,
-} from "@osdk/api";
+import type { ObjectTypeDefinition, Osdk, PropertyKeys } from "@osdk/api";
+import { useOsdkMetadata } from "@osdk/react";
 import type { AccessorColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
+
+interface UseColumnDefsResult<Q extends ObjectTypeDefinition> {
+  columns: AccessorColumnDef<
+    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, {}>
+  >[];
+
+  loading: boolean;
+
+  error: string | undefined;
+}
 
 /**
  * Hook which builds column definitions for tanstack-table given the objectSet
  */
 export function useColumnDefs<Q extends ObjectTypeDefinition>(
-  objectSet: ObjectSet<Q>,
-): AccessorColumnDef<
-  Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, {}>
->[] {
-  const stableObjectSet = useMemo(() => objectSet, [JSON.stringify(objectSet)]);
+  objectType: Q,
+): UseColumnDefsResult<Q> {
+  const { metadata, loading, error } = useOsdkMetadata(objectType);
 
-  const properties = useMemo(() => {
-    return stableObjectSet.$objectSetInternals.def.__DefinitionMetadata
-      ?.properties;
-  }, [stableObjectSet]);
-
-  const columnDefs: AccessorColumnDef<
+  const columns: AccessorColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, {}>
   >[] = useMemo(() => {
-    if (!properties) return [];
+    if (!metadata?.properties) return [];
 
-    return Object.entries(properties).map(([key, property]) => {
+    return Object.entries(metadata?.properties).map(([key, property]) => {
       const colDef: AccessorColumnDef<
         Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, {}>
       > = {
@@ -52,7 +51,7 @@ export function useColumnDefs<Q extends ObjectTypeDefinition>(
       };
       return colDef;
     });
-  }, [properties]);
+  }, [metadata?.properties]);
 
-  return columnDefs;
+  return { columns, loading, error };
 }

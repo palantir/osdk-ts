@@ -81,6 +81,11 @@ export interface ObjectTableProps<
   objectSet: ObjectSet<Q>;
 
   /**
+   * The object type of the object
+   */
+  objectType: Q;
+
+  /**
    * Ordered list of column definitions to show in the table
    *
    * If not provided, all of the properties of the object type will be shown in default order.
@@ -136,6 +141,7 @@ export interface ObjectTableProps<
       direction: "asc" | "desc";
     }>,
   ) => void;
+
   /**
    * Called when the visible columns change.
    *
@@ -174,6 +180,7 @@ export interface ObjectTableProps<
     columnId: PropertyKeys<Q> | keyof RDPs | keyof FunctionColumns,
     newWidth: number,
   ) => void;
+
   /**
    * Called when a cell is clicked.
    *
