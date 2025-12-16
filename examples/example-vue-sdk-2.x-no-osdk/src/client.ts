@@ -38,6 +38,6 @@ export const auth: PublicOauthClient = createPublicOauthClient(
 /**
  * Initialize the client to interact with the Platform SDK
  */
-const client: PlatformClient = createPlatformClient(foundryUrl, auth);
+export const client: PlatformClient = createPlatformClient(foundryUrl, auth);
 
 export default client;

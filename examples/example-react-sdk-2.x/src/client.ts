@@ -39,6 +39,6 @@ export const auth: PublicOauthClient = createPublicOauthClient(
 /**
  * Initialize the client to interact with the Ontology and Platform SDKs
  */
-const client: Client = createClient(foundryUrl, ontologyRid, auth);
+export const client: Client = createClient(foundryUrl, ontologyRid, auth);
 
 export default client;
