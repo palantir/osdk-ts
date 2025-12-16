@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.15.0-beta.3
+
+### Minor Changes
+
+- e743064: Expose icon param in actions
+
+### Patch Changes
+
+- Updated dependencies [1e3c147]
+- Updated dependencies [579e518]
+  - @osdk/api@2.7.0-beta.4
+  - @osdk/typescript-sdk-docs@0.6.0-beta.3
+
 ## 0.15.0-beta.2
 
 ### Minor Changes

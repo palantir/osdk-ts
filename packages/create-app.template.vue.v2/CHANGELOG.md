@@ -1,5 +1,12 @@
 # @osdk/create-app.template.vue.v2
 
+## 2.7.0-beta.4
+
+### Minor Changes
+
+- 5ba2346: Add `osdk/foundry` to `create-app` templates
+- 968dca0: Add padding and export `client` as a named export
+
 ## 2.7.0-beta.3
 
 ## 2.7.0-beta.2
