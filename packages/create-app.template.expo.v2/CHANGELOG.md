@@ -1,5 +1,7 @@
 # @osdk/create-app.template.expo.v2
 
+## 2.5.7
+
 ## 2.5.6
 
 ### Patch Changes

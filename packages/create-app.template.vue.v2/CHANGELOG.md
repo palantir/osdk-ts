@@ -1,5 +1,11 @@
 # @osdk/create-app.template.vue.v2
 
+## 2.5.7
+
+### Patch Changes
+
+- efe27e4: Add padding and export `client` as a named export
+
 ## 2.5.6
 
 ### Patch Changes
