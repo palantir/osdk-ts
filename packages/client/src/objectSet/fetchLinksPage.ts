@@ -54,7 +54,8 @@ export const fetchLinksPage = async <
   return remapLinksPage(result);
 };
 
-const remapLinksPage = <
+/** @internal */
+export const remapLinksPage = <
   Q extends ObjectOrInterfaceDefinition,
   LINK_TYPES extends LinkTypeApiNamesFor<Q>,
 >(
@@ -72,7 +73,8 @@ const remapLinksPage = <
   };
 };
 
-const remapObjectLocator = <Q extends ObjectOrInterfaceDefinition>(
+/** @internal */
+export const remapObjectLocator = <Q extends ObjectOrInterfaceDefinition>(
   wireObjectLocator: OntologiesV2.OntologyObjectV2,
 ): ObjectIdentifiers<Q> => ({
   $apiName: wireObjectLocator.__apiName,
