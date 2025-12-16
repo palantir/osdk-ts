@@ -41,7 +41,6 @@ export function EmployeesPage() {
                   onSelect={setSelectedEmployee}
                 />
               )}
-            <EmployeesTable />
           </Section>
         </div>
 
@@ -50,6 +49,9 @@ export function EmployeesPage() {
             <EmployeeDetails employee={selectedEmployee} />
           </Section>
         </div>
+      </div>
+      <div className="flex w-96">
+        <EmployeesTable />
       </div>
     </div>
   );
