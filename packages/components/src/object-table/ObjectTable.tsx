@@ -22,12 +22,12 @@ import type {
 } from "@osdk/api";
 import { useObjectSet } from "@osdk/react/experimental";
 import {
-  createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React, { useMemo } from "react";
+import React from "react";
+import { useColumnDefs } from "./hooks/useColumnDefs.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
 
 /**
@@ -47,48 +47,14 @@ export function ObjectTable<
 >({
   objectSet,
 }: ObjectTableProps<Q, RDPs>): React.ReactElement {
-  // Fetch objects using the useObjectSet hook from @osdk/react/new
   const { data, isLoading, error } = useObjectSet(objectSet);
 
-  // Get property keys from the object type definition
-  const propertyKeys = useMemo(() => {
-    if (!objectSet || !(objectSet as any).objectType) return [];
-    const objectType = (objectSet as any).objectType;
-    // Extract property keys from the object type definition
-    return Object.keys(objectType.properties || {}) as PropertyKeys<Q>[];
-  }, [objectSet]);
+  const columns = useColumnDefs(objectSet);
 
-  // Create column definitions based on object properties
-  const columns = useMemo(() => {
-    if (propertyKeys.length === 0) return [];
-
-    const columnHelper = createColumnHelper<
-      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
-    >();
-
-    return propertyKeys.map((propertyKey) =>
-      columnHelper.accessor(
-        (
-          row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-        ) => {
-          const value = row[propertyKey];
-          // Handle various property value types
-          if (value == null) return "";
-          if (typeof value === "object") return JSON.stringify(value);
-          return String(value);
-        },
-        {
-          id: propertyKey as string,
-          header: () => propertyKey as string,
-          cell: (info: any) => info.getValue(),
-        },
-      )
-    );
-  }, [propertyKeys]);
-
-  // Initialize TanStack Table
-  const table = useReactTable({
-    data: data || [],
+  const table = useReactTable<
+    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, {}>
+  >({
+    data: data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
