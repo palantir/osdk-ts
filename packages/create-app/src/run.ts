@@ -184,10 +184,8 @@ export async function run(
   };
   processFiles(root);
 
-  if (osdkPackage != null && osdkRegistryUrl != null) {
-    const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl, foundryUrl });
-    fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
-  }
+  const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl, foundryUrl });
+  fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
 
   const envDevelopment = generateEnvDevelopment({
     envPrefix: template.envPrefix,

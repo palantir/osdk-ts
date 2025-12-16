@@ -22,7 +22,11 @@ const expected = `
 @myapp:registry=https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm/
 `.trimStart();
 
-test("it generates .npmrc for package and registry", () => {
+const expectedNoRegistry = `
+//example.palantirfoundry.com/artifacts/api/:_authToken=\${FOUNDRY_TOKEN}
+`.trimStart();
+
+test("it generates .npmrc for package, registry, and foundry url", () => {
   expect(
     generateNpmRc({
       foundryUrl: "https://example.palantirfoundry.com",
@@ -33,7 +37,7 @@ test("it generates .npmrc for package and registry", () => {
   ).toEqual(expected);
 });
 
-test("it generates .npmrc for package and registry with malformed foundry url", () => {
+test("it generates .npmrc for package, registry, and malformed foundry url", () => {
   expect(
     generateNpmRc({
       foundryUrl: "example.palantirfoundry.com/",
@@ -42,4 +46,14 @@ test("it generates .npmrc for package and registry with malformed foundry url", 
         "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm/",
     }),
   ).toEqual(expected);
+});
+
+test("it generates .npmrc for foundry url", () => {
+  expect(
+    generateNpmRc({
+      foundryUrl: "example.palantirfoundry.com/",
+      osdkPackage: undefined,
+      osdkRegistryUrl: undefined,
+    }),
+  ).toEqual(expectedNoRegistry);
 });
