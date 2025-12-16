@@ -151,18 +151,20 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
     Map<string, { objectSetRid: string; objectSet: ObjectSet }>
   >(new Map());
 
-  const emitEventCallId = useRef(0);
+  const emitEventCallIds = useRef<Map<string, number>>(new Map());
 
   /**
    * Wrapped emitEvent that transforms ObjectSet values to objectSetRid before sending.
    * This allows callers to pass ObjectSet<T> directly instead of `{ objectSetRid: string }`.
    *
-   * If multiple calls are made before the async transformation completes,
-   * only the last call will actually emit the event.
+   * If multiple calls are made for the same event before the async transformation completes,
+   * only the last call for that event will actually emit. Different events are independent.
    */
   const emitEvent: AugmentedEmitEvent<C> = useCallback(
     async (eventId, payload) => {
-      const thisCallId = ++emitEventCallId.current;
+      const eventKey = String(eventId);
+      const thisCallId = (emitEventCallIds.current.get(eventKey) ?? 0) + 1;
+      emitEventCallIds.current.set(eventKey, thisCallId);
 
       const transformedPayload = await transformEmitEventPayload(
         config,
@@ -171,7 +173,7 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
         osdkClient,
       );
 
-      if (thisCallId !== emitEventCallId.current) {
+      if (thisCallId !== emitEventCallIds.current.get(eventKey)) {
         return;
       }
 
