@@ -1,5 +1,13 @@
 # @osdkkit/react
 
+## 0.8.0-rc.7
+
+### Patch Changes
+
+- 13f229d: preserve object set data on rid change
+  - @osdk/api@2.6.0-rc.18
+  - @osdk/client@2.6.0-rc.18
+
 ## 0.8.0-rc.6
 
 ### Patch Changes
