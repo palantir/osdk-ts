@@ -67,7 +67,7 @@ export type AugmentedEmitEvent<C extends WidgetConfig<C["parameters"]>> = <
   ID extends M["payload"]["eventId"],
 >(
   eventId: ID,
-  payload: Extract<M["payload"], { eventId: ID }>,
+  payload: Omit<Extract<M["payload"], { eventId: ID }>, "eventId">,
 ) => void;
 
 export interface FoundryWidgetClientContext<
