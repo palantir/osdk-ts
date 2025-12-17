@@ -50,8 +50,14 @@ export type ColumnDefinition<
 
 type ColumnDefinitionLocator<
   Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = {},
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
 > =
   | {
     type: "property";
@@ -79,6 +85,11 @@ export interface ObjectTableProps<
    * The set of objects to show in the table
    */
   objectSet: ObjectSet<Q>;
+
+  /**
+   * The object type of the object
+   */
+  objectType: Q;
 
   /**
    * Ordered list of column definitions to show in the table

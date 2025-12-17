@@ -17,48 +17,51 @@
 import type {
   ObjectTypeDefinition,
   Osdk,
-  PropertyKeys,
+  QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
 import { useObjectSet } from "@osdk/react/experimental";
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import React from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
+import { Table } from "./Table.js";
 
 /**
  * ObjectTable - A headless table component for displaying OSDK object sets
- *
- * This is an MVP implementation that renders a basic table when given an objectSet.
  * It uses TanStack Table for table state management and @osdk/react hooks for data fetching.
  *
  * @example
  * ```tsx
- * <ObjectTable objectSet={myObjectSet} />
+ * <ObjectTable objectSet={myObjectSet} objectType={MyObjectType} />
  * ```
  */
 export function ObjectTable<
   Q extends ObjectTypeDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
 >({
   objectSet,
   objectType,
-}: ObjectTableProps<Q, RDPs>): React.ReactElement {
-  const { data, isLoading, error } = useObjectSet(objectSet);
+  columnDefinitions,
+}: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
+  const { data, isLoading, error } = useObjectSet<Q, never, RDPs>(objectSet);
+
+  const rows = data as Array<Osdk.Instance<Q>>;
 
   const { columns, loading: isColumnsLoading, error: columnsError } =
-    useColumnDefs(
+    useColumnDefs<Q, RDPs, FunctionColumns>(
       objectType,
+      columnDefinitions,
     );
 
   const table = useReactTable<
-    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, {}>
+    Osdk.Instance<Q>
   >({
-    data: data ?? [],
+    data: rows ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -79,35 +82,5 @@ export function ObjectTable<
     return <div>No data available</div>;
   }
 
-  return (
-    <table>
-      <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <th key={header.id}>
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                    header.column.columnDef.header,
-                    header.getContext(),
-                  )}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody>
-        {table.getRowModel().rows.map((row) => (
-          <tr key={row.id}>
-            {row.getVisibleCells().map((cell) => (
-              <td key={cell.id}>
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
+  return <Table table={table} />;
 }

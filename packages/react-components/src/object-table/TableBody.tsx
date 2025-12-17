@@ -14,8 +14,20 @@
  * limitations under the License.
  */
 
-export type { FilterListProps } from "../filter-list/FilterListApi.js";
-export type { FilterListItemProps } from "../filter-list/FilterListItemApi.js";
+import type { Row, RowData } from "@tanstack/react-table";
+import React from "react";
+import { TableRow } from "./TableRow.js";
 
-export { ObjectTable } from "../object-table/ObjectTable.js";
-export type { ObjectTableProps } from "../object-table/ObjectTableApi.js";
+interface TableBodyProps<TData extends RowData> {
+  rows: Array<Row<TData>>;
+}
+
+export function TableBody<TData extends RowData>({
+  rows,
+}: TableBodyProps<TData>): React.ReactElement {
+  return (
+    <tbody>
+      {rows.map((row) => <TableRow key={row.id} row={row} />)}
+    </tbody>
+  );
+}

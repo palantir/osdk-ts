@@ -39,7 +39,7 @@
   "dependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
-    "@osdk/components": "workspace:~",
+    "@osdk/react-components": "workspace:~",
     "@osdk/oauth": "workspace:~",
     "@osdk/react": "workspace:~",
     "core-js": "^3.45.1",

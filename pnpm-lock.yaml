@@ -3243,15 +3243,15 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../client
-      '@osdk/components':
-        specifier: workspace:~
-        version: link:../components
       '@osdk/oauth':
         specifier: workspace:~
         version: link:../oauth
       '@osdk/react':
         specifier: workspace:~
         version: link:../react
+      '@osdk/react-components':
+        specifier: workspace:~
+        version: link:../react-components
       core-js:
         specifier: ^3.45.1
         version: 3.45.1
