@@ -292,6 +292,7 @@ const archetypeRules = archetypes(
     [
       "@osdk/widget.client-react",
       "@osdk/react",
+      "@osdk/react-components",
     ],
     {
       ...LIBRARY_RULES,
