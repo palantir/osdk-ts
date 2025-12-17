@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,6 +148,13 @@ describe("FoundryWidget emitEvent race condition handling", () => {
         const next = pending.shift();
         if (next) next.resolve(next.payload);
       },
+      resolveAtIndex(index: number) {
+        const item = pending[index];
+        if (item) {
+          pending.splice(index, 1);
+          item.resolve(item.payload);
+        }
+      },
     };
   };
 
@@ -160,31 +167,6 @@ describe("FoundryWidget emitEvent race condition handling", () => {
   afterEach(() => {
     unmountWidget();
     vi.useRealTimers();
-  });
-
-  it("should only emit the last call when same event is called multiple times", async () => {
-    const deferred = createDeferredTransformMock();
-    const emit = await mountWidget();
-
-    // Call emitEvent 3 times rapidly for the same event
-    act(() => {
-      emit("eventA", { parameterUpdates: { myParam: "first" } });
-      emit("eventA", { parameterUpdates: { myParam: "second" } });
-      emit("eventA", { parameterUpdates: { myParam: "third" } });
-    });
-
-    expect(deferred.pendingCount).toBe(3);
-
-    await act(async () => {
-      deferred.resolveAll();
-      await vi.runAllTimersAsync();
-    });
-
-    // Only the last call should be emitted
-    expect(mockEmitEvent).toHaveBeenCalledTimes(1);
-    expect(mockEmitEvent).toHaveBeenCalledWith("eventA", {
-      parameterUpdates: { myParam: "third" },
-    });
   });
 
   it("should emit both events when different events are called", async () => {
@@ -211,6 +193,41 @@ describe("FoundryWidget emitEvent race condition handling", () => {
     expect(mockEmitEvent).toHaveBeenCalledWith("eventB", {
       parameterUpdates: { myParam: "valueB" },
     });
+  });
+
+  it("should only emit the last call even when transforms resolve out of order", async () => {
+    const deferred = createDeferredTransformMock();
+    const emit = await mountWidget();
+
+    // Call emitEvent 3 times rapidly
+    act(() => {
+      emit("eventA", { parameterUpdates: { myParam: "first" } });
+      emit("eventA", { parameterUpdates: { myParam: "second" } });
+      emit("eventA", { parameterUpdates: { myParam: "third" } });
+    });
+
+    expect(deferred.pendingCount).toBe(3);
+
+    // Resolve in reverse order: third, then first, then second
+    await act(async () => {
+      deferred.resolveAtIndex(2); // "third" resolves first
+      await vi.runAllTimersAsync();
+    });
+
+    // The third call should emit immediately since it's the latest
+    expect(mockEmitEvent).toHaveBeenCalledTimes(1);
+    expect(mockEmitEvent).toHaveBeenCalledWith("eventA", {
+      parameterUpdates: { myParam: "third" },
+    });
+
+    await act(async () => {
+      deferred.resolveAtIndex(0); // "first" resolves second
+      deferred.resolveAtIndex(0); // "second" resolves last (now at index 0)
+      await vi.runAllTimersAsync();
+    });
+
+    // Still only one emit - the stale calls are ignored
+    expect(mockEmitEvent).toHaveBeenCalledTimes(1);
   });
 
   it("should emit all calls when they complete sequentially", async () => {
