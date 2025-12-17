@@ -1,5 +1,20 @@
 # @osdkkit/react
 
+## 0.8.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- 13f229d: preserve object set data on rid change
+- c5a3815: Add new auto fetch more behavior to useOsdkObjects
+- 4b13323: update OSDK toolkit docs
+- 9961f06: fix order by via key stabilization
+- e7bf02a: Add RDP support to React toolkit
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
 ## 0.8.0-rc.7
 
 ### Patch Changes

@@ -1,5 +1,33 @@
 # @osdk/benchmarks.primary
 
+## 0.1.0
+
+### Patch Changes
+
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- Updated dependencies [322c5bc]
+- Updated dependencies [b48526f]
+- Updated dependencies [b313525]
+- Updated dependencies [3fbb596]
+- Updated dependencies [f7ae38a]
+- Updated dependencies [486ef7e]
+- Updated dependencies [ea077c6]
+- Updated dependencies [507ec7f]
+- Updated dependencies [c5a3815]
+- Updated dependencies [5a9cd8f]
+- Updated dependencies [61eb5b0]
+- Updated dependencies [9961f06]
+- Updated dependencies [e7bf02a]
+- Updated dependencies [a1ffb20]
+- Updated dependencies [b959085]
+- Updated dependencies [af4f3bf]
+- Updated dependencies [e62c692]
+  - @osdk/client@2.6.0
+
 ## 0.1.0-rc.92
 
 ### Patch Changes

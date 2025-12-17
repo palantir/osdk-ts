@@ -1,5 +1,27 @@
 # @osdk/api
 
+## 2.6.0
+
+### Patch Changes
+
+- 322c5bc: Simulated release
+- f7ae38a: Allow exact matching for arrays of structs
+- 486ef7e: Deprecate multiplicity in query params/outputs
+- ea077c6: Change asType to narrowToType
+- 3d7dc0a: introduce new token field, note readToken as deprecated
+- 2556c64: Fix asType types to accept any interface when casting from an interface with no implementing object types
+- 5a9cd8f: Remove NULL_VALUE from @osdk/api for RC
+- b307201: Add edits support for media reference.
+- e7bf02a: Add RDP support to React toolkit
+- a1ffb20: Use new ephemeral media upload endpoint.
+- b959085: Fix nested array query param type handling
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
+- e62c692: Allow all applicable filters for struct sub properties to be applied on struct arrays
+
 ## 2.6.0-rc.18
 
 ## 2.6.0-rc.17

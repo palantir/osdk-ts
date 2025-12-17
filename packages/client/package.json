@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "2.6.0-rc.18",
+  "version": "2.6.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -71,7 +71,7 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
+    "@osdk/api": "workspace:~",
     "@osdk/client.unstable": "workspace:*",
     "@osdk/foundry.core": "2.42.0",
     "@osdk/foundry.mediasets": "2.42.0",

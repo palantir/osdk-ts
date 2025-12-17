@@ -1,5 +1,20 @@
 # @osdk/typescript-sdk-docs
 
+## 0.5.0
+
+### Patch Changes
+
+- 776ae8a: Simulated release
+- a035fdc: Add draft of media upload docs
+- dd8c385: Update upload media ontology edits docs
+- 823c756: Update object parameter format in TypeScript SDK documentation to directly provide the primary key as a string
+- 0e863aa: Tweak media upload snippet
+- 7cac2f8: Upgrade to latest spec and fix attachment template"
+- af4f3bf: Remove the following features for RC:
+  - Property formatting
+  - Branching
+  - Constant RDPs
+
 ## 0.5.0-rc.6
 
 ### Patch Changes
