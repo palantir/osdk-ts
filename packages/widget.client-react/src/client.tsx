@@ -15,12 +15,7 @@
  */
 
 import type { Client, ObjectSet } from "@osdk/client";
-import { createAndFetchTempObjectSetRid } from "@osdk/client/internal";
-import type {
-  EventId,
-  EventParameterValueMap,
-  ObjectType,
-} from "@osdk/widget.api";
+import type { ObjectType } from "@osdk/widget.api";
 import {
   type AsyncValue,
   createFoundryWidgetClient,
@@ -31,7 +26,6 @@ import {
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import type {
   AugmentedEmitEvent,
-  AugmentedEventParameterValueMap,
   ExtendedAsyncParameterValueMap,
   ExtendedParameterValueMap,
   FoundryWidgetClientContext,
@@ -40,6 +34,7 @@ import { FoundryWidgetContext } from "./context.js";
 import { ErrorBoundary } from "./ErrorBoundary.js";
 import { extendParametersWithObjectSets } from "./utils/extendParametersWithObjectSets.js";
 import { initializeParameters } from "./utils/initializeParameters.js";
+import { transformEmitEventPayload } from "./utils/transformEmitEventPayload.js";
 
 type ExtractObjectTypes<C extends WidgetConfig<C["parameters"]>> =
   C["parameters"][keyof C["parameters"]] extends infer Param
@@ -48,54 +43,6 @@ type ExtractObjectTypes<C extends WidgetConfig<C["parameters"]>> =
       : never
     : never
     : never;
-
-/**
- * Transforms an augmented emit event payload by creating temporary object sets
- * from ObjectSet instances.
- */
-async function transformEmitEventPayload<
-  C extends WidgetConfig<C["parameters"]>,
-  K extends EventId<C>,
->(
-  config: C,
-  eventId: K,
-  payload: { parameterUpdates: AugmentedEventParameterValueMap<C, K> },
-  osdkClient?: Client,
-): Promise<{ parameterUpdates: EventParameterValueMap<C, K> }> {
-  const event = config.events[eventId as string];
-  if (event == null) {
-    throw new Error(
-      `Event with ID "${eventId.toString()}" not found in widget config`,
-    );
-  }
-
-  const entries = Object.entries(payload.parameterUpdates);
-
-  const transformedEntries = await Promise.all(
-    entries.map(async ([paramId, paramValue]): Promise<[string, unknown]> => {
-      const paramConfig = config.parameters[paramId];
-      if (paramConfig?.type === "objectSet") {
-        if (osdkClient == null) {
-          throw new Error(
-            `Cannot emit event "${eventId.toString()}" with ObjectSet parameter "${paramId}" without an osdk client`,
-          );
-        }
-        const objectSetRid = await createAndFetchTempObjectSetRid(
-          osdkClient,
-          paramValue as ObjectSet,
-        );
-        return [paramId, { objectSetRid }];
-      }
-      return [paramId, paramValue];
-    }),
-  );
-
-  return {
-    parameterUpdates: Object.fromEntries(
-      transformedEntries,
-    ) as EventParameterValueMap<C, K>,
-  };
-}
 
 type HasObjectSetParameters<C extends WidgetConfig<C["parameters"]>> =
   ExtractObjectTypes<C> extends never ? false : true;
