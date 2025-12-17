@@ -1678,7 +1678,7 @@ importers:
   packages/client:
     dependencies:
       '@osdk/api':
-        specifier: workspace:*
+        specifier: workspace:~
         version: link:../api
       '@osdk/client.unstable':
         specifier: workspace:*
