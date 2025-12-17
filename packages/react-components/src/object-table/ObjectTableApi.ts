@@ -33,7 +33,15 @@ export type ColumnDefinition<
   FunctionColumns extends Record<string, QueryDefinition<{}>>,
 > = {
   locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>;
+
+  /**
+   * @default true
+   */
   isVisible?: boolean;
+
+  /**
+   * @default none
+   */
   pinned?: "left" | "right" | "none";
   width?: number;
   minWidth?: number;

@@ -79,15 +79,15 @@ export function useColumnDefs<
 
         // Q: Do we always use accessorKey?
         // Q: Do we want to standardize propertyKey -> id?
-        const accessorKey = locator.type === "property"
+        const colKey = locator.type === "property"
           ? locator.propertyKey
           : locator.id as string;
 
         const colDef: AccessorColumnDef<
           Osdk.Instance<Q>
         > = {
-          id: accessorKey,
-          accessorKey,
+          id: colKey,
+          accessorKey: colKey,
           header: renderHeader ?? propertyMetadata?.displayName,
           size: width,
           minSize: minWidth,

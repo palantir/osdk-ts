@@ -1,9 +1,6 @@
 import type { Osdk } from "@osdk/api";
-import type {
-  ColumnDefinition} from "@osdk/react-components/experimental";
-import {
-  ObjectTable,
-} from "@osdk/react-components/experimental";
+import type { ColumnDefinition } from "@osdk/react-components/experimental";
+import { ObjectTable } from "@osdk/react-components/experimental";
 import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 

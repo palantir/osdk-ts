@@ -24,6 +24,7 @@ import { useObjectSet } from "@osdk/react/experimental";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import React from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
+import { useDefaultTableStates } from "./hooks/useDefaultTableStates.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { Table } from "./Table.js";
 
@@ -49,7 +50,6 @@ export function ObjectTable<
   columnDefinitions,
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { data, isLoading, error } = useObjectSet<Q, never, RDPs>(objectSet);
-
   const rows = data as Array<Osdk.Instance<Q>>;
 
   const { columns, loading: isColumnsLoading, error: columnsError } =
@@ -58,14 +58,20 @@ export function ObjectTable<
       columnDefinitions,
     );
 
+  const { columnVisibility } = useDefaultTableStates({ columnDefinitions });
+
   const table = useReactTable<
     Osdk.Instance<Q>
   >({
     data: rows ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    state: {
+      columnVisibility,
+    },
   });
 
+  // TODO: Render skeleton
   if (isLoading || isColumnsLoading) {
     return <div>Loading...</div>;
   }
