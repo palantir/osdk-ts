@@ -1,6 +1,8 @@
 # @osdk/react-components
 
-React components for building Foundry applications. These components are Ontology-aware — pass in OSDK entities, and they handle data loading, caching, error states, and refresh logic automatically.
+React components for building Foundry applications. These components are Ontology-aware — pass in OSDK entities, and they handle data loading, caching, and state management automatically.
+
+Built on top of [@osdk/react](../react), these components use OSDK hooks internally to provide ready-to-use UI elements. While @osdk/react gives you low-level hooks for data fetching, @osdk/react-components provides UI widgets for common patterns like tables and forms.
 
 ## Installation
 
@@ -10,13 +12,15 @@ npm install @osdk/react-components @osdk/react
 
 **Prerequisites:**
 
-- React 18+
+- React 18
 - A configured OSDK client
 - An OsdkProvider wrapping your application
 
 ## Components
 
-We aim to offer these three components in the initial phase:
+> **Note:** This package is under active development. Not all components listed below are available yet.
+
+The components that this package will provide are:
 
 | Component     | Description                                                                        |
 | ------------- | ---------------------------------------------------------------------------------- |
@@ -51,10 +55,6 @@ function EmployeeDirectory() {
 **Best practices included.** Loading states, error handling, caching, and data freshness are handled for you — no need to reimplement these patterns for each component.
 
 **Fully customizable.** Supports custom styling for any design system.
-
-## Styling
-
-Components ship unstyled by default with default stylesheets to use.
 
 ## What this package is (and isn't)
 
