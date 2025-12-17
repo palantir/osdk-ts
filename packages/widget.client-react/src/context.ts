@@ -61,6 +61,10 @@ interface AugmentedWidgetEmitEvent<C extends WidgetConfig<C["parameters"]>>
  *
  * For object set parameters, pass `ObjectSet<T>` directly.
  * If the same event is emitted multiple times in quick succession, only the last call will be sent.
+ *
+ * Errors (e.g., network failures when materializing ObjectSet parameters)
+ * are not surfaced to the caller. Consider using `window.addEventListener('unhandledrejection', ...)`
+ * if you need to handle these failures.
  */
 export type AugmentedEmitEvent<C extends WidgetConfig<C["parameters"]>> = <
   M extends AugmentedWidgetEmitEvent<C>,
@@ -75,7 +79,10 @@ export interface FoundryWidgetClientContext<
 > {
   /**
    * Emits a widget event with parameter updates to the host Foundry UI.
-   * If the same event is emitted multiple times in quick succession, only the last call will be sent.
+   *
+   * - For ObjectSet parameters, pass `ObjectSet<T>` directly
+   * - If the same event is emitted multiple times rapidly, only the last call is sent
+   * - Errors are not surfaced to the caller (use `window.addEventListener('unhandledrejection', ...)` if needed)
    */
   emitEvent: AugmentedEmitEvent<C>;
   hostEventTarget: FoundryHostEventTarget<C>;
