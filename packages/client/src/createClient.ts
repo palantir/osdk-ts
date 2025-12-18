@@ -16,6 +16,7 @@
 
 import type {
   ActionDefinition,
+  DerivedProperty,
   FetchPageArgs,
   InterfaceDefinition,
   Logger,
@@ -39,7 +40,10 @@ import {
   __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
   __EXPERIMENTAL__NOT_SUPPORTED_YET__getBulkLinks,
 } from "@osdk/api/unstable";
-import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
+import type {
+  DerivedPropertyDefinition,
+  ObjectSet as WireObjectSet,
+} from "@osdk/foundry.ontologies";
 import * as OntologiesV2 from "@osdk/foundry.ontologies";
 import { symbolClientContext as oldSymbolClientContext } from "@osdk/shared.client";
 import { createBulkLinksAsyncIterFactory } from "./__unstable/createBulkLinksAsyncIterFactory.js";
@@ -47,6 +51,7 @@ import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import { applyAction } from "./actions/applyAction.js";
 import { additionalContext, type Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
+import { createWithPropertiesObjectSet } from "./derivedProperties/createWithPropertiesObjectSet.js";
 import { fetchMetadataInternal } from "./fetchMetadata.js";
 import { MinimalLogger } from "./logger/MinimalLogger.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
@@ -240,13 +245,26 @@ export function createClientFromContext(clientCtx: MinimalClient) {
             >(
               objectOrInterfaceType: Q,
               rids: string[],
-              options: FetchPageArgs<Q, L, R, any, S> = {},
+              options: FetchPageArgs<Q, L, R, any, S> & {
+                $withProperties?: DerivedProperty.Clause<Q>;
+              } = {},
             ) => {
+              const { $withProperties, ...rest } = options;
+
+              const baseObjectSet = createWithRid(rids);
+              const objectSet = $withProperties
+                ? wrapWithDerivedProperties(
+                  objectOrInterfaceType,
+                  baseObjectSet,
+                  $withProperties,
+                )
+                : baseObjectSet;
+
               return await fetchPage(
                 clientCtx,
                 objectOrInterfaceType,
-                options,
-                createWithRid(rids),
+                rest,
+                objectSet,
               );
             },
             fetchPageByRidNoType: async <
@@ -332,13 +350,36 @@ export const createClientWithTransaction: (
     ...args,
   ) as Client;
 
-function createWithRid(
-  rids: string[],
-) {
-  const withRid: WireObjectSet = {
+function createWithRid(rids: string[]): WireObjectSet {
+  return {
     type: "static",
-    "objects": rids,
+    objects: rids,
   };
+}
 
-  return withRid;
+function wrapWithDerivedProperties<Q extends ObjectOrInterfaceDefinition>(
+  objectType: Q,
+  objectSet: WireObjectSet,
+  withPropertiesClause: DerivedProperty.Clause<Q>,
+): WireObjectSet {
+  const definitionMap = new Map<any, DerivedPropertyDefinition>();
+  const derivedProperties: Record<string, DerivedPropertyDefinition> = {};
+
+  for (const key of Object.keys(withPropertiesClause)) {
+    const result = withPropertiesClause[key](
+      createWithPropertiesObjectSet(
+        objectType,
+        { type: "methodInput" },
+        definitionMap,
+        true,
+      ),
+    );
+    derivedProperties[key] = definitionMap.get(result)!;
+  }
+
+  return {
+    type: "withProperties",
+    derivedProperties,
+    objectSet,
+  };
 }
