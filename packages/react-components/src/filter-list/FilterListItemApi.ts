@@ -21,6 +21,12 @@ import type {
   PropertyKeys,
   WirePropertyTypes,
 } from "@osdk/api";
+import type { ReactNode } from "react";
+import type {
+  FilterDataIndicator,
+  FilterInteractionMode,
+  FilterItemColor,
+} from "./FilterDisplayTypes.js";
 
 /**
  * Props for a single filter list item component
@@ -31,7 +37,7 @@ export interface FilterListItemProps<
   C extends ValidComponentsForPropertyType<
     PropertyTypeFromKey<Q, K>
   > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> extends FilterDefinition<Q, K, C> {
+> extends PropertyFilterDefinition<Q, K, C> {
   objectSet: ObjectSet<Q>;
 
   /**
@@ -44,64 +50,45 @@ export interface FilterListItemProps<
 }
 
 /**
- * A filter definition specifies configuration for a single filter
- *
- * The component type C must be compatible with the property type derived from the key.
- * For example, boolean properties can only use LISTOGRAM,
- * while string properties can use LISTOGRAM, TEXT_TAGS, or CONTAINS_TEXT.
- */
-export interface FilterDefinition<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q> = PropertyKeys<Q>,
-  C extends ValidComponentsForPropertyType<
-    PropertyTypeFromKey<Q, K>
-  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> {
-  /**
-   * The property key to filter on
-   */
-  key: K;
-
-  /**
-   * Display label for the filter
-   */
-  label?: string;
-
-  /**
-   * The filter component type to render
-   * Must be compatible with the property type derived from the key, see ValidComponentsForPropertyType
-   */
-  filterComponent: C;
-
-  /**
-   * The current state of the filter.
-   * If provided, the filter is controlled.
-   */
-  filterState: FilterStateByComponentType[C];
-}
-
-/**
  * Helper type to extract the property type from an ObjectTypeDefinition given a property key
  */
-type PropertyTypeFromKey<
+export type PropertyTypeFromKey<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q>,
 > = CompileTimeMetadata<Q>["properties"][K]["type"];
 
+/**
+ * All available filter component types
+ */
 export type FilterComponentType =
   | "LISTOGRAM"
   | "DATE_RANGE"
   | "NUMBER_RANGE"
   | "TEXT_TAGS"
-  | "CONTAINS_TEXT";
+  | "CONTAINS_TEXT"
+  | "SINGLE_SELECT"
+  | "MULTI_SELECT"
+  | "SINGLE_DATE"
+  | "MULTI_DATE"
+  | "TIMELINE"
+  | "CHECKBOX_LIST"
+  | "TOGGLE";
 
 /**
  * Gets valid component types for a given property type
  */
 export type ValidComponentsForPropertyType<P extends WirePropertyTypes> =
-  P extends "boolean" ? "LISTOGRAM"
-    : P extends "string" ? "LISTOGRAM" | "TEXT_TAGS" | "CONTAINS_TEXT"
-    : P extends "datetime" | "timestamp" ? "DATE_RANGE"
+  P extends "boolean"
+    ? "LISTOGRAM" | "CHECKBOX_LIST" | "SINGLE_SELECT" | "TOGGLE"
+    : P extends "string" ?
+        | "LISTOGRAM"
+        | "TEXT_TAGS"
+        | "CONTAINS_TEXT"
+        | "SINGLE_SELECT"
+        | "MULTI_SELECT"
+        | "CHECKBOX_LIST"
+    : P extends "datetime" | "timestamp"
+      ? "DATE_RANGE" | "SINGLE_DATE" | "MULTI_DATE" | "TIMELINE"
     : P extends
       | "double"
       | "integer"
@@ -109,7 +96,7 @@ export type ValidComponentsForPropertyType<P extends WirePropertyTypes> =
       | "float"
       | "short"
       | "byte"
-      | "decimal" ? "NUMBER_RANGE"
+      | "decimal" ? "NUMBER_RANGE" | "SINGLE_SELECT" | "MULTI_SELECT"
     : never;
 
 /**
@@ -119,7 +106,14 @@ export type FilterState =
   | ExactMatchFilterState<string | boolean>
   | DateRangeFilterState
   | ContainsTextFilterState
-  | NumberRangeFilterState;
+  | NumberRangeFilterState
+  | SingleSelectFilterState<string | boolean | number>
+  | MultiSelectFilterState<string | boolean | number>
+  | SingleDateFilterState
+  | MultiDateFilterState
+  | TimelineFilterState
+  | CheckboxListFilterState
+  | ToggleFilterState;
 
 /**
  * Maps component types to their corresponding state types
@@ -130,13 +124,34 @@ export interface FilterStateByComponentType {
   TEXT_TAGS: ExactMatchFilterState<string>;
   CONTAINS_TEXT: ContainsTextFilterState;
   NUMBER_RANGE: NumberRangeFilterState;
+  SINGLE_SELECT: SingleSelectFilterState<string | boolean | number>;
+  MULTI_SELECT: MultiSelectFilterState<string | boolean | number>;
+  SINGLE_DATE: SingleDateFilterState;
+  MULTI_DATE: MultiDateFilterState;
+  TIMELINE: TimelineFilterState;
+  CHECKBOX_LIST: CheckboxListFilterState;
+  TOGGLE: ToggleFilterState;
 }
 
-type FilterStateType =
+/**
+ * All filter state discriminator types
+ */
+export type FilterStateType =
   | "EXACT_MATCH"
   | "DATE_RANGE"
   | "NUMBER_RANGE"
-  | "CONTAINS_TEXT";
+  | "CONTAINS_TEXT"
+  | "SINGLE_SELECT"
+  | "MULTI_SELECT"
+  | "SINGLE_DATE"
+  | "MULTI_DATE"
+  | "TIMELINE"
+  | "CHECKBOX_LIST"
+  | "TOGGLE"
+  | "HAS_LINK"
+  | "LINKED_PROPERTY"
+  | "KEYWORD_SEARCH"
+  | "CUSTOM";
 
 /**
  * Base interface for all filter states
@@ -144,7 +159,7 @@ type FilterStateType =
  */
 export interface BaseFilterState {
   /**
-   * The type of filter component
+   * The type discriminator for the filter state
    */
   type: FilterStateType;
 
@@ -196,3 +211,206 @@ export interface NumberRangeFilterState extends BaseFilterState {
    */
   maxValue?: number;
 }
+
+export interface SingleSelectFilterState<T = string | boolean | number>
+  extends BaseFilterState
+{
+  type: "SINGLE_SELECT";
+  selectedValue?: T;
+}
+
+export interface MultiSelectFilterState<T = string | boolean | number>
+  extends BaseFilterState
+{
+  type: "MULTI_SELECT";
+  selectedValues: T[];
+}
+
+export interface SingleDateFilterState extends BaseFilterState {
+  type: "SINGLE_DATE";
+  selectedDate?: Date;
+}
+
+export interface MultiDateFilterState extends BaseFilterState {
+  type: "MULTI_DATE";
+  selectedDates: Date[];
+}
+
+export interface TimelineFilterState extends BaseFilterState {
+  type: "TIMELINE";
+  startDate?: Date;
+  endDate?: Date;
+  granularity?: "day" | "week" | "month" | "quarter" | "year";
+}
+
+export interface CheckboxListFilterState extends BaseFilterState {
+  type: "CHECKBOX_LIST";
+  selectedValues: string[];
+  selectAll?: boolean;
+}
+
+export interface ToggleFilterState extends BaseFilterState {
+  type: "TOGGLE";
+  enabled: boolean;
+}
+
+/**
+ * A property filter definition specifies configuration for filtering on a single property
+ *
+ * The component type C must be compatible with the property type derived from the key.
+ * For example, boolean properties can only use LISTOGRAM, CHECKBOX_LIST, or SINGLE_SELECT,
+ * while string properties can use LISTOGRAM, TEXT_TAGS, CONTAINS_TEXT, SINGLE_SELECT, MULTI_SELECT, or CHECKBOX_LIST.
+ */
+export interface PropertyFilterDefinition<
+  Q extends ObjectTypeDefinition,
+  K extends PropertyKeys<Q> = PropertyKeys<Q>,
+  C extends ValidComponentsForPropertyType<
+    PropertyTypeFromKey<Q, K>
+  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
+> {
+  /**
+   * Discriminator for filter definition type
+   */
+  type: "property";
+
+  /**
+   * The property key to filter on
+   */
+  key: K;
+
+  /**
+   * Display label for the filter
+   */
+  label?: string;
+
+  /**
+   * The filter component type to render
+   * Must be compatible with the property type derived from the key, see ValidComponentsForPropertyType
+   */
+  filterComponent: C;
+
+  /**
+   * The current state of the filter.
+   * If provided, the filter is controlled.
+   */
+  filterState: FilterStateByComponentType[C];
+
+  /**
+   * Default state for the filter when reset
+   */
+  defaultFilterState?: FilterStateByComponentType[C];
+
+  /**
+   * Interaction mode for the filter
+   * - "checkbox": Multi-select with checkboxes
+   * - "category": Single-click toggle
+   */
+  interactionMode?: FilterInteractionMode;
+
+  /**
+   * Show "Select All" checkbox when using checkbox interaction mode
+   */
+  showSelectAll?: boolean;
+
+  /**
+   * Visual data indicator type
+   * - "histogram": Show distribution histogram bars
+   * - "count": Show count number only
+   * - "none": No data indicator
+   */
+  dataIndicator?: FilterDataIndicator;
+
+  /**
+   * Allow user to toggle between include/exclude mode
+   */
+  allowToggleExcludeMode?: boolean;
+
+  /**
+   * Called when exclude mode changes
+   */
+  onExcludeModeChange?: (isExcluding: boolean) => void;
+
+  /**
+   * Color formatting for the filter item
+   */
+  color?: FilterItemColor;
+
+  /**
+   * Color formatting for specific values within the filter
+   */
+  valueColors?: Record<string, FilterItemColor>;
+
+  // ─── Phase 2: Figma Alignment Props ─────────────────────────────────
+
+  /**
+   * Icon to display next to the filter label
+   */
+  icon?: ReactNode;
+
+  /**
+   * Controlled collapsed state for this filter item
+   */
+  itemCollapsed?: boolean;
+
+  /**
+   * Default collapsed state for this filter item (uncontrolled)
+   */
+  defaultItemCollapsed?: boolean;
+
+  /**
+   * Called when the filter item collapsed state changes
+   */
+  onItemCollapsedChange?: (collapsed: boolean) => void;
+
+  /**
+   * Show overflow menu (...) with standard actions
+   */
+  showOverflowMenu?: boolean;
+
+  /**
+   * Show search input for filtering values within this filter
+   */
+  showFilterSearch?: boolean;
+
+  /**
+   * Placeholder text for the filter search input
+   */
+  filterSearchPlaceholder?: string;
+
+  /**
+   * Controlled value for the filter search input
+   */
+  filterSearchValue?: string;
+
+  /**
+   * Called when the filter search value changes
+   */
+  onFilterSearchChange?: (value: string) => void;
+
+  /**
+   * Maximum number of values to display before truncation
+   * If not specified, all values are shown
+   */
+  maxVisibleItems?: number;
+
+  /**
+   * Show "View all (X)" link when values are truncated
+   */
+  showViewAllLink?: boolean;
+
+  /**
+   * Called when the "View all" link is clicked
+   */
+  onViewAllClick?: () => void;
+}
+
+/**
+ * @deprecated Use PropertyFilterDefinition instead. This alias is kept for backwards compatibility.
+ */
+export type FilterDefinition<
+  Q extends ObjectTypeDefinition,
+  K extends PropertyKeys<Q> = PropertyKeys<Q>,
+  C extends ValidComponentsForPropertyType<
+    PropertyTypeFromKey<Q, K>
+  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
+> = PropertyFilterDefinition<Q, K, C>;

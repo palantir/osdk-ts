@@ -58,7 +58,7 @@ export function createCollectionConnectable<
           : combineLatest(
             listEntry.value.data.map((cacheKey: ObjectCacheKey) =>
               subjects.get(cacheKey).pipe(
-                map(objectEntry => objectEntry?.value!),
+                map(objectEntry => objectEntry?.value),
                 distinctUntilChanged(),
               )
             ),
@@ -74,7 +74,7 @@ export function createCollectionConnectable<
             map(params =>
               createPayload({
                 resolvedData: Array.isArray(params.resolvedData)
-                  ? params.resolvedData
+                  ? params.resolvedData.filter(item => item != null)
                   : [],
                 isOptimistic: params.isOptimistic,
                 status: params.status,

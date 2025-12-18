@@ -1,0 +1,343 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.osdk-filter-list {
+  --filter-panel-bg: var(--osdk-filter-panel-bg, #ffffff);
+  --filter-item-bg: var(--osdk-filter-item-bg, #f8f9fa);
+  --filter-item-hover-bg: var(--osdk-filter-item-hover-bg, #e9ecef);
+  --filter-item-active-bg: var(--osdk-filter-item-active-bg, #e3f2fd);
+  --filter-panel-border: var(--osdk-filter-panel-border, #dee2e6);
+  --filter-histogram: var(--osdk-filter-histogram, #4c90f0);
+  --filter-count-text: var(--osdk-filter-count-text, #6c757d);
+  --filter-header-bg: var(--osdk-filter-header-bg, #f8f9fa);
+
+  display: flex;
+  flex-direction: column;
+  width: 280px;
+  min-width: 200px;
+  background-color: var(--filter-panel-bg);
+  border: 1px solid var(--filter-panel-border);
+  border-radius: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px;
+}
+
+.osdk-filter-list--collapsed {
+  width: auto;
+  min-width: auto;
+}
+
+/* Header */
+.osdk-filter-list__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background-color: var(--filter-header-bg);
+  border-bottom: 1px solid var(--filter-panel-border);
+}
+
+.osdk-filter-list__collapse-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.osdk-filter-list__collapse-button:hover {
+  background-color: var(--filter-item-hover-bg);
+}
+
+.osdk-filter-list__chevron {
+  font-size: 14px;
+  color: #495057;
+}
+
+.osdk-filter-list__title-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.osdk-filter-list__title-icon {
+  display: flex;
+  align-items: center;
+}
+
+.osdk-filter-list__title {
+  font-weight: 600;
+  color: #212529;
+}
+
+.osdk-filter-list__active-count {
+  color: var(--filter-count-text);
+  font-size: 12px;
+}
+
+.osdk-filter-list__reset-button {
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #4c90f0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.osdk-filter-list__reset-button:hover:not(:disabled) {
+  background-color: var(--filter-item-hover-bg);
+}
+
+.osdk-filter-list__reset-button:disabled {
+  color: #adb5bd;
+  cursor: not-allowed;
+}
+
+/* Content */
+.osdk-filter-list__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.osdk-filter-list__content--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: var(--filter-count-text);
+}
+
+/* Filter Item */
+.osdk-filter-list__item {
+  margin-bottom: 8px;
+  background-color: var(--filter-item-bg);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.osdk-filter-list__item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.osdk-filter-list__item-header:hover {
+  background-color: var(--filter-item-hover-bg);
+}
+
+.osdk-filter-list__item-chevron {
+  font-size: 10px;
+  color: #6c757d;
+  transition: transform 0.15s ease;
+}
+
+.osdk-filter-list__item-chevron--collapsed {
+  transform: rotate(0deg);
+}
+
+.osdk-filter-list__item-label {
+  font-weight: 500;
+  color: #212529;
+}
+
+.osdk-filter-list__item-content {
+  padding: 8px 12px 12px;
+  border-top: 1px solid var(--filter-panel-border);
+}
+
+/* Add Filter Button */
+.osdk-filter-list__add-button {
+  padding: 10px 12px;
+  color: #4c90f0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 14px;
+}
+
+.osdk-filter-list__add-button:hover {
+  background-color: var(--filter-item-hover-bg);
+}
+
+.osdk-filter-list__add-button--fixed {
+  border-top: 1px solid var(--filter-panel-border);
+}
+
+.osdk-filter-list__add-button--inline {
+  margin: 8px;
+  border-radius: 4px;
+}
+
+/* Filter Inputs */
+.osdk-filter-input {
+  font-size: 13px;
+}
+
+.osdk-filter-input--loading,
+.osdk-filter-input--error,
+.osdk-filter-input--empty {
+  padding: 8px;
+  color: var(--filter-count-text);
+  font-style: italic;
+}
+
+.osdk-filter-input--error {
+  color: #dc3545;
+}
+
+/* Checkbox List */
+.osdk-filter-input--checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.osdk-filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.osdk-filter-checkbox--select-all {
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--filter-panel-border);
+  font-weight: 500;
+}
+
+.osdk-filter-checkbox input[type="checkbox"] {
+  margin: 0;
+  cursor: pointer;
+}
+
+.osdk-filter-checkbox__label {
+  color: #212529;
+}
+
+.osdk-filter-checkbox__more {
+  padding-top: 4px;
+  font-size: 12px;
+  color: var(--filter-count-text);
+}
+
+/* Text Input */
+.osdk-filter-input--text {
+  position: relative;
+}
+
+.osdk-filter-text-input {
+  width: 100%;
+  padding: 8px 28px 8px 10px;
+  font-size: 13px;
+  border: 1px solid var(--filter-panel-border);
+  border-radius: 4px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.osdk-filter-text-input:focus {
+  border-color: #4c90f0;
+  box-shadow: 0 0 0 2px rgba(76, 144, 240, 0.2);
+}
+
+.osdk-filter-text-input__clear {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6c757d;
+  font-size: 16px;
+  border-radius: 50%;
+}
+
+.osdk-filter-text-input__clear:hover {
+  background-color: var(--filter-item-hover-bg);
+  color: #212529;
+}
+
+/* Toggle */
+.osdk-filter-input--toggle {
+  padding: 4px 0;
+}
+
+.osdk-filter-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.osdk-filter-toggle__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.osdk-filter-toggle__slider {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background-color: #ced4da;
+  border-radius: 10px;
+  transition: background-color 0.2s;
+}
+
+.osdk-filter-toggle__slider::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.osdk-filter-toggle__input:checked + .osdk-filter-toggle__slider {
+  background-color: #4c90f0;
+}
+
+.osdk-filter-toggle__input:checked + .osdk-filter-toggle__slider::before {
+  transform: translateX(16px);
+}
+
+.osdk-filter-toggle__label {
+  color: #212529;
+}
