@@ -295,6 +295,26 @@ describe("ObjectSet", () => {
     expect(employees.data[1].$primaryKey).toBe(stubData.employee3.employeeId);
   });
 
+  it("allows fetching by rid with experimental function with $withProperties", async () => {
+    const employees = await client(
+      __EXPERIMENTAL__NOT_SUPPORTED_YET__fetchPageByRid,
+    ).fetchPageByRid(
+      Employee,
+      [stubData.employee1.__rid],
+      {
+        $withProperties: {
+          leadEmployeeId: (base) =>
+            base.pivotTo("lead").selectProperty("employeeId"),
+        },
+      },
+    );
+    expectTypeOf(employees.data[0].leadEmployeeId).toEqualTypeOf<number>();
+    expect(employees.data[0].$primaryKey).toBe(stubData.employee1.employeeId);
+    expect(employees.data[0].leadEmployeeId).toBe(
+      stubData.employee2.__primaryKey,
+    );
+  });
+
   it("check struct parsing", async () => {
     const player = await client(BgaoNflPlayer).fetchOne(
       "tkelce",
