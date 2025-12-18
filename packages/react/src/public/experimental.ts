@@ -17,7 +17,7 @@
 export { OsdkProvider2 } from "../new/OsdkProvider2.js";
 export { useCurrentFoundryUser } from "../new/platform-apis/admin/useCurrentFoundryUser.js";
 export { useFoundryUser } from "../new/platform-apis/admin/useFoundryUser.js";
-export { useFoundryUserList } from "../new/platform-apis/admin/useFoundryUserList.js";
+export { useFoundryUsersList } from "../new/platform-apis/admin/useFoundryUsersList.js";
 export { useLinks } from "../new/useLinks.js";
 export { useObjectSet } from "../new/useObjectSet.js";
 export { useOsdkAction } from "../new/useOsdkAction.js";
