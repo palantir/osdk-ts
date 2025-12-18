@@ -19,6 +19,13 @@ declare global {
 }
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
+// Mock ResizeObserver for jsdom
+globalThis.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
 import type { Client } from "@osdk/client";
 import { defineConfig, FoundryHostEventTarget } from "@osdk/widget.client";
 import { act } from "react";
@@ -97,7 +104,7 @@ describe("FoundryWidget emitEvent race condition handling", () => {
 
     const emitEventRef = { current: null as unknown as EmitEventFn };
 
-    await act(async () => {
+    act(() => {
       root.render(
         <FoundryWidget config={config} client={client}>
           <EmitEventCapture emitEventRef={emitEventRef} />
@@ -126,8 +133,9 @@ describe("FoundryWidget emitEvent race condition handling", () => {
     }> = [];
 
     vi.mocked(transformEmitEventPayload).mockImplementation(
-      (_config, _eventId, payload) =>
-        new Promise((resolve) => {
+      (_config, _eventId, payload) => ({
+        type: "async" as const,
+        payload: new Promise((resolve) => {
           pending.push({
             payload: payload as { parameterUpdates: { myParam: string } },
             resolve: resolve as (
@@ -135,6 +143,7 @@ describe("FoundryWidget emitEvent race condition handling", () => {
             ) => void,
           });
         }),
+      }),
     );
 
     return {
@@ -208,25 +217,33 @@ describe("FoundryWidget emitEvent race condition handling", () => {
 
     expect(deferred.pendingCount).toBe(3);
 
-    // Resolve in reverse order: third, then first, then second
+    // Resolve in different order: second first, then third, then first
+    // This proves only the last *call* emits, not just the last to resolve
     await act(async () => {
-      deferred.resolveAtIndex(2); // "third" resolves first
+      deferred.resolveAtIndex(1); // "second" resolves first - should not emit
       await vi.runAllTimersAsync();
     });
 
-    // The third call should emit immediately since it's the latest
+    // No emit yet since "second" wasn't the last call
+    expect(mockEmitEvent).toHaveBeenCalledTimes(0);
+
+    await act(async () => {
+      deferred.resolveAtIndex(1); // "third" resolves second (now at index 1)
+      await vi.runAllTimersAsync();
+    });
+
+    // Now "third" should emit because it was the last call
     expect(mockEmitEvent).toHaveBeenCalledTimes(1);
     expect(mockEmitEvent).toHaveBeenCalledWith("eventA", {
       parameterUpdates: { myParam: "third" },
     });
 
     await act(async () => {
-      deferred.resolveAtIndex(0); // "first" resolves second
-      deferred.resolveAtIndex(0); // "second" resolves last (now at index 0)
+      deferred.resolveAtIndex(0); // "first" resolves last - should not emit
       await vi.runAllTimersAsync();
     });
 
-    // Still only one emit - the stale calls are ignored
+    // Still only one emit - all stale calls are ignored
     expect(mockEmitEvent).toHaveBeenCalledTimes(1);
   });
 
@@ -264,6 +281,45 @@ describe("FoundryWidget emitEvent race condition handling", () => {
     expect(mockEmitEvent).toHaveBeenCalledTimes(2);
     expect(mockEmitEvent).toHaveBeenLastCalledWith("eventA", {
       parameterUpdates: { myParam: "second" },
+    });
+  });
+
+  it("should emit all rapid calls synchronously when passThrough type is returned", async () => {
+    // Mock transformEmitEventPayload to return passThrough (synchronous) results
+    vi.mocked(transformEmitEventPayload).mockImplementation(
+      (_config, _eventId, payload) => ({
+        type: "passThrough" as const,
+        payload: payload as { parameterUpdates: { myParam: string } },
+      }),
+    );
+
+    const emit = await mountWidget();
+
+    // Emit 5 events rapidly - all should go through synchronously
+    act(() => {
+      emit("eventA", { parameterUpdates: { myParam: "first" } });
+      emit("eventA", { parameterUpdates: { myParam: "second" } });
+      emit("eventA", { parameterUpdates: { myParam: "third" } });
+      emit("eventA", { parameterUpdates: { myParam: "fourth" } });
+      emit("eventA", { parameterUpdates: { myParam: "fifth" } });
+    });
+
+    // All 5 should be emitted immediately without waiting for any async operations
+    expect(mockEmitEvent).toHaveBeenCalledTimes(5);
+    expect(mockEmitEvent).toHaveBeenNthCalledWith(1, "eventA", {
+      parameterUpdates: { myParam: "first" },
+    });
+    expect(mockEmitEvent).toHaveBeenNthCalledWith(2, "eventA", {
+      parameterUpdates: { myParam: "second" },
+    });
+    expect(mockEmitEvent).toHaveBeenNthCalledWith(3, "eventA", {
+      parameterUpdates: { myParam: "third" },
+    });
+    expect(mockEmitEvent).toHaveBeenNthCalledWith(4, "eventA", {
+      parameterUpdates: { myParam: "fourth" },
+    });
+    expect(mockEmitEvent).toHaveBeenNthCalledWith(5, "eventA", {
+      parameterUpdates: { myParam: "fifth" },
     });
   });
 });

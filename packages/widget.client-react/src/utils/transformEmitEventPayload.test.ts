@@ -69,14 +69,16 @@ describe("transformEmitEventPayload", () => {
       "ri.object-set.456",
     );
 
-    const result = await transformEmitEventPayload(
+    const result = transformEmitEventPayload(
       config,
       "updateMixed",
       { parameterUpdates: { myObjectSet: mockObjectSet, myString: "world" } },
       client,
     );
 
-    expect(result).toEqual({
+    expect(result.type).toBe("async");
+    const resolved = await result.payload;
+    expect(resolved).toEqual({
       parameterUpdates: {
         myObjectSet: { objectSetRid: "ri.object-set.456" },
         myString: "world",
@@ -113,7 +115,7 @@ describe("transformEmitEventPayload", () => {
       .mockResolvedValueOnce("ri.object-set.aaa")
       .mockResolvedValueOnce("ri.object-set.bbb");
 
-    const result = await transformEmitEventPayload(
+    const result = transformEmitEventPayload(
       config,
       "updateBoth",
       {
@@ -125,8 +127,10 @@ describe("transformEmitEventPayload", () => {
       client,
     );
 
+    expect(result.type).toBe("async");
+    const resolved = await result.payload;
     expect(createAndFetchTempObjectSetRid).toHaveBeenCalledTimes(2);
-    expect(result).toEqual({
+    expect(resolved).toEqual({
       parameterUpdates: {
         objectSetA: { objectSetRid: "ri.object-set.aaa" },
         objectSetB: { objectSetRid: "ri.object-set.bbb" },
@@ -154,11 +158,12 @@ describe("transformEmitEventPayload", () => {
       },
     });
 
-    await expect(
-      transformEmitEventPayload(config, "updateObjectSet", {
-        parameterUpdates: { myObjectSet: mockObjectSet },
-      }),
-    ).rejects.toThrow(
+    const result = transformEmitEventPayload(config, "updateObjectSet", {
+      parameterUpdates: { myObjectSet: mockObjectSet },
+    });
+
+    expect(result.type).toBe("async");
+    await expect(result.payload).rejects.toThrow(
       "Cannot emit event \"updateObjectSet\" with ObjectSet parameter \"myObjectSet\" without an osdk client",
     );
   });
@@ -168,18 +173,25 @@ describe("transformEmitEventPayload", () => {
       id: "testWidget",
       name: "Test Widget",
       type: "workshop",
-      parameters: {},
+      parameters: {
+        myObjectSet: {
+          displayName: "My Object Set",
+          type: "objectSet",
+          objectType: createMockObjectType(),
+        },
+      },
       events: {},
     });
 
-    await expect(
-      transformEmitEventPayload(
-        config,
-        "nonExistentEvent" as never,
-        { parameterUpdates: {} },
-        client,
-      ),
-    ).rejects.toThrow(
+    const result = transformEmitEventPayload(
+      config,
+      "nonExistentEvent" as never,
+      { parameterUpdates: { myObjectSet: mockObjectSet } } as never,
+      client,
+    );
+
+    expect(result.type).toBe("async");
+    await expect(result.payload).rejects.toThrow(
       "Event with ID \"nonExistentEvent\" not found in widget config",
     );
   });

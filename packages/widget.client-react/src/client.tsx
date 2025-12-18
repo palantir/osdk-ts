@@ -99,28 +99,43 @@ export const FoundryWidget = <C extends WidgetConfig<C["parameters"]>>({
   const emitEventCallIds = useRef<Map<string, number>>(new Map());
 
   const emitEvent: AugmentedEmitEvent<C> = useCallback(
-    async (eventId, payload) => {
-      const eventKey = String(eventId);
-      const thisCallId = (emitEventCallIds.current.get(eventKey) ?? 0) + 1;
-      emitEventCallIds.current.set(eventKey, thisCallId);
-
-      const transformedPayload = await transformEmitEventPayload(
+    (eventId: Parameters<FoundryWidgetClient<C>["emitEvent"]>[0], payload) => {
+      const transformResult = transformEmitEventPayload(
         config,
         eventId,
         payload,
         osdkClient,
       );
-
-      if (thisCallId !== emitEventCallIds.current.get(eventKey)) {
+      if (transformResult.type === "passThrough") {
+        client.emitEvent(
+          eventId,
+          transformResult.payload as Parameters<
+            FoundryWidgetClient<C>["emitEvent"]
+          >[1],
+        );
         return;
       }
 
-      client.emitEvent(
-        eventId as Parameters<FoundryWidgetClient<C>["emitEvent"]>[0],
-        transformedPayload as Parameters<
-          FoundryWidgetClient<C>["emitEvent"]
-        >[1],
-      );
+      async function handleAsyncEmitEvent() {
+        const eventKey = String(eventId);
+        const thisCallId = (emitEventCallIds.current.get(eventKey) ?? 0) + 1;
+        emitEventCallIds.current.set(eventKey, thisCallId);
+
+        const transformedPayload = await transformResult.payload;
+
+        if (thisCallId !== emitEventCallIds.current.get(eventKey)) {
+          return;
+        }
+
+        client.emitEvent(
+          eventId,
+          transformedPayload as Parameters<
+            FoundryWidgetClient<C>["emitEvent"]
+          >[1],
+        );
+      }
+
+      void handleAsyncEmitEvent();
     },
     [osdkClient, config, client],
   );

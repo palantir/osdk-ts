@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,71 @@
 
 import type { Client, ObjectSet } from "@osdk/client";
 import { createAndFetchTempObjectSetRid } from "@osdk/client/internal";
-import type { EventId, EventParameterValueMap } from "@osdk/widget.api";
+import type {
+  AsyncValue,
+  EventId,
+  EventParameterValueMap,
+  ParameterValue,
+} from "@osdk/widget.api";
 import type { WidgetConfig } from "@osdk/widget.client";
 import type { AugmentedEventParameterValueMap } from "../context.js";
+
+type ObjectSetEmitEventPayload = ParameterValue.ObjectSet["value"] extends
+  AsyncValue<infer T> ? T : never;
+
+type TransformedEmitEventPayload<
+  C extends WidgetConfig<C["parameters"]>,
+  K extends EventId<C>,
+> = {
+  parameterUpdates: EventParameterValueMap<C, K>;
+};
+
+type TransformedEmitEventPayloadResult<
+  C extends WidgetConfig<C["parameters"]>,
+  K extends EventId<C>,
+> = {
+  type: "async";
+  payload: Promise<TransformedEmitEventPayload<C, K>>;
+} | {
+  type: "passThrough";
+  payload: TransformedEmitEventPayload<C, K>;
+};
+
+export function transformEmitEventPayload<
+  C extends WidgetConfig<C["parameters"]>,
+  K extends EventId<C>,
+>(
+  config: C,
+  eventId: K,
+  payload: { parameterUpdates: AugmentedEventParameterValueMap<C, K> },
+  osdkClient?: Client,
+): TransformedEmitEventPayloadResult<C, K> {
+  for (const paramId of Object.keys(payload.parameterUpdates)) {
+    const paramConfig = config.parameters[paramId];
+    if (paramConfig?.type === "objectSet") {
+      return {
+        type: "async",
+        payload: transformEmitEventPayloadAsync(
+          config,
+          eventId,
+          payload,
+          osdkClient,
+        ),
+      };
+    }
+  }
+
+  // No object set parameters, pass through synchronously
+  return {
+    type: "passThrough",
+    payload: {
+      parameterUpdates: payload.parameterUpdates as EventParameterValueMap<
+        C,
+        K
+      >,
+    },
+  };
+}
 
 /**
  * Transforms an augmented emit event payload by creating temporary object sets
@@ -26,7 +88,7 @@ import type { AugmentedEventParameterValueMap } from "../context.js";
  *
  * Multiple ObjectSet parameters are transformed in parallel for better performance.
  */
-export async function transformEmitEventPayload<
+export async function transformEmitEventPayloadAsync<
   C extends WidgetConfig<C["parameters"]>,
   K extends EventId<C>,
 >(
@@ -57,7 +119,7 @@ export async function transformEmitEventPayload<
           osdkClient,
           paramValue as ObjectSet,
         );
-        return [paramId, { objectSetRid }];
+        return [paramId, { objectSetRid } satisfies ObjectSetEmitEventPayload];
       }
       return [paramId, paramValue];
     }),
