@@ -4100,6 +4100,9 @@ importers:
       '@osdk/client.test.ontology':
         specifier: workspace:*
         version: link:../client.test.ontology
+      '@osdk/foundry':
+        specifier: latest
+        version: 2.43.0
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
