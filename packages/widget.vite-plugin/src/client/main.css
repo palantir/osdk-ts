@@ -26,6 +26,19 @@ iframe {
     word-wrap: break-word;
 }
 
+.hint-block {
+    text-align: left;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: normal;
+    background-color: #fef3cd;
+    border: 1px solid #ffc107;
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 16px;
+    color: #856404;
+}
+
 .bp5-non-ideal-state > * {
     max-width: min(100%, 800px);
 }
