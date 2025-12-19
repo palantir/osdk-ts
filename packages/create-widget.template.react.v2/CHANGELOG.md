@@ -1,5 +1,12 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.4.0-beta.5
+
+### Minor Changes
+
+- c7bd7c0: Use createFoundryWidgetTokenProvider in widget template
+- 3ab2c66: Provide FoundryWidget#client by default
+
 ## 3.4.0-beta.4
 
 ## 3.4.0-beta.3

@@ -1,5 +1,18 @@
 # @osdk/foundry-sdk-generator
 
+## 2.7.0-beta.5
+
+### Minor Changes
+
+- ceb5e70: Fix linkType parsing for object types with dots in API names
+
+### Patch Changes
+
+- Updated dependencies [dc33f68]
+  - @osdk/generator@2.7.0-beta.5
+  - @osdk/client@2.7.0-beta.5
+  - @osdk/api@2.7.0-beta.5
+
 ## 2.7.0-beta.4
 
 ### Patch Changes
