@@ -198,7 +198,7 @@ describe("transformEmitEventPayload", () => {
       client,
     );
 
-    expect(result.type).toBe("sync");
+    expect(result.type).toBe("passThrough");
     expect(result.payload).toEqual({
       parameterUpdates: { myString: "hello", myNumber: 42 },
     });
