@@ -75,7 +75,10 @@ export async function applyQuery<
         )
         : {},
     },
-    { version: query.isFixedVersion ? query.version : undefined },
+    {
+      version: query.isFixedVersion ? query.version : undefined,
+      transactionId: client.transactionId,
+    },
   );
 
   const objectOutputDefs = await getRequiredDefinitions(
