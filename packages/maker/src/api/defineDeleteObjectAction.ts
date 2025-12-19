@@ -16,31 +16,28 @@
 
 import { type ActionType } from "./action/ActionType.js";
 import type { ActionTypeUserDefinition } from "./defineAction.js";
-import { convertValidationRule, defineAction, kebab } from "./defineAction.js";
+import {
+  convertValidationRule,
+  createParameters,
+  defineAction,
+  kebab,
+} from "./defineAction.js";
 
 export function defineDeleteObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
+  const parameters = createParameters(
+    def,
+    {},
+    new Set(["objectToDeleteParameter"]),
+  );
   return defineAction({
     apiName: def.apiName
       ?? `delete-object-${
         kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
       }`,
     displayName: def.displayName ?? `Delete ${def.objectType.displayName}`,
-    parameters: [
-      {
-        id: "objectToDeleteParameter",
-        displayName: "Delete object",
-        type: {
-          type: "objectReference",
-          objectReference: { objectTypeId: def.objectType.apiName },
-        },
-        validation: {
-          required: true,
-          allowedValues: { type: "objectQuery" },
-        },
-      },
-    ],
+    parameters: createParameters(def, {}, new Set(["objectToDeleteParameter"])),
     status: def.status ?? "active",
     rules: [{
       type: "deleteObjectRule",

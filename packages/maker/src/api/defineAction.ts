@@ -64,13 +64,15 @@ export const MODIFY_OBJECT_PARAMETER: string = "objectToModifyParameter";
 export const CREATE_OR_MODIFY_OBJECT_PARAMETER: string =
   "objectToCreateOrModifyParameter";
 
+export const DELETE_OBJECT_PARAMETER: string = "objectToDeleteParameter";
+
 export const CREATE_INTERFACE_OBJECT_PARAMETER: string = "objectTypeParameter";
 
 export const MODIFY_INTERFACE_OBJECT_PARAMETER: string =
   "interfaceObjectToModifyParameter";
 
 export type ActionTypeDefinition = Omit<ActionType, "__type">;
-
+``;
 export type ActionTypeUserDefinition = {
   objectType: ObjectTypeDefinition;
   apiName?: string;
@@ -374,6 +376,25 @@ function getTargetParameters(
       });
       parameterSet.delete(CREATE_OR_MODIFY_OBJECT_PARAMETER);
     }
+    if (name === DELETE_OBJECT_PARAMETER && !("interfaceType" in def)) {
+      targetParams.push({
+        id: DELETE_OBJECT_PARAMETER,
+        displayName: def.parameterConfiguration?.[name]?.displayName
+          ?? "Delete object",
+        type: {
+          type: "objectReference",
+          objectReference: { objectTypeId: def.objectType!.apiName },
+        },
+        validation: {
+          ...def.parameterConfiguration?.[name],
+          allowedValues: { type: "objectQuery" },
+          required: def.parameterConfiguration?.[name]?.required ?? true,
+        },
+        defaultValue: def.parameterConfiguration?.[name]?.defaultValue,
+        description: def.parameterConfiguration?.[name]?.description,
+      });
+      parameterSet.delete(DELETE_OBJECT_PARAMETER);
+    }
     if (name === CREATE_INTERFACE_OBJECT_PARAMETER && "interfaceType" in def) {
       targetParams.push({
         id: CREATE_INTERFACE_OBJECT_PARAMETER,
@@ -438,6 +459,36 @@ function getTargetParameters(
         description: def.parameterConfiguration?.[name]?.description,
       });
       parameterSet.delete(MODIFY_INTERFACE_OBJECT_PARAMETER);
+    }
+    if (name === DELETE_OBJECT_PARAMETER && "interfaceType" in def) {
+      targetParams.push({
+        id: DELETE_OBJECT_PARAMETER,
+        displayName: def.parameterConfiguration?.[name]?.displayName
+          ?? "Delete Object",
+        type: {
+          type: "interfaceReference",
+          interfaceReference: { interfaceTypeRid: def.interfaceType.apiName },
+        },
+        validation: {
+          ...def.parameterConfiguration?.[name],
+          required: true,
+          allowedValues: def.objectType === undefined
+            ? { type: "interfaceObjectQuery" }
+            : {
+              type: "oneOf",
+              oneOf: [{
+                label: def.objectType.displayName,
+                value: {
+                  type: "objectType",
+                  objectType: { objectTypeId: def.objectType.apiName },
+                },
+              }],
+            },
+        },
+        defaultValue: def.parameterConfiguration?.[name]?.defaultValue,
+        description: def.parameterConfiguration?.[name]?.description,
+      });
+      parameterSet.delete(DELETE_OBJECT_PARAMETER);
     }
   });
   return targetParams;
