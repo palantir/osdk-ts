@@ -72,7 +72,7 @@ export const MODIFY_INTERFACE_OBJECT_PARAMETER: string =
   "interfaceObjectToModifyParameter";
 
 export type ActionTypeDefinition = Omit<ActionType, "__type">;
-``;
+
 export type ActionTypeUserDefinition = {
   objectType: ObjectTypeDefinition;
   apiName?: string;
