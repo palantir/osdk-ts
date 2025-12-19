@@ -403,14 +403,3 @@ export interface PropertyFilterDefinition<
    */
   onViewAllClick?: () => void;
 }
-
-/**
- * @deprecated Use PropertyFilterDefinition instead. This alias is kept for backwards compatibility.
- */
-export type FilterDefinition<
-  Q extends ObjectTypeDefinition,
-  K extends PropertyKeys<Q> = PropertyKeys<Q>,
-  C extends ValidComponentsForPropertyType<
-    PropertyTypeFromKey<Q, K>
-  > = ValidComponentsForPropertyType<PropertyTypeFromKey<Q, K>>,
-> = PropertyFilterDefinition<Q, K, C>;

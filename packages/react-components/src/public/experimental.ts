@@ -32,8 +32,6 @@ export type {
   DateRangeFilterState,
   ExactMatchFilterState,
   FilterComponentType,
-  // eslint-disable-next-line @typescript-eslint/no-deprecated
-  FilterDefinition,
   FilterListItemProps,
   FilterStateByComponentType,
   FilterStateType,
@@ -54,7 +52,6 @@ export type {
   FilterInteractionMode,
   FilterItemColor,
   FilterListLayoutMode,
-  FilterOverflowAction,
 } from "../filter-list/FilterDisplayTypes.js";
 
 export type { FilterListTheme } from "../filter-list/FilterThemeTypes.js";

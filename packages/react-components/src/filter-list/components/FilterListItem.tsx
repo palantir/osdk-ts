@@ -19,7 +19,6 @@ import classNames from "classnames";
 import React, { useCallback, useState } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
-import { CategoryListInput } from "../inputs/CategoryListInput.js";
 import { CheckboxListInput } from "../inputs/CheckboxListInput.js";
 import { ContainsTextInput } from "../inputs/ContainsTextInput.js";
 import { ToggleInput } from "../inputs/ToggleInput.js";
@@ -191,22 +190,6 @@ function renderFilterInput<Q extends ObjectTypeDefinition>(
           selectedValues: newSelectedValues,
           isExcluding: filterState?.isExcluding,
         });
-
-      if (definition.interactionMode === "category") {
-        return (
-          <CategoryListInput
-            objectType={objectType}
-            propertyKey={definition.key}
-            selectedValues={selectedValues}
-            onChange={handleChange}
-            allowMultiple={false}
-            maxVisibleItems={definition.maxVisibleItems}
-            dataIndicator={definition.dataIndicator}
-            color={definition.color}
-            valueColors={definition.valueColors}
-          />
-        );
-      }
 
       return (
         <CheckboxListInput

@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-/*
- * Filter List styles - integrates with Blueprint.js design system
- * Requires @blueprintjs/core CSS to be loaded
- */
-
 .filter-list {
   display: flex;
   flex-direction: column;
@@ -156,26 +151,6 @@
   padding: 4px 12px 12px;
 }
 
-/* Add Filter Button */
-.filter-list__add-button {
-  width: 100%;
-  justify-content: flex-start;
-}
-
-.filter-list__add-button--fixed {
-  border-top: 1px solid var(--filter-panel-border-color, rgba(17, 20, 24, 0.15));
-  border-radius: 0;
-}
-
-.bp5-dark .filter-list__add-button--fixed {
-  border-top-color: var(--filter-panel-border-color, rgba(255, 255, 255, 0.2));
-}
-
-.filter-list__add-button--inline {
-  margin: 10px;
-  width: calc(100% - 20px);
-}
-
 /* Filter Inputs */
 .filter-input--checkbox-list {
   display: flex;
@@ -207,28 +182,6 @@
   box-shadow: 0 0 0 1px rgba(45, 114, 210, 0.3);
 }
 
-/* View All Button */
-.filter-input__view-all {
-  margin-top: 6px;
-  padding: 4px 0 !important;
-  color: var(--filter-count-text-color, #5f6b7c) !important;
-  font-size: 12px;
-  text-align: left;
-}
-
-.filter-input__view-all:hover {
-  color: #2d72d2 !important;
-  text-decoration: underline;
-}
-
-.bp5-dark .filter-input__view-all {
-  color: var(--filter-count-text-color, #a7b6c2) !important;
-}
-
-.bp5-dark .filter-input__view-all:hover {
-  color: #4c90f0 !important;
-}
-
 /* Text Input */
 .filter-input--text {
   position: relative;
@@ -254,23 +207,6 @@
   margin-bottom: 0;
 }
 
-/* Category List Input */
-.filter-input--category-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-
-.filter-input__category-item {
-  flex-shrink: 0;
-}
-
-.filter-input__category-item--selected {
-  font-weight: 500;
-  background-color: var(--filter-item-active-bg-color, rgba(45, 114, 210, 0.1));
-  box-shadow: inset 0 0 0 1px rgba(45, 114, 210, 0.6);
-}
-
 /* Include/Exclude Mode */
 .filter-list__item--excluding {
   border-left: 3px solid #cd4246;
@@ -292,8 +228,7 @@
 }
 
 /* Histogram and Count Display */
-.filter-input__checkbox-row,
-.filter-input__category-row {
+.filter-input__checkbox-row {
   position: relative;
   display: flex;
   align-items: center;
@@ -312,8 +247,7 @@
   pointer-events: none;
 }
 
-.filter-input__checkbox-label,
-.filter-input__category-label {
+.filter-input__checkbox-label {
   position: relative;
   z-index: 1;
   display: flex;
@@ -341,8 +275,7 @@
 }
 
 /* Color Customization (per-item) */
-.filter-input__checkbox-row,
-.filter-input__category-item {
+.filter-input__checkbox-row {
   background-color: var(--item-bg, transparent);
   color: var(--item-text, inherit);
   border-color: var(--item-border, transparent);

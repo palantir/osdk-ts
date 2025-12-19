@@ -25,7 +25,6 @@ import type {
   FilterDataIndicator,
   FilterItemColor,
 } from "../FilterDisplayTypes.js";
-import { useDistinctValues } from "../hooks/useDistinctValues.js";
 
 interface CheckboxListInputProps<
   Q extends ObjectTypeDefinition,
@@ -56,9 +55,6 @@ export function CheckboxListInput<
   color,
   valueColors,
 }: CheckboxListInputProps<Q, K>): React.ReactElement {
-  const { values, isLoading: valuesLoading, error: valuesError } =
-    useDistinctValues(objectType, propertyKey);
-
   const showCounts = dataIndicator === "histogram" || dataIndicator === "count";
 
   // AggregateOpts requires specific property keys from Q, but we're dynamically
@@ -72,17 +68,21 @@ export function CheckboxListInput<
     [propertyKey],
   );
 
-  const { data: countData } = useOsdkAggregation(objectType, {
+  const { data: countData, isLoading, error } = useOsdkAggregation(objectType, {
     aggregate: aggregateOptions,
   });
 
-  // AggregationsResults is dynamically typed based on AggregateOpts, so we cast
-  // to a concrete iterable type for processing the results.
-  const { valueCounts, maxCount } = useMemo(() => {
-    if (!showCounts || !countData) {
-      return { valueCounts: new Map<string, number>(), maxCount: 0 };
+  // Extract values and counts from aggregation results
+  const { values, valueCounts, maxCount } = useMemo(() => {
+    if (!countData) {
+      return {
+        values: [] as string[],
+        valueCounts: new Map<string, number>(),
+        maxCount: 0,
+      };
     }
     const counts = new Map<string, number>();
+    const extractedValues: string[] = [];
     let max = 0;
     const dataArray = countData as Iterable<{
       $group: Record<string, unknown>;
@@ -92,12 +92,14 @@ export function CheckboxListInput<
       const value = String(item.$group[propertyKey as string] ?? "");
       const count = item.$count ?? 0;
       if (value) {
+        extractedValues.push(value);
         counts.set(value, count);
         max = Math.max(max, count);
       }
     }
-    return { valueCounts: counts, maxCount: max };
-  }, [showCounts, countData, propertyKey]);
+    extractedValues.sort((a, b) => a.localeCompare(b));
+    return { values: extractedValues, valueCounts: counts, maxCount: max };
+  }, [countData, propertyKey]);
 
   const toggleValue = useCallback(
     (value: string) => {
@@ -129,17 +131,17 @@ export function CheckboxListInput<
 
   return (
     <div className="filter-input--checkbox-list">
-      {valuesLoading && (
+      {isLoading && (
         <div className="bp5-text-muted bp5-text-small">Loading values...</div>
       )}
 
-      {valuesError && (
+      {error && (
         <div className="bp5-text-small bp5-intent-danger">
-          Error loading values: {valuesError.message}
+          Error loading values: {error.message}
         </div>
       )}
 
-      {!valuesLoading && !valuesError && values.length === 0 && (
+      {!isLoading && !error && values.length === 0 && (
         <div className="bp5-text-muted bp5-text-small">No values available</div>
       )}
 
@@ -207,12 +209,9 @@ export function CheckboxListInput<
           })}
 
           {hasMore && (
-            <button
-              type="button"
-              className="filter-input__view-all bp5-button bp5-minimal bp5-small"
-            >
-              View all ({values.length})
-            </button>
+            <div className="bp5-text-muted bp5-text-small">
+              +{values.length - (maxVisibleItems ?? 0)} more
+            </div>
           )}
         </>
       )}

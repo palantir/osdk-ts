@@ -45,14 +45,3 @@ export interface FilterItemColor {
   border?: string;
   histogramBar?: string;
 }
-
-/**
- * Standard overflow menu actions available for filter items
- */
-export type FilterOverflowAction =
-  | "remove"
-  | "reset"
-  | "expand"
-  | "collapse"
-  | "includeMode"
-  | "excludeMode";
