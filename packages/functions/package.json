@@ -61,9 +61,9 @@
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
-    "@osdk/foundry.core": "^2.42.0",
-    "@osdk/foundry.mediasets": "^2.42.0",
-    "@osdk/foundry.ontologies": "^2.42.0",
+    "@osdk/foundry.core": "catalog:foundry-platform-typescript",
+    "@osdk/foundry.mediasets": "catalog:foundry-platform-typescript",
+    "@osdk/foundry.ontologies": "catalog:foundry-platform-typescript",
     "@types/geojson": "^7946.0.16",
     "yaml": "^2.8.1"
   },

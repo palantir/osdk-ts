@@ -34,6 +34,7 @@ const baseObjectSet: LoadObjectSetV2MultipleObjectTypesRequest = {
     interfaceType: FooInterface.apiName,
   },
   select: [],
+  selectV2: [],
   excludeRid: true,
 };
 
@@ -50,6 +51,7 @@ const baseObjectSetFullObject: LoadObjectSetV2MultipleObjectTypesRequest = {
     ],
   },
   select: [],
+  selectV2: [],
   excludeRid: true,
 };
 
@@ -72,6 +74,7 @@ const baseObjectSetSelect: LoadObjectSetV2MultipleObjectTypesRequest = {
     interfaceType: FooInterface.apiName,
   },
   select: ["fullName"],
+  selectV2: [],
   excludeRid: true,
 };
 
@@ -89,6 +92,7 @@ const baseObjectSetSelectFullObject: LoadObjectSetV2MultipleObjectTypesRequest =
       ],
     },
     select: ["fullName"],
+    selectV2: [],
     excludeRid: true,
   };
 
@@ -106,6 +110,7 @@ const eqSearchBody: LoadObjectSetV2MultipleObjectTypesRequest = {
     },
   },
   select: [],
+  selectV2: [],
   excludeRid: true,
 };
 
@@ -130,6 +135,7 @@ const eqSearchBodyFullScope: LoadObjectSetV2MultipleObjectTypesRequest = {
     }],
   },
   select: [],
+  selectV2: [],
   excludeRid: true,
 };
 
