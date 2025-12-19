@@ -3698,13 +3698,13 @@ importers:
         specifier: workspace:^
         version: link:../client
       '@osdk/foundry.core':
-        specifier: catalog:foundry-platform-typescript
+        specifier: ^2.44.0
         version: 2.44.0
       '@osdk/foundry.mediasets':
-        specifier: catalog:foundry-platform-typescript
+        specifier: ^2.44.0
         version: 2.44.0
       '@osdk/foundry.ontologies':
-        specifier: catalog:foundry-platform-typescript
+        specifier: ^2.44.0
         version: 2.44.0
       '@types/geojson':
         specifier: ^7946.0.16
@@ -3799,7 +3799,7 @@ importers:
         specifier: workspace:~
         version: link:../api
       '@osdk/foundry.ontologies':
-        specifier: 2.44.0
+        specifier: catalog:foundry-platform-typescript
         version: 2.44.0
     devDependencies:
       '@osdk/monorepo.api-extractor':
