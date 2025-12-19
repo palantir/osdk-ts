@@ -168,6 +168,43 @@ describe("transformEmitEventPayload", () => {
     );
   });
 
+  it("should pass through all parameters when none are ObjectSet type", () => {
+    const config = defineConfig({
+      id: "testWidget",
+      name: "Test Widget",
+      type: "workshop",
+      parameters: {
+        myString: {
+          displayName: "My String",
+          type: "string",
+        },
+        myNumber: {
+          displayName: "My Number",
+          type: "number",
+        },
+      },
+      events: {
+        updatePrimitives: {
+          displayName: "Update Primitives",
+          parameterUpdateIds: ["myString", "myNumber"],
+        },
+      },
+    });
+
+    const result = transformEmitEventPayload(
+      config,
+      "updatePrimitives",
+      { parameterUpdates: { myString: "hello", myNumber: 42 } },
+      client,
+    );
+
+    expect(result.type).toBe("sync");
+    expect(result.payload).toEqual({
+      parameterUpdates: { myString: "hello", myNumber: 42 },
+    });
+    expect(createAndFetchTempObjectSetRid).not.toHaveBeenCalled();
+  });
+
   it("should throw error when eventId not found in config", async () => {
     const config = defineConfig({
       id: "testWidget",

@@ -19,13 +19,6 @@ declare global {
 }
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 
-// Mock ResizeObserver for jsdom
-globalThis.ResizeObserver = class ResizeObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-};
-
 import type { Client } from "@osdk/client";
 import { defineConfig, FoundryHostEventTarget } from "@osdk/widget.client";
 import { act } from "react";
