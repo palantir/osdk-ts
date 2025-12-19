@@ -14,30 +14,25 @@
  * limitations under the License.
  */
 
-import React from "react";
+import type { ObjectTypeDefinition } from "@osdk/api";
+import type { FilterDefinitionUnion } from "../FilterListApi.js";
 
-interface ToggleInputProps {
-  enabled: boolean;
-  onChange: (enabled: boolean) => void;
-  label?: string;
-}
-
-export function ToggleInput({
-  enabled,
-  onChange,
-  label,
-}: ToggleInputProps): React.ReactElement {
-  return (
-    <div className="filter-input--toggle">
-      <label className="bp5-control bp5-switch">
-        <input
-          type="checkbox"
-          checked={enabled}
-          onChange={(e) => onChange(e.target.checked)}
-        />
-        <span className="bp5-control-indicator" />
-        {label}
-      </label>
-    </div>
-  );
+export function getFilterKey<Q extends ObjectTypeDefinition>(
+  definition: FilterDefinitionUnion<Q>,
+): string {
+  switch (definition.type) {
+    case "property":
+      return definition.key;
+    case "hasLink":
+    case "linkedProperty":
+      return definition.linkName;
+    case "keywordSearch":
+      return `keywordSearch-${
+        Array.isArray(definition.properties)
+          ? definition.properties.join("-")
+          : "all"
+      }`;
+    case "custom":
+      return definition.key;
+  }
 }

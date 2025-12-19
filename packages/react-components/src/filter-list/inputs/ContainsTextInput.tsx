@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 interface ContainsTextInputProps {
   value: string | undefined;
@@ -30,55 +30,75 @@ export function ContainsTextInput({
   debounceMs = 300,
 }: ContainsTextInputProps): React.ReactElement {
   const [localValue, setLocalValue] = useState(value ?? "");
-  const [timeoutId, setTimeoutId] = useState<
-    ReturnType<typeof setTimeout> | null
-  >(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onChangeRef = useRef(onChange);
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
+  useEffect(() => {
+    setLocalValue(value ?? "");
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  }, [value]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
       setLocalValue(newValue);
 
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
       }
 
-      const newTimeoutId = setTimeout(() => {
-        onChange(newValue || undefined);
+      timeoutRef.current = setTimeout(() => {
+        onChangeRef.current(newValue || undefined);
       }, debounceMs);
-
-      setTimeoutId(newTimeoutId);
     },
-    [onChange, debounceMs, timeoutId],
+    [debounceMs],
   );
 
   const handleClear = useCallback(() => {
     setLocalValue("");
     onChange(undefined);
-    if (timeoutId) {
-      clearTimeout(timeoutId);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
     }
-  }, [onChange, timeoutId]);
+  }, [onChange]);
 
   return (
-    <div className="osdk-filter-input osdk-filter-input--text">
-      <input
-        type="text"
-        className="osdk-filter-text-input"
-        value={localValue}
-        onChange={handleChange}
-        placeholder={placeholder}
-      />
-      {localValue && (
-        <button
-          type="button"
-          className="osdk-filter-text-input__clear"
-          onClick={handleClear}
-          aria-label="Clear search"
-        >
-          ×
-        </button>
-      )}
+    <div className="filter-input--text">
+      <div className="bp5-input-group">
+        <span className="bp5-icon bp5-icon-search" />
+        <input
+          type="text"
+          className="bp5-input"
+          value={localValue}
+          onChange={handleChange}
+          placeholder={placeholder}
+        />
+        {localValue && (
+          <button
+            type="button"
+            className="bp5-button bp5-minimal bp5-small filter-input__clear"
+            onClick={handleClear}
+            aria-label="Clear search"
+          >
+            <span className="bp5-icon bp5-icon-cross" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }

@@ -18,6 +18,7 @@ import type { ObjectTypeDefinition } from "@osdk/api";
 import React from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { getFilterKey } from "../utils/getFilterKey.js";
 import { FilterListItem } from "./FilterListItem.js";
 
 interface FilterListContentProps<Q extends ObjectTypeDefinition> {
@@ -35,14 +36,14 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
 }: FilterListContentProps<Q>): React.ReactElement {
   if (!filterDefinitions || filterDefinitions.length === 0) {
     return (
-      <div className="osdk-filter-list__content osdk-filter-list__content--empty">
+      <div className="filter-list__content filter-list__content--empty bp5-text-muted">
         <p>No filters configured</p>
       </div>
     );
   }
 
   return (
-    <div className="osdk-filter-list__content">
+    <div className="filter-list__content">
       {filterDefinitions.map((definition) => {
         const key = getFilterKey(definition);
         const state = filterStates.get(key);
@@ -60,26 +61,4 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
       })}
     </div>
   );
-}
-
-function getFilterKey<Q extends ObjectTypeDefinition>(
-  definition: FilterDefinitionUnion<Q>,
-): string {
-  switch (definition.type) {
-    case "property":
-      return definition.key as string;
-    case "hasLink":
-    case "linkedProperty":
-      return definition.linkName as string;
-    case "keywordSearch":
-      return `keywordSearch-${
-        Array.isArray(definition.properties)
-          ? definition.properties.join("-")
-          : "all"
-      }`;
-    case "custom":
-      return definition.key;
-    default:
-      return "unknown";
-  }
 }

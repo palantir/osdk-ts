@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
-import React, { useState } from "react";
+import type { ObjectTypeDefinition } from "@osdk/api";
+import classNames from "classnames";
+import React, { useCallback, useState } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
-import type {
-  FilterState,
-  PropertyFilterDefinition,
-} from "../FilterListItemApi.js";
+import type { FilterState } from "../FilterListItemApi.js";
+import { CategoryListInput } from "../inputs/CategoryListInput.js";
 import { CheckboxListInput } from "../inputs/CheckboxListInput.js";
 import { ContainsTextInput } from "../inputs/ContainsTextInput.js";
 import { ToggleInput } from "../inputs/ToggleInput.js";
@@ -42,31 +41,97 @@ export function FilterListItem<Q extends ObjectTypeDefinition>({
 
   const label = getLabel(definition);
 
+  const showExcludeToggle = definition.type === "property"
+    && definition.allowToggleExcludeMode === true;
+
+  const isExcluding = filterState?.isExcluding ?? false;
+
+  const handleToggleExcludeMode = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (!filterState) return;
+
+      const newState = {
+        ...filterState,
+        isExcluding: !isExcluding,
+      };
+      onFilterStateChanged(newState);
+
+      if (definition.type === "property" && definition.onExcludeModeChange) {
+        definition.onExcludeModeChange(!isExcluding);
+      }
+    },
+    [filterState, isExcluding, onFilterStateChanged, definition],
+  );
+
   return (
-    <div className="osdk-filter-list__item">
+    <div
+      className={classNames(
+        "filter-list__item",
+        isExcluding && "filter-list__item--excluding",
+      )}
+    >
       <div
-        className="osdk-filter-list__item-header"
+        className="filter-list__item-header bp5-interactive"
         onClick={() => setIsCollapsed(!isCollapsed)}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
             setIsCollapsed(!isCollapsed);
           }
         }}
       >
-        <span
-          className={`osdk-filter-list__item-chevron ${
-            isCollapsed ? "osdk-filter-list__item-chevron--collapsed" : ""
-          }`}
+        <svg
+          className={classNames(
+            "filter-list__item-chevron",
+            isCollapsed && "filter-list__item-chevron--collapsed",
+          )}
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="currentColor"
         >
-          {isCollapsed ? "▶" : "▼"}
-        </span>
-        <span className="osdk-filter-list__item-label">{label}</span>
+          <path d="M4.7 6.3a1 1 0 0 1 1.4 0L8 8.2l1.9-1.9a1 1 0 1 1 1.4 1.4l-2.6 2.6a1 1 0 0 1-1.4 0L4.7 7.7a1 1 0 0 1 0-1.4z" />
+        </svg>
+        <span className="filter-list__item-label">{label}</span>
+
+        {isExcluding && (
+          <span className="filter-list__item-exclude-badge bp5-tag bp5-minimal bp5-small">
+            Excluding
+          </span>
+        )}
+
+        {showExcludeToggle && (
+          <button
+            type="button"
+            className={classNames(
+              "bp5-button",
+              "bp5-minimal",
+              "bp5-small",
+              "filter-list__item-exclude-toggle",
+            )}
+            onClick={handleToggleExcludeMode}
+            title={isExcluding
+              ? "Switch to include mode"
+              : "Switch to exclude mode"}
+            aria-label={isExcluding
+              ? "Switch to include mode"
+              : "Switch to exclude mode"}
+          >
+            <span
+              className={classNames(
+                "bp5-icon",
+                isExcluding ? "bp5-icon-disable" : "bp5-icon-filter",
+              )}
+            />
+          </button>
+        )}
       </div>
 
       {!isCollapsed && (
-        <div className="osdk-filter-list__item-content">
+        <div className="filter-list__item-content">
           {renderFilterInput(
             objectType,
             definition,
@@ -108,30 +173,55 @@ function renderFilterInput<Q extends ObjectTypeDefinition>(
   onFilterStateChanged: (state: FilterState) => void,
 ): React.ReactElement {
   if (definition.type !== "property") {
-    return <div>Unsupported filter type: {definition.type}</div>;
+    return (
+      <div className="bp5-text-muted">
+        Unsupported filter type: {definition.type}
+      </div>
+    );
   }
 
-  const propertyDef = definition as PropertyFilterDefinition<
-    Q,
-    PropertyKeys<Q>
-  >;
+  switch (definition.filterComponent) {
+    case "CHECKBOX_LIST": {
+      const selectedValues = filterState?.type === "CHECKBOX_LIST"
+        ? filterState.selectedValues
+        : [];
+      const handleChange = (newSelectedValues: string[]) =>
+        onFilterStateChanged({
+          type: "CHECKBOX_LIST",
+          selectedValues: newSelectedValues,
+          isExcluding: filterState?.isExcluding,
+        });
 
-  switch (propertyDef.filterComponent) {
-    case "CHECKBOX_LIST":
+      if (definition.interactionMode === "category") {
+        return (
+          <CategoryListInput
+            objectType={objectType}
+            propertyKey={definition.key}
+            selectedValues={selectedValues}
+            onChange={handleChange}
+            allowMultiple={false}
+            maxVisibleItems={definition.maxVisibleItems}
+            dataIndicator={definition.dataIndicator}
+            color={definition.color}
+            valueColors={definition.valueColors}
+          />
+        );
+      }
+
       return (
         <CheckboxListInput
           objectType={objectType}
-          propertyKey={propertyDef.key}
-          selectedValues={filterState?.type === "CHECKBOX_LIST"
-            ? filterState.selectedValues
-            : []}
-          onChange={(selectedValues) =>
-            onFilterStateChanged({
-              type: "CHECKBOX_LIST",
-              selectedValues,
-            })}
+          propertyKey={definition.key}
+          selectedValues={selectedValues}
+          onChange={handleChange}
+          showSelectAll={definition.showSelectAll}
+          maxVisibleItems={definition.maxVisibleItems}
+          dataIndicator={definition.dataIndicator}
+          color={definition.color}
+          valueColors={definition.valueColors}
         />
       );
+    }
 
     case "CONTAINS_TEXT":
       return (
@@ -144,7 +234,7 @@ function renderFilterInput<Q extends ObjectTypeDefinition>(
               type: "CONTAINS_TEXT",
               value,
             })}
-          placeholder={`Search ${propertyDef.key}...`}
+          placeholder={`Search ${definition.key}...`}
         />
       );
 
@@ -162,8 +252,8 @@ function renderFilterInput<Q extends ObjectTypeDefinition>(
 
     default:
       return (
-        <div>
-          Unsupported filter component: {propertyDef.filterComponent}
+        <div className="bp5-text-muted">
+          Unsupported filter component: {definition.filterComponent}
         </div>
       );
   }

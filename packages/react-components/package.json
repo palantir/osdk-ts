@@ -87,5 +87,10 @@
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/cjs/index.d.cts",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "@blueprintjs/core": "^5.19.1",
+    "@blueprintjs/icons": "^5.23.0",
+    "classnames": "^2.5.1"
+  }
 }

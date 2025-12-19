@@ -20,6 +20,7 @@ import type {
   PropertyKeys,
 } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
+import classNames from "classnames";
 import React, { useCallback, useMemo } from "react";
 import type {
   FilterDataIndicator,
@@ -27,7 +28,7 @@ import type {
 } from "../FilterDisplayTypes.js";
 import { useDistinctValues } from "../hooks/useDistinctValues.js";
 
-interface CheckboxListInputProps<
+interface CategoryListInputProps<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q>,
 > {
@@ -35,14 +36,14 @@ interface CheckboxListInputProps<
   propertyKey: K;
   selectedValues: string[];
   onChange: (selectedValues: string[]) => void;
-  showSelectAll?: boolean;
+  allowMultiple?: boolean;
   maxVisibleItems?: number;
   dataIndicator?: FilterDataIndicator;
   color?: FilterItemColor;
   valueColors?: Record<string, FilterItemColor>;
 }
 
-export function CheckboxListInput<
+export function CategoryListInput<
   Q extends ObjectTypeDefinition,
   K extends PropertyKeys<Q>,
 >({
@@ -50,14 +51,16 @@ export function CheckboxListInput<
   propertyKey,
   selectedValues,
   onChange,
-  showSelectAll = true,
+  allowMultiple = false,
   maxVisibleItems,
   dataIndicator = "none",
   color,
   valueColors,
-}: CheckboxListInputProps<Q, K>): React.ReactElement {
-  const { values, isLoading: valuesLoading, error: valuesError } =
-    useDistinctValues(objectType, propertyKey);
+}: CategoryListInputProps<Q, K>): React.ReactElement {
+  const { values, isLoading, error } = useDistinctValues(
+    objectType,
+    propertyKey,
+  );
 
   const showCounts = dataIndicator === "histogram" || dataIndicator === "count";
 
@@ -78,12 +81,11 @@ export function CheckboxListInput<
 
   // AggregationsResults is dynamically typed based on AggregateOpts, so we cast
   // to a concrete iterable type for processing the results.
-  const { valueCounts, maxCount } = useMemo(() => {
+  const { valueCounts } = useMemo(() => {
     if (!showCounts || !countData) {
-      return { valueCounts: new Map<string, number>(), maxCount: 0 };
+      return { valueCounts: new Map<string, number>() };
     }
     const counts = new Map<string, number>();
-    let max = 0;
     const dataArray = countData as Iterable<{
       $group: Record<string, unknown>;
       $count?: number;
@@ -93,86 +95,71 @@ export function CheckboxListInput<
       const count = item.$count ?? 0;
       if (value) {
         counts.set(value, count);
-        max = Math.max(max, count);
       }
     }
-    return { valueCounts: counts, maxCount: max };
+    return { valueCounts: counts };
   }, [showCounts, countData, propertyKey]);
 
-  const toggleValue = useCallback(
+  const handleClick = useCallback(
     (value: string) => {
-      if (selectedValues.includes(value)) {
-        onChange(selectedValues.filter((v) => v !== value));
+      const isSelected = selectedValues.includes(value);
+
+      if (allowMultiple) {
+        if (isSelected) {
+          onChange(selectedValues.filter((v) => v !== value));
+        } else {
+          onChange([...selectedValues, value]);
+        }
       } else {
-        onChange([...selectedValues, value]);
+        if (isSelected) {
+          onChange([]);
+        } else {
+          onChange([value]);
+        }
       }
     },
-    [selectedValues, onChange],
+    [selectedValues, onChange, allowMultiple],
   );
-
-  const toggleAll = useCallback(() => {
-    if (selectedValues.length === values.length) {
-      onChange([]);
-    } else {
-      onChange([...values]);
-    }
-  }, [selectedValues, values, onChange]);
 
   const displayValues = maxVisibleItems
     ? values.slice(0, maxVisibleItems)
     : values;
   const hasMore = maxVisibleItems && values.length > maxVisibleItems;
-  const allSelected = values.length > 0
-    && selectedValues.length === values.length;
-  const someSelected = selectedValues.length > 0
-    && selectedValues.length < values.length;
 
   return (
-    <div className="filter-input--checkbox-list">
-      {valuesLoading && (
+    <div className="filter-input--category-list">
+      {isLoading && (
         <div className="bp5-text-muted bp5-text-small">Loading values...</div>
       )}
 
-      {valuesError && (
+      {error && (
         <div className="bp5-text-small bp5-intent-danger">
-          Error loading values: {valuesError.message}
+          Error loading values: {error.message}
         </div>
       )}
 
-      {!valuesLoading && !valuesError && values.length === 0 && (
+      {!isLoading && !error && values.length === 0 && (
         <div className="bp5-text-muted bp5-text-small">No values available</div>
       )}
 
       {values.length > 0 && (
         <>
-          {showSelectAll && values.length > 1 && (
-            <div className="filter-input--checkbox-list-select-all">
-              <label className="bp5-control bp5-checkbox">
-                <input
-                  type="checkbox"
-                  checked={allSelected}
-                  ref={(el) => {
-                    if (el) {
-                      el.indeterminate = someSelected;
-                    }
-                  }}
-                  onChange={toggleAll}
-                />
-                <span className="bp5-control-indicator" />
-                Select All
-              </label>
-            </div>
-          )}
-
           {displayValues.map((value) => {
-            const count = valueCounts.get(value) ?? 0;
-            const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
+            const isSelected = selectedValues.includes(value);
             const itemColor = valueColors?.[value] ?? color;
+            const count = valueCounts.get(value) ?? 0;
 
             return (
-              <div
+              <button
                 key={value}
-                className="filter-input__checkbox-row"
+                type="button"
+                className={classNames(
+                  "filter-input__category-item",
+                  "bp5-button",
+                  "bp5-minimal",
+                  isSelected && "filter-input__category-item--selected",
+                  isSelected && "bp5-intent-primary",
+                )}
                 style={itemColor
                   ? ({
                     "--item-bg": itemColor.background,
@@ -181,38 +168,28 @@ export function CheckboxListInput<
                     "--item-histogram": itemColor.histogramBar,
                   } as React.CSSProperties)
                   : undefined}
+                onClick={() => handleClick(value)}
+                aria-pressed={isSelected}
               >
-                {dataIndicator === "histogram" && (
-                  <div
-                    className="filter-input__histogram-bar"
-                    style={{ width: `${percentage}%` }}
-                  />
+                {value}
+                {showCounts && (
+                  <span className="filter-input__count">
+                    {count.toLocaleString()}
+                  </span>
                 )}
-                <label className="bp5-control bp5-checkbox filter-input__checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={selectedValues.includes(value)}
-                    onChange={() => toggleValue(value)}
-                  />
-                  <span className="bp5-control-indicator" />
-                  <span className="filter-input__value-text">{value}</span>
-                  {showCounts && (
-                    <span className="filter-input__count">
-                      {count.toLocaleString()}
-                    </span>
-                  )}
-                </label>
-              </div>
+              </button>
             );
           })}
-
           {hasMore && (
-            <button
-              type="button"
-              className="filter-input__view-all bp5-button bp5-minimal bp5-small"
+            <div
+              className={classNames(
+                "filter-input__more",
+                "bp5-text-muted",
+                "bp5-text-small",
+              )}
             >
-              View all ({values.length})
-            </button>
+              +{values.length - maxVisibleItems} more
+            </div>
           )}
         </>
       )}

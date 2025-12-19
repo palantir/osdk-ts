@@ -18,6 +18,9 @@ import type { ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
 import { useOsdkClient } from "@osdk/react/experimental";
 import { useEffect, useState } from "react";
 
+const MAX_DISTINCT_VALUES = 1000;
+const PAGE_SIZE = 100;
+
 interface UseDistinctValuesResult {
   values: string[];
   isLoading: boolean;
@@ -49,9 +52,9 @@ export function useDistinctValues<
         let hasMore = true;
         let nextPageToken: string | undefined;
 
-        while (hasMore && distinctSet.size < 1000) {
+        while (hasMore && distinctSet.size < MAX_DISTINCT_VALUES) {
           const page = await objectSet.fetchPage({
-            $pageSize: 100,
+            $pageSize: PAGE_SIZE,
             $nextPageToken: nextPageToken,
             $select: [propertyKey] as [K],
           });

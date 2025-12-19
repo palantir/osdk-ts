@@ -15,11 +15,44 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
+import classNames from "classnames";
 import React, { useCallback, useEffect } from "react";
 import type { FilterListProps } from "../FilterListApi.js";
+import type { FilterListTheme } from "../FilterThemeTypes.js";
 import { useFilterListState } from "../hooks/useFilterListState.js";
 import { FilterListContent } from "./FilterListContent.js";
 import { FilterListHeader } from "./FilterListHeader.js";
+
+function themeToStyle(
+  theme: FilterListTheme | undefined,
+): React.CSSProperties | undefined {
+  if (!theme) return undefined;
+
+  const style: React.CSSProperties & Record<`--${string}`, string> = {};
+
+  if (theme.panelBgColor) style["--filter-panel-bg-color"] = theme.panelBgColor;
+  if (theme.itemBgColor) style["--filter-item-bg-color"] = theme.itemBgColor;
+  if (theme.itemHoverBgColor) {
+    style["--filter-item-hover-bg-color"] = theme.itemHoverBgColor;
+  }
+  if (theme.itemActiveBgColor) {
+    style["--filter-item-active-bg-color"] = theme.itemActiveBgColor;
+  }
+  if (theme.panelBorderColor) {
+    style["--filter-panel-border-color"] = theme.panelBorderColor;
+  }
+  if (theme.histogramColor) {
+    style["--filter-histogram-color"] = theme.histogramColor;
+  }
+  if (theme.countTextColor) {
+    style["--filter-count-text-color"] = theme.countTextColor;
+  }
+  if (theme.headerBgColor) {
+    style["--filter-header-bg-color"] = theme.headerBgColor;
+  }
+
+  return Object.keys(style).length > 0 ? style : undefined;
+}
 
 export function FilterList<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
@@ -59,25 +92,14 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     onReset?.();
   }, [reset, onReset]);
 
-  const themeStyle = theme
-    ? {
-      "--osdk-filter-panel-bg": theme.panelBgColor,
-      "--osdk-filter-item-bg": theme.itemBgColor,
-      "--osdk-filter-item-hover-bg": theme.itemHoverBgColor,
-      "--osdk-filter-item-active-bg": theme.itemActiveBgColor,
-      "--osdk-filter-panel-border": theme.panelBorderColor,
-      "--osdk-filter-histogram": theme.histogramColor,
-      "--osdk-filter-count-text": theme.countTextColor,
-      "--osdk-filter-header-bg": theme.headerBgColor,
-    }
-    : undefined;
-
   return (
     <div
-      className={`osdk-filter-list ${
-        collapsed ? "osdk-filter-list--collapsed" : ""
-      } ${className ?? ""}`}
-      style={themeStyle as React.CSSProperties}
+      className={classNames(
+        "filter-list",
+        collapsed && "filter-list--collapsed",
+        className,
+      )}
+      style={themeToStyle(theme)}
     >
       <FilterListHeader
         title={title}
@@ -102,7 +124,13 @@ export function FilterList<Q extends ObjectTypeDefinition>(
           {showAddFilterButton && addFilterPosition === "inline" && (
             <button
               type="button"
-              className="osdk-filter-list__add-button osdk-filter-list__add-button--inline"
+              className={classNames(
+                "bp5-button",
+                "bp5-minimal",
+                "bp5-intent-primary",
+                "filter-list__add-button",
+                "filter-list__add-button--inline",
+              )}
               onClick={onAddFilter}
             >
               + Add filter
@@ -114,7 +142,13 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       {showAddFilterButton && addFilterPosition === "fixed" && !collapsed && (
         <button
           type="button"
-          className="osdk-filter-list__add-button osdk-filter-list__add-button--fixed"
+          className={classNames(
+            "bp5-button",
+            "bp5-minimal",
+            "bp5-intent-primary",
+            "filter-list__add-button",
+            "filter-list__add-button--fixed",
+          )}
           onClick={onAddFilter}
         >
           + Add filter

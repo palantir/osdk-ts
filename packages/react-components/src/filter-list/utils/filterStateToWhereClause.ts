@@ -16,14 +16,7 @@
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
-import type {
-  CheckboxListFilterState,
-  ContainsTextFilterState,
-  DateRangeFilterState,
-  FilterState,
-  NumberRangeFilterState,
-  ToggleFilterState,
-} from "../FilterListItemApi.js";
+import type { FilterState } from "../FilterListItemApi.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
 
@@ -32,43 +25,39 @@ function filterStateToPropertyFilter(
 ): PropertyFilter | undefined {
   switch (state.type) {
     case "CHECKBOX_LIST": {
-      const checkboxState = state as CheckboxListFilterState;
-      if (checkboxState.selectedValues.length === 0) {
+      if (state.selectedValues.length === 0) {
         return undefined;
       }
-      const filter = { $in: checkboxState.selectedValues };
-      if (checkboxState.isExcluding) {
+      const filter = { $in: state.selectedValues };
+      if (state.isExcluding) {
         return { $not: filter };
       }
       return filter;
     }
 
     case "CONTAINS_TEXT": {
-      const textState = state as ContainsTextFilterState;
-      if (!textState.value) {
+      if (!state.value) {
         return undefined;
       }
-      const filter = { $containsAllTermsInOrder: textState.value };
-      if (textState.isExcluding) {
+      const filter = { $containsAllTermsInOrder: state.value };
+      if (state.isExcluding) {
         return { $not: filter };
       }
       return filter;
     }
 
     case "TOGGLE": {
-      const toggleState = state as ToggleFilterState;
-      return toggleState.enabled;
+      return state.enabled;
     }
 
     case "DATE_RANGE": {
-      const dateState = state as DateRangeFilterState;
       const conditions: PropertyFilter[] = [];
 
-      if (dateState.minValue) {
-        conditions.push({ $gte: dateState.minValue.toISOString() });
+      if (state.minValue) {
+        conditions.push({ $gte: state.minValue.toISOString() });
       }
-      if (dateState.maxValue) {
-        conditions.push({ $lte: dateState.maxValue.toISOString() });
+      if (state.maxValue) {
+        conditions.push({ $lte: state.maxValue.toISOString() });
       }
 
       if (conditions.length === 0) {
@@ -81,14 +70,13 @@ function filterStateToPropertyFilter(
     }
 
     case "NUMBER_RANGE": {
-      const numState = state as NumberRangeFilterState;
       const conditions: PropertyFilter[] = [];
 
-      if (numState.minValue !== undefined) {
-        conditions.push({ $gte: numState.minValue });
+      if (state.minValue !== undefined) {
+        conditions.push({ $gte: state.minValue });
       }
-      if (numState.maxValue !== undefined) {
-        conditions.push({ $lte: numState.maxValue });
+      if (state.maxValue !== undefined) {
+        conditions.push({ $lte: state.maxValue });
       }
 
       if (conditions.length === 0) {
@@ -101,14 +89,13 @@ function filterStateToPropertyFilter(
     }
 
     case "EXACT_MATCH": {
-      const exactState = state as { values: (string | boolean)[] };
-      if (exactState.values.length === 0) {
+      if (state.values.length === 0) {
         return undefined;
       }
-      if (exactState.values.length === 1) {
-        return exactState.values[0];
+      if (state.values.length === 1) {
+        return state.values[0];
       }
-      return { $in: exactState.values };
+      return { $in: state.values };
     }
 
     default:
@@ -133,12 +120,12 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
 
     switch (definition.type) {
       case "property":
-        key = definition.key as string;
+        key = definition.key;
         state = filterStates.get(key);
         break;
       case "hasLink":
       case "linkedProperty":
-        key = definition.linkName as string;
+        key = definition.linkName;
         state = filterStates.get(key);
         break;
       case "keywordSearch":

@@ -15,13 +15,12 @@
  */
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import { useCallback, useMemo, useState } from "react";
-import type {
-  FilterDefinitionUnion,
-  FilterListProps,
-} from "../FilterListApi.js";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { FilterKey, FilterListProps } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import type { FilterListPersistedState } from "../FilterPanelTypes.js";
 import { buildWhereClause } from "../utils/filterStateToWhereClause.js";
+import { getFilterKey } from "../utils/getFilterKey.js";
 
 interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   collapsed: boolean;
@@ -33,30 +32,8 @@ interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   reset: () => void;
 }
 
-function getFilterKey<Q extends ObjectTypeDefinition>(
-  definition: FilterDefinitionUnion<Q>,
-): string {
-  switch (definition.type) {
-    case "property":
-      return definition.key as string;
-    case "hasLink":
-    case "linkedProperty":
-      return definition.linkName as string;
-    case "keywordSearch":
-      return `keywordSearch-${
-        Array.isArray(definition.properties)
-          ? definition.properties.join("-")
-          : "all"
-      }`;
-    case "custom":
-      return definition.key;
-    default:
-      return "unknown";
-  }
-}
-
 function buildInitialStates<Q extends ObjectTypeDefinition>(
-  definitions: Array<FilterDefinitionUnion<Q>> | undefined,
+  definitions: FilterListProps<Q>["filterDefinitions"],
 ): Map<string, FilterState> {
   const states = new Map<string, FilterState>();
 
@@ -67,12 +44,19 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
   for (const definition of definitions) {
     const key = getFilterKey(definition);
 
-    if ("filterState" in definition && definition.filterState) {
-      states.set(key, definition.filterState as FilterState);
-    } else if (
-      "defaultFilterState" in definition && definition.defaultFilterState
-    ) {
-      states.set(key, definition.defaultFilterState as FilterState);
+    switch (definition.type) {
+      case "property": {
+        const state = definition.filterState ?? definition.defaultFilterState;
+        if (state) {
+          states.set(key, state);
+        }
+        break;
+      }
+      case "hasLink":
+      case "linkedProperty":
+      case "keywordSearch":
+      case "custom":
+        break;
     }
   }
 
@@ -120,6 +104,45 @@ function isFilterActive(state: FilterState): boolean {
   }
 }
 
+function isValidPersistedState(value: unknown): boolean {
+  if (typeof value !== "object" || value == null) return false;
+  const obj = value as Record<string, unknown>;
+  return (
+    typeof obj.collapsed === "boolean"
+    && Array.isArray(obj.filterDefinitions)
+    && typeof obj.filterClause === "object"
+  );
+}
+
+function loadFromStorage<Q extends ObjectTypeDefinition>(
+  key: string,
+): FilterListPersistedState<Q> | undefined {
+  try {
+    const stored = sessionStorage.getItem(key);
+    if (stored) {
+      const parsed: unknown = JSON.parse(stored);
+      // Runtime validation ensures structure matches FilterListPersistedState
+      if (isValidPersistedState(parsed)) {
+        return parsed as FilterListPersistedState<Q>;
+      }
+    }
+  } catch {
+    // Silently fail - storage may not be available or data corrupted
+  }
+  return undefined;
+}
+
+function saveToStorage<Q extends ObjectTypeDefinition>(
+  key: string,
+  state: FilterListPersistedState<Q>,
+): void {
+  try {
+    sessionStorage.setItem(key, JSON.stringify(state));
+  } catch {
+    // Silently fail - storage may be full or unavailable
+  }
+}
+
 export function useFilterListState<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
 ): UseFilterListStateResult<Q> {
@@ -129,9 +152,27 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     collapsed: controlledCollapsed,
     defaultCollapsed = false,
     onCollapsedChange,
+    onFilterStateChanged,
+    persistenceKey,
+    onPersistState,
+    initialPersistedState,
   } = props;
 
-  const [internalCollapsed, setInternalCollapsed] = useState(defaultCollapsed);
+  // Load persisted state only once on mount - intentionally ignoring prop changes
+  // to avoid overwriting user's in-session filter state
+  const persistedState = useMemo(() => {
+    if (initialPersistedState) {
+      return initialPersistedState;
+    }
+    if (persistenceKey) {
+      return loadFromStorage<Q>(persistenceKey);
+    }
+    return undefined;
+  }, []);
+
+  const [internalCollapsed, setInternalCollapsed] = useState(
+    persistedState?.collapsed ?? defaultCollapsed,
+  );
   const isCollapsedControlled = controlledCollapsed !== undefined;
   const collapsed = isCollapsedControlled
     ? controlledCollapsed
@@ -158,12 +199,10 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
         next.set(key, state);
         return next;
       });
-      props.onFilterStateChanged?.(
-        key as ReturnType<typeof getFilterKey<Q>>,
-        state,
-      );
+      // Cast is safe: keys are derived from filter definitions via getFilterKey()
+      onFilterStateChanged?.(key as FilterKey<Q>, state);
     },
-    [props],
+    [onFilterStateChanged],
   );
 
   const whereClause = useMemo(
@@ -179,6 +218,30 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   const reset = useCallback(() => {
     setFilterStates(buildInitialStates(filterDefinitions));
   }, [filterDefinitions]);
+
+  useEffect(() => {
+    if (!persistenceKey && !onPersistState) {
+      return;
+    }
+
+    const stateToSave: FilterListPersistedState<Q> = {
+      collapsed,
+      filterDefinitions: filterDefinitions ?? [],
+      filterClause: whereClause,
+    };
+
+    if (persistenceKey) {
+      saveToStorage(persistenceKey, stateToSave);
+    }
+
+    onPersistState?.(stateToSave);
+  }, [
+    collapsed,
+    filterDefinitions,
+    whereClause,
+    persistenceKey,
+    onPersistState,
+  ]);
 
   return {
     collapsed,

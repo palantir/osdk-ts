@@ -20,6 +20,7 @@ import {
   type PropertyFilterDefinition,
 } from "@osdk/react-components/experimental";
 import { useOsdkObjects } from "@osdk/react/experimental";
+import "@osdk/react-components/styles/FilterListBundle.css";
 import "@osdk/react-components/styles/FilterList.css";
 import { useMemo, useState } from "react";
 import { List } from "../../components/List.js";
@@ -77,6 +78,8 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
       label: "Department",
       filterComponent: "CHECKBOX_LIST",
       filterState: { type: "CHECKBOX_LIST", selectedValues: [] },
+      dataIndicator: "histogram",
+      showSelectAll: true,
     },
     {
       type: "property",
@@ -91,6 +94,8 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
       label: "Worker Type",
       filterComponent: "CHECKBOX_LIST",
       filterState: { type: "CHECKBOX_LIST", selectedValues: [] },
+      dataIndicator: "histogram",
+      showSelectAll: true,
     },
     {
       type: "property",
@@ -98,6 +103,9 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
       label: "City",
       filterComponent: "CHECKBOX_LIST",
       filterState: { type: "CHECKBOX_LIST", selectedValues: [] },
+      dataIndicator: "histogram",
+      showSelectAll: true,
+      maxVisibleItems: 5,
     },
   ], []);
 

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import classNames from "classnames";
 import React, { type ReactNode } from "react";
 
 interface FilterListHeaderProps {
@@ -38,32 +39,36 @@ export function FilterListHeader({
   activeFilterCount,
 }: FilterListHeaderProps): React.ReactElement {
   return (
-    <div className="osdk-filter-list__header">
+    <div className="filter-list__header">
       <button
         type="button"
-        className="osdk-filter-list__collapse-button"
+        className={classNames(
+          "bp5-button",
+          "bp5-minimal",
+          "bp5-small",
+          "filter-list__collapse-button",
+        )}
         onClick={() => onCollapsedChange(!collapsed)}
         aria-expanded={!collapsed}
         aria-label={collapsed ? "Expand filters" : "Collapse filters"}
       >
         <span
-          className={`osdk-filter-list__chevron ${
-            collapsed ? "osdk-filter-list__chevron--collapsed" : ""
-          }`}
-        >
-          {collapsed ? "»" : "«"}
-        </span>
+          className={classNames(
+            "bp5-icon",
+            collapsed ? "bp5-icon-chevron-right" : "bp5-icon-chevron-down",
+          )}
+        />
       </button>
 
       {!collapsed && (
         <>
-          <div className="osdk-filter-list__title-container">
+          <div className="filter-list__title-container">
             {titleIcon && (
-              <span className="osdk-filter-list__title-icon">{titleIcon}</span>
+              <span className="filter-list__title-icon">{titleIcon}</span>
             )}
-            {title && <span className="osdk-filter-list__title">{title}</span>}
+            {title && <span className="filter-list__title">{title}</span>}
             {showActiveFilterCount && activeFilterCount > 0 && (
-              <span className="osdk-filter-list__active-count">
+              <span className="filter-list__active-count bp5-text-muted bp5-text-small">
                 ({activeFilterCount})
               </span>
             )}
@@ -72,7 +77,7 @@ export function FilterListHeader({
           {showResetButton && (
             <button
               type="button"
-              className="osdk-filter-list__reset-button"
+              className="bp5-button bp5-minimal bp5-small bp5-intent-primary"
               onClick={onReset}
               disabled={activeFilterCount === 0}
             >
