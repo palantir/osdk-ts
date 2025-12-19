@@ -256,6 +256,7 @@ async function fetchInterfacePage<
     {
       objectSet: resolvedInterfaceObjectSet,
       select: args?.$select ? [...args.$select] : [],
+      selectV2: [],
       excludeRid: !args?.$includeRid,
       snapshot: useSnapshot,
     },
@@ -557,6 +558,7 @@ export async function fetchObjectPage<
     {
       objectSet,
       select: args?.$select ? [...args.$select] : [],
+      selectV2: [],
       excludeRid: !args?.$includeRid,
       snapshot: useSnapshot,
     },

@@ -297,6 +297,9 @@ exports[`Load Ontologies Metadata > Loads action types with media refs, interfac
             },
             "employeeSensor": {
               "dataType": {
+                "itemType": {
+                  "type": "string",
+                },
                 "type": "timeseries",
               },
               "description": "TimeSeries sensor of the status of the employee",
@@ -559,6 +562,9 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
             },
             "employeeSensor": {
               "dataType": {
+                "itemType": {
+                  "type": "string",
+                },
                 "type": "timeseries",
               },
               "description": "TimeSeries sensor of the status of the employee",
@@ -912,6 +918,9 @@ exports[`Load Ontologies Metadata > Loads object, action, interface types withou
             },
             "employeeSensor": {
               "dataType": {
+                "itemType": {
+                  "type": "string",
+                },
                 "type": "timeseries",
               },
               "description": "TimeSeries sensor of the status of the employee",
