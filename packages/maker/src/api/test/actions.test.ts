@@ -15260,5 +15260,51 @@ describe("Action Types", () => {
           }
         `);
     });
+
+    it("Group and user ", () => {
+      const exampleObjectType = defineObject({
+        titlePropertyApiName: "bar",
+        displayName: "exampleObjectType",
+        pluralDisplayName: "exampleObjectTypes",
+        apiName: "foo",
+        primaryKeyPropertyApiName: "bar",
+        properties: {
+          "bar": { type: "string" },
+          "fizz": { type: "string" },
+          "buzz": { type: "string" },
+        },
+      });
+
+      const createObjectActionType = defineCreateObjectAction(
+        {
+          objectType: exampleObjectType,
+          parameterConfiguration: {
+            "bar": {
+              allowedValues: {
+                type: "multipassGroup",
+              },
+            },
+            "fizz": {
+              allowedValues: {
+                type: "user",
+                fromGroups: [{
+                  type: "static",
+                  name: "group",
+                }, {
+                  type: "parameter",
+                  parameter: "bar",
+                }],
+              },
+            },
+            "buzz": {
+              allowedValues: {
+                type: "user",
+              },
+            },
+          },
+        },
+      );
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(``);
+    });
   });
 });

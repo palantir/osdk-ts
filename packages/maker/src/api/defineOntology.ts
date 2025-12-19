@@ -19,6 +19,7 @@ import type {
   OntologyIr,
   OntologyIrActionTypeBlockDataV2,
   OntologyIrAllowedParameterValues,
+  OntologyIrMultipassUserFilter,
   OntologyIrObjectTypeDatasource,
   OntologyIrObjectTypeDatasourceDefinition,
   OntologyIrParameter,
@@ -470,6 +471,54 @@ export function extractAllowedValues(
         geotimeSeriesReference: {
           type: "geotimeSeries",
           geotimeSeries: {},
+        },
+      };
+    case "user":
+      const filters: Array<OntologyIrMultipassUserFilter> = [];
+      allowedValues.fromGroups?.forEach(group => {
+        filters.push({
+          type: "groupFilter",
+          groupFilter: {
+            groupId: group.type === "static"
+              ? {
+                type: "staticValue",
+                staticValue: {
+                  type: "string",
+                  string: group.name,
+                },
+              }
+              : {
+                type: "parameterId",
+                parameterId: group.parameter,
+              },
+          },
+        });
+      });
+      return {
+        type: "user",
+        user: {
+          type: "user",
+          user: {
+            filter: (allowedValues.fromGroups ?? []).map(group => {
+              return {
+                type: "groupFilter",
+                groupFilter: {
+                  groupId: group.type === "static"
+                    ? {
+                      type: "staticValue",
+                      staticValue: {
+                        type: "string",
+                        string: group.name,
+                      },
+                    }
+                    : {
+                      type: "parameterId",
+                      parameterId: group.parameter,
+                    },
+                },
+              };
+            }),
+          },
         },
       };
     default:
