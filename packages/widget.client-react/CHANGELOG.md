@@ -1,5 +1,17 @@
 # @osdk/widget.client-react
 
+## 3.4.0-beta.5
+
+### Minor Changes
+
+- ee3af16: Improved object set write path
+
+### Patch Changes
+
+- Updated dependencies [dc33f68]
+  - @osdk/client@2.7.0-beta.5
+  - @osdk/widget.client@3.4.0-beta.5
+
 ## 3.4.0-beta.4
 
 ### Patch Changes
