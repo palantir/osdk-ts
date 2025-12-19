@@ -15261,7 +15261,7 @@ describe("Action Types", () => {
         `);
     });
 
-    it("Group and user ", () => {
+    it("Group and user parameters are properly defined", () => {
       const exampleObjectType = defineObject({
         titlePropertyApiName: "bar",
         displayName: "exampleObjectType",
@@ -15288,9 +15288,6 @@ describe("Action Types", () => {
               allowedValues: {
                 type: "user",
                 fromGroups: [{
-                  type: "static",
-                  name: "group",
-                }, {
                   type: "parameter",
                   parameter: "bar",
                 }],
@@ -15304,7 +15301,461 @@ describe("Action Types", () => {
           },
         },
       );
-      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(``);
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "importedOntology": {
+            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+            "sharedPropertyTypes": {},
+          },
+          "importedValueTypes": {
+            "valueTypes": [],
+          },
+          "ontology": {
+            "actionTypes": {
+              "com.palantir.create-object-foo": {
+                "actionType": {
+                  "actionTypeLogic": {
+                    "logic": {
+                      "rules": [
+                        {
+                          "addObjectRule": {
+                            "objectTypeId": "com.palantir.foo",
+                            "propertyValues": {
+                              "bar": {
+                                "parameterId": "bar",
+                                "type": "parameterId",
+                              },
+                              "buzz": {
+                                "parameterId": "buzz",
+                                "type": "parameterId",
+                              },
+                              "fizz": {
+                                "parameterId": "fizz",
+                                "type": "parameterId",
+                              },
+                            },
+                            "structFieldValues": {},
+                          },
+                          "type": "addObjectRule",
+                        },
+                      ],
+                    },
+                    "validation": {
+                      "actionTypeLevelValidation": {
+                        "rules": {
+                          "0": {
+                            "condition": {
+                              "true": {},
+                              "type": "true",
+                            },
+                            "displayMetadata": {
+                              "failureMessage": "",
+                              "typeClasses": [],
+                            },
+                          },
+                        },
+                      },
+                      "parameterValidations": {
+                        "bar": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "type": "userDropdown",
+                                "userDropdown": {},
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "multipassGroup": {
+                                  "group": {},
+                                  "type": "group",
+                                },
+                                "type": "multipassGroup",
+                              },
+                              "required": {
+                                "notRequired": {},
+                                "type": "notRequired",
+                              },
+                            },
+                          },
+                        },
+                        "buzz": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "type": "userDropdown",
+                                "userDropdown": {},
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "type": "user",
+                                "user": {
+                                  "type": "user",
+                                  "user": {
+                                    "filter": [],
+                                  },
+                                },
+                              },
+                              "required": {
+                                "notRequired": {},
+                                "type": "notRequired",
+                              },
+                            },
+                          },
+                        },
+                        "fizz": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "type": "userDropdown",
+                                "userDropdown": {},
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "type": "user",
+                                "user": {
+                                  "type": "user",
+                                  "user": {
+                                    "filter": [
+                                      {
+                                        "groupFilter": {
+                                          "groupId": {
+                                            "parameterId": "bar",
+                                            "type": "parameterId",
+                                          },
+                                        },
+                                        "type": "groupFilter",
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                              "required": {
+                                "notRequired": {},
+                                "type": "notRequired",
+                              },
+                            },
+                          },
+                        },
+                      },
+                      "sectionValidations": {},
+                    },
+                  },
+                  "metadata": {
+                    "apiName": "com.palantir.create-object-foo",
+                    "displayMetadata": {
+                      "configuration": {
+                        "defaultLayout": "FORM",
+                        "displayAndFormat": {
+                          "table": {
+                            "columnWidthByParameterRid": {},
+                            "enableFileImport": true,
+                            "fitHorizontally": false,
+                            "frozenColumnCount": 0,
+                            "rowHeightInLines": 1,
+                          },
+                        },
+                        "enableLayoutUserSwitch": false,
+                      },
+                      "description": "",
+                      "displayName": "Create exampleObjectType",
+                      "icon": {
+                        "blueprint": {
+                          "color": "#000000",
+                          "locator": "edit",
+                        },
+                        "type": "blueprint",
+                      },
+                      "successMessage": [],
+                      "typeClasses": [],
+                    },
+                    "entities": {
+                      "affectedInterfaceTypes": [],
+                      "affectedLinkTypes": [],
+                      "affectedObjectTypes": [
+                        "com.palantir.foo",
+                      ],
+                      "typeGroups": [],
+                    },
+                    "formContentOrdering": [],
+                    "parameterOrdering": [
+                      "bar",
+                      "fizz",
+                      "buzz",
+                    ],
+                    "parameters": {
+                      "bar": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Bar",
+                          "typeClasses": [],
+                        },
+                        "id": "bar",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                      "buzz": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Buzz",
+                          "typeClasses": [],
+                        },
+                        "id": "buzz",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                      "fizz": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Fizz",
+                          "typeClasses": [],
+                        },
+                        "id": "fizz",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                    },
+                    "sections": {},
+                    "status": {
+                      "active": {},
+                      "type": "active",
+                    },
+                  },
+                },
+              },
+            },
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
+            "interfaceTypes": {},
+            "linkTypes": {},
+            "objectTypes": {
+              "com.palantir.foo": {
+                "datasources": [
+                  {
+                    "datasource": {
+                      "datasetV2": {
+                        "datasetRid": "com.palantir.foo",
+                        "propertyMapping": {
+                          "bar": {
+                            "column": "bar",
+                            "type": "column",
+                          },
+                          "buzz": {
+                            "column": "buzz",
+                            "type": "column",
+                          },
+                          "fizz": {
+                            "column": "fizz",
+                            "type": "column",
+                          },
+                        },
+                      },
+                      "type": "datasetV2",
+                    },
+                    "datasourceName": "com.palantir.foo",
+                    "editsConfiguration": {
+                      "onlyAllowPrivilegedEdits": false,
+                    },
+                    "redacted": false,
+                  },
+                ],
+                "entityMetadata": {
+                  "arePatchesEnabled": false,
+                },
+                "objectType": {
+                  "allImplementsInterfaces": {},
+                  "apiName": "com.palantir.foo",
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "exampleObjectType",
+                    "groupDisplayName": undefined,
+                    "icon": {
+                      "blueprint": {
+                        "color": "#2D72D2",
+                        "locator": "cube",
+                      },
+                      "type": "blueprint",
+                    },
+                    "pluralDisplayName": "exampleObjectTypes",
+                    "visibility": "NORMAL",
+                  },
+                  "implementsInterfaces2": [],
+                  "primaryKeys": [
+                    "bar",
+                  ],
+                  "propertyTypes": {
+                    "bar": {
+                      "apiName": "bar",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Bar",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "buzz": {
+                      "apiName": "buzz",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Buzz",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "fizz": {
+                      "apiName": "fizz",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Fizz",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                  },
+                  "redacted": false,
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                  "titlePropertyTypeRid": "bar",
+                },
+              },
+            },
+            "sharedPropertyTypes": {},
+          },
+          "randomnessKey": undefined,
+          "valueTypes": {
+            "valueTypes": [],
+          },
+        }
+      `);
     });
   });
 });
