@@ -38,6 +38,40 @@ describe(OrderByCanonicalizer, () => {
     expect(canonLong).not.toEqual(canon1);
   });
 
+  it("is order-independent for properties", () => {
+    const obc = new OrderByCanonicalizer();
+    const canon1 = obc.canonicalize({ name: "asc", id: "desc" });
+    const canon2 = obc.canonicalize({ id: "desc", name: "asc" });
+
+    expect(canon1).toBe(canon2);
+    expect(canon1).toEqual({ name: "asc", id: "desc" });
+  });
+
+  it("handles empty objects", () => {
+    const obc = new OrderByCanonicalizer();
+    const canon = obc.canonicalize({});
+
+    expect(canon).toEqual({});
+  });
+
+  it("handles many properties in any order", () => {
+    const obc = new OrderByCanonicalizer();
+    const canon1 = obc.canonicalize({
+      z: "asc",
+      a: "desc",
+      m: "asc",
+      b: "desc",
+    });
+    const canon2 = obc.canonicalize({
+      b: "desc",
+      m: "asc",
+      a: "desc",
+      z: "asc",
+    });
+
+    expect(canon1).toBe(canon2);
+  });
+
   it("cleans up", async () => {
     const callback = vi.fn((...args: any[]) => {
       console.log("args", args);
