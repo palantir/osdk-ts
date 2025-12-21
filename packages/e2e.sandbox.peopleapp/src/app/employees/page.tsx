@@ -4,6 +4,7 @@ import type { Employee } from "../../generatedNoCheck2/index.js";
 import { EmployeeDetails } from "./EmployeeDetails.js";
 import { EmployeesList } from "./EmployeesList.js";
 import { EmployeesListEnhanced } from "./EmployeesListEnhanced.js";
+import { EmployeesTable } from "./EmployeesTable.js";
 
 export function EmployeesPage() {
   const [selectedEmployee, setSelectedEmployee] = useState<
@@ -48,6 +49,9 @@ export function EmployeesPage() {
             <EmployeeDetails employee={selectedEmployee} />
           </Section>
         </div>
+      </div>
+      <div className="flex w-192">
+        <EmployeesTable />
       </div>
     </div>
   );

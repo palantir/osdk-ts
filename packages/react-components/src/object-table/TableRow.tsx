@@ -14,11 +14,24 @@
  * limitations under the License.
  */
 
-export type { FilterListProps } from "../filter-list/FilterListApi.js";
-export type { FilterListItemProps } from "../filter-list/FilterListItemApi.js";
+import type { Row, RowData } from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
+import React from "react";
 
-export { ObjectTable } from "../object-table/ObjectTable.js";
-export type {
-  ColumnDefinition,
-  ObjectTableProps,
-} from "../object-table/ObjectTableApi.js";
+interface TableRowProps<TData extends RowData> {
+  row: Row<TData>;
+}
+
+export function TableRow<TData extends RowData>({
+  row,
+}: TableRowProps<TData>): React.ReactElement {
+  return (
+    <tr>
+      {row.getVisibleCells().map((cell) => (
+        <td key={cell.id}>
+          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+        </td>
+      ))}
+    </tr>
+  );
+}

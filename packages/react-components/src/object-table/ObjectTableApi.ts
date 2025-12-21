@@ -33,7 +33,15 @@ export type ColumnDefinition<
   FunctionColumns extends Record<string, QueryDefinition<{}>>,
 > = {
   locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>;
+
+  /**
+   * @default true
+   */
   isVisible?: boolean;
+
+  /**
+   * @default none
+   */
   pinned?: "left" | "right" | "none";
   width?: number;
   minWidth?: number;
@@ -50,8 +58,14 @@ export type ColumnDefinition<
 
 type ColumnDefinitionLocator<
   Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>> = {},
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
 > =
   | {
     type: "property";
@@ -79,6 +93,11 @@ export interface ObjectTableProps<
    * The set of objects to show in the table
    */
   objectSet: ObjectSet<Q>;
+
+  /**
+   * The object type of the object
+   */
+  objectType: Q;
 
   /**
    * Ordered list of column definitions to show in the table
