@@ -15,7 +15,7 @@ const columnDefinitions: ColumnDefinition<Employee>[] = [{
   isVisible: false,
 }, {
   locator: { type: "property", propertyKey: "firstFullTimeStartDate" },
-  width: 500,
+  width: 200,
   renderHeader: () => "Start Date",
   renderCell: (
     object: Osdk.Instance<Employee>,
@@ -38,7 +38,7 @@ export function EmployeesTable() {
     <ObjectTable<Employee>
       objectSet={employeesObjectSet}
       objectType={Employee}
-      columnDefinitions={columnDefinitions}
+      // columnDefinitions={columnDefinitions}
     />
   );
 }

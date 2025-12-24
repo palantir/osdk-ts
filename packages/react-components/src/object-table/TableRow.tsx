@@ -26,9 +26,9 @@ export function TableRow<TData extends RowData>({
   row,
 }: TableRowProps<TData>): React.ReactElement {
   return (
-    <tr>
+    <tr className="osdk-object-table-row">
       {row.getVisibleCells().map((cell) => (
-        <td key={cell.id}>
+        <td key={cell.id} className="osdk-object-table-cell">
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
         </td>
       ))}

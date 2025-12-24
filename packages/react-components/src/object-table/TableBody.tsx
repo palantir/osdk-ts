@@ -26,7 +26,7 @@ export function TableBody<TData extends RowData>({
   rows,
 }: TableBodyProps<TData>): React.ReactElement {
   return (
-    <tbody>
+    <tbody className="osdk-object-table-body">
       {rows.map((row) => <TableRow key={row.id} row={row} />)}
     </tbody>
   );

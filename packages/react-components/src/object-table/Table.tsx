@@ -31,7 +31,7 @@ export function Table<TData extends RowData>(
   const rows = useMemo(() => table.getRowModel().rows, [table]);
 
   return (
-    <table>
+    <table className="osdk-object-table">
       <TableHeader headerGroups={headerGroups} />
       <TableBody rows={rows} />
     </table>
