@@ -46,6 +46,7 @@ export function TableBody<TData extends RowData>({
 
   return (
     <tbody
+      className="osdk-object-table-body"
       style={{
         display: "grid",
         position: "relative",

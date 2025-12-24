@@ -30,6 +30,7 @@ export function TableRow<TData extends RowData>({
 }: TableRowProps<TData>): React.ReactElement {
   return (
     <tr
+      className="osdk-object-table-row"
       style={{
         position: "absolute",
         height: `${virtualRow.size}px`,
@@ -40,6 +41,7 @@ export function TableRow<TData extends RowData>({
       {row.getVisibleCells().map((cell) => (
         <td
           key={cell.id}
+          className="osdk-object-table-cell"
           style={{
             display: "flex",
             alignItems: "center",

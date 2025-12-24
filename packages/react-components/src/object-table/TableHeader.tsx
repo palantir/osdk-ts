@@ -27,6 +27,7 @@ export function TableHeader<TData extends RowData>({
 }: TableHeaderProps<TData>): React.ReactElement {
   return (
     <thead
+      className="osdk-object-table-header"
       style={{
         display: "grid",
         position: "sticky",
@@ -37,6 +38,7 @@ export function TableHeader<TData extends RowData>({
       {headerGroups.map((headerGroup) => (
         <tr
           key={headerGroup.id}
+          className="osdk-object-table-header-row"
           style={{
             display: "flex",
           }}
@@ -51,6 +53,7 @@ export function TableHeader<TData extends RowData>({
                 justifyContent: "flex-start",
                 alignItems: "center",
               }}
+              className="osdk-object-table-header-cell"
             >
               {header.isPlaceholder
                 ? null

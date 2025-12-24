@@ -64,6 +64,7 @@ export function Table<TData extends RowData>(
       onScroll={handleScroll}
     >
       <table
+        className="osdk-object-table"
         style={{ display: "grid" }}
       >
         <TableHeader headerGroups={table.getHeaderGroups()} />

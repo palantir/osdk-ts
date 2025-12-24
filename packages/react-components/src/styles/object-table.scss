@@ -43,7 +43,6 @@
 
 .osdk-object-table-header-cell {
   padding: ($pt-spacing * 3) ($pt-spacing * 3);
-  text-align: left;
   color: $pt-text-color;
   font-size: $pt-font-size;
   font-weight: 600;
@@ -80,7 +79,6 @@
 /* States (loading, error, empty) */
 .osdk-object-table-state {
   padding: ($pt-spacing * 6);
-  text-align: center;
 
   &[data-state="error"] {
     .osdk-object-table-state-content {
