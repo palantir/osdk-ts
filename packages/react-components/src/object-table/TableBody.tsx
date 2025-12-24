@@ -15,19 +15,43 @@
  */
 
 import type { Row, RowData } from "@tanstack/react-table";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import React from "react";
 import { TableRow } from "./TableRow.js";
 
 interface TableBodyProps<TData extends RowData> {
   rows: Array<Row<TData>>;
+  tableContainerRef: React.RefObject<HTMLDivElement>;
 }
 
 export function TableBody<TData extends RowData>({
   rows,
+  tableContainerRef,
 }: TableBodyProps<TData>): React.ReactElement {
+  // TODO: Allow user to pass in a custom row height
+  const ROW_HEIGHT = 40;
+
+  // Important: Keep the row virtualizer in the lowest component possible to avoid unnecessary re-renders.
+  const rowVirtualizer = useVirtualizer<HTMLDivElement, HTMLTableRowElement>({
+    count: rows.length,
+    estimateSize: () => ROW_HEIGHT,
+    getScrollElement: () => tableContainerRef.current,
+    overscan: 5,
+  });
+
   return (
-    <tbody>
-      {rows.map((row) => <TableRow key={row.id} row={row} />)}
+    <tbody
+      style={{
+        display: "grid",
+        position: "relative",
+        height: `${rowVirtualizer.getTotalSize()}px`,
+      }}
+    >
+      {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+        const row = rows[virtualRow.index] as Row<TData>;
+
+        return <TableRow key={row.id} row={row} virtualRow={virtualRow} />;
+      })}
     </tbody>
   );
 }

@@ -35,10 +35,17 @@ export function EmployeesTable() {
   const employeesObjectSet = $(Employee);
 
   return (
-    <ObjectTable<Employee>
-      objectSet={employeesObjectSet}
-      objectType={Employee}
-      columnDefinitions={columnDefinitions}
-    />
+    <div
+      style={{
+        height: "150px",
+        overflow: "auto",
+      }}
+    >
+      <ObjectTable<Employee>
+        objectSet={employeesObjectSet}
+        objectType={Employee}
+        // columnDefinitions={columnDefinitions}
+      />
+    </div>
   );
 }

@@ -26,12 +26,32 @@ export function TableHeader<TData extends RowData>({
   headerGroups,
 }: TableHeaderProps<TData>): React.ReactElement {
   return (
-    <thead>
+    <thead
+      style={{
+        display: "grid",
+        position: "sticky",
+        top: 0,
+        zIndex: 1,
+      }}
+    >
       {headerGroups.map((headerGroup) => (
-        <tr key={headerGroup.id}>
+        <tr
+          key={headerGroup.id}
+          style={{
+            display: "flex",
+          }}
+        >
           {headerGroup.headers.map((header) => (
             // Q: Should we restrict inline styling?
-            <th key={header.id} style={{ width: header.getSize() }}>
+            <th
+              key={header.id}
+              style={{
+                display: "flex",
+                width: header.getSize(),
+                justifyContent: "flex-start",
+                alignItems: "center",
+              }}
+            >
               {header.isPlaceholder
                 ? null
                 : flexRender(

@@ -16,19 +16,36 @@
 
 import type { Row, RowData } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
+import type { VirtualItem } from "@tanstack/react-virtual";
 import React from "react";
 
 interface TableRowProps<TData extends RowData> {
   row: Row<TData>;
+  virtualRow: VirtualItem;
 }
 
 export function TableRow<TData extends RowData>({
   row,
+  virtualRow,
 }: TableRowProps<TData>): React.ReactElement {
   return (
-    <tr>
+    <tr
+      style={{
+        position: "absolute",
+        height: `${virtualRow.size}px`,
+        transform: `translateY(${virtualRow.start}px)`,
+        display: "flex",
+      }}
+    >
       {row.getVisibleCells().map((cell) => (
-        <td key={cell.id}>
+        <td
+          key={cell.id}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            width: cell.column.getSize(),
+          }}
+        >
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
         </td>
       ))}

@@ -62,6 +62,8 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",
+    "@tanstack/react-table": "^8.21.3",
+    "@tanstack/react-virtual": "^3.13.13",
     "@types/react": "^18.3.24",
     "react": "^18.3.1",
     "typescript": "~5.5.4"

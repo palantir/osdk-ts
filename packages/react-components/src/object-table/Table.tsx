@@ -26,14 +26,25 @@ interface TableProps<TData extends RowData> {
 export function Table<TData extends RowData>(
   { table }: TableProps<TData>,
 ): React.ReactElement {
+  const tableContainerRef = React.useRef<HTMLDivElement>(null);
+
   const headerGroups = useMemo(() => table.getHeaderGroups(), [table]);
 
   const rows = useMemo(() => table.getRowModel().rows, [table]);
 
   return (
-    <table>
-      <TableHeader headerGroups={headerGroups} />
-      <TableBody rows={rows} />
-    </table>
+    <div
+      ref={tableContainerRef}
+      style={{
+        position: "relative", // needed for sticky header
+      }}
+    >
+      <table
+        style={{ display: "grid" }}
+      >
+        <TableHeader headerGroups={headerGroups} />
+        <TableBody rows={rows} tableContainerRef={tableContainerRef} />
+      </table>
+    </div>
   );
 }
