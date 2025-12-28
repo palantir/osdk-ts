@@ -52,13 +52,14 @@ export class ObjectsHelper extends AbstractHelper<
     const apiName = typeof options.apiName === "string"
       ? options.apiName
       : options.apiName.apiName;
-    const { pk } = options;
+    const { pk, includeRid } = options;
 
     const objectCacheKey = this.cacheKeys.get<ObjectCacheKey>(
       "object",
       apiName,
       pk,
       rdpConfig ?? undefined,
+      includeRid,
     );
 
     return this.store.queries.get(objectCacheKey, () =>

@@ -58,6 +58,7 @@ export interface ObserveObjectSetOptions<
    * @default false
    */
   streamUpdates?: boolean;
+  includeRid?: boolean;
 }
 
 export interface ObjectSetQueryOptions

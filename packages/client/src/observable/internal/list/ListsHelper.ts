@@ -81,6 +81,7 @@ export class ListsHelper extends AbstractHelper<
       where,
       orderBy,
       withProperties,
+      includeRid,
       intersectWith,
       pivotTo,
     } = options;
@@ -107,6 +108,7 @@ export class ListsHelper extends AbstractHelper<
       canonWhere,
       canonOrderBy,
       canonRdp,
+      includeRid,
       canonIntersect,
       canonPivot,
     );
