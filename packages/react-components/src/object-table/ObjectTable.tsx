@@ -30,7 +30,6 @@ import { Table } from "./Table.js";
 
 /**
  * ObjectTable - A headless table component for displaying OSDK object sets
- * It uses TanStack Table for table state management and @osdk/react hooks for data fetching.
  *
  * @example
  * ```tsx
@@ -49,8 +48,13 @@ export function ObjectTable<
   objectType,
   columnDefinitions,
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
-  const { data, isLoading, error } = useObjectSet<Q, never, RDPs>(objectSet);
-  const rows = data as Array<Osdk.Instance<Q>>;
+  // TODO: Replace pageSize with 50?
+  const { data, fetchMore, isLoading, error } = useObjectSet<Q, never, RDPs>(
+    objectSet,
+    {
+      pageSize: 2,
+    },
+  );
 
   const { columns, loading: isColumnsLoading, error: columnsError } =
     useColumnDefs<Q, RDPs, FunctionColumns>(
@@ -63,7 +67,7 @@ export function ObjectTable<
   const table = useReactTable<
     Osdk.Instance<Q>
   >({
-    data: rows ?? [],
+    data: (data ?? []) as Array<Osdk.Instance<Q>>,
     columns,
     getCoreRowModel: getCoreRowModel(),
     state: {
@@ -71,10 +75,7 @@ export function ObjectTable<
     },
   });
 
-  // TODO: Render skeleton
-  if (isLoading || isColumnsLoading) {
-    return <div>Loading...</div>;
-  }
+  const isTableLoading = isLoading || isColumnsLoading;
 
   if (error) {
     return <div>Error: {error.message}</div>;
@@ -88,5 +89,11 @@ export function ObjectTable<
     return <div>No data available</div>;
   }
 
-  return <Table table={table} />;
+  return (
+    <Table
+      table={table}
+      isLoading={isTableLoading}
+      fetchNextPage={fetchMore}
+    />
+  );
 }

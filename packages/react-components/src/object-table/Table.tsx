@@ -15,35 +15,62 @@
  */
 
 import { type RowData, type Table } from "@tanstack/react-table";
-import React, { useMemo } from "react";
+import type { ReactElement } from "react";
+import React, { useCallback, useRef } from "react";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
 
 interface TableProps<TData extends RowData> {
   table: Table<TData>;
+  isLoading?: boolean;
+  fetchNextPage?: () => Promise<void>;
 }
 
 export function Table<TData extends RowData>(
-  { table }: TableProps<TData>,
-): React.ReactElement {
-  const tableContainerRef = React.useRef<HTMLDivElement>(null);
+  { table, isLoading, fetchNextPage }: TableProps<TData>,
+): ReactElement {
+  const tableContainerRef = useRef<HTMLDivElement>(null);
 
-  const headerGroups = useMemo(() => table.getHeaderGroups(), [table]);
+  const fetchMoreOnEndReached = useCallback(
+    async (containerRefElement?: HTMLDivElement | null) => {
+      if (containerRefElement) {
+        const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
+        if (
+          scrollHeight - scrollTop - clientHeight < 100
+          && !isLoading
+        ) {
+          await fetchNextPage?.();
+        }
+      }
+    },
+    [fetchNextPage, isLoading],
+  );
 
-  const rows = useMemo(() => table.getRowModel().rows, [table]);
+  const handleScroll = useCallback(
+    async (e: React.UIEvent<HTMLDivElement>) => {
+      await fetchMoreOnEndReached(e.currentTarget);
+    },
+    [fetchMoreOnEndReached],
+  );
 
   return (
     <div
       ref={tableContainerRef}
       style={{
         position: "relative", // needed for sticky header
+        height: "100%", // needed for scrolling
+        overflow: "auto",
       }}
+      onScroll={handleScroll}
     >
       <table
         style={{ display: "grid" }}
       >
-        <TableHeader headerGroups={headerGroups} />
-        <TableBody rows={rows} tableContainerRef={tableContainerRef} />
+        <TableHeader headerGroups={table.getHeaderGroups()} />
+        <TableBody
+          rows={table.getRowModel().rows}
+          tableContainerRef={tableContainerRef}
+        />
       </table>
     </div>
   );
