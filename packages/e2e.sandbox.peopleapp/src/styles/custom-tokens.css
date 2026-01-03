@@ -1,0 +1,28 @@
+/**
+ * Custom Token Overrides for ObjectTable
+ *
+ * This file demonstrates how to override OSDK component tokens
+ * to customize the appearance of components like ObjectTable.
+ *
+ * Simply import this file before the component styles to apply
+ * these customizations.
+ */
+
+:root {
+  /* Vibrant color scheme */
+  --osdk-color-primary: #2563eb;
+  --osdk-color-accent: #8b5cf6;
+  --osdk-color-background-alt: #dbeafe;
+  --osdk-color-background-hover: #eff6ff;
+  --osdk-color-border: #93c5fd;
+
+  /* Larger spacing for more breathing room */
+  --osdk-spacing-base: 5px;
+
+  /* Larger typography */
+  --osdk-font-size-base: 14px;
+  --osdk-font-size-large: 16px;
+
+  /* More rounded corners */
+  --osdk-border-radius: 8px;
+}

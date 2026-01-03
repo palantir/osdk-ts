@@ -1,0 +1,84 @@
+// Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+// Licensed under the Apache License, Version 2.0.
+
+/**
+ * CSS Custom Properties (CSS Variables) for OSDK Components
+ *
+ * This file converts SCSS tokens to CSS custom properties, enabling
+ * runtime customization of component styles without recompilation.
+ *
+ * Users can override these variables in their own CSS to customize
+ * component appearance.
+ */
+
+/* stylelint-disable @blueprintjs/no-color-literal */
+
+:root {
+  // ===== Colors =====
+
+  // Primary and accent colors
+  --osdk-color-primary: #{$blue3};
+  --osdk-color-accent: #{$violet4};
+
+  // Text colors
+  --osdk-color-text: #{$pt-text-color};
+  --osdk-color-text-muted: #{$pt-text-color-muted};
+
+  // Background colors
+  --osdk-color-background: #{$white};
+  --osdk-color-background-alt: #{$light-gray5};
+  --osdk-color-background-hover: #{$light-gray4};
+
+  // Border colors
+  --osdk-color-border: #{$pt-divider-black};
+  --osdk-color-border-muted: #{$pt-divider-black-muted};
+
+  // Intent colors
+  --osdk-color-danger: #{$pt-intent-danger};
+
+  // ===== Spacing =====
+
+  --osdk-spacing-base: #{$pt-spacing};  // 4px
+  --osdk-spacing-cell: calc(var(--osdk-spacing-base) * 3);  // 12px for cell padding
+  --osdk-spacing-state: calc(var(--osdk-spacing-base) * 6);  // 24px for state padding
+
+  // ===== Typography =====
+
+  --osdk-font-family: #{$pt-font-family};
+  --osdk-font-size-base: #{$pt-font-size};  // 12px
+  --osdk-font-size-large: #{$pt-font-size-large};  // 14px
+  --osdk-line-height: #{$pt-line-height};
+
+  // ===== Borders & Shadows =====
+
+  --osdk-border-radius: #{$pt-border-radius};  // 4px
+  --osdk-shadow-elevation-0: #{$pt-elevation-shadow-0};
+
+  // ===== Transitions =====
+
+  --osdk-transition-duration: #{$pt-transition-duration};
+  --osdk-transition-ease: #{$pt-transition-ease};
+}
+
+// ===== Dark Mode Overrides =====
+
+:root:is(.bp6-dark, [data-theme="dark"]) {
+  // Text colors
+  --osdk-color-text: #{$pt-dark-text-color};
+  --osdk-color-text-muted: #{$pt-dark-text-color-muted};
+
+  // Background colors
+  --osdk-color-background: #{$dark-gray1};
+  --osdk-color-background-alt: #{$dark-gray2};
+  --osdk-color-background-hover: #{$dark-gray3};
+
+  // Border colors
+  --osdk-color-border: #{$pt-dark-divider-white};
+  --osdk-color-border-muted: #{$pt-dark-divider-white-muted};
+
+  // Shadows
+  --osdk-shadow-elevation-0: #{$pt-dark-elevation-shadow-0};
+
+  // Intent colors
+  --osdk-color-danger: #{$pt-dark-intent-danger};
+}

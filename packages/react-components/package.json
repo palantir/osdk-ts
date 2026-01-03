@@ -26,6 +26,15 @@
       "default": "./build/browser/public/experimental.js"
     },
     "./styles": "./build/styles/object-table.css",
+    "./tokens": {
+      "browser": "./build/browser/tokens.js",
+      "import": {
+        "types": "./build/types/tokens.d.ts",
+        "default": "./build/esm/tokens.js"
+      },
+      "require": "./build/cjs/tokens.cjs",
+      "default": "./build/browser/tokens.js"
+    },
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {
@@ -37,16 +46,17 @@
     }
   },
   "scripts": {
+    "build:styles": "mkdir -p build/styles && sass src/styles/object-table.scss build/styles/object-table.css",
     "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run",
-    "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser",
-    "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
-    "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
-    "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
+    "transpileBrowser": "pnpm run build:styles && monorepo.tool.transpile -f esm -m normal -t browser",
+    "transpileCjs": "pnpm run build:styles && monorepo.tool.transpile -f cjs -m bundle -t node",
+    "transpileEsm": "pnpm run build:styles && monorepo.tool.transpile -f esm -m normal -t node",
+    "transpileTypes": "pnpm run build:styles && monorepo.tool.transpile -f esm -m types -t node",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "peerDependencies": {
@@ -69,6 +79,7 @@
     "@types/react": "^18.3.24",
     "happy-dom": "^16.8.1",
     "react": "^18.3.1",
+    "sass": "^1.97.1",
     "typescript": "~5.5.4"
   },
   "publishConfig": {
@@ -79,6 +90,7 @@
     "build/esm",
     "build/browser",
     "build/types",
+    "build/styles",
     "CHANGELOG.md",
     "package.json",
     "templates",
