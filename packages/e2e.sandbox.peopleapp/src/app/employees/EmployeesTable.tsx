@@ -1,35 +1,61 @@
-import type { Osdk } from "@osdk/api";
+import type { DerivedProperty, Osdk } from "@osdk/api";
 import type { ColumnDefinition } from "@osdk/react-components/experimental";
 import { ObjectTable } from "@osdk/react-components/experimental";
 import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
-const columnDefinitions: ColumnDefinition<Employee>[] = [{
-  locator: {
-    type: "property",
-    propertyKey: "fullName",
+const columnDefinitions: ColumnDefinition<Employee>[] = [
+  // With renderHeader prop
+  {
+    locator: {
+      type: "property",
+      propertyKey: "fullName",
+    },
+    renderHeader: () => <div style={{ color: "red" }}>My Name</div>,
   },
-  renderHeader: () => <div style={{ color: "red" }}>My Name</div>,
-}, {
-  locator: { type: "property", propertyKey: "jobTitle" },
-  isVisible: false,
-}, {
-  locator: { type: "property", propertyKey: "firstFullTimeStartDate" },
-  width: 500,
-  renderHeader: () => "Start Date",
-  renderCell: (
-    object: Osdk.Instance<Employee>,
-    locator: ColumnDefinition<Employee>["locator"],
-  ) => {
-    return (
-      <div>
-        {object["firstFullTimeStartDate"]
-          ? new Date(object["firstFullTimeStartDate"]).toISOString()
-          : "No value"}
-      </div>
-    );
+  // With isVisible prop
+  {
+    locator: { type: "property", propertyKey: "jobTitle" },
+    isVisible: false,
   },
-}];
+  // With renderHeader, renderCell, width prop
+  {
+    locator: { type: "property", propertyKey: "firstFullTimeStartDate" },
+    width: 300,
+    renderHeader: () => "Start Date",
+    renderCell: (
+      object: Osdk.Instance<Employee>,
+      locator: ColumnDefinition<Employee>["locator"],
+    ) => {
+      return (
+        <div>
+          {object["firstFullTimeStartDate"]
+            ? new Date(object["firstFullTimeStartDate"]).toISOString()
+            : "No value"}
+        </div>
+      );
+    },
+  },
+  // RDP
+  {
+    locator: {
+      type: "rdp",
+      id: "managerName",
+      creator: (baseObjectSet: DerivedProperty.Builder<Employee, false>) =>
+        baseObjectSet.pivotTo("lead").selectProperty("fullName"),
+    },
+    renderHeader: () => "Derived Manager Name",
+    renderCell: (
+      object: Osdk.Instance<Employee>,
+      locator: ColumnDefinition<Employee>["locator"],
+    ) => {
+      if ("managerName" in object) {
+        return object["managerName"];
+      }
+      return "No Value";
+    },
+  },
+];
 
 export function EmployeesTable() {
   const employeesObjectSet = $(Employee);
@@ -37,14 +63,14 @@ export function EmployeesTable() {
   return (
     <div
       style={{
-        height: "150px",
+        height: "500px",
         overflow: "auto",
       }}
     >
       <ObjectTable<Employee>
         objectSet={employeesObjectSet}
         objectType={Employee}
-        // columnDefinitions={columnDefinitions}
+        columnDefinitions={columnDefinitions}
       />
     </div>
   );

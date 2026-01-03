@@ -20,11 +20,11 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import { useObjectSet } from "@osdk/react/experimental";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import React from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
 import { useDefaultTableStates } from "./hooks/useDefaultTableStates.js";
+import { useObjectTableData } from "./hooks/useObjectTableData.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { Table } from "./Table.js";
 
@@ -36,6 +36,7 @@ import { Table } from "./Table.js";
  * <ObjectTable objectSet={myObjectSet} objectType={MyObjectType} />
  * ```
  */
+
 export function ObjectTable<
   Q extends ObjectTypeDefinition,
   RDPs extends Record<string, SimplePropertyDef> = {},
@@ -48,12 +49,13 @@ export function ObjectTable<
   objectType,
   columnDefinitions,
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
-  // TODO: Replace pageSize with 50?
-  const { data, fetchMore, isLoading, error } = useObjectSet<Q, never, RDPs>(
+  const { data, fetchMore, isLoading, error } = useObjectTableData<
+    Q,
+    RDPs,
+    FunctionColumns
+  >(
     objectSet,
-    {
-      pageSize: 2,
-    },
+    columnDefinitions,
   );
 
   const { columns, loading: isColumnsLoading, error: columnsError } =
