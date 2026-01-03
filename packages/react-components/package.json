@@ -82,6 +82,12 @@
     "sass": "^1.97.1",
     "typescript": "~5.5.4"
   },
+  "sideEffects": [
+    "./build/browser/public/experimental.js",
+    "./build/esm/public/experimental.js",
+    "./build/cjs/public/experimental.cjs",
+    "./build/styles/*.css"
+  ],
   "publishConfig": {
     "access": "public"
   },

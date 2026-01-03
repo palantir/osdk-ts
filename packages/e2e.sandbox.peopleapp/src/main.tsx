@@ -1,11 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import "@osdk/react-components/styles";
-import "./styles/custom-tokens.css";
 import { OsdkProvider2 } from "@osdk/react/experimental";
 import { $ } from "./foundryClient.js";
 import { Router } from "./router.js";
+import "./styles/custom-tokens.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

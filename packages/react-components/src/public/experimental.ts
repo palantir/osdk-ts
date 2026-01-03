@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+// Auto-import styles as a side-effect
+// This allows users to skip the manual "@osdk/react-components/styles" import
+import "@osdk/react-components/styles";
+
 export type { FilterListProps } from "../filter-list/FilterListApi.js";
 export type { FilterListItemProps } from "../filter-list/FilterListItemApi.js";
 
