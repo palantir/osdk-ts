@@ -56,8 +56,6 @@ export function useColumnDefs<
       Osdk.Instance<Q>
     >
   > = useMemo(() => {
-    if (!metadata?.properties) return [];
-
     // If columnDefinitions is provided, construct colDefs with it
     if (columnDefinitions) {
       return columnDefinitions.map((col) => {
@@ -74,7 +72,7 @@ export function useColumnDefs<
         } = col;
 
         const propertyMetadata = locator.type === "property"
-          ? metadata.properties[locator.propertyKey]
+          ? metadata?.properties[locator.propertyKey]
           : undefined;
 
         // TODO: Do we want to standardize propertyKey -> id?
@@ -108,6 +106,8 @@ export function useColumnDefs<
     }
 
     // Generate default colDefs with the object metadata
+    if (!metadata?.properties) return [];
+
     return Object.entries(metadata?.properties).map(([key, property]) => {
       const colDef: AccessorColumnDef<
         Osdk.Instance<Q>
