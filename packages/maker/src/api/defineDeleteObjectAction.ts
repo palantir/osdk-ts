@@ -20,29 +20,25 @@ import {
   convertValidationRule,
   createParameters,
   defineAction,
+  DELETE_OBJECT_PARAMETER,
   kebab,
 } from "./defineAction.js";
 
 export function defineDeleteObjectAction(
   def: ActionTypeUserDefinition,
 ): ActionType {
-  const parameters = createParameters(
-    def,
-    {},
-    new Set(["objectToDeleteParameter"]),
-  );
   return defineAction({
     apiName: def.apiName
       ?? `delete-object-${
         kebab(def.objectType.apiName.split(".").pop() ?? def.objectType.apiName)
       }`,
     displayName: def.displayName ?? `Delete ${def.objectType.displayName}`,
-    parameters: createParameters(def, {}, new Set(["objectToDeleteParameter"])),
+    parameters: createParameters(def, {}, new Set([DELETE_OBJECT_PARAMETER])),
     status: def.status ?? "active",
     rules: [{
       type: "deleteObjectRule",
       deleteObjectRule: {
-        objectToDelete: "objectToDeleteParameter",
+        objectToDelete: DELETE_OBJECT_PARAMETER,
       },
     }],
     entities: {
