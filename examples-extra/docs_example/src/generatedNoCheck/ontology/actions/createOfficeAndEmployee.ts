@@ -50,11 +50,11 @@ export namespace createOfficeAndEmployee {
     /**
      * The office's physical address (not necessarily shipping address)
      */
-    readonly address?: ActionParam.PrimitiveType<'string'>;
+    readonly address?: ActionParam.PrimitiveType<'string'> | null;
     /**
      * The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)
      */
-    readonly capacity?: ActionParam.PrimitiveType<'integer'>;
+    readonly capacity?: ActionParam.PrimitiveType<'integer'> | null;
     /**
      * New employee Id
      */
@@ -64,7 +64,7 @@ export namespace createOfficeAndEmployee {
     /**
      * A list of all office names
      */
-    readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'string'>>;
+    readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'string'>> | null;
   }
 
   // Represents a fqn of the action

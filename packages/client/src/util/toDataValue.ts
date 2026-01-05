@@ -45,7 +45,6 @@ export async function toDataValue(
   if (value == null) {
     // typeof null is 'object' so do this first
     // Sending null over the wire clears the data, whereas undefined is dropped at request time.
-    // Null values are not allowed with OSDK types, but leaving here as an override.
     return value;
   }
 

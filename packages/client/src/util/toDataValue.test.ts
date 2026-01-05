@@ -266,4 +266,13 @@ describe(toDataValue, () => {
     );
     expect(converted).toEqual(mediaReference);
   });
+
+  it("passes through nulls correctly", async () => {
+    const converted = await toDataValue(
+      null,
+      clientCtx,
+      mockActionMetadata,
+    );
+    expect(converted).toBeNull();
+  });
 });

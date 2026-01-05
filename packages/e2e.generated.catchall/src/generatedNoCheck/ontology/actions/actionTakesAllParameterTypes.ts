@@ -57,11 +57,11 @@ export namespace actionTakesAllParameterTypes {
   export interface Params {
     readonly attachmentArray: ReadonlyArray<ActionParam.PrimitiveType<'attachment'>>;
 
-    readonly dateArray?: ReadonlyArray<ActionParam.PrimitiveType<'datetime'>>;
+    readonly dateArray?: ReadonlyArray<ActionParam.PrimitiveType<'datetime'>> | null;
     /**
      * A person Object
      */
-    readonly object?: ActionParam.ObjectType<Person>;
+    readonly object?: ActionParam.ObjectType<Person> | null;
 
     readonly objectSet: ActionParam.ObjectSetType<Todo>;
 

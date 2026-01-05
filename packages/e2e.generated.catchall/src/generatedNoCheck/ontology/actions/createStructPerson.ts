@@ -29,7 +29,7 @@ export namespace createStructPerson {
    * Create a struct
    */
   export interface Params {
-    readonly address?: ActionParam.StructType<{ city: 'string'; state: 'string' }>;
+    readonly address?: ActionParam.StructType<{ city: 'string'; state: 'string' }> | null;
 
     readonly name: ActionParam.PrimitiveType<'string'>;
   }
