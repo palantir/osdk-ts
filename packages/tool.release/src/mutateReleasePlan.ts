@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,47 @@
 
 import type { ReleasePlan } from "@changesets/types";
 import chalk from "chalk";
-import * as path from "node:path";
-import { inc } from "semver";
+import path from "path";
+import { inc, parse } from "semver";
 import { FailedWithUserMessage } from "./FailedWithUserMessage.js";
+
+function isFirstMinorRelease(oldVersion: string, newVersion: string): boolean {
+  const oldSemver = parse(oldVersion);
+  const newSemver = parse(newVersion);
+  if (oldSemver == null || newSemver == null) {
+    throw new FailedWithUserMessage(
+      `Invalid version(s): ${oldVersion}, ${newVersion}`,
+    );
+  }
+  return (
+    oldSemver.prerelease.length > 0
+    && newSemver.prerelease.length === 0
+    && oldSemver.compareMain(newSemver) === 0
+    && newSemver.patch === 0
+  );
+}
+
+function isPatchVersionOrFirstMinorRelease(
+  releasePlan: ReleasePlan,
+  releaseName: string,
+): boolean {
+  const matchingReleases = releasePlan.releases.filter((r) =>
+    r.name === releaseName
+  );
+  if (matchingReleases.length !== 1) {
+    throw new FailedWithUserMessage(
+      `Expected exactly one release entry for package "${releaseName}", but found ${matchingReleases.length}.`,
+    );
+  }
+  const release = matchingReleases[0];
+  if (release.type === "patch") {
+    return true;
+  }
+  if (release.type === "minor") {
+    return isFirstMinorRelease(release.oldVersion, release.newVersion);
+  }
+  return false;
+}
 
 export function mutateReleasePlan(
   cwd: string,
@@ -32,7 +70,8 @@ export function mutateReleasePlan(
       if (releaseType === "main" && release.type === "patch") {
         release.type = "minor";
       } else if (
-        releaseType === "release branch" && (release.type !== "patch")
+        releaseType === "release branch"
+        && (!isPatchVersionOrFirstMinorRelease(releasePlan, release.name))
         && (release.type !== "none")
       ) {
         if (!errorStarted) {
