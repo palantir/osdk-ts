@@ -1,0 +1,33 @@
+// Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+// Licensed under the Apache License, Version 2.0.
+
+// ============================================
+// Filter List Component Variables (Base)
+// ============================================
+
+// Panel backgrounds
+$filter-panel-bg-light: #ffffff !default;
+$filter-panel-bg-dark: #383e47 !default;
+
+// Borders
+$filter-panel-border-light: rgba(0, 0, 0, 0.15) !default;
+$filter-panel-border-dark: rgba(255, 255, 255, 0.2) !default;
+$filter-panel-border-muted-light: rgba(0, 0, 0, 0.1) !default;
+$filter-panel-border-muted-dark: rgba(255, 255, 255, 0.1) !default;
+
+// Muted text
+$filter-muted-text-light: #5c7080 !default;
+$filter-muted-text-dark: #a7b6c2 !default;
+
+// Danger/exclude state
+$filter-danger-color: #cd4246 !default;
+$filter-danger-bg: rgba(213, 40, 27, 0.1) !default;
+
+// Interactive states
+$filter-histogram-color: #4a90d9 !default;
+$filter-focus-ring: rgba(0, 103, 199, 0.3) !default;
+$filter-hover-bg: rgba(149, 161, 172, 0.15) !default;
+
+// Sizing
+$filter-border-radius: 4px !default;
+$filter-font-size: 14px !default;

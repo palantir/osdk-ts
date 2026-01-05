@@ -1,0 +1,173 @@
+// Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+// Licensed under the Apache License, Version 2.0.
+
+// Blueprint-specific overrides for filter-list components
+
+@use "../../base/styles/variables" as *;
+
+// Dark mode overrides
+.bp6-dark .filter-list {
+  background-color: var(--filter-panel-bg-color, #{$filter-panel-bg-dark});
+  border-right-color: var(--filter-panel-border-color, #{$filter-panel-border-dark});
+}
+
+.bp6-dark .filter-list__header {
+  border-bottom-color: var(--filter-panel-border-color, #{$filter-panel-border-dark});
+}
+
+.bp6-dark .filter-list__item {
+  border-bottom-color: var(--filter-panel-border-color, #{$filter-panel-border-muted-dark});
+}
+
+.bp6-dark .filter-list__item-chevron {
+  color: var(--filter-count-text-color, #{$filter-muted-text-dark});
+}
+
+.bp6-dark .filter-list__add-button--fixed {
+  border-top-color: var(--filter-panel-border-color, #{$filter-panel-border-muted-dark});
+}
+
+// Blueprint Checkbox List Input overrides
+.filter-input--checkbox-list {
+  // Hide the native checkbox input in ALL checkboxes
+  .bp6-control.bp6-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.filter-input--checkbox-list .bp6-control {
+  margin-bottom: 0;
+}
+
+.bp6-dark .filter-input--checkbox-list-select-all {
+  border-bottom-color: var(--filter-panel-border-color, #{$filter-panel-border-muted-dark});
+}
+
+.filter-input--checkbox-list-select-all .bp6-control {
+  font-weight: 500;
+}
+
+// Fix checkbox focus styling
+.filter-input--checkbox-list .bp6-control input:focus ~ .bp6-control-indicator {
+  outline: none;
+  box-shadow: 0 0 0 1px $filter-focus-ring;
+}
+
+// Blueprint checkbox in row
+.filter-input__checkbox-row .bp6-control.bp6-checkbox {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+// Blueprint Text Input overrides
+.filter-input--text .bp6-input-group {
+  position: relative;
+  width: 100%;
+}
+
+.filter-input--text .bp6-input {
+  padding-right: 30px;
+}
+
+// Blueprint clear button in text input
+.filter-input--text .filter-input__clear.bp6-button {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  min-width: 24px;
+}
+
+// Blueprint Toggle/Switch overrides
+.filter-input--toggle .bp6-control {
+  margin-bottom: 0;
+}
+
+// Blueprint count dark mode
+.bp6-dark .filter-input__count {
+  color: var(--filter-count-text-color, #{$filter-muted-text-dark});
+}
+
+// Blueprint view all link
+.filter-input__view-all-link:hover {
+  color: #2b95d6;
+}
+
+.bp6-dark .filter-input__view-all-link {
+  color: $filter-muted-text-dark;
+
+  &:hover {
+    color: #48aff0;
+  }
+}
+
+// Blueprint range separator dark mode
+.bp6-dark .filter-input__range-separator {
+  color: var(--filter-muted-text-color, #{$filter-muted-text-dark});
+}
+
+// Blueprint range inputs
+.filter-input--number-range .bp6-input,
+.filter-input--date-range .bp6-input {
+  width: 100%;
+}
+
+// Blueprint null value row
+.filter-input__null-value-row {
+  .bp6-control.bp6-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .bp6-control.bp6-checkbox {
+    flex: 1;
+    margin-bottom: 0;
+  }
+}
+
+.bp6-dark .filter-input__null-value-row {
+  border-top-color: var(--filter-panel-border-color, #{$filter-panel-border-muted-dark});
+}
+
+.bp6-dark .filter-input__null-label {
+  color: var(--filter-muted-text-color, #{$filter-muted-text-dark});
+}
+
+// Add Filter Button - Blueprint outlined button styling
+.filter-list__add-button.bp6-button.bp6-outlined {
+  color: $filter-muted-text-light;
+  border-color: $filter-panel-border-light;
+
+  .bp6-icon {
+    color: $filter-muted-text-light;
+  }
+
+  &:hover {
+    color: $filter-muted-text-light;
+    background-color: $filter-hover-bg;
+
+    .bp6-icon {
+      color: $filter-muted-text-light;
+    }
+  }
+}
+
+.bp6-dark .filter-list__add-button.bp6-button.bp6-outlined {
+  color: $filter-muted-text-dark;
+  border-color: $filter-panel-border-dark;
+
+  .bp6-icon {
+    color: $filter-muted-text-dark;
+  }
+
+  &:hover {
+    color: $filter-muted-text-dark;
+  }
+}

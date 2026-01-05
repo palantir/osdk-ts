@@ -41,11 +41,11 @@ export function evaluateFilter(
     case "$ne":
       return realValue !== expected;
     case "$in":
-      return expected.$in.includes(realValue);
+      return expected.includes(realValue);
     case "$isNull":
       return realValue == null;
     case "$startsWith":
-      return realValue.startsWith(expected);
+      return realValue != null && realValue.startsWith(expected);
     case "$contains":
     case "$containsAllTerms":
     case "$containsAllTermsInOrder":
