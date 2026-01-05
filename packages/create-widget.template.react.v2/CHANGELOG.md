@@ -1,5 +1,11 @@
 # @osdk/create-widget.template.react.v2
 
+## 3.3.1
+
+### Patch Changes
+
+- 6b85da5: Use createFoundryWidgetTokenProvider in widget template
+
 ## 3.3.0
 
 ### Patch Changes

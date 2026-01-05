@@ -1,5 +1,12 @@
 # @osdk/widget.client-react
 
+## 3.3.1
+
+### Patch Changes
+
+- 14fca1c: Improved object set write path
+  - @osdk/widget.client@3.3.1
+
 ## 3.3.0
 
 ### Patch Changes

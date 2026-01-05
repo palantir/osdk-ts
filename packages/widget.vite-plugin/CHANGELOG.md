@@ -1,5 +1,12 @@
 # @osdk/widget.vite-plugin
 
+## 3.3.1
+
+### Patch Changes
+
+- 275b70d: Show hint for WidgetIdNotFound errors
+  - @osdk/widget.api@3.3.1
+
 ## 3.3.0
 
 ### Patch Changes
