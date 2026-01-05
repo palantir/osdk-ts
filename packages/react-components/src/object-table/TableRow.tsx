@@ -17,17 +17,23 @@
 import type { Row, RowData } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import type { VirtualItem } from "@tanstack/react-virtual";
-import React from "react";
+import React, { useCallback } from "react";
 
 interface TableRowProps<TData extends RowData> {
   row: Row<TData>;
   virtualRow: VirtualItem;
+  onRowClick?: (row: TData) => void;
 }
 
 export function TableRow<TData extends RowData>({
   row,
   virtualRow,
+  onRowClick,
 }: TableRowProps<TData>): React.ReactElement {
+  const handleClick = useCallback(() => {
+    onRowClick?.(row.original);
+  }, []);
+
   return (
     <tr
       style={{
@@ -36,6 +42,7 @@ export function TableRow<TData extends RowData>({
         transform: `translateY(${virtualRow.start}px)`,
         display: "flex",
       }}
+      onClick={handleClick}
     >
       {row.getVisibleCells().map((cell) => (
         <td

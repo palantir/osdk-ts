@@ -22,11 +22,13 @@ import { TableRow } from "./TableRow.js";
 interface TableBodyProps<TData extends RowData> {
   rows: Array<Row<TData>>;
   tableContainerRef: React.RefObject<HTMLDivElement>;
+  onRowClick?: (row: TData) => void;
 }
 
 export function TableBody<TData extends RowData>({
   rows,
   tableContainerRef,
+  onRowClick,
 }: TableBodyProps<TData>): React.ReactElement {
   // TODO: Allow user to pass in a custom row height?
   const ROW_HEIGHT = 40;
@@ -54,7 +56,14 @@ export function TableBody<TData extends RowData>({
     >
       {rowVirtualizer.getVirtualItems().map((virtualRow) => {
         const row = rows[virtualRow.index] as Row<TData>;
-        return <TableRow key={row.id} row={row} virtualRow={virtualRow} />;
+        return (
+          <TableRow
+            key={row.id}
+            row={row}
+            virtualRow={virtualRow}
+            onRowClick={onRowClick}
+          />
+        );
       })}
     </tbody>
   );
