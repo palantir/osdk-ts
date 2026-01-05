@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-/*
- * FilterList bundle - includes Blueprint.js CSS dependencies
- * Use this file if your app doesn't already load Blueprint CSS
+/**
+ * Exhaustive type checking helper.
+ * Use in default cases of switch statements to ensure all cases are handled.
+ * TypeScript will error if a case is missing.
  */
-
-@import "@blueprintjs/icons/lib/css/blueprint-icons.css";
-@import "@blueprintjs/core/lib/css/blueprint.css";
+export function assertUnreachable(value: never): never {
+  throw new Error(`Unhandled value: ${String(value)}`);
+}

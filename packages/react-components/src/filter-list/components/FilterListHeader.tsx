@@ -43,9 +43,9 @@ export function FilterListHeader({
       <button
         type="button"
         className={classNames(
-          "bp5-button",
-          "bp5-minimal",
-          "bp5-small",
+          "bp6-button",
+          "bp6-minimal",
+          "bp6-small",
           "filter-list__collapse-button",
         )}
         onClick={() => onCollapsedChange(!collapsed)}
@@ -54,8 +54,8 @@ export function FilterListHeader({
       >
         <span
           className={classNames(
-            "bp5-icon",
-            collapsed ? "bp5-icon-chevron-right" : "bp5-icon-chevron-down",
+            "bp6-icon",
+            collapsed ? "bp6-icon-chevron-right" : "bp6-icon-chevron-down",
           )}
         />
       </button>
@@ -68,7 +68,7 @@ export function FilterListHeader({
             )}
             {title && <span className="filter-list__title">{title}</span>}
             {showActiveFilterCount && activeFilterCount > 0 && (
-              <span className="filter-list__active-count bp5-text-muted bp5-text-small">
+              <span className="filter-list__active-count bp6-text-muted bp6-text-small">
                 ({activeFilterCount})
               </span>
             )}
@@ -77,7 +77,7 @@ export function FilterListHeader({
           {showResetButton && (
             <button
               type="button"
-              className="bp5-button bp5-minimal bp5-small bp5-intent-primary"
+              className="bp6-button bp6-minimal bp6-small bp6-intent-primary"
               onClick={onReset}
               disabled={activeFilterCount === 0}
             >

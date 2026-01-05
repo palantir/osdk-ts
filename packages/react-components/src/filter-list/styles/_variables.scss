@@ -1,0 +1,43 @@
+// Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+// Licensed under the Apache License, Version 2.0.
+
+// ============================================
+// Component-specific variables
+// Values sourced from @osdk/styles design tokens
+// ============================================
+
+// Color foundation (from @osdk/styles/_colors.scss)
+$white: #FFFFFF !default;
+$black: #212B32 !default;
+$dark-gray1: #1C2329 !default;
+$dark-gray2: #2A3238 !default;
+$gray1: #6B7B87 !default;
+$gray4: #AAB5BF !default;
+$red3: #D5281B !default;
+
+// Panel backgrounds
+$filter-panel-bg-light: $white !default;
+$filter-panel-bg-dark: $dark-gray2 !default;
+
+// Borders (from @osdk/styles/_variables.scss)
+$filter-panel-border-light: rgba($black, 0.15) !default;
+$filter-panel-border-dark: rgba($white, 0.2) !default;
+$filter-panel-border-muted-light: rgba($black, 0.1) !default;
+$filter-panel-border-muted-dark: rgba($white, 0.1) !default;
+
+// Muted text
+$filter-muted-text-light: $gray1 !default;
+$filter-muted-text-dark: $gray4 !default;
+
+// Danger/exclude state
+$filter-danger-color: $red3 !default;
+$filter-danger-bg: rgba(213, 40, 27, 0.1) !default;
+
+// Interactive states (from @osdk/styles/_variables.scss component tokens)
+$filter-histogram-color: rgba(45, 114, 210, 0.1) !default;
+$filter-focus-ring: rgba(0, 103, 199, 0.3) !default;
+$filter-hover-bg: rgba(149, 161, 172, 0.15) !default;
+
+// Sizing
+$filter-border-radius: 4px !default;
+$filter-font-size: 14px !default;

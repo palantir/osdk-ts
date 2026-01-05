@@ -1,0 +1,9 @@
+// Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+// Licensed under the Apache License, Version 2.0.
+
+// Main entry point for filter-list styles
+// This file compiles to FilterList.css
+
+@use "variables";
+@use "filter-list";
+@use "filter-inputs";

@@ -1,0 +1,13 @@
+{
+  "name": "@osdk/styles",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Shared design tokens and SCSS variables for OSDK components",
+  "main": "src/index.scss",
+  "files": [
+    "src"
+  ],
+  "peerDependencies": {
+    "sass": "^1.0.0"
+  }
+}

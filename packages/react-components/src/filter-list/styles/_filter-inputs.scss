@@ -1,0 +1,110 @@
+// Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+// Licensed under the Apache License, Version 2.0.
+
+@use "variables" as *;
+
+// Checkbox List Input
+.filter-input--checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.filter-input--checkbox-list .bp6-control {
+  margin-bottom: 0;
+}
+
+.filter-input--checkbox-list-select-all {
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-muted-light});
+}
+
+.bp6-dark .filter-input--checkbox-list-select-all {
+  border-bottom-color: var(--filter-panel-border-color, #{$filter-panel-border-muted-dark});
+}
+
+.filter-input--checkbox-list-select-all .bp6-control {
+  font-weight: 500;
+}
+
+// Fix checkbox focus styling
+.filter-input--checkbox-list .bp6-control input:focus ~ .bp6-control-indicator {
+  outline: none;
+  box-shadow: 0 0 0 1px $filter-focus-ring;
+}
+
+// Text Input
+.filter-input--text {
+  position: relative;
+}
+
+.filter-input--text .bp6-input-group {
+  width: 100%;
+}
+
+.filter-input--text .bp6-input {
+  padding-right: 30px;
+}
+
+.filter-input__clear {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+// Toggle/Switch
+.filter-input--toggle .bp6-control {
+  margin-bottom: 0;
+}
+
+// Histogram and Count Display
+.filter-input__checkbox-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 2px 4px;
+  border-radius: $filter-border-radius;
+  background-color: var(--item-bg, transparent);
+  color: var(--item-text, inherit);
+  border-color: var(--item-border, transparent);
+}
+
+.filter-input__histogram-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background-color: var(--item-histogram, var(--filter-histogram-color, #{$filter-histogram-color}));
+  border-radius: $filter-border-radius;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.filter-input__checkbox-label {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.filter-input__value-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.filter-input__count {
+  flex-shrink: 0;
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--filter-count-text-color, #{$filter-muted-text-light});
+  font-variant-numeric: tabular-nums;
+}
+
+.bp6-dark .filter-input__count {
+  color: var(--filter-count-text-color, #{$filter-muted-text-dark});
+}

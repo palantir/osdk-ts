@@ -21,7 +21,6 @@ import {
 } from "@osdk/react-components/experimental";
 import { useOsdkObjects } from "@osdk/react/experimental";
 import "@osdk/react-components/styles/FilterListBundle.css";
-import "@osdk/react-components/styles/FilterList.css";
 import { useMemo, useState } from "react";
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";

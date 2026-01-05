@@ -71,7 +71,7 @@ export function FilterListItem<Q extends ObjectTypeDefinition>({
       )}
     >
       <div
-        className="filter-list__item-header bp5-interactive"
+        className="filter-list__item-header bp6-interactive"
         onClick={() => setIsCollapsed(!isCollapsed)}
         role="button"
         tabIndex={0}
@@ -97,7 +97,7 @@ export function FilterListItem<Q extends ObjectTypeDefinition>({
         <span className="filter-list__item-label">{label}</span>
 
         {isExcluding && (
-          <span className="filter-list__item-exclude-badge bp5-tag bp5-minimal bp5-small">
+          <span className="filter-list__item-exclude-badge bp6-tag bp6-minimal bp6-small">
             Excluding
           </span>
         )}
@@ -106,9 +106,9 @@ export function FilterListItem<Q extends ObjectTypeDefinition>({
           <button
             type="button"
             className={classNames(
-              "bp5-button",
-              "bp5-minimal",
-              "bp5-small",
+              "bp6-button",
+              "bp6-minimal",
+              "bp6-small",
               "filter-list__item-exclude-toggle",
             )}
             onClick={handleToggleExcludeMode}
@@ -121,8 +121,8 @@ export function FilterListItem<Q extends ObjectTypeDefinition>({
           >
             <span
               className={classNames(
-                "bp5-icon",
-                isExcluding ? "bp5-icon-disable" : "bp5-icon-filter",
+                "bp6-icon",
+                isExcluding ? "bp6-icon-disable" : "bp6-icon-filter",
               )}
             />
           </button>
@@ -173,7 +173,7 @@ function renderFilterInput<Q extends ObjectTypeDefinition>(
 ): React.ReactElement {
   if (definition.type !== "property") {
     return (
-      <div className="bp5-text-muted">
+      <div className="bp6-text-muted">
         Unsupported filter type: {definition.type}
       </div>
     );
@@ -235,7 +235,7 @@ function renderFilterInput<Q extends ObjectTypeDefinition>(
 
     default:
       return (
-        <div className="bp5-text-muted">
+        <div className="bp6-text-muted">
           Unsupported filter component: {definition.filterComponent}
         </div>
       );

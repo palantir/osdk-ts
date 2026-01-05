@@ -20,7 +20,7 @@ import type {
   PropertyKeys,
 } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import type {
   FilterDataIndicator,
   FilterItemColor,
@@ -84,6 +84,9 @@ export function CheckboxListInput<
     const counts = new Map<string, number>();
     const extractedValues: string[] = [];
     let max = 0;
+    // The aggregation result type varies by query structure. Since we're building
+    // the query dynamically based on propertyKey, we cast to a known shape that
+    // matches the $groupBy + $count aggregation pattern.
     const dataArray = countData as Iterable<{
       $group: Record<string, unknown>;
       $count?: number;
@@ -129,38 +132,41 @@ export function CheckboxListInput<
   const someSelected = selectedValues.length > 0
     && selectedValues.length < values.length;
 
+  const selectAllCheckboxRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (selectAllCheckboxRef.current) {
+      selectAllCheckboxRef.current.indeterminate = someSelected;
+    }
+  }, [someSelected]);
+
   return (
     <div className="filter-input--checkbox-list">
       {isLoading && (
-        <div className="bp5-text-muted bp5-text-small">Loading values...</div>
+        <div className="bp6-text-muted bp6-text-small">Loading values...</div>
       )}
 
       {error && (
-        <div className="bp5-text-small bp5-intent-danger">
+        <div className="bp6-text-small bp6-intent-danger">
           Error loading values: {error.message}
         </div>
       )}
 
       {!isLoading && !error && values.length === 0 && (
-        <div className="bp5-text-muted bp5-text-small">No values available</div>
+        <div className="bp6-text-muted bp6-text-small">No values available</div>
       )}
 
       {values.length > 0 && (
         <>
           {showSelectAll && values.length > 1 && (
             <div className="filter-input--checkbox-list-select-all">
-              <label className="bp5-control bp5-checkbox">
+              <label className="bp6-control bp6-checkbox">
                 <input
                   type="checkbox"
                   checked={allSelected}
-                  ref={(el) => {
-                    if (el) {
-                      el.indeterminate = someSelected;
-                    }
-                  }}
+                  ref={selectAllCheckboxRef}
                   onChange={toggleAll}
                 />
-                <span className="bp5-control-indicator" />
+                <span className="bp6-control-indicator" />
                 Select All
               </label>
             </div>
@@ -190,13 +196,13 @@ export function CheckboxListInput<
                     style={{ width: `${percentage}%` }}
                   />
                 )}
-                <label className="bp5-control bp5-checkbox filter-input__checkbox-label">
+                <label className="bp6-control bp6-checkbox filter-input__checkbox-label">
                   <input
                     type="checkbox"
                     checked={selectedValues.includes(value)}
                     onChange={() => toggleValue(value)}
                   />
-                  <span className="bp5-control-indicator" />
+                  <span className="bp6-control-indicator" />
                   <span className="filter-input__value-text">{value}</span>
                   {showCounts && (
                     <span className="filter-input__count">
@@ -209,7 +215,7 @@ export function CheckboxListInput<
           })}
 
           {hasMore && (
-            <div className="bp5-text-muted bp5-text-small">
+            <div className="bp6-text-muted bp6-text-small">
               +{values.length - (maxVisibleItems ?? 0)} more
             </div>
           )}

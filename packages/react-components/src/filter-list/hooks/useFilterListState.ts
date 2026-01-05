@@ -19,6 +19,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FilterKey, FilterListProps } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { FilterListPersistedState } from "../FilterPanelTypes.js";
+import { assertUnreachable } from "../utils/assertUnreachable.js";
 import { buildWhereClause } from "../utils/filterStateToWhereClause.js";
 import { getFilterKey } from "../utils/getFilterKey.js";
 
@@ -100,7 +101,7 @@ function isFilterActive(state: FilterState): boolean {
     case "TIMELINE":
       return state.startDate !== undefined || state.endDate !== undefined;
     default:
-      return false;
+      return assertUnreachable(state);
   }
 }
 

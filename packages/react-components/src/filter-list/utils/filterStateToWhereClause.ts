@@ -17,6 +17,7 @@
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
+import { assertUnreachable } from "./assertUnreachable.js";
 
 type PropertyFilter = Record<string, unknown> | boolean | string | number;
 
@@ -98,11 +99,67 @@ function filterStateToPropertyFilter(
       return { $in: state.values };
     }
 
+    case "SINGLE_SELECT": {
+      if (state.selectedValue === undefined) {
+        return undefined;
+      }
+      return state.selectedValue;
+    }
+
+    case "MULTI_SELECT": {
+      if (state.selectedValues.length === 0) {
+        return undefined;
+      }
+      if (state.selectedValues.length === 1) {
+        return state.selectedValues[0];
+      }
+      return { $in: state.selectedValues };
+    }
+
+    case "SINGLE_DATE": {
+      if (state.selectedDate === undefined) {
+        return undefined;
+      }
+      return state.selectedDate.toISOString();
+    }
+
+    case "MULTI_DATE": {
+      if (state.selectedDates.length === 0) {
+        return undefined;
+      }
+      return { $in: state.selectedDates.map((d) => d.toISOString()) };
+    }
+
+    case "TIMELINE": {
+      const conditions: PropertyFilter[] = [];
+      if (state.startDate) {
+        conditions.push({ $gte: state.startDate.toISOString() });
+      }
+      if (state.endDate) {
+        conditions.push({ $lte: state.endDate.toISOString() });
+      }
+      if (conditions.length === 0) {
+        return undefined;
+      }
+      if (conditions.length === 1) {
+        return conditions[0];
+      }
+      return { $and: conditions };
+    }
+
     default:
-      return undefined;
+      return assertUnreachable(state);
   }
 }
 
+/**
+ * Builds a WhereClause from filter definitions and their current states.
+ *
+ * Note: The `as WhereClause<Q>` casts are necessary because we're building
+ * clauses dynamically from property keys determined at runtime. TypeScript
+ * cannot verify that the constructed clause structure matches the generic Q's
+ * expected shape, but the structure is guaranteed to be valid by construction.
+ */
 export function buildWhereClause<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
   filterStates: Map<string, FilterState>,

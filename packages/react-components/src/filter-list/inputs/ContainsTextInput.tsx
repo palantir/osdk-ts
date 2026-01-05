@@ -79,11 +79,11 @@ export function ContainsTextInput({
 
   return (
     <div className="filter-input--text">
-      <div className="bp5-input-group">
-        <span className="bp5-icon bp5-icon-search" />
+      <div className="bp6-input-group">
+        <span className="bp6-icon bp6-icon-search" />
         <input
           type="text"
-          className="bp5-input"
+          className="bp6-input"
           value={localValue}
           onChange={handleChange}
           placeholder={placeholder}
@@ -91,11 +91,11 @@ export function ContainsTextInput({
         {localValue && (
           <button
             type="button"
-            className="bp5-button bp5-minimal bp5-small filter-input__clear"
+            className="bp6-button bp6-minimal bp6-small filter-input__clear"
             onClick={handleClear}
             aria-label="Clear search"
           >
-            <span className="bp5-icon bp5-icon-cross" />
+            <span className="bp6-icon bp6-icon-cross" />
           </button>
         )}
       </div>

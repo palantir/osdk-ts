@@ -125,9 +125,9 @@ export function FilterList<Q extends ObjectTypeDefinition>(
             <button
               type="button"
               className={classNames(
-                "bp5-button",
-                "bp5-minimal",
-                "bp5-intent-primary",
+                "bp6-button",
+                "bp6-minimal",
+                "bp6-intent-primary",
                 "filter-list__add-button",
                 "filter-list__add-button--inline",
               )}
@@ -143,9 +143,9 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         <button
           type="button"
           className={classNames(
-            "bp5-button",
-            "bp5-minimal",
-            "bp5-intent-primary",
+            "bp6-button",
+            "bp6-minimal",
+            "bp6-intent-primary",
             "filter-list__add-button",
             "filter-list__add-button--fixed",
           )}

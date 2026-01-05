@@ -29,13 +29,13 @@ export function ToggleInput({
 }: ToggleInputProps): React.ReactElement {
   return (
     <div className="filter-input--toggle">
-      <label className="bp5-control bp5-switch">
+      <label className="bp6-control bp6-switch">
         <input
           type="checkbox"
           checked={enabled}
           onChange={(e) => onChange(e.target.checked)}
         />
-        <span className="bp5-control-indicator" />
+        <span className="bp6-control-indicator" />
         {label}
       </label>
     </div>

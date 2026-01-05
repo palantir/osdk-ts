@@ -28,6 +28,9 @@
     "./styles/*.css": {
       "default": "./build/styles/*.css"
     },
+    "./styles/scss": {
+      "default": "./build/styles/scss/index.scss"
+    },
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {
@@ -42,11 +45,14 @@
     "check-attw": "attw --pack .",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "copyStyles": "mkdir -p build/styles && cp src/filter-list/styles/*.css build/styles/",
+    "compileStyles": "sass src/filter-list/styles/index.scss build/styles/FilterList.css --style=compressed --source-map --load-path=../../node_modules --load-path=node_modules",
+    "compileBundle": "sass src/filter-list/styles/bundle.scss build/styles/FilterListBundle.css --style=compressed --source-map --load-path=../../node_modules --load-path=node_modules",
+    "copyScss": "mkdir -p build/styles/scss && cp -r src/filter-list/styles/*.scss build/styles/scss/",
+    "buildStyles": "pnpm compileStyles && pnpm compileBundle && pnpm copyScss",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run",
-    "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser && pnpm copyStyles",
+    "transpileBrowser": "monorepo.tool.transpile -f esm -m normal -t browser && pnpm buildStyles",
     "transpileCjs": "monorepo.tool.transpile -f cjs -m bundle -t node",
     "transpileEsm": "monorepo.tool.transpile -f esm -m normal -t node",
     "transpileTypes": "monorepo.tool.transpile -f esm -m types -t node",
@@ -66,9 +72,16 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/react": "workspace:*",
+    "@osdk/styles": "workspace:*",
     "@types/react": "^18.3.24",
     "react": "^18.3.1",
+    "sass": "^1.83.0",
     "typescript": "~5.5.4"
+  },
+  "peerDependenciesMeta": {
+    "sass": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public"

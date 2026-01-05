@@ -36,7 +36,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
 }: FilterListContentProps<Q>): React.ReactElement {
   if (!filterDefinitions || filterDefinitions.length === 0) {
     return (
-      <div className="filter-list__content filter-list__content--empty bp5-text-muted">
+      <div className="filter-list__content filter-list__content--empty bp6-text-muted">
         <p>No filters configured</p>
       </div>
     );
