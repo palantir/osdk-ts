@@ -11177,10 +11177,10 @@ describe("Action Types", () => {
                         },
                         "id": "objectToDeleteParameter",
                         "type": {
-                          "objectReference": {
+                          "objectReferenceList": {
                             "objectTypeId": "com.palantir.employee",
                           },
-                          "type": "objectReference",
+                          "type": "objectReferenceList",
                         },
                       },
                     },

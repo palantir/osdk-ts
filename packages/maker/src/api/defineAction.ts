@@ -327,10 +327,16 @@ function getTargetParameters(
         id: MODIFY_OBJECT_PARAMETER,
         displayName: def.parameterConfiguration?.[name]?.displayName
           ?? "Modify object",
-        type: {
-          type: "objectReference",
-          objectReference: { objectTypeId: def.objectType!.apiName },
-        },
+        type: (typeof def.parameterConfiguration?.[name]?.required === "object"
+            && "listLength" in def.parameterConfiguration?.[name]?.required)
+          ? {
+            type: "objectReferenceList",
+            objectReferenceList: { objectTypeId: def.objectType!.apiName },
+          }
+          : {
+            type: "objectReference",
+            objectReference: { objectTypeId: def.objectType!.apiName },
+          },
         validation: {
           ...def.parameterConfiguration?.[name],
           allowedValues: { type: "objectQuery" },
@@ -381,10 +387,16 @@ function getTargetParameters(
         id: DELETE_OBJECT_PARAMETER,
         displayName: def.parameterConfiguration?.[name]?.displayName
           ?? "Delete object",
-        type: {
-          type: "objectReference",
-          objectReference: { objectTypeId: def.objectType!.apiName },
-        },
+        type: (typeof def.parameterConfiguration?.[name]?.required === "object"
+            && "listLength" in def.parameterConfiguration?.[name]?.required)
+          ? {
+            type: "objectReferenceList",
+            objectReferenceList: { objectTypeId: def.objectType!.apiName },
+          }
+          : {
+            type: "objectReference",
+            objectReference: { objectTypeId: def.objectType!.apiName },
+          },
         validation: {
           ...def.parameterConfiguration?.[name],
           allowedValues: { type: "objectQuery" },
@@ -400,12 +412,18 @@ function getTargetParameters(
         id: CREATE_INTERFACE_OBJECT_PARAMETER,
         displayName: def.parameterConfiguration?.[name]?.displayName
           ?? "Object type to create",
-        type: {
-          type: "objectTypeReference",
-          objectTypeReference: {
-            interfaceTypeRids: [def.interfaceType.apiName],
+        type: (typeof def.parameterConfiguration?.[name]?.required === "object"
+            && "listLength" in def.parameterConfiguration?.[name]?.required)
+          ? {
+            type: "objectReferenceList",
+            objectReferenceList: { objectTypeId: def.objectType!.apiName },
+          }
+          : {
+            type: "objectTypeReference",
+            objectTypeReference: {
+              interfaceTypeRids: [def.interfaceType.apiName],
+            },
           },
-        },
         validation: {
           ...def.parameterConfiguration?.[name],
           required: true,
@@ -435,10 +453,20 @@ function getTargetParameters(
         id: MODIFY_INTERFACE_OBJECT_PARAMETER,
         displayName: def.parameterConfiguration?.[name]?.displayName
           ?? "Object type to modify",
-        type: {
-          type: "interfaceReference",
-          interfaceReference: { interfaceTypeRid: def.interfaceType.apiName },
-        },
+        type: (typeof def.parameterConfiguration?.[name]?.required === "object"
+            && "listLength" in def.parameterConfiguration?.[name]?.required)
+          ? {
+            type: "interfaceReferenceList",
+            interfaceReferenceList: {
+              interfaceTypeRid: def.interfaceType.apiName,
+            },
+          }
+          : {
+            type: "interfaceReference",
+            interfaceReference: {
+              interfaceTypeRid: def.interfaceType.apiName,
+            },
+          },
         validation: {
           ...def.parameterConfiguration?.[name],
           required: true,
@@ -465,10 +493,20 @@ function getTargetParameters(
         id: DELETE_OBJECT_PARAMETER,
         displayName: def.parameterConfiguration?.[name]?.displayName
           ?? "Delete Object",
-        type: {
-          type: "interfaceReference",
-          interfaceReference: { interfaceTypeRid: def.interfaceType.apiName },
-        },
+        type: (typeof def.parameterConfiguration?.[name]?.required === "object"
+            && "listLength" in def.parameterConfiguration?.[name]?.required)
+          ? {
+            type: "interfaceReferenceList",
+            interfaceReferenceList: {
+              interfaceTypeRid: def.interfaceType.apiName,
+            },
+          }
+          : {
+            type: "interfaceReference",
+            interfaceReference: {
+              interfaceTypeRid: def.interfaceType.apiName,
+            },
+          },
         validation: {
           ...def.parameterConfiguration?.[name],
           required: true,
