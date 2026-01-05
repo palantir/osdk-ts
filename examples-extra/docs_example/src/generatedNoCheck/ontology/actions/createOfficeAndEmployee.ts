@@ -86,6 +86,11 @@ export namespace createOfficeAndEmployee {
 
 /**
  * Create an office and employee
+ *
+ * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+ * can change the behavior of the applied action. If prefills are configured, null prevents them
+ * from being applied. If a parameter modifies an object's property, null will clear the data from
+ * the object, whereas undefined would not modify that property._
  * @param {ActionParam.PrimitiveType<"string">} [address] The office's physical address (not necessarily shipping address)
  * @param {ActionParam.PrimitiveType<"integer">} [capacity] The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)
  * @param {ActionParam.PrimitiveType<"integer">} employeeId New employee Id

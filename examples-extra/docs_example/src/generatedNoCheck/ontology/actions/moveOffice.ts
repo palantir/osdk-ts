@@ -76,6 +76,11 @@ export namespace moveOffice {
 
 /**
  * Update an office's physical location
+ *
+ * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+ * can change the behavior of the applied action. If prefills are configured, null prevents them
+ * from being applied. If a parameter modifies an object's property, null will clear the data from
+ * the object, whereas undefined would not modify that property._
  * @param {ActionParam.PrimitiveType<"string">} [newAddress] The office's new physical address (not necessarily shipping address)
  * @param {ActionParam.PrimitiveType<"integer">} [newCapacity] The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)
  * @param {ActionParam.PrimitiveType<"string">} officeId

@@ -89,6 +89,11 @@ export namespace actionTakesAllParameterTypes {
 
 /**
  * An action which takes different types of parameters
+ *
+ * **Note on null values:** _For optional parameters, explicitly providing a null value instead of undefined
+ * can change the behavior of the applied action. If prefills are configured, null prevents them
+ * from being applied. If a parameter modifies an object's property, null will clear the data from
+ * the object, whereas undefined would not modify that property._
  * @param {ActionParam.PrimitiveType<"attachment">} attachmentArray
  * @param {ActionParam.PrimitiveType<"datetime">} [dateArray]
  * @param {ActionParam.ObjectType<Person>} [object] A person Object
