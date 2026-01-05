@@ -35,7 +35,7 @@ export async function runWithPropertiesTest(): Promise<void> {
       base.pivotTo("stateTerritory").aggregate("airportStateName:collectSet", {
         "limit": 10,
       }),
-  }).where({ airportCountryIsoCode: { $in: [] } }).fetchPage();
+  }).fetchPage();
 
   console.log(
     result2.data.map((
