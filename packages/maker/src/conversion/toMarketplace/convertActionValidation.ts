@@ -48,7 +48,7 @@ export function convertActionValidation(
           {
             defaultValidation: {
               display: {
-                renderHint: renderHintFromBaseType(p),
+                renderHint: renderHintFromBaseType(p, p.validation),
                 visibility: convertActionVisibility(
                   p.validation.defaultVisibility,
                 ),

@@ -1,5 +1,17 @@
 # @osdk/shared.test
 
+## 2.7.0-beta.3
+
+### Minor Changes
+
+- dc33f68: Add Transaction ID to Queries
+
+### Patch Changes
+
+- Updated dependencies [dc33f68]
+  - @osdk/generator-converters@2.7.0-beta.5
+  - @osdk/api@2.7.0-beta.5
+
 ## 2.7.0-beta.2
 
 ### Minor Changes

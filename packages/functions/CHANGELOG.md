@@ -1,5 +1,16 @@
 # @osdk/functions
 
+## 1.5.0-beta.3
+
+### Minor Changes
+
+- dc33f68: Add Transaction ID to Queries
+
+### Patch Changes
+
+- Updated dependencies [dc33f68]
+  - @osdk/client@2.7.0-beta.5
+
 ## 1.5.0-beta.2
 
 ### Minor Changes
