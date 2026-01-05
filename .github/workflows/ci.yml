@@ -76,7 +76,7 @@ jobs:
       issues: write
     strategy:
       matrix:
-        node: [20, 22, 24]
+        node: [18, 20, 22, 24] # We need to support any LTS versions since the GA of 2.0, which includes 18.x and up
 
     steps:
       - name: Check out code
