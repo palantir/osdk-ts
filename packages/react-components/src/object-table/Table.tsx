@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { type RowData, type Table } from "@tanstack/react-table";
-import type { ReactElement } from "react";
-import React, { useCallback, useRef } from "react";
+import type { RowData, Table } from "@tanstack/react-table";
+import React, { type ReactElement, useCallback, useRef } from "react";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
 

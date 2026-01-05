@@ -77,8 +77,7 @@ export function useColumnDefs<
           ? metadata.properties[locator.propertyKey]
           : undefined;
 
-        // Q: Do we always use accessorKey?
-        // Q: Do we want to standardize propertyKey -> id?
+        // TODO: Do we want to standardize propertyKey -> id?
         const colKey = locator.type === "property"
           ? locator.propertyKey
           : locator.id as string;
@@ -97,7 +96,7 @@ export function useColumnDefs<
           enableColumnFilter: filterable,
           cell: (cellContext) => {
             const object: Osdk.Instance<Q> = cellContext.row.original;
-            // Q: Should we rename object to "row" and pass the cellValue instead of locator as locator is not providing much value?
+            // TODO: Should we rename object to "row" and pass the cellValue instead of locator as locator is not providing much value?
             return renderCell
               ? renderCell(object, locator)
               : cellContext.getValue();

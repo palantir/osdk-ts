@@ -42,7 +42,7 @@ export function TableHeader<TData extends RowData>({
           }}
         >
           {headerGroup.headers.map((header) => (
-            // Q: Should we restrict inline styling?
+            // TODO: Move inline styling to CSS file
             <th
               key={header.id}
               style={{
