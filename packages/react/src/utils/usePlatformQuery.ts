@@ -99,7 +99,7 @@ export function usePlatformQuery<T>(
         queryName,
       );
     },
-    [enabled, handleQuery],
+    [enabled, queryName, handleQuery],
   );
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);

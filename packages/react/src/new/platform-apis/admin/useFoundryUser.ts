@@ -62,7 +62,7 @@ export function useFoundryUser(
 
   const handleQuery = React.useCallback(() => {
     return Admin.Users.get(client, userId, { status });
-  }, [client, userId]);
+  }, [client, userId, status]);
 
   const query = usePlatformQuery({
     query: handleQuery,
