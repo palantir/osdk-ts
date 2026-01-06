@@ -8,14 +8,14 @@ import { InlineSpinner } from "./InlineSpinner.js";
 
 interface ListProps<T extends ObjectTypeDefinition> {
   Component: React.FC<{
-    item: Osdk.Instance<T>;
+    item: Osdk.Instance<T, "$allBaseProperties">;
     isSelected: boolean;
-    onSelect: (item: Osdk.Instance<T>) => void;
+    onSelect: (item: Osdk.Instance<T, "$allBaseProperties">) => void;
   }>;
 
-  selected: Osdk.Instance<T> | undefined;
+  selected: Osdk.Instance<T, "$allBaseProperties"> | undefined;
 
-  onSelect: (item: Osdk.Instance<T>) => void;
+  onSelect: (item: Osdk.Instance<T, "$allBaseProperties">) => void;
 
   className?: string;
 
