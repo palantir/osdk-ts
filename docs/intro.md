@@ -18,6 +18,7 @@ React framework for building front-end applications with OSDK.
 - [Actions](/react/actions) - useOsdkAction, validation, optimistic updates
 - [Advanced Queries](/react/advanced-queries) - useObjectSet, derived properties, aggregations
 - [Cache Management](/react/cache-management) - Cache behavior and invalidation
+- [Platform APIs](/react/platform-apis) - useCurrentFoundryUser, useFoundryUser, useFoundryUsersList
 
 ### Other Guides
 
