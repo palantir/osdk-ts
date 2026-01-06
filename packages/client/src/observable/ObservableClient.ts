@@ -104,9 +104,7 @@ export interface ObserveListOptions<
   pivotTo?: string;
 }
 
-// TODO: Rename this from `ObserveObjectArgs` => `ObserveObjectCallbackArgs`. Not doing it now to reduce churn
-// in repo.
-export interface ObserveObjectArgs<T extends ObjectTypeDefinition> {
+export interface ObserveObjectCallbackArgs<T extends ObjectTypeDefinition> {
   object: Osdk.Instance<T> | undefined;
   isOptimistic: boolean;
   status: Status;
@@ -216,7 +214,7 @@ export interface ObservableClient extends ObserveLinks {
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveOptions,
-    subFn: Observer<ObserveObjectArgs<T>>,
+    subFn: Observer<ObserveObjectCallbackArgs<T>>,
   ): Unsubscribable;
 
   /**
