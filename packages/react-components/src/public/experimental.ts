@@ -20,5 +20,6 @@ export type { FilterListItemProps } from "../filter-list/FilterListItemApi.js";
 export { ObjectTable } from "../object-table/ObjectTable.js";
 export type {
   ColumnDefinition,
+  ColumnDefinitionLocator,
   ObjectTableProps,
 } from "../object-table/ObjectTableApi.js";

@@ -507,7 +507,7 @@ describe(useColumnDefs, () => {
       expect(rdpColumn.size).toBe(180);
     });
 
-    it("handles metadata fetch errors", async () => {
+    it("updates columns when columnDefinitions changed", async () => {
       const deferred = pDefer();
       const fakeClient = {
         fetchMetadata: vitest.fn(() => deferred.promise),
@@ -515,21 +515,75 @@ describe(useColumnDefs, () => {
 
       const wrapper = createWrapper(fakeClient);
 
-      const { result } = renderHook(
-        () => useColumnDefs(TestObjectType),
-        { wrapper },
+      const initialColumnDefinitions: Array<
+        ColumnDefinition<TestObject, {}, {}>
+      > = [
+        {
+          locator: { type: "property", id: "name" as TestObjectKeys },
+        },
+      ];
+
+      const { result, rerender } = renderHook(
+        ({ colDefs }: { colDefs: any }) =>
+          useColumnDefs(TestObjectType, colDefs),
+        {
+          initialProps: { colDefs: initialColumnDefinitions as any },
+          wrapper,
+        },
       );
 
-      const error = new Error("Failed to fetch metadata");
-      deferred.reject(error);
+      deferred.resolve(mockMetadata);
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
       });
 
-      expect(result.current.error).toBeDefined();
-      expect(result.current.columns).toEqual([]);
+      const firstColumns = result.current.columns;
+
+      const updatedColumnDefinitions: Array<
+        ColumnDefinition<TestObject, {}, {}>
+      > = [
+        {
+          locator: { type: "property", id: "name" as TestObjectKeys },
+        },
+        {
+          locator: { type: "property", id: "email" as TestObjectKeys },
+        },
+      ];
+
+      // Rerender with new columnDefinitions
+      rerender({ colDefs: updatedColumnDefinitions });
+
+      // Updated columns should have two items
+      const updatedColumns = result.current.columns;
+
+      expect(firstColumns.length).toBe(1);
+      expect(updatedColumns.length).toBe(2);
     });
+  });
+
+  it("handles metadata fetch errors", async () => {
+    const deferred = pDefer();
+    const fakeClient = {
+      fetchMetadata: vitest.fn(() => deferred.promise),
+    } as unknown as Client;
+
+    const wrapper = createWrapper(fakeClient);
+
+    const { result } = renderHook(
+      () => useColumnDefs(TestObjectType),
+      { wrapper },
+    );
+
+    const error = new Error("Failed to fetch metadata");
+    deferred.reject(error);
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    expect(result.current.error).toBeDefined();
+    expect(result.current.columns).toEqual([]);
   });
 
   it("memoizes columns based on metadata properties", async () => {

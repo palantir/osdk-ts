@@ -114,7 +114,7 @@ export function useColumnDefs<
       };
       return colDef;
     });
-  }, [metadata?.properties]);
+  }, [columnDefinitions, metadata?.properties]);
 
   return { columns, loading, error };
 }

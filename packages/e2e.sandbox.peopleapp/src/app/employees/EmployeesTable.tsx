@@ -4,11 +4,13 @@ import { ObjectTable } from "@osdk/react-components/experimental";
 import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
+type RDPs = {
+  managerName: "string";
+};
+
 const columnDefinitions: ColumnDefinition<
   Employee,
-  {
-    managerName: "string";
-  },
+  RDPs,
   {}
 >[] = [
   // With renderHeader prop

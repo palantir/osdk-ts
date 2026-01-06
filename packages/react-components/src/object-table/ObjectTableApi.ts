@@ -56,7 +56,7 @@ export type ColumnDefinition<
   renderHeader?: () => React.ReactNode;
 };
 
-type ColumnDefinitionLocator<
+export type ColumnDefinitionLocator<
   Q extends ObjectTypeDefinition,
   RDPs extends Record<string, SimplePropertyDef> = Record<
     string,
