@@ -699,7 +699,7 @@ describe("createCollectionConnectable", () => {
   });
 
   describe("error handling", () => {
-    it("should handle store.getSubject returning undefined object entry", async () => {
+    it("should filter out undefined object entries from resolved data", async () => {
       const objectKey1: ObjectCacheKey = {
         type: "object",
         otherKeys: ["Employee", 1, undefined],
@@ -742,12 +742,12 @@ describe("createCollectionConnectable", () => {
 
       await waitForCall(observer);
 
-      // Should handle undefined object entry gracefully by filtering it out
+      // Should filter out undefined entries - resolved list should not contain undefined
       expect(observer.next).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: [undefined], // The function maps the undefined value from the store
+          data: [], // Undefined entries are filtered out
           status: "loaded",
-          count: 1,
+          count: 0,
         }),
       );
 
