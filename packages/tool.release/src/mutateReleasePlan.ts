@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ReleasePlan } from "@changesets/types";
+import type { Release, ReleasePlan } from "@changesets/types";
 import chalk from "chalk";
 import path from "path";
 import { inc, parse } from "semver";
@@ -36,23 +36,31 @@ function isFirstMinorRelease(oldVersion: string, newVersion: string): boolean {
   );
 }
 
+/**
+ * Checks that a release for a given changeset is valid.
+ * @param releasePlan The entire release plan
+ * @param releaseForChangeset A release entry from a specific changeset
+ * @returns
+ */
 function isPatchVersionOrFirstMinorRelease(
   releasePlan: ReleasePlan,
-  releaseName: string,
+  releaseForChangeset: Release,
 ): boolean {
-  const matchingReleases = releasePlan.releases.filter((r) =>
-    r.name === releaseName
-  );
-  if (matchingReleases.length !== 1) {
-    throw new FailedWithUserMessage(
-      `Expected exactly one release entry for package "${releaseName}", but found ${matchingReleases.length}.`,
-    );
-  }
-  const release = matchingReleases[0];
-  if (release.type === "patch") {
+  if (releaseForChangeset.type === "patch") {
     return true;
   }
-  if (release.type === "minor") {
+  if (releaseForChangeset.type === "minor") {
+    // Find the matching release entry in the overall release plan
+    const releaseName = releaseForChangeset.name;
+    const matchingReleases = releasePlan.releases.filter((r) =>
+      r.name === releaseForChangeset.name
+    );
+    if (matchingReleases.length !== 1) {
+      throw new FailedWithUserMessage(
+        `Expected exactly one release entry for package "${releaseName}", but found ${matchingReleases.length}.`,
+      );
+    }
+    const release = matchingReleases[0];
     return isFirstMinorRelease(release.oldVersion, release.newVersion);
   }
   return false;
@@ -71,7 +79,7 @@ export function mutateReleasePlan(
         release.type = "minor";
       } else if (
         releaseType === "release branch"
-        && (!isPatchVersionOrFirstMinorRelease(releasePlan, release.name))
+        && (!isPatchVersionOrFirstMinorRelease(releasePlan, release))
         && (release.type !== "none")
       ) {
         if (!errorStarted) {
