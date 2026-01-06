@@ -20,7 +20,7 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import type { VisibilityState } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import type { ObjectTableProps } from "../ObjectTableApi.js";
 
 interface UseDefaultTableStatesProps<
@@ -56,11 +56,7 @@ export const useDefaultTableStates = <
     FunctionColumns
   >,
 ): UseDefaultTableStatesResult => {
-  const [columnVisibility, setColumnVisibility] = useState<
-    VisibilityState
-  >();
-
-  useEffect(() => {
+  const columnVisibility = useMemo(() => {
     if (columnDefinitions) {
       const colVisibility: VisibilityState = columnDefinitions.reduce(
         (acc, colDef) => {
@@ -79,7 +75,7 @@ export const useDefaultTableStates = <
         {},
       );
 
-      setColumnVisibility(colVisibility);
+      return colVisibility;
     }
   }, [columnDefinitions]);
 
