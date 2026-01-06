@@ -15,18 +15,18 @@ const columnDefinitions: ColumnDefinition<
   {
     locator: {
       type: "property",
-      propertyKey: "fullName",
+      id: "fullName",
     },
     renderHeader: () => <div style={{ color: "red" }}>My Name</div>,
   },
   // With isVisible prop
   {
-    locator: { type: "property", propertyKey: "jobTitle" },
+    locator: { type: "property", id: "jobTitle" },
     isVisible: false,
   },
   // With renderHeader, renderCell, width prop
   {
-    locator: { type: "property", propertyKey: "firstFullTimeStartDate" },
+    locator: { type: "property", id: "firstFullTimeStartDate" },
     width: 300,
     renderHeader: () => "Start Date",
     renderCell: (object: Osdk.Instance<Employee>, _locator) => {

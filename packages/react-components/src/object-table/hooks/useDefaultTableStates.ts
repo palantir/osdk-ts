@@ -66,10 +66,8 @@ export const useDefaultTableStates = <
         (acc, colDef) => {
           if (colDef.isVisible !== undefined) {
             const { locator } = colDef;
-            // TODO: Extract a helper function to get colKey from locator
-            const colKey = locator.type === "property"
-              ? locator.propertyKey
-              : locator.id as string;
+
+            const colKey = locator.id;
 
             return {
               ...acc,

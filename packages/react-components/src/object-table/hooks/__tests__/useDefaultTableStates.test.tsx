@@ -42,10 +42,10 @@ describe(useDefaultTableStates, () => {
   it("returns empty columnVisibility when columnDefinitions have no isVisible properties", () => {
     const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
       {
-        locator: { type: "property", propertyKey: "name" as TestObjectKeys },
+        locator: { type: "property", id: "name" as TestObjectKeys },
       },
       {
-        locator: { type: "property", propertyKey: "email" as TestObjectKeys },
+        locator: { type: "property", id: "email" as TestObjectKeys },
       },
     ];
 
@@ -65,7 +65,7 @@ describe(useDefaultTableStates, () => {
       ColumnDefinition<TestObject, { myRdp: any }, { myFunction: any }>
     > = [
       {
-        locator: { type: "property", propertyKey: "name" as TestObjectKeys },
+        locator: { type: "property", id: "name" as TestObjectKeys },
         isVisible: true,
       },
       {
@@ -77,7 +77,7 @@ describe(useDefaultTableStates, () => {
         isVisible: true,
       },
       {
-        locator: { type: "property", propertyKey: "email" as TestObjectKeys },
+        locator: { type: "property", id: "email" as TestObjectKeys },
       },
     ];
 
@@ -101,7 +101,7 @@ describe(useDefaultTableStates, () => {
       ColumnDefinition<TestObject, {}, {}>
     > = [
       {
-        locator: { type: "property", propertyKey: "name" as TestObjectKeys },
+        locator: { type: "property", id: "name" as TestObjectKeys },
         isVisible: true,
       },
     ];
@@ -126,11 +126,11 @@ describe(useDefaultTableStates, () => {
       ColumnDefinition<TestObject, {}, {}>
     > = [
       {
-        locator: { type: "property", propertyKey: "name" as TestObjectKeys },
+        locator: { type: "property", id: "name" as TestObjectKeys },
         isVisible: false,
       },
       {
-        locator: { type: "property", propertyKey: "email" as TestObjectKeys },
+        locator: { type: "property", id: "email" as TestObjectKeys },
         isVisible: true,
       },
     ];
@@ -148,18 +148,18 @@ describe(useDefaultTableStates, () => {
   it("only includes columns with explicit isVisible in the visibility state", async () => {
     const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
       {
-        locator: { type: "property", propertyKey: "name" as TestObjectKeys },
+        locator: { type: "property", id: "name" as TestObjectKeys },
         isVisible: true,
       },
       {
-        locator: { type: "property", propertyKey: "email" as TestObjectKeys },
+        locator: { type: "property", id: "email" as TestObjectKeys },
       },
       {
-        locator: { type: "property", propertyKey: "age" as TestObjectKeys },
+        locator: { type: "property", id: "age" as TestObjectKeys },
         isVisible: false,
       },
       {
-        locator: { type: "property", propertyKey: "id" as TestObjectKeys },
+        locator: { type: "property", id: "id" as TestObjectKeys },
       },
     ];
 

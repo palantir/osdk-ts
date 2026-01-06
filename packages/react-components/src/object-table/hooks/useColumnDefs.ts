@@ -72,13 +72,10 @@ export function useColumnDefs<
         } = col;
 
         const propertyMetadata = locator.type === "property"
-          ? metadata?.properties[locator.propertyKey]
+          ? metadata?.properties[locator.id]
           : undefined;
 
-        // TODO: Do we want to standardize propertyKey -> id?
-        const colKey = locator.type === "property"
-          ? locator.propertyKey
-          : locator.id as string;
+        const colKey = locator.id as string;
 
         const colDef: AccessorColumnDef<
           Osdk.Instance<Q>

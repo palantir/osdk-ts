@@ -92,10 +92,10 @@ describe(useObjectTableData, () => {
   it("calls useObjectSet without withProperties when columnDefinitions have no RDP columns", () => {
     const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
       {
-        locator: { type: "property", propertyKey: "name" as TestObjectKeys },
+        locator: { type: "property", id: "name" as TestObjectKeys },
       },
       {
-        locator: { type: "property", propertyKey: "email" as TestObjectKeys },
+        locator: { type: "property", id: "email" as TestObjectKeys },
       },
     ];
 
@@ -126,7 +126,7 @@ describe(useObjectTableData, () => {
       >
     > = [
       {
-        locator: { type: "property", propertyKey: "name" as TestObjectKeys },
+        locator: { type: "property", id: "name" as TestObjectKeys },
       },
       {
         locator: { type: "rdp", id: "rdp1", creator: mockRdpCreator1 },

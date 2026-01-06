@@ -199,7 +199,7 @@ describe(useColumnDefs, () => {
         {
           locator: {
             type: "property",
-            propertyKey: "name" as TestObjectKeys,
+            id: "name" as TestObjectKeys,
           },
           width: 200,
           minWidth: 100,
@@ -209,7 +209,7 @@ describe(useColumnDefs, () => {
           filterable: false,
         },
         {
-          locator: { type: "property", propertyKey: "email" as TestObjectKeys },
+          locator: { type: "property", id: "email" as TestObjectKeys },
         },
       ];
 
@@ -254,7 +254,7 @@ describe(useColumnDefs, () => {
         {
           locator: {
             type: "property",
-            propertyKey: "name" as TestObjectKeys,
+            id: "name" as TestObjectKeys,
           },
           width: 200,
           minWidth: 100,
@@ -264,7 +264,7 @@ describe(useColumnDefs, () => {
           filterable: false,
         },
         {
-          locator: { type: "property", propertyKey: "email" as TestObjectKeys },
+          locator: { type: "property", id: "email" as TestObjectKeys },
         },
       ];
       const deferred = pDefer();
@@ -308,7 +308,7 @@ describe(useColumnDefs, () => {
 
       const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
         {
-          locator: { type: "property", propertyKey: "name" as TestObjectKeys },
+          locator: { type: "property", id: "name" as TestObjectKeys },
           renderHeader: customHeader,
         },
       ];
@@ -341,7 +341,7 @@ describe(useColumnDefs, () => {
 
       const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
         {
-          locator: { type: "property", propertyKey: "name" as TestObjectKeys },
+          locator: { type: "property", id: "name" as TestObjectKeys },
           renderCell: customRenderCell,
         },
       ];
@@ -375,7 +375,7 @@ describe(useColumnDefs, () => {
 
       expect(customRenderCell).toHaveBeenCalledWith(
         mockObject,
-        { type: "property", propertyKey: "name" },
+        { type: "property", id: "name" },
       );
     });
 
@@ -389,7 +389,7 @@ describe(useColumnDefs, () => {
 
       const columnDefinitions: Array<ColumnDefinition<TestObject, {}, {}>> = [
         {
-          locator: { type: "property", propertyKey: "name" as TestObjectKeys },
+          locator: { type: "property", id: "name" as TestObjectKeys },
         },
       ];
 

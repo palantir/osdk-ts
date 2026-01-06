@@ -69,7 +69,7 @@ type ColumnDefinitionLocator<
 > =
   | {
     type: "property";
-    propertyKey: PropertyKeys<Q>;
+    id: PropertyKeys<Q>;
   }
   | {
     type: "function";
