@@ -61,16 +61,16 @@ export type ActionParameterAllowedValues =
     fromGroups?: Array<UserGroup>;
   };
 
-export type UserGroup = ParameterUserGroup;
-// | StaticUserGroup;
+export type UserGroup =
+  | ParameterUserGroup
+  | StaticUserGroup;
 
 export type ParameterUserGroup = {
   type: "parameter";
   parameter: string;
 };
 
-// TODO(ethana): implement safely in OMS
-// export type StaticUserGroup = {
-//   type: "static";
-//   name: string;
-// };
+export type StaticUserGroup = {
+  type: "static";
+  name: string;
+};
