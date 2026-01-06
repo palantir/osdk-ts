@@ -535,7 +535,7 @@ importers:
         version: 6.3.6(@types/node@18.19.124)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3)(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
 
   examples/example-expo-sdk-2.x-no-osdk:
     dependencies:
@@ -725,7 +725,7 @@ importers:
         version: 6.3.6(@types/node@18.19.124)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3)(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
 
   examples/example-react-sdk-1.x:
     dependencies:
@@ -886,7 +886,7 @@ importers:
         version: 6.3.6(@types/node@18.19.124)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3)(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
 
   examples/example-react-sdk-2.x-no-osdk:
     dependencies:
@@ -974,7 +974,7 @@ importers:
         version: 6.3.6(@types/node@18.19.124)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3)(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
 
   examples/example-tutorial-todo-aip-app-sdk-1.x:
     dependencies:
@@ -1337,7 +1337,7 @@ importers:
         version: 6.3.6(@types/node@18.19.124)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3)(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
       vue-tsc:
         specifier: ^2.2.12
         version: 2.2.12(typescript@5.5.4)
@@ -1374,7 +1374,7 @@ importers:
         version: 6.3.6(@types/node@18.19.124)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3)(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
       vue-tsc:
         specifier: ^2.2.12
         version: 2.2.12(typescript@5.5.4)
@@ -2230,7 +2230,7 @@ importers:
         version: 6.3.6(@types/node@18.19.124)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3)(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
 
   packages/create-app.template.react:
     dependencies:
@@ -2391,7 +2391,7 @@ importers:
         version: 6.3.6(@types/node@18.19.124)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3)(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
 
   packages/create-app.template.tutorial-todo-aip-app:
     dependencies:
@@ -3794,7 +3794,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3)(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
 
   packages/generator-converters:
     dependencies:
@@ -4150,7 +4150,7 @@ importers:
     dependencies:
       react-dom:
         specifier: ^17 || ^18 || ^19
-        version: 19.1.1(react@18.3.1)
+        version: 18.3.1(react@18.3.1)
     devDependencies:
       '@osdk/api':
         specifier: workspace:*
@@ -4169,13 +4169,19 @@ importers:
         version: link:../react
       '@tanstack/react-table':
         specifier: ^8.21.3
-        version: 8.21.3(react-dom@19.1.1(react@18.3.1))(react@18.3.1)
+        version: 8.21.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-virtual':
         specifier: ^3.13.13
-        version: 3.13.13(react-dom@19.1.1(react@18.3.1))(react@18.3.1)
+        version: 3.13.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@testing-library/react':
+        specifier: ^16.3.0
+        version: 16.3.0(@testing-library/dom@10.4.0)(@types/react-dom@19.1.9(@types/react@18.3.24))(@types/react@18.3.24)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@types/react':
         specifier: ^18.3.24
         version: 18.3.24
+      p-defer:
+        specifier: ^4.0.1
+        version: 4.0.1
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -4481,7 +4487,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3)(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
 
   packages/typescript-docs-example-generator:
     dependencies:
@@ -4521,7 +4527,7 @@ importers:
         version: 5.5.4
       vitest:
         specifier: ^3.2.4
-        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3)(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
 
   packages/typescript-sdk-docs:
     dependencies:
@@ -6568,7 +6574,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {node: '>=0.10.0'}
+    engines: {'0': node >=0.10.0}
 
   '@expo/cli@0.22.26':
     resolution: {integrity: sha512-I689wc8Fn/AX7aUGiwrh3HnssiORMJtR2fpksX+JIe8Cj/EDleblYMSwRPd0025wrwOV9UN1KM/RuEt/QjCS3Q==}
@@ -23793,17 +23799,17 @@ snapshots:
       tailwindcss: 4.1.13
       vite: 6.3.6(@types/node@24.3.1)(jiti@2.5.1)(lightningcss@1.30.1)(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1)
 
-  '@tanstack/react-table@8.21.3(react-dom@19.1.1(react@18.3.1))(react@18.3.1)':
+  '@tanstack/react-table@8.21.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/table-core': 8.21.3
       react: 18.3.1
-      react-dom: 19.1.1(react@18.3.1)
+      react-dom: 18.3.1(react@18.3.1)
 
-  '@tanstack/react-virtual@3.13.13(react-dom@19.1.1(react@18.3.1))(react@18.3.1)':
+  '@tanstack/react-virtual@3.13.13(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/virtual-core': 3.13.13
       react: 18.3.1
-      react-dom: 19.1.1(react@18.3.1)
+      react-dom: 18.3.1(react@18.3.1)
 
   '@tanstack/table-core@8.21.3': {}
 
@@ -31777,11 +31783,6 @@ snapshots:
       react: 18.3.1
       scheduler: 0.23.2
 
-  react-dom@19.1.1(react@18.3.1):
-    dependencies:
-      react: 18.3.1
-      scheduler: 0.26.0
-
   react-dom@19.1.1(react@19.1.1):
     dependencies:
       react: 19.1.1
@@ -34311,7 +34312,7 @@ snapshots:
       tsx: 4.20.5
       yaml: 2.8.1
 
-  vitest@3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3(canvas@2.11.2))(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1):
+  vitest@3.2.4(@types/debug@4.1.12)(@types/node@18.19.124)(happy-dom@16.8.1)(jiti@2.5.1)(jsdom@20.0.3)(lightningcss@1.30.1)(msw@2.11.1(@types/node@18.19.124)(typescript@5.5.4))(terser@5.44.0)(tsx@4.20.5)(yaml@2.8.1):
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.4

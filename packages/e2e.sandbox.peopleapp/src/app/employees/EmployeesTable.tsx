@@ -4,7 +4,13 @@ import { ObjectTable } from "@osdk/react-components/experimental";
 import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
-const columnDefinitions: ColumnDefinition<Employee>[] = [
+const columnDefinitions: ColumnDefinition<
+  Employee,
+  {
+    managerName: "string";
+  },
+  {}
+>[] = [
   // With renderHeader prop
   {
     locator: {
@@ -23,10 +29,7 @@ const columnDefinitions: ColumnDefinition<Employee>[] = [
     locator: { type: "property", propertyKey: "firstFullTimeStartDate" },
     width: 300,
     renderHeader: () => "Start Date",
-    renderCell: (
-      object: Osdk.Instance<Employee>,
-      locator: ColumnDefinition<Employee>["locator"],
-    ) => {
+    renderCell: (object: Osdk.Instance<Employee>, _locator) => {
       return (
         <div>
           {object["firstFullTimeStartDate"]
@@ -45,12 +48,9 @@ const columnDefinitions: ColumnDefinition<Employee>[] = [
         baseObjectSet.pivotTo("lead").selectProperty("fullName"),
     },
     renderHeader: () => "Derived Manager Name",
-    renderCell: (
-      object: Osdk.Instance<Employee>,
-      locator: ColumnDefinition<Employee>["locator"],
-    ) => {
+    renderCell: (object: Osdk.Instance<Employee>, _locator) => {
       if ("managerName" in object) {
-        return object["managerName"];
+        return object["managerName"] as string;
       }
       return "No Value";
     },
@@ -71,7 +71,7 @@ export function EmployeesTable() {
         overflow: "auto",
       }}
     >
-      <ObjectTable<Employee>
+      <ObjectTable<Employee, { managerName: "string" }>
         objectSet={employeesObjectSet}
         objectType={Employee}
         columnDefinitions={columnDefinitions}
