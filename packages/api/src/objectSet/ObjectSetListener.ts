@@ -53,15 +53,27 @@ export namespace ObjectSetSubscription {
   /**
    * Options for subscribing to an ObjectSet.
    *
-   * properties - The properties to request a subscription for. Requesting specific properties limits the possible properties
+   * @param properties The properties to request a subscription for. Requesting specific properties limits the possible properties
    * that can be returned from the subscription. If not provided, all properties will be requested and potentially be returned on updates.
+   *
+   * @param includeRid Whether to include the $rid property in the subscription. Defaults to false. RIDs will be returned on all updates unless the update
+   * contains a new value for a geotime series reference property, in which case the RID will be undefined.
    */
   export interface Options<
     O extends ObjectOrInterfaceDefinition,
     P extends PropertyKeys<O> = PropertyKeys<O>,
     R extends boolean = false,
   > {
+    /**
+     * The properties to request a subscription for. Requesting specific properties limits the possible properties
+     * that can be returned from the subscription. If not provided, all properties will be requested and potentially be returned on updates.
+     */
     properties?: Array<P>;
+
+    /**
+     * Whether to include the $rid property in the subscription. Defaults to false. RIDs will be returned on all updates unless the update
+     * contains a new value for a geotime series reference property, in which case the RID will be undefined.
+     */
     includeRid?: R;
   }
 }
