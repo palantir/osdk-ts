@@ -50,7 +50,7 @@ export function ObjectTable<
   columnDefinitions,
   onRowClick,
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
-  const { data, fetchMore, isLoading, error } = useObjectTableData<
+  const { data, fetchMore, isLoading } = useObjectTableData<
     Q,
     RDPs,
     FunctionColumns
@@ -59,11 +59,14 @@ export function ObjectTable<
     columnDefinitions,
   );
 
-  const { columns, loading: isColumnsLoading, error: columnsError } =
-    useColumnDefs<Q, RDPs, FunctionColumns>(
-      objectType,
-      columnDefinitions,
-    );
+  const { columns, loading: isColumnsLoading } = useColumnDefs<
+    Q,
+    RDPs,
+    FunctionColumns
+  >(
+    objectType,
+    columnDefinitions,
+  );
 
   const { columnVisibility } = useDefaultTableStates({ columnDefinitions });
 
@@ -79,18 +82,6 @@ export function ObjectTable<
   });
 
   const isTableLoading = isLoading || isColumnsLoading;
-
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-
-  if (columnsError) {
-    return <div>Columns load error: {columnsError}</div>;
-  }
-
-  if (!data || data.length === 0) {
-    return <div>No data available</div>;
-  }
 
   return (
     <Table

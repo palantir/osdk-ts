@@ -53,6 +53,8 @@ export function Table<TData extends RowData>(
     [fetchMoreOnEndReached],
   );
 
+  // TODO: Handle error, loading and empty states
+
   return (
     <div
       ref={tableContainerRef}
