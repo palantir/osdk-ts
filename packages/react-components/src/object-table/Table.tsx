@@ -31,15 +31,23 @@ export function Table<TData extends RowData>(
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
+  // Using a ref to prevent duplicate fetches from rapid scroll events while a fetch is in-flight
+  const fetchingRef = useRef(false);
+
   const fetchMoreOnEndReached = useCallback(
     async (containerRefElement?: HTMLDivElement | null) => {
-      if (containerRefElement) {
+      if (containerRefElement && !fetchingRef.current) {
         const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
         if (
           scrollHeight - scrollTop - clientHeight < 100
           && !isLoading
         ) {
-          await fetchNextPage?.();
+          fetchingRef.current = true;
+          try {
+            await fetchNextPage?.();
+          } finally {
+            fetchingRef.current = false;
+          }
         }
       }
     },
