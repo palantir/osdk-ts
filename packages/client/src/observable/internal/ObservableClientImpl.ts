@@ -43,7 +43,7 @@ import type {
   ObserveListOptions,
   ObserveObjectArgs,
   ObserveObjectOptions,
-  ObserveObjectsArgs,
+  ObserveObjectsCallbackArgs,
   ObserveObjectSetArgs,
   Unsubscribable,
 } from "../ObservableClient.js";
@@ -95,7 +95,7 @@ export class ObservableClientImpl implements ObservableClient {
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveListOptions<T, RDPs>,
-    subFn: Observer<ObserveObjectsArgs<T>>,
+    subFn: Observer<ObserveObjectsCallbackArgs<T, RDPs>>,
   ) => Unsubscribable = (options, subFn) => {
     return this.__experimentalStore.lists.observe(
       options,

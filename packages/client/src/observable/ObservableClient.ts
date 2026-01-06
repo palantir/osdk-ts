@@ -113,11 +113,16 @@ export interface ObserveObjectArgs<T extends ObjectTypeDefinition> {
   lastUpdated: number;
 }
 
-// TODO: Rename this from `ObserveObjectsArgs` => `ObserveObjectsCallbackArgs`. Not doing it now to reduce churn
-export interface ObserveObjectsArgs<
+export interface ObserveObjectsCallbackArgs<
   T extends ObjectTypeDefinition | InterfaceDefinition,
+  RDPs extends Record<
+    string,
+    WirePropertyTypes | undefined | Array<WirePropertyTypes>
+  > = {},
 > {
-  resolvedList: Array<Osdk.Instance<T>>;
+  resolvedList: Array<
+    Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
+  >;
   isOptimistic: boolean;
   lastUpdated: number;
   fetchMore: () => Promise<void>;
@@ -232,7 +237,7 @@ export interface ObservableClient extends ObserveLinks {
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveListOptions<T, RDPs>,
-    subFn: Observer<ObserveObjectsArgs<T>>,
+    subFn: Observer<ObserveObjectsCallbackArgs<T, RDPs>>,
   ): Unsubscribable;
 
   /**
