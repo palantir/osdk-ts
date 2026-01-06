@@ -40,7 +40,6 @@ function normalSubscription() {
             " changed stringProperty to ",
             object.object.stringProperty,
           );
-          const maybeUndefined = object.object.$rid as undefined; // ensure rid is present
           if (++counter >= 3) {
             console.log("Unsubscribing");
             subscription.unsubscribe();
