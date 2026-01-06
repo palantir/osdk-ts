@@ -28,7 +28,7 @@ describe("usePlatformQuery enabled option", () => {
 
   beforeEach(() => {
     mockQueryFn.mockClear();
-    mockQueryFn.mockReturnValue(null);
+    mockQueryFn.mockReturnValue(new Promise<undefined>(() => undefined));
   });
 
   it("should NOT call mockQueryFn when enabled is false", () => {
@@ -49,7 +49,7 @@ describe("usePlatformQuery enabled option", () => {
     expect(mockQueryFn).not.toHaveBeenCalled();
   });
 
-  it("should start observing when enabled changes from false to true", () => {
+  it("should query when enabled changes from false to true", () => {
     const wrapper = createWrapper();
 
     const { rerender } = renderHook(
