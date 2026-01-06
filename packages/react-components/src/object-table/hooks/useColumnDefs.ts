@@ -15,6 +15,7 @@
  */
 
 import type {
+  ObjectMetadata,
   ObjectTypeDefinition,
   Osdk,
   QueryDefinition,
@@ -56,65 +57,95 @@ export function useColumnDefs<
       Osdk.Instance<Q>
     >
   > = useMemo(() => {
+    const objectProperties = metadata?.properties;
     // If columnDefinitions is provided, construct colDefs with it
     if (columnDefinitions) {
-      return columnDefinitions.map((col) => {
-        const {
-          locator,
-          width,
-          minWidth,
-          maxWidth,
-          resizable,
-          orderable,
-          filterable,
-          renderCell,
-          renderHeader,
-        } = col;
-
-        const propertyMetadata = locator.type === "property"
-          ? metadata?.properties[locator.id]
-          : undefined;
-
-        const colKey = locator.id as string;
-
-        const colDef: AccessorColumnDef<
-          Osdk.Instance<Q>
-        > = {
-          id: colKey,
-          accessorKey: colKey,
-          header: renderHeader ?? propertyMetadata?.displayName,
-          size: width,
-          minSize: minWidth,
-          maxSize: maxWidth,
-          enableResizing: resizable,
-          enableSorting: orderable,
-          enableColumnFilter: filterable,
-          cell: (cellContext) => {
-            const object: Osdk.Instance<Q> = cellContext.row.original;
-            // TODO: Should we rename object to "row" and pass the cellValue instead of locator as locator is not providing much value?
-            return renderCell
-              ? renderCell(object, locator)
-              : cellContext.getValue();
-          },
-        };
-
-        return colDef;
-      });
+      return getColumnsFromColumnDefinitions<Q, RDPs, FunctionColumns>(
+        columnDefinitions,
+        objectProperties,
+      );
     }
 
-    // Generate default colDefs with the object metadata
-    if (!metadata?.properties) return [];
-
-    return Object.entries(metadata?.properties).map(([key, property]) => {
-      const colDef: AccessorColumnDef<
-        Osdk.Instance<Q>
-      > = {
-        accessorKey: key,
-        header: property.displayName ?? key,
-      };
-      return colDef;
-    });
+    // If not, return the default columns from the object properties
+    return getDefaultColumns<Q>(objectProperties);
   }, [columnDefinitions, metadata?.properties]);
 
   return { columns, loading, error };
+}
+
+function getColumnsFromColumnDefinitions<
+  Q extends ObjectTypeDefinition,
+  RDPs extends Record<string, SimplePropertyDef>,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
+>(
+  columnDefinitions: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
+  objectProperties?: Record<any, ObjectMetadata.Property>,
+) {
+  return columnDefinitions.map((col) => {
+    const {
+      locator,
+      width,
+      minWidth,
+      maxWidth,
+      resizable,
+      orderable,
+      filterable,
+      renderCell,
+      renderHeader,
+    } = col;
+
+    const propertyMetadata = locator.type === "property"
+      ? objectProperties?.[locator.id]
+      : undefined;
+
+    const colKey = locator.id as string;
+
+    const colDef: AccessorColumnDef<
+      Osdk.Instance<Q>
+    > = {
+      id: colKey,
+      accessorKey: colKey,
+      header: renderHeader ?? propertyMetadata?.displayName,
+      size: width,
+      minSize: minWidth,
+      maxSize: maxWidth,
+      enableResizing: resizable,
+      enableSorting: orderable,
+      enableColumnFilter: filterable,
+      cell: (cellContext) => {
+        const object: Osdk.Instance<Q> = cellContext.row.original;
+
+        return renderCell
+          ? renderCell(object, locator)
+          : cellContext.getValue();
+      },
+    };
+
+    return colDef;
+  });
+}
+
+function getDefaultColumns<
+  Q extends ObjectTypeDefinition,
+>(
+  objectProperties?: Record<any, ObjectMetadata.Property>,
+): Array<
+  AccessorColumnDef<
+    Osdk.Instance<Q>
+  >
+> {
+  if (!objectProperties) return [];
+
+  return Object.entries(objectProperties).map(([key, property]) => {
+    const colDef: AccessorColumnDef<
+      Osdk.Instance<Q>
+    > = {
+      accessorKey: key,
+      header: property.displayName ?? key,
+    };
+    return colDef;
+  });
 }
