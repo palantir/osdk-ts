@@ -6,6 +6,9 @@
     "type": "git",
     "url": "https://github.com/palantir/osdk-ts.git"
   },
+  "bin": {
+    "osdk-generate-theme": "./bin/osdk-generate-theme.js"
+  },
   "exports": {
     ".": {
       "browser": "./build/browser/index.js",
@@ -25,6 +28,10 @@
       "require": "./build/cjs/public/experimental.cjs",
       "default": "./build/browser/public/experimental.js"
     },
+    "./styles": "./src/styles/index.css",
+    "./styles/tokens": "./src/styles/tokens.css",
+    "./styles/components/table": "./src/styles/components/table.css",
+    "./styles/themes/blueprint": "./src/styles/themes/blueprint.css",
     "./*": {
       "browser": "./build/browser/public/*.js",
       "import": {
@@ -81,7 +88,10 @@
     "CHANGELOG.md",
     "package.json",
     "templates",
-    "*.d.ts"
+    "*.d.ts",
+    "src/styles/**/*.css",
+    "bin/",
+    "scripts/"
   ],
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",

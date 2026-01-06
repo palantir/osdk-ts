@@ -66,16 +66,10 @@ export function Table<TData extends RowData>(
   return (
     <div
       ref={tableContainerRef}
-      style={{
-        position: "relative", // needed for sticky header
-        height: "100%", // needed for scrolling
-        overflow: "auto",
-      }}
+      className="osdk-table-container"
       onScroll={handleScroll}
     >
-      <table
-        style={{ display: "grid" }}
-      >
+      <table className="osdk-table">
         <TableHeader headerGroups={table.getHeaderGroups()} />
         <TableBody
           rows={table.getRowModel().rows}

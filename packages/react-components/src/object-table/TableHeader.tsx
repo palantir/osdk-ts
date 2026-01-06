@@ -26,30 +26,18 @@ export function TableHeader<TData extends RowData>({
   headerGroups,
 }: TableHeaderProps<TData>): React.ReactElement {
   return (
-    <thead
-      style={{
-        display: "grid",
-        position: "sticky",
-        top: 0,
-        zIndex: 1,
-      }}
-    >
+    <thead className="osdk-table-header">
       {headerGroups.map((headerGroup) => (
         <tr
           key={headerGroup.id}
-          style={{
-            display: "flex",
-          }}
+          className="osdk-table-header-row"
         >
           {headerGroup.headers.map((header) => (
-            // TODO: Move inline styling to CSS file
             <th
               key={header.id}
+              className="osdk-table-header-cell"
               style={{
-                display: "flex",
                 width: header.getSize(),
-                justifyContent: "flex-start",
-                alignItems: "center",
               }}
             >
               {header.isPlaceholder

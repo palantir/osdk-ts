@@ -36,20 +36,19 @@ export function TableRow<TData extends RowData>({
 
   return (
     <tr
+      className="osdk-table-row"
       style={{
         position: "absolute",
         height: `${virtualRow.size}px`,
         transform: `translateY(${virtualRow.start}px)`,
-        display: "flex",
       }}
       onClick={handleClick}
     >
       {row.getVisibleCells().map((cell) => (
         <td
           key={cell.id}
+          className="osdk-table-cell"
           style={{
-            display: "flex",
-            alignItems: "center",
             width: cell.column.getSize(),
           }}
         >

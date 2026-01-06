@@ -41,7 +41,7 @@ export function OfficesPage() {
           </Section>
         </div>
       </div>
-      <div className="w-192">
+      <div className="w-192 h-200">
         <ObjectTable objectSet={$(Office)} objectType={Office} />
       </div>
     </div>

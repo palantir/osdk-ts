@@ -1,0 +1,25 @@
+/**
+ * @osdk/react-components Styles
+ *
+ * This is the main entry point for importing all component styles.
+ * Includes:
+ * - Blueprint theme with light & dark modes (themes/blueprint.css)
+ * - Component-specific styles (components/*)
+ *
+ * Usage:
+ * ```tsx
+ * import '@osdk/react-components/styles';
+ * ```
+ *
+ * For custom themes, import individual parts:
+ * ```tsx
+ * import '@osdk/react-components/styles/components/table';
+ * import './my-custom-theme.css';
+ * ```
+ */
+
+/* Import default Blueprint theme (includes light + dark modes) */
+@import './themes/blueprint.css';
+
+/* Import component styles */
+@import './components/table.css';

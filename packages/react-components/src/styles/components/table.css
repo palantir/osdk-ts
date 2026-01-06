@@ -1,0 +1,154 @@
+/**
+ * ObjectTable Component Styles
+ *
+ * Layer 2: Component-specific variables and styles for ObjectTable
+ * References Layer 1 Blueprint tokens (--pt-*) from tokens.css
+ */
+
+/* ============================================
+ * Component-Specific Variables
+ * ============================================ */
+
+.osdk-table-container {
+  /* Table structure */
+  --pt-components-table-row-height: 40px;
+  --pt-components-table-header-height: 40px;
+
+  /* Header styling */
+  --pt-components-table-header-bg: var(--pt-secondary-background);
+  --pt-components-table-header-text: var(--pt-text-color);
+  --pt-components-table-header-border: var(--pt-divider-black);
+
+  /* Row styling - primary (default) */
+  --pt-components-table-row-bg-primary: var(--pt-primary-background);
+  --pt-components-table-row-text: var(--pt-text-color);
+  --pt-components-table-row-border: var(--pt-divider-black-muted);
+
+  /* Row styling - alternating (for striped tables) */
+  --pt-components-table-row-bg-secondary: var(--pt-secondary-background);
+
+  /* Row interactive states */
+  --pt-components-table-row-hover-bg: var(--pt-components-background-hover);
+  --pt-components-table-row-selected-bg: rgba(45, 114, 210, 0.1);
+
+  /* Cell styling */
+  --pt-components-table-cell-padding-x: calc(var(--pt-spacing) * 3); /* 12px */
+  --pt-components-table-cell-padding-y: calc(var(--pt-spacing) * 2); /* 8px */
+}
+
+/* ============================================
+ * Container
+ * ============================================ */
+
+.osdk-table-container {
+  position: relative;
+  height: 100%;
+  overflow: auto;
+}
+
+/* ============================================
+ * Table
+ * ============================================ */
+
+.osdk-table {
+  display: grid;
+  width: 100%;
+}
+
+/* ============================================
+ * Header
+ * ============================================ */
+
+.osdk-table-header {
+  display: grid;
+  position: sticky;
+  top: 0;
+  z-index: var(--pt-z-index-content);
+  background-color: var(--pt-components-table-header-bg);
+  color: var(--pt-components-table-header-text);
+  border-bottom: 1px solid var(--pt-components-table-header-border);
+  font-weight: 600;
+}
+
+.osdk-table-header-row {
+  display: flex;
+}
+
+.osdk-table-header-cell {
+  display: flex;
+  align-items: center;
+  justify-content: "flex-start";
+  padding: var(--pt-components-table-cell-padding-y)
+    var(--pt-components-table-cell-padding-x);
+  height: var(--pt-components-table-header-height);
+  box-sizing: border-box;
+}
+
+/* ============================================
+ * Body
+ * ============================================ */
+
+.osdk-table-body {
+  display: contents;
+}
+
+/* ============================================
+ * Rows
+ * ============================================ */
+
+/* Default: all rows use primary background */
+.osdk-table-row {
+  display: flex;
+  background-color: var(--pt-components-table-row-bg-primary);
+  color: var(--pt-components-table-row-text);
+  border-bottom: 1px solid var(--pt-components-table-row-border);
+  height: var(--pt-components-table-row-height);
+  box-sizing: border-box;
+  transition: background-color var(--pt-transition-duration)
+    var(--pt-transition-ease);
+}
+
+.osdk-table-row:hover {
+  background-color: var(--pt-components-table-row-hover-bg);
+}
+
+/* Selected rows */
+.osdk-table-row.osdk-table-row-selected {
+  background-color: var(--pt-components-table-row-selected-bg);
+}
+
+.osdk-table-row.osdk-table-row-selected:hover {
+  background-color: var(--pt-components-table-row-selected-bg);
+  opacity: 0.9;
+}
+
+/* Alternating row backgrounds - add .osdk-table-striped to container */
+.osdk-table-striped .osdk-table-row:nth-child(even) {
+  background-color: var(--pt-components-table-row-bg-secondary);
+}
+
+/* ============================================
+ * Cells
+ * ============================================ */
+
+.osdk-table-cell {
+  display: flex;
+  align-items: center;
+  padding: var(--pt-components-table-cell-padding-y)
+    var(--pt-components-table-cell-padding-x);
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================
+ * Dark Mode Support
+ * ============================================ */
+
+/*
+ * All color variables automatically switch when .dark class is applied to root element.
+ * No additional dark mode styles needed - handled by theme file.
+ *
+ * Example:
+ *   document.documentElement.classList.toggle('dark');
+ */
