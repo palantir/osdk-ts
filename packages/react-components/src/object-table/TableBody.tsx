@@ -55,7 +55,8 @@ export function TableBody<TData extends RowData>({
       }}
     >
       {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-        const row = rows[virtualRow.index] as Row<TData>;
+        const row = rows[virtualRow.index];
+
         return (
           <TableRow
             key={row.id}
