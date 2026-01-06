@@ -41,10 +41,12 @@ import {
   beforeEach,
   describe,
   expect,
+  expectTypeOf,
   it,
   vi,
 } from "vitest";
 import { z } from "zod";
+import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -504,6 +506,19 @@ describe("ObjectSetListenerWebsocket", async () => {
         unsubscribe();
         setWebSocketState(ws5, "close");
       });
+    });
+  });
+
+  describe("types", () => {
+    it("returns rid on type if requested", async () => {
+      const client: Client =
+        ((a: any) => ({ subscribe: (a: any, b: any) => {} })) as Client;
+
+      client(Employee).subscribe({
+        onChange: (change) => {
+          expectTypeOf(change.object.$rid).toMatchTypeOf<string | undefined>();
+        },
+      }, { includeRid: true });
     });
   });
 });

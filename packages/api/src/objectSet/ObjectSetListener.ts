@@ -24,12 +24,13 @@ export namespace ObjectSetSubscription {
   export interface Listener<
     O extends ObjectOrInterfaceDefinition,
     P extends PropertyKeys<O> = PropertyKeys<O>,
+    R extends boolean = false,
   > {
     /**
      * Specific objects have changed and can be immediately updated
      */
     onChange?: (
-      objectUpdate: ObjectUpdate<O, P>,
+      objectUpdate: ObjectUpdate<O, P, R>,
     ) => void;
 
     /**
@@ -58,15 +59,19 @@ export namespace ObjectSetSubscription {
   export interface Options<
     O extends ObjectOrInterfaceDefinition,
     P extends PropertyKeys<O> = PropertyKeys<O>,
+    R extends boolean = false,
   > {
     properties?: Array<P>;
+    includeRid?: R;
   }
 }
 
 type ObjectUpdate<
   O extends ObjectOrInterfaceDefinition,
   P extends PropertyKeys<O>,
+  R extends boolean = false,
 > = {
-  object: Osdk.Instance<O, never, P>;
+  object: R extends false ? Osdk.Instance<O, never, P>
+    : Osdk.Instance<O, "$ridOrUndefined", P>;
   state: "ADDED_OR_UPDATED" | "REMOVED";
 };
