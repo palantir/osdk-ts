@@ -61,12 +61,13 @@ export function useFoundryUser(
   const { client } = React.useContext(OsdkContext2);
 
   const handleQuery = React.useCallback(() => {
-    return Admin.Users.get(client, userId, { status: status });
+    return Admin.Users.get(client, userId, { status });
   }, [client, userId]);
 
   const query = usePlatformQuery({
     query: handleQuery,
     enabled,
+    queryName: "foundry-user",
   });
 
   return {

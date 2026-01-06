@@ -33,6 +33,7 @@ export interface UseQueryOptions<T> {
    * });
    */
   enabled?: boolean;
+  queryName: string;
   query: () => Promise<T>;
 }
 
@@ -49,7 +50,7 @@ interface QueryPayload<T> {
 }
 
 export function usePlatformQuery<T>(
-  { query, enabled = true }: UseQueryOptions<T>,
+  { query, queryName, enabled = true }: UseQueryOptions<T>,
 ): QueryResult<T> {
   const observerRef = React.useRef<Observer<QueryPayload<T> | undefined>>();
 
@@ -80,7 +81,7 @@ export function usePlatformQuery<T>(
         return makeExternalStore<QueryPayload<T>>(
           () => ({ unsubscribe: () => {} }),
           process.env.NODE_ENV !== "production"
-            ? `Current Foundry User Query [DISABLED]`
+            ? `${queryName} Query [DISABLED]`
             : undefined,
         );
       }
@@ -95,7 +96,7 @@ export function usePlatformQuery<T>(
             },
           };
         },
-        "foundry-current-user",
+        queryName,
       );
     },
     [enabled, handleQuery],
@@ -107,7 +108,7 @@ export function usePlatformQuery<T>(
   if (payload && "error" in payload && payload.error != null) {
     error = payload.error;
   } else if (payload?.status === "error") {
-    error = new Error("Failed to load current user");
+    error = new Error(`Failed to query platform API: ${queryName}`);
   }
 
   return {

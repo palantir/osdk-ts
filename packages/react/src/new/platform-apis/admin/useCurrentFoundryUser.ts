@@ -53,12 +53,13 @@ export function useCurrentFoundryUser(
 
   const handleQuery = React.useCallback(
     () => Admin.Users.getCurrent(client),
-    [],
+    [client],
   );
 
   const query = usePlatformQuery({
     query: handleQuery,
     enabled,
+    queryName: "foundry-current-user",
   });
 
   return {

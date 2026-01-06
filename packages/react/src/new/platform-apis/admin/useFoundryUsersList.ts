@@ -21,7 +21,7 @@ import React from "react";
 import { usePlatformQuery } from "../../../utils/usePlatformQuery.js";
 import { OsdkContext2 } from "../../OsdkContext2.js";
 
-export interface UseCurrentFoundryUserOptions {
+export interface UseFoundryUsersListOptions {
   /**
    * Enable or disable the query.
    *
@@ -61,6 +61,10 @@ export interface UseCurrentFoundryUserOptions {
 
 export interface UseFoundryUsersListResult {
   users: Admin.ListUsersResponse["data"] | undefined;
+  /**
+   * The page token to be used for the next page of users. If this is undefined, there are no more
+   * pages of users to load.
+   */
   nextPageToken: string | undefined;
   isLoading: boolean;
 
@@ -71,17 +75,18 @@ export interface UseFoundryUsersListResult {
 
 export function useFoundryUsersList(
   { enabled = true, include = "ACTIVE", pageSize = 1000, pageToken }:
-    UseCurrentFoundryUserOptions = {},
+    UseFoundryUsersListOptions = {},
 ): UseFoundryUsersListResult {
   const { client } = React.useContext(OsdkContext2);
 
   const handleQuery = React.useCallback(() => {
     return Admin.Users.list(client, { include, pageSize, pageToken });
-  }, [client]);
+  }, [client, include, pageSize, pageToken]);
 
   const query = usePlatformQuery({
     query: handleQuery,
     enabled,
+    queryName: "foundry-users-list",
   });
 
   return {
