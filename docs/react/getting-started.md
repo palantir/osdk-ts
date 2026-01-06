@@ -14,7 +14,11 @@ This guide covers installation, setup, and your first OSDK React application.
 
 ### 1. Install Beta Packages
 
-Using `latest` doesn't always install actual latest versions for beta packages. Specify them explicitly:
+Using `latest` doesn't always install actual latest versions for beta packages. Specify them explicitly.
+
+:::warning Version Compatibility
+All `@osdk/*` packages must use **compatible versions**. Mismatched versions (e.g., mixing an old `@osdk/client` with a newer `@osdk/react`) will cause TypeScript errors.
+:::
 
 ```json
 {
@@ -196,6 +200,28 @@ function CompleteTodoButton({ todo }: { todo: Todo.OsdkInstance }) {
 See [Actions](/react/actions) for validation, batch actions, and optimistic updates.
 
 ## Troubleshooting
+
+### "Property 'store' is missing" with OsdkProvider2
+
+This error occurs when your `@osdk/client` version is incompatible with `@osdk/react`. The versions must match.
+
+**Fix:** Ensure all `@osdk/*` packages use compatible beta versions:
+
+1. Go to **Developer Console** → **SDK versions** → **Settings**
+2. Enable **beta features** for TypeScript
+3. Generate a new SDK version with the latest beta generator
+4. Check the **Installation instructions** for the compatible `@osdk/client` version
+5. Update your package.json to use matching versions:
+
+```json
+{
+  "dependencies": {
+    "@osdk/client": "^2.6.0-beta.11",
+    "@osdk/react": "^0.8.0-beta.4",
+    "@osdk/api": "^2.6.0-beta.11"
+  }
+}
+```
 
 ### "Cannot read property 'observableClient' of undefined"
 
