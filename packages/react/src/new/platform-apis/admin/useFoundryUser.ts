@@ -54,6 +54,11 @@ export interface UseFoundryUserResult {
   refetch: () => void;
 }
 
+/**
+ * Get the User with the specified id.
+ * @param userId A Foundry User ID.
+ * @param options Options to control the query.
+ */
 export function useFoundryUser(
   userId: string,
   { enabled = true, status = "ACTIVE" }: UseFoundryUserOptions = {},

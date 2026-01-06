@@ -46,6 +46,10 @@ export interface UseCurrentFoundryUserResult {
   refetch: () => void;
 }
 
+/**
+ * Get the currently signed in User.
+ * @param options Options to control the query.
+ */
 export function useCurrentFoundryUser(
   { enabled = true }: UseCurrentFoundryUserOptions = {},
 ): UseCurrentFoundryUserResult {
