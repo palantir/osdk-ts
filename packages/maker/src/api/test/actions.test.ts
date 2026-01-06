@@ -15557,6 +15557,7 @@ describe("Action Types", () => {
           "bar": { type: "string" },
           "fizz": { type: "string" },
           "buzz": { type: "string" },
+          "fizzbuzz": { type: "string" },
         },
       });
 
@@ -15581,6 +15582,17 @@ describe("Action Types", () => {
             "buzz": {
               allowedValues: {
                 type: "user",
+              },
+            },
+            "fizzbuzz": {
+              allowedValues: {
+                type: "user",
+                fromGroups: [
+                  {
+                    type: "static",
+                    name: "inputGroup",
+                  },
+                ],
               },
             },
           },
@@ -15624,6 +15636,10 @@ describe("Action Types", () => {
                               },
                               "fizz": {
                                 "parameterId": "fizz",
+                                "type": "parameterId",
+                              },
+                              "fizzbuzz": {
+                                "parameterId": "fizzbuzz",
                                 "type": "parameterId",
                               },
                             },
@@ -15747,6 +15763,49 @@ describe("Action Types", () => {
                             },
                           },
                         },
+                        "fizzbuzz": {
+                          "conditionalOverrides": [],
+                          "defaultValidation": {
+                            "display": {
+                              "renderHint": {
+                                "type": "userDropdown",
+                                "userDropdown": {},
+                              },
+                              "visibility": {
+                                "editable": {},
+                                "type": "editable",
+                              },
+                            },
+                            "validation": {
+                              "allowedValues": {
+                                "type": "user",
+                                "user": {
+                                  "type": "user",
+                                  "user": {
+                                    "filter": [
+                                      {
+                                        "groupFilter": {
+                                          "groupId": {
+                                            "staticValue": {
+                                              "string": "inputGroup",
+                                              "type": "string",
+                                            },
+                                            "type": "staticValue",
+                                          },
+                                        },
+                                        "type": "groupFilter",
+                                      },
+                                    ],
+                                  },
+                                },
+                              },
+                              "required": {
+                                "notRequired": {},
+                                "type": "notRequired",
+                              },
+                            },
+                          },
+                        },
                       },
                       "sectionValidations": {},
                     },
@@ -15792,6 +15851,7 @@ describe("Action Types", () => {
                       "bar",
                       "fizz",
                       "buzz",
+                      "fizzbuzz",
                     ],
                     "parameters": {
                       "bar": {
@@ -15825,6 +15885,18 @@ describe("Action Types", () => {
                           "typeClasses": [],
                         },
                         "id": "fizz",
+                        "type": {
+                          "string": {},
+                          "type": "string",
+                        },
+                      },
+                      "fizzbuzz": {
+                        "displayMetadata": {
+                          "description": "",
+                          "displayName": "Fizzbuzz",
+                          "typeClasses": [],
+                        },
+                        "id": "fizzbuzz",
                         "type": {
                           "string": {},
                           "type": "string",
@@ -15865,6 +15937,10 @@ describe("Action Types", () => {
                           },
                           "fizz": {
                             "column": "fizz",
+                            "type": "column",
+                          },
+                          "fizzbuzz": {
+                            "column": "fizzbuzz",
                             "type": "column",
                           },
                         },
@@ -15990,6 +16066,46 @@ describe("Action Types", () => {
                       "displayMetadata": {
                         "description": undefined,
                         "displayName": "Fizz",
+                        "visibility": "NORMAL",
+                      },
+                      "indexedForSearch": true,
+                      "inlineAction": undefined,
+                      "ruleSetBinding": undefined,
+                      "sharedPropertyTypeApiName": undefined,
+                      "sharedPropertyTypeRid": undefined,
+                      "status": {
+                        "active": {},
+                        "type": "active",
+                      },
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsEfficientLeadingWildcard": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [
+                        {
+                          "kind": "render_hint",
+                          "name": "SELECTABLE",
+                        },
+                        {
+                          "kind": "render_hint",
+                          "name": "SORTABLE",
+                        },
+                      ],
+                      "valueType": undefined,
+                    },
+                    "fizzbuzz": {
+                      "apiName": "fizzbuzz",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "Fizzbuzz",
                         "visibility": "NORMAL",
                       },
                       "indexedForSearch": true,

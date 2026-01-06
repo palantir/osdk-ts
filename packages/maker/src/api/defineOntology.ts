@@ -485,10 +485,18 @@ export function extractAllowedValues(
               return {
                 type: "groupFilter",
                 groupFilter: {
-                  groupId: {
-                    type: "parameterId",
-                    parameterId: group.parameter,
-                  },
+                  groupId: group.type === "static"
+                    ? {
+                      type: "staticValue",
+                      staticValue: {
+                        type: "string",
+                        string: group.name,
+                      },
+                    }
+                    : {
+                      type: "parameterId",
+                      parameterId: group.parameter,
+                    },
                 },
               };
             }),
