@@ -3701,10 +3701,10 @@ importers:
         specifier: workspace:^
         version: link:../client
       '@osdk/foundry.core':
-        specifier: ^2.42.0
+        specifier: ^2.44.0
         version: 2.44.0
       '@osdk/foundry.mediasets':
-        specifier: ^2.42.0
+        specifier: ^2.44.0
         version: 2.44.0
       '@osdk/foundry.ontologies':
         specifier: ^2.44.0
@@ -4182,6 +4182,9 @@ importers:
       '@types/react':
         specifier: ^18.3.24
         version: 18.3.24
+      eslint-plugin-react-hooks:
+        specifier: ^5.2.0
+        version: 5.2.0(eslint@9.35.0(jiti@2.5.1))
       p-defer:
         specifier: ^4.0.1
         version: 4.0.1
@@ -7283,9 +7286,6 @@ packages:
 
   '@osdk/foundry.mediasets@2.44.0':
     resolution: {integrity: sha512-l378lxKUdIMmb1txFs/hOKyPO3bc10OWU4BvaP/LMZjXLbUZPNI/DYAmKrzKTeSMGBnZ2luhqEyfPfZYMGmrhw==}
-
-  '@osdk/foundry.models@2.42.0':
-    resolution: {integrity: sha512-HOj1cHcj1DMak+V+K+9W0xr4Nh/zXbiOhWYkOTXdrv8aIVAHo0BmckPb+R33LR4UeGVhaFEnbJwxw1Ecy21vSA==}
 
   '@osdk/foundry.models@2.43.0':
     resolution: {integrity: sha512-SVPOHtxMP0SDUuhPc5uXBXKJLe/0NNvV5XiYbbUiyqjQdNtjKWjnobZnFkiTa4dDbuiZM+C7kHcUQYf+rLtseA==}
@@ -21743,13 +21743,6 @@ snapshots:
       '@osdk/shared.net.platformapi': 1.5.0
 
   '@osdk/foundry.mediasets@2.44.0':
-    dependencies:
-      '@osdk/foundry.core': 2.44.0
-      '@osdk/shared.client': 1.0.1
-      '@osdk/shared.client2': 1.0.0
-      '@osdk/shared.net.platformapi': 1.5.0
-
-  '@osdk/foundry.models@2.42.0':
     dependencies:
       '@osdk/foundry.core': 2.44.0
       '@osdk/shared.client': 1.0.1
