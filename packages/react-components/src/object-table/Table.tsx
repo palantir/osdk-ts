@@ -24,10 +24,11 @@ interface TableProps<TData extends RowData> {
   isLoading?: boolean;
   fetchNextPage?: () => Promise<void>;
   onRowClick?: (row: TData) => void;
+  rowHeight?: number;
 }
 
 export function Table<TData extends RowData>(
-  { table, isLoading, fetchNextPage, onRowClick }: TableProps<TData>,
+  { table, isLoading, fetchNextPage, onRowClick, rowHeight }: TableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -81,6 +82,7 @@ export function Table<TData extends RowData>(
           rows={table.getRowModel().rows}
           tableContainerRef={tableContainerRef}
           onRowClick={onRowClick}
+          rowHeight={rowHeight}
         />
       </table>
     </div>

@@ -23,20 +23,19 @@ interface TableBodyProps<TData extends RowData> {
   rows: Array<Row<TData>>;
   tableContainerRef: React.RefObject<HTMLDivElement>;
   onRowClick?: (row: TData) => void;
+  rowHeight?: number;
 }
 
 export function TableBody<TData extends RowData>({
   rows,
   tableContainerRef,
   onRowClick,
+  rowHeight = 40,
 }: TableBodyProps<TData>): React.ReactElement {
-  // TODO: Allow user to pass in a custom row height / read from css variable
-  const ROW_HEIGHT = 40;
-
   // Important: Keep the row virtualizer in the lowest component possible to avoid unnecessary re-renders.
   const rowVirtualizer = useVirtualizer<HTMLDivElement, HTMLTableRowElement>({
     count: rows.length,
-    estimateSize: () => ROW_HEIGHT,
+    estimateSize: () => rowHeight,
     getScrollElement: () => tableContainerRef.current,
     overscan: 5,
   });

@@ -242,4 +242,11 @@ export interface ObjectTableProps<
     object: Osdk.Instance<Q>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
   ) => React.ReactNode;
+
+  /**
+   * The height of each row in pixels.
+   *
+   * @default 40
+   */
+  rowHeight?: number;
 }

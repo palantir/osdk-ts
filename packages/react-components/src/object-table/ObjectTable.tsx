@@ -49,6 +49,7 @@ export function ObjectTable<
   objectType,
   columnDefinitions,
   onRowClick,
+  rowHeight,
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { data, fetchMore, isLoading } = useObjectTableData<
     Q,
@@ -89,6 +90,7 @@ export function ObjectTable<
       isLoading={isTableLoading}
       fetchNextPage={fetchMore}
       onRowClick={onRowClick}
+      rowHeight={rowHeight}
     />
   );
 }
