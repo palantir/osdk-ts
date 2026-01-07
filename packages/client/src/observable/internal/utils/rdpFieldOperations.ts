@@ -43,6 +43,7 @@ function stripRdpFields(
   }
 
   const underlying = value[UnderlyingOsdkObject] as SimpleOsdkProperties;
+  const objectDef = value[ObjectDefRef];
 
   const newProps: SimpleOsdkProperties = {
     $apiName: underlying.$apiName,
@@ -52,12 +53,12 @@ function stripRdpFields(
   };
 
   for (const key of Object.keys(underlying)) {
-    if (!key.startsWith("$") && !rdpFields.has(key)) {
+    if (key in objectDef.properties && !rdpFields.has(key)) {
       newProps[key] = underlying[key];
     }
   }
 
-  return createOsdkObject(value[ClientRef], value[ObjectDefRef], newProps);
+  return createOsdkObject(value[ClientRef], objectDef, newProps);
 }
 
 function isSuperset(
@@ -72,11 +73,13 @@ function isSuperset(
   return true;
 }
 
-function filterToFields(
+function filterToRdpFields(
   value: ObjectHolder,
-  allowedFields: ReadonlySet<string>,
+  rdpFieldsToKeep: ReadonlySet<string>,
+  sourceRdpFields: ReadonlySet<string>,
 ): ObjectHolder {
   const underlying = value[UnderlyingOsdkObject] as SimpleOsdkProperties;
+  const objectDef = value[ObjectDefRef];
 
   const newProps: SimpleOsdkProperties = {
     $apiName: underlying.$apiName,
@@ -86,12 +89,15 @@ function filterToFields(
   };
 
   for (const key of Object.keys(underlying)) {
-    if (!key.startsWith("$") && allowedFields.has(key)) {
-      newProps[key] = underlying[key];
+    if (key in objectDef.properties) {
+      const isRdpField = sourceRdpFields.has(key);
+      if (!isRdpField || rdpFieldsToKeep.has(key)) {
+        newProps[key] = underlying[key];
+      }
     }
   }
 
-  return createOsdkObject(value[ClientRef], value[ObjectDefRef], newProps);
+  return createOsdkObject(value[ClientRef], objectDef, newProps);
 }
 
 export function mergeObjectFields(
@@ -108,11 +114,12 @@ export function mergeObjectFields(
     if (sourceRdpFields.size === targetRdpFields.size) {
       return sourceValue;
     }
-    return filterToFields(sourceValue, targetRdpFields);
+    return filterToRdpFields(sourceValue, targetRdpFields, sourceRdpFields);
   }
 
   const sourceUnderlying =
     sourceValue[UnderlyingOsdkObject] as SimpleOsdkProperties;
+  const objectDef = sourceValue[ObjectDefRef];
 
   const newProps: SimpleOsdkProperties = {
     $apiName: sourceUnderlying.$apiName,
@@ -123,7 +130,7 @@ export function mergeObjectFields(
 
   for (const key of Object.keys(sourceUnderlying)) {
     if (
-      !key.startsWith("$")
+      key in objectDef.properties
       && (!sourceRdpFields.has(key) || targetRdpFields.has(key))
     ) {
       newProps[key] = sourceUnderlying[key];
@@ -142,7 +149,7 @@ export function mergeObjectFields(
 
   return createOsdkObject(
     sourceValue[ClientRef],
-    sourceValue[ObjectDefRef],
+    objectDef,
     newProps,
   );
 }
