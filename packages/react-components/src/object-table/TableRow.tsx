@@ -32,7 +32,7 @@ export function TableRow<TData extends RowData>({
 }: TableRowProps<TData>): React.ReactElement {
   const handleClick = useCallback(() => {
     onRowClick?.(row.original);
-  }, []);
+  }, [onRowClick, row.original]);
 
   return (
     <tr
