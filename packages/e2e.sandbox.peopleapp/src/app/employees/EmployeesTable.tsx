@@ -62,10 +62,6 @@ const columnDefinitions: ColumnDefinition<
 export function EmployeesTable() {
   const employeesObjectSet = $(Employee);
 
-  const handleRowClick = (row: Osdk.Instance<Employee>) => {
-    console.log("Row clicked ", row);
-  };
-
   return (
     <div
       style={{
@@ -77,7 +73,6 @@ export function EmployeesTable() {
         objectSet={employeesObjectSet}
         objectType={Employee}
         columnDefinitions={columnDefinitions}
-        onRowClick={handleRowClick}
       />
     </div>
   );
