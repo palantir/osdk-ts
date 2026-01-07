@@ -20,6 +20,7 @@ import type {
   ObjectMetadata,
 } from "@osdk/api";
 import type {
+  InterfacePropertyLocalPropertyImplementation,
   InterfaceToObjectTypeMappings,
   InterfaceToObjectTypeMappingsV2,
   InterfaceTypeApiName,
@@ -429,7 +430,11 @@ function convertInterfaceToObjectTypeMappingsV2ToV1(
               .filter(([, impl]) => impl.type === "localPropertyImplementation")
               .map((
                 [interfaceProp, impl],
-              ) => [interfaceProp, impl.propertyApiName]),
+              ) => [
+                interfaceProp,
+                (impl as InterfacePropertyLocalPropertyImplementation)
+                  .propertyApiName,
+              ]),
           ),
         ]),
       ),

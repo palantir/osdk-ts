@@ -1,5 +1,15 @@
 # @osdk/generator-converters.ontologyir
 
+## 2.7.0-beta.5
+
+### Minor Changes
+
+- dc33f68: Add Transaction ID to Queries
+
+### Patch Changes
+
+- @osdk/client.unstable@2.7.0-beta.5
+
 ## 2.7.0-beta.4
 
 ### Patch Changes

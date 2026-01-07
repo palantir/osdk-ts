@@ -22,6 +22,9 @@ interface StringFilterOptions extends BaseFilterOptions<string> {
   "$containsAllTermsInOrder": string;
   "$containsAnyTerm": string | { term: string; fuzzySearch?: boolean };
   "$containsAllTerms": string | { term: string; fuzzySearch?: boolean };
+  /**
+   * Matches any of the provided values. If an empty array is provided, the filter will match all objects.
+   */
   "$in": ReadonlyArray<string>;
 }
 

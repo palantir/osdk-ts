@@ -26,6 +26,7 @@ type PageState =
     state: "failed";
     error?: string;
     response?: string;
+    hint?: string;
   }
   | {
     state: "success";
@@ -37,10 +38,12 @@ const REDIRECT_DELAY = 500;
 
 class ResponseError extends Error {
   public readonly response: string;
+  public readonly hint: string | undefined;
 
-  constructor(message: string, response: string) {
+  constructor(message: string, response: string, hint?: string) {
     super(message);
     this.response = response;
+    this.hint = hint;
   }
 }
 
@@ -67,7 +70,11 @@ export const App: React.FC = () => {
           }
           if (result.status === "error") {
             if (result.response != null) {
-              throw new ResponseError(result.error, result.response);
+              throw new ResponseError(
+                result.error,
+                result.response,
+                result.hint,
+              );
             }
             throw new Error(result.error);
           }
@@ -96,6 +103,7 @@ export const App: React.FC = () => {
             response: error instanceof ResponseError
               ? error.response
               : undefined,
+            hint: error instanceof ResponseError ? error.hint : undefined,
           });
         });
     }, POLLING_INTERVAL);
@@ -130,6 +138,9 @@ export const App: React.FC = () => {
           icon="error"
           description={
             <>
+              {pageState.hint != null && (
+                <div className="hint-block">{pageState.hint}</div>
+              )}
               {pageState.response != null && (
                 <Pre className="response-block">{pageState.response}</Pre>
               )}
@@ -159,6 +170,7 @@ function finish(attempt: number): Promise<
     status: "error";
     error: string;
     response?: string;
+    hint?: string;
   }
   | {
     status: "pending";
