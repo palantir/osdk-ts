@@ -4,11 +4,11 @@
 @import "colors";
 
 // Text Colors
+$pt-text-color: $dark-gray1 !default;
+$pt-text-color-muted: $gray1 !default;
 $pt-code-text-color: $pt-text-color-muted !default;
 $pt-components-tooltip-text: $white !default;
 $pt-text-aip: $indigo2 !default;
-$pt-text-color: $dark-gray1 !default;
-$pt-text-color-muted: $gray1 !default;
 $pt-text-danger: $red2 !default;
 $pt-text-primary: $blue2 !default;
 $pt-text-success: $green2 !default;

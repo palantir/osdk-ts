@@ -1,8 +1,8 @@
 // Copyright 2015 Palantir Technologies, Inc. All rights reserved.
 // Licensed under the Apache License, Version 2.0.
 
-@import "color-aliases";
-@import "mixins";
+// NOTE: Imports removed to fix circular dependencies
+// color-aliases and mixins are imported in index.scss in the correct order
 
 // ----------------------------------------------------------------------------
 // This file is part of the public Sass API of @blueprintjs/core.
@@ -32,9 +32,6 @@ $pt-spacing: 4px !default;
 $pt-font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Open Sans", "Helvetica Neue", sans-serif !default;
 $pt-font-family-monospace: monospace !default;
 
-// Additional missing color aliases
-$pt-heading-color: $pt-text-color !default;
-$pt-dark-heading-color: $pt-dark-text-color !default;
 
 $pt-outline-color: rgba($blue3, 0.6) !default;
 $pt-focus-indicator-color: rgba($blue2, 0.752) !default;
@@ -414,4 +411,3 @@ $pt-dark-divider-white: rgba(255, 255, 255, 0.20000000298023224) !default;
 $pt-dark-divider-white-muted: rgba(255, 255, 255, 0.10000000149011612) !default;
 $pt-dark-elevated-background: $dark-gray2 !default;
 $pt-dark-primary-background: $dark-gray1 !default;
-

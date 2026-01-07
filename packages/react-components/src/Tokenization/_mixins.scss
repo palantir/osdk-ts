@@ -37,6 +37,10 @@ $pt-dark-intent-text-colors: (
   "danger": $red5,
 ) !default;
 
+// Additional missing color aliases
+$pt-heading-color: $pt-text-color !default;
+$pt-dark-heading-color: $pt-dark-text-color !default;
+
 @mixin intent-color($intentName) {
   color: map.get($pt-intent-colors, $intentName);
 }

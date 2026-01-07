@@ -1,242 +1,212 @@
-// Copyright 2015 Palantir Technologies, Inc. All rights reserved.
-// Licensed under the Apache License, Version 2.0.
-
-import fs from 'fs';
-import path from 'path';
-
-/**
- * Parse SCSS file and extract variables (handles multi-line values)
- * @param {string} scss - SCSS content
- * @param {string} prefix - Variable prefix to match (e.g., '$pt-', '$pt-dark-', '$')
- * @param {boolean} excludeDark - Whether to exclude -dark- variants (only for pt- prefix)
- * @returns {Map<string, string>} Map of variable names to values
+/*
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-function extractVariables(scss, prefix, excludeDark = false) {
-  const variables = new Map();
 
-  // Create regex pattern based on prefix
-  let pattern;
-  if (prefix === '$pt-' && excludeDark) {
-    // Match $pt- but not $pt-dark-
-    // Note: Using [^;\n] to avoid matching across lines
-    pattern = /\$pt-(?!dark-)([^:]+):\s*([^;\n]+);/g;
-  } else if (prefix === '$pt-dark-') {
-    // Match $pt-dark-
-    pattern = /\$pt-dark-([^:]+):\s*([^;\n]+);/g;
-  } else {
-    // Match basic color primitives like $blue1, $light-gray5, etc.
-    pattern = /\$([a-z][a-z0-9-]*?):\s*([^;\n]+);/g;
-  }
 
-  let match;
-  while ((match = pattern.exec(scss)) !== null) {
-    const [, name, value] = match;
-    if (name && value) {
-      // Clean up the value: remove !default, trim whitespace, normalize multi-line
-      let cleanValue = value
-        .replace(/\s*!default\s*$/, '')
-        .trim()
-        .replace(/\s+/g, ' ') // Normalize whitespace
-        .replace(/\s*\n\s*/g, ' '); // Remove line breaks
-
-      variables.set(name.trim(), cleanValue);
-    }
-  }
-
-  return variables;
-}
+import fs from "fs";
+import path from "path";
+import * as sass from "sass";
 
 /**
- * Resolve SCSS variable references recursively
- * @param {string} value - Variable value (may contain $references)
- * @param {Map} allVars - All available variables
- * @param {Set} visited - Track visited variables to prevent infinite loops
- * @returns {string} Resolved value
- */
-function resolveReferences(value, allVars, visited = new Set()) {
-  // Match $variable-name patterns
-  const refPattern = /\$([a-zA-Z0-9-]+)/g;
-  let resolved = value;
-  let hasReferences = false;
-
-  const matches = [...value.matchAll(refPattern)];
-  for (const match of matches) {
-    const refName = match[1];
-    if (visited.has(refName)) {
-      // Circular reference detected, stop resolving
-      continue;
-    }
-    if (allVars.has(refName)) {
-      hasReferences = true;
-      visited.add(refName);
-      const refValue = allVars.get(refName);
-      // Recursively resolve nested references
-      const resolvedRef = resolveReferences(refValue, allVars, visited);
-      resolved = resolved.replace(match[0], resolvedRef);
-      visited.delete(refName);
-    }
-  }
-
-  return resolved;
-}
-
-/**
- * Generate CSS theme from SCSS tokenization folder
+ * Generate CSS theme from SCSS tokenization folder using Dart Sass compiler
+ *
+ * This approach:
+ * 1. Reads SCSS files to extract variable names using simple regex
+ * 2. Generates SCSS template that outputs variables as CSS custom properties
+ * 3. Uses Dart Sass compiler to properly resolve all SCSS logic (imports, functions, etc.)
+ * 4. Returns clean CSS with all variables resolved
+ *
  * @param {string} tokenizationPath - Path to tokenization folder
  * @returns {string} Generated CSS
  */
 function generateTheme(tokenizationPath) {
-  // Read SCSS files
-  const variablesPath = path.join(tokenizationPath, '_variables.scss');
-  const aliasesPath = path.join(tokenizationPath, '_color-aliases.scss');
-  const colorsPath = path.join(tokenizationPath, '_colors.scss');
+  const variablesPath = path.join(tokenizationPath, "_variables.scss");
 
   if (!fs.existsSync(variablesPath)) {
     throw new Error(`_variables.scss not found in ${tokenizationPath}`);
   }
 
-  let scss = '';
+  // Read all SCSS files to extract variable names
+  const allScss = readAllScssFiles(tokenizationPath);
 
-  // Read in order: colors first (primitives), then aliases, then variables
-  if (fs.existsSync(colorsPath)) {
-    scss += fs.readFileSync(colorsPath, 'utf-8') + '\n';
-  }
-  if (fs.existsSync(aliasesPath)) {
-    scss += fs.readFileSync(aliasesPath, 'utf-8') + '\n';
-  }
-  scss += fs.readFileSync(variablesPath, 'utf-8');
+  // Extract variable names using regex (just the names, not values)
+  const lightVarNames = extractVariableNames(
+    allScss,
+    /\$pt-(?!dark-)([a-zA-Z0-9-]+):/g,
+  );
+  const darkVarNames = extractVariableNames(
+    allScss,
+    /\$pt-dark-([a-zA-Z0-9-]+):/g,
+  );
 
-  // Extract all primitive variables first (colors, no $pt- prefix)
-  // Match variables like: $blue1: #002A7C !default;
-  const colorPrimitives = extractVariables(scss, '$');
+  // Generate SCSS template that will output these as CSS variables
+  // The #{...} syntax tells Sass to interpolate the variable value
+  // Import in the correct order as defined in index.scss
+  const scssTemplate = `
+@import "colors";
+@import "flex";
+@import "variables";
+@import "color-aliases";
+@import "mixins";
+@import "variables-extended";
 
-  // Extract pt-prefixed variables (excluding dark variants)
-  const lightVars = extractVariables(scss, '$pt-', true);
+/* Light Mode */
+:root {
+${lightVarNames.map(name => `  --pt-${name}: #{$pt-${name}};`).join("\n")}
+}
 
-  // Extract dark mode variables ($pt-dark-*)
-  const darkVarsRaw = extractVariables(scss, '$pt-dark-');
-
-  // Combine all variables for reference resolution
-  const allVars = new Map([...colorPrimitives, ...lightVars, ...darkVarsRaw]);
-
-  // Resolve references and generate CSS
-  const timestamp = new Date().toISOString();
-  let css = `/**\n * Custom Theme\n * Generated from: ${tokenizationPath}\n * Generated at: ${timestamp}\n */\n\n`;
-
-  // Light mode (:root)
-  css += '/* Light Mode */\n:root {\n';
-  const sortedLightVars = Array.from(lightVars.entries()).sort((a, b) => a[0].localeCompare(b[0]));
-  for (const [name, value] of sortedLightVars) {
-    // Skip null values
-    if (value === 'null') {
-      continue;
-    }
-    // Skip values that contain newlines or comments (likely malformed)
-    if (value.includes('\n') || value.includes('//')) {
-      continue;
-    }
-    try {
-      const resolved = resolveReferences(value, allVars);
-      // Skip if resolved to null
-      if (resolved === 'null') {
-        continue;
-      }
-      // Skip if resolution still contains $ (unresolved reference)
-      if (resolved.includes('$')) {
-        continue;
-      }
-      css += `  --pt-${name}: ${resolved};\n`;
-    } catch (error) {
-      // Skip on error
-      continue;
-    }
-  }
-  css += '}\n\n';
-
-  // Dark mode (.dark)
-  css += '/* Dark Mode */\n.dark {\n';
-  const sortedLightKeys = Array.from(lightVars.keys()).sort();
-  for (const name of sortedLightKeys) {
-    try {
-      // Check if dark variant exists
-      if (darkVarsRaw.has(name)) {
-        const darkValue = darkVarsRaw.get(name);
-        // Skip null values
-        if (darkValue === 'null') {
-          continue;
-        }
-        // Skip malformed values
-        if (darkValue.includes('\n') || darkValue.includes('//')) {
-          continue;
-        }
-        const resolved = resolveReferences(darkValue, allVars);
-        // Skip if resolved to null or has unresolved refs
-        if (resolved === 'null' || resolved.includes('$')) {
-          continue;
-        }
-        css += `  --pt-${name}: ${resolved};\n`;
+/* Dark Mode */
+.dark {
+${
+    lightVarNames.map(name => {
+      // Check if dark variant exists, otherwise use light value
+      if (darkVarNames.includes(name)) {
+        return `  --pt-${name}: #{$pt-dark-${name}};`;
       } else {
-        const lightValue = lightVars.get(name);
-        // Skip null values
-        if (lightValue === 'null') {
-          continue;
-        }
-        // Skip malformed values
-        if (lightValue.includes('\n') || lightValue.includes('//')) {
-          continue;
-        }
-        // No dark variant, use light value
-        const resolved = resolveReferences(lightValue, allVars);
-        // Skip if resolved to null or has unresolved refs
-        if (resolved === 'null' || resolved.includes('$')) {
-          continue;
-        }
-        css += `  --pt-${name}: ${resolved};\n`;
+        return `  --pt-${name}: #{$pt-${name}};`;
       }
-    } catch (error) {
-      // Just skip on error
-      continue;
+    }).join("\n")
+  }
+}
+`;
+
+  // Compile SCSS to CSS using Dart Sass
+  // This properly handles all SCSS features: imports, functions, calculations, etc.
+  try {
+    const result = sass.compileString(scssTemplate, {
+      loadPaths: [tokenizationPath],
+      style: "expanded",
+      logger: sass.Logger.silent, // Suppress deprecation warnings
+    });
+
+    // Add header comment
+    const timestamp = new Date().toISOString();
+    const header = `/**
+ * Custom Theme
+ * Generated from: ${tokenizationPath}
+ * Generated at: ${timestamp}
+ */
+
+`;
+
+    // Clean up the output: remove lines with "null" or unresolved variables
+    const cleanedCss = cleanupGeneratedCss(result.css);
+
+    return header + cleanedCss;
+  } catch (error) {
+    // If Sass compilation fails, provide helpful error message
+    const errorMessage = error.span?.context
+      ? `${error.message}\n\nContext:\n${error.span.context}`
+      : error.message;
+
+    throw new Error(
+      `SCSS compilation failed: ${errorMessage}\n\nThis usually means there are forward references in your SCSS files. Variables must be defined before they are used.\n\nTo fix this, restructure your SCSS files so that:\n1. _colors.scss contains only color primitives\n2. _color-aliases.scss contains semantic color mappings (and any variables it references)\n3. _variables.scss contains remaining variables\n\nMake sure each file only references variables defined earlier in the import chain.`,
+    );
+  }
+}
+
+/**
+ * Read all SCSS files in the tokenization folder
+ * @param {string} tokenizationPath - Path to tokenization folder
+ * @returns {string} Combined SCSS content
+ */
+function readAllScssFiles(tokenizationPath) {
+  const files = [
+    "_colors.scss",
+    "_color-aliases.scss",
+    "_variables.scss",
+    "_variables-extended.scss",
+  ];
+
+  let scss = "";
+  for (const file of files) {
+    const filePath = path.join(tokenizationPath, file);
+    if (fs.existsSync(filePath)) {
+      scss += fs.readFileSync(filePath, "utf-8") + "\n";
     }
   }
-  css += '}\n';
 
-  // Final cleanup: remove any lines that contain SCSS syntax or malformed CSS
-  const lines = css.split('\n');
+  return scss;
+}
+
+/**
+ * Extract variable names from SCSS using regex
+ *
+ * This only extracts the names, not the values. The Sass compiler
+ * will resolve the actual values, including all SCSS logic.
+ *
+ * @param {string} scss - SCSS content
+ * @param {RegExp} pattern - Regex pattern to match variable declarations
+ * @returns {string[]} Array of variable names (without $ prefix)
+ */
+function extractVariableNames(scss, pattern) {
+  const names = new Set();
+
+  // Split into lines and filter out comments
+  const lines = scss.split("\n");
+  const activeLines = lines.filter(line => {
+    const trimmed = line.trim();
+    // Skip empty lines and comment lines
+    return trimmed && !trimmed.startsWith("//");
+  });
+
+  const filteredScss = activeLines.join("\n");
+
+  let match;
+  while ((match = pattern.exec(filteredScss)) != null) {
+    if (match[1]) {
+      names.add(match[1]);
+    }
+  }
+  return Array.from(names).sort();
+}
+
+/**
+ * Clean up generated CSS by removing lines with null values or malformed content
+ * @param {string} css - Generated CSS
+ * @returns {string} Cleaned CSS
+ */
+function cleanupGeneratedCss(css) {
+  const lines = css.split("\n");
   const cleanedLines = lines.filter(line => {
     const trimmed = line.trim();
 
-    // Keep empty lines, comments, and CSS selectors
-    if (!trimmed || trimmed.startsWith('/*') || trimmed.startsWith('*') || trimmed === '*/') {
-      return true;
-    }
-    if (line.includes(':root') || line.includes('.dark') || trimmed === '}') {
+    // Keep comments, selectors, braces, empty lines
+    if (
+      !trimmed || trimmed.startsWith("/*") || trimmed.startsWith("*")
+      || trimmed === "*/" || line.includes(":root") || line.includes(".dark")
+      || trimmed === "}" || trimmed === "{"
+    ) {
       return true;
     }
 
-    // Skip lines with SCSS syntax
-    if (line.includes('$') || line.includes('!default') || trimmed.startsWith('//')) {
+    // Skip lines with null values (variables that weren't defined)
+    if (trimmed.includes(": null;")) {
       return false;
     }
 
-    // For CSS variable declarations, validate they're well-formed
-    if (line.includes('--pt-')) {
-      // Valid CSS variable should be: --pt-name: value;
-      // Must have colon, semicolon, and shouldn't end with comma or paren
-      if (!trimmed.includes(':') || !trimmed.endsWith(';')) {
-        return false;
-      }
-      // Skip lines that look like partial values (ending with comma, paren, etc before semicolon)
-      if (trimmed.match(/[,\(\)]\s*;?\s*$/)) {
-        return false;
-      }
-      return true;
+    // Skip lines that still contain SCSS variables (shouldn't happen with proper compilation)
+    if (trimmed.includes("$")) {
+      return false;
     }
 
-    // Skip everything else
-    return false;
+    // Keep all other lines (should be valid CSS variable declarations)
+    return true;
   });
 
-  return cleanedLines.join('\n');
+  return cleanedLines.join("\n");
 }
 
-export { generateTheme, extractVariables, resolveReferences };
+export { extractVariableNames, generateTheme };
