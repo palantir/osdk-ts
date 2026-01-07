@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, PropertyKeys } from "@osdk/api";
+import type {
+  DerivedProperty,
+  ObjectTypeDefinition,
+  PropertyKeys,
+  QueryDefinition,
+  SimplePropertyDef,
+} from "@osdk/api";
 import { renderHook, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
@@ -59,10 +65,17 @@ describe(useDefaultTableStates, () => {
   });
 
   it("handles mixed column types with different visibility states", async () => {
-    const mockRdpCreator = () => ({} as any);
+    const mockRdpCreator = (() => ({})) as unknown as DerivedProperty.Creator<
+      TestObject,
+      SimplePropertyDef
+    >;
 
     const columnDefinitions: Array<
-      ColumnDefinition<TestObject, { myRdp: any }, { myFunction: any }>
+      ColumnDefinition<
+        TestObject,
+        { myRdp: SimplePropertyDef },
+        { myFunction: QueryDefinition<{}> }
+      >
     > = [
       {
         locator: { type: "property", id: "name" as TestObjectKeys },
@@ -73,7 +86,7 @@ describe(useDefaultTableStates, () => {
         isVisible: false,
       },
       {
-        locator: { type: "rdp", id: "myRdp", creator: mockRdpCreator as any },
+        locator: { type: "rdp", id: "myRdp", creator: mockRdpCreator },
         isVisible: true,
       },
       {

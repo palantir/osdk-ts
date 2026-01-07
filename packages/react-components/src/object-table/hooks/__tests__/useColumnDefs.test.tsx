@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, Osdk, PropertyKeys } from "@osdk/api";
+import type {
+  DerivedProperty,
+  ObjectTypeDefinition,
+  Osdk,
+  PropertyKeys,
+  SimplePropertyDef,
+} from "@osdk/api";
 import type { Client } from "@osdk/client";
 import { OsdkProvider } from "@osdk/react";
 import type { AccessorKeyColumnDef } from "@tanstack/react-table";
@@ -370,7 +376,9 @@ describe(useColumnDefs, () => {
       };
 
       if (typeof nameColumn.cell === "function") {
-        nameColumn.cell(mockCellContext as any);
+        (nameColumn.cell as unknown as (
+          ctx: typeof mockCellContext,
+        ) => unknown)(mockCellContext);
       }
 
       expect(customRenderCell).toHaveBeenCalledWith(
@@ -419,7 +427,9 @@ describe(useColumnDefs, () => {
       let cellResult: unknown;
 
       if (typeof nameColumn.cell === "function") {
-        cellResult = nameColumn.cell(mockCellContext as any);
+        cellResult = (nameColumn.cell as unknown as (
+          ctx: typeof mockCellContext,
+        ) => unknown)(mockCellContext);
       }
       expect(cellResult).toBe("John");
       expect(mockGetValue).toHaveBeenCalled();
@@ -473,13 +483,16 @@ describe(useColumnDefs, () => {
 
       const wrapper = createWrapper(fakeClient);
 
-      const mockRdpCreator = vitest.fn();
+      const mockRdpCreator = vitest.fn() as unknown as DerivedProperty.Creator<
+        TestObject,
+        SimplePropertyDef
+      >;
 
       const columnDefinitions: Array<
-        ColumnDefinition<TestObject, { myRdp: any }, {}>
+        ColumnDefinition<TestObject, { myRdp: SimplePropertyDef }, {}>
       > = [
         {
-          locator: { type: "rdp", id: "myRdp", creator: mockRdpCreator as any },
+          locator: { type: "rdp", id: "myRdp", creator: mockRdpCreator },
           width: 180,
         },
       ];
@@ -523,11 +536,17 @@ describe(useColumnDefs, () => {
         },
       ];
 
+      type ColDefs =
+        | Array<
+          ColumnDefinition<TestObject, Record<string, SimplePropertyDef>, {}>
+        >
+        | undefined;
+
       const { result, rerender } = renderHook(
-        ({ colDefs }: { colDefs: any }) =>
+        ({ colDefs }: { colDefs: ColDefs }) =>
           useColumnDefs(TestObjectType, colDefs),
         {
-          initialProps: { colDefs: initialColumnDefinitions as any },
+          initialProps: { colDefs: initialColumnDefinitions as ColDefs },
           wrapper,
         },
       );

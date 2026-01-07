@@ -29,8 +29,14 @@ import type * as React from "react";
 
 export type ColumnDefinition<
   Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef>,
-  FunctionColumns extends Record<string, QueryDefinition<{}>>,
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
+  FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
+    string,
+    never
+  >,
 > = {
   locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>;
 
@@ -50,7 +56,7 @@ export type ColumnDefinition<
   orderable?: boolean;
   filterable?: boolean;
   renderCell?: (
-    object: Osdk.Instance<Q>,
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
   ) => React.ReactNode;
   renderHeader?: () => React.ReactNode;
@@ -83,7 +89,10 @@ export type ColumnDefinitionLocator<
 
 export interface ObjectTableProps<
   Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = {},
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -202,7 +211,7 @@ export interface ObjectTableProps<
    * @param columnDefinition The column definition for the clicked cell
    */
   onCellClick?: (
-    object: Osdk.Instance<Q>,
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
   ) => void;
 
@@ -211,7 +220,9 @@ export interface ObjectTableProps<
    *
    * @param object The object representing the clicked row
    */
-  onRowClick?: (object: Osdk.Instance<Q>) => void;
+  onRowClick?: (
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+  ) => void;
 
   /**
    * Selection mode for the table rows.
@@ -239,7 +250,7 @@ export interface ObjectTableProps<
    * If provided, will render this context menu when right clicking on a cell
    */
   renderCellContextMenu?: (
-    object: Osdk.Instance<Q>,
+    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
     locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
   ) => React.ReactNode;
 

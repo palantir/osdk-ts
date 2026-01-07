@@ -18,6 +18,7 @@ import type {
   ObjectMetadata,
   ObjectTypeDefinition,
   Osdk,
+  PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
@@ -26,9 +27,15 @@ import type { AccessorColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 
-interface UseColumnDefsResult<Q extends ObjectTypeDefinition> {
+interface UseColumnDefsResult<
+  Q extends ObjectTypeDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
+> {
   columns: AccessorColumnDef<
-    Osdk.Instance<Q>
+    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >[];
 
   loading: boolean;
@@ -41,7 +48,10 @@ interface UseColumnDefsResult<Q extends ObjectTypeDefinition> {
  */
 export function useColumnDefs<
   Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef>,
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -49,14 +59,10 @@ export function useColumnDefs<
 >(
   objectType: Q,
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
-): UseColumnDefsResult<Q> {
+): UseColumnDefsResult<Q, RDPs> {
   const { metadata, loading, error } = useOsdkMetadata(objectType);
 
-  const columns: Array<
-    AccessorColumnDef<
-      Osdk.Instance<Q>
-    >
-  > = useMemo(() => {
+  const columns = useMemo(() => {
     const objectProperties = metadata?.properties;
     // If columnDefinitions is provided, construct colDefs with it
     if (columnDefinitions) {
@@ -67,7 +73,7 @@ export function useColumnDefs<
     }
 
     // If not, return the default columns from the object properties
-    return getDefaultColumns<Q>(objectProperties);
+    return getDefaultColumns<Q, RDPs>(objectProperties);
   }, [columnDefinitions, metadata?.properties]);
 
   return { columns, loading, error };
@@ -75,7 +81,10 @@ export function useColumnDefs<
 
 function getColumnsFromColumnDefinitions<
   Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef>,
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -83,7 +92,11 @@ function getColumnsFromColumnDefinitions<
 >(
   columnDefinitions: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
   objectProperties?: Record<any, ObjectMetadata.Property>,
-) {
+): Array<
+  AccessorColumnDef<
+    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+  >
+> {
   return columnDefinitions.map((col) => {
     const {
       locator,
@@ -104,7 +117,7 @@ function getColumnsFromColumnDefinitions<
     const colKey = locator.id as string;
 
     const colDef: AccessorColumnDef<
-      Osdk.Instance<Q>
+      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
     > = {
       id: colKey,
       accessorKey: colKey,
@@ -116,7 +129,12 @@ function getColumnsFromColumnDefinitions<
       enableSorting: orderable,
       enableColumnFilter: filterable,
       cell: (cellContext) => {
-        const object: Osdk.Instance<Q> = cellContext.row.original;
+        const object: Osdk.Instance<
+          Q,
+          "$allBaseProperties",
+          PropertyKeys<Q>,
+          RDPs
+        > = cellContext.row.original;
 
         return renderCell
           ? renderCell(object, locator)
@@ -130,18 +148,22 @@ function getColumnsFromColumnDefinitions<
 
 function getDefaultColumns<
   Q extends ObjectTypeDefinition,
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
 >(
   objectProperties?: Record<any, ObjectMetadata.Property>,
 ): Array<
   AccessorColumnDef<
-    Osdk.Instance<Q>
+    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >
 > {
   if (!objectProperties) return [];
 
   return Object.entries(objectProperties).map(([key, property]) => {
     const colDef: AccessorColumnDef<
-      Osdk.Instance<Q>
+      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
     > = {
       accessorKey: key,
       header: property.displayName ?? key,

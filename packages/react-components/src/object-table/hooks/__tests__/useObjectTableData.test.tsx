@@ -29,9 +29,21 @@ import { describe, expect, it, vi } from "vitest";
 import type { ColumnDefinition } from "../../ObjectTableApi.js";
 import { useObjectTableData } from "../useObjectTableData.js";
 
-// Mock the useObjectSet hook from @osdk/react/experimental
+interface MockUseObjectSetReturn {
+  data: [];
+  isLoading: false;
+  error: undefined;
+  fetchNextPage: ReturnType<typeof vi.fn>;
+  hasNextPage: false;
+  isFetchingNextPage: false;
+  _testOptions: {
+    withProperties?: Record<string, unknown>;
+    pageSize: number;
+  };
+}
+
 vi.mock("@osdk/react/experimental", () => ({
-  useObjectSet: vi.fn((objectSet, options) => {
+  useObjectSet: vi.fn((objectSet, options): MockUseObjectSetReturn => {
     return {
       data: [],
       isLoading: false,
@@ -73,7 +85,8 @@ describe(useObjectTableData, () => {
       { wrapper },
     );
 
-    expect((result.current as any)._testOptions).toEqual({
+    const mockResult = result.current as unknown as MockUseObjectSetReturn;
+    expect(mockResult._testOptions).toEqual({
       withProperties: undefined,
       pageSize: 50,
     });
@@ -85,8 +98,9 @@ describe(useObjectTableData, () => {
       { wrapper },
     );
 
-    expect((result.current as any)._testOptions.withProperties).toBeUndefined();
-    expect((result.current as any)._testOptions.pageSize).toBe(50);
+    const mockResult = result.current as unknown as MockUseObjectSetReturn;
+    expect(mockResult._testOptions.withProperties).toBeUndefined();
+    expect(mockResult._testOptions.pageSize).toBe(50);
   });
 
   it("calls useObjectSet without withProperties when columnDefinitions have no RDP columns", () => {
@@ -104,8 +118,9 @@ describe(useObjectTableData, () => {
       { wrapper },
     );
 
-    expect((result.current as any)._testOptions.withProperties).toEqual({});
-    expect((result.current as any)._testOptions.pageSize).toBe(50);
+    const mockResult = result.current as unknown as MockUseObjectSetReturn;
+    expect(mockResult._testOptions.withProperties).toEqual({});
+    expect(mockResult._testOptions.pageSize).toBe(50);
   });
 
   it("extracts RDP creators and passes them to useObjectSet", () => {
@@ -144,7 +159,8 @@ describe(useObjectTableData, () => {
       { wrapper },
     );
 
-    expect((result.current as any)._testOptions.withProperties).toEqual({
+    const mockResult = result.current as unknown as MockUseObjectSetReturn;
+    expect(mockResult._testOptions.withProperties).toEqual({
       rdp1: mockRdpCreator1,
       rdp2: mockRdpCreator2,
     });
@@ -172,14 +188,16 @@ describe(useObjectTableData, () => {
       },
     );
 
-    const firstWithProperties = (result.current as any)._testOptions
-      .withProperties;
+    const firstMockResult = result.current as unknown as MockUseObjectSetReturn;
+    const firstWithProperties = firstMockResult._testOptions.withProperties;
 
     // Rerender with same columnDefinitions reference
     rerender({ colDefs: columnDefinitions });
 
     // Should be the same reference (memoized)
-    expect((result.current as any)._testOptions.withProperties).toBe(
+    const secondMockResult = result
+      .current as unknown as MockUseObjectSetReturn;
+    expect(secondMockResult._testOptions.withProperties).toBe(
       firstWithProperties,
     );
   });
@@ -202,30 +220,39 @@ describe(useObjectTableData, () => {
       },
     ];
 
+    type ColDefs =
+      | Array<
+        ColumnDefinition<TestObject, Record<string, SimplePropertyDef>, {}>
+      >
+      | undefined;
+
     const { result, rerender } = renderHook(
-      ({ colDefs }: { colDefs: any }) =>
+      ({ colDefs }: { colDefs: ColDefs }) =>
         useObjectTableData(mockObjectSet, colDefs),
       {
-        initialProps: { colDefs: initialColumnDefinitions as any },
+        initialProps: { colDefs: initialColumnDefinitions as ColDefs },
         wrapper,
       },
     );
 
-    expect((result.current as any)._testOptions.withProperties).toEqual({
+    const firstMockResult = result.current as unknown as MockUseObjectSetReturn;
+    expect(firstMockResult._testOptions.withProperties).toEqual({
       rdp1: mockRdpCreator1,
     });
 
     const updatedColumnDefinitions: Array<
-      ColumnDefinition<TestObject, { rdp2: any }, {}>
+      ColumnDefinition<TestObject, { rdp2: SimplePropertyDef }, {}>
     > = [
       {
         locator: { type: "rdp", id: "rdp2", creator: mockRdpCreator2 },
       },
     ];
 
-    rerender({ colDefs: updatedColumnDefinitions as any });
+    rerender({ colDefs: updatedColumnDefinitions as ColDefs });
 
-    expect((result.current as any)._testOptions.withProperties).toEqual({
+    const secondMockResult = result
+      .current as unknown as MockUseObjectSetReturn;
+    expect(secondMockResult._testOptions.withProperties).toEqual({
       rdp2: mockRdpCreator2,
     });
   });

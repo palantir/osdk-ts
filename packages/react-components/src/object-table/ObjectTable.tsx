@@ -17,6 +17,7 @@
 import type {
   ObjectTypeDefinition,
   Osdk,
+  PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
@@ -39,7 +40,10 @@ import { Table } from "./Table.js";
 
 export function ObjectTable<
   Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = {},
+  RDPs extends Record<string, SimplePropertyDef> = Record<
+    string,
+    never
+  >,
   FunctionColumns extends Record<string, QueryDefinition<{}>> = Record<
     string,
     never
@@ -72,9 +76,9 @@ export function ObjectTable<
   const { columnVisibility } = useDefaultTableStates({ columnDefinitions });
 
   const table = useReactTable<
-    Osdk.Instance<Q>
+    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >({
-    data: (data ?? []) as Array<Osdk.Instance<Q>>,
+    data: data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     state: {
