@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.15.0-beta.4
+
+### Minor Changes
+
+- 9088072: Add users from static groups as action parameters in OAC
+- bb8d059: Support customizations for delete object action parameters
+- 33e10e3: Implement user and group action parameters
+
+### Patch Changes
+
+- Updated dependencies [c9ca08d]
+  - @osdk/api@2.7.0-beta.6
+
 ## 0.15.0-beta.3
 
 ### Minor Changes

@@ -1,5 +1,19 @@
 # @osdkkit/react
 
+## 0.9.0-beta.4
+
+### Minor Changes
+
+- 0b2cd91: fix SimplePropertyDef issue, wire RDPs through, update names
+
+### Patch Changes
+
+- Updated dependencies [c9ca08d]
+- Updated dependencies [c332598]
+- Updated dependencies [0b2cd91]
+  - @osdk/api@2.7.0-beta.6
+  - @osdk/client@2.7.0-beta.6
+
 ## 0.9.0-beta.3
 
 ### Minor Changes
