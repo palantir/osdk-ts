@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Row, RowData, Table } from "@tanstack/react-table";
+import type { Row, RowData } from "@tanstack/react-table";
 import React, { useCallback } from "react";
 
 interface SelectionHeaderCellProps {
@@ -52,45 +52,23 @@ export function SelectionHeaderCell({
 
 interface SelectionCellProps<TData extends RowData> {
   row: Row<TData>;
-  table: Table<TData>;
-  onToggleRow: (rowId: string, isShiftClick: boolean) => void;
-  lastSelectedRowIndex: number | null;
-  setLastSelectedRowIndex: (index: number | null) => void;
+  onToggleRow: (rowId: string, rowIndex: number, isShiftClick: boolean) => void;
 }
 
 export function SelectionCell<TData extends RowData>({
   row,
-  table,
   onToggleRow,
-  lastSelectedRowIndex,
-  setLastSelectedRowIndex,
 }: SelectionCellProps<TData>): React.ReactElement {
   const isSelected = row.getIsSelected();
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLInputElement>) => {
+      // Prevent onRowClick call
       e.stopPropagation();
 
-      const isShiftClick = e.shiftKey;
-
-      if (isShiftClick && lastSelectedRowIndex != null) {
-        const currentIndex = row.index;
-        const startIndex = Math.min(lastSelectedRowIndex, currentIndex);
-        const endIndex = Math.max(lastSelectedRowIndex, currentIndex);
-
-        const rows = table.getRowModel().rows;
-        for (let i = startIndex; i <= endIndex; i++) {
-          const targetRow = rows[i];
-          if (targetRow) {
-            onToggleRow(targetRow.id, true);
-          }
-        }
-      } else {
-        onToggleRow(row.id, false);
-        setLastSelectedRowIndex(row.index);
-      }
+      onToggleRow(row.id, row.index, e.shiftKey);
     },
-    [row, table, onToggleRow, lastSelectedRowIndex, setLastSelectedRowIndex],
+    [row, onToggleRow],
   );
 
   return (
