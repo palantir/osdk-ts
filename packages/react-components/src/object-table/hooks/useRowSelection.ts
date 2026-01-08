@@ -33,10 +33,8 @@ export interface UseRowSelectionResult<Q extends ObjectTypeDefinition> {
   onRowSelectionChange: (updater: any) => void;
   isAllSelected: boolean;
   hasSelection: boolean;
-  lastSelectedRowIndex: number | null;
-  setLastSelectedRowIndex: (index: number | null) => void;
   onToggleAll: () => void;
-  onToggleRow: (rowId: string, isShiftClick: boolean) => void;
+  onToggleRow: (rowId: string, rowIndex: number, isShiftClick: boolean) => void;
 }
 
 export function useRowSelection<
@@ -122,8 +120,8 @@ export function useRowSelection<
 
     const newSelection: RowSelectionState = {};
     if (!isAllSelected) {
-      data.forEach((_, index) => {
-        newSelection[index.toString()] = true;
+      data.forEach((item) => {
+        newSelection[item.$primaryKey.toString()] = true;
       });
     }
 
@@ -137,76 +135,100 @@ export function useRowSelection<
     }
   }, [isSelectionEnabled, data, isAllSelected, isControlled, onRowSelection]);
 
-  const onToggleRow = useCallback((rowId: string, isShiftClick: boolean) => {
-    if (!isSelectionEnabled) return;
+  const onToggleRow = useCallback(
+    (rowId: string, rowIndex: number, isShiftClick: boolean) => {
+      if (!isSelectionEnabled) return;
 
-    if (selectionMode === "single") {
-      const newSelection: RowSelectionState = { [rowId]: !rowSelection[rowId] };
-
-      if (isControlled && data) {
-        const index = parseInt(rowId, 10);
-        const item = data[index];
-        const newSelectedRows = rowSelection[rowId]
-          ? []
-          : item
-          ? [item.$primaryKey as PrimaryKeyType<Q>]
-          : [];
-        onRowSelection?.(newSelectedRows);
-      } else {
-        setInternalRowSelection(newSelection);
-      }
-      return;
-    }
-
-    if (isControlled) {
-      const index = parseInt(rowId, 10);
-      const item = data?.[index];
-      if (!item) return;
-
-      const primaryKey = item.$primaryKey as PrimaryKeyType<Q>;
-      const currentlySelected = selectedRows || [];
-
-      if (isShiftClick) {
-        // For shift-click, always add to selection (don't toggle off)
-        const newSelectedRows = currentlySelected.includes(primaryKey)
-          ? currentlySelected
-          : [...currentlySelected, primaryKey];
-        onRowSelection?.(newSelectedRows);
-      } else {
-        const newSelectedRows = currentlySelected.includes(primaryKey)
-          ? currentlySelected.filter(id => id !== primaryKey)
-          : [...currentlySelected, primaryKey];
-        onRowSelection?.(newSelectedRows);
-      }
-    } else {
-      setInternalRowSelection(prev => {
-        if (isShiftClick) {
-          // For shift-click, always select (don't toggle)
-          return { ...prev, [rowId]: true };
-        }
-        return {
-          ...prev,
-          [rowId]: !prev[rowId],
+      if (selectionMode === "single") {
+        // In single selection mode, ignore shift-click
+        const newSelection: RowSelectionState = {
+          [rowId]: !rowSelection[rowId],
         };
-      });
-    }
-  }, [
-    isSelectionEnabled,
-    selectionMode,
-    rowSelection,
-    isControlled,
-    data,
-    selectedRows,
-    onRowSelection,
-  ]);
+
+        if (isControlled && data) {
+          const newSelectedRows = rowSelection[rowId]
+            ? []
+            : [rowId as PrimaryKeyType<Q>];
+          onRowSelection?.(newSelectedRows);
+        } else {
+          setInternalRowSelection(newSelection);
+        }
+        setLastSelectedRowIndex(rowIndex);
+        return;
+      }
+
+      // Multiple selection mode
+      if (isShiftClick && lastSelectedRowIndex != null && data) {
+        // Handle shift-click range selection
+        const startIndex = Math.min(lastSelectedRowIndex, rowIndex);
+        const endIndex = Math.max(lastSelectedRowIndex, rowIndex);
+
+        if (isControlled) {
+          const currentlySelected = selectedRows || [];
+          const newSelectedRows = [...currentlySelected];
+
+          // Add all rows in the range to selection
+          for (let i = startIndex; i <= endIndex; i++) {
+            const item = data[i];
+            if (item) {
+              const pk = item.$primaryKey as PrimaryKeyType<Q>;
+              if (!newSelectedRows.includes(pk)) {
+                newSelectedRows.push(pk);
+              }
+            }
+          }
+
+          onRowSelection?.(newSelectedRows);
+        } else {
+          setInternalRowSelection(prev => {
+            const newSelection = { ...prev };
+            // Select all rows in the range
+            for (let i = startIndex; i <= endIndex; i++) {
+              const item = data[i];
+              if (item) {
+                newSelection[item.$primaryKey.toString()] = true;
+              }
+            }
+            return newSelection;
+          });
+        }
+      } else {
+        // Normal click (toggle single row)
+        const primaryKey = rowId as PrimaryKeyType<Q>;
+
+        if (isControlled) {
+          const currentlySelected = selectedRows || [];
+          const newSelectedRows = currentlySelected.includes(primaryKey)
+            ? currentlySelected.filter(id => id !== primaryKey)
+            : [...currentlySelected, primaryKey];
+          onRowSelection?.(newSelectedRows);
+        } else {
+          setInternalRowSelection(prev => ({
+            ...prev,
+            [rowId]: !prev[rowId],
+          }));
+        }
+
+        setLastSelectedRowIndex(rowIndex);
+      }
+    },
+    [
+      isSelectionEnabled,
+      selectionMode,
+      rowSelection,
+      isControlled,
+      data,
+      selectedRows,
+      onRowSelection,
+      lastSelectedRowIndex,
+    ],
+  );
 
   return {
     rowSelection,
     onRowSelectionChange,
     isAllSelected,
     hasSelection,
-    lastSelectedRowIndex,
-    setLastSelectedRowIndex,
     onToggleAll,
     onToggleRow,
   };
