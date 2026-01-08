@@ -85,8 +85,6 @@ export function ObjectTable<
     onRowSelectionChange,
     isAllSelected,
     hasSelection,
-    lastSelectedRowIndex,
-    setLastSelectedRowIndex,
     onToggleAll,
     onToggleRow,
   } = useRowSelection<Q, RDPs>({
@@ -112,13 +110,10 @@ export function ObjectTable<
           )
           : null
       ),
-      cell: ({ row, table }: { row: any; table: any }) => (
+      cell: ({ row }: { row: any }) => (
         <SelectionCell
           row={row}
-          table={table}
           onToggleRow={onToggleRow}
-          lastSelectedRowIndex={lastSelectedRowIndex}
-          setLastSelectedRowIndex={setLastSelectedRowIndex}
         />
       ),
       size: 50,
@@ -134,8 +129,6 @@ export function ObjectTable<
     hasSelection,
     onToggleAll,
     onToggleRow,
-    lastSelectedRowIndex,
-    setLastSelectedRowIndex,
   ]);
 
   const allColumns = useMemo(() => {
