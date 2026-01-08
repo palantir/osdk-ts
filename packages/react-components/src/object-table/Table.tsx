@@ -71,13 +71,19 @@ export function Table<TData extends RowData>(
         position: "relative", // needed for sticky header
         height: "100%", // needed for scrolling
         overflow: "auto",
+        cursor: table.getState().columnSizingInfo?.isResizingColumn
+          ? "col-resize"
+          : "default",
+        userSelect: table.getState().columnSizingInfo?.isResizingColumn
+          ? "none"
+          : "auto",
       }}
       onScroll={handleScroll}
     >
       <table
         style={{ display: "grid" }}
       >
-        <TableHeader headerGroups={table.getHeaderGroups()} />
+        <TableHeader headerGroups={table.getHeaderGroups()} table={table} />
         <TableBody
           rows={table.getRowModel().rows}
           tableContainerRef={tableContainerRef}

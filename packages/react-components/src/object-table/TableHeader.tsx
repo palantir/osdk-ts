@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-import type { HeaderGroup, RowData } from "@tanstack/react-table";
+import type { HeaderGroup, RowData, Table } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
 import React from "react";
 
 interface TableHeaderProps<TData extends RowData> {
   headerGroups: Array<HeaderGroup<TData>>;
+  table: Table<TData>;
 }
 
 export function TableHeader<TData extends RowData>({
   headerGroups,
+  table,
 }: TableHeaderProps<TData>): React.ReactElement {
   return (
     <thead
@@ -50,6 +52,7 @@ export function TableHeader<TData extends RowData>({
                 width: header.getSize(),
                 justifyContent: "flex-start",
                 alignItems: "center",
+                position: "relative",
               }}
             >
               {header.isPlaceholder
@@ -58,6 +61,29 @@ export function TableHeader<TData extends RowData>({
                   header.column.columnDef.header,
                   header.getContext(),
                 )}
+              {header.column.getCanResize() && (
+                <div
+                  onDoubleClick={() => header.column.resetSize()}
+                  onMouseDown={header.getResizeHandler()}
+                  onTouchStart={header.getResizeHandler()}
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    top: 0,
+                    height: "100%",
+                    width: "3px",
+                    cursor: "col-resize",
+                    touchAction: "none",
+                    zIndex: 11,
+                    background: "transparent",
+                    transform: header.column.getIsResizing()
+                      ? `translateX(${
+                        table.getState().columnSizingInfo.deltaOffset ?? 0
+                      }px)`
+                      : "",
+                  }}
+                />
+              )}
             </th>
           ))}
         </tr>
