@@ -104,20 +104,23 @@ export interface ObserveListOptions<
   pivotTo?: string;
 }
 
-// TODO: Rename this from `ObserveObjectArgs` => `ObserveObjectCallbackArgs`. Not doing it now to reduce churn
-// in repo.
-export interface ObserveObjectArgs<T extends ObjectTypeDefinition> {
+export interface ObserveObjectCallbackArgs<T extends ObjectTypeDefinition> {
   object: Osdk.Instance<T> | undefined;
   isOptimistic: boolean;
   status: Status;
   lastUpdated: number;
 }
 
-// TODO: Rename this from `ObserveObjectsArgs` => `ObserveObjectsCallbackArgs`. Not doing it now to reduce churn
-export interface ObserveObjectsArgs<
+export interface ObserveObjectsCallbackArgs<
   T extends ObjectTypeDefinition | InterfaceDefinition,
+  RDPs extends Record<
+    string,
+    WirePropertyTypes | undefined | Array<WirePropertyTypes>
+  > = {},
 > {
-  resolvedList: Array<Osdk.Instance<T>>;
+  resolvedList: Array<
+    Osdk.Instance<T, "$allBaseProperties", PropertyKeys<T>, RDPs>
+  >;
   isOptimistic: boolean;
   lastUpdated: number;
   fetchMore: () => Promise<void>;
@@ -211,7 +214,7 @@ export interface ObservableClient extends ObserveLinks {
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: ObserveOptions,
-    subFn: Observer<ObserveObjectArgs<T>>,
+    subFn: Observer<ObserveObjectCallbackArgs<T>>,
   ): Unsubscribable;
 
   /**
@@ -232,7 +235,7 @@ export interface ObservableClient extends ObserveLinks {
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveListOptions<T, RDPs>,
-    subFn: Observer<ObserveObjectsArgs<T>>,
+    subFn: Observer<ObserveObjectsCallbackArgs<T, RDPs>>,
   ): Unsubscribable;
 
   /**
