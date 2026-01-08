@@ -55,6 +55,7 @@ interface SelectionCellProps<TData extends RowData> {
   onToggleRow: (rowId: string, rowIndex: number, isShiftClick: boolean) => void;
 }
 
+const noop = () => {};
 export function SelectionCell<TData extends RowData>({
   row,
   onToggleRow,
@@ -84,6 +85,7 @@ export function SelectionCell<TData extends RowData>({
         type="checkbox"
         checked={isSelected}
         onClick={handleClick}
+        onChange={noop} // Using onClick here
         aria-label={`Select row ${row.index + 1}`}
       />
     </div>
