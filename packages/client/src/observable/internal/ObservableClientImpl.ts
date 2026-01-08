@@ -41,9 +41,9 @@ import type {
   ObserveAggregationArgs,
   ObserveAggregationOptions,
   ObserveListOptions,
-  ObserveObjectArgs,
+  ObserveObjectCallbackArgs,
   ObserveObjectOptions,
-  ObserveObjectsArgs,
+  ObserveObjectsCallbackArgs,
   ObserveObjectSetArgs,
   Unsubscribable,
 } from "../ObservableClient.js";
@@ -77,7 +77,7 @@ export class ObservableClientImpl implements ObservableClient {
     apiName: T["apiName"] | T,
     pk: PrimaryKeyType<T>,
     options: Omit<ObserveObjectOptions<T>, "apiName" | "pk">,
-    subFn: Observer<ObserveObjectArgs<T>>,
+    subFn: Observer<ObserveObjectCallbackArgs<T>>,
   ) => Unsubscribable = (apiName, pk, options, subFn) => {
     return this.__experimentalStore.objects.observe(
       {
@@ -95,7 +95,7 @@ export class ObservableClientImpl implements ObservableClient {
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveListOptions<T, RDPs>,
-    subFn: Observer<ObserveObjectsArgs<T>>,
+    subFn: Observer<ObserveObjectsCallbackArgs<T, RDPs>>,
   ) => Unsubscribable = (options, subFn) => {
     return this.__experimentalStore.lists.observe(
       options,
