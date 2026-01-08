@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
 import React from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
@@ -24,6 +24,7 @@ import { FilterListItem } from "./FilterListItem.js";
 
 interface FilterListContentProps<Q extends ObjectTypeDefinition> {
   objectType: Q;
+  objectSet: ObjectSet<Q>;
   filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (key: string, state: FilterState) => void;
@@ -32,6 +33,7 @@ interface FilterListContentProps<Q extends ObjectTypeDefinition> {
 
 export function FilterListContent<Q extends ObjectTypeDefinition>({
   objectType,
+  objectSet,
   filterDefinitions,
   filterStates,
   onFilterStateChanged,
@@ -58,6 +60,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
           <FilterListItem
             key={key}
             objectType={objectType}
+            objectSet={objectSet}
             definition={definition}
             filterState={state}
             onFilterStateChanged={(newState) =>

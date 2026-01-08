@@ -76,6 +76,7 @@ export type {
   NumberRangeFilterState,
   OverflowMenuRenderProps,
   PropertyFilterDefinition,
+  PropertyFilterDefinition as FilterDefinition,
   PropertyTypeFromKey,
   SingleDateFilterState,
   SingleSelectFilterState,

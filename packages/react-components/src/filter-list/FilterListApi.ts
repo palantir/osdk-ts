@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import type { LinkNames, ObjectTypeDefinition, WhereClause } from "@osdk/api";
+import type {
+  LinkNames,
+  ObjectSet,
+  ObjectTypeDefinition,
+  WhereClause,
+} from "@osdk/api";
 import type { ReactNode } from "react";
 import type {
-  FilterState as FilterStateUnion,
+  FilterState as FilterStateType,
   PropertyFilterDefinition,
 } from "./FilterListItemApi.js";
 import type { FilterTemplate } from "./types/AddFilterMenuTypes.js";
@@ -63,9 +68,9 @@ export type FilterState<Q extends ObjectTypeDefinition> =
 
 export interface FilterListProps<Q extends ObjectTypeDefinition> {
   /**
-   * The object type definition for the objects to be filtered
+   * The object set to filter. The type definition is extracted from this.
    */
-  objectType: Q;
+  objectSet: ObjectSet<Q>;
 
   /**
    * Title displayed in the panel header
@@ -113,7 +118,7 @@ export interface FilterListProps<Q extends ObjectTypeDefinition> {
    */
   onFilterStateChanged?: (
     filterKey: FilterKey<Q>,
-    newState: FilterStateUnion,
+    newState: FilterStateType,
   ) => void;
 
   /**

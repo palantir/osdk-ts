@@ -66,7 +66,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
   props: FilterListComponentProps<Q>,
 ): React.ReactElement {
   const {
-    objectType,
+    objectSet,
     title,
     titleIcon,
     filterDefinitions,
@@ -81,6 +81,9 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     classNames,
     renderAddFilterButton,
   } = props;
+
+  // Extract objectType from objectSet for internal use
+  const objectType = objectSet.$objectSetInternals.def;
 
   const {
     collapsed,
@@ -129,6 +132,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
         <>
           <FilterListContent
             objectType={objectType}
+            objectSet={objectSet}
             filterDefinitions={filterDefinitions}
             filterStates={filterStates}
             onFilterStateChanged={setFilterState}

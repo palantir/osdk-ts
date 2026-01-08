@@ -27,9 +27,7 @@ import type {
   ToggleInputClassNames,
 } from "../types/ClassNameOverrides.js";
 import type { KeywordSearchFilterState } from "../types/KeywordSearchTypes.js";
-import type {
-  HasLinkFilterState,
-} from "../types/LinkedFilterTypes.js";
+import type { HasLinkFilterState } from "../types/LinkedFilterTypes.js";
 import { CheckboxListInput } from "./inputs/CheckboxListInput.js";
 import { ContainsTextInput } from "./inputs/ContainsTextInput.js";
 import { DateRangeInput } from "./inputs/DateRangeInput.js";
@@ -54,11 +52,11 @@ export interface InputClassNames {
 
 export function renderFilterInput<Q extends ObjectTypeDefinition>(
   objectType: Q,
+  objectSet: ObjectSet<Q>,
   definition: FilterDefinitionUnion<Q>,
   filterState: FilterState | undefined,
   onFilterStateChanged: (state: FilterState) => void,
   inputClassNames?: InputClassNames,
-  objectSet?: ObjectSet<Q>,
 ): React.ReactElement {
   // Handle non-property filter types
   switch (definition.type) {
@@ -114,7 +112,7 @@ export function renderFilterInput<Q extends ObjectTypeDefinition>(
 
     case "custom": {
       // Custom filters provide their own renderInput function
-      if (definition.renderInput && objectSet) {
+      if (definition.renderInput) {
         const customFilterState = filterState?.type === "CUSTOM"
           ? filterState
           : definition.filterState;
@@ -132,7 +130,7 @@ export function renderFilterInput<Q extends ObjectTypeDefinition>(
       }
       return (
         <div data-unsupported="true">
-          Custom filter missing renderInput or objectSet
+          Custom filter missing renderInput
         </div>
       );
     }
