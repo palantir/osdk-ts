@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
-import type { OnChangeFn, RowSelectionState } from "@tanstack/react-table";
+import type { RowSelectionState } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
 
 export interface UseRowSelectionProps<
@@ -30,11 +30,10 @@ export interface UseRowSelectionProps<
 
 export interface UseRowSelectionResult<Q extends ObjectTypeDefinition> {
   rowSelection: RowSelectionState;
-  onRowSelectionChange: (updater: any) => void;
   isAllSelected: boolean;
   hasSelection: boolean;
   onToggleAll: () => void;
-  onToggleRow: (rowId: string, rowIndex: number, isShiftClick: boolean) => void;
+  onToggleRow: (id: string, rowIndex: number, isShiftClick: boolean) => void;
 }
 
 export function useRowSelection<
@@ -49,6 +48,7 @@ export function useRowSelection<
   const [internalRowSelection, setInternalRowSelection] = useState<
     RowSelectionState
   >({});
+
   const [lastSelectedRowIndex, setLastSelectedRowIndex] = useState<
     number | null
   >(null);
@@ -57,17 +57,17 @@ export function useRowSelection<
   const isSelectionEnabled = selectionMode !== "none";
 
   // Row selection state
-  // If controlled mode, return the state from selectedRows prop
+  // If controlled mode, return the state from selectedRows prop (converted to string IDs)
   // If uncontrolled, return the internalRowSelection state
   const rowSelection: RowSelectionState = useMemo(() => {
     if (!isSelectionEnabled) return {};
 
     if (isControlled && selectedRows && data) {
       const selectionState: RowSelectionState = selectedRows.reduce(
-        (acc, selectedRowPk) => {
+        (acc, primaryKey) => {
           return {
             ...acc,
-            [selectedRowPk]: true,
+            [primaryKey.toString()]: true,
           };
         },
         {},
@@ -84,31 +84,6 @@ export function useRowSelection<
     data,
     internalRowSelection,
   ]);
-
-  // Row selection event handler
-  // Only provided if selection is enabled and it's uncontrolled mode
-  const onRowSelectionChange: OnChangeFn<RowSelectionState> = useCallback(
-    (updater) => {
-      if (!isSelectionEnabled) return;
-
-      if (!isControlled) {
-        setInternalRowSelection(updater);
-      } else {
-        if (onRowSelection) {
-          const updated: RowSelectionState = updater instanceof Function
-            ? updater(rowSelection)
-            : updater;
-
-          const selectedRowIds: PrimaryKeyType<Q>[] = Object.entries(updated)
-            .filter(([_, v]) => v)
-            .map(([k]) => k as PrimaryKeyType<Q>);
-
-          onRowSelection(selectedRowIds);
-        }
-      }
-    },
-    [isSelectionEnabled, isControlled],
-  );
 
   const selectedCount = Object.values(rowSelection).filter(Boolean).length;
   const totalCount = data?.length ?? 0;
@@ -128,7 +103,7 @@ export function useRowSelection<
     if (isControlled) {
       const newSelectedRows = isAllSelected
         ? []
-        : data.map(item => item.$primaryKey as PrimaryKeyType<Q>);
+        : data.map(item => item.$primaryKey);
       onRowSelection?.(newSelectedRows);
     } else {
       setInternalRowSelection(newSelection);
@@ -136,19 +111,21 @@ export function useRowSelection<
   }, [isSelectionEnabled, data, isAllSelected, isControlled, onRowSelection]);
 
   const onToggleRow = useCallback(
-    (rowId: string, rowIndex: number, isShiftClick: boolean) => {
+    (id: string, rowIndex: number, isShiftClick: boolean) => {
       if (!isSelectionEnabled) return;
 
       if (selectionMode === "single") {
         // In single selection mode, ignore shift-click
         const newSelection: RowSelectionState = {
-          [rowId]: !rowSelection[rowId],
+          [id]: !rowSelection[id],
         };
 
         if (isControlled && data) {
-          const newSelectedRows = rowSelection[rowId]
+          const primaryKey = data[rowIndex].$primaryKey;
+
+          const newSelectedRows = rowSelection[id]
             ? []
-            : [rowId as PrimaryKeyType<Q>];
+            : [primaryKey];
           onRowSelection?.(newSelectedRows);
         } else {
           setInternalRowSelection(newSelection);
@@ -171,9 +148,9 @@ export function useRowSelection<
           for (let i = startIndex; i <= endIndex; i++) {
             const item = data[i];
             if (item) {
-              const pk = item.$primaryKey as PrimaryKeyType<Q>;
-              if (!newSelectedRows.includes(pk)) {
-                newSelectedRows.push(pk);
+              const primaryKey = item.$primaryKey;
+              if (!newSelectedRows.includes(primaryKey)) {
+                newSelectedRows.push(primaryKey);
               }
             }
           }
@@ -193,19 +170,18 @@ export function useRowSelection<
           });
         }
       } else {
-        // Normal click (toggle single row)
-        const primaryKey = rowId as PrimaryKeyType<Q>;
-
-        if (isControlled) {
+        if (isControlled && data) {
+          const primaryKey = data[rowIndex].$primaryKey;
           const currentlySelected = selectedRows || [];
           const newSelectedRows = currentlySelected.includes(primaryKey)
-            ? currentlySelected.filter(id => id !== primaryKey)
+            ? currentlySelected.filter(pk => pk !== primaryKey)
             : [...currentlySelected, primaryKey];
+
           onRowSelection?.(newSelectedRows);
         } else {
           setInternalRowSelection(prev => ({
             ...prev,
-            [rowId]: !prev[rowId],
+            [id]: !prev[id],
           }));
         }
 
