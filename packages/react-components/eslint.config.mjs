@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
+import reactHooks from "eslint-plugin-react-hooks";
+import rootConfig from "../../eslint.config.mjs";
 
-describe("anything", () => {
-  it("does", async () => {
-    expect(1).toBe(1);
-  });
-});
+export default [
+  ...rootConfig,
+  {
+    plugins: {
+      "react-hooks": reactHooks,
+    },
+    rules: {
+      "react-hooks/exhaustive-deps": "warn",
+    },
+  },
+];
