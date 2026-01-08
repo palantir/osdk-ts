@@ -84,7 +84,6 @@ export function ObjectTable<
 
   const {
     rowSelection,
-    onRowSelectionChange,
     isAllSelected,
     hasSelection,
     onToggleAll,
@@ -148,7 +147,6 @@ export function ObjectTable<
       rowSelection,
       columnSizing,
     },
-    onRowSelectionChange,
     onColumnSizingChange: setColumnSizing,
     enableRowSelection: selectionMode !== "none",
     columnResizeMode: "onChange",
