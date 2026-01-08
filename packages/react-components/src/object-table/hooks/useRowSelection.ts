@@ -45,10 +45,12 @@ export function useRowSelection<
   onRowSelection,
   data,
 }: UseRowSelectionProps<Q, RDPs>): UseRowSelectionResult<Q> {
+  // The rowSelection state in uncontrolled mode
   const [internalRowSelection, setInternalRowSelection] = useState<
     RowSelectionState
   >({});
 
+  // Used for shift-click behavior in "multiple" mode
   const [lastSelectedRowIndex, setLastSelectedRowIndex] = useState<
     number | null
   >(null);
@@ -57,12 +59,12 @@ export function useRowSelection<
   const isSelectionEnabled = selectionMode !== "none";
 
   // Row selection state
-  // If controlled mode, return the state from selectedRows prop (converted to string IDs)
+  // If controlled mode, return the state from selectedRows prop
   // If uncontrolled, return the internalRowSelection state
   const rowSelection: RowSelectionState = useMemo(() => {
     if (!isSelectionEnabled) return {};
 
-    if (isControlled && selectedRows && data) {
+    if (isControlled && selectedRows) {
       const selectionState: RowSelectionState = selectedRows.reduce(
         (acc, primaryKey) => {
           return {
@@ -90,6 +92,7 @@ export function useRowSelection<
   const isAllSelected = totalCount > 0 && selectedCount === totalCount;
   const hasSelection = selectedCount > 0;
 
+  // Called by the SelectionHeaderCell
   const onToggleAll = useCallback(() => {
     if (!isSelectionEnabled || !data) return;
 
@@ -110,17 +113,17 @@ export function useRowSelection<
     }
   }, [isSelectionEnabled, data, isAllSelected, isControlled, onRowSelection]);
 
+  // Called by the row-level SelectionCell
   const onToggleRow = useCallback(
     (id: string, rowIndex: number, isShiftClick: boolean) => {
-      if (!isSelectionEnabled) return;
+      if (!isSelectionEnabled || !data) return;
 
       if (selectionMode === "single") {
-        // In single selection mode, ignore shift-click
         const newSelection: RowSelectionState = {
           [id]: !rowSelection[id],
         };
 
-        if (isControlled && data) {
+        if (isControlled) {
           const primaryKey = data[rowIndex].$primaryKey;
 
           const newSelectedRows = rowSelection[id]
@@ -135,7 +138,7 @@ export function useRowSelection<
       }
 
       // Multiple selection mode
-      if (isShiftClick && lastSelectedRowIndex != null && data) {
+      if (isShiftClick && lastSelectedRowIndex != null) {
         // Handle shift-click range selection
         const startIndex = Math.min(lastSelectedRowIndex, rowIndex);
         const endIndex = Math.max(lastSelectedRowIndex, rowIndex);
@@ -170,7 +173,7 @@ export function useRowSelection<
           });
         }
       } else {
-        if (isControlled && data) {
+        if (isControlled) {
           const primaryKey = data[rowIndex].$primaryKey;
           const currentlySelected = selectedRows || [];
           const newSelectedRows = currentlySelected.includes(primaryKey)
@@ -202,7 +205,6 @@ export function useRowSelection<
 
   return {
     rowSelection,
-    onRowSelectionChange,
     isAllSelected,
     hasSelection,
     onToggleAll,
