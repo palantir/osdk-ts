@@ -39,9 +39,9 @@
   "dependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
-    "@osdk/react-components": "workspace:~",
     "@osdk/oauth": "workspace:~",
     "@osdk/react": "workspace:~",
+    "@osdk/react-components": "workspace:~",
     "core-js": "^3.45.1",
     "maplibre-gl": "^5.7.1",
     "react": "^19.1.1",
