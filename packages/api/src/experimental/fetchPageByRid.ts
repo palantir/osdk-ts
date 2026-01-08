@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
+import type { DerivedProperty } from "../derivedProperties/DerivedProperty.js";
 import type {
   FetchPageArgs,
   NullabilityAdherence,
 } from "../object/FetchPageArgs.js";
-import type { FetchPageResult } from "../object/FetchPageResult.js";
-
+import type {
+  FetchPageResult,
+  SingleOsdkResult,
+} from "../object/FetchPageResult.js";
 import type {
   ObjectOrInterfaceDefinition,
   PropertyKeys,
 } from "../ontology/ObjectOrInterface.js";
+import type { SimplePropertyDef } from "../ontology/SimplePropertyDef.js";
+import type { PageResult } from "../PageResult.js";
 import type { Experiment } from "./Experiment.js";
 
 type fetchPageByRidFn = <
@@ -32,11 +37,18 @@ type fetchPageByRidFn = <
   const R extends boolean,
   const S extends NullabilityAdherence,
   const T extends boolean,
+  RDPs extends Record<string, SimplePropertyDef> = {},
 >(
   objectType: Q,
   rids: string[],
-  options?: FetchPageArgs<Q, L, R, any, S, T>,
-) => Promise<FetchPageResult<Q, L, R, S, T>>;
+  options?: FetchPageArgs<Q, L | (string & keyof RDPs), R, any, S, T> & {
+    $withProperties?: {
+      [K in keyof RDPs]: DerivedProperty.Creator<Q, RDPs[K]>;
+    };
+  },
+) => Promise<
+  PageResult<SingleOsdkResult<Q, L | (string & keyof RDPs), R, S, RDPs, T>>
+>;
 
 export type FetchPageByRidPayload = {
   fetchPageByRid: fetchPageByRidFn;
