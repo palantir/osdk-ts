@@ -22,7 +22,7 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
 import { useDefaultTableStates } from "./hooks/useDefaultTableStates.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
@@ -79,6 +79,8 @@ export function ObjectTable<
   );
 
   const { columnVisibility } = useDefaultTableStates({ columnDefinitions });
+
+  const [columnSizing, setColumnSizing] = useState({});
 
   const {
     rowSelection,
@@ -144,9 +146,16 @@ export function ObjectTable<
     state: {
       columnVisibility,
       rowSelection,
+      columnSizing,
     },
     onRowSelectionChange,
+    onColumnSizingChange: setColumnSizing,
     enableRowSelection: selectionMode !== "none",
+    columnResizeMode: "onChange",
+    columnResizeDirection: "ltr",
+    defaultColumn: {
+      minSize: 80,
+    },
     getRowId: (row) => row.$primaryKey.toString(),
   });
 
