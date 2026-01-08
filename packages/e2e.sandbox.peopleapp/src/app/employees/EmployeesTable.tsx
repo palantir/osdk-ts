@@ -31,7 +31,7 @@ const columnDefinitions: ColumnDefinition<
     locator: { type: "property", id: "firstFullTimeStartDate" },
     width: 300,
     renderHeader: () => "Start Date",
-    renderCell: (object: Osdk.Instance<Employee>, _locator) => {
+    renderCell: (object: Osdk.Instance<Employee>) => {
       return (
         <div>
           {object["firstFullTimeStartDate"]
@@ -50,7 +50,7 @@ const columnDefinitions: ColumnDefinition<
         baseObjectSet.pivotTo("lead").selectProperty("fullName"),
     },
     renderHeader: () => "Derived Manager Name",
-    renderCell: (object: Osdk.Instance<Employee>, _locator) => {
+    renderCell: (object: Osdk.Instance<Employee>) => {
       if ("managerName" in object) {
         return object["managerName"] as string;
       }
