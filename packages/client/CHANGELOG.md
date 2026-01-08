@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 2.7.0-beta.6
+
+### Minor Changes
+
+- c332598: Adds experimental platform API hooks to fetch Foundry users
+- 0b2cd91: fix SimplePropertyDef issue, wire RDPs through, update names
+
+### Patch Changes
+
+- Updated dependencies [c9ca08d]
+  - @osdk/api@2.7.0-beta.6
+  - @osdk/client.unstable@2.7.0-beta.6
+  - @osdk/generator-converters@2.7.0-beta.6
+
 ## 2.7.0-beta.5
 
 ### Minor Changes
