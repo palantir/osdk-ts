@@ -22,11 +22,13 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import React from "react";
+import React, { useMemo } from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
 import { useDefaultTableStates } from "./hooks/useDefaultTableStates.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
+import { useRowSelection } from "./hooks/useRowSelection.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
+import { SelectionCell, SelectionHeaderCell } from "./SelectionCells.js";
 import { Table } from "./Table.js";
 
 /**
@@ -54,6 +56,9 @@ export function ObjectTable<
   columnDefinitions,
   onRowClick,
   rowHeight,
+  selectionMode = "none",
+  selectedRows,
+  onRowSelection,
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { data, fetchMore, isLoading } = useObjectTableData<
     Q,
@@ -75,15 +80,81 @@ export function ObjectTable<
 
   const { columnVisibility } = useDefaultTableStates({ columnDefinitions });
 
+  const {
+    rowSelection,
+    onRowSelectionChange,
+    isAllSelected,
+    hasSelection,
+    lastSelectedRowIndex,
+    setLastSelectedRowIndex,
+    onToggleAll,
+    onToggleRow,
+  } = useRowSelection<Q, RDPs>({
+    selectionMode,
+    selectedRows,
+    onRowSelection,
+    data,
+  });
+
+  const selectionColumn = useMemo(() => {
+    if (selectionMode === "none") return null;
+
+    return {
+      id: "__selection__",
+      header: () => (
+        selectionMode === "multiple"
+          ? (
+            <SelectionHeaderCell
+              isAllSelected={isAllSelected}
+              hasSelection={hasSelection}
+              onToggleAll={onToggleAll}
+            />
+          )
+          : null
+      ),
+      cell: ({ row, table }: { row: any; table: any }) => (
+        <SelectionCell
+          row={row}
+          table={table}
+          onToggleRow={onToggleRow}
+          lastSelectedRowIndex={lastSelectedRowIndex}
+          setLastSelectedRowIndex={setLastSelectedRowIndex}
+        />
+      ),
+      size: 50,
+      minSize: 50,
+      maxSize: 50,
+      enableSorting: false,
+      enableResizing: false,
+      enablePinning: true,
+    };
+  }, [
+    selectionMode,
+    isAllSelected,
+    hasSelection,
+    onToggleAll,
+    onToggleRow,
+    lastSelectedRowIndex,
+    setLastSelectedRowIndex,
+  ]);
+
+  const allColumns = useMemo(() => {
+    return selectionColumn ? [selectionColumn, ...columns] : columns;
+  }, [selectionColumn, columns]);
+
   const table = useReactTable<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >({
     data: data ?? [],
-    columns,
+    columns: allColumns,
     getCoreRowModel: getCoreRowModel(),
     state: {
       columnVisibility,
+      rowSelection,
     },
+    onRowSelectionChange,
+    enableRowSelection: selectionMode !== "none",
+    getRowId: (row) => row.$primaryKey.toString(),
   });
 
   const isTableLoading = isLoading || isColumnsLoading;
