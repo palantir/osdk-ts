@@ -1,0 +1,8 @@
+// Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+// Licensed under the Apache License, Version 2.0.
+
+// DEPRECATED: Use blueprint/styles/index.scss for Blueprint integration
+// or base/styles/index.scss for framework-agnostic styles
+
+// This file forwards to the Blueprint styles for backward compatibility
+@forward "../blueprint/styles/index.scss";

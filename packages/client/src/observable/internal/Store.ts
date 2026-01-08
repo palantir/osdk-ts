@@ -166,21 +166,26 @@ export class Store {
   #cleanupCacheKey = (key: KnownCacheKey) => {
     const subject = this.subjects.peek(key);
 
+    // Subject may not exist if the cache key was never subscribed to
+    if (!subject) {
+      return;
+    }
+
+    if (process.env.NODE_ENV !== "production") {
+      invariant(subject);
+    }
+
     if (DEBUG_REFCOUNTS) {
       // eslint-disable-next-line no-console
       console.log(
         `CacheKey cleaning up (${
           JSON.stringify({
-            closed: subject?.closed,
-            observed: subject?.observed,
+            closed: subject.closed,
+            observed: subject.observed,
           })
         })`,
         JSON.stringify([key.type, ...key.otherKeys], null, 2),
       );
-    }
-
-    if (process.env.NODE_ENV !== "production") {
-      invariant(subject);
     }
 
     this.subjects.delete(key);
