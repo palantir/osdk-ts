@@ -323,6 +323,37 @@ function validateDerivedDatasource(
   }
 }
 
+/**
+ * Gets properties for validation, handling self-referential links where
+ * the target object is the same as the object being defined (not yet in registry).
+ */
+function getPropertiesForValidation(
+  linkObject: string | ObjectTypeDefinition,
+  objectDef: ObjectTypeDefinition,
+): { apiName: string; hasProperty: (propName: string) => boolean } {
+  const targetApiName = typeof linkObject === "string"
+    ? linkObject
+    : linkObject.apiName;
+  const selfApiName = namespace + objectDef.apiName;
+
+  // Self-referential: use objectDef directly (not yet in registry)
+  if (targetApiName === selfApiName) {
+    return {
+      apiName: selfApiName,
+      hasProperty: (propName: string) =>
+        objectDef.properties?.[propName] !== undefined,
+    };
+  }
+
+  // Non-self-referential: look up from registry
+  const { apiName, object } = getObject(linkObject);
+  return {
+    apiName,
+    hasProperty: (propName: string) =>
+      object.properties?.find(p => p.apiName === propName) !== undefined,
+  };
+}
+
 function validateLinkedProperties(
   datasource: ObjectTypeDatasourceDefinition_derived,
   objectDef: ObjectTypeDefinition,
@@ -331,12 +362,15 @@ function validateLinkedProperties(
     datasource.propertyMapping,
   ) as string[];
   // the foreign property must exist in the final object in the link chain
-  const finalObject =
-    getObject(datasource.linkDefinition.at(-1)!.linkType.toMany.object).object;
+  const targetObject = datasource.linkDefinition.at(-1)!.linkType.toMany.object;
+  const { apiName, hasProperty } = getPropertiesForValidation(
+    targetObject,
+    objectDef,
+  );
   foreignProperties.forEach(prop => {
     invariant(
-      finalObject.properties?.find(p => p.apiName === prop) !== undefined,
-      `Property '${prop}' on object '${finalObject.apiName}' is not defined`,
+      hasProperty(prop),
+      `Property '${prop}' on object '${apiName}' is not defined`,
     );
   });
 }
@@ -393,13 +427,15 @@ function validateAggregations(
     // if a foreign property is referenced, it must exist in the final object
     if (agg.type !== "count") {
       const foreignProperty = agg.property;
-      const finalObject =
-        getObject(datasource.linkDefinition.at(-1)!.linkType.toMany.object)
-          .object;
+      const targetObject =
+        datasource.linkDefinition.at(-1)!.linkType.toMany.object;
+      const { apiName, hasProperty } = getPropertiesForValidation(
+        targetObject,
+        objectDef,
+      );
       invariant(
-        finalObject.properties?.find(p => p.apiName === foreignProperty)
-          !== undefined,
-        `Property '${foreignProperty}' on object '${finalObject.apiName}' is not defined`,
+        hasProperty(foreignProperty),
+        `Property '${foreignProperty}' on object '${apiName}' is not defined`,
       );
     }
   });
