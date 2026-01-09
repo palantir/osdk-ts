@@ -83,7 +83,7 @@ export function Table<TData extends RowData>(
       <table
         style={{ display: "grid" }}
       >
-        <TableHeader headerGroups={table.getHeaderGroups()} table={table} />
+        <TableHeader table={table} />
         <TableBody
           rows={table.getRowModel().rows}
           tableContainerRef={tableContainerRef}
