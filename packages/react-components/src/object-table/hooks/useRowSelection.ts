@@ -17,6 +17,7 @@
 import type { ObjectTypeDefinition, Osdk, PrimaryKeyType } from "@osdk/api";
 import type { RowSelectionState } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
+import { getRowId, getRowIdFromPrimaryKey } from "../utils/getRowId.js";
 
 export interface UseRowSelectionProps<
   Q extends ObjectTypeDefinition,
@@ -45,7 +46,7 @@ export function useRowSelection<
   onRowSelection,
   data,
 }: UseRowSelectionProps<Q, RDPs>): UseRowSelectionResult<Q> {
-  // The rowSelection state in uncontrolled mode
+  // The rowSelectionState in uncontrolled mode
   const [internalRowSelection, setInternalRowSelection] = useState<
     RowSelectionState
   >({});
@@ -61,23 +62,11 @@ export function useRowSelection<
   // Row selection state
   // If controlled mode, return the state from selectedRows prop
   // If uncontrolled, return the internalRowSelection state
-  const rowSelection: RowSelectionState = useMemo(() => {
+  const rowSelectionState: RowSelectionState = useMemo(() => {
     if (!isSelectionEnabled) return {};
-
     if (isControlled && selectedRows) {
-      const selectionState: RowSelectionState = selectedRows.reduce(
-        (acc, primaryKey) => {
-          return {
-            ...acc,
-            [primaryKey.toString()]: true,
-          };
-        },
-        {},
-      );
-
-      return selectionState;
+      return getRowSelectionState(selectedRows);
     }
-
     return internalRowSelection;
   }, [
     isSelectionEnabled,
@@ -87,7 +76,7 @@ export function useRowSelection<
     internalRowSelection,
   ]);
 
-  const selectedCount = Object.values(rowSelection).filter(Boolean).length;
+  const selectedCount = Object.values(rowSelectionState).filter(Boolean).length;
   const totalCount = data?.length ?? 0;
   const isAllSelected = totalCount > 0 && selectedCount === totalCount;
   const hasSelection = selectedCount > 0;
@@ -96,21 +85,14 @@ export function useRowSelection<
   const onToggleAll = useCallback(() => {
     if (!isSelectionEnabled || !data) return;
 
-    const newSelection: RowSelectionState = {};
-    if (!isAllSelected) {
-      data.forEach((item) => {
-        newSelection[item.$primaryKey.toString()] = true;
-      });
-    }
+    const newSelectedRows: PrimaryKeyType<Q>[] = isAllSelected
+      ? []
+      : data.map(item => item.$primaryKey);
 
-    if (isControlled) {
-      const newSelectedRows = isAllSelected
-        ? []
-        : data.map(item => item.$primaryKey);
-      onRowSelection?.(newSelectedRows);
-    } else {
-      setInternalRowSelection(newSelection);
+    if (!isControlled) {
+      setInternalRowSelection(getRowSelectionState(newSelectedRows));
     }
+    onRowSelection?.(newSelectedRows);
   }, [isSelectionEnabled, data, isAllSelected, isControlled, onRowSelection]);
 
   // Called by the row-level SelectionCell
@@ -119,95 +101,214 @@ export function useRowSelection<
       if (!isSelectionEnabled || !data) return;
 
       if (selectionMode === "single") {
-        const newSelection: RowSelectionState = {
-          [id]: !rowSelection[id],
-        };
-
-        if (isControlled) {
-          const primaryKey = data[rowIndex].$primaryKey;
-
-          const newSelectedRows = rowSelection[id]
-            ? []
-            : [primaryKey];
-          onRowSelection?.(newSelectedRows);
-        } else {
-          setInternalRowSelection(newSelection);
-        }
-        setLastSelectedRowIndex(rowIndex);
+        handleSingleSelection(
+          id,
+          rowIndex,
+          data,
+          isControlled,
+          rowSelectionState,
+          onRowSelection,
+          setInternalRowSelection,
+          setLastSelectedRowIndex,
+        );
         return;
       }
 
       // Multiple selection mode
       if (isShiftClick && lastSelectedRowIndex != null) {
-        // Handle shift-click range selection
-        const startIndex = Math.min(lastSelectedRowIndex, rowIndex);
-        const endIndex = Math.max(lastSelectedRowIndex, rowIndex);
-
-        if (isControlled) {
-          const currentlySelected = selectedRows || [];
-          const newSelectedRows = [...currentlySelected];
-
-          // Add all rows in the range to selection
-          for (let i = startIndex; i <= endIndex; i++) {
-            const item = data[i];
-            if (item) {
-              const primaryKey = item.$primaryKey;
-              if (!newSelectedRows.includes(primaryKey)) {
-                newSelectedRows.push(primaryKey);
-              }
-            }
-          }
-
-          onRowSelection?.(newSelectedRows);
-        } else {
-          setInternalRowSelection(prev => {
-            const newSelection = { ...prev };
-            // Select all rows in the range
-            for (let i = startIndex; i <= endIndex; i++) {
-              const item = data[i];
-              if (item) {
-                newSelection[item.$primaryKey.toString()] = true;
-              }
-            }
-            return newSelection;
-          });
-        }
+        handleRangeSelection(
+          rowIndex,
+          data,
+          lastSelectedRowIndex,
+          isControlled,
+          rowSelectionState,
+          onRowSelection,
+          setInternalRowSelection,
+        );
       } else {
-        if (isControlled) {
-          const primaryKey = data[rowIndex].$primaryKey;
-          const currentlySelected = selectedRows || [];
-          const newSelectedRows = currentlySelected.includes(primaryKey)
-            ? currentlySelected.filter(pk => pk !== primaryKey)
-            : [...currentlySelected, primaryKey];
-
-          onRowSelection?.(newSelectedRows);
-        } else {
-          setInternalRowSelection(prev => ({
-            ...prev,
-            [id]: !prev[id],
-          }));
-        }
-
-        setLastSelectedRowIndex(rowIndex);
+        handleMultipleSelectionToggle(
+          rowIndex,
+          data,
+          isControlled,
+          rowSelectionState,
+          onRowSelection,
+          setInternalRowSelection,
+          setLastSelectedRowIndex,
+        );
       }
     },
     [
       isSelectionEnabled,
-      selectionMode,
-      rowSelection,
-      isControlled,
       data,
-      selectedRows,
-      onRowSelection,
+      selectionMode,
       lastSelectedRowIndex,
+      isControlled,
+      rowSelectionState,
+      onRowSelection,
     ],
   );
 
   return {
-    rowSelection,
+    rowSelection: rowSelectionState,
     isAllSelected,
     hasSelection,
     onToggleAll,
     onToggleRow,
   };
+}
+
+// Handles single selection mode toggle
+function handleSingleSelection<
+  Q extends ObjectTypeDefinition,
+  RDPs extends Record<string, any> = Record<string, never>,
+>(
+  id: string,
+  rowIndex: number,
+  data: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>>,
+  isControlled: boolean,
+  rowSelectionState: RowSelectionState,
+  onRowSelection: ((selectedRowIds: PrimaryKeyType<Q>[]) => void) | undefined,
+  setInternalRowSelection: React.Dispatch<
+    React.SetStateAction<RowSelectionState>
+  >,
+  setLastSelectedRowIndex: React.Dispatch<React.SetStateAction<number | null>>,
+) {
+  const primaryKey = data[rowIndex].$primaryKey;
+  const newSelectedRows = rowSelectionState[id] ? [] : [primaryKey];
+
+  if (!isControlled) {
+    setInternalRowSelection(getRowSelectionState(newSelectedRows));
+  }
+  onRowSelection?.(newSelectedRows);
+  setLastSelectedRowIndex(rowIndex);
+}
+
+// Handles range selection in multiple selection mode (shift-click)
+function handleRangeSelection<
+  Q extends ObjectTypeDefinition,
+  RDPs extends Record<string, any> = Record<string, never>,
+>(
+  rowIndex: number,
+  data: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>>,
+  lastSelectedRowIndex: number,
+  isControlled: boolean,
+  rowSelectionState: RowSelectionState,
+  onRowSelection: ((selectedRowIds: PrimaryKeyType<Q>[]) => void) | undefined,
+  setInternalRowSelection: React.Dispatch<
+    React.SetStateAction<RowSelectionState>
+  >,
+) {
+  const rowsInRange = getRowsInRange(data, lastSelectedRowIndex, rowIndex);
+  const primaryKeysInRange = rowsInRange.map(item => item.$primaryKey);
+
+  const currentlySelected = getSelectedPrimaryKeys(rowSelectionState, data);
+  const newSelectedRows = addUniqueItems(currentlySelected, primaryKeysInRange);
+
+  if (!isControlled) {
+    setInternalRowSelection(getRowSelectionState(newSelectedRows));
+  }
+  onRowSelection?.(newSelectedRows);
+}
+
+// Handles single row toggle in multiple selection mode
+function handleMultipleSelectionToggle<
+  Q extends ObjectTypeDefinition,
+  RDPs extends Record<string, any> = Record<string, never>,
+>(
+  rowIndex: number,
+  data: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>>,
+  isControlled: boolean,
+  rowSelectionState: RowSelectionState,
+  onRowSelection: ((selectedRowIds: PrimaryKeyType<Q>[]) => void) | undefined,
+  setInternalRowSelection: React.Dispatch<
+    React.SetStateAction<RowSelectionState>
+  >,
+  setLastSelectedRowIndex: React.Dispatch<React.SetStateAction<number | null>>,
+) {
+  const primaryKey = data[rowIndex].$primaryKey;
+  const currentlySelected = getSelectedPrimaryKeys(rowSelectionState, data);
+  const newSelectedRows = toggleItem(currentlySelected, primaryKey);
+
+  if (!isControlled) {
+    setInternalRowSelection(getRowSelectionState(newSelectedRows));
+  }
+  onRowSelection?.(newSelectedRows);
+  setLastSelectedRowIndex(rowIndex);
+}
+
+/**
+ * Builds a range of rows from startIndex to endIndex
+ */
+function getRowsInRange<
+  Q extends ObjectTypeDefinition,
+  RDPs extends Record<string, any> = Record<string, never>,
+>(
+  data: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>>,
+  startIndex: number,
+  endIndex: number,
+): Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>> {
+  const start = Math.min(startIndex, endIndex);
+  const end = Math.max(startIndex, endIndex);
+  const rows: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>> = [];
+
+  for (let i = start; i <= end; i++) {
+    const item = data[i];
+    if (item) {
+      rows.push(item);
+    }
+  }
+
+  return rows;
+}
+
+/**
+ * Adds unique items to an array. Used to merge selections while avoiding duplicates.
+ */
+function addUniqueItems<T>(currentItems: T[], newItems: T[]): T[] {
+  const result = [...currentItems];
+  newItems.forEach(item => {
+    if (!result.includes(item)) {
+      result.push(item);
+    }
+  });
+  return result;
+}
+
+/**
+ * Toggles an item in an array. Removes it if present, adds it if absent.
+ */
+function toggleItem<T>(items: T[], item: T): T[] {
+  return items.includes(item)
+    ? items.filter(i => i !== item)
+    : [...items, item];
+}
+
+/**
+ * Converts an array of primary keys to a RowSelectionState object
+ */
+function getRowSelectionState<Q extends ObjectTypeDefinition>(
+  primaryKeys: PrimaryKeyType<Q>[],
+): RowSelectionState {
+  return primaryKeys.reduce<RowSelectionState>(
+    (acc, primaryKey) => {
+      acc[getRowIdFromPrimaryKey(primaryKey)] = true;
+      return acc;
+    },
+    {},
+  );
+}
+
+/**
+ * Converts from a RowSelectionState object back to an array of primary keys
+ */
+function getSelectedPrimaryKeys<
+  Q extends ObjectTypeDefinition,
+  RDPs extends Record<string, any> = Record<string, never>,
+>(
+  selectionState: RowSelectionState,
+  data: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>>,
+): PrimaryKeyType<Q>[] {
+  return data
+    .filter(item => selectionState[getRowId(item)])
+    .map(item => item.$primaryKey);
 }
