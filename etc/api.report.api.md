@@ -315,7 +315,7 @@ export type ConvertProps<
 	FROM extends ObjectOrInterfaceDefinition,
 	TO extends ValidToFrom<FROM>,
 	P extends ValidOsdkPropParams<FROM>,
-	OPTIONS extends never | "$rid" | "$allBaseProperties" = never
+	OPTIONS extends never | "$rid" | "$ridOrUndefined" | "$allBaseProperties" = never
 > = TO extends FROM ? P : TO extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToObjectType<FROM, TO, P, OPTIONS>, P extends "$rid" ? true : false, "$rid">) : TO extends InterfaceDefinition ? FROM extends ObjectTypeDefinition ? (UnionIfTrue<MapPropNamesToInterface<FROM, TO, P>, P extends "$rid" ? true : false, "$rid">) : never : never;
 
 // @public
@@ -1205,10 +1205,11 @@ export namespace ObjectSetSubscription {
     	// (undocumented)
     export interface Listener<
     		O extends ObjectOrInterfaceDefinition,
-    		P extends PropertyKeys<O> = PropertyKeys<O>
+    		P extends PropertyKeys<O> = PropertyKeys<O>,
+    		R extends boolean = false
     	> {
         		// Warning: (ae-forgotten-export) The symbol "ObjectUpdate" needs to be exported by the entry point index.d.ts
-        onChange?: (objectUpdate: ObjectUpdate<O, P>) => void;
+        onChange?: (objectUpdate: ObjectUpdate<O, P, R>) => void;
         		onError?: (errors: {
             			subscriptionClosed: boolean
             			error: any
@@ -1219,10 +1220,11 @@ export namespace ObjectSetSubscription {
     	// (undocumented)
     export interface Options<
     		O extends ObjectOrInterfaceDefinition,
-    		P extends PropertyKeys<O> = PropertyKeys<O>
+    		P extends PropertyKeys<O> = PropertyKeys<O>,
+    		R extends boolean = false
     	> {
-        		// (undocumented)
-        properties?: Array<P>;
+        		includeRid?: R;
+        		properties?: Array<P>;
         	}
 }
 
@@ -1281,7 +1283,7 @@ export namespace Osdk {
     // (undocumented)
     export type Instance<
     		Q extends ObjectOrInterfaceDefinition,
-    		OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
+    		OPTIONS extends never | "$rid" | "$ridOrUndefined" | "$allBaseProperties" = never,
     		P extends PropertyKeys<Q> = PropertyKeys<Q>,
     		R extends Record<string, SimplePropertyDef> = {}
     	> = OsdkBase<Q> & Pick<CompileTimeMetadata<Q>["props"], GetPropsKeys<Q, P, [R] extends [{}] ? false : true>> & ([R] extends [never] ? {} : { [A in keyof R] : SimplePropertyDef.ToRuntimeProperty<R[A]> }) & {
@@ -1302,6 +1304,8 @@ export namespace Osdk {
             		}) => string | undefined
         	} & (IsNever<OPTIONS> extends true ? {} : IsAny<OPTIONS> extends true ? {} : "$rid" extends OPTIONS ? {
         		readonly $rid: string
+        	} : "$ridOrUndefined" extends OPTIONS ? {
+        		readonly $rid: string | undefined
         	} : {});
 }
 

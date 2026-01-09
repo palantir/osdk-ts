@@ -78,7 +78,8 @@ export type MapPropNamesToObjectType<
   FROM extends ObjectOrInterfaceDefinition,
   TO extends ObjectTypeDefinition,
   P extends ValidOsdkPropParams<FROM>,
-  OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
+  OPTIONS extends never | "$rid" | "$ridOrUndefined" | "$allBaseProperties" =
+    never,
 > = "$allBaseProperties" extends OPTIONS
   ? PropertyKeys<FROM> extends P ? PropertyKeys<TO>
   : PropMapToObject<
@@ -129,7 +130,8 @@ export type ConvertProps<
   FROM extends ObjectOrInterfaceDefinition,
   TO extends ValidToFrom<FROM>,
   P extends ValidOsdkPropParams<FROM>,
-  OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
+  OPTIONS extends never | "$rid" | "$ridOrUndefined" | "$allBaseProperties" =
+    never,
 > = TO extends FROM ? P
   : TO extends ObjectTypeDefinition ? (
       UnionIfTrue<
@@ -204,7 +206,8 @@ export type MaybeScore<
 export namespace Osdk {
   export type Instance<
     Q extends ObjectOrInterfaceDefinition,
-    OPTIONS extends never | "$rid" | "$allBaseProperties" = never,
+    OPTIONS extends never | "$rid" | "$ridOrUndefined" | "$allBaseProperties" =
+      never,
     P extends PropertyKeys<Q> = PropertyKeys<Q>,
     R extends Record<string, SimplePropertyDef> = {},
   > =
@@ -259,6 +262,8 @@ export namespace Osdk {
     & (IsNever<OPTIONS> extends true ? {}
       : IsAny<OPTIONS> extends true ? {}
       : "$rid" extends OPTIONS ? { readonly $rid: string }
+      : "$ridOrUndefined" extends OPTIONS
+        ? { readonly $rid: string | undefined }
       : {});
 }
 
