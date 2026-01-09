@@ -75,7 +75,6 @@ export function TableHeader<TData extends RowData>({
                     cursor: "col-resize",
                     touchAction: "none",
                     zIndex: 11,
-                    background: "transparent",
                     transform: header.column.getIsResizing()
                       ? `translateX(${
                         table.getState().columnSizingInfo.deltaOffset ?? 0

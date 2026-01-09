@@ -21,14 +21,18 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import {
+  type ColumnSizingState,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import React, { useMemo, useState } from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
 import { useDefaultTableStates } from "./hooks/useDefaultTableStates.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
 import { useRowSelection } from "./hooks/useRowSelection.js";
+import { useSelectionColumn } from "./hooks/useSelectionColumn.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
-import { SelectionCell, SelectionHeaderCell } from "./SelectionCells.js";
 import { Table } from "./Table.js";
 import { getRowId } from "./utils/getRowId.js";
 
@@ -81,7 +85,7 @@ export function ObjectTable<
 
   const { columnVisibility } = useDefaultTableStates({ columnDefinitions });
 
-  const [columnSizing, setColumnSizing] = useState({});
+  const [columnSizing, setColumnSizing] = useState<ColumnSizingState>({});
 
   const {
     rowSelection,
@@ -96,42 +100,9 @@ export function ObjectTable<
     data,
   });
 
-  const selectionColumn = useMemo(() => {
-    if (selectionMode === "none") return null;
-
-    return {
-      id: "__selection__",
-      header: () => (
-        selectionMode === "multiple"
-          ? (
-            <SelectionHeaderCell
-              isAllSelected={isAllSelected}
-              hasSelection={hasSelection}
-              onToggleAll={onToggleAll}
-            />
-          )
-          : null
-      ),
-      cell: ({ row }: { row: any }) => (
-        <SelectionCell
-          row={row}
-          onToggleRow={onToggleRow}
-        />
-      ),
-      size: 50,
-      minSize: 50,
-      maxSize: 50,
-      enableSorting: false,
-      enableResizing: false,
-      enablePinning: true,
-    };
-  }, [
-    selectionMode,
-    isAllSelected,
-    hasSelection,
-    onToggleAll,
-    onToggleRow,
-  ]);
+  const selectionColumn = useSelectionColumn<Q, RDPs>(
+    { selectionMode, isAllSelected, hasSelection, onToggleAll, onToggleRow },
+  );
 
   const allColumns = useMemo(() => {
     return selectionColumn ? [selectionColumn, ...columns] : columns;

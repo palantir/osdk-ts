@@ -34,7 +34,7 @@ export interface UseRowSelectionResult<Q extends ObjectTypeDefinition> {
   isAllSelected: boolean;
   hasSelection: boolean;
   onToggleAll: () => void;
-  onToggleRow: (id: string, rowIndex: number, isShiftClick: boolean) => void;
+  onToggleRow: (id: string, rowIndex: number, isShiftClick?: boolean) => void;
 }
 
 export function useRowSelection<
@@ -72,7 +72,6 @@ export function useRowSelection<
     isSelectionEnabled,
     isControlled,
     selectedRows,
-    data,
     internalRowSelection,
   ]);
 
@@ -97,7 +96,7 @@ export function useRowSelection<
 
   // Called by the row-level SelectionCell
   const onToggleRow = useCallback(
-    (id: string, rowIndex: number, isShiftClick: boolean) => {
+    (id: string, rowIndex: number, isShiftClick: boolean = false) => {
       if (!isSelectionEnabled || !data) return;
 
       if (selectionMode === "single") {

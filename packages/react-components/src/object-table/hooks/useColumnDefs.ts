@@ -23,7 +23,7 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
-import type { AccessorColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 
@@ -34,7 +34,7 @@ interface UseColumnDefsResult<
     never
   >,
 > {
-  columns: AccessorColumnDef<
+  columns: ColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >[];
 
@@ -93,7 +93,7 @@ function getColumnsFromColumnDefinitions<
   columnDefinitions: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
   objectProperties?: Record<any, ObjectMetadata.Property>,
 ): Array<
-  AccessorColumnDef<
+  ColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >
 > {
@@ -116,7 +116,7 @@ function getColumnsFromColumnDefinitions<
 
     const colKey = locator.id as string;
 
-    const colDef: AccessorColumnDef<
+    const colDef: ColumnDef<
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
     > = {
       id: colKey,
@@ -155,14 +155,14 @@ function getDefaultColumns<
 >(
   objectProperties?: Record<any, ObjectMetadata.Property>,
 ): Array<
-  AccessorColumnDef<
+  ColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >
 > {
   if (!objectProperties) return [];
 
   return Object.entries(objectProperties).map(([key, property]) => {
-    const colDef: AccessorColumnDef<
+    const colDef: ColumnDef<
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
     > = {
       accessorKey: key,
