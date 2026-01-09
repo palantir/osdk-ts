@@ -130,6 +130,7 @@ export interface NumberRangeInputClassNames {
   input?: string;
   separator?: string;
   loadingMessage?: string;
+  errorMessage?: string;
 }
 
 /**
@@ -145,6 +146,7 @@ export interface DateRangeInputClassNames {
   input?: string;
   separator?: string;
   loadingMessage?: string;
+  errorMessage?: string;
 }
 
 /**
@@ -157,6 +159,110 @@ export interface NullValueWrapperClassNames {
   checkboxIndicator?: string;
   label?: string;
   count?: string;
+}
+
+/**
+ * Class name overrides for SingleSelectInput component elements.
+ */
+export interface SingleSelectInputClassNames {
+  root?: string;
+  selectContainer?: string;
+  select?: string;
+  clearButton?: string;
+  loadingMessage?: string;
+  errorMessage?: string;
+  emptyMessage?: string;
+}
+
+/**
+ * Class name overrides for MultiSelectInput component elements.
+ */
+export interface MultiSelectInputClassNames {
+  root?: string;
+  inputContainer?: string;
+  input?: string;
+  tagContainer?: string;
+  tag?: string;
+  tagRemoveButton?: string;
+  clearAllButton?: string;
+  dropdown?: string;
+  dropdownItem?: string;
+  dropdownItemSelected?: string;
+  loadingMessage?: string;
+  errorMessage?: string;
+  emptyMessage?: string;
+}
+
+/**
+ * Class name overrides for SingleDateInput component elements.
+ */
+export interface SingleDateInputClassNames {
+  root?: string;
+  inputContainer?: string;
+  input?: string;
+  clearButton?: string;
+  loadingMessage?: string;
+  errorMessage?: string;
+}
+
+/**
+ * Class name overrides for ListogramInput component elements.
+ */
+export interface ListogramInputClassNames {
+  root?: string;
+  barContainer?: string;
+  barRow?: string;
+  barRowSelected?: string;
+  barLabel?: string;
+  bar?: string;
+  barFill?: string;
+  barCount?: string;
+  loadingMessage?: string;
+  errorMessage?: string;
+  emptyMessage?: string;
+}
+
+/**
+ * Class name overrides for TextTagsInput component elements.
+ */
+export interface TextTagsInputClassNames {
+  root?: string;
+  inputContainer?: string;
+  input?: string;
+  tagContainer?: string;
+  tag?: string;
+  tagRemoveButton?: string;
+  suggestionList?: string;
+  suggestionItem?: string;
+  loadingMessage?: string;
+  errorMessage?: string;
+}
+
+/**
+ * Class name overrides for MultiDateInput component elements.
+ */
+export interface MultiDateInputClassNames {
+  root?: string;
+  calendarContainer?: string;
+  selectedDatesContainer?: string;
+  selectedDateTag?: string;
+  selectedDateRemoveButton?: string;
+  clearAllButton?: string;
+  loadingMessage?: string;
+  errorMessage?: string;
+}
+
+/**
+ * Class name overrides for TimelineInput component elements.
+ */
+export interface TimelineInputClassNames {
+  root?: string;
+  chartContainer?: string;
+  brushContainer?: string;
+  selectedRange?: string;
+  rangeLabels?: string;
+  loadingMessage?: string;
+  errorMessage?: string;
 }
 
 /**

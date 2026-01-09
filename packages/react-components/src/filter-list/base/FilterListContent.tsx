@@ -52,19 +52,20 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
 
   return (
     <div className={classNames?.content}>
-      {filterDefinitions.map((definition) => {
-        const key = getFilterKey(definition);
-        const state = filterStates.get(key);
+      {filterDefinitions.map((definition, index) => {
+        const filterKey = getFilterKey(definition);
+        const instanceKey = `${filterKey}:${index}`;
+        const state = filterStates.get(instanceKey);
 
         return (
           <FilterListItem
-            key={key}
+            key={instanceKey}
             objectType={objectType}
             objectSet={objectSet}
             definition={definition}
             filterState={state}
             onFilterStateChanged={(newState) =>
-              onFilterStateChanged(key, newState)}
+              onFilterStateChanged(instanceKey, newState)}
             classNames={classNames?.item}
             inputClassNames={{
               checkboxList: classNames?.checkboxListInput,

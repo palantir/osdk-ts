@@ -18,6 +18,7 @@ import type {
   AggregateOpts,
   ObjectTypeDefinition,
   PropertyKeys,
+  WhereClause,
 } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
 import React, {
@@ -47,6 +48,11 @@ interface DateRangeInputProps<
   minValue: Date | undefined;
   maxValue: Date | undefined;
   onChange: (min: Date | undefined, max: Date | undefined) => void;
+  /**
+   * WhereClause from other filters to chain aggregation queries.
+   * When provided, the aggregation will respect other active filters.
+   */
+  whereClause?: WhereClause<Q>;
   showHistogram?: boolean;
   classNames?: DateRangeInputClassNames;
 }
@@ -71,6 +77,7 @@ function DateRangeInputInner<
   minValue,
   maxValue,
   onChange,
+  whereClause,
   showHistogram = false,
   classNames,
 }: DateRangeInputProps<Q, K>): React.ReactElement {
@@ -132,6 +139,7 @@ function DateRangeInputInner<
   );
 
   const { data: aggregateData, isLoading } = useOsdkAggregation(objectType, {
+    where: whereClause,
     aggregate: aggregateOptions,
   });
 

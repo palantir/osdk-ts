@@ -18,6 +18,7 @@ import type {
   AggregateOpts,
   ObjectTypeDefinition,
   PropertyKeys,
+  WhereClause,
 } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
 import React, {
@@ -47,6 +48,11 @@ interface NumberRangeInputProps<
   minValue: number | undefined;
   maxValue: number | undefined;
   onChange: (min: number | undefined, max: number | undefined) => void;
+  /**
+   * WhereClause from other filters to chain aggregation queries.
+   * When provided, the aggregation will respect other active filters.
+   */
+  whereClause?: WhereClause<Q>;
   showHistogram?: boolean;
   classNames?: NumberRangeInputClassNames;
 }
@@ -60,6 +66,7 @@ function NumberRangeInputInner<
   minValue,
   maxValue,
   onChange,
+  whereClause,
   showHistogram = true,
   classNames,
 }: NumberRangeInputProps<Q, K>): React.ReactElement {
@@ -125,7 +132,7 @@ function NumberRangeInputInner<
   );
 
   const { data: aggregateData, isLoading: histogramLoading } =
-    useOsdkAggregation(objectType, { aggregate: aggregateOptions });
+    useOsdkAggregation(objectType, { where: whereClause, aggregate: aggregateOptions });
 
   // Extract numeric values and their counts from aggregation data
   const valueCountPairs = useMemo<Array<{ value: number; count: number }>>(

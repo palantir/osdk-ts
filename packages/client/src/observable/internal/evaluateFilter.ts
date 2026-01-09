@@ -45,7 +45,7 @@ export function evaluateFilter(
     case "$isNull":
       return realValue == null;
     case "$startsWith":
-      return realValue != null && realValue.startsWith(expected);
+      return realValue != null && expected != null && realValue.startsWith(expected);
     case "$contains":
     case "$containsAllTerms":
     case "$containsAllTermsInOrder":

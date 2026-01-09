@@ -30,6 +30,7 @@ import { useCallback, useState } from "react";
 
 import { List } from "../../components/List.js";
 import { ListItem } from "../../components/ListItem.js";
+import { $ } from "../../foundryClient.js";
 import { Employee } from "../../generatedNoCheck2/index.js";
 
 type FilterablePropertyKeys =
@@ -293,7 +294,7 @@ export function EmployeesWithFilterList(props: EmployeesWithFilterListProps) {
     <>
       <div style={{ display: "flex", gap: "16px", height: "100%" }}>
         <FilterList
-          objectType={Employee}
+          objectSet={$(Employee)}
           filterDefinitions={activeFilters}
           onFilterClauseChanged={setWhereClause}
           title="Employee Filters"

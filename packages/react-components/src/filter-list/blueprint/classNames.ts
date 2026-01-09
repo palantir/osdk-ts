@@ -23,8 +23,15 @@ import type {
   DateRangeInputClassNames,
   FilterListClassNames,
   FilterListItemClassNames,
+  ListogramInputClassNames,
+  MultiDateInputClassNames,
+  MultiSelectInputClassNames,
   NullValueWrapperClassNames,
   NumberRangeInputClassNames,
+  SingleDateInputClassNames,
+  SingleSelectInputClassNames,
+  TextTagsInputClassNames,
+  TimelineInputClassNames,
   ToggleInputClassNames,
 } from "../types/ClassNameOverrides.js";
 
@@ -107,6 +114,7 @@ export const numberRangeInputClassNames: NumberRangeInputClassNames = {
   input: "bp6-input bp6-small",
   separator: "filter-input__range-separator",
   loadingMessage: "bp6-text-muted bp6-text-small",
+  errorMessage: "bp6-text-small bp6-intent-danger",
 };
 
 /**
@@ -114,12 +122,15 @@ export const numberRangeInputClassNames: NumberRangeInputClassNames = {
  */
 export const dateRangeInputClassNames: DateRangeInputClassNames = {
   root: "filter-input--date-range",
+  histogramContainer: "filter-input__histogram-container",
+  histogramBar: "filter-input__histogram-bar-vertical",
   inputsContainer: "filter-input__range-inputs",
   inputWrapper: "filter-input__range-input-wrapper",
   inputLabel: "filter-input__range-label bp6-text-muted bp6-text-small",
   input: "bp6-input bp6-small",
   separator: "filter-input__range-separator",
   loadingMessage: "bp6-text-muted bp6-text-small",
+  errorMessage: "bp6-text-small bp6-intent-danger",
 };
 
 /**
@@ -132,6 +143,110 @@ export const nullValueWrapperClassNames: NullValueWrapperClassNames = {
   checkboxIndicator: "bp6-control-indicator",
   label: "filter-input__null-label",
   count: "filter-input__count",
+};
+
+/**
+ * Blueprint class names for SingleSelectInput component
+ */
+export const singleSelectInputClassNames: SingleSelectInputClassNames = {
+  root: "filter-input--single-select",
+  selectContainer: "filter-input__select-container",
+  select: "bp6-input bp6-fill",
+  clearButton: "bp6-button bp6-minimal bp6-small filter-input__clear",
+  loadingMessage: "bp6-text-muted bp6-text-small",
+  errorMessage: "bp6-text-small bp6-intent-danger",
+  emptyMessage: "bp6-text-muted bp6-text-small",
+};
+
+/**
+ * Blueprint class names for MultiSelectInput component
+ */
+export const multiSelectInputClassNames: MultiSelectInputClassNames = {
+  root: "filter-input--multi-select",
+  inputContainer: "filter-input__multi-select-container",
+  input: "bp6-input bp6-fill",
+  tagContainer: "filter-input__tag-container",
+  tag: "bp6-tag bp6-minimal",
+  tagRemoveButton: "bp6-tag-remove",
+  clearAllButton: "bp6-button bp6-minimal bp6-small",
+  dropdown: "bp6-menu filter-input__dropdown",
+  dropdownItem: "bp6-menu-item",
+  dropdownItemSelected: "bp6-active",
+  loadingMessage: "bp6-text-muted bp6-text-small",
+  errorMessage: "bp6-text-small bp6-intent-danger",
+  emptyMessage: "bp6-text-muted bp6-text-small",
+};
+
+/**
+ * Blueprint class names for SingleDateInput component
+ */
+export const singleDateInputClassNames: SingleDateInputClassNames = {
+  root: "filter-input--single-date",
+  inputContainer: "filter-input__date-container",
+  input: "bp6-input bp6-fill",
+  clearButton: "bp6-button bp6-minimal bp6-small filter-input__clear",
+  loadingMessage: "bp6-text-muted bp6-text-small",
+  errorMessage: "bp6-text-small bp6-intent-danger",
+};
+
+/**
+ * Blueprint class names for ListogramInput component
+ */
+export const listogramInputClassNames: ListogramInputClassNames = {
+  root: "filter-input--listogram",
+  barContainer: "filter-input__listogram-container",
+  barRow: "filter-input__listogram-row",
+  barRowSelected: "filter-input__listogram-row--selected",
+  barLabel: "filter-input__listogram-label",
+  bar: "filter-input__listogram-bar",
+  barFill: "filter-input__listogram-bar-fill",
+  barCount: "filter-input__count",
+  loadingMessage: "bp6-text-muted bp6-text-small",
+  errorMessage: "bp6-text-small bp6-intent-danger",
+  emptyMessage: "bp6-text-muted bp6-text-small",
+};
+
+/**
+ * Blueprint class names for TextTagsInput component
+ */
+export const textTagsInputClassNames: TextTagsInputClassNames = {
+  root: "filter-input--text-tags",
+  inputContainer: "filter-input__text-tags-container",
+  input: "bp6-input bp6-fill",
+  tagContainer: "filter-input__tag-container",
+  tag: "bp6-tag bp6-minimal",
+  tagRemoveButton: "bp6-tag-remove",
+  suggestionList: "bp6-menu filter-input__suggestions",
+  suggestionItem: "bp6-menu-item",
+  loadingMessage: "bp6-text-muted bp6-text-small",
+  errorMessage: "bp6-text-small bp6-intent-danger",
+};
+
+/**
+ * Blueprint class names for MultiDateInput component
+ */
+export const multiDateInputClassNames: MultiDateInputClassNames = {
+  root: "filter-input--multi-date",
+  calendarContainer: "filter-input__calendar-container",
+  selectedDatesContainer: "filter-input__selected-dates",
+  selectedDateTag: "bp6-tag bp6-minimal",
+  selectedDateRemoveButton: "bp6-tag-remove",
+  clearAllButton: "bp6-button bp6-minimal bp6-small",
+  loadingMessage: "bp6-text-muted bp6-text-small",
+  errorMessage: "bp6-text-small bp6-intent-danger",
+};
+
+/**
+ * Blueprint class names for TimelineInput component
+ */
+export const timelineInputClassNames: TimelineInputClassNames = {
+  root: "filter-input--timeline",
+  chartContainer: "filter-input__timeline-chart",
+  brushContainer: "filter-input__timeline-brush",
+  selectedRange: "filter-input__timeline-range",
+  rangeLabels: "filter-input__timeline-labels bp6-text-muted bp6-text-small",
+  loadingMessage: "bp6-text-muted bp6-text-small",
+  errorMessage: "bp6-text-small bp6-intent-danger",
 };
 
 /**

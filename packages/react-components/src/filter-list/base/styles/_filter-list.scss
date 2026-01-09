@@ -2,20 +2,32 @@
 // Licensed under the Apache License, Version 2.0.
 
 // Base filter list styles - framework agnostic
+//
+// Design System Measurements:
+// - 280px: Standard filter panel width (comfortable for labels + controls)
+// - 200px: Minimum usable width (prevents content truncation)
+// - 48px: Collapsed width (fits single icon comfortably)
+// - 44px: Min header height (touch-friendly target per WCAG guidelines)
+// - 12px: Standard internal padding
+// - 8px: Small gap (between related items)
+// - 10px: Content padding (slight visual breathing room)
 
 @use "variables" as *;
 
 .filter-list {
   display: flex;
   flex-direction: column;
-  width: 280px;
-  min-width: 200px;
+  // 280px is the standard panel width - wide enough for filter labels and controls
+  width: var(--filter-list-width, 280px);
+  // 200px minimum prevents content from becoming unusably cramped
+  min-width: var(--filter-list-min-width, 200px);
   background-color: var(--filter-panel-bg-color, #{$filter-panel-bg-light});
   border-right: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-light});
   transition: width 0.2s ease-out, min-width 0.2s ease-out;
 }
 
 .filter-list--collapsed {
+  // 48px fits a single icon button comfortably with padding
   width: 48px;
   min-width: 48px;
 }
@@ -28,6 +40,7 @@
   padding: 12px;
   background-color: var(--filter-header-bg-color, transparent);
   border-bottom: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-light});
+  // 44px minimum height ensures touch-friendly target size (WCAG 2.1 AAA)
   min-height: 44px;
 }
 
@@ -192,4 +205,99 @@
   flex-shrink: 0;
   border-top: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-muted-light});
   padding: 12px;
+}
+
+// Layout Modes
+.filter-list[data-layout-mode="pills"] {
+  width: auto;
+  min-width: auto;
+  max-width: 100%;
+  border-right: none;
+  background-color: transparent;
+
+  .filter-list__header {
+    border-bottom: none;
+    padding: 8px 0;
+  }
+
+  .filter-list__content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0;
+    overflow-y: visible;
+  }
+
+  .filter-list__item {
+    display: inline-flex;
+    flex-direction: column;
+    border-radius: 16px;
+    border: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-light});
+    background-color: var(--filter-item-bg-color, #{$filter-panel-bg-light});
+    padding: 0;
+    border-bottom: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-light});
+  }
+
+  .filter-list__item-header {
+    padding: 4px 12px;
+    gap: 4px;
+  }
+
+  .filter-list__item-label {
+    font-size: 12px;
+  }
+
+  .filter-list__item-content {
+    padding: 8px;
+  }
+
+  .filter-list__item-chevron {
+    display: none;
+  }
+}
+
+.filter-list[data-layout-mode="horizontal"] {
+  flex-direction: row;
+  width: auto;
+  min-width: auto;
+  max-width: 100%;
+  border-right: none;
+  border-bottom: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-light});
+
+  .filter-list__header {
+    flex-shrink: 0;
+    border-bottom: none;
+    border-right: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-light});
+    padding: 8px 12px;
+  }
+
+  .filter-list__content {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    padding: 8px 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex: 1;
+  }
+
+  .filter-list__item {
+    flex-shrink: 0;
+    border-bottom: none;
+    border-right: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-muted-light});
+    padding-right: 16px;
+  }
+
+  .filter-list__item:last-child {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .filter-list__item-header {
+    padding: 4px 0;
+  }
+
+  .filter-list__item-content {
+    padding: 4px 0 0;
+  }
 }

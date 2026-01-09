@@ -15,6 +15,7 @@
  */
 
 import type { ReactNode } from "react";
+import type { FilterComponentType } from "../FilterListItemApi.js";
 import type { FilterDataIndicator } from "./FilterDisplayTypes.js";
 
 /**
@@ -47,7 +48,7 @@ export interface FilterTemplate {
   /**
    * The type of filter component to use
    */
-  filterComponent: string;
+  filterComponent: FilterComponentType;
 
   /**
    * Icon to display next to the filter label.

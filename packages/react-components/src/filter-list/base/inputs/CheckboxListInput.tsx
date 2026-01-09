@@ -18,6 +18,7 @@ import type {
   AggregateOpts,
   ObjectTypeDefinition,
   PropertyKeys,
+  WhereClause,
 } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
 import React, {
@@ -31,6 +32,7 @@ import React, {
 import type { CheckboxListInputClassNames } from "../../types/ClassNameOverrides.js";
 import type {
   FilterDataIndicator,
+  FilterInteractionMode,
   FilterItemColor,
 } from "../../types/FilterDisplayTypes.js";
 
@@ -42,6 +44,11 @@ interface CheckboxListInputProps<
   propertyKey: K;
   selectedValues: string[];
   onChange: (selectedValues: string[]) => void;
+  /**
+   * WhereClause from other filters to chain aggregation queries.
+   * When provided, the aggregation will respect other active filters.
+   */
+  whereClause?: WhereClause<Q>;
   showSelectAll?: boolean;
   showSearch?: boolean;
   searchPlaceholder?: string;
@@ -49,6 +56,7 @@ interface CheckboxListInputProps<
   showClearAll?: boolean;
   maxVisibleItems?: number;
   dataIndicator?: FilterDataIndicator;
+  interactionMode?: FilterInteractionMode;
   color?: FilterItemColor;
   valueColors?: Record<string, FilterItemColor>;
   classNames?: CheckboxListInputClassNames;
@@ -62,6 +70,7 @@ function CheckboxListInputInner<
   propertyKey,
   selectedValues,
   onChange,
+  whereClause,
   showSelectAll = true,
   showSearch = false,
   searchPlaceholder,
@@ -69,11 +78,13 @@ function CheckboxListInputInner<
   showClearAll = false,
   maxVisibleItems,
   dataIndicator = "none",
+  interactionMode = "checkbox",
   color,
   valueColors,
   classNames,
 }: CheckboxListInputProps<Q, K>): React.ReactElement {
   const showCounts = dataIndicator === "histogram" || dataIndicator === "count";
+  const isCategoryMode = interactionMode === "category";
 
   // AggregateOpts requires specific property keys from Q, but we're dynamically
   // using propertyKey. The cast is unavoidable for this dynamic filter pattern.
@@ -87,6 +98,7 @@ function CheckboxListInputInner<
   );
 
   const { data: countData, isLoading, error } = useOsdkAggregation(objectType, {
+    where: whereClause,
     aggregate: aggregateOptions,
   });
 
@@ -125,13 +137,24 @@ function CheckboxListInputInner<
 
   const toggleValue = useCallback(
     (value: string) => {
-      if (selectedValues.includes(value)) {
-        onChange(selectedValues.filter((v) => v !== value));
+      if (isCategoryMode) {
+        // In category mode, clicking selects only that value (deselects others)
+        // Clicking the same value again deselects it
+        if (selectedValues.length === 1 && selectedValues[0] === value) {
+          onChange([]);
+        } else {
+          onChange([value]);
+        }
       } else {
-        onChange([...selectedValues, value]);
+        // In checkbox mode, toggle the value
+        if (selectedValues.includes(value)) {
+          onChange(selectedValues.filter((v) => v !== value));
+        } else {
+          onChange([...selectedValues, value]);
+        }
       }
     },
-    [selectedValues, onChange],
+    [selectedValues, onChange, isCategoryMode],
   );
 
   const toggleAll = useCallback(() => {
@@ -236,7 +259,7 @@ function CheckboxListInputInner<
             </div>
           )}
 
-          {showSelectAll && values.length > 1 && (
+          {showSelectAll && values.length > 1 && !isCategoryMode && (
             <div className={classNames?.selectAllContainer}>
               <label className={classNames?.selectAllCheckbox}>
                 <input
@@ -258,12 +281,14 @@ function CheckboxListInputInner<
             const count = valueCounts.get(value) ?? 0;
             const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
             const itemColor = valueColors?.[value] ?? color;
+            const isSelected = selectedValues.includes(value);
 
             return (
               <div
                 key={value}
                 className={classNames?.checkboxRow}
-                data-selected={selectedValues.includes(value)}
+                data-selected={isSelected}
+                data-interaction-mode={interactionMode}
                 style={itemColor
                   ? ({
                     "--item-bg": itemColor.background,
@@ -273,19 +298,32 @@ function CheckboxListInputInner<
                   } as React.CSSProperties)
                   : undefined}
               >
-                <label className={classNames?.checkbox}>
-                  <input
-                    type="checkbox"
-                    checked={selectedValues.includes(value)}
-                    onChange={() => toggleValue(value)}
-                  />
-                  <span
-                    className={classNames?.checkboxIndicator}
-                  />
-                  <span className={classNames?.valueText}>
-                    {value}
-                  </span>
-                </label>
+                {isCategoryMode ? (
+                  <button
+                    type="button"
+                    className={classNames?.checkbox}
+                    onClick={() => toggleValue(value)}
+                    aria-pressed={isSelected}
+                  >
+                    <span className={classNames?.valueText}>
+                      {value}
+                    </span>
+                  </button>
+                ) : (
+                  <label className={classNames?.checkbox}>
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={() => toggleValue(value)}
+                    />
+                    <span
+                      className={classNames?.checkboxIndicator}
+                    />
+                    <span className={classNames?.valueText}>
+                      {value}
+                    </span>
+                  </label>
+                )}
                 {showCounts && (
                   <span className={classNames?.count}>
                     {count.toLocaleString()}

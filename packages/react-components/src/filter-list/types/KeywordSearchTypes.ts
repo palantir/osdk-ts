@@ -56,6 +56,15 @@ export interface KeywordSearchFilterDefinition<
    */
   properties: "all" | K[];
   label?: string;
-  filterState: KeywordSearchFilterState;
+  /**
+   * Controlled state for the filter.
+   * When provided, the filter becomes controlled and changes should be
+   * handled via onFilterStateChanged callback.
+   */
+  filterState?: KeywordSearchFilterState;
+  /**
+   * Default state for uncontrolled mode.
+   * Used when filterState is not provided.
+   */
   defaultFilterState?: KeywordSearchFilterState;
 }

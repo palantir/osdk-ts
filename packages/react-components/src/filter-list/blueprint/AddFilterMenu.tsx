@@ -35,10 +35,6 @@ const SECTION_LABELS: Record<FilterCategory, string> = {
   LINKED_OBJECT: "FILTER ON A LINKED OBJECT",
 };
 
-const MENU_WIDTH = 300;
-const MENU_MAX_HEIGHT = 400;
-const MENU_BORDER_RADIUS = 3;
-const MENU_SHADOW = "0 2px 10px rgba(0,0,0,0.15)";
 
 export function AddFilterMenu({
   templates,
@@ -85,35 +81,14 @@ export function AddFilterMenu({
   };
 
   return (
-    <div
-      style={{
-        width: MENU_WIDTH,
-        backgroundColor: "#fff",
-        borderRadius: MENU_BORDER_RADIUS,
-        boxShadow: MENU_SHADOW,
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          padding: "12px 16px",
-          borderBottom: "1px solid #e1e8ed",
-        }}
-      >
+    <div className="filter-add-menu">
+      <div className="filter-add-menu__search-container">
         <input
           type="text"
+          className="filter-add-menu__search-input"
           placeholder="Search..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          style={{
-            flex: 1,
-            border: "none",
-            outline: "none",
-            fontSize: 14,
-            color: "#182026",
-            backgroundColor: "transparent",
-          }}
         />
         {searchQuery && (
           <Button
@@ -135,7 +110,7 @@ export function AddFilterMenu({
         />
       </div>
 
-      <div style={{ maxHeight: MENU_MAX_HEIGHT, overflowY: "auto" }}>
+      <div className="filter-add-menu__content">
         {SECTION_ORDER.map((category) => {
           const items = groupedTemplates[category];
           const count = items.length;
@@ -148,6 +123,7 @@ export function AddFilterMenu({
           return (
             <div key={category}>
               <Button
+                className="filter-add-menu__section-button"
                 variant="minimal"
                 fill
                 alignText="left"
@@ -163,22 +139,8 @@ export function AddFilterMenu({
                     }}
                   />
                 }
-                style={{
-                  padding: "10px 16px",
-                  backgroundColor: "#f5f8fa",
-                  borderBottom: "1px solid #e1e8ed",
-                  borderRadius: 0,
-                }}
               >
-                <span
-                  style={{
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: "#5c7080",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.5px",
-                  }}
-                >
+                <span className="filter-add-menu__section-label">
                   {SECTION_LABELS[category]}{" "}
                   {category !== "ALL_PROPERTIES" && `(${count})`}
                 </span>

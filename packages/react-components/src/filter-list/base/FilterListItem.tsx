@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React, { memo, useCallback, useId, useRef, useState } from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
@@ -28,6 +28,11 @@ interface FilterListItemProps<Q extends ObjectTypeDefinition> {
   definition: FilterDefinitionUnion<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  /**
+   * WhereClause from other filters to chain aggregation queries.
+   * When provided, the aggregations in input components will respect other active filters.
+   */
+  whereClause?: WhereClause<Q>;
   classNames?: FilterListItemClassNames;
   inputClassNames?: InputClassNames;
 }
@@ -38,10 +43,33 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
   definition,
   filterState,
   onFilterStateChanged,
+  whereClause,
   classNames,
   inputClassNames,
 }: FilterListItemProps<Q>): React.ReactElement {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  // Support controlled/uncontrolled collapse from definition
+  const controlledCollapsed = definition.type === "property"
+    ? definition.itemCollapsed
+    : undefined;
+  const defaultCollapsed = definition.type === "property"
+    ? definition.defaultItemCollapsed ?? false
+    : false;
+  const onCollapsedChange = definition.type === "property"
+    ? definition.onItemCollapsedChange
+    : undefined;
+
+  const isControlled = controlledCollapsed !== undefined;
+  const [internalCollapsed, setInternalCollapsed] = useState(defaultCollapsed);
+  const isCollapsed = isControlled ? controlledCollapsed : internalCollapsed;
+
+  const handleToggleCollapse = useCallback(() => {
+    const newValue = !isCollapsed;
+    if (!isControlled) {
+      setInternalCollapsed(newValue);
+    }
+    onCollapsedChange?.(newValue);
+  }, [isCollapsed, isControlled, onCollapsedChange]);
+
   const [isOverflowMenuOpen, setIsOverflowMenuOpen] = useState(false);
   const overflowMenuTriggerRef = useRef<HTMLButtonElement>(null);
   const contentId = useId();
@@ -92,7 +120,7 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
         <button
           type="button"
           className={classNames?.headerButton}
-          onClick={() => setIsCollapsed(!isCollapsed)}
+          onClick={handleToggleCollapse}
           aria-expanded={!isCollapsed}
           aria-controls={contentId}
           aria-label={`${isCollapsed ? "Expand" : "Collapse"} ${label} filter`}
@@ -164,6 +192,7 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
             filterState,
             onFilterStateChanged,
             inputClassNames,
+            whereClause,
           )}
         </div>
       )}
@@ -192,7 +221,5 @@ function getLabel<Q extends ObjectTypeDefinition>(
       return "Search";
     case "custom":
       return definition.key;
-    default:
-      return "Filter";
   }
 }

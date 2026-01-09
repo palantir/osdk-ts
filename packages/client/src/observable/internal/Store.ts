@@ -171,10 +171,6 @@ export class Store {
       return;
     }
 
-    if (process.env.NODE_ENV !== "production") {
-      invariant(subject);
-    }
-
     if (DEBUG_REFCOUNTS) {
       // eslint-disable-next-line no-console
       console.log(

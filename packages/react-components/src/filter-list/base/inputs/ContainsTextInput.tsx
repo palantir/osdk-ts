@@ -27,7 +27,7 @@ interface ContainsTextInputProps {
   renderClearIcon?: () => React.ReactNode;
 }
 
-export const ContainsTextInput = memo(function ContainsTextInput({
+function ContainsTextInputInner({
   value,
   onChange,
   placeholder = "Search...",
@@ -116,4 +116,7 @@ export const ContainsTextInput = memo(function ContainsTextInput({
       </div>
     </div>
   );
-});
+}
+
+export const ContainsTextInput: React.NamedExoticComponent<ContainsTextInputProps> =
+  memo(ContainsTextInputInner);

@@ -73,6 +73,8 @@
 }
 
 // Blueprint clear button in text input
+// Note: top: 40% (instead of 50%) compensates for Blueprint button's internal padding
+// which causes visual misalignment when using standard vertical centering
 .filter-input--text .filter-input__clear.bp6-button {
   position: absolute;
   top: 40%;
@@ -96,14 +98,14 @@
 
 // Blueprint view all link
 .filter-input__view-all-link:hover {
-  color: #2b95d6;
+  color: var(--filter-link-color, #{$filter-link-color-light});
 }
 
 .bp6-dark .filter-input__view-all-link {
   color: $filter-muted-text-dark;
 
   &:hover {
-    color: #48aff0;
+    color: var(--filter-link-color, #{$filter-link-color-dark});
   }
 }
 
@@ -170,4 +172,70 @@
   &:hover {
     color: $filter-muted-text-dark;
   }
+}
+
+// AddFilterMenu styles
+.filter-add-menu {
+  width: var(--filter-add-menu-width, 300px);
+  background-color: var(--filter-add-menu-bg, #{$filter-panel-bg-light});
+  border-radius: var(--filter-add-menu-radius, 3px);
+  box-shadow: var(--filter-add-menu-shadow, 0 2px 10px rgba(0, 0, 0, 0.15));
+}
+
+.filter-add-menu__search-container {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-light});
+}
+
+.filter-add-menu__search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: var(--filter-add-menu-text-color, #{$filter-text-light});
+  background-color: transparent;
+}
+
+.filter-add-menu__content {
+  max-height: var(--filter-add-menu-max-height, 400px);
+  overflow-y: auto;
+}
+
+.filter-add-menu__section-button {
+  padding: 10px 16px;
+  background-color: var(--filter-add-menu-section-bg, #{$filter-hover-bg});
+  border-bottom: 1px solid var(--filter-panel-border-color, #{$filter-panel-border-light});
+  border-radius: 0;
+}
+
+.filter-add-menu__section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--filter-muted-text-color, #{$filter-muted-text-light});
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// Dark mode for AddFilterMenu
+.bp6-dark .filter-add-menu {
+  background-color: var(--filter-add-menu-bg, #{$filter-panel-bg-dark});
+}
+
+.bp6-dark .filter-add-menu__search-container {
+  border-bottom-color: var(--filter-panel-border-color, #{$filter-panel-border-dark});
+}
+
+.bp6-dark .filter-add-menu__search-input {
+  color: var(--filter-add-menu-text-color, #{$filter-text-dark});
+}
+
+.bp6-dark .filter-add-menu__section-button {
+  background-color: var(--filter-add-menu-section-bg, #{$filter-panel-bg-dark});
+  border-bottom-color: var(--filter-panel-border-color, #{$filter-panel-border-dark});
+}
+
+.bp6-dark .filter-add-menu__section-label {
+  color: var(--filter-muted-text-color, #{$filter-muted-text-dark});
 }

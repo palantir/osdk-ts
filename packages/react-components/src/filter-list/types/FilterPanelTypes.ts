@@ -15,14 +15,24 @@
  */
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
-import type { FilterDefinitionUnion } from "../FilterListApi.js";
+import type { FilterState } from "../FilterListItemApi.js";
+
+/**
+ * Filter states indexed by key (serializable to JSON)
+ */
+export type SerializableFilterStates = Record<string, FilterState>;
 
 /**
  * Persisted state for the filter list
  * Can be serialized and stored for session persistence
+ *
+ * Note: Only includes serializable data. Filter definitions are not persisted
+ * because they may contain callback functions which cannot be serialized.
  */
-export interface FilterListPersistedState<Q extends ObjectTypeDefinition> {
+export interface FilterListPersistedState<
+  Q extends ObjectTypeDefinition = ObjectTypeDefinition,
+> {
   collapsed: boolean;
-  filterDefinitions: Array<FilterDefinitionUnion<Q>>;
-  filterClause: WhereClause<Q>;
+  filterStatesByKey: SerializableFilterStates;
+  filterClause?: WhereClause<Q>;
 }

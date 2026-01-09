@@ -31,6 +31,7 @@ export { AddFilterMenu } from "../filter-list/blueprint/AddFilterMenu.js";
 export {
   checkboxListInputClassNames,
   containsTextInputClassNames,
+  containsTextInputRenderProps,
   dateRangeInputClassNames,
   filterListClassNames,
   filterListItemClassNames,
@@ -44,6 +45,7 @@ export {
 export type {
   CheckboxListInputClassNames,
   ContainsTextInputClassNames,
+  ContainsTextInputRenderProps,
   DateRangeInputClassNames,
   FilterListClassNames,
   FilterListItemClassNames,
@@ -76,7 +78,6 @@ export type {
   NumberRangeFilterState,
   OverflowMenuRenderProps,
   PropertyFilterDefinition,
-  PropertyFilterDefinition as FilterDefinition,
   PropertyTypeFromKey,
   SingleDateFilterState,
   SingleSelectFilterState,
@@ -84,6 +85,22 @@ export type {
   ToggleFilterState,
   ValidComponentsForPropertyType,
 } from "../filter-list/FilterListItemApi.js";
+
+// ─── Filter List Hooks ────────────────────────────────────────────────────────
+
+export { useFilterListState } from "../filter-list/hooks/useFilterListState.js";
+export type { UseFilterListStateResult } from "../filter-list/hooks/useFilterListState.js";
+
+// ─── Filter List Input Components (Base) ─────────────────────────────────────
+
+export {
+  CheckboxListInput,
+  ContainsTextInput,
+  DateRangeInput,
+  NullValueWrapper,
+  NumberRangeInput,
+  ToggleInput,
+} from "../filter-list/base/inputs/index.js";
 
 export type {
   FilterDataIndicator,

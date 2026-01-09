@@ -46,8 +46,9 @@ function filterStateToPropertyFilter(
       if (!state.value) {
         return undefined;
       }
-      // Use $startsWith for prefix matching - "consult" matches "Consultant"
-      const filter = { $startsWith: state.value };
+      // Use $containsAllTermsInOrder for substring matching
+      // "consult" matches "Management Consultant", "consultant", etc.
+      const filter = { $containsAllTermsInOrder: state.value };
       if (state.isExcluding) {
         return { $not: filter };
       }
@@ -68,13 +69,27 @@ function filterStateToPropertyFilter(
         conditions.push({ $lte: state.maxValue.toISOString() });
       }
 
-      if (conditions.length === 0) {
+      if (conditions.length === 0 && !state.includeNull) {
         return undefined;
       }
+
+      // Build the range filter
+      let rangeFilter: PropertyFilter | undefined;
       if (conditions.length === 1) {
-        return conditions[0];
+        rangeFilter = conditions[0];
+      } else if (conditions.length > 1) {
+        rangeFilter = { $and: conditions };
       }
-      return { $and: conditions };
+
+      // Handle includeNull: include objects with null values in addition to range
+      if (state.includeNull) {
+        if (rangeFilter) {
+          return { $or: [rangeFilter, { $isNull: true }] };
+        }
+        return { $isNull: true };
+      }
+
+      return rangeFilter;
     }
 
     case "NUMBER_RANGE": {
@@ -87,13 +102,27 @@ function filterStateToPropertyFilter(
         conditions.push({ $lte: state.maxValue });
       }
 
-      if (conditions.length === 0) {
+      if (conditions.length === 0 && !state.includeNull) {
         return undefined;
       }
+
+      // Build the range filter
+      let rangeFilter: PropertyFilter | undefined;
       if (conditions.length === 1) {
-        return conditions[0];
+        rangeFilter = conditions[0];
+      } else if (conditions.length > 1) {
+        rangeFilter = { $and: conditions };
       }
-      return { $and: conditions };
+
+      // Handle includeNull: include objects with null values in addition to range
+      if (state.includeNull) {
+        if (rangeFilter) {
+          return { $or: [rangeFilter, { $isNull: true }] };
+        }
+        return { $isNull: true };
+      }
+
+      return rangeFilter;
     }
 
     case "EXACT_MATCH": {
@@ -186,34 +215,36 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
 
   const clauses: Array<Record<string, unknown>> = [];
 
-  for (const definition of definitions) {
-    let key: string;
+  for (let i = 0; i < definitions.length; i++) {
+    const definition = definitions[i];
+    let filterKey: string;
     let state: FilterState | undefined;
 
     switch (definition.type) {
       case "property":
-        key = definition.key;
-        state = filterStates.get(key);
+        filterKey = definition.key;
+        state = filterStates.get(`${filterKey}:${i}`);
         break;
       case "hasLink":
+        filterKey = `hasLink:${definition.linkName}`;
+        state = filterStates.get(`${filterKey}:${i}`);
+        break;
       case "linkedProperty":
-        key = definition.linkName;
-        state = filterStates.get(key);
+        filterKey = `linkedProperty:${definition.linkName}:${definition.linkedPropertyKey}`;
+        state = filterStates.get(`${filterKey}:${i}`);
         break;
       case "keywordSearch":
-        key = `keywordSearch-${
+        filterKey = `keywordSearch-${
           Array.isArray(definition.properties)
             ? definition.properties.join("-")
             : "all"
         }`;
-        state = filterStates.get(key);
+        state = filterStates.get(`${filterKey}:${i}`);
         break;
       case "custom":
-        key = definition.key;
-        state = filterStates.get(key);
+        filterKey = definition.key;
+        state = filterStates.get(`${filterKey}:${i}`);
         break;
-      default:
-        continue;
     }
 
     if (!state) {
@@ -224,7 +255,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
       case "property": {
         const filter = filterStateToPropertyFilter(state);
         if (filter !== undefined) {
-          clauses.push({ [key]: filter });
+          clauses.push({ [definition.key]: filter });
         }
         break;
       }

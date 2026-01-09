@@ -24,8 +24,9 @@ export function getFilterKey<Q extends ObjectTypeDefinition>(
     case "property":
       return definition.key;
     case "hasLink":
+      return `hasLink:${definition.linkName}`;
     case "linkedProperty":
-      return definition.linkName;
+      return `linkedProperty:${definition.linkName}:${definition.linkedPropertyKey}`;
     case "keywordSearch":
       return `keywordSearch-${
         Array.isArray(definition.properties)

@@ -18,6 +18,7 @@ import type {
   AggregateOpts,
   ObjectTypeDefinition,
   PropertyKeys,
+  WhereClause,
 } from "@osdk/api";
 import { useOsdkAggregation } from "@osdk/react/experimental";
 import React, { memo, useCallback, useMemo } from "react";
@@ -31,6 +32,11 @@ interface NullValueWrapperProps<
   propertyKey: K;
   includeNull?: boolean;
   onIncludeNullChange: (include: boolean) => void;
+  /**
+   * WhereClause from other filters to chain aggregation queries.
+   * When provided, the aggregation will respect other active filters.
+   */
+  whereClause?: WhereClause<Q>;
   showNullCount?: boolean;
   children: React.ReactNode;
   classNames?: NullValueWrapperClassNames;
@@ -44,6 +50,7 @@ function NullValueWrapperInner<
   propertyKey,
   includeNull = false,
   onIncludeNullChange,
+  whereClause,
   showNullCount = true,
   children,
   classNames,
@@ -61,6 +68,7 @@ function NullValueWrapperInner<
   );
 
   const { data: nullCountData, isLoading } = useOsdkAggregation(objectType, {
+    where: whereClause,
     aggregate: nullCountAggregateOptions,
   });
 

@@ -24,7 +24,7 @@ interface ToggleInputProps {
   classNames?: ToggleInputClassNames;
 }
 
-export const ToggleInput = memo(function ToggleInput({
+function ToggleInputInner({
   enabled,
   onChange,
   label,
@@ -45,4 +45,7 @@ export const ToggleInput = memo(function ToggleInput({
       </label>
     </div>
   );
-});
+}
+
+export const ToggleInput: React.NamedExoticComponent<ToggleInputProps> =
+  memo(ToggleInputInner);

@@ -76,6 +76,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     showAddFilterButton = false,
     addFilterPosition = "fixed",
     showActiveFilterCount = false,
+    layoutMode = "vertical",
     theme,
     className,
     classNames,
@@ -115,6 +116,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
       style={themeToStyle(theme)}
       data-collapsed={collapsed}
       data-active-count={activeFilterCount}
+      data-layout-mode={layoutMode}
     >
       <FilterListHeader
         title={title}

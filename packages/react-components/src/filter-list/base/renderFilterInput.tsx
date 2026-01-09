@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectSet, ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import React from "react";
 import type { FilterDefinitionUnion } from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
@@ -22,8 +22,15 @@ import type {
   CheckboxListInputClassNames,
   ContainsTextInputClassNames,
   DateRangeInputClassNames,
+  ListogramInputClassNames,
+  MultiDateInputClassNames,
+  MultiSelectInputClassNames,
   NullValueWrapperClassNames,
   NumberRangeInputClassNames,
+  SingleDateInputClassNames,
+  SingleSelectInputClassNames,
+  TextTagsInputClassNames,
+  TimelineInputClassNames,
   ToggleInputClassNames,
 } from "../types/ClassNameOverrides.js";
 import type { KeywordSearchFilterState } from "../types/KeywordSearchTypes.js";
@@ -31,8 +38,15 @@ import type { HasLinkFilterState } from "../types/LinkedFilterTypes.js";
 import { CheckboxListInput } from "./inputs/CheckboxListInput.js";
 import { ContainsTextInput } from "./inputs/ContainsTextInput.js";
 import { DateRangeInput } from "./inputs/DateRangeInput.js";
+import { ListogramInput } from "./inputs/ListogramInput.js";
+import { MultiDateInput } from "./inputs/MultiDateInput.js";
+import { MultiSelectInput } from "./inputs/MultiSelectInput.js";
 import { NullValueWrapper } from "./inputs/NullValueWrapper.js";
 import { NumberRangeInput } from "./inputs/NumberRangeInput.js";
+import { SingleDateInput } from "./inputs/SingleDateInput.js";
+import { SingleSelectInput } from "./inputs/SingleSelectInput.js";
+import { TextTagsInput } from "./inputs/TextTagsInput.js";
+import { TimelineInput } from "./inputs/TimelineInput.js";
 import { ToggleInput } from "./inputs/ToggleInput.js";
 
 interface ContainsTextRenderProps {
@@ -48,6 +62,13 @@ export interface InputClassNames {
   numberRange?: NumberRangeInputClassNames;
   dateRange?: DateRangeInputClassNames;
   nullValueWrapper?: NullValueWrapperClassNames;
+  singleSelect?: SingleSelectInputClassNames;
+  multiSelect?: MultiSelectInputClassNames;
+  singleDate?: SingleDateInputClassNames;
+  listogram?: ListogramInputClassNames;
+  textTags?: TextTagsInputClassNames;
+  multiDate?: MultiDateInputClassNames;
+  timeline?: TimelineInputClassNames;
 }
 
 export function renderFilterInput<Q extends ObjectTypeDefinition>(
@@ -57,6 +78,11 @@ export function renderFilterInput<Q extends ObjectTypeDefinition>(
   filterState: FilterState | undefined,
   onFilterStateChanged: (state: FilterState) => void,
   inputClassNames?: InputClassNames,
+  /**
+   * WhereClause from other filters to chain aggregation queries.
+   * When provided, the aggregations in input components will respect other active filters.
+   */
+  whereClause?: WhereClause<Q>,
 ): React.ReactElement {
   // Handle non-property filter types
   switch (definition.type) {
@@ -166,6 +192,7 @@ export function renderFilterInput<Q extends ObjectTypeDefinition>(
           propertyKey={definition.key}
           selectedValues={selectedValues}
           onChange={handleChange}
+          whereClause={whereClause}
           showSelectAll={definition.showSelectAll}
           maxVisibleItems={definition.maxVisibleItems}
           dataIndicator={definition.dataIndicator}
@@ -226,6 +253,7 @@ export function renderFilterInput<Q extends ObjectTypeDefinition>(
                 : undefined,
               includeNull,
             })}
+          whereClause={whereClause}
           classNames={inputClassNames?.nullValueWrapper}
         >
           <NumberRangeInput
@@ -244,6 +272,7 @@ export function renderFilterInput<Q extends ObjectTypeDefinition>(
                 maxValue,
                 includeNull: filterState?.includeNull,
               })}
+            whereClause={whereClause}
             showHistogram={definition.dataIndicator === "histogram"}
             classNames={inputClassNames?.numberRange}
           />
@@ -267,6 +296,7 @@ export function renderFilterInput<Q extends ObjectTypeDefinition>(
                 : undefined,
               includeNull,
             })}
+          whereClause={whereClause}
           classNames={inputClassNames?.nullValueWrapper}
         >
           <DateRangeInput
@@ -285,9 +315,148 @@ export function renderFilterInput<Q extends ObjectTypeDefinition>(
                 maxValue,
                 includeNull: filterState?.includeNull,
               })}
+            whereClause={whereClause}
             classNames={inputClassNames?.dateRange}
           />
         </NullValueWrapper>
+      );
+
+    case "SINGLE_SELECT":
+      return (
+        <SingleSelectInput
+          objectType={objectType}
+          propertyKey={definition.key}
+          selectedValue={filterState?.type === "SINGLE_SELECT"
+            ? (filterState.selectedValue as string | undefined)
+            : undefined}
+          onChange={(value) =>
+            onFilterStateChanged({
+              type: "SINGLE_SELECT",
+              selectedValue: value,
+              isExcluding: filterState?.isExcluding ?? false,
+            })}
+          whereClause={whereClause}
+          classNames={inputClassNames?.singleSelect}
+        />
+      );
+
+    case "MULTI_SELECT": {
+      const multiSelectValues = filterState?.type === "MULTI_SELECT"
+        ? filterState.selectedValues as string[]
+        : [];
+      return (
+        <MultiSelectInput
+          objectType={objectType}
+          propertyKey={definition.key}
+          selectedValues={multiSelectValues}
+          onChange={(values) =>
+            onFilterStateChanged({
+              type: "MULTI_SELECT",
+              selectedValues: values,
+              isExcluding: filterState?.isExcluding ?? false,
+            })}
+          whereClause={whereClause}
+          showSelectAll={definition.showSelectAll}
+          classNames={inputClassNames?.multiSelect}
+        />
+      );
+    }
+
+    case "SINGLE_DATE":
+      return (
+        <SingleDateInput
+          selectedDate={filterState?.type === "SINGLE_DATE"
+            ? filterState.selectedDate
+            : undefined}
+          onChange={(date) =>
+            onFilterStateChanged({
+              type: "SINGLE_DATE",
+              selectedDate: date,
+              isExcluding: filterState?.isExcluding ?? false,
+            })}
+          classNames={inputClassNames?.singleDate}
+        />
+      );
+
+    case "MULTI_DATE": {
+      const multiDateValues = filterState?.type === "MULTI_DATE"
+        ? filterState.selectedDates
+        : [];
+      return (
+        <MultiDateInput
+          selectedDates={multiDateValues}
+          onChange={(dates) =>
+            onFilterStateChanged({
+              type: "MULTI_DATE",
+              selectedDates: dates,
+              isExcluding: filterState?.isExcluding ?? false,
+            })}
+          classNames={inputClassNames?.multiDate}
+        />
+      );
+    }
+
+    case "LISTOGRAM": {
+      const listogramValues = filterState?.type === "EXACT_MATCH"
+        ? filterState.values as string[]
+        : [];
+      return (
+        <ListogramInput
+          objectType={objectType}
+          propertyKey={definition.key}
+          selectedValues={listogramValues}
+          onChange={(values) =>
+            onFilterStateChanged({
+              type: "EXACT_MATCH",
+              values,
+              isExcluding: filterState?.isExcluding ?? false,
+            })}
+          whereClause={whereClause}
+          maxVisibleItems={definition.maxVisibleItems}
+          classNames={inputClassNames?.listogram}
+        />
+      );
+    }
+
+    case "TEXT_TAGS": {
+      const textTagsValues = filterState?.type === "EXACT_MATCH"
+        ? filterState.values as string[]
+        : [];
+      return (
+        <TextTagsInput
+          objectType={objectType}
+          propertyKey={definition.key}
+          tags={textTagsValues}
+          onChange={(tags) =>
+            onFilterStateChanged({
+              type: "EXACT_MATCH",
+              values: tags,
+              isExcluding: filterState?.isExcluding ?? false,
+            })}
+          whereClause={whereClause}
+          classNames={inputClassNames?.textTags}
+        />
+      );
+    }
+
+    case "TIMELINE":
+      return (
+        <TimelineInput
+          startDate={filterState?.type === "TIMELINE"
+            ? filterState.startDate
+            : undefined}
+          endDate={filterState?.type === "TIMELINE"
+            ? filterState.endDate
+            : undefined}
+          onChange={(startDate, endDate) =>
+            onFilterStateChanged({
+              type: "TIMELINE",
+              startDate,
+              endDate,
+              isExcluding: filterState?.isExcluding ?? false,
+            })}
+          classNames={inputClassNames?.timeline}
+        />
       );
 
     default:
