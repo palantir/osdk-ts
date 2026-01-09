@@ -71,9 +71,7 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild",
-      "turbo",
-      "dprint",
-      "husky"
+      "dprint"
     ],
     "overrides": {
       "trim@0.0.1": "0.0.3",
