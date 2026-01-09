@@ -20,6 +20,7 @@ import type {
   ObjectTypeDefinition,
   PropertyKeys,
   SimplePropertyDef,
+  WhereClause,
 } from "@osdk/api";
 import type { Client } from "@osdk/client";
 import { OsdkProvider } from "@osdk/react";
@@ -39,6 +40,7 @@ interface MockUseObjectSetReturn {
   _testOptions: {
     withProperties?: Record<string, unknown>;
     pageSize: number;
+    where?: WhereClause<any>;
   };
 }
 
@@ -90,6 +92,19 @@ describe(useObjectTableData, () => {
       withProperties: undefined,
       pageSize: 50,
     });
+  });
+
+  it("calls useObjectSet with filter clause provided", () => {
+    const filterClause = {
+      name: "John",
+    } as unknown as WhereClause<TestObject>;
+    const { result } = renderHook(
+      () => useObjectTableData(mockObjectSet, undefined, filterClause),
+      { wrapper },
+    );
+
+    const mockResult = result.current as unknown as MockUseObjectSetReturn;
+    expect(mockResult._testOptions.where).toEqual(filterClause);
   });
 
   it("calls useObjectSet without withProperties when no columnDefinitions provided", () => {

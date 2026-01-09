@@ -59,11 +59,12 @@ export function ObjectTable<
   objectSet,
   objectType,
   columnDefinitions,
+  filter,
   onRowClick,
+  onRowSelection,
   rowHeight,
   selectionMode = "none",
   selectedRows,
-  onRowSelection,
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { data, fetchMore, isLoading } = useObjectTableData<
     Q,
@@ -72,6 +73,7 @@ export function ObjectTable<
   >(
     objectSet,
     columnDefinitions,
+    filter,
   );
 
   const { columns, loading: isColumnsLoading } = useColumnDefs<
