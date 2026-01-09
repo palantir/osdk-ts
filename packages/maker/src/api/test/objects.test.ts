@@ -2581,7 +2581,6 @@ describe("Object Types", () => {
       },
     });
 
-    // Bag Object Definitions
     const obj_person = defineObject({
       displayName: "Person",
       pluralDisplayName: "Persons",
