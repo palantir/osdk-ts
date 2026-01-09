@@ -30,6 +30,7 @@ import { useRowSelection } from "./hooks/useRowSelection.js";
 import type { ObjectTableProps } from "./ObjectTableApi.js";
 import { SelectionCell, SelectionHeaderCell } from "./SelectionCells.js";
 import { Table } from "./Table.js";
+import { getRowId } from "./utils/getRowId.js";
 
 /**
  * ObjectTable - A headless table component for displaying OSDK object sets
@@ -154,7 +155,7 @@ export function ObjectTable<
     defaultColumn: {
       minSize: 80,
     },
-    getRowId: (row) => row.$primaryKey.toString(),
+    getRowId,
   });
 
   const isTableLoading = isLoading || isColumnsLoading;
