@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.15.0-beta.6
+
+### Minor Changes
+
+- 2fd6f6e: Fix self-referential derived datasources
+
 ## 0.15.0-beta.5
 
 ### Minor Changes
