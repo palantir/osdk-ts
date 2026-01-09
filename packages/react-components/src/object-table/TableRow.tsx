@@ -41,9 +41,6 @@ export function TableRow<TData extends RowData>({
         height: `${virtualRow.size}px`,
         transform: `translateY(${virtualRow.start}px)`,
         display: "flex",
-        backgroundColor: row.getIsSelected()
-          ? "rgba(0, 123, 255, 0.1)"
-          : undefined,
       }}
       onClick={handleClick}
     >
