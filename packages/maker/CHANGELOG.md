@@ -1,5 +1,11 @@
 # @osdk/maker
 
+## 0.15.0-beta.5
+
+### Minor Changes
+
+- 1cb0862: fix property parameter defaults
+
 ## 0.15.0-beta.4
 
 ### Minor Changes
