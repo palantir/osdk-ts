@@ -70,8 +70,15 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@swc/core",
+      "@tailwindcss/oxide",
+      "canvas",
+      "core-js",
+      "core-js-pure",
+      "dprint",
       "esbuild",
-      "dprint"
+      "msw",
+      "unrs-resolver"
     ],
     "overrides": {
       "trim@0.0.1": "0.0.3",
