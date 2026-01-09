@@ -229,6 +229,8 @@ export interface ObjectTableProps<
    *
    * If multiple, a checkbox will be shown for each row to allow selecting multiple rows
    * as well as a top-level checkbox in the header to select all rows.
+   *
+   * @default "none"
    */
   selectionMode?: "single" | "multiple" | "none";
 
@@ -242,9 +244,10 @@ export interface ObjectTableProps<
    * Called when the row selection changes.
    * Required when row selection is controlled.
    *
-   * @param objects The currently selected objects
+   * @param selectedRowIds The primary keys of currently selected rows
    */
-  onRowSelection?: (objects: PrimaryKeyType<Q>[]) => void;
+
+  onRowSelection?: (selectedRowIds: PrimaryKeyType<Q>[]) => void;
 
   /**
    * If provided, will render this context menu when right clicking on a cell

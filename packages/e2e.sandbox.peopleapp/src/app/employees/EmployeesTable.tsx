@@ -73,6 +73,7 @@ export function EmployeesTable() {
         objectSet={employeesObjectSet}
         objectType={Employee}
         columnDefinitions={columnDefinitions}
+        selectionMode={"multiple"}
       />
     </div>
   );
