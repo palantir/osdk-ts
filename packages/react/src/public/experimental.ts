@@ -23,6 +23,12 @@ export { useObjectSet } from "../new/useObjectSet.js";
 export { useOsdkAction } from "../new/useOsdkAction.js";
 export type { UseOsdkAggregationResult } from "../new/useOsdkAggregation.js";
 export { useOsdkAggregation } from "../new/useOsdkAggregation.js";
+export { useOsdkMediaUpload } from "../new/useOsdkMediaUpload.js";
+export type {
+  FileInfo,
+  UploadStatus,
+  UseOsdkMediaUploadResult,
+} from "../new/useOsdkMediaUpload.js";
 export { useOsdkObject } from "../new/useOsdkObject.js";
 export type { UseOsdkListResult } from "../new/useOsdkObjects.js";
 export { useOsdkObjects } from "../new/useOsdkObjects.js";
