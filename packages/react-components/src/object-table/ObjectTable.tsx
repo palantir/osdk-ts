@@ -21,6 +21,7 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
+import { useOsdkMetadata } from "@osdk/react";
 import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import React from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
@@ -55,6 +56,8 @@ export function ObjectTable<
   onRowClick,
   rowHeight,
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
+  const { metadata, loading: isMetadataLoading } = useOsdkMetadata(objectType);
+
   const { data, fetchMore, isLoading } = useObjectTableData<
     Q,
     RDPs,
@@ -62,15 +65,16 @@ export function ObjectTable<
   >(
     objectSet,
     columnDefinitions,
+    metadata?.primaryKeyApiName.toString(),
   );
 
-  const { columns, loading: isColumnsLoading } = useColumnDefs<
+  const { columns } = useColumnDefs<
     Q,
     RDPs,
     FunctionColumns
   >(
-    objectType,
     columnDefinitions,
+    metadata?.properties,
   );
 
   const { columnVisibility } = useDefaultTableStates({ columnDefinitions });
@@ -86,7 +90,7 @@ export function ObjectTable<
     },
   });
 
-  const isTableLoading = isLoading || isColumnsLoading;
+  const isTableLoading = isLoading || isMetadataLoading;
 
   return (
     <Table

@@ -22,9 +22,9 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import { useOsdkMetadata } from "@osdk/react";
 import type { AccessorColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
+import type { AsyncValue } from "../../types/AsyncValue.js";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 
 interface UseColumnDefsResult<
@@ -37,10 +37,6 @@ interface UseColumnDefsResult<
   columns: AccessorColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >[];
-
-  loading: boolean;
-
-  error: string | undefined;
 }
 
 /**
@@ -57,26 +53,23 @@ export function useColumnDefs<
     never
   >,
 >(
-  objectType: Q,
   columnDefinitions?: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
+  allObjectProperties?: Record<any, ObjectMetadata.Property>,
 ): UseColumnDefsResult<Q, RDPs> {
-  const { metadata, loading, error } = useOsdkMetadata(objectType);
-
   const columns = useMemo(() => {
-    const objectProperties = metadata?.properties;
     // If columnDefinitions is provided, construct colDefs with it
     if (columnDefinitions) {
       return getColumnsFromColumnDefinitions<Q, RDPs, FunctionColumns>(
         columnDefinitions,
-        objectProperties,
+        allObjectProperties,
       );
     }
 
     // If not, return the default columns from the object properties
-    return getDefaultColumns<Q, RDPs>(objectProperties);
-  }, [columnDefinitions, metadata?.properties]);
+    return getDefaultColumns<Q, RDPs>(allObjectProperties);
+  }, [columnDefinitions, allObjectProperties]);
 
-  return { columns, loading, error };
+  return { columns };
 }
 
 function getColumnsFromColumnDefinitions<
@@ -129,6 +122,24 @@ function getColumnsFromColumnDefinitions<
       enableSorting: orderable,
       enableColumnFilter: filterable,
       cell: (cellContext) => {
+        if (locator.type === "rdp" || locator.type === "function") {
+          // TODO: Handle async column type
+          /**
+           * {
+           *   value: ...,
+           *   status: "loading" | "loaded" | "error"
+           * }
+           */
+          const cellValue = cellContext.getValue() as AsyncValue<any>;
+          if (cellValue.type === "loaded") {
+            return cellValue.value ?? "No Value";
+          }
+          if (cellValue.type === "loading") {
+            return "Loading...";
+          }
+          return "No Value";
+        }
+
         const object: Osdk.Instance<
           Q,
           "$allBaseProperties",
