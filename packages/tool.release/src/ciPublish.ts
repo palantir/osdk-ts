@@ -20,6 +20,10 @@ import { existsSync } from "fs";
 import { readFile } from "fs/promises";
 import { join } from "path";
 import semver from "semver";
+import type { PublishedPackages } from "./runTagRelease.js";
+import { runTagReleaseLocal } from "./runTagRelease.js";
+import type { GithubContext } from "./runVersion.js";
+import { setupOctokit } from "./util/setupOctokit.js";
 
 async function ciPublish(): Promise<void> {
   let tag = "latest";
@@ -62,6 +66,56 @@ async function ciPublish(): Promise<void> {
         cwd: repoRoot,
       },
     );
+
+    const githubToken = process.env.GITHUB_TOKEN;
+
+    if (githubToken) {
+      const [owner, repo] = (process.env.GITHUB_REPOSITORY || "").split("/");
+      if (owner && repo) {
+        const octokit = setupOctokit(githubToken);
+        const currentBranch = await getCurrentBranch();
+        const { stdout: sha } = await execa("git", ["rev-parse", "HEAD"]);
+        const context: GithubContext = {
+          repo: { owner, repo },
+          branch: currentBranch,
+          sha,
+          octokit,
+        };
+        consola.info("GitHub token detected, will create GitHub releases");
+
+        try {
+          const summaryPath = join(repoRoot, "pnpm-publish-summary.json");
+          if (existsSync(summaryPath)) {
+            const summaryContent = await readFile(summaryPath, "utf-8");
+            const publishSummary: PublishedPackages = JSON.parse(
+              summaryContent,
+            );
+
+            if (
+              publishSummary && publishSummary.publishedPackages
+              && publishSummary.publishedPackages.length > 0
+            ) {
+              await runTagReleaseLocal(
+                context,
+                publishSummary,
+              );
+            } else {
+              consola.info(
+                "No packages were published according to the summary",
+              );
+            }
+          } else {
+            consola.warn("No publish summary file found");
+          }
+        } catch (error) {
+          consola.error(`Error creating GitHub releases: ${error}`);
+        }
+      }
+    } else {
+      consola.warn(
+        "No GitHub token available, skipping GitHub release creation",
+      );
+    }
   } catch (error) {
     consola.error(`Error during publish: ${error}`);
     process.exit(1);

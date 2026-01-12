@@ -20,6 +20,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      issues: write
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -37,10 +38,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Setup GitHub CLI
+        uses: cli/cli-action@v1
+
       - name: Publish packages
         run: pnpm ci:publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Save publish data
         uses: actions/upload-artifact@v4

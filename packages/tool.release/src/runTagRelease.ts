@@ -20,19 +20,19 @@ import chalk from "chalk";
 import consola from "consola";
 import type { GithubContext } from "./runVersion.js";
 
-type PublishedPackages = {
+export type PublishedPackages = {
   publishedPackages: {
     name: string;
     version: string;
   }[];
 };
 
-async function createGithubReleaseTag(
+export async function createGithubReleaseTag(
   packageName: string,
   version: string,
   context: GithubContext,
   sha: string,
-) {
+): Promise<void> {
   const changelogPath = `packages/${
     getDirNameFromPackageName(packageName)
   }/CHANGELOG.md`;
@@ -194,6 +194,21 @@ export async function runTagRelease(
       publishedPackage.version,
       context,
       workflowSha,
+    );
+  }
+}
+
+export async function runTagReleaseLocal(
+  context: GithubContext,
+  publishedPackages: PublishedPackages,
+): Promise<void> {
+  for (const publishedPackage of publishedPackages.publishedPackages) {
+    const packageName = publishedPackage.name;
+    await createGithubReleaseTag(
+      packageName,
+      publishedPackage.version,
+      context,
+      context.sha,
     );
   }
 }
