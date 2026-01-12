@@ -62,6 +62,7 @@ export function ObjectTable<
   columnDefinitions,
   filter,
   onRowSelection,
+  renderCellContextMenu,
   selectionMode = "none",
   selectedRows,
   ...props
@@ -131,7 +132,7 @@ export function ObjectTable<
     getRowId,
   });
 
-  const renderCellContextMenu = useCallback(
+  const onRenderCellContextMenu = useCallback(
     (
       row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
       cell: Cell<
@@ -139,9 +140,9 @@ export function ObjectTable<
         unknown
       >,
     ) => {
-      return props.renderCellContextMenu?.(row, cell.getValue());
+      return renderCellContextMenu?.(row, cell.getValue());
     },
-    [props.renderCellContextMenu],
+    [renderCellContextMenu],
   );
 
   const isTableLoading = isLoading || isColumnsLoading;
@@ -153,7 +154,7 @@ export function ObjectTable<
       fetchNextPage={fetchMore}
       onRowClick={props.onRowClick}
       rowHeight={props.rowHeight}
-      renderCellContextMenu={renderCellContextMenu}
+      renderCellContextMenu={onRenderCellContextMenu}
     />
   );
 }

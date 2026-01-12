@@ -40,9 +40,7 @@ export function TableCell<TData extends RowData>(
     handleOpenContextMenu,
     handleCloseContextMenu,
     popoverPosition,
-  } = useCellContextMenu<
-    TData
-  >({
+  } = useCellContextMenu({
     tdRef,
   });
 

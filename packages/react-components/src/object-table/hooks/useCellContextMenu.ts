@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { RowData } from "@tanstack/react-table";
-import type { MouseEventHandler, RefObject} from "react";
+import type { MouseEventHandler, RefObject } from "react";
 import { useCallback, useState } from "react";
 
 export interface PopoverPosition {
@@ -24,20 +23,20 @@ export interface PopoverPosition {
   width: number;
 }
 
-interface UseCellContextMenuProps<TData extends RowData> {
+interface UseCellContextMenuProps {
   tdRef: RefObject<HTMLTableCellElement>;
 }
 
-interface UseCellContextMenuResults<TData extends RowData> {
+interface UseCellContextMenuResults {
   isContextMenuOpen: boolean;
   handleOpenContextMenu: MouseEventHandler<HTMLTableCellElement>;
   handleCloseContextMenu: () => void;
   popoverPosition: PopoverPosition | null;
 }
 
-export const useCellContextMenu = <TData extends RowData>({
+export const useCellContextMenu = ({
   tdRef,
-}: UseCellContextMenuProps<TData>): UseCellContextMenuResults<TData> => {
+}: UseCellContextMenuProps): UseCellContextMenuResults => {
   const [popoverPosition, setPopoverPosition] = useState<
     PopoverPosition | null
   >(null);
@@ -52,7 +51,7 @@ export const useCellContextMenu = <TData extends RowData>({
       setPopoverPosition(position);
       setIsContextMenuOpen(true);
     }
-  }, []);
+  }, [tdRef]);
 
   const handleCloseContextMenu = useCallback(() => {
     setIsContextMenuOpen(false);
