@@ -25,9 +25,12 @@ import {
   withoutNamespace,
 } from "./defineOntology.js";
 import { defineSharedPropertyType } from "./defineSpt.js";
+import type {
+  InterfaceDefinedProperty,
+  InterfacePropertyType,
+} from "./interface/InterfacePropertyType.js";
 import { type InterfaceType } from "./interface/InterfaceType.js";
 import { mapSimplifiedStatusToInterfaceTypeStatus } from "./interface/mapSimplifiedStatusToInterfaceTypeStatus.js";
-import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
 import {
   isPropertyTypeType,
   type PropertyTypeType,
@@ -39,10 +42,13 @@ export type SimplifiedInterfaceTypeStatus =
   | { type: "active" }
   | { type: "experimental" };
 
-type PropertyBase = SharedPropertyType | PropertyTypeType;
-type PropertyWithOptional = {
+type PropertyBase =
+  | SharedPropertyType
+  | PropertyTypeType
+  | InterfaceDefinedProperty;
+type SptWithOptional = {
   required: boolean;
-  propertyDefinition: PropertyBase;
+  sharedPropertyType: SharedPropertyType;
 };
 
 export type InterfaceTypeDefinition = {
@@ -53,7 +59,7 @@ export type InterfaceTypeDefinition = {
   status?: SimplifiedInterfaceTypeStatus;
   properties?: Record<
     string,
-    PropertyBase | PropertyWithOptional
+    PropertyBase | SptWithOptional
   >;
   extends?: InterfaceType | InterfaceType[];
   searchable?: boolean;
@@ -69,48 +75,86 @@ export function defineInterface(
     `Interface ${apiName} already exists`,
   );
 
-  const properties = Object.fromEntries(
+  // const propertiesV2 = Object.fromEntries(
+  //   Object.entries(interfaceDef.properties ?? {}).map<
+  //     [string, { required: boolean; sharedPropertyType: SharedPropertyType }]
+  //   >(
+  //     ([unNamespacedPropApiName, type]) => {
+  //       if (typeof type === "object" && "propertyDefinition" in type) {
+  //         // If the property is an imported SPT, use the SPT's apiName
+  //         const apiName = combineApiNamespaceIfMissing(
+  //           namespace,
+  //           typeof type.propertyDefinition === "object"
+  //             && "apiName" in type.propertyDefinition
+  //             ? type.propertyDefinition.apiName
+  //             : unNamespacedPropApiName,
+  //         );
+
+  //         return [apiName, {
+  //           required: type.required,
+  //           sharedPropertyType: unifyBasePropertyDefinition(
+  //             namespace,
+  //             unNamespacedPropApiName,
+  //             type.propertyDefinition,
+  //           ),
+  //         }];
+  //       }
+
+  //       // If the property is an imported SPT, use the SPT's apiName
+  //       const apiName = combineApiNamespaceIfMissing(
+  //         namespace,
+  //         typeof type === "object" && "apiName" in type
+  //           ? type.apiName
+  //           : unNamespacedPropApiName,
+  //       );
+  //       return [apiName, {
+  //         required: true,
+  //         sharedPropertyType: unifyBasePropertyDefinition(
+  //           namespace,
+  //           unNamespacedPropApiName,
+  //           type,
+  //         ),
+  //       }];
+  //     },
+  //   ),
+  // );
+
+  const propertiesV3 = Object.fromEntries(
     Object.entries(interfaceDef.properties ?? {}).map<
-      [string, { required: boolean; sharedPropertyType: SharedPropertyType }]
-    >(
-      ([unNamespacedPropApiName, type]) => {
-        if (typeof type === "object" && "propertyDefinition" in type) {
-          // If the property is an imported SPT, use the SPT's apiName
-          const apiName = combineApiNamespaceIfMissing(
-            namespace,
-            typeof type.propertyDefinition === "object"
-              && "apiName" in type.propertyDefinition
-              ? type.propertyDefinition.apiName
-              : unNamespacedPropApiName,
-          );
+      [string, InterfacePropertyType]
+    >(([apiName, prop]) => {
+      const required =
+        (typeof prop === "object" && "sharedPropertyType" in prop)
+          ? prop.required
+          : true;
+      const propertyBase: PropertyBase =
+        (typeof prop === "object" && "sharedPropertyType" in prop)
+          ? prop.sharedPropertyType
+          : prop;
 
-          return [apiName, {
-            required: type.required,
-            sharedPropertyType: unifyBasePropertyDefinition(
-              namespace,
-              unNamespacedPropApiName,
-              type.propertyDefinition,
-            ),
-          }];
-        }
-
-        // If the property is an imported SPT, use the SPT's apiName
-        const apiName = combineApiNamespaceIfMissing(
-          namespace,
-          typeof type === "object" && "apiName" in type
-            ? type.apiName
-            : unNamespacedPropApiName,
-        );
+      if (
+        typeof propertyBase === "string"
+        || (typeof propertyBase === "object" && !("apiName" in propertyBase))
+      ) {
+        // construct IDP from minimal PropertyTypeType definition
         return [apiName, {
-          required: true,
-          sharedPropertyType: unifyBasePropertyDefinition(
-            namespace,
-            unNamespacedPropApiName,
-            type,
-          ),
+          apiName: apiName,
+          type: propertyBase,
         }];
-      },
-    ),
+      } else if (
+        typeof propertyBase === "object"
+        && "nonNameSpacedApiName" in propertyBase
+      ) {
+        // SPT
+        return [apiName, {
+          required: required,
+          sharedPropertyType: propertyBase,
+        }];
+      } else {
+        // IDP
+        return [apiName, propertyBase];
+      }
+    }),
   );
 
   const extendsInterfaces = interfaceDef.extends
@@ -148,7 +192,8 @@ export function defineInterface(
     extendsInterfaces,
     links: [],
     status,
-    propertiesV2: properties,
+    propertiesV2: {},
+    propertiesV3: propertiesV3,
     searchable: interfaceDef.searchable ?? true,
     __type: OntologyEntityTypeEnum.INTERFACE_TYPE,
   };
@@ -160,7 +205,7 @@ export function defineInterface(
 function unifyBasePropertyDefinition(
   namespace: string,
   apiName: string,
-  type: PropertyBase,
+  type: SharedPropertyType | PropertyTypeType,
 ): SharedPropertyType {
   if (
     typeof type === "string"

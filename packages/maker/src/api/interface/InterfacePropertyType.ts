@@ -14,9 +14,24 @@
  * limitations under the License.
  */
 
-import type { SharedPropertyType } from "../properties/SharedPropertyType.js";
+import type { OntologyIrBaseFormatter } from "@osdk/client.unstable";
+import type {
+  PropertyType,
+  SharedPropertyType,
+} from "../properties/SharedPropertyType.js";
 
-export interface InterfacePropertyType {
+export type InterfacePropertyType =
+  | InterfaceSharedPropertyType
+  | InterfaceDefinedProperty;
+
+export interface InterfaceDefinedProperty extends PropertyType {
+  apiName: string;
+  required?: boolean;
+  primaryKeyConstraint?: "MUST_BE_PK" | "CANNOT_BE_PK" | "NO_RESTRICTION";
+  baseFormatter?: OntologyIrBaseFormatter;
+}
+
+export interface InterfaceSharedPropertyType {
   sharedPropertyType: SharedPropertyType;
   required: boolean;
 }

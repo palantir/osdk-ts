@@ -482,10 +482,14 @@ describe("Interfaces", () => {
   });
 
   it("supports optional properties", () => {
+    const spt = defineSharedPropertyType({
+      apiName: "spt",
+      type: "string",
+    });
     const parentInterface = defineInterface({
       apiName: "parentInterface",
       properties: {
-        property1: { required: false, propertyDefinition: "string" },
+        property1: { required: false, sharedPropertyType: spt },
       },
     });
 

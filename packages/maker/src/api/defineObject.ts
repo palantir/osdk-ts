@@ -25,7 +25,7 @@ import {
   updateOntology,
 } from "./defineOntology.js";
 import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfaceProperties.js";
-import type { InterfacePropertyType } from "./interface/InterfacePropertyType.js";
+import type { InterfaceSharedPropertyType } from "./interface/InterfacePropertyType.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
 import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTypeUserDefinition.js";
 import type { ObjectType } from "./object/ObjectType.js";
@@ -173,7 +173,7 @@ export function defineObject(
       ),
     );
     const validateProperty = (
-      interfaceProp: [string, InterfacePropertyType],
+      interfaceProp: [string, InterfaceSharedPropertyType],
     ): ValidationResult => {
       if (
         interfaceProp[1].sharedPropertyType.apiName

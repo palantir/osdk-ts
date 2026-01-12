@@ -121,4 +121,5 @@ export interface StructPropertyType extends
   >
 {
   fieldType: PropertyTypeTypesWithoutStruct;
+  requireImplementation?: boolean;
 }
