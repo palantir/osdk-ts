@@ -16,6 +16,11 @@
 
 import React, { memo, useCallback } from "react";
 import type { MultiDateInputClassNames } from "../../types/ClassNameOverrides.js";
+import {
+  formatDateForDisplay,
+  formatDateForInput,
+  parseDateFromInput,
+} from "./dateUtils.js";
 
 interface MultiDateInputProps {
   selectedDates: Date[];
@@ -24,25 +29,6 @@ interface MultiDateInputProps {
   minDate?: Date;
   maxDate?: Date;
   showClearAll?: boolean;
-}
-
-function formatDateForDisplay(date: Date): string {
-  return date.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
-
-function formatDateForInput(date: Date | undefined): string {
-  if (!date) return "";
-  return date.toISOString().split("T")[0];
-}
-
-function parseDateFromInput(value: string): Date | undefined {
-  if (!value) return undefined;
-  const date = new Date(value + "T00:00:00");
-  return isNaN(date.getTime()) ? undefined : date;
 }
 
 function MultiDateInputInner({

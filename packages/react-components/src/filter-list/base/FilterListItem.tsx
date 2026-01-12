@@ -28,6 +28,7 @@ interface FilterListItemProps<Q extends ObjectTypeDefinition> {
   definition: FilterDefinitionUnion<Q>;
   filterState: FilterState | undefined;
   onFilterStateChanged: (state: FilterState) => void;
+  onResetFilterState: () => void;
   /**
    * WhereClause from other filters to chain aggregation queries.
    * When provided, the aggregations in input components will respect other active filters.
@@ -43,6 +44,7 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
   definition,
   filterState,
   onFilterStateChanged,
+  onResetFilterState,
   whereClause,
   classNames,
   inputClassNames,
@@ -79,12 +81,16 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
   const renderOverflowMenu = definition.type === "property"
     ? definition.renderOverflowMenu
     : undefined;
-  const onResetFilter = definition.type === "property"
-    ? definition.onResetFilter
-    : undefined;
   const onRemoveFilter = definition.type === "property"
     ? definition.onRemoveFilter
     : undefined;
+
+  const handleResetFilter = useCallback(() => {
+    onResetFilterState();
+    if (definition.type === "property") {
+      definition.onResetFilter?.();
+    }
+  }, [onResetFilterState, definition]);
 
   const showExcludeToggle = definition.type === "property"
     && definition.allowToggleExcludeMode === true;
@@ -177,7 +183,7 @@ function FilterListItemInner<Q extends ObjectTypeDefinition>({
               },
               triggerRef: overflowMenuTriggerRef,
               triggerClassName: classNames?.overflowMenu,
-              onResetFilter,
+              onResetFilter: handleResetFilter,
               onRemoveFilter,
             })
           )}

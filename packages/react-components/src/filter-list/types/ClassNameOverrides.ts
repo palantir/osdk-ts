@@ -118,9 +118,9 @@ export interface ToggleInputClassNames {
 }
 
 /**
- * Class name overrides for NumberRangeInput component elements.
+ * Class name overrides for range input components (NumberRangeInput, DateRangeInput).
  */
-export interface NumberRangeInputClassNames {
+export interface RangeInputClassNames {
   root?: string;
   histogramContainer?: string;
   histogramBar?: string;
@@ -133,21 +133,8 @@ export interface NumberRangeInputClassNames {
   errorMessage?: string;
 }
 
-/**
- * Class name overrides for DateRangeInput component elements.
- */
-export interface DateRangeInputClassNames {
-  root?: string;
-  histogramContainer?: string;
-  histogramBar?: string;
-  inputsContainer?: string;
-  inputWrapper?: string;
-  inputLabel?: string;
-  input?: string;
-  separator?: string;
-  loadingMessage?: string;
-  errorMessage?: string;
-}
+export type NumberRangeInputClassNames = RangeInputClassNames;
+export type DateRangeInputClassNames = RangeInputClassNames;
 
 /**
  * Class name overrides for NullValueWrapper component elements.

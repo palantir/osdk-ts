@@ -91,6 +91,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
     setCollapsed,
     filterStates,
     setFilterState,
+    resetFilterState,
     whereClause,
     activeFilterCount,
     reset,
@@ -138,6 +139,7 @@ export function FilterList<Q extends ObjectTypeDefinition>(
             filterDefinitions={filterDefinitions}
             filterStates={filterStates}
             onFilterStateChanged={setFilterState}
+            onResetFilterState={resetFilterState}
             classNames={classNames}
           />
 

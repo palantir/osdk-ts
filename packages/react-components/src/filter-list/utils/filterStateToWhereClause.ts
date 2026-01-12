@@ -46,9 +46,7 @@ function filterStateToPropertyFilter(
       if (!state.value) {
         return undefined;
       }
-      // Use $containsAllTermsInOrder for substring matching
-      // "consult" matches "Management Consultant", "consultant", etc.
-      const filter = { $containsAllTermsInOrder: state.value };
+      const filter = { $containsAnyTerm: state.value };
       if (state.isExcluding) {
         return { $not: filter };
       }
@@ -208,6 +206,7 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
   definitions: Array<FilterDefinitionUnion<Q>> | undefined,
   filterStates: Map<string, FilterState>,
   operator: "and" | "or",
+  objectType?: Q,
 ): WhereClause<Q> {
   if (!definitions || definitions.length === 0) {
     return {} as WhereClause<Q>;
@@ -303,23 +302,41 @@ export function buildWhereClause<Q extends ObjectTypeDefinition>(
         if (searchState.type === "KEYWORD_SEARCH" && searchState.searchTerm) {
           const searchTerm = searchState.searchTerm.trim();
           if (searchTerm) {
-            // Build search filter across specified properties
             const properties = definition.properties;
+
+            let propertiesToSearch: string[];
             if (properties === "all") {
-              // Use $containsAllTermsInOrder for full-text search
-              clauses.push({
-                $containsAllTermsInOrder: searchTerm,
-              });
-            } else {
-              // Search specific properties with $or
-              const propertySearches = properties.map((prop) => ({
-                [prop]: { $startsWith: searchTerm },
-              }));
-              if (propertySearches.length === 1) {
-                clauses.push(propertySearches[0]);
-              } else if (propertySearches.length > 1) {
-                clauses.push({ $or: propertySearches });
+              if (objectType?.__DefinitionMetadata?.properties) {
+                propertiesToSearch = Object.entries(
+                  objectType.__DefinitionMetadata.properties,
+                )
+                  .filter(([, prop]) => prop.type === "string" && !prop.multiplicity)
+                  .map(([key]) => key);
+              } else {
+                if (process.env.NODE_ENV !== "production") {
+                  console.warn(
+                    "[FilterList] Keyword search with properties: 'all' requires object type metadata. Filter will be skipped.",
+                  );
+                }
+                break;
               }
+            } else {
+              propertiesToSearch = properties;
+            }
+
+            if (propertiesToSearch.length === 0) {
+              break;
+            }
+
+            // Build $or clause for all properties using $containsAnyTerm
+            const propertySearches = propertiesToSearch.map((prop) => ({
+              [prop]: { $containsAnyTerm: searchTerm },
+            }));
+
+            if (propertySearches.length === 1) {
+              clauses.push(propertySearches[0]);
+            } else {
+              clauses.push({ $or: propertySearches });
             }
           }
         }

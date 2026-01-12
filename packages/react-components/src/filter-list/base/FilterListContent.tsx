@@ -28,6 +28,7 @@ interface FilterListContentProps<Q extends ObjectTypeDefinition> {
   filterDefinitions?: Array<FilterDefinitionUnion<Q>>;
   filterStates: Map<string, FilterState>;
   onFilterStateChanged: (key: string, state: FilterState) => void;
+  onResetFilterState: (key: string) => void;
   classNames?: FilterListClassNames;
 }
 
@@ -37,6 +38,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
   filterDefinitions,
   filterStates,
   onFilterStateChanged,
+  onResetFilterState,
   classNames,
 }: FilterListContentProps<Q>): React.ReactElement {
   if (!filterDefinitions || filterDefinitions.length === 0) {
@@ -66,6 +68,7 @@ export function FilterListContent<Q extends ObjectTypeDefinition>({
             filterState={state}
             onFilterStateChanged={(newState) =>
               onFilterStateChanged(instanceKey, newState)}
+            onResetFilterState={() => onResetFilterState(instanceKey)}
             classNames={classNames?.item}
             inputClassNames={{
               checkboxList: classNames?.checkboxListInput,

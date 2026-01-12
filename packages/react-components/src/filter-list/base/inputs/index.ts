@@ -17,11 +17,13 @@
 export { CheckboxListInput } from "./CheckboxListInput.js";
 export { ContainsTextInput } from "./ContainsTextInput.js";
 export { DateRangeInput } from "./DateRangeInput.js";
+export { formatDateForDisplay, formatDateForInput, parseDateFromInput } from "./dateUtils.js";
 export { ListogramInput } from "./ListogramInput.js";
 export { MultiDateInput } from "./MultiDateInput.js";
 export { MultiSelectInput } from "./MultiSelectInput.js";
 export { NullValueWrapper } from "./NullValueWrapper.js";
 export { NumberRangeInput } from "./NumberRangeInput.js";
+export { RangeInput, type RangeInputConfig } from "./RangeInput.js";
 export { SingleDateInput } from "./SingleDateInput.js";
 export { SingleSelectInput } from "./SingleSelectInput.js";
 export { TextTagsInput } from "./TextTagsInput.js";

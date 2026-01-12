@@ -16,6 +16,11 @@
 
 import React, { memo, useCallback } from "react";
 import type { TimelineInputClassNames } from "../../types/ClassNameOverrides.js";
+import {
+  formatDateForDisplay,
+  formatDateForInput,
+  parseDateFromInput,
+} from "./dateUtils.js";
 
 interface TimelineInputProps {
   startDate: Date | undefined;
@@ -24,26 +29,6 @@ interface TimelineInputProps {
   classNames?: TimelineInputClassNames;
   minDate?: Date;
   maxDate?: Date;
-}
-
-function formatDateForInput(date: Date | undefined): string {
-  if (!date) return "";
-  return date.toISOString().split("T")[0];
-}
-
-function formatDateForDisplay(date: Date | undefined): string {
-  if (!date) return "—";
-  return date.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
-
-function parseDateFromInput(value: string): Date | undefined {
-  if (!value) return undefined;
-  const date = new Date(value + "T00:00:00");
-  return isNaN(date.getTime()) ? undefined : date;
 }
 
 function TimelineInputInner({
@@ -77,9 +62,9 @@ function TimelineInputInner({
   return (
     <div className={classNames?.root}>
       <div className={classNames?.rangeLabels}>
-        <span>{formatDateForDisplay(startDate)}</span>
+        <span>{formatDateForDisplay(startDate, "—")}</span>
         <span>to</span>
-        <span>{formatDateForDisplay(endDate)}</span>
+        <span>{formatDateForDisplay(endDate, "—")}</span>
         {(startDate || endDate) && (
           <button type="button" onClick={handleClear} aria-label="Clear range">
             ×

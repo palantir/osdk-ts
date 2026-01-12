@@ -78,48 +78,28 @@ export function renderFilterInput<Q extends ObjectTypeDefinition>(
   filterState: FilterState | undefined,
   onFilterStateChanged: (state: FilterState) => void,
   inputClassNames?: InputClassNames,
-  /**
-   * WhereClause from other filters to chain aggregation queries.
-   * When provided, the aggregations in input components will respect other active filters.
-   */
   whereClause?: WhereClause<Q>,
 ): React.ReactElement {
-  // Handle non-property filter types
   switch (definition.type) {
     case "hasLink": {
       const hasLinkState = filterState as HasLinkFilterState | undefined;
       return (
         <ToggleInput
-          enabled={hasLinkState?.type === "HAS_LINK"
-            ? hasLinkState.hasLink
-            : false}
-          onChange={(hasLink) =>
-            onFilterStateChanged({
-              type: "HAS_LINK",
-              hasLink,
-            })}
+          enabled={hasLinkState?.type === "HAS_LINK" ? hasLinkState.hasLink : false}
+          onChange={(hasLink) => onFilterStateChanged({ type: "HAS_LINK", hasLink })}
           classNames={inputClassNames?.toggle}
         />
       );
     }
 
-    case "linkedProperty": {
-      // linkedProperty renders based on its linkedFilterComponent
-      // For now, we show an unsupported message as this requires more complex handling
-      return (
-        <div data-unsupported="true">
-          Linked property filters require custom rendering
-        </div>
-      );
-    }
+    case "linkedProperty":
+      return <div data-unsupported="true">Linked property filters require custom rendering</div>;
 
     case "keywordSearch": {
       const searchState = filterState as KeywordSearchFilterState | undefined;
       return (
         <ContainsTextInput
-          value={searchState?.type === "KEYWORD_SEARCH"
-            ? searchState.searchTerm
-            : undefined}
+          value={searchState?.type === "KEYWORD_SEARCH" ? searchState.searchTerm : undefined}
           onChange={(searchTerm) =>
             onFilterStateChanged({
               type: "KEYWORD_SEARCH",
@@ -128,70 +108,49 @@ export function renderFilterInput<Q extends ObjectTypeDefinition>(
             })}
           placeholder={definition.label ?? "Search..."}
           classNames={inputClassNames?.containsText}
-          renderSearchIcon={inputClassNames?.containsTextRenderProps
-            ?.renderSearchIcon}
-          renderClearIcon={inputClassNames?.containsTextRenderProps
-            ?.renderClearIcon}
+          renderSearchIcon={inputClassNames?.containsTextRenderProps?.renderSearchIcon}
+          renderClearIcon={inputClassNames?.containsTextRenderProps?.renderClearIcon}
         />
       );
     }
 
     case "custom": {
-      // Custom filters provide their own renderInput function
-      if (definition.renderInput) {
-        const customFilterState = filterState?.type === "CUSTOM"
-          ? filterState
-          : definition.filterState;
-        return (
-          <>
-            {definition.renderInput({
-              objectSet,
-              filterState: customFilterState,
-              onFilterStateChanged: onFilterStateChanged as (
-                state: typeof customFilterState,
-              ) => void,
-            })}
-          </>
-        );
+      if (!definition.renderInput) {
+        return <div data-unsupported="true">Custom filter missing renderInput</div>;
       }
+      const customFilterState = filterState?.type === "CUSTOM" ? filterState : definition.filterState;
       return (
-        <div data-unsupported="true">
-          Custom filter missing renderInput
-        </div>
+        <>
+          {definition.renderInput({
+            objectSet,
+            filterState: customFilterState,
+            onFilterStateChanged: onFilterStateChanged as (state: typeof customFilterState) => void,
+          })}
+        </>
       );
     }
 
     case "property":
-      // Continue to property filter switch below
       break;
 
     default:
-      return (
-        <div data-unsupported="true">
-          Unsupported filter type
-        </div>
-      );
+      return <div data-unsupported="true">Unsupported filter type</div>;
   }
 
-  // Handle property filter components
   switch (definition.filterComponent) {
     case "CHECKBOX_LIST": {
-      const selectedValues = filterState?.type === "CHECKBOX_LIST"
-        ? filterState.selectedValues
-        : [];
-      const handleChange = (newSelectedValues: string[]) =>
-        onFilterStateChanged({
-          type: "CHECKBOX_LIST",
-          selectedValues: newSelectedValues,
-          isExcluding: filterState?.isExcluding ?? false,
-        });
-
+      const selectedValues = filterState?.type === "CHECKBOX_LIST" ? filterState.selectedValues : [];
       return (
         <CheckboxListInput
           objectType={objectType}
           propertyKey={definition.key}
           selectedValues={selectedValues}
-          onChange={handleChange}
+          onChange={(newSelectedValues) =>
+            onFilterStateChanged({
+              type: "CHECKBOX_LIST",
+              selectedValues: newSelectedValues,
+              isExcluding: filterState?.isExcluding ?? false,
+            })}
           whereClause={whereClause}
           showSelectAll={definition.showSelectAll}
           maxVisibleItems={definition.maxVisibleItems}
@@ -206,20 +165,12 @@ export function renderFilterInput<Q extends ObjectTypeDefinition>(
     case "CONTAINS_TEXT":
       return (
         <ContainsTextInput
-          value={filterState?.type === "CONTAINS_TEXT"
-            ? filterState.value
-            : undefined}
-          onChange={(value) =>
-            onFilterStateChanged({
-              type: "CONTAINS_TEXT",
-              value,
-            })}
+          value={filterState?.type === "CONTAINS_TEXT" ? filterState.value : undefined}
+          onChange={(value) => onFilterStateChanged({ type: "CONTAINS_TEXT", value })}
           placeholder={`Search ${definition.key}...`}
           classNames={inputClassNames?.containsText}
-          renderSearchIcon={inputClassNames?.containsTextRenderProps
-            ?.renderSearchIcon}
-          renderClearIcon={inputClassNames?.containsTextRenderProps
-            ?.renderClearIcon}
+          renderSearchIcon={inputClassNames?.containsTextRenderProps?.renderSearchIcon}
+          renderClearIcon={inputClassNames?.containsTextRenderProps?.renderClearIcon}
         />
       );
 
@@ -227,134 +178,86 @@ export function renderFilterInput<Q extends ObjectTypeDefinition>(
       return (
         <ToggleInput
           enabled={filterState?.type === "TOGGLE" ? filterState.enabled : false}
-          onChange={(enabled) =>
-            onFilterStateChanged({
-              type: "TOGGLE",
-              enabled,
-            })}
+          onChange={(enabled) => onFilterStateChanged({ type: "TOGGLE", enabled })}
           classNames={inputClassNames?.toggle}
         />
       );
 
-    case "NUMBER_RANGE":
+    case "NUMBER_RANGE": {
+      const nr = filterState?.type === "NUMBER_RANGE" ? filterState : undefined;
       return (
         <NullValueWrapper
           objectType={objectType}
           propertyKey={definition.key}
           includeNull={filterState?.includeNull}
           onIncludeNullChange={(includeNull) =>
-            onFilterStateChanged({
-              type: "NUMBER_RANGE",
-              minValue: filterState?.type === "NUMBER_RANGE"
-                ? filterState.minValue
-                : undefined,
-              maxValue: filterState?.type === "NUMBER_RANGE"
-                ? filterState.maxValue
-                : undefined,
-              includeNull,
-            })}
+            onFilterStateChanged({ type: "NUMBER_RANGE", minValue: nr?.minValue, maxValue: nr?.maxValue, includeNull })}
           whereClause={whereClause}
           classNames={inputClassNames?.nullValueWrapper}
         >
           <NumberRangeInput
             objectType={objectType}
             propertyKey={definition.key}
-            minValue={filterState?.type === "NUMBER_RANGE"
-              ? filterState.minValue
-              : undefined}
-            maxValue={filterState?.type === "NUMBER_RANGE"
-              ? filterState.maxValue
-              : undefined}
+            minValue={nr?.minValue}
+            maxValue={nr?.maxValue}
             onChange={(minValue, maxValue) =>
-              onFilterStateChanged({
-                type: "NUMBER_RANGE",
-                minValue,
-                maxValue,
-                includeNull: filterState?.includeNull,
-              })}
+              onFilterStateChanged({ type: "NUMBER_RANGE", minValue, maxValue, includeNull: filterState?.includeNull })}
             whereClause={whereClause}
             showHistogram={definition.dataIndicator === "histogram"}
             classNames={inputClassNames?.numberRange}
           />
         </NullValueWrapper>
       );
+    }
 
-    case "DATE_RANGE":
+    case "DATE_RANGE": {
+      const dr = filterState?.type === "DATE_RANGE" ? filterState : undefined;
       return (
         <NullValueWrapper
           objectType={objectType}
           propertyKey={definition.key}
           includeNull={filterState?.includeNull}
           onIncludeNullChange={(includeNull) =>
-            onFilterStateChanged({
-              type: "DATE_RANGE",
-              minValue: filterState?.type === "DATE_RANGE"
-                ? filterState.minValue
-                : undefined,
-              maxValue: filterState?.type === "DATE_RANGE"
-                ? filterState.maxValue
-                : undefined,
-              includeNull,
-            })}
+            onFilterStateChanged({ type: "DATE_RANGE", minValue: dr?.minValue, maxValue: dr?.maxValue, includeNull })}
           whereClause={whereClause}
           classNames={inputClassNames?.nullValueWrapper}
         >
           <DateRangeInput
             objectType={objectType}
             propertyKey={definition.key}
-            minValue={filterState?.type === "DATE_RANGE"
-              ? filterState.minValue
-              : undefined}
-            maxValue={filterState?.type === "DATE_RANGE"
-              ? filterState.maxValue
-              : undefined}
+            minValue={dr?.minValue}
+            maxValue={dr?.maxValue}
             onChange={(minValue, maxValue) =>
-              onFilterStateChanged({
-                type: "DATE_RANGE",
-                minValue,
-                maxValue,
-                includeNull: filterState?.includeNull,
-              })}
+              onFilterStateChanged({ type: "DATE_RANGE", minValue, maxValue, includeNull: filterState?.includeNull })}
             whereClause={whereClause}
             classNames={inputClassNames?.dateRange}
           />
         </NullValueWrapper>
       );
+    }
 
     case "SINGLE_SELECT":
       return (
         <SingleSelectInput
           objectType={objectType}
           propertyKey={definition.key}
-          selectedValue={filterState?.type === "SINGLE_SELECT"
-            ? (filterState.selectedValue as string | undefined)
-            : undefined}
+          selectedValue={filterState?.type === "SINGLE_SELECT" ? (filterState.selectedValue as string | undefined) : undefined}
           onChange={(value) =>
-            onFilterStateChanged({
-              type: "SINGLE_SELECT",
-              selectedValue: value,
-              isExcluding: filterState?.isExcluding ?? false,
-            })}
+            onFilterStateChanged({ type: "SINGLE_SELECT", selectedValue: value, isExcluding: filterState?.isExcluding ?? false })}
           whereClause={whereClause}
           classNames={inputClassNames?.singleSelect}
         />
       );
 
     case "MULTI_SELECT": {
-      const multiSelectValues = filterState?.type === "MULTI_SELECT"
-        ? filterState.selectedValues as string[]
-        : [];
+      const values = filterState?.type === "MULTI_SELECT" ? (filterState.selectedValues as string[]) : [];
       return (
         <MultiSelectInput
           objectType={objectType}
           propertyKey={definition.key}
-          selectedValues={multiSelectValues}
-          onChange={(values) =>
-            onFilterStateChanged({
-              type: "MULTI_SELECT",
-              selectedValues: values,
-              isExcluding: filterState?.isExcluding ?? false,
-            })}
+          selectedValues={values}
+          onChange={(selectedValues) =>
+            onFilterStateChanged({ type: "MULTI_SELECT", selectedValues, isExcluding: filterState?.isExcluding ?? false })}
           whereClause={whereClause}
           showSelectAll={definition.showSelectAll}
           classNames={inputClassNames?.multiSelect}
@@ -365,52 +268,34 @@ export function renderFilterInput<Q extends ObjectTypeDefinition>(
     case "SINGLE_DATE":
       return (
         <SingleDateInput
-          selectedDate={filterState?.type === "SINGLE_DATE"
-            ? filterState.selectedDate
-            : undefined}
-          onChange={(date) =>
-            onFilterStateChanged({
-              type: "SINGLE_DATE",
-              selectedDate: date,
-              isExcluding: filterState?.isExcluding ?? false,
-            })}
+          selectedDate={filterState?.type === "SINGLE_DATE" ? filterState.selectedDate : undefined}
+          onChange={(selectedDate) =>
+            onFilterStateChanged({ type: "SINGLE_DATE", selectedDate, isExcluding: filterState?.isExcluding ?? false })}
           classNames={inputClassNames?.singleDate}
         />
       );
 
     case "MULTI_DATE": {
-      const multiDateValues = filterState?.type === "MULTI_DATE"
-        ? filterState.selectedDates
-        : [];
+      const dates = filterState?.type === "MULTI_DATE" ? filterState.selectedDates : [];
       return (
         <MultiDateInput
-          selectedDates={multiDateValues}
-          onChange={(dates) =>
-            onFilterStateChanged({
-              type: "MULTI_DATE",
-              selectedDates: dates,
-              isExcluding: filterState?.isExcluding ?? false,
-            })}
+          selectedDates={dates}
+          onChange={(selectedDates) =>
+            onFilterStateChanged({ type: "MULTI_DATE", selectedDates, isExcluding: filterState?.isExcluding ?? false })}
           classNames={inputClassNames?.multiDate}
         />
       );
     }
 
     case "LISTOGRAM": {
-      const listogramValues = filterState?.type === "EXACT_MATCH"
-        ? filterState.values as string[]
-        : [];
+      const values = filterState?.type === "EXACT_MATCH" ? (filterState.values as string[]) : [];
       return (
         <ListogramInput
           objectType={objectType}
           propertyKey={definition.key}
-          selectedValues={listogramValues}
+          selectedValues={values}
           onChange={(values) =>
-            onFilterStateChanged({
-              type: "EXACT_MATCH",
-              values,
-              isExcluding: filterState?.isExcluding ?? false,
-            })}
+            onFilterStateChanged({ type: "EXACT_MATCH", values, isExcluding: filterState?.isExcluding ?? false })}
           whereClause={whereClause}
           maxVisibleItems={definition.maxVisibleItems}
           classNames={inputClassNames?.listogram}
@@ -419,20 +304,14 @@ export function renderFilterInput<Q extends ObjectTypeDefinition>(
     }
 
     case "TEXT_TAGS": {
-      const textTagsValues = filterState?.type === "EXACT_MATCH"
-        ? filterState.values as string[]
-        : [];
+      const tags = filterState?.type === "EXACT_MATCH" ? (filterState.values as string[]) : [];
       return (
         <TextTagsInput
           objectType={objectType}
           propertyKey={definition.key}
-          tags={textTagsValues}
-          onChange={(tags) =>
-            onFilterStateChanged({
-              type: "EXACT_MATCH",
-              values: tags,
-              isExcluding: filterState?.isExcluding ?? false,
-            })}
+          tags={tags}
+          onChange={(values) =>
+            onFilterStateChanged({ type: "EXACT_MATCH", values, isExcluding: filterState?.isExcluding ?? false })}
           whereClause={whereClause}
           classNames={inputClassNames?.textTags}
         />
@@ -442,28 +321,15 @@ export function renderFilterInput<Q extends ObjectTypeDefinition>(
     case "TIMELINE":
       return (
         <TimelineInput
-          startDate={filterState?.type === "TIMELINE"
-            ? filterState.startDate
-            : undefined}
-          endDate={filterState?.type === "TIMELINE"
-            ? filterState.endDate
-            : undefined}
+          startDate={filterState?.type === "TIMELINE" ? filterState.startDate : undefined}
+          endDate={filterState?.type === "TIMELINE" ? filterState.endDate : undefined}
           onChange={(startDate, endDate) =>
-            onFilterStateChanged({
-              type: "TIMELINE",
-              startDate,
-              endDate,
-              isExcluding: filterState?.isExcluding ?? false,
-            })}
+            onFilterStateChanged({ type: "TIMELINE", startDate, endDate, isExcluding: filterState?.isExcluding ?? false })}
           classNames={inputClassNames?.timeline}
         />
       );
 
     default:
-      return (
-        <div data-unsupported="true">
-          Unsupported filter component: {definition.filterComponent}
-        </div>
-      );
+      return <div data-unsupported="true">Unsupported filter component: {definition.filterComponent}</div>;
   }
 }

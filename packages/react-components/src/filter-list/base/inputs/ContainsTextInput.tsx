@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import React, { memo, useCallback, useEffect, useRef, useState } from "react";
+import React, { memo, useCallback } from "react";
+import { useDebouncedValue } from "../../hooks/useDebouncedValue.js";
 import type { ContainsTextInputClassNames } from "../../types/ClassNameOverrides.js";
 
 interface ContainsTextInputProps {
@@ -36,53 +37,30 @@ function ContainsTextInputInner({
   renderSearchIcon,
   renderClearIcon,
 }: ContainsTextInputProps): React.ReactElement {
-  const [localValue, setLocalValue] = useState(value ?? "");
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const onChangeRef = useRef(onChange);
-
-  useEffect(() => {
-    onChangeRef.current = onChange;
-  }, [onChange]);
-
-  useEffect(() => {
-    setLocalValue(value ?? "");
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-  }, [value]);
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
   const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e.target.value;
-      setLocalValue(newValue);
-
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      timeoutRef.current = setTimeout(() => {
-        onChangeRef.current(newValue.length > 0 ? newValue : undefined);
-      }, debounceMs);
+    (newValue: string) => {
+      onChange(newValue.length > 0 ? newValue : undefined);
     },
-    [debounceMs],
+    [onChange],
+  );
+
+  const [localValue, setLocalValue] = useDebouncedValue(
+    value ?? "",
+    handleChange,
+    debounceMs,
+  );
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setLocalValue(e.target.value);
+    },
+    [setLocalValue],
   );
 
   const handleClear = useCallback(() => {
     setLocalValue("");
-    onChangeRef.current(undefined);
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-  }, []);
+    onChange(undefined);
+  }, [setLocalValue, onChange]);
 
   return (
     <div
@@ -97,7 +75,7 @@ function ContainsTextInputInner({
           type="text"
           className={classNames?.input}
           value={localValue}
-          onChange={handleChange}
+          onChange={handleInputChange}
           placeholder={placeholder}
           aria-label={placeholder}
         />

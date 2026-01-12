@@ -16,6 +16,7 @@
 
 import React, { memo, useCallback } from "react";
 import type { SingleDateInputClassNames } from "../../types/ClassNameOverrides.js";
+import { formatDateForInput, parseDateFromInput } from "./dateUtils.js";
 
 interface SingleDateInputProps {
   selectedDate: Date | undefined;
@@ -25,17 +26,6 @@ interface SingleDateInputProps {
   maxDate?: Date;
   placeholder?: string;
   showClearButton?: boolean;
-}
-
-function formatDateForInput(date: Date | undefined): string {
-  if (!date) return "";
-  return date.toISOString().split("T")[0];
-}
-
-function parseDateFromInput(value: string): Date | undefined {
-  if (!value) return undefined;
-  const date = new Date(value + "T00:00:00");
-  return isNaN(date.getTime()) ? undefined : date;
 }
 
 function SingleDateInputInner({

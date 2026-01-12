@@ -16,7 +16,11 @@
 
 import type { ObjectTypeDefinition, WhereClause } from "@osdk/api";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { FilterKey, FilterListProps } from "../FilterListApi.js";
+import type {
+  FilterDefinitionUnion,
+  FilterKey,
+  FilterListProps,
+} from "../FilterListApi.js";
 import type { FilterState } from "../FilterListItemApi.js";
 import type { FilterListPersistedState } from "../types/FilterPanelTypes.js";
 import type { LinkedPropertyFilterState } from "../types/LinkedFilterTypes.js";
@@ -29,11 +33,16 @@ export interface UseFilterListStateResult<Q extends ObjectTypeDefinition> {
   setCollapsed: (collapsed: boolean) => void;
   filterStates: Map<string, FilterState>;
   setFilterState: (key: string, state: FilterState) => void;
+  resetFilterState: (key: string) => void;
   whereClause: WhereClause<Q>;
   activeFilterCount: number;
   reset: () => void;
 }
 
+/**
+ * Build initial states from filter definitions.
+ * Only uses defaultFilterState for initialization.
+ */
 function buildInitialStates<Q extends ObjectTypeDefinition>(
   definitions: FilterListProps<Q>["filterDefinitions"],
 ): Map<string, FilterState> {
@@ -49,42 +58,23 @@ function buildInitialStates<Q extends ObjectTypeDefinition>(
     const instanceKey = `${filterKey}:${i}`;
 
     switch (definition.type) {
-      case "property": {
-        const state = definition.filterState ?? definition.defaultFilterState;
-        if (state) {
-          states.set(instanceKey, state);
-        }
-        break;
-      }
-      case "hasLink": {
-        const state = definition.filterState ?? definition.defaultFilterState;
+      case "property":
+      case "hasLink":
+      case "keywordSearch":
+      case "custom": {
+        const state = definition.defaultFilterState;
         if (state) {
           states.set(instanceKey, state);
         }
         break;
       }
       case "linkedProperty": {
-        const innerState = definition.linkedFilterState
-          ?? definition.defaultLinkedFilterState;
+        const innerState = definition.defaultLinkedFilterState;
         if (innerState) {
           const state: LinkedPropertyFilterState = {
             type: "LINKED_PROPERTY",
             linkedFilterState: innerState,
           };
-          states.set(instanceKey, state);
-        }
-        break;
-      }
-      case "keywordSearch": {
-        const state = definition.filterState ?? definition.defaultFilterState;
-        if (state) {
-          states.set(instanceKey, state);
-        }
-        break;
-      }
-      case "custom": {
-        const state = definition.filterState ?? definition.defaultFilterState;
-        if (state) {
           states.set(instanceKey, state);
         }
         break;
@@ -187,6 +177,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   props: FilterListProps<Q>,
 ): UseFilterListStateResult<Q> {
   const {
+    objectSet,
     filterDefinitions,
     filterOperator = "and",
     collapsed: controlledCollapsed,
@@ -197,6 +188,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     onPersistState,
     initialPersistedState,
   } = props;
+
+  const objectType = objectSet.$objectSetInternals.def;
 
   // Load persisted state only once on mount - intentionally ignoring prop changes
   // to avoid overwriting user's in-session filter state
@@ -228,9 +221,9 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     [isCollapsedControlled, onCollapsedChange],
   );
 
-  const [filterStates, setFilterStates] = useState<Map<string, FilterState>>(
+  // Internal state for filters
+  const [internalFilterStates, setInternalFilterStates] = useState<Map<string, FilterState>>(
     () => {
-      // Start with default states from definitions
       const initialStates = buildInitialStates(filterDefinitions);
 
       // Merge in persisted states if available
@@ -246,9 +239,11 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     },
   );
 
+  const filterStates = internalFilterStates;
+
   const setFilterState = useCallback(
     (key: string, state: FilterState) => {
-      setFilterStates((prev) => {
+      setInternalFilterStates((prev) => {
         const next = new Map(prev);
         next.set(key, state);
         return next;
@@ -260,8 +255,8 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   );
 
   const whereClause = useMemo(
-    () => buildWhereClause(filterDefinitions, filterStates, filterOperator),
-    [filterDefinitions, filterStates, filterOperator],
+    () => buildWhereClause(filterDefinitions, filterStates, filterOperator, objectType),
+    [filterDefinitions, filterStates, filterOperator, objectType],
   );
 
   const activeFilterCount = useMemo(
@@ -270,8 +265,16 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
   );
 
   const reset = useCallback(() => {
-    setFilterStates(buildInitialStates(filterDefinitions));
+    setInternalFilterStates(buildInitialStates(filterDefinitions));
   }, [filterDefinitions]);
+
+  const resetFilterState = useCallback((key: string) => {
+    setInternalFilterStates((prev) => {
+      const next = new Map(prev);
+      next.delete(key);
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     if (!persistenceKey && !onPersistState) {
@@ -308,6 +311,7 @@ export function useFilterListState<Q extends ObjectTypeDefinition>(
     setCollapsed,
     filterStates,
     setFilterState,
+    resetFilterState,
     whereClause,
     activeFilterCount,
     reset,
