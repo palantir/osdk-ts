@@ -22,6 +22,7 @@ import { propertyTypeTypeToOntologyIrInterfaceType } from "./propertyTypeTypeToO
 
 export function convertInterfaceProperty(
   prop: InterfacePropertyType,
+  apiName: string,
 ): [string, OntologyIrMarketplaceInterfacePropertyType] {
   if ("sharedPropertyType" in prop) {
     return [prop.sharedPropertyType.apiName, {
@@ -32,12 +33,12 @@ export function convertInterfaceProperty(
       },
     }];
   } else {
-    return [prop.apiName, {
+    return [apiName, {
       type: "interfaceDefinedPropertyType",
       interfaceDefinedPropertyType: {
-        apiName: prop.apiName,
+        apiName: apiName,
         displayMetadata: {
-          displayName: prop.displayName ?? prop.apiName,
+          displayName: prop.displayName ?? apiName,
           visibility: prop.visibility ?? "NORMAL",
           description: prop.description,
         },

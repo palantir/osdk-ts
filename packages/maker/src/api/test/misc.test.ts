@@ -516,13 +516,13 @@ describe("Miscellaneous Tests", () => {
         const parentInterface = defineInterface({
           apiName: "parentInterface",
           properties: {
-            property1: "string",
+            property1: { type: "string" },
           },
         });
         const childInterface = defineInterface({
           apiName: "childInterface",
           properties: {
-            property2: "string",
+            property2: { type: "string" },
           },
           extends: [parentInterface],
         });
@@ -629,13 +629,13 @@ describe("Miscellaneous Tests", () => {
       const parentInterface = defineInterface({
         apiName: "parentInterface",
         properties: {
-          iProperty1: "string",
+          iProperty1: { type: "string" },
         },
       });
       const childInterface = defineInterface({
         apiName: "childInterface",
         properties: {
-          iProperty2: "string",
+          iProperty2: { type: "string" },
         },
         extends: [parentInterface],
       });
@@ -1078,7 +1078,7 @@ describe("Miscellaneous Tests", () => {
           defineInterface({
             apiName: "myInterface",
             properties: {
-              property1: "string",
+              property1: { type: "string" },
             },
           });
         },

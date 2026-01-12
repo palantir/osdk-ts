@@ -469,7 +469,7 @@ describe("Action Types", () => {
         icon: { color: "#c7cdd6ff", locator: "globe" },
         properties: {
           mySpt,
-          property1: "string",
+          property1: { type: "string" },
           property2: exampleStructPropertyType,
         },
       });
@@ -2873,7 +2873,7 @@ describe("Action Types", () => {
       const exampleInterface = defineInterface({
         apiName: "exampleInterface",
         properties: {
-          property1: "string",
+          property1: { type: "string" },
         },
       });
       const createAction = defineCreateInterfaceObjectAction({
@@ -3378,7 +3378,7 @@ describe("Action Types", () => {
       const exampleInterface = defineInterface({
         apiName: "exampleInterface",
         properties: {
-          property1: "string",
+          property1: { type: "string" },
         },
       });
       const deleteAction = defineDeleteInterfaceObjectAction({
@@ -3654,7 +3654,7 @@ describe("Action Types", () => {
       const exampleInterface = defineInterface({
         apiName: "exampleInterface",
         properties: {
-          property1: "string",
+          property1: { type: "string" },
         },
       });
       const deleteAction = defineDeleteInterfaceObjectAction({
@@ -3933,7 +3933,7 @@ describe("Action Types", () => {
       const exampleInterface = defineInterface({
         apiName: "exampleInterface",
         properties: {
-          property1: "string",
+          property1: { type: "string" },
         },
       });
       const deleteAction = defineDeleteInterfaceObjectAction({

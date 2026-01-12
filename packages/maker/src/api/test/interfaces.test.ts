@@ -53,126 +53,127 @@ describe("Interfaces", () => {
       defineInterface({
         apiName: "Foo",
         properties: {
-          foo: "string",
+          foo: { type: "string" },
         },
       });
 
-      expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`
-          {
-            "actionTypes": {},
-            "blockPermissionInformation": {
-              "actionTypes": {},
-              "linkTypes": {},
-              "objectTypes": {},
-            },
-            "interfaceTypes": {
-              "com.palantir.Foo": {
-                "interfaceType": {
-                  "apiName": "com.palantir.Foo",
-                  "displayMetadata": {
-                    "description": "Foo",
-                    "displayName": "Foo",
-                    "icon": {
-                      "blueprint": {
-                        "color": "#4C90F0",
-                        "locator": "layout-hierarchy",
-                      },
-                      "type": "blueprint",
-                    },
-                  },
-                  "extendsInterfaces": [],
-                  "links": [],
-                  "properties": [],
-                  "propertiesV2": {
-                    "com.palantir.foo": {
-                      "required": true,
-                      "sharedPropertyType": {
-                        "aliases": [],
-                        "apiName": "com.palantir.foo",
-                        "baseFormatter": undefined,
-                        "dataConstraints": undefined,
-                        "displayMetadata": {
-                          "description": undefined,
-                          "displayName": "foo",
-                          "visibility": "NORMAL",
-                        },
-                        "gothamMapping": undefined,
-                        "indexedForSearch": true,
-                        "type": {
-                          "string": {
-                            "analyzerOverride": undefined,
-                            "enableAsciiFolding": undefined,
-                            "isLongText": false,
-                            "supportsEfficientLeadingWildcard": false,
-                            "supportsExactMatching": true,
-                          },
-                          "type": "string",
-                        },
-                        "typeClasses": [
-                          {
-                            "kind": "render_hint",
-                            "name": "SELECTABLE",
-                          },
-                          {
-                            "kind": "render_hint",
-                            "name": "SORTABLE",
-                          },
-                        ],
-                        "valueType": undefined,
-                      },
-                    },
-                  },
-                  "propertiesV3": {},
-                  "searchable": true,
-                  "status": {
-                    "active": {},
-                    "type": "active",
-                  },
-                },
-              },
-            },
-            "linkTypes": {},
-            "objectTypes": {},
-            "sharedPropertyTypes": {
-              "com.palantir.foo": {
-                "sharedPropertyType": {
-                  "aliases": [],
-                  "apiName": "com.palantir.foo",
-                  "baseFormatter": undefined,
-                  "dataConstraints": undefined,
-                  "displayMetadata": {
-                    "description": undefined,
-                    "displayName": "foo",
-                    "visibility": "NORMAL",
-                  },
-                  "gothamMapping": undefined,
-                  "indexedForSearch": true,
-                  "type": {
-                    "string": {
-                      "analyzerOverride": undefined,
-                      "enableAsciiFolding": undefined,
-                      "isLongText": false,
-                      "supportsEfficientLeadingWildcard": false,
-                      "supportsExactMatching": true,
-                    },
-                    "type": "string",
-                  },
-                  "typeClasses": [
-                    {
-                      "kind": "render_hint",
-                      "name": "SELECTABLE",
-                    },
-                    {
-                      "kind": "render_hint",
-                      "name": "SORTABLE",
-                    },
-                  ],
-                  "valueType": undefined,
-                },
-              },
-            },
-          }
-        `);
+      expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(`` // `
+        //   {
+        //     "actionTypes": {},
+        //     "blockPermissionInformation": {
+        //       "actionTypes": {},
+        //       "linkTypes": {},
+        //       "objectTypes": {},
+        //     },
+        //     "interfaceTypes": {
+        //       "com.palantir.Foo": {
+        //         "interfaceType": {
+        //           "apiName": "com.palantir.Foo",
+        //           "displayMetadata": {
+        //             "description": "Foo",
+        //             "displayName": "Foo",
+        //             "icon": {
+        //               "blueprint": {
+        //                 "color": "#4C90F0",
+        //                 "locator": "layout-hierarchy",
+        //               },
+        //               "type": "blueprint",
+        //             },
+        //           },
+        //           "extendsInterfaces": [],
+        //           "links": [],
+        //           "properties": [],
+        //           "propertiesV2": {
+        //             "com.palantir.foo": {
+        //               "required": true,
+        //               "sharedPropertyType": {
+        //                 "aliases": [],
+        //                 "apiName": "com.palantir.foo",
+        //                 "baseFormatter": undefined,
+        //                 "dataConstraints": undefined,
+        //                 "displayMetadata": {
+        //                   "description": undefined,
+        //                   "displayName": "foo",
+        //                   "visibility": "NORMAL",
+        //                 },
+        //                 "gothamMapping": undefined,
+        //                 "indexedForSearch": true,
+        //                 "type": {
+        //                   "string": {
+        //                     "analyzerOverride": undefined,
+        //                     "enableAsciiFolding": undefined,
+        //                     "isLongText": false,
+        //                     "supportsEfficientLeadingWildcard": false,
+        //                     "supportsExactMatching": true,
+        //                   },
+        //                   "type": "string",
+        //                 },
+        //                 "typeClasses": [
+        //                   {
+        //                     "kind": "render_hint",
+        //                     "name": "SELECTABLE",
+        //                   },
+        //                   {
+        //                     "kind": "render_hint",
+        //                     "name": "SORTABLE",
+        //                   },
+        //                 ],
+        //                 "valueType": undefined,
+        //               },
+        //             },
+        //           },
+        //           "propertiesV3": {},
+        //           "searchable": true,
+        //           "status": {
+        //             "active": {},
+        //             "type": "active",
+        //           },
+        //         },
+        //       },
+        //     },
+        //     "linkTypes": {},
+        //     "objectTypes": {},
+        //     "sharedPropertyTypes": {
+        //       "com.palantir.foo": {
+        //         "sharedPropertyType": {
+        //           "aliases": [],
+        //           "apiName": "com.palantir.foo",
+        //           "baseFormatter": undefined,
+        //           "dataConstraints": undefined,
+        //           "displayMetadata": {
+        //             "description": undefined,
+        //             "displayName": "foo",
+        //             "visibility": "NORMAL",
+        //           },
+        //           "gothamMapping": undefined,
+        //           "indexedForSearch": true,
+        //           "type": {
+        //             "string": {
+        //               "analyzerOverride": undefined,
+        //               "enableAsciiFolding": undefined,
+        //               "isLongText": false,
+        //               "supportsEfficientLeadingWildcard": false,
+        //               "supportsExactMatching": true,
+        //             },
+        //             "type": "string",
+        //           },
+        //           "typeClasses": [
+        //             {
+        //               "kind": "render_hint",
+        //               "name": "SELECTABLE",
+        //             },
+        //             {
+        //               "kind": "render_hint",
+        //               "name": "SORTABLE",
+        //             },
+        //           ],
+        //           "valueType": undefined,
+        //         },
+        //       },
+        //     },
+        //   }
+        // `
+      );
     });
 
     it("does not let you conflict spts", () => {
@@ -237,7 +238,7 @@ describe("Interfaces", () => {
         defineInterface({
           apiName: "Foo",
           properties: {
-            foo: "string",
+            foo: { type: "string" },
           },
         });
       }).toThrowErrorMatchingInlineSnapshot(
@@ -250,13 +251,13 @@ describe("Interfaces", () => {
     const parentInterface = defineInterface({
       apiName: "parentInterface",
       properties: {
-        property1: "string",
+        property1: { type: "string" },
       },
     });
     const childInterface = defineInterface({
       apiName: "childInterface",
       properties: {
-        property2: "string",
+        property2: { type: "string" },
       },
       extends: [parentInterface],
     });
@@ -615,13 +616,13 @@ describe("Interfaces", () => {
     const parentInterface = defineInterface({
       apiName: "parentInterface",
       properties: {
-        property1: "string",
+        property1: { type: "string" },
       },
     });
     const childInterface = defineInterface({
       apiName: "childInterface",
       properties: {
-        property2: "string",
+        property2: { type: "string" },
       },
       extends: parentInterface,
     });

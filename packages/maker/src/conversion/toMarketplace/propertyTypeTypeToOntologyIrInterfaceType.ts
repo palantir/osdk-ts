@@ -59,6 +59,8 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
               fieldType: propertyTypeTypeToOntologyIrInterfaceType(
                 fieldTypeDefinition.fieldType,
               ),
+              displayMetadata: fieldTypeDefinition.displayMetadata
+                ?? { displayName: key, description: undefined },
               typeClasses: fieldTypeDefinition.typeClasses ?? [],
               aliases: fieldTypeDefinition.aliases ?? [],
               requireImplementation: fieldTypeDefinition.requireImplementation

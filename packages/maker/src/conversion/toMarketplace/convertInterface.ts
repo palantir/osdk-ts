@@ -46,8 +46,8 @@ export function convertInterface(
     // these are omitted from our internal types but we need to re-add them for the final json
     properties: [],
     propertiesV3: Object.fromEntries(
-      Object.values(interfaceType.propertiesV3).map((prop) =>
-        convertInterfaceProperty(prop)
+      Object.entries(interfaceType.propertiesV3).map(([apiName, prop]) =>
+        convertInterfaceProperty(prop, apiName)
       ),
     ),
   };

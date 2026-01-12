@@ -25,7 +25,6 @@ export type InterfacePropertyType =
   | InterfaceDefinedProperty;
 
 export interface InterfaceDefinedProperty extends PropertyType {
-  apiName: string;
   required?: boolean;
   primaryKeyConstraint?: "MUST_BE_PK" | "CANNOT_BE_PK" | "NO_RESTRICTION";
   baseFormatter?: OntologyIrBaseFormatter;

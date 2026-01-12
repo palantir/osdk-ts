@@ -44,7 +44,6 @@ export type SimplifiedInterfaceTypeStatus =
 
 type PropertyBase =
   | SharedPropertyType
-  | PropertyTypeType
   | InterfaceDefinedProperty;
 type SptWithOptional = {
   required: boolean;
@@ -132,16 +131,17 @@ export function defineInterface(
           ? prop.sharedPropertyType
           : prop;
 
+      // if (
+      //   typeof propertyBase === "string"
+      //   || (typeof propertyBase === "object" && !("apiName" in propertyBase))
+      // ) {
+      //   // construct IDP from minimal PropertyTypeType definition
+      //   return [apiName, {
+      //     apiName: apiName,
+      //     type: propertyBase,
+      //   }];
+      // } else if (
       if (
-        typeof propertyBase === "string"
-        || (typeof propertyBase === "object" && !("apiName" in propertyBase))
-      ) {
-        // construct IDP from minimal PropertyTypeType definition
-        return [apiName, {
-          apiName: apiName,
-          type: propertyBase,
-        }];
-      } else if (
         typeof propertyBase === "object"
         && "nonNameSpacedApiName" in propertyBase
       ) {
