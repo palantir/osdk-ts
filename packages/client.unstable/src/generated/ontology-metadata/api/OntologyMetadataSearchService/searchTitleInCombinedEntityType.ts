@@ -16,25 +16,28 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type {
-  LinkTypeSearchRequest as _api_search_LinkTypeSearchRequest,
-  LinkTypeSearchResponse as _api_search_LinkTypeSearchResponse,
+  SearchTitleInCombinedEntityTypeRequest
+    as _api_search_SearchTitleInCombinedEntityTypeRequest,
+  SearchTitleInCombinedEntityTypeResponse
+    as _api_search_SearchTitleInCombinedEntityTypeResponse,
 } from "../search/__components.js";
 
 /**
- * Endpoint to search LinkTypes based on various filters. Endpoint allows to return results based on relevance
- * of the match. There is no timeout between fetching consecutive pages and clients do not need to page to the end.
- * In some cases updates to the Ontology between fetching pages can cause the same result to be returned more than once.
+ * Endpoint to search a Title string over multiple Ontology entities based on provided filters.
+ * Endpoint returns results based on relevance of the match. There is no timeout between fetching
+ * consecutive pages and clients do not need to page to the end. In some cases updates to the Ontology between
+ * fetching pages can cause the same result to be returned more than once.
  *
  * The results in this endpoint are eventually consistent with the latest OntologyVersion and may lag slightly
  * behind the last Ontology modification.
  */
-export async function searchLinkTypes(
+export async function searchTitleInCombinedEntityType(
   ctx: ConjureContext,
-  request: _api_search_LinkTypeSearchRequest,
-): Promise<_api_search_LinkTypeSearchResponse> {
+  request: _api_search_SearchTitleInCombinedEntityTypeRequest,
+): Promise<_api_search_SearchTitleInCombinedEntityTypeResponse> {
   return conjureFetch(
     ctx,
-    `/ontology/search/v0/searchLinkTypes`,
+    `/ontology/search/v0/searchTitleInCombinedEntityType`,
     "POST",
     request,
   );
