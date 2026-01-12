@@ -21,8 +21,8 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import type {
-  Cell,
+import {
+  type Cell,
   type ColumnSizingState,
   getCoreRowModel,
   useReactTable,

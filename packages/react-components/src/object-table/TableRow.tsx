@@ -50,7 +50,11 @@ export function TableRow<TData extends RowData>({
       onClick={handleClick}
     >
       {row.getVisibleCells().map((cell) => (
-        <TableCell cell={cell} renderCellContextMenu={renderCellContextMenu} />
+        <TableCell
+          key={cell.id}
+          cell={cell}
+          renderCellContextMenu={renderCellContextMenu}
+        />
       ))}
     </tr>
   );

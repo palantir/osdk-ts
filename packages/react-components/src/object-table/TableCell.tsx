@@ -19,6 +19,7 @@ import { flexRender } from "@tanstack/react-table";
 import React, { useRef } from "react";
 import { CellContextMenu } from "./CellContextMenu.js";
 import { useCellContextMenu } from "./hooks/useCellContextMenu.js";
+import { SELECTION_COLUMN_ID } from "./hooks/useSelectionColumn.js";
 
 interface TableCellProps<TData extends RowData> {
   cell: Cell<TData, unknown>;
@@ -32,6 +33,7 @@ export function TableCell<TData extends RowData>(
   { cell, renderCellContextMenu }: TableCellProps<TData>,
 ): React.ReactElement {
   const tdRef = useRef<HTMLTableCellElement>(null);
+  const isSelectColumn = cell.column.id === SELECTION_COLUMN_ID;
 
   const {
     isContextMenuOpen,
@@ -44,14 +46,14 @@ export function TableCell<TData extends RowData>(
     tdRef,
   });
 
-  const shouldRenderContextMenu = isContextMenuOpen && !!popoverPosition
+  const shouldRenderContextMenu = !isSelectColumn && isContextMenuOpen
+    && !!popoverPosition
     && !!renderCellContextMenu;
 
   return (
     <>
       <td
         ref={tdRef}
-        key={cell.id}
         style={{
           display: "flex",
           alignItems: "center",
