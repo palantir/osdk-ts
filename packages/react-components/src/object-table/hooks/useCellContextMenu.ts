@@ -1,0 +1,77 @@
+/*
+ * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { RowData } from "@tanstack/react-table";
+import type { MouseEventHandler, RefObject} from "react";
+import { useCallback, useState } from "react";
+
+export interface PopoverPosition {
+  left: number;
+  top: number;
+  width: number;
+}
+
+interface UseCellContextMenuProps<TData extends RowData> {
+  tdRef: RefObject<HTMLTableCellElement>;
+}
+
+interface UseCellContextMenuResults<TData extends RowData> {
+  isContextMenuOpen: boolean;
+  handleOpenContextMenu: MouseEventHandler<HTMLTableCellElement>;
+  handleCloseContextMenu: () => void;
+  popoverPosition: PopoverPosition | null;
+}
+
+export const useCellContextMenu = <TData extends RowData>({
+  tdRef,
+}: UseCellContextMenuProps<TData>): UseCellContextMenuResults<TData> => {
+  const [popoverPosition, setPopoverPosition] = useState<
+    PopoverPosition | null
+  >(null);
+  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
+
+  const handleOpenContextMenu = useCallback((event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (tdRef.current) {
+      const position = calculatePopoverPosition(tdRef.current);
+      setPopoverPosition(position);
+      setIsContextMenuOpen(true);
+    }
+  }, []);
+
+  const handleCloseContextMenu = useCallback(() => {
+    setIsContextMenuOpen(false);
+    setPopoverPosition(null);
+  }, []);
+
+  return {
+    isContextMenuOpen,
+    handleOpenContextMenu,
+    handleCloseContextMenu,
+    popoverPosition,
+  };
+};
+
+const calculatePopoverPosition = (element: HTMLElement): PopoverPosition => {
+  const rect = element.getBoundingClientRect();
+  return {
+    left: rect.left + window.scrollX,
+    top: rect.bottom + window.scrollY,
+    width: rect.width,
+  };
+};

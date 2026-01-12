@@ -17,9 +17,13 @@
 export type { FilterListProps } from "../filter-list/FilterListApi.js";
 export type { FilterListItemProps } from "../filter-list/FilterListItemApi.js";
 
+// ObjectTable that loads and displays data for a given objectSet
 export { ObjectTable } from "../object-table/ObjectTable.js";
 export type {
   ColumnDefinition,
   ColumnDefinitionLocator,
   ObjectTableProps,
 } from "../object-table/ObjectTableApi.js";
+
+// BaseTable with default table behaviors that accepts a react-table instance
+export { Table as BaseTable } from "../object-table/Table.js";

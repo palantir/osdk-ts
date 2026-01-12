@@ -205,17 +205,6 @@ export interface ObjectTableProps<
   ) => void;
 
   /**
-   * Called when a cell is clicked.
-   *
-   * @param object The object representing the row
-   * @param columnDefinition The column definition for the clicked cell
-   */
-  onCellClick?: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
-  ) => void;
-
-  /**
    * Called when a row is clicked.
    *
    * @param object The object representing the clicked row
@@ -253,8 +242,8 @@ export interface ObjectTableProps<
    * If provided, will render this context menu when right clicking on a cell
    */
   renderCellContextMenu?: (
-    object: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
-    locator: ColumnDefinitionLocator<Q, RDPs, FunctionColumns>,
+    row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+    cellValue: unknown,
   ) => React.ReactNode;
 
   /**

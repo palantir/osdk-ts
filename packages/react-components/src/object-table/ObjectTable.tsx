@@ -21,12 +21,13 @@ import type {
   QueryDefinition,
   SimplePropertyDef,
 } from "@osdk/api";
-import {
+import type {
+  Cell,
   type ColumnSizingState,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useColumnDefs } from "./hooks/useColumnDefs.js";
 import { useDefaultTableStates } from "./hooks/useDefaultTableStates.js";
 import { useObjectTableData } from "./hooks/useObjectTableData.js";
@@ -60,11 +61,10 @@ export function ObjectTable<
   objectType,
   columnDefinitions,
   filter,
-  onRowClick,
   onRowSelection,
-  rowHeight,
   selectionMode = "none",
   selectedRows,
+  ...props
 }: ObjectTableProps<Q, RDPs, FunctionColumns>): React.ReactElement {
   const { data, fetchMore, isLoading } = useObjectTableData<
     Q,
@@ -131,6 +131,19 @@ export function ObjectTable<
     getRowId,
   });
 
+  const renderCellContextMenu = useCallback(
+    (
+      row: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+      cell: Cell<
+        Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>,
+        unknown
+      >,
+    ) => {
+      return props.renderCellContextMenu?.(row, cell.getValue());
+    },
+    [props.renderCellContextMenu],
+  );
+
   const isTableLoading = isLoading || isColumnsLoading;
 
   return (
@@ -138,8 +151,9 @@ export function ObjectTable<
       table={table}
       isLoading={isTableLoading}
       fetchNextPage={fetchMore}
-      onRowClick={onRowClick}
-      rowHeight={rowHeight}
+      onRowClick={props.onRowClick}
+      rowHeight={props.rowHeight}
+      renderCellContextMenu={renderCellContextMenu}
     />
   );
 }

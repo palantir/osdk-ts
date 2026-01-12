@@ -74,6 +74,20 @@ export function EmployeesTable() {
         objectType={Employee}
         columnDefinitions={columnDefinitions}
         selectionMode={"multiple"}
+        renderCellContextMenu={(row, cellValue) => {
+          return (
+            <div
+              style={{
+                background: "white",
+                padding: 20,
+                border: "1px solid #d1d5db",
+                boxShadow: "0 2px 8px 0 rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              {cellValue}
+            </div>
+          );
+        }}
       />
     </div>
   );

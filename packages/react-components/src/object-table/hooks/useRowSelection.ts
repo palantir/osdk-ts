@@ -29,12 +29,16 @@ export interface UseRowSelectionProps<
   data: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>> | undefined;
 }
 
-export interface UseRowSelectionResult<Q extends ObjectTypeDefinition> {
+export interface UseRowSelectionResult {
   rowSelection: RowSelectionState;
   isAllSelected: boolean;
   hasSelection: boolean;
   onToggleAll: () => void;
-  onToggleRow: (id: string, rowIndex: number, isShiftClick?: boolean) => void;
+  onToggleRow: (
+    rowId: string,
+    rowIndex: number,
+    isShiftClick?: boolean,
+  ) => void;
 }
 
 export function useRowSelection<
@@ -45,7 +49,7 @@ export function useRowSelection<
   selectedRows,
   onRowSelection,
   data,
-}: UseRowSelectionProps<Q, RDPs>): UseRowSelectionResult<Q> {
+}: UseRowSelectionProps<Q, RDPs>): UseRowSelectionResult {
   // The rowSelectionState in uncontrolled mode
   const [internalRowSelection, setInternalRowSelection] = useState<
     RowSelectionState
@@ -96,45 +100,39 @@ export function useRowSelection<
 
   // Called by the row-level SelectionCell
   const onToggleRow = useCallback(
-    (id: string, rowIndex: number, isShiftClick: boolean = false) => {
+    (rowId: string, rowIndex: number, isShiftClick: boolean = false) => {
       if (!isSelectionEnabled || !data) return;
 
-      if (selectionMode === "single") {
-        handleSingleSelection(
-          id,
-          rowIndex,
-          data,
-          isControlled,
-          rowSelectionState,
-          onRowSelection,
-          setInternalRowSelection,
-          setLastSelectedRowIndex,
-        );
-        return;
-      }
+      let newSelectedRows: PrimaryKeyType<Q>[] = [];
 
-      // Multiple selection mode
-      if (isShiftClick && lastSelectedRowIndex != null) {
-        handleRangeSelection(
+      if (selectionMode === "single") {
+        newSelectedRows = getSingleSelectionRows({
+          rowId,
           rowIndex,
           data,
-          lastSelectedRowIndex,
-          isControlled,
           rowSelectionState,
-          onRowSelection,
-          setInternalRowSelection,
-        );
+        });
+        setLastSelectedRowIndex(rowIndex);
       } else {
-        handleMultipleSelectionToggle(
-          rowIndex,
-          data,
-          isControlled,
-          rowSelectionState,
-          onRowSelection,
-          setInternalRowSelection,
-          setLastSelectedRowIndex,
-        );
+        // Multiple selection mode
+
+        // When user does shiftClick but lastSelectedRowIndex is null,
+        // it is treated as a normal click in multiple selection
+        if (isShiftClick && lastSelectedRowIndex != null) {
+          newSelectedRows = getRangeSelectionRows(
+            { rowId, rowIndex, data, lastSelectedRowIndex, rowSelectionState },
+          );
+        } else {
+          newSelectedRows = getMultipleSelectionRows(
+            { rowId, rowIndex, data, rowSelectionState },
+          );
+        }
+        setLastSelectedRowIndex(rowIndex);
       }
+      if (!isControlled) {
+        setInternalRowSelection(getRowSelectionState(newSelectedRows));
+      }
+      onRowSelection?.(newSelectedRows);
     },
     [
       isSelectionEnabled,
@@ -156,83 +154,64 @@ export function useRowSelection<
   };
 }
 
-// Handles single selection mode toggle
-function handleSingleSelection<
+interface GetSelectedRowsProps<
   Q extends ObjectTypeDefinition,
   RDPs extends Record<string, any> = Record<string, never>,
->(
-  id: string,
-  rowIndex: number,
-  data: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>>,
-  isControlled: boolean,
-  rowSelectionState: RowSelectionState,
-  onRowSelection: ((selectedRowIds: PrimaryKeyType<Q>[]) => void) | undefined,
-  setInternalRowSelection: React.Dispatch<
-    React.SetStateAction<RowSelectionState>
-  >,
-  setLastSelectedRowIndex: React.Dispatch<React.SetStateAction<number | null>>,
-) {
-  const primaryKey = data[rowIndex].$primaryKey;
-  const newSelectedRows = rowSelectionState[id] ? [] : [primaryKey];
-
-  if (!isControlled) {
-    setInternalRowSelection(getRowSelectionState(newSelectedRows));
-  }
-  onRowSelection?.(newSelectedRows);
-  setLastSelectedRowIndex(rowIndex);
+> {
+  rowId: string;
+  rowIndex: number;
+  data: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>>;
+  rowSelectionState: RowSelectionState;
+  lastSelectedRowIndex?: number;
 }
 
-// Handles range selection in multiple selection mode (shift-click)
-function handleRangeSelection<
+function getSingleSelectionRows<
   Q extends ObjectTypeDefinition,
   RDPs extends Record<string, any> = Record<string, never>,
 >(
-  rowIndex: number,
-  data: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>>,
-  lastSelectedRowIndex: number,
-  isControlled: boolean,
-  rowSelectionState: RowSelectionState,
-  onRowSelection: ((selectedRowIds: PrimaryKeyType<Q>[]) => void) | undefined,
-  setInternalRowSelection: React.Dispatch<
-    React.SetStateAction<RowSelectionState>
-  >,
-) {
-  const rowsInRange = getRowsInRange(data, lastSelectedRowIndex, rowIndex);
-  const primaryKeysInRange = rowsInRange.map(item => item.$primaryKey);
-
-  const currentlySelected = getSelectedPrimaryKeys(rowSelectionState, data);
-  const newSelectedRows = addUniqueItems(currentlySelected, primaryKeysInRange);
-
-  if (!isControlled) {
-    setInternalRowSelection(getRowSelectionState(newSelectedRows));
-  }
-  onRowSelection?.(newSelectedRows);
+  { rowId, rowIndex, data, rowSelectionState }: GetSelectedRowsProps<Q, RDPs>,
+): PrimaryKeyType<Q>[] {
+  const primaryKey = data[rowIndex].$primaryKey;
+  // Toggle row selection in single selection mode
+  const newSelectedRows = rowSelectionState[rowId] ? [] : [primaryKey];
+  return newSelectedRows;
 }
 
-// Handles single row toggle in multiple selection mode
-function handleMultipleSelectionToggle<
+function getRangeSelectionRows<
   Q extends ObjectTypeDefinition,
   RDPs extends Record<string, any> = Record<string, never>,
 >(
-  rowIndex: number,
-  data: Array<Osdk.Instance<Q, "$allBaseProperties", any, RDPs>>,
-  isControlled: boolean,
-  rowSelectionState: RowSelectionState,
-  onRowSelection: ((selectedRowIds: PrimaryKeyType<Q>[]) => void) | undefined,
-  setInternalRowSelection: React.Dispatch<
-    React.SetStateAction<RowSelectionState>
-  >,
-  setLastSelectedRowIndex: React.Dispatch<React.SetStateAction<number | null>>,
-) {
+  { lastSelectedRowIndex, rowIndex, data, rowSelectionState }:
+    GetSelectedRowsProps<Q, RDPs>,
+): PrimaryKeyType<Q>[] {
+  // This function is only called if lastSelectedRowIndex is not null
+  // This condition is added for typechecks only
+  if (lastSelectedRowIndex != null) {
+    const rowsInRange = getRowsInRange(data, lastSelectedRowIndex, rowIndex);
+    const primaryKeysInRange = rowsInRange.map(item => item.$primaryKey);
+
+    const currentlySelected = getSelectedPrimaryKeys(rowSelectionState, data);
+    const newSelectedRows = addUniqueItems(
+      currentlySelected,
+      primaryKeysInRange,
+    );
+
+    return newSelectedRows;
+  }
+  return [];
+}
+
+function getMultipleSelectionRows<
+  Q extends ObjectTypeDefinition,
+  RDPs extends Record<string, any> = Record<string, never>,
+>(
+  { rowIndex, data, rowSelectionState }: GetSelectedRowsProps<Q, RDPs>,
+): PrimaryKeyType<Q>[] {
   const primaryKey = data[rowIndex].$primaryKey;
   const currentlySelected = getSelectedPrimaryKeys(rowSelectionState, data);
+  // Handles single row toggle in multiple selection mode
   const newSelectedRows = toggleItem(currentlySelected, primaryKey);
-
-  if (!isControlled) {
-    setInternalRowSelection(getRowSelectionState(newSelectedRows));
-  }
-  onRowSelection?.(newSelectedRows);
-  setLastSelectedRowIndex(rowIndex);
+  return newSelectedRows;
 }
 
 /**

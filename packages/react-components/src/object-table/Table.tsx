@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { RowData, Table } from "@tanstack/react-table";
+import type { Cell, RowData, Table } from "@tanstack/react-table";
 import React, { type ReactElement, useCallback, useRef } from "react";
 import { TableBody } from "./TableBody.js";
 import { TableHeader } from "./TableHeader.js";
@@ -25,10 +25,21 @@ interface TableProps<TData extends RowData> {
   fetchNextPage?: () => Promise<void>;
   onRowClick?: (row: TData) => void;
   rowHeight?: number;
+  renderCellContextMenu?: (
+    row: TData,
+    cell: Cell<TData, unknown>,
+  ) => React.ReactNode;
 }
 
 export function Table<TData extends RowData>(
-  { table, isLoading, fetchNextPage, onRowClick, rowHeight }: TableProps<TData>,
+  {
+    table,
+    isLoading,
+    fetchNextPage,
+    onRowClick,
+    rowHeight,
+    renderCellContextMenu,
+  }: TableProps<TData>,
 ): ReactElement {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -89,6 +100,7 @@ export function Table<TData extends RowData>(
           tableContainerRef={tableContainerRef}
           onRowClick={onRowClick}
           rowHeight={rowHeight}
+          renderCellContextMenu={renderCellContextMenu}
         />
       </table>
     </div>
