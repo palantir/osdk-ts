@@ -253,7 +253,7 @@ async function getContext(
   process.exit(1);
 });
 
-async function getGithubTokenOrFail() {
+export async function getGithubTokenOrFail(): Promise<string> {
   const githubToken = process.env.GITHUB_TOKEN;
   if (!githubToken) {
     consola.info(
