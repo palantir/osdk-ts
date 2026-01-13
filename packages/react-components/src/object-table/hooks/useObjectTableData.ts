@@ -129,7 +129,7 @@ export function useObjectTableData<
     [primaryKeyApiName, baseRows, isBaseObjectSetLoading],
   );
 
-  // Load async columns (withProperties) - this will be the merged result
+  // Load derived properties
   const { data: dataWithDerivedProperties, isLoading: isAsyncColumnLoading } =
     useObjectSet<Q, never, RDPs>(
       objectSet,
@@ -137,10 +137,12 @@ export function useObjectTableData<
         withProperties,
         pageSize: PAGE_SIZE,
         where: filterForObjectsInBaseRows,
+        // Do not fetch when baseRows is not ready or empty
+        enabled: filterForObjectsInBaseRows !== undefined,
       },
     );
 
-  // Combine base rows with async column data, respecting sort order
+  // Combine base rows with async column data
   const rows: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[] =
     useMemo(() => {
       const enrichedData = (dataWithDerivedProperties ?? []).reduce(
@@ -199,7 +201,7 @@ const mergeRowsWithEnrichedData = <
   if (isBaseObjectSetLoading || !baseRows) {
     return [];
   }
-
+  // The resulting data should respect the sort order of baseRows
   return baseRows.map(row => {
     const rowEnrichedData = enrichedData[row.$primaryKey];
     // TODO: Type the async column values

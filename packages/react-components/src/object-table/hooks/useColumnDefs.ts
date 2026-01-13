@@ -122,21 +122,18 @@ function getColumnsFromColumnDefinitions<
       enableSorting: orderable,
       enableColumnFilter: filterable,
       cell: (cellContext) => {
+        // Handle async column types
         if (locator.type === "rdp" || locator.type === "function") {
-          // TODO: Handle async column type
-          /**
-           * {
-           *   value: ...,
-           *   status: "loading" | "loaded" | "error"
-           * }
-           */
-          const cellValue = cellContext.getValue() as AsyncValue<any>;
-          if (cellValue.type === "loaded") {
-            return cellValue.value ?? "No Value";
+          const cellValue = cellContext.getValue() as AsyncValue<unknown>;
+
+          if (cellValue.type === "loaded" && cellValue.value != null) {
+            return cellValue.value;
           }
+
           if (cellValue.type === "loading") {
             return "Loading...";
           }
+
           return "No Value";
         }
 

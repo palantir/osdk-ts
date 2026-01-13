@@ -50,12 +50,6 @@ const columnDefinitions: ColumnDefinition<
         baseObjectSet.pivotTo("lead").selectProperty("fullName"),
     },
     renderHeader: () => "Derived Manager Name",
-    renderCell: (object: Osdk.Instance<Employee>) => {
-      if ("managerName" in object) {
-        return object["managerName"] as string;
-      }
-      return "No Value";
-    },
   },
 ];
 
@@ -65,7 +59,7 @@ export function EmployeesTable() {
   return (
     <div
       style={{
-        height: "500px",
+        height: "120px",
         overflow: "auto",
       }}
     >
