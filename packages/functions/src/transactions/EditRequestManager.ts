@@ -81,7 +81,7 @@ export class EditRequestManager {
     await OntologyTransactions.postEdits(
       this.client,
       await this.client[writeableClientContext].ontologyRid,
-      this.client[writeableClientContext].transactionRid,
+      this.client[writeableClientContext].transactionId,
       { edits: copiedEdits },
       { preview: true },
     );

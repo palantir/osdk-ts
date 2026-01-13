@@ -326,13 +326,14 @@ export const createClient: (
 );
 
 export const createClientWithTransaction: (
-  transactionRid: string,
-  flushEdits?: () => Promise<void>,
+  transactionId: string,
+  flushEdits: () => Promise<void>,
   ...args: Parameters<typeof createClient>
-) => Client = (transactionRid, ...args) =>
+) => Client = (transactionRid, flushEdits, ...args) =>
   createClientInternal(
     createObjectSet,
     transactionRid,
+    flushEdits,
     ...args,
   ) as Client;
 

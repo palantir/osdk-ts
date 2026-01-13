@@ -39,7 +39,7 @@ export const writeableClientContext: unique symbol = Symbol(
 
 export interface WriteableClientContext {
   ontologyRid: string | Promise<string>;
-  transactionRid: string;
+  transactionId: string;
   editRequestManager: EditRequestManager;
 }
 
