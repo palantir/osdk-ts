@@ -39,8 +39,11 @@ type CanonicalValue =
 
 type PathElement = PrimitiveValue | WireObjectSet;
 
+// Path markers use "$:" prefix. User data with this prefix is unlikely but could
+// theoretically cause collisions if it matches the exact marker sequence.
+
 function isPrimitiveValue(value: unknown): value is PrimitiveValue {
-  if (value == null || value === undefined) return true;
+  if (value == null) return true;
   const t = typeof value;
   return t === "string" || t === "number" || t === "boolean" || t === "bigint";
 }
@@ -63,9 +66,8 @@ export class FunctionParamsCanonicalizer {
       return undefined;
     }
 
-    const cached = this.#inputCache.get(params);
-    if (cached !== undefined) {
-      return cached;
+    if (this.#inputCache.has(params)) {
+      return this.#inputCache.get(params);
     }
 
     const seen = new WeakSet<object>();
@@ -112,6 +114,7 @@ export class FunctionParamsCanonicalizer {
       return value;
     }
 
+    // Poor man's circular reference detection, we should improve this if this turns into a problem
     if (seen.has(value as object)) {
       throw new Error("Circular reference in function parameters");
     }
@@ -176,9 +179,20 @@ export class FunctionParamsCanonicalizer {
     const tb = typeof b;
     if (ta !== tb) return ta.localeCompare(tb);
     if (ta === "string") return (a as string).localeCompare(b as string);
-    if (ta === "number") return (a as number) - (b as number);
+    if (ta === "number") {
+      const an = a as number;
+      const bn = b as number;
+      if (Number.isNaN(an) && Number.isNaN(bn)) return 0;
+      if (Number.isNaN(an)) return 1;
+      if (Number.isNaN(bn)) return -1;
+      return an - bn;
+    }
     if (ta === "boolean") return (a ? 1 : 0) - (b ? 1 : 0);
-    if (ta === "bigint") return Number((a as bigint) - (b as bigint));
+    if (ta === "bigint") {
+      const ab = a as bigint;
+      const bb = b as bigint;
+      return ab < bb ? -1 : ab > bb ? 1 : 0;
+    }
     return 0;
   }
 
@@ -187,11 +201,7 @@ export class FunctionParamsCanonicalizer {
       if (isPrimitiveValue(a) && isPrimitiveValue(b)) {
         return this.#comparePrimitives(a, b);
       }
-      try {
-        return JSON.stringify(a).localeCompare(JSON.stringify(b));
-      } catch {
-        return 0;
-      }
+      return JSON.stringify(a).localeCompare(JSON.stringify(b));
     });
   }
 
@@ -200,11 +210,7 @@ export class FunctionParamsCanonicalizer {
       if (isPrimitiveValue(a) && isPrimitiveValue(b)) {
         return this.#comparePrimitives(a, b);
       }
-      try {
-        return JSON.stringify(a).localeCompare(JSON.stringify(b));
-      } catch {
-        return 0;
-      }
+      return JSON.stringify(a).localeCompare(JSON.stringify(b));
     });
   }
 }
