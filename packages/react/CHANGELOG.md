@@ -1,5 +1,18 @@
 # @osdkkit/react
 
+## 0.9.0-beta.5
+
+### Minor Changes
+
+- adca853: fix fetchMore behavior
+
+### Patch Changes
+
+- Updated dependencies [adca853]
+- Updated dependencies [0b0be9f]
+  - @osdk/client@2.7.0-beta.7
+  - @osdk/api@2.7.0-beta.7
+
 ## 0.9.0-beta.4
 
 ### Minor Changes

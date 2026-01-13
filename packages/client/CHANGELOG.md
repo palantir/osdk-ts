@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 2.7.0-beta.7
+
+### Minor Changes
+
+- adca853: fix fetchMore behavior
+- 0b0be9f: fix object spread related bug by using createOsdkObject
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.7
+- @osdk/client.unstable@2.7.0-beta.7
+- @osdk/generator-converters@2.7.0-beta.7
+
 ## 2.7.0-beta.6
 
 ### Minor Changes
