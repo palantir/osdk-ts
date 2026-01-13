@@ -18,7 +18,6 @@ import { convertMappingValue } from "../conversion/toMarketplace/convertMappingV
 import { type ActionType } from "./action/ActionType.js";
 import type { InterfaceActionTypeUserDefinition } from "./defineAction.js";
 import {
-  addNamespaceToActionDefinition,
   convertValidationRule,
   CREATE_INTERFACE_OBJECT_PARAMETER,
   createDefaultParameterOrdering,
@@ -37,7 +36,6 @@ import { getInterfacePropertyTypeType } from "./interface/InterfacePropertyType.
 export function defineCreateInterfaceObjectAction(
   def: InterfaceActionTypeUserDefinition,
 ): ActionType {
-  addNamespaceToActionDefinition(def);
   const allProperties = getFlattenedInterfaceProperties(def.interfaceType);
   validateActionParameters(
     def,

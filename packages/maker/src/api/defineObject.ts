@@ -23,6 +23,7 @@ import {
   namespace,
   ontologyDefinition,
   updateOntology,
+  withoutNamespace,
 } from "./defineOntology.js";
 import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfaceProperties.js";
 import {
@@ -159,6 +160,8 @@ export function defineObject(
       .propertyMapping.map(val => val.interfaceProperty).filter(
         interfaceProperty =>
           allInterfaceProperties[addNamespaceIfNone(interfaceProperty)]
+            === undefined
+          && allInterfaceProperties[withoutNamespace(interfaceProperty)]
             === undefined,
       ).map(interfaceProp => ({
         type: "invalid",
@@ -169,7 +172,7 @@ export function defineObject(
     const interfaceToObjectProperties = Object.fromEntries(
       interfaceImpl.propertyMapping.map(
         mapping => [
-          addNamespaceIfNone(mapping.interfaceProperty),
+          mapping.interfaceProperty,
           mapping.mapsTo,
         ],
       ),

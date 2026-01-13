@@ -47,6 +47,7 @@ import {
   namespace,
   ontologyDefinition,
   updateOntology,
+  withoutNamespace,
 } from "./defineOntology.js";
 import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfaceProperties.js";
 import type {
@@ -282,9 +283,12 @@ export function createParameters(
     ...targetParams,
     ...Array.from(parameterSet).map(
       id => {
-        const propertyMetadata = "sharedPropertyType" in propertyMap[id]
-          ? propertyMap[id].sharedPropertyType
-          : propertyMap[id];
+        let propertyMetadata = undefined;
+        if (id in propertyMap) {
+          propertyMetadata = "sharedPropertyType" in propertyMap[id]
+            ? propertyMap[id].sharedPropertyType
+            : propertyMap[id];
+        }
         return {
           id,
           displayName: def.parameterConfiguration?.[id]?.displayName
@@ -304,7 +308,7 @@ export function createParameters(
                     propertyMetadata!.type,
                   )),
               required: def.parameterConfiguration?.[id].required
-                ?? (propertyMetadata!.nullability?.noNulls
+                ?? (propertyMetadata?.nullability?.noNulls
                   ?? false),
             }
             : {
@@ -316,10 +320,10 @@ export function createParameters(
                     : {},
                 }
                 : requiredMap?.[id]
-                  ?? propertyMetadata!.nullability?.noNulls
+                  ?? propertyMetadata?.nullability?.noNulls
                   ?? false,
               allowedValues: extractAllowedValuesFromPropertyType(
-                propertyMetadata!.type,
+                propertyMetadata?.type!,
               ),
             },
           defaultValue: def.parameterConfiguration?.[id]?.defaultValue,
@@ -983,7 +987,8 @@ export function validateActionParameters(
   ].forEach(id => {
     invariant(
       properties.includes(id)
-        || properties.includes(addNamespaceIfNone(id)),
+        || properties.includes(addNamespaceIfNone(id))
+        || properties.includes(withoutNamespace(id)),
       `Property ${id} does not exist as a property on ${name}`,
     );
   });
