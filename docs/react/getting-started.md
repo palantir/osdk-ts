@@ -124,6 +124,7 @@ Experimental exports:
 - `useLinks` - Navigate object relationships
 - `useObjectSet` - Advanced queries with set operations
 - `useOsdkAggregation` - Server-side aggregations
+- `useOsdkFunction` - Execute and observe OSDK functions
 - `useDebouncedCallback` - Debounce callbacks
 - `useOsdkClient` - Access the OSDK client
 - `useOsdkMetadata` - Fetch type metadata (also available from stable)

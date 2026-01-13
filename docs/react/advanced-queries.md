@@ -316,6 +316,148 @@ const { data } = useOsdkObjects(Employee, {
 
 ---
 
+## useOsdkFunction
+
+*Experimental - import from `@osdk/react/experimental`*
+
+Execute and observe functions with request deduplication and configurable dependency tracking for automatic refetching.
+
+### Basic Usage
+
+```tsx
+import { addOne } from "@my/osdk";
+import { useOsdkFunction } from "@osdk/react/experimental";
+
+function AddOneDemo() {
+  const { data, isLoading, error } = useOsdkFunction(addOne, {
+    params: { n: 5 },
+  });
+
+  if (isLoading && data === undefined) {
+    return <div>Calculating...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  return <div>Result: {data}</div>;
+}
+```
+
+### Functions Without Parameters
+
+```tsx
+import { getTodoCount } from "@my/osdk";
+import { useOsdkFunction } from "@osdk/react/experimental";
+
+function TodoCount() {
+  const { data, isLoading } = useOsdkFunction(getTodoCount);
+
+  return (
+    <div>
+      {isLoading && <span>Loading...</span>}
+      {data !== undefined && <span>Total todos: {data}</span>}
+    </div>
+  );
+}
+```
+
+### Dependency Tracking
+
+Automatically refetch when actions modify objects of specified types:
+
+```tsx
+import { Employee, getEmployeeMetrics } from "@my/osdk";
+import { useOsdkFunction } from "@osdk/react/experimental";
+
+function EmployeeMetrics({ departmentId }: { departmentId: string }) {
+  const { data, isLoading, refetch } = useOsdkFunction(getEmployeeMetrics, {
+    params: { departmentId },
+    dependsOn: [Employee], // Refetch when any Employee changes
+  });
+
+  return (
+    <div>
+      {isLoading && <span>Updating...</span>}
+      {data && <span>Headcount: {data.headcount}</span>}
+      <button onClick={refetch}>Refresh</button>
+    </div>
+  );
+}
+```
+
+### Specific Object Dependencies
+
+For finer-grained control, depend on specific object instances:
+
+```tsx
+import { Employee, getEmployeeReport } from "@my/osdk";
+import { useOsdkFunction, useOsdkObject } from "@osdk/react/experimental";
+
+function EmployeeReport({ employee }: { employee: Employee.OsdkInstance }) {
+  const { data, isLoading } = useOsdkFunction(getEmployeeReport, {
+    params: { employeeId: employee.$primaryKey },
+    dependsOnObjects: [employee], // Refetch only when this employee changes
+  });
+
+  return (
+    <div>
+      {isLoading && <span>Loading report...</span>}
+      {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+    </div>
+  );
+}
+```
+
+### Conditional Execution
+
+Use `enabled` to control when the function executes:
+
+```tsx
+import { Employee, getEmployeeReport } from "@my/osdk";
+import { useOsdkFunction, useOsdkObject } from "@osdk/react/experimental";
+
+function ConditionalReport({ employeeId }: { employeeId: string }) {
+  const { object: employee } = useOsdkObject(Employee, employeeId);
+
+  const { data, isLoading } = useOsdkFunction(getEmployeeReport, {
+    params: { employeeId },
+    enabled: employee !== undefined, // Wait for employee to load
+  });
+
+  if (!employee) {
+    return <div>Loading employee...</div>;
+  }
+
+  return (
+    <div>
+      <h2>{employee.fullName}</h2>
+      {isLoading && <span>Loading report...</span>}
+      {data && <div>Report: {JSON.stringify(data)}</div>}
+    </div>
+  );
+}
+```
+
+### Options
+
+- `params` - Parameters to pass to the function (required if function has parameters)
+- `dependsOn` - Array of object types; refetch when any object of these types changes
+- `dependsOnObjects` - Array of specific object instances; refetch when these objects change
+- `dedupeIntervalMs` - Milliseconds to dedupe identical calls (default: 2000)
+- `enabled` - Enable/disable execution (default: true)
+
+### Return Values
+
+- `data` - Function result, or undefined if not loaded or on error
+- `isLoading` - True while the function is executing
+- `error` - Error object if execution failed
+- `lastUpdated` - Timestamp (ms since epoch) when result was last fetched
+- `refetch` - Function to manually trigger a refetch
+
+---
+
 ## useOsdkAggregation
 
 *Experimental - import from `@osdk/react/experimental`*
