@@ -151,6 +151,10 @@ export async function fetchStaticRidPage<
     { type: "object", apiName: "" },
   );
 
+  if (client.flushEdits != null) {
+    await client.flushEdits();
+  }
+
   const result = await OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
     addUserAgentAndRequestContextHeaders(client, { osdkMetadata: undefined }),
     await client.ontologyRid,
@@ -222,6 +226,10 @@ async function fetchInterfacePage<
       requestBody.selectedSharedPropertyTypes = Array.from(remapped);
     }
 
+    if (client.flushEdits != null) {
+      await client.flushEdits();
+    }
+
     const result = await OntologiesV2.OntologyInterfaces
       .search(
         addUserAgentAndRequestContextHeaders(client, interfaceType),
@@ -262,6 +270,10 @@ async function fetchInterfacePage<
     client,
     interfaceType,
   );
+
+  if (client.flushEdits != null) {
+    await client.flushEdits();
+  }
 
   const result = await OntologiesV2.OntologyObjectSets.loadMultipleObjectTypes(
     addUserAgentAndRequestContextHeaders(client, interfaceType),
@@ -562,6 +574,10 @@ export async function fetchObjectPage<
     client,
     objectType,
   );
+
+  if (client.flushEdits != null) {
+    await client.flushEdits();
+  }
 
   const r = await OntologiesV2.OntologyObjectSets.load(
     addUserAgentAndRequestContextHeaders(client, objectType),

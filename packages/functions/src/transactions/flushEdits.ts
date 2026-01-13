@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2026 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-export { createWriteableClient } from "../transactions/createWriteableClient.js";
-export { flushEdits } from "../transactions/flushEdits.js";
-export type { WriteableClient } from "../transactions/WriteableClient.js";
-export { getApiGatewayBaseUrl } from "../utils/getApiGatewayBaseUrl.js";
+import {
+  type WriteableClient,
+  writeableClientContext,
+} from "./WriteableClient.js";
+
+export async function flushEdits(client: WriteableClient<any>): Promise<void> {
+  await client[writeableClientContext].editRequestManager.flushPendingEdits();
+  return;
+}

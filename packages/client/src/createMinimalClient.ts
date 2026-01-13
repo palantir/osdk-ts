@@ -42,6 +42,8 @@ export function createMinimalClient(
   options: OntologyCachingOptions & {
     logger?: Logger;
     transactionId?: string;
+    flushEdits?: () => Promise<void>;
+    branch?: string;
   } = {},
   fetchFn: (
     input: Request | URL | string,

@@ -59,6 +59,10 @@ export async function aggregate<
     body.groupBy = modernToLegacyGroupByClause(req.$groupBy);
   }
 
+  if (clientCtx.flushEdits != null) {
+    await clientCtx.flushEdits();
+  }
+
   const result = await OntologiesV2.OntologyObjectSets.aggregate(
     addUserAgentAndRequestContextHeaders(clientCtx, objectType),
     await clientCtx.ontologyRid,
