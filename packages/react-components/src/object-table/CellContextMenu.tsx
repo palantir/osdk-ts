@@ -52,7 +52,7 @@ export function CellContextMenu<TData extends RowData>({
     <div
       ref={ref}
       style={{
-        position: "absolute",
+        position: "fixed",
         zIndex: 9999,
         left: position.left,
         top: position.top,

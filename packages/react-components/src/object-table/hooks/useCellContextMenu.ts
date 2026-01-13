@@ -69,8 +69,8 @@ export const useCellContextMenu = ({
 const calculatePopoverPosition = (element: HTMLElement): PopoverPosition => {
   const rect = element.getBoundingClientRect();
   return {
-    left: rect.left + window.scrollX,
-    top: rect.bottom + window.scrollY,
+    left: rect.left,
+    top: rect.bottom,
     width: rect.width,
   };
 };
