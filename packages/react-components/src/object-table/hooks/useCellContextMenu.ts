@@ -47,7 +47,12 @@ export const useCellContextMenu = ({
     event.stopPropagation();
 
     if (tdRef.current) {
-      const position = calculatePopoverPosition(tdRef.current);
+      const rect = tdRef.current.getBoundingClientRect();
+      const position = {
+        left: rect.left,
+        top: rect.bottom,
+        width: rect.width,
+      };
       setPopoverPosition(position);
       setIsContextMenuOpen(true);
     }
@@ -63,14 +68,5 @@ export const useCellContextMenu = ({
     handleOpenContextMenu,
     handleCloseContextMenu,
     popoverPosition,
-  };
-};
-
-const calculatePopoverPosition = (element: HTMLElement): PopoverPosition => {
-  const rect = element.getBoundingClientRect();
-  return {
-    left: rect.left,
-    top: rect.bottom,
-    width: rect.width,
   };
 };
