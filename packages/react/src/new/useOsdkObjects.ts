@@ -304,7 +304,7 @@ export function useOsdkObjects<
   }
 
   return {
-    fetchMore: listPayload?.fetchMore,
+    fetchMore: listPayload?.hasMore ? listPayload.fetchMore : undefined,
     error,
     data: listPayload?.resolvedList,
     isLoading: listPayload?.status === "loading",
