@@ -18,13 +18,20 @@ import type {
   AggregateOpts,
   DerivedProperty,
   ObjectOrInterfaceDefinition,
+  ObjectSet,
   SimplePropertyDef,
   WhereClause,
 } from "@osdk/api";
-import type { Observer } from "../../ObservableClient/common.js";
+import { getWireObjectSet } from "../../../objectSet/createObjectSet.js";
+import type {
+  CommonObserveOptions,
+  ObserveOptions,
+  Observer,
+} from "../../ObservableClient/common.js";
 import { AbstractHelper } from "../AbstractHelper.js";
 import type { CacheKeys } from "../CacheKeys.js";
 import type { Canonical } from "../Canonical.js";
+import type { IntersectCanonicalizer } from "../IntersectCanonicalizer.js";
 import type { KnownCacheKey } from "../KnownCacheKey.js";
 import type { QuerySubscription } from "../QuerySubscription.js";
 import type { RdpCanonicalizer } from "../RdpCanonicalizer.js";
@@ -37,38 +44,66 @@ import type {
 } from "./AggregationQuery.js";
 import { ObjectAggregationQuery } from "./ObjectAggregationQuery.js";
 
-export interface ObserveAggregationOptions<
+export interface InternalAggregationOptions<
   T extends ObjectOrInterfaceDefinition,
   A extends AggregateOpts<T>,
   RDPs extends Record<string, SimplePropertyDef> = {},
-> {
+> extends CommonObserveOptions, ObserveOptions {
   type: T;
+  objectSet?: undefined;
   where?: WhereClause<T, RDPs>;
   withProperties?: DerivedProperty.Clause<T>;
+  intersectWith?: Array<{
+    where: WhereClause<T, RDPs>;
+  }>;
   aggregate: A;
-  dedupeInterval?: number;
 }
 
-export class AggregationsHelper extends AbstractHelper<
-  AggregationQuery,
-  ObserveAggregationOptions<
+export interface InternalAggregationOptionsWithObjectSet<
+  T extends ObjectOrInterfaceDefinition,
+  A extends AggregateOpts<T>,
+  RDPs extends Record<string, SimplePropertyDef> = {},
+> extends CommonObserveOptions, ObserveOptions {
+  type: T;
+  objectSet: ObjectSet<T>;
+  where?: WhereClause<T, RDPs>;
+  withProperties?: DerivedProperty.Clause<T>;
+  intersectWith?: Array<{
+    where: WhereClause<T, RDPs>;
+  }>;
+  aggregate: A;
+}
+
+type AnyInternalAggregationOptions =
+  | InternalAggregationOptions<
     ObjectOrInterfaceDefinition,
     AggregateOpts<ObjectOrInterfaceDefinition>
   >
+  | InternalAggregationOptionsWithObjectSet<
+    ObjectOrInterfaceDefinition,
+    AggregateOpts<ObjectOrInterfaceDefinition>
+  >;
+
+export class AggregationsHelper extends AbstractHelper<
+  AggregationQuery,
+  AnyInternalAggregationOptions
 > {
   whereCanonicalizer: WhereClauseCanonicalizer;
   rdpCanonicalizer: RdpCanonicalizer;
+  intersectCanonicalizer: IntersectCanonicalizer;
 
   constructor(
     store: Store,
     cacheKeys: CacheKeys<KnownCacheKey>,
     whereCanonicalizer: WhereClauseCanonicalizer,
     rdpCanonicalizer: RdpCanonicalizer,
+    intersectCanonicalizer: IntersectCanonicalizer,
   ) {
     super(store, cacheKeys);
 
     this.whereCanonicalizer = whereCanonicalizer;
     this.rdpCanonicalizer = rdpCanonicalizer;
+    this.intersectCanonicalizer = intersectCanonicalizer;
   }
 
   observe<
@@ -76,10 +111,27 @@ export class AggregationsHelper extends AbstractHelper<
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    options: ObserveAggregationOptions<T, A, RDPs>,
+    options: InternalAggregationOptions<T, A, RDPs>,
     subFn: Observer<AggregationPayloadBase>,
   ): QuerySubscription<AggregationQuery> {
     return super.observe(options, subFn);
+  }
+
+  async observeAsync<
+    T extends ObjectOrInterfaceDefinition,
+    A extends AggregateOpts<T>,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options: InternalAggregationOptionsWithObjectSet<T, A, RDPs>,
+    subFn: Observer<AggregationPayloadBase>,
+  ): Promise<QuerySubscription<AggregationQuery>> {
+    const query = this.getQueryWithObjectSet(options);
+    await query.ensureInvalidationTypesReady();
+    return this._subscribe(
+      query,
+      options as AnyInternalAggregationOptions,
+      subFn,
+    );
   }
 
   getQuery<
@@ -87,15 +139,18 @@ export class AggregationsHelper extends AbstractHelper<
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    options: ObserveAggregationOptions<T, A, RDPs>,
+    options: InternalAggregationOptions<T, A, RDPs>,
   ): AggregationQuery {
-    const { type, where, withProperties, aggregate } = options;
+    const { type, where, withProperties, intersectWith, aggregate } = options;
     const { apiName } = type;
     const typeKind = "type" in type ? type.type : "interface";
 
     const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
     const canonRdp = withProperties
       ? this.rdpCanonicalizer.canonicalize(withProperties)
+      : undefined;
+    const canonIntersect = intersectWith && intersectWith.length > 0
+      ? this.intersectCanonicalizer.canonicalize(intersectWith)
       : undefined;
 
     const canonAggregate = this.canonicalizeAggregate(aggregate);
@@ -104,8 +159,10 @@ export class AggregationsHelper extends AbstractHelper<
       "aggregation",
       typeKind,
       apiName,
+      undefined,
       canonWhere,
       canonRdp,
+      canonIntersect,
       canonAggregate,
     );
 
@@ -124,7 +181,61 @@ export class AggregationsHelper extends AbstractHelper<
     });
   }
 
-  private canonicalizeAggregate<A extends AggregateOpts<any>>(
+  getQueryWithObjectSet<
+    T extends ObjectOrInterfaceDefinition,
+    A extends AggregateOpts<T>,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options: InternalAggregationOptionsWithObjectSet<T, A, RDPs>,
+  ): AggregationQuery {
+    const { type, objectSet, where, withProperties, intersectWith, aggregate } =
+      options;
+    const { apiName } = type;
+    const typeKind = "type" in type ? type.type : "interface";
+
+    const wireObjectSet = getWireObjectSet(objectSet);
+    const serializedObjectSet = JSON.stringify(wireObjectSet);
+
+    const canonWhere = this.whereCanonicalizer.canonicalize(where ?? {});
+    const canonRdp = withProperties
+      ? this.rdpCanonicalizer.canonicalize(withProperties)
+      : undefined;
+    const canonIntersect = intersectWith && intersectWith.length > 0
+      ? this.intersectCanonicalizer.canonicalize(intersectWith)
+      : undefined;
+
+    const canonAggregate = this.canonicalizeAggregate(aggregate);
+
+    const aggregationCacheKey = this.cacheKeys.get<AggregationCacheKey>(
+      "aggregation",
+      typeKind,
+      apiName,
+      serializedObjectSet,
+      canonWhere,
+      canonRdp,
+      canonIntersect,
+      canonAggregate,
+    );
+
+    return this.store.queries.get(aggregationCacheKey, () => {
+      if (typeKind !== "object") {
+        throw new Error(
+          "Only ObjectTypeDefinition is currently supported for aggregations",
+        );
+      }
+      return new ObjectAggregationQuery(
+        this.store,
+        this.store.subjects.get(aggregationCacheKey),
+        aggregationCacheKey,
+        options,
+      );
+    });
+  }
+
+  private canonicalizeAggregate<
+    T extends ObjectOrInterfaceDefinition,
+    A extends AggregateOpts<T>,
+  >(
     aggregate: A,
   ): Canonical<A> {
     return JSON.parse(JSON.stringify(aggregate)) as Canonical<A>;
