@@ -28,9 +28,12 @@ import type { CanonicalFunctionParams } from "./FunctionParamsCanonicalizer.js";
 import { FunctionParamsCanonicalizer } from "./FunctionParamsCanonicalizer.js";
 import { type FunctionObserveOptions, FunctionQuery } from "./FunctionQuery.js";
 
+type PrimaryKeyValue = string | number;
+type FunctionParams = Record<string, unknown>;
+
 export interface ObserveFunctionOptions extends FunctionObserveOptions {
   queryDef: QueryDefinition<unknown>;
-  params?: Record<string, unknown>;
+  params?: FunctionParams;
 }
 
 export class FunctionsHelper extends AbstractHelper<
@@ -78,7 +81,7 @@ export class FunctionsHelper extends AbstractHelper<
 
   async invalidateFunction(
     apiName: string | QueryDefinition<unknown>,
-    params?: Record<string, unknown>,
+    params?: FunctionParams,
   ): Promise<void> {
     const functionApiName = typeof apiName === "string"
       ? apiName
@@ -126,7 +129,7 @@ export class FunctionsHelper extends AbstractHelper<
 
   async invalidateFunctionsByObject(
     apiName: string,
-    primaryKey: unknown,
+    primaryKey: PrimaryKeyValue,
   ): Promise<void> {
     const promises: Array<Promise<void>> = [];
 

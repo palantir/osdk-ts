@@ -175,12 +175,6 @@ export interface ObserveAggregationArgs<
 
 export interface ObserveFunctionOptions extends CommonObserveOptions {
   /**
-   * Time in milliseconds after which the result is considered stale.
-   * When stale, `isStale` will be true in the callback args.
-   */
-  staleTime?: number;
-
-  /**
    * Object types this function depends on.
    * When actions modify these types, the function will refetch.
    */
@@ -199,7 +193,6 @@ export interface ObserveFunctionCallbackArgs<
   result: QueryReturnType<CompileTimeMetadata<Q>["output"]> | undefined;
   status: Status;
   lastUpdated: number;
-  isStale: boolean;
   error?: Error;
 }
 
@@ -334,7 +327,6 @@ export interface ObservableClient extends ObserveLinks {
    * - Automatic caching and deduplication
    * - Dependency-based invalidation (dependsOn object types)
    * - Instance-based invalidation (dependsOnObjects)
-   * - Time-based staleness tracking (staleTime)
    * - Manual refetch via invalidateFunction()
    */
   observeFunction<Q extends QueryDefinition<unknown>>(
@@ -434,7 +426,7 @@ export interface ObservableClient extends ObserveLinks {
    */
   invalidateFunctionsByObject(
     apiName: string,
-    primaryKey: unknown,
+    primaryKey: string | number,
   ): Promise<void>;
 
   canonicalizeWhereClause: <

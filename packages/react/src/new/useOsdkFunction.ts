@@ -39,12 +39,6 @@ export interface UseOsdkFunctionOptions<Q extends QueryDefinition<unknown>> {
     : QueryParameterType<CompileTimeMetadata<Q>["parameters"]>;
 
   /**
-   * Time in milliseconds after which cached results are considered stale.
-   * When stale, `isStale` will be true in the result.
-   */
-  staleTime?: number;
-
-  /**
    * Object types this function depends on.
    * When actions modify objects of these types, the function will automatically refetch.
    *
@@ -107,12 +101,6 @@ export interface UseOsdkFunctionResult<Q extends QueryDefinition<unknown>> {
   isLoading: boolean;
 
   /**
-   * True if the cached result is older than the configured staleTime.
-   * The stale data is still provided in `data` while a refetch may be in progress.
-   */
-  isStale: boolean;
-
-  /**
    * Error if the function execution failed.
    */
   error: Error | undefined;
@@ -143,7 +131,7 @@ declare const process: {
  *
  * @param queryDef - The QueryDefinition to execute
  * @param options - Configuration options for the function call
- * @returns Object containing result, loading state, staleness, error, and refetch function
+ * @returns Object containing result, loading state, error, and refetch function
  *
  * @example Basic usage
  * ```tsx
@@ -154,10 +142,9 @@ declare const process: {
  *
  * @example With dependency tracking
  * ```tsx
- * const { data, isStale, refetch } = useOsdkFunction(calculateMetrics, {
+ * const { data, refetch } = useOsdkFunction(calculateMetrics, {
  *   params: { startDate, endDate },
  *   dependsOn: [Employee, Project],
- *   staleTime: 60_000, // Consider stale after 1 minute
  * });
  * ```
  *
@@ -176,7 +163,6 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
   const { observableClient } = React.useContext(OsdkContext2);
   const {
     params,
-    staleTime,
     dependsOn,
     dependsOnObjects,
     dedupeIntervalMs,
@@ -185,7 +171,13 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
 
   const stableParams = React.useMemo(
     () => params,
-    [JSON.stringify(params)],
+    [(() => {
+      try {
+        return JSON.stringify(params);
+      } catch {
+        return params;
+      }
+    })()],
   );
   const stableDependsOn = React.useMemo(
     () => dependsOn,
@@ -224,7 +216,6 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
             queryDef,
             paramsForApi,
             {
-              staleTime,
               dependsOn: stableDependsOn,
               dependsOnObjects: stableDependsOnObjects,
               dedupeInterval: dedupeIntervalMs ?? 2_000,
@@ -241,7 +232,6 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
       queryDef.apiName,
       queryDef.version,
       paramsForApi,
-      staleTime,
       stableDependsOn,
       stableDependsOnObjects,
       dedupeIntervalMs,
@@ -251,12 +241,10 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
 
   const payload = React.useSyncExternalStore(subscribe, getSnapShot);
 
-  let error: Error | undefined;
-  if (payload && "error" in payload && payload.error) {
-    error = payload.error;
-  } else if (payload?.status === "error") {
-    error = new Error("Failed to execute function");
-  }
+  const error = payload?.error
+    ?? (payload?.status === "error"
+      ? new Error("Failed to execute function")
+      : undefined);
 
   const refetch = React.useCallback(() => {
     void observableClient.invalidateFunction(queryDef, paramsForApi);
@@ -267,7 +255,6 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
       | QueryReturnType<CompileTimeMetadata<Q>["output"]>
       | undefined,
     isLoading: payload?.status === "loading",
-    isStale: payload?.isStale ?? false,
     error,
     lastUpdated: payload?.lastUpdated ?? 0,
     refetch,

@@ -22,7 +22,6 @@ export interface FunctionPayload<T = unknown> {
   status: Status;
   result: T | undefined;
   lastUpdated: number;
-  isStale: boolean;
   error?: Error;
 }
 

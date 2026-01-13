@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
 import { Trie } from "@wry/trie";
-import deepEqual from "fast-deep-equal";
 import {
   getWireObjectSet,
   isObjectSet,
@@ -23,29 +23,38 @@ import {
 import { isObjectSpecifiersObject } from "../../../util/isObjectSpecifiersObject.js";
 import type { Canonical } from "../Canonical.js";
 
-export type CanonicalFunctionParams = Record<string, unknown>;
+export type CanonicalFunctionParams = Record<string, CanonicalValue>;
+
+type PrimitiveValue = string | number | boolean | bigint | null | undefined;
+
+type OsdkObjectRef = { $apiName: string; $primaryKey: string | number };
+
+type CanonicalValue =
+  | PrimitiveValue
+  | OsdkObjectRef
+  | WireObjectSet
+  | CanonicalValue[]
+  | [CanonicalValue, CanonicalValue][]
+  | { [key: string]: CanonicalValue };
+
+type PathElement = PrimitiveValue | WireObjectSet;
+
+function isPrimitiveValue(value: unknown): value is PrimitiveValue {
+  if (value == null || value === undefined) return true;
+  const t = typeof value;
+  return t === "string" || t === "number" || t === "boolean" || t === "bigint";
+}
 
 export class FunctionParamsCanonicalizer {
-  /**
-   * WeakMap cache for input object identity.
-   * If we see the same input object reference, return the same canonical form.
-   */
-  #cache = new WeakMap<
+  #inputCache = new WeakMap<
     Record<string, unknown>,
     Canonical<CanonicalFunctionParams>
   >();
-
-  /**
-   * Trie for efficient lookup based on sorted keys.
-   */
-  #trie = new Trie<object>();
-
-  /**
-   * Maps trie cache keys to arrays of WeakRefs to canonical forms.
-   */
-  #existingOptions: Map<object, {
-    options: WeakRef<Canonical<CanonicalFunctionParams>>[];
-  }> = new Map();
+  #trie = new Trie<object>(false);
+  #canonicalByMarker = new WeakMap<
+    object,
+    Canonical<CanonicalFunctionParams>
+  >();
 
   public canonicalize(
     params: Record<string, unknown> | undefined | null,
@@ -54,125 +63,148 @@ export class FunctionParamsCanonicalizer {
       return undefined;
     }
 
-    // Fast path: seen this exact object before
-    if (this.#cache.has(params)) {
-      return this.#cache.get(params)!;
+    const cached = this.#inputCache.get(params);
+    if (cached !== undefined) {
+      return cached;
     }
 
-    // Canonicalize the params structure
-    const keysSet = new Set<string>();
-    const calculatedCanon = this.#toCanon(
+    const seen = new WeakSet<object>();
+    const path: PathElement[] = [];
+    const canonicalValue = this.#encodeAndBuild(
       params,
-      keysSet,
-    ) as Canonical<CanonicalFunctionParams>;
+      path,
+      seen,
+    ) as CanonicalFunctionParams;
 
-    // Use trie for efficient lookup
-    const cacheKey = this.#trie.lookupArray(Array.from(keysSet).sort());
-    const lookupEntry = this.#existingOptions.get(cacheKey)
-      ?? { options: [] as WeakRef<Canonical<CanonicalFunctionParams>>[] };
-    this.#existingOptions.set(cacheKey, lookupEntry);
-
-    // Clean up dead WeakRef entries to prevent memory leak and performance degradation
-    lookupEntry.options = lookupEntry.options.filter(ref =>
-      ref.deref() !== undefined
-    );
-
-    // Find existing canonical form with same structure
-    const existingCanon = lookupEntry.options.find(
-      (ref) => deepEqual(ref.deref(), calculatedCanon),
-    )?.deref();
-    const canon = existingCanon ?? calculatedCanon;
-
-    if (canon === calculatedCanon) {
-      // New unique structure, store it
-      lookupEntry.options.push(new WeakRef(calculatedCanon));
+    const marker = this.#trie.lookupArray(path);
+    let canonical = this.#canonicalByMarker.get(marker);
+    if (canonical === undefined) {
+      canonical = canonicalValue as Canonical<CanonicalFunctionParams>;
+      this.#canonicalByMarker.set(marker, canonical);
     }
 
-    this.#cache.set(params, canon);
-    return canon;
+    this.#inputCache.set(params, canonical);
+    return canonical;
   }
 
-  #toCanon = (
+  #encodeAndBuild(
     value: unknown,
-    keySet: Set<string>,
-    depth: number = 0,
-  ): unknown => {
-    // Prevent infinite recursion
-    if (depth > 50) {
-      return value;
-    }
-
+    path: PathElement[],
+    seen: WeakSet<object>,
+  ): CanonicalValue {
     if (value == null) {
+      path.push(null);
+      return null;
+    }
+
+    if (value === undefined) {
+      path.push(undefined);
+      return undefined;
+    }
+
+    if (
+      typeof value === "boolean"
+      || typeof value === "number"
+      || typeof value === "string"
+      || typeof value === "bigint"
+    ) {
+      path.push(value);
       return value;
     }
 
-    // Handle primitives directly
-    if (typeof value !== "object") {
-      return value;
+    if (seen.has(value as object)) {
+      throw new Error("Circular reference in function parameters");
     }
+    seen.add(value as object);
 
-    // Handle arrays
-    if (Array.isArray(value)) {
-      return value.map((item) => this.#toCanon(item, keySet, depth + 1));
-    }
-
-    // Handle Sets - convert to sorted array for canonical form
-    if (value instanceof Set) {
-      const items = Array.from(value).map((item) =>
-        this.#toCanon(item, keySet, depth + 1)
-      );
-      // Sort for stability (only works well for primitives)
-      return items.sort((a, b) => {
-        if (typeof a === "string" && typeof b === "string") {
-          return a.localeCompare(b);
-        }
-        if (typeof a === "number" && typeof b === "number") {
-          return a - b;
-        }
-        return JSON.stringify(a).localeCompare(JSON.stringify(b));
-      });
-    }
-
-    // Handle Maps - convert to sorted entries
-    if (value instanceof Map) {
-      const entries = Array.from(value.entries()).map(([k, v]) => [
-        this.#toCanon(k, keySet, depth + 1),
-        this.#toCanon(v, keySet, depth + 1),
-      ]);
-      return entries.sort((a, b) =>
-        JSON.stringify(a[0]).localeCompare(JSON.stringify(b[0]))
-      );
-    }
-
-    // Handle Dates
     if (value instanceof Date) {
-      return value.toISOString();
+      const iso = value.toISOString();
+      path.push("$:date", iso);
+      return iso;
     }
 
-    // Handle OSDK objects - extract primary key for identity
+    if (Array.isArray(value)) {
+      path.push("$:array");
+      const arr = value.map(item => this.#encodeAndBuild(item, path, seen));
+      path.push("$:array_end");
+      return arr;
+    }
+
+    if (value instanceof Set) {
+      path.push("$:set");
+      const sorted = this.#sortSetValues(Array.from(value));
+      const arr = sorted.map(item => this.#encodeAndBuild(item, path, seen));
+      path.push("$:set_end");
+      return arr;
+    }
+
+    if (value instanceof Map) {
+      path.push("$:map");
+      const sorted = this.#sortMapEntries(Array.from(value.entries()));
+      const arr: [CanonicalValue, CanonicalValue][] = sorted.map(([k, v]) => [
+        this.#encodeAndBuild(k, path, seen),
+        this.#encodeAndBuild(v, path, seen),
+      ]);
+      path.push("$:map_end");
+      return arr;
+    }
+
     if (isObjectSpecifiersObject(value)) {
-      return {
-        $apiName: value.$apiName,
-        $primaryKey: value.$primaryKey,
-      };
+      path.push("$:osdk", value.$apiName, value.$primaryKey);
+      return { $apiName: value.$apiName, $primaryKey: value.$primaryKey };
     }
 
-    // Handle ObjectSets - serialize to wire format
     if (isObjectSet(value)) {
-      return getWireObjectSet(value);
+      const wire = getWireObjectSet(value);
+      path.push("$:objectset", wire);
+      return wire;
     }
 
-    // Handle plain objects (structs, params)
     const obj = value as Record<string, unknown>;
-    const canonObj: Record<string, unknown> = {};
-
-    // Sort keys for consistent ordering
-    const sortedKeys = Object.keys(obj).sort();
-    for (const key of sortedKeys) {
-      keySet.add(key);
-      canonObj[key] = this.#toCanon(obj[key], keySet, depth + 1);
+    path.push("$:object");
+    const canonical: Record<string, CanonicalValue> = {};
+    for (const key of Object.keys(obj).sort()) {
+      path.push(key);
+      canonical[key] = this.#encodeAndBuild(obj[key], path, seen);
     }
+    path.push("$:object_end");
+    return canonical;
+  }
 
-    return canonObj as Canonical<CanonicalFunctionParams>;
-  };
+  #comparePrimitives(a: PrimitiveValue, b: PrimitiveValue): number {
+    const ta = typeof a;
+    const tb = typeof b;
+    if (ta !== tb) return ta.localeCompare(tb);
+    if (ta === "string") return (a as string).localeCompare(b as string);
+    if (ta === "number") return (a as number) - (b as number);
+    if (ta === "boolean") return (a ? 1 : 0) - (b ? 1 : 0);
+    if (ta === "bigint") return Number((a as bigint) - (b as bigint));
+    return 0;
+  }
+
+  #sortSetValues<T>(items: T[]): T[] {
+    return items.slice().sort((a, b) => {
+      if (isPrimitiveValue(a) && isPrimitiveValue(b)) {
+        return this.#comparePrimitives(a, b);
+      }
+      try {
+        return JSON.stringify(a).localeCompare(JSON.stringify(b));
+      } catch {
+        return 0;
+      }
+    });
+  }
+
+  #sortMapEntries<K, V>(entries: [K, V][]): [K, V][] {
+    return entries.slice().sort(([a], [b]) => {
+      if (isPrimitiveValue(a) && isPrimitiveValue(b)) {
+        return this.#comparePrimitives(a, b);
+      }
+      try {
+        return JSON.stringify(a).localeCompare(JSON.stringify(b));
+      } catch {
+        return 0;
+      }
+    });
+  }
 }

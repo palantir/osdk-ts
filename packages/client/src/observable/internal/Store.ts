@@ -539,7 +539,7 @@ export class Store {
 
   public async invalidateFunctionsByObject(
     apiName: string,
-    primaryKey: unknown,
+    primaryKey: string | number,
   ): Promise<void> {
     return this.functions.invalidateFunctionsByObject(apiName, primaryKey);
   }

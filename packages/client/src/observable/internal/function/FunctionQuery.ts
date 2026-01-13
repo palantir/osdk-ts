@@ -34,10 +34,13 @@ import type {
   FunctionCacheValue,
 } from "./FunctionCacheKey.js";
 
+type PrimaryKeyValue = string | number;
+type FunctionParams = Record<string, unknown>;
+type ObjectDependency = { $apiName: string; $primaryKey: PrimaryKeyValue };
+
 export interface FunctionObserveOptions extends CommonObserveOptions {
-  staleTime?: number;
   dependsOn?: string[];
-  dependsOnObjects?: Array<{ $apiName: string; $primaryKey: unknown }>;
+  dependsOnObjects?: ObjectDependency[];
 }
 
 export class FunctionQuery extends Query<
@@ -47,19 +50,16 @@ export class FunctionQuery extends Query<
 > {
   #apiName: string;
   #version: string | undefined;
-  #params: Record<string, unknown> | undefined;
-  #staleTime: number | undefined;
+  #params: FunctionParams | undefined;
   #dependsOn: string[] | undefined;
-  #dependsOnObjects:
-    | Array<{ $apiName: string; $primaryKey: unknown }>
-    | undefined;
+  #dependsOnObjects: ObjectDependency[] | undefined;
   #queryDef: QueryDefinition<unknown>;
 
   constructor(
     store: Store,
     subject: Subject<SubjectPayload<FunctionCacheKey>>,
     queryDef: QueryDefinition<unknown>,
-    params: Record<string, unknown> | undefined,
+    params: FunctionParams | undefined,
     cacheKey: FunctionCacheKey,
     opts: FunctionObserveOptions,
   ) {
@@ -81,7 +81,6 @@ export class FunctionQuery extends Query<
     this.#apiName = queryDef.apiName;
     this.#version = queryDef.isFixedVersion ? queryDef.version : undefined;
     this.#params = params;
-    this.#staleTime = opts.staleTime;
     this.#dependsOn = opts.dependsOn;
     this.#dependsOnObjects = opts.dependsOnObjects;
     this.#queryDef = queryDef;
@@ -98,7 +97,7 @@ export class FunctionQuery extends Query<
             status: x.status,
             result: value?.result,
             lastUpdated: value?.executedAt ?? 0,
-            isStale: this.#isStale(value?.executedAt),
+            error: value?.error,
           };
         }),
       ),
@@ -108,7 +107,6 @@ export class FunctionQuery extends Query<
             status: "init",
             result: undefined,
             lastUpdated: 0,
-            isStale: false,
           }),
       },
     );
@@ -140,16 +138,20 @@ export class FunctionQuery extends Query<
       this.store.batch({}, (batch) => {
         this.writeToStore({ result, executedAt }, "loaded", batch);
       });
-    } catch (error) {
+    } catch (e) {
       if (process.env.NODE_ENV !== "production") {
         this.logger?.child({ methodName: "_fetchAndStore" }).error(
           "Error executing function",
-          error,
+          e,
         );
       }
-      // Write error state to store so subscribers are notified
+      const error = e instanceof Error ? e : new Error(String(e));
       this.store.batch({}, (batch) => {
-        this.writeToStore({ result: undefined, executedAt: 0 }, "error", batch);
+        this.writeToStore(
+          { result: undefined, executedAt: 0, error },
+          "error",
+          batch,
+        );
       });
     }
   }
@@ -161,13 +163,6 @@ export class FunctionQuery extends Query<
   ): Entry<FunctionCacheKey> {
     batch.write(this.cacheKey, data, status);
     return batch.read(this.cacheKey)!;
-  }
-
-  #isStale(executedAt: number | undefined): boolean {
-    if (this.#staleTime == null || executedAt == null) {
-      return false;
-    }
-    return Date.now() - executedAt > this.#staleTime;
   }
 
   invalidateObjectType = (
@@ -182,7 +177,7 @@ export class FunctionQuery extends Query<
     return Promise.resolve();
   };
 
-  dependsOnObject(apiName: string, primaryKey: unknown): boolean {
+  dependsOnObject(apiName: string, primaryKey: PrimaryKeyValue): boolean {
     if (!this.#dependsOnObjects) {
       return false;
     }

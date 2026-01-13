@@ -24,9 +24,14 @@ export const API_NAME_IDX = 0;
 export const VERSION_IDX = 1;
 export const PARAMS_IDX = 2;
 
+/**
+ * Cache values use `unknown` because FunctionQuery handles any QueryDefinition at runtime.
+ * Concrete typing is preserved at the API layer via generics and cast at output.
+ */
 export interface FunctionCacheValue {
   result: unknown;
   executedAt: number;
+  error?: Error;
 }
 
 export interface FunctionCacheKey extends

@@ -251,7 +251,7 @@ export class ObservableClientImpl implements ObservableClient {
 
   public invalidateFunctionsByObject(
     apiName: string,
-    primaryKey: unknown,
+    primaryKey: string | number,
   ): Promise<void> {
     return this.__experimentalStore.invalidateFunctionsByObject(
       apiName,
