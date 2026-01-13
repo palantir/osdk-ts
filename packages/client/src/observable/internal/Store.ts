@@ -22,6 +22,7 @@ import type {
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
+  QueryDefinition,
 } from "@osdk/api";
 import invariant from "tiny-invariant";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
@@ -43,6 +44,7 @@ import {
   createChangedObjects,
   DEBUG_ONLY__changesToString,
 } from "./Changes.js";
+import { FunctionsHelper } from "./function/FunctionsHelper.js";
 import { IntersectCanonicalizer } from "./IntersectCanonicalizer.js";
 import type { KnownCacheKey } from "./KnownCacheKey.js";
 import type { Entry } from "./Layer.js";
@@ -114,6 +116,7 @@ export class Store {
 
   // these are hopefully temporary
   readonly aggregations: AggregationsHelper;
+  readonly functions: FunctionsHelper;
   readonly lists: ListsHelper;
   readonly objects: ObjectsHelper;
   readonly links: LinksHelper;
@@ -135,6 +138,7 @@ export class Store {
       this.whereCanonicalizer,
       this.rdpCanonicalizer,
     );
+    this.functions = new FunctionsHelper(this, this.cacheKeys);
     this.lists = new ListsHelper(
       this,
       this.cacheKeys,
@@ -524,5 +528,19 @@ export class Store {
 
     // we use allSettled here because we don't care if it succeeds or fails, just that they all complete.
     return Promise.allSettled(promises).then(() => void 0);
+  }
+
+  public async invalidateFunction(
+    apiName: string | QueryDefinition<unknown>,
+    params?: Record<string, unknown>,
+  ): Promise<void> {
+    return this.functions.invalidateFunction(apiName, params);
+  }
+
+  public async invalidateFunctionsByObject(
+    apiName: string,
+    primaryKey: unknown,
+  ): Promise<void> {
+    return this.functions.invalidateFunctionsByObject(apiName, primaryKey);
   }
 }

@@ -26,12 +26,14 @@ import type {
   ObjectTypeDefinition,
   Osdk,
   PrimaryKeyType,
+  QueryDefinition,
   SimplePropertyDef,
   WhereClause,
   WirePropertyTypes,
 } from "@osdk/api";
 import { Subscription } from "rxjs";
 import type { ActionSignatureFromDef } from "../../actions/applyAction.js";
+import type { FunctionPayload } from "../FunctionPayload.js";
 import type { SpecificLinkPayload } from "../LinkPayload.js";
 import type { ListPayload } from "../ListPayload.js";
 import type { ObjectPayload } from "../ObjectPayload.js";
@@ -40,6 +42,8 @@ import type {
   ObservableClient,
   ObserveAggregationArgs,
   ObserveAggregationOptions,
+  ObserveFunctionCallbackArgs,
+  ObserveFunctionOptions,
   ObserveListOptions,
   ObserveObjectCallbackArgs,
   ObserveObjectOptions,
@@ -122,6 +126,32 @@ export class ObservableClientImpl implements ObservableClient {
     return this.__experimentalStore.aggregations.observe(
       options,
       subFn as Observer<AggregationPayloadBase>,
+    );
+  };
+
+  public observeFunction: <Q extends QueryDefinition<unknown>>(
+    queryDef: Q,
+    params: Record<string, unknown> | undefined,
+    options: ObserveFunctionOptions,
+    subFn: Observer<ObserveFunctionCallbackArgs<Q>>,
+  ) => Unsubscribable = (queryDef, params, options, subFn) => {
+    const dependsOn = options.dependsOn?.map(dep =>
+      typeof dep === "string" ? dep : dep.apiName
+    );
+    const dependsOnObjects = options.dependsOnObjects?.map(obj => ({
+      $apiName: obj.$apiName,
+      $primaryKey: obj.$primaryKey,
+    }));
+
+    return this.__experimentalStore.functions.observe(
+      {
+        ...options,
+        queryDef,
+        params,
+        dependsOn,
+        dependsOnObjects,
+      },
+      subFn as unknown as Observer<FunctionPayload>,
     );
   };
 
@@ -210,6 +240,23 @@ export class ObservableClientImpl implements ObservableClient {
     type: T | T["apiName"],
   ): Promise<void> {
     return this.__experimentalStore.invalidateObjectType(type, undefined);
+  }
+
+  public invalidateFunction(
+    apiName: string | QueryDefinition<unknown>,
+    params?: Record<string, unknown>,
+  ): Promise<void> {
+    return this.__experimentalStore.invalidateFunction(apiName, params);
+  }
+
+  public invalidateFunctionsByObject(
+    apiName: string,
+    primaryKey: unknown,
+  ): Promise<void> {
+    return this.__experimentalStore.invalidateFunctionsByObject(
+      apiName,
+      primaryKey,
+    );
   }
 
   public canonicalizeWhereClause<

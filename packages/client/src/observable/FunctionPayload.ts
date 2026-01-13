@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import type { AggregationCacheKey } from "./aggregation/AggregationCacheKey.js";
-import type { FunctionCacheKey } from "./function/FunctionCacheKey.js";
-import type { SpecificLinkCacheKey } from "./links/SpecificLinkCacheKey.js";
-import type { ListCacheKey } from "./list/ListCacheKey.js";
-import type { ObjectCacheKey } from "./object/ObjectCacheKey.js";
-import type { ObjectSetCacheKey } from "./objectset/ObjectSetCacheKey.js";
+import type { CompileTimeMetadata, QueryDefinition } from "@osdk/api";
+import type { QueryReturnType } from "../queries/types.js";
+import type { Status } from "./ObservableClient/common.js";
 
-export type KnownCacheKey =
-  | AggregationCacheKey
-  | FunctionCacheKey
-  | ObjectCacheKey
-  | SpecificLinkCacheKey
-  | ListCacheKey
-  | ObjectSetCacheKey;
+export interface FunctionPayload<T = unknown> {
+  status: Status;
+  result: T | undefined;
+  lastUpdated: number;
+  isStale: boolean;
+  error?: Error;
+}
+
+export interface TypedFunctionPayload<Q extends QueryDefinition<any>>
+  extends FunctionPayload<QueryReturnType<CompileTimeMetadata<Q>["output"]>>
+{}
