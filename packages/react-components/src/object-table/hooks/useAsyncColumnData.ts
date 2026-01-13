@@ -208,12 +208,15 @@ function mergeRowsWithEnrichedData<
 
   return baseRows.map(row => {
     const rowEnrichedData = enrichedData[row.$primaryKey];
-    const hasEnrichedData = rowEnrichedData != null;
 
     const asyncColumnValues = Object.fromEntries(
       (derivedPropertyKeys ?? []).map(colKey => {
-        const asyncValue: AsyncValue<unknown> = hasEnrichedData
-          ? { type: "loaded", value: rowEnrichedData[colKey] }
+        // Check if this specific column has been loaded for this row
+        const hasColumnData = rowEnrichedData != null
+          && colKey in rowEnrichedData;
+
+        const asyncValue: AsyncValue<unknown> = hasColumnData
+          ? { type: "loaded", value: rowEnrichedData![colKey] }
           : isDerivedPropertiesLoading
           ? { type: "loading" }
           : derivedPropertiesError
