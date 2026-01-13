@@ -52,7 +52,10 @@ export function propertyTypeTypeToOntologyIrInterfaceType(
           };
         } else {
           // If it is a full form type definition then process it as such
-          if ("fieldType" in fieldTypeDefinition) {
+          if (
+            typeof fieldTypeDefinition === "object"
+            && "fieldType" in fieldTypeDefinition
+          ) {
             field = {
               ...fieldTypeDefinition,
               apiName: key,
