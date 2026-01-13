@@ -102,6 +102,7 @@ class QueryInvoker<Q extends QueryDefinition<any>>
 export function createClientInternal(
   objectSetFactory: ObjectSetFactory<any, any>,
   transactionRid: string | undefined,
+  flushEdits: (() => Promise<void>) | undefined,
   baseUrl: string,
   ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
@@ -130,6 +131,7 @@ export function createClientInternal(
       ...options,
       logger: options?.logger ?? new MinimalLogger(),
       transactionId: transactionRid,
+      flushEdits,
       branch: options?.branch,
     },
     fetchFn,
@@ -320,10 +322,12 @@ export const createClient: (
   undefined,
   createObjectSet,
   undefined,
+  undefined,
 );
 
 export const createClientWithTransaction: (
   transactionRid: string,
+  flushEdits?: () => Promise<void>,
   ...args: Parameters<typeof createClient>
 ) => Client = (transactionRid, ...args) =>
   createClientInternal(

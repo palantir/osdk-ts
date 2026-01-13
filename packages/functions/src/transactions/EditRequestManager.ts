@@ -86,4 +86,28 @@ export class EditRequestManager {
       { preview: true },
     );
   }
+
+  public async flushPendingEdits(): Promise<void> {
+    if (this.editTimeout) {
+      clearTimeout(this.editTimeout);
+      this.editTimeout = null;
+
+      if (this.pendingEdits.length > 0) {
+        await this.dispatchRequest();
+        this.inFlightRequest = null;
+      }
+    }
+
+    if (this.inFlightRequest) {
+      await this.inFlightRequest;
+    }
+
+    if (this.queuedRequest) {
+      await this.queuedRequest;
+    }
+
+    if (this.pendingEdits.length > 0) {
+      await this.dispatchRequest();
+    }
+  }
 }

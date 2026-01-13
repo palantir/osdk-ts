@@ -174,6 +174,7 @@ export function createWriteableClient<
         value: {
           ontologyRid,
           transactionRid,
+          editRequestManager,
         } satisfies WriteableClientContext,
       },
     } satisfies Record<
