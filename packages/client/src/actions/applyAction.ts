@@ -22,8 +22,10 @@ import type {
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
+  AttachmentUpload,
   CompileTimeMetadata as CompileTimeActionMetadata,
   DataValueClientToWire,
+  MediaUpload,
 } from "@osdk/api";
 import type {
   BatchApplyActionResponseV2,
@@ -207,10 +209,39 @@ async function remapActionParams<AD extends ActionDefinition<any>>(
 
   const parameterMap: { [parameterName: string]: unknown } = {};
   for (const [key, value] of Object.entries(params)) {
-    parameterMap[key] = await toDataValue(value, client, actionMetadata);
+    // For File/Blob uploads, convert to the correct upload object based on parameter type
+    const processedValue = preprocessUploadValue(value, key, actionMetadata);
+    parameterMap[key] = await toDataValue(
+      processedValue,
+      client,
+      actionMetadata,
+    );
   }
 
   return parameterMap;
+}
+
+function preprocessUploadValue<T>(
+  value: T | Blob,
+  paramName: string,
+  actionMetadata: ActionMetadata,
+): T | Blob | AttachmentUpload | MediaUpload {
+  if (!(value instanceof Blob)) {
+    return value;
+  }
+
+  const paramType = actionMetadata.parameters[paramName]?.type;
+  const fileName = "name" in value && typeof value.name === "string"
+    ? value.name
+    : "upload";
+
+  if (paramType === "attachment") {
+    return { name: fileName, data: value };
+  } else if (paramType === "mediaReference") {
+    return { fileName, data: value };
+  }
+
+  return value;
 }
 
 async function remapBatchActionParams<
