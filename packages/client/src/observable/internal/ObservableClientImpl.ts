@@ -48,6 +48,7 @@ import type {
   ObservableClient,
   ObserveAggregationArgs,
   ObserveAggregationOptions,
+  ObserveAggregationOptionsWithObjectSet,
   ObserveFunctionCallbackArgs,
   ObserveFunctionOptions,
   ObserveListOptions,
@@ -114,26 +115,43 @@ export class ObservableClientImpl implements ObservableClient {
     );
   };
 
-  public observeAggregation: <
+  public observeAggregation<
     T extends ObjectOrInterfaceDefinition,
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
     options: ObserveAggregationOptions<T, A, RDPs>,
     subFn: Observer<ObserveAggregationArgs<T, A>>,
-  ) => Unsubscribable = <
+  ): Unsubscribable;
+  public observeAggregation<
     T extends ObjectOrInterfaceDefinition,
     A extends AggregateOpts<T>,
     RDPs extends Record<string, SimplePropertyDef> = {},
   >(
-    options: ObserveAggregationOptions<T, A, RDPs>,
+    options: ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
     subFn: Observer<ObserveAggregationArgs<T, A>>,
-  ) => {
+  ): Promise<Unsubscribable>;
+  public observeAggregation<
+    T extends ObjectOrInterfaceDefinition,
+    A extends AggregateOpts<T>,
+    RDPs extends Record<string, SimplePropertyDef> = {},
+  >(
+    options:
+      | ObserveAggregationOptions<T, A, RDPs>
+      | ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
+    subFn: Observer<ObserveAggregationArgs<T, A>>,
+  ): Unsubscribable | Promise<Unsubscribable> {
+    if (options.objectSet) {
+      return this.__experimentalStore.aggregations.observeAsync(
+        options as ObserveAggregationOptionsWithObjectSet<T, A, RDPs>,
+        subFn as Observer<AggregationPayloadBase>,
+      );
+    }
     return this.__experimentalStore.aggregations.observe(
-      options,
+      options as ObserveAggregationOptions<T, A, RDPs>,
       subFn as Observer<AggregationPayloadBase>,
     );
-  };
+  }
 
   public observeFunction: <Q extends QueryDefinition<unknown>>(
     queryDef: Q,
