@@ -1235,6 +1235,78 @@ describe(Store, () => {
           { status: "loaded" },
         );
       });
+
+      it("handles multiple sequential fetchMore calls", async () => {
+        const listSub = mockListSubCallback();
+        defer(cache.lists.observe(
+          {
+            type: Employee,
+            where: {},
+            orderBy: {},
+            mode: "force",
+            pageSize: 1,
+          },
+          listSub,
+        ));
+
+        await waitForCall(listSub, 1);
+        expectSingleListCallAndClear(listSub, [], { status: "loading" });
+
+        await waitForCall(listSub, 1);
+        let { fetchMore } = listSub.next.mock.calls[0][0]!;
+        expectSingleListCallAndClear(
+          listSub,
+          employeesAsServerReturns.slice(0, 1),
+          { status: "loaded" },
+        );
+
+        void fetchMore();
+        await waitForCall(listSub, 1);
+        expectSingleListCallAndClear(
+          listSub,
+          employeesAsServerReturns.slice(0, 1),
+          { status: "loading" },
+        );
+
+        await waitForCall(listSub, 1);
+        ({ fetchMore } = listSub.next.mock.calls[0][0]!);
+        expectSingleListCallAndClear(
+          listSub,
+          employeesAsServerReturns.slice(0, 2),
+          { status: "loaded" },
+        );
+
+        void fetchMore();
+        await waitForCall(listSub, 1);
+        expectSingleListCallAndClear(
+          listSub,
+          employeesAsServerReturns.slice(0, 2),
+          { status: "loading" },
+        );
+
+        await waitForCall(listSub, 1);
+        ({ fetchMore } = listSub.next.mock.calls[0][0]!);
+        expectSingleListCallAndClear(
+          listSub,
+          employeesAsServerReturns.slice(0, 3),
+          { status: "loaded" },
+        );
+
+        void fetchMore();
+        await waitForCall(listSub, 1);
+        expectSingleListCallAndClear(
+          listSub,
+          employeesAsServerReturns.slice(0, 3),
+          { status: "loading" },
+        );
+
+        await waitForCall(listSub, 1);
+        expectSingleListCallAndClear(
+          listSub,
+          employeesAsServerReturns.slice(0, 4),
+          { status: "loaded" },
+        );
+      });
     });
   });
 
