@@ -60,6 +60,7 @@ import {
 import { ObjectCacheKeyRegistry } from "./object/ObjectCacheKeyRegistry.js";
 import { ObjectsHelper } from "./object/ObjectsHelper.js";
 import { ObjectSetHelper } from "./objectset/ObjectSetHelper.js";
+import { ObjectSetArrayCanonicalizer } from "./ObjectSetArrayCanonicalizer.js";
 import { type OptimisticId } from "./OptimisticId.js";
 import { OrderByCanonicalizer } from "./OrderByCanonicalizer.js";
 import { PivotCanonicalizer } from "./PivotCanonicalizer.js";
@@ -95,6 +96,8 @@ export class Store {
   readonly intersectCanonicalizer: IntersectCanonicalizer =
     new IntersectCanonicalizer(this.whereCanonicalizer);
   readonly pivotCanonicalizer: PivotCanonicalizer = new PivotCanonicalizer();
+  readonly objectSetArrayCanonicalizer: ObjectSetArrayCanonicalizer =
+    new ObjectSetArrayCanonicalizer();
 
   readonly client: Client;
 
@@ -156,6 +159,7 @@ export class Store {
       this.cacheKeys,
       this.whereCanonicalizer,
       this.orderByCanonicalizer,
+      this.objectSetArrayCanonicalizer,
     );
   }
 
