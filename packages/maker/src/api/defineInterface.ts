@@ -31,9 +31,7 @@ import type {
 import { type InterfaceType } from "./interface/InterfaceType.js";
 import { mapSimplifiedStatusToInterfaceTypeStatus } from "./interface/mapSimplifiedStatusToInterfaceTypeStatus.js";
 import { combineApiNamespaceIfMissing } from "./namespace/combineApiNamespaceIfMissing.js";
-import {
-  isPropertyTypeType,
-} from "./properties/PropertyTypeType.js";
+import { isPropertyTypeType, isStruct } from "./properties/PropertyTypeType.js";
 import { type SharedPropertyType } from "./properties/SharedPropertyType.js";
 
 export type SimplifiedInterfaceTypeStatus =
@@ -199,7 +197,7 @@ function verifyBasePropertyDefinition(
 ): SharedPropertyType {
   const unNamespacedTypeApiName = withoutNamespace(type.apiName);
   invariant(
-    isPropertyTypeType(type.type),
+    isPropertyTypeType(type.type) || isStruct(type.type),
     `Invalid data type ${
       JSON.stringify(type)
     } for property ${apiName} on InterfaceType ${apiName}`,
