@@ -49,6 +49,10 @@ import {
   updateOntology,
 } from "./defineOntology.js";
 import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfaceProperties.js";
+import type {
+  InterfaceDefinedProperty,
+  InterfacePropertyType,
+} from "./interface/InterfacePropertyType.js";
 import type { InterfaceType } from "./interface/InterfaceType.js";
 import type { ObjectPropertyType } from "./object/ObjectPropertyType.js";
 import type { ObjectPropertyTypeUserDefinition } from "./object/ObjectPropertyTypeUserDefinition.js";
@@ -57,7 +61,6 @@ import {
   isStruct,
   type PropertyTypeType,
 } from "./properties/PropertyTypeType.js";
-import type { SharedPropertyType } from "./properties/SharedPropertyType.js";
 
 export const MODIFY_OBJECT_PARAMETER: string = "objectToModifyParameter";
 
@@ -251,8 +254,16 @@ export function isPropertyParameter(
   name: string,
   type: PropertyTypeType,
 ): boolean {
+  if ("interfaceType" in def) {
+    return (Object.keys(getFlattenedInterfaceProperties(def.interfaceType))
+      .includes(name)
+      && !Object.keys(def.nonParameterMappings ?? {}).includes(name)
+      && !isStruct(type)
+      && !def.excludedProperties?.includes(name));
+  }
   return (
-    !Object.keys(def.nonParameterMappings ?? {}).includes(name)
+    Object.keys(def.objectType.properties ?? {}).includes(name)
+    && !Object.keys(def.nonParameterMappings ?? {}).includes(name)
     && !isStruct(type)
     && !def.excludedProperties?.includes(name)
   );
@@ -262,7 +273,7 @@ export function createParameters(
   def: ActionTypeUserDefinition | InterfaceActionTypeUserDefinition,
   propertyMap:
     | Record<string, ObjectPropertyTypeUserDefinition>
-    | Record<string, SharedPropertyType>,
+    | Record<string, InterfacePropertyType>,
   parameterSet: Set<string>,
   requiredMap?: Record<string, boolean>,
 ): Array<ActionParameter> {
@@ -270,14 +281,17 @@ export function createParameters(
   return [
     ...targetParams,
     ...Array.from(parameterSet).map(
-      id => (
-        {
+      id => {
+        const propertyMetadata = "sharedPropertyType" in propertyMap[id]
+          ? propertyMap[id].sharedPropertyType
+          : propertyMap[id];
+        return {
           id,
           displayName: def.parameterConfiguration?.[id]?.displayName
-            ?? propertyMap[id]?.displayName
+            ?? propertyMetadata?.displayName
             ?? uppercaseFirstLetter(id),
           type: def.parameterConfiguration?.[id]?.customParameterType
-            ?? extractActionParameterType(propertyMap[id]!),
+            ?? extractActionParameterType(propertyMetadata!),
           validation: (def.parameterConfiguration?.[id] !== undefined)
             ? {
               ...def.parameterConfiguration?.[id],
@@ -287,31 +301,31 @@ export function createParameters(
                     def.parameterConfiguration?.[id].customParameterType,
                   )
                   : extractAllowedValuesFromPropertyType(
-                    propertyMap[id]?.type!,
+                    propertyMetadata!.type,
                   )),
               required: def.parameterConfiguration?.[id].required
-                ?? (propertyMap[id]?.nullability?.noNulls
+                ?? (propertyMetadata!.nullability?.noNulls
                   ?? false),
             }
             : {
-              required: (propertyMap[id]?.array ?? false)
+              required: (propertyMetadata!.array ?? false)
                 ? {
-                  listLength: propertyMap[id]?.nullability
+                  listLength: propertyMetadata!.nullability
                       ?.noEmptyCollections
                     ? { min: 1 }
                     : {},
                 }
                 : requiredMap?.[id]
-                  ?? propertyMap[id]?.nullability?.noNulls
+                  ?? propertyMetadata!.nullability?.noNulls
                   ?? false,
               allowedValues: extractAllowedValuesFromPropertyType(
-                propertyMap[id]?.type!,
+                propertyMetadata!.type,
               ),
             },
           defaultValue: def.parameterConfiguration?.[id]?.defaultValue,
           description: def.parameterConfiguration?.[id]?.description,
-        }
-      ),
+        };
+      },
     ),
   ];
 }
@@ -739,7 +753,7 @@ function extractAllowedValuesFromPropertyType(
 
 function extractActionParameterType(
   pt:
-    | SharedPropertyType
+    | InterfaceDefinedProperty
     | ObjectPropertyType
     | ObjectPropertyTypeUserDefinition,
 ): ActionParameterType {
@@ -779,7 +793,7 @@ function extractActionParameterType(
 function maybeAddList(
   type: ActionParameterTypePrimitive,
   pt:
-    | SharedPropertyType
+    | InterfaceDefinedProperty
     | ObjectPropertyType
     | ObjectPropertyTypeUserDefinition,
 ): ActionParameterType {

@@ -32,6 +32,7 @@ import {
   validateParameterOrdering,
 } from "./defineAction.js";
 import { getFlattenedInterfaceProperties } from "./interface/getFlattenedInterfaceProperties.js";
+import { getInterfacePropertyTypeType } from "./interface/InterfacePropertyType.js";
 
 export function defineModifyInterfaceObjectAction(
   def: InterfaceActionTypeUserDefinition,
@@ -43,20 +44,27 @@ export function defineModifyInterfaceObjectAction(
     Object.keys(allProperties),
     def.interfaceType.apiName,
   );
-  const sptNames = Object.keys(allProperties).filter(apiName =>
-    isPropertyParameter(
-      def,
-      apiName,
-      allProperties[apiName].sharedPropertyType.type,
-    )
+  const actionInterfaceProperties = Object.entries(allProperties).filter(
+    ([apiName, type]) => {
+      return isPropertyParameter(
+        def,
+        apiName,
+        getInterfacePropertyTypeType(type),
+      );
+    },
   );
+  const sptNames = Object.entries(actionInterfaceProperties)
+    .filter(([_apiName, type]) => "sharedPropertyType" in type)
+    .map(([apiName]) => apiName);
   const parameterNames = new Set(
-    sptNames.map(apiName => getInterfaceParameterName(def, apiName)),
+    actionInterfaceProperties.map(([apiName, _type]) =>
+      getInterfaceParameterName(def, apiName)
+    ),
   );
   const propertyMap = Object.fromEntries(
     Object.entries(allProperties).map((
       [id, prop],
-    ) => [getInterfaceParameterName(def, id), prop.sharedPropertyType]),
+    ) => [getInterfaceParameterName(def, id), prop]),
   );
 
   Object.keys(def.parameterConfiguration ?? {}).forEach(param =>
@@ -93,7 +101,9 @@ export function defineModifyInterfaceObjectAction(
     propertyMap,
     parameterNames,
     Object.fromEntries(
-      Object.entries(allProperties).map(([id, prop]) => [id, prop.required]),
+      Object.entries(allProperties).map((
+        [id, prop],
+      ) => [id, prop.required ?? true]),
     ),
   );
   const mappings = Object.fromEntries(
@@ -120,6 +130,7 @@ export function defineModifyInterfaceObjectAction(
       {
         type: "modifyInterfaceRule",
         modifyInterfaceRule: {
+          interfaceApiName: def.interfaceType.apiName,
           interfaceObjectToModifyParameter: "interfaceObjectToModifyParameter",
           sharedPropertyValues: {
             ...Object.fromEntries(
@@ -133,6 +144,23 @@ export function defineModifyInterfaceObjectAction(
               ),
             ),
             ...mappings,
+          },
+          interfacePropertyValues: {
+            ...Object.fromEntries(
+              actionInterfaceProperties
+                .map(([id, _type]) => [
+                  id,
+                  {
+                    type: "logicRuleValue",
+                    logicRuleValue: {
+                      type: "parameterId",
+                      parameterId: def.useNonNamespacedParameters
+                        ? getNonNamespacedParameterName(def, id)
+                        : id,
+                    },
+                  },
+                ]),
+            ),
           },
         },
       },

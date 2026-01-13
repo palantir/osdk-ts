@@ -8871,6 +8871,7 @@ export type OntologyIrMediaSourceRid =
   | OntologyIrMediaSourceRid_datasetRid;
 
 export interface OntologyIrModifyInterfaceRule {
+  interfaceApiName: InterfaceTypeApiName;
   interfaceObjectToModifyParameter: ParameterId;
   interfacePropertyValues: Record<
     InterfacePropertyTypeApiName,

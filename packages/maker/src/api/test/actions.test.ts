@@ -252,6 +252,7 @@ describe("Action Types", () => {
             interfaceApiName: "foo",
             objectTypeParameter: "param1",
             sharedPropertyValues: {},
+            interfacePropertyValues: {},
           },
         }],
         parameters: [{
@@ -5432,6 +5433,7 @@ describe("Action Types", () => {
           rules: [{
             type: "modifyInterfaceRule",
             modifyInterfaceRule: {
+              interfaceApiName: "com.palantir.other.ontology.event.Event",
               interfaceObjectToModifyParameter:
                 "interfaceObjectToModifyParameter",
               sharedPropertyValues: {
@@ -5451,6 +5453,7 @@ describe("Action Types", () => {
                   parameterId: "otherParameter",
                 },
               },
+              interfacePropertyValues: {},
             },
           }],
         })
@@ -5514,6 +5517,7 @@ describe("Action Types", () => {
           rules: [{
             type: "modifyInterfaceRule",
             modifyInterfaceRule: {
+              interfaceApiName: "com.palantir.other.ontology.event.Event",
               interfaceObjectToModifyParameter:
                 "interfaceObjectToModifyParameter",
               sharedPropertyValues: {
@@ -5529,6 +5533,7 @@ describe("Action Types", () => {
                   },
                 },
               },
+              interfacePropertyValues: {},
             },
           }],
         });

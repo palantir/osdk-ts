@@ -15,6 +15,7 @@
  */
 
 import type { OntologyIrBaseFormatter } from "@osdk/client.unstable";
+import type { PropertyTypeType } from "../properties/PropertyTypeType.js";
 import type {
   PropertyType,
   SharedPropertyType,
@@ -33,4 +34,12 @@ export interface InterfaceDefinedProperty extends PropertyType {
 export interface InterfaceSharedPropertyType {
   sharedPropertyType: SharedPropertyType;
   required: boolean;
+}
+
+export function getInterfacePropertyTypeType(
+  interfacePropertyType: InterfacePropertyType,
+): PropertyTypeType {
+  return "sharedPropertyType" in interfacePropertyType
+    ? interfacePropertyType.sharedPropertyType.type
+    : interfacePropertyType.type;
 }

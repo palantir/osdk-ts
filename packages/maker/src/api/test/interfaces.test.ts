@@ -15,7 +15,9 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
+import { defineCreateInterfaceObjectAction } from "../defineCreateInterfaceObjectAction.js";
 import { defineInterface } from "../defineInterface.js";
+import { defineModifyInterfaceObjectAction } from "../defineModifyInterfaceObjectAction.js";
 import { defineOntology, dumpOntologyFullMetadata } from "../defineOntology.js";
 import { defineSharedPropertyType } from "../defineSpt.js";
 
@@ -926,5 +928,44 @@ describe("Interfaces", () => {
       status: { type: "deprecated", message: "foo", deadline: "foo" },
     });
     expect(result.status).toEqual(deprecatedStatus);
+  });
+  it("IDP TEST", () => {
+    const ethanaSpt = defineSharedPropertyType({
+      apiName: "ethanaSpt",
+      type: "string",
+    });
+
+    const iface = defineInterface({
+      apiName: "idp5",
+      displayName: "Test IDP 5",
+      properties: {
+        "bar": {
+          type: "string",
+          primaryKeyConstraint: "MUST_BE_PK",
+        },
+        "foo": { type: "boolean" },
+        "ethanaSpt": ethanaSpt,
+        // "struct": {
+        //   type: {
+        //     type: "struct",
+        //     structDefinition: {
+        //       field: {
+        //         fieldType: "string",
+        //         requireImplementation: true
+        //       }
+        //     }
+        //   }
+        // },
+      },
+    });
+
+    defineModifyInterfaceObjectAction({
+      interfaceType: iface,
+    });
+    defineCreateInterfaceObjectAction({
+      interfaceType: iface,
+    });
+
+    expect(dumpOntologyFullMetadata().ontology).toMatchInlineSnapshot(``);
   });
 });
