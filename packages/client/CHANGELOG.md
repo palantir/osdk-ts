@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 2.7.0-beta.8
+
+### Minor Changes
+
+- c6124eb: Add ability to flush edits to transactions
+
+### Patch Changes
+
+- @osdk/api@2.7.0-beta.8
+- @osdk/client.unstable@2.7.0-beta.8
+- @osdk/generator-converters@2.7.0-beta.8
+
 ## 2.7.0-beta.7
 
 ### Minor Changes
