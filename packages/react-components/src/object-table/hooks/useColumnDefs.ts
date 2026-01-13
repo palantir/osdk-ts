@@ -124,13 +124,15 @@ function getColumnsFromColumnDefinitions<
       cell: (cellContext) => {
         // Handle async column types
         if (locator.type === "rdp" || locator.type === "function") {
-          const cellValue = cellContext.getValue() as AsyncValue<unknown>;
+          const cellValue = cellContext.getValue() as
+            | AsyncValue<unknown>
+            | undefined;
 
-          if (cellValue.type === "loaded" && cellValue.value != null) {
+          if (cellValue?.type === "loaded" && cellValue.value != null) {
             return cellValue.value;
           }
 
-          if (cellValue.type === "loading") {
+          if (cellValue?.type === "loading") {
             return "Loading...";
           }
 

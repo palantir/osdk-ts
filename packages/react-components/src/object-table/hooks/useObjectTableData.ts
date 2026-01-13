@@ -19,18 +19,16 @@ import type {
   ObjectSet,
   ObjectTypeDefinition,
   Osdk,
-  PrimaryKeyType,
   PropertyKeys,
   QueryDefinition,
   SimplePropertyDef,
-  WhereClause,
 } from "@osdk/api";
 import { useObjectSet } from "@osdk/react/experimental";
 import { useMemo } from "react";
-import type { AsyncValue } from "../../types/AsyncValue.js";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
+import { useAsyncColumnData } from "./useAsyncColumnData.js";
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 2;
 
 interface UseObjectTableDataResults<
   Q extends ObjectTypeDefinition,
@@ -41,6 +39,7 @@ interface UseObjectTableDataResults<
 > {
   data: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[];
   fetchMore: (() => Promise<void>) | undefined;
+  isLoading: boolean;
 }
 
 /**
@@ -99,131 +98,28 @@ export function useObjectTableData<
     );
   }, [columnDefinitions]);
 
+  // Load derived properties
   const derivedPropertyKeys = useMemo(
     () => withProperties ? Object.keys(withProperties) : [],
     [withProperties],
   );
+  type DerivedPropertyKey = (typeof derivedPropertyKeys)[number];
 
-  type DerivedPropertyKeys = (typeof derivedPropertyKeys)[number];
-
-  const filterForObjectsInBaseRows: WhereClause<Q, RDPs> | undefined = useMemo(
-    () => {
-      if (
-        !primaryKeyApiName || isBaseObjectSetLoading || !baseRows
-      ) {
-        return;
-      }
-
-      const baseRowPrimaryKeys = baseRows.map(row => row.$primaryKey);
-
-      if (baseRowPrimaryKeys.length === 0) {
-        return;
-      }
-
-      return {
-        [primaryKeyApiName as PropertyKeys<Q>]: {
-          $in: baseRowPrimaryKeys,
-        },
-      } as WhereClause<Q, RDPs>;
-    },
-    [primaryKeyApiName, baseRows, isBaseObjectSetLoading],
-  );
-
-  // Load derived properties
-  const { data: dataWithDerivedProperties, isLoading: isAsyncColumnLoading } =
-    useObjectSet<Q, never, RDPs>(
-      objectSet,
-      {
-        withProperties,
-        pageSize: PAGE_SIZE,
-        where: filterForObjectsInBaseRows,
-        // Do not fetch when baseRows is not ready or empty
-        enabled: filterForObjectsInBaseRows !== undefined,
-      },
-    );
-
-  // Combine base rows with async column data
-  const rows: Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>[] =
-    useMemo(() => {
-      const enrichedData = (dataWithDerivedProperties ?? []).reduce(
-        (acc, cur) => {
-          return {
-            ...acc,
-            [cur.$primaryKey]: {
-              cur,
-            },
-          };
-        },
-        {},
-      );
-      return mergeRowsWithEnrichedData<Q, RDPs, DerivedPropertyKeys>(
-        baseRows,
-        isBaseObjectSetLoading,
-        isAsyncColumnLoading,
-        enrichedData,
-        derivedPropertyKeys,
-      );
-    }, [
-      baseRows,
-      dataWithDerivedProperties,
-      derivedPropertyKeys,
-      isAsyncColumnLoading,
-      isBaseObjectSetLoading,
-    ]);
+  const { rows } = useAsyncColumnData<
+    Q,
+    DerivedPropertyKey,
+    RDPs
+  >({
+    objectSet,
+    baseRows,
+    withProperties,
+    primaryKeyApiName,
+    derivedPropertyKeys,
+  });
 
   return {
     data: rows,
     fetchMore: baseObjectSetResults.fetchMore,
+    isLoading: isBaseObjectSetLoading,
   };
 }
-
-const mergeRowsWithEnrichedData = <
-  Q extends ObjectTypeDefinition,
-  RDPs extends Record<string, SimplePropertyDef> = Record<
-    string,
-    never
-  >,
-  AsyncColumnKeys extends string = string,
->(
-  baseRows:
-    | Array<
-      Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
-    >
-    | undefined,
-  isBaseObjectSetLoading: boolean,
-  isAsyncColumnLoading: boolean,
-  // TODO: Fix types. The string in the second record is the same as asyncColumnKeys
-  enrichedData: Partial<
-    Record<PrimaryKeyType<Q>, Record<AsyncColumnKeys, AsyncValue<any>>>
-  >,
-  asyncColumnKeys: AsyncColumnKeys[],
-) => {
-  if (isBaseObjectSetLoading || !baseRows) {
-    return [];
-  }
-  // The resulting data should respect the sort order of baseRows
-  return baseRows.map(row => {
-    const rowEnrichedData = enrichedData[row.$primaryKey];
-    // TODO: Type the async column values
-    const asyncColumnValues: Record<string, AsyncValue<any>> = asyncColumnKeys
-      .reduce(
-        (acc, colKey) => ({
-          ...acc,
-          [colKey]: isAsyncColumnLoading
-            ? { type: "loading" }
-            : rowEnrichedData?.[colKey] != null
-            ? rowEnrichedData[colKey]
-            : {
-              type: "loaded",
-              value: undefined,
-            },
-        }),
-        {},
-      );
-
-    return {
-      ...row,
-      ...asyncColumnValues,
-    };
-  });
-};
