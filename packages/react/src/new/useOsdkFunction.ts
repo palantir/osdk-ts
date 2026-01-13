@@ -171,13 +171,7 @@ export function useOsdkFunction<Q extends QueryDefinition<unknown>>(
 
   const stableParams = React.useMemo(
     () => params,
-    [(() => {
-      try {
-        return JSON.stringify(params);
-      } catch {
-        return params;
-      }
-    })()],
+    [JSON.stringify(params)],
   );
   const stableDependsOn = React.useMemo(
     () => dependsOn,
