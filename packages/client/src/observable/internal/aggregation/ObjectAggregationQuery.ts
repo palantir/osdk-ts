@@ -15,9 +15,16 @@
  */
 
 import type { DerivedProperty, ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectSet as WireObjectSet } from "@osdk/foundry.ontologies";
+import { additionalContext } from "../../../Client.js";
+import { createObjectSet } from "../../../objectSet/createObjectSet.js";
+import type { Canonical } from "../Canonical.js";
+import type { SimpleWhereClause } from "../SimpleWhereClause.js";
 import {
   type AggregationCacheKey,
   API_NAME_IDX,
+  INTERSECT_IDX,
+  WIRE_OBJECT_SET_IDX,
 } from "./AggregationCacheKey.js";
 import { AggregationQuery } from "./AggregationQuery.js";
 
@@ -26,10 +33,26 @@ export class ObjectAggregationQuery extends AggregationQuery {
     AggregationCacheKey["__cacheKey"]["value"]
   > {
     const type = this.cacheKey.otherKeys[API_NAME_IDX];
-    let objectSet = this.store.client({
+    const serializedObjectSet = this.cacheKey.otherKeys[WIRE_OBJECT_SET_IDX];
+    const intersectWith = this.cacheKey.otherKeys[INTERSECT_IDX] as
+      | Canonical<Array<Canonical<SimpleWhereClause>>>
+      | undefined;
+    const objectTypeDef = {
       type: "object",
       apiName: type,
-    } as ObjectTypeDefinition);
+    } as ObjectTypeDefinition;
+
+    let objectSet;
+    if (serializedObjectSet) {
+      const wireObjectSet = JSON.parse(serializedObjectSet) as WireObjectSet;
+      objectSet = createObjectSet(
+        objectTypeDef,
+        this.store.client[additionalContext],
+        wireObjectSet,
+      );
+    } else {
+      objectSet = this.store.client(objectTypeDef);
+    }
 
     if (this.rdpConfig) {
       objectSet = objectSet.withProperties(
@@ -38,6 +61,22 @@ export class ObjectAggregationQuery extends AggregationQuery {
     }
 
     objectSet = objectSet.where(this.canonicalWhere);
+
+    if (intersectWith != null && intersectWith.length > 0) {
+      const intersectSets = intersectWith.map(whereClause => {
+        let intersectSet = this.store.client(objectTypeDef);
+
+        if (this.rdpConfig) {
+          intersectSet = intersectSet.withProperties(
+            this.rdpConfig as DerivedProperty.Clause<ObjectTypeDefinition>,
+          );
+        }
+
+        return intersectSet.where(whereClause);
+      });
+
+      objectSet = objectSet.intersect(...intersectSets);
+    }
 
     return await objectSet.aggregate(
       this.canonicalAggregate as Parameters<typeof objectSet.aggregate>[0],

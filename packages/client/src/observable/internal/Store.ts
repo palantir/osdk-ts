@@ -134,6 +134,7 @@ export class Store {
       this.cacheKeys,
       this.whereCanonicalizer,
       this.rdpCanonicalizer,
+      this.intersectCanonicalizer,
     );
     this.lists = new ListsHelper(
       this,
