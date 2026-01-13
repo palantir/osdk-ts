@@ -84,7 +84,6 @@ export function useRowSelection<
   const isAllSelected = totalCount > 0 && selectedCount === totalCount;
   const hasSelection = selectedCount > 0;
 
-  // Called by the SelectionHeaderCell
   const onToggleAll = useCallback(() => {
     if (!isSelectionEnabled || !data) return;
 
@@ -98,7 +97,6 @@ export function useRowSelection<
     onRowSelection?.(newSelectedRows);
   }, [isSelectionEnabled, data, isAllSelected, isControlled, onRowSelection]);
 
-  // Called by the row-level SelectionCell
   const onToggleRow = useCallback(
     (rowId: string, rowIndex: number, isShiftClick: boolean = false) => {
       if (!isSelectionEnabled || !data) return;
@@ -191,11 +189,14 @@ function getRangeSelectionRows<
     const primaryKeysInRange = rowsInRange.map(item => item.$primaryKey);
 
     const currentlySelected = getSelectedPrimaryKeys(rowSelectionState, data);
-    const newSelectedRows = addUniqueItems(
-      currentlySelected,
-      primaryKeysInRange,
-    );
 
+    // Add all rows in range to selectedRows if not yet selected
+    const newSelectedRows = [...currentlySelected];
+    primaryKeysInRange.forEach(item => {
+      if (!newSelectedRows.includes(item)) {
+        newSelectedRows.push(item);
+      }
+    });
     return newSelectedRows;
   }
   return [];
@@ -210,7 +211,9 @@ function getMultipleSelectionRows<
   const primaryKey = data[rowIndex].$primaryKey;
   const currentlySelected = getSelectedPrimaryKeys(rowSelectionState, data);
   // Handles single row toggle in multiple selection mode
-  const newSelectedRows = toggleItem(currentlySelected, primaryKey);
+  const newSelectedRows = currentlySelected.includes(primaryKey)
+    ? currentlySelected.filter(i => i !== primaryKey)
+    : [...currentlySelected, primaryKey];
   return newSelectedRows;
 }
 
@@ -237,28 +240,6 @@ function getRowsInRange<
   }
 
   return rows;
-}
-
-/**
- * Adds unique items to an array. Used to merge selections while avoiding duplicates.
- */
-function addUniqueItems<T>(currentItems: T[], newItems: T[]): T[] {
-  const result = [...currentItems];
-  newItems.forEach(item => {
-    if (!result.includes(item)) {
-      result.push(item);
-    }
-  });
-  return result;
-}
-
-/**
- * Toggles an item in an array. Removes it if present, adds it if absent.
- */
-function toggleItem<T>(items: T[], item: T): T[] {
-  return items.includes(item)
-    ? items.filter(i => i !== item)
-    : [...items, item];
 }
 
 /**

@@ -108,7 +108,7 @@ describe("useRowSelection", () => {
         expect(onRowSelection).toHaveBeenCalledWith([data[0].$primaryKey]);
       });
 
-      it("deselects when clicking selected row and calls onRowSelection", () => {
+      it("deselects when toggling selected row and calls onRowSelection", () => {
         const data = createMockData(5);
         const onRowSelection = vi.fn();
         const { result } = renderHook(() =>
@@ -207,6 +207,7 @@ describe("useRowSelection", () => {
           "item-0": true,
           "item-2": true,
         });
+        expect(result.current.isAllSelected).toBe(false);
         expect(onRowSelection).toHaveBeenLastCalledWith([
           data[0].$primaryKey,
           data[2].$primaryKey,
@@ -409,7 +410,7 @@ describe("useRowSelection", () => {
         expect(result.current.hasSelection).toBe(true);
       });
 
-      it("calls onRowSelection but does not update internal state", () => {
+      it("calls onRowSelection when toggling but does not update internal state", () => {
         const data = createMockData(5);
         const onRowSelection = vi.fn();
         const { result, rerender } = renderHook(
@@ -463,7 +464,7 @@ describe("useRowSelection", () => {
         });
       });
 
-      it("calls onRowSelection for toggle operations", () => {
+      it("calls onRowSelection when toggling rows", () => {
         const data = createMockData(5);
         const onRowSelection = vi.fn();
         const { result } = renderHook(() =>
@@ -493,7 +494,7 @@ describe("useRowSelection", () => {
         expect(onRowSelection).toHaveBeenCalledWith([]);
       });
 
-      it("calls onRowSelection for range selection", () => {
+      it("calls onRowSelection for shift-click range selection", () => {
         const data = createMockData(5);
         const onRowSelection = vi.fn();
         const { result } = renderHook(() =>
@@ -522,7 +523,7 @@ describe("useRowSelection", () => {
         ]);
       });
 
-      it("calls onRowSelection for toggle all", () => {
+      it("calls onRowSelection when toggling all rows", () => {
         const data = createMockData(3);
         const onRowSelection = vi.fn();
         const { result } = renderHook(() =>
@@ -576,74 +577,6 @@ describe("useRowSelection", () => {
       });
     });
   });
-
-  describe("isAllSelected and hasSelection", () => {
-    it("correctly computes isAllSelected", () => {
-      const data = createMockData(3);
-      const { result } = renderHook(() =>
-        useRowSelection({
-          selectionMode: "multiple",
-          data,
-        })
-      );
-
-      expect(result.current.isAllSelected).toBe(false);
-
-      // Select some
-      act(() => {
-        result.current.onToggleRow("item-0", 0);
-      });
-
-      expect(result.current.isAllSelected).toBe(false);
-
-      // Select all
-      act(() => {
-        result.current.onToggleRow("item-1", 1);
-      });
-
-      act(() => {
-        result.current.onToggleRow("item-2", 2);
-      });
-
-      expect(result.current.isAllSelected).toBe(true);
-    });
-
-    it("correctly computes hasSelection", () => {
-      const data = createMockData(3);
-      const { result } = renderHook(() =>
-        useRowSelection({
-          selectionMode: "multiple",
-          data,
-        })
-      );
-
-      expect(result.current.hasSelection).toBe(false);
-
-      act(() => {
-        result.current.onToggleRow("item-0", 0);
-      });
-
-      expect(result.current.hasSelection).toBe(true);
-
-      act(() => {
-        result.current.onToggleRow("item-0", 0);
-      });
-
-      expect(result.current.hasSelection).toBe(false);
-    });
-
-    it("isAllSelected is false with empty data", () => {
-      const { result } = renderHook(() =>
-        useRowSelection({
-          selectionMode: "multiple",
-          data: [],
-        })
-      );
-
-      expect(result.current.isAllSelected).toBe(false);
-    });
-  });
-
   describe("edge cases", () => {
     it("handles undefined data gracefully", () => {
       const { result } = renderHook(() =>

@@ -23,7 +23,7 @@ import type {
   SimplePropertyDef,
 } from "@osdk/api";
 import { useOsdkMetadata } from "@osdk/react";
-import type { ColumnDef } from "@tanstack/react-table";
+import type { AccessorColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { ColumnDefinition } from "../ObjectTableApi.js";
 
@@ -34,7 +34,7 @@ interface UseColumnDefsResult<
     never
   >,
 > {
-  columns: ColumnDef<
+  columns: AccessorColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >[];
 
@@ -62,7 +62,9 @@ export function useColumnDefs<
 ): UseColumnDefsResult<Q, RDPs> {
   const { metadata, loading, error } = useOsdkMetadata(objectType);
 
-  const columns = useMemo(() => {
+  const columns: AccessorColumnDef<
+    Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
+  >[] = useMemo(() => {
     const objectProperties = metadata?.properties;
     // If columnDefinitions is provided, construct colDefs with it
     if (columnDefinitions) {
@@ -93,7 +95,7 @@ function getColumnsFromColumnDefinitions<
   columnDefinitions: Array<ColumnDefinition<Q, RDPs, FunctionColumns>>,
   objectProperties?: Record<any, ObjectMetadata.Property>,
 ): Array<
-  ColumnDef<
+  AccessorColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >
 > {
@@ -116,7 +118,7 @@ function getColumnsFromColumnDefinitions<
 
     const colKey = locator.id as string;
 
-    const colDef: ColumnDef<
+    const colDef: AccessorColumnDef<
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
     > = {
       id: colKey,
@@ -155,14 +157,14 @@ function getDefaultColumns<
 >(
   objectProperties?: Record<any, ObjectMetadata.Property>,
 ): Array<
-  ColumnDef<
+  AccessorColumnDef<
     Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
   >
 > {
   if (!objectProperties) return [];
 
   return Object.entries(objectProperties).map(([key, property]) => {
-    const colDef: ColumnDef<
+    const colDef: AccessorColumnDef<
       Osdk.Instance<Q, "$allBaseProperties", PropertyKeys<Q>, RDPs>
     > = {
       accessorKey: key,
